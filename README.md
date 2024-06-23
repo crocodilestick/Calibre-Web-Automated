@@ -107,29 +107,29 @@ As you may know, everytime you rebuild a docker container, anything that isn't i
 
 ### To make sure CWA remains installed between rebuilds, you can do the following:
 ### Option 1: Creating a new, modified Docker Image (Recommended)
->#### This option sounds much harder than it really is if you've never done it before but it's actually shockingly easy and currently the best option now the developer of Calibre-Web is sunsetting further development of the project.
->
->1. Successfully install CWA using the steps above and confirm it's working by running the included `check-cwa-install.sh' binary from the CLI of your Calibre-Web container as described above in Step 7
->2. While the container is running, from your main shell (use `exit` to return to your main shell if your still in the container's CLI) run the following command to generate an image of your newly modified Calibre-Web container, exactly as it's currently configured:
->    > `docker commit calibre-web calibre-web-automated`
->    - Replace `calibre-web` with the name of your Calibre-Web container if it differs and you can also replace `calibre-web-automated` with whatever you like as it is only the name the image being generated will have
->3. Once the process is finished, you can check the image was successfully created using the following command to list all current available docker images on your system:
->    > `docker image ls`
->4. Once you've confirmed the image was created successfully, edit your docker compose file so that the variable `image` is now as follows:
->~~~docker-compose
->---
->services:
->  calibre-web:
->    image: calibre-web-automated:latest
->    container_name: calibre-web
->    environment:
-> ...
->~~~
->    - Now the image variable should read `image: calibre-web-automated:latest' or `image: <your-chosen-image-name-here>:latest`
->5. Finished! 🎉 Now everytime you rebuild your container, CWA as well as any other changes you may have made will remain 👍
+#### This option sounds much harder than it really is if you've never done it before but it's actually shockingly easy and currently the best option now the developer of Calibre-Web is sunsetting further development of the project.
+
+1. Successfully install CWA using the steps above and confirm it's working by running the included `check-cwa-install.sh' binary from the CLI of your Calibre-Web container as described above in Step 7
+2. While the container is running, from your main shell (use `exit` to return to your main shell if your still in the container's CLI) run the following command to generate an image of your newly modified Calibre-Web container, exactly as it's currently configured:
+    > `docker commit calibre-web calibre-web-automated`
+    - Replace `calibre-web` with the name of your Calibre-Web container if it differs and you can also replace `calibre-web-automated` with whatever you like as it is only the name the image being generated will have
+3. Once the process is finished, you can check the image was successfully created using the following command to list all current available docker images on your system:
+    > `docker image ls`
+4. Once you've confirmed the image was created successfully, edit your docker compose file so that the variable `image` is now as follows:
+~~~docker-compose
+---
+services:
+  calibre-web:
+    image: calibre-web-automated:latest
+    container_name: calibre-web
+    environment:
+ ...
+~~~
+    - Now the image variable should read `image: calibre-web-automated:latest' or `image: <your-chosen-image-name-here>:latest`
+5. Finished! 🎉 Now everytime you rebuild your container, CWA as well as any other changes you may have made will remain 👍
 
 ### Option 2: Re-Running 'setup-cwa.sh' Whenever You Rebuild the Container
->This wouldn't be my preferred method but if you never really touch your containers the above may be overkill for you
+This wouldn't be my preferred method but if you never really touch your containers the above may be overkill for you
 
 How to Use 🔧
 -----------

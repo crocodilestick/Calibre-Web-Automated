@@ -1,4 +1,4 @@
-Calibre-Web-Automator
+Calibre-Web Automator
 =======
 
 ![Image](CWA-banner.png "CWA-banner")

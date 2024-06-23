@@ -20,7 +20,7 @@ What Does it do? 🎯
 
 After discovering that using the DOCKER_MODS universal-calibre environment variable, you could gain access to Calibre's fantastic eBook conversion tools, both in the Web UI and in the container's CLI, I set about designing a service that could really make the most of all of the tools available to try and fill in the gaps in functionality I was facing with Calibre-Web so that I could finally get rid of my bulky Calibre instance for good.
 
-> ### ***Features:***
+### ***Features:***
 - **Easy, Guided Setup** via CLI interface
 - Automatic imports of `.epub` files into your Calibre-Web library
 - **Automatic Conversion** of newly downloaded books into `.epub` format for optimal compatibility with the widest number of eReaders, library homogeneity, and seamless functionality with Calibre-Web's excellent **Send-to-Kindle** Function.

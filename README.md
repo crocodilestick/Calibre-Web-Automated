@@ -33,6 +33,10 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     - Logs also contain performance benchmarks in the form of a time to complete, both for an overall import task, as well as the conversion of each of the individual files within it 
 - **Supported file types for conversion:**
     - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txt, .txtz_
+ 
+### Coming in Version 1.1.0:
+- A **"fix"** that will address an issue many have with **Book Covers and Metadata** changed through the edit function of Calibre-Web, only changing visibly in Calibre-Web itself, not on your Kindle or other reading device
+- This new service / "fix" will come bundled with CWA's existing features and should be ready for release by Mid-July 2024 at the lastest
 
 ### ***Coming Soon :tm:***
 - Ability to ***automatically push all newly imported books to your kindle*** through the existing **Send-to-Kindle** feature
@@ -125,7 +129,7 @@ services:
     environment:
  ...
 ~~~
-    - Now the image variable should read `image: calibre-web-automated:latest' or `image: <your-chosen-image-name-here>:latest`
+- Now the image variable should read `image: calibre-web-automated:latest` or `image: <your-chosen-image-name-here>:latest`
 5. Finished! 🎉 Now everytime you rebuild your container, CWA as well as any other changes you may have made will remain 👍
 
 ### Option 2: Re-Running 'setup-cwa.sh' Whenever You Rebuild the Container

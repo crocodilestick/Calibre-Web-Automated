@@ -25,12 +25,12 @@ python3 $SCRIPT_DIR/setup.py
 mkdir /etc/calibre-web-automator
 cp "$SCRIPT_DIR/new-book-processor.py" /etc/calibre-web-automator/new-book-processor.py
 cp "$SCRIPT_DIR/dirs.json" /etc/calibre-web-automator/dirs.json
-cp "$SCRIPT_DIR/check-cwa-install.sh" /etc/calibre-web-automator/check-cwa-install.sh 
+cp "$SCRIPT_DIR/check-cwa-install.sh" /etc/calibre-web-automator/check-cwa-install.sh
 
 # Add aliases to .bashrc
 echo "" | cat >> ~/.bashrc
 echo "# Calibre-Web Automator Aliases" | cat >> ~/.bashrc
-echo "alias cwa-check='sh /config/check-cwa-install.sh'" | cat >> ~/.bashrc
+echo "alias cwa-check='bash /etc/calibre-web-automator/check-cwa-install.sh'" | cat >> ~/.bashrc
 echo "alias cwa-change-dirs='nano /etc/calibre-web-automater/dirs.json'" | cat >> ~/.bashrc
 source ~/.bashrc
 
@@ -52,7 +52,8 @@ touch /etc/s6-overlay/s6-rc.d/user/contents.d/books-to-process-scan
 echo ""
 echo "SUCSESS: Calibre-Web-Automator Setup Complete!"
 echo ""
-echo " - Please restart the container so the changes will take effect by typing 'exit', presing enter, then running the docker command:"
-echo "   docker restart <name-of-your-calibre-web-container"
+echo " - Please restart the container so the changes will take effect."
+echo " - Do so by typing 'exit', presing enter, then running the docker command:"
+echo " - 'docker restart <name-of-your-calibre-web-container'"
 echo ""
 echo "To check if CWA is running properly following the restart, use the command 'cwa-check' in the container's terminal."

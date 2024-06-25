@@ -4,7 +4,6 @@ import sys
 
 
 def main():
-
     while True:
         dirs = {}
         dirs |= {"ingest_folder":get_ingest_dir()}
@@ -19,10 +18,14 @@ def main():
     with open("dirs.json", "w") as f:
         json.dump(dirs, f)
 
+    os.system("chown abc:users dirs.json")
     sys.exit(1)
 
 def path_check(path: str) -> bool:
-    """Returns true if a given path exists and is a directory and False if not"""
+    """Returns true if a given path exists and is a directory after making sure it has the correct permissions, and False if not"""
+    if os.path.exists(f"{path}/"):
+        os.system(f'chown -R abc:1000 {path}/')    
+    
     return os.path.exists(f"{path}/")
 
 def path_correct(path: str) -> str:
@@ -38,13 +41,13 @@ def confirm_dirs(dirs: dict[str, str]) -> bool:
     """Allows the user to confirm that the entrered dirs are correct"""
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n-- Welcome to the Calibre-Web Automater setup script! --\n")
+        print("============ Welcome to the Calibre-Web Automater setup script! ============")
     
-        print("Please confirm the following directories are correct:\n")
+        print("\nPlease confirm the following directories are correct:\n")
         print(f"{'Ingest folder:':<30}{dirs['ingest_folder']}")
         print(f"{'Import folder:':<30}{dirs['import_folder']}")
         print(f"{'Calibre Library dir:':<30}{dirs['calibre_library_dir']}")
-        confirmation = input("\nAre these directories correct? (y/n): ").strip().lower()
+        confirmation = input("\nAre these directories correct? (Y/n): ").strip().lower()
         match confirmation:
             case "y":
                 input("\nDirectories sucsessfully confirmed. Press Enter to continue the Setup.")
@@ -59,11 +62,12 @@ def get_ingest_dir() -> str:
     """Gets the ingest folder from the user"""
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n-- Welcome to the Calibre-Web Automater setup script! --\n")
+        print("============ Welcome to the Calibre-Web Automater Setup Wizard! ============")
     
-        print("\nCalibre-Web-Automater needs an ingest folder for new files that are to be processed (converted / imported).")
-        print("This folder needs to be accessable from within the Calibre-Web container so make sure you add the appropriate binds to yopur docker compose file.\n")
-        ingest_folder = path_correct(input("Please make such a folder and enter it's internal container path here (e.g. /books/to_process/): ").strip())
+        print("\nCalibre-Web-Automater needs an Ingest Folder for New Files that are to be\nprocessed (converted / imported if they're already epubs).\n")
+        print("This folder needs to be accessable from within the Calibre-Web container so\nmake sure you add the appropriate binds to your Docker-Compose file.\n")
+        print("Please make such a folder & enter it's internal container path below\n(e.g. /books/cwa-ingest/):\n")
+        ingest_folder = path_correct(input("    - Ingest Directory Path: ").strip())
         if path_check(ingest_folder):
             return ingest_folder
         else:
@@ -74,11 +78,12 @@ def get_import_dir() -> str:
     """Gets the import folder from the user"""
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n--Welcome to the Calibre-Web Automater setup script! --\n")
+        print("============ Welcome to the Calibre-Web Automater Setup Wizard! ============")
 
-        print("\nCalibre-Web-Automater also needs a folder for processed files to be temporarily stored within prior to their auto-import into Calibre-Web")
-        print("This folder also needs to be accessable from within the Calibre-Web container so make sure you add the appropriate binds to yopur docker compose file.\n")
-        import_folder = path_correct(input("Make such a folder & enter it's internal container path here (e.g. /books/to_calibre/): ").strip())
+        print("\nCalibre-Web-Automater also needs a folder for processed files to be\ntemporarily stored within prior to their auto-import into Calibre-Web.\n")
+        print("This folder also needs to be accessable from within the Calibre-Web container\nso make sure you add the appropriate binds to yopur docker compose file.\n")
+        print("Make such a folder & enter it's internal container path below\n(e.g. /books/calibre-web_import/):\n")
+        import_folder = path_correct(input("    - Import Directory Path: ").strip())
         if path_check(import_folder):
             return import_folder
         else:
@@ -89,11 +94,12 @@ def get_calibre_library_dir() -> str:
     """Gets the path to the calibre library dir from the user"""
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n-- Welcome to the Calibre-Web Automater setup script! --\n")
-
-        print("\nLastly, Calibre-Web-Automater needs the location of the calibre library folder in your container.")
-        print('It is usually "/calibre-main/Calibre Library".\n')
-        calibre_library_dir = path_correct(input("Please enter it's internal container path here: ").strip())
+        print("============ Welcome to the Calibre-Web Automater Setup Wizard! ============")
+        
+        print("\nLastly, Calibre-Web-Automater needs the location of the Calibre Library\nfolder accessable from inside your container.\n")
+        print('It is usually "/calibre-main/Calibre Library/".\n')
+        print("Please enter it's internal container path below:\n")        
+        calibre_library_dir = path_correct(input("    - Calibre Library Path: ").strip())
         if path_check(calibre_library_dir):
             return calibre_library_dir
         else:

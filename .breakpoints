@@ -1,5 +1,13 @@
 {
   "files": {
+    "calibre-web-automater/setup-cwa.sh": [
+      {
+        "id": "02c24718-34f4-4425-841f-dae976972cb5",
+        "line": 22,
+        "version": 278,
+        "index": 782
+      }
+    ],
     "new-book-processor-test-version.py": [
       {
         "id": "ee4a3fd4-14dc-4e16-b670-a7b76f57c1a0",

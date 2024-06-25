@@ -7,7 +7,7 @@ supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'ch
 hierarchy_of_succsess = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
 
 dirs = {}
-with open('dirs.json', 'r') as f: # '/etc/calibre-web-automater/dirs.json'
+with open('/etc/calibre-web-automator/dirs.json', 'r') as f:
     dirs: dict[str, str] = json.load(f)
 
 # Both folders are assigned by user during setup

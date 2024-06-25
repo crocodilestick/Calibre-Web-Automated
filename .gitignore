@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Test Scripts
+test*
+*dirs.json
+
 # Distribution / packaging
 .Python
 build/

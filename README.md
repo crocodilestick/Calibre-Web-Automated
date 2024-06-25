@@ -38,6 +38,17 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - A **"fix"** that will address an issue many have with **Book Covers and Metadata** changed through the edit function of Calibre-Web, only changing visibly in Calibre-Web itself, not on your Kindle or other reading device
 - This new service / "fix" will come bundled with CWA's existing features and should be ready for release by Mid-July 2024 at the lastest
 
+### New in Version 1.0.1:
+- Fixed some pathing issues I missed in the release of Version 1.0.0
+- Simplified the Install process and updated the instructions here to match
+- Added terminal commands you can use to change the given directories & check on the current status of the monitoring services
+- Made preparations for Version 1.1.0 which is coming soon with new features
+
+### _Coming in Version 1.1.0:_
+- A "fix" that will address an issue many have with Book Covers and Metadata changed through the edit function of Calibre-Web, only changing visibly in Calibre-Web itself, not on your Kindle or other reading device
+    - This new service / "fix" will come bundled with CWA's existing features and should be ready for release by Mid-July 2024 at the lastest
+- The ability to also use an **Calibre-Web-Automator** image from the DockerHub to install the service instead of having to modify an existing Calibre-Web Instance
+
 ### ***Coming Soon :tm:***
 - Ability to ***automatically push all newly imported books to your kindle*** through the existing **Send-to-Kindle** feature
 
@@ -86,26 +97,31 @@ services:
 ~~~
 
 ### CWA Installation ⚙️
+<!---
+#### Method 1: Using the Provided Docker Image (Reccommended)
+...
 
-1. Download the `calibre-web-automator` folder from this repo, unzip it if it came zipped, and then place the folder and it's contents in the folder bound to your `/config` volume
+#### Method 2: Use the Provided Install Script in Your Existing Calibre-Web Container
+-->
+1. Download the `calibre-web-automator` folder from this repo, unzip it, and then place the `calibre-web-automator` folder inside into the folder bound to your `/config` volume
 2. Next, use the following command to gain access to the container's CLI, replacing ***calibre-web*** with the name of your Calibre-Web container if it differs:
     > `docker exec -it calibre-web bash`
-3. Navigate inside the **CWA Install Folder** that you previously placed within your `/config` directory with the following command:
-    > `cd /config/calibre-web-automator`
-4. Now initiate the install with the following command:
+3. Navigate inside the **calibre-web-automator** that you previously placed within your `/config` directory with the following command:
+    > `cd /config/calibre-web-automator
+4. Make sure the `setup-cwa.sh`is executable with the following command:
+    > `chmod +x setup-cwa.sh`
+5. Now initiate the install with the following command:
     > `./setup-cwa.sh`
-5. When prompted, follow the on-screen instructions to create and enter the paths of the directories the program needs to function.
+6. When prompted, follow the on-screen instructions to create and enter the paths of the directories the program needs to function.
     - The folders can be wherever you like but **they must be in a persistent volume** like in your `/books` bind, **otherwise they and their contents won't be persistent between rebuilds of the container**
-6. When the setup is complete, we need to restart the container for the changes to take effect. You can do so by using `exit` to return to your main shell and then running the following command:
-    > `docker restart calibre-web`
-7. Once the container is back up and running, you should be good to go! To check however, do the following:
-    1. Return to the CLI of the Calibre-Web container with `docker exec -it calibre-web bash`
-    2. Navigate to the `calibre-web-automator` folder in your `/config` directory with `cd /config/calibre-web-automator` like before
-    3. Then run the included testing script with `./check-cwa-install.sh` to verify your install.
-        - All three prompts should return green, indicating that the new `calibre-scan` and `books-to-process-scan` services are working properly.
-        - If one or both of the services return red indicating that they are not running, rebuild your Calibre-Web container using the `docker-compose` above and retry the installation process.
+7. When the setup is complete, we need to restart the container for the changes to take effect. You can do so by using `exit` to return to your main shell and then running the following command:
+    > `docker restart calibre-web` or `docker restart <replace-this-with-the-name-of-your-calibre-web-container>`
+8. Once the container is back up and running, you should be good to go! To check however, do the following:
+    - Then run the included testing script with `cwa-check` anywhere in the terminal to verify your install.
+    - All three prompts should return green, indicating that the new `calibre-scan` and `books-to-process-scan` services are working properly.
+    - If one or both of the services return red indicating that they are not running, rebuild your Calibre-Web container using the `docker-compose` above and retry the installation process.
 
-### Making The Changes persistent 🔗
+### Making The Changes Persistent 🔗
 
 As you may know, everytime you rebuild a docker container, anything that isn't include in the source image or saved to a persistent volume, is gone and the container returns to it's stock state.
 
@@ -116,7 +132,7 @@ As you may know, everytime you rebuild a docker container, anything that isn't i
 1. Successfully install CWA using the steps above and confirm it's working by running the included `check-cwa-install.sh' binary from the CLI of your Calibre-Web container as described above in Step 7
 2. While the container is running, from your main shell (use `exit` to return to your main shell if your still in the container's CLI) run the following command to generate an image of your newly modified Calibre-Web container, exactly as it's currently configured:
     > `docker commit calibre-web calibre-web-automated`
-    - Replace `calibre-web` with the name of your Calibre-Web container if it differs and you can also replace `calibre-web-automated` with whatever you like as it is only the name the image being generated will have
+    - Replace `calibre-web` with the name of your Calibre-Web container if it differs and you can also replace `calibre-web-automated` with whatever name you like
 3. Once the process is finished, you can check the image was successfully created using the following command to list all current available docker images on your system:
     > `docker image ls`
 4. Once you've confirmed the image was created successfully, edit your docker compose file so that the variable `image` is now as follows:
@@ -133,7 +149,7 @@ services:
 5. Finished! 🎉 Now everytime you rebuild your container, CWA as well as any other changes you may have made will remain 👍
 
 ### Option 2: Re-Running 'setup-cwa.sh' Whenever You Rebuild the Container
-This wouldn't be my preferred method but if you never really touch your containers the above may be overkill for you
+This wouldn't be my preferred method but if you never really touch your containers the above may be overkill for you.
 
 How to Use 🔧
 -----------
@@ -141,7 +157,7 @@ How to Use 🔧
 1. Simply move your newly downloaded or existing eBook files to the ingest folder you designated during setup and anything you place in that folder will be automatically analysed, converted if necessary and then imported into your Calibre-Web library.
 2. I personally use a script that my instance of qBittorrent will automatically execute upon finishing a download with the category **'books'** to fully automate the process however there's an infinite number of configurations out there so do whatever works best for your needs!
 3. If you ever need to change the locations of your **ingest**, **import** and/ or **calibre-library** folders, you can do so in one of the following 2 ways:
-   1. Edit the `dirs.json` file located in the `/etc/calibre-web-automator/` directory created during setup
+   1. Use the 'cwa-change-dirs' command from anywhere in your terminal to open the json file where the paths are saved and change them as required.
    2. Or simply reset your container to stock and rerun the setup script again, using the instructions above if needed
 
 Further Development 🏗️

@@ -1,8 +1,5 @@
 #!/bin/bash
 
-GREEN='\033[0;32m'
-NC='\033[0m' # No Color
-
 # Script to automatically enable the automatic importing of epubs from the 'to_calibre' import folder upon container restart
 # For help with S6 commands ect.: https://wiki.artixlinux.org/Main/S6
 
@@ -52,7 +49,10 @@ cp "$SCRIPT_DIR/books-to-process-scan.sh" /etc/s6-overlay/s6-rc.d/books-to-proce
 touch /etc/s6-overlay/s6-rc.d/user/contents.d/books-to-process-scan
 
 # Setup completion notification
-echo "${GREEN}SUCSESS${NC}: calibre-scan & books-to-process-scan setup complete!"
-echo " - Please restart the container so the changes will take effect by typing 'exit' then presing enter, then running the docker command:"
-echo "   docker restart <name-of-your-calibre-web-container>"
-echo "\nTo check if the container is running properly followin the restart, use the command 'cwa-check' in the container's terminal."
+echo ""
+echo "SUCSESS: Calibre-Web-Automator Setup Complete!"
+echo ""
+echo " - Please restart the container so the changes will take effect by typing 'exit', presing enter, then running the docker command:"
+echo "   docker restart <name-of-your-calibre-web-container"
+echo ""
+echo "To check if CWA is running properly following the restart, use the command 'cwa-check' in the container's terminal."

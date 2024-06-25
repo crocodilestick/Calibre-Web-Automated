@@ -6,9 +6,18 @@ __pycache__/
 # C extensions
 *.so
 
+# Enviroment Guff
+
+poetry.lock
+replit.nix
+pyproject.toml
+.replit
+.breakpoints
+
 # Test Scripts
 test*
 *dirs.json
+*/DEV
 
 # Distribution / packaging
 .Python

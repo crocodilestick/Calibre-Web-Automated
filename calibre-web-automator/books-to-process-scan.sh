@@ -5,7 +5,6 @@
 # This script is used to automatically import downloaded eBook's into a Calibre database.
 # Reference: https://manual.calibre-ebook.com/generated/en/calibredb.html#add
 echo "STARTING NEW-BOOK-PROCESSING SCANNER"
-apt install inotify-tools
 
 # Folder to monitor, replace "/books/to_process" with the folder you want to monitor e.g. your download folder for books
 WATCH_FOLDER=grep -o '"ingest_folder": "[^"]*' /etc/calibre-web-automator/dirs.json | grep -o '[^"]*$'

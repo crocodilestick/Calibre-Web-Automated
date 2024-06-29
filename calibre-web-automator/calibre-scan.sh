@@ -30,7 +30,7 @@ while read -r directory events filename; do
         echo "New file detected: $filename"
         add_to_calibre "$filename"
         echo "Removing $filename from import folder..."
-        rm "/books/to_calibre/$filename"
+        rm -r "/books/to_calibre/*"
         sleep 10s
         chown -R abc:1000 "/calibre-main/Calibre Library"
 done

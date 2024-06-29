@@ -5,25 +5,33 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 # Print promt title
-echo "==== Calibre-Web Automator -- Status of Monitoring Services ===="
+echo "====== Calibre-Web Automator -- Status of Monitoring Services ======"
 echo ""
 
-if s6-rc -a list | grep -q 'calibre-scan'; then
-    echo -e "- Calibre-scan ${GREEN}is running${NC}"
+if s6-rc -a list | grep -q 'new-book-detector'; then
+    echo -e "- New-Book-Detector ${GREEN}is running${NC}"
     cs=true
 else
-    echo -e "- Calibre-scan ${RED}is not running${NC}"
+    echo -e "- New-Book-Detector ${RED}is not running${NC}"
     cs=false
 fi
 
 
-if s6-rc -a list | grep -q 'books-to-process-scan'; then
-    echo -e "- Books-to-process-scan ${GREEN}is running${NC}"
+if s6-rc -a list | grep -q 'books-to-process-detector'; then
+    echo -e "- Books-to-Process-Detector ${GREEN}is running${NC}"
     bs=true
 else
-    echo -e "- Books-to-process-scan ${RED}is not running${NC}"
+    echo -e "- Books-to-Process-Detector ${RED}is not running${NC}"
     bs=false
 fi
+
+# if s6-rc -a list | grep -q 'new-cover-detector'; then
+#     echo -e "- New-Cover-Detector ${GREEN}is running${NC}"
+#     cs=true
+# else
+#     echo -e "- New-Cover-Detector ${RED}is not running${NC}"
+#     cs=false
+# fi
 
 echo ""
 

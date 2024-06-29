@@ -82,7 +82,7 @@ def get_import_dir() -> str:
 
         print("\nCalibre-Web-Automater also needs a folder for processed files to be\ntemporarily stored within prior to their auto-import into Calibre-Web.\n")
         print("This folder also needs to be accessable from within the Calibre-Web container\nso make sure you add the appropriate binds to yopur docker compose file.\n")
-        print("Make such a folder & enter it's internal container path below\n(e.g. /books/calibre-web_import/):\n")
+        print("Make such a folder & enter it's internal container path below\n(e.g. /books/cwa-temp/):\n")
         import_folder = path_correct(input("    - Import Directory Path: ").strip())
         if path_check(import_folder):
             return import_folder
@@ -97,8 +97,8 @@ def get_calibre_library_dir() -> str:
         print("============ Welcome to the Calibre-Web Automater Setup Wizard! ============")
         
         print("\nLastly, Calibre-Web-Automater needs the location of the Calibre Library\nfolder accessable from inside your container.\n")
-        print('It is usually "/calibre-main/Calibre Library/".\n')
-        print("Please enter it's internal container path below:\n")        
+        print('It is usually /calibre-main/Calibre Library/.\n')
+        print("Please enter it's internal container path below (without quotes):\n")
         calibre_library_dir = path_correct(input("    - Calibre Library Path: ").strip())
         if path_check(calibre_library_dir):
             return calibre_library_dir

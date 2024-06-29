@@ -7,6 +7,7 @@ NC='\033[0m' # No Color
 # For help with S6 commands ect.: https://wiki.artixlinux.org/Main/S6
 
 # Install required packages
+apt install -y xdg-utils
 apt install -y inotify-tools
 apt install -y python3
 apt install -y python3-pip
@@ -28,6 +29,7 @@ python3 $SCRIPT_DIR/setup.py
 mkdir /etc/calibre-web-automator
 cp "$SCRIPT_DIR/new-book-processor.py" /etc/calibre-web-automator/new-book-processor.py
 cp "$SCRIPT_DIR/dirs.json" /etc/calibre-web-automator/dirs.json
+rm "$SCRIPT_DIR/dirs.json"
 cp "$SCRIPT_DIR/check-cwa-install.sh" /etc/calibre-web-automator/check-cwa-install.sh
 
 # Add aliases to .bashrc

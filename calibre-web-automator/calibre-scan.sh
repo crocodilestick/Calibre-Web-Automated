@@ -7,11 +7,11 @@
 echo "STARTING CALIBRE SCANNER"
 
 # Folder to monitor
-WATCH_FOLDER=grep -o '"import_folder": "[^"]*' /etc/calibre-web-automator/dirs.json | grep -o '[^"]*$'
+WATCH_FOLDER=$(grep -o '"import_folder": "[^"]*' /etc/calibre-web-automator/dirs.json | grep -o '[^"]*$')
 echo "Watching folder: $WATCH_FOLDER"
 
 # Calibre library path
-CALIBRE_LIBRARY=grep -o '"calibre_library_dir": "[^"]*' /etc/calibre-web-automator/dirs.json | grep -o '[^"]*$'
+CALIBRE_LIBRARY=$(grep -o '"calibre_library_dir": "[^"]*' /etc/calibre-web-automator/dirs.json | grep -o '[^"]*$')
 echo "Calibre library: $CALIBRE_LIBRARY"
 
 # Function to add new eBook to Calibre database

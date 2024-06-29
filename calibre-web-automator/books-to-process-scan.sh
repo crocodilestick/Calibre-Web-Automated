@@ -7,7 +7,7 @@
 echo "STARTING NEW-BOOK-PROCESSING SCANNER"
 
 # Folder to monitor, replace "/books/to_process" with the folder you want to monitor e.g. your download folder for books
-WATCH_FOLDER=grep -o '"ingest_folder": "[^"]*' /etc/calibre-web-automator/dirs.json | grep -o '[^"]*$'
+WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /etc/calibre-web-automator/dirs.json | grep -o '[^"]*$')
 echo "Watching folder: $WATCH_FOLDER"
 
 # Monitor the folder for new files

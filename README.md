@@ -46,7 +46,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 ### _Coming in Version 1.1.0:_
 - A "fix" that will address an issue many have with Book Covers and Metadata changed through the edit function of Calibre-Web, only changing visibly in Calibre-Web itself, not on your Kindle or other reading device
-    - This new service / "fix" will come bundled with CWA's existing features and should be ready for release by Mid-July 2024 at the lastest
+    - This new service / "fix" will come bundled with CWA's existing features and should be ready for release by Mid-July 2024 at the latest
 - The ability to also use an **Calibre-Web-Automator** image from the DockerHub to install the service instead of having to modify an existing Calibre-Web Instance
 
 ### ***Coming Soon :tm:***

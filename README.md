@@ -38,8 +38,8 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 ![Cover Enforcement CWA](cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
 
-  - Something that's always bothered my as a Kindle user has been Calibre-Web's inability to change the Metadata and Covers stored within the `.epub` files of our books, despite letting us change these things in the Web UI
-  - This has resulted in many people, including my self, running instances of both `Calibre-Web` **AND** full-fat `Calibre`, to make use of `Calibre`'s much more robust editing tools to change out those ugly covers and keep our Kindle Libraries looking a bit more\
+  - Something that's always bothered me as a Kindle user has been Calibre-Web's inability to change the Metadata and Covers stored within the `.epub` files of our books, despite letting us change these things in the Web UI
+  - This has resulted in many people, including myself, running instances of both `Calibre-Web` **AND** full-fat `Calibre`, to make use of `Calibre`'s much more robust editing tools to change out those ugly covers and keep our Kindle Libraries looking a bit more\
     **_~ a e s t h e t i c ~_**
   - Well, **_no more!_** ⏰
   - Using `CWA 1.2.0`, whenever you change any **Covers** or **Metadata** using the `Calibre-Web` UI, those changes will now be automatically applied directly to the `.epub` files in your library, as well as in the Web UI itself, meaning that from now on what you see really is what you get!

@@ -9,33 +9,32 @@ echo "====== Calibre-Web Automator -- Status of Monitoring Services ======"
 echo ""
 
 if s6-rc -a list | grep -q 'new-book-detector'; then
-    echo -e "- New-Book-Detector ${GREEN}is running${NC}"
-    cs=true
+    echo -e "- new-book-detector ${GREEN}is running${NC}"
+    nb=true
 else
-    echo -e "- New-Book-Detector ${RED}is not running${NC}"
-    cs=false
+    echo -e "- new-book-detector ${RED}is not running${NC}"
+    nb=false
 fi
-
 
 if s6-rc -a list | grep -q 'books-to-process-detector'; then
-    echo -e "- Books-to-Process-Detector ${GREEN}is running${NC}"
-    bs=true
+    echo -e "- books-to-process-detector ${GREEN}is running${NC}"
+    bp=true
 else
-    echo -e "- Books-to-Process-Detector ${RED}is not running${NC}"
-    bs=false
+    echo -e "- books-to-process-detector ${RED}is not running${NC}"
+    bp=false
 fi
 
-# if s6-rc -a list | grep -q 'new-cover-detector'; then
-#     echo -e "- New-Cover-Detector ${GREEN}is running${NC}"
-#     cs=true
-# else
-#     echo -e "- New-Cover-Detector ${RED}is not running${NC}"
-#     cs=false
-# fi
+if s6-rc -a list | grep -q 'metadata-change-detector'; then
+    echo -e "- metadata-change-detector ${GREEN}is running${NC}"
+    mc=true
+else
+    echo -e "- metadata-change-detector ${RED}is not running${NC}"
+    mc=false
+fi
 
 echo ""
 
-if $cs && $bs; then
+if $cs && $bs && $mc; then
     echo -e "Calibre-Web-Automater was ${GREEN}sucsessfully installed ${NC}and ${GREEN}is running properly!${NC}"
 else
     echo -e "Calibre-Web-Automater was ${RED}not installed sucsessfully${NC}, please check the logs for more information."

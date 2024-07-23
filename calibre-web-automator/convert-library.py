@@ -1,0 +1,89 @@
+import argparse
+import glob
+import json
+import os
+import re
+import sys
+
+
+class LibraryConverter:
+    def __init__(self, args) -> None:
+        self.args = args
+        
+        self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz']
+        self.hierarchy_of_succsess = ['lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
+
+        self.dirs = self.get_dirs() # Dirs are assigned by user during setup
+        self.import_folder = f"{self.dirs['import_folder']}/"
+        self.ingest_folder = f"{self.dirs['ingest_folder']}/" # Dir where new files are looked for to process and subsequently deleted
+        self.library = f"{self.dirs['calibre_library_dir']}/"
+        self.epubs, self.to_convert = self.get_library_books()
+
+
+    def get_library_books(self):
+        library_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.library) for f in filenames]
+        epub_files = [f for f in library_files if f.endswith('.epub')]
+        dupe_list = []
+        to_convert = []
+        for format in self.hierarchy_of_succsess:
+            format_files = [f for f in library_files if f.endswith(f'.{format}')]
+            if len(format_files) > 0:
+                for file in format_files:
+                    filename, file_extension = os.path.splitext(file)
+                    if filename not in dupe_list:
+                        to_convert.append(file)
+                        dupe_list.append(filename)
+
+        return epub_files, to_convert
+
+    def get_dirs(self) -> dict[str, str]:
+        dirs = {}
+        with open('/etc/calibre-web-automator/dirs.json', 'r') as f:
+            dirs: dict[str, str] = json.load(f)
+
+        return dirs
+
+    def convert_library(self):
+        for file in self.to_convert:
+            print(f"[convert-library]: Converting {file}...")
+            filename, file_extension = os.path.splitext(file)
+            filename = filename.split('/')[-1]
+            book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1]
+            os.system(f"cp '{file}' '/config/original-library/{filename}{file_extension}'")
+            os.system(f"calibredb remove {book_id} --permanent --with-library '{self.library}'")
+            os.system(f"ebook-convert '/config/original-library/{filename}{file_extension}' '{self.import_folder}{filename}.epub'")
+            if self.args.setup == True:
+                os.system(f"calibredb add --with-library '{self.library}' '{self.import_folder}{filename}.epub'")
+            os.system(f"chown -R abc:1000 '{self.library}'")
+            if not self.args.keep:
+                os.remove(f"/config/original-library/{filename}{file_extension}")
+
+    def empty_import_folder(self):
+        os.system(f"chown -R abc:1000 '{self.import_folder}'")
+        files = glob.glob(f"{self.import_folder}*")
+        for f in files:
+            os.remove(f)
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog='convert-library',
+        description='Made for the purpose of converting ebooks in a calibre library not in epub format, to epub format'
+    )
+    
+    parser.add_argument('--replace', '-r', action='store_true', required=False, dest='replace', help='Replaces the old library with the new one', default=False)
+    parser.add_argument('--keep', '-k', action='store_true', required=False, dest='keep', help='Creates a new epub library with the old one but stores the old files in /config/original-library', default=False)
+    parser.add_argument('-setup', action='store_true', required=False, dest='setup', help="Indicates to the function whether or not it's being ran from the setup script or manually (DO NOT USE MANUALLY)", default=False)
+    args = parser.parse_args()
+
+    if not args.replace and not args.keep:
+        print("[convert-library]: You must specify either the --replace/-r or --keep/-k flag")
+        sys.exit(0)
+    else:
+        converter = LibraryConverter(args)
+        converter.convert_library()
+        if args.setup == True:
+            converter.empty_import_folder()
+
+
+if __name__ == "__main__":
+    main()

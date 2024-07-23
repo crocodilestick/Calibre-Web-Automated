@@ -15,9 +15,12 @@ pyproject.toml
 .breakpoints
 
 # Test Scripts
+*/test
 test*
 *dirs.json
 */DEV
+*/REFERENCE
+*.db
 
 # Distribution / packaging
 .Python

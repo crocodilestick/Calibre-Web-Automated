@@ -1,7 +1,6 @@
-Calibre-Web Automator
-=======
+# Calibre-Web Automated _(formerly Calibre-Web Automator)_
 
-![Image](CWA-banner.png "CWA-banner")
+![Image](CWA-banner.png "CWA-Banner")
 
 Making Calibre-Web your _dream_, all-in-one self-hosted digital library solution.
 -----------
@@ -33,41 +32,99 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     - Logs also contain performance benchmarks in the form of a time to complete, both for an overall import task, as well as the conversion of each of the individual files within it 
 - **Supported file types for conversion:**
     - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txt, .txtz_
- 
-### Coming in Version 1.1.0:
-- A **"fix"** that will address an issue many have with **Book Covers and Metadata** changed through the edit function of Calibre-Web, only changing visibly in Calibre-Web itself, not on your Kindle or other reading device
-- This new service / "fix" will come bundled with CWA's existing features and should be ready for release by Mid-July 2024 at the lastest
 
-### New in Version 1.0.1:
-- Fixed some pathing issues I missed in the release of Version 1.0.0
-- Simplified the Install process and updated the instructions here to match
-- Added terminal commands you can use to change the given directories & check on the current status of the monitoring services
-- Made preparations for Version 1.1.0 which is coming soon with new features
+# New in Version 1.2.0
+- ## **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 🙌📔
 
-### _Coming in Version 1.1.0:_
-- A "fix" that will address an issue many have with Book Covers and Metadata changed through the edit function of Calibre-Web, only changing visibly in Calibre-Web itself, not on your Kindle or other reading device
-    - This new service / "fix" will come bundled with CWA's existing features and should be ready for release by Mid-July 2024 at the lastest
-- The ability to also use an **Calibre-Web-Automator** image from the DockerHub to install the service instead of having to modify an existing Calibre-Web Instance
+![Cover Enforcement CWA](cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
 
-### ***Coming Soon :tm:***
-- Ability to ***automatically push all newly imported books to your kindle*** through the existing **Send-to-Kindle** feature
+  - Something that's always bothered my as a Kindle user has been Calibre-Web's inability to change the Metadata and Covers stored within the `.epub` files of our books, despite letting us change these things in the Web UI
+  - This has resulted in many people, including my self, running instances of both `Calibre-Web` **AND** full-fat `Calibre`, to make use of `Calibre`'s much more robust editing tools to change out those ugly covers and keep our Kindle Libraries looking a bit more\
+    **_~ a e s t h e t i c ~_**
+  - Well, **_no more!_** ⏰
+  - Using `CWA 1.2.0`, whenever you change any **Covers** or **Metadata** using the `Calibre-Web` UI, those changes will now be automatically applied directly to the `.epub` files in your library, as well as in the Web UI itself, meaning that from now on what you see really is what you get!
 
-How To Install 📖
-------------
+- ## **One Step Full Library Conversion** - Any format -> `.epub` ✏️
+  - Calibre-Web Automated has always been designed with `.epub` libraries in mind due to many factors, the chief among which being the fact they are **Compatible with the Widest Range oif Devices**, **Ubiquitous** and **Easy to Manage and Work with**
+  - Previously this meant that anyone with `non-epub` ebooks in their existing Calibre Libraries were unable to take advantage of all of `Calibre-Web Automator`'s features reliably
+  - So new to Version 1.2.0 is the ability for those users to quickly and easily convert their existing Ebook Libraries, no matter the size, to `.epub Version 3` format using a one step CLI Command from within the CWA Container
+  - This utility gives the user the option to either keep a copy of the original of all converted files in `/config/original-library` or to trust the process and have CWA simply convert and replace those files (not recommended)
+  - Full usage details can be found [here](#the-convert-library-tool)
+
+- ## **Simple CLI Tools** for manual fixes, conversions, enforcements, history viewing ect. 👨‍💻
+  - On top of the existing automatic ingest folder feature, you now also have the ability to manually ingest books from the command-line using the following built-in command:
+    - `convert-library --keep/-k`  OR `--replace/-r`
+  - Built-in command-line tools now also exist for:
+    - Viewing the Edit History of your Library files _(detailed above)_
+    - Listing all of the books currently in your Library with their current Books IDs
+    - **Manually enforcing the covers & metadata for ALL BOOKS** in your library using the `cover-enforcer -all` command from within the container **(RECOMMENDED WITH FIRST TIME USE)**
+    - Manually Enforcing the Covers & Metadata for any individual books by using the following command
+    - `cover-enforcer --dir <path-to-folder-containing-the-books-epub-here>`
+  - Full usage and documentation for all new CLI Commands can be found [here](#the-cover-enforcer-cli-tool)
+
+- ## **Easy to View Change Database and Internal Automatic Logging** 📈
+
+![Cover Enforcement CWA](cwa-db-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
+
+- In combination with the **New Cover & Metadata Enforcement Features**, a database now exists to keep track of any and all enforcements both for peace of mind and to make checking for any bugs or weird behaviour easier, but also for statistics of whatever someone might want to use the data for
+- Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
+
+## IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated versions before 1.2.0 should perform a fresh install using the new DockerHub image method below to ensure stability and to keep up-to-date with future bugfixes and updates
+
+## Upcoming Features 🌱 - _Coming Soon™_
+- Adding buttons to the Web UI to enable easier execution of features like full library conversion and others currently only available through the command-line interface
+- Releasing a DockerMod to reduce the size of the Docker Image
+- Please suggest any ideas or wishes you might have! I'm open to anything! 
+
+# How To Install 📖
 
 ### Pre-requisites:
-- An existing docker instance of **Calibre-Web** up and running with the **Calibre eBook-converter** via `linuxserver/mods`
-  - If you don't already have an instance of Calibre-Web or don't/ aren't sure if you have the `universal-calibre` docker-mod enabled, feel free to use the following Docker Compose below and consult the documentation [here](https://docs.linuxserver.io/images/docker-calibre-web/) if you have any issues.
 - An existing **Calibre Library**
-  - If you don't have an existing Calibre Library and don't want to install Calibre to create one, use the guide [here](https://d-heinrich.medium.com/setup-your-own-ebook-manager-using-calibre-web-6a1dba9f74a0) to get setup and generate the all important `metadate.db` file that you'll be prompted for when first access the Calibre-Web UI.
+  - If you don't have an existing Calibre Library and don't want to install Calibre to create one, use the guide [here](https://d-heinrich.medium.com/setup-your-own-ebook-manager-using-calibre-web-6a1dba9f74a0) to get setup and generate the all important `metadata.db` file that you'll be prompted for when first access the Calibre-Web UI.
   - You must point to this library using the `/calibre-main` bind below.
-#### docker-compose for stock Calibre-Web with the Calibre eBook-converter
+## Method 1: Using Docker Compose 🐋 ⭐(Recommended)
+### 1. Install using the Docker Compose template below:
+~~~
+---
+services:
+  calibre-web-automated:
+    image: crocodilestick/calibre-web-automated:latest
+    container_name: calibre-web-automated
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=UTC
+    volumes:
+      - /path/to/config/folder:/config
+      - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
+      - /path/to/your/calibre/library:/calibre-main # Point to your Calibre config folder not the 'Calibre Library' folder directly
+      - /path/to/where/you/keep/your/books:/books #Optional
+      - /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
+    ports:
+      - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
+    restart: unless-stopped
+~~~
+### 2. And just like that, Calibre-Web Automated should be up and running!
+   - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the docker compose however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths
+### 3. **_Recommended Post-Install Tasks:_**
+ - If your Calibre Library contains any ebooks not in the `.epub` format, from within the container run the `convert-library` command.
+     - Calibre-Web Automated's extra features only work with epubs and so **failure to complete this step could result in unforeseen errors and general unreliability**
+     - Full usage can be found below in the Usage Section however the following command will automatically convert any non-epubs to epubs and store the original files in `/config/original-library`:
+~~~
+convert-library --keep
+~~~
+- Drop a book into your ingest folder and check everything is working correctly!
+## Method 2: Using the **Script Install Method** with Clean Calibre-Web Base Image 📜 🔻(Not Recommended)
+ - This method is only recommended for **developers** or those who would like to set their own directories using the provided **Setup Wizard**
+ - To begin this installation method, you'll need to use the Docker Compose below to set up a base container for you to perform the installation within
+ - The image provided is a snapshot of the official Calibre-Web release from mid June 2024. This is the image that Calibre-Web Automated was built upon and currently Calibre-Web Automated is not compatible with more recent versions of Calibre-Web  
+### Step 1: docker-compose for stock Calibre-Web with the Calibre eBook-converter
 ~~~docker-compose
 ---
 services:
   calibre-web:
-    image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web
+    image: crocodilestick/calibre-web-base
+    container_name: calibre-web-automated
     environment:
       - PUID=1000
       - PGID=100
@@ -86,44 +143,49 @@ services:
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #Optional
     volumes:
       - /path/to/config/folder:/config
-      - /path/to/where/you/keep/your/books:/books
+      - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
       - /path/to/your/calibre/library:/calibre-main
+      - /path/to/where/you/keep/your/books:/books
       - /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
     ports:
-      - 8083:8083
+      - 8083:8083 # Change the first number to change the port you want to access the Web UI, not the second
 
     restart: unless-stopped
     
 ~~~
 
-### CWA Installation ⚙️
-<!---
-#### Method 1: Using the Provided Docker Image (Reccommended)
-...
-
-#### Method 2: Use the Provided Install Script in Your Existing Calibre-Web Container
--->
+### Step 2: CWA Installation ⚙️
 1. Download the `calibre-web-automator` folder from this repo, unzip it, and then place the `calibre-web-automator` folder inside into the folder bound to your `/config` volume
 2. Next, use the following command to gain access to the container's CLI, replacing ***calibre-web*** with the name of your Calibre-Web container if it differs:
-    > `docker exec -it calibre-web bash`
+~~~
+docker exec -it calibre-web bash
+~~~
 3. Navigate inside the **calibre-web-automator** that you previously placed within your `/config` directory with the following command:
-    > `cd /config/calibre-web-automator
+~~~
+cd /config/calibre-web-automator
+~~~
 4. Make sure the `setup-cwa.sh`is executable with the following command:
-    > `chmod +x setup-cwa.sh`
+~~~
+chmod +x setup-cwa.sh
+~~~
 5. Now initiate the install with the following command:
-    > `./setup-cwa.sh`
+~~~
+./setup-cwa.sh
+~~~
 6. When prompted, follow the on-screen instructions to create and enter the paths of the directories the program needs to function.
     - The folders can be wherever you like but **they must be in a persistent volume** like in your `/books` bind, **otherwise they and their contents won't be persistent between rebuilds of the container**
 7. When the setup is complete, we need to restart the container for the changes to take effect. You can do so by using `exit` to return to your main shell and then running the following command:
-    > `docker restart calibre-web` or `docker restart <replace-this-with-the-name-of-your-calibre-web-container>`
-8. Once the container is back up and running, you should be good to go! To check however, do the following:
+~~~
+docker restart calibre-web` or `docker restart <replace-this-with-the-name-of-your-calibre-web-container>
+~~~
+1. Once the container is back up and running, you should be good to go! To check however, do the following:
     - Then run the included testing script with `cwa-check` anywhere in the terminal to verify your install.
     - All three prompts should return green, indicating that the new `calibre-scan` and `books-to-process-scan` services are working properly.
     - If one or both of the services return red indicating that they are not running, rebuild your Calibre-Web container using the `docker-compose` above and retry the installation process.
 
-### Making The Changes Persistent 🔗
+### Step 3: Making The Changes Persistent 🔗
 
-As you may know, everytime you rebuild a docker container, anything that isn't include in the source image or saved to a persistent volume, is gone and the container returns to it's stock state.
+As you may know, every time you rebuild a docker container, anything that isn't include in the source image or saved to a persistent volume, is gone and the container returns to it's stock state.
 
 ### To make sure CWA remains installed between rebuilds, you can do the following:
 ### Option 1: Creating a new, modified Docker Image (Recommended)
@@ -131,10 +193,14 @@ As you may know, everytime you rebuild a docker container, anything that isn't i
 
 1. Successfully install CWA using the steps above and confirm it's working by running the included `check-cwa-install.sh' binary from the CLI of your Calibre-Web container as described above in Step 7
 2. While the container is running, from your main shell (use `exit` to return to your main shell if your still in the container's CLI) run the following command to generate an image of your newly modified Calibre-Web container, exactly as it's currently configured:
-    > `docker commit calibre-web calibre-web-automated`
-    - Replace `calibre-web` with the name of your Calibre-Web container if it differs and you can also replace `calibre-web-automated` with whatever name you like
+~~~
+docker commit calibre-web calibre-web-automated
+~~~
+  - Replace `calibre-web` with the name of your Calibre-Web container if it differs and you can also replace `calibre-web-automated` with whatever name you like
 3. Once the process is finished, you can check the image was successfully created using the following command to list all current available docker images on your system:
-    > `docker image ls`
+~~~
+docker images
+~~~
 4. Once you've confirmed the image was created successfully, edit your docker compose file so that the variable `image` is now as follows:
 ~~~docker-compose
 ---
@@ -146,23 +212,52 @@ services:
  ...
 ~~~
 - Now the image variable should read `image: calibre-web-automated:latest` or `image: <your-chosen-image-name-here>:latest`
-5. Finished! 🎉 Now everytime you rebuild your container, CWA as well as any other changes you may have made will remain 👍
+5. Finished! 🎉 Now every time you rebuild your container, CWA as well as any other changes you may have made will remain 👍
 
 ### Option 2: Re-Running 'setup-cwa.sh' Whenever You Rebuild the Container
 This wouldn't be my preferred method but if you never really touch your containers the above may be overkill for you.
 
-How to Use 🔧
------------
+# Usage 🔧
+## Adding Books to Your Library
+- Simply move your newly downloaded or existing eBook files to the ingest folder which is `/cwa-book-ingest` by default or whatever you designated during setup if using the Script Install method. Anything you place in that folder will be automatically analysed, converted if necessary and then imported into your Calibre-Web library.
+    - I personally use a script that my instance of qBittorrent will automatically execute upon finishing a download with the category **'books'** to fully automate the process however there's an infinite number of configurations out there so do whatever works best for your needs!
+## The Cover-Enforcer CLI Tool
+~~~
+usage: cover-enforcer [-h] [--log LOG] [--dir DIR] [-all] [-list] [-history] [-paths] [-v]
 
-1. Simply move your newly downloaded or existing eBook files to the ingest folder you designated during setup and anything you place in that folder will be automatically analysed, converted if necessary and then imported into your Calibre-Web library.
-2. I personally use a script that my instance of qBittorrent will automatically execute upon finishing a download with the category **'books'** to fully automate the process however there's an infinite number of configurations out there so do whatever works best for your needs!
-3. If you ever need to change the locations of your **ingest**, **import** and/ or **calibre-library** folders, you can do so in one of the following 2 ways:
-   1. Use the 'cwa-change-dirs' command from anywhere in your terminal to open the json file where the paths are saved and change them as required.
-   2. Or simply reset your container to stock and rerun the setup script again, using the instructions above if needed
+Upon receiving a log, valid directory or an "-all" flag, this script will enforce the covers and metadata of the corresponding books, making sure that each are correctly stored in
+both the epubs themselves and the user's Calibre Library. Additionally, if an epub happens to be in EPUB 2 format, it will also be automatically upgraded to EPUB 3.
 
-Further Development 🏗️
-------------
+options:
+  -h, --help     show this help message and exit
+  --log LOG      Will enforce the covers and metadata of the books in the given log file.
+  --dir DIR      Will enforce the covers and metadata of the books in the given directory.
+  -all           Will enforce covers & metadata for ALL books currently in your calibre-library-dir
+  -list, -l      List all books in your calibre-library-dir
+  -history       Display a history of all enforcements ever carried out on your machine (not yet implemented)
+  -paths, -p     Use with '-history' flag to display stored paths of all epubs in enforcement database
+  -v, --verbose  Use with history to display entire enforcement history instead of only the most recent 10 entries
+~~~
+![cover-enforcer history usage](cwa-db-diagram.png)
+## The Convert-Library Tool
+~~~
+usage: convert-library [-h] [--replace] [--keep] [-setup]
 
-This is actually my first project that I am releasing to the public! As mentioned above, I made this project to provide a solution to gaps in the Calibre-Web feature set that I wanted to help try and address and I hope what I have built can also be of use to some of you too!
+Made for the purpose of converting ebooks in a calibre library not in epub format, to epub format
 
-As I said, this is my first **public** and so I am very open to feedback and criticisms. I've personally been using CWA for the last couple months without any issues but again, I have no way of validating how it'll work on your specific setup so please feel free to send me tickets with any issues you might be facing and I'll do my best to address them however I can't make any promises on how much further development this particular project will receive.
+options:
+  -h, --help     show this help message and exit
+  --replace, -r  Replaces the old library with the new one
+  --keep, -k     Creates a new epub library with the old one but stores the old files in /config/original-library
+  -setup         Indicates to the function whether or not it's being ran from the setup script or manually (DO NOT USE MANUALLY)
+  ~~~
+## Changing the Default Directories
+- If you ever need to change the locations of your **ingest**, **import** and/ or **calibre-library** folders, use the `cwa-change-dirs` command from anywhere within the container's terminal to open the json file where the paths are saved and change them as required.
+## Checking the Monitoring Services are working correctly
+- Simply run the following command from within the container: `cwa-check`
+- If all 3 services come back as green and running they are working properly, otherwise there may be problems with your configuration/install
+
+# Further Development 🏗️
+
+- I've now been daily driving this version of Calibre-Web Automated (_formerly Calibre-Web Automator_) for a couple weeks now and it now does everything I need for my reading workflow, I personally love the new features and hope you do to!
+- I will continue to maintain this project but as to new features I'm very much open to requests so please reach out with any suggestions or ideas you might have and I'll do my best to implement them!

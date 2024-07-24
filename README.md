@@ -97,15 +97,15 @@ services:
     volumes:
       - /path/to/config/folder:/config
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
-      - /path/to/your/calibre/library:/calibre-main # Point to your Calibre config folder not the 'Calibre Library' folder directly
-      - /path/to/where/you/keep/your/books:/books #Optional
-      - /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
+      - /path/to/your/calibre/library:/calibre-main # Point to your Calibre config folder NOT the 'Calibre Library' folder directly
+      #- /path/to/where/you/keep/your/books:/books #Optional
+      #- /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
     ports:
       - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
     restart: unless-stopped
 ~~~
 ### 2. And just like that, Calibre-Web Automated should be up and running!
-   - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the docker compose however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths
+   - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths
 ### 3. **_Recommended Post-Install Tasks:_**
 #### Calibre-Web Quick Start
 1. Open your browser and navigate to http://localhost:8084 or http://localhost:8084/opds for the OPDS catalog

@@ -78,10 +78,10 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 # How To Install 📖
 
-### Pre-requisites:
+<!-- ### Pre-requisites:
 - An existing **Calibre Library**
   - If you don't have an existing Calibre Library and don't want to install Calibre to create one, use the guide [here](https://d-heinrich.medium.com/setup-your-own-ebook-manager-using-calibre-web-6a1dba9f74a0) to get setup and generate the all important `metadata.db` file that you'll be prompted for when first access the Calibre-Web UI.
-  - You must point to this library using the `/calibre-main` bind below.
+  - You must point to this library using the `/calibre-main` bind below. -->
 ## Method 1: Using Docker Compose 🐋 ⭐(Recommended)
 ### 1. Install using the Docker Compose template below:
 ~~~
@@ -107,6 +107,20 @@ services:
 ### 2. And just like that, Calibre-Web Automated should be up and running!
    - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the docker compose however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths
 ### 3. **_Recommended Post-Install Tasks:_**
+#### Calibre-Web Quick Start
+1. Open your browser and navigate to http://localhost:8084 or http://localhost:8084/opds for the OPDS catalog
+2. Log in with the default admin credentials (_below_)
+3. If you don't have an existing Calibre database, you can use the `metadata.db` file above
+    - This is a blank Calibre-Database you can use to perform the Initial Setup with
+    - Place the `metadata.db` file in the the folder you bound to `/calibre-main` in your Docker Compose
+4. During the Web UI's Initial Setup screen, Set Location of Calibre database to the path of the folder to `/calibre-main` and click "Save"
+5. Optionally, use Google Drive to host your Calibre library by following the Google Drive integration guide
+6. Configure your Calibre-Web instance via the admin page, referring to the Basic Configuration and UI Configuration guides
+7. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
+#### Default Admin Login:
+> **Username:** admin\
+> **Password:** admin123
+#### Configuring CWA
  - If your Calibre Library contains any ebooks not in the `.epub` format, from within the container run the `convert-library` command.
      - Calibre-Web Automated's extra features only work with epubs and so **failure to complete this step could result in unforeseen errors and general unreliability**
      - Full usage can be found below in the Usage Section however the following command will automatically convert any non-epubs to epubs and store the original files in `/config/original-library`:

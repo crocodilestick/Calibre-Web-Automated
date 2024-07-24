@@ -42,21 +42,21 @@
 ~~~docker-compose
 ---
 services:
-  calibre-web:
+  calibre-web-automated:
     image: crocodilestick/calibre-web-automated:latest
     container_name: calibre-web-automated
     environment:
       - PUID=1000
       - PGID=100
+      - TZ=UTC
     volumes:
       - /path/to/config/folder:/config
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
-      - /path/to/your/calibre/library:/calibre-main
+      - /path/to/your/calibre/library:/calibre-main # Point to your Calibre config folder not the 'Calibre Library' folder directly
       - /path/to/where/you/keep/your/books:/books #Optional
       - /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
     ports:
-      - 8084:8083 # Web-UI Available through port 8084
-
+      - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
     restart: unless-stopped
     
 ~~~

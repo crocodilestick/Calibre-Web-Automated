@@ -20,7 +20,7 @@ test*
 *dirs.json
 */DEV
 */REFERENCE
-*.db
+cwa.db
 
 # Distribution / packaging
 .Python

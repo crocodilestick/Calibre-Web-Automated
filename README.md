@@ -98,6 +98,13 @@ services:
       - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
     restart: unless-stopped
 ~~~
+- **Explaination of the Container Bindings:**
+  - **/config** - Can be any empty folder, used to store logs and other miscellaneous files that keep CWA running
+  - **/cwa-book-ingest** - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
+  - **/calibre-main** - This should be bound to the folder that your `metadata.db` file resides within.
+      - If you don't have an **exisitng** Calibre Database, make an empty folder somewhere called 'calibre-main' or something similar, bind that, place the `metadata.db` file from the project's GitHub page within it and follow the steps below after building the container
+  - **/books** _(Optional)_ - This is purely optional, I personally bind /books to where I store my downloaded books so that they accessable from within the container but CWA doesn't require this
+  - **/gmail.json** _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally reccommend a simple SMTP Server
 ### 2. And just like that, Calibre-Web Automated should be up and running!
    - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths
 ### 3. **_Recommended Post-Install Tasks:_**

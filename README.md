@@ -17,7 +17,7 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 What Does it do? 🎯
 ------------
 
-After discovering that using the DOCKER_MODS universal-calibre environment variable, you could gain access to Calibre's fantastic eBook conversion tools, both in the Web UI and in the container's CLI, I set about designing a similar modification that could really make the most of all of the tools available to try and fill in the gaps in functionality I was facing with Calibre-Web so that I could finally get rid of my bulky Calibre instance for good. Calibre-Web Automated builds on top of the original Calibre-Web container, which also means you don't have to miss out on its latest updates!
+After discovering that using the DOCKER_MODS universal-calibre environment variable, you could gain access to Calibre's fantastic eBook conversion tools, both in the Web UI and in the container's CLI, I set about designing a similar modification that could really make the most of all of the tools available to try and fill in the gaps in functionality I was facing with Calibre-Web so that I could finally get rid of my bulky Calibre instance for good. Calibre-Web Automated builds on top of the calibre-web container.
 
 ### ***Features:***
 - **Easy, Guided Setup** via CLI interface

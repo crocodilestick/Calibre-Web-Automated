@@ -8,16 +8,16 @@ Making Calibre-Web your _dream_, all-in-one self-hosted digital library solution
 Why does it exist? 🔓
 -----------
 
-Calibre, while a fantastic tool for it's age, has a number of problems when containerised, including it's reliance on a KasmVNC server instance for the UI, which is near impossible to use on mobile and is relatively resource heavy if your running a small, lower power server like I am.
+Calibre, while a fantastic tool for its age, has several problems when containerised, including its reliance on a KasmVNC server instance for the UI, which is near impossible to use on mobile and is relatively resource-heavy if you're running a small, lower power server like I am.
 
 For many, Calibre-Web has really swooped in to save the day, offering an alternative to a containerised Calibre instance that's quick, easy to set up, resource-light and with a much more modern UI to boot.
 
-However, when compared to full-fat Calibre, it does unfortunately lack a few core features leading many to run both services in parallel, each serving to fill in where the other lacks, resulting in a often clunky, imperfect solution.
+However, when compared to full-fat Calibre, it unfortunately lacks a few core features leading many to run both services in parallel, each serving to fill in where the other lacks, resulting in an often clunky, imperfect solution.
 
 What Does it do? 🎯
 ------------
 
-After discovering that using the DOCKER_MODS universal-calibre environment variable, you could gain access to Calibre's fantastic eBook conversion tools, both in the Web UI and in the container's CLI, I set about designing a service that could really make the most of all of the tools available to try and fill in the gaps in functionality I was facing with Calibre-Web so that I could finally get rid of my bulky Calibre instance for good.
+After discovering that using the DOCKER_MODS universal-calibre environment variable, you could gain access to Calibre's fantastic eBook conversion tools, both in the Web UI and in the container's CLI, I set about designing a similar modification that could really make the most of all of the tools available to try and fill in the gaps in functionality I was facing with Calibre-Web so that I could finally get rid of my bulky Calibre instance for good. Calibre-Web Automated builds on top of the original Calibre-Web container, which also means you don't have to miss out on its latest updates!
 
 ### ***Features:***
 - **Easy, Guided Setup** via CLI interface
@@ -26,8 +26,8 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - User-defined File Structure
 - A **Weighted Conversion Algorithm:**
     - Using the information provided in the Calibre eBook-converter documentation on which formats convert best into epubs, CWA is able to determine from downloads containing multiple eBook formats, which format will convert most optimally, ignoring the other formats to ensure the **best possible quality** and no **duplicate imports**
-- **Optional Persistance** within your Calibre-Web instance between container rebuilds
-- Easy tool to quickly check whether or not the service is currently running as intended / was installed successfully
+- **Optional Persistence** within your Calibre-Web instance between container rebuilds
+- Easy tool to quickly check whether or not the service is currently running as intended/was installed successfully
 - Easy to follow logging in the regular container logs to diagnose problems or monitor conversion progress ect. (Easily viewable using Portainer or something similar)
     - Logs also contain performance benchmarks in the form of a time to complete, both for an overall import task, as well as the conversion of each of the individual files within it 
 - **Supported file types for conversion:**
@@ -46,15 +46,15 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 - ## **One Step Full Library Conversion** - Any format -> `.epub` ✏️
   - Calibre-Web Automated has always been designed with `.epub` libraries in mind due to many factors, chief among which being the fact they are **Compatible with the Widest Range of Devices**, **Ubiquitous** as well as being **Easy to Manage and Work with**
-  - Previously this meant that anyone with `non-epub` ebooks in their existing Calibre Libraries were unable to take advantage of all of `Calibre-Web Automator`'s features reliably
-  - So new to Version 1.2.0 is the ability for those users to quickly and easily convert their existing eBook Libraries, no matter the size, to `.epub Version 3` format using a one step CLI Command from within the CWA Container
+  - Previously this meant that anyone with `non-epub` ebooks in their existing Calibre Libraries was unable to take advantage of all of `Calibre-Web Automator`'s features reliably
+  - So new to Version 1.2.0 is the ability for those users to quickly and easily convert their existing eBook Libraries, no matter the size, to `.epub Version 3` format using a one-step CLI Command from within the CWA Container
   - This utility gives the user the option to either keep a copy of the original of all converted files in `/config/original-library` or to trust the process and have CWA simply convert and replace those files (not recommended)
   - Full usage details can be found [here](#the-convert-library-tool)
 
 - ## **Simple CLI Tools** for manual fixes, conversions, enforcements, history viewing ect. 👨‍💻
   - Built-in command-line tools now also exist for:
     - Viewing the Edit History of your Library files _(detailed above)_
-    - Listing all of the books currently in your Library with their current Books IDs
+    - Listing all of the books currently in your Library with their current Book IDs
     - **Manually enforcing the covers & metadata for ALL BOOKS** in your library using the `cover-enforcer -all` command from within the container **(RECOMMENDED WITH FIRST TIME USE)**
     - Manually Enforcing the Covers & Metadata for any individual books by using the following command
     - `cover-enforcer --dir <path-to-folder-containing-the-books-epub-here>`

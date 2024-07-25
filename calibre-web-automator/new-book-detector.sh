@@ -24,7 +24,7 @@ add_to_calibre() {
 }
 
 # Monitor the folder for new files
-inotifywait -m -e create -e moved_to "$WATCH_FOLDER" |
+inotifywait -m -e close_write -e moved_to "$WATCH_FOLDER" |
 while read -r directory events filename; do
         echo "[new-book-detector]: New file detected: $filename"
         add_to_calibre "$filename"

@@ -11,9 +11,10 @@ WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /etc/calibre-web-automator/dirs
 echo "[books-to-process]: Watching folder: $WATCH_FOLDER"
 
 # Monitor the folder for new files
-inotifywait -m -r -e close_write -e moved_to "$WATCH_FOLDER" |
-while read -r directory events filename; do
-        echo "[books-to-process]: New files detected - $filename"
-        python3 /etc/calibre-web-automator/new-book-processor.py
+inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
+while read -r events filepath ; do
+        echo "[books-to-process]: New files detected - $filepath"
+        python3 /etc/calibre-web-automator/new-book-processor.py "$filepath"
         echo "[books-to-process]: New files successfully moved/converted, the Ingest Folder has been emptied and is ready to go again."
 done
+

@@ -17,7 +17,6 @@ pyproject.toml
 # Test Scripts
 */test
 test*
-*dirs.json
 */DEV
 */REFERENCE
 cwa.db

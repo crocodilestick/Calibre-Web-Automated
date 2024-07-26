@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import time
+import shutil
 
 supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz']
 hierarchy_of_succsess = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
@@ -83,9 +84,7 @@ def copy_epubs_for_import(epub_files) -> None:
 
 def empty_to_process_folder() -> None:
     """Empties the ingest folder"""
-    files = glob.glob(f"{ingest_folder}*")
-    for f in files:
-        os.remove(f)
+    shutil.rmtree(ingest_folder)
 
 
 if __name__ == "__main__":

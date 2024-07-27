@@ -34,10 +34,7 @@ cp $SCRIPT_DIR/cover-enforcer.py /etc/calibre-web-automator/cover-enforcer.py
 cp $SCRIPT_DIR/cwa_db.py /etc/calibre-web-automator/cwa_db.py
 cp $SCRIPT_DIR/convert-library.py /etc/calibre-web-automator/convert-library.py
 
-# Change permissions of /etc/calibre-web-automator/
-chown -R abc:1000 /etc/calibre-web-automator
-
-# Make sure other sctipts are executable and permissions are correct
+# Make sure other scripts are executable and permissions are correct
 chown -R abc:users /config
 chown -R abc:users /etc/calibre-web-automator
 
@@ -92,7 +89,7 @@ touch /etc/s6-overlay/s6-rc.d/user/contents.d/metadata-change-detector
 
 # Setup completion notification
 echo ""
-echo -e "======== ${GREEN}SUCSESS${NC}: Calibre-Web-Automator Setup Complete! ========"
+echo -e "======== ${GREEN}SUCCESS${NC}: Calibre-Web-Automator Setup Complete! ========"
 echo ""
 echo " - Please restart the container so the changes will take effect."
 echo " - Do so by typing 'exit', presing enter, then running the docker command:"

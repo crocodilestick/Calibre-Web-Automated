@@ -189,13 +189,12 @@ convert-library --keep
 ## Method 2: Using the **Script Install Method** with Clean Calibre-Web Base Image 📜 🔻(Not Recommended)
  - This method is only recommended for **developers** or those who would like to set their own directories using the provided **Setup Wizard**
  - To begin this installation method, you'll need to use the Docker Compose below to set up a base container for you to perform the installation within
- - The image provided is a snapshot of the official Calibre-Web release from mid June 2024. This is the image that Calibre-Web Automated was built upon and currently Calibre-Web Automated is not compatible with more recent versions of Calibre-Web  
 ### Step 1: docker-compose for stock Calibre-Web with the Calibre eBook-converter
 ~~~docker-compose
 ---
 services:
   calibre-web:
-    image: crocodilestick/calibre-web-base
+    image: lscr.io/linuxserver/calibre-web:latest
     container_name: calibre-web-automated
     environment:
       - PUID=1000
@@ -217,8 +216,8 @@ services:
       - /path/to/config/folder:/config
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
       - "/path/to/your/calibre/library:/calibre-main/Calibre Library"
-      - /path/to/where/you/keep/your/books:/books
-      - /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
+     # - /path/to/where/you/keep/your/books:/books #Optional
+     # - /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
     ports:
       - 8083:8083 # Change the first number to change the port you want to access the Web UI, not the second
 

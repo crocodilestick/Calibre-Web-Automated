@@ -64,31 +64,29 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     - Ingest folder currently no longer looks recursively through folders, only the files in the main directory due to an oversight following a recent bugfix
     - Fixes courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)
 - Base version of stock Calibre-Web updated to : **V 0.6.22 - Oxana** which comes with the following fixes & features:
-<sup><sub>
-  - New features:
-    - lubimyczytac metadata fetches now the right tags section
-    - OPDS catalog now only shows categories which are also visible in the normal User interface
-    - PRC is added as source for book conversion
-    - Added option for read status "Any" in Advanced Searching
-    - Metadata Backup is supported now
-    - Metadata changes can be applied during downloading and sending books
-    - Splited library locations are supported
-    - In all categories a category "No category applied (None) is visible
-  - Bug Fixes:
-    - CB7 metadata extraction working with newer version of py7zr
-    - douban metadata fetching is working again
-    - Improved Content Security Policy header
-    - Improvements for Caliblur! Dark Theme
-    - It's now possible to reset Kobo sync for other users
-    - Improved parsing of book content on upload to prevent crashes
-    - refactored author renaming issue to prevent Oops Database corrupt messages
-    - Fix on Windows that prevents starting calibre-web
-    - Ä Ö Ü are now counting as uppercase letters for Passwords
-    - Fix for Text reader to handle invalid mulitbyte sequence (mainly for CJK-Languaes)
-    - Fix for _internal folder showing up using windows installer version
-    - Security fix: File upload mimetype is checked to prevent malicious file content in the books library
-    - Security fix: Cross-site scripting (XSS) stored in comments section is prevented better (switching from lxml to bleach for sanitizing strings)
-</sub></sup>
+  - <sup><sub>New features:
+    - <sup><sub>lubimyczytac metadata fetches now the right tags section</sub></sup>
+    - <sup><sub>OPDS catalog now only shows categories which are also visible in the normal User interface</sub></sup>
+    - <sup><sub>PRC is added as source for book conversion</sub></sup>
+    - <sup><sub>Added option for read status "Any" in Advanced Searching</sub></sup>
+    - <sup><sub>Metadata Backup is supported now</sub></sup>
+    - <sup><sub>Metadata changes can be applied during downloading and sending books</sub></sup>
+    - <sup><sub>Splited library locations are supported</sub></sup>
+    - <sup><sub>In all categories a category "No category applied (None) is visible</sub></sup>
+  - <sup><sub>Bug Fixes:</sub></sup>
+    - <sup><sub>CB7 metadata extraction working with newer version of py7zr</sub></sup>
+    - <sup><sub>douban metadata fetching is working again</sub></sup>
+    - <sup><sub>Improved Content Security Policy header</sub></sup>
+    - <sup><sub>Improvements for Caliblur! Dark Theme</sub></sup>
+    - <sup><sub>It's now possible to reset Kobo sync for other users</sub></sup>
+    - <sup><sub>Improved parsing of book content on upload to prevent crashes</sub></sup>
+    - <sup><sub>refactored author renaming issue to prevent Oops Database corrupt messages</sub></sup>
+    - <sup><sub>Fix on Windows that prevents starting calibre-web</sub></sup>
+    - <sup><sub>Ä Ö Ü are now counting as uppercase letters for Passwords</sub></sup>
+    - <sup><sub>Fix for Text reader to handle invalid mulitbyte sequence (mainly for CJK-Languaes)</sub></sup>
+    - <sup><sub>Fix for _internal folder showing up using windows installer version</sub></sup>
+    - <sup><sub>Security fix: File upload mimetype is checked to prevent malicious file content in the books library</sub></sup>
+    - <sup><sub>Security fix: Cross-site scripting (XSS) stored in comments section is prevented better (switching from lxml to bleach for sanitizing strings)</sub></sup>
 
 # New in Version 1.2.0
 - ## **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 🙌📔

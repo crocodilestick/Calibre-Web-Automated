@@ -92,7 +92,7 @@ touch /etc/s6-overlay/s6-rc.d/user/contents.d/metadata-change-detector
 
 # Setup completion notification
 echo ""
-echo -e "======== ${GREEN}SUCSESS${NC}: Calibre-Web-Automator Setup Complete! ========"
+echo -e "======== ${GREEN}SUCCESS${NC}: Calibre-Web-Automator Setup Complete! ========"
 echo ""
 echo " - Please restart the container so the changes will take effect."
 echo " - Do so by typing 'exit', presing enter, then running the docker command:"

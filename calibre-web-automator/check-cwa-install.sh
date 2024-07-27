@@ -35,7 +35,7 @@ fi
 echo ""
 
 if $cs && $bs && $mc; then
-    echo -e "Calibre-Web-Automater was ${GREEN}sucsessfully installed ${NC}and ${GREEN}is running properly!${NC}"
+    echo -e "Calibre-Web-Automater was ${GREEN}successfully installed ${NC}and ${GREEN}is running properly!${NC}"
 else
-    echo -e "Calibre-Web-Automater was ${RED}not installed sucsessfully${NC}, please check the logs for more information."
+    echo -e "Calibre-Web-Automater was ${RED}not installed successfully${NC}, please check the logs for more information."
 fi

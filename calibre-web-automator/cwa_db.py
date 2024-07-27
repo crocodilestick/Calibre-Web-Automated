@@ -27,7 +27,7 @@ class CWA_DB:
             sys.exit(0)
         if con:
             cur = con.cursor()
-            print("[cover-enforcer]: Connection with the CWA Enforcement DB Sucsessful!")
+            print("[cover-enforcer]: Connection with the CWA Enforcement DB Successful!")
             return con, cur
 
     def make_table(self) -> None:

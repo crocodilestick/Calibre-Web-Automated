@@ -65,7 +65,7 @@ def convert_book(import_format: str) -> float:
 
 def can_convert_check():
     """When no epubs are detected in the download, this function will go through the list of new files 
-    and check for the format the are in that has the highest chance of sucsessful conversion according to the input format hierarchy list 
+    and check for the format the are in that has the highest chance of successful conversion according to the input format hierarchy list 
     provided by calibre"""
     can_convert = False
     import_format = ''

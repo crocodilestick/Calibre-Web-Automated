@@ -177,7 +177,7 @@ def main():
         print('[cover-enforcer]: Enforcing metadata and covers for all books in library...')
         n_enforced, completion_time = enforcer.enforce_all_covers()
         enforcer.check_for_other_logs()
-        print(f"\n[cover-enforcer]: SUCSESS: All covers & metadata succsessfully updated for all {n_enforced} books in the library in {completion_time:.2f} seconds!")
+        print(f"\n[cover-enforcer]: SUCCESS: All covers & metadata succsessfully updated for all {n_enforced} books in the library in {completion_time:.2f} seconds!")
     elif args.log is not None and args.dir is None and args.all is False and args.list is False and args.history is False:
         # log passed: (args.log), no dir
         log_info = enforcer.read_log()

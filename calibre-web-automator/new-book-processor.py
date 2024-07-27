@@ -26,7 +26,7 @@ def main():
         files_to_convert, import_format = select_books_for_conversion(new_files)
         print(f"[new-book-processor]: Converting {len(files_to_convert)} file(s) from to epub format...\n")
         time_total_conversion = convert_books(files_to_convert, import_format)
-        print(f"\n[new-book-processor]: {len(files_to_convert)} conversion(s) to .epub format completed succsessfully in {time_total_conversion:.2f} seconds.")
+        print(f"\n[new-book-processor]: {len(files_to_convert)} conversion(s) to .epub format completed successfully in {time_total_conversion:.2f} seconds.")
         print("[new-book-processor]: All new epub files have now been moved to the calibre-web import folder.")
     else: # Books only need copying to the import folder
         print(f"\n[new-book-processor]: Found {len(epub_files)} epub file(s) from the most recent download.")

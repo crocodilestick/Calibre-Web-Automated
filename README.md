@@ -29,7 +29,8 @@ What Does it do? 🎯
 After discovering that using the DOCKER_MODS universal-calibre environment variable, you could gain access to Calibre's fantastic eBook conversion tools, both in the Web UI and in the container's CLI, I set about designing a similar solution that could really make the most of all of the tools available to try and fill in the gaps in functionality I was facing with Calibre-Web so that I could finally get rid of my bulky Calibre instance for good. Calibre-Web Automated builds on top of the calibre-web container.
 
 ### ***Features:***
-<!-- - **Easy, Guided Setup** via CLI interface -->
+_View the [Releases section](https://github.com/crocodilestick/Calibre-Web-Automator) for the full list_
+
 - **Automatic imports** of `.epub` files into your Calibre-Web library
 - **Automatic Conversion** of newly downloaded books into `.epub` format for optimal compatibility with the widest number of eReaders, library homogeneity, and seamless functionality with Calibre-Web's excellent **Send-to-Kindle** Function.
 - User-defined File Structure
@@ -42,9 +43,28 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - **Supported file types for conversion:**
     - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txt, .txtz_
 - **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!**
-  - In stock Calibre-Web, any changes made to a book's **Cover and/or Metadata** are only applied to how the book appears in the Calibre-Web UI, changing nothing in the ebook file's like you would expect
+  - In stock Calibre-Web, any changes made to a book's **Cover and/or Metadata** are only applied to how the book appears in the Calibre-Web UI, changing nothing in the ebook files like you would expect
   - This results in a frustrating situation for many CW users who utilise CW's Send-To-Kindle function, and are disappointed to find that the High-Quality Covers they picked out and carefully chosen Metadata they sourced are completely absent on all their other devices! UGH!
   - CWA's **Automatic Cover & Metadata Enforcement Feature** makes it so that WHATEVER you changes you make to YOUR books, **_are made to the books themselves_**, as well as in the Web UI, making what you see, what you get.
+
+- **One Step Full Library Conversion** - Any format -> `.epub` ✏️
+  - Calibre-Web Automated has always been designed with `.epub` libraries in mind due to many factors, chief among which being the fact they are **Compatible with the Widest Range of Devices**, **Ubiquitous** as well as being **Easy to Manage and Work with**
+  - Previously this meant that anyone with `non-epub` ebooks in their existing Calibre Libraries was unable to take advantage of all of `Calibre-Web Automator`'s features reliably
+  - So new to Version 1.2.0 is the ability for those users to quickly and easily convert their existing eBook Libraries, no matter the size, to `.epub Version 3` format using a one-step CLI Command from within the CWA Container
+  - This utility gives the user the option to either keep a copy of the original of all converted files in `/config/original-library` or to trust the process and have CWA simply convert and replace those files (not recommended)
+  - Full usage details can be found [here](#the-convert-library-tool)
+
+- **Simple CLI Tools** for manual fixes, conversions, enforcements, history viewing ect. 👨‍💻
+  - Built-in command-line tools now also exist for:
+    - Viewing the Edit History of your Library files _(detailed above)_
+    - Listing all of the books currently in your Library with their current Book IDs
+    - **Manually enforcing the covers & metadata for ALL BOOKS** in your library using the `cover-enforcer -all` command from within the container **(RECOMMENDED WITH FIRST TIME USE)**
+    - Manually Enforcing the Covers & Metadata for any individual books by using the following command
+    - `cover-enforcer --dir <path-to-folder-containing-the-books-epub-here>`
+  - Full usage and documentation for all new CLI Commands can be found [here](#the-cover-enforcer-cli-tool)
+
+  - In combination with the **New Cover & Metadata Enforcement Features**, a database now exists to keep track of any and all enforcements, both for peace of mind and to make the checking of any bugs or weird behaviour easier, but also to make the data available for statistical analysis or whatever else someone might want to use the data for
+    - Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
 
 # UNDER ACTIVE DEVELOPMENT ⚠️
 - Please be aware that while CWA currently works for most people, it is still under active development and that bugs and unexpected behaviours can occur while we work and the code base matures
@@ -64,66 +84,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - Add **Update Notification system** to notify users of the availability of new updates within the Web UI
 - A Batch Editing Feature to allow the editing of Metadata for multiple books at once, i.e. for a series ect.
 - Integrating some of the new **Command-Line Features into the Web UI**
-
-# New in Version 1.2.1 - 27.07.2024
-🚨 **TO ALL USERS** 🚨 Please update to the latest DockerHub image ASAP to avoid major issues with the old Import/Ingest System
-- **Major Bugfixes** to existing book **Import & Ingest Methods** that could previously result in:
-    - Some books being imported multiple times when importing large numbers at once
-    - The ingestion of some books failing due to the import process triggering too quickly, before the transfer of said files is complete, leading to the attempted import of incomplete files which inevitably fails
-    - Ingest folder currently no longer looks recursively through folders, only the files in the main directory due to an oversight following a recent bugfix
-    - Fixes courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)
-- Base version of stock Calibre-Web updated to : **V 0.6.22 - Oxana** which comes with the following fixes & features:
-
-| **New features:**                                                                                     | **Bug Fixes:**                                                                                                                                            |
-|-------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <sup>lubimyczytac metadata fetches now the right tags section</sub>                                   | <sup>CB7 metadata extraction working with newer version of py7zr</sub>                                                                                    |
-| <sup>OPDS catalog now only shows categories which are also visible in the normal User interface</sub> | <sup>douban metadata fetching is working again</sub>                                                                                                      |
-| <sup>PRC is added as source for book conversion</sub>                                                 | <sup>Improved Content Security Policy header</sub>                                                                                                        |
-| <sup>Added option for read status "Any" in Advanced Searching</sub>                                   | <sup>Improvements for Caliblur! Dark Theme</sub>                                                                                                          |
-| <sup>Metadata Backup is supported now</sub>                                                           | <sup>It's now possible to reset Kobo sync for other users</sub>                                                                                           |
-| <sup>Metadata Backup is supported now</sub>                                                           | <sup>Improved parsing of book content on upload to prevent crashes</sub>                                                                                  |
-| <sup>In all categories a category "No category applied (None) is visible</sub>                        | <sup>Refactored author renaming issue to prevent Oops Database corrupt messages</sub>                                                                     |
-|                                                                                                       | <sup>Fix on Windows that prevents starting calibre-web</sub>                                                                                              |
-|                                                                                                       | <sup>Ä Ö Ü are now counting as uppercase letters for Passwords</sub>                                                                                      |
-|                                                                                                       | <sup>Fix for Text reader to handle invalid mulitbyte sequence (mainly for CJK-Languaes)</sub>                                                             |
-|                                                                                                       | <sup>Fix for _internal folder showing up using windows installer version</sub>                                                                            |
-|                                                                                                       | <sup>Security fix: File upload mimetype is checked to prevent malicious file content in the books library</sub>                                           |
-|                                                                                                       | <sup>Security fix: Cross-site scripting (XSS) stored in comments section is prevented better (switching from lxml to bleach for sanitizing strings)</sub> |
-
-# New in Version 1.2.0
-- ## **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 🙌📔
-
-![Cover Enforcement CWA](cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
-
-  - Something that's always bothered me as a Kindle user has been Calibre-Web's inability to change the Metadata and Covers stored within the `.epub` files of our books, despite letting us change these things in the Web UI
-  - This has resulted in many people, including myself, running instances of both `Calibre-Web` **AND** full-fat `Calibre`, to make use of `Calibre`'s much more robust editing tools to change out those ugly covers and keep our Kindle Libraries looking a bit more\
-    **_~ a e s t h e t i c ~_** and our metadata correct between devices
-  - Well, **_no more!_** ⏰
-  - Using `CWA 1.2.0`, whenever you change any **Covers** or **Metadata** using the `Calibre-Web` UI, those changes will now be automatically applied directly to the `.epub` files in your library, as well as in the Web UI itself, meaning that from now on what you see really is what you get!
-
-- ## **One Step Full Library Conversion** - Any format -> `.epub` ✏️
-  - Calibre-Web Automated has always been designed with `.epub` libraries in mind due to many factors, chief among which being the fact they are **Compatible with the Widest Range of Devices**, **Ubiquitous** as well as being **Easy to Manage and Work with**
-  - Previously this meant that anyone with `non-epub` ebooks in their existing Calibre Libraries was unable to take advantage of all of `Calibre-Web Automator`'s features reliably
-  - So new to Version 1.2.0 is the ability for those users to quickly and easily convert their existing eBook Libraries, no matter the size, to `.epub Version 3` format using a one-step CLI Command from within the CWA Container
-  - This utility gives the user the option to either keep a copy of the original of all converted files in `/config/original-library` or to trust the process and have CWA simply convert and replace those files (not recommended)
-  - Full usage details can be found [here](#the-convert-library-tool)
-
-- ## **Simple CLI Tools** for manual fixes, conversions, enforcements, history viewing ect. 👨‍💻
-  - Built-in command-line tools now also exist for:
-    - Viewing the Edit History of your Library files _(detailed above)_
-    - Listing all of the books currently in your Library with their current Book IDs
-    - **Manually enforcing the covers & metadata for ALL BOOKS** in your library using the `cover-enforcer -all` command from within the container **(RECOMMENDED WITH FIRST TIME USE)**
-    - Manually Enforcing the Covers & Metadata for any individual books by using the following command
-    - `cover-enforcer --dir <path-to-folder-containing-the-books-epub-here>`
-  - Full usage and documentation for all new CLI Commands can be found [here](#the-cover-enforcer-cli-tool)
-
-- ## **Easy to View Change Database and Internal Automatic Logging** 📈
-
-![Cover Enforcement CWA](cwa-db-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
-
-- In combination with the **New Cover & Metadata Enforcement Features**, a database now exists to keep track of any and all enforcements, both for peace of mind and to make the checking of any bugs or weird behaviour easier, but also to make the data available for statistical analysis or whatever else someone might want to use the data for
-- Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
-
+s
 ## IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated versions before 1.2.0 should perform a fresh install using the new DockerHub image method below to ensure stability and to keep up-to-date with future bugfixes and updates
 
 ## Upcoming Features 🌱 - _Coming Soon™_
@@ -156,14 +117,16 @@ services:
     restart: unless-stopped
 ~~~
 - **Explanation of the Container Bindings:**
-  - **/config** - Can be any empty folder, used to store logs and other miscellaneous files that keep CWA running
-  - **/cwa-book-ingest** - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
-  - **/calibre-main/Calibre Library** - This should be bound to your Calibre library folder where the `metadata.db` file resides within.   
+  - `/config` - Can be any empty folder, used to store logs and other miscellaneous files that keep CWA running
+  - `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
+  - `/calibre-main/Calibre Library` - This should be bound to your Calibre library folder where the `metadata.db` file resides within.   
       - If you don't have an **existing** Calibre Database, create a folder for your library, place the `metadata.db` file from the project's GitHub page within it, and bind it to `/calibre-main/Calibre Library` shown above. Follow the steps below after building the container
-  - **/books** _(Optional)_ - This is purely optional, I personally bind /books to where I store my downloaded books so that they accessible from within the container but CWA doesn't require this
-  - **/gmail.json** _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
+  - `/books` _(Optional)_ - This is purely optional, I personally bind /books to where I store my downloaded books so that they accessible from within the container but CWA doesn't require this
+  - `/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
+
 ### 2. And just like that, Calibre-Web Automated should be up and running!
    - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths
+
 ### 3. **_Recommended Post-Install Tasks:_**
 #### Calibre-Web Quick Start
 1. Open your browser and navigate to http://localhost:8084 or http://localhost:8084/opds for the OPDS catalog

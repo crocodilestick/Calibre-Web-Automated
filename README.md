@@ -40,18 +40,13 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 # UNDER ACTIVE DEVELOPMENT ⚠️
 - Please be aware that while CWA currently works for most people, it is still under active development and that bugs and unexpected behaviours can occur while we work and the code base matures
 - I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project, especially to @jmarmstrong1207 who has been working tirelessly on improving the project since the release of Version 1.2.0
-  - In recognition of this, @jmarmstrong1207 has now been promoted to a co-contributor here on the project, so feel free to also contact him with any issues, suggestions, ideas ect.
+  - In recognition of this, [@jmarmstrong1207](https://github.com/jmarmstrong1207) has now been promoted to a co-contributor here on the project, so feel free to also contact him with any issues, suggestions, ideas ect.
   - For any others that wish to contribute to this project in some way, please reach out on our Discord Server and see how you can best get involved:\
 \
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
-### Coming in Version 1.2.1 - Currently in Testing Phase 🧪
-  - Major Bugfix to existing book **Import & Ingest Methods** that previously could result in:
-    - Some books being imported multiple times when importing large numbers at once
-    - The ingestion of some books failing due to the import process triggering too quickly, before the transfer of said files is complete, leading to the attempted import of incomplete files which inevitably fails
-    - Ingest folder currently no longer looks recursively through folders, only the files in the main directory due to an oversight following a recent bugfix
+### Coming in Version 1.2.2 - Currently in Testing Phase 🧪
   - Simplification of CWA's install, specifically for users having issues binding the right folder of their existing Calibre libraries in the Docker Compose
-  - The update of the base version of stock Calibre-Web to: **V 0.6.22 - Oxana**
 ### Coming Soon - Currently Under Active Development 🏗️
   - A form of **Library Auto-Detect** is currently in development to mitigate these issues, as well as to automatically establish a fresh Calibre Library for new users without an existing one, to simplify the install for them and make it so they don't have to manually copy `metadata.db` files from the repo into specific folders ect.
   - A `dockerfile` to help attract other developers, standardise our Image build procedure and to help us also release CWA as a Docker Mod
@@ -61,6 +56,39 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - A Batch Editing Feature to allow the editing of Metadata for multiple books at once, i.e. for a series ect.
 - Integrating some of the new **Command-Line Features into the Web UI**
 
+# New in Version 1.2.1 - 27.07.2024
+🚨 **TO ALL USERS** 🚨 Please update to the latest DockerHub image ASAP to avoid major issues with the old Import/Ingest System
+- **Major Bugfixes** to existing book **Import & Ingest Methods** that could previously result in:
+    - Some books being imported multiple times when importing large numbers at once
+    - The ingestion of some books failing due to the import process triggering too quickly, before the transfer of said files is complete, leading to the attempted import of incomplete files which inevitably fails
+    - Ingest folder currently no longer looks recursively through folders, only the files in the main directory due to an oversight following a recent bugfix
+    - Fixes courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)
+- Base version of stock Calibre-Web updated to : **V 0.6.22 - Oxana** which comes with the following fixes & features:
+<sup><sub>
+  - New features:
+    - lubimyczytac metadata fetches now the right tags section
+    - OPDS catalog now only shows categories which are also visible in the normal User interface
+    - PRC is added as source for book conversion
+    - Added option for read status "Any" in Advanced Searching
+    - Metadata Backup is supported now
+    - Metadata changes can be applied during downloading and sending books
+    - Splited library locations are supported
+    - In all categories a category "No category applied (None) is visible
+  - Bug Fixes:
+    - CB7 metadata extraction working with newer version of py7zr
+    - douban metadata fetching is working again
+    - Improved Content Security Policy header
+    - Improvements for Caliblur! Dark Theme
+    - It's now possible to reset Kobo sync for other users
+    - Improved parsing of book content on upload to prevent crashes
+    - refactored author renaming issue to prevent Oops Database corrupt messages
+    - Fix on Windows that prevents starting calibre-web
+    - Ä Ö Ü are now counting as uppercase letters for Passwords
+    - Fix for Text reader to handle invalid mulitbyte sequence (mainly for CJK-Languaes)
+    - Fix for _internal folder showing up using windows installer version
+    - Security fix: File upload mimetype is checked to prevent malicious file content in the books library
+    - Security fix: Cross-site scripting (XSS) stored in comments section is prevented better (switching from lxml to bleach for sanitizing strings)
+</sub></sup>
 # New in Version 1.2.0
 - ## **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 🙌📔
 

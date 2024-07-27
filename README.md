@@ -37,7 +37,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - Please be aware that while CWA currently works for most people, it is still under active development and that bugs and unexpected behaviours can occur while we work and the code base matures
 - I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project, especially to @jmarmstrong1207 who has been working tirelessly on improving the project since the release of Version 1.2.0
   - In recognition of this, @jmarmstrong1207 has now been promoted to a co-contributor here on the project, so feel free to also contact him with any issues, suggestions, ideas ect.
-  - For any others that wish to contribute to this project in some way, please reach out on our Discord Server and see how you can best get involved:
+  - For any others that wish to contribute to this project in some way, please reach out on our Discord Server and see how you can best get involved:\
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
 ### Coming in Version 1.2.1 - Currently in Testing Phase 🧪

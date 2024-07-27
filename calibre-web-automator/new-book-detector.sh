@@ -32,6 +32,6 @@ while read -r directory events filename; do
         chown -R abc:users "$WATCH_FOLDER"
         find "$WATCH_FOLDER/" -type f -delete
         sleep 10s
-        chown -R abc:1000 "$CALIBRE_LIBRARY"
+        chown -R abc:users "$CALIBRE_LIBRARY"
         echo "[new-book-detector]: $filename successfully moved/converted, the import & ingest folders have been emptied and are ready to go again!"
 done

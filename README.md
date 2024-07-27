@@ -64,29 +64,22 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     - Ingest folder currently no longer looks recursively through folders, only the files in the main directory due to an oversight following a recent bugfix
     - Fixes courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)
 - Base version of stock Calibre-Web updated to : **V 0.6.22 - Oxana** which comes with the following fixes & features:
-  - <sup>New features:
-    - <sup>lubimyczytac metadata fetches now the right tags section</sub>
-    - <sup>OPDS catalog now only shows categories which are also visible in the normal User interface</sub>
-    - <sup>PRC is added as source for book conversion</sub>
-    - <sup>Added option for read status "Any" in Advanced Searching</sub>
-    - <sup>Metadata Backup is supported now</sub>
-    - <sup>Metadata changes can be applied during downloading and sending books</sub>
-    - <sup>Splited library locations are supported</sub>
-    - <sup>In all categories a category "No category applied (None) is visible</sub>
-  - <sup>Bug Fixes:
-    - <sup>CB7 metadata extraction working with newer version of py7zr</sub>
-    - <sup>douban metadata fetching is working again</sub>
-    - <sup>Improved Content Security Policy header</sub>
-    - <sup>Improvements for Caliblur! Dark Theme</sub>
-    - <sup>It's now possible to reset Kobo sync for other users</sub>
-    - <sup>Improved parsing of book content on upload to prevent crashes</sub>
-    - <sup>refactored author renaming issue to prevent Oops Database corrupt messages</sub>
-    - <sup>Fix on Windows that prevents starting calibre-web</sub>
-    - <sup>Ä Ö Ü are now counting as uppercase letters for Passwords</sub>
-    - <sup>Fix for Text reader to handle invalid mulitbyte sequence (mainly for CJK-Languaes)</sub>
-    - <sup>Fix for _internal folder showing up using windows installer version</sub>
-    - <sup>Security fix: File upload mimetype is checked to prevent malicious file content in the books library</sub>
-    - <sup>Security fix: Cross-site scripting (XSS) stored in comments section is prevented better (switching from lxml to bleach for sanitizing strings)</sub>
+
+| **New features:**                                                                                     | **Bug Fixes:**                                                                                                                                            |
+|-------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <sup>lubimyczytac metadata fetches now the right tags section</sub>                                   | <sup>CB7 metadata extraction working with newer version of py7zr</sub>                                                                                    |
+| <sup>OPDS catalog now only shows categories which are also visible in the normal User interface</sub> | <sup>douban metadata fetching is working again</sub>                                                                                                      |
+| <sup>PRC is added as source for book conversion</sub>                                                 | <sup>Improved Content Security Policy header</sub>                                                                                                        |
+| <sup>Added option for read status "Any" in Advanced Searching</sub>                                   | <sup>Improvements for Caliblur! Dark Theme</sub>                                                                                                          |
+| <sup>Metadata Backup is supported now</sub>                                                           | <sup>It's now possible to reset Kobo sync for other users</sub>                                                                                           |
+| <sup>Metadata Backup is supported now</sub>                                                           | <sup>Improved parsing of book content on upload to prevent crashes</sub>                                                                                  |
+| <sup>In all categories a category "No category applied (None) is visible</sub>                        | <sup>Refactored author renaming issue to prevent Oops Database corrupt messages</sub>                                                                     |
+|                                                                                                       | <sup>Fix on Windows that prevents starting calibre-web</sub>                                                                                              |
+|                                                                                                       | <sup>Ä Ö Ü are now counting as uppercase letters for Passwords</sub>                                                                                      |
+|                                                                                                       | <sup>Fix for Text reader to handle invalid mulitbyte sequence (mainly for CJK-Languaes)</sub>                                                             |
+|                                                                                                       | <sup>Fix for _internal folder showing up using windows installer version</sub>                                                                            |
+|                                                                                                       | <sup>Security fix: File upload mimetype is checked to prevent malicious file content in the books library</sub>                                           |
+|                                                                                                       | <sup>Security fix: Cross-site scripting (XSS) stored in comments section is prevented better (switching from lxml to bleach for sanitizing strings)</sub> |
 
 # New in Version 1.2.0
 - ## **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 🙌📔

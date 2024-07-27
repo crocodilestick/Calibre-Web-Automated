@@ -73,7 +73,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     - <sup><sub>Metadata changes can be applied during downloading and sending books</sub></sup>
     - <sup><sub>Splited library locations are supported</sub></sup>
     - <sup><sub>In all categories a category "No category applied (None) is visible</sub></sup>
-  - <sup><sub>Bug Fixes:</sub></sup>
+  - <sup><sub>Bug Fixes:
     - <sup><sub>CB7 metadata extraction working with newer version of py7zr</sub></sup>
     - <sup><sub>douban metadata fetching is working again</sub></sup>
     - <sup><sub>Improved Content Security Policy header</sub></sup>

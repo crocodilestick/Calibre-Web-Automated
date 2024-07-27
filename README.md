@@ -89,6 +89,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     - Security fix: File upload mimetype is checked to prevent malicious file content in the books library
     - Security fix: Cross-site scripting (XSS) stored in comments section is prevented better (switching from lxml to bleach for sanitizing strings)
 </sub></sup>
+
 # New in Version 1.2.0
 - ## **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 🙌📔
 

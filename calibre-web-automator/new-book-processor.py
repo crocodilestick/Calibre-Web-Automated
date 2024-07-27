@@ -1,9 +1,7 @@
-import glob
 import json
 import os
 import sys
 import time
-from pathlib import Path
 import subprocess
 
 supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz']
@@ -21,11 +19,11 @@ filepath = sys.argv[1] # path of the book we're targeting
 def main():
     t_start = time.time()
 
-    isEpub = True if filepath.endswith('.epub') else False
+    is_epub = True if filepath.endswith('.epub') else False
 
-    if not isEpub: # Books require conversion
+    if not is_epub: # Books require conversion
         print("\n[new-book-processor]: No epub files found in the current directory. Starting conversion process...")
-        can_convert, import_format = can_convert()
+        can_convert, import_format = can_convert_check()
         print(f"[new-book-processor]: Converting file from to epub format...\n")
         
         if (can_convert):
@@ -38,7 +36,7 @@ def main():
     else: # Books only need copying to the import folder
         print(f"\n[new-book-processor]: Found  epub file from the most recent download.")
         print("[new-book-processor]: Moving resulting files to calibre-web import folder...\n")
-        move_epub(isEpub)
+        move_epub(is_epub)
         print(f"[new-book-processor]: Copied epub file to calibre-web import folder.")
 
     t_end = time.time()
@@ -65,15 +63,15 @@ def convert_book(import_format: str) -> float:
     return time_total_conversion
 
 
-def can_convert():
+def can_convert_check():
     """When no epubs are detected in the download, this function will go through the list of new files 
     and check for the format the are in that has the highest chance of sucsessful conversion according to the input format hierarchy list 
     provided by calibre"""
     can_convert = False
     import_format = ''
     for format in hierarchy_of_succsess:
-        canBeConverted = True if filepath.endswith(f'.{format}') else False
-        if canBeConverted:
+        can_be_converted = True if filepath.endswith(f'.{format}') else False
+        if can_be_converted:
             can_convert = True
             import_format = format
             break
@@ -81,7 +79,7 @@ def can_convert():
     return can_convert, import_format
 
 
-def move_epub(isEpub) -> None:
+def move_epub(is_epub) -> None:
     """Moves the epubs from the download folder to the calibre-web import folder"""
     print(f"[new-book-processor]: Moving {filepath}...")
     filename = filepath.split('/')[-1]

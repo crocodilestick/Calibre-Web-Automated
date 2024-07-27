@@ -20,8 +20,8 @@ What Does it do? 🎯
 After discovering that using the DOCKER_MODS universal-calibre environment variable, you could gain access to Calibre's fantastic eBook conversion tools, both in the Web UI and in the container's CLI, I set about designing a similar solution that could really make the most of all of the tools available to try and fill in the gaps in functionality I was facing with Calibre-Web so that I could finally get rid of my bulky Calibre instance for good. Calibre-Web Automated builds on top of the calibre-web container.
 
 ### ***Features:***
-- **Easy, Guided Setup** via CLI interface
-- Automatic imports of `.epub` files into your Calibre-Web library
+<!-- - **Easy, Guided Setup** via CLI interface -->
+- **Automatic imports** of `.epub` files into your Calibre-Web library
 - **Automatic Conversion** of newly downloaded books into `.epub` format for optimal compatibility with the widest number of eReaders, library homogeneity, and seamless functionality with Calibre-Web's excellent **Send-to-Kindle** Function.
 - User-defined File Structure
 - A **Weighted Conversion Algorithm:**
@@ -32,13 +32,18 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     - Logs also contain performance benchmarks in the form of a time to complete, both for an overall import task, as well as the conversion of each of the individual files within it 
 - **Supported file types for conversion:**
     - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txt, .txtz_
+- **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!**
+  - In stock Calibre-Web, any changes made to a book's **Cover and/or Metadata** are only applied to how the book appears in the Calibre-Web UI, changing nothing in the ebook file's like you would expect
+  - This results in a frustrating situation for many CW users who utilise CW's Send-To-Kindle function, and are disappointed to find that the High-Quality Covers they picked out and carefully chosen Metadata they sourced are completely absent on all their other devices! UGH!
+  - CWA's **Automatic Cover & Metadata Enforcement Feature** makes it so that WHATEVER you changes you make to YOUR books, **_are made to the books themselves_**, as well as in the Web UI, making what you see, what you get.
 
 # UNDER ACTIVE DEVELOPMENT ⚠️
 - Please be aware that while CWA currently works for most people, it is still under active development and that bugs and unexpected behaviours can occur while we work and the code base matures
 - I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project, especially to @jmarmstrong1207 who has been working tirelessly on improving the project since the release of Version 1.2.0
   - In recognition of this, @jmarmstrong1207 has now been promoted to a co-contributor here on the project, so feel free to also contact him with any issues, suggestions, ideas ect.
   - For any others that wish to contribute to this project in some way, please reach out on our Discord Server and see how you can best get involved:\
-    [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
+\
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
 ### Coming in Version 1.2.1 - Currently in Testing Phase 🧪
   - Major Bugfix to existing book **Import & Ingest Methods** that previously could result in:

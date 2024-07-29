@@ -29,7 +29,7 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 - **Major Bugfixes** to existing book **Import & Ingest Methods** that could previously result in:
     - Some books being imported multiple times when importing large numbers at once
     - The ingestion of some books failing due to the import process triggering too quickly, before the transfer of said files is complete, leading to the attempted import of incomplete files which inevitably fails
-    - Ingest folder currently no longer looks recursively through folders, only the files in the main directory due to an oversight following a recent bugfix
+    - Ingest folder currently no longer looks recursively through folders when copying, only the files in the main directory due to an oversight following a recent bugfix. **Moving folders (rather than copy) still doesn't work. This will be fixed in the next update**
     - Fixes courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)
 - Base version of stock Calibre-Web updated to : **V 0.6.22 - Oxana** which comes with many new fixes & features
 - _View the [Releases section](https://github.com/crocodilestick/Calibre-Web-Automator) for the full list_

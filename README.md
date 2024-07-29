@@ -35,12 +35,10 @@ Fixed bugs:
 
 New features:
 - Added a Docker Template folder with the docker-compose file for quick installations
-- Changed default calibre library folder to directly in `/calibre-main` rather than `/calibre-main/Calibre Library` as this folder was redundant. Deprecation support is added to those with a `/calibre-main/Calibre Library` folder. The default library folder will be changed back to `/calibre-main/Calibre Library` if it exists. Otherwise, `/calibre-main` is used
 - Disabled update button in the Admin settings page, and replaced the version number with Calibre-Web-Automated's
 
 misc:
 - Refactored README code to be more consistent
-- Added dirs.json to the repository
 
 ## What Does it do? 🎯
 

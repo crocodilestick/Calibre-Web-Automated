@@ -150,7 +150,7 @@ services:
 7. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
 
 **⚠️ ATTENTION ⚠️**
-  - _Downloading torrent files directly into `/cwa-book-ingest` is currently not supported. It will cause duplicate imports and potentially a corrupt database. This is currently being investigated**_
+  - _Downloading torrent files directly into `/cwa-book-ingest` is currently not supported. It will cause duplicate imports and potentially a corrupt database. This is currently being investigated_
   - _The import system doesn't fully work with subdirectories within `/cwa-book-ingest`. Copying folders with books into `/cwa-book-ingest` will work, but not when moving them. This is currently being investigated. Workaround: Move/copy the books directly into `/cwa-book-ingest` without folders_
 #### Default Admin Login:
 > **Username:** admin\
@@ -270,7 +270,7 @@ This wouldn't be my preferred method but if you never really touch your containe
 ## Adding Books to Your Library
 - Simply move your newly downloaded or existing eBook files to the ingest folder which is `/cwa-book-ingest` by default or whatever you designated during setup if using the Script Install method. Anything you place in that folder will be automatically analysed, converted if necessary and then imported into your Calibre-Web library.
     - **⚠️ ATTENTION ⚠️**
-      - _Downloading torrent files directly into `/cwa-book-ingest` is currently not supported. It will cause duplicate imports and potentially a corrupt database. This is currently being investigated**_
+      - _Downloading torrent files directly into `/cwa-book-ingest` is currently not supported. It will cause duplicate imports and potentially a corrupt database. This is currently being investigated_
       - _The import system doesn't fully work with subdirectories within `/cwa-book-ingest`. Copying folders with books into `/cwa-book-ingest` will work, but not when moving them. This is currently being investigated. Workaround: Move/copy the books directly into `/cwa-book-ingest` without folders_
     - I personally use a script that my instance of qBittorrent will automatically execute upon finishing a download with the category **'books'** to fully automate the process however there's an infinite number of configurations out there so do whatever works best for your needs!
 ## The Cover-Enforcer CLI Tool

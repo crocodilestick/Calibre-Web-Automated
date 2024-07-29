@@ -25,20 +25,19 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 # 🚨 **NEW UPDATE WITH FIXES** 🚨 - Version 1.2.2 - 29.07.2024
 
-🚨 Please **Update to the latest DockerHub image ASAP** to avoid major issues with the old Import/Ingest System and for **General Stability Improvemnets**
+### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid major issues with the old Import/Ingest System and for **General Stability Improvemnets**
 
-_This update should now render the auto-import system as stable now with the major bugs being fixed. If you find any bugs, be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automator/issues)_
+This update should now render the Auto-Import system stable, with all the major bugs now being fixed! 🎊
 
-Fixed bugs:
+If you find any bugs however, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automator/issues)! 🪲
+
+Fixed Bugs:
 - Fixed moving (not copying) a folder into cwa-book-ingest not detecting the folder and its contents
 - Fixed import duplication issues that sometimes happens from slower drive speeds or mass importing
 
-New features:
+New Features:
 - Added a Docker Template folder with the docker-compose file for quick installations
-- Disabled update button in the Admin settings page, and replaced the version number with Calibre-Web-Automated's
-
-misc:
-- Refactored README code to be more consistent
+-  Calibre-Web-Automated's Version Number now shows up alongside the version of the stock CW running as a base on the Settings page
 
 ## What Does it do? 🎯
 
@@ -121,7 +120,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 ## Method 1: Using Docker Compose 🐋 ⭐(Recommended)
 
-### Quick install:
+### Quick Install: 🚀
 
 1. Download the Docker Template folder and place it somewhere ideal:
 
@@ -137,11 +136,11 @@ docker compose up -d
 
 [View post-install tasks here](#3-recommended-post-install-tasks)
 
-Follow the instructions below for a manual installation.
+Follow the Instructions below for a more Detailed Guide and to avoid common troubleshooting problems ect.
 
 ---
 
-### 1. Install using the Docker Compose template below:
+### 1. Install using the Docker Compose template below: 🐋📜
 
 ```
 ---

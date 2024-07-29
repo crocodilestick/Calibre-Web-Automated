@@ -19,7 +19,7 @@ add_to_calibre() {
     CALIBREDB="/usr/bin/calibredb"
     
     # Run calibredb command to add the new eBook to the database
-    $CALIBREDB add -r $WATCH_FOLDER --library-path="$CALIBRE_LIBRARY"
+    $CALIBREDB add -r "$1" --library-path="$CALIBRE_LIBRARY"
     echo "[new-book-detector] Added $1 to Calibre database"
 }
 

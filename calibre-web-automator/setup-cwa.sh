@@ -46,12 +46,15 @@ chmod +x $SCRIPT_DIR/to-process-detector.sh
 chmod +x $SCRIPT_DIR/new-book-detector.sh
 chmod +x $SCRIPT_DIR/metadata-change-detector.sh
 chmod 775 $SCRIPT_DIR/editbooks_cwa.py
+chmod 775 $SCRIPT_DIR/admin_cwa.py
 
 # Run setup.py to get dirs from user and store them in dirs.json
 python3 $SCRIPT_DIR/setup.py
 
-# Replace editbooks.py with the CWA edited version
+# Replace stock CW files with CWA modded ones
 cp $SCRIPT_DIR/editbooks_cwa.py /app/calibre-web/cps/editbooks.py
+cp $SCRIPT_DIR/admin_cwa.py /app/calibre-web/cps/admin.py
+cp $SCRIPT_DIR/admin_cwa.html /app/calibre-web/cps/templates/admin.html
 
 # Add aliases to .bashrc
 echo "" | cat >> ~/.bashrc

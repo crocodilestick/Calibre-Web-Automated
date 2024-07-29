@@ -25,19 +25,19 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 # 🚨 **NEW UPDATE WITH FIXES** 🚨 - Version 1.2.2 - 29.07.2024
 
-### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid major issues with the old Import/Ingest System and for **General Stability Improvemnets**
+### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid major issues with the old Import/Ingest System and for **General Stability Improvements**
 
-This update should now render the Auto-Import system stable, with all the major bugs now being fixed! 🎊
+This update should now render the Auto-Import system **FULLY STABLE**, with all the major bugs now being fixed! 🎊
 
 If you find any bugs however, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automator/issues)! 🪲
 
-Fixed Bugs:
+#### Fixed Bugs:
 - Fixed moving (not copying) a folder into cwa-book-ingest not detecting the folder and its contents
 - Fixed import duplication issues that sometimes happens from slower drive speeds or mass importing
 
-New Features:
+#### New Features:
 - Added a Docker Template folder with the docker-compose file for quick installations
--  Calibre-Web-Automated's Version Number now shows up alongside the version of the stock CW running as a base on the Settings page
+- Calibre-Web-Automated's Version Number now shows up alongside the version of the stock CW running as a base on the Settings page
 
 ## What Does it do? 🎯
 

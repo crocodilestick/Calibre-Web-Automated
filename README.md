@@ -148,6 +148,10 @@ services:
 5. Optionally, use Google Drive to host your Calibre library by following the Google Drive integration guide
 6. Configure your Calibre-Web instance via the admin page, referring to the Basic Configuration and UI Configuration guides
 7. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
+
+**⚠️ ATTENTION ⚠️**
+  - _Downloading torrent files directly into `/cwa-book-ingest` is currently not supported. It will cause duplicate imports and potentially a corrupt database. This is currently being investigated**_
+  - _The import system doesn't fully work with subdirectories within `/cwa-book-ingest`. Copying folders with books into `/cwa-book-ingest` will work, but not when moving them. This is currently being investigated. Workaround: Move/copy the books directly into `/cwa-book-ingest` without folders_
 #### Default Admin Login:
 > **Username:** admin\
 > **Password:** admin123

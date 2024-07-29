@@ -29,7 +29,6 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 - **Major Bugfixes** to existing book **Import & Ingest Methods** that could previously result in:
     - Some books being imported multiple times when importing large numbers at once
     - The ingestion of some books failing due to the import process triggering too quickly, before the transfer of said files is complete, leading to the attempted import of incomplete files which inevitably fails
-    - Ingest folder currently no longer looks recursively through folders, only the files in the main directory due to an oversight following a recent bugfix
     - Fixes courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)
 - Base version of stock Calibre-Web updated to : **V 0.6.22 - Oxana** which comes with many new fixes & features
 - _View the [Releases section](https://github.com/crocodilestick/Calibre-Web-Automator) for the full list_
@@ -150,7 +149,7 @@ services:
 7. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
 
 **⚠️ ATTENTION ⚠️**
-  - _Downloading torrent files directly into `/cwa-book-ingest` is currently not supported. It will cause duplicate imports and potentially a corrupt database. This is currently being investigated_
+  - _Downloading files directly into `/cwa-book-ingest` is not supported. It will cause duplicate imports and potentially a corrupt database. Be sure to completely download the files in a separate folder, then transfer them into `/cwa-book-ingest` after_
   - _The import system doesn't fully work with subdirectories within `/cwa-book-ingest`. Copying folders with books into `/cwa-book-ingest` will work, but not when moving them. This is currently being investigated. Workaround: Move/copy the books directly into `/cwa-book-ingest` without folders_
 #### Default Admin Login:
 > **Username:** admin\
@@ -270,7 +269,7 @@ This wouldn't be my preferred method but if you never really touch your containe
 ## Adding Books to Your Library
 - Simply move your newly downloaded or existing eBook files to the ingest folder which is `/cwa-book-ingest` by default or whatever you designated during setup if using the Script Install method. Anything you place in that folder will be automatically analysed, converted if necessary and then imported into your Calibre-Web library.
     - **⚠️ ATTENTION ⚠️**
-      - _Downloading torrent files directly into `/cwa-book-ingest` is currently not supported. It will cause duplicate imports and potentially a corrupt database. This is currently being investigated_
+      - _Downloading files directly into `/cwa-book-ingest` is not supported. It will cause duplicate imports and potentially a corrupt database. Be sure to completely download the files in a separate folder, then transfer them into `/cwa-book-ingest` after_
       - _The import system doesn't fully work with subdirectories within `/cwa-book-ingest`. Copying folders with books into `/cwa-book-ingest` will work, but not when moving them. This is currently being investigated. Workaround: Move/copy the books directly into `/cwa-book-ingest` without folders_
     - I personally use a script that my instance of qBittorrent will automatically execute upon finishing a download with the category **'books'** to fully automate the process however there's an infinite number of configurations out there so do whatever works best for your needs!
 ## The Cover-Enforcer CLI Tool

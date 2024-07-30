@@ -36,7 +36,6 @@ If you find any bugs however, please be sure to create an issue in the [Issues S
 - Fixed import duplication issues that sometimes happens from slower drive speeds or mass importing
 
 #### New Features:
-- Added a Docker Template folder with the docker-compose file for quick installations
 - Calibre-Web-Automated's Version Number now shows up alongside the version of the stock CW running as a base on the Settings page
 
 ## What Does it do? 🎯

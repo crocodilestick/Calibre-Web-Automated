@@ -105,7 +105,7 @@ def confirm_dirs(dirs: dict[str, str]) -> bool:
         confirmation = input("\nAre these directories correct? (Y/n): ").strip().lower()
         match confirmation:
             case "y":
-                input("\nDirectories sucsessfully confirmed. Press Enter to continue the Setup.")
+                input("\nDirectories successfully confirmed. Press Enter to continue the Setup.")
                 return True
             case "n":
                 input("\nEntered paths deleted. Press Enter to try again.")

@@ -1,91 +1,116 @@
-import glob
 import json
 import os
+import subprocess
 import sys
 import time
 
-supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz']
-hierarchy_of_succsess = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
 
-dirs = {}
-with open('/etc/calibre-web-automator/dirs.json', 'r') as f:
-    dirs: dict[str, str] = json.load(f)
+class NewBookProcessor:
+    def __init__(self, filepath: str):
+        self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz']
+        self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz']
+        self.import_folder, self.ingest_folder = self.get_dirs("/etc/calibre-web-automator/dirs.json")
 
-# Both folders are assigned by user during setup
-import_folder = f"{dirs['import_folder']}/"
-ingest_folder = f"{dirs['ingest_folder']}/" # Dir where new files are looked for to process and subsequently deleted
+        self.filepath = filepath # path of the book we're targeting
+        self.is_epub: bool = bool(self.filepath.endswith('.epub'))
 
-def main():
+    def get_dirs(self, dirs_json_path: str) -> tuple[str, str]:
+        dirs = {}
+        with open(dirs_json_path, 'r') as f:
+            dirs: dict[str, str] = json.load(f)
+        # Both folders are preassigned in dirs.json but can be changed with the 'cwa-change-dirs' command from within the container
+        import_folder = f"{dirs['import_folder']}/"
+        ingest_folder = f"{dirs['ingest_folder']}/" # Dir where new files are looked for to process and subsequently deleted
+
+        return import_folder, ingest_folder
+
+
+    def convert_book(self, import_format: str) -> float:
+        """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting epubs to the calibre-web import folder."""
+        t_convert_total_start = time.time()
+        t_convert_book_start = time.time()
+        filename = self.filepath.split('/')[-1]
+        print(f"[new-book-processor]: START_CON: Converting {filename}...\n")
+        os.system(f'ebook-convert "{self.filepath}" "{self.import_folder}{(filename.split(f".{import_format}"))[0]}.epub"')
+        t_convert_book_end = time.time()
+        time_book_conversion = t_convert_book_end - t_convert_book_start
+        print(f"\n[new-book-processor]: END_CON: Conversion of {filename} complete in {time_book_conversion:.2f} seconds.\n")
+
+        t_convert_total_end = time.time()
+        time_total_conversion = t_convert_total_end - t_convert_total_start
+
+        return time_total_conversion
+
+
+    def can_convert_check(self):
+        """When no epubs are detected in the download, this function will go through the list of new files 
+        and check for the format the are in that has the highest chance of successful conversion according to the input format hierarchy list 
+        provided by calibre"""
+        can_convert = False
+        import_format = ''
+        for format in self.hierarchy_of_success:
+            can_be_converted = bool(self.filepath.endswith(f'.{format}'))
+            if can_be_converted:
+                can_convert = True
+                import_format = format
+                break
+
+        return can_convert, import_format
+
+    def move_epub(self) -> None:
+        """Moves the epubs from the download folder to the calibre-web import folder"""
+        print(f"[new-book-processor]: Moving {self.filepath}...")
+        filename = self.filepath.split('/')[-1]
+        os.system(f'cp "{self.filepath}" "{self.import_folder}{filename}"')
+
+    def empty_to_process_folder(self) -> None:
+        """Empties the ingest folder"""
+        os.remove(self.filepath)
+        subprocess.run(["find", f"{self.ingest_folder}", "-type", "d", "-empty", "-delete"])
+
+    def delete_file(self) -> None:
+        """Empties the ingest folder"""
+        os.remove(self.filepath)
+        subprocess.run(["find", f"{self.ingest_folder}", "-type", "d", "-empty", "-delete"])
+
+
+def main(filepath=sys.argv[1]):
+    # Check if filepath is a directory
+    # If it is, main will be ran on every file in the given directory
+    # Inotifywait won't detect files inside folders if the folder was moved rather than copied
+    if os.path.isdir(filepath):
+        print(os.listdir(filepath))
+        for filename in os.listdir(filepath):
+            f = os.path.join(filepath, filename)
+            main(f)
+        return
+
     t_start = time.time()
+    nbp = NewBookProcessor(filepath)
 
-    new_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(ingest_folder) for f in filenames] 
-    epub_files = [f for f in new_files if f.endswith('.epub')]
-
-    if len(epub_files) == 0: # Books require conversion
+    if not nbp.is_epub: # Books require conversion
         print("\n[new-book-processor]: No epub files found in the current directory. Starting conversion process...")
-        files_to_convert, import_format = select_books_for_conversion(new_files)
-        print(f"[new-book-processor]: Converting {len(files_to_convert)} file(s) from to epub format...\n")
-        time_total_conversion = convert_books(files_to_convert, import_format)
-        print(f"\n[new-book-processor]: {len(files_to_convert)} conversion(s) to .epub format completed succsessfully in {time_total_conversion:.2f} seconds.")
-        print("[new-book-processor]: All new epub files have now been moved to the calibre-web import folder.")
+        can_convert, import_format = nbp.can_convert_check()
+        print(f"[new-book-processor]: Converting file from to epub format...\n")
+
+        if can_convert:
+            time_total_conversion = nbp.convert_book(import_format)
+            print(f"\n[new-book-processor]: conversion to .epub format completed succsessfully in {time_total_conversion:.2f} seconds.")
+            print("[new-book-processor]: All new epub files have now been moved to the calibre-web import folder.")
+        else:
+            print(f"Cannot convert {nbp.filepath}")
+
     else: # Books only need copying to the import folder
-        print(f"\n[new-book-processor]: Found {len(epub_files)} epub file(s) from the most recent download.")
+        print(f"\n[new-book-processor]: Found  epub file from the most recent download.")
         print("[new-book-processor]: Moving resulting files to calibre-web import folder...\n")
-        copy_epubs_for_import(epub_files)
-        print(f"[new-book-processor]: Copied {len(epub_files)} epub file(s) to calibre-web import folder.")
+        nbp.move_epub()
+        print(f"[new-book-processor]: Copied epub file to calibre-web import folder.")
 
     t_end = time.time()
     running_time = t_end - t_start
 
     print(f"[new-book-processor]: Processing of new files completed in {running_time:.2f} seconds.\n\n")
-    empty_to_process_folder()
-    sys.exit(1)
-
-def convert_books(files_to_convert, import_format: str) -> float:
-    """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting epubs to the calibre-web import folder."""
-    t_convert_total_start = time.time()
-    for file_to_convert in files_to_convert:
-        t_convert_book_start = time.time()
-        book_title = file_to_convert.split('/')[-1]
-        print(f"[new-book-processor]: START_CON: Converting {book_title}...\n")
-        filename = file_to_convert.split('/')[-1]
-        os.system(f'ebook-convert "{file_to_convert}" "{import_folder}{(filename.split(f".{import_format}"))[0]}.epub"')
-        t_convert_book_end = time.time()
-        time_book_conversion = t_convert_book_end - t_convert_book_start
-        print(f"\n[new-book-processor]: END_CON: Conversion of {book_title} complete in {time_book_conversion:.2f} seconds.\n")
-
-    t_convert_total_end = time.time()
-    time_total_conversion = t_convert_total_end - t_convert_total_start
-
-    return time_total_conversion
-
-
-def select_books_for_conversion(new_files: list[str]) -> tuple[list[str], str]:
-    """When no epubs are detected in the download, this function will go through the list of new files and check for the format the are in that has the highest chance of sucsessful conversion according to the input format hierarchy list provided by calibre"""
-    files_to_convert = []
-    import_format = ''
-    for format in hierarchy_of_succsess:
-        file_search = [f for f in new_files if f.endswith(f'.{format}')]
-        if len(file_search) > 0:
-            files_to_convert += file_search
-            import_format = format
-            break
-
-    return files_to_convert, import_format
-
-
-def copy_epubs_for_import(epub_files) -> None:
-    """Moves the epubs from the download folder to the calibre-web import folder"""
-    for file in epub_files:
-        print(f"[new-book-processor]: Moving {file}...")
-        filename = file.split('/')[-1]
-        os.system(f'cp "{file}" "{import_folder}{filename}"')
-
-def empty_to_process_folder() -> None:
-    """Empties the ingest folder"""
-    files = glob.glob(f"{ingest_folder}*")
-    for f in files:
-        os.remove(f)
+    nbp.delete_file()
 
 
 if __name__ == "__main__":

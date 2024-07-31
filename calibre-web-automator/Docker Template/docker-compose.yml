@@ -1,0 +1,17 @@
+services:
+  calibre-web-automated:
+    image: crocodilestick/calibre-web-automated:latest
+    container_name: calibre-web-automated
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=UTC
+    volumes:
+      - ./config:/config
+      - ./cwa-book-ingest:/cwa-book-ingest
+      - ./library:/calibre-main/
+      #- /path/to/where/you/keep/your/books:/books #Optional
+      #- /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
+    ports:
+      - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
+    restart: unless-stopped

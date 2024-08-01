@@ -38,7 +38,7 @@ class LibraryConverter:
 
     def get_dirs(self) -> dict[str, str]:
         dirs = {}
-        with open('/etc/calibre-web-automator/dirs.json', 'r') as f:
+        with open('/app/calibre-web-automated/dirs.json', 'r') as f:
             dirs: dict[str, str] = json.load(f)
 
         return dirs

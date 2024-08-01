@@ -198,12 +198,24 @@ def update_thumbnails():
     return ""
 
 
+def cwa_get_package_versions() -> tuple[str, str, str, str]:
+    with open("/app/CWA_RELEASE", "r") as f:
+        cwa_version = f.read()
+    with open("/app/KEPUBIFY_RELEASE", "r") as f:
+        kepubify_version = f.read()
+    with open("/CALIBRE_RELEASE", "r") as f:
+        calibre_version = f.read()
+    with open("/app/LSCW_RELEASE", "r") as f:
+        lscw_version = f.read()
+    return cwa_version, kepubify_version, calibre_version, lscw_version
+
+
 @admi.route("/admin/view")
 @login_required
 @admin_required
 def admin():
     version = updater_thread.get_current_version_info()
-    cwa_version = "1.2.2"
+    cwa_version, kepubify_version, calibre_version, lscw_version = cwa_get_package_versions()
     if version is False:
         commit = _('Unknown')
     else:
@@ -228,9 +240,11 @@ def admin():
     schedule_duration = format_timedelta(t, threshold=.99)
 
     return render_title_template("admin.html", allUser=all_user, config=config, commit=commit,
-                                 cwa_version=cwa_version, feature_support=feature_support, schedule_time=schedule_time,
-                                 schedule_duration=schedule_duration,
-                                 title=_("Admin page"), page="admin")
+                                 cwa_version=cwa_version, kepubify_version=kepubify_version,
+                                 calibre_version=calibre_version, lscw_version=lscw_version,
+                                 feature_support=feature_support, schedule_time=schedule_time,
+                                 schedule_duration=schedule_duration, title=_("Admin page"),
+                                 page="admin")
 
 
 @admi.route("/admin/dbconfig", methods=["GET", "POST"])

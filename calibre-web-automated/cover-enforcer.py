@@ -12,9 +12,9 @@ from cwa_db import CWA_DB
 class Enforcer:
     def __init__(self, args):
         self.args = args
-        self.dirs_json = "/etc/calibre-web-automator/dirs.json"
-        self.change_logs_dir = "/etc/calibre-web-automator/metadata_change_logs"
-        self.metadata_temp_dir = "/etc/calibre-web-automator/metadata_temp"
+        self.dirs_json = "/app/calibre-web-automated/dirs.json"
+        self.change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
+        self.metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
         self.calibre_library = self.get_calibre_library()
         self.db = CWA_DB()
 
@@ -54,6 +54,12 @@ class Enforcer:
         book_title = log_info['book_title'].replace(':', '_')
         author_name = (log_info['author_name'].split(', ')[0]).split(' & ')[0]
         book_id = log_info['book_id']
+
+        if '/' in book_title:
+            book_title = book_title.replace('/', '_')
+        if '/' in author_name:
+            author_name = author_name.replace('/', '_')
+        
         book_dir = f"{self.calibre_library}/{author_name}/{book_title} ({book_id})/"
         log_info['epub_path'] = book_dir
 
@@ -119,9 +125,10 @@ class Enforcer:
     def delete_log(self, auto=True, log_path="None"):
         """Deletes the log file"""
         if auto:
-            os.system(f"rm {self.change_logs_dir}/{self.args.log}")
+            log = os.path.join(self.change_logs_dir, self.args.log)
+            os.remove(log)
         else:
-            os.system(f"rm {log_path}")
+            os.remove(log_path)
 
     def empty_metadata_temp(self):
         """Empties the metadata_temp folder"""
@@ -176,7 +183,6 @@ def main():
         # only all flag passed
         print('[cover-enforcer]: Enforcing metadata and covers for all books in library...')
         n_enforced, completion_time = enforcer.enforce_all_covers()
-        enforcer.check_for_other_logs()
         print(f"\n[cover-enforcer]: SUCCESS: All covers & metadata succsessfully updated for all {n_enforced} books in the library in {completion_time:.2f} seconds!")
     elif args.log is not None and args.dir is None and args.all is False and args.list is False and args.history is False:
         # log passed: (args.log), no dir

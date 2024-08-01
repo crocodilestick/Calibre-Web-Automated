@@ -4,6 +4,8 @@
 
 ## Making Calibre-Web your _dream_, all-in-one self-hosted digital library solution.
 
+![Docker Pulls](https://img.shields.io/docker/pulls/crocodilestick/calibre-web-automated)
+
 ## _Quick Access_
 
 - [Features](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#what-does-it-do-) 🪄
@@ -24,6 +26,9 @@ For many, Calibre-Web has really swooped in to save the day, offering an alterna
 However, when compared to full-fat Calibre, it unfortunately lacks a few core features leading many to run both services in parallel, each serving to fill in where the other lacks, resulting in an often clunky, imperfect solution.
 
 # 🚨 **NEW UPDATE WITH FIXES** 🚨 - Version 1.2.2 - 29.07.2024
+
+![GitHub Release](https://img.shields.io/github/v/release/crocodilestick/calibre-web-automator)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/crocodilestick/calibre-web-automator/latest)
 
 ### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid major issues with the old Import/Ingest System and for **General Stability Improvements**
 

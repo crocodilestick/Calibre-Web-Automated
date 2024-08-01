@@ -9,7 +9,7 @@ class NewBookProcessor:
     def __init__(self, filepath: str):
         self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz']
         self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz']
-        self.import_folder, self.ingest_folder = self.get_dirs("/etc/calibre-web-automator/dirs.json")
+        self.import_folder, self.ingest_folder = self.get_dirs("/app/calibre-web-automated/dirs.json")
 
         self.filepath = filepath # path of the book we're targeting
         self.is_epub: bool = bool(self.filepath.endswith('.epub'))

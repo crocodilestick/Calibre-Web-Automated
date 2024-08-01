@@ -13,6 +13,7 @@
 - [Roadmap](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#under-active-development-%EF%B8%8F) 🛣️
 - [How to Install](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#how-to-install-): 📖
   - [Docker-Compose](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-1-using-docker-compose--recommended) 🐋⭐(Recommended)
+  - [Quick Install](https://github.com/crocodilestick/Calibre-Web-Automator/tree/main?tab=readme-ov-file#quick-install-) 🚀
 - [Usage](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🔧
 - [Further Development](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
 
@@ -120,27 +121,25 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - A Batch Editing Feature to allow the editing of Metadata for multiple books at once, i.e. for a series ect.
 - Please suggest any ideas or wishes you might have! we're open to anything!
 
-## IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated versions before 1.2.2 should update using the latest DockerHub image to ensure stability and conpatability with future updates
+### IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated versions before 1.2.2 should update using the latest DockerHub image to ensure stability and conpatability with future updates
 
 # How To Install 📖
 
 ## Quick Install 🚀
 
-1. Download the Docker Template folder and place it somewhere ideal:
+1. Download the Docker Compose template file using the command below:
 
 ```
-git clone https://github.com/crocodilestick/Calibre-Web-Automator/
+curl -OL https://raw.githubusercontent.com/crocodilestick/calibre-web-automator/main/docker-compose.yml
 ```
 
-2. cd into `Docker Template`, then run:
+2. Navigate to where you downloaded the Compose file using `cd` and run:
 
 ```
 docker compose up -d
 ```
 
-[View Post-Install Tasks Here](#3-recommended-post-install-tasks)
-
-Follow the Instructions below for a more Detailed Guide and to avoid common troubleshooting problems ect.
+And that's you off to the races! 🥳 HOWEVER to avoid potential problems and ensure maximum functionality, we reccommend carrying out these [Post-Install Tasks Here](#3-recommended-post-install-tasks).
 
 ---
 ## Using Docker Compose 🐋⭐(Recommended)

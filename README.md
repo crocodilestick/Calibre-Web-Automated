@@ -1,6 +1,6 @@
 # Calibre-Web Automated _(formerly Calibre-Web Automator)_
 
-![Image](CWA-banner.png "CWA-Banner")
+![Calibre-Web Automated](README_images/CWA-banner.png "Calibre-Web Automated")
 
 ## Making Calibre-Web your _dream_, all-in-one self-hosted digital library solution.
 
@@ -13,7 +13,7 @@
 - [Roadmap](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#under-active-development-%EF%B8%8F) 🛣️
 - [How to Install](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#how-to-install-): 📖
   - [Docker-Compose](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-1-using-docker-compose--recommended) 🐋⭐(Recommended)
-  - [Script Install on latest stock Calibre-Web image](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 📜🔻(Not Recommended)
+  <!-- - [Script Install on latest stock Calibre-Web image](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 📜🔻(Not Recommended)
 - [Usage](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🔧
 - [Further Development](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
 
@@ -55,15 +55,10 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 - A **Weighted Conversion Algorithm:** ⚖️
   - Using the information provided in the Calibre eBook-converter documentation on which formats convert best into epubs, CWA is able to determine from downloads containing multiple eBook formats, which format will convert most optimally, ignoring the other formats to ensure the **best possible quality** and no **duplicate imports**
-
-<!-- - Easy tool to quickly check whether or not the service is currently running as intended/was installed successfully
-- Easy to follow logging in the regular container logs to diagnose problems or monitor conversion progress ect. (Easily viewable using Portainer or something similar)
-    - Logs also contain performance benchmarks in the form of a time to complete, both for an overall import task, as well as the conversion of each of the individual files within it  -->
-
 - **28 Supported file types for conversion:** 🤯
   - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txtz_
 
-![Cover Enforcement CWA](cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
+![Cover Enforcement CWA](README_images/cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
 
 - **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 👀📔
   - In stock Calibre-Web, any changes made to a book's **Cover and/or Metadata** are only applied to how the book appears in the Calibre-Web UI, changing nothing in the ebook's files like you would expect
@@ -86,7 +81,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     - Manually Enforcing the Covers & Metadata for any individual books by using the following command
     - `cover-enforcer --dir <path-to-folder-containing-the-books-epub-here>`
   - Full usage and documentation for all new CLI Commands can be found [here](#the-cover-enforcer-cli-tool)
-    ![Cover Enforcement CWA](cwa-db-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
+    ![CWA Database](README_images/cwa-db-diagram.png "CWA 1.2.0 Cover Database Diagram")
 
 - **Change Tracking Database** 📊 - In combination with the **New Cover & Metadata Enforcement Features**, a database now exists to keep track of any and all enforcements, both for peace of mind and to make the checking of any bugs or weird behaviour easier, but also to make the data available for statistical analysis or whatever else someone might want to use the data for
   - Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
@@ -100,9 +95,18 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     \
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
-### Coming in Version 1.2.2 - Currently in Testing Phase 🧪
+### Coming in Version 1.3.0 - Currently in Testing Phase 🧪
 
 - Simplification of CWA's install, specifically for users having issues binding the right folder of their existing Calibre libraries in the Docker Compose
+- **Rebranded the Web UI** throughout to make it clear you are using Calibre-Web Automated
+- Added a button on the Web UI's navbar that allows users to **switch between Light & Dark Modes in one click**
+- Fixed a bug with cover_enforcer.py where books with '/' characters in the title or author's name(s) would break the process
+- Added Version numbers to Settings page for the installed Linuxserver.io, Calibre and Kepubify distributions
+- Added an **Update Notification system** to notify users of the availability of new updates from within the Web UI
+  - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
+  - Set to only show once per calendar day until updated as to not be annoying
+  - Persistent until closed with button to ensure it is seen
+- Building future images via Dockerfile 🐋
 
 ### Coming Soon - Currently Under Active Development 🏗️
 
@@ -110,21 +114,18 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - A `dockerfile` to help attract other developers, standardise our Image build procedure and to help us also release CWA as a Docker Mod
 - Support for `arm64` architectures
 - Adding tracking of ebook conversions to the `cwa.db`
+- Integrating some of the new **Command-Line Features into the Web UI**
 
 ### Additional Features on our Roadmap 🛣️🌱
 
-- Add **Update Notification system** to notify users of the availability of new updates within the Web UI
 - A Batch Editing Feature to allow the editing of Metadata for multiple books at once, i.e. for a series ect.
-- Integrating some of the new **Command-Line Features into the Web UI**
 - Please suggest any ideas or wishes you might have! we're open to anything!
 
-## IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated versions before 1.2.1 should update using the latest DockerHub image to ensure stability and conpatability with future updates
+## IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated versions before 1.2.2 should update using the latest DockerHub image to ensure stability and conpatability with future updates
 
 # How To Install 📖
 
-## Method 1: Using Docker Compose 🐋 ⭐(Recommended)
-
-### Quick Install: 🚀
+## Quick Install 🚀
 
 1. Download the Docker Template folder and place it somewhere ideal:
 
@@ -138,13 +139,14 @@ git clone https://github.com/crocodilestick/Calibre-Web-Automator/
 docker compose up -d
 ```
 
-[View post-install tasks here](#3-recommended-post-install-tasks)
+[View Post-Install Tasks Here](#3-recommended-post-install-tasks)
 
 Follow the Instructions below for a more Detailed Guide and to avoid common troubleshooting problems ect.
 
 ---
+## Using Docker Compose 🐋⭐(Recommended)
 
-### 1. Install using the Docker Compose template below: 🐋📜
+### 1. Setup the container using the Docker Compose template below: 🐋📜
 
 ```
 ---
@@ -214,7 +216,7 @@ convert-library --keep
 
 - Drop a book into your ingest folder and check everything is working correctly!
 
-## Method 2: Using the **Script Install Method** with stock Calibre-Web Base Image 📜 🔻(Not Recommended)
+<!-- ## Method 2: Using the **Script Install Method** with stock Calibre-Web Base Image 📜 🔻(Not Recommended)
 
 - This method is only recommended for **developers** or those who would like to set their own directories using the provided **Setup Wizard**
 - To begin this installation method, you'll need to use the Docker Compose below to set up a base container for you to perform the installation within
@@ -340,7 +342,7 @@ services:
 ### Option 2: Re-Running 'setup-cwa.sh' Whenever You Rebuild the Container
 
 This wouldn't be my preferred method but if you never really touch your containers the above may be overkill for you.
-
+ -->
 # Usage 🔧
 
 ## Adding Books to Your Library
@@ -368,7 +370,7 @@ options:
   -v, --verbose  Use with history to display entire enforcement history instead of only the most recent 10 entries
 ```
 
-![cover-enforcer history usage](cwa-db-diagram.png)
+![CWA Cover-Enforcer History Usage](README_images/cwa-db-diagram.png)
 
 ## The Convert-Library Tool
 

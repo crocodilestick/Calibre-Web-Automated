@@ -15,10 +15,9 @@ pyproject.toml
 .breakpoints
 
 # Test Scripts
-*/test
 test*
-*dirs.json
-*/DEV
+TEST
+DEV
 */REFERENCE
 cwa.db
 

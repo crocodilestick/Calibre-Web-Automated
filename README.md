@@ -13,7 +13,6 @@
 - [Roadmap](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#under-active-development-%EF%B8%8F) 🛣️
 - [How to Install](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#how-to-install-): 📖
   - [Docker-Compose](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-1-using-docker-compose--recommended) 🐋⭐(Recommended)
-  <!-- - [Script Install on latest stock Calibre-Web image](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 📜🔻(Not Recommended)
 - [Usage](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🔧
 - [Further Development](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
 

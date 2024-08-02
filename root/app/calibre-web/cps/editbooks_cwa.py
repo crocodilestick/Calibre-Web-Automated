@@ -474,6 +474,28 @@ def get_sorted_entry(field, bookid):
                 return json.dumps({'authors': " & ".join([a.name for a in calibre_db.order_authors([book])])})
     return ""
 
+@editbook.route("/ajax/simulatedeleteselectedbooks", methods=['POST'])
+@login_required
+@edit_required
+def simulate_delete_selected_books():
+    vals = request.get_json().get('selections')
+    books = []
+    if vals:
+        for book_id in vals:
+            books.append(calibre_db.get_book(book_id).title)
+        return json.dumps({'books': books})
+    return ""
+
+@editbook.route("/ajax/deleteselectedbooks", methods=['POST'])
+@login_required
+@edit_required
+def delete_selected_books():
+    vals = request.get_json().get('selections')
+    if vals:
+        for book_id in vals:
+            delete_book_from_table(book_id, "", True)
+        return json.dumps({'success': True})
+    return ""
 
 @editbook.route("/ajax/simulatemerge", methods=['POST'])
 @login_required

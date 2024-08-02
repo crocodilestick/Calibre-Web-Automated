@@ -24,7 +24,7 @@ add_to_calibre() {
 }
 
 # Monitor the folder for new files
-inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
+s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
 while read -r events filepath; do
         echo "[new-book-detector]: New file detected: $filepath"
         add_to_calibre "$filepath"

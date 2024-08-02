@@ -11,7 +11,7 @@ WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs
 echo "[books-to-process]: Watching folder: $WATCH_FOLDER"
 
 # Monitor the folder for new files
-inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
+s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
 while read -r events filepath ; do
         echo "[books-to-process]: New files detected - $filepath"
         python3 /app/calibre-web-automated/scripts/new-book-processor.py "$filepath"

@@ -6,19 +6,25 @@
 # Make required directories and files for metadata enforcment
 make_dirs () {
     mkdir /app/calibre-web-automated/metadata_change_logs
+    chown -R abc:abc /app/calibre-web-automated/metadata_change_logs
     mkdir /app/calibre-web-automated/metadata_temp
+    chown -R abc:abc /app/calibre-web-automated/metadata_temp
     mkdir /app/calibre-web-automated/cwa-import
+    chown -R abc:abc /app/calibre-web-automated/cwa-import
+    mkdir /cwa-book-ingest
+    chown abc:abc /cwa-book-ingest
+    mkdir /calibre-library
+    chown abc:abc /calibre-library
 }
 
 # Change ownership & permissions as required
 change_script_permissions () {
-    # chown -R abc:users $SCRIPT_DIR/
     chmod +x /app/calibre-web-automated/scripts/check-cwa-install.sh
-    chmod +x /app/calibre-web-automated/root/etc/s6-overlay/s6-rc.d/to-process-detector/run
-    chmod +x /app/calibre-web-automated/root/etc/s6-overlay/s6-rc.d/new-book-detector/run
-    chmod +x /app/calibre-web-automated/root/etc/s6-overlay/s6-rc.d/metadata-change-detector/run
-    chmod 775 /app/calibre-web-automated/root/app/calibre-web/cps/editbooks.py
-    chmod 775 /app/calibre-web-automated/root/app/calibre-web/cps/admin.py
+    chmod +x /etc/s6-overlay/s6-rc.d/to-process-detector/run
+    chmod +x /etc/s6-overlay/s6-rc.d/new-book-detector/run
+    chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
+    chmod 775 /app/calibre-web/cps/editbooks.py
+    chmod 775 /app/calibre-web/cps/admin.py
 }
 
 # Add aliases to .bashrc

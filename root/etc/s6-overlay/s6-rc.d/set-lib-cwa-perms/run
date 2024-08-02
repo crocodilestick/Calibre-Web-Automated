@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "Recursively setting ownership of everything in /calibre-library and /app/calibre-web-automated to abc:abc..."
+chown -R abc:abc /calibre-library
+chown -R abc:abc /app/calibre-web-automated
+

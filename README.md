@@ -107,18 +107,20 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
   - Set to only show once per calendar day until updated as to not be annoying
   - Persistent until closed with button to ensure it is seen
 - Building future images via Dockerfile 🐋
+- **Batch Metadata Editing!** Allows the editing of Metadata for multiple books at once, i.e. for a series
+- **Batch Removal / Deletion!** say goodbye to clicking that edit button again, and again, and again...
 
 ### Coming Soon - Currently Under Active Development 🏗️
 
 - A form of **Library Auto-Detect** is currently in development to mitigate these issues, as well as to automatically establish a fresh Calibre Library for new users without an existing one, to simplify the install for them and make it so they don't have to manually copy `metadata.db` files from the repo into specific folders ect.
-- A `dockerfile` to help attract other developers, standardise our Image build procedure and to help us also release CWA as a Docker Mod
-- Support for `arm64` architectures
-- Adding tracking of ebook conversions to the `cwa.db`
 - Integrating some of the new **Command-Line Features into the Web UI**
 
 ### Additional Features on our Roadmap 🛣️🌱
 
-- A Batch Editing Feature to allow the editing of Metadata for multiple books at once, i.e. for a series ect.
+- Release CWA also as a Docker Mod
+- Support for `arm64` architectures
+- Adding tracking of ebook imports & deletions to the `cwa.db`
+- Improved metadata handling and conversion for comics & manga
 - Please suggest any ideas or wishes you might have! we're open to anything!
 
 ### IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated versions before 1.2.2 should update using the latest DockerHub image to ensure stability and conpatability with future updates

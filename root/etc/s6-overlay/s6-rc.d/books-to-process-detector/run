@@ -14,7 +14,7 @@ echo "[books-to-process]: Watching folder: $WATCH_FOLDER"
 inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
 while read -r events filepath ; do
         echo "[books-to-process]: New files detected - $filepath"
-        python3 /app/calibre-web-automated/new-book-processor.py "$filepath"
+        python3 /app/calibre-web-automated/scripts/new-book-processor.py "$filepath"
         echo "[books-to-process]: New files successfully moved/converted, the Ingest Folder has been emptied and is ready to go again."
 done
 

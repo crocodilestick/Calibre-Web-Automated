@@ -10,5 +10,5 @@ echo "[metadata-change-detector]: Watching folder: $WATCH_FOLDER"
 inotifywait -m -e close_write -e moved_to --exclude '^.*\.(swp)$' "$WATCH_FOLDER" |
 while read -r directory events filename; do
         echo "[metadata-change-detector]: New file detected: $filename"
-        python3 /app/calibre-web-automated/cover-enforcer.py "--log" "$filename"
+        python3 /app/calibre-web-automated/scripts/cover-enforcer.py "--log" "$filename"
 done

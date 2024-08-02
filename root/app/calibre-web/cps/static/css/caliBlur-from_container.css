@@ -884,6 +884,26 @@ body > div.navbar.navbar-default.navbar-static-top > div > form.search-focus > d
     float: left !important
 }
 
+.top_tasks.cwa_change_theme {
+    float: left !important
+}
+
+.glyphicon.glyphicon-sunglasses {
+    font-size: large;
+    padding-right: 10px;
+    padding-left: 5px
+}
+
+.hidden-sm.cwa_change_theme {
+    margin-bottom: 15px;
+    text-align: -webkit-match-parent;
+    display: inline-block;
+    line-height: 22px;
+    vertical-align: top;
+    box-sizing: border-box;
+    font-size: 13px
+}
+
 .navbar {
     z-index: 9 !important
 }

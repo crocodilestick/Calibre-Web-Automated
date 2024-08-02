@@ -143,10 +143,8 @@ class Enforcer:
         if len(log_files) > 0:
             for log in log_files:
                 if log.endswith('.json'):
-                    print(log)
                     log_info = self.read_log(auto=False, log_path=log)
                     book_dir = self.get_book_dir_from_log(log_info)
-                    print(book_dir)
                     book_info = self.enforce_cover(book_dir)
                     log_info['epub_path'] = book_info['epub_path']
                     self.db.add_entry_from_log(log_info)

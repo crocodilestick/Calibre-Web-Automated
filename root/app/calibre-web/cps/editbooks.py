@@ -348,6 +348,74 @@ def table_get_custom_enum(c_id):
 @edit_required
 def edit_list_book(param):
     vals = request.form.to_dict()
+    return edit_book_param(param, vals)
+
+@editbook.route("/ajax/editselectedbooks", methods=['POST'])
+@login_required_if_no_ano
+@edit_required
+def edit_selected_books():
+    d = request.get_json()
+    selections = d.get('selections')
+    title = d.get('title')
+    title_sort = d.get('title_sort')
+    author_sort = d.get('author_sortj')
+    authors = d.get('authors')
+    categories = d.get('categories')
+    series = d.get('series')
+    languages = d.get('languages')
+    publishers = d.get('publishers')
+    comments = d.get('comments')
+
+    if len(selections) != 0:
+        for book_id in selections:
+            vals = {
+                "pk": book_id,
+                "value": None,
+            }
+            if title:
+                vals['value'] = title
+                edit_book_param('title', vals)
+            if title_sort:
+                vals['value'] = title_sort
+                edit_book_param('sort', vals)
+            if author_sort:
+                vals['value'] = author_sort
+                edit_book_param('author_sort', vals)
+            if authors:
+                vals['value'] = authors
+                edit_book_param('authors', vals)
+            if categories:
+                vals['value'] = categories
+                edit_book_param('tags', vals)
+            if series:
+                vals['value'] = series
+                edit_book_param('series', vals)
+            if languages:
+                vals['value'] = languages
+                edit_book_param('languages', vals)
+            if publishers:
+                vals['value'] = publishers
+                edit_book_param('publishers', vals)
+            if comments:
+                vals['value'] = comments
+                edit_book_param('comments', vals)
+        return json.dumps({'success': True})
+    return ""
+
+# Separated from /editbooks so that /editselectedbooks can also use this
+#
+# param: the property of the book to be changed
+# vals - JSON Object:
+#   { 
+#       'pk': "the book id",
+#       'value': "changes value of param to what's passed here"
+#       'checkA': "Optional. Used to check if autosort author is enabled. Assumed as true if not passed"
+#       'checkT': "Optional. Used to check if autotitle author is enabled. Assumed as true if not passed"
+#   }
+#
+@login_required_if_no_ano
+@edit_required
+def edit_book_param(param, vals):
     book = calibre_db.get_book(vals['pk'])
     sort_param = ""
     ret = ""
@@ -470,6 +538,23 @@ def get_sorted_entry(field, bookid):
                 return json.dumps({'authors': " & ".join([a.name for a in calibre_db.order_authors([book])])})
     return ""
 
+    
+@editbook.route("/ajax/simulatemerge", methods=['POST'])
+@login_required
+@edit_required
+def simulate_merge_list_book():
+    vals = request.get_json().get('Merge_books')
+    if vals:
+        to_book = calibre_db.get_book(vals[0]).title
+        vals.pop(0)
+        if to_book:
+            from_book = []
+            for book_id in vals:
+                from_book.append(calibre_db.get_book(book_id).title)
+            return json.dumps({'to': to_book, 'from': from_book})
+    return ""
+
+
 @editbook.route("/ajax/displayselectedbooks", methods=['POST'])
 @login_required
 @edit_required
@@ -508,19 +593,25 @@ def delete_selected_books():
         return json.dumps({'success': True})
     return ""
 
-@editbook.route("/ajax/simulatemerge", methods=['POST'])
+@editbook.route("/ajax/readselectedbooks", methods=['POST'])
 @login_required
 @edit_required
-def simulate_merge_list_book():
-    vals = request.get_json().get('Merge_books')
+def read_selected_books():
+    vals = request.get_json().get('selections')
+    markAsRead = request.get_json().get('markAsRead')
     if vals:
-        to_book = calibre_db.get_book(vals[0]).title
-        vals.pop(0)
-        if to_book:
-            from_book = []
+        try:
             for book_id in vals:
-                from_book.append(calibre_db.get_book(book_id).title)
-            return json.dumps({'to': to_book, 'from': from_book})
+                ret = helper.edit_book_read_status(book_id, markAsRead)
+
+        except (OperationalError, IntegrityError, StaleDataError) as e:
+            calibre_db.session.rollback()
+            log.error_or_exception("Database error: {}".format(e))
+            ret = Response(json.dumps({'success': False,
+                    'msg': 'Database error: {}'.format(e.orig if hasattr(e, "orig") else e)}),
+                    mimetype='application/json')
+
+        return json.dumps({'success': True})
     return ""
 
 

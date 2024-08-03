@@ -2358,7 +2358,7 @@ body > div.row-fluid {
     border-color: #182026;
     color: #fff;
     border-radius: 15px;
-    opacity: 0.9;
+    opacity: 1;
     word-wrap: break-word;
     white-space: normal;
     -webkit-animation: none;
@@ -2375,7 +2375,7 @@ body > div.row-fluid {
     -webkit-transform: translate(-50%);
     -ms-transform: translate(-50%);
     transform: translate(-50%);
-    opacity: 0.8 !important;
+    opacity: 1 !important;
     right: 0;
     border-radius: 10px;
     background-color: #000;

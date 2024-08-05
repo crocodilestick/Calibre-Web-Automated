@@ -115,7 +115,7 @@ def get_sidebar_config(kwargs=None):
 def cwa_update_available() -> tuple[bool, str, str]:
     with open("/app/CWA_RELEASE", 'r') as f:
         current_version = f.read()
-    response = requests.get("https://api.github.com/repos/crocodilestick/calibre-web-automator/releases/latest")
+    response = requests.get("https://api.github.com/repos/crocodilestick/calibre-web-automated/releases/latest")
     tag_name = response.json()['tag_name']
     return (tag_name != current_version), current_version, tag_name
 

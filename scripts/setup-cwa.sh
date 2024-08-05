@@ -29,7 +29,7 @@ change_script_permissions () {
 # Add aliases to .bashrc
 add_aliases () {
     echo "" | cat >> ~/.bashrc
-    echo "# Calibre-Web Automator Aliases" | cat >> ~/.bashrc
+    echo "# Calibre-Web Automated Aliases" | cat >> ~/.bashrc
     echo "alias cwa-check='bash /app/calibre-web-automated/scripts/check-cwa-install.sh'" | cat >> ~/.bashrc
     echo "alias cwa-change-dirs='nano /app/calibre-web-automated/dirs.json'" | cat >> ~/.bashrc
     

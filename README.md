@@ -8,14 +8,14 @@
 
 ## _Quick Access_
 
-- [Features](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#what-does-it-do-) 🪄
-- [Releases](https://github.com/crocodilestick/Calibre-Web-Automator/releases) 🆕
-- [Roadmap](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#under-active-development-%EF%B8%8F) 🛣️
-- [How to Install](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#how-to-install-): 📖
-  - [Docker-Compose](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-1-using-docker-compose--recommended) 🐋⭐(Recommended)
-  - [Quick Install](https://github.com/crocodilestick/Calibre-Web-Automator/tree/main?tab=readme-ov-file#quick-install-) 🚀
-- [Usage](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🔧
-- [Further Development](https://github.com/crocodilestick/Calibre-Web-Automator?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
+- [Features](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#what-does-it-do-) 🪄
+- [Releases](https://github.com/crocodilestick/Calibre-Web-Automated/releases) 🆕
+- [Roadmap](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#under-active-development-%EF%B8%8F) 🛣️
+- [How to Install](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#how-to-install-): 📖
+  - [Docker-Compose](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-1-using-docker-compose--recommended) 🐋⭐(Recommended)
+  - [Quick Install](https://github.com/crocodilestick/Calibre-Web-Automated/tree/main?tab=readme-ov-file#quick-install-) 🚀
+- [Usage](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🔧
+- [Further Development](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
 
 ## Why does it exist? 🔓
 
@@ -27,14 +27,14 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 # 🚨 **NEW UPDATE WITH FIXES** 🚨 - Version 1.2.2 - 29.07.2024
 
-![GitHub Release](https://img.shields.io/github/v/release/crocodilestick/calibre-web-automator)
-![GitHub commits since latest release](https://img.shields.io/github/commits-since/crocodilestick/calibre-web-automator/latest)
+![GitHub Release](https://img.shields.io/github/v/release/crocodilestick/calibre-web-automated)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/crocodilestick/calibre-web-automated/latest)
 
 ### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid major issues with the old Import/Ingest System and for **General Stability Improvements**
 
 This update should now render the Auto-Import system **FULLY STABLE**, with all the major bugs now being fixed! 🎊
 
-If you find any bugs however, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automator/issues)! 🪲
+If you find any bugs however, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automated/issues)! 🪲
 
 #### Fixed Bugs:
 - Fixed moving (not copying) a folder into cwa-book-ingest not detecting the folder and its contents
@@ -67,7 +67,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - **One Step Full Library Conversion** 🔂 - Any format -> `.epub`
 
   - Calibre-Web Automated has always been designed with `.epub` libraries in mind due to many factors, chief among which being the fact they are **Compatible with the Widest Range of Devices**, **Ubiquitous** as well as being **Easy to Manage and Work with**
-  - Previously this meant that anyone with `non-epub` ebooks in their existing Calibre Libraries was unable to take advantage of all of `Calibre-Web Automator`'s features reliably
+  - Previously this meant that anyone with `non-epub` ebooks in their existing Calibre Libraries was unable to take advantage of all of `Calibre-Web Automated`'s features reliably
   - So new to Version 1.2.0 is the ability for those users to quickly and easily convert their existing eBook Libraries, no matter the size, to `.epub Version 3` format using a one-step CLI Command from within the CWA Container
   - This utility gives the user the option to either keep a copy of the original of all converted files in `/config/original-library` or to trust the process and have CWA simply convert and replace those files (not recommended)
   - Full usage details can be found [here](#the-convert-library-tool)
@@ -132,7 +132,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 1. Download the Docker Compose template file using the command below:
 
 ```
-curl -OL https://raw.githubusercontent.com/crocodilestick/calibre-web-automator/main/docker-compose.yml
+curl -OL https://raw.githubusercontent.com/crocodilestick/calibre-web-automated/main/docker-compose.yml
 ```
 
 2. Navigate to where you downloaded the Compose file using `cd` and run:
@@ -216,133 +216,6 @@ convert-library --keep
 
 - Drop a book into your ingest folder and check everything is working correctly!
 
-<!-- ## Method 2: Using the **Script Install Method** with stock Calibre-Web Base Image 📜 🔻(Not Recommended)
-
-- This method is only recommended for **developers** or those who would like to set their own directories using the provided **Setup Wizard**
-- To begin this installation method, you'll need to use the Docker Compose below to set up a base container for you to perform the installation within
-
-### Step 1: docker-compose for stock Calibre-Web with the Calibre eBook-converter
-
-```docker-compose
----
-services:
-  calibre-web:
-    image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web-automated
-    environment:
-      - PUID=1000
-      - PGID=100
-      - PATH=/lsiopy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      - HOME=/root
-      - LANGUAGE=en_US.UTF-8
-      - LANG=en_US.UTF-8
-      - TERM=xterm
-      - S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
-      - S6_VERBOSITY=1
-      - S6_STAGE2_HOOK=/docker-mods
-      - VIRTUAL_ENV=/isiopy
-      - LSIO_FIRST_PARTY=true
-      - TZ=Europe/Berlin
-      - DOCKER_MODS=linuxserver/mods:universal-calibre
-      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #Optional
-    volumes:
-      - /path/to/config/folder:/config
-      - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
-      - "/path/to/your/calibre/library:/calibre-main/Calibre Library"
-     # - /path/to/where/you/keep/your/books:/books #Optional
-     # - /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
-    ports:
-      - 8083:8083 # Change the first number to change the port you want to access the Web UI, not the second
-
-    restart: unless-stopped
-
-```
-
-### Step 2: CWA Installation ⚙️
-
-1. Download the `calibre-web-automator` folder from this repo, unzip it, and then place the `calibre-web-automator` folder inside into the folder bound to your `/config` volume
-2. Next, use the following command to gain access to the container's CLI, replacing **_calibre-web_** with the name of your Calibre-Web container if it differs:
-
-```
-docker exec -it calibre-web bash
-```
-
-3. Navigate inside the **calibre-web-automator** that you previously placed within your `/config` directory with the following command:
-
-```
-cd /config/calibre-web-automator
-```
-
-4. Make sure the `setup-cwa.sh`is executable with the following command:
-
-```
-chmod +x setup-cwa.sh
-```
-
-5. Now initiate the install with the following command:
-
-```
-./setup-cwa.sh
-```
-
-6. When prompted, follow the on-screen instructions to create and enter the paths of the directories the program needs to function.
-   - The folders can be wherever you like but **they must be in a persistent volume** like in your `/books` bind, **otherwise they and their contents won't be persistent between rebuilds of the container**
-7. When the setup is complete, we need to restart the container for the changes to take effect. You can do so by using `exit` to return to your main shell and then running the following command:
-
-```
-docker restart calibre-web` or `docker restart <replace-this-with-the-name-of-your-calibre-web-container>
-```
-
-1. Once the container is back up and running, you should be good to go! To check however, do the following:
-   - Then run the included testing script with `cwa-check` anywhere in the terminal to verify your install.
-   - All three prompts should return green, indicating that the new `calibre-scan` and `books-to-process-scan` services are working properly.
-   - If one or both of the services return red indicating that they are not running, rebuild your Calibre-Web container using the `docker-compose` above and retry the installation process.
-
-### Step 3: Making The Changes Persistent 🔗
-
-As you may know, every time you rebuild a docker container, anything that isn't include in the source image or saved to a persistent volume, is gone and the container returns to it's stock state.
-
-### To make sure CWA remains installed between rebuilds, you can do the following:
-
-### Option 1: Creating a new, modified Docker Image (Recommended)
-
-#### This option sounds much harder than it really is if you've never done it before but it's actually shockingly easy and currently the best option now the developer of Calibre-Web is sunsetting further development of the project.
-
-1. Successfully install CWA using the steps above and confirm it's working by running the included `check-cwa-install.sh' binary from the CLI of your Calibre-Web container as described above in Step 7
-2. While the container is running, from your main shell (use `exit` to return to your main shell if your still in the container's CLI) run the following command to generate an image of your newly modified Calibre-Web container, exactly as it's currently configured:
-
-```
-docker commit calibre-web calibre-web-automated
-```
-
-- Replace `calibre-web` with the name of your Calibre-Web container if it differs and you can also replace `calibre-web-automated` with whatever name you like
-
-3. Once the process is finished, you can check the image was successfully created using the following command to list all current available docker images on your system:
-
-```
-docker images
-```
-
-4. Once you've confirmed the image was created successfully, edit your docker compose file so that the variable `image` is now as follows:
-
-```docker-compose
----
-services:
-  calibre-web:
-    image: calibre-web-automated:latest
-    container_name: calibre-web
-    environment:
- ...
-```
-
-- Now the image variable should read `image: calibre-web-automated:latest` or `image: <your-chosen-image-name-here>:latest`
-
-5. Finished! 🎉 Now every time you rebuild your container, CWA as well as any other changes you may have made will remain 👍
-
-### Option 2: Re-Running 'setup-cwa.sh' Whenever You Rebuild the Container
-
-This wouldn't be my preferred method but if you never really touch your containers the above may be overkill for you.
- -->
 # Usage 🔧
 
 ## Adding Books to Your Library

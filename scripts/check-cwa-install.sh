@@ -5,7 +5,7 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 # Print promt title
-echo "====== Calibre-Web Automator -- Status of Monitoring Services ======"
+echo "====== Calibre-Web Automated -- Status of Monitoring Services ======"
 echo ""
 
 if s6-rc -a list | grep -q 'new-book-detector'; then
@@ -35,7 +35,7 @@ fi
 echo ""
 
 if $cs && $bs && $mc; then
-    echo -e "Calibre-Web-Automater was ${GREEN}successfully installed ${NC}and ${GREEN}is running properly!${NC}"
+    echo -e "Calibre-Web-Automated was ${GREEN}successfully installed ${NC}and ${GREEN}is running properly!${NC}"
 else
-    echo -e "Calibre-Web-Automater was ${RED}not installed successfully${NC}, please check the logs for more information."
+    echo -e "Calibre-Web-Automated was ${RED}not installed successfully${NC}, please check the logs for more information."
 fi

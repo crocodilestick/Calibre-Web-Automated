@@ -54,12 +54,12 @@ class LibraryConverter:
             os.system(f"ebook-convert '/config/original-library/{filename}{file_extension}' '{self.import_folder}{filename}.epub'")
             if self.args.setup == True:
                 os.system(f"calibredb add --with-library '{self.library}' '{self.import_folder}{filename}.epub'")
-            os.system(f"chown -R abc:1000 '{self.library}'")
+            os.system(f"chown -R abc:abc '{self.library}'")
             if not self.args.keep:
                 os.remove(f"/config/original-library/{filename}{file_extension}")
 
     def empty_import_folder(self):
-        os.system(f"chown -R abc:1000 '{self.import_folder}'")
+        os.system(f"chown -R abc:abc '{self.import_folder}'")
         files = glob.glob(f"{self.import_folder}*")
         for f in files:
             os.remove(f)

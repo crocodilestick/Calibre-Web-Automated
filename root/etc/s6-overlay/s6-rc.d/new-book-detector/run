@@ -32,7 +32,6 @@ while read -r events filepath; do
         chown -R abc:users "$WATCH_FOLDER"
         #find "$WATCH_FOLDER/" -mindepth 1 -type f,d -delete
         rm "$filepath"
-        chown -R abc:1000 "$CALIBRE_LIBRARY"
+        chown -R abc:abc "$CALIBRE_LIBRARY"
         echo "[new-book-detector]: $filepath successfully moved/converted, the Ingest Folder has been emptied and is ready"
 done
-

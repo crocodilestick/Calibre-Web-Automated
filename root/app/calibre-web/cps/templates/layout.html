@@ -74,10 +74,10 @@
                 </ul>
               </li>
               {% endif %}
-              <li class="top_tasks cwa-change-theme">
-                <a id="top_tasks" href="/cwa-switch-theme" title="Switch Theme" data-placement="bottom" data-viewport="#main-nav" class="tasks-btn-tooltip" data-original-title="Switch Theme" aria-describedby="Switch Theme">
+              <li class="cwa-switch-theme">
+                <a id="cwa-switch-theme" href="/cwa-switch-theme" title="Switch Theme">
                   <span class="glyphicon glyphicon-sunglasses"></span>
-                  <span class="hidden-sm cwa_change_theme">{{_('Switch Theme')}}</span>
+                  <span class="hidden-sm">{{_('Switch Theme')}}</span>
                 </a>
               </li>
               {% if current_user.role_upload() and g.allow_upload %}

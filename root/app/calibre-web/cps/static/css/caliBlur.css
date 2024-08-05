@@ -884,24 +884,25 @@ body > div.navbar.navbar-default.navbar-static-top > div > form.search-focus > d
     float: left !important
 }
 
-.top_tasks.cwa_change_theme {
-    float: left !important
-}
-
 .glyphicon.glyphicon-sunglasses {
     font-size: large;
     padding-right: 10px;
-    padding-left: 5px
+    padding-left:5px;
+    vertical-align: top
 }
 
-.hidden-sm.cwa_change_theme {
-    margin-bottom: 15px;
-    text-align: -webkit-match-parent;
+span.hidden-sm.cwa_switch_theme {
+    margin-bottom: 20px;
     display: inline-block;
-    line-height: 22px;
-    vertical-align: top;
+    line-height: 20px;
+    vertical-align: super;
     box-sizing: border-box;
+    float: left
     font-size: 13px
+}
+
+span.hidden-sm.top_admin {
+    line-height: 26px
 }
 
 .navbar {
@@ -7993,4 +7994,146 @@ div.comments + [data-readmore-toggle], div.comments[data-readmore] {
 div.comments[data-readmore] {
     transition: height 300ms;
     overflow: hidden
+}
+
+.cwa-switch-theme {
+    float: left !important
+}
+
+#top_admin > span.hidden-sm, #cwa-switch-theme > span.hidden-sm {
+    display: none
+}
+
+#form-upload .form-group .btn:after {
+    content: "\EA13";
+    position: absolute;
+    font-family: plex-icons-new, serif;
+    font-size: 8px;
+    background: #3c444a;
+    color: hsla(0, 0%, 100%, .7);
+    border-radius: 50%;
+    padding: .25px .25px 0 0;
+    z-index: 9;
+    left: 15px;
+    top: 32px;
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
+    font-weight: 400;
+    text-align: center;
+    pointer-events: none
+}
+
+#top_admin, #cwa-switch-theme {
+    height: 60px;
+    width: 50px;
+    padding: 20px 15px
+}
+
+#cwa-switch-theme > .glyphicon-tasks::before {
+    content: "\EA2E";
+    text-transform: none;
+    font-weight: 400;
+    font-style: normal;
+    font-family: plex-icons-new, serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1;
+    text-rendering: optimizeLegibility;
+    speak: none;
+    font-size: 20px
+}
+
+#cwa-switch-theme > .glyphicon-tasks {
+    background-color: hsla(0, 0%, 100%, .15);
+    border-radius: 50%
+}
+
+@media only screen and (max-width: 767px) {
+    #form-upload .form-group .btn:before, #top_admin > .glyphicon, #cwa-switch-theme > .glyphicon-tasks {
+        -moz-osx-font-smoothing: grayscale;
+        font-weight: 400;
+        font-style: normal
+    }
+
+    #main-nav > li.top_admin, #main-nav > li.cwa-switch-theme {
+        height: 45px;
+        width: 100%;
+        min-height: 30px;
+        overflow: visible;
+        border-radius: 0 4px 4px 0;
+        max-width: 265px
+    }
+
+    #main-nav > li.cwa-switch-theme:before {
+        content: "MANAGE";
+        color: hsla(0, 0%, 100%, .45);
+        text-transform: uppercase;
+        font-size: 12px;
+        font-family: Open Sans Bold, Helvetica Neue, Helvetica, Arial, sans-serif;
+        line-height: 60px;
+        padding-left: 15px;
+        position: absolute;
+        top: -60px
+    }
+
+    #top_admin, #cwa-switch-theme, .navigation > ul > li > a {
+        color: #fff;
+        height: 45px;
+        width: 100%;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-decoration: none
+    }
+
+    #main-nav > li.cwa-switch-theme {
+        margin-top: 72px
+    }
+
+    #top_admin, #cwa-switch-theme {
+        padding: 12px 15px;
+        font-size: 13px;
+        line-height: 1.71428571;
+        overflow: hidden
+    }
+
+    #top_admin > .glyphicon, #cwa-switch-theme > .glyphicon-tasks {
+        position: relative;
+        top: 0;
+        font-family: 'Glyphicons Halflings', serif;
+        line-height: 1;
+        border-radius: 0;
+        background: 0 0;
+        display: inline-block
+    }
+
+    #cwa-switch-theme > .glyphicon-tasks {
+        -webkit-font-smoothing: antialiased;
+        margin-right: 7px
+    }
+
+    #cwa-switch-theme > .glyphicon-tasks::before, body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > #top_admin > .glyphicon-dashboard::before {
+        text-transform: none;
+        font-family: plex-icons-new, serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        speak: none;
+        vertical-align: sub;
+        font-weight: 400;
+        font-style: normal
+    }
+
+    #cwa-switch-theme > .glyphicon-tasks::before {
+        content: "\EA2E";
+        line-height: 22px;
+        font-size: 16px
+    }
+
+    #top_admin > span.hidden-sm, #cwa-switch-theme > span.hidden-sm {
+        display: inline-block;
+        line-height: 22px
+    }
+
 }

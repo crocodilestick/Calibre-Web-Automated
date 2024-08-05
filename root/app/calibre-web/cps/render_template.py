@@ -29,6 +29,7 @@ from .ub import User
 import requests
 from datetime import datetime
 import os.path
+from flask_login import current_user
 
 
 log = logger.create()
@@ -148,7 +149,8 @@ def cwa_update_notification() -> None:
 # Returns the template for rendering and includes the instance name
 def render_title_template(*args, **kwargs):
     sidebar, simple = get_sidebar_config(kwargs)
-    cwa_update_notification()
+    if current_user.role_admin():
+        cwa_update_notification()
     try:
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
                                accept=config.config_upload_formats.split(','),

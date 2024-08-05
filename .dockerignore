@@ -1,0 +1,9 @@
+README_images
+docker-compose.yml
+.git
+.gitignore
+.github/workflows
+README.md
+LICENSE
+Dockerfile
+.dockerignore

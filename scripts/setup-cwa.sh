@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# # Stores the loctation of this script
-# SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
 # Make required directories and files for metadata enforcment
 make_dirs () {
     mkdir /app/calibre-web-automated/metadata_change_logs
@@ -20,9 +17,11 @@ make_dirs () {
 # Change ownership & permissions as required
 change_script_permissions () {
     chmod +x /app/calibre-web-automated/scripts/check-cwa-install.sh
-    chmod +x /etc/s6-overlay/s6-rc.d/to-process-detector/run
+    chmod +x /etc/s6-overlay/s6-rc.d/books-to-process-detector/run
     chmod +x /etc/s6-overlay/s6-rc.d/new-book-detector/run
     chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
+    chmod +x /etc/s6-overlay/s6-rc.d/set-cwa-perms/run
+    chmod +x /etc/s6-overlay/s6-rc.d/auto-library/run
     chmod 775 /app/calibre-web/cps/editbooks.py
     chmod 775 /app/calibre-web/cps/admin.py
 }

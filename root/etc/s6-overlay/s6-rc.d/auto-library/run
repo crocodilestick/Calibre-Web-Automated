@@ -1,0 +1,11 @@
+#!/bin/bash
+
+python3 /app/calibre-web-automated/scripts/auto-library.py
+
+if [[ $? == 0 ]]
+then
+    echo "[auto-library] Service did not complete successfully (see errors above). Ending service..."
+elif [[ $? == 1 ]]
+then
+    echo "[auto-library] Service completed successfully. Ending service..."
+fi

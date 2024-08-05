@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "========== STARTING METADATA CHANGE DETECTOR =========="
+echo "========== STARTING METADATA CHANGE DETECTOR ==========="
 
 # Folder to monitor
 WATCH_FOLDER="/app/calibre-web-automated/metadata_change_logs"

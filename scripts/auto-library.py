@@ -14,7 +14,7 @@ def main():
         auto_lib.set_library_location()
 
     print(f"[auto-library] Library location successfully set to: {auto_lib.lib_path}")
-    sys.exit(1)
+    sys.exit(0)
 
 
 class AutoLibrary:
@@ -71,7 +71,7 @@ class AutoLibrary:
             return
         else:
             print("[auto-library]: ERROR: metadata.db found but not mounted")
-            sys.exit(0)
+            sys.exit(1)
 
     # Uses sql to update CW's app.db with the correct library location (config_calibre_dir in the settings table)
     def update_calibre_web_db(self):
@@ -86,16 +86,16 @@ class AutoLibrary:
             except Exception as e:
                 print("[auto-library]: ERROR: Could not update Calibre Web Database")
                 print(e)
-                sys.exit(0)
+                sys.exit(1)
         else:
             print(f"[auto-library]: ERROR: app.db in {self.app_db} not found")
-            sys.exit(0)
+            sys.exit(1)
 
     # Update the dirs.json file with the new library location (lib_path))
     def update_dirs_json(self):
         """Updates the location of the calibre library stored in dirs.json with the found library"""
         try:
-            print("Updating dirs.json with new library location...")
+            print("[auto-library] Updating dirs.json with new library location...")
             with open(self.dirs_path) as f:
                 dirs = json.load(f)
             dirs["calibre_library_dir"] = self.lib_path
@@ -105,7 +105,7 @@ class AutoLibrary:
         except Exception as e:
             print("[auto-library]: ERROR: Could not update dirs.json")
             print(e)
-            sys.exit(0)
+            sys.exit(1)
 
     # Uses the empty metadata.db in /app/calibre-web-automated to create a new library
     def make_new_library(self):

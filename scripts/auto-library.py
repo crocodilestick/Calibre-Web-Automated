@@ -128,7 +128,7 @@ class AutoLibrary:
         print("[auto-library]: No existing library found. Creating new library...")
         shutil.copyfile(self.empty_metadb, f"{self.library_dir}/metadata.db")
         os.system(f"chown -R abc:abc {self.library_dir}")
-        self.metadb_path = self.library_dir
+        self.metadb_path = f"{self.library_dir}/metadata.db"
         return
         
 

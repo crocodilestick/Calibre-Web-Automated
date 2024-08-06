@@ -8228,3 +8228,18 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.c
 .glyphicon.glyphicon-refresh {
     font-size: large
 }
+
+body h2 {
+  font-weight: normal;
+  color: #fff;
+}
+
+#cwa_github_link {
+  --color-secondary: #2b3137;
+  --color-secondary-hover: #40524d
+}
+
+#cwa_discord_link {
+  --color-secondary: #7289da;
+  --color-secondary-hover: #839ffc
+}

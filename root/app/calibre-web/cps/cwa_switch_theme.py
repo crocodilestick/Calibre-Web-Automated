@@ -3,8 +3,13 @@ from flask_babel import gettext as _
 
 from . import logger, config, constants
 from .usermanagement import login_required_if_no_ano
+from .admin import admin_required
 
 switch_theme = Blueprint('switch_theme', __name__)
+library_refresh = Blueprint('library_refresh', __name__)
+convert_library = Blueprint('convert_library', __name__)
+cwa_history = Blueprint('cwa_history', __name__)
+cwa_check_monitoring = Blueprint('cwa_check_monitoring', __name__)
 
 log = logger.create()
 
@@ -34,3 +39,26 @@ def cwa_switch_theme():
 
     config.save()
     return redirect("/", code=302)
+
+@library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])
+@login_required_if_no_ano
+def cwa_library_refresh():
+    ...
+
+@convert_library.route("/cwa-library-convert", methods=["GET", "POST"])
+@login_required_if_no_ano
+@admin_required
+def cwa_library_convert():
+    ...
+
+@cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
+@login_required_if_no_ano
+@admin_required
+def cwa_history_show():
+    ...
+
+@cwa_check_monitoring.route("/cwa-check-monitoring", methods=["GET", "POST"])
+@login_required_if_no_ano
+@admin_required
+def cwa_check_monitoring_services():
+    ...

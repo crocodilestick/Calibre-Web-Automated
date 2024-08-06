@@ -126,7 +126,7 @@ class AutoLibrary:
     # Uses the empty metadata.db in /app/calibre-web-automated to create a new library
     def make_new_library(self):
         print("[auto-library]: No existing library found. Creating new library...")
-        shutil.copy(self.empty_metadb, f"{self.library_dir}/metadata.db")
+        shutil.copyfile(self.empty_metadb, f"{self.library_dir}/metadata.db")
         os.system(f"chown -R abc:abc {self.library_dir}")
         self.metadb_path = self.library_dir
         return

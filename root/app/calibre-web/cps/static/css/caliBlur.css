@@ -8000,7 +8000,13 @@ div.comments[data-readmore] {
     float: left !important
 }
 
-#top_admin > span.hidden-sm, #cwa-switch-theme > span.hidden-sm {
+#cwa-switch-theme {
+    height: 60px;
+    width: 50px;
+    padding: 20px 15px
+}
+
+#cwa-switch-theme > span.hidden-sm, #cwa-switch-theme > span.hidden-sm {
     display: none
 }
 
@@ -8024,12 +8030,6 @@ div.comments[data-readmore] {
     pointer-events: none
 }
 
-#top_admin, #cwa-switch-theme {
-    height: 60px;
-    width: 50px;
-    padding: 20px 15px
-}
-
 #cwa-switch-theme > .glyphicon-tasks::before {
     content: "\EA2E";
     text-transform: none;
@@ -8050,13 +8050,13 @@ div.comments[data-readmore] {
 }
 
 @media only screen and (max-width: 767px) {
-    #form-upload .form-group .btn:before, #top_admin > .glyphicon, #cwa-switch-theme > .glyphicon-tasks {
+    #form-upload .form-group .btn:before, #cwa-switch-theme > .glyphicon, #cwa-switch-theme > .glyphicon-tasks {
         -moz-osx-font-smoothing: grayscale;
         font-weight: 400;
         font-style: normal
     }
 
-    #main-nav > li.top_admin, #main-nav > li.cwa-switch-theme {
+    #main-nav > li.cwa-switch-theme, #main-nav > li.cwa-switch-theme {
         height: 45px;
         width: 100%;
         min-height: 30px;
@@ -8077,7 +8077,7 @@ div.comments[data-readmore] {
         top: -60px
     }
 
-    #top_admin, #cwa-switch-theme, .navigation > ul > li > a {
+    #cwa-switch-theme, #cwa-switch-theme, .navigation > ul > li > a {
         color: #fff;
         height: 45px;
         width: 100%;
@@ -8091,14 +8091,14 @@ div.comments[data-readmore] {
         margin-top: 72px
     }
 
-    #top_admin, #cwa-switch-theme {
+    #cwa-switch-theme, #cwa-switch-theme {
         padding: 12px 15px;
         font-size: 13px;
         line-height: 1.71428571;
         overflow: hidden
     }
 
-    #top_admin > .glyphicon, #cwa-switch-theme > .glyphicon-tasks {
+    #cwa-switch-theme > .glyphicon, #cwa-switch-theme > .glyphicon-tasks {
         position: relative;
         top: 0;
         font-family: 'Glyphicons Halflings', serif;
@@ -8131,9 +8131,100 @@ div.comments[data-readmore] {
         font-size: 16px
     }
 
-    #top_admin > span.hidden-sm, #cwa-switch-theme > span.hidden-sm {
+    #cwa-switch-theme > span.hidden-sm, #cwa-switch-theme > span.hidden-sm {
         display: inline-block;
         line-height: 22px
     }
 
+}
+
+#refresh-library {
+    height: 60px;
+    width: 50px;
+    padding: 20px 15px
+}
+
+#refresh-library > span.hidden-sm, #refresh-library > span.hidden-sm {
+    display: none
+}
+
+body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > #refresh-library > .glyphicon-dashboard::before {
+    content: "\EA31";
+    font-family: plex-icons-new, serif;
+    font-size: 20px
+}
+
+body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > #refresh-library > span:last-of-type {
+    vertical-align: top
+}
+
+@media only screen and (max-width: 767px) {
+    #form-upload .form-group .btn:before, #refresh-library > .glyphicon, #refresh-library > .glyphicon-tasks {
+        -moz-osx-font-smoothing: grayscale;
+        font-weight: 400;
+        font-style: normal
+    }
+
+    #refresh-library, #refresh-library, .navigation > ul > li > a {
+        color: #fff;
+        height: 45px;
+        width: 100%;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-decoration: none
+    }
+
+    #main-nav > li.refresh-library {
+        margin-top: 72px
+    }
+
+    #refresh-library, #refresh-library {
+        padding: 12px 15px;
+        font-size: 13px;
+        line-height: 1.71428571;
+        overflow: hidden
+    }
+
+    #refresh-library > .glyphicon, #refresh-library > .glyphicon-tasks {
+        position: relative;
+        top: 0;
+        font-family: 'Glyphicons Halflings', serif;
+        line-height: 1;
+        border-radius: 0;
+        background: 0 0;
+        display: inline-block
+    }
+
+    #refresh-library > .glyphicon {
+        -webkit-font-smoothing: antialiased;
+        margin-right: 10px
+    }
+
+    #refresh-library > .glyphicon-tasks::before, body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > #refresh-library > .glyphicon-dashboard::before {
+        text-transform: none;
+        font-family: plex-icons-new, serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        speak: none;
+        vertical-align: sub;
+        font-weight: 400;
+        font-style: normal
+    }
+
+    body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > #refresh-library > .glyphicon-dashboard::before {
+        content: "\EA56";
+        line-height: 22px;
+        font-size: 14px
+    }
+
+    #refresh-library > span.hidden-sm, #refresh-library > span.hidden-sm {
+        display: inline-block;
+        line-height: 22px
+    }
+}
+
+.glyphicon.glyphicon-refresh {
+    font-size: large
 }

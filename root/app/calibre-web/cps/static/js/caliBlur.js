@@ -299,6 +299,7 @@ $("#top_tasks").parent().addClass("top_tasks");
 $("#top_admin").parent().addClass("top_admin");
 $("#form-upload").parent().addClass("form-upload");
 $("cwa-switch-theme").parent().addClass("cwa-switch-theme");
+$("refresh-library").parent().addClass("refresh-library");
 
 // Search button work
 $("input#query").focus(function () {
@@ -494,6 +495,14 @@ $("#cwa-switch-theme").attr({
     "data-viewport": "#main-nav"
 })
     .addClass("switch-btn-tooltip");
+
+$("#refresh-library").attr({
+    "data-toggle": "tooltip",
+    "title": $("#refresh-library").text(),              // "Refresh Library"
+    "data-placement": "bottom",
+    "data-viewport": "#main-nav"
+})
+    .addClass("refresh-lib-btn-tooltip");
 
 $("#top_tasks").attr({
     "data-toggle": "tooltip",
@@ -721,4 +730,3 @@ $(window).on("resize", function () {
 //  id = setTimeout(mobileSupport, 500);
     mobileSupport();
 });
-

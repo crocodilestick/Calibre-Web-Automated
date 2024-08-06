@@ -7,6 +7,7 @@ import sys
 
 def main():
     auto_lib = AutoLibrary()
+    auto_lib.check_for_app_db()
     if auto_lib.check_for_existing_library():
         auto_lib.set_library_location()
     else: # No existing library found
@@ -19,10 +20,13 @@ def main():
 
 class AutoLibrary:
     def __init__(self):
+        self.config_dir = "/config"
         self.library_dir = "/calibre-library"
         self.dirs_path = "/app/calibre-web-automated/dirs.json"
         self.app_db = "/config/app.db"
-        self.empty_db = "/app/calibre-web-automated/empty_library/metadata.db"
+        
+        self.empty_appdb = "/app/calibre-web-automated/empty_library/app.db"
+        self.empty_metadb = "/app/calibre-web-automated/empty_library/metadata.db"
         
         self.metadb_path = None
         self.lib_path = None
@@ -39,6 +43,17 @@ class AutoLibrary:
         else:
             self._metadb_path = path
             self.lib_path = os.path.dirname(path)
+
+    # Checks config_dir for an exisiting app.db, if one doesn't already exist it copies an empty one from /app/calibre-web-automated/empty_library/app.db and sets the permissiosn
+    def check_for_app_db(self):
+        files_in_config = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.config_dir) for f in filenames]
+        db_files = [f for f in files_in_config if "app.db" in f]
+        if len(db_files) == 0:
+            print(f"[auto-library] No app.db found in {self.config_dir}, copying from /app/calibre-web-automated/empty_library/app.db")
+            shutil.copyfile(self.empty_appdb, f"{self.config_dir}/app.db")
+            os.system(f"chown -R abc:abc {self.config_dir}")
+        else:
+            return
 
     # Check for a metadata.db file in the given library dir and returns False if one doesn't exist
     # and True if one does exist, while also updating metadb_path to the path of the found metadata.db file
@@ -110,7 +125,8 @@ class AutoLibrary:
     # Uses the empty metadata.db in /app/calibre-web-automated to create a new library
     def make_new_library(self):
         print("[auto-library]: No existing library found. Creating new library...")
-        shutil.copy(self.empty_db, f"{self.library_dir}/metadata.db")
+        shutil.copy(self.empty_metadb, f"{self.library_dir}/metadata.db")
+        os.system(f"chown -R abc:abc {self.library_dir}")
         self.metadb_path = self.library_dir
         return
         

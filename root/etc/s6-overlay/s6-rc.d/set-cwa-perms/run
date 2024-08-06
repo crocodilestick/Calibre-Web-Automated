@@ -1,6 +1,16 @@
 #!/bin/bash
 
-echo "[cwa-set-perms] Recursively setting ownership of everything in /calibre-library and /app/calibre-web-automated to abc:abc..."
+echo "[cwa-set-perms] Recursively setting ownership of everything in /config, /calibre-library, /app/calibre-web-automated to abc:abc..."
+
+chown -R abc:abc /config
+
+if [[ $? == 0 ]]
+then
+    echo "[cwa-set-perms] Successfully set permissions for '/config'!"
+elif [[ $? > 0 ]]
+then
+    echo "[cwa-set-perms] Service could not successfully set permissions for '/config' (see errors above)."
+fi
 
 chown -R abc:abc /calibre-library
     

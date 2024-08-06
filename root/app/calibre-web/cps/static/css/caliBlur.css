@@ -8066,7 +8066,7 @@ div.comments[data-readmore] {
     }
 
     #main-nav > li.cwa-switch-theme:before {
-        content: "MANAGE";
+        content: "CWA Functions";
         color: hsla(0, 0%, 100%, .45);
         text-transform: uppercase;
         font-size: 12px;

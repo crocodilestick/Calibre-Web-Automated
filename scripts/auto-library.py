@@ -52,6 +52,7 @@ class AutoLibrary:
             print(f"[auto-library] No app.db found in {self.config_dir}, copying from /app/calibre-web-automated/empty_library/app.db")
             shutil.copyfile(self.empty_appdb, f"{self.config_dir}/app.db")
             os.system(f"chown -R abc:abc {self.config_dir}")
+            print(f"[auto-library] app.db successfully copied to {self.config_dir}")
         else:
             return
 

@@ -95,7 +95,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     \
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
-### Coming in Version 1.3.0 - Currently in Testing Phase 🧪
+### Coming in Version 2.0.0 - Currently in Testing Phase 🧪
 
 - Simplification of CWA's install, specifically for users having issues binding the right folder of their existing Calibre libraries in the Docker Compose
 - **Rebranded the Web UI** throughout to make it clear you are using Calibre-Web Automated
@@ -114,6 +114,9 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 - A form of **Library Auto-Detect** is currently in development to mitigate these issues, as well as to automatically establish a fresh Calibre Library for new users without an existing one, to simplify the install for them and make it so they don't have to manually copy `metadata.db` files from the repo into specific folders ect.
 - Integrating some of the new **Command-Line Features into the Web UI**
+- **Robo**tic **Read**ing 🤖📖
+  - **Bio**nic **read**ing **wa**s **initi**ally **rele**ased **i**n **20**22 **a**s **a** **met**hod **o**f **forma**tting **te**xt **t**o **ma**ke **i**t **eas**ier **fo**r **peo**ple **wi**th **AD**HD **an**d **oth**er **concent**ration **&** **read**ing **iss**ues **t**o **re**ad **fast**er, **eas**ier **an**d **t**o **ret**ain **mo**re **o**f **wh**at **they**'ve **rea**d.
+  - **W**e **we**re **insp**ired **b**y **th**e **conc**ept **an**d **ha**ve **crea**ted **a** **eP**ub **conve**rsion **algor**ithm **insp**ired **b**y **th**e **orig**inal **Bio**nic **Read**ing **fo**r **tho**se **wh**o **li**ke **i**t **o**r **wh**o **ma**y **wa**nt **t**o **gi**ve **i**t **a** **g**o
 
 ### Additional Features on our Roadmap 🛣️🌱
 

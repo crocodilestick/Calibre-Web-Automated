@@ -1,9 +1,11 @@
-from flask import Blueprint, redirect
+from flask import Blueprint, redirect, flash, url_for
 from flask_babel import gettext as _
 
 from . import logger, config, constants
 from .usermanagement import login_required_if_no_ano
 from .admin import admin_required
+
+import os
 
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
@@ -43,20 +45,39 @@ def cwa_switch_theme():
 @library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_library_refresh():
-    ...
+    # flash(_("Library Refresh: Initialising Book Ingest System, please wait..."), category="refresh-cwa")
+    return_code = os.system('python3 /app/calibre-web-automated/scripts/new-book-processor.py "/cwa-book-ingest"')
+    return_val = os.WEXITSTATUS(return_code)
+
+    if return_val > 100:
+        flash(_(f"Library Refresh: Ingest process complete. {return_val - 100} new books ingested."), category="refresh-cwa")
+    elif return_val == 2:
+        flash(_("Library Refresh: The book ingest service is already running, please wait until it has finished before trying again."), category="refresh-cwa")
+    # elif return_val == 0:
+    #     flash(_("Manually starting ingest process..."), category="info")
+    elif return_val == 0:
+        flash(_("Library Refresh: Ingest process complete. No new books ingested."), category="refresh-cwa")
+    else:
+        flash(_("Library Refresh: An unexpected error occured, check the logs."), category="refresh-cwa")
+        
+    return redirect("/", code=302)
 
 @convert_library.route("/cwa-library-convert", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def cwa_library_convert():
-    ...
+    flash(_("Library Convert: Running, please wait..."), category="refresh-cwa")
+    os.system('python3 /app/calibre-web-automated/scripts/convert-library.py -k')
+    return redirect(url_for('admin.view_logfile'))
 
+#Coming Soon
 @cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def cwa_history_show():
     ...
-
+    
+#Coming Soon
 @cwa_check_monitoring.route("/cwa-check-monitoring", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required

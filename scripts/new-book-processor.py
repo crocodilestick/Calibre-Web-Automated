@@ -1,9 +1,37 @@
+import atexit
 import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 
+# Global variable counting the number of books processed
+books_processed = 0
+
+def increment_books_processed():
+    global books_processed
+    if books_processed == 0:
+        books_processed = 101
+    else:
+        books_processed += 1
+
+# Creates a lock file unless one already exists meaning an instance of the script is
+# already running, then the script is closed, the user is notified and the program
+# exits with code 2
+try:
+    lock = open(tempfile.gettempdir() + '/new-book-processor.lock', 'x')
+    lock.close()
+except FileExistsError:
+    print("CANCELING... new-book-processor initiated but is already running")
+    sys.exit(2)
+
+# Defineing function to delete the lock on script exit
+def removeLock():
+    os.remove(tempfile.gettempdir() + '/new-book-processor.lock')
+
+# Will automatically run when the script exits
+atexit.register(removeLock)
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
@@ -85,7 +113,7 @@ def main(filepath=sys.argv[1]):
             main(f)
         return
 
-    t_start = time.time()
+    # t_start = time.time()
     nbp = NewBookProcessor(filepath)
 
     if not nbp.is_epub: # Books require conversion
@@ -95,23 +123,25 @@ def main(filepath=sys.argv[1]):
 
         if can_convert:
             time_total_conversion = nbp.convert_book(import_format)
-            print(f"\n[new-book-processor]: conversion to .epub format completed succsessfully in {time_total_conversion:.2f} seconds.")
-            print("[new-book-processor]: All new epub files have now been moved to the calibre-web import folder.")
+            print(f"\n[new-book-processor]: Conversion to .epub format completed succsessfully in {time_total_conversion:.2f} seconds.")
+            print("[new-book-processor]: Importing new epub to CWA...")
+            increment_books_processed()
         else:
             print(f"Cannot convert {nbp.filepath}")
 
     else: # Books only need copying to the import folder
-        print(f"\n[new-book-processor]: Found  epub file from the most recent download.")
-        print("[new-book-processor]: Moving resulting files to calibre-web import folder...\n")
+        print(f"\n[new-book-processor]: Found  epub file in ingest folder.")
+        print("[new-book-processor]: Moving epub file to the CWA import folder...\n")
         nbp.move_epub()
-        print(f"[new-book-processor]: Copied epub file to calibre-web import folder.")
+        increment_books_processed()
 
-    t_end = time.time()
-    running_time = t_end - t_start
+    # t_end = time.time()
+    # running_time = t_end - t_start
 
-    print(f"[new-book-processor]: Processing of new files completed in {running_time:.2f} seconds.\n\n")
+    # print(f"[new-book-processor]: Processing of new files completed in {running_time:.2f} seconds.\n\n")
     nbp.delete_file()
-
+    del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
 
 if __name__ == "__main__":
     main()
+    sys.exit(books_processed)

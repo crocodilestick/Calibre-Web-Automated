@@ -201,10 +201,13 @@
 {%  endif %}
 
   <div class="row form-group">
-    <h2>{{_('CWA Admin Functions⚡')}}</h2>
-    <a class="btn btn-default" id="library_convert" href="{{url_for('admin.download_debug')}}">{{_('Convert Library to epub')}}</a>
-    <a class="btn btn-default" id="con_history" href="{{url_for('admin.view_logfile')}}">{{_('Show Conversion History')}}</a>
-    <a class="btn btn-default" id="check_mon_srvs" href="{{url_for('admin.view_logfile')}}">{{_('Check Monitoring Services')}}</a>
+    <h2>{{_('CWA Admin Functions⚡<i>(Coming Soon!)</i>')}}</h2>
+    <a class="btn btn-default" id="library_convert">{{_('Convert Library to epub')}}</a>
+     <!-- href="{{url_for('convert_library.cwa_library_convert')}}" -->
+    <a class="btn btn-default" id="con_history">{{_('Show Conversion History')}}</a>
+     <!-- href="{{url_for('cwa_history.cwa_history_show')}}" -->
+    <a class="btn btn-default" id="check_mon_srvs">{{_('Check Monitoring Services')}}</a>
+     <!-- href="{{url_for('cwa_check_monitoring.cwa_check_monitoring_services')}}" -->
   </div>
   <div class="row-form-group">
     <a class="btn btn-default github" id="cwa_github_link" href="https://github.com/crocodilestick/Calibre-Web-Automated/">{{_('CWA GitHub')}}</a>

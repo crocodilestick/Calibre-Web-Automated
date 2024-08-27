@@ -2366,6 +2366,31 @@ body > div.row-fluid {
     animation: none
 }
 
+.alert-info.refresh-cwa {
+    position: fixed;
+    top: auto;
+    bottom: 20px;
+    padding: 20px;
+    left: 50%;
+    width: 50%;
+    z-index: 99999;
+    -webkit-transform: translate(-50%);
+    -ms-transform: translate(-50%);
+    transform: translate(-50%);
+    right: 0;
+    background-color: #1c252a;
+    border-color: #182026;
+    color: #fff;
+    border-radius: 15px;
+    opacity: 0.8;
+    word-wrap: break-word;
+    white-space: normal;
+    -webkit-animation: cssAnimation 0s ease-in 5s forwards;
+    /* animation: cssAnimation 0s ease-in 5s forwards; */
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards
+}
+
 .alert {
     position: fixed;
     top: auto;

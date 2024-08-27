@@ -130,7 +130,7 @@ $(function() {
                 $("#table_xchange").attr("aria-disabled", false);
 
             }
-            
+
         });
 
     // Small block to initialize the state of the author/title sort inputs in metadata form
@@ -152,7 +152,7 @@ $(function() {
             $('#title_sort_input').prop('disabled', checkT);
     })
     /////
-    
+
     $("#delete_selection").click(function() {
         $("#books-table").bootstrapTable("uncheckAll");
     });
@@ -840,10 +840,10 @@ $(function() {
         if (e.type === "uncheck-all") {
             selections = [];
         } else {
-	        var ids = $.map(!$.isArray(rows) ? [rows] : rows, function (row) {
-	            return row.id;
-	        });
-	        var func = $.inArray(e.type, ["check", "check-all"]) > -1 ? "union" : "difference";
+            var ids = $.map(!$.isArray(rows) ? [rows] : rows, function (row) {
+                return row.id;
+            });
+            var func = $.inArray(e.type, ["check", "check-all"]) > -1 ? "union" : "difference";
             selections = window._[func](selections, ids);
         }
         handle_header_buttons();

@@ -24,10 +24,10 @@ class AutoLibrary:
         self.library_dir = "/calibre-library"
         self.dirs_path = "/app/calibre-web-automated/dirs.json"
         self.app_db = "/config/app.db"
-        
+
         self.empty_appdb = "/app/calibre-web-automated/empty_library/app.db"
         self.empty_metadb = "/app/calibre-web-automated/empty_library/metadata.db"
-        
+
         self.metadb_path = None
         self.lib_path = None
 
@@ -130,7 +130,7 @@ class AutoLibrary:
         os.system(f"chown -R abc:abc {self.library_dir}")
         self.metadb_path = f"{self.library_dir}/metadata.db"
         return
-        
+
 
 if __name__ == '__main__':
     main()

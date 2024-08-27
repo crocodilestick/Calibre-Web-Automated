@@ -23,6 +23,10 @@
        <link href="{{ url_for('static', filename='css/caliBlur.css') }}" rel="stylesheet" media="screen">
        <link href="{{ url_for('static', filename='css/caliBlur_override.css') }}" rel="stylesheet" media="screen">
     {% endif %}
+    <script>
+      const flash_success = document.getElementById("flash_success");
+      target.addEventListener('transitionend', () => flash_success.remove());
+    </script>
   </head>
   <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
     <!-- Static navbar -->
@@ -97,7 +101,7 @@
               {% if current_user.role_admin() %}
                 <li><a id="top_admin" data-text="{{_('Settings')}}" href="{{url_for('admin.admin')}}"><span class="glyphicon glyphicon-dashboard"></span> <span class="hidden-sm">{{_('Admin')}}</span></a></li>
               {% endif %}
-              <li><a id="refresh-library" data-text="{{_('Refresh Library')}}" href="{{url_for('admin.admin')}}"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Refresh Library')}}</span></a></li>
+              <li><a id="refresh-library" data-text="{{_('Refresh Library')}}" href="{{url_for('library_refresh.cwa_library_refresh')}}"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Refresh Library')}}</span></a></li>
               {% if g.current_theme == 0 %}
               <li><a id="top_user" data-text="{{_('Account')}}" href="{{url_for('web.profile')}}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
                 {% if not current_user.is_anonymous %}
@@ -136,7 +140,7 @@
       {%endif%}
       {%if message[0] == "cwa_refresh" %}
       <div class="row-fluid text-center">
-        <div id="flash_info" class="alert alert-info refresh-cwa">
+        <div id="flash_success" class="alert alert-info refresh-cwa">
           {{ message[1] }}
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>

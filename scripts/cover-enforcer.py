@@ -30,7 +30,7 @@ class Enforcer:
             book_id = (self.args.log.split('-')[1]).split('.')[0]
             timestamp_raw = self.args.log.split('-')[0]
             timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
-            
+
             log_info = {}
             with open(f'{self.change_logs_dir}/{self.args.log}', 'r') as f:
                 log_info = json.load(f)
@@ -47,7 +47,7 @@ class Enforcer:
                 log_info = json.load(f)
             log_info['book_id'] = book_id
             log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-        
+
         return log_info
 
     def get_book_dir_from_log(self, log_info: dict) -> str:
@@ -59,7 +59,7 @@ class Enforcer:
             book_title = book_title.replace('/', '_')
         if '/' in author_name:
             author_name = author_name.replace('/', '_')
-        
+
         book_dir = f"{self.calibre_library}/{author_name}/{book_title} ({book_id})/"
         log_info['epub_path'] = book_dir
 
@@ -84,7 +84,7 @@ class Enforcer:
         timestamp = self.get_time()
         book_title = title_author.split(f" - {title_author.split(' - ')[-1]}")[0]
         author_name = title_author.split(' - ')[-1]
-        
+
         book_info = {'timestamp':timestamp, 'book_id':book_id, 'book_title':book_title, 'author_name':author_name, 'epub_path':epub}
         return book_info
 
@@ -113,7 +113,7 @@ class Enforcer:
         os.system(f"calibredb export --with-library '{self.calibre_library}' --to-dir '{self.metadata_temp_dir}' {book_id}")
         temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.metadata_temp_dir) for f in filenames]
         return [f for f in temp_files if f.endswith('.opf')][0]
-    
+
     def replace_old_metadata(self, old_metadata: str, new_metadata: str) -> None:
         """Switches the metadata in metadata_temp with the metadata in the Calibre-Library"""
         os.system(f'cp "{new_metadata}" "{old_metadata}"')
@@ -149,7 +149,7 @@ class Enforcer:
                     log_info['epub_path'] = book_info['epub_path']
                     self.db.add_entry_from_log(log_info)
                     self.delete_log(auto=False, log_path=log)
-        
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -160,7 +160,7 @@ def main():
         user\'s Calibre Library. Additionally, if an epub happens to be in EPUB 2 \
         format, it will also be automatically upgraded to EPUB 3.'
     )
-    
+
     parser.add_argument('--log', action='store', dest='log', required=False, help='Will enforce the covers and metadata of the books in the given log file.', default=None)
     parser.add_argument('--dir', action='store', dest='dir', required=False, help='Will enforce the covers and metadata of the books in the given directory.', default=None)
     parser.add_argument('-all', action='store_true', dest='all', help='Will enforce covers & metadata for ALL books currently in your calibre-library-dir', default=False)
@@ -169,9 +169,9 @@ def main():
     parser.add_argument('-paths', '-p', action='store_true', dest='paths', help="Use with '-history' flag to display stored paths of all epubs in enforcement database", default=False)
     parser.add_argument('-v', '--verbose', action='store_true', dest='verbose', help="Use with history to display entire enforcement history instead of only the most recent 10 entries", default=False)
     args = parser.parse_args()
-    
+
     enforcer = Enforcer(args)
-    
+
     if len(sys.argv) == 1:
         parser.print_help()
     elif args.log is not None and args.dir is not None:

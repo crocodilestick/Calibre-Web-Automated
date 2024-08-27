@@ -31,7 +31,7 @@ def request_username():
 def main():
     app = create_app()
 
-    from .cwa_switch_theme import switch_theme, library_refresh, convert_library, cwa_history, cwa_check_monitoring
+    from .cwa_functions import switch_theme, library_refresh, convert_library, cwa_history, cwa_check_monitoring
     from .web import web
     from .opds import opds
     from .admin import admi
@@ -69,7 +69,7 @@ def main():
     app.register_blueprint(cwa_history)
     app.register_blueprint(cwa_check_monitoring)
 
-    # Stock Calibre-Web
+    # Stock CW
     app.register_blueprint(search)
     app.register_blueprint(tasks)
     app.register_blueprint(web)

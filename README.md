@@ -16,6 +16,7 @@
   - [Quick Install](https://github.com/crocodilestick/Calibre-Web-Automated/tree/main?tab=readme-ov-file#quick-install-) 🚀
 - [Usage](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🔧
 - [Further Development](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
+- [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
 
 ## Why does it exist? 🔓
 
@@ -25,23 +26,50 @@ For many, Calibre-Web has really swooped in to save the day, offering an alterna
 
 However, when compared to full-fat Calibre, it unfortunately lacks a few core features leading many to run both services in parallel, each serving to fill in where the other lacks, resulting in an often clunky, imperfect solution.
 
-# 🚨 **NEW UPDATE WITH FIXES** 🚨 - Version 1.2.2 - 29.07.2024
+# 🚨 **HUGE NEW UPDATE** 🚨 - Version 2.0.0 - 28.08.2024
 
 ![GitHub Release](https://img.shields.io/github/v/release/crocodilestick/calibre-web-automated)
 ![GitHub commits since latest release](https://img.shields.io/github/commits-since/crocodilestick/calibre-web-automated/latest)
 
-### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid major issues with the old Import/Ingest System and for **General Stability Improvements**
+### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid stability & import/ ingest issues that have been corrected from previous versions
 
-This update should now render the Auto-Import system **FULLY STABLE**, with all the major bugs now being fixed! 🎊
+> If you find any bugs, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automated/issues)! 🪲
 
-If you find any bugs however, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automated/issues)! 🪲
+- ### Dockerfile is now freely available & provides _wider system / hardware compatability_ 🐋
+- ### NEW FEATURE - Library Auto-Detect 📚🕵️
+  - Made to MASSIVELY simplify the setup process for both new and existing users alike
+  - **New Users without exisitng Libraries:** 🆕
+    - New users without existing Calibre Libraries no longer need to copy and paste `metadata.db` files and point to their location in the Web UI, CWA will now automatically detect the lack of Library in your given bind and automatically create a new one for you! It will even automatically register it with the Web UI so you can really hit the ground running
+  - **New or Existing Users with Existing Libraries:**
+    - Simply bind a directory containing your Calibre Library (search is done recursivly so it doesn't matter how deep in the directory it is) and CWA will now automatically find it and mount it to the Web UI
+    - Should you bind a directory with more than 1 Calibre Library in it, CWA will inteligently compare the disk sizes of all discovered libraries and mount the largest one
+      - _CWA supports only one library per instance though support for muliple libraries is being investigated for future releases_
+      - _In the meantime, users with muliple libraries who don't want to consolidate them are advised to run muliple, paralell instances_
+- ### NEW FEATURE - Easy Dark/ Light Mode Switching ☀️🌙
+- **Switch between Light & Dark Modes in just one click from anywhere!**
+  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
+- ### NEW FEATURE - Internal Update Notification System 🛎️
+  - Users will now be automatically notifed of the availability of new updates from within the Web UI
+    - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
+    - Set to only show once per calendar day until updated as to not be annoying
+      - _Visable to Admin users only_
+- ### NEW FEATURE - Manual Library Refresh ♻️
+  - Ever had books get stuck in the ingest folder after an unexpected powercut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything atill sitting in the ingest folder will be automatically ingested!
+- ### NEW FEATURE - Batch Editing & Deletion! 🗂️🗄️
+- Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
+- To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
+  - _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
 
-#### Fixed Bugs:
-- Fixed moving (not copying) a folder into cwa-book-ingest not detecting the folder and its contents
-- Fixed import duplication issues that sometimes happens from slower drive speeds or mass importing
+![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
 
-#### New Features:
-- Calibre-Web-Automated's Version Number now shows up alongside the version of the stock CW running as a base on the Settings page
+### Bugfixes 🐜:
+- Fixed a bug with cover_enforcer.py where books with '/' characters in the title or author's name(s) would break the process
+- Fixed a bug that resulted in excessive memory usage over time when ingesting large libraries (1000+ books)
+
+### Tweaks/ Minor Improvments ✨:
+- The Version Numbers of the installed distributions for CWA, Calibre, Stock CW, Kepubify and the Linuxserver.io base image are now all displayed at the bottom of the Settings page
+- Added links to the CWA Github and Discord in the Settings Page
+- Added Consistent CWA Branding throughout
 
 ## What Does it do? 🎯
 
@@ -89,31 +117,19 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 # UNDER ACTIVE DEVELOPMENT ⚠️
 
 - Please be aware that while CWA currently works for most people, it is still under active development and that bugs and unexpected behaviours can occur while we work and the code base matures
-- I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project, especially to @jmarmstrong1207 who has been working tirelessly on improving the project since the release of Version 1.2.0
+- I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project, especially to [@jmarmstrong1207](https://github.com/jmarmstrong1207) who has been working tirelessly on improving the project since the release of Version 1.2.0
   - In recognition of this, [@jmarmstrong1207](https://github.com/jmarmstrong1207) has now been promoted to a co-contributor here on the project, so feel free to also contact him with any issues, suggestions, ideas ect.
   - For any others that wish to contribute to this project in some way, please reach out on our Discord Server and see how you can best get involved:\
     \
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
-### Coming in Version 2.0.0 - Currently in Testing Phase 🧪
+### Coming in Version 2.0.1 - Currently in Testing Phase 🧪
 
-- Simplification of CWA's install, specifically for users having issues binding the right folder of their existing Calibre libraries in the Docker Compose
-- **Rebranded the Web UI** throughout to make it clear you are using Calibre-Web Automated
-- Added a button on the Web UI's navbar that allows users to **switch between Light & Dark Modes in one click**
-- Fixed a bug with cover_enforcer.py where books with '/' characters in the title or author's name(s) would break the process
-- Added Version numbers to Settings page for the installed Linuxserver.io, Calibre and Kepubify distributions
-- Added an **Update Notification system** to notify users of the availability of new updates from within the Web UI
-  - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
-  - Set to only show once per calendar day until updated as to not be annoying
-  - Persistent until closed with button to ensure it is seen
-- Building future images via Dockerfile 🐋
-- **Batch Metadata Editing!** Allows the editing of Metadata for multiple books at once, i.e. for a series
-- **Batch Removal / Deletion!** say goodbye to clicking that edit button again, and again, and again...
+- Integrating some of the new **Command-Line Features into the Web UI**
+  - Including Library Conversion, the Display of Conversion History and checking of the CWA Monitoring Services
 
 ### Coming Soon - Currently Under Active Development 🏗️
 
-- A form of **Library Auto-Detect** is currently in development to mitigate these issues, as well as to automatically establish a fresh Calibre Library for new users without an existing one, to simplify the install for them and make it so they don't have to manually copy `metadata.db` files from the repo into specific folders ect.
-- Integrating some of the new **Command-Line Features into the Web UI**
 - **Robo**tic **Read**ing 🤖📖
   - **Bio**nic **read**ing **wa**s **initi**ally **rele**ased **i**n **20**22 **a**s **a** **met**hod **o**f **forma**tting **te**xt **t**o **ma**ke **i**t **eas**ier **fo**r **peo**ple **wi**th **AD**HD **an**d **oth**er **concent**ration **&** **read**ing **iss**ues **t**o **re**ad **fast**er, **eas**ier **an**d **t**o **ret**ain **mo**re **o**f **wh**at **they**'ve **rea**d.
   - **W**e **we**re **insp**ired **b**y **th**e **conc**ept **an**d **ha**ve **crea**ted **a** **eP**ub **conve**rsion **algor**ithm **insp**ired **b**y **th**e **orig**inal **Bio**nic **Read**ing **fo**r **tho**se **wh**o **li**ke **i**t **o**r **wh**o **ma**y **wa**nt **t**o **gi**ve **i**t **a** **g**o
@@ -126,7 +142,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - Improved metadata handling and conversion for comics & manga
 - Please suggest any ideas or wishes you might have! we're open to anything!
 
-### IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated versions before 1.2.2 should update using the latest DockerHub image to ensure stability and conpatability with future updates
+### IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated version 1.2.2 or below should update using the latest DockerHub image to ensure stability and conpatability with future updates
 
 # How To Install 📖
 
@@ -161,18 +177,21 @@ services:
       - PUID=1000
       - PGID=100
       - TZ=UTC
+      - DOCKER_MODS=linuxserver/mods:universal-calibre
     volumes:
       - /path/to/config/folder:/config
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
-      - "/path/to/your/calibre/library:/calibre-main/Calibre Library"
+      - /path/to/your/calibre/library:/calibre-library
       #- /path/to/where/you/keep/your/books:/books #Optional
       #- /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
     ports:
       - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
     restart: unless-stopped
+    
 ```
 
 - **Explanation of the Container Bindings:**
+  - Make sure all 3 of the main bindings are seperate directories, errors can occur when binds are made within other binds
   - `/config` - Can be any empty folder, used to store logs and other miscellaneous files that keep CWA running
   - `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
   - `/calibre-main/Calibre Library` - This should be bound to your Calibre library folder where the `metadata.db` file resides within.

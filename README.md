@@ -36,6 +36,8 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 > If you find any bugs, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automated/issues)! 🪲
 
 - ### Dockerfile is now freely available & provides _wider system / hardware compatibility_ 🐋
+- ### Offical Support for Proxmox and NAS Based-Systems 💾
+  - If you've previously tried to use CWA and couldn't get it to work properly, many permissions related issues from the previous releases have now been fixed and so V2.0.0 should now work for pretty much anyone! (except those on ARM-based systems)
 - ### NEW FEATURE - Library Auto-Detect 📚🕵️
   - Made to MASSIVELY simplify the setup process for both new and existing users alike
   - **New Users without existing Libraries:** 🆕
@@ -63,6 +65,7 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 ![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
 
 ### Bugfixes 🐜:
+- Fixed a slew of permissions related issues that previously prevented Proxmox users and users with NAS-Based systems from being able to run CWA without issue. These configurations are now officially supported!
 - Fixed a bug with cover_enforcer.py where books with '/' characters in the title or author's name(s) would break the process
 - Fixed a bug that resulted in excessive memory usage over time when ingesting large libraries (1000+ books)
 

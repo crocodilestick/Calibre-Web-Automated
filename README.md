@@ -35,16 +35,16 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 > If you find any bugs, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automated/issues)! 🪲
 
-- ### Dockerfile is now freely available & provides _wider system / hardware compatability_ 🐋
+- ### Dockerfile is now freely available & provides _wider system / hardware compatibility_ 🐋
 - ### NEW FEATURE - Library Auto-Detect 📚🕵️
   - Made to MASSIVELY simplify the setup process for both new and existing users alike
-  - **New Users without exisitng Libraries:** 🆕
+  - **New Users without existing Libraries:** 🆕
     - New users without existing Calibre Libraries no longer need to copy and paste `metadata.db` files and point to their location in the Web UI, CWA will now automatically detect the lack of Library in your given bind and automatically create a new one for you! It will even automatically register it with the Web UI so you can really hit the ground running
   - **New or Existing Users with Existing Libraries:**
-    - Simply bind a directory containing your Calibre Library (search is done recursivly so it doesn't matter how deep in the directory it is) and CWA will now automatically find it and mount it to the Web UI
-    - Should you bind a directory with more than 1 Calibre Library in it, CWA will inteligently compare the disk sizes of all discovered libraries and mount the largest one
-      - _CWA supports only one library per instance though support for muliple libraries is being investigated for future releases_
-      - _In the meantime, users with muliple libraries who don't want to consolidate them are advised to run muliple, paralell instances_
+    - Simply bind a directory containing your Calibre Library (search is done recursively so it doesn't matter how deep in the directory it is) and CWA will now automatically find it and mount it to the Web UI
+    - Should you bind a directory with more than 1 Calibre Library in it, CWA will intelligently compare the disk sizes of all discovered libraries and mount the largest one
+      - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
+      - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
 - ### NEW FEATURE - Easy Dark/ Light Mode Switching ☀️🌙
 - **Switch between Light & Dark Modes in just one click from anywhere!**
   - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
@@ -52,9 +52,9 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
   - Users will now be automatically notifed of the availability of new updates from within the Web UI
     - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
     - Set to only show once per calendar day until updated as to not be annoying
-      - _Visable to Admin users only_
+      - _Visible to Admin users only_
 - ### NEW FEATURE - Manual Library Refresh ♻️
-  - Ever had books get stuck in the ingest folder after an unexpected powercut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything atill sitting in the ingest folder will be automatically ingested!
+  - Ever had books get stuck in the ingest folder after an unexpected powercut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything still sitting in the ingest folder will be automatically ingested!
 - ### NEW FEATURE - Batch Editing & Deletion! 🗂️🗄️
 - Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
 - To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!

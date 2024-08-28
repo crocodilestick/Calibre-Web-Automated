@@ -36,7 +36,7 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 > If you find any bugs, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automated/issues)! 🪲
 
 - ### Dockerfile is now freely available & provides _wider system / hardware compatibility_ 🐋
-- ### Offical Support for Proxmox and NAS Based-Systems 💾
+- ### Official Support for Proxmox and NAS Based-Systems 💾
   - If you've previously tried to use CWA and couldn't get it to work properly, many permissions related issues from the previous releases have now been fixed and so V2.0.0 should now work for pretty much anyone! (except those on ARM-based systems)
 - ### NEW FEATURE - Library Auto-Detect 📚🕵️
   - Made to MASSIVELY simplify the setup process for both new and existing users alike
@@ -48,7 +48,7 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
       - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
       - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
 - ### NEW FEATURE - Easy Dark/ Light Mode Switching ☀️🌙
-- **Switch between Light & Dark Modes in just one click from anywhere!**
+- **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
   - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
 - ### NEW FEATURE - Internal Update Notification System 🛎️
   - Users will now be automatically notifed of the availability of new updates from within the Web UI

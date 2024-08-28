@@ -199,14 +199,30 @@ def update_thumbnails():
 
 
 def cwa_get_package_versions() -> tuple[str, str, str, str]:
-    with open("/app/CWA_RELEASE", "r") as f:
-        cwa_version = f.read()
-    with open("/app/KEPUBIFY_RELEASE", "r") as f:
-        kepubify_version = f.read()
-    with open("/CALIBRE_RELEASE", "r") as f:
-        calibre_version = f.read()
-    with open("/app/LSCW_RELEASE", "r") as f:
-        lscw_version = f.read()
+    try:
+        with open("/app/CWA_RELEASE", "r") as f:
+            cwa_version = f.read()
+    except Exception:
+        cwa_version = "Unknown"
+
+    try:
+        with open("/app/KEPUBIFY_RELEASE", "r") as f:
+            kepubify_version = f.read()
+    except Exception:
+        kepubify_version = "Unknown"
+
+    try:
+        with open("/config/.CALIBRE_RELEASE", "r") as f:
+            calibre_version = f.read()
+    except Exception:
+        calibre_version = "Unknown"
+
+    try:
+        with open("/app/LSCW_RELEASE", "r") as f:
+            lscw_version = f.read()
+    except Exception:
+        lscw_version = "Unknown"
+
     return cwa_version, kepubify_version, calibre_version, lscw_version
 
 

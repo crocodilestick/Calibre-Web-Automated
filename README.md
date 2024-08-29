@@ -197,7 +197,7 @@ services:
   - Make sure all 3 of the main bindings are seperate directories, errors can occur when binds are made within other binds
   - `/config` - Can be any empty folder, used to store logs and other miscellaneous files that keep CWA running
   - `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
-  - `/calibre-main/Calibre Library` - This should be bound to your Calibre library folder where the `metadata.db` file resides within.
+  - `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` file resides within and will be mounted automatically. If there are multiple libraries, it will find and mount the largest one.
     - If you don't have an **existing** Calibre Database, you can use the Docker Template folder for a quick install mentioned above.
   - `/books` _(Optional)_ - This is purely optional, I personally bind /books to where I store my downloaded books so that they accessible from within the container but CWA doesn't require this
   - `/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server

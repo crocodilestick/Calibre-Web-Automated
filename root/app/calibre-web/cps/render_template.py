@@ -116,7 +116,7 @@ def cwa_update_available() -> tuple[bool, str, str]:
     with open("/app/CWA_RELEASE", 'r') as f:
         current_version = f.read().strip()
     response = requests.get("https://api.github.com/repos/crocodilestick/calibre-web-automated/releases/latest")
-    tag_name = response.json()['tag_name']
+    tag_name = response.json().get('tag_name', current_version)
     return (tag_name != current_version), current_version, tag_name
 
 # Gets the date the last cwa update notification was displayed

@@ -63,7 +63,7 @@ class LibraryConverter:
                 os.system(f"ebook-convert '/config/original-library/{filename}{file_extension}' '{self.import_folder}{filename}.epub'") # >>/config/calibre-web.log 2>&1
                 logging.info(f"[convert-library]: Conversion of {os.path.basename(file)} complete!")
             else:
-                logging.info(f"[convert-library]: Conversion of {os.path.basename(file)} has failed!")
+                logging.info(f"[convert-library]: Conversion of {os.path.basename(file)} has failed! Please manually import this if necessary")
 
             #  if self.args.setup == True:
             #     os.system(f"calibredb add --with-library '{self.library}' '{self.import_folder}{filename}.epub' >>/config/calibre-web.log 2>&1")

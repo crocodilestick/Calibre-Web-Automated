@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import sys
+import filecmp
 
 logger = logging.getLogger(__name__)
 
@@ -55,12 +56,18 @@ class LibraryConverter:
             filename = filename.split('/')[-1]
             book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1]
             os.system(f"cp '{file}' '/config/original-library/{filename}{file_extension}'")
-            os.system(f"calibredb remove {book_id} --permanent --with-library '{self.library}'")
-            os.system(f"ebook-convert '/config/original-library/{filename}{file_extension}' '{self.import_folder}{filename}.epub'") # >>/config/calibre-web.log 2>&1
+
+            # Double check if path is actually copied before inserting. Compares byte for byte
+            if (filecmp.cmp(f'{file}', f'/config/original-library/{filename}{file_extension}', shallow = False)):
+                os.system(f"calibredb remove {book_id} --permanent --with-library '{self.library}'")
+                os.system(f"ebook-convert '/config/original-library/{filename}{file_extension}' '{self.import_folder}{filename}.epub'") # >>/config/calibre-web.log 2>&1
+                logging.info(f"[convert-library]: Conversion of {os.path.basename(file)} complete!")
+            else:
+                logging.info(f"[convert-library]: Conversion of {os.path.basename(file)} has failed!")
+
             #  if self.args.setup == True:
             #     os.system(f"calibredb add --with-library '{self.library}' '{self.import_folder}{filename}.epub' >>/config/calibre-web.log 2>&1")
             os.system(f"chown -R abc:abc '{self.library}'")
-            logging.info(f"[convert-library]: Conversion of {os.path.basename(file)} complete!")
             self.current_book += 1
             if not self.args.keep:
                 os.remove(f"/config/original-library/{filename}{file_extension}")

@@ -101,8 +101,11 @@ class Enforcer:
         print(f"[cover-enforcer]: Enforcing covers for {len(epubs_in_library)} epub file(s) in {self.calibre_library} ...")
 
         for book_dir in book_dirs:
-            book_info = self.enforce_cover(book_dir)
-            self.db.add_entry_from_all(book_info)
+            try:
+                book_info = self.enforce_cover(book_dir)
+                self.db.add_entry_from_all(book_info)
+            except:
+                print(f"'{book_dir}' cover is unable to be enforced ")
 
         t_end = time.time()
 

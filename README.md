@@ -180,7 +180,7 @@ services:
       - PUID=1000
       - PGID=100
       - TZ=UTC
-      - DOCKER_MODS=linuxserver/mods:universal-calibre
+      - DOCKER_MODS=lscr.io/linuxserver/mods:universal-calibre-v7.16.0
     volumes:
       - /path/to/config/folder:/config
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest

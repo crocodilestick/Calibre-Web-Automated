@@ -33,17 +33,7 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 ### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid stability & import/ ingest issues that have been corrected from previous versions
 
-View [The changelog for more info](https://github.com/crocodilestick/Calibre-Web-Automated/releases/tag/V2.0.0)
-
-### Bugfixes 🐜:
-- Fixed a slew of permissions related issues that previously prevented Proxmox users and users with NAS-Based systems from being able to run CWA without issue. These configurations are now officially supported!
-- Fixed a bug with cover_enforcer.py where books with '/' characters in the title or author's name(s) would break the process
-- Fixed a bug that resulted in excessive memory usage over time when ingesting large libraries (1000+ books)
-
-### Tweaks/ Minor Improvements ✨:
-- The Version Numbers of the installed distributions for CWA, Calibre, Stock CW, Kepubify and the Linuxserver.io base image are now all displayed at the bottom of the Settings page
-- Added links to the CWA Github and Discord in the Settings Page
-- Added Consistent CWA Branding throughout
+View [The changelog for more info](https://github.com/crocodilestick/Calibre-Web-Automated/releases/tag/V2.0.0). New features have been released
 
 ## What Does it do? 🎯
 

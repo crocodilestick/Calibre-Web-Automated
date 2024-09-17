@@ -18,6 +18,8 @@ class Enforcer:
         self.calibre_library = self.get_calibre_library()
         self.db = CWA_DB()
 
+        self.illegal_characters = ["<", ">", ":", '"', "/", "\\", "|", "?", "*"]
+
     def get_calibre_library(self) -> str:
         """Gets Calibre-Library location from dirs_json path"""
         with open(self.dirs_json, 'r') as f:
@@ -55,10 +57,12 @@ class Enforcer:
         author_name = (log_info['author_name'].split(', ')[0]).split(' & ')[0]
         book_id = log_info['book_id']
 
-        if '/' in book_title:
-            book_title = book_title.replace('/', '_')
-        if '/' in author_name:
-            author_name = author_name.replace('/', '_')
+        for char in book_title:
+            if char in self.illegal_characters:
+                book_title = book_title.replace(char, '_')
+        for char in author_name:
+            if char in self.illegal_characters:
+                author_name = author_name.replace(char, '_')
 
         book_dir = f"{self.calibre_library}/{author_name}/{book_title} ({book_id})/"
         log_info['epub_path'] = book_dir
@@ -68,7 +72,13 @@ class Enforcer:
     def enforce_cover(self, book_dir: str) -> dict:
         """Will force the Cover & Metadata to update for the book in the given directory"""
         library_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(book_dir) for f in filenames]
-        epub = [f for f in library_files if f.endswith('.epub')][0]
+        try:
+            epub = [f for f in library_files if f.endswith('.epub')][0]
+        except Exception as e:
+            print(f"[cover-enforcer]: No epub file found in {book_dir}")
+            print(f"[cover-enforcer]: {e}")
+            return {}
+            
         title_author = epub.split('/')[-1].split('.epub')[0]
         cover = book_dir + '/cover.jpg'
         old_metadata = book_dir + '/metadata.opf'
@@ -101,8 +111,13 @@ class Enforcer:
         print(f"[cover-enforcer]: Enforcing covers for {len(epubs_in_library)} epub file(s) in {self.calibre_library} ...")
 
         for book_dir in book_dirs:
-            book_info = self.enforce_cover(book_dir)
-            self.db.add_entry_from_all(book_info)
+            try:
+                book_info = self.enforce_cover(book_dir)
+                self.db.add_entry_from_all(book_info)
+            except Exception as e:
+                print(f"[cover-enforcer]: ERROR: {book_dir}")
+                print(f"[cover-enforcer]: Skipping book due to following error: {e}")
+                continue
 
         t_end = time.time()
 
@@ -187,6 +202,9 @@ def main():
         log_info = enforcer.read_log()
         book_dir = enforcer.get_book_dir_from_log(log_info)
         book_info = enforcer.enforce_cover(book_dir)
+        if book_info == {}:
+            print(f"[cover-enforcer] Metadata for '{log_info['book_title']}' could not be successfully enforced")
+            sys.exit(1)
         log_info['epub_path'] = book_info['epub_path']
         enforcer.db.add_entry_from_log(log_info)
         enforcer.delete_log()

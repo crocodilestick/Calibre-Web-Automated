@@ -33,36 +33,7 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 ### 🚨 Please **Update to the latest DockerHub image ASAP** to avoid stability & import/ ingest issues that have been corrected from previous versions
 
-> If you find any bugs, please be sure to create an issue in the [Issues Section](https://github.com/crocodilestick/Calibre-Web-Automated/issues)! 🪲
-
-- ### Dockerfile is now freely available & provides _wider system / hardware compatibility_ 🐋
-- ### Official Support for Proxmox and NAS Based-Systems 💾
-  - If you've previously tried to use CWA and couldn't get it to work properly, many permissions related issues from the previous releases have now been fixed and so V2.0.0 should now work for pretty much anyone! (except those on ARM-based systems)
-- ### NEW FEATURE - Library Auto-Detect 📚🕵️
-  - Made to MASSIVELY simplify the setup process for both new and existing users alike
-  - **New Users without existing Libraries:** 🆕
-    - New users without existing Calibre Libraries no longer need to copy and paste `metadata.db` files and point to their location in the Web UI, CWA will now automatically detect the lack of Library in your given bind and automatically create a new one for you! It will even automatically register it with the Web UI so you can really hit the ground running
-  - **New or Existing Users with Existing Libraries:**
-    - Simply bind a directory containing your Calibre Library (search is done recursively so it doesn't matter how deep in the directory it is) and CWA will now automatically find it and mount it to the Web UI
-    - Should you bind a directory with more than 1 Calibre Library in it, CWA will intelligently compare the disk sizes of all discovered libraries and mount the largest one
-      - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
-      - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
-- ### NEW FEATURE - Easy Dark/ Light Mode Switching ☀️🌙
-- **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
-  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
-- ### NEW FEATURE - Internal Update Notification System 🛎️
-  - Users will now be automatically notified of the availability of new updates from within the Web UI
-    - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
-    - Set to only show once per calendar day until updated as to not be annoying
-      - _Visible to Admin users only_
-- ### NEW FEATURE - Manual Library Refresh ♻️
-  - Ever had books get stuck in the ingest folder after an unexpected power-cut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything still sitting in the ingest folder will be automatically ingested!
-- ### NEW FEATURE - Batch Editing & Deletion! 🗂️🗄️
-- Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
-- To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
-  - _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
-
-![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
+View [The changelog for more info](https://github.com/crocodilestick/Calibre-Web-Automated/releases/tag/V2.0.0)
 
 ### Bugfixes 🐜:
 - Fixed a slew of permissions related issues that previously prevented Proxmox users and users with NAS-Based systems from being able to run CWA without issue. These configurations are now officially supported!
@@ -116,6 +87,33 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 - **Change Tracking Database** 📊 - In combination with the **New Cover & Metadata Enforcement Features**, a database now exists to keep track of any and all enforcements, both for peace of mind and to make the checking of any bugs or weird behaviour easier, but also to make the data available for statistical analysis or whatever else someone might want to use the data for
   - Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
+
+- ### NEW FEATURE - Library Auto-Detect 📚🕵️
+  - Made to MASSIVELY simplify the setup process for both new and existing users alike
+  - **New Users without existing Libraries:** 🆕
+    - New users without existing Calibre Libraries no longer need to copy and paste `metadata.db` files and point to their location in the Web UI, CWA will now automatically detect the lack of Library in your given bind and automatically create a new one for you! It will even automatically register it with the Web UI so you can really hit the ground running
+  - **New or Existing Users with Existing Libraries:**
+    - Simply bind a directory containing your Calibre Library (search is done recursively so it doesn't matter how deep in the directory it is) and CWA will now automatically find it and mount it to the Web UI
+    - Should you bind a directory with more than 1 Calibre Library in it, CWA will intelligently compare the disk sizes of all discovered libraries and mount the largest one
+      - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
+      - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
+- ### NEW FEATURE - Easy Dark/ Light Mode Switching ☀️🌙
+- **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
+  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
+- ### NEW FEATURE - Internal Update Notification System 🛎️
+  - Users will now be automatically notified of the availability of new updates from within the Web UI
+    - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
+    - Set to only show once per calendar day until updated as to not be annoying
+      - _Visible to Admin users only_
+- ### NEW FEATURE - Manual Library Refresh ♻️
+  - Ever had books get stuck in the ingest folder after an unexpected power-cut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything still sitting in the ingest folder will be automatically ingested!
+- ### NEW FEATURE - Batch Editing & Deletion! 🗂️🗄️
+  - Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
+  - To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
+  - _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
+
+![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
+
 
 # UNDER ACTIVE DEVELOPMENT ⚠️
 

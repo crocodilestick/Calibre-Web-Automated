@@ -88,7 +88,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
       - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
       - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
 - ### NEW FEATURE - Easy Dark/ Light Mode Switching ☀️🌙
-- **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
+  - **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
   - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
 - ### NEW FEATURE - Internal Update Notification System 🛎️
   - Users will now be automatically notified of the availability of new updates from within the Web UI

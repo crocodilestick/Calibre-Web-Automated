@@ -6,7 +6,16 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 # Set the default shell for the following RUN instructions to bash instead of sh
 SHELL ["/bin/bash", "-c"]
 
-# Example build command = 'docker build --tag cwa-dockerfile-test --build-arg="BUILD_DATE=02-08-2024 20:52" --build-arg="VERSION=1.3.0-test-2" .'
+# Old Example Build Command:
+# docker build --tag cwa-dockerfile-test --build-arg="BUILD_DATE=02-08-2024 20:52" --build-arg="VERSION=1.3.0-test-2" .
+
+# New Example Build & Push Command:
+# docker buildx build \
+# --push \
+# --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
+# --build-arg="BUILD_DATE=02-08-2024 20:52" \
+# --build-arg="VERSION=2.1.0" \
+# --tag crocodilestick/calibre-web-automated:latest .
 
 # set version label
 ARG BUILD_DATE

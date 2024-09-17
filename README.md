@@ -51,12 +51,12 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 - **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
   - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
 - ### NEW FEATURE - Internal Update Notification System 🛎️
-  - Users will now be automatically notifed of the availability of new updates from within the Web UI
+  - Users will now be automatically notified of the availability of new updates from within the Web UI
     - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
     - Set to only show once per calendar day until updated as to not be annoying
       - _Visible to Admin users only_
 - ### NEW FEATURE - Manual Library Refresh ♻️
-  - Ever had books get stuck in the ingest folder after an unexpected powercut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything still sitting in the ingest folder will be automatically ingested!
+  - Ever had books get stuck in the ingest folder after an unexpected power-cut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything still sitting in the ingest folder will be automatically ingested!
 - ### NEW FEATURE - Batch Editing & Deletion! 🗂️🗄️
 - Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
 - To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
@@ -69,7 +69,7 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 - Fixed a bug with cover_enforcer.py where books with '/' characters in the title or author's name(s) would break the process
 - Fixed a bug that resulted in excessive memory usage over time when ingesting large libraries (1000+ books)
 
-### Tweaks/ Minor Improvments ✨:
+### Tweaks/ Minor Improvements ✨:
 - The Version Numbers of the installed distributions for CWA, Calibre, Stock CW, Kepubify and the Linuxserver.io base image are now all displayed at the bottom of the Settings page
 - Added links to the CWA Github and Discord in the Settings Page
 - Added Consistent CWA Branding throughout
@@ -145,7 +145,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 - Improved metadata handling and conversion for comics & manga
 - Please suggest any ideas or wishes you might have! we're open to anything!
 
-### IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated version 1.2.2 or below should update using the latest DockerHub image to ensure stability and conpatability with future updates
+### IMPORTANT NOTE: ⚡ Current users of Calibre-Web Automated version 1.2.2 or below should update using the latest DockerHub image to ensure stability and compatibility with future updates
 
 # How To Install 📖
 
@@ -163,7 +163,7 @@ curl -OL https://raw.githubusercontent.com/crocodilestick/calibre-web-automated/
 docker compose up -d
 ```
 
-And that's you off to the races! 🥳 HOWEVER to avoid potential problems and ensure maximum functionality, we reccommend carrying out these [Post-Install Tasks Here](#3-recommended-post-install-tasks).
+And that's you off to the races! 🥳 HOWEVER to avoid potential problems and ensure maximum functionality, we recommend carrying out these [Post-Install Tasks Here](#3-recommended-post-install-tasks).
 
 ---
 ## Using Docker Compose 🐋⭐(Recommended)
@@ -194,7 +194,7 @@ services:
 ```
 
 - **Explanation of the Container Bindings:**
-  - Make sure all 3 of the main bindings are seperate directories, errors can occur when binds are made within other binds
+  - Make sure all 3 of the main bindings are separate directories, errors can occur when binds are made within other binds
   - `/config` - Can be any empty folder, used to store logs and other miscellaneous files that keep CWA running
   - `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
   - `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` file resides within and will be mounted automatically. If there are multiple libraries, it will find and mount the largest one.
@@ -202,23 +202,23 @@ services:
   - `/books` _(Optional)_ - This is purely optional, I personally bind /books to where I store my downloaded books so that they accessible from within the container but CWA doesn't require this
   - `/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
 
-### 2. And just like that, Calibre-Web Automated should be up and running!
+### And just like that, Calibre-Web Automated should be up and running!
 
-- By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths
+<!-- - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths -->
 
-### 3. **_Recommended Post-Install Tasks:_**
+### 2. **_Recommended Post-Install Tasks:_**
 
 #### _Calibre-Web Quick Start Guide_
 
 1. Open your browser and navigate to http://localhost:8084 or http://localhost:8084/opds for the OPDS catalog
 2. Log in with the default admin credentials (_below_)
-3. If you don't have an existing Calibre database, you can use the `metadata.db` file above
+<!-- 3. If you don't have an existing Calibre database, you can use the `metadata.db` file above
    - This is a blank Calibre-Database you can use to perform the Initial Setup with
-   - Place the `metadata.db` file in the the folder you bound to `/calibre-main` in your Docker Compose
-4. During the Web UI's Initial Setup screen, Set Location of Calibre database to the path of the folder to `/calibre-main` and click "Save"
-5. Optionally, use Google Drive to host your Calibre library by following the Google Drive integration guide
-6. Configure your Calibre-Web instance via the admin page, referring to the Basic Configuration and UI Configuration guides
-7. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
+   - Place the `metadata.db` file in the the folder you bound to `/calibre-main` in your Docker Compose -->
+<!-- 4. During the Web UI's Initial Setup screen, Set Location of Calibre database to the path of the folder to `/calibre-main` and click "Save"
+5. Optionally, use Google Drive to host your Calibre library by following the Google Drive integration guide -->
+3. Configure your Calibre-Web instance via the admin page, referring to the Basic Configuration and UI Configuration guides
+4. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
 
 **⚠️ ATTENTION ⚠️**
 
@@ -284,9 +284,9 @@ options:
   -setup         Indicates to the function whether or not it's being ran from the setup script or manually (DO NOT USE MANUALLY)
 ```
 
-## Changing the Default Directories
+<!-- ## Changing the Default Directories
 
-- If you ever need to change the locations of your **ingest**, **import** and/ or **calibre-library** folders, use the `cwa-change-dirs` command from anywhere within the container's terminal to open the json file where the paths are saved and change them as required.
+- If you ever need to change the locations of your **ingest**, **import** and/ or **calibre-library** folders, use the `cwa-change-dirs` command from anywhere within the container's terminal to open the json file where the paths are saved and change them as required. -->
 
 ## Checking the Monitoring Services are working correctly
 
@@ -297,6 +297,6 @@ options:
 
 - Calibre-Web Automated (_formerly Calibre-Web Automator_) was made to be everything I need for my reading workflow, I personally love the new features and hope you do to!
 - While it already does everything I need, building it has been really fun and it's great to see so many other people get so much use out of it!
-- And so on top of continuing to perform maintainace and bugfixes, we are always open to suggestions and ideas from the community so if there's something you'd like to see, don't be afraid to ask!
+- And so on top of continuing to perform maintenance and bugfixes, we are always open to suggestions and ideas from the community so if there's something you'd like to see, don't be afraid to ask!
 - To do so you can either open an Issue here on the project page or get in touch with us on our Discord Server [here](https://discord.gg/EjgSeek94R)!
 - We're always looking for new people to help out too so if that sounds like you, let us know!

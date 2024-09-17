@@ -21,6 +21,9 @@ DEV
 */REFERENCE
 cwa.db
 
+# Dev files
+dev_changelog.md
+
 # Distribution / packaging
 .Python
 build/

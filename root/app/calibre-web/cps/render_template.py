@@ -125,25 +125,29 @@ def get_cwa_last_notification() -> str:
     if not os.path.isfile('/app/cwa_update_notice'):
         with open('/app/cwa_update_notice', 'w') as f:
             f.write(current_date)
-        return "0001.01.01"
+        return "0001-01-01"
     else:
         with open('/app/cwa_update_notice', 'r') as f:
             last_notification = f.read()
     return last_notification
 
 # Displays a notification to the user that an update for CWA is available, no matter which page they're on
-# Currently set to only display once per calander day
+# Currently set to only display once per calender day
 def cwa_update_notification() -> None:
     current_date = datetime.now().strftime("%Y-%m-%d")
     cwa_last_notification = get_cwa_last_notification()
+    
     if cwa_last_notification == current_date:
         return
-    update_available, current_verision, tag_name = cwa_update_available()
-    if update_available and (cwa_last_notification != current_date):
-        with open('/app/cwa_update_notice', 'w') as f:
-            f.write(current_date)
-        message = f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_verision} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day"
+
+    update_available, current_version, tag_name = cwa_update_available()
+    if update_available:
+        message = f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_version} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day"
         flash(_(message), category="cwa_update")
+
+    with open('/app/cwa_update_notice', 'w') as f:
+        f.write(current_date)
+    return
 
 
 # Returns the template for rendering and includes the instance name

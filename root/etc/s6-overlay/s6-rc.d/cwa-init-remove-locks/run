@@ -1,0 +1,25 @@
+#!/bin/bash
+
+declare -a lockFiles=("new-book-processor.lock")
+
+echo "[cwa-init-remove-locks] Checking for leftover lock files from prvious instance..."
+
+counter=0
+
+for f in "${lockFiles[@]}"
+do
+    if [ -f "/tmp/$f" ]
+    then
+        echo "[cwa-init-remove-locks] Leftover $f exists, removing now..."
+        rm "/tmp/$f"
+        echo "[cwa-init-remove-locks] Leftover $f removed."
+        let counter++
+    fi
+done
+
+if [[ "$counter" -eq 0 ]]
+then
+    echo "[cwa-init-remove-locks] No leftover lock files to remove. Ending service..."
+else
+    echo "[cwa-init-remove-locks] $counter lock file(s) removed. Ending service..."
+fi

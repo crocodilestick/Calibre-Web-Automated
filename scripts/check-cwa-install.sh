@@ -8,20 +8,20 @@ NC='\033[0m' # No Color
 echo "====== Calibre-Web Automated -- Status of Monitoring Services ======"
 echo ""
 
-if s6-rc -a list | grep -q 'new-book-detector'; then
-    echo -e "- new-book-detector ${GREEN}is running${NC}"
-    nb=true
-else
-    echo -e "- new-book-detector ${RED}is not running${NC}"
-    nb=false
-fi
+# if s6-rc -a list | grep -q 'new-book-detector'; then
+#     echo -e "- new-book-detector ${GREEN}is running${NC}"
+#     nb=true
+# else
+#     echo -e "- new-book-detector ${RED}is not running${NC}"
+#     nb=false
+# fi
 
-if s6-rc -a list | grep -q 'books-to-process-detector'; then
-    echo -e "- books-to-process-detector ${GREEN}is running${NC}"
-    bp=true
+if s6-rc -a list | grep -q 'cwa-ingest-service'; then
+    echo -e "- cwa-ingest-service ${GREEN}is running${NC}"
+    is=true
 else
-    echo -e "- books-to-process-detector ${RED}is not running${NC}"
-    bp=false
+    echo -e "- cwa-ingest-service ${RED}is not running${NC}"
+    is=false
 fi
 
 if s6-rc -a list | grep -q 'metadata-change-detector'; then
@@ -32,9 +32,10 @@ else
     mc=false
 fi
 
+
 echo ""
 
-if $cs && $bs && $mc; then
+if $is && $mc; then
     echo -e "Calibre-Web-Automated was ${GREEN}successfully installed ${NC}and ${GREEN}is running properly!${NC}"
 else
     echo -e "Calibre-Web-Automated was ${RED}not installed successfully${NC}, please check the logs for more information."

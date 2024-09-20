@@ -44,7 +44,7 @@ class AutoLibrary:
             self._metadb_path = path
             self.lib_path = os.path.dirname(path)
 
-    # Checks config_dir for an exisiting app.db, if one doesn't already exist it copies an empty one from /app/calibre-web-automated/empty_library/app.db and sets the permissiosn
+    # Checks config_dir for an existing app.db, if one doesn't already exist it copies an empty one from /app/calibre-web-automated/empty_library/app.db and sets the permissions
     def check_for_app_db(self):
         files_in_config = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.config_dir) for f in filenames]
         db_files = [f for f in files_in_config if "app.db" in f]

@@ -4,17 +4,16 @@
 
 # This script is used to automatically import downloaded ebooks into a Calibre database.
 # Reference: https://manual.calibre-ebook.com/generated/en/calibredb.html#add
-echo "========== STARTING BOOKS-TO-PROCESS DETECTOR =========="
+echo "========== STARTING CWA-INGEST SERVICE =========="
 
-# Folder to monitor, replace "/books/to_process" with the folder you want to monitor e.g. your download folder for books
 WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
-echo "[books-to-process]: Watching folder: $WATCH_FOLDER"
+echo "[cwa-ingest-service]: Watching folder: $WATCH_FOLDER"
 
 # Monitor the folder for new files
 s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
 while read -r events filepath ; do
-        echo "[books-to-process]: New files detected - $filepath"
-        python3 /app/calibre-web-automated/scripts/new-book-processor.py "$filepath"
-        echo "[books-to-process]: New files successfully moved/converted, the Ingest Folder has been emptied and is ready to go again."
+        echo "[cwa-ingest-service]: New files detected - $filepath"
+        python3 /app/calibre-web-automated/scripts/ingest-processor.py "$filepath"
+        echo "[cwa-ingest-service]: New files successfully moved/converted, the Ingest Folder has been emptied and is ready to go again."
 done
 

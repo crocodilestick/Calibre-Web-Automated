@@ -5,7 +5,7 @@ from . import logger, config, constants
 from .usermanagement import login_required_if_no_ano
 from .admin import admin_required
 
-import os
+import subprocess
 
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
@@ -47,19 +47,19 @@ def cwa_switch_theme():
 @login_required_if_no_ano
 def cwa_library_refresh():
     flash(_("Library Refresh: Initialising Book Ingest System, please wait..."), category="cwa_refresh")
-    return_code = os.system('python3 /app/calibre-web-automated/scripts/new-book-processor.py "/cwa-book-ingest"')
-    return_val = os.WEXITSTATUS(return_code)
+    result = subprocess.run('python3', '/app/calibre-web-automated/scripts/ingest-processor.py', '/cwa-book-ingest')
+    return_code = result.returncode
 
-    if return_val > 100:
-        flash(_(f"Library Refresh: Ingest process complete. {return_val - 100} new books ingested."), category="cwa_refresh")
-    elif return_val == 2:
-        flash(_("Library Refersh: The book ingest service is already running, please wait until it has finished before trying again."), category="cwa_refresh")
-#    elif return_val == 0:
-#        flash(_("Manually starting ingest proces"), category="info")
-    elif return_val == 0:
+    if return_code > 100:
+        flash(_(f"Library Refresh: Ingest process complete. {return_code - 100} new books ingested."), category="cwa_refresh")
+    elif return_code == 2:
+        flash(_("Library Refresh: The book ingest service is already running, please wait until it has finished before trying again."), category="cwa_refresh")
+#    elif return_code == 0:
+#        flash(_("Manually starting ingest process"), category="info")
+    elif return_code == 0:
         flash(_("Library Refresh: Ingest process complete. No new books ingested."), category="cwa_refresh")
     else:
-        flash(_("Library Refresh: An unexpected error occured, check the logs."), category="cwa_refresh")
+        flash(_("Library Refresh: An unexpected error occurred, check the logs."), category="cwa_refresh")
 
     return redirect("/", code=302)
 
@@ -69,7 +69,7 @@ def cwa_library_refresh():
 @admin_required
 def cwa_library_convert():
     flash(_("Library Convert: Running, please wait..."), category="refresh-cwa")
-    os.system('python3 /app/calibre-web-automated/scripts/convert-library.py -k')
+    subprocess.Popen('python3', '/app/calibre-web-automated/scripts/convert-library.py', '-k')
     return redirect(url_for('admin.view_logfile'))
 
 # Coming Soon

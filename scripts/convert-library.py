@@ -13,7 +13,7 @@ class LibraryConverter:
         self.args = args
 
         self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz']
-        self.hierarchy_of_succsess = ['lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
+        self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
 
         self.dirs = self.get_dirs() # Dirs are assigned by user during setup
         self.import_folder = f"{self.dirs['import_folder']}/"
@@ -28,7 +28,7 @@ class LibraryConverter:
         epub_files = [f for f in library_files if f.endswith('.epub')]
         dupe_list = []
         to_convert = []
-        for format in self.hierarchy_of_succsess:
+        for format in self.hierarchy_of_success:
             format_files = [f for f in library_files if f.endswith(f'.{format}')]
             if len(format_files) > 0:
                 for file in format_files:
@@ -54,16 +54,16 @@ class LibraryConverter:
             filename, file_extension = os.path.splitext(file)
             filename = filename.split('/')[-1]
             book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1]
-            os.system(f"cp '{file}' '/config/original-library/{filename}{file_extension}'")
+            os.system(f"cp '{file}' '/config/processed_books/{filename}{file_extension}'")
             os.system(f"calibredb remove {book_id} --permanent --with-library '{self.library}'")
-            os.system(f"ebook-convert '/config/original-library/{filename}{file_extension}' '{self.import_folder}{filename}.epub'") # >>/config/calibre-web.log 2>&1
+            os.system(f"ebook-convert '/config/processed_books/{filename}{file_extension}' '{self.import_folder}{filename}.epub'") # >>/config/calibre-web.log 2>&1
             #  if self.args.setup == True:
             #     os.system(f"calibredb add --with-library '{self.library}' '{self.import_folder}{filename}.epub' >>/config/calibre-web.log 2>&1")
             os.system(f"chown -R abc:abc '{self.library}'")
             logging.info(f"[convert-library]: Conversion of {os.path.basename(file)} complete!")
             self.current_book += 1
             if not self.args.keep:
-                os.remove(f"/config/original-library/{filename}{file_extension}")
+                os.remove(f"/config/processed_books/{filename}{file_extension}")
 
     def empty_import_folder(self):
         os.system(f"chown -R abc:abc '{self.import_folder}'")
@@ -78,7 +78,7 @@ def main():
     )
 
     parser.add_argument('--replace', '-r', action='store_true', required=False, dest='replace', help='Replaces the old library with the new one', default=False)
-    parser.add_argument('--keep', '-k', action='store_true', required=False, dest='keep', help='Creates a new epub library with the old one but stores the old files in /config/original-library', default=False)
+    parser.add_argument('--keep', '-k', action='store_true', required=False, dest='keep', help='Creates a new epub library with the old one but stores the old files in /config/processed_books', default=False)
     #  parser.add_argument('-setup', action='store_true', required=False, dest='setup', help="Indicates to the function whether or not it's being ran from the setup script or manually (DO NOT USE MANUALLY)", default=False)
     args = parser.parse_args()
 

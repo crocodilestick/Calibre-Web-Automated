@@ -43,7 +43,7 @@ class NewBookProcessor:
     def __init__(self, filepath: str):
         self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz']
         self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz']
-        self.ingest_folder, self.library_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
+        self.ingest_folder, self.library_dir, self.book_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
         self.tmp_conversion_dir = "/config/.cwa_conversion_tmp/"
 
         self.filepath = filepath # path of the book we're targeting
@@ -57,8 +57,10 @@ class NewBookProcessor:
 
         ingest_folder = f"{dirs['ingest_folder']}/" # Dir where new files are looked for to process and subsequently deleted
         library_dir = f"{dirs['calibre_library_dir']}/"
-
-        return ingest_folder, library_dir
+        split_dir = f"{dirs['config_calibre_split_dir']}/"
+        book_dir = split_dir if split_dir else library_dir
+        
+        return ingest_folder, library_dir, book_dir
 
 
     def convert_book(self, import_format: str) -> tuple[bool, str]:
@@ -108,8 +110,8 @@ class NewBookProcessor:
         print("[ingest-processor]: Importing new epub to CWA...")
         import_path = Path(book_path)
         import_filename = os.path.basename(book_path)
-        try:
-            subprocess.run("calibredb", "add", f"{book_path}", f"--library-path='{self.library_dir}'", check=True)
+        try:            
+            subprocess.run("calibredb", "add", f"{book_path}", f"--library-path='{self.book_dir}'", check=True)
             print(f"[ingest-processor] Added {import_path.stem} to Calibre database")
             shutil.copyfile(book_path, f"/config/processed_books/imported/{import_filename}")
         except subprocess.CalledProcessError as e:

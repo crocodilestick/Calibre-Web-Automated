@@ -115,7 +115,7 @@ class AutoLibrary:
             sys.exit(1)
 
     # Update the dirs.json file with the new library location (lib_path))
-    def update_dirs_json(self, config_calibre_split, config_calibre_split_dir):
+    def update_dirs_json(self):
         """Updates the location of the calibre library stored in dirs.json with the found library"""
         try:
             print("[auto-library] Updating dirs.json with new library location...")

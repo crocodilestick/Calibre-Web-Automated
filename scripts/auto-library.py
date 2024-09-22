@@ -82,12 +82,20 @@ class AutoLibrary:
     # Sets the library's location in both dirs.json and the CW db
     def set_library_location(self):
         if self.metadb_path is not None and os.path.exists(self.metadb_path):
-            self.update_dirs_json()
+            config_calibre_split, config_calibre_split_dir = self.get_library_split()
+            self.update_dirs_json(config_calibre_split, config_calibre_split_dir)
             self.update_calibre_web_db()
             return
         else:
             print("[auto-library]: ERROR: metadata.db found but not mounted")
             sys.exit(1)
+
+    def get_library_split(self):
+        con = sqlite3.connect("/config/app.db")
+        cur = con.cursor()
+        config_calibre_split = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+        config_calibre_split_dir = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+        return config_calibre_split, config_calibre_split_dir
 
     # Uses sql to update CW's app.db with the correct library location (config_calibre_dir in the settings table)
     def update_calibre_web_db(self):
@@ -108,13 +116,15 @@ class AutoLibrary:
             sys.exit(1)
 
     # Update the dirs.json file with the new library location (lib_path))
-    def update_dirs_json(self):
+    def update_dirs_json(self, config_calibre_split, config_calibre_split_dir):
         """Updates the location of the calibre library stored in dirs.json with the found library"""
         try:
             print("[auto-library] Updating dirs.json with new library location...")
             with open(self.dirs_path) as f:
                 dirs = json.load(f)
             dirs["calibre_library_dir"] = self.lib_path
+            dirs["config_calibre_split"] = config_calibre_split
+            dirs["config_calibre_split_dir"] = config_calibre_split_dir
             with open(self.dirs_path, 'w') as f:
                 json.dump(dirs, f)
             return

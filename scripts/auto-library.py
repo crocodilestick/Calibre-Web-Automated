@@ -82,8 +82,8 @@ class AutoLibrary:
     # Sets the library's location in both dirs.json and the CW db
     def set_library_location(self):
         if self.metadb_path is not None and os.path.exists(self.metadb_path):
-            config_calibre_split, config_calibre_split_dir = self.get_library_split()
-            self.update_dirs_json(config_calibre_split, config_calibre_split_dir)
+            self.config_calibre_split_dir = self.get_library_split()
+            self.update_dirs_json()
             self.update_calibre_web_db()
             return
         else:
@@ -93,9 +93,8 @@ class AutoLibrary:
     def get_library_split(self):
         con = sqlite3.connect("/config/app.db")
         cur = con.cursor()
-        config_calibre_split = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
         config_calibre_split_dir = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
-        return config_calibre_split, config_calibre_split_dir
+        return config_calibre_split_dir
 
     # Uses sql to update CW's app.db with the correct library location (config_calibre_dir in the settings table)
     def update_calibre_web_db(self):
@@ -123,8 +122,7 @@ class AutoLibrary:
             with open(self.dirs_path) as f:
                 dirs = json.load(f)
             dirs["calibre_library_dir"] = self.lib_path
-            dirs["config_calibre_split"] = config_calibre_split
-            dirs["config_calibre_split_dir"] = config_calibre_split_dir
+            dirs["config_calibre_split_dir"] = self.config_calibre_split_dir
             with open(self.dirs_path, 'w') as f:
                 json.dump(dirs, f)
             return

@@ -47,7 +47,7 @@ def cwa_switch_theme():
 @login_required_if_no_ano
 def cwa_library_refresh():
     flash(_("Library Refresh: Initialising Book Ingest System, please wait..."), category="cwa_refresh")
-    result = subprocess.run('python3', '/app/calibre-web-automated/scripts/ingest-processor.py', '/cwa-book-ingest')
+    result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest-processor.py', '/cwa-book-ingest'])
     return_code = result.returncode
 
     if return_code > 100:
@@ -69,7 +69,7 @@ def cwa_library_refresh():
 @admin_required
 def cwa_library_convert():
     flash(_("Library Convert: Running, please wait..."), category="refresh-cwa")
-    subprocess.Popen('python3', '/app/calibre-web-automated/scripts/convert-library.py', '-k')
+    subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert-library.py', '-k'])
     return redirect(url_for('admin.view_logfile'))
 
 # Coming Soon

@@ -32,12 +32,32 @@ except FileExistsError:
     print("CANCELLING... ingest-processor initiated but is already running")
     sys.exit(2)
 
+# Make sure required directories are there
+required_directories = [
+    "/config/.cwa_conversion_tmp",
+    "/config/processed_books",
+    "/config/processed_books/imported",
+    "/config/processed_books/failed",
+    "/config/processed_books/converted"
+]
+for directory in required_directories:
+    Path(directory).mkdir(exist_ok=True)
+    os.system(f"chown -R abc:abc {directory}")
+
 # Defining function to delete the lock on script exit
 def removeLock():
     os.remove(tempfile.gettempdir() + '/ingest-processor.lock')
 
+def numProcessed():
+    if books_processed > 100:
+        print(f"[ingest-processor] All {books_processed - 100} books found in ingest folder processed! Exiting now...")
+    elif books_processed == 0:
+        print("[ingest-processor] No books found to process ingest folder. Exiting now...")
+    sys.exit(books_processed)
+
 # Will automatically run when the script exits
 atexit.register(removeLock)
+atexit.register(numProcessed)
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
@@ -63,22 +83,20 @@ class NewBookProcessor:
 
     def convert_book(self, import_format: str) -> tuple[bool, str]:
         """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting epubs to the calibre-web import folder."""
-        
         print(f"[ingest-processor]: START_CON: Converting {self.filename}...\n")
         original_filepath = Path(self.filepath)
         target_filepath = f"{self.tmp_conversion_dir}{original_filepath.stem}.epub"
-        
         try:
             t_convert_book_start = time.time()
-            subprocess.run('ebook-convert', f'"{self.filepath}"', f'"{target_filepath}"', check=True)
+            subprocess.run(['ebook-convert', self.filepath, target_filepath], check=True)
             t_convert_book_end = time.time()
             time_book_conversion = t_convert_book_end - t_convert_book_start
             print(f"\n[ingest-processor]: END_CON: Conversion of {self.filename} complete in {time_book_conversion:.2f} seconds.\n")
-            shutil.copyfile(self.filepath, f"/config/processed_books/converted/{original_filepath.stem}")
+            shutil.copyfile(self.filepath, f"/config/processed_books/converted/{os.path.basename(original_filepath)}")
             return True, target_filepath
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to epub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}")
-            shutil.copyfile(self.filepath, f"/config/processed_books/failed/{original_filepath.stem}")
+            shutil.copyfile(self.filepath, f"/config/processed_books/failed/{os.path.basename(original_filepath)}")
             return False, ""
 
 
@@ -109,7 +127,7 @@ class NewBookProcessor:
         import_path = Path(book_path)
         import_filename = os.path.basename(book_path)
         try:
-            subprocess.run("calibredb", "add", f"{book_path}", f"--library-path='{self.library_dir}'", check=True)
+            subprocess.run(["calibredb", "add", book_path, f"--library-path={self.library_dir}"], check=True)
             print(f"[ingest-processor] Added {import_path.stem} to Calibre database")
             shutil.copyfile(book_path, f"/config/processed_books/imported/{import_filename}")
         except subprocess.CalledProcessError as e:
@@ -142,7 +160,7 @@ def main(filepath=sys.argv[1]):
     nbp = NewBookProcessor(filepath)
 
     if not nbp.is_epub: # Books require conversion
-        print(f"\n[ingest-processor]: Starting conversion process for {self.filename}...")
+        print(f"\n[ingest-processor]: Starting conversion process for {nbp.filename}...")
         can_convert, import_format = nbp.can_convert_check()
         print(f"[ingest-processor]: Converting file from {import_format} to epub format...\n")
 
@@ -156,9 +174,8 @@ def main(filepath=sys.argv[1]):
             print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {import_format} is currently unsupported.")
 
     else: # Books need imported
-        print(f"\n[ingest-processor]: No conversion needed for {self.filename}, importing now...")
+        print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...")
         npb.add_book_to_library(filepath)
-        # nbp.move_epub()
         increment_books_processed()
 
     nbp.delete_current_file()
@@ -166,5 +183,3 @@ def main(filepath=sys.argv[1]):
 
 if __name__ == "__main__":
     main()
-    print(f"[ingest-processor] All {books_processed} books found in ingest folder processed! Exiting now...")
-    sys.exit(books_processed)

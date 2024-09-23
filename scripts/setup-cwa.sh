@@ -11,24 +11,14 @@ make_dirs () {
     mkdir /cwa-book-ingest
     chown abc:abc /cwa-book-ingest
     mkdir /calibre-library
-    chown abc:abc /calibre-library
-    mkdir /config/.cwa_conversion_tmp
-    chown abc:abc /config/.cwa_conversion_tmp
-    mkdir /config/processed_books
-    chown abc:abc /config/processed_books
-    mkdir /config/processed_books/imported
-    chown abc:abc /config/processed_books/imported
-    mkdir /config/processed_books/failed
-    chown abc:abc /config/processed_books/failed
-    mkdir /config/processed_books/converted
-    chown abc:abc /config/processed_books/converted
+    chown -R abc:abc /calibre-library
 }
 
 # Change ownership & permissions as required
 change_script_permissions () {
     chmod +x /app/calibre-web-automated/scripts/check-cwa-install.sh
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-ingest-service/run
-    # chmod +x /etc/s6-overlay/s6-rc.d/new-book-detector/run
+    chmod +x /etc/s6-overlay/s6-rc.d/cwa-init-remove-locks/run
     chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-set-perms/run
     chmod +x /etc/s6-overlay/s6-rc.d/auto-library/run

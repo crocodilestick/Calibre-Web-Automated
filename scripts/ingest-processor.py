@@ -10,17 +10,17 @@ import shutil
 from pathlib import Path
 
 # Global variable counting the number of books processed
-books_processed = 0
+# books_processed = 0
 
 # Used to generate a count of the number of books processed during each run
 # 1 book is 101 as there are functions that use the scripts exit code to tell the number of processed books
 # In that case, the code being over 100 indicates at least one book was processed and the actual number is the value - 100
-def increment_books_processed():
-    global books_processed
-    if books_processed == 0:
-        books_processed = 101
-    else:
-        books_processed += 1
+# def increment_books_processed():
+#     global books_processed
+#     if books_processed == 0:
+#         books_processed = 101
+#     else:
+#         books_processed += 1
 
 # Creates a lock file unless one already exists meaning an instance of the script is
 # already running, then the script is closed, the user is notified and the program
@@ -48,16 +48,16 @@ for directory in required_directories:
 def removeLock():
     os.remove(tempfile.gettempdir() + '/ingest-processor.lock')
 
-def numProcessed():
-    if books_processed > 100:
-        print(f"[ingest-processor] All {books_processed - 100} books found in ingest folder processed! Exiting now...")
-    elif books_processed == 0:
-        print("[ingest-processor] No books found to process ingest folder. Exiting now...")
-    sys.exit(books_processed)
+# def numProcessed():
+#     if books_processed > 100:
+#         print(f"[ingest-processor] All {books_processed - 100} books found in ingest folder processed! Exiting now...")
+#     elif books_processed == 0:
+#         print("[ingest-processor] No books found to process ingest folder. Exiting now...")
+#         sys.exit(books_processed)
 
 # Will automatically run when the script exits
 atexit.register(removeLock)
-atexit.register(numProcessed)
+# atexit.register(numProcessed)
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
@@ -168,7 +168,7 @@ def main(filepath=sys.argv[1]):
             result, epub_filepath = nbp.convert_book(import_format)
             if result:
                 nbp.add_book_to_library(epub_filepath)
-                increment_books_processed()
+                # increment_books_processed()
                 nbp.empty_tmp_con_dir()
         else:
             print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {import_format} is currently unsupported.")
@@ -176,7 +176,7 @@ def main(filepath=sys.argv[1]):
     else: # Books need imported
         print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...")
         npb.add_book_to_library(filepath)
-        increment_books_processed()
+        # increment_books_processed()
 
     nbp.delete_current_file()
     del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests

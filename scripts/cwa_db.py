@@ -2,6 +2,7 @@ import sqlite3
 import sys
 from sqlite3 import Error as sqlError
 import os
+from datetime import datetime
 
 from tabulate import tabulate
 
@@ -132,11 +133,13 @@ class CWA_DB:
     #     self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (timestamp, book_id, book_title, author, epub_path, trigger_type))
     #     self.con.commit()
 
-    def import_add_entry(self, timestamp, filename, original_backed_up):
+    def import_add_entry(self, filename, original_backed_up):
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_backed_up) VALUES (?, ?, ?);", (timestamp, filename, original_backed_up))
         self.con.commit()
     
-    def conversion_add_entry(self, timestamp, filename, original_format, original_backed_up):
+    def conversion_add_entry(self, filename, original_format, original_backed_up):
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_format, original_backed_up) VALUES (?, ?, ?, ?);", (timestamp, filename, original_format, original_backed_up))
         self.con.commit()
 

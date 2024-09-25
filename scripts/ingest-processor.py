@@ -5,7 +5,6 @@ import subprocess
 import sys
 import tempfile
 import time
-from datetime import datetime
 import shutil
 from pathlib import Path
 
@@ -45,12 +44,10 @@ class NewBookProcessor:
     def __init__(self, filepath: str):
         self.db = CWA_DB()
         self.cwa_settings = self.db.cwa_settings
-        input(self.cwa_settings)
 
         self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz']
         self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz']
-        self.ingest_folder, self.library_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
-        self.tmp_conversion_dir = "/config/.cwa_conversion_tmp/"
+        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
 
         self.filepath = filepath # path of the book we're targeting
         self.filename = os.path.basename(filepath)
@@ -62,10 +59,11 @@ class NewBookProcessor:
         with open(dirs_json_path, 'r') as f:
             dirs: dict[str, str] = json.load(f)
 
-        ingest_folder = f"{dirs['ingest_folder']}/" # Dir where new files are looked for to process and subsequently deleted
+        ingest_folder = f"{dirs['ingest_folder']}/"
         library_dir = f"{dirs['calibre_library_dir']}/"
+        tmp_conversion_dir = f"{dirs['tmp_conversion_dir']}/"
 
-        return ingest_folder, library_dir
+        return ingest_folder, library_dir, tmp_conversion_dir
 
 
     def convert_book(self, import_format: str) -> tuple[bool, str]:
@@ -83,8 +81,7 @@ class NewBookProcessor:
             if self.cwa_settings['auto_backup_conversions']:
                 shutil.copyfile(self.filepath, f"/config/processed_books/converted/{os.path.basename(original_filepath)}")
 
-            self.db.conversion_add_entry(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                                         os.path.basename(target_filepath),
+            self.db.conversion_add_entry(original_filepath.stem,
                                          import_format,
                                          str(self.cwa_settings["auto_backup_conversions"]))
 
@@ -129,8 +126,7 @@ class NewBookProcessor:
             if self.cwa_settings['auto_backup_imports']:
                 shutil.copyfile(book_path, f"/config/processed_books/imported/{import_filename}")
 
-            self.db.import_add_entry(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                                     os.path.basename(target_filepath),
+            self.db.import_add_entry(import_path.stem,
                                      str(self.cwa_settings["auto_backup_imports"]))
 
         except subprocess.CalledProcessError as e:

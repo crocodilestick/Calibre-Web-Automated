@@ -116,7 +116,7 @@ class AutoLibrary:
                 dirs = json.load(f)
             dirs["calibre_library_dir"] = self.lib_path
             with open(self.dirs_path, 'w') as f:
-                json.dump(dirs, f)
+                json.dump(dirs, f, indent=4)
             return
         except Exception as e:
             print("[auto-library]: ERROR: Could not update dirs.json")

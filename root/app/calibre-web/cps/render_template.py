@@ -31,6 +31,10 @@ from datetime import datetime
 import os.path
 from flask_login import current_user
 
+import sys
+sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+from cwa_db import CWA_DB
+
 
 log = logger.create()
 
@@ -134,20 +138,24 @@ def get_cwa_last_notification() -> str:
 # Displays a notification to the user that an update for CWA is available, no matter which page they're on
 # Currently set to only display once per calender day
 def cwa_update_notification() -> None:
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    cwa_last_notification = get_cwa_last_notification()
-    
-    if cwa_last_notification == current_date:
+    db = CWA_DB()
+    if db.cwa_settings['cwa_update_notifications']:
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        cwa_last_notification = get_cwa_last_notification()
+        
+        if cwa_last_notification == current_date:
+            return
+
+        update_available, current_version, tag_name = cwa_update_available()
+        if update_available:
+            message = f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_version} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day"
+            flash(_(message), category="cwa_update")
+
+        with open('/app/cwa_update_notice', 'w') as f:
+            f.write(current_date)
         return
-
-    update_available, current_version, tag_name = cwa_update_available()
-    if update_available:
-        message = f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_version} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day"
-        flash(_(message), category="cwa_update")
-
-    with open('/app/cwa_update_notice', 'w') as f:
-        f.write(current_date)
-    return
+    else:
+        return
 
 
 # Returns the template for rendering and includes the instance name

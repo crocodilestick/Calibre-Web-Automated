@@ -6,6 +6,8 @@ import os
 import re
 import sys
 
+from cwa_db import CWA_DB
+
 logger = logging.getLogger(__name__)
 
 class LibraryConverter:
@@ -16,12 +18,13 @@ class LibraryConverter:
         self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
 
         self.dirs = self.get_dirs() # Dirs are assigned by user during setup
-        self.import_folder = f"{self.dirs['import_folder']}/"
         self.ingest_folder = f"{self.dirs['ingest_folder']}/" # Dir where new files are looked for to process and subsequently deleted
         self.library = f"{self.dirs['calibre_library_dir']}/"
         self.epubs, self.to_convert = self.get_library_books()
         self.current_book = 1
 
+        self.db = CWA_DB()
+        self.cwa_settings = self.db.cwa_settings
 
     def get_library_books(self):
         library_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.library) for f in filenames]
@@ -57,8 +60,6 @@ class LibraryConverter:
             os.system(f"cp '{file}' '/config/processed_books/{filename}{file_extension}'")
             os.system(f"calibredb remove {book_id} --permanent --with-library '{self.library}'")
             os.system(f"ebook-convert '/config/processed_books/{filename}{file_extension}' '{self.import_folder}{filename}.epub'") # >>/config/calibre-web.log 2>&1
-            #  if self.args.setup == True:
-            #     os.system(f"calibredb add --with-library '{self.library}' '{self.import_folder}{filename}.epub' >>/config/calibre-web.log 2>&1")
             os.system(f"chown -R abc:abc '{self.library}'")
             logging.info(f"[convert-library]: Conversion of {os.path.basename(file)} complete!")
             self.current_book += 1
@@ -79,7 +80,6 @@ def main():
 
     parser.add_argument('--replace', '-r', action='store_true', required=False, dest='replace', help='Replaces the old library with the new one', default=False)
     parser.add_argument('--keep', '-k', action='store_true', required=False, dest='keep', help='Creates a new epub library with the old one but stores the old files in /config/processed_books', default=False)
-    #  parser.add_argument('-setup', action='store_true', required=False, dest='setup', help="Indicates to the function whether or not it's being ran from the setup script or manually (DO NOT USE MANUALLY)", default=False)
     args = parser.parse_args()
 
     if not args.replace and not args.keep:
@@ -93,9 +93,6 @@ def main():
             print("[convert-library] No non-epubs found in library. Exiting now...")
             logging.info("[convert-library] No non-epubs found in library. Exiting now...")
             sys.exit(0)
-
-        # if args.setup == True:
-        #     converter.empty_import_folder()
 
         print(f"\n[convert-library] Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")
         logging.info(f"[convert-library] Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")

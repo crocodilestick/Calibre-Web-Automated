@@ -13,6 +13,8 @@ replit.nix
 pyproject.toml
 .replit
 .breakpoints
+.venv
+.vscode
 
 # Test Scripts
 test*
@@ -43,7 +45,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-.vscode
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

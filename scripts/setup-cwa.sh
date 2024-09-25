@@ -6,8 +6,6 @@ make_dirs () {
     chown -R abc:abc /app/calibre-web-automated/metadata_change_logs
     mkdir /app/calibre-web-automated/metadata_temp
     chown -R abc:abc /app/calibre-web-automated/metadata_temp
-    mkdir /app/calibre-web-automated/cwa-import
-    chown -R abc:abc /app/calibre-web-automated/cwa-import
     mkdir /cwa-book-ingest
     chown abc:abc /cwa-book-ingest
     mkdir /calibre-library

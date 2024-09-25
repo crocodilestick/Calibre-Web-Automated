@@ -5,22 +5,12 @@ import subprocess
 import sys
 import tempfile
 import time
+from datetime import datetime
 import shutil
-
 from pathlib import Path
 
-# Global variable counting the number of books processed
-# books_processed = 0
+from cwa_db import CWA_DB
 
-# Used to generate a count of the number of books processed during each run
-# 1 book is 101 as there are functions that use the scripts exit code to tell the number of processed books
-# In that case, the code being over 100 indicates at least one book was processed and the actual number is the value - 100
-# def increment_books_processed():
-#     global books_processed
-#     if books_processed == 0:
-#         books_processed = 101
-#     else:
-#         books_processed += 1
 
 # Creates a lock file unless one already exists meaning an instance of the script is
 # already running, then the script is closed, the user is notified and the program
@@ -32,7 +22,7 @@ except FileExistsError:
     print("CANCELLING... ingest-processor initiated but is already running")
     sys.exit(2)
 
-# Make sure required directories are there
+# Make sure required directories are present
 required_directories = [
     "/config/.cwa_conversion_tmp",
     "/config/processed_books",
@@ -48,19 +38,15 @@ for directory in required_directories:
 def removeLock():
     os.remove(tempfile.gettempdir() + '/ingest-processor.lock')
 
-# def numProcessed():
-#     if books_processed > 100:
-#         print(f"[ingest-processor] All {books_processed - 100} books found in ingest folder processed! Exiting now...")
-#     elif books_processed == 0:
-#         print("[ingest-processor] No books found to process ingest folder. Exiting now...")
-#         sys.exit(books_processed)
-
 # Will automatically run when the script exits
 atexit.register(removeLock)
-# atexit.register(numProcessed)
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
+        self.db = CWA_DB()
+        self.cwa_settings = self.db.cwa_settings
+        input(self.cwa_settings)
+
         self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz']
         self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz']
         self.ingest_folder, self.library_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
@@ -69,6 +55,7 @@ class NewBookProcessor:
         self.filepath = filepath # path of the book we're targeting
         self.filename = os.path.basename(filepath)
         self.is_epub: bool = bool(self.filepath.endswith('.epub'))
+
 
     def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:
         dirs = {}
@@ -92,8 +79,17 @@ class NewBookProcessor:
             t_convert_book_end = time.time()
             time_book_conversion = t_convert_book_end - t_convert_book_start
             print(f"\n[ingest-processor]: END_CON: Conversion of {self.filename} complete in {time_book_conversion:.2f} seconds.\n")
-            shutil.copyfile(self.filepath, f"/config/processed_books/converted/{os.path.basename(original_filepath)}")
+
+            if self.cwa_settings['auto_backup_conversions']:
+                shutil.copyfile(self.filepath, f"/config/processed_books/converted/{os.path.basename(original_filepath)}")
+
+            self.db.conversion_add_entry(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                                         os.path.basename(target_filepath),
+                                         import_format,
+                                         str(self.cwa_settings["auto_backup_conversions"]))
+
             return True, target_filepath
+
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to epub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}")
             shutil.copyfile(self.filepath, f"/config/processed_books/failed/{os.path.basename(original_filepath)}")
@@ -129,7 +125,14 @@ class NewBookProcessor:
         try:
             subprocess.run(["calibredb", "add", book_path, f"--library-path={self.library_dir}"], check=True)
             print(f"[ingest-processor] Added {import_path.stem} to Calibre database")
-            shutil.copyfile(book_path, f"/config/processed_books/imported/{import_filename}")
+
+            if self.cwa_settings['auto_backup_imports']:
+                shutil.copyfile(book_path, f"/config/processed_books/imported/{import_filename}")
+
+            self.db.import_add_entry(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                                     os.path.basename(target_filepath),
+                                     str(self.cwa_settings["auto_backup_imports"]))
+
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {import_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}")
             shutil.copyfile(book_path, f"/config/processed_books/failed/{import_filename}")
@@ -168,7 +171,6 @@ def main(filepath=sys.argv[1]):
             result, epub_filepath = nbp.convert_book(import_format)
             if result:
                 nbp.add_book_to_library(epub_filepath)
-                # increment_books_processed()
                 nbp.empty_tmp_con_dir()
         else:
             print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {import_format} is currently unsupported.")
@@ -176,7 +178,6 @@ def main(filepath=sys.argv[1]):
     else: # Books need imported
         print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...")
         npb.add_book_to_library(filepath)
-        # increment_books_processed()
 
     nbp.delete_current_file()
     del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests

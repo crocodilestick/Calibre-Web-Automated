@@ -27,7 +27,7 @@ class Enforcer:
         return dirs['calibre_library_dir'] # Returns without / on the end
 
     def read_log(self, auto=True, log_path: str = "None") -> dict:
-        """Reads pertinant infomation from the given log file, adds the book_id from the log name and returns the info as a dict"""
+        """Reads pertinent information from the given log file, adds the book_id from the log name and returns the info as a dict"""
         if auto:
             book_id = (self.args.log.split('-')[1]).split('.')[0]
             timestamp_raw = self.args.log.split('-')[0]
@@ -113,7 +113,7 @@ class Enforcer:
         for book_dir in book_dirs:
             try:
                 book_info = self.enforce_cover(book_dir)
-                self.db.add_entry_from_all(book_info)
+                self.db.enforce_add_entry_from_all(book_info)
             except Exception as e:
                 print(f"[cover-enforcer]: ERROR: {book_dir}")
                 print(f"[cover-enforcer]: Skipping book due to following error: {e}")
@@ -162,15 +162,15 @@ class Enforcer:
                     book_dir = self.get_book_dir_from_log(log_info)
                     book_info = self.enforce_cover(book_dir)
                     log_info['epub_path'] = book_info['epub_path']
-                    self.db.add_entry_from_log(log_info)
+                    self.db.enforce_add_entry_from_log(log_info)
                     self.delete_log(auto=False, log_path=log)
 
 
 def main():
     parser = argparse.ArgumentParser(
         prog='cover-enforcer',
-        description='Upon recieving a log, valid directory or an "-all" flag, this \
-        script will enforce the covers and metadata of the corrisponding books, making \
+        description='Upon receiving a log, valid directory or an "-all" flag, this \
+        script will enforce the covers and metadata of the corresponding books, making \
         sure that each are correctly stored in both the epubs themselves and the \
         user\'s Calibre Library. Additionally, if an epub happens to be in EPUB 2 \
         format, it will also be automatically upgraded to EPUB 3.'
@@ -180,7 +180,7 @@ def main():
     parser.add_argument('--dir', action='store', dest='dir', required=False, help='Will enforce the covers and metadata of the books in the given directory.', default=None)
     parser.add_argument('-all', action='store_true', dest='all', help='Will enforce covers & metadata for ALL books currently in your calibre-library-dir', default=False)
     parser.add_argument('-list', '-l', action='store_true', dest='list', help='List all books in your calibre-library-dir', default=False)
-    parser.add_argument('-history', action='store_true', dest='history', help='Display a history of all enforcments ever carried out on your machine (not yet implemented)', default=False)
+    parser.add_argument('-history', action='store_true', dest='history', help='Display a history of all enforcements ever carried out on your machine (not yet implemented)', default=False)
     parser.add_argument('-paths', '-p', action='store_true', dest='paths', help="Use with '-history' flag to display stored paths of all epubs in enforcement database", default=False)
     parser.add_argument('-v', '--verbose', action='store_true', dest='verbose', help="Use with history to display entire enforcement history instead of only the most recent 10 entries", default=False)
     args = parser.parse_args()
@@ -196,7 +196,7 @@ def main():
         # only all flag passed
         print('[cover-enforcer]: Enforcing metadata and covers for all books in library...')
         n_enforced, completion_time = enforcer.enforce_all_covers()
-        print(f"\n[cover-enforcer]: SUCCESS: All covers & metadata succsessfully updated for all {n_enforced} books in the library in {completion_time:.2f} seconds!")
+        print(f"\n[cover-enforcer]: SUCCESS: All covers & metadata successfully updated for all {n_enforced} books in the library in {completion_time:.2f} seconds!")
     elif args.log is not None and args.dir is None and args.all is False and args.list is False and args.history is False:
         # log passed: (args.log), no dir
         log_info = enforcer.read_log()
@@ -206,7 +206,7 @@ def main():
             print(f"[cover-enforcer] Metadata for '{log_info['book_title']}' could not be successfully enforced")
             sys.exit(1)
         log_info['epub_path'] = book_info['epub_path']
-        enforcer.db.add_entry_from_log(log_info)
+        enforcer.db.enforce_add_entry_from_log(log_info)
         enforcer.delete_log()
         enforcer.check_for_other_logs()
     elif args.log is None and args.dir is not None and args.all is False and args.list is False and args.history is False:
@@ -214,14 +214,14 @@ def main():
             args.dir = args.dir[:-1]
         if os.path.isdir(args.dir):
             book_info = enforcer.enforce_cover(args.dir)
-            enforcer.db.add_entry_from_dir(book_info)
+            enforcer.db.enforce_add_entry_from_dir(book_info)
         else:
             print(f"[cover-enforcer]: ERROR: '{args.dir}' is not a valid directory")
     elif args.list and args.log is None and args.dir is None and args.all is False and args.history is False:
         # only list flag passed
         enforcer.print_library_list()
     elif args.history and args.log is None and args.dir is None and args.all is False and args.list is False:
-        enforcer.db.show(args.paths, args.verbose)
+        enforcer.db.enforce_show(args.paths, args.verbose)
     else:
         parser.print_usage()
 

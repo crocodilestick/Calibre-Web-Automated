@@ -50,14 +50,12 @@ def cwa_library_refresh():
     result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest-processor.py', '/cwa-book-ingest'])
     return_code = result.returncode
 
-    if return_code > 100:
-        flash(_(f"Library Refresh: Ingest process complete. {return_code - 100} new books ingested."), category="cwa_refresh")
-    elif return_code == 2:
+    # if return_code == 100:
+    #     flash(_(f"Library Refresh: Ingest process complete. New books ingested."), category="cwa_refresh")
+    if return_code == 2:
         flash(_("Library Refresh: The book ingest service is already running, please wait until it has finished before trying again."), category="cwa_refresh")
-#    elif return_code == 0:
-#        flash(_("Manually starting ingest process"), category="info")
     elif return_code == 0:
-        flash(_("Library Refresh: Ingest process complete. No new books ingested."), category="cwa_refresh")
+        flash(_("Library Refresh: Library refreshed & ingest process complete."), category="cwa_refresh")
     else:
         flash(_("Library Refresh: An unexpected error occurred, check the logs."), category="cwa_refresh")
 

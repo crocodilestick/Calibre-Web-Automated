@@ -12,6 +12,7 @@ library_refresh = Blueprint('library_refresh', __name__)
 convert_library = Blueprint('convert_library', __name__)
 cwa_history = Blueprint('cwa_history', __name__)
 cwa_check_monitoring = Blueprint('cwa_check_monitoring', __name__)
+set_cwa_settings = Blueprint('set_cwa_settings', __name__)
 
 log = logger.create()
 
@@ -60,6 +61,13 @@ def cwa_library_refresh():
         flash(_("Library Refresh: An unexpected error occurred, check the logs."), category="cwa_refresh")
 
     return redirect("/", code=302)
+
+# Coming Soon
+@set_cwa_settings.route("/set-cwa-settings", methods=["GET", "POST"])
+@login_required_if_no_ano
+@admin_required
+def set_cwa_settings():
+    ...
 
 # Coming Soon
 @convert_library.route("/cwa-library-convert", methods=["GET", "POST"])

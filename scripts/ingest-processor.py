@@ -142,7 +142,13 @@ class NewBookProcessor:
                 if os.path.isfile(file_path):
                     os.remove(file_path)
         except OSError:
-            print(f"Error occurred while emptying {self.tmp_conversion_dir}.")
+            print(f"[ingest-processor] An error occurred while emptying {self.tmp_conversion_dir}.")
+
+    def set_library_permissions(self):
+        try:
+            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"[ingest-processor] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
 
 
 def main(filepath=sys.argv[1]):
@@ -175,6 +181,7 @@ def main(filepath=sys.argv[1]):
         print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...")
         npb.add_book_to_library(filepath)
 
+    nbp.set_library_permissions()
     nbp.delete_current_file()
     del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
 

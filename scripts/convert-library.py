@@ -129,7 +129,7 @@ class LibraryConverter:
                 self.current_book += 1
                 continue
 
-            
+            self.set_library_permissions()
             self.current_book += 1
             continue
 
@@ -141,7 +141,14 @@ class LibraryConverter:
                 if os.path.isfile(file_path):
                     os.remove(file_path)
         except OSError:
-            print(f"Error occurred while emptying {self.tmp_conversion_dir}.")
+            print(f"[convert-library] An error occurred while emptying {self.tmp_conversion_dir}.")
+
+    def set_library_permissions(self):
+        try:
+            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"[convert-library] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
+
 
 def main():
     # parser = argparse.ArgumentParser(

@@ -19,7 +19,7 @@
 from flask import render_template, g, abort, request, flash
 from flask_babel import gettext as _
 from werkzeug.local import LocalProxy
-from flask_login import current_user
+from .cw_login import current_user
 from sqlalchemy.sql.expression import or_
 
 from . import config, constants, logger, ub

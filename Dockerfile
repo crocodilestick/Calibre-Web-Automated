@@ -20,8 +20,8 @@ SHELL ["/bin/bash", "-c"]
 # set version label
 ARG BUILD_DATE
 ARG VERSION
-ARG CALIBREWEB_RELEASE=0.6.22
-ARG LSCW_RELEASE=0.6.22-ls279
+ARG CALIBREWEB_RELEASE=0.6.23
+ARG LSCW_RELEASE=0.6.23-ls291
 LABEL build_version="Version:- ${VERSION}"
 LABEL build_type="localbuild"
 LABEL build_date="${BUILD_DATE}" 

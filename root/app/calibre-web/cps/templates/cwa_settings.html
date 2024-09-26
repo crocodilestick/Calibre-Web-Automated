@@ -7,5 +7,47 @@
 {% block body %}
 <div class="discover">
   <h2>{{title}}</h2>
+    <div>
+      <h3>Calibre-Web Automated User Settings</h3><br>
+      <form action="{{ url_for('cwa_settings.set_cwa_settings') }}" method="post"> 
+        {% if cwa_settings['auto_backup_imports'] %}
+        <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True" checked>
+        {% else %}
+        <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True">
+        {% endif %}
+        <label for="auto_backup_imports">Enable CWA Import Auto-Backup</label><br>
+
+        {% if cwa_settings['auto_backup_conversions'] %}
+        <input type="checkbox" id="auto_backup_conversions" name="auto_backup_conversions" value="True" checked>
+        {% else %}
+        <input type="checkbox" id="auto_backup_conversions" name="auto_backup_conversions" value="True">
+        {% endif %}
+        <label for="auto_backup_conversions">Enable CWA Conversion Auto-Backup</label><br>
+
+        {% if cwa_settings['auto_zip_backups'] %}
+        <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True" checked>
+        {% else %}
+        <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True">
+        {% endif %}
+        <label for="auto_zip_backups">Enable CWA Auto Zip Backups</label><br>
+
+        {% if cwa_settings['cwa_update_notifications'] %}
+        <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" checked>
+        {% else %}
+        <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True">
+        {% endif %}
+        <label for="cwa_update_notifications">Enable CWA Update Notifications</label><br>
+
+        {% if cwa_settings['robotic_reading'] %}
+        <input type="checkbox" id="robotic_reading" name="robotic_reading" value="True" checked>
+        {% else %}
+        <input type="checkbox" id="robotic_reading" name="robotic_reading" value="True">
+        {% endif %}
+        <label for="robotic_reading">Enable Robotic Reading</label><br>
+        
+        <br>
+        <input type="submit" value="Submit" class="btn btn-default">
+      </form>
+    </div>
 </div>
 {% endblock %}

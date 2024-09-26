@@ -41,7 +41,7 @@ class CWA_DB:
     def make_tables(self) -> None:
         """Creates the tables for the CWA DB if they don't already exist"""
         schema = []
-        with open("cwa_schema.sql", 'r') as f:
+        with open("/app/calibre-web-automated/scripts/cwa_schema.sql", 'r') as f:
             for line in f:
                 if line != "\n":
                     schema.append(line)
@@ -82,6 +82,14 @@ class CWA_DB:
             cwa_settings |= {cwa_setting_names[x]:bool(cwa_setting_values[0][x])}
 
         return cwa_settings
+
+    def update_cwa_settings(self, result) -> None:
+        """Sets settings using POST request from set_cwa_settings()"""
+        settings = result.keys()
+        for setting in settings:
+            self.cur.execute(f"UPDATE cwa_settings SET {setting}={result[setting]};")
+            self.con.commit()
+        self.set_default_settings()
 
     def enforce_add_entry_from_log(self, log_info: dict):
         """Adds an entry to the db from a change log file"""

@@ -1,12 +1,17 @@
-from flask import Blueprint, redirect, flash, url_for
+from flask import Blueprint, redirect, flash, url_for, request
 from flask_babel import gettext as _
 
-from . import logger, config, constants
+from . import logger, config, constants, csrf
 from .usermanagement import login_required_if_no_ano
 from .admin import admin_required
 from .render_template import render_title_template
 
 import subprocess
+import sqlite3
+
+import sys
+sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+from cwa_db import CWA_DB
 
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
@@ -17,7 +22,6 @@ cwa_settings = Blueprint('cwa_settings', __name__)
 
 log = logger.create()
 
-import sqlite3
 
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
@@ -64,11 +68,38 @@ def cwa_library_refresh():
     return redirect("/", code=302)
 
 # Coming Soon
-@cwa_settings.route("/set-cwa-settings", methods=["GET", "POST"])
+@csrf.exempt
+@cwa_settings.route("/cwa-settings", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def set_cwa_settings():
-    return render_title_template("cwa_settings.html", instance="Calibre-Web Automated", accept=["epub"])
+    if request.method == 'POST':
+
+        settings = ["auto_backup_imports",
+                    "auto_backup_conversions",
+                    "auto_zip_backups",
+                    "cwa_update_notifications",
+                    "robotic_reading"]
+
+        result = {}
+        for setting in settings:
+            value = request.form.get(setting)
+            if value == None:
+                value = 0
+            else:
+                value = 1
+            result |= {setting:value}
+
+        cwa_db = CWA_DB()
+        cwa_db.update_cwa_settings(result)
+        cwa_settings = cwa_db.get_cwa_settings()
+
+    elif request.method == 'GET':
+        cwa_db = CWA_DB()
+        cwa_settings = cwa_db.cwa_settings
+
+    return render_title_template("cwa_settings.html", title=_("CWA Settings"), page="cwa-settings",
+                                    cwa_settings=cwa_settings)
 
 # Coming Soon
 @convert_library.route("/cwa-library-convert", methods=["GET", "POST"])
@@ -76,7 +107,7 @@ def set_cwa_settings():
 @admin_required
 def cwa_library_convert():
     flash(_("Library Convert: Running, please wait..."), category="refresh-cwa")
-    subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert-library.py', '-k'])
+    subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert-library.py'])
     return redirect(url_for('admin.view_logfile'))
 
 # Coming Soon

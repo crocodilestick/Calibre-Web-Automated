@@ -29,7 +29,6 @@ from .ub import User
 import requests
 from datetime import datetime
 import os.path
-from flask_login import current_user
 
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')

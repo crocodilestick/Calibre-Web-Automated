@@ -4,6 +4,7 @@ from flask_babel import gettext as _
 from . import logger, config, constants
 from .usermanagement import login_required_if_no_ano
 from .admin import admin_required
+from .render_template import render_title_template
 
 import subprocess
 
@@ -67,7 +68,7 @@ def cwa_library_refresh():
 @login_required_if_no_ano
 @admin_required
 def set_cwa_settings():
-    ...
+    return render_title_template("cwa_settings.html", instance="Calibre-Web Automated", accept=["epub"])
 
 # Coming Soon
 @convert_library.route("/cwa-library-convert", methods=["GET", "POST"])

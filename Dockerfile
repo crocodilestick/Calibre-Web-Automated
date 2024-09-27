@@ -7,7 +7,7 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 SHELL ["/bin/bash", "-c"]
 
 # Old Example Build Command:
-# docker build --tag crocodilestick/calibre-web-automated:dev --build-arg="BUILD_DATE=26-09-2024 13:10" --build-arg="VERSION=2.1.0-test-4" .
+# docker build --tag crocodilestick/calibre-web-automated:dev --build-arg="BUILD_DATE=27-09-2024 12:06" --build-arg="VERSION=2.1.0-test-5" .
 
 # New Example Build & Push Command:
 # docker buildx build \

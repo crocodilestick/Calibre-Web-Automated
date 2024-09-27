@@ -30,7 +30,7 @@ def request_username():
 def main():
     app = create_app()
 
-    from .cwa_functions import switch_theme, library_refresh, convert_library, cwa_history, cwa_check_monitoring, cwa_settings
+    from .cwa_functions import switch_theme, library_refresh, convert_library, cwa_history, cwa_check_status, cwa_settings
     from .web import web
     from .opds import opds
     from .admin import admi
@@ -67,7 +67,7 @@ def main():
     app.register_blueprint(library_refresh)
     app.register_blueprint(convert_library)
     app.register_blueprint(cwa_history)
-    app.register_blueprint(cwa_check_monitoring)
+    app.register_blueprint(cwa_check_status)
     app.register_blueprint(cwa_settings)
 
     # Stock CW

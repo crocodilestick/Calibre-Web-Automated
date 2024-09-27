@@ -17,7 +17,7 @@ switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
 convert_library = Blueprint('convert_library', __name__)
 cwa_history = Blueprint('cwa_history', __name__)
-cwa_check_monitoring = Blueprint('cwa_check_monitoring', __name__)
+cwa_check_status = Blueprint('cwa_check_status', __name__)
 cwa_settings = Blueprint('cwa_settings', __name__)
 
 log = logger.create()
@@ -67,7 +67,7 @@ def cwa_library_refresh():
 
     return redirect("/", code=302)
 
-# Coming Soon
+
 @csrf.exempt
 @cwa_settings.route("/cwa-settings", methods=["GET", "POST"])
 @login_required_if_no_ano
@@ -117,9 +117,24 @@ def cwa_library_convert():
 def cwa_history_show():
     ...
 
-# Coming Soon
-@cwa_check_monitoring.route("/cwa-check-monitoring", methods=["GET", "POST"])
+
+@cwa_check_status.route("/cwa-check-monitoring", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
-def cwa_check_monitoring_services():
-    ...
+def cwa_flash_status():
+    result = subprocess.run(['/app/calibre-web-automated/scripts/check-cwa-services.sh'])
+    services_status = result.returncode
+
+    match services_status:
+        case 0:
+            flash(_("✅ All Monitoring Services are running as intended! 👍"), category="cwa_refresh")
+        case 1:
+            flash(_("🔴 The Ingest Service is running but the Metadata Change Detector is not"), category="cwa_refresh")
+        case 2:
+            flash(_("🔴 The Metadata Change Detector is running but the Ingest Service is not"), category="cwa_refresh")
+        case 3:
+            flash(_("⛔ Neither the Ingest Service or the Metadata Change Detector are running"), category="cwa_refresh")
+        case _:
+            flash(_("An Error has occurred"), category="cwa_refresh")
+
+    return redirect(url_for('admin.admin'))

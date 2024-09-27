@@ -14,7 +14,7 @@ make_dirs () {
 
 # Change ownership & permissions as required
 change_script_permissions () {
-    chmod +x /app/calibre-web-automated/scripts/check-cwa-install.sh
+    chmod +x /app/calibre-web-automated/scripts/check-cwa-services.sh
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-ingest-service/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-init-remove-locks/run
     chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
@@ -28,7 +28,7 @@ change_script_permissions () {
 add_aliases () {
     echo "" | cat >> ~/.bashrc
     echo "# Calibre-Web Automated Aliases" | cat >> ~/.bashrc
-    echo "alias cwa-check='bash /app/calibre-web-automated/scripts/check-cwa-install.sh'" | cat >> ~/.bashrc
+    echo "alias cwa-check='bash /app/calibre-web-automated/scripts/check-cwa-services.sh'" | cat >> ~/.bashrc
     echo "alias cwa-change-dirs='nano /app/calibre-web-automated/dirs.json'" | cat >> ~/.bashrc
     
     echo "cover-enforcer () {" | cat >> ~/.bashrc

@@ -115,7 +115,7 @@ class LibraryConverter:
 
                 print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} successfully completed!")
             except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} was not successfully completed. See the following error:\n{e}")
+                print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} was not successfully completed. Converted file moved to /config/processed_books/failed/{os.path.basename(target_filepath)}. See the following error:\n{e}")
                 shutil.move(target_filepath, f"/config/processed_books/failed/{os.path.basename(target_filepath)}")
                 self.current_book += 1
                 continue

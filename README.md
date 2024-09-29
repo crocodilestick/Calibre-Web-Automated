@@ -14,7 +14,7 @@
 - [How to Install](#how-to-install-): 📖
   - [Quick Install](#quick-install-) 🚀
   - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
-  - [For Developers](#for-developers) 🚀
+  - [For Developers](#for-developers--building-custom-docker-image) 🚀
 - [Usage](#usage-)
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
@@ -161,7 +161,7 @@ And that's you off to the races! 🥳 HOWEVER to avoid potential problems and en
 
 ### 1. Setup the container using the Docker Compose template below: 🐋📜
 
-```
+```yml
 ---
 services:
   calibre-web-automated:
@@ -196,11 +196,12 @@ services:
 ### And just like that, Calibre-Web Automated should be up and running!
 
 ---
-## For Developers
-If you want to contribute to this project, you can build a docker file by running `build.sh` in the repository.
-This will build the docker image of the cloned repository with the modifications you have made>
+## For Developers - Building Custom Docker Image
+If you want to contribute to this project, you can build the docker file by running `build.sh` in the repository.
+This will build the docker image of the cloned repository with the modifications you have made. the `build/` folder
+will be made, containing the the development docker-compose.yml and the mountpoints. Add a test library if necessary>
 
-```
+```bash
 $ chmod +x build.sh
 $ ./build.sh
 ```

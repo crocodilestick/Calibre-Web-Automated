@@ -101,16 +101,6 @@ class LibraryConverter:
                 print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} successful! Removing old version from library...")
             except subprocess.CalledProcessError as e:
                 print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
-                shutil.copyfile(file, f"/config/processed_books/failed/{os.path.basename(file)}")
-                self.current_book += 1
-                continue
-
-            try: # Remove Book from Existing Library
-                subprocess.run(["calibredb", "remove", book_id, "--permanent", "--with-library", self.library_dir], check=True)
-
-                print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} (Book ID: {book_id}) was successfully removed from library.\nAdding converted version to library...")
-            except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} couldn't be successfully removed from library. See the following error:\n{e}")
                 self.current_book += 1
                 continue
 
@@ -125,7 +115,17 @@ class LibraryConverter:
 
                 print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} successfully completed!")
             except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} was not successfully completed. See the following error:\n{e}")
+                print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} was not successfully completed. Converted file moved to /config/processed_books/failed/{os.path.basename(target_filepath)}. See the following error:\n{e}")
+                shutil.move(target_filepath, f"/config/processed_books/failed/{os.path.basename(target_filepath)}")
+                self.current_book += 1
+                continue
+
+            try: # Remove Book from Existing Library
+                subprocess.run(["calibredb", "remove", book_id, "--permanent", "--with-library", self.library_dir], check=True)
+
+                print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} (Book ID: {book_id}) was successfully removed from library.\nAdding converted version to library...")
+            except subprocess.CalledProcessError as e:
+                print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} couldn't be successfully removed from library. See the following error:\n{e}")
                 self.current_book += 1
                 continue
 

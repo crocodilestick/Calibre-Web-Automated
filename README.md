@@ -222,7 +222,6 @@ services:
 - If your Calibre Library contains any ebooks not in the `.epub` format, from within the container run the `convert-library` command.
   - Calibre-Web Automated's extra features only work with epubs and so **failure to complete this step could result in unforeseen errors and general unreliability**
   - Full usage can be found below in the Usage Section however the following command will automatically convert any non-epubs to epubs and store the original files in `/config/processed_books`:
-  - Failed conversions will remove the book from the calibre library, and moved to `/config/processed_books/failed/`
 
 ```
 convert-library --keep

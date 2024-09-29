@@ -1,0 +1,19 @@
+---
+services:
+  calibre-web-automated:
+    image: cwa-dev
+    container_name: cwa-dev
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=UTC
+      - DOCKER_MODS=lscr.io/linuxserver/mods:universal-calibre-v7.16.0
+    volumes:
+      - ./folder:/config
+      - ./cwa-book-ingest:/cwa-book-ingest
+      - ./calibre-library:/calibre-library
+      #- ./books:/books #Optional
+      #- gmail.json.json:/app/calibre-web/gmail.json #Optional
+    ports:
+      - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
+    restart: unless-stopped

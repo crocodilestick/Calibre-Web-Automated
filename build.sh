@@ -1,7 +1,10 @@
 #!/bin/sh
 
-docker build --tag crocodilestick/calibre-web-automated:master 
-# optional: --build-arg="BUILD_DATE=27-09-2024 12:06" --build-arg="VERSION=2.1.0-test-5" .
-
+docker build --tag cwa-dev .
 mkdir -p build
+cp docker-compose.yml.dev build/docker-compose.yml
+cd build/
+docker compose up -d
+
+
 

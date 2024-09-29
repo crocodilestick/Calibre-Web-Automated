@@ -16,7 +16,7 @@
   - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
   - [For Developers](#for-developers) 🚀
 - [Usage](#usage-)
-- [Further Development](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
+- [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
 
 ## Why does it exist? 🔓

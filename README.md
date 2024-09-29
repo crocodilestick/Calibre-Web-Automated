@@ -15,6 +15,8 @@
   - [Quick Install](#quick-install-) 🚀
   - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
   - [For Developers](#for-developers---building-custom-docker-image) 🚀
+- [Post-Install Tasks](#post-install-tasks)
+- [Usage](#usage-)
 - [Usage](#usage-)
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
@@ -154,7 +156,7 @@ curl -OL https://raw.githubusercontent.com/crocodilestick/calibre-web-automated/
 docker compose up -d
 ```
 
-And that's you off to the races! 🥳 HOWEVER to avoid potential problems and ensure maximum functionality, we recommend carrying out these [Post-Install Tasks Here](#recommended-post-install-tasks).
+And that's you off to the races! 🥳 HOWEVER to avoid potential problems and ensure maximum functionality, we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
 ---
 ## Using Docker Compose 🐋⭐(Recommended)
@@ -194,7 +196,7 @@ services:
   - `/app/calibre-web/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
 
 And just like that, Calibre-Web Automated should be up and running! HOWEVER to avoid potential problems and ensure maximum functionality,
-we recommend carrying out these [Post-Install Tasks Here](#recommended-post-install-tasks).
+we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
 <!-- - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths -->
 ---
@@ -208,11 +210,11 @@ $ chmod +x build.sh
 $ ./build.sh
 ```
 
-Check out [Post-Install Tasks Here](#recommended-post-install-tasks) when necessary.
+Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
 
 ---
 
-# Recommended Post-Install Tasks:
+# Post-Install Tasks:
 
 ## _Calibre-Web Quick Start Guide_
 

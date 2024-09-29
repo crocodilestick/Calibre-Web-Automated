@@ -14,7 +14,7 @@
 - [How to Install](#how-to-install-): 📖
   - [Quick Install](#quick-install-) 🚀
   - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
-  - [For Developers](#for-developers--building-custom-docker-image) 🚀
+  - [For Developers](#for-developers---building-custom-docker-image) 🚀
 - [Usage](#usage-)
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕

@@ -8,13 +8,14 @@
 
 ## _Quick Access_
 
-- [Features](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#what-does-it-do-) 🪄
+- [Features](#what-does-it-do-) 🪄
 - [Releases](https://github.com/crocodilestick/Calibre-Web-Automated/releases) 🆕
-- [Roadmap](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#under-active-development-%EF%B8%8F) 🛣️
-- [How to Install](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#how-to-install-): 📖
-  - [Docker-Compose](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-1-using-docker-compose--recommended) 🐋⭐(Recommended)
-  - [Quick Install](https://github.com/crocodilestick/Calibre-Web-Automated/tree/main?tab=readme-ov-file#quick-install-) 🚀
-- [Usage](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🔧
+- [Roadmap](#under-active-development-%EF%B8%8F) 🛣️
+- [How to Install](#how-to-install-): 📖
+  - [Quick Install](#quick-install-) 🚀
+  - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
+  - [For Developers](#for-developers) 🚀
+- [Usage](#usage-)
 - [Further Development](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
 
@@ -193,6 +194,16 @@ services:
   - `/app/calibre-web/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
 
 ### And just like that, Calibre-Web Automated should be up and running!
+
+---
+## For Developers
+If you want to contribute to this project, you can build a docker file by running `build.sh` in the repository.
+This will build the docker image of the cloned repository with the modifications you have made>
+
+```
+$ chmod +x build.sh
+$ ./build.sh
+```
 
 <!-- - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths -->
 

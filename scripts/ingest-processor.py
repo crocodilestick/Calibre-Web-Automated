@@ -179,7 +179,7 @@ def main(filepath=sys.argv[1]):
 
     else: # Books need imported
         print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...")
-        npb.add_book_to_library(filepath)
+        nbp.add_book_to_library(filepath)
 
     nbp.set_library_permissions()
     nbp.delete_current_file()

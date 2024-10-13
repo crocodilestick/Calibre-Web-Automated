@@ -17,7 +17,6 @@
   - [For Developers](#for-developers---building-custom-docker-image) 🚀
 - [Post-Install Tasks](#post-install-tasks)
 - [Usage](#usage-)
-- [Usage](#usage-)
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
 

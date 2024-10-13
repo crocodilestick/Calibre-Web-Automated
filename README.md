@@ -8,14 +8,17 @@
 
 ## _Quick Access_
 
-- [Features](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#what-does-it-do-) 🪄
+- [Features](#what-does-it-do-) 🪄
 - [Releases](https://github.com/crocodilestick/Calibre-Web-Automated/releases) 🆕
-- [Roadmap](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#under-active-development-%EF%B8%8F) 🛣️
-- [How to Install](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#how-to-install-): 📖
-  - [Docker-Compose](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-1-using-docker-compose--recommended) 🐋⭐(Recommended)
-  - [Quick Install](https://github.com/crocodilestick/Calibre-Web-Automated/tree/main?tab=readme-ov-file#quick-install-) 🚀
-- [Usage](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🔧
-- [Further Development](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#method-2-using-the-script-install-method-with-clean-calibre-web-base-image--not-recommended) 🏗️
+- [Roadmap](#under-active-development-%EF%B8%8F) 🛣️
+- [How to Install](#how-to-install-): 📖
+  - [Quick Install](#quick-install-) 🚀
+  - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
+  - [For Developers](#for-developers---building-custom-docker-image) 🚀
+- [Post-Install Tasks](#post-install-tasks)
+- [Usage](#usage-)
+- [Usage](#usage-)
+- [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
 
 ## Why does it exist? 🔓
@@ -153,14 +156,14 @@ curl -OL https://raw.githubusercontent.com/crocodilestick/calibre-web-automated/
 docker compose up -d
 ```
 
-And that's you off to the races! 🥳 HOWEVER to avoid potential problems and ensure maximum functionality, we recommend carrying out these [Post-Install Tasks Here](#3-recommended-post-install-tasks).
+And that's you off to the races! 🥳 HOWEVER to avoid potential problems and ensure maximum functionality, we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
 ---
 ## Using Docker Compose 🐋⭐(Recommended)
 
 ### 1. Setup the container using the Docker Compose template below: 🐋📜
 
-```
+```yml
 ---
 services:
   calibre-web-automated:
@@ -192,13 +195,28 @@ services:
   - `/books` _(Optional)_ - This is purely optional, I personally bind /books to where I store my downloaded books so that they accessible from within the container but CWA doesn't require this
   - `/app/calibre-web/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
 
-### And just like that, Calibre-Web Automated should be up and running!
+And just like that, Calibre-Web Automated should be up and running! HOWEVER to avoid potential problems and ensure maximum functionality,
+we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
 <!-- - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths -->
+---
+## For Developers - Building Custom Docker Image
+If you want to contribute to this project, you can build the docker file by running `build.sh` in the repository.
+This will build the docker image of the cloned repository with the modifications you have made. the `build/` folder
+will be made, containing the the development docker-compose.yml and the mountpoints. Add a test library if necessary>
 
-### 2. **_Recommended Post-Install Tasks:_**
+```bash
+$ chmod +x build.sh
+$ ./build.sh
+```
 
-#### _Calibre-Web Quick Start Guide_
+Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
+
+---
+
+# Post-Install Tasks:
+
+## _Calibre-Web Quick Start Guide_
 
 1. Open your browser and navigate to http://localhost:8084 or http://localhost:8084/opds for the OPDS catalog
 2. Log in with the default admin credentials (_below_)
@@ -214,12 +232,12 @@ services:
 
 - _Downloading files directly into `/cwa-book-ingest` is not supported. It can cause duplicate imports and potentially a corrupt database. It is recommended to first download the books completely, then transfer them to `/cwa-book-ingest` to avoid any issues_
 
-#### Default Admin Login:
+## Default Admin Login:
 
 > **Username:** admin\
 > **Password:** admin123
 
-#### Configuring CWA ⚙️
+## Configuring CWA ⚙️
 
 - If your Calibre Library contains any ebooks not in the `.epub` format, from within the container run the `convert-library` command.
   - Calibre-Web Automated's extra features only work with epubs and so **failure to complete this step could result in unforeseen errors and general unreliability**

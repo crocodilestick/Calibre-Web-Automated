@@ -201,13 +201,15 @@ we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 ---
 ## For Developers - Building Custom Docker Image
 If you want to contribute to this project, you can build the docker file by running `build.sh` in the repository.
-This will build the docker image of the cloned repository with the modifications you have made. the `build/` folder
-will be made, containing the the development docker-compose.yml and the mountpoints. Add a test library if necessary>
+With your modifications, this will build the docker image of the cloned repository. The `build/` folder
+will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary. 
 
 ```bash
 $ chmod +x build.sh
 $ ./build.sh
 ```
+
+After the script is done executing, `cd` into the `build/` folder, then run `docker compose up -d`. This will use `build/docker-compose.yml`. Modify it if necessary.
 
 Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
 

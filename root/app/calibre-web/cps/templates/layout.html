@@ -101,7 +101,7 @@
               {% if current_user.role_admin() %}
                 <li><a id="top_admin" data-text="{{_('Settings')}}" href="{{url_for('admin.admin')}}"><span class="glyphicon glyphicon-dashboard"></span> <span class="hidden-sm">{{_('Admin')}}</span></a></li>
               {% endif %}
-              <li><a id="refresh-library" data-text="{{_('Ingest Books')}}" href="{{url_for('library_ingest.cwa_library_ingest')}}"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Refresh Library')}}</span></a></li>
+              <li><a id="ingest-library" data-text="{{_('Ingest Books')}}" href="{{url_for('library_ingest.cwa_library_ingest')}}"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Ingest Books')}}</span></a></li>
               {% if g.current_theme == 0 %}
               <li><a id="top_user" data-text="{{_('Account')}}" href="{{url_for('web.profile')}}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
                 {% if not current_user.is_anonymous %}

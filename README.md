@@ -243,7 +243,7 @@ convert-library --keep
 
 ## Adding Books to Your Library
 
-- Simply move your newly downloaded or existing eBook files to the ingest folder which is `/cwa-book-ingest` by default or whatever you designated during setup if using the Script Install method. Then on the website, press "Ingest Books" at the top right of the navigation bar. Anything you place in that folder will be automatically analyzed, converted if necessary, then imported into your Calibre-Web library.
+- Simply move your newly downloaded or existing eBook files to the ingest folder which is `/cwa-book-ingest` by default or whatever you designated during setup if using the Script Install method. Anything you place in that folder will be automatically analysed, converted if necessary and then imported into your Calibre-Web library.
   - **⚠️ ATTENTION ⚠️**
     - _Downloading files directly into `/cwa-book-ingest` is not supported. It can cause duplicate imports and potentially a corrupt database. It is recommended to first download the books completely, then transfer them to `/cwa-book-ingest` to avoid any issues_
     - Be sure that the books you are transferring to `/cwa-book-ingest` are owned by your user rather than root. Otherwise, permission errors may occur and may result in incomplete importing. 

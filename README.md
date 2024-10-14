@@ -225,7 +225,9 @@ convert-library --keep
 
 - Simply move your newly downloaded or existing eBook files to the ingest folder which is `/cwa-book-ingest` by default or whatever you designated during setup if using the Script Install method. Anything you place in that folder will be automatically analysed, converted if necessary and then imported into your Calibre-Web library.
   - **⚠️ ATTENTION ⚠️**
-    - Be sure that the books you are transferring to `/cwa-book-ingest` are owned by your user rather than root. Otherwise, permission errors may occur and may result in incomplete importing. 
+    - _Downloading files directly into `/cwa-book-ingest` is not supported. It can cause duplicate imports and potentially a corrupt database. It is recommended to first download the books completely, then transfer them to `/cwa-book-ingest` to avoid any issues_
+    - Be sure that the books you are transferring to `/cwa-book-ingest` are owned by your user rather than root. Otherwise, permission errors may occur and may result in incomplete importing.
+    - In the event you're expecting a book to be ingested and it hasn't been, use the "Library Refresh" button on the Upper Navbar to manually trigger the ingest process
 
 ## The Cover-Enforcer CLI Tool
 
@@ -273,16 +275,14 @@ options:
 
 ---
 ## For Developers - Building Custom Docker Image
-If you want to contribute to this project, you can build the docker file by running `build.sh` in the repository.
-With your modifications, this will build the docker image of the cloned repository. The `build/` folder
-will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary. 
+If you want to contribute to this project, you can build a local version with your changes by running `build.sh` in the repository.
+
+The resultant image will then be automatically deployed using the `docker-compose.yml.dev` (make changes as necessary beforehand) in the directory and the `build/` folder will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary. 
 
 ```bash
 $ chmod +x build.sh
 $ ./build.sh
 ```
-
-After the script is done executing, `cd` into the `build/` folder, then run `docker compose up -d`. This will use `build/docker-compose.yml`. Modify it if necessary.
 
 Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
 

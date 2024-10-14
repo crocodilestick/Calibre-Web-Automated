@@ -498,7 +498,7 @@ $("#cwa-switch-theme").attr({
 
 $("#refresh-library").attr({
     "data-toggle": "tooltip",
-    "title": $("#refresh-library").text(),              // "Refresh Library"
+    "title": $("#ingest-library").text(),              // "Refresh Library"
     "data-placement": "bottom",
     "data-viewport": "#main-nav"
 })

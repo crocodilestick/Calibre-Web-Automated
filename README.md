@@ -218,10 +218,6 @@ Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
 3. Configure your Calibre-Web instance via the admin page, referring to the Basic Configuration and UI Configuration guides
 4. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
 
-**⚠️ ATTENTION ⚠️**
-
-- _Downloading files directly into `/cwa-book-ingest` is not supported. It can cause duplicate imports and potentially a corrupt database. It is recommended to first download the books completely, then transfer them to `/cwa-book-ingest` to avoid any issues_
-
 ## Default Admin Login:
 
 > **Username:** admin\
@@ -245,7 +241,6 @@ convert-library --keep
 
 - Simply move your newly downloaded or existing eBook files to the ingest folder which is `/cwa-book-ingest` by default or whatever you designated during setup if using the Script Install method. Anything you place in that folder will be automatically analysed, converted if necessary and then imported into your Calibre-Web library.
   - **⚠️ ATTENTION ⚠️**
-    - _Downloading files directly into `/cwa-book-ingest` is not supported. It can cause duplicate imports and potentially a corrupt database. It is recommended to first download the books completely, then transfer them to `/cwa-book-ingest` to avoid any issues_
     - Be sure that the books you are transferring to `/cwa-book-ingest` are owned by your user rather than root. Otherwise, permission errors may occur and may result in incomplete importing. 
 
 ## The Cover-Enforcer CLI Tool

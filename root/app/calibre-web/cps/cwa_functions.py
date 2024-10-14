@@ -14,7 +14,7 @@ sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
 
 switch_theme = Blueprint('switch_theme', __name__)
-library_refresh = Blueprint('library_refresh', __name__)
+library_ingest = Blueprint('library_ingest', __name__)
 convert_library = Blueprint('convert_library', __name__)
 cwa_history = Blueprint('cwa_history', __name__)
 cwa_check_status = Blueprint('cwa_check_status', __name__)
@@ -49,9 +49,9 @@ def cwa_switch_theme():
     return redirect("/", code=302)
 
 
-@library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])
+@library_ingest.route("/cwa-library-ingest", methods=["GET", "POST"])
 @login_required_if_no_ano
-def cwa_library_refresh():
+def cwa_library_ingest():
     flash(_("Library Refresh: Initialising Book Ingest System, please wait..."), category="cwa_refresh")
     result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest-processor.py', '/cwa-book-ingest'])
     return_code = result.returncode

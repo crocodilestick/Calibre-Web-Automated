@@ -122,18 +122,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
   - **Bio**nic **read**ing **wa**s **initi**ally **rele**ased **i**n **20**22 **a**s **a** **met**hod **o**f **forma**tting **te**xt **t**o **ma**ke **i**t **eas**ier **fo**r **peo**ple **wi**th **AD**HD **an**d **oth**er **concent**ration **&** **read**ing **iss**ues **t**o **re**ad **fast**er, **eas**ier **an**d **t**o **ret**ain **mo**re **o**f **wh**at **they**'ve **rea**d.
   - **W**e **we**re **insp**ired **b**y **th**e **conc**ept **an**d **ha**ve **crea**ted **a** **eP**ub **conve**rsion **algor**ithm **insp**ired **b**y **th**e **orig**inal **Bio**nic **Read**ing **fo**r **tho**se **wh**o **li**ke **i**t **o**r **wh**o **ma**y **wa**nt **t**o **gi**ve **i**t **a** **g**o
 
-#### Upcoming in v2.1.0 (currently in dev image):
-- Added greater support for special characters in Book Titles and Author Names
-- Improved error handling for files that are unable to be successfully processed
-- Fix for bug where the Web UI could become unavailable due to not receiving a response for a API query to the project's GitHub page. Courtesy of @Buco7854
-- Made it so CWA only checks for available updates once per day
-- This and future builds now available for ARM based machines thanks to help from @driftywinds and @carlossgv
-- Enabled Uploads to be on by default
-- Added default path to included calibre & kepubify binaries
-- Reworked the ingest process to solve issues for a number of users
-- Deprecated new-book-detector and renamed scripts to make their function clearer
-- convert-library revamped to be more stable, including error checking to prevent unconverted books from being deleted
-- Failed conversions and ingests are moved to `/config/processed_books/` rather than being deleted if the process fails
+- [View upcoming releases here](https://github.com/crocodilestick/Calibre-Web-Automated/releases) 
 
 ### Additional Features on our Roadmap 🛣️🌱
 

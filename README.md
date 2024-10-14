@@ -17,9 +17,9 @@
 - [How to Install](#how-to-install-): 📖
   - [Quick Install](#quick-install-) 🚀
   - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
-  - [For Developers](#for-developers---building-custom-docker-image) 🚀
-- [Post-Install Tasks](#post-install-tasks)
+  - [Post-Install Tasks](#post-install-tasks)
 - [Usage](#usage-)
+- [For Developers](#for-developers---building-custom-docker-image) 🚀
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
 
@@ -163,11 +163,11 @@ services:
       - TZ=UTC
       - DOCKER_MODS=lscr.io/linuxserver/mods:universal-calibre-v7.16.0
     volumes:
-      - ./config:/config
-      - ./cwa-book-ingest:/cwa-book-ingest
-      - ./calibre-library:/calibre-library
-      #- ./books:/books #Optional
-      #- gmail.json:/app/calibre-web/gmail.json #Optional
+      - /path/to/config/folder:/config
+      - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
+      - /path/to/your/calibre/library:/calibre-library
+      #- /path/to/where/you/keep/your/books:/books #Optional
+      #- /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
     ports:
       - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
     restart: unless-stopped
@@ -187,22 +187,6 @@ And just like that, Calibre-Web Automated should be up and running! HOWEVER to a
 we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
 <!-- - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths -->
----
-## For Developers - Building Custom Docker Image
-If you want to contribute to this project, you can build the docker file by running `build.sh` in the repository.
-With your modifications, this will build the docker image of the cloned repository. The `build/` folder
-will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary. 
-
-```bash
-$ chmod +x build.sh
-$ ./build.sh
-```
-
-After the script is done executing, `cd` into the `build/` folder, then run `docker compose up -d`. This will use `build/docker-compose.yml`. Modify it if necessary.
-
-Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
-
----
 
 # Post-Install Tasks:
 
@@ -286,6 +270,23 @@ options:
 
 - Simply run the following command from within the container: `cwa-check`
 - If all 3 services come back as green and running they are working properly, otherwise there may be problems with your configuration/install
+
+---
+## For Developers - Building Custom Docker Image
+If you want to contribute to this project, you can build the docker file by running `build.sh` in the repository.
+With your modifications, this will build the docker image of the cloned repository. The `build/` folder
+will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary. 
+
+```bash
+$ chmod +x build.sh
+$ ./build.sh
+```
+
+After the script is done executing, `cd` into the `build/` folder, then run `docker compose up -d`. This will use `build/docker-compose.yml`. Modify it if necessary.
+
+Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
+
+---
 
 # Further Development 🏗️
 

@@ -9,6 +9,14 @@ echo "====== Calibre-Web Automated -- Status of Monitoring Services ======"
 echo ""
 
 
+if s6-rc -a list | grep -q 'cwa-ingest-service'; then
+    echo -e "- cwa-ingest-service ${GREEN}is running${NC}"
+    is=true
+else
+    echo -e "- cwa-ingest-service ${RED}is not running${NC}"
+    is=false
+fi
+
 if s6-rc -a list | grep -q 'metadata-change-detector'; then
     echo -e "- metadata-change-detector ${GREEN}is running${NC}"
     mc=true
@@ -19,7 +27,7 @@ fi
 
 echo ""
 
-if $mc; then
+if $is && $mc; then
     echo -e "Calibre-Web-Automated was ${GREEN}successfully installed ${NC}and ${GREEN}is running properly!${NC}"
     exit 0
 else

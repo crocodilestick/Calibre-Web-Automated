@@ -15,6 +15,7 @@ make_dirs () {
 # Change ownership & permissions as required
 change_script_permissions () {
     chmod +x /app/calibre-web-automated/scripts/check-cwa-services.sh
+    chmod +x /etc/s6-overlay/s6-rc.d/cwa-ingest-service/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-init-remove-locks/run
     chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-set-perms/run

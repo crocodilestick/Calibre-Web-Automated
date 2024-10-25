@@ -1,10 +1,44 @@
-#!/bin/sh
+#!/bin/bash
 
-docker build --tag calibre-web-automated:dev --build-arg="BUILD_DATE=$(date '+%Y/%m/%d')" --build-arg="VERSION=2.1.0-dev" .
-mkdir -p build
-cp -n docker-compose.yml.dev build/docker-compose.yml
-cd build/
-docker compose up -d
+# Enter location for cwa repo files below
+REPO_DIR="/home/cwa-repo-download"
+# Enter your DockerHub username here
+DH_USER="crocodilestick"
 
+rm -r -f $REPO_DIR
+git clone http://github.com/crocodilestick/calibre-web-automated.git $REPO_DIR
+cd $REPO_DIR
+
+echo
+echo Enter Version Number\: \(Convention is e.g. V2.0.1\)
+read version
+
+echo Dev or Production Image? Enter \'dev\' or \'prod\' to choose:
+while true ; do
+  read type
+  case $type in
+    dev | Dev | DEV)
+      echo Enter test version number\:
+      read testnum
+      break
+      ;;
+
+    prod | Prod | PROD)
+      break
+      ;;
+
+    *)
+      echo Invalid entry. Please try again.
+      ;;
+  esac
+done
+
+NOW="$(date +"%Y-%m-%d %H:%M:%S")"
+
+if [ -v testnum ]; then
+  docker build --tag $DH_USER/calibre-web-automated:dev --build-arg="BUILD_DATE=$NOW" --build-arg="VERSION=$version-TEST-$testnum" .
+else
+  docker build --tag $DH_USER/calibre-web-automated:$version --build-arg="BUILD_DATE=$NOW" --build-arg="VERSION=$version" .
+fi
 
 

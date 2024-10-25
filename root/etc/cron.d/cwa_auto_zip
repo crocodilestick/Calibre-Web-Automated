@@ -1,0 +1,2 @@
+55 23 * * * root pip install tabulate
+59 23 * * * root python3 /app/calibre-web-automated/scripts/auto-zip.py > /proc/1/fd/1 2>&1

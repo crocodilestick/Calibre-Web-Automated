@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block script %}
+  $(document).ready(function(){
+    var output = document.getElementById('output');
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '{{ url_for('convert_library.cwa_library_convert') }}', true);
+    xhr.send();
+    setInterval(function() {
+      output.textContent = xhr.responseText;
+    }, 500);
+  });
+{% endblock %}
+{% block body %}
+<div class="discover">
+  <h2>{{title}}</h2>
+    <div>
+      <h3>CWA Library Convertor</h3><br>
+      <div class="row">
+        <div class="logging_window">
+          <pre id="output"></pre>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

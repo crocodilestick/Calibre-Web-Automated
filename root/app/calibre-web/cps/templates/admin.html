@@ -203,9 +203,10 @@
   <div class="row form-group">
     <h2>{{_('CWA Admin Functions⚡')}}</h2>
     <a class="btn btn-default" id="cwa-settings" href="{{url_for('cwa_settings.set_cwa_settings')}}">{{_('CWA Settings')}}</a>
-  </div>
-  <div class="row form-group">  
     <a class="btn btn-default" id="check_mon_srvs" href="{{url_for('cwa_check_status.cwa_flash_status')}}">{{_('Check CWA Status')}}</a>
+  </div>
+  <div class="row form-group">
+    <a class="btn btn-default" id="library_convert" href="{{url_for('convert_library.cwa_library_convert')}}">{{_('Convert Library to epub')}}</a>
   </div>
   <div class="row-form-group">
     <a class="btn btn-default github" id="cwa_github_link" href="https://github.com/crocodilestick/Calibre-Web-Automated/">{{_('CWA GitHub')}}</a>
@@ -213,8 +214,6 @@
   </div>
   <div class="row form-group">
     <h4><i>(More Functions Coming Soon!)</i></h4>
-    <a class="btn btn-default" id="library_convert">{{_('Convert Library to epub')}}</a>
-      <!-- href="{{url_for('convert_library.cwa_library_convert')}}" -->
     <a class="btn btn-default" id="con_history">{{_('Show Conversion History')}}</a>
       <!-- href="{{url_for('cwa_history.cwa_history_show')}}" -->
   </div>

@@ -11,7 +11,7 @@ import subprocess
 from cwa_db import CWA_DB
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='/config/calibre-web.log', level=logging.INFO)
+logging.basicConfig(filename='/config/convert-library.log', level=logging.INFO, filemode='w')
 
 # Make sure required directories are present
 required_directories = [
@@ -32,7 +32,7 @@ class LibraryConverter:
         self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz']
         self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
 
-        self.ingest_folder, self.library_dir, tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
+        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
         self.epubs, self.to_convert = self.get_library_books()
         self.current_book = 1
 
@@ -141,13 +141,13 @@ class LibraryConverter:
                 if os.path.isfile(file_path):
                     os.remove(file_path)
         except OSError:
-            print(f"[convert-library] An error occurred while emptying {self.tmp_conversion_dir}.")
+            print_and_log(f"[convert-library] An error occurred while emptying {self.tmp_conversion_dir}.")
 
     def set_library_permissions(self):
         try:
             subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
         except subprocess.CalledProcessError as e:
-            print(f"[convert-library] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
+            print_and_log(f"[convert-library] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
 
 
 def main():
@@ -169,9 +169,11 @@ def main():
         converter.convert_library()
     else:
         print_and_log("[convert-library] No non-epubs found in library. Exiting now...")
+        logging.info("FIN")
         sys.exit(0)
 
     print_and_log(f"\n[convert-library] Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")
+    logging.info("FIN")
     sys.exit(0)
 
 def print_and_log(string) -> None:

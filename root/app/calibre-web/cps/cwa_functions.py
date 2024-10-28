@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, flash, url_for, request
+from flask import Blueprint, redirect, flash, url_for, request, Response
 from flask_babel import gettext as _
 
 from . import logger, config, constants, csrf
@@ -20,7 +20,7 @@ cwa_history = Blueprint('cwa_history', __name__)
 cwa_check_status = Blueprint('cwa_check_status', __name__)
 cwa_settings = Blueprint('cwa_settings', __name__)
 
-log = logger.create()
+# log = logger.create()
 
 
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
@@ -101,14 +101,6 @@ def set_cwa_settings():
     return render_title_template("cwa_settings.html", title=_("CWA Settings"), page="cwa-settings",
                                     cwa_settings=cwa_settings)
 
-# Coming Soon
-@convert_library.route("/cwa-library-convert", methods=["GET", "POST"])
-@login_required_if_no_ano
-@admin_required
-def cwa_library_convert():
-    flash(_("Library Convert: Running, please wait..."), category="refresh-cwa")
-    subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert-library.py'])
-    return redirect(url_for('admin.view_logfile'))
 
 # Coming Soon
 @cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
@@ -138,3 +130,100 @@ def cwa_flash_status():
             flash(_("An Error has occurred"), category="cwa_refresh")
 
     return redirect(url_for('admin.admin'))
+
+from time import sleep
+
+def flask_logger():
+    subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert-library.py'])
+    with open("/config/convert-library.log", 'r') as log_info:
+        while True:
+            data = log_info.read()
+            yield data.encode()
+            sleep(1)
+            if "FIN" in data:
+                break
+
+@convert_library.route("/cwa-library-convert", methods=["GET", "POST"])
+@login_required_if_no_ano
+@admin_required
+def cwa_library_convert():
+    return Response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
+
+# @convert_library.route("/convert-progress", methods=["GET"])
+# @login_required_if_no_ano
+# @admin_required
+# def convert_progress():
+#     # return render_title_template("cwa_convert_library.html", title=_("CWA Convert Library"), page="cwa-library-convert")
+# def convert_progress():
+#     return '''
+#     <!DOCTYPE html>
+#     <html lang="en">
+#     <head>
+#         <meta charset="UTF-8">
+#         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+#         <title>Log Viewer</title>
+#         <style>
+#             body {
+#                 font-family: Arial, sans-serif;
+#                 background-color: #f4f4f4;
+#                 margin: 0;
+#                 padding: 20px;
+#             }
+#             #log {
+#                 background: #fff;
+#                 border: 1px solid #ccc;
+#                 padding: 10px;
+#                 height: 400px;
+#                 overflow-y: scroll;
+#                 font-family: monospace;
+#                 white-space: pre-wrap;
+#             }
+#             .log-entry {
+#                 margin-bottom: 5px;
+#             }
+#             .info {
+#                 color: blue;
+#             }
+#             .warning {
+#                 color: orange;
+#             }
+#             .error {
+#                 color: red;
+#             }
+#         </style>
+#     </head>
+#     <body>
+#         <h1>Log Viewer</h1>
+#         <div id="log"></div>
+#         <script>
+#             const eventSource = new EventSource("/logs");
+            
+#             eventSource.onopen = function(event) {
+#                 console.log("Connection to server opened.");
+#             };
+
+#             eventSource.onmessage = function(event) {
+#                 console.log("Received message:", event.data); // Log incoming messages for debugging
+#                 const logEntry = document.createElement("div");
+#                 logEntry.className = "log-entry";
+                
+#                 if (event.data.includes("ERROR")) {
+#                     logEntry.classList.add("error");
+#                 } else if (event.data.includes("WARNING")) {
+#                     logEntry.classList.add("warning");
+#                 } else {
+#                     logEntry.classList.add("info");
+#                 }
+
+#                 logEntry.textContent = event.data;
+#                 document.getElementById("log").appendChild(logEntry);
+#                 document.getElementById("log").scrollTop = document.getElementById("log").scrollHeight;
+#             };
+
+#             eventSource.onerror = function(event) {
+#                 console.error("EventSource failed:", event);
+#             };
+#         </script>
+#     </body>
+#     </html>
+#     '''

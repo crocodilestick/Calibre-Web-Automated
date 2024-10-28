@@ -1,14 +1,13 @@
 #!/bin/bash
 
-exho "[cwa-auto-zipper] Starting CWA-Auto-Zipper service..."
+echo "[cwa-auto-zipper] Starting CWA-Auto-Zipper service..."
 echo "[cwa-auto-zipper] Matching internal localtime & timezone with the one provided..."
 
-tz_line=$(printenv | grep TZ=)
-if [[ $tz_line == "" ]]
+tz=$(printcontenv TZ)
+if [[ $tz == "" ]]
 then
     echo "[cwa-auto-zipper] No TZ env found. Defaulting to UTC..."
 else
-    tz=$(echo $tz_line | awk -F '=' '{ print $2 }')
     region=$(echo $tz | awk -F '/' '{ print $1 }')
     city=$(echo $tz | awk -F '/' '{ print $2 }')
 
@@ -29,7 +28,6 @@ WAKEUP="23:59" # Wake up at this time tomorrow and run a command
 # in a docker container that does a single thing at a specific time on a regular interval, but does not want to be bothered
 # with cron or at. The -d option to date is VERY flexible for relative times.
 # See https://www.gnu.org/software/coreutils/manual/html_node/Relative-items-in-date-strings.html#Relative-items-in-date-strings
-# For details
 
 # This script runs in an infinite loop, waking up every night at 23:59
 while :

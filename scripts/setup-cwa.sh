@@ -19,7 +19,8 @@ change_script_permissions () {
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-init-remove-locks/run
     chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-set-perms/run
-    chmod +x /etc/s6-overlay/s6-rc.d/auto-library/run
+    chmod +x /etc/s6-overlay/s6-rc.d/cwa-auto-library/run
+    chmod +x /etc/s6-overlay/s6-rc.d/cwa-auto-zipper/run
     chmod 775 /app/calibre-web/cps/editbooks.py
     chmod 775 /app/calibre-web/cps/admin.py
 }

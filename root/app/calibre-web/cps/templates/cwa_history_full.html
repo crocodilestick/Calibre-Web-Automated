@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="discover">
+  <h2>{{title}}</h2>
+    <div>
+      <h3>Calibre-Web Automated Enforcement History</h3><br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in table_headers %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+</div>
+{% endblock %}

@@ -122,7 +122,7 @@ def cwa_history_show():
                                     data_i=data_i, table_headers_i=table_headers_i,
                                     data_c=data_c, table_headers_c=table_headers_c)
                                     
-@cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
+@cwa_history.route("/cwa-history-show/full-enforcement", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_enforcement():
@@ -131,7 +131,7 @@ def show_full_enforcement():
     return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Enforcement History"), page="cwa-history-full",
                                     table_headers=table_headers, data=data)
 
-@cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
+@cwa_history.route("/cwa-history-show/full-enforcement-path", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_enforcement_path():
@@ -140,7 +140,7 @@ def show_full_enforcement_path():
     return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Enforcement History (Paths)"), page="cwa-history-full",
                                     table_headers=table_headers, data=data)
 
-@cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
+@cwa_history.route("/cwa-history-show/full-imports", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_imports():
@@ -149,7 +149,7 @@ def show_full_imports():
     return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Import History"), page="cwa-history-full",
                                     table_headers=table_headers, data=data)
 
-@cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
+@cwa_history.route("/cwa-history-show/full-conversions", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_conversions():

@@ -10,8 +10,33 @@ import subprocess
 
 from cwa_db import CWA_DB
 
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='/config/convert-library.log', level=logging.INFO, filemode='w')
+
+def print_and_log(string) -> None:
+    logging.info(string)
+    print(string)
+
+
+# Creates a lock file unless one already exists meaning an instance of the script is
+# already running, then the script is closed, the user is notified and the program
+# exits with code 2
+try:
+    lock = open(tempfile.gettempdir() + '/convert-library.lock', 'x')
+    lock.close()
+except FileExistsError:
+    print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
+    print_and_log("FIN")
+    sys.exit(2)
+
+# Defining function to delete the lock on script exit
+def removeLock():
+    os.remove(tempfile.gettempdir() + '/convert-library.lock')
+
+# Will automatically run when the script exits
+atexit.register(removeLock)
+
 
 # Make sure required directories are present
 required_directories = [
@@ -76,7 +101,7 @@ class LibraryConverter:
             try: # Get Calibre Library Book ID
                 book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1]
             except Exception as e:
-                print_and_log(f"[convert-library] A Calibre Library Book ID could not be determined for {file}. Make sure the structure of your calibre library matches the following example:\n")
+                print_and_log(f"[convert-library]: A Calibre Library Book ID could not be determined for {file}. Make sure the structure of your calibre library matches the following example:\n")
                 print_and_log("Terry Goodkind/")
                 print_and_log("└── Wizard's First Rule (6120)")
                 print_and_log("    ├── cover.jpg")
@@ -175,10 +200,6 @@ def main():
     print_and_log(f"\n[convert-library] Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")
     logging.info("FIN")
     sys.exit(0)
-
-def print_and_log(string) -> None:
-    logging.info(string)
-    print(string)
 
 
 if __name__ == "__main__":

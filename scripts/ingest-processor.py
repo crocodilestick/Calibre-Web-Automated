@@ -21,6 +21,13 @@ except FileExistsError:
     print("CANCELLING... ingest-processor initiated but is already running")
     sys.exit(2)
 
+# Defining function to delete the lock on script exit
+def removeLock():
+    os.remove(tempfile.gettempdir() + '/ingest-processor.lock')
+
+# Will automatically run when the script exits
+atexit.register(removeLock)
+
 # Make sure required directories are present
 required_directories = [
     "/config/.cwa_conversion_tmp",
@@ -33,12 +40,6 @@ for directory in required_directories:
     Path(directory).mkdir(exist_ok=True)
     os.system(f"chown -R abc:abc {directory}")
 
-# Defining function to delete the lock on script exit
-def removeLock():
-    os.remove(tempfile.gettempdir() + '/ingest-processor.lock')
-
-# Will automatically run when the script exits
-atexit.register(removeLock)
 
 class NewBookProcessor:
     def __init__(self, filepath: str):

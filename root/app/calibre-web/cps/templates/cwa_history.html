@@ -3,7 +3,7 @@
 <div class="discover">
   <h2>{{title}}</h2>
     <div>
-      <h3>Calibre-Web Automated Enforcement History</h3><input type="submit" name="see_more" value="Click to See More" class="btn btn-default" formaction="{{ url_for('cwa_history.show_full_enforcement') }}"><br>
+      <h3>Calibre-Web Automated Enforcement History</h3><a class="btn btn-default" id="show_full_enforcement" href="{{url_for('cwa_history.show_full_enforcement')}}">{{_('Click to See More')}}</a><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers %}
@@ -18,7 +18,7 @@
         </tr>
         {% endfor %}
       </table>
-      <h4><i>Paths</i></h4><input type="submit" name="see_more" value="Click to See More" class="btn btn-default" formaction="{{ url_for('cwa_history.show_full_enforcement_path') }}"><br>
+      <h4><i>Paths</i></h4><a class="btn btn-default" id="show_full_enforcement" href="{{ url_for('cwa_history.show_full_enforcement_path') }}">{{_('Click to See More')}}</a><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers_p %}
@@ -35,7 +35,7 @@
       </table>
     </div>
     <div>
-      <h3>Calibre-Web Automated Import History</h3><input type="submit" name="see_more" value="Click to See More" class="btn btn-default" formaction="{{ url_for('cwa_history.show_full_imports') }}"><br>
+      <h3>Calibre-Web Automated Import History</h3><a class="btn btn-default" id="show_full_enforcement" href="{{ url_for('cwa_history.show_full_imports') }}">{{_('Click to See More')}}</a><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers_i %}
@@ -52,7 +52,7 @@
       </table>
     </div>
     <div>
-      <h3>Calibre-Web Automated Conversion History</h3><input type="submit" name="see_more" value="Click to See More" class="btn btn-default" formaction="{{ url_for('cwa_history.show_full_conversions') }}"><br>
+      <h3>Calibre-Web Automated Conversion History</h3><a class="btn btn-default" id="show_full_enforcement" href="{{ url_for('cwa_history.show_full_conversions') }}">{{_('Click to See More')}}</a><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers_c %}

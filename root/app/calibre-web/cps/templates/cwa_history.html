@@ -3,7 +3,7 @@
 <div class="discover">
   <h2>{{title}}</h2>
     <div>
-      <h3>Calibre-Web Automated Enforcement History</h3><br>
+      <h3>Calibre-Web Automated Enforcement History</h3><input type="submit" name="see_more" value="Click to See More" class="btn btn-default" formaction="{{ url_for('cwa_history.show_full_enforcement') }}"><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers %}
@@ -18,8 +18,7 @@
         </tr>
         {% endfor %}
       </table>
-      <br>
-      <h4>With Paths</h4><br>
+      <h4><i>Paths</i></h4><input type="submit" name="see_more" value="Click to See More" class="btn btn-default" formaction="{{ url_for('cwa_history.show_full_enforcement_path') }}"><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers_p %}
@@ -36,7 +35,7 @@
       </table>
     </div>
     <div>
-      <h3>Calibre-Web Automated Import History</h3>
+      <h3>Calibre-Web Automated Import History</h3><input type="submit" name="see_more" value="Click to See More" class="btn btn-default" formaction="{{ url_for('cwa_history.show_full_imports') }}"><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers_i %}
@@ -53,7 +52,7 @@
       </table>
     </div>
     <div>
-      <h3>Calibre-Web Automated Conversion History</h3>
+      <h3>Calibre-Web Automated Conversion History</h3><input type="submit" name="see_more" value="Click to See More" class="btn btn-default" formaction="{{ url_for('cwa_history.show_full_conversions') }}"><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers_c %}

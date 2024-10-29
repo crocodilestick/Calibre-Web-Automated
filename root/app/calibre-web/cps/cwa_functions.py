@@ -121,6 +121,26 @@ def cwa_history_show():
                                     table_headers_p=table_headers_p, data_p=data_p,
                                     data_i=data_i, table_headers_i=table_headers_i,
                                     data_c=data_c, table_headers_c=table_headers_c)
+def show_full_enforcement():
+    cwa_db = CWA_DB()
+    data, table_headers = cwa_db.enforce_show(paths=False, verbose=True, web_ui=True)
+    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Enforcement History"), page="cwa-history-full",
+                                    table_headers=table_headers, data=data)
+def show_full_enforcement_path():
+    cwa_db = CWA_DB()
+    data, table_headers = cwa_db.enforce_show(paths=True, verbose=True, web_ui=True)
+    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Enforcement History (Paths)"), page="cwa-history-full",
+                                    table_headers=table_headers, data=data)
+def show_full_imports():
+    cwa_db = CWA_DB()
+    data, table_headers = cwa_db.get_import_history(verbose=True)
+    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Import History"), page="cwa-history-full",
+                                    table_headers=table_headers, data=data)
+def show_full_conversions():
+    cwa_db = CWA_DB()
+    data, table_headers = cwa_db.get_conversion_history(verbose=True)
+    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Conversion History"), page="cwa-history-full",
+                                    table_headers=table_headers, data=data)
 
 
 @cwa_check_status.route("/cwa-check-monitoring", methods=["GET", "POST"])

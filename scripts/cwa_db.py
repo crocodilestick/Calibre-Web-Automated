@@ -169,7 +169,7 @@ class CWA_DB:
         else:
             newest_ten = []
             x = 0
-            for result in results_with_path:
+            for result in results:
                 newest_ten.insert(0, result)
                 x += 1
                 if x == 10:
@@ -185,7 +185,7 @@ class CWA_DB:
         else:
             newest_ten = []
             x = 0
-            for result in results_with_path:
+            for result in results:
                 newest_ten.insert(0, result)
                 x += 1
                 if x == 10:

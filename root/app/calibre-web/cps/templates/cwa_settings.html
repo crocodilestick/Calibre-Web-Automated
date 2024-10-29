@@ -9,7 +9,7 @@
   <h2>{{title}}</h2>
     <div>
       <h3>Calibre-Web Automated User Settings</h3><br>
-      <form action="{{ url_for('cwa_settings.set_cwa_settings') }}" method="post"> 
+      <form action="{{ url_for('cwa_settings.set_cwa_settings')}}" method="post"> 
         {% if cwa_settings['auto_backup_imports'] %}
         <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True" checked>
         {% else %}

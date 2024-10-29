@@ -18,6 +18,12 @@ class CWA_DB:
         self.headers = {"no_path":["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
                        "with_path":["Timestamp","Book ID", "EPUB Path"]}
 
+        self.default_settings = {"auto_backup_imports": 1,
+                                 "auto_backup_conversions": 1,
+                                 "auto_zip_backups": 1,
+                                 "cwa_update_notifications": 1,
+                                 "robotic_reading": 0}
+
         self.make_tables()
         self.set_default_settings()
 
@@ -53,15 +59,21 @@ class CWA_DB:
         for table in tables:
             self.cur.execute(table)
 
-    def set_default_settings(self):
+    def set_default_settings(self, force=False) -> None:
         """Sets default settings for new tables and keeps track if the user is using the default settings or not"""
+        if force:
+            for setting in self.default_settings:
+                self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.default_settings[setting]};")
+                self.con.commit()
+            print("[cwa-db] CWA Default Settings successfully applied.")
+        
         current_settings = self.cur.execute("SELECT * FROM cwa_settings").fetchall()
         if current_settings == []:
             self.cur.execute("INSERT INTO cwa_settings (default_settings) VALUES (1);")
             print("[cwa-db]: New DB detected, applying default CWA settings...")
             self.con.commit()
         else:
-            if current_settings == [(0 ,1, 1, 1, 1, 0)]:
+            if current_settings == [(0, 1, 1, 1, 1, 0)]:
                 self.cur.execute("UPDATE cwa_settings SET default_settings=1 WHERE default_settings=0;")
                 self.con.commit()
             elif current_settings != [(1, 1, 1, 1, 1, 0)]:
@@ -135,11 +147,6 @@ class CWA_DB:
                     if x == 10:
                         break
                 print(f"\n{tabulate(newest_ten, headers=self.headers['no_path'], tablefmt='rounded_grid')}\n")
-
-    # def manual_add_entry(self, timestamp: str, book_id: int, book_title: str, author: str, epub_path: str, trigger_type: str):
-    #     """Allows manual addition of an entry to the db, timestamp format is YYYY-MM-DD HH:MM:SS"""
-    #     self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (timestamp, book_id, book_title, author, epub_path, trigger_type))
-    #     self.con.commit()
 
     def import_add_entry(self, filename, original_backed_up):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

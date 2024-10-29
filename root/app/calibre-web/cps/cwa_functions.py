@@ -74,25 +74,29 @@ def cwa_library_refresh():
 @admin_required
 def set_cwa_settings():
     if request.method == 'POST':
+        if request.form['submit_button'] == "Submit":
+            settings = ["auto_backup_imports",
+                        "auto_backup_conversions",
+                        "auto_zip_backups",
+                        "cwa_update_notifications",
+                        "robotic_reading"]
 
-        settings = ["auto_backup_imports",
-                    "auto_backup_conversions",
-                    "auto_zip_backups",
-                    "cwa_update_notifications",
-                    "robotic_reading"]
+            result = {}
+            for setting in settings:
+                value = request.form.get(setting)
+                if value == None:
+                    value = 0
+                else:
+                    value = 1
+                result |= {setting:value}
 
-        result = {}
-        for setting in settings:
-            value = request.form.get(setting)
-            if value == None:
-                value = 0
-            else:
-                value = 1
-            result |= {setting:value}
-
-        cwa_db = CWA_DB()
-        cwa_db.update_cwa_settings(result)
-        cwa_settings = cwa_db.get_cwa_settings()
+            cwa_db = CWA_DB()
+            cwa_db.update_cwa_settings(result)
+            cwa_settings = cwa_db.get_cwa_settings()
+        elif request.form['submit_button'] == "Apply Default Settings":
+            cwa_db = CWA_DB()
+            cwa_db.set_default_settings(force=True)
+            cwa_settings = cwa_db.get_cwa_settings()
 
     elif request.method == 'GET':
         cwa_db = CWA_DB()

@@ -111,7 +111,10 @@ def set_cwa_settings():
 @login_required_if_no_ano
 @admin_required
 def cwa_history_show():
-    ...
+    cwa_db = CWA_DB()
+    data, table_headers = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
+    return render_title_template("cwa_history.html", title=_("CWA Conversion History"), page="cwa-history",
+                                    table_headers=table_headers, data=data)
 
 
 @cwa_check_status.route("/cwa-check-monitoring", methods=["GET", "POST"])

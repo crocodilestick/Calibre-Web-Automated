@@ -118,13 +118,16 @@ class CWA_DB:
         self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book_info['timestamp'], book_info['book_id'], book_info['book_title'], book_info['author_name'], book_info['epub_path'], 'manual -all'))
         self.con.commit()
 
-    def enforce_show(self, paths: bool, verbose: bool):
+    def enforce_show(self, paths: bool, verbose: bool, web_ui=False) -> None | tuple(list[tuple], list[str]):
         results_no_path = self.cur.execute("SELECT timestamp, book_id, book_title, author, trigger_type FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
         results_with_path = self.cur.execute("SELECT timestamp, book_id, epub_path FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
         if paths:
             if verbose:
                 results_with_path.reverse()
-                print(f"\n{tabulate(results_with_path, headers=self.headers['with_path'], tablefmt='rounded_grid')}\n")
+                if web_ui:
+                    return results_with_path, self.headers['with_path']
+                else:
+                    print(f"\n{tabulate(results_with_path, headers=self.headers['with_path'], tablefmt='rounded_grid')}\n")
             else:
                 newest_ten = []
                 x = 0
@@ -133,11 +136,17 @@ class CWA_DB:
                     x += 1
                     if x == 10:
                         break
-                print(f"\n{tabulate(newest_ten, headers=self.headers['with_path'], tablefmt='rounded_grid')}\n")
+                if web_ui:
+                    return newest_ten, self.headers['with_path']
+                else:
+                    print(f"\n{tabulate(newest_ten, headers=self.headers['with_path'], tablefmt='rounded_grid')}\n")
         else:
             if verbose:
                 results_no_path.reverse()
-                print(f"\n{tabulate(results_no_path, headers=self.headers['no_path'], tablefmt='rounded_grid')}\n")
+                if web_ui:
+                    return results_no_path, self.headers['no_path']
+                else:
+                    print(f"\n{tabulate(results_no_path, headers=self.headers['no_path'], tablefmt='rounded_grid')}\n")
             else:
                 newest_ten = []
                 x = 0
@@ -146,7 +155,10 @@ class CWA_DB:
                     x += 1
                     if x == 10:
                         break
-                print(f"\n{tabulate(newest_ten, headers=self.headers['no_path'], tablefmt='rounded_grid')}\n")
+                if web_ui:
+                    return newest_ten, self.headers['no_path']
+                else:
+                    print(f"\n{tabulate(newest_ten, headers=self.headers['no_path'], tablefmt='rounded_grid')}\n")
 
     def import_add_entry(self, filename, original_backed_up):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

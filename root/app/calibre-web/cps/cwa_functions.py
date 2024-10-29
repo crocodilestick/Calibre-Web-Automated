@@ -106,15 +106,21 @@ def set_cwa_settings():
                                     cwa_settings=cwa_settings)
 
 
-# Coming Soon
 @cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def cwa_history_show():
     cwa_db = CWA_DB()
     data, table_headers = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
-    return render_title_template("cwa_history.html", title=_("CWA Conversion History"), page="cwa-history",
-                                    table_headers=table_headers, data=data)
+    data_p, table_headers_p = cwa_db.enforce_show(paths=True, verbose=False, web_ui=True)
+    data_i, table_headers_i = cwa_db.get_import_history(verbose=False)
+    data_c, table_headers_c = cwa_db.get_conversion_history(verbose=False)
+
+    return render_title_template("cwa_history.html", title=_("Calibre-Web Automated Stats"), page="cwa-history",
+                                    table_headers=table_headers, data=data,
+                                    table_headers_p=table_headers_p, data_p=data_p,
+                                    data_i=data_i, table_headers_i=table_headers_i,
+                                    data_c=data_c, table_headers_c=table_headers_c)
 
 
 @cwa_check_status.route("/cwa-check-monitoring", methods=["GET", "POST"])

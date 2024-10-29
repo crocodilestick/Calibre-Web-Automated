@@ -118,7 +118,7 @@ class CWA_DB:
         self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book_info['timestamp'], book_info['book_id'], book_info['book_title'], book_info['author_name'], book_info['epub_path'], 'manual -all'))
         self.con.commit()
 
-    def enforce_show(self, paths: bool, verbose: bool, web_ui=False) -> None | tuple(list[tuple], list[str]):
+    def enforce_show(self, paths: bool, verbose: bool, web_ui=False):
         results_no_path = self.cur.execute("SELECT timestamp, book_id, book_title, author, trigger_type FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
         results_with_path = self.cur.execute("SELECT timestamp, book_id, epub_path FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
         if paths:
@@ -159,6 +159,38 @@ class CWA_DB:
                     return newest_ten, self.headers['no_path']
                 else:
                     print(f"\n{tabulate(newest_ten, headers=self.headers['no_path'], tablefmt='rounded_grid')}\n")
+
+    def get_import_history(self, verbose: bool):
+        headers = ["Timestamp", "Filename", "Original Backed Up?"]
+        results = self.cur.execute("SELECT timestamp, filename, original_backed_up FROM cwa_import ORDER BY timestamp DESC;").fetchall()
+        if verbose:
+            results.reverse()
+            return results, headers
+        else:
+            newest_ten = []
+            x = 0
+            for result in results_with_path:
+                newest_ten.insert(0, result)
+                x += 1
+                if x == 10:
+                    break
+            return newest_ten, headers
+    
+    def get_conversion_history(self, verbose: bool):
+        headers = ["Timestamp", "Filename", "Original Format", "Original Backed Up?"]
+        results = self.cur.execute("SELECT timestamp, filename, original_format, original_backed_up FROM cwa_conversions ORDER BY timestamp DESC;").fetchall()
+        if verbose:
+            results.reverse()
+            return results, headers
+        else:
+            newest_ten = []
+            x = 0
+            for result in results_with_path:
+                newest_ten.insert(0, result)
+                x += 1
+                if x == 10:
+                    break
+            return newest_ten, headers
 
     def import_add_entry(self, filename, original_backed_up):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

@@ -3,7 +3,7 @@
 <div class="discover">
   <h2>{{title}}</h2>
     <div>
-      <h3>Calibre-Web Conversion History</h3><br>
+      <h3>Calibre-Web Automated Enforcement History</h3><br>
       <table class="table table-striped">
         <tr>
           {% for header in table_headers %}
@@ -11,6 +11,56 @@
           {% endfor %}
         </tr>
         {% for row in data %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+      <br>
+      <h4>With Paths</h4><br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in table_headers_p %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_p %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div>
+      <h3>Calibre-Web Automated Import History</h3>
+      <table class="table table-striped">
+        <tr>
+          {% for header in table_headers_i %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_i %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div>
+      <h3>Calibre-Web Automated Conversion History</h3>
+      <table class="table table-striped">
+        <tr>
+          {% for header in table_headers_c %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_c %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>

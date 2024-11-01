@@ -27,7 +27,21 @@ class CWA_DB:
         self.make_tables()
         self.set_default_settings()
 
+        self.temp_disable_split_library()
+
         self.cwa_settings = self.get_cwa_settings()
+
+    def temp_disable_split_library(self): # Temporary measure to disable split library functionality until it can be supported in V2.2.0
+        con = sqlite3.connect("/config/app.db")
+        cur = conn.cursor()
+
+        current_split_setting = bool(cur.execute("SELECT config_calibre_split FROM settings").fetchone()[0])
+
+        if current_split_setting:
+            print("[ATTENTION USER]: Split Libraries (having your books in a separate location to your Calibre Library) are currently unsupported by CWA. This is something currently being worked on to be re-added in V2.2.0")
+            cur.execute("UPDATE settings SET config_calibre_split=0;")
+            con.commit()
+
 
     def connect_to_db(self) -> tuple[sqlite3.Connection, sqlite3.Cursor] | None:
         """Establishes connection with the db or makes one if one doesn't already exist"""

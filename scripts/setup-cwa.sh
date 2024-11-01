@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Make required directories and files for metadata enforcment
+# Make required directories and files for metadata enforcement
 make_dirs () {
     mkdir /app/calibre-web-automated/metadata_change_logs
     chown -R abc:abc /app/calibre-web-automated/metadata_change_logs

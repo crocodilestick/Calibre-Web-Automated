@@ -45,20 +45,50 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
   - Using the information provided in the Calibre eBook-converter documentation on which formats convert best into epubs, CWA is able to determine from downloads containing multiple eBook formats, which format will convert most optimally, ignoring the other formats to ensure the **best possible quality** and no **duplicate imports**
 - **28 Supported file types for conversion:** 🤯
   - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txtz_
-
-![Cover Enforcement CWA](README_images/cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
-
 - **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 👀📔
   - In stock Calibre-Web, any changes made to a book's **Cover and/or Metadata** are only applied to how the book appears in the Calibre-Web UI, changing nothing in the ebook's files like you would expect
   - This results in a frustrating situation for many CW users who utilise CW's Send-To-Kindle function, and are disappointed to find that the High-Quality Covers they picked out and carefully chosen Metadata they sourced are completely absent on all their other devices! UGH!
   - CWA's **Automatic Cover & Metadata Enforcement Feature** makes it so that **WHATEVER** you changes you make to **YOUR** books, **_are made to the books themselves_**, as well as in the Web UI, **making what you see, what you get.**
-- **One Step Full Library Conversion** 🔂 - Any format -> `.epub`
 
+![Cover Enforcement CWA](README_images/cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
+
+- **One Step Full Library Conversion** 🔂 - Any format -> `.epub`
   - Calibre-Web Automated has always been designed with `.epub` libraries in mind due to many factors, chief among which being the fact they are **Compatible with the Widest Range of Devices**, **Ubiquitous** as well as being **Easy to Manage and Work with**
   - Previously this meant that anyone with `non-epub` ebooks in their existing Calibre Libraries was unable to take advantage of all of `Calibre-Web Automated`'s features reliably
   - So new to Version 1.2.0 is the ability for those users to quickly and easily convert their existing eBook Libraries, no matter the size, to `.epub Version 3` format using a one-step CLI Command from within the CWA Container
   - This utility gives the user the option to either keep a copy of the original of all converted files in `/config/processed_books` or to trust the process and have CWA simply convert and replace those files (not recommended)
   - Full usage details can be found [here](#the-convert-library-tool)
+- **Change Tracking Database** 📊 - In combination with the **Cover & Metadata Enforcement Features**, a database now exists to keep track of any and all enforcements, imports and conversions both for peace of mind and to make the checking of any bugs or weird behaviour easier, but also to make the data available for statistical analysis or whatever else someone might want to use the data for
+  - Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
+- **Library Auto-Detect** 📚🕵️
+  - Made to MASSIVELY simplify the setup process for both new and existing users alike
+  - **New Users without existing Libraries:** 🆕
+    - New users without existing Calibre Libraries no longer need to copy and paste `metadata.db` files and point to their location in the Web UI, CWA will now automatically detect the lack of Library in your given bind and automatically create a new one for you! It will even automatically register it with the Web UI so you can really hit the ground running
+  - **New or Existing Users with Existing Libraries:**
+    - Simply bind a directory containing your Calibre Library (search is done recursively so it doesn't matter how deep in the directory it is) and CWA will now automatically find it and mount it to the Web UI
+    - Should you bind a directory with more than 1 Calibre Library in it, CWA will intelligently compare the disk sizes of all discovered libraries and mount the largest one
+      - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
+      - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
+- **Easy Dark/ Light Mode Switching** ☀️🌙
+  - **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
+  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
+- **Internal Update Notification System** 🛎️
+  - Users will now be automatically notified of the availability of new updates from within the Web UI
+  - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
+  - Set to only show once per calendar day until updated as to not be annoying
+  - _Visible to Admin users only_
+- **Manual Library Refresh** ♻️
+  - Ever had books get stuck in the ingest folder after an unexpected power-cut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything still sitting in the ingest folder will be automatically ingested!
+- **Auto-Compression of Backed Up Files** 🤐
+  - Just before midnight each day, the CWA-Auto-Zipper service will automatically zip together all files processed that day.
+  - Minimises disk space usage and helps keep back up files as organised as possible
+  - __Enabled by default but can be disabled in the CWA Settings page in the Admin panel__
+- **Batch Editing & Deletion!** 🗂️🗄️
+  - Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
+  - To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
+  - _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
+
+![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
 
 - **Simple CLI Tools** for manual fixes, conversions, enforcements, history viewing ect. 👨‍💻
 
@@ -71,41 +101,11 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
   - Full usage and documentation for all new CLI Commands can be found [here](#the-cover-enforcer-cli-tool)
     ![CWA Database](README_images/cwa-db-diagram.png "CWA 1.2.0 Cover Database Diagram")
 
-- **Change Tracking Database** 📊 - In combination with the **New Cover & Metadata Enforcement Features**, a database now exists to keep track of any and all enforcements, both for peace of mind and to make the checking of any bugs or weird behaviour easier, but also to make the data available for statistical analysis or whatever else someone might want to use the data for
-  - Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
-
-- ### NEW FEATURE - Library Auto-Detect 📚🕵️
-  - Made to MASSIVELY simplify the setup process for both new and existing users alike
-  - **New Users without existing Libraries:** 🆕
-    - New users without existing Calibre Libraries no longer need to copy and paste `metadata.db` files and point to their location in the Web UI, CWA will now automatically detect the lack of Library in your given bind and automatically create a new one for you! It will even automatically register it with the Web UI so you can really hit the ground running
-  - **New or Existing Users with Existing Libraries:**
-    - Simply bind a directory containing your Calibre Library (search is done recursively so it doesn't matter how deep in the directory it is) and CWA will now automatically find it and mount it to the Web UI
-    - Should you bind a directory with more than 1 Calibre Library in it, CWA will intelligently compare the disk sizes of all discovered libraries and mount the largest one
-      - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
-      - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
-- ### NEW FEATURE - Easy Dark/ Light Mode Switching ☀️🌙
-  - **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
-  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
-- ### NEW FEATURE - Internal Update Notification System 🛎️
-  - Users will now be automatically notified of the availability of new updates from within the Web UI
-    - Automatically triggered by a difference between the version number of the most recent GitHub release and the version installed
-    - Set to only show once per calendar day until updated as to not be annoying
-      - _Visible to Admin users only_
-- ### NEW FEATURE - Manual Library Refresh ♻️
-  - Ever had books get stuck in the ingest folder after an unexpected power-cut ect.? Well say goodbye to having to manually copy the books to be ingested back in and out of the ingest folder, simply press the `Refresh Library` button on the navbar of the Web UI and anything still sitting in the ingest folder will be automatically ingested!
-- ### NEW FEATURE - Batch Editing & Deletion! 🗂️🗄️
-  - Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
-  - To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
-  - _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
-
-![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
-
 
 # UNDER ACTIVE DEVELOPMENT ⚠️
 
 - Please be aware that while CWA currently works for most people, it is still under active development and that bugs and unexpected behaviours can occur while we work and the code base matures
-- I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project, especially to [@jmarmstrong1207](https://github.com/jmarmstrong1207) who has been working tirelessly on improving the project since the release of Version 1.2.0
-  - In recognition of this, [@jmarmstrong1207](https://github.com/jmarmstrong1207) has now been promoted to a co-contributor here on the project, so feel free to also contact him with any issues, suggestions, ideas ect.
+- I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project and we encourage anyone who would like to to contribute in some way. Anyone of any level is welcome and every little helps!
   - For any others that wish to contribute to this project in some way, please reach out on our Discord Server and see how you can best get involved:\
     \
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
@@ -120,9 +120,9 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 ### Additional Features on our Roadmap 🛣️🌱
 
+- Split Libraries, coming in V2.2.0
 - Release CWA also as a Docker Mod
-- Support for `arm64` architectures
-- Adding tracking of ebook imports & deletions to the `cwa.db`
+- Wider support for `arm64` architectures
 - Improved metadata handling and conversion for comics & manga
 - Please suggest any ideas or wishes you might have! we're open to anything!
 
@@ -186,19 +186,12 @@ services:
 And just like that, Calibre-Web Automated should be up and running! HOWEVER to avoid potential problems and ensure maximum functionality,
 we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
-<!-- - By default, `/cwa-book-ingest` is the ingest folder bound to the ingest folder you entered in the Docker Compose template however should you want to change any of the default directories, use the `cwa-change-dirs` command from within the container to edit the default paths -->
-
 # Post-Install Tasks:
 
 ## _Calibre-Web Quick Start Guide_
 
 1. Open your browser and navigate to http://localhost:8084 or http://localhost:8084/opds for the OPDS catalog
 2. Log in with the default admin credentials (_below_)
-<!-- 3. If you don't have an existing Calibre database, you can use the `metadata.db` file above
-   - This is a blank Calibre-Database you can use to perform the Initial Setup with
-   - Place the `metadata.db` file in the the folder you bound to `/calibre-main` in your Docker Compose -->
-<!-- 4. During the Web UI's Initial Setup screen, Set Location of Calibre database to the path of the folder to `/calibre-main` and click "Save"
-5. Optionally, use Google Drive to host your Calibre library by following the Google Drive integration guide -->
 3. Configure your Calibre-Web instance via the admin page, referring to the Basic Configuration and UI Configuration guides
 4. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
 
@@ -263,10 +256,6 @@ options:
   --keep, -k     Creates a new epub library with the old one but stores the old files in /config/processed_books
   -setup         Indicates to the function whether or not it's being ran from the setup script or manually (DO NOT USE MANUALLY)
 ```
-
-<!-- ## Changing the Default Directories
-
-- If you ever need to change the locations of your **ingest**, **import** and/ or **calibre-library** folders, use the `cwa-change-dirs` command from anywhere within the container's terminal to open the json file where the paths are saved and change them as required. -->
 
 ## Checking the Monitoring Services are working correctly
 

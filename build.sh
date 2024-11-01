@@ -18,12 +18,14 @@ while true ; do
   read type
   case $type in
     dev | Dev | DEV)
+      type="dev"
       echo Enter test version number\:
       read testnum
       break
       ;;
 
     prod | Prod | PROD)
+      type="prod"
       break
       ;;
 
@@ -35,10 +37,14 @@ done
 
 NOW="$(date +"%Y-%m-%d %H:%M:%S")"
 
-if [ -v testnum ]; then
+if [ type == "dev" ]; then
   docker build --tag $DH_USER/calibre-web-automated:dev --build-arg="BUILD_DATE=$NOW" --build-arg="VERSION=$version-TEST-$testnum" .
+  echo
+  echo "Dev image Version $version - Test $testnum created! Exiting now... "
 else
   docker build --tag $DH_USER/calibre-web-automated:$version --build-arg="BUILD_DATE=$NOW" --build-arg="VERSION=$version" .
+  echo
+  echo "Prod image Version $version created! Exiting now..."
 fi
 
-
+cd

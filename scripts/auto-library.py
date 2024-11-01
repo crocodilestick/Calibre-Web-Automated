@@ -94,10 +94,10 @@ class AutoLibrary:
         if os.path.exists(self.metadb_path):
             try:
                 print("[cwa-auto-library]: Updating Settings Database with library location...")
-                conn = sqlite3.connect(self.app_db)
-                cur = conn.cursor()
+                con = sqlite3.connect(self.app_db)
+                cur = con.cursor()
                 cur.execute("UPDATE settings SET config_calibre_dir = ?;", (self.lib_path,))
-                conn.commit()
+                con.commit()
                 return
             except Exception as e:
                 print("[cwa-auto-library]: ERROR: Could not update Calibre Web Database")

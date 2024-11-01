@@ -33,7 +33,7 @@ class CWA_DB:
 
     def temp_disable_split_library(self): # Temporary measure to disable split library functionality until it can be supported in V2.2.0
         con = sqlite3.connect("/config/app.db")
-        cur = conn.cursor()
+        cur = con.cursor()
 
         current_split_setting = bool(cur.execute("SELECT config_calibre_split FROM settings").fetchone()[0])
 

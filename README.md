@@ -17,8 +17,9 @@
 - [How to Install](#how-to-install-): 📖
   - [Quick Install](#quick-install-) 🚀
   - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
-  - [Post-Install Tasks](#post-install-tasks)
-- [Usage](#usage-)
+  - [Users Migrating from stock Calibre Web](#users-migrating-from-stock-calibre-web) 🔄
+  - [Post-Install Tasks](#post-install-tasks) 🏁
+- [Usage](#usage-) 🔧
 - [For Developers](#for-developers---building-custom-docker-image) 🚀
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
@@ -166,7 +167,6 @@ services:
       - /path/to/config/folder:/config
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
       - /path/to/your/calibre/library:/calibre-library
-      #- /path/to/where/you/keep/your/books:/books #Optional
       #- /path/to/your/gmail/credentials.json:/app/calibre-web/gmail.json #Optional
     ports:
       - 8084:8083 # Change the first number to change the port you want to access the Web UI, not the second
@@ -177,17 +177,23 @@ services:
 - **Explanation of the Container Bindings:**
   - Make sure all 3 of the main bindings are separate directories, errors can occur when binds are made within other binds
   - `/config` - This is used to store logs and other miscellaneous files that keep CWA running
-    -  **New Users** - Use the Docker Template folder for a quick install mentioned above or the mount can be any empty folder
-    -  **Existing Users** - Those with existing Calibre-Web setups, map this to your existing `/config` directory containing `app.db` to ensure settings and users are pulled in
+    -  **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
+    -  **Existing/ CW Users** - Those with existing Calibre-Web setups, map this to your existing `/config` directory containing `app.db` to ensure settings and users are pulled in
   - `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
   - `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` & book(s) files reside.
-    - **New Users** - Use the Docker Template folder for a quick install mentioned above
-    - **Existing Users** - If there are multiple libraries, it will find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
-  - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient
+    - **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
+    - **Existing/ CW Users** - If there are multiple libraries in the mounted directory, CWA will automatically find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
+  <!-- - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient -->
   - `/app/calibre-web/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
 
-And just like that, Calibre-Web Automated should be up and running! HOWEVER to avoid potential problems and ensure maximum functionality,
-we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
+And just like that, Calibre-Web Automated should be up and running! **HOWEVER** to avoid potential problems and ensure maximum functionality,we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
+
+# Users migrating from stock Calibre-Web
+
+- CWA has been designed to make switching over as easy as possible. To migrate your CW instance to CWA, simply:
+  1. Mount the same `/config` folder in your Docker Compose that you were using for CW
+  2. Mount the same folder containing your Calibre Library (the Docker Compose for the Linuxserver image of Calibre Web has this as `/books` by default)
+- And then you're done! All of your users, settings ect. should be automatically carried over into your new CWA instance! Enjoy!
 
 # Post-Install Tasks:
 

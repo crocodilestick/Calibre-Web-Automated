@@ -13,7 +13,7 @@
 
 - [Features](#what-does-it-do-) 🪄
 - [Releases](https://github.com/crocodilestick/Calibre-Web-Automated/releases) 🆕
-- [Roadmap](#under-active-development-%EF%B8%8F) 🛣️
+- [Roadmap](#features-currently-under-active-development-and-on-our-roadmap-️️) 🛣️
 - [How to Install](#how-to-install-): 📖
   - [Quick Install](#quick-install-) 🚀
   - [Docker-Compose](#using-docker-compose-recommended) 🐋⭐(Recommended)
@@ -36,7 +36,21 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 After discovering that using the DOCKER_MODS universal-calibre environment variable, you could gain access to Calibre's fantastic eBook conversion tools, both in the Web UI and in the container's CLI, I set about designing a similar solution that could really make the most of all of the tools available to try and fill in the gaps in functionality I was facing with Calibre-Web so that I could finally get rid of my bulky Calibre instance for good.
 
-### **_Features:_**
+![Calibre-Web Automated Example Homepage](README_images/CWA-Homepage.png)
+<p style="text-align:center;"><i>CWA allows you to keep your ebook library accessible & organised and looks good while doing it</i> 😎🦚</p>
+
+## **_Features:_**
+
+### CWA supports all Stock CW Features:
+| | | |
+|     :---:    |     :---:      |     :---:     |
+| Modern & responsive Bootstrap 3 HTML5 interface | Comprehensive user management with per-user permissions | OPDS feed for ereader apps |
+| eBook metadata editing and deletion support | Metadata download from various sources (extensible via plugins) | eBook download restriction to logged-in users |
+| Public user registration support | Send eBooks to E-Readers with a single click | Sync Kobo devices with your Calibre library |
+| In-browser eBook reading support for multiple formats | Content hiding based on categories and Custom Column content per user | "Magic Link" login for easy access on eReaders | 
+| LDAP, Google/GitHub OAuth, and proxy authentication support | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) | 
+
+### Plus these CWA Specific ones on top:
 
 - **Automatic Imports** - of `.epub` files into your Calibre-Web library ✨
 
@@ -44,6 +58,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
 
 - A **Weighted Conversion Algorithm:** ⚖️
   - Using the information provided in the Calibre eBook-converter documentation on which formats convert best into epubs, CWA is able to determine from downloads containing multiple eBook formats, which format will convert most optimally, ignoring the other formats to ensure the **best possible quality** and no **duplicate imports**
+
 - **28 Supported file types for conversion:** 🤯
   - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txtz_
 - **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 👀📔
@@ -103,7 +118,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     ![CWA Database](README_images/cwa-db-diagram.png "CWA 1.2.0 Cover Database Diagram")
 
 
-# UNDER ACTIVE DEVELOPMENT ⚠️
+## UNDER ACTIVE DEVELOPMENT ⚠️
 
 - Please be aware that while CWA currently works for most people, it is still under active development and that bugs and unexpected behaviours can occur while we work and the code base matures
 - I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project and we encourage anyone who would like to to contribute in some way. Anyone of any level is welcome and every little helps!
@@ -111,21 +126,23 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
     \
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
-### Coming Soon - Currently Under Active Development 🏗️
+# Features Currently Under Active Development and on our Roadmap 🏗️🛣️
 
+#### High Priority 🚨
+
+- Split Libraries (having your Calibre Library and books in separate locations), coming in V2.2.0
+- Making CWAs features compatible with a wider range of fiel formats instead of just `.epub` files
+- Allowing users to disable auto-conversion for selected formats
+- Wider support for `arm64` architectures
+
+#### Lower Priority 🌱
+- Improved metadata handling and conversion for comics & manga
+- Also releasing CWA as a Docker Mod
 - **Robo**tic **Read**ing 🤖📖
   - **Bio**nic **read**ing **wa**s **initi**ally **rele**ased **i**n **20**22 **a**s **a** **met**hod **o**f **forma**tting **te**xt **t**o **ma**ke **i**t **eas**ier **fo**r **peo**ple **wi**th **AD**HD **an**d **oth**er **concent**ration **&** **read**ing **iss**ues **t**o **re**ad **fast**er, **eas**ier **an**d **t**o **ret**ain **mo**re **o**f **wh**at **they**'ve **rea**d.
   - **W**e **we**re **insp**ired **b**y **th**e **conc**ept **an**d **ha**ve **crea**ted **an** **eP**ub **conve**rsion **algor**ithm **insp**ired **b**y **th**e **orig**inal **Bio**nic **Read**ing **fo**r **tho**se **wh**o **li**ke **i**t **o**r **wh**o **ma**y **wa**nt **t**o **gi**ve **i**t **a** **g**o
 
-<!-- - [View upcoming releases here](https://github.com/crocodilestick/Calibre-Web-Automated/releases)  -->
-
-### Additional Features on our Roadmap 🛣️🌱
-
-- Split Libraries, coming in V2.2.0
-- Release CWA also as a Docker Mod
-- Wider support for `arm64` architectures
-- Improved metadata handling and conversion for comics & manga
-- Please suggest any ideas or wishes you might have! we're open to anything!
+Please suggest any ideas or wishes you might have! we're open to anything!
 
 # How To Install 📖
 

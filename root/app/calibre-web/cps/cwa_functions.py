@@ -8,6 +8,8 @@ from .render_template import render_title_template
 
 import subprocess
 import sqlite3
+import os.path
+from time import sleep
 
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
@@ -180,10 +182,12 @@ def cwa_flash_status():
 
     return redirect(url_for('admin.admin'))
 
-from time import sleep
 
 def flask_logger():
     subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert-library.py'])
+    if os.path.isfile("/config/convert-library.log") == False:
+        with open('/config/convert-library.log', 'w') as create_new_log: 
+            pass
     with open("/config/convert-library.log", 'r') as log_info:
         while True:
             data = log_info.read()

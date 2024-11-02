@@ -116,7 +116,7 @@ After discovering that using the DOCKER_MODS universal-calibre environment varia
   - **Bio**nic **read**ing **wa**s **initi**ally **rele**ased **i**n **20**22 **a**s **a** **met**hod **o**f **forma**tting **te**xt **t**o **ma**ke **i**t **eas**ier **fo**r **peo**ple **wi**th **AD**HD **an**d **oth**er **concent**ration **&** **read**ing **iss**ues **t**o **re**ad **fast**er, **eas**ier **an**d **t**o **ret**ain **mo**re **o**f **wh**at **they**'ve **rea**d.
   - **W**e **we**re **insp**ired **b**y **th**e **conc**ept **an**d **ha**ve **crea**ted **a** **eP**ub **conve**rsion **algor**ithm **insp**ired **b**y **th**e **orig**inal **Bio**nic **Read**ing **fo**r **tho**se **wh**o **li**ke **i**t **o**r **wh**o **ma**y **wa**nt **t**o **gi**ve **i**t **a** **g**o
 
-- [View upcoming releases here](https://github.com/crocodilestick/Calibre-Web-Automated/releases) 
+<!-- - [View upcoming releases here](https://github.com/crocodilestick/Calibre-Web-Automated/releases)  -->
 
 ### Additional Features on our Roadmap 🛣️🌱
 
@@ -194,23 +194,15 @@ we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 2. Log in with the default admin credentials (_below_)
 3. Configure your Calibre-Web instance via the admin page, referring to the Basic Configuration and UI Configuration guides
 4. Add books by having them placed in the folder you bound to `cwa-book-ingest` in your Docker Compose
+5. CWA currently requires all books in the library to be in `.epub` format. If your existing library contains any books of different filetypes, navigate to the Admin panel and scroll until you see the "Convert Library to EPUB" option.
+  - A live log page will then be loaded to allow you to monitor the progress of the conversion process.
+  - All files processed during this process, whether successfully converted or not, will be backed up to `/config/processed_books`
+6. Drop a book into your ingest folder to check everything is working and enjoy!
 
 ## Default Admin Login:
 
 > **Username:** admin\
 > **Password:** admin123
-
-## Configuring CWA ⚙️
-
-- If your Calibre Library contains any ebooks not in the `.epub` format, from within the container run the `convert-library` command.
-  - Calibre-Web Automated's extra features only work with epubs and so **failure to complete this step could result in unforeseen errors and general unreliability**
-  - Full usage can be found below in the Usage Section however the following command will automatically convert any non-epubs to epubs and store the original files in `/config/processed_books`:
-
-```
-convert-library --keep
-```
-
-- Drop a book into your ingest folder and check everything is working correctly!
 
 # Usage 🔧
 
@@ -221,6 +213,8 @@ convert-library --keep
     - _Downloading files directly into `/cwa-book-ingest` is not supported. It can cause duplicate imports and potentially a corrupt database. It is recommended to first download the books completely, then transfer them to `/cwa-book-ingest` to avoid any issues_
     - Be sure that the books you are transferring to `/cwa-book-ingest` are owned by your user rather than root. Otherwise, permission errors may occur and may result in incomplete importing.
     - In the event you're expecting a book to be ingested and it hasn't been, use the "Library Refresh" button on the Upper Navbar to manually trigger the ingest process
+
+# CWA CLI Tools 🧑‍💻
 
 ## The Cover-Enforcer CLI Tool
 

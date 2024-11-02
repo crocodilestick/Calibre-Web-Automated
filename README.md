@@ -176,11 +176,14 @@ services:
 
 - **Explanation of the Container Bindings:**
   - Make sure all 3 of the main bindings are separate directories, errors can occur when binds are made within other binds
-  - `/config` - Can be any empty folder, used to store logs and other miscellaneous files that keep CWA running
+  - `/config` - This is used to store logs and other miscellaneous files that keep CWA running
+    -  **New Users** - Use the Docker Template folder for a quick install mentioned above or the mount can be any empty folder
+    -  **Existing Users** - Those with existing Calibre-Web setups, map this to your existing `/config` directory containing `app.db` to ensure settings and users are pulled in
   - `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
-  - `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` file resides within and will be mounted automatically. If there are multiple libraries, it will find and mount the largest one.
-    - If you don't have an **existing** Calibre Database, you can use the Docker Template folder for a quick install mentioned above.
-  - `/books` _(Optional)_ - This is purely optional, I personally bind /books to where I store my downloaded books so that they accessible from within the container but CWA doesn't require this
+  - `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` & book(s) files reside.
+    - **New Users** - Use the Docker Template folder for a quick install mentioned above
+    - **Existing Users** - If there are multiple libraries, it will find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
+  - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient
   - `/app/calibre-web/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
 
 And just like that, Calibre-Web Automated should be up and running! HOWEVER to avoid potential problems and ensure maximum functionality,

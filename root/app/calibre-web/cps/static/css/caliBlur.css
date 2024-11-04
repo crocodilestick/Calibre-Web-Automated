@@ -7,7 +7,9 @@
 }
 
 .pagination, .plexBack.noBack, .root .plexBack, .root .plexBack > a {
-    cursor: default
+    cursor: default;
+    padding-top: 10px;
+    padding-right: 10px;
 }
 
 .navigation li a, .shelforder #sortTrue > div {
@@ -1054,7 +1056,7 @@ span.hidden-sm.top_admin {
     background-image: none;
     display: block;
     width: 100%;
-    height: 40px;
+    height: 36px;
     padding: 6px 12px;
     font-family: "Open Sans Semibold", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px !important;
@@ -3362,7 +3364,7 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] .dropd
     overflow-y: auto;
 }
 .dropdown-menu:not(.datepicker-dropdown):not(.profileDropli) {
-    left: 0 !important;
+    left: auto !important;
 }
 #add-to-shelves {
   min-height: 48px;

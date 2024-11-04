@@ -899,7 +899,7 @@ span.hidden-sm.cwa_switch_theme {
     line-height: 20px;
     vertical-align: super;
     box-sizing: border-box;
-    float: left
+    float: left;
     font-size: 13px
 }
 
@@ -1954,13 +1954,13 @@ body > div.container-fluid > div > div.col-sm-10 > div.discover > form > .btn.bt
 .pagination {
     display: block !important;
     position: fixed;
-    top: 60px;
+    top: 4.15em;
     right: 0;
     overflow: visible;
-    height: 60px;
+    height: 1em;
     margin: 0;
     line-height: 60px;
-    font-size: 15px;
+    font-size: 1em;
     z-index: 99999
 }
 
@@ -6682,10 +6682,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .well > h2, body.shelf > div.container-fluid > div > div.col-sm-10 > div.discover > h2, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover:only-of-type > h2 {
-        top: 48px !important;
+        top: 3.4em !important;
         left: 0 !important;
-        padding-left: 10px !important;
-        height: 42px !important;
+        padding-left: 1em !important;
+        height: 1em !important;
         width: calc(100%) !important;
         line-height: 42px !important;
         padding-right: 130px !important;
@@ -6694,7 +6694,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
         background: rgba(0, 0, 0, .15) !important;
-        font-size: 13px !important;
+        font-size: 1.2em !important;
         max-width: 100% !important
     }
 
@@ -8270,3 +8270,39 @@ body h2 {
   --color-secondary: #7289da;
   --color-secondary-hover: #839ffc
 }
+
+/* .pagination > li > a
+{
+    background-color: white;
+    color: #cc7b19;
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover
+{
+    color: #5a5a5a;
+    background-color: #cc7b19;
+    border-color: #cc7b19;
+} */
+
+.pagination > .active > a
+{
+    color: white;
+    background-color: #cc7b19 !Important;
+    border: solid 1px #cc7b19 !Important;
+}
+
+/* .pagination > .active > a:hover
+{
+    background-color: #cc7b19 !Important;
+    border: solid 1px #cc7b19;
+}
+
+.pagination > .disabled > a
+{
+    background-color: white;
+    color: #aaa;
+    border: solid 1px #cc7b19 !Important;
+} */

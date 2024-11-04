@@ -8,8 +8,8 @@
 
 .pagination, .plexBack.noBack, .root .plexBack, .root .plexBack > a {
     cursor: default;
-    padding-top: 10px;
-    padding-right: 10px;
+    padding-top: 1.1em;
+    padding-right: 1.1em;
 }
 
 .navigation li a, .shelforder #sortTrue > div {
@@ -6685,7 +6685,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         top: 3.4em !important;
         left: 0 !important;
         padding-left: 1em !important;
-        height: 1em !important;
+        height: 3em !important;
         width: calc(100%) !important;
         line-height: 42px !important;
         padding-right: 130px !important;

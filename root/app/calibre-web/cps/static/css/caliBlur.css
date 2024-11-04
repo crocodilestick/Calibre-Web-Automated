@@ -8,8 +8,6 @@
 
 .pagination, .plexBack.noBack, .root .plexBack, .root .plexBack > a {
     cursor: default;
-    padding-top: 1.1em;
-    padding-right: 1.1em;
 }
 
 .navigation li a, .shelforder #sortTrue > div {
@@ -1961,7 +1959,9 @@ body > div.container-fluid > div > div.col-sm-10 > div.discover > form > .btn.bt
     margin: 0;
     line-height: 60px;
     font-size: 1em;
-    z-index: 99999
+    z-index: 99999;
+    padding-top: 1.1em;
+    padding-right: 1.1em;
 }
 
 body > div.container-fluid > div > div.col-sm-10 > div.pagination .page-next > a,

@@ -11,39 +11,44 @@
       <h3>Calibre-Web Automated User Settings</h3><br>
       <form action="{{ url_for('cwa_settings.set_cwa_settings')}}" method="post"> 
         {% if cwa_settings['auto_backup_imports'] %}
-        <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True" checked>
+        <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True" checked data-toggle="tooltip" data-placement="right" title="If deactivated, imported files can only be found in your Calibre Library" >
         {% else %}
-        <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True">
+        <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True" data-toggle="tooltip" data-placement="right" title="If deactivated, imported files can only be found in your Calibre Library" >
         {% endif %}
-        <label for="auto_backup_imports">Enable CWA Import Auto-Backup</label><br>
+        <label for="auto_backup_imports" style="padding-left: 10px;">Enable CWA Import Auto-Backup</label><br>
+        <p class="cwa-settings-tooltip">When active, a copy of all imported files will be stored in /config/processed_books/imported</p>
 
         {% if cwa_settings['auto_backup_conversions'] %}
-        <input type="checkbox" id="auto_backup_conversions" name="auto_backup_conversions" value="True" checked>
+        <input type="checkbox" id="auto_backup_conversions" name="auto_backup_conversions" value="True" checked data-toggle="tooltip" data-placement="right" title="If deactivated, the originals of converted files will not be stored (except in the case of a failed conversion)">
         {% else %}
-        <input type="checkbox" id="auto_backup_conversions" name="auto_backup_conversions" value="True">
+        <input type="checkbox" id="auto_backup_conversions" name="auto_backup_conversions" value="True" data-toggle="tooltip" data-placement="right" title="If deactivated, the originals of converted files will not be stored (except in the case of a failed conversion)">
         {% endif %}
-        <label for="auto_backup_conversions">Enable CWA Conversion Auto-Backup</label><br>
+        <label for="auto_backup_conversions" style="padding-left: 10px;">Enable CWA Conversion Auto-Backup</label><br>
+        <p class="cwa-settings-tooltip">When active, the originals of ingested files that undergo conversion will be stored in /config/processed_books/converted</p>
 
         {% if cwa_settings['auto_zip_backups'] %}
-        <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True" checked>
+        <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True" checked data-toggle="tooltip" data-placement="right" data-html="true" title="If deactivated, backed up files will be left alone in their respective folders">
         {% else %}
-        <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True">
+        <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True" data-toggle="tooltip" data-placement="right" data-html="true" title="If deactivated, backed up files will be left alone in their respective folders">
         {% endif %}
-        <label for="auto_zip_backups">Enable CWA Auto Zip Backups</label><br>
+        <label for="auto_zip_backups" style="padding-left: 10px;">Enable CWA Auto Zip Backups</label><br>
+        <p class="cwa-settings-tooltip">When active, just before midnight each day, the cwa-auto-zipper service will make zip archives of all the backed up converted, imported and failed files from that day.<br><br>This is to help keep the subdirectories of /config/processed_books organised and to minimise disk space usage</p>
 
         {% if cwa_settings['cwa_update_notifications'] %}
-        <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" checked>
+        <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" checked data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
         {% else %}
-        <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True">
+        <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
         {% endif %}
-        <label for="cwa_update_notifications">Enable CWA Update Notifications</label><br>
+        <label for="cwa_update_notifications" style="padding-left: 10px;">Enable CWA Update Notifications</label><br>
+        <p class="cwa-settings-tooltip">When active, you will no longer recieve notifications in the Web UI when a new version of CWA is released</p>
 
         {% if cwa_settings['robotic_reading'] %}
-        <input type="checkbox" id="robotic_reading" name="robotic_reading" value="True" checked>
+        <input type="checkbox" id="robotic_reading" name="robotic_reading" value="True" checked data-toggle="tooltip" data-placement="right" data-html="true" title="Coming in V2.2.0">
         {% else %}
-        <input type="checkbox" id="robotic_reading" name="robotic_reading" value="True">
+        <input type="checkbox" id="robotic_reading" name="robotic_reading" value="True" data-toggle="tooltip" data-placement="right" data-html="true" title="Coming in V2.2.0">
         {% endif %}
-        <label for="robotic_reading">Enable Robotic Reading <i>(Coming Soon!)</i></label><br>
+        <label for="robotic_reading" style="padding-left: 10px;">Enable Robotic Reading <i>(Coming Soon!)</i></label><br>
+        <p class="cwa-settings-tooltip"><em><i>Coming Soon! <sup>tm</sup></i></em><br><br>When active, users will be given the option to convert books to the <q>Robotic Reading</q> format to try and help increase reading speed and comprehension among some users</p>
         
         <br>
         <div class="row form-group">

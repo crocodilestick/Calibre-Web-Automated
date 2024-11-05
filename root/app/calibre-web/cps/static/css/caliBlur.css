@@ -8271,10 +8271,11 @@ body h2 {
   --color-secondary-hover: #839ffc
 }
 
-/* .pagination > li > a
+.pagination > li > a
 {
-    background-color: white;
-    color: #cc7b19;
+    background-color: #202c35;
+    color: white;
+    border: 1px solid #202c35;
 }
 
 .pagination > li > a:focus,
@@ -8282,10 +8283,10 @@ body h2 {
 .pagination > li > span:focus,
 .pagination > li > span:hover
 {
-    color: #5a5a5a;
-    background-color: #cc7b19;
-    border-color: #cc7b19;
-} */
+    color: white;
+    background-color: #E59029;
+    border-color: #E59029;
+}
 
 .pagination > .active > a
 {
@@ -8294,15 +8295,35 @@ body h2 {
     border: solid 1px #cc7b19 !Important;
 }
 
-/* .pagination > .active > a:hover
+.pagination > .active > a:hover
 {
-    background-color: #cc7b19 !Important;
-    border: solid 1px #cc7b19;
+    background-color: #E59029 !Important;
+    border: solid 1px #E59029;
 }
 
 .pagination > .disabled > a
 {
-    background-color: white;
-    color: #aaa;
-    border: solid 1px #cc7b19 !Important;
-} */
+    background-color: #202c35;
+    color: white;
+    border: solid 1px #202c35 !Important;
+}
+
+@media (min-width: 767px) {
+    p.cwa-settings-tooltip {
+        margin: 1px 4px 16px 32px;
+        padding: 5px 10px;
+        line-height: normal;
+        color: #e9e9e9;
+        max-width: 90rem;
+        font-family: 'Open Sans Regular';
+    }    
+    p:after {
+        margin: 1px 4px 16px 32px;
+        padding: 5px 10px;
+        border-radius: 0px 0px 6px 0px;
+        font-style: italic;
+        font-family: 'Open Sans Regular';
+        line-height: normal;
+        background-color: #373737;
+    } 
+}

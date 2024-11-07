@@ -1,7 +1,7 @@
 on:
   release:
     types:
-      - prereleased
+      - published
 
 jobs:
   github-releases-to-discord:
@@ -13,3 +13,5 @@ jobs:
         uses: sillyangel/releases-to-discord@v1
         with:
           webhook_url: ${{ secrets.DISCORD_RELEASE_WEBHOOK_URL }}
+          username: "CWA Release Changelog Bot"
+          avatar_url: "https://ibb.co/r0yFvZx"

@@ -1,15 +1,10 @@
 name: Build and Push Image to DockerHub
-
-#on:
-#  push:
-#    branches: [ "main" ]
-#  pull_request:
-#    branches: [ "main" ]
+# Automatically builds and pushes a multi-platform image based on the repo's newest release and tags it both as latest and with the version number of the release
 
 on:
   release:
     types:
-      - prereleased
+      - published
 
 jobs:
   build:
@@ -35,6 +30,6 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:${{ github.event.release.tag_name }}
-#            ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:latest
             
           platforms: linux/amd64,linux/arm64

@@ -190,10 +190,6 @@ services:
     restart: unless-stopped
     
 ```
-### ATTENTION ARM DEVICE USERS ⚠️
-- Currently, `crocodilestick/calibre-web-automated` only supports `x86/amd64` architectures (though this will hopefully be sorted in the near future through sucsessful utilisation of `docker buildx`)
-- In the meantime, please use the `driftywinds/cwa:latest` image maintained by the wonderful [@driftywinds](https://github.com/driftywinds)
----
 ### Explanation of the Container Bindings:
   - Make sure all 3 of the main bindings are separate directories, errors can occur when binds are made within other binds
   - `/config` - This is used to store logs and other miscellaneous files that keep CWA running

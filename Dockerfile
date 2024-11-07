@@ -23,9 +23,9 @@ ARG VERSION
 ARG CALIBREWEB_RELEASE=0.6.23
 ARG LSCW_RELEASE=0.6.23-ls291
 LABEL build_version="Version:- ${VERSION}"
-LABEL build_type="localbuild"
 LABEL build_date="${BUILD_DATE}" 
 LABEL CW-Stock-version="${CALIBREWEB_RELEASE}"
+LABEL LSCW_Image_Release="${LSCW_RELEASE}"
 LABEL maintainer="CrocodileStick"
 
 # Copy local files into the container

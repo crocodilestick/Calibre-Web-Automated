@@ -28,6 +28,9 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          build-args: |
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+            VERSION=${{ github.event.release.tag_name }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:${{ github.event.release.tag_name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:latest

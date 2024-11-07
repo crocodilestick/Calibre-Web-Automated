@@ -8,7 +8,8 @@ name: Build and Push Image to DockerHub
 
 on:
   release:
-    types: [published]
+    types:
+      - prereleased
 
 jobs:
   build:

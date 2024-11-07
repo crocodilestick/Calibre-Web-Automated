@@ -37,4 +37,4 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:${{ github.event.release.tag_name }}
 #            ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:latest
             
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64

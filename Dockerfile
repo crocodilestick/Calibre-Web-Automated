@@ -74,7 +74,7 @@ RUN \
   tar xf \
     /tmp/calibre-web.tar.gz -C \
     /app/calibre-web --strip-components=1 && \
-  # STEP 1.6 - Sets up a python virtual enviroment and installs pip and wheel packages
+  # STEP 1.6 - Sets up a python virtual environment and installs pip and wheel packages
   cd /app/calibre-web && \
   python3 -m venv /lsiopy && \
   pip install -U --no-cache-dir \
@@ -107,7 +107,6 @@ RUN \
     python3 \
     python3-pip \
     nano \
-    git \
     sqlite3 && \
   # STEP 2.2 - Install additional required python packages
   pip install -r /app/calibre-web-automated/requirements.txt && \
@@ -135,43 +134,55 @@ RUN \
     # STEP 2.4.6 - Remove the temp files
   rm -R /app/calibre-web-automated/root/ && \
   rm -R /tmp/lscw/root/ && \
-  # STEP 2.5 - ADD files referencing the verisons of the installed main packages
-    # CALIRBE_RELEASE is placed in root by universal calibre below and containers the calibre version being used
+  # STEP 2.5 - ADD files referencing the versions of the installed main packages
+    # CALIBRE_RELEASE is placed in root by universal calibre below and containers the calibre version being used
   echo "$VERSION" >| /app/CWA_RELEASE && \
   echo "$LSCW_RELEASE" >| /app/LSCW_RELEASE && \
   echo "$KEPUBIFY_RELEASE" >| /app/KEPUBIFY_RELEASE && \
-  # STEP 2.6 - Run CWA install script to make required dirs, set script permissions and add alliases for CLI commands  ect.
+  # STEP 2.6 - Run CWA install script to make required dirs, set script permissions and add aliases for CLI commands  ect.
   chmod +x /app/calibre-web-automated/scripts/setup-cwa.sh && \
   /app/calibre-web-automated/scripts/setup-cwa.sh && \
 # STEP 3 - Install Universal Calibre
-  # STEP 3.1 - Make a temporary directory for all the required files to download
+  # STEP 3.1 - Install additional required packages
+  apt-get update && \
+  apt-get install -y --no-install-recommends \
+    libxtst6 \
+    libxrandr2 \
+    libxkbfile1 \
+    libxcomposite1 \
+    libopengl0 \
+    libnss3 \
+    libxkbcommon0 \
+    libegl1 \
+    libxdamage1 \
+    libgl1 \
+    libglx-mesa0 \
+    xz-utils && \
+  # STEP 3.3 - Make a temporary directory for all the required files to download
   mkdir -p \
-  /tmp/universal-calibre/root && \
-  # # STEP 3.2 - Download required files from the dockermod repo
-  # git clone https://github.com/linuxserver/docker-mods --branch universal-calibre /tmp/universal-calibre/root && \
-  # STEP 3.3 - Download the version of Calibre specified in the UNIVERSAL_CALIBRE_RELEASE arg variable
+  /app/calibre && \
+  # STEP 3.4 - Extract the version of Calibre dependent on the architecture of the build environment
   if [ "$(uname -m)" == "x86_64" ]; then \
-  curl -o \
-      /tmp/universal-calibre/root/calibre.txz -L \
+    curl -o \
+      /calibre.txz -L \
       "https://download.calibre-ebook.com/${UNIVERSAL_CALIBRE_RELEASE}/calibre-${UNIVERSAL_CALIBRE_RELEASE}-x86_64.txz"; \
   elif [ "$(uname -m)" == "aarch64" ]; then \
-  curl -o \
-      /tmp/universal-calibre/root/calibre.txz -L \
+    curl -o \
+      /calibre.txz -L \
       "https://download.calibre-ebook.com/${UNIVERSAL_CALIBRE_RELEASE}/calibre-${UNIVERSAL_CALIBRE_RELEASE}-arm64.txz"; \
   fi && \
-  # STEP 3.4 - Store the UNIVERSAL_CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
-  echo $UNIVERSAL_CALIBRE_RELEASE > /tmp/universal-calibre/root/CALIBRE_RELEASE && \
-  # STEP 3.5 - Copy all files from the /tmp/universal-calibre/root directory to the root of the image
-  cp -R /tmp/universal-calibre/root/* / && \
-  # STEP 3.6 - Remove the temp files
-  rm -R /tmp/universal-calibre/root/
+  # STEP 3.x - Extract the calibre files to /app/calibre
+  tar xf \
+      /calibre.txz -C \
+      /app/calibre && \
+  # STEP 3.5 - Store the UNIVERSAL_CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
+  echo $UNIVERSAL_CALIBRE_RELEASE > /CALIBRE_RELEASE
 
 # Removes packages that are no longer required, also emptying dirs used to build the image that are no longer needed
 RUN \
   echo "**** cleanup ****" && \
   apt-get -y purge \
     build-essential \
-    git \
     libldap2-dev \
     libsasl2-dev \
     python3-dev && \

@@ -25,6 +25,7 @@ cwa.db
 
 # Dev files
 dev_changelog.md
+*.txz
 
 # Distribution / packaging
 .Python

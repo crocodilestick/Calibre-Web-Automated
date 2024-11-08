@@ -17,12 +17,15 @@ fi
 
 export DEBIAN_FRONTEND="noninteractive"
 
-if [[ -e /calibre.txz ]]; then
-    mkdir -p /app/calibre
-    tar xf \
-        /calibre.txz \
-        -C /app/calibre
-    echo "Installing Calibre version $(cat /CALIBRE_RELEASE)"
+if [[ "$(calibredb --version)" != "calibredb (calibre 7.16)" ]]; then
+    echo "[universal-calibre-setup] Installing Calibre version $(cat /CALIBRE_RELEASE)..."
     /app/calibre/calibre_postinstall
-    rm /calibre.txz
+    if [[ $? == 0 ]]
+    then
+        echo "[universal-calibre-setup] Setup successful! Exiting now..." 
+    else
+        echo "[universal-calibre-setup] Setup unsuccessful, 'calibre_postinstall' encountered an error. Exiting now..." 
+    fi
+else
+    echo "[universal-calibre-setup] Skipping setup, Calibre already installed. Exiting now..."
 fi

@@ -158,10 +158,10 @@ RUN \
     libgl1 \
     libglx-mesa0 \
     xz-utils && \
-  # STEP 3.3 - Make a temporary directory for all the required files to download
+  # STEP 3.2 - Make the /app/calibre directory for the installed files
   mkdir -p \
   /app/calibre && \
-  # STEP 3.4 - Extract the version of Calibre dependent on the architecture of the build environment
+  # STEP 3.3 - Download the desired version of Calibre, determined by the UNIVERSAL_CALIBRE_RELEASE variable and the architecture of the build environment
   if [ "$(uname -m)" == "x86_64" ]; then \
     curl -o \
       /calibre.txz -L \
@@ -171,13 +171,13 @@ RUN \
       /calibre.txz -L \
       "https://download.calibre-ebook.com/${UNIVERSAL_CALIBRE_RELEASE}/calibre-${UNIVERSAL_CALIBRE_RELEASE}-arm64.txz"; \
   fi && \
-  # STEP 3.x - Extract the calibre files to /app/calibre
+  # STEP 3.4 - Extract the downloaded file to /app/calibre
   tar xf \
       /calibre.txz -C \
       /app/calibre && \
-  # STEP 3.x - Delete calibre.txz to save space in final image
+  # STEP 3.5 - Delete the extracted calibre.txz to save space in final image
   rm /calibre.txz && \
-  # STEP 3.5 - Store the UNIVERSAL_CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
+  # STEP 3.6 - Store the UNIVERSAL_CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
   echo $UNIVERSAL_CALIBRE_RELEASE > /CALIBRE_RELEASE
 
 # Removes packages that are no longer required, also emptying dirs used to build the image that are no longer needed

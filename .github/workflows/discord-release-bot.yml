@@ -1,3 +1,6 @@
+name: Post New Release Notes to Discord
+# Automatically posts new Release Notes to the project's discord
+
 on:
   release:
     types:
@@ -14,4 +17,4 @@ jobs:
         with:
           webhook_url: ${{ secrets.DISCORD_RELEASE_WEBHOOK_URL }}
           username: "CWA Release Changelog Bot"
-          avatar_url: "https://ibb.co/r0yFvZx"
+          avatar_url: "https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/cwa-logo-round-light.png"

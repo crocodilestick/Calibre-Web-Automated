@@ -1,4 +1,6 @@
 name: Update Docker Hub Description
+# Automatically mirrors the README to the project's DockerHub page
+
 on:
   push:
     branches:

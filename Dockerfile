@@ -175,6 +175,8 @@ RUN \
   tar xf \
       /calibre.txz -C \
       /app/calibre && \
+  # STEP 3.x - Delete calibre.txz to save space in final image
+  rm /calibre.txz && \
   # STEP 3.5 - Store the UNIVERSAL_CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
   echo $UNIVERSAL_CALIBRE_RELEASE > /CALIBRE_RELEASE
 

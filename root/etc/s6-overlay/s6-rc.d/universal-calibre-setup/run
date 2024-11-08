@@ -1,0 +1,28 @@
+#!/usr/bin/with-contenv bash
+
+if [[ ! -f /usr/bin/apt ]]; then
+cat <<-EOF
+    ********************************************************
+    ********************************************************
+    *                                                      *
+    *                         !!!!                         *
+    *   universal-calibre mod is only supported on images  *
+    *             using an Ubuntu base image.              *
+    *                                                      *
+    ********************************************************
+    ********************************************************
+EOF
+exit 0
+fi
+
+export DEBIAN_FRONTEND="noninteractive"
+
+if [[ -e /calibre.txz ]]; then
+    mkdir -p /app/calibre
+    tar xf \
+        /calibre.txz \
+        -C /app/calibre
+    echo "Installing Calibre version $(cat /CALIBRE_RELEASE)"
+    /app/calibre/calibre_postinstall
+    rm /calibre.txz
+fi

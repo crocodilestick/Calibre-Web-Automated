@@ -22,6 +22,9 @@ change_script_permissions () {
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-auto-library/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-auto-zipper/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-set-binary-paths/run
+    chmod +x /etc/s6-overlay/s6-rc.d/universal-calibre-add-packages/run
+    chmod +x /etc/s6-overlay/s6-rc.d/universal-calibre-package-install/run
+    chmod +x /etc/s6-overlay/s6-rc.d/universal-calibre-setup/run
     chmod 775 /app/calibre-web/cps/editbooks.py
     chmod 775 /app/calibre-web/cps/admin.py
 }

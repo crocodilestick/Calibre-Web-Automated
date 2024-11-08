@@ -1,0 +1,81 @@
+#!/usr/bin/with-contenv bash
+
+if [[ "$(uname -m)" == "armv7l" ]]; then
+cat <<-EOF
+    ********************************************************
+    ********************************************************
+    *                                                      *
+    *                         !!!!                         *
+    *   universal-calibre mod is not supported on armhf.   *
+    *                                                      *
+    ********************************************************
+    ********************************************************
+EOF
+exit 0
+fi
+
+if [ ! -f /usr/bin/apt ]; then
+cat <<-EOF
+    ********************************************************
+    ********************************************************
+    *                                                      *
+    *                         !!!!                         *
+    *   universal-calibre mod is only supported on images  *
+    *             using an Ubuntu base image.              *
+    *                                                      *
+    ********************************************************
+    ********************************************************
+EOF
+exit 0
+fi
+
+if ! dpkg -s xz-utils >/dev/null 2>&1; then
+    PACKAGES="xz-utils ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libGL.so.1 ]; then
+    PACKAGES="libgl1 libglx-mesa0 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libxdamage.so.1 ]; then
+    PACKAGES="libxdamage1 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libEGL.so.1 ]; then
+    PACKAGES="libegl1 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 ]; then
+    PACKAGES="libxkbcommon0 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libnss3.so ]; then
+    PACKAGES="libnss3 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libOpenGL.so.0 ]; then
+    PACKAGES="libopengl0 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 ]; then
+    PACKAGES="libxcomposite1 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libxkbfile.so.1 ]; then
+    PACKAGES="libxkbfile1 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libXrandr.so.2 ]; then
+    PACKAGES="libxrandr2 ${PACKAGES}"
+fi
+
+if [ ! -L /usr/lib/x86_64-linux-gnu/libXtst.so.6 ]; then
+    PACKAGES="libxtst6 ${PACKAGES}"
+fi
+
+if [ -n "${PACKAGES}" ]; then
+    echo "${PACKAGES}" >> /mod-repo-packages-to-install.list
+    echo "**** Adding calibre dependencies to package install list ****"
+else
+    echo "**** Calibre dependencies already installed, skipping ****"
+fi

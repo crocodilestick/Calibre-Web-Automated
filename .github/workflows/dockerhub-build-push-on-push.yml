@@ -1,4 +1,4 @@
-name: Build and Push Image to DockerHub
+name: Build & Push - Dev
 # Automatically builds and pushes a multi-platform dev image based on commits involving key files
 
 on:

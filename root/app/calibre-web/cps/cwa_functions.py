@@ -76,25 +76,38 @@ def cwa_library_refresh():
 @admin_required
 def set_cwa_settings():
     if request.method == 'POST':
-        if request.form['submit_button'] == "Submit":
-            settings = ["auto_backup_imports",
-                        "auto_backup_conversions",
-                        "auto_zip_backups",
-                        "cwa_update_notifications",
-                        "robotic_reading"]
+        cwa_db = CWA_DB()
 
+        if request.form['submit_button'] == "Submit":
+            boolean_settings = ["auto_backup_imports",
+                                "auto_backup_conversions",
+                                "auto_zip_backups",
+                                "cwa_update_notifications",
+                                "auto_convert"]
+            string_settings = ["auto_convert_target_format",
+                               "cwa_ignored_formats"]
+            
             result = {}
-            for setting in settings:
+            # set boolean_settings
+            for setting in boolean_settings:
                 value = request.form.get(setting)
                 if value == None:
                     value = 0
                 else:
                     value = 1
                 result |= {setting:value}
-
-            cwa_db = CWA_DB()
+            # set string settings
+            for setting in string_settings:
+                value = request.form.get(setting)
+                if setting == "auto_convert_target_format" and value == None:
+                    value = cwa_db.cwa_settings['auto_convert_target_format']
+                if setting == "cwa_ignored_formats" and value == None:
+                    value = ""
+                result |= {setting:value}
+            
             cwa_db.update_cwa_settings(result)
             cwa_settings = cwa_db.get_cwa_settings()
+
         elif request.form['submit_button'] == "Apply Default Settings":
             cwa_db = CWA_DB()
             cwa_db.set_default_settings(force=True)

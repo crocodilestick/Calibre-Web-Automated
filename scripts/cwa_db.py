@@ -15,14 +15,16 @@ class CWA_DB:
         self.db_path = "/config/"
         self.con, self.cur = self.connect_to_db()
 
-        self.headers = {"no_path":["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
-                       "with_path":["Timestamp","Book ID", "EPUB Path"]}
+        self.stats_tables_headers = {"no_path":["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
+                                     "with_path":["Timestamp","Book ID", "EPUB Path"]}
 
-        self.default_settings = {"auto_backup_imports": 1,
-                                 "auto_backup_conversions": 1,
-                                 "auto_zip_backups": 1,
-                                 "cwa_update_notifications": 1,
-                                 "robotic_reading": 0}
+        self.cwa_default_settings = {"auto_backup_imports": 1,
+                                     "auto_backup_conversions": 1,
+                                     "auto_zip_backups": 1,
+                                     "cwa_update_notifications": 1,
+                                     "auto_convert": 1,
+                                     "auto_convert_target_format": "epub",
+                                     "cwa_ignored_formats":[]}
 
         self.make_tables()
         self.set_default_settings()
@@ -76,28 +78,29 @@ class CWA_DB:
     def set_default_settings(self, force=False) -> None:
         """Sets default settings for new tables and keeps track if the user is using the default settings or not"""
         if force:
-            for setting in self.default_settings:
-                self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.default_settings[setting]};")
+            for setting in self.cwa_default_settings:
+                self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
                 self.con.commit()
             print("[cwa-db] CWA Default Settings successfully applied.")
         
         current_settings = self.cur.execute("SELECT * FROM cwa_settings").fetchall()
         if current_settings == []:
-            self.cur.execute("INSERT INTO cwa_settings (default_settings) VALUES (1);")
             print("[cwa-db]: New DB detected, applying default CWA settings...")
-            self.con.commit()
+            for setting in self.cwa_default_settings:
+                self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
+                self.con.commit()
         else:
-            if current_settings == [(0, 1, 1, 1, 1, 0)]:
+            if current_settings == [(0, 1, 1, 1, 1, 0, 1, "epub", "")]:
                 self.cur.execute("UPDATE cwa_settings SET default_settings=1 WHERE default_settings=0;")
                 self.con.commit()
-            elif current_settings != [(1, 1, 1, 1, 1, 0)]:
+            elif current_settings != [(1, 1, 1, 1, 1, 0, "epub", "")]:
                 self.cur.execute("UPDATE cwa_settings SET default_settings=0 WHERE default_settings=1;")
                 self.con.commit()
 
             if self.verbose:
                 print("[cwa-db] CWA Settings loaded successfully")
 
-    def get_cwa_settings(self) -> dict[str:bool]:
+    def get_cwa_settings(self) -> dict[str:bool|str]:
         """Gets the cwa_settings from the table of the same name in cwa.db"""
         settings_dump = self.cur.execute("PRAGMA table_info(cwa_settings)").fetchall()
         cwa_setting_names = [i[1] for i in settings_dump]
@@ -105,7 +108,12 @@ class CWA_DB:
 
         cwa_settings = {}
         for x in range(len(cwa_setting_names)):
-            cwa_settings |= {cwa_setting_names[x]:bool(cwa_setting_values[0][x])}
+            if type(cwa_setting_values[0][x]) == int:
+                cwa_settings |= {cwa_setting_names[x]:bool(cwa_setting_values[0][x])}
+            else:
+                cwa_settings |= {cwa_setting_names[x]:cwa_setting_values[0][x]}
+
+        cwa_settings['cwa_ignored_formats'] = cwa_settings['cwa_ignored_formats'].split(',')
 
         return cwa_settings
 
@@ -139,9 +147,9 @@ class CWA_DB:
             if verbose:
                 results_with_path.reverse()
                 if web_ui:
-                    return results_with_path, self.headers['with_path']
+                    return results_with_path, self.stats_tables_headers['with_path']
                 else:
-                    print(f"\n{tabulate(results_with_path, headers=self.headers['with_path'], tablefmt='rounded_grid')}\n")
+                    print(f"\n{tabulate(results_with_path, headers=self.stats_tables_headers['with_path'], tablefmt='rounded_grid')}\n")
             else:
                 newest_ten = []
                 x = 0
@@ -151,16 +159,16 @@ class CWA_DB:
                     if x == 10:
                         break
                 if web_ui:
-                    return newest_ten, self.headers['with_path']
+                    return newest_ten, self.stats_tables_headers['with_path']
                 else:
-                    print(f"\n{tabulate(newest_ten, headers=self.headers['with_path'], tablefmt='rounded_grid')}\n")
+                    print(f"\n{tabulate(newest_ten, headers=self.stats_tables_headers['with_path'], tablefmt='rounded_grid')}\n")
         else:
             if verbose:
                 results_no_path.reverse()
                 if web_ui:
-                    return results_no_path, self.headers['no_path']
+                    return results_no_path, self.stats_tables_headers['no_path']
                 else:
-                    print(f"\n{tabulate(results_no_path, headers=self.headers['no_path'], tablefmt='rounded_grid')}\n")
+                    print(f"\n{tabulate(results_no_path, headers=self.stats_tables_headers['no_path'], tablefmt='rounded_grid')}\n")
             else:
                 newest_ten = []
                 x = 0
@@ -170,9 +178,9 @@ class CWA_DB:
                     if x == 10:
                         break
                 if web_ui:
-                    return newest_ten, self.headers['no_path']
+                    return newest_ten, self.stats_tables_headers['no_path']
                 else:
-                    print(f"\n{tabulate(newest_ten, headers=self.headers['no_path'], tablefmt='rounded_grid')}\n")
+                    print(f"\n{tabulate(newest_ten, headers=self.stats_tables_headers['no_path'], tablefmt='rounded_grid')}\n")
 
     def get_import_history(self, verbose: bool):
         headers = ["Timestamp", "Filename", "Original Backed Up?"]

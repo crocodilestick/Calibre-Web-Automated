@@ -26,5 +26,7 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_backup_conversions SMALLINT DEFAULT 1 NOT NULL,
     auto_zip_backups SMALLINT DEFAULT 1 NOT NULL,
     cwa_update_notifications SMALLINT DEFAULT 1 NOT NULL,
-    robotic_reading SMALLINT DEFAULT 0 NOT NULL
+    auto_convert SMALLINT DEFAULT 1 NOT NULL,
+    auto_convert_target_format TEXT DEFAULT "epub" NOT NULL;
+    cwa_ignored_formats TEXT DEFAULT "" NOT NULL;
 );

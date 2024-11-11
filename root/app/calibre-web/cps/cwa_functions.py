@@ -86,6 +86,13 @@ def set_cwa_settings():
                                 "auto_convert"]
             string_settings = ["auto_convert_target_format",
                                "cwa_ignored_formats"]
+            ignorable_formats = ['azw', 'azw3', 'azw4', 'cbz',
+                                 'cbr', 'cb7', 'cbc', 'chm',
+                                 'djvu', 'docx', 'epub', 'fb2',
+                                 'fbz', 'html', 'htmlz', 'lit',
+                                 'lrf', 'mobi', 'odt', 'pdf',
+                                 'prc', 'pdb', 'pml', 'rb',
+                                 'rtf', 'snb', 'tcr', 'txtz']
             
             result = {}
             # set boolean_settings
@@ -115,10 +122,10 @@ def set_cwa_settings():
 
     elif request.method == 'GET':
         cwa_db = CWA_DB()
-        cwa_settings = cwa_db.cwa_settings
+        cwa_settings = cwa_db.get_cwa_settings
 
     return render_title_template("cwa_settings.html", title=_("CWA Settings"), page="cwa-settings",
-                                    cwa_settings=cwa_settings)
+                                    cwa_settings=cwa_settings, ignorable_formats=ignorable_formats)
 
 
 @cwa_history.route("/cwa-history-show", methods=["GET", "POST"])

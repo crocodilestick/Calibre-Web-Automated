@@ -66,11 +66,11 @@
         <p class="cwa-settings-tooltip">The formats selected here will be ignored by CWA's auto-conversion feature when it's active</p>
         <div style="max-width: 280px;"></div>
           {% for format in ignorable_formats -%}
-          {% if format in ignored formats %}
-          <input type="checkbox" name="ignore_{{ format }}" value="True" checked>
-          {% else %}
-          <input type="checkbox" name="ignore_{{ format }}" value="True">
-          {% endif %}
+            {% if format in cwa_settings['cwa_ignored_formats'] %}
+            <input type="checkbox" name="ignore_{{ format }}" value="True" checked>
+            {% else %}
+            <input type="checkbox" name="ignore_{{ format }}" value="True">
+            {% endif %}
           <label for="ignore_{{ format }}"> {{ format }}</label><br>
           {% endfor %}
         </div>

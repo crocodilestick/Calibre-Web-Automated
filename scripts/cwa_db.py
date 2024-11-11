@@ -26,7 +26,8 @@ class CWA_DB:
                                      "auto_convert_target_format": "epub",
                                      "cwa_ignored_formats":[]}
 
-        self.make_tables()
+        self.tables, self.schema = self.make_tables()
+        self.ensure_schema_match()
         self.set_default_settings()
 
         self.temp_disable_split_library()
@@ -74,6 +75,24 @@ class CWA_DB:
             tables[x] = tables[x] + ";"
         for table in tables:
             self.cur.execute(table)
+
+        return tables, schema
+
+    def ensure_schema_match(self) -> None:
+        settings_dump = self.cur.execute("PRAGMA table_info(cwa_settings)").fetchall()
+        cwa_setting_names = [i[1] for i in settings_dump]
+
+        for setting in self.cwa_default_settings.keys():
+            if setting not in cwa_setting_names:
+                for line in self.schema:
+                    matches = re.findall(setting, line)
+                    if matches:
+                        command = line.replace(',', ';')
+                        if command[-1] != ';':
+                            command = command + ';'
+                        self.cur.execute(f"ALTER TABLE cwa_settings ADD {command}")  
+                    else:
+                        print("[cwa_db] Error adding new setting to cwa.db: Matching setting could not be found in schema")
 
     def set_default_settings(self, force=False) -> None:
         """Sets default settings for new tables and keeps track if the user is using the default settings or not"""

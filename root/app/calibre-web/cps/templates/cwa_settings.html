@@ -32,7 +32,7 @@
         <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True" data-toggle="tooltip" data-placement="right" data-html="true" title="If deactivated, backed up files will be left alone in their respective folders">
         {% endif %}
         <label for="auto_zip_backups" style="padding-left: 10px;">Enable CWA Auto Zip Backups</label><br>
-        <p class="cwa-settings-tooltip">When active, just before midnight each day, the cwa-auto-zipper service will make zip archives of all the backed up converted, imported and failed files from that day.<br><br>This is to help keep the subdirectories of /config/processed_books organised and to minimise disk space usage</p>
+        <p class="cwa-settings-tooltip">When active, just before midnight each day, the cwa-auto-zipper service will make zip archives of all the backed up converted, imported and failed files from that day. This is to help keep the subdirectories of /config/processed_books organised and to minimise disk space usage</p>
 
         {% if cwa_settings['cwa_update_notifications'] %}
         <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" checked data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
@@ -50,28 +50,43 @@
         <label for="auto_convert" style="padding-left: 10px;">Enable CWA Auto-Convert</label><br>
         <p class="cwa-settings-tooltip">On by default, when active all ingested books will automatically be converted to the target format specified below (epub by default)</p>
 
-        <h3>CWA Auto-Convert - Target Format - Current Target - {{ cwa_settings['auto_convert_target_format'] }}</h3>
-        <p class="cwa-settings-tooltip">When the Auto-Convert feature is active, all ingested books will be automatically converted to the format chosen here (except those formats selected in the ignore list below)</p>
-        <label for="auto_convert_target_format">Choose a target format:</label>
-        <select name="auto_convert_target_format" id="auto_convert_target_format">
-          <option value="" disabled selected>Select a new target format</option>
-          <option value="epub">EPUB (default)</option>
-          <option value="azw3">AZW3</option> (Only epub and azw3 are supported by ebook polish)
-          <option value="kepub">KEPUB</option>
-          <option value="mobi">MOBI</option>
-          <option value="pdf">pdf</option>
+        <h3>CWA Auto-Convert - Choose Target Format for CWA Functions <i>(epub by default)</i></h3>
+        <p style="color: whitesmoke;
+        font-style: italic;
+        font-size: inherit;
+        line-height: normal;
+        padding-left: 10px;
+        max-width: 90rem;">When the Auto-Convert feature is active, all ingested books will be automatically converted to the format chosen here (except those formats selected in the ignore list below)</p>
+        <label for="auto_convert_target_format" style="padding-right: 10px; padding-left: 10px;">Choose a target format:</label>
+        <select name="auto_convert_target_format" id="auto_convert_target_format" style="background-color: rgba(0, 0, 0, 0.3); color: whitesmoke; text-align: center; border-radius: 6px;">
+          <!-- <option value="" disabled selected>Select a new target format</option> -->
+          {% for format in target_formats -%}
+            {% if cwa_settings['auto_convert_target_format'] == format %}
+              <option value="{{ format }}" selected>{{ format }}</option>
+            {% else %}
+              <option value="{{ format }}">{{ format }}</option>
+            {% endif %}
+          {% endfor %}
         </select>
+        <p style="font-size: small; font-style: italic;color: whitesmoke; padding-left: 10px;">* CWA's metadata enforcement is only supported for epub and azw3 as target formats</p>
         
         <h3>CWA Auto-Convert - Ignored Formats</h3>
-        <p class="cwa-settings-tooltip">The formats selected here will be ignored by CWA's auto-conversion feature when it's active</p>
-        <div style="max-width: 280px;"></div>
+        <p style="color: whitesmoke;
+        font-style: italic;
+        font-size: inherit;
+        line-height: normal;
+        padding-left: 10px;
+        max-width: 90rem;">The formats selected here will be ignored by CWA's auto-conversion feature when it's active</p>
+        <div style="max-width: 90rem; padding-left: 30px;">
           {% for format in ignorable_formats -%}
-            {% if format in cwa_settings['cwa_ignored_formats'] %}
-            <input type="checkbox" name="ignore_{{ format }}" value="True" checked>
-            {% else %}
-            <input type="checkbox" name="ignore_{{ format }}" value="True">
-            {% endif %}
-          <label for="ignore_{{ format }}"> {{ format }}</label><br>
+            <label for="ignore_{{ format }}" style="width: 75px; padding-right: 6px;">
+              {% if format in cwa_settings['cwa_ignored_formats'] %}
+                <input type="checkbox" name="ignore_{{ format }}" value="{{ format }}" checked style="vertical-align: middle;">
+              {% else %}
+                <input type="checkbox" name="ignore_{{ format }}" value="{{ format }}" style="vertical-align: middle;">
+              {% endif %}
+              <span style="padding-left: 4px; vertical-align: middle;">{{ format }}</span>
+            </label>
           {% endfor %}
         </div>
 
@@ -80,6 +95,7 @@
           <input type="submit" name="submit_button" value="Submit" class="btn btn-default">
           <input type="submit" name="submit_button" value="Apply Default Settings" class="btn btn-default">
         </div>
+        <br>
       </form>
     </div>
 </div>

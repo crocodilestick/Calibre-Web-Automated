@@ -75,26 +75,27 @@ def cwa_library_refresh():
 @login_required_if_no_ano
 @admin_required
 def set_cwa_settings():
+    ignorable_formats = ['azw', 'azw3', 'azw4', 'cbz',
+                        'cbr', 'cb7', 'cbc', 'chm',
+                        'djvu', 'docx', 'epub', 'fb2',
+                        'fbz', 'html', 'htmlz', 'lit',
+                        'lrf', 'mobi', 'odt', 'pdf',
+                        'prc', 'pdb', 'pml', 'rb',
+                        'rtf', 'snb', 'tcr', 'txtz']
+    target_formats = ['epub', 'azw3', 'kepub', 'mobi', 'pdf']
+    boolean_settings = ["auto_backup_imports",
+                        "auto_backup_conversions",
+                        "auto_zip_backups",
+                        "cwa_update_notifications",
+                        "auto_convert"]
+    string_settings = ["auto_convert_target_format"]
+    for format in ignorable_formats:
+        string_settings.append(f"ignore_{format}")
+
     if request.method == 'POST':
         cwa_db = CWA_DB()
-
         if request.form['submit_button'] == "Submit":
-            boolean_settings = ["auto_backup_imports",
-                                "auto_backup_conversions",
-                                "auto_zip_backups",
-                                "cwa_update_notifications",
-                                "auto_convert"]
-            string_settings = ["auto_convert_target_format",
-                               "cwa_ignored_formats"]
-            ignorable_formats = ['azw', 'azw3', 'azw4', 'cbz',
-                                 'cbr', 'cb7', 'cbc', 'chm',
-                                 'djvu', 'docx', 'epub', 'fb2',
-                                 'fbz', 'html', 'htmlz', 'lit',
-                                 'lrf', 'mobi', 'odt', 'pdf',
-                                 'prc', 'pdb', 'pml', 'rb',
-                                 'rtf', 'snb', 'tcr', 'txtz']
-            
-            result = {}
+            result = {"cwa_ignored_formats":[]}
             # set boolean_settings
             for setting in boolean_settings:
                 value = request.form.get(setting)
@@ -106,12 +107,24 @@ def set_cwa_settings():
             # set string settings
             for setting in string_settings:
                 value = request.form.get(setting)
-                if setting == "auto_convert_target_format" and value == None:
+                if setting[:7] == "ignore_":
+                    if value == None:
+                        continue
+                    else:
+                        result["cwa_ignored_formats"].append(value)
+                        continue
+                elif setting == "auto_convert_target_format" and value == None:
                     value = cwa_db.cwa_settings['auto_convert_target_format']
-                if setting == "cwa_ignored_formats" and value == None:
-                    value = ""
+
                 result |= {setting:value}
-            
+
+            # DEBUGGING
+            with open("/config/post_request" ,"w") as f:
+                for key in result.keys():
+                    if key == "cwa_ignored_formats":
+                        result[key] = ', '.join(result[key])
+                    f.write(f"{key} - {result[key]}\n")
+
             cwa_db.update_cwa_settings(result)
             cwa_settings = cwa_db.get_cwa_settings()
 
@@ -125,7 +138,8 @@ def set_cwa_settings():
         cwa_settings = cwa_db.get_cwa_settings
 
     return render_title_template("cwa_settings.html", title=_("CWA Settings"), page="cwa-settings",
-                                    cwa_settings=cwa_settings, ignorable_formats=ignorable_formats)
+                                    cwa_settings=cwa_settings, ignorable_formats=ignorable_formats,
+                                    target_formats=target_formats)
 
 
 @cwa_history.route("/cwa-history-show", methods=["GET", "POST"])

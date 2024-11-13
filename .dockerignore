@@ -8,3 +8,4 @@ LICENSE
 Dockerfile
 .dockerignore
 build
+.history

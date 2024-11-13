@@ -15,6 +15,7 @@ pyproject.toml
 .breakpoints
 .venv
 .vscode
+.history
 
 # Test Scripts
 test*

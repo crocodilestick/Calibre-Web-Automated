@@ -95,7 +95,8 @@ class CWA_DB:
                         print("[cwa_db] Error adding new setting to cwa.db: Matching setting could not be found in schema")
 
     def set_default_settings(self, force=False) -> None:
-        """Sets default settings for new tables and keeps track if the user is using the default settings or not"""
+        """Sets default settings for new tables and keeps track if the user is using the default settings or not.\n\n
+        If the argument 'force' is set to True, the function instead sets all settings to their default values"""
         if force:
             for setting in self.cwa_default_settings:
                 self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
@@ -138,8 +139,9 @@ class CWA_DB:
 
     def update_cwa_settings(self, result) -> None:
         """Sets settings using POST request from set_cwa_settings()"""
-        settings = result.keys()
-        for setting in settings:
+        for setting in result.keys():
+            if setting == "cwa_ignored_formats":
+                result[setting] = ','.join(result[setting])
             self.cur.execute(f"UPDATE cwa_settings SET {setting}={result[setting]};")
             self.con.commit()
         self.set_default_settings()

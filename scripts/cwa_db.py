@@ -2,6 +2,7 @@ import sqlite3
 import sys
 from sqlite3 import Error as sqlError
 import os
+import re
 from datetime import datetime
 
 from tabulate import tabulate
@@ -16,15 +17,16 @@ class CWA_DB:
         self.con, self.cur = self.connect_to_db()
 
         self.stats_tables_headers = {"no_path":["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
-                                     "with_path":["Timestamp","Book ID", "EPUB Path"]}
+                                    "with_path":["Timestamp","Book ID", "EPUB Path"]}
 
-        self.cwa_default_settings = {"auto_backup_imports": 1,
-                                     "auto_backup_conversions": 1,
-                                     "auto_zip_backups": 1,
-                                     "cwa_update_notifications": 1,
-                                     "auto_convert": 1,
-                                     "auto_convert_target_format": "epub",
-                                     "cwa_ignored_formats":[]}
+        self.cwa_default_settings = {"default_settings":1,
+                                    "auto_backup_imports": 1,
+                                    "auto_backup_conversions": 1,
+                                    "auto_zip_backups": 1,
+                                    "cwa_update_notifications": 1,
+                                    "auto_convert": 1,
+                                    "auto_convert_target_format": "epub",
+                                    "cwa_ignored_formats":""}
 
         self.tables, self.schema = self.make_tables()
         self.ensure_schema_match()
@@ -79,60 +81,81 @@ class CWA_DB:
         return tables, schema
 
     def ensure_schema_match(self) -> None:
-        settings_dump = self.cur.execute("PRAGMA table_info(cwa_settings)").fetchall()
-        cwa_setting_names = [i[1] for i in settings_dump]
+        self.cur.execute("SELECT * FROM cwa_settings")
+        cwa_setting_names = [header[0] for header in self.cur.description]
 
+        # Add any settings present in the schema file but not in the db
         for setting in self.cwa_default_settings.keys():
             if setting not in cwa_setting_names:
                 for line in self.schema:
                     matches = re.findall(setting, line)
                     if matches:
-                        command = line.replace(',', ';')
-                        if command[-1] != ';':
-                            command = command + ';'
+                        command = line.replace('\n', '').strip()
+                        command = command.replace(',', ';')
+                        with open('/config/debug', 'w') as f:
+                            f.write(command)
                         self.cur.execute(f"ALTER TABLE cwa_settings ADD {command}")  
+                        self.con.commit()
                     else:
-                        print("[cwa_db] Error adding new setting to cwa.db: Matching setting could not be found in schema")
+                        print("[cwa_db] Error adding new setting to cwa.db: Matching setting could not be found in schema file")
+        
+        # Delete any settings in the db but not in the schema file
+        for setting in cwa_setting_names:
+            if setting not in self.cwa_default_settings.keys():
+                self.cur.execute(f"ALTER TABLE cwa_settings DROP COLUMN {setting}")  
+                self.con.commit()
+                print(f"[cwa_db] Deprecated setting found from previous version of CWA, deleting setting '{setting}' from cwa.db...")
 
     def set_default_settings(self, force=False) -> None:
         """Sets default settings for new tables and keeps track if the user is using the default settings or not.\n\n
         If the argument 'force' is set to True, the function instead sets all settings to their default values"""
         if force:
-            for setting in self.cwa_default_settings:
-                self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
-                self.con.commit()
+            for setting in self.cwa_default_settings:                    
+                if type(self.cwa_default_settings[setting]) == int:
+                    self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
+                else:
+                    self.cur.execute(f'UPDATE cwa_settings SET {setting}="{self.cwa_default_settings[setting]}";')
+                    
             print("[cwa-db] CWA Default Settings successfully applied.")
         
-        current_settings = self.cur.execute("SELECT * FROM cwa_settings").fetchall()
+        current_settings = self.cur.execute("SELECT * FROM cwa_settings")
+        setting_names = [header[0] for header in self.cur.description]
+        cwa_settings = [dict(zip(setting_names,row)) for row in self.cur.fetchall()][0]
+
         if current_settings == []:
             print("[cwa-db]: New DB detected, applying default CWA settings...")
-            for setting in self.cwa_default_settings:
-                self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
-                self.con.commit()
+            for setting in self.cwa_default_settings:                    
+                if type(self.cwa_default_settings[setting]) == int:
+                    self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
+                else:
+                    self.cur.execute(f'UPDATE cwa_settings SET {setting}="{self.cwa_default_settings[setting]}";')
         else:
-            if current_settings == [(0, 1, 1, 1, 1, 0, 1, "epub", "")]:
+            default_check = True
+            for setting in setting_names:
+                if setting == "default_settings":
+                    continue
+                elif cwa_settings[setting] != self.cwa_default_settings[setting]:
+                    default_check = False
+                    self.cur.execute("UPDATE cwa_settings SET default_settings=0 WHERE default_settings=1;")
+                    self.con.commit()
+                    break
+
+            if default_check:
                 self.cur.execute("UPDATE cwa_settings SET default_settings=1 WHERE default_settings=0;")
-                self.con.commit()
-            elif current_settings != [(1, 1, 1, 1, 1, 0, "epub", "")]:
-                self.cur.execute("UPDATE cwa_settings SET default_settings=0 WHERE default_settings=1;")
                 self.con.commit()
 
             if self.verbose:
                 print("[cwa-db] CWA Settings loaded successfully")
 
     def get_cwa_settings(self) -> dict[str:bool|str]:
-        """Gets the cwa_settings from the table of the same name in cwa.db"""
-        settings_dump = self.cur.execute("PRAGMA table_info(cwa_settings)").fetchall()
-        cwa_setting_names = [i[1] for i in settings_dump]
-        cwa_setting_values = self.cur.execute("SELECT * FROM cwa_settings").fetchall()
+        """Gets the current cwa_settings values from the table of the same name in cwa.db and returns them as a dict"""
+        self.cur.execute("SELECT * FROM cwa_settings")
+        headers = [header[0] for header in self.cur.description]
+        cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
 
-        cwa_settings = {}
-        for x in range(len(cwa_setting_names)):
-            if type(cwa_setting_values[0][x]) == int:
-                cwa_settings |= {cwa_setting_names[x]:bool(cwa_setting_values[0][x])}
-            else:
-                cwa_settings |= {cwa_setting_names[x]:cwa_setting_values[0][x]}
-
+        for header in headers:
+            if type(cwa_settings[header]) == int:
+                cwa_settings[header] = bool(cwa_settings[header])
         cwa_settings['cwa_ignored_formats'] = cwa_settings['cwa_ignored_formats'].split(',')
 
         return cwa_settings
@@ -142,7 +165,11 @@ class CWA_DB:
         for setting in result.keys():
             if setting == "cwa_ignored_formats":
                 result[setting] = ','.join(result[setting])
-            self.cur.execute(f"UPDATE cwa_settings SET {setting}={result[setting]};")
+
+            if type(result[setting]) == int:
+                self.cur.execute(f"UPDATE cwa_settings SET {setting}={result[setting]};")
+            else:
+                self.cur.execute(f'UPDATE cwa_settings SET {setting}="{result[setting]}";')
             self.con.commit()
         self.set_default_settings()
 

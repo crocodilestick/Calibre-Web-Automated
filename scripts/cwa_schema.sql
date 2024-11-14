@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS cwa_conversions(
     original_backed_up TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS cwa_settings(
-    default_settings SMALLINT NOT NULL,
+    default_settings SMALLINT DEFAULT 1 NOT NULL,
     auto_backup_imports SMALLINT DEFAULT 1 NOT NULL,
     auto_backup_conversions SMALLINT DEFAULT 1 NOT NULL,
     auto_zip_backups SMALLINT DEFAULT 1 NOT NULL,

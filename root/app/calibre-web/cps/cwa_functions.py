@@ -122,8 +122,9 @@ def set_cwa_settings():
             with open("/config/post_request" ,"w") as f:
                 for key in result.keys():
                     if key == "cwa_ignored_formats":
-                        result[key] = ', '.join(result[key])
-                    f.write(f"{key} - {result[key]}\n")
+                        f.write(f"{key} - {', '.join(result[key])}\n")
+                    else:
+                        f.write(f"{key} - {result[key]}\n")
 
             cwa_db.update_cwa_settings(result)
             cwa_settings = cwa_db.get_cwa_settings()
@@ -135,7 +136,7 @@ def set_cwa_settings():
 
     elif request.method == 'GET':
         cwa_db = CWA_DB()
-        cwa_settings = cwa_db.get_cwa_settings
+        cwa_settings = cwa_db.cwa_settings
 
     return render_title_template("cwa_settings.html", title=_("CWA Settings"), page="cwa-settings",
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats,

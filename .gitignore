@@ -25,7 +25,7 @@ DEV
 cwa.db
 
 # Dev files
-dev_changelog.md
+changelogs/
 *.txz
 
 # Distribution / packaging

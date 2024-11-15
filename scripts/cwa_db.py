@@ -26,7 +26,8 @@ class CWA_DB:
                                     "cwa_update_notifications": 1,
                                     "auto_convert": 1,
                                     "auto_convert_target_format": "epub",
-                                    "cwa_ignored_formats":""}
+                                    "auto_convert_ignored_formats":"",
+                                    "auto_import_ignored_formats":""}
 
         self.tables, self.schema = self.make_tables()
         self.ensure_schema_match()
@@ -35,6 +36,7 @@ class CWA_DB:
         self.temp_disable_split_library()
 
         self.cwa_settings = self.get_cwa_settings()
+
 
     def temp_disable_split_library(self): # Temporary measure to disable split library functionality until it can be supported in V2.2.0
         con = sqlite3.connect("/config/app.db")
@@ -63,6 +65,7 @@ class CWA_DB:
                 print("[cwa-db]: Connection with the CWA Enforcement DB Successful!")
             return con, cur
 
+
     def make_tables(self) -> None:
         """Creates the tables for the CWA DB if they don't already exist"""
         schema = []
@@ -77,8 +80,10 @@ class CWA_DB:
             tables[x] = tables[x] + ";"
         for table in tables:
             self.cur.execute(table)
+            self.con.commit()
 
         return tables, schema
+
 
     def ensure_schema_match(self) -> None:
         self.cur.execute("SELECT * FROM cwa_settings")
@@ -106,6 +111,7 @@ class CWA_DB:
                 self.con.commit()
                 print(f"[cwa_db] Deprecated setting found from previous version of CWA, deleting setting '{setting}' from cwa.db...")
 
+
     def set_default_settings(self, force=False) -> None:
         """Sets default settings for new tables and keeps track if the user is using the default settings or not.\n\n
         If the argument 'force' is set to True, the function instead sets all settings to their default values"""
@@ -113,39 +119,44 @@ class CWA_DB:
             for setting in self.cwa_default_settings:                    
                 if type(self.cwa_default_settings[setting]) == int:
                     self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
+                    self.con.commit()
                 else:
                     self.cur.execute(f'UPDATE cwa_settings SET {setting}="{self.cwa_default_settings[setting]}";')
-                    
-            print("[cwa-db] CWA Default Settings successfully applied.")
-        
-        current_settings = self.cur.execute("SELECT * FROM cwa_settings")
-        setting_names = [header[0] for header in self.cur.description]
-        cwa_settings = [dict(zip(setting_names,row)) for row in self.cur.fetchall()][0]
-
-        if current_settings == []:
-            print("[cwa-db]: New DB detected, applying default CWA settings...")
+                    self.con.commit()
+            print("[cwa-db] CWA Default Settings successfully applied!")
+            return
+        try:
+            self.cur.execute("SELECT * FROM cwa_settings")
+            setting_names = [header[0] for header in self.cur.description]
+            current_settings = [dict(zip(setting_names,row)) for row in self.cur.fetchall()][0]
+    
+        except IndexError:
+            print("[cwa-db]: No existing CWA settings detected, applying default CWA settings...")
             for setting in self.cwa_default_settings:                    
                 if type(self.cwa_default_settings[setting]) == int:
                     self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
                 else:
                     self.cur.execute(f'UPDATE cwa_settings SET {setting}="{self.cwa_default_settings[setting]}";')
-        else:
-            default_check = True
-            for setting in setting_names:
-                if setting == "default_settings":
-                    continue
-                elif cwa_settings[setting] != self.cwa_default_settings[setting]:
-                    default_check = False
-                    self.cur.execute("UPDATE cwa_settings SET default_settings=0 WHERE default_settings=1;")
-                    self.con.commit()
-                    break
-
-            if default_check:
-                self.cur.execute("UPDATE cwa_settings SET default_settings=1 WHERE default_settings=0;")
                 self.con.commit()
+            print("[cwa-db] CWA Default Settings successfully applied!")
+            return
 
-            if self.verbose:
-                print("[cwa-db] CWA Settings loaded successfully")
+        default_check = True
+        for setting in setting_names:
+            if setting == "default_settings":
+                continue
+            elif current_settings[setting] != self.cwa_default_settings[setting]:
+                default_check = False
+                self.cur.execute("UPDATE cwa_settings SET default_settings=0 WHERE default_settings=1;")
+                self.con.commit()
+                break
+        if default_check:
+            self.cur.execute("UPDATE cwa_settings SET default_settings=1 WHERE default_settings=0;")
+            self.con.commit()
+
+        if self.verbose:
+            print("[cwa-db] CWA Settings loaded successfully")
+
 
     def get_cwa_settings(self) -> dict[str:bool|str]:
         """Gets the current cwa_settings values from the table of the same name in cwa.db and returns them as a dict"""
@@ -156,14 +167,16 @@ class CWA_DB:
         for header in headers:
             if type(cwa_settings[header]) == int:
                 cwa_settings[header] = bool(cwa_settings[header])
-        cwa_settings['cwa_ignored_formats'] = cwa_settings['cwa_ignored_formats'].split(',')
+        cwa_settings['auto_convert_ignored_formats'] = cwa_settings['auto_convert_ignored_formats'].split(',')
+        cwa_settings['auto_import_ignored_formats'] = cwa_settings['auto_import_ignored_formats'].split(',')
 
         return cwa_settings
+
 
     def update_cwa_settings(self, result) -> None:
         """Sets settings using POST request from set_cwa_settings()"""
         for setting in result.keys():
-            if setting == "cwa_ignored_formats":
+            if setting == "auto_convert_ignored_formats" or setting == "auto_import_ignored_formats":
                 result[setting] = ','.join(result[setting])
 
             if type(result[setting]) == int:
@@ -173,20 +186,24 @@ class CWA_DB:
             self.con.commit()
         self.set_default_settings()
 
+
     def enforce_add_entry_from_log(self, log_info: dict):
         """Adds an entry to the db from a change log file"""
         self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (log_info['timestamp'], log_info['book_id'], log_info['book_title'], log_info['author_name'], log_info['epub_path'], 'auto -log'))
         self.con.commit()
+
 
     def enforce_add_entry_from_dir(self, book_info: dict):
         """Adds an entry to the db when cover-enforcer is ran with a directory"""
         self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book_info['timestamp'], book_info['book_id'], book_info['book_title'], book_info['author_name'], book_info['epub_path'], 'manual -dir'))
         self.con.commit()
 
+
     def enforce_add_entry_from_all(self, book_info: dict):
         """Adds an entry to the db when cover-enforcer is ran with the -all flag"""
         self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book_info['timestamp'], book_info['book_id'], book_info['book_title'], book_info['author_name'], book_info['epub_path'], 'manual -all'))
         self.con.commit()
+
 
     def enforce_show(self, paths: bool, verbose: bool, web_ui=False):
         results_no_path = self.cur.execute("SELECT timestamp, book_id, book_title, author, trigger_type FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
@@ -246,6 +263,7 @@ class CWA_DB:
                     break
             return newest_ten, headers
     
+
     def get_conversion_history(self, verbose: bool):
         headers = ["Timestamp", "Filename", "Original Format", "Original Backed Up?"]
         results = self.cur.execute("SELECT timestamp, filename, original_format, original_backed_up FROM cwa_conversions ORDER BY timestamp DESC;").fetchall()
@@ -262,11 +280,13 @@ class CWA_DB:
                     break
             return newest_ten, headers
 
+
     def import_add_entry(self, filename, original_backed_up):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_import(timestamp, filename, original_backed_up) VALUES (?, ?, ?);", (timestamp, filename, original_backed_up))
         self.con.commit()
-    
+
+
     def conversion_add_entry(self, filename, original_format, original_backed_up):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_format, original_backed_up) VALUES (?, ?, ?, ?);", (timestamp, filename, original_format, original_backed_up))

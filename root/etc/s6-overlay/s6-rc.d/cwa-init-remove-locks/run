@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -a lockFiles=("ingest-processor.lock", "convert-library.lock")
+declare -a lockFiles=("ingest-processor.lock" "convert-library.lock")
 
 echo "[cwa-init-remove-locks] Checking for leftover lock files from previous instance..."
 

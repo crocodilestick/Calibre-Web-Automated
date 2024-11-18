@@ -46,13 +46,18 @@ class NewBookProcessor:
         self.db = CWA_DB()
         self.cwa_settings = self.db.cwa_settings
 
-        self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz']
-        self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz']
+        self.auto_convert_on = self.db.cwa_settings['auto_convert']
+        self.target_format = self.db.cwa_settings['auto_convert_target_format']
+        self.ingest_ignored_formats = self.db.cwa_settings['auto_ingest_ignored_formats']
+        self.convert_ignored_formats = self.db.cwa_settings['auto_convert_ignored_formats']
+
+        self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz', 'txt']
+        self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
 
         self.filepath = filepath # path of the book we're targeting
         self.filename = os.path.basename(filepath)
-        self.is_epub: bool = bool(self.filepath.endswith('.epub'))
+        self.is_target_format = bool(self.filepath.endswith(self.target_format))
 
 
     def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:
@@ -68,10 +73,10 @@ class NewBookProcessor:
 
 
     def convert_book(self, import_format: str) -> tuple[bool, str]:
-        """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting epubs to the calibre-web import folder."""
+        """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting files to the calibre-web import folder."""
         print(f"[ingest-processor]: START_CON: Converting {self.filename}...\n")
         original_filepath = Path(self.filepath)
-        target_filepath = f"{self.tmp_conversion_dir}{original_filepath.stem}.epub"
+        target_filepath = f"{self.tmp_conversion_dir}{original_filepath.stem}.{self.target_format}"
         try:
             t_convert_book_start = time.time()
             subprocess.run(['ebook-convert', self.filepath, target_filepath], check=True)
@@ -83,8 +88,8 @@ class NewBookProcessor:
                 shutil.copyfile(self.filepath, f"/config/processed_books/converted/{os.path.basename(original_filepath)}")
 
             self.db.conversion_add_entry(original_filepath.stem,
-                                         import_format,
-                                         str(self.cwa_settings["auto_backup_conversions"]))
+                                        import_format,
+                                        str(self.cwa_settings["auto_backup_conversions"]))
 
             return True, target_filepath
 
@@ -94,20 +99,18 @@ class NewBookProcessor:
             return False, ""
 
 
-    def can_convert_check(self):
-        """When no epubs are detected in the download, this function will go through the list of new files 
-        and check for the format the are in that has the highest chance of successful conversion according to the input format hierarchy list 
-        provided by calibre"""
+    def can_convert_check(self, bool_only=False) -> tuple[bool, str]:
+        """When the current filepath isn't of the target format, this function will check if the file is able to be converted to the target format,
+        returning a can_convert bool with the answer"""
         can_convert = False
-        import_format = ''
-        for format in self.hierarchy_of_success:
-            can_be_converted = bool(self.filepath.endswith(f'.{format}'))
-            if can_be_converted:
-                can_convert = True
-                import_format = format
-                break
+        import_format = Path(self.filepath).suffix
+        if import_format in self.supported_book_formats:
+            can_convert = True
 
-        return can_convert, import_format
+        if bool_only:
+            return can_convert, import_format
+        else:
+            return can_convert
 
 
     def delete_current_file(self) -> None:
@@ -117,7 +120,7 @@ class NewBookProcessor:
 
 
     def add_book_to_library(self, book_path) -> None:
-        print("[ingest-processor]: Importing new epub to CWA...")
+        print("[ingest-processor]: Importing new book to CWA...")
         import_path = Path(book_path)
         import_filename = os.path.basename(book_path)
         try:
@@ -128,7 +131,7 @@ class NewBookProcessor:
                 shutil.copyfile(book_path, f"/config/processed_books/imported/{import_filename}")
 
             self.db.import_add_entry(import_path.stem,
-                                     str(self.cwa_settings["auto_backup_imports"]))
+                                    str(self.cwa_settings["auto_backup_imports"]))
 
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {import_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}")
@@ -165,26 +168,33 @@ def main(filepath=sys.argv[1]):
 
     nbp = NewBookProcessor(filepath)
 
-    if not nbp.is_epub: # Books require conversion
-        print(f"\n[ingest-processor]: Starting conversion process for {nbp.filename}...")
-        can_convert, import_format = nbp.can_convert_check()
-        print(f"[ingest-processor]: Converting file from {import_format} to epub format...\n")
-
-        if can_convert:
-            result, epub_filepath = nbp.convert_book(import_format)
-            if result:
-                nbp.add_book_to_library(epub_filepath)
-                nbp.empty_tmp_con_dir()
+    # Check if the user has chosen to exclude files of this type from the ingest process
+    if Path(nbp.filename).suffix in nbp.ingest_ignored_formats:
+        continue
+    else:
+        if nbp.is_target_format: # File can just be imported
+            print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...")
+            nbp.add_book_to_library(filepath)
         else:
-            print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {import_format} is currently unsupported.")
+            if nbp.auto_convert_on and nbp.can_convert_check(bool_only=True): # File can be converted to target format and Auto-Converter is on
+                print(f"\n[ingest-processor]: Starting conversion process for {nbp.filename}...")
+                can_convert, import_format = nbp.can_convert_check()
+                print(f"[ingest-processor]: Converting file from {import_format} to epub format...\n")
 
-    else: # Books need imported
-        print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...")
-        nbp.add_book_to_library(filepath)
+                if can_convert:
+                    result, converted_filepath = nbp.convert_book(import_format)
+                    if result:
+                        nbp.add_book_to_library(converted_filepath)
+                        nbp.empty_tmp_con_dir()
+            elif not nbp.auto_convert_on and nbp.can_convert_check(bool_only=True): # Books not in target format but Auto-Converter is off so files are imported anyway
+                print(f"\n[ingest-processor]: {nbp.filename} not in target format but CWA Auto-Convert is deactivated so importing file anyway...")
+                nbp.add_book_to_library(filepath)
+            else:
+                print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {import_format} is currently unsupported / is not a known ebook format.")
 
-    nbp.set_library_permissions()
-    nbp.delete_current_file()
-    del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
+            nbp.set_library_permissions()
+            nbp.delete_current_file()
+            del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
 
 if __name__ == "__main__":
     main()

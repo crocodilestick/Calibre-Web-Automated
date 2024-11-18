@@ -27,7 +27,7 @@ class CWA_DB:
                                     "auto_convert": 1,
                                     "auto_convert_target_format": "epub",
                                     "auto_convert_ignored_formats":"",
-                                    "auto_import_ignored_formats":""}
+                                    "auto_ingest_ignored_formats":""}
 
         self.tables, self.schema = self.make_tables()
         self.ensure_schema_match()
@@ -168,7 +168,7 @@ class CWA_DB:
             if type(cwa_settings[header]) == int:
                 cwa_settings[header] = bool(cwa_settings[header])
         cwa_settings['auto_convert_ignored_formats'] = cwa_settings['auto_convert_ignored_formats'].split(',')
-        cwa_settings['auto_import_ignored_formats'] = cwa_settings['auto_import_ignored_formats'].split(',')
+        cwa_settings['auto_ingest_ignored_formats'] = cwa_settings['auto_ingest_ignored_formats'].split(',')
 
         return cwa_settings
 
@@ -176,7 +176,7 @@ class CWA_DB:
     def update_cwa_settings(self, result) -> None:
         """Sets settings using POST request from set_cwa_settings()"""
         for setting in result.keys():
-            if setting == "auto_convert_ignored_formats" or setting == "auto_import_ignored_formats":
+            if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats":
                 result[setting] = ','.join(result[setting])
 
             if type(result[setting]) == int:
@@ -287,7 +287,7 @@ class CWA_DB:
         self.con.commit()
 
 
-    def conversion_add_entry(self, filename, original_format, original_backed_up):
+    def conversion_add_entry(self, filename, original_format, original_backed_up): # TODO Add end_format
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_format, original_backed_up) VALUES (?, ?, ?, ?);", (timestamp, filename, original_format, original_backed_up))
         self.con.commit()

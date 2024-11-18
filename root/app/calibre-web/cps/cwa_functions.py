@@ -81,7 +81,7 @@ def set_cwa_settings():
                         'fbz', 'html', 'htmlz', 'lit',
                         'lrf', 'mobi', 'odt', 'pdf',
                         'prc', 'pdb', 'pml', 'rb',
-                        'rtf', 'snb', 'tcr', 'txtz']
+                        'rtf', 'snb', 'tcr', 'txtz', 'txt']
     target_formats = ['epub', 'azw3', 'kepub', 'mobi', 'pdf']
     boolean_settings = ["auto_backup_imports",
                         "auto_backup_conversions",
@@ -90,13 +90,13 @@ def set_cwa_settings():
                         "auto_convert"]
     string_settings = ["auto_convert_target_format"]
     for format in ignorable_formats:
-        string_settings.append(f"ignore_import_{format}")
+        string_settings.append(f"ignore_ingest_{format}")
         string_settings.append(f"ignore_convert_{format}")
 
     if request.method == 'POST':
         cwa_db = CWA_DB()
         if request.form['submit_button'] == "Submit":
-            result = {"auto_convert_ignored_formats":[], "auto_import_ignored_formats":[]}
+            result = {"auto_convert_ignored_formats":[], "auto_ingest_ignored_formats":[]}
             # set boolean_settings
             for setting in boolean_settings:
                 value = request.form.get(setting)
@@ -114,27 +114,27 @@ def set_cwa_settings():
                     else:
                         result["auto_convert_ignored_formats"].append(value)
                         continue
-                elif setting[:13] == "ignore_import":
+                elif setting[:13] == "ignore_ingest":
                     if value == None:
                         continue
                     else:
-                        result["auto_import_ignored_formats"].append(value)
+                        result["auto_ingest_ignored_formats"].append(value)
                         continue
-                elif setting == "auto_import_target_format" and value == None:
-                    value = cwa_db.cwa_settings['auto_import_target_format']
+                elif setting == "auto_convert_target_format" and value == None:
+                    value = cwa_db.cwa_settings['auto_convert_target_format']
 
                 result |= {setting:value}
             
             # Prevent ignoring of target format
             if result['auto_convert_target_format'] in result['auto_convert_ignored_formats']:
                 result['auto_convert_ignored_formats'].remove(result['auto_convert_target_format'])
-            if result['auto_convert_target_format'] in result['auto_import_ignored_formats']:
-                result['auto_import_ignored_formats'].remove(result['auto_convert_target_format'])
+            if result['auto_convert_target_format'] in result['auto_ingest_ignored_formats']:
+                result['auto_ingest_ignored_formats'].remove(result['auto_convert_target_format'])
 
             # DEBUGGING
             with open("/config/post_request" ,"w") as f:
                 for key in result.keys():
-                    if key == "auto_convert_ignored_formats" or key == "auto_import_ignored_formats":
+                    if key == "auto_convert_ignored_formats" or key == "auto_ingest_ignored_formats":
                         f.write(f"{key} - {', '.join(result[key])}\n")
                     else:
                         f.write(f"{key} - {result[key]}\n")

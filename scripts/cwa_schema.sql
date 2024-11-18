@@ -29,5 +29,5 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_convert SMALLINT DEFAULT 1 NOT NULL,
     auto_convert_target_format TEXT DEFAULT "epub" NOT NULL,
     auto_convert_ignored_formats TEXT DEFAULT "" NOT NULL,
-    auto_import_ignored_formats TEXT DEFAULT "" NOT NULL
+    auto_ingest_ignored_formats TEXT DEFAULT "" NOT NULL
 );

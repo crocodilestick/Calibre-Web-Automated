@@ -78,10 +78,10 @@ def set_cwa_settings():
     ignorable_formats = ['azw', 'azw3', 'azw4', 'cbz',
                         'cbr', 'cb7', 'cbc', 'chm',
                         'djvu', 'docx', 'epub', 'fb2',
-                        'fbz', 'html', 'htmlz', 'lit',
+                        'fbz', 'html', 'htmlz', 'kepub', 'lit',
                         'lrf', 'mobi', 'odt', 'pdf',
                         'prc', 'pdb', 'pml', 'rb',
-                        'rtf', 'snb', 'tcr', 'txtz', 'txt']
+                        'rtf', 'snb', 'tcr', 'txt', 'txtz']
     target_formats = ['epub', 'azw3', 'kepub', 'mobi', 'pdf']
     boolean_settings = ["auto_backup_imports",
                         "auto_backup_conversions",

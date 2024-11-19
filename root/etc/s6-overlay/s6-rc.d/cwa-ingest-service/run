@@ -12,8 +12,7 @@ echo "[cwa-ingest-service]: Watching folder: $WATCH_FOLDER"
 # Monitor the folder for new files
 s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
 while read -r events filepath ; do
-        echo "[cwa-ingest-service]: New files detected - $filepath"
+        echo "[cwa-ingest-service]: New files detected - $filepath - Starting Ingest Processor..."
         python3 /app/calibre-web-automated/scripts/ingest-processor.py "$filepath"
-        echo "[cwa-ingest-service]: New files successfully moved/converted, the Ingest Folder has been emptied and is ready to go again."
 done
 

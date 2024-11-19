@@ -436,14 +436,39 @@
   #detailcover:fullscreen { cursor:zoom-out; border: 0; }
   
   .error-list {
-      margin-top: 5px;
-    }
-  
-  
+    margin-top: 5px;
+  }
+
+  :root {
+    --color-secondary: #45b29d;
+  }
+    
   p.cwa-settings-tooltip {
     margin: 1px 4px 16px 32px;
     padding: 5px 10px;
     line-height: normal;
     color: #444444;
     max-width: 100rem;
+  }
+
+  p.cwa-settings-explanation {
+    color: #444444;
+    font-style: italic;
+    font-size: inherit;
+    line-height: normal;
+    padding-left: 10px;
+    max-width: 90rem;
+  }
+  p.cwa-settings-disclaimer {
+    font-size: small;
+    font-style: italic;
+    color: #444444;
+    padding-left: 10px;
+  }
+
+  select.cwa-settings-select {
+    background-color: white;
+    color: #444444;
+    text-align: center;
+    border-radius: 6px;
   }

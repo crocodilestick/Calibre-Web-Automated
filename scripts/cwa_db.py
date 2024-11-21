@@ -7,6 +7,7 @@ from datetime import datetime
 
 from tabulate import tabulate
 
+from cover_enforcer import Book
 
 class CWA_DB:
     def __init__(self, verbose=False):
@@ -16,8 +17,11 @@ class CWA_DB:
         self.db_path = "/config/"
         self.con, self.cur = self.connect_to_db()
 
+        self.schema_path = "/app/calibre-web-automated/scripts/cwa_schema.sql"
+
+        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions"]
         self.stats_tables_headers = {"no_path":["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
-                                    "with_path":["Timestamp","Book ID", "EPUB Path"]}
+                                    "with_path":["Timestamp","Book ID", "File Path"]}
 
         self.cwa_default_settings = {"default_settings":1,
                                     "auto_backup_imports": 1,
@@ -27,10 +31,12 @@ class CWA_DB:
                                     "auto_convert": 1,
                                     "auto_convert_target_format": "epub",
                                     "auto_convert_ignored_formats":"",
-                                    "auto_ingest_ignored_formats":""}
+                                    "auto_ingest_ignored_formats":"",
+                                    "auto_metadata_enforcement":1}
 
         self.tables, self.schema = self.make_tables()
-        self.ensure_schema_match()
+        self.ensure_settings_schema_match()
+        self.match_stat_table_columns_with_schema()
         self.set_default_settings()
 
         self.temp_disable_split_library()
@@ -66,10 +72,10 @@ class CWA_DB:
             return con, cur
 
 
-    def make_tables(self) -> None:
+    def make_tables(self) -> tuple[list[str], list[str]]:
         """Creates the tables for the CWA DB if they don't already exist"""
         schema = []
-        with open("/app/calibre-web-automated/scripts/cwa_schema.sql", 'r') as f:
+        with open(self.schema_path, 'r') as f:
             for line in f:
                 if line != "\n":
                     schema.append(line)
@@ -85,7 +91,7 @@ class CWA_DB:
         return tables, schema
 
 
-    def ensure_schema_match(self) -> None:
+    def ensure_settings_schema_match(self) -> None:
         self.cur.execute("SELECT * FROM cwa_settings")
         cwa_setting_names = [header[0] for header in self.cur.description]
 
@@ -110,6 +116,47 @@ class CWA_DB:
                 self.cur.execute(f"ALTER TABLE cwa_settings DROP COLUMN {setting}")  
                 self.con.commit()
                 print(f"[cwa_db] Deprecated setting found from previous version of CWA, deleting setting '{setting}' from cwa.db...")
+
+
+    def match_stat_table_columns_with_schema(self) -> None:
+        """ Used to rename columns whose names have been changed in later versions and add columns added in later versions """
+        # Produces a dict with all of the column names for each table, from the existing DB
+        current_column_names = {}
+        for table in self.stats_tables:
+            self.cur.execute(f"SELECT * FROM {table}")
+            setting_names = [header[0] for header in self.cur.description]
+            current_column_names |= {table:setting_names}
+
+        # Produces a dict with all of the column names for each table, from the schema
+        column_names_in_schema = {}
+        for table in self.tables:
+            column_names = []
+            table = table.split('\n')
+            for line in table:
+                if line[:27] == "CREATE TABLE IF NOT EXISTS ":
+                    table_name = line[27:].replace('(', '')
+                elif line[:4] == "    ":
+                    column_names.append(line.strip().split(' ')[0])
+            column_names_in_schema |= {table_name:column_names}
+
+        for table in self.stats_tables:
+            if len(current_column_names[table]) < len(column_names_in_schema[table]): # Adds new columns not yet in existing db
+                num_new_columns = len(column_names_in_schema[table]) - len(current_column_names[table])
+                for x in range(1, num_new_columns + 1):
+                    if column_names_in_schema[table][-x] not in current_column_names[table]:
+                        for line in self.schema:
+                            matches = re.findall(column_names_in_schema[table][-x], line)
+                            if matches:
+                                new_column = line.strip().replace(',', '')
+                                self.cur.execute(f"ALTER TABLE {table} ADD {new_column};")
+                                self.con.commit()
+                                print(f'[cwa-db] Missing Column detected in cwa.db. Added new column "{column_names_in_schema[table][-x]}" to table "{table}" in cwa.db')
+            else: # Number of columns in table matches the schema, now checks whether the names are the same
+                for x in range(len(column_names_in_schema[table])):
+                    if current_column_names[table][x] != column_names_in_schema[table][x]:
+                        self.cur.execute(f"ALTER TABLE {table} RENAME COLUMN {current_column_names[table][x]} TO {column_names_in_schema[table][x]}")
+                        self.con.commit()
+                        print(f'[cwa-db] Fixed column mismatch between versions. Column "{current_column_names[table][x]}" in table "{table}" renamed to "{column_names_in_schema[table][x]}"', flush=True)
 
 
     def set_default_settings(self, force=False) -> None:
@@ -189,25 +236,27 @@ class CWA_DB:
 
     def enforce_add_entry_from_log(self, log_info: dict):
         """Adds an entry to the db from a change log file"""
-        self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (log_info['timestamp'], log_info['book_id'], log_info['book_title'], log_info['author_name'], log_info['epub_path'], 'auto -log'))
+        self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (log_info['timestamp'], log_info['book_id'], log_info['book_title'], log_info['author_name'], log_info['file_path'], 'auto -log'))
         self.con.commit()
 
 
-    def enforce_add_entry_from_dir(self, book_info: dict):
-        """Adds an entry to the db when cover-enforcer is ran with a directory"""
-        self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book_info['timestamp'], book_info['book_id'], book_info['book_title'], book_info['author_name'], book_info['epub_path'], 'manual -dir'))
-        self.con.commit()
+    def enforce_add_entry_from_dir(self, book_objects: list[Book]):
+        """Adds an entry to the db when cover_enforcer is ran with a directory"""
+        for book in book_objects:
+            self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book.timestamp, book.book_id, book.book_title, book.author_name, book.file_path, 'manual -dir'))
+            self.con.commit()
 
 
-    def enforce_add_entry_from_all(self, book_info: dict):
-        """Adds an entry to the db when cover-enforcer is ran with the -all flag"""
-        self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, epub_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book_info['timestamp'], book_info['book_id'], book_info['book_title'], book_info['author_name'], book_info['epub_path'], 'manual -all'))
-        self.con.commit()
+    def enforce_add_entry_from_all(self, book_objects: list[Book]):
+        """Adds an entry to the db when cover_enforcer is ran with the -all flag"""
+        for book in book_objects:
+            self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book.timestamp, book.book_id, book.book_title, book.author_name, book.file_path, 'manual -all'))
+            self.con.commit()
 
 
     def enforce_show(self, paths: bool, verbose: bool, web_ui=False):
         results_no_path = self.cur.execute("SELECT timestamp, book_id, book_title, author, trigger_type FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
-        results_with_path = self.cur.execute("SELECT timestamp, book_id, epub_path FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
+        results_with_path = self.cur.execute("SELECT timestamp, book_id, file_path FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
         if paths:
             if verbose:
                 results_with_path.reverse()
@@ -294,7 +343,7 @@ class CWA_DB:
 
 
 def main():
-    cwa_db = CWA_DB()
+    db = CWA_DB()
 
 
 if __name__ == "__main__":

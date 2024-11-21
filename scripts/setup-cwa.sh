@@ -35,7 +35,7 @@ add_aliases () {
     echo "alias cwa-change-dirs='nano /app/calibre-web-automated/dirs.json'" | cat >> ~/.bashrc
     
     echo "cover-enforcer () {" | cat >> ~/.bashrc
-    echo '    python3 /app/calibre-web-automated/scripts/cover-enforcer.py "$@"' | cat >> ~/.bashrc
+    echo '    python3 /app/calibre-web-automated/scripts/cover_enforcer.py "$@"' | cat >> ~/.bashrc
     echo "}" | cat >> ~/.bashrc
     
     echo "convert-library () {" | cat >> ~/.bashrc

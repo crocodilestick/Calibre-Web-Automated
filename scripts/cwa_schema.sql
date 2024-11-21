@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS cwa_enforcement(
     book_id INTEGER NOT NULL, 
     book_title TEXT NOT NULL,
     author TEXT NOT NULL, 
-    epub_path TEXT NOT NULL, 
+    file_path TEXT NOT NULL, 
     trigger_type TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS cwa_import(
@@ -29,5 +29,6 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_convert SMALLINT DEFAULT 1 NOT NULL,
     auto_convert_target_format TEXT DEFAULT "epub" NOT NULL,
     auto_convert_ignored_formats TEXT DEFAULT "" NOT NULL,
-    auto_ingest_ignored_formats TEXT DEFAULT "" NOT NULL
+    auto_ingest_ignored_formats TEXT DEFAULT "" NOT NULL,
+    auto_metadata_enforcement SMALLINT DEFAULT 1 NOT NULL
 );

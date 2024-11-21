@@ -87,7 +87,8 @@ def set_cwa_settings():
                         "auto_backup_conversions",
                         "auto_zip_backups",
                         "cwa_update_notifications",
-                        "auto_convert"]
+                        "auto_convert",
+                        "auto_metadata_enforcement"]
     string_settings = ["auto_convert_target_format"]
     for format in ignorable_formats:
         string_settings.append(f"ignore_ingest_{format}")

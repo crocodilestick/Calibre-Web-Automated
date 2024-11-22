@@ -122,8 +122,8 @@ class LibraryConverter:
                     shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(file)}")
 
                 self.db.conversion_add_entry(os.path.basename(target_filepath),
-                                             Path(file).suffix,
-                                             str(self.cwa_settings["auto_backup_conversions"]))
+                                            Path(file).suffix,
+                                            str(self.cwa_settings["auto_backup_conversions"]))
 
                 print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} successful! Removing old version from library...")
             except subprocess.CalledProcessError as e:
@@ -138,7 +138,7 @@ class LibraryConverter:
                     shutil.copyfile(target_filepath, f"/config/processed_books/imported/{os.path.basename(target_filepath)}")
 
                 self.db.import_add_entry(os.path.basename(target_filepath),
-                                         str(self.cwa_settings["auto_backup_imports"]))
+                                        str(self.cwa_settings["auto_backup_imports"]))
 
                 print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} successfully completed!")
             except subprocess.CalledProcessError as e:

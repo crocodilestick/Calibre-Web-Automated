@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS cwa_conversions(
     timestamp TEXT NOT NULL,
     filename TEXT NOT NULL,
     original_format TEXT NOT NULL,
-    original_backed_up TEXT NOT NULL
+    original_backed_up TEXT NOT NULL,
+    end_format TEXT DEFAULT "" NOT NULL
 );
 CREATE TABLE IF NOT EXISTS cwa_settings(
     default_settings SMALLINT DEFAULT 1 NOT NULL,

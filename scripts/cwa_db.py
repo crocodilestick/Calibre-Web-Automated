@@ -19,8 +19,11 @@ class CWA_DB:
         self.schema_path = "/app/calibre-web-automated/scripts/cwa_schema.sql"
 
         self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions"]
-        self.stats_tables_headers = {"no_path":["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
+
+        self.enforcement_history_headers = {"no_path":["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
                                     "with_path":["Timestamp","Book ID", "File Path"]}
+        self.import_history_headers = ["Timestamp", "Filename", "Original Backed Up?"]
+        self.conversion_history_headers = ["Timestamp", "Filename", "Original Format", "End Format", "Original Backed Up?"]
 
         self.cwa_default_settings = {"default_settings":1,
                                     "auto_backup_imports": 1,
@@ -260,9 +263,9 @@ class CWA_DB:
             if verbose:
                 results_with_path.reverse()
                 if web_ui:
-                    return results_with_path, self.stats_tables_headers['with_path']
+                    return results_with_path, self.enforcement_history_headers['with_path']
                 else:
-                    print(f"\n{tabulate(results_with_path, headers=self.stats_tables_headers['with_path'], tablefmt='rounded_grid')}\n")
+                    print(f"\n{tabulate(results_with_path, headers=self.enforcement_history_headers['with_path'], tablefmt='rounded_grid')}\n")
             else:
                 newest_ten = []
                 x = 0
@@ -272,16 +275,16 @@ class CWA_DB:
                     if x == 10:
                         break
                 if web_ui:
-                    return newest_ten, self.stats_tables_headers['with_path']
+                    return newest_ten, self.enforcement_history_headers['with_path']
                 else:
-                    print(f"\n{tabulate(newest_ten, headers=self.stats_tables_headers['with_path'], tablefmt='rounded_grid')}\n")
+                    print(f"\n{tabulate(newest_ten, headers=self.enforcement_history_headers['with_path'], tablefmt='rounded_grid')}\n")
         else:
             if verbose:
                 results_no_path.reverse()
                 if web_ui:
-                    return results_no_path, self.stats_tables_headers['no_path']
+                    return results_no_path, self.enforcement_history_headers['no_path']
                 else:
-                    print(f"\n{tabulate(results_no_path, headers=self.stats_tables_headers['no_path'], tablefmt='rounded_grid')}\n")
+                    print(f"\n{tabulate(results_no_path, headers=self.enforcement_history_headers['no_path'], tablefmt='rounded_grid')}\n")
             else:
                 newest_ten = []
                 x = 0
@@ -291,16 +294,15 @@ class CWA_DB:
                     if x == 10:
                         break
                 if web_ui:
-                    return newest_ten, self.stats_tables_headers['no_path']
+                    return newest_ten, self.enforcement_history_headers['no_path']
                 else:
-                    print(f"\n{tabulate(newest_ten, headers=self.stats_tables_headers['no_path'], tablefmt='rounded_grid')}\n")
+                    print(f"\n{tabulate(newest_ten, headers=self.enforcement_history_headers['no_path'], tablefmt='rounded_grid')}\n")
 
     def get_import_history(self, verbose: bool):
-        headers = ["Timestamp", "Filename", "Original Backed Up?"]
         results = self.cur.execute("SELECT timestamp, filename, original_backed_up FROM cwa_import ORDER BY timestamp DESC;").fetchall()
         if verbose:
             results.reverse()
-            return results, headers
+            return results, self.import_history_headers
         else:
             newest_ten = []
             x = 0
@@ -309,15 +311,14 @@ class CWA_DB:
                 x += 1
                 if x == 10:
                     break
-            return newest_ten, headers
+            return newest_ten, self.import_history_headers
     
 
     def get_conversion_history(self, verbose: bool):
-        headers = ["Timestamp", "Filename", "Original Format", "Original Backed Up?"]
-        results = self.cur.execute("SELECT timestamp, filename, original_format, original_backed_up FROM cwa_conversions ORDER BY timestamp DESC;").fetchall()
+        results = self.cur.execute("SELECT timestamp, filename, original_format, end_format, original_backed_up FROM cwa_conversions ORDER BY timestamp DESC;").fetchall()
         if verbose:
             results.reverse()
-            return results, headers
+            return results, self.conversion_history_headers
         else:
             newest_ten = []
             x = 0
@@ -326,7 +327,7 @@ class CWA_DB:
                 x += 1
                 if x == 10:
                     break
-            return newest_ten, headers
+            return newest_ten, self.conversion_history_headers
 
 
     def import_add_entry(self, filename, original_backed_up):
@@ -335,9 +336,9 @@ class CWA_DB:
         self.con.commit()
 
 
-    def conversion_add_entry(self, filename, original_format, original_backed_up): # TODO Add end_format
+    def conversion_add_entry(self, filename, original_format, end_format, original_backed_up): # TODO Add end_format - 22.11.2024 - Done?
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_format, original_backed_up) VALUES (?, ?, ?, ?);", (timestamp, filename, original_format, original_backed_up))
+        self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_format, original_backed_up) VALUES (?, ?, ?, ?, ?);", (timestamp, filename, original_format, end_format, original_backed_up))
         self.con.commit()
 
 

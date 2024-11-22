@@ -7,12 +7,33 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+import tempfile
+import atexit
+
 from cwa_db import CWA_DB
 
 # Global Variables
 dirs_json = "/app/calibre-web-automated/dirs.json"
 change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
 metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
+
+
+# Creates a lock file unless one already exists meaning an instance of the script is
+# already running, then the script is closed, the user is notified and the program
+# exits with code 2
+try:
+    lock = open(tempfile.gettempdir() + '/cover_enforcer.lock', 'x')
+    lock.close()
+except FileExistsError:
+    print("[cover-metadata-enforcer]: CANCELLING... cover-metadata-enforcer was initiated but is already running")
+    sys.exit(2)
+
+# Defining function to delete the lock on script exit
+def removeLock():
+    os.remove(tempfile.gettempdir() + '/cover_enforcer.lock')
+
+# Will automatically run when the script exits
+atexit.register(removeLock)
 
 
 class Book:
@@ -24,7 +45,7 @@ class Book:
         self.file_format: str = Path(file_path).suffix.replace('.', '')
         self.timestamp: str = self.get_time()
         self.book_id: str = (list(re.findall(r'\(\d*\)', book_dir))[-1])[1:-1]
-        self.book_title, self.author_name = self.get_title_and_author()
+        self.book_title, self.author_name, self.title_author = self.get_title_and_author()
 
         self.cover_path = book_dir + '/cover.jpg'
         self.old_metadata_path = book_dir + '/metadata.opf'
@@ -45,12 +66,12 @@ class Book:
         return now.strftime('%Y-%m-%d %H:%M:%S')
 
 
-    def get_title_and_author(self) -> tuple[str, str]:
+    def get_title_and_author(self) -> tuple[str, str, str]:
         title_author = self.file_path.split('/')[-1].split(f'.{self.file_format}')[0]
         book_title = title_author.split(f" - {title_author.split(' - ')[-1]}")[0]
         author_name = title_author.split(' - ')[-1]
 
-        return book_title, author_name
+        return book_title, author_name, title_author
 
 
     def get_new_metadata_path(self) -> str:
@@ -68,6 +89,7 @@ class Book:
                 "book_id":self.book_id,
                 "book_title":self.book_title,
                 "author_name":self.author_name,
+                "title_author":self.title_author,
                 "cover_path":self.cover_path,
                 "old_metadata_path":self.old_metadata_path,
                 "self.new_metadata_path":self.new_metadata_path,
@@ -149,18 +171,21 @@ class Enforcer:
         """Will force the Cover & Metadata to update for the supported book files in the given directory"""
         supported_files = self.get_supported_files_from_dir(book_dir)
         if supported_files:
+            if len(supported_files) > 1:
+                print("[cover-metadata-enforcer] Multiple file formats for current book detected...", flush=True)
             book_objects = []
             for file in supported_files:
                 book = Book(book_dir, file)
                 self.replace_old_metadata(book.old_metadata_path, book.new_metadata_path)
                 os.system(f'ebook-polish -c "{book.cover_path}" -o "{book.new_metadata_path}" -U "{file}" "{file}"')
                 self.empty_metadata_temp()
-                print(f"[cover-metadata-enforcer]: DONE: '{title_author}': Cover & metadata updated")
+                print(f"[cover-metadata-enforcer]: DONE: '{book.title_author}.{book.file_format}': Cover & Metadata updated", flash=True)
                 book_objects.append(book)
 
             return book_objects
         else:
-            print(f"[cover-metadata-enforcer]: No supported file formats found in {book_dir}. Only EPUB & AZW3 formats are currently supported.")
+            print(f"[cover-metadata-enforcer]: No supported file formats found in {book_dir}.", flush=True)
+            print("[cover-metadata-enforcer]: *** NOTICE **** Only EPUB & AZW3 formats are currently supported.", flush=True)
             return False
 
     def enforce_all_covers(self) -> tuple[int, float, int] | tuple[bool, bool, bool]:
@@ -220,6 +245,7 @@ class Enforcer:
     def check_for_other_logs(self):
         log_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(change_logs_dir) for f in filenames]
         if len(log_files) > 0:
+            print(f"[cover-metadata-enforcer] {len(log_files)} Additional metadata changes detected, processing now..", flush=True)
             for log in log_files:
                 if log.endswith('.json'):
                     log_info = self.read_log(auto=False, log_path=log)
@@ -268,16 +294,16 @@ def main():
     #########################  ENFORCEMENT ARGS  ###########################
     elif args.all and args.log is None and args.dir is None and args.list is False and args.history is False:
         ### only all flag passed
-        print('[cover-enforcer]: Enforcing metadata and covers for all books in library...')
+        print('[cover-metadata-enforcer]: Enforcing metadata and covers for all books in library...')
         n_enforced, completion_time, n_supported_files = enforcer.enforce_all_covers()
         if n_enforced == False:
-            print(f"\n[cover-enforcer]: No supported ebook files found in library (only EPUB & AZW3 formats are currently supported)")
+            print(f"\n[cover-metadata-enforcer]: No supported ebook files found in library (only EPUB & AZW3 formats are currently supported)")
         elif n_enforced == n_supported_files:
-            print(f"\n[cover-enforcer]: SUCCESS: All covers & metadata successfully updated for all {n_enforced} supported ebooks in the library in {completion_time:.2f} seconds!")
+            print(f"\n[cover-metadata-enforcer]: SUCCESS: All covers & metadata successfully updated for all {n_enforced} supported ebooks in the library in {completion_time:.2f} seconds!")
         elif n_enforced == 0:
-            print("\n[cover-enforcer]: FAILURE: Supported files found but none we're successfully enforced. See the log above for details.")
+            print("\n[cover-metadata-enforcer]: FAILURE: Supported files found but none we're successfully enforced. See the log above for details.")
         elif n_enforced < n_supported_files:
-            print(f"\n[cover-enforcer]: PARTIAL SUCCESS: Out of {n_supported_files} supported files detected, {n_enforced} were successfully enforced. See log above for details")
+            print(f"\n[cover-metadata-enforcer]: PARTIAL SUCCESS: Out of {n_supported_files} supported files detected, {n_enforced} were successfully enforced. See log above for details")
     elif args.log is None and args.dir is not None and args.all is False and args.list is False and args.history is False:
         ### dir passed, no log, not all, no flags
         if args.dir[-1] == '/':
@@ -297,7 +323,7 @@ def main():
         if enforcer.enforcer_on:
             book_objects = enforcer.enforce_cover(book_dir)
             if book_objects == False:
-                print(f"[cover-enforcer] Metadata for '{log_info['book_title']}' not successfully enforced")
+                print(f"[cover-metadata-enforcer] Metadata for '{log_info['book_title']}' not successfully enforced")
                 sys.exit(1)
             for book in book_objects:
                 book.log_info = log_info
@@ -306,7 +332,7 @@ def main():
             enforcer.delete_log()
             enforcer.check_for_other_logs()
         else: # Enforcer has been disabled in the CWA Settings
-            print(f"[cover-enforcer] The CWA Automatic Metadata enforcement service is currently disabled in the settings. Therefore the metadata changes for {log_info['book_title'].replace(':', '_')} won't be enforced.")
+            print(f"[cover-metadata-enforcer] The CWA Automatic Metadata enforcement service is currently disabled in the settings. Therefore the metadata changes for {log_info['book_title'].replace(':', '_')} won't be enforced.\n\nThis means that the changes made will appear in the Web UI, but not be stored in the ebook files themselves.")
             enforcer.delete_log()
     else:
         parser.print_usage()

@@ -464,6 +464,7 @@
     font-style: italic;
     color: #444444;
     padding-left: 10px;
+    line-height: normal;
   }
 
   select.cwa-settings-select {

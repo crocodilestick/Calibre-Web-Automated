@@ -18,7 +18,7 @@ try:
     lock = open(tempfile.gettempdir() + '/ingest-processor.lock', 'x')
     lock.close()
 except FileExistsError:
-    print("CANCELLING... ingest-processor initiated but is already running")
+    print("[ingest-processor] CANCELLING... ingest-processor initiated but is already running")
     sys.exit(2)
 
 # Defining function to delete the lock on script exit
@@ -95,6 +95,7 @@ class NewBookProcessor:
 
             self.db.conversion_add_entry(original_filepath.stem,
                                         import_format,
+                                        self.target_format,
                                         str(self.cwa_settings["auto_backup_conversions"]))
 
             return True, target_filepath
@@ -128,6 +129,7 @@ class NewBookProcessor:
 
                 self.db.conversion_add_entry(converted_filepath.stem,
                                             import_format,
+                                            self.target_format,
                                             str(self.cwa_settings["auto_backup_conversions"]))
 
                 return True, target_filepath

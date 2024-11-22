@@ -59,6 +59,20 @@ class Book:
         temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
         return [f for f in temp_files if f.endswith('.opf')][0]
 
+    def export_as_dict(self) -> dict[str:str]:
+        return {"book_dir":self.book_dir,
+                "file_path":self.file_path,
+                "calibre_library":self.calibre_library,
+                "file_format":self.file_format,
+                "timestamp":self.timestamp,
+                "book_id":self.book_id,
+                "book_title":self.book_title,
+                "author_name":self.author_name,
+                "cover_path":self.cover_path,
+                "old_metadata_path":self.old_metadata_path,
+                "self.new_metadata_path":self.new_metadata_path,
+                "log_info":self.log_info}
+
 
 class Enforcer:
     def __init__(self, args):
@@ -167,7 +181,10 @@ class Enforcer:
             for book_dir in book_dirs:
                 try:
                     book_objects = self.enforce_cover(book_dir)
-                    self.db.enforce_add_entry_from_all(book_objects)
+                    book_dicts = []
+                    for book in book_objects:
+                        book_dicts.append(book.export_as_dict())
+                    self.db.enforce_add_entry_from_all(book_dicts)
                 except Exception as e:
                     print(f"[cover-metadata-enforcer]: ERROR: {book_dir}")
                     print(f"[cover-metadata-enforcer]: Skipping book due to following error: {e}")
@@ -267,7 +284,10 @@ def main():
             args.dir = args.dir[:-1]
         if os.path.isdir(args.dir):
             book_objects = enforcer.enforce_cover(args.dir)
-            enforcer.db.enforce_add_entry_from_dir(book_objects)
+            book_dicts = []
+            for book in book_objects:
+                book_dicts.append(book.export_as_dict())
+            enforcer.db.enforce_add_entry_from_dir(book_dicts)
         else:
             print(f"[cover-metadata-enforcer]: ERROR: '{args.dir}' is not a valid directory")
     elif args.log is not None and args.dir is None and args.all is False and args.list is False and args.history is False:

@@ -7,7 +7,6 @@ from datetime import datetime
 
 from tabulate import tabulate
 
-from cover_enforcer import Book
 
 class CWA_DB:
     def __init__(self, verbose=False):
@@ -240,17 +239,17 @@ class CWA_DB:
         self.con.commit()
 
 
-    def enforce_add_entry_from_dir(self, book_objects: list[Book]):
+    def enforce_add_entry_from_dir(self, book_dicts: list[dict[str:str]]):
         """Adds an entry to the db when cover_enforcer is ran with a directory"""
-        for book in book_objects:
-            self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book.timestamp, book.book_id, book.book_title, book.author_name, book.file_path, 'manual -dir'))
+        for book in book_dicts:
+            self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book['timestamp'], book['book_id'], book['book_title'], book['author_name'], book['file_path'], 'manual -dir'))
             self.con.commit()
 
 
-    def enforce_add_entry_from_all(self, book_objects: list[Book]):
+    def enforce_add_entry_from_all(self, book_dicts: list[dict[str:str]]):
         """Adds an entry to the db when cover_enforcer is ran with the -all flag"""
-        for book in book_objects:
-            self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book.timestamp, book.book_id, book.book_title, book.author_name, book.file_path, 'manual -all'))
+        for book in book_dicts:
+            self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book['timestamp'], book['book_id'], book['book_title'], book['author_name'], book['file_path'], 'manual -all'))
             self.con.commit()
 
 

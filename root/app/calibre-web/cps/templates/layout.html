@@ -73,7 +73,7 @@
                     <li><a id="register" href="{{url_for('web.register')}}"><span class="glyphicon glyphicon-user"></span> {{_('Register')}}</a></li>
                     {% endif %}
                     {% if not current_user.is_anonymous %}
-                    <li><a id="logout" href="{{url_for('web.logout')}}"><span class="glyphicon glyphicon-log-out"></span> <span class="hidden-sm">{{_('Logout')}}</span></a></li>
+                    <li><a id="logout" href="{{url_for('web.logout', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}"><span class="glyphicon glyphicon-log-out"></span> <span class="hidden-sm">{{_('Logout')}}</span></a></li>
                     {% endif %}
                 </ul>
               </li>
@@ -91,6 +91,7 @@
                       <div class="form-group">
                         <span class="btn btn-default btn-file">{{_('Upload')}}<input id="btn-upload" name="btn-upload"
                         type="file" accept="{% for format in accept %}.{% if format != ''%}{{format}}{% else %}*{% endif %}{{ ',' if not loop.last }}{% endfor %}" multiple></span>
+                        <input class="hide" id="btn-upload2" name="btn-upload2" type="file" accept="{% for format in accept %}.{% if format != ''%}{{format}}{% else %}*{% endif %}{{ ',' if not loop.last }}{% endfor %}">
                       </div>
                     </form>
                   </li>
@@ -103,9 +104,9 @@
               {% endif %}
               <li><a id="refresh-library" data-text="{{_('Refresh Library')}}" href="{{url_for('library_refresh.cwa_library_refresh')}}"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Refresh Library')}}</span></a></li>
               {% if g.current_theme == 0 %}
-              <li><a id="top_user" data-text="{{_('Account')}}" href="{{url_for('web.profile')}}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
+              <li><a id="top_user" data-text="{{_('Account')}}" href="{% if not current_user.is_anonymous %}{{url_for('web.profile')}}{% else %}{{url_for('web.login', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}{% endif %}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
                 {% if not current_user.is_anonymous %}
-                <li><a id="logout" href="{{url_for('web.logout')}}"><span class="glyphicon glyphicon-log-out"></span> <span class="hidden-sm">{{_('Logout')}}</span></a></li>
+                <li><a id="logout" href="{{url_for('web.logout', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}"><span class="glyphicon glyphicon-log-out"></span> <span class="hidden-sm">{{_('Logout')}}</span></a></li>
                 {% endif %}
               {% endif %}
             {% endif %}
@@ -190,6 +191,7 @@
                 <li id="nav_about" {% if page == 'stat' %}class="active"{% endif %}><a href="{{url_for('about.stats')}}"><span class="glyphicon glyphicon-info-sign"></span> {{_('About')}}</a></li>
               {% endif %}
               {% endif %}
+              
             </ul>
           </nav>
         </div>

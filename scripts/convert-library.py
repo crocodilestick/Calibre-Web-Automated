@@ -52,35 +52,23 @@ for directory in required_directories:
     Path(directory).mkdir(exist_ok=True)
     os.system(f"chown -R abc:abc {directory}")
 
+
 class LibraryConverter:
     def __init__(self) -> None: #args
         # self.args = args
 
         self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz']
-        self.hierarchy_of_success = ['lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
+        self.hierarchy_of_success = ['epub', 'lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
 
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
-        self.epubs, self.to_convert = self.get_library_books()
+        self.to_convert = self.get_books_to_convert()
         self.current_book = 1
 
         self.db = CWA_DB()
         self.cwa_settings = self.db.cwa_settings
+        self.target_format = self.cwa_settings['auto_convert_target_format']
+        self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats']
 
-    def get_library_books(self):
-        library_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.library_dir) for f in filenames]
-        epub_files = [f for f in library_files if f.endswith('.epub')]
-        dupe_list = []
-        to_convert = []
-        for format in self.hierarchy_of_success:
-            format_files = [f for f in library_files if f.endswith(f'.{format}')]
-            if len(format_files) > 0:
-                for file in format_files:
-                    filename, file_extension = os.path.splitext(file)
-                    if filename not in dupe_list:
-                        to_convert.append(file)
-                        dupe_list.append(filename)
-
-        return epub_files, to_convert
 
     def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:
         dirs = {}
@@ -93,12 +81,38 @@ class LibraryConverter:
 
         return ingest_folder, library_dir, tmp_conversion_dir
 
+
+    def get_books_to_convert(self):
+        library_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.library_dir) for f in filenames]
+
+        exclusion_list = [] # If multiple formats for a book exist, only the one with the highest success rate will be converted and the rest will be left alone
+        files_already_in_target_format = [f for f in library_files if f.endswith(f'.{self.target_format}')]
+        for file in files_already_in_target_format:
+            filename, file_extension = os.path.splitext(file)
+            exclusion_list.append(filename) # Adding books with a file already in the target format to the exclusion list
+        
+        to_convert = [] # Will only contain a single filepath for each book without an existing file in the target format in the format with the highest available conversion success rate, where that filepath is allow to be converted
+        for format in self.hierarchy_of_success:
+            if format in self.convert_ignored_formats:
+                print_and_log(f"{format} in list of user-defined ignored formats for conversion. To change this, navigate to the CWA Settings panel from the Settings page in the Web UI.")
+                continue
+            files_in_format = [f for f in library_files if f.endswith(f'.{format}')]
+            if len(files_in_format) > 0:
+                for file in files_in_format:
+                    filename, file_extension = os.path.splitext(file)
+                    if filename not in exclusion_list:
+                        to_convert.append(file)
+                        exclusion_list.append(filename)
+
+        return to_convert
+
+
     def convert_library(self):
         for file in self.to_convert:
-            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)})  Converting {os.path.basename(file)}...")
-
             filename = os.path.basename(file)
             file_extension = Path(file).suffix
+
+            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Converting {filename} from {file_extension} format to {self.target_format} format...")
 
             try: # Get Calibre Library Book ID
                 book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1]
@@ -114,25 +128,33 @@ class LibraryConverter:
                 self.current_book += 1
                 continue
 
-            try: # Convert Book
-                target_filepath = f"{self.tmp_conversion_dir}{Path(file).stem}.epub"
-                subprocess.run(["ebook-convert", file, target_filepath], check=True)
+            if self.target_format == "kepub":
+                successful, target_filepath = self.convert_to_kepub(filename, file_extension)
+                if not successful:
+                    print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
+                    self.current_book += 1
+                    continue
+            else:
+                try: # Convert Book to target format (target is not kepub)
+                    target_filepath = f"{self.tmp_conversion_dir}{Path(file).stem}.{self.target_format}"
+                    subprocess.run(["ebook-convert", file, target_filepath], check=True)
 
-                if self.cwa_settings['auto_backup_conversions']:
-                    shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(file)}")
+                    if self.cwa_settings['auto_backup_conversions']:
+                        shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(file)}")
 
-                self.db.conversion_add_entry(os.path.basename(target_filepath),
-                                            Path(file).suffix,
-                                            str(self.cwa_settings["auto_backup_conversions"]))
+                    self.db.conversion_add_entry(os.path.basename(target_filepath),
+                                                Path(file).suffix,
+                                                self.target_format,
+                                                str(self.cwa_settings["auto_backup_conversions"]))
 
-                print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} successful! Removing old version from library...")
-            except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
-                self.current_book += 1
-                continue
+                    print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} to {self.target_format} format successful!") # Removed as of V3.0.0 - Removing old version from library...
+                except subprocess.CalledProcessError as e:
+                    print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
+                    self.current_book += 1
+                    continue
 
-            try: # Import converted book to library
-                subprocess.run(["calibredb", "add", target_filepath, f"--library-path={self.library_dir}"], check=True)
+            try: # Import converted book to library. As of V3.0.0, "add_format" is used instead of add
+                subprocess.run(["calibredb", "add_format", book_id, target_filepath, f"--library-path={self.library_dir}"], check=True)
 
                 if self.cwa_settings['auto_backup_imports']:
                     shutil.copyfile(target_filepath, f"/config/processed_books/imported/{os.path.basename(target_filepath)}")
@@ -147,18 +169,70 @@ class LibraryConverter:
                 self.current_book += 1
                 continue
 
-            try: # Remove Book from Existing Library
-                subprocess.run(["calibredb", "remove", book_id, "--permanent", "--with-library", self.library_dir], check=True)
+            ### As of Version 3.0.0, CWA will no longer remove the originals of converted files as CWA now supports multiple formats for each book ###
 
-                print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} (Book ID: {book_id}) was successfully removed from library.\nAdding converted version to library...")
-            except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} couldn't be successfully removed from library. See the following error:\n{e}")
-                self.current_book += 1
-                continue
+            # try: # Remove Book from Existing Library
+            #     subprocess.run(["calibredb", "remove", book_id, "--permanent", "--with-library", self.library_dir], check=True)
+
+            #     print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} (Book ID: {book_id}) was successfully removed from library.\nAdding converted version to library...")
+            # except subprocess.CalledProcessError as e:
+            #     print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} couldn't be successfully removed from library. See the following error:\n{e}")
+            #     self.current_book += 1
+            #     continue
 
             self.set_library_permissions()
+            self.empty_tmp_con_dir()
             self.current_book += 1
             continue
+
+
+    def convert_to_kepub(self, filepath:str ,import_format:str) -> tuple[bool, str]:
+        """Kepubify is limited in that it can only convert from epub to kepub, therefore any files not already in epub need to first be converted to epub, and then to kepub"""
+        if import_format == "epub":
+            print_and_log(f"[convert-library]: File in epub format, converting directly to kepub...")
+
+            if self.cwa_settings['auto_backup_conversions']:
+                shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(filepath)}")
+
+            epub_filepath = filepath
+            epub_ready = True
+        else:
+            print_and_log("\n[convert-library]: *** NOTICE TO USER: Kepubify is limited in that it can only convert from epubs. To get around this, CWA will automatically convert other supported formats to epub using the Calibre's conversion tools & then use Kepubify to produce your desired kepubs. Obviously multi-step conversions aren't ideal so if you notice issues with your converted files, bare in mind starting with epubs will ensure the best possible results***\n")
+            try: # Convert book to epub format so it can then be converted to kepub
+                epub_filepath = f"{self.tmp_conversion_dir}{Path(filepath).stem}.epub"
+                subprocess.run(["ebook-convert", filepath, epub_filepath], check=True)
+
+                if self.cwa_settings['auto_backup_conversions']:
+                    shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(filepath)}")
+
+                print_and_log(f"[convert-library]: Intermediate conversion of {os.path.basename(filepath)} to epub from {import_format} successful, now converting to kepub...")
+                epub_ready = True
+            except subprocess.CalledProcessError as e:
+                print_and_log(f"[convert-library]: Intermediate conversion of {os.path.basename(filepath)} to epub was unsuccessful. Cancelling kepub conversion and moving on to next file. See the following error:\n{e}")
+                return False, ""
+            
+        if epub_ready:
+            epub_filepath = Path(epub_filepath)
+            target_filepath = f"{self.tmp_conversion_dir}{epub_filepath.stem}.kepub"
+            try:
+                subprocess.run(['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, epub_filepath], check=True)
+                if self.cwa_settings['auto_backup_conversions']:
+                    shutil.copy2(filepath, f"/config/processed_books/converted")
+
+                self.db.conversion_add_entry(epub_filepath.stem,
+                                            import_format,
+                                            self.target_format,
+                                            str(self.cwa_settings["auto_backup_conversions"]))
+
+                return True, target_filepath
+            except subprocess.CalledProcessError as e:
+                print_and_log(f"[convert-library]: CON_ERROR: {os.path.basename(filepath)} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}")
+                shutil.copy2(epub_filepath, f"/config/processed_books/failed")
+                return False, ""
+        else:
+            print_and_log(f"[convert-library]: An error occurred when converting the original {import_format} to epub. Cancelling kepub conversion and moving on to next file...")
+            return False, ""
+
 
     def empty_tmp_con_dir(self):
         try:
@@ -169,6 +243,7 @@ class LibraryConverter:
                     os.remove(file_path)
         except OSError:
             print_and_log(f"[convert-library] An error occurred while emptying {self.tmp_conversion_dir}.")
+
 
     def set_library_permissions(self):
         try:
@@ -195,7 +270,7 @@ def main():
     if len(converter.to_convert) > 0:
         converter.convert_library()
     else:
-        print_and_log("[convert-library] No non-epubs found in library. Exiting now...")
+        print_and_log("[convert-library] No books found in library without a copy in the target format. Exiting now...")
         logging.info("FIN")
         sys.exit(0)
 

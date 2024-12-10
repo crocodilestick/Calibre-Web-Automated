@@ -1,11 +1,15 @@
 README_images
 docker-compose.yml
 .git
+.github
 .gitignore
 .github/workflows
+build.sh
 README.md
 LICENSE
 Dockerfile
 .dockerignore
 build
 .history
+Dockerfile_calibre_not_included
+requirements.txt

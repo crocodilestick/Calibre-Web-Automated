@@ -298,6 +298,7 @@ class CWA_DB:
                 else:
                     print(f"\n{tabulate(newest_ten, headers=self.enforcement_history_headers['no_path'], tablefmt='rounded_grid')}\n")
 
+
     def get_import_history(self, verbose: bool):
         results = self.cur.execute("SELECT timestamp, filename, original_backed_up FROM cwa_import ORDER BY timestamp DESC;").fetchall()
         if verbose:
@@ -312,7 +313,7 @@ class CWA_DB:
                 if x == 10:
                     break
             return newest_ten, self.import_history_headers
-    
+
 
     def get_conversion_history(self, verbose: bool):
         results = self.cur.execute("SELECT timestamp, filename, original_format, end_format, original_backed_up FROM cwa_conversions ORDER BY timestamp DESC;").fetchall()

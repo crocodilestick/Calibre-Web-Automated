@@ -12,4 +12,3 @@ Dockerfile
 build
 .history
 Dockerfile_calibre_not_included
-requirements.txt

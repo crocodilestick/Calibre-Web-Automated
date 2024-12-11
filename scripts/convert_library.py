@@ -11,6 +11,7 @@ import tempfile
 import atexit
 
 from cwa_db import CWA_DB
+from kindle_epub_fixer import EPUBFixer
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ def print_and_log(string) -> None:
 # already running, then the script is closed, the user is notified and the program
 # exits with code 2
 try:
-    lock = open(tempfile.gettempdir() + '/convert-library.lock', 'x')
+    lock = open(tempfile.gettempdir() + '/convert_library.lock', 'x')
     lock.close()
 except FileExistsError:
     print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
@@ -34,7 +35,7 @@ except FileExistsError:
 
 # Defining function to delete the lock on script exit
 def removeLock():
-    os.remove(tempfile.gettempdir() + '/convert-library.lock')
+    os.remove(tempfile.gettempdir() + '/convert_library.lock')
 
 # Will automatically run when the script exits
 atexit.register(removeLock)
@@ -60,9 +61,10 @@ class LibraryConverter:
         self.cwa_settings = self.db.cwa_settings
         self.target_format = self.cwa_settings['auto_convert_target_format']
         self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats']
+        self.kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
 
-        self.supported_book_formats = ['azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz']
-        self.hierarchy_of_success = ['epub', 'lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt']
+        self.supported_book_formats = {'azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz'}
+        self.hierarchy_of_success = {'epub', 'lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt'}
 
         self.current_book = 1
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
@@ -128,8 +130,8 @@ class LibraryConverter:
                 continue
 
             if self.target_format == "kepub":
-                successful, target_filepath = self.convert_to_kepub(filename, file_extension)
-                if not successful:
+                convert_successful, target_filepath = self.convert_to_kepub(filename, file_extension)
+                if not convert_successful:
                     print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
                     self.current_book += 1
                     continue
@@ -152,7 +154,13 @@ class LibraryConverter:
                     self.current_book += 1
                     continue
 
-            try: # Import converted book to library. As of V3.0.0, "add_format" is used instead of add
+            if self.target_format == "epub" and self.kindle_epub_fixer:
+                try:
+                    EPUBFixer(target_filepath).process()
+                except Exception as e:
+                    print_and_log(f"[convert-library] An error occurred while processing {os.path.basename(target_filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
+
+            try: # Import converted book to library. As of V3.0.0, "add_format" is used instead of "add"
                 subprocess.run(["calibredb", "add_format", book_id, target_filepath, f"--library-path={self.library_dir}"], check=True)
 
                 if self.cwa_settings['auto_backup_imports']:

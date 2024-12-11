@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python3 /app/calibre-web-automated/scripts/auto-library.py
+python3 /app/calibre-web-automated/scripts/auto_library.py
 
 if [[ $? == 1 ]]
 then

@@ -39,7 +39,7 @@ add_aliases () {
     echo "}" | cat >> ~/.bashrc
     
     echo "convert-library () {" | cat >> ~/.bashrc
-    echo '    python3 /app/calibre-web-automated/scripts/convert-library.py "$@"' | cat >> ~/.bashrc
+    echo '    python3 /app/calibre-web-automated/scripts/convert_library.py "$@"' | cat >> ~/.bashrc
     echo "}" | cat >> ~/.bashrc
     
     source ~/.bashrc

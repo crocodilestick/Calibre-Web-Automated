@@ -36,6 +36,16 @@
         <label for="cwa_update_notifications" style="padding-left: 10px;">Enable CWA Update Notifications</label><br>
         <p class="cwa-settings-tooltip">When active, you will no longer receive notifications in the Web UI when a new version of CWA is released</p>
 
+        {% if cwa_settings['kindle_epub_fixer'] %}
+        <input type="checkbox" id="kindle_epub_fixer" name="kindle_epub_fixer" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
+        {% else %}
+        <input type="checkbox" id="kindle_epub_fixer" name="kindle_epub_fixer" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
+        {% endif %}
+        <label for="kindle_epub_fixer" style="padding-left: 10px;">Enable CWA Kindle EPUB Fixer</label><br>
+        <p class="cwa-settings-tooltip">When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum compatibility with Amazon's Send-to-Kindle Service (TLDR: if you've ever had EPUB files that Amazon just constantly rejects for seemingly no reason, this should prevent that from happening again)</p>
+        <p class="cwa-settings-tooltip"><i>This tool was adapted from the kindle-epub-fix.netlify.app tool made by innocenat</i></p>
+
+
         <h4 style="padding-bottom: 14px;">Automatic Backup Settings</h4>
 
         {% if cwa_settings['auto_backup_imports'] %}

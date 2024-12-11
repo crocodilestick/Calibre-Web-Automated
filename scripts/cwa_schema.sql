@@ -31,5 +31,6 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_convert_target_format TEXT DEFAULT "epub" NOT NULL,
     auto_convert_ignored_formats TEXT DEFAULT "" NOT NULL,
     auto_ingest_ignored_formats TEXT DEFAULT "" NOT NULL,
-    auto_metadata_enforcement SMALLINT DEFAULT 1 NOT NULL
+    auto_metadata_enforcement SMALLINT DEFAULT 1 NOT NULL,
+    kindle_epub_fixer SMALLINT DEFAULT 1 NOT NULL
 );

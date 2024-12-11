@@ -34,7 +34,8 @@ class CWA_DB:
                                     "auto_convert_target_format": "epub",
                                     "auto_convert_ignored_formats":"",
                                     "auto_ingest_ignored_formats":"",
-                                    "auto_metadata_enforcement":1}
+                                    "auto_metadata_enforcement":1,
+                                    "kindle_epub_fixer":1}
 
         self.tables, self.schema = self.make_tables()
         self.ensure_settings_schema_match()

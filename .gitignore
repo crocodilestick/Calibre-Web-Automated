@@ -23,6 +23,7 @@ TEST
 DEV
 */REFERENCE
 cwa.db
+*.epub
 
 # Dev files
 changelogs/

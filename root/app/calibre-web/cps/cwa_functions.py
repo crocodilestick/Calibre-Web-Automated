@@ -55,7 +55,7 @@ def cwa_switch_theme():
 @login_required_if_no_ano
 def cwa_library_refresh():
     flash(_("Library Refresh: Initialising Book Ingest System, please wait..."), category="cwa_refresh")
-    result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest-processor.py', '/cwa-book-ingest'])
+    result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest_processor.py', '/cwa-book-ingest'])
     return_code = result.returncode
 
     # if return_code == 100:
@@ -88,7 +88,8 @@ def set_cwa_settings():
                         "auto_zip_backups",
                         "cwa_update_notifications",
                         "auto_convert",
-                        "auto_metadata_enforcement"]
+                        "auto_metadata_enforcement",
+                        "kindle_epub_fixer"]
     string_settings = ["auto_convert_target_format"]
     for format in ignorable_formats:
         string_settings.append(f"ignore_ingest_{format}")
@@ -233,7 +234,7 @@ def cwa_flash_status():
 
 
 def flask_logger():
-    subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert-library.py'])
+    subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
     if os.path.isfile("/config/convert-library.log") == False:
         with open('/config/convert-library.log', 'w') as create_new_log: 
             pass

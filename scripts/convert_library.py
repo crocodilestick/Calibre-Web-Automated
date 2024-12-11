@@ -157,6 +157,7 @@ class LibraryConverter:
             if self.target_format == "epub" and self.kindle_epub_fixer:
                 try:
                     EPUBFixer(target_filepath).process()
+                    print_and_log("[convert-library] Resulting EPUB file successfully processed by CWA-EPUB-Fixer!")
                 except Exception as e:
                     print_and_log(f"[convert-library] An error occurred while processing {os.path.basename(target_filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 

@@ -243,7 +243,8 @@ def convert_library_start():
 def start_conversion():
     t1 = Thread(target=convert_library_start)
     t1.start()
-    return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert")
+    return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
+                                target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
 
 @convert_library.route('/convert-library-status', methods=['GET'])
 def getStatus():

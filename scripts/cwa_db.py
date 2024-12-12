@@ -217,8 +217,8 @@ class CWA_DB:
         for header in headers:
             if type(cwa_settings[header]) == int:
                 cwa_settings[header] = bool(cwa_settings[header])
-        cwa_settings['auto_convert_ignored_formats'] = cwa_settings['auto_convert_ignored_formats'].split(',')
-        cwa_settings['auto_ingest_ignored_formats'] = cwa_settings['auto_ingest_ignored_formats'].split(',')
+            elif type(cwa_settings[header]) == str:
+                cwa_settings[header] = cwa_settings[header].split(',')
 
         return cwa_settings
 

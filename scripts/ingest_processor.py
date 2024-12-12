@@ -85,7 +85,7 @@ class NewBookProcessor:
         return can_convert, input_format
 
 
-    def convert_book(self, end_format: str=None) -> tuple[bool, str]:
+    def convert_book(self, end_format=None) -> tuple[bool, str]:
         """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting files to the calibre-web import folder."""
         print(f"\n[ingest-processor]: Starting conversion process for {self.filename}...", flush=True)
         print(f"[ingest-processor]: Converting file from {self.input_format} to {self.target_format} format...\n", flush=True)
@@ -120,7 +120,7 @@ class NewBookProcessor:
 
 
     # Kepubify can only convert EPUBs to Kepubs
-    def convert_to_kepub(self) -> None:
+    def convert_to_kepub(self) -> tuple[bool,str]:
         """Kepubify is limited in that it can only convert from epub to kepub, therefore any files not already in epub need to first be converted to epub, and then to kepub"""
         if self.input_format == "epub":
             print(f"[ingest-processor]: File in epub format, converting directly to kepub...", flush=True)
@@ -130,7 +130,7 @@ class NewBookProcessor:
             print("\n[ingest-processor]: *** NOTICE TO USER: Kepubify is limited in that it can only convert from epubs. To get around this, CWA will automatically convert other"
             "supported formats to epub using the Calibre's conversion tools & then use Kepubify to produce your desired kepubs. Obviously multi-step conversions aren't ideal"
             "so if you notice issues with your converted files, bare in mind starting with epubs will ensure the best possible results***\n", flush=True)
-            convert_successful, converted_filepath = self.convert_book(self.input_format, end_format="epub")
+            convert_successful, converted_filepath = self.convert_book(self.input_format, end_format="epub") # type: ignore
             
         if convert_successful:
             converted_filepath = Path(converted_filepath)
@@ -149,7 +149,7 @@ class NewBookProcessor:
 
             except subprocess.CalledProcessError as e:
                 print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
-                shutil.copy2(converted_filepath, f"/config/processed_books/failed/{os.path.basename(original_filepath)}")
+                shutil.copy2(converted_filepath, f"/config/processed_books/failed/{os.path.basename(self.filepath)}")
                 return False, ""
         else:
             print(f"[ingest-processor]: An error occurred when converting the original {self.input_format} to epub. Cancelling kepub conversion...", flush=True)
@@ -240,7 +240,7 @@ def main(filepath=sys.argv[1]):
                     convert_successful, converted_filepath = nbp.convert_book()
                     
                 if convert_successful: # If previous conversion process was successful, remove tmp files and import into library
-                    nbp.add_book_to_library(converted_filepath)
+                    nbp.add_book_to_library(converted_filepath) # type: ignore
 
             elif nbp.can_convert and not nbp.auto_convert_on: # Books not in target format but Auto-Converter is off so files are imported anyway
                 print(f"\n[ingest-processor]: {nbp.filename} not in target format but CWA Auto-Convert is deactivated so importing the file anyway...", flush=True)

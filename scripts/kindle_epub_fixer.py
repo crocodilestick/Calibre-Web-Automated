@@ -54,7 +54,7 @@ class EPUBFixer:
 
                 if lang_tag is None:
                     metadata = root.find(".//{http://www.idpf.org/2007/opf}metadata")
-                    lang_tag = ET.SubElement(metadata, "{http://purl.org/dc/elements/1.1/}language")
+                    lang_tag = ET.SubElement(metadata, "{http://purl.org/dc/elements/1.1/}language") # type: ignore
                 lang_tag.text = new_lang
 
                 self.files[opf_file] = ET.tostring(root, encoding='unicode')

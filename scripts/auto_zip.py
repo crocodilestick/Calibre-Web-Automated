@@ -33,7 +33,7 @@ class AutoZipper:
         stat = os.stat(path_to_file)
         return datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d') #%H:%M:%S
 
-    def get_books_to_zip(self) -> dict[str:list[str]]:
+    def get_books_to_zip(self) -> dict[str,list[str]]:
         """ Returns a dictionary with the books that are to be zipped together in each dir """
         to_zip = {}
         for dir in self.archive_dirs:

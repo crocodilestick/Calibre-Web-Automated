@@ -91,7 +91,7 @@ class AutoLibrary:
 
     # Uses sql to update CW's app.db with the correct library location (config_calibre_dir in the settings table)
     def update_calibre_web_db(self):
-        if os.path.exists(self.metadb_path):
+        if os.path.exists(self.metadb_path): # type: ignore
             try:
                 print("[cwa-auto-library]: Updating Settings Database with library location...")
                 con = sqlite3.connect(self.app_db)

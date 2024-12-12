@@ -80,7 +80,7 @@ class Book:
         temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
         return [f for f in temp_files if f.endswith('.opf')][0]
 
-    def export_as_dict(self) -> dict[str:str]:
+    def export_as_dict(self) -> dict[str,str | None]:
         return {"book_dir":self.book_dir,
                 "file_path":self.file_path,
                 "calibre_library":self.calibre_library,
@@ -167,7 +167,7 @@ class Enforcer:
 
         return supported_files
 
-    def enforce_cover(self, book_dir: str) -> bool | list[Book]:
+    def enforce_cover(self, book_dir: str) -> list:
         """Will force the Cover & Metadata to update for the supported book files in the given directory"""
         supported_files = self.get_supported_files_from_dir(book_dir)
         if supported_files:
@@ -179,20 +179,20 @@ class Enforcer:
                 self.replace_old_metadata(book.old_metadata_path, book.new_metadata_path)
                 os.system(f'ebook-polish -c "{book.cover_path}" -o "{book.new_metadata_path}" -U "{file}" "{file}"')
                 self.empty_metadata_temp()
-                print(f"[cover-metadata-enforcer]: DONE: '{book.title_author}.{book.file_format}': Cover & Metadata updated", flash=True)
+                print(f"[cover-metadata-enforcer]: DONE: '{book.title_author}.{book.file_format}': Cover & Metadata updated", flush=True)
                 book_objects.append(book)
 
             return book_objects
         else:
             print(f"[cover-metadata-enforcer]: No supported file formats found in {book_dir}.", flush=True)
             print("[cover-metadata-enforcer]: *** NOTICE **** Only EPUB & AZW3 formats are currently supported.", flush=True)
-            return False
+            return []
 
     def enforce_all_covers(self) -> tuple[int, float, int] | tuple[bool, bool, bool]:
         """Will force the covers and metadata to be re-generated for all books in the library"""
         t_start = time.time()
 
-        supported_files = self.get_supported_files_from_book_dir(self.calibre_library)
+        supported_files = self.get_supported_files_from_dir(self.calibre_library)
         if supported_files:
             book_dirs = []
             for file in supported_files:
@@ -206,10 +206,11 @@ class Enforcer:
             for book_dir in book_dirs:
                 try:
                     book_objects = self.enforce_cover(book_dir)
-                    book_dicts = []
-                    for book in book_objects:
-                        book_dicts.append(book.export_as_dict())
-                    self.db.enforce_add_entry_from_all(book_dicts)
+                    if book_objects:
+                        book_dicts = []
+                        for book in book_objects:
+                            book_dicts.append(book.export_as_dict())
+                        self.db.enforce_add_entry_from_all(book_dicts)
                 except Exception as e:
                     print(f"[cover-metadata-enforcer]: ERROR: {book_dir}")
                     print(f"[cover-metadata-enforcer]: Skipping book due to following error: {e}")
@@ -251,10 +252,11 @@ class Enforcer:
                     log_info = self.read_log(auto=False, log_path=log)
                     book_dir = self.get_book_dir_from_log(log_info)
                     book_objects = self.enforce_cover(book_dir)
-                    for book in book_objects:
-                        book.log_info = log_info
-                        book.log_info['file_path'] = book.file_path
-                        self.db.enforce_add_entry_from_log(book.log_info)
+                    if book_objects:
+                        for book in book_objects:
+                            book.log_info = log_info
+                            book.log_info['file_path'] = book.file_path
+                            self.db.enforce_add_entry_from_log(book.log_info)
                     self.delete_log(auto=False, log_path=log)
 
 
@@ -310,10 +312,11 @@ def main():
             args.dir = args.dir[:-1]
         if os.path.isdir(args.dir):
             book_objects = enforcer.enforce_cover(args.dir)
-            book_dicts = []
-            for book in book_objects:
-                book_dicts.append(book.export_as_dict())
-            enforcer.db.enforce_add_entry_from_dir(book_dicts)
+            if book_objects:
+                book_dicts = []
+                for book in book_objects:
+                    book_dicts.append(book.export_as_dict())
+                enforcer.db.enforce_add_entry_from_dir(book_dicts)
         else:
             print(f"[cover-metadata-enforcer]: ERROR: '{args.dir}' is not a valid directory")
     elif args.log is not None and args.dir is None and args.all is False and args.list is False and args.history is False:
@@ -322,7 +325,7 @@ def main():
         book_dir = enforcer.get_book_dir_from_log(log_info)
         if enforcer.enforcer_on:
             book_objects = enforcer.enforce_cover(book_dir)
-            if book_objects == False:
+            if not book_objects:
                 print(f"[cover-metadata-enforcer] Metadata for '{log_info['book_title']}' not successfully enforced")
                 sys.exit(1)
             for book in book_objects:

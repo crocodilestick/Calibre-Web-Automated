@@ -14,7 +14,7 @@ class CWA_DB:
 
         self.db_file = "cwa.db"
         self.db_path = "/config/"
-        self.con, self.cur = self.connect_to_db()
+        self.con, self.cur = self.connect_to_db() # type: ignore
 
         self.schema_path = "/app/calibre-web-automated/scripts/cwa_schema.sql"
 
@@ -140,7 +140,7 @@ class CWA_DB:
                     table_name = line[27:].replace('(', '')
                 elif line[:4] == "    ":
                     column_names.append(line.strip().split(' ')[0])
-            column_names_in_schema |= {table_name:column_names}
+            column_names_in_schema |= {table_name:column_names} # type: ignore
 
         for table in self.stats_tables:
             if len(current_column_names[table]) < len(column_names_in_schema[table]): # Adds new columns not yet in existing db
@@ -208,7 +208,7 @@ class CWA_DB:
             print("[cwa-db] CWA Settings loaded successfully")
 
 
-    def get_cwa_settings(self) -> dict[str:bool|str]:
+    def get_cwa_settings(self) -> dict:
         """Gets the current cwa_settings values from the table of the same name in cwa.db and returns them as a dict"""
         self.cur.execute("SELECT * FROM cwa_settings")
         headers = [header[0] for header in self.cur.description]
@@ -243,14 +243,14 @@ class CWA_DB:
         self.con.commit()
 
 
-    def enforce_add_entry_from_dir(self, book_dicts: list[dict[str:str]]):
+    def enforce_add_entry_from_dir(self, book_dicts: list[dict[str,str]]):
         """Adds an entry to the db when cover_enforcer is ran with a directory"""
         for book in book_dicts:
             self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book['timestamp'], book['book_id'], book['book_title'], book['author_name'], book['file_path'], 'manual -dir'))
             self.con.commit()
 
 
-    def enforce_add_entry_from_all(self, book_dicts: list[dict[str:str]]):
+    def enforce_add_entry_from_all(self, book_dicts: list[dict[str,str]]):
         """Adds an entry to the db when cover_enforcer is ran with the -all flag"""
         for book in book_dicts:
             self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book['timestamp'], book['book_id'], book['book_title'], book['author_name'], book['file_path'], 'manual -all'))

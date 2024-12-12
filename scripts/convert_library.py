@@ -116,7 +116,7 @@ class LibraryConverter:
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Converting {filename} from {file_extension} format to {self.target_format} format...")
 
             try: # Get Calibre Library Book ID
-                book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1]
+                book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1] # type: ignore
             except Exception as e:
                 print_and_log(f"[convert-library]: A Calibre Library Book ID could not be determined for {file}. Make sure the structure of your calibre library matches the following example:\n")
                 print_and_log("Terry Goodkind/")
@@ -132,7 +132,7 @@ class LibraryConverter:
             if self.target_format == "kepub":
                 convert_successful, target_filepath = self.convert_to_kepub(filename, file_extension)
                 if not convert_successful:
-                    print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
+                    print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. Moving to next book...")
                     self.current_book += 1
                     continue
             else:
@@ -200,7 +200,7 @@ class LibraryConverter:
             print_and_log(f"[convert-library]: File in epub format, converting directly to kepub...")
 
             if self.cwa_settings['auto_backup_conversions']:
-                shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(filepath)}")
+                shutil.copyfile(filepath, f"/config/processed_books/converted/{os.path.basename(filepath)}")
 
             epub_filepath = filepath
             epub_ready = True
@@ -211,7 +211,7 @@ class LibraryConverter:
                 subprocess.run(["ebook-convert", filepath, epub_filepath], check=True)
 
                 if self.cwa_settings['auto_backup_conversions']:
-                    shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(filepath)}")
+                    shutil.copyfile(filepath, f"/config/processed_books/converted/{os.path.basename(filepath)}")
 
                 print_and_log(f"[convert-library]: Intermediate conversion of {os.path.basename(filepath)} to epub from {import_format} successful, now converting to kepub...")
                 epub_ready = True
@@ -258,6 +258,19 @@ class LibraryConverter:
             subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
         except subprocess.CalledProcessError as e:
             print_and_log(f"[convert-library] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
+
+    # def process(self):
+    #     """ Allows LibraryConverter to be ran from an import  """
+    #     if len(self.to_convert) > 0:
+    #         self.convert_library()
+    #     else:
+    #         print_and_log("[convert-library] No books found in library without a copy in the target format. Exiting now...")
+    #         logging.info("FIN")
+    #         sys.exit(0)
+
+    #     print_and_log(f"\n[convert-library] Library conversion complete! {len(self.to_convert)} books converted! Exiting now...")
+    #     logging.info("FIN")
+    #     sys.exit(0)
 
 
 def main():

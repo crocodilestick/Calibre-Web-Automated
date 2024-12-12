@@ -1,15 +1,5 @@
 {% extends "layout.html" %}
-{% block script %}
-  $(document).ready(function(){
-    var output = document.getElementById('output');
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '{{ url_for('convert_library.cwa_library_convert') }}', true);
-    xhr.send();
-    setInterval(function() {
-      output.textContent = xhr.responseText;
-    }, 500);
-  });
-{% endblock %}
+
 {% block body %}
 <div class="discover">
   <h2>{{title}}</h2>
@@ -17,9 +7,39 @@
       <h3>CWA Library Convertor</h3><br>
       <div class="row">
         <div class="logging_window">
-          <pre id="output"></pre>
+          <h2 id="innerStatus">Loading...</h2>
         </div>
       </div>
     </div>
 </div>
+{% endblock %}
+
+{% block js %}
+<script>
+  var timeout;
+  
+  async function getStatus() {
+  
+    let get;
+    
+    try {
+      const res = await fetch("/convert-library-status");
+      get = await res.json();
+    } catch (e) {
+      console.error("Error: ", e);
+    }
+    
+    document.getElementById("innerStatus").innerHTML = get.status.replace(/\n/g, "<br>"); // * 10 + "&percnt;"
+    
+    if (get.status == "Done!"){
+      document.getElementById("innerStatus").innerHTML;
+      clearTimeout(timeout);
+      return false;
+    }
+  
+    timeout = setTimeout(getStatus, 1000);
+  }
+  
+  getStatus();
+  </script>
 {% endblock %}

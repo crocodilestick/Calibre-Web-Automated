@@ -15,7 +15,11 @@ from kindle_epub_fixer import EPUBFixer
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='/config/convert-library.log', level=logging.INFO, filemode='w')
+LOG_FORMAT = '%(message)s'
+logging.basicConfig(filename='/config/convert-library.log',
+                    level=logging.INFO,
+                    filemode='w',
+                    format=LOG_FORMAT)
 
 def print_and_log(string) -> None:
     logging.info(string)

@@ -2,12 +2,16 @@
 
 {% block body %}
 <div class="discover">
-  <h2>{{title}}</h2>
+  <h2 style="color: whitesmoke;">{{title}}</h2>
     <div>
       <h3>CWA Library Convertor</h3><br>
       <div class="row">
-        <div class="logging_window">
-          <h2 id="innerStatus">Loading...</h2>
+        <div class="logging_window" style="padding-left: 15px;
+                                          padding-right: 15px;
+                                          background: #0000003d;
+                                          padding-top: 11px;
+                                          padding-bottom: 1px;">
+          <p id="innerStatus" style="color: whitesmoke;">Loading...</h2>
         </div>
       </div>
     </div>
@@ -31,7 +35,7 @@
     
     document.getElementById("innerStatus").innerHTML = get.status.replace(/\n/g, "<br>"); // * 10 + "&percnt;"
     
-    if (get.status == "Done!"){
+    if (get.status.includes("FIN")){
       document.getElementById("innerStatus").innerHTML;
       clearTimeout(timeout);
       return false;

@@ -217,7 +217,7 @@ class CWA_DB:
         for header in headers:
             if type(cwa_settings[header]) == int:
                 cwa_settings[header] = bool(cwa_settings[header])
-            elif type(cwa_settings[header]) == str:
+            elif type(cwa_settings[header]) == str and ',' in cwa_settings[header]:
                 cwa_settings[header] = cwa_settings[header].split(',')
 
         return cwa_settings

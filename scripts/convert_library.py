@@ -122,7 +122,7 @@ class LibraryConverter:
             try: # Get Calibre Library Book ID
                 book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1] # type: ignore
             except Exception as e:
-                print_and_log(f"[convert-library]: A Calibre Library Book ID could not be determined for {file}. Make sure the structure of your calibre library matches the following example:\n")
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) A Calibre Library Book ID could not be determined for {file}. Make sure the structure of your calibre library matches the following example:\n")
                 print_and_log("Terry Goodkind/")
                 print_and_log("└── Wizard's First Rule (6120)")
                 print_and_log("    ├── cover.jpg")
@@ -136,13 +136,20 @@ class LibraryConverter:
             if self.target_format == "kepub":
                 convert_successful, target_filepath = self.convert_to_kepub(filename, file_extension)
                 if not convert_successful:
-                    print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. Moving to next book...")
+                    print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Conversion of {os.path.basename(file)} was unsuccessful. Moving to next book...")
                     self.current_book += 1
                     continue
             else:
                 try: # Convert Book to target format (target is not kepub)
                     target_filepath = f"{self.tmp_conversion_dir}{Path(file).stem}.{self.target_format}"
-                    subprocess.run(["ebook-convert", file, target_filepath], check=True)
+                    with subprocess.Popen(
+                        ["ebook-convert", file, target_filepath],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True
+                    ) as process:
+                        for line in process.stdout: # Read from the combined stdout (which includes stderr)
+                            print_and_log(line)
 
                     if self.cwa_settings['auto_backup_conversions']:
                         shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(file)}")
@@ -152,21 +159,28 @@ class LibraryConverter:
                                                 self.target_format,
                                                 str(self.cwa_settings["auto_backup_conversions"]))
 
-                    print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} to {self.target_format} format successful!") # Removed as of V3.0.0 - Removing old version from library...
+                    print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Conversion of {os.path.basename(file)} to {self.target_format} format successful!") # Removed as of V3.0.0 - Removing old version from library...
                 except subprocess.CalledProcessError as e:
-                    print_and_log(f"[convert-library]: Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
+                    print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
                     self.current_book += 1
                     continue
 
             if self.target_format == "epub" and self.kindle_epub_fixer:
                 try:
                     EPUBFixer(target_filepath).process()
-                    print_and_log("[convert-library] Resulting EPUB file successfully processed by CWA-EPUB-Fixer!")
+                    print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Resulting EPUB file successfully processed by CWA-EPUB-Fixer!")
                 except Exception as e:
-                    print_and_log(f"[convert-library] An error occurred while processing {os.path.basename(target_filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
+                    print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while processing {os.path.basename(target_filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 
             try: # Import converted book to library. As of V3.0.0, "add_format" is used instead of "add"
-                subprocess.run(["calibredb", "add_format", book_id, target_filepath, f"--library-path={self.library_dir}"], check=True)
+                with subprocess.Popen(
+                    ["calibredb", "add_format", book_id, target_filepath, f"--library-path={self.library_dir}"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True
+                ) as process:
+                    for line in process.stdout: # Read from the combined stdout (which includes stderr)
+                        print_and_log(line)
 
                 if self.cwa_settings['auto_backup_imports']:
                     shutil.copyfile(target_filepath, f"/config/processed_books/imported/{os.path.basename(target_filepath)}")
@@ -174,9 +188,9 @@ class LibraryConverter:
                 self.db.import_add_entry(os.path.basename(target_filepath),
                                         str(self.cwa_settings["auto_backup_imports"]))
 
-                print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} successfully completed!")
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Import of {os.path.basename(target_filepath)} successfully completed!")
             except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: Import of {os.path.basename(target_filepath)} was not successfully completed. Converted file moved to /config/processed_books/failed/{os.path.basename(target_filepath)}. See the following error:\n{e}")
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Import of {os.path.basename(target_filepath)} was not successfully completed. Converted file moved to /config/processed_books/failed/{os.path.basename(target_filepath)}. See the following error:\n{e}")
                 shutil.move(target_filepath, f"/config/processed_books/failed/{os.path.basename(target_filepath)}")
                 self.current_book += 1
                 continue
@@ -201,7 +215,7 @@ class LibraryConverter:
     def convert_to_kepub(self, filepath:str ,import_format:str) -> tuple[bool, str]:
         """Kepubify is limited in that it can only convert from epub to kepub, therefore any files not already in epub need to first be converted to epub, and then to kepub"""
         if import_format == "epub":
-            print_and_log(f"[convert-library]: File in epub format, converting directly to kepub...")
+            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) File already in epub format, converting directly to kepub...")
 
             if self.cwa_settings['auto_backup_conversions']:
                 shutil.copyfile(filepath, f"/config/processed_books/converted/{os.path.basename(filepath)}")
@@ -209,25 +223,40 @@ class LibraryConverter:
             epub_filepath = filepath
             epub_ready = True
         else:
-            print_and_log("\n[convert-library]: *** NOTICE TO USER: Kepubify is limited in that it can only convert from epubs. To get around this, CWA will automatically convert other supported formats to epub using the Calibre's conversion tools & then use Kepubify to produce your desired kepubs. Obviously multi-step conversions aren't ideal so if you notice issues with your converted files, bare in mind starting with epubs will ensure the best possible results***\n")
+            print_and_log(f"\n[convert-library]: ({self.current_book}/{len(self.to_convert)}) *** NOTICE TO USER: Kepubify is limited in that it can only convert from epubs. To get around this, CWA will automatically convert other supported formats to epub using the Calibre's conversion tools & then use Kepubify to produce your desired kepubs. Obviously multi-step conversions aren't ideal so if you notice issues with your converted files, bare in mind starting with epubs will ensure the best possible results***\n")
             try: # Convert book to epub format so it can then be converted to kepub
                 epub_filepath = f"{self.tmp_conversion_dir}{Path(filepath).stem}.epub"
-                subprocess.run(["ebook-convert", filepath, epub_filepath], check=True)
+                with subprocess.Popen(
+                    ["ebook-convert", filepath, epub_filepath],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True
+                ) as process:
+                    for line in process.stdout: # Read from the combined stdout (which includes stderr)
+                        print_and_log(line)
 
                 if self.cwa_settings['auto_backup_conversions']:
                     shutil.copyfile(filepath, f"/config/processed_books/converted/{os.path.basename(filepath)}")
 
-                print_and_log(f"[convert-library]: Intermediate conversion of {os.path.basename(filepath)} to epub from {import_format} successful, now converting to kepub...")
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Intermediate conversion of {os.path.basename(filepath)} to epub from {import_format} successful, now converting to kepub...")
                 epub_ready = True
             except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: Intermediate conversion of {os.path.basename(filepath)} to epub was unsuccessful. Cancelling kepub conversion and moving on to next file. See the following error:\n{e}")
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Intermediate conversion of {os.path.basename(filepath)} to epub was unsuccessful. Cancelling kepub conversion and moving on to next file. See the following error:\n{e}")
                 return False, ""
             
         if epub_ready:
             epub_filepath = Path(epub_filepath)
             target_filepath = f"{self.tmp_conversion_dir}{epub_filepath.stem}.kepub"
             try:
-                subprocess.run(['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, epub_filepath], check=True)
+                with subprocess.Popen(
+                    ['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, epub_filepath],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True
+                ) as process:
+                    for line in process.stdout: # Read from the combined stdout (which includes stderr)
+                        print_and_log(line)
+                
                 if self.cwa_settings['auto_backup_conversions']:
                     shutil.copy2(filepath, f"/config/processed_books/converted")
 
@@ -238,11 +267,11 @@ class LibraryConverter:
 
                 return True, target_filepath
             except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: CON_ERROR: {os.path.basename(filepath)} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}")
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) CON_ERROR: {os.path.basename(filepath)} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}")
                 shutil.copy2(epub_filepath, f"/config/processed_books/failed")
                 return False, ""
         else:
-            print_and_log(f"[convert-library]: An error occurred when converting the original {import_format} to epub. Cancelling kepub conversion and moving on to next file...")
+            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred when converting the original {import_format} to epub. Cancelling kepub conversion and moving on to next file...")
             return False, ""
 
 
@@ -254,25 +283,26 @@ class LibraryConverter:
                 if os.path.isfile(file_path):
                     os.remove(file_path)
         except OSError:
-            print_and_log(f"[convert-library] An error occurred while emptying {self.tmp_conversion_dir}.")
+            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while emptying {self.tmp_conversion_dir}.")
 
 
     def set_library_permissions(self):
         try:
             subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Successfully set ownership of new files in {self.library_dir} to abc:abc.")
         except subprocess.CalledProcessError as e:
-            print_and_log(f"[convert-library] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
+            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
 
     # def process(self):
     #     """ Allows LibraryConverter to be ran from an import  """
     #     if len(self.to_convert) > 0:
     #         self.convert_library()
     #     else:
-    #         print_and_log("[convert-library] No books found in library without a copy in the target format. Exiting now...")
+    #         print_and_log("[convert-library]: No books found in library without a copy in the target format. Exiting now...")
     #         logging.info("FIN")
     #         sys.exit(0)
 
-    #     print_and_log(f"\n[convert-library] Library conversion complete! {len(self.to_convert)} books converted! Exiting now...")
+    #     print_and_log(f"\n[convert-library]: Library conversion complete! {len(self.to_convert)} books converted! Exiting now...")
     #     logging.info("FIN")
     #     sys.exit(0)
 
@@ -295,12 +325,12 @@ def main():
     if len(converter.to_convert) > 0:
         converter.convert_library()
     else:
-        print_and_log("[convert-library] No books found in library without a copy in the target format. Exiting now...")
-        logging.info("FIN")
+        print_and_log("[convert-library]: No books found in library without a copy in the target format. Exiting now...")
+        logging.info("\nDone!")
         sys.exit(0)
 
-    print_and_log(f"\n[convert-library] Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")
-    logging.info("FIN")
+    print_and_log(f"\n[convert-library]: Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")
+    logging.info("\nDone!")
     sys.exit(0)
 
 

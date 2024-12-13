@@ -241,6 +241,7 @@ def convert_library_start():
 
 @convert_library.route('/cwa-library-convert', methods=['GET'])
 def start_conversion():
+    open('/config/convert-library.log', 'w').close() # Wipe conversion log from previous runs
     t1 = Thread(target=convert_library_start)
     t1.start()
     return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",

@@ -34,7 +34,7 @@ try:
     lock.close()
 except FileExistsError:
     print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
-    print_and_log("FIN")
+    print_and_log("\nDone!")
     sys.exit(2)
 
 # Defining function to delete the lock on script exit
@@ -256,7 +256,7 @@ class LibraryConverter:
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)
                         print_and_log(line)
-                
+
                 if self.cwa_settings['auto_backup_conversions']:
                     shutil.copy2(filepath, f"/config/processed_books/converted")
 

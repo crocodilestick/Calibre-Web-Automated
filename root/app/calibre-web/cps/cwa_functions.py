@@ -8,11 +8,14 @@ from .render_template import render_title_template
 
 import subprocess
 import sqlite3
-import os.path
+from pathlib import Path
 from time import sleep
 
 import json
 from threading import Thread
+import queue
+import os
+import tempfile
 
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
@@ -236,40 +239,46 @@ def cwa_flash_status():
     return redirect(url_for('admin.admin'))
 
 
-def convert_library_start():
-    subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
+def convert_library_start(queue):
+    cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
+    queue.put(cl_process)
+
+def kill_convert_library(queue):
+    trigger_file = Path("/config/.kill_convert_library_trigger")
+    while True:
+        sleep(0.1)
+        if trigger_file.exists():
+            cl_process = queue.get()
+            cl_process.terminate()
+            os.remove(tempfile.gettempdir() + '/convert_library.lock')
+            os.remove(trigger_file)
+            with open("/config/convert-library.log", 'a') as f:
+                f.write("\nCONVERT LIBRARY PROCESS TERMINATED BY USER")
+            break
 
 @convert_library.route('/cwa-library-convert', methods=['GET'])
 def start_conversion():
     open('/config/convert-library.log', 'w').close() # Wipe conversion log from previous runs
-    t1 = Thread(target=convert_library_start)
-    t1.start()
+    # Queue to share the subprocess reference
+    process_queue = queue.Queue()
+    # Create and start the subprocess thread
+    cl_thread = Thread(target=convert_library_start, args=(process_queue,))
+    cl_thread.start()
+    # Create and start the kill thread
+    cl_kill_thread = Thread(target=kill_convert_library, args=(process_queue,))
+    cl_kill_thread.start()
     return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
                                 target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
 
-@convert_library.route('/convert-library-status', methods=['GET'])
-def getStatus():
-    with open("/config/convert-library.log", 'r') as f:
-        status = f.read()
-    statusList = {'status':status}
-    return json.dumps(statusList)
-
-
-# def flask_logger():
-#     subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
-#     if os.path.isfile("/config/convert-library.log") == False:
-#         with open('/config/convert-library.log', 'w') as create_new_log: 
-#             pass
-#     with open("/config/convert-library.log", 'r') as log_info:
-#         while True:
-#             data = log_info.read()
-#             yield data.encode()
-#             sleep(1)
-#             if "FIN" in data:
-#                 break
-
-# @convert_library.route("/cwa-library-convert", methods=["GET", "POST"])
-# @login_required_if_no_ano
-# @admin_required
-# def cwa_library_convert():
-#     return Response(flask_logger(), mimetype="text/plain", content_type="text/event-stream")
+@convert_library.route('/convert-library-status', methods=['GET', 'POST'])
+def get_status():
+    if request.method == "POST" and request.form['cancel_button'] == "Cancel":
+        open("/config/.kill_convert_library_trigger", 'w').close()
+        return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
+                                    target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
+    
+    elif request.method == "GET":
+        with open("/config/convert-library.log", 'r') as f:
+            status = f.read()
+        statusList = {'status':status}
+        return json.dumps(statusList)

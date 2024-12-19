@@ -243,22 +243,62 @@ def convert_library_start(queue):
     cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
     queue.put(cl_process)
 
+def get_tmp_conversion_dir() -> str:
+    dirs_json_path = "/app/calibre-web-automated/dirs.json"
+    dirs = {}
+    with open(dirs_json_path, 'r') as f:
+        dirs: dict[str, str] = json.load(f)
+    tmp_conversion_dir = f"{dirs['tmp_conversion_dir']}/"
+
+    return tmp_conversion_dir
+
+def empty_tmp_con_dir(tmp_conversion_dir) -> None:
+    try:
+        files = os.listdir(tmp_conversion_dir)
+        for file in files:
+            file_path = os.path.join(tmp_conversion_dir, file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+    except Exception as e:
+        print_and_log(f"[convert-library]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
+
 def kill_convert_library(queue):
     trigger_file = Path("/config/.kill_convert_library_trigger")
     while True:
-        sleep(0.1)
         if trigger_file.exists():
+            # Kill the convert_library process
             cl_process = queue.get()
             cl_process.terminate()
-            os.remove(tempfile.gettempdir() + '/convert_library.lock')
-            os.remove(trigger_file)
+            # Remove any potentially left over lock files
+            try:
+                os.remove(tempfile.gettempdir() + '/convert_library.lock')
+            except FileNotFoundError:
+                ...
+            # Empty tmp conversion dir of half finished files
+            empty_tmp_con_dir(get_tmp_conversion_dir())
+            # Remove the trigger file that triggered this block
+            try:
+                os.remove(trigger_file)
+            except FileNotFoundError:
+                ...
             with open("/config/convert-library.log", 'a') as f:
                 f.write("\nCONVERT LIBRARY PROCESS TERMINATED BY USER")
             break
 
-@convert_library.route('/cwa-library-convert', methods=['GET'])
+@convert_library.route('/cwa-convert-library-overview', methods=["GET"])
+def show_convert_library_page():
+    return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
+                                target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
+
+@convert_library.route('/cwa-convert-library-start', methods=["GET"])
 def start_conversion():
-    open('/config/convert-library.log', 'w').close() # Wipe conversion log from previous runs
+    # Wipe conversion log from previous runs
+    open('/config/convert-library.log', 'w').close()
+    # Remove any left over kill file
+    try:
+        os.remove("/config/.kill_convert_library_trigger")
+    except FileNotFoundError:
+        ...
     # Queue to share the subprocess reference
     process_queue = queue.Queue()
     # Create and start the subprocess thread
@@ -267,18 +307,17 @@ def start_conversion():
     # Create and start the kill thread
     cl_kill_thread = Thread(target=kill_convert_library, args=(process_queue,))
     cl_kill_thread.start()
-    return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
-                                target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
+    return redirect(url_for('convert_library.show_convert_library_page'))
 
-@convert_library.route('/convert-library-status', methods=['GET', 'POST'])
+@convert_library.route('/convert-library-cancel', methods=["GET"])
+def cancel_convert_library():
+    # Create kill trigger file
+    open("/config/.kill_convert_library_trigger", 'w').close()
+    return redirect(url_for('convert_library.show_convert_library_page'))
+
+@convert_library.route('/convert-library-status', methods=["GET"])
 def get_status():
-    if request.method == "POST" and request.form['cancel_button'] == "Cancel":
-        open("/config/.kill_convert_library_trigger", 'w').close()
-        return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
-                                    target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
-    
-    elif request.method == "GET":
-        with open("/config/convert-library.log", 'r') as f:
-            status = f.read()
-        statusList = {'status':status}
-        return json.dumps(statusList)
+    with open("/config/convert-library.log", 'r') as f:
+        status = f.read()
+    statusList = {'status':status}
+    return json.dumps(statusList)

@@ -8,17 +8,15 @@
       <div style="display: flex;
                   justify-content: space-between;
                   gap: 20px;">
-        <p style="font-size: xx-small;max-width: 80%;">
+        <p style="font-size: xx-small;max-width: 70%;">
           The Library Conversion Process automatically starts upon loading this page and therefore has already started, 
           you can follow it's progress below. Leaving this page will not interrupt the process but you will be unable to 
           return to check on it's process here in the Web UI after leaving, you would then need to check it's progress 
           in the container's logs.</p>
-        <form action="{{ url_for('convert_library.get_status')}}" method="post">
-        <input class="btn btn-default" type="submit" name="cancel_button" value="Cancel"
-          style="vertical-align: top;
-                float: right;
-                width: 100px;">Cancel</button>
-        </form>
+        <div>
+          <a class="btn btn-default" href="{{ url_for('convert_library.cancel_convert_library') }}" style="vertical-align: top; float: right; width: 100px; margin-left: 10px;">{{_('Cancel')}}</a>
+          <a class="btn btn-default" href="{{ url_for('convert_library.start_conversion') }}" style="vertical-align: top; float: right; width: 100px;">{{_('Start')}}</a>
+        </div>
       </div>
       <div class="row">
         <div class="logging_window" style="padding-left: 15px;
@@ -50,7 +48,7 @@
     
     document.getElementById("innerStatus").innerHTML = get.status.replace(/\n/g, "<br>"); // * 10 + "&percnt;"
     
-    if (get.status.includes("Done!")){
+    if (get.status.includes("Done!") || get.status.includes("CONVERT LIBRARY PROCESS TERMINATED BY USER")){
       document.getElementById("innerStatus").innerHTML;
       clearTimeout(timeout);
       return false;

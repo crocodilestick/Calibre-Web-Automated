@@ -1,4 +1,4 @@
-# import argparse
+import argparse
 import json
 import logging
 import os
@@ -39,7 +39,10 @@ except FileExistsError:
 
 # Defining function to delete the lock on script exit
 def removeLock():
-    os.remove(tempfile.gettempdir() + '/convert_library.lock')
+    try:
+        os.remove(tempfile.gettempdir() + '/convert_library.lock')
+    except FileNotFoundError:
+        ...
 
 # Will automatically run when the script exits
 atexit.register(removeLock)
@@ -59,8 +62,10 @@ for directory in required_directories:
 
 
 class LibraryConverter:
-    def __init__(self) -> None: #args
-        # self.args = args
+    def __init__(self, args) -> None:
+        self.args = args
+        self.verbose = args.verbose
+
         self.db = CWA_DB()
         self.cwa_settings = self.db.cwa_settings
         self.target_format = self.cwa_settings['auto_convert_target_format']
@@ -149,7 +154,10 @@ class LibraryConverter:
                         text=True
                     ) as process:
                         for line in process.stdout: # Read from the combined stdout (which includes stderr)
-                            print_and_log(line)
+                            if self.verbose:
+                                print_and_log(line)
+                            else:
+                                print(line)
 
                     if self.cwa_settings['auto_backup_conversions']:
                         shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(file)}")
@@ -180,7 +188,10 @@ class LibraryConverter:
                     text=True
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)
-                        print_and_log(line)
+                        if self.verbose:
+                            print_and_log(line)
+                        else:
+                            print(line)
 
                 if self.cwa_settings['auto_backup_imports']:
                     shutil.copyfile(target_filepath, f"/config/processed_books/imported/{os.path.basename(target_filepath)}")
@@ -233,7 +244,10 @@ class LibraryConverter:
                     text=True
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)
-                        print_and_log(line)
+                        if self.verbose:
+                            print_and_log(line)
+                        else:
+                            print(line)
 
                 if self.cwa_settings['auto_backup_conversions']:
                     shutil.copyfile(filepath, f"/config/processed_books/converted/{os.path.basename(filepath)}")
@@ -255,7 +269,10 @@ class LibraryConverter:
                     text=True
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)
-                        print_and_log(line)
+                        if self.verbose:
+                            print_and_log(line)
+                        else:
+                            print(line)
 
                 if self.cwa_settings['auto_backup_conversions']:
                     shutil.copy2(filepath, f"/config/processed_books/converted")
@@ -293,35 +310,17 @@ class LibraryConverter:
         except subprocess.CalledProcessError as e:
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
 
-    # def process(self):
-    #     """ Allows LibraryConverter to be ran from an import  """
-    #     if len(self.to_convert) > 0:
-    #         self.convert_library()
-    #     else:
-    #         print_and_log("[convert-library]: No books found in library without a copy in the target format. Exiting now...")
-    #         logging.info("FIN")
-    #         sys.exit(0)
-
-    #     print_and_log(f"\n[convert-library]: Library conversion complete! {len(self.to_convert)} books converted! Exiting now...")
-    #     logging.info("FIN")
-    #     sys.exit(0)
-
 
 def main():
-    # parser = argparse.ArgumentParser(
-    #     prog='convert-library',
-    #     description='Made for the purpose of converting ebooks in a calibre library not in epub format, to epub format'
-    # )
+    parser = argparse.ArgumentParser(
+        prog='convert-library',
+        description='Made for the purpose of converting ebooks in a calibre library to the users specified target format (default epub)'
+    )
 
-    # parser.add_argument('--replace', '-r', action='store_true', required=False, dest='replace', help='Replaces the old library with the new one', default=False)
-    # parser.add_argument('--keep', '-k', action='store_true', required=False, dest='keep', help='Creates a new epub library with the old one but stores the old files in /config/processed_books', default=False)
-    # args = parser.parse_args()
+    parser.add_argument('--verbose', '-v', action='store_true', required=False, dest='verbose', help='When passed, the output from the ebook-convert command will be included in what is shown to the user in the Web UI', default=False)
+    args = parser.parse_args()
 
-    # if not args.replace and not args.keep:
-    #     print("[convert-library]: You must specify either the --replace/-r or --keep/-k flag")
-    #     sys.exit(0)
-    # else:
-    converter = LibraryConverter() # args
+    converter = LibraryConverter(args)
     if len(converter.to_convert) > 0:
         converter.convert_library()
     else:

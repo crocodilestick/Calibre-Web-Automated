@@ -51,7 +51,7 @@ class NewBookProcessor:
         self.target_format = self.cwa_settings['auto_convert_target_format']
         self.ingest_ignored_formats = self.cwa_settings['auto_ingest_ignored_formats']
         self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats']
-        self.kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
+        self.is_kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
 
         self.supported_book_formats = {'azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz', 'txt', 'kepub'}
         self.hierarchy_of_success = {'epub', 'lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt'}
@@ -163,7 +163,7 @@ class NewBookProcessor:
 
 
     def add_book_to_library(self, book_path:str) -> None:
-        if self.target_format == "epub" and self.kindle_epub_fixer:
+        if self.target_format == "epub" and self.is_kindle_epub_fixer:
             self.kindle_epub_fixer(book_path)
 
         print("[ingest-processor]: Importing new book to CWA...")

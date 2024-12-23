@@ -141,8 +141,8 @@ class Enforcer:
         return log_info
 
     def get_book_dir_from_log(self, log_info: dict) -> str:
-        book_title = log_info['book_title'].replace(':', '_')
-        author_name = (log_info['author_name'].split(', ')[0]).split(' & ')[0]
+        book_title = log_info['title'].replace(':', '_')
+        author_name = (log_info['authors'].split(', ')[0]).split(' & ')[0]
         book_id = log_info['book_id']
 
         for char in book_title:
@@ -326,7 +326,7 @@ def main():
         if enforcer.enforcer_on:
             book_objects = enforcer.enforce_cover(book_dir)
             if not book_objects:
-                print(f"[cover-metadata-enforcer] Metadata for '{log_info['book_title']}' not successfully enforced")
+                print(f"[cover-metadata-enforcer] Metadata for '{log_info['title']}' not successfully enforced")
                 sys.exit(1)
             for book in book_objects:
                 book.log_info = log_info
@@ -335,7 +335,7 @@ def main():
             enforcer.delete_log()
             enforcer.check_for_other_logs()
         else: # Enforcer has been disabled in the CWA Settings
-            print(f"[cover-metadata-enforcer] The CWA Automatic Metadata enforcement service is currently disabled in the settings. Therefore the metadata changes for {log_info['book_title'].replace(':', '_')} won't be enforced.\n\nThis means that the changes made will appear in the Web UI, but not be stored in the ebook files themselves.")
+            print(f"[cover-metadata-enforcer] The CWA Automatic Metadata enforcement service is currently disabled in the settings. Therefore the metadata changes for {log_info['title'].replace(':', '_')} won't be enforced.\n\nThis means that the changes made will appear in the Web UI, but not be stored in the ebook files themselves.")
             enforcer.delete_log()
     else:
         parser.print_usage()

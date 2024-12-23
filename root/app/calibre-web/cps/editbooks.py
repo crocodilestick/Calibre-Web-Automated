@@ -1204,7 +1204,7 @@ def edit_cc_data(book_id, book, to_save, cc):
     # CWA Export of changed Metadata
     now = datetime.now()
     with open(f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book_id}.json', 'w') as f:
-        json.dump(to_save, f)
+        json.dump(to_save, f, indent=4)
     return changed
 
 

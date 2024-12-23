@@ -151,6 +151,8 @@ class NewBookProcessor:
                 print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
                 shutil.copy2(converted_filepath, f"/config/processed_books/failed/{os.path.basename(self.filepath)}")
                 return False, ""
+            except Exception as e:
+                print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
         else:
             print(f"[ingest-processor]: An error occurred when converting the original {self.input_format} to epub. Cancelling kepub conversion...", flush=True)
             return False, ""
@@ -159,12 +161,15 @@ class NewBookProcessor:
     def delete_current_file(self) -> None:
         """Deletes file just processed from ingest folder"""
         os.remove(self.filepath) # Removes processed file
-        subprocess.run(["find", f"{self.ingest_folder}", "-type", "d", "-empty", "-delete"]) # Removes any now empty folders
+        subprocess.run(["find", f"{self.ingest_folder}", "-mindepth", "1", "-type", "d", "-empty", "-delete"]) # Removes any now empty folders in the ingest folder
 
 
     def add_book_to_library(self, book_path:str) -> None:
         if self.target_format == "epub" and self.is_kindle_epub_fixer:
-            self.kindle_epub_fixer(book_path)
+            self.run_kindle_epub_fixer(book_path, dest=self.tmp_conversion_dir)
+            fixed_epub_path = str(self.empty_tmp_con_dir) + str(os.path.basename(book_path))
+            if Path(fixed_epub_path).exists():
+                book_path = self.empty_tmp_con_dir + os.path.basename(book_path)
 
         print("[ingest-processor]: Importing new book to CWA...")
         import_path = Path(book_path)
@@ -182,11 +187,13 @@ class NewBookProcessor:
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {import_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
             shutil.copy2(book_path, f"/config/processed_books/failed/{import_filename}")
+        except Exception as e:
+            print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
 
 
-    def kindle_epub_fixer(self, filepath:str) -> None:
+    def run_kindle_epub_fixer(self, filepath:str, dest=None) -> None:
         try:
-            EPUBFixer(filepath).process()
+            EPUBFixer(filepath, dest).process()
         except Exception as e:
             print(f"[ingest-processor] An error occurred while processing {os.path.basename(filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 
@@ -211,11 +218,12 @@ class NewBookProcessor:
 def main(filepath=sys.argv[1]):
     """Checks if filepath is a directory. If it is, main will be ran on every file in the given directory
     Inotifywait won't detect files inside folders if the folder was moved rather than copied"""
-    if os.path.isdir(filepath):
-        print(os.listdir(filepath))
+    if os.path.isdir(filepath) and Path(filepath).exists():
+        # print(os.listdir(filepath))
         for filename in os.listdir(filepath):
             f = os.path.join(filepath, filename)
-            main(f)
+            if Path(f).exists():
+                main(f)
         return
 
     nbp = NewBookProcessor(filepath)

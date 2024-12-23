@@ -8,8 +8,9 @@ import xml.etree.ElementTree as ET
 ### & modified and integrated into CWA by CrocodileStick
 
 class EPUBFixer:
-    def __init__(self, epub_path):
+    def __init__(self, epub_path:str, dest=None):
         self.epub_path = epub_path
+        self.dest = dest
         self.files = {}
         self.fixed_problems = []
 

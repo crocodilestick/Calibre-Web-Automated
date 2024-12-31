@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import atexit
+from datetime import datetime
 
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
@@ -320,16 +321,17 @@ def main():
     parser.add_argument('--verbose', '-v', action='store_true', required=False, dest='verbose', help='When passed, the output from the ebook-convert command will be included in what is shown to the user in the Web UI', default=False)
     args = parser.parse_args()
 
+    logging.info(f"CWA Convert Library Service - Run Started: {datetime.now()}\n")
     converter = LibraryConverter(args)
     if len(converter.to_convert) > 0:
         converter.convert_library()
     else:
         print_and_log("[convert-library]: No books found in library without a copy in the target format. Exiting now...")
-        logging.info("\nDone!")
+        logging.info(f"\nCWA Convert Library Service - Run Ended: {datetime.now()}")
         sys.exit(0)
 
     print_and_log(f"\n[convert-library]: Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")
-    logging.info("\nDone!")
+    logging.info(f"\nCWA Convert Library Service - Run Ended: {datetime.now()}")
     sys.exit(0)
 
 

@@ -9,10 +9,10 @@
                   justify-content: space-between;
                   gap: 20px;">
         <p style="font-size: xx-small;max-width: 70%;">
-          The Library Conversion Process automatically starts upon loading this page and therefore has already started, 
-          you can follow it's progress below. Leaving this page will not interrupt the process but you will be unable to 
-          return to check on it's process here in the Web UI after leaving, you would then need to check it's progress 
-          in the container's logs.</p>
+          Upon loading this page, if you have previously started a run of the CWA Convert Library service either here in the Web UI or through the CLI, you will see the output of the most recent previous run below. 
+          Once you start a run, you are free to leave the page and return whenever you want to check on the run's progress. If you wish to cancel a run that is still in progress, simply press the Cancel button above 
+          and the run will terminate ASAP. If you wish to change the service's target format, please change your target format in the CWA Settings panel as desired.
+        </p>
         <div>
           <a class="btn btn-default" href="{{ url_for('convert_library.cancel_convert_library') }}" style="vertical-align: top; float: right; width: 100px; margin-left: 10px;">{{_('Cancel')}}</a>
           <a class="btn btn-default" href="{{ url_for('convert_library.start_conversion') }}" style="vertical-align: top; float: right; width: 100px;">{{_('Start')}}</a>
@@ -24,7 +24,7 @@
                                           background: #0000003d;
                                           padding-top: 11px;
                                           padding-bottom: 1px;">
-          <p id="innerStatus" style="color: whitesmoke; font-size: small;">Loading...</h2>
+          <p id="innerStatus" style="color: whitesmoke; font-size: small;">No current or previous run to display. Press the Start button above to initiate a run.</h2>
         </div>
       </div>
     </div>
@@ -48,7 +48,7 @@
     
     document.getElementById("innerStatus").innerHTML = get.status.replace(/\n/g, "<br>"); // * 10 + "&percnt;"
     
-    if (get.status.includes("Done!") || get.status.includes("CONVERT LIBRARY PROCESS TERMINATED BY USER")){
+    if (get.status.includes("CWA Convert Library Service - Run Ended:") || get.status.includes("CONVERT LIBRARY PROCESS TERMINATED BY USER")){
       document.getElementById("innerStatus").innerHTML;
       clearTimeout(timeout);
       return false;

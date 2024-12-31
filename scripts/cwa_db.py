@@ -97,29 +97,44 @@ class CWA_DB:
     def ensure_settings_schema_match(self) -> None:
         self.cur.execute("SELECT * FROM cwa_settings")
         cwa_setting_names = [header[0] for header in self.cur.description]
+        print(f"[cwa-db] DEBUG: Current available cwa_settings: {cwa_setting_names}")
 
         # Add any settings present in the schema file but not in the db
         for setting in self.cwa_default_settings.keys():
             if setting not in cwa_setting_names:
-                for line in self.schema:
-                    matches = re.findall(setting, line)
-                    if matches:
-                        command = line.replace('\n', '').strip()
-                        command = command.replace(',', ';')
-                        with open('/config/debug', 'w') as f:
-                            f.write(command)
-                        self.cur.execute(f"ALTER TABLE cwa_settings ADD {command}")  
-                        self.con.commit()
-                    else:
-                        print("[cwa_db] Error adding new setting to cwa.db: Matching setting could not be found in schema file")
+                success = self.add_missing_setting(setting)
+                if success:
+                    print(f"[cwa-db] Setting '{setting}' successfully added to cwa.db!")
         
         # Delete any settings in the db but not in the schema file
         for setting in cwa_setting_names:
             if setting not in self.cwa_default_settings.keys():
-                self.cur.execute(f"ALTER TABLE cwa_settings DROP COLUMN {setting}")  
-                self.con.commit()
-                print(f"[cwa_db] Deprecated setting found from previous version of CWA, deleting setting '{setting}' from cwa.db...")
+                try:
+                    print(f"[cwa-db] Deprecated setting found from previous version of CWA, removing setting '{setting}' from cwa.db...")
+                    self.cur.execute(f"ALTER TABLE cwa_settings DROP COLUMN {setting}")  
+                    self.con.commit()
+                    print(f"[cwa-db] Deprecated setting {setting} successfully removed from cwa.db!")
+                except Exception as e:
+                    print(f"[cwa-db] The following error occurred when trying to remove {setting} from cwa.db:\n{e}")
 
+
+    def add_missing_setting(self, setting) -> bool:
+        for line in self.schema:
+            match = re.findall(setting, line)
+            if match:
+                try:
+                    command = line.replace('\n', '').strip()
+                    command = command.replace(',', ';')
+                    with open('/config/.cwa_db_debug', 'a') as f:
+                        f.write(command)
+                    self.cur.execute(f"ALTER TABLE cwa_settings ADD {command}")  
+                    self.con.commit()
+                    return True
+                except Exception as e:
+                    print(f"[cwa-db] The following error occurred when trying to add {setting} to cwa.db:\n{e}")
+                    return False
+        print(f"[cwa-db] Error adding new setting to cwa.db: {setting}: Matching setting could not be found in schema file")
+        return False
 
     def match_stat_table_columns_with_schema(self) -> None:
         """ Used to rename columns whose names have been changed in later versions and add columns added in later versions """

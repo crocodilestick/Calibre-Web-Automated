@@ -16,6 +16,7 @@ from threading import Thread
 import queue
 import os
 import tempfile
+from datetime import datetime
 
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
@@ -282,7 +283,7 @@ def kill_convert_library(queue):
             except FileNotFoundError:
                 ...
             with open("/config/convert-library.log", 'a') as f:
-                f.write("\nCONVERT LIBRARY PROCESS TERMINATED BY USER")
+                f.write(f"\nCONVERT LIBRARY PROCESS TERMINATED BY USER AT {datetime.now()}")
             break
 
 @convert_library.route('/cwa-convert-library-overview', methods=["GET"])

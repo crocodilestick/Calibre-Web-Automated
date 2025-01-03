@@ -29,10 +29,19 @@ ARG CALIBREWEB_RELEASE=0.6.24
 ARG LSCW_RELEASE=0.6.24-ls304
 ARG UNIVERSAL_CALIBRE_RELEASE=7.16.0
 LABEL build_version="Version:- ${VERSION}"
-LABEL build_date="${BUILD_DATE}" 
+LABEL build_date="${BUILD_DATE}"
 LABEL CW-Stock-version="${CALIBREWEB_RELEASE}"
 LABEL LSCW_Image_Release="${LSCW_RELEASE}"
 LABEL maintainer="CrocodileStick"
+
+# ports and volumes
+EXPOSE 8083
+VOLUME /config
+VOLUME /cwa-book-ingest
+VOLUME /calibre-library
+
+RUN mkdir -p /config /cwa-book-ingest /calibre-library && \
+    chown -R abc:abc /config /cwa-book-ingest /calibre-library
 
 # Copy local files into the container
 COPY --chown=abc:abc . /app/calibre-web-automated/
@@ -197,9 +206,3 @@ RUN \
 
 # add unrar
 COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
-
-# ports and volumes
-EXPOSE 8083
-VOLUME /config
-VOLUME /cwa-book-ingest
-VOLUME /calibre-library

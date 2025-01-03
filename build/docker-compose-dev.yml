@@ -1,0 +1,17 @@
+---
+services:
+  calibre-web-automated-dev:
+    image: calibre-web-automated:dev
+    container_name: cwa-dev
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=UTC
+      - DOCKER_MODS=lscr.io/linuxserver/mods:universal-calibre-v7.16.0
+    volumes:
+      - ./config:/config
+      - ./ingest:/cwa-book-ingest
+      - ./library:/calibre-library
+    ports:
+      - 8088:8083 # Change the first number to change the port you want to access the Web UI, not the second
+    restart: unless-stopped

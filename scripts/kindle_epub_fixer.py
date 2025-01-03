@@ -20,16 +20,24 @@ dirs_json = "/app/calibre-web-automated/dirs.json"
 change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
 metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
 
+
+# Define the logger
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)  # Set the logging level
+# Create a FileHandler
+file_handler = logging.FileHandler('/config/epub-fixer.log', mode='w')
+# Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
-logging.basicConfig(filename='/config/epub-fixer.log',
-                    level=logging.INFO,
-                    filemode='w',
-                    format=LOG_FORMAT)
+formatter = logging.Formatter(LOG_FORMAT)
+file_handler.setFormatter(formatter)
+# Add the handler to the logger
+logger.addHandler(file_handler)
 
 def print_and_log(string) -> None:
+    """ Ensures the provided string is passed to STDOUT and stored in the runs log file """
     logging.info(string)
     print(string)
+
 
 # Creates a lock file unless one already exists meaning an instance of the script is
 # already running, then the script is closed, the user is notified and the program
@@ -77,10 +85,10 @@ class EPUBFixer:
                 if not xml_declaration_pattern.match(content):
                     self.files[filename] = f"{encoding_declaration}\n{content}"
                     self.fixed_problems.append(f"Fixed encoding for file {filename}")
-                    if self.as_script:
-                        print_and_log(f"   - Fixed encoding for file {filename}")
-                    else:
-                        print(f"   - Fixed encoding for file {filename}")
+                    # if self.as_script:
+                    #     print_and_log(f"   - Fixed encoding for file {filename}")
+                    # else:
+                    #     print(f"   - Fixed encoding for file {filename}")
 
     def fix_language(self):
         allowed_languages = {# ISO 639-1
@@ -109,10 +117,10 @@ class EPUBFixer:
 
                 self.files[opf_file] = ET.tostring(root, encoding='unicode')
                 self.fixed_problems.append(f"Updated language from {current_lang} to {new_lang}")
-                if self.as_script:
-                    print_and_log(f"   - Updated language from {current_lang} to {new_lang}")
-                else:
-                    print(f"   - Updated language from {current_lang} to {new_lang}")
+                # if self.as_script:
+                #     print_and_log(f"   - Updated language from {current_lang} to {new_lang}")
+                # else:
+                #     print(f"   - Updated language from {current_lang} to {new_lang}")
 
     def fix_stray_images(self):
         img_tag_pattern = re.compile(r'<img([^>]*)>', re.IGNORECASE)
@@ -130,10 +138,10 @@ class EPUBFixer:
                 if content != original_content:
                     self.files[filename] = content
                     self.fixed_problems.append(f"Removed stray images in {filename}")
-                    if self.as_script:
-                        print_and_log(f"   - Removed stray images in {filename}")
-                    else:
-                        print(f"   - Removed stray images in {filename}")
+                    # if self.as_script:
+                    #     print_and_log(f"   - Removed stray images in {filename}")
+                    # else:
+                    #     print(f"   - Removed stray images in {filename}")
 
     def write_epub(self):
         with zipfile.ZipFile(self.epub_path, 'w') as zip_out:
@@ -149,13 +157,21 @@ class EPUBFixer:
         self.fix_language()
         self.fix_stray_images()
         self.write_epub()
-        print("[cwa-kindle-epub-fixer] Processing completed.")
+        # print("[cwa-kindle-epub-fixer] Processing completed.")
         if self.fixed_problems:
-            print(f"[cwa-kindle-epub-fixer] {len(self.fixed_problems)} issues fixed with {self.epub_path}:")
-            for count, problem in enumerate(self.fixed_problems):
-                print(f"   {count} - {problem}")
+            if self.as_script:
+                print_and_log(f"[cwa-kindle-epub-fixer] {len(self.fixed_problems)} issues fixed with {self.epub_path}:")
+                for count, problem in enumerate(self.fixed_problems):
+                    print_and_log(f"   {count + 1} - {problem}")
+            else:
+                print(f"[cwa-kindle-epub-fixer] {len(self.fixed_problems)} issues fixed with {self.epub_path}:")
+                for count, problem in enumerate(self.fixed_problems):
+                    print(f"   {count + 1} - {problem}")                
         else:
-            print(f"[cwa-kindle-epub-fixer] No issues found! - {self.epub_path}")
+            if self.as_script:
+                print_and_log(f"[cwa-kindle-epub-fixer] No issues found! - {self.epub_path}")
+            else:
+                print(f"[cwa-kindle-epub-fixer] No issues found! - {self.epub_path}")
 
 
 def get_library_location() -> str:
@@ -186,27 +202,27 @@ if __name__ == "__main__":
 
     logging.info(f"CWA Kindle EPUB Fixer Service - Run Started: {datetime.now()}\n")
     if not args.file and not args.all:
-        print("[cwa-kindle-epub-fixer] ERROR - Nothing given")
-        logging.info(f"CWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+        print("[cwa-kindle-epub-fixer] ERROR - No file provided")
+        logging.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
         sys.exit(4)
     elif args.all and args.file:
-        print("[cwa-kindle-epub-fixer] ERROR - Can't give all and file at the same time")
-        logging.info(f"CWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+        print("[cwa-kindle-epub-fixer] ERROR - Can't give all and a filepath at the same time")
+        logging.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
         sys.exit(5)
     elif args.file and not args.all:
         if not args.file.lower().endswith('.epub'):
             print("[cwa-kindle-epub-fixer] ERROR - The input file must be an EPUB file with a .epub extension.")
-            logging.info(f"CWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+            logging.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(1)
         else:
             if Path(args.file).exists():
                 print(f"[cwa-kindle-epub-fixer] Processing given file - {args.file}...")
                 EPUBFixer(args.file, as_script=True).process()
-                logging.info(f"CWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+                logging.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
                 sys.exit(0)
             else:
                 print(f"[cwa-kindle-epub-fixer] ERROR - Given file {args.file} does not exist")
-                logging.info(f"CWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+                logging.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
                 sys.exit(3)
     elif args.all and not args.file:
         print("[cwa-kindle-epub-fixer] Processing all epubs in library...")
@@ -215,14 +231,14 @@ if __name__ == "__main__":
             print_and_log(f"[cwa-kindle-epub-fixer] {len(epubs_to_process)} EPUBs found to process.")
             for count, epub in enumerate(epubs_to_process):
                 try:
-                    print_and_log(f"[cwa-kindle-epub-fixer] {count}/{len(epubs_to_process)} - Processing {epub}...")
+                    print_and_log(f"\n[cwa-kindle-epub-fixer] {count + 1}/{len(epubs_to_process)} - Processing {epub}...")
                     EPUBFixer(epub, as_script=True).process()
                 except Exception as e:
-                    print_and_log(f"[cwa-kindle-epub-fixer] {count}/{len(epubs_to_process)} - The following error occurred when processing {epub}\n{e}")
-            print_and_log(f"All {len(epubs_to_process)} EPUBs in Library successfully processed! Exiting now...")
-            logging.info(f"CWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+                    print_and_log(f"[cwa-kindle-epub-fixer] {count + 1}/{len(epubs_to_process)} - The following error occurred when processing {epub}\n{e}")
+            print_and_log(f"\nAll {len(epubs_to_process)} EPUBs in Library successfully processed! Exiting now...")
+            logging.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(0)
         else:
             print_and_log("[cwa-kindle-epub-fixer] No EPUBs found to process. Exiting now...")
-            logging.info(f"CWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+            logging.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(0)

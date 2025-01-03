@@ -15,14 +15,20 @@ from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 
 
+# Define the logger
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)  # Set the logging level
+# Create a FileHandler
+file_handler = logging.FileHandler('/config/convert-library.log', mode='w')
+# Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
-logging.basicConfig(filename='/config/convert-library.log',
-                    level=logging.INFO,
-                    filemode='w',
-                    format=LOG_FORMAT)
+formatter = logging.Formatter(LOG_FORMAT)
+file_handler.setFormatter(formatter)
+# Add the handler to the logger
+logger.addHandler(file_handler)
 
 def print_and_log(string) -> None:
+    """ Ensures the provided string is passed to STDOUT and stored in the runs log file """
     logging.info(string)
     print(string)
 

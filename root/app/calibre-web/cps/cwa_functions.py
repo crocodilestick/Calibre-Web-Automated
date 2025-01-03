@@ -373,25 +373,6 @@ def epub_fixer_start(queue):
     ef_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/kindle_epub_fixer.py', '--all'])
     queue.put(ef_process)
 
-# def get_tmp_conversion_dir() -> str:
-#     dirs_json_path = "/app/calibre-web-automated/dirs.json"
-#     dirs = {}
-#     with open(dirs_json_path, 'r') as f:
-#         dirs: dict[str, str] = json.load(f)
-#     tmp_conversion_dir = f"{dirs['tmp_conversion_dir']}/"
-
-#     return tmp_conversion_dir
-
-# def empty_tmp_con_dir(tmp_conversion_dir) -> None:
-#     try:
-#         files = os.listdir(tmp_conversion_dir)
-#         for file in files:
-#             file_path = os.path.join(tmp_conversion_dir, file)
-#             if os.path.isfile(file_path):
-#                 os.remove(file_path)
-#     except Exception as e:
-#         print(f"[cwa-functions]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
-
 def is_epub_fixer_finished() -> bool:
     with open("/config/epub-fixer.log", 'r') as log:
         if "CWA Kindle EPUB Fixer Service - Run Ended: " in log.read():
@@ -419,7 +400,7 @@ def kill_epub_fixer(queue):
                 os.remove(trigger_file)
             except FileNotFoundError:
                 ...
-            with open("/config/convert-library.log", 'a') as f:
+            with open("/config/epub-fixer.log", 'a') as f:
                 f.write(f"\nCWA EPUB FIXER PROCESS TERMINATED BY USER AT {datetime.now()}")
             break
         elif is_epub_fixer_finished():

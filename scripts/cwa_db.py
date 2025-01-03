@@ -97,7 +97,7 @@ class CWA_DB:
     def ensure_settings_schema_match(self) -> None:
         self.cur.execute("SELECT * FROM cwa_settings")
         cwa_setting_names = [header[0] for header in self.cur.description]
-        print(f"[cwa-db] DEBUG: Current available cwa_settings: {cwa_setting_names}")
+        # print(f"[cwa-db] DEBUG: Current available cwa_settings: {cwa_setting_names}")
 
         # Add any settings present in the schema file but not in the db
         for setting in self.cwa_default_settings.keys():
@@ -113,7 +113,7 @@ class CWA_DB:
                     print(f"[cwa-db] Deprecated setting found from previous version of CWA, removing setting '{setting}' from cwa.db...")
                     self.cur.execute(f"ALTER TABLE cwa_settings DROP COLUMN {setting}")  
                     self.con.commit()
-                    print(f"[cwa-db] Deprecated setting {setting} successfully removed from cwa.db!")
+                    print(f"[cwa-db] Deprecated setting '{setting}' successfully removed from cwa.db!")
                 except Exception as e:
                     print(f"[cwa-db] The following error occurred when trying to remove {setting} from cwa.db:\n{e}")
 

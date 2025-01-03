@@ -35,7 +35,7 @@ try:
     lock.close()
 except FileExistsError:
     print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
-    print_and_log("\nDone!")
+    logging.info(f"\nCWA Convert Library Service - Run Cancelled: {datetime.now()}")
     sys.exit(2)
 
 # Defining function to delete the lock on script exit

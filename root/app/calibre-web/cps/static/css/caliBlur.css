@@ -1960,7 +1960,7 @@ body > div.container-fluid > div > div.col-sm-10 > div.discover > form > .btn.bt
     line-height: 60px;
     font-size: 1em;
     z-index: 99999;
-    padding-top: 1.1em;
+    /* padding-top: 1.1em; */
     padding-right: 1.1em;
 }
 
@@ -1997,7 +1997,7 @@ body > div.container-fluid > div > div.col-sm-10 > div.pagination .page-previous
 
 body > div.container-fluid > div > div.col-sm-10 > div.pagination > .page-item:not(.page-next):not(.page-previous)
 {
-    display: none
+    display: inline-flex
 }
 
 body > div.container-fluid > div > div.col-sm-10 > div.pagination > .page-next > a,

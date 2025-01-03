@@ -25,12 +25,16 @@ from cwa_db import CWA_DB
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
 convert_library = Blueprint('convert_library', __name__)
+epub_fixer = Blueprint('epub_fixer', __name__)
 cwa_history = Blueprint('cwa_history', __name__)
 cwa_check_status = Blueprint('cwa_check_status', __name__)
 cwa_settings = Blueprint('cwa_settings', __name__)
 
-# log = logger.create()
-
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
+##                               CWA SWITCH THEME                             ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
 
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
@@ -57,6 +61,11 @@ def cwa_switch_theme():
     config.save()
     return redirect("/", code=302)
 
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
+##                             CWA LIBRARY REFRESH                            ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
 
 @library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])
 @login_required_if_no_ano
@@ -76,6 +85,11 @@ def cwa_library_refresh():
 
     return redirect("/", code=302)
 
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
+##                              CWA SETTINGS PAGE                             ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
 
 @csrf.exempt
 @cwa_settings.route("/cwa-settings", methods=["GET", "POST"])
@@ -141,12 +155,12 @@ def set_cwa_settings():
                 result['auto_ingest_ignored_formats'].remove(result['auto_convert_target_format'])
 
             # DEBUGGING
-            with open("/config/post_request" ,"w") as f:
-                for key in result.keys():
-                    if key == "auto_convert_ignored_formats" or key == "auto_ingest_ignored_formats":
-                        f.write(f"{key} - {', '.join(result[key])}\n")
-                    else:
-                        f.write(f"{key} - {result[key]}\n")
+            # with open("/config/post_request" ,"w") as f:
+            #     for key in result.keys():
+            #         if key == "auto_convert_ignored_formats" or key == "auto_ingest_ignored_formats":
+            #             f.write(f"{key} - {', '.join(result[key])}\n")
+            #         else:
+            #             f.write(f"{key} - {result[key]}\n")
 
             cwa_db.update_cwa_settings(result)
             cwa_settings = cwa_db.get_cwa_settings()
@@ -164,6 +178,11 @@ def set_cwa_settings():
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats,
                                     target_formats=target_formats)
 
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
+##                               CWA SHOW HISTORY                             ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
 
 @cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
 @login_required_if_no_ano
@@ -217,6 +236,11 @@ def show_full_conversions():
     return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Conversion History"), page="cwa-history-full",
                                     table_headers=table_headers, data=data)
 
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
+##                               CWA CHECK STATUS                             ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
 
 @cwa_check_status.route("/cwa-check-monitoring", methods=["GET", "POST"])
 @login_required_if_no_ano
@@ -239,6 +263,11 @@ def cwa_flash_status():
 
     return redirect(url_for('admin.admin'))
 
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
+##                        CWA LIBRARY CONVERSION SERVICE                      ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
 
 def convert_library_start(queue):
     cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
@@ -261,11 +290,19 @@ def empty_tmp_con_dir(tmp_conversion_dir) -> None:
             if os.path.isfile(file_path):
                 os.remove(file_path)
     except Exception as e:
-        print_and_log(f"[convert-library]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
+        print(f"[cwa-functions]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
+
+def is_convert_library_finished() -> bool:
+    with open("/config/convert-library.log", 'r') as log:
+        if "CWA Convert Library Service - Run Ended: " in log.read():
+            return True
+        else:
+            return False
 
 def kill_convert_library(queue):
-    trigger_file = Path("/config/.kill_convert_library_trigger")
+    trigger_file = Path(tempfile.gettempdir() + "/.kill_convert_library_trigger")
     while True:
+        sleep(0.05) # Required to prevent high cpu usage
         if trigger_file.exists():
             # Kill the convert_library process
             cl_process = queue.get()
@@ -285,6 +322,8 @@ def kill_convert_library(queue):
             with open("/config/convert-library.log", 'a') as f:
                 f.write(f"\nCONVERT LIBRARY PROCESS TERMINATED BY USER AT {datetime.now()}")
             break
+        elif is_convert_library_finished():
+            break
 
 @convert_library.route('/cwa-convert-library-overview', methods=["GET"])
 def show_convert_library_page():
@@ -297,7 +336,7 @@ def start_conversion():
     open('/config/convert-library.log', 'w').close()
     # Remove any left over kill file
     try:
-        os.remove("/config/.kill_convert_library_trigger")
+        os.remove(tempfile.gettempdir() + "/.kill_convert_library_trigger")
     except FileNotFoundError:
         ...
     # Queue to share the subprocess reference
@@ -313,12 +352,111 @@ def start_conversion():
 @convert_library.route('/convert-library-cancel', methods=["GET"])
 def cancel_convert_library():
     # Create kill trigger file
-    open("/config/.kill_convert_library_trigger", 'w').close()
+    open(tempfile.gettempdir() + "/.kill_convert_library_trigger", 'w').close()
     return redirect(url_for('convert_library.show_convert_library_page'))
 
 @convert_library.route('/convert-library-status', methods=["GET"])
 def get_status():
     with open("/config/convert-library.log", 'r') as f:
+        status = f.read()
+    statusList = {'status':status}
+    return json.dumps(statusList)
+
+
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
+##                            CWA EPUB FIXER SERVICE                          ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
+
+def epub_fixer_start(queue):
+    ef_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/kindle_epub_fixer.py', '--all'])
+    queue.put(ef_process)
+
+# def get_tmp_conversion_dir() -> str:
+#     dirs_json_path = "/app/calibre-web-automated/dirs.json"
+#     dirs = {}
+#     with open(dirs_json_path, 'r') as f:
+#         dirs: dict[str, str] = json.load(f)
+#     tmp_conversion_dir = f"{dirs['tmp_conversion_dir']}/"
+
+#     return tmp_conversion_dir
+
+# def empty_tmp_con_dir(tmp_conversion_dir) -> None:
+#     try:
+#         files = os.listdir(tmp_conversion_dir)
+#         for file in files:
+#             file_path = os.path.join(tmp_conversion_dir, file)
+#             if os.path.isfile(file_path):
+#                 os.remove(file_path)
+#     except Exception as e:
+#         print(f"[cwa-functions]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
+
+def is_epub_fixer_finished() -> bool:
+    with open("/config/epub-fixer.log", 'r') as log:
+        if "CWA Kindle EPUB Fixer Service - Run Ended: " in log.read():
+            return True
+        else:
+            return False
+
+def kill_epub_fixer(queue):
+    trigger_file = Path(tempfile.gettempdir() + "/.kill_epub_fixer_trigger")
+    while True:
+        sleep(0.05) # Required to prevent high cpu usage
+        if trigger_file.exists():
+            # Kill the epub_fixer process
+            fl_process = queue.get()
+            fl_process.terminate()
+            # Remove any potentially left over lock files
+            try:
+                os.remove(tempfile.gettempdir() + '/kindle_epub_fixer.lock')
+            except FileNotFoundError:
+                ...
+            # # Empty tmp conversion dir of half finished files
+            # empty_tmp_con_dir(get_tmp_conversion_dir())
+            # Remove the trigger file that triggered this block
+            try:
+                os.remove(trigger_file)
+            except FileNotFoundError:
+                ...
+            with open("/config/convert-library.log", 'a') as f:
+                f.write(f"\nCWA EPUB FIXER PROCESS TERMINATED BY USER AT {datetime.now()}")
+            break
+        elif is_epub_fixer_finished():
+            break
+
+@epub_fixer.route('/cwa-epub-fixer-overview', methods=["GET"])
+def show_epub_fixer_page():
+    return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer")
+
+@epub_fixer.route('/cwa-epub-fixer-start', methods=["GET"])
+def start_epub_fixer():
+    # Wipe conversion log from previous runs
+    open('/config/epub-fixer.log', 'w').close()
+    # Remove any left over kill file
+    try:
+        os.remove(tempfile.gettempdir() + "/.kill_epub_fixer_trigger")
+    except FileNotFoundError:
+        ...
+    # Queue to share the subprocess reference
+    process_queue = queue.Queue()
+    # Create and start the subprocess thread
+    ef_thread = Thread(target=epub_fixer_start, args=(process_queue,))
+    ef_thread.start()
+    # Create and start the kill thread
+    ef_kill_thread = Thread(target=kill_epub_fixer, args=(process_queue,))
+    ef_kill_thread.start()
+    return redirect(url_for('epub_fixer.show_epub_fixer_page'))
+
+@epub_fixer.route('/epub-fixer-cancel', methods=["GET"])
+def cancel_epub_fixer():
+    # Create kill trigger file
+    open(tempfile.gettempdir() + "/.kill_epub_fixer_trigger", 'w').close()
+    return redirect(url_for('epub_fixer.show_epub_fixer_page'))
+
+@epub_fixer.route('/epub-fixer-status', methods=["GET"])
+def get_status():
+    with open("/config/epub-fixer.log", 'r') as f:
         status = f.read()
     statusList = {'status':status}
     return json.dumps(statusList)

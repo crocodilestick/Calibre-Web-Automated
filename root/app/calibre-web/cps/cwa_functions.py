@@ -393,8 +393,6 @@ def kill_epub_fixer(queue):
                 os.remove(tempfile.gettempdir() + '/kindle_epub_fixer.lock')
             except FileNotFoundError:
                 ...
-            # # Empty tmp conversion dir of half finished files
-            # empty_tmp_con_dir(get_tmp_conversion_dir())
             # Remove the trigger file that triggered this block
             try:
                 os.remove(trigger_file)

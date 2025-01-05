@@ -29,17 +29,11 @@ def removeLock():
 # Will automatically run when the script exits
 atexit.register(removeLock)
 
-# Make sure required directories are present
-required_directories = [
-    "/config/.cwa_conversion_tmp",
-    "/config/processed_books",
-    "/config/processed_books/imported",
-    "/config/processed_books/failed",
-    "/config/processed_books/converted"
-]
-for directory in required_directories:
-    Path(directory).mkdir(exist_ok=True)
-    os.system(f"chown -R abc:abc {directory}")
+backup_destinations = {
+        entry.name: entry.path
+        for entry in os.scandir("/config/processed_books")
+        if entry.is_dir()
+    }
 
 
 class NewBookProcessor:
@@ -84,6 +78,13 @@ class NewBookProcessor:
             can_convert = True
         return can_convert, input_format
 
+    def backup(self, input_file, backup_type):
+        try:
+            output_path = backup_destinations[backup_type]
+            shutil.copy2(input_file, output_path)
+        except Exception as e:
+            print(f"[ingest-processor]: ERROR - The following error occurred when trying to copy {input_file} to {output_path}:\n{e}")
+
 
     def convert_book(self, end_format=None) -> tuple[bool, str]:
         """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting files to the calibre-web import folder."""
@@ -104,7 +105,7 @@ class NewBookProcessor:
             print(f"\n[ingest-processor]: END_CON: Conversion of {self.filename} complete in {time_book_conversion:.2f} seconds.\n", flush=True)
 
             if self.cwa_settings['auto_backup_conversions']:
-                shutil.copy2(self.filepath, f"/config/processed_books/converted/{os.path.basename(original_filepath)}")
+                self.backup(self.filepath, backup_type="converted")
 
             self.db.conversion_add_entry(original_filepath.stem,
                                         self.input_format,
@@ -115,7 +116,7 @@ class NewBookProcessor:
 
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to {end_format} due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
-            shutil.copy2(self.filepath, f"/config/processed_books/failed/{os.path.basename(original_filepath)}")
+            self.backup(self.filepath, backup_type="failed")
             return False, ""
 
 
@@ -138,7 +139,7 @@ class NewBookProcessor:
             try:
                 subprocess.run(['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, converted_filepath], check=True)
                 if self.cwa_settings['auto_backup_conversions']:
-                    shutil.copy2(self.filepath, f"/config/processed_books/converted/{os.path.basename(converted_filepath)}")
+                    self.backup(self.filepath, backup_type="converted")
 
                 self.db.conversion_add_entry(converted_filepath.stem,
                                             self.input_format,
@@ -149,7 +150,7 @@ class NewBookProcessor:
 
             except subprocess.CalledProcessError as e:
                 print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
-                shutil.copy2(converted_filepath, f"/config/processed_books/failed/{os.path.basename(self.filepath)}")
+                self.backup(converted_filepath, backup_type="failed")
                 return False, ""
             except Exception as e:
                 print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
@@ -179,21 +180,21 @@ class NewBookProcessor:
             print(f"[ingest-processor] Added {import_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:
-                shutil.copy2(book_path, f"/config/processed_books/imported/{import_filename}")
+                self.backup(book_path, backup_type="imported")
 
             self.db.import_add_entry(import_path.stem,
                                     str(self.cwa_settings["auto_backup_imports"]))
 
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {import_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
-            shutil.copy2(book_path, f"/config/processed_books/failed/{import_filename}")
+            self.backup(book_path, backup_type="failed")
         except Exception as e:
             print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
 
 
     def run_kindle_epub_fixer(self, filepath:str, dest=None) -> None:
         try:
-            EPUBFixer(filepath, dest).process()
+            EPUBFixer().process(filepath, dest)
         except Exception as e:
             print(f"[ingest-processor] An error occurred while processing {os.path.basename(filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 

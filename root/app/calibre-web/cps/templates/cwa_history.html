@@ -2,30 +2,17 @@
 {% block body %}
 <div class="discover">
   <h2>{{title}}</h2>
+
     <div>
-      <h3>Calibre-Web Automated Enforcement History</h3><a class="btn btn-default" id="show_full_enforcement" href="{{url_for('cwa_history.show_full_enforcement')}}">{{_('Click to See More')}}</a><br>
+      <h3>Calibre-Web Automated Conversion History</h3>
+      <a class="btn btn-default" href="{{ url_for('cwa_history.show_full_conversions') }}">{{_('Click to See More')}}</a><br>
       <table class="table table-striped">
         <tr>
-          {% for header in table_headers %}
+          {% for header in headers_conversion %}
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data %}
-        <tr>
-          {% for cell in row %}
-          <td>{{ cell }}</td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </table>
-      <h4><i>Paths</i></h4><a class="btn btn-default" id="show_full_enforcement" href="{{ url_for('cwa_history.show_full_enforcement_path') }}">{{_('Click to See More')}}</a><br>
-      <table class="table table-striped">
-        <tr>
-          {% for header in table_headers_p %}
-          <th>{{ header }}</th>
-          {% endfor %}
-        </tr>
-        {% for row in data_p %}
+        {% for row in data_conversions %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>
@@ -34,15 +21,17 @@
         {% endfor %}
       </table>
     </div>
+
     <div>
-      <h3>Calibre-Web Automated Import History</h3><a class="btn btn-default" id="show_full_enforcement" href="{{ url_for('cwa_history.show_full_imports') }}">{{_('Click to See More')}}</a><br>
+      <h3>Calibre-Web Automated Import History</h3>
+      <a class="btn btn-default" href="{{ url_for('cwa_history.show_full_imports') }}">{{_('Click to See More')}}</a><br>
       <table class="table table-striped">
         <tr>
-          {% for header in table_headers_i %}
+          {% for header in headers_import %}
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data_i %}
+        {% for row in data_imports %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>
@@ -51,15 +40,33 @@
         {% endfor %}
       </table>
     </div>
+
     <div>
-      <h3>Calibre-Web Automated Conversion History</h3><a class="btn btn-default" id="show_full_enforcement" href="{{ url_for('cwa_history.show_full_conversions') }}">{{_('Click to See More')}}</a><br>
+      <h3>Calibre-Web Automated EPUB Fixer History</h3>
+      <a class="btn btn-default" href="{{url_for('cwa_history.show_full_epub_fixer')}}">{{_('Click to See More')}}</a><br>
       <table class="table table-striped">
         <tr>
-          {% for header in table_headers_c %}
+          {% for header in headers_epub_fixer %}
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data_c %}
+        {% for row in data_epub_fixer %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+      <h4><i>EPUB Fixer History with Paths & Fixes</i></h4>
+      <a class="btn btn-default" href="{{ url_for('cwa_history.show_full_epub_fixer_with_paths_fixes') }}">{{_('Click to See More')}}</a><br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_epub_fixer_with_fixes %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_epub_fixer_with_fixes %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>
@@ -68,5 +75,41 @@
         {% endfor %}
       </table>
     </div>
+
+    <div>
+      <h3>Calibre-Web Automated Enforcement History</h3>
+      <a class="btn btn-default" href="{{url_for('cwa_history.show_full_enforcement')}}">{{_('Click to See More')}}</a><br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_enforcement %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_enforcement %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+      <h4><i>Enforcement History with Paths</i></h4>
+      <a class="btn btn-default" href="{{ url_for('cwa_history.show_full_enforcement_path') }}">{{_('Click to See More')}}</a><br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_enforcement_with_paths %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_enforcement_with_paths %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
 </div>
 {% endblock %}

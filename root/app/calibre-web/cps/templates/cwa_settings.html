@@ -67,6 +67,14 @@
         <label for="auto_backup_conversions" style="padding-left: 10px;">Enable CWA Conversion Auto-Backup</label><br>
         <p class="cwa-settings-tooltip">When active, the originals of ingested files that undergo conversion will be stored in /config/processed_books/converted</p>
 
+        {% if cwa_settings['auto_backup_epub_fixes'] %}
+        <input type="checkbox" id="auto_backup_epub_fixes" name="auto_backup_epub_fixes" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="If deactivated, the originals of EPUB's that have been fixed will not be stored (except in the case of a process failure)">
+        {% else %}
+        <input type="checkbox" id="auto_backup_epub_fixes" name="auto_backup_epub_fixes" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="If deactivated, the originals of EPUB's that have been fixed will not be stored (except in the case of a process failure)">
+        {% endif %}
+        <label for="auto_backup_epub_fixes" style="padding-left: 10px;">Enable CWA EPUB Fixer Auto-Backup</label><br>
+        <p class="cwa-settings-tooltip">When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer service will be stored in /config/processed_books/fixed_originals</p>
+
         {% if cwa_settings['auto_zip_backups'] %}
         <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" data-html="true" title="If deactivated, backed up files will be left alone in their respective folders">
         {% else %}

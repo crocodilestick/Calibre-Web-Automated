@@ -1,7 +1,6 @@
 import sqlite3
 import sys
 from sqlite3 import Error as sqlError
-import os
 import re
 from datetime import datetime
 
@@ -18,26 +17,11 @@ class CWA_DB:
 
         self.schema_path = "/app/calibre-web-automated/scripts/cwa_schema.sql"
 
-        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions"]
-
-        self.enforcement_history_headers = {"no_path":["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
-                                    "with_path":["Timestamp","Book ID", "File Path"]}
-        self.import_history_headers = ["Timestamp", "Filename", "Original Backed Up?"]
-        self.conversion_history_headers = ["Timestamp", "Filename", "Original Format", "End Format", "Original Backed Up?"]
-
-        self.cwa_default_settings = {"default_settings":1,
-                                    "auto_backup_imports": 1,
-                                    "auto_backup_conversions": 1,
-                                    "auto_zip_backups": 1,
-                                    "cwa_update_notifications": 1,
-                                    "auto_convert": 1,
-                                    "auto_convert_target_format": "epub",
-                                    "auto_convert_ignored_formats":"",
-                                    "auto_ingest_ignored_formats":"",
-                                    "auto_metadata_enforcement":1,
-                                    "kindle_epub_fixer":1}
+        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes"]
 
         self.tables, self.schema = self.make_tables()
+
+        self.cwa_default_settings = self.get_cwa_default_settings()
         self.ensure_settings_schema_match()
         self.match_stat_table_columns_with_schema()
         self.set_default_settings()
@@ -92,6 +76,33 @@ class CWA_DB:
             self.con.commit()
 
         return tables, schema
+
+
+    def get_cwa_default_settings(self):
+        for table in self.tables:
+            if "cwa_settings" in table:
+                settings_table = table.strip()
+                break
+
+        settings_lines = []
+        for line in settings_table.split('\n'):
+            if line[:4] == "    ":
+                settings_lines.append(line.strip())
+
+        default_settings = {}
+        for line in settings_lines:
+            components = line.split(' ')
+            setting_name = components[0]
+            setting_value = components[3]
+
+            try:
+                setting_value = int(setting_value)
+            except ValueError:
+                setting_value = setting_value.replace('"', '')
+
+            default_settings |= {setting_name:setting_value}
+
+        return default_settings
 
 
     def ensure_settings_schema_match(self) -> None:
@@ -276,50 +287,37 @@ class CWA_DB:
         results_no_path = self.cur.execute("SELECT timestamp, book_id, book_title, author, trigger_type FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
         results_with_path = self.cur.execute("SELECT timestamp, book_id, file_path FROM cwa_enforcement ORDER BY timestamp DESC;").fetchall()
         if paths:
-            if verbose:
-                results_with_path.reverse()
-                if web_ui:
-                    return results_with_path, self.enforcement_history_headers['with_path']
-                else:
-                    print(f"\n{tabulate(results_with_path, headers=self.enforcement_history_headers['with_path'], tablefmt='rounded_grid')}\n")
-            else:
-                newest_ten = []
-                x = 0
-                for result in results_with_path:
-                    newest_ten.insert(0, result)
-                    x += 1
-                    if x == 10:
-                        break
-                if web_ui:
-                    return newest_ten, self.enforcement_history_headers['with_path']
-                else:
-                    print(f"\n{tabulate(newest_ten, headers=self.enforcement_history_headers['with_path'], tablefmt='rounded_grid')}\n")
+            results = results_with_path
+            headers = ["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"]
         else:
-            if verbose:
-                results_no_path.reverse()
-                if web_ui:
-                    return results_no_path, self.enforcement_history_headers['no_path']
-                else:
-                    print(f"\n{tabulate(results_no_path, headers=self.enforcement_history_headers['no_path'], tablefmt='rounded_grid')}\n")
+            results = results_no_path
+            headers = ["Timestamp","Book ID", "Filepath"]
+
+        if verbose:
+            results.reverse()
+            if web_ui:
+                return results
             else:
-                newest_ten = []
-                x = 0
-                for result in results_no_path:
-                    newest_ten.insert(0, result)
-                    x += 1
-                    if x == 10:
-                        break
-                if web_ui:
-                    return newest_ten, self.enforcement_history_headers['no_path']
-                else:
-                    print(f"\n{tabulate(newest_ten, headers=self.enforcement_history_headers['no_path'], tablefmt='rounded_grid')}\n")
+                print(f"\n{tabulate(results, headers=headers, tablefmt='rounded_grid')}\n")
+        else:
+            newest_ten = []
+            x = 0
+            for result in results:
+                newest_ten.insert(0, result)
+                x += 1
+                if x == 10:
+                    break
+            if web_ui:
+                return newest_ten
+            else:
+                print(f"\n{tabulate(newest_ten, headers=headers, tablefmt='rounded_grid')}\n")
 
 
     def get_import_history(self, verbose: bool):
         results = self.cur.execute("SELECT timestamp, filename, original_backed_up FROM cwa_import ORDER BY timestamp DESC;").fetchall()
         if verbose:
             results.reverse()
-            return results, self.import_history_headers
+            return results
         else:
             newest_ten = []
             x = 0
@@ -328,14 +326,14 @@ class CWA_DB:
                 x += 1
                 if x == 10:
                     break
-            return newest_ten, self.import_history_headers
+            return newest_ten
 
 
     def get_conversion_history(self, verbose: bool):
         results = self.cur.execute("SELECT timestamp, filename, original_format, end_format, original_backed_up FROM cwa_conversions ORDER BY timestamp DESC;").fetchall()
         if verbose:
             results.reverse()
-            return results, self.conversion_history_headers
+            return results
         else:
             newest_ten = []
             x = 0
@@ -344,7 +342,29 @@ class CWA_DB:
                 x += 1
                 if x == 10:
                     break
-            return newest_ten, self.conversion_history_headers
+            return newest_ten
+
+
+    def get_epub_fixer_history(self, fixes:bool, verbose: bool):
+        results_no_fixes = self.cur.execute("SELECT timestamp, filename, manually_triggered, num_of_fixes_applied, original_backed_up FROM epub_fixes ORDER BY timestamp DESC;").fetchall()
+        results_with_fixes = self.cur.execute("SELECT timestamp, filename, file_path, fixes_applied FROM epub_fixes ORDER BY timestamp DESC;").fetchall()
+        if fixes:
+            results = results_with_fixes
+        else:
+            results = results_no_fixes
+
+        if verbose:
+            results.reverse()
+            return results
+        else:
+            newest_ten = []
+            x = 0
+            for result in results:
+                newest_ten.insert(0, result)
+                x += 1
+                if x == 10:
+                    break
+            return newest_ten
 
 
     def import_add_entry(self, filename, original_backed_up):
@@ -356,6 +376,11 @@ class CWA_DB:
     def conversion_add_entry(self, filename, original_format, end_format, original_backed_up): # TODO Add end_format - 22.11.2024 - Done?
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_format, end_format, original_backed_up) VALUES (?, ?, ?, ?, ?);", (timestamp, filename, original_format, end_format, original_backed_up))
+        self.con.commit()
+
+    def epub_fixer_add_entry(self, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied=""):
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.cur.execute("INSERT INTO epub_fixes(timestamp, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied) VALUES (?, ?, ?, ?, ?, ?, ?);", (timestamp, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied))
         self.con.commit()
 
 

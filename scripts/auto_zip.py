@@ -13,7 +13,9 @@ class AutoZipper:
         self.converted_dir = self.archive_dirs_stem + "converted/"
         self.failed_dir = self.archive_dirs_stem + "failed/"
         self.imported_dir = self.archive_dirs_stem + "imported/"
-        self.archive_dirs = [self.converted_dir, self.failed_dir, self.imported_dir]
+        self.fixed_originals_dir = self.archive_dirs_stem + "fixed_originals/"
+
+        self.archive_dirs = [self.converted_dir, self.failed_dir, self.imported_dir, self.fixed_originals_dir]
 
         self.current_date = datetime.today().strftime('%Y-%m-%d')
 

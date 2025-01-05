@@ -54,18 +54,11 @@ def removeLock():
 # Will automatically run when the script exits
 atexit.register(removeLock)
 
-
-# Make sure required directories are present
-required_directories = [
-    "/config/.cwa_conversion_tmp",
-    "/config/processed_books",
-    "/config/processed_books/imported",
-    "/config/processed_books/failed",
-    "/config/processed_books/converted"
-]
-for directory in required_directories:
-    Path(directory).mkdir(exist_ok=True)
-    os.system(f"chown -R abc:abc {directory}")
+backup_destinations = {
+        entry.name: entry.path
+        for entry in os.scandir("/config/processed_books")
+        if entry.is_dir()
+    }
 
 
 class LibraryConverter:
@@ -124,6 +117,14 @@ class LibraryConverter:
         return to_convert
 
 
+    def backup(self, input_file, backup_type):
+        try:
+            output_path = backup_destinations[backup_type]
+            shutil.copy2(input_file, output_path)
+        except Exception as e:
+            print_and_log(f"[convert-library]: ERROR - The following error occurred when trying to copy {input_file} to {output_path}:\n{e}")
+
+
     def convert_library(self):
         for file in self.to_convert:
             filename = os.path.basename(file)
@@ -141,7 +142,7 @@ class LibraryConverter:
                 print_and_log("    ├── metadata.opf")
                 print_and_log("    └── Wizard's First Rule - Terry Goodkind.epub")
 
-                shutil.copyfile(file, f"/config/processed_books/failed/{os.path.basename(file)}")
+                self.backup(file, backup_type="failed")
                 self.current_book += 1
                 continue
 
@@ -167,7 +168,7 @@ class LibraryConverter:
                                 print(line)
 
                     if self.cwa_settings['auto_backup_conversions']:
-                        shutil.copyfile(file, f"/config/processed_books/converted/{os.path.basename(file)}")
+                        self.backup(file, backup_type="converted")
 
                     self.db.conversion_add_entry(os.path.basename(target_filepath),
                                                 Path(file).suffix,
@@ -182,7 +183,7 @@ class LibraryConverter:
 
             if self.target_format == "epub" and self.kindle_epub_fixer:
                 try:
-                    EPUBFixer(target_filepath).process()
+                    EPUBFixer().process(target_filepath)
                     print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Resulting EPUB file successfully processed by CWA-EPUB-Fixer!")
                 except Exception as e:
                     print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while processing {os.path.basename(target_filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
@@ -201,7 +202,7 @@ class LibraryConverter:
                             print(line)
 
                 if self.cwa_settings['auto_backup_imports']:
-                    shutil.copyfile(target_filepath, f"/config/processed_books/imported/{os.path.basename(target_filepath)}")
+                    self.backup(target_filepath, backup_type="imported")
 
                 self.db.import_add_entry(os.path.basename(target_filepath),
                                         str(self.cwa_settings["auto_backup_imports"]))
@@ -209,20 +210,13 @@ class LibraryConverter:
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Import of {os.path.basename(target_filepath)} successfully completed!")
             except subprocess.CalledProcessError as e:
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Import of {os.path.basename(target_filepath)} was not successfully completed. Converted file moved to /config/processed_books/failed/{os.path.basename(target_filepath)}. See the following error:\n{e}")
-                shutil.move(target_filepath, f"/config/processed_books/failed/{os.path.basename(target_filepath)}")
+                try:
+                    output_path = f"/config/processed_books/failed/{os.path.basename(target_filepath)}"
+                    shutil.move(target_filepath, output_path)
+                except Exception as e:
+                    print_and_log(f"[convert-library]: ERROR - The following error occurred when trying to copy {file} to {output_path}:\n{e}")
                 self.current_book += 1
                 continue
-
-            ### As of Version 3.0.0, CWA will no longer remove the originals of converted files as CWA now supports multiple formats for each book ###
-
-            # try: # Remove Book from Existing Library
-            #     subprocess.run(["calibredb", "remove", book_id, "--permanent", "--with-library", self.library_dir], check=True)
-
-            #     print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} (Book ID: {book_id}) was successfully removed from library.\nAdding converted version to library...")
-            # except subprocess.CalledProcessError as e:
-            #     print_and_log(f"[convert-library]: Non-epub version of {Path(file).stem} couldn't be successfully removed from library. See the following error:\n{e}")
-            #     self.current_book += 1
-            #     continue
 
             self.set_library_permissions()
             self.empty_tmp_con_dir()
@@ -236,7 +230,7 @@ class LibraryConverter:
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) File already in epub format, converting directly to kepub...")
 
             if self.cwa_settings['auto_backup_conversions']:
-                shutil.copyfile(filepath, f"/config/processed_books/converted/{os.path.basename(filepath)}")
+                self.backup(filepath, backup_type="converted")
 
             epub_filepath = filepath
             epub_ready = True
@@ -257,7 +251,7 @@ class LibraryConverter:
                             print(line)
 
                 if self.cwa_settings['auto_backup_conversions']:
-                    shutil.copyfile(filepath, f"/config/processed_books/converted/{os.path.basename(filepath)}")
+                    self.backup(filepath, backup_type="converted")
 
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Intermediate conversion of {os.path.basename(filepath)} to epub from {import_format} successful, now converting to kepub...")
                 epub_ready = True
@@ -282,7 +276,7 @@ class LibraryConverter:
                             print(line)
 
                 if self.cwa_settings['auto_backup_conversions']:
-                    shutil.copy2(filepath, f"/config/processed_books/converted")
+                    self.backup(filepath, backup_type="converted")
 
                 self.db.conversion_add_entry(epub_filepath.stem,
                                             import_format,
@@ -292,7 +286,7 @@ class LibraryConverter:
                 return True, target_filepath
             except subprocess.CalledProcessError as e:
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) CON_ERROR: {os.path.basename(filepath)} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}")
-                shutil.copy2(epub_filepath, f"/config/processed_books/failed")
+                self.backup(epub_filepath, backup_type="failed")
                 return False, ""
         else:
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred when converting the original {import_format} to epub. Cancelling kepub conversion and moving on to next file...")

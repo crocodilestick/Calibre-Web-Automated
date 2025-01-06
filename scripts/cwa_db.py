@@ -386,7 +386,7 @@ class CWA_DB:
         
         for table in totals:
             try:
-                totals[table] = self.cur.execute(f"SELECT count(*) FROM cwa_enforcement").fetchone()[0]
+                totals[table] = self.cur.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
             except Exception as e:
                 print(f"[cwa-db] ERROR - The following error occurred when fetching stat totals:\n{e}")
 

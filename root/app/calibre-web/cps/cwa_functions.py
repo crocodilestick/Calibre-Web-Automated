@@ -320,6 +320,19 @@ def cwa_flash_status():
 ##                                                                            ##
 ##————————————————————————————————————————————————————————————————————————————##
 
+##——————————————————————————————SHARED FUNCTIONS——————————————————————————————##
+
+def extract_progress(log_content):
+    """Analyses a log's given contents & returns the processes current progress as a dict"""
+    # Regex to find all progress matches (e.g., "n/n")
+    matches = re.findall(r'(\d+)/(\d+)', log_content)
+    if matches:
+        # Convert the matches to integers and take the last one
+        current, total = map(int, matches[-1])
+        return {"current": current, "total": total}
+    return {"current": 0, "total": 0}
+
+##————————————————————————————————————————————————————————————————————————————##
 def convert_library_start(queue):
     cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
     queue.put(cl_process)
@@ -410,7 +423,9 @@ def cancel_convert_library():
 def get_status():
     with open("/config/convert-library.log", 'r') as f:
         status = f.read()
-    statusList = {'status':status}
+    progress = extract_progress(status)
+    statusList = {'status':status,
+                  'progress':progress}
     return json.dumps(statusList)
 
 
@@ -483,15 +498,6 @@ def cancel_epub_fixer():
     # Create kill trigger file
     open(tempfile.gettempdir() + "/.kill_epub_fixer_trigger", 'w').close()
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
-
-def extract_progress(log_content):
-    # Regex to find all progress matches (e.g., "n/n")
-    matches = re.findall(r'(\d+)/(\d+)', log_content)
-    if matches:
-        # Convert the matches to integers and take the last one
-        current, total = map(int, matches[-1])
-        return {"current": current, "total": total}
-    return {"current": 0, "total": 0}
 
 @epub_fixer.route('/epub-fixer-status', methods=["GET"])
 def get_status():

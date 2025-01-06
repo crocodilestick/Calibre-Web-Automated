@@ -18,18 +18,14 @@
           <a class="btn btn-default" href="{{ url_for('epub_fixer.start_epub_fixer') }}" style="vertical-align: top; float: right; width: 100px;">{{_('Start')}}</a>
         </div>
       </div>
-      <div class="row">
-        <div class="progress-container" style="margin-top: 20px;">
-          <div id="progress-bar" style="width: 0%; height: 25px; background-color: green; text-align: center; color: white;">0%</div>
-        </div>
-      </div>
+
       <div class="row">
         <div class="logging_window" style="padding-left: 15px;
                                           padding-right: 15px;
                                           background: #0000003d;
                                           padding-top: 11px;
                                           padding-bottom: 1px;
-                                          max-height: calc(100vh - 30rem);
+                                          max-height: calc(100vh - 40rem);
                                           overflow-y: scroll;">
           <p id="innerStatus" style="color: whitesmoke; font-size: small;">No current or previous run to display. Press the Start button above to initiate a run.</h2>
         </div>
@@ -67,9 +63,27 @@
         progressBar.textContent = percentage + "%";
       }
     }
-    
-    if (get.status.includes("CWA Kindle EPUB Fixer Service - Run Ended:") || get.status.includes("CWA EPUB FIXER PROCESS TERMINATED BY USER AT")){
+
+    if (get.status.includes("CWA EPUB FIXER PROCESS TERMINATED BY USER AT")){
+      // Add finished log
       document.getElementById("innerStatus").innerHTML;
+      // Check if run was cancelled, make progress bar red if so
+      const progressBar = document.getElementById("progress-bar");
+      progressBar.style.backgroundColor = "#D22B2B"; // Cadmium Red
+      // End script
+      clearTimeout(timeout);
+      return false;
+    }
+    
+    if (get.status.includes("CWA Kindle EPUB Fixer Service - Run Ended:")){
+      // Add finished log
+      document.getElementById("innerStatus").innerHTML;
+      // Set the progress bar to 100%
+      const percentage = 100;
+      const progressBar = document.getElementById("progress-bar");
+      progressBar.style.width = percentage + "%";
+      progressBar.textContent = percentage + "%";
+      // End script
       clearTimeout(timeout);
       return false;
     }

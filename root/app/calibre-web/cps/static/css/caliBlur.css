@@ -8351,3 +8351,19 @@ select.cwa-settings-select {
     text-align: center;
     border-radius: 6px;
 }
+
+.progress-container {
+    background-color: #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 100%;
+}
+
+#progress-bar {
+    height: 25px;
+    background-color: green;
+    color: white;
+    text-align: center;
+    line-height: 25px;
+    transition: width 0.3s ease-in-out;
+}

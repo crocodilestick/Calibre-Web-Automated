@@ -13,7 +13,7 @@
         {% for row in data %}
         <tr>
           {% for cell in row %}
-          <td>{{ cell }}</td>
+          <td style="max-height: 20rem; overflow-y: scroll; display: flex;">{{ cell | replace("\n", "<br>") | safe }}</td>
           {% endfor %}
         </tr>
         {% endfor %}

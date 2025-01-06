@@ -19,6 +19,11 @@
         </div>
       </div>
       <div class="row">
+        <div class="progress-container" style="margin-top: 20px;">
+          <div id="progress-bar" style="width: 0%; height: 25px; background-color: green; text-align: center; color: white;">0%</div>
+        </div>
+      </div>
+      <div class="row">
         <div class="logging_window" style="padding-left: 15px;
                                           padding-right: 15px;
                                           background: #0000003d;
@@ -50,7 +55,17 @@
     
     // Check if get.status is a non-empty string
     if (get.status && get.status.trim() !== "") {
-        document.getElementById("innerStatus").innerHTML = get.status.replace(/\n/g, "<br>");
+      document.getElementById("innerStatus").innerHTML = get.status.replace(/\n/g, "<br>");
+    }
+
+    if (get.progress) {
+      const { current, total } = get.progress;
+      if (total > 0) {
+        const percentage = Math.round((current / total) * 100);
+        const progressBar = document.getElementById("progress-bar");
+        progressBar.style.width = percentage + "%";
+        progressBar.textContent = percentage + "%";
+      }
     }
     
     if (get.status.includes("CWA Kindle EPUB Fixer Service - Run Ended:") || get.status.includes("CWA EPUB FIXER PROCESS TERMINATED BY USER AT")){

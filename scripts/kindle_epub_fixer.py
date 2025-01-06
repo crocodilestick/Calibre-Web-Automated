@@ -39,7 +39,7 @@ logger.addHandler(file_handler)
 def print_and_log(string, log=True) -> None:
     """ Ensures the provided string is passed to STDOUT AND stored in the run's log file """
     if log:
-        logger.info(string)
+        logger.info(string.replace("[cwa-kindle-epub-fixer] ", ""))
     print(string)
 
 ### LOCK FILES
@@ -252,12 +252,20 @@ class EPUBFixer:
             print_and_log(line_suffix + f"No issues found! - {epub_path}", log=self.manually_triggered)
 
     def add_entry_to_db(self, input_path, output_path):
+        if self.fixed_problems:
+            fixed_problems = []
+            for count, problem in enumerate(self.fixed_problems):
+                fixed_problems.append(f"{str(count + 1).zfill(2)} - {problem}")
+            fixed_problems = "\n".join(fixed_problems)
+        else:
+            fixed_problems = "No fixes required"
+
         self.db.epub_fixer_add_entry(Path(input_path).stem,
                                     self.manually_triggered,
                                     len(self.fixed_problems),
                                     str(self.cwa_settings['auto_backup_epub_fixes']),
                                     output_path,
-                                    "\n".join(self.fixed_problems))
+                                    fixed_problems)
 
 
     def process(self, input_path, output_path=None, default_language='en'):

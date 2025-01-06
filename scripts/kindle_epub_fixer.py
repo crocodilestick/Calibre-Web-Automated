@@ -209,7 +209,6 @@ class EPUBFixer:
         for filename in list(self.files.keys()):
             ext = filename.split('.')[-1]
             if ext in ['html', 'xhtml']:
-                # parser_type = 'application/xhtml+xml' if ext == 'xhtml' else 'text/html'
                 dom = minidom.parseString(self.files[filename])
                 stray_img = []
                 
@@ -248,7 +247,7 @@ class EPUBFixer:
         if self.fixed_problems:
             print_and_log(line_suffix + f"{len(self.fixed_problems)} issues fixed with {epub_path}:", log=self.manually_triggered)
             for count, problem in enumerate(self.fixed_problems):
-                print_and_log(f"   {count + 1} - {problem}", log=self.manually_triggered)            
+                print_and_log(f"   {str(count + 1).zfill(2)} - {problem}", log=self.manually_triggered)            
         else:
             print_and_log(line_suffix + f"No issues found! - {epub_path}", log=self.manually_triggered)
 
@@ -265,44 +264,40 @@ class EPUBFixer:
         """Process a single EPUB file"""
         if not output_path:
             output_path = input_path
-        try:
-            # Back Up Original File
-            print_and_log("[cwa-kindle-epub-fixer] Backing up original file...", log=self.manually_triggered)
-            self.backup_original_file(input_path)
 
-            # Load EPUB
-            print_and_log("[cwa-kindle-epub-fixer] Loading provided EPUB...", log=self.manually_triggered)
-            self.read_epub(input_path)
+        # Back Up Original File
+        print_and_log("[cwa-kindle-epub-fixer] Backing up original file...", log=self.manually_triggered)
+        self.backup_original_file(input_path)
 
-            # Run fixing procedures
-            print_and_log("[cwa-kindle-epub-fixer] Checking linking to body ID to prevent unresolved hyperlinks...", log=self.manually_triggered)
-            self.fix_body_id_link()
-            print_and_log("[cwa-kindle-epub-fixer] Checking language field tag is valid...", log=self.manually_triggered)
-            self.fix_book_language(default_language)
-            print_and_log("[cwa-kindle-epub-fixer] Checking for stray images...", log=self.manually_triggered)
-            self.fix_stray_img()
-            print_and_log("[cwa-kindle-epub-fixer] Checking UTF-8 encoding declaration...", log=self.manually_triggered)
-            self.fix_encoding()
+        # Load EPUB
+        print_and_log("[cwa-kindle-epub-fixer] Loading provided EPUB...", log=self.manually_triggered)
+        self.read_epub(input_path)
 
-            # Notify user and/or write to log
-            self.export_issue_summary(input_path)
+        # Run fixing procedures
+        print_and_log("[cwa-kindle-epub-fixer] Checking linking to body ID to prevent unresolved hyperlinks...", log=self.manually_triggered)
+        self.fix_body_id_link()
+        print_and_log("[cwa-kindle-epub-fixer] Checking language field tag is valid...", log=self.manually_triggered)
+        self.fix_book_language(default_language)
+        print_and_log("[cwa-kindle-epub-fixer] Checking for stray images...", log=self.manually_triggered)
+        self.fix_stray_img()
+        print_and_log("[cwa-kindle-epub-fixer] Checking UTF-8 encoding declaration...", log=self.manually_triggered)
+        self.fix_encoding()
 
-            # Write EPUB
-            print_and_log("[cwa-kindle-epub-fixer] Writing EPUB...", log=self.manually_triggered)
-            if Path(output_path).is_dir():
-                output_path = output_path + os.path.basename(input_path)
-            self.write_epub(output_path)
-            print_and_log("[cwa-kindle-epub-fixer] EPUB successfully written.", log=self.manually_triggered)
-            
-            # Add entry to cwa.db
-            print_and_log("[cwa-kindle-epub-fixer] Adding run to cwa.db...", log=self.manually_triggered)
-            self.add_entry_to_db(input_path, output_path)
-            print_and_log("[cwa-kindle-epub-fixer] Run successfully added to cwa.db.", log=self.manually_triggered)
-            return self.fixed_problems
-            
-        except Exception as e:
-            print(f"[cwa-kindle-epub-fixer] ERROR - Error processing {input_path}: {e}")
-            return None
+        # Notify user and/or write to log
+        self.export_issue_summary(input_path)
+
+        # Write EPUB
+        print_and_log("[cwa-kindle-epub-fixer] Writing EPUB...", log=self.manually_triggered)
+        if Path(output_path).is_dir():
+            output_path = output_path + os.path.basename(input_path)
+        self.write_epub(output_path)
+        print_and_log("[cwa-kindle-epub-fixer] EPUB successfully written.", log=self.manually_triggered)
+        
+        # Add entry to cwa.db
+        print_and_log("[cwa-kindle-epub-fixer] Adding run to cwa.db...", log=self.manually_triggered)
+        self.add_entry_to_db(input_path, output_path)
+        print_and_log("[cwa-kindle-epub-fixer] Run successfully added to cwa.db.", log=self.manually_triggered)
+        return self.fixed_problems
 
 
 def get_library_location() -> str:
@@ -333,28 +328,28 @@ def main():
     parser.add_argument('--all', '-a', required=False, default=False, action='store_true', help='Will attempt to fix any issues in every EPUB in th user\'s library')
     
     args = parser.parse_args()
-    logger.info(f"CWA Kindle EPUB Fixer Service - Run Started: {datetime.now()}\n")
+    # logger.info(f"CWA Kindle EPUB Fixer Service - Run Started: {datetime.now()}\n")
 
     ### CATCH INCOMPATIBLE COMBINATIONS OF ARGUMENTS
     if not args.input_file and not args.all:
         print("[cwa-kindle-epub-fixer] ERROR - No file provided")
-        logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+        # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
         sys.exit(4)
     elif args.all and args.input_file:
         print("[cwa-kindle-epub-fixer] ERROR - Can't give all and a filepath at the same time")
-        logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+        # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
         sys.exit(5)
 
     ### INPUT_FILE PROVIDED
     elif args.input_file and not args.all:
         # Validate input file
         if not Path(args.input_file).exists():
-            print_and_log(f"[cwa-kindle-epub-fixer] ERROR - Given file {args.input_file} does not exist")
-            logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+            print(f"[cwa-kindle-epub-fixer] ERROR - Given file {args.input_file} does not exist")
+            # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(3)
         if not args.input_file.lower().endswith('.epub'):
-            print_and_log("[cwa-kindle-epub-fixer] ERROR - The input file must be an EPUB file with a .epub extension.")
-            logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+            print("[cwa-kindle-epub-fixer] ERROR - The input file must be an EPUB file with a .epub extension.")
+            # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(1)
         # Determine output path
         if args.output:
@@ -366,12 +361,18 @@ def main():
                 output_path = Path(args.input_file)
         # Run EPUBFixer
         print(f"[cwa-kindle-epub-fixer] Processing given file - {args.input_file}...")
-        EPUBFixer(manually_triggered=True).process(args.input_file, output_path, args.language)
-        logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+        try:
+            EPUBFixer(manually_triggered=True).process(args.input_file, output_path, args.language)
+        except:
+            print(f"[cwa-kindle-epub-fixer] ERROR - Error processing {args.input_file}: {e}")
+            # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+            sys.exit(6)
+        # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
         sys.exit(0)
 
     ### ALL PASSED AS ARGUMENT
     elif args.all and not args.input_file:
+        logger.info(f"CWA Kindle EPUB Fixer Service - Run Started: {datetime.now()}\n")
         print_and_log("[cwa-kindle-epub-fixer] Processing all epubs in library...")
         epubs_to_process = get_all_epubs_in_library()
         if len(epubs_to_process) > 0:

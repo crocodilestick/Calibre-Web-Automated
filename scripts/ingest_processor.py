@@ -88,9 +88,9 @@ class NewBookProcessor:
 
     def convert_book(self, end_format=None) -> tuple[bool, str]:
         """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting files to the calibre-web import folder."""
-        print(f"\n[ingest-processor]: Starting conversion process for {self.filename}...", flush=True)
+        print(f"[ingest-processor]: Starting conversion process for {self.filename}...", flush=True)
         print(f"[ingest-processor]: Converting file from {self.input_format} to {self.target_format} format...\n", flush=True)
-        print(f"[ingest-processor]: START_CON: Converting {self.filename}...\n", flush=True)
+        print(f"\n[ingest-processor]: START_CON: Converting {self.filename}...\n", flush=True)
 
         if end_format == None:
             end_format = self.target_format # If end_format isn't given, the file is converted to the target format specified in the CWA Settings page
@@ -115,7 +115,7 @@ class NewBookProcessor:
             return True, target_filepath
 
         except subprocess.CalledProcessError as e:
-            print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to {end_format} due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
+            print(f"\n[ingest-processor]: CON_ERROR: {self.filename} could not be converted to {end_format} due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
             self.backup(self.filepath, backup_type="failed")
             return False, ""
 
@@ -195,6 +195,7 @@ class NewBookProcessor:
     def run_kindle_epub_fixer(self, filepath:str, dest=None) -> None:
         try:
             EPUBFixer().process(input_path=filepath, output_path=dest)
+            print(f"[ingest-processor] {os.path.basename(filepath)} successfully processed with the cwa-kindle-epub-fixer!")
         except Exception as e:
             print(f"[ingest-processor] An error occurred while processing {os.path.basename(filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 

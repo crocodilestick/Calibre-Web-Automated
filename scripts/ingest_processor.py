@@ -194,7 +194,7 @@ class NewBookProcessor:
 
     def run_kindle_epub_fixer(self, filepath:str, dest=None) -> None:
         try:
-            EPUBFixer().process(filepath, dest)
+            EPUBFixer().process(input_path=filepath, output_path=dest)
         except Exception as e:
             print(f"[ingest-processor] An error occurred while processing {os.path.basename(filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 

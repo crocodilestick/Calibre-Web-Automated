@@ -46,7 +46,10 @@
       console.error("Error: ", e);
     }
     
-    document.getElementById("innerStatus").innerHTML = get.status.replace(/\n/g, "<br>"); // * 10 + "&percnt;"
+    // Check if get.status is a non-empty string
+    if (get.status && get.status.trim() !== "") {
+        document.getElementById("innerStatus").innerHTML = get.status.replace(/\n/g, "<br>");
+    }
     
     if (get.status.includes("CWA Convert Library Service - Run Ended:") || get.status.includes("CONVERT LIBRARY PROCESS TERMINATED BY USER")){
       document.getElementById("innerStatus").innerHTML;

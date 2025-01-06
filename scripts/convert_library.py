@@ -29,7 +29,7 @@ logger.addHandler(file_handler)
 
 def print_and_log(string) -> None:
     """ Ensures the provided string is passed to STDOUT and stored in the runs log file """
-    logging.info(string)
+    logger.info(string)
     print(string)
 
 
@@ -41,7 +41,7 @@ try:
     lock.close()
 except FileExistsError:
     print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
-    logging.info(f"\nCWA Convert Library Service - Run Cancelled: {datetime.now()}")
+    logger.info(f"\nCWA Convert Library Service - Run Cancelled: {datetime.now()}")
     sys.exit(2)
 
 # Defining function to delete the lock on script exit
@@ -183,7 +183,7 @@ class LibraryConverter:
 
             if self.target_format == "epub" and self.kindle_epub_fixer:
                 try:
-                    EPUBFixer().process(target_filepath)
+                    EPUBFixer().process(input_path=target_filepath)
                     print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Resulting EPUB file successfully processed by CWA-EPUB-Fixer!")
                 except Exception as e:
                     print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while processing {os.path.basename(target_filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
@@ -321,17 +321,17 @@ def main():
     parser.add_argument('--verbose', '-v', action='store_true', required=False, dest='verbose', help='When passed, the output from the ebook-convert command will be included in what is shown to the user in the Web UI', default=False)
     args = parser.parse_args()
 
-    logging.info(f"CWA Convert Library Service - Run Started: {datetime.now()}\n")
+    logger.info(f"CWA Convert Library Service - Run Started: {datetime.now()}\n")
     converter = LibraryConverter(args)
     if len(converter.to_convert) > 0:
         converter.convert_library()
     else:
         print_and_log("[convert-library]: No books found in library without a copy in the target format. Exiting now...")
-        logging.info(f"\nCWA Convert Library Service - Run Ended: {datetime.now()}")
+        logger.info(f"\nCWA Convert Library Service - Run Ended: {datetime.now()}")
         sys.exit(0)
 
     print_and_log(f"\n[convert-library]: Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")
-    logging.info(f"\nCWA Convert Library Service - Run Ended: {datetime.now()}")
+    logger.info(f"\nCWA Convert Library Service - Run Ended: {datetime.now()}")
     sys.exit(0)
 
 

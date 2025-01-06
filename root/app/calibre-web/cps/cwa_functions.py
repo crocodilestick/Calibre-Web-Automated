@@ -19,6 +19,8 @@ import tempfile
 from datetime import datetime
 import re
 
+from .web import cwa_get_num_books_in_library
+
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
@@ -27,7 +29,7 @@ switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
 convert_library = Blueprint('convert_library', __name__)
 epub_fixer = Blueprint('epub_fixer', __name__)
-cwa_history = Blueprint('cwa_history', __name__)
+cwa_stats = Blueprint('cwa_stats', __name__)
 cwa_check_status = Blueprint('cwa_check_status', __name__)
 cwa_settings = Blueprint('cwa_settings', __name__)
 
@@ -193,6 +195,14 @@ def set_cwa_settings():
 ##                                                                            ##
 ##————————————————————————————————————————————————————————————————————————————##
 
+def get_cwa_stats() -> dict[str,int]:
+    """Returns CWA stat totals as a dict (keys are table names except for total_books)"""
+    cwa_db = CWA_DB()
+    totals = cwa_db.get_stat_totals()
+    totals["total_books"] = cwa_get_num_books_in_library() # from web.py
+
+    return totals
+
 ### TABLE HEADERS
 headers = {
     "enforcement":{
@@ -213,10 +223,10 @@ headers = {
         "Timestamp", "Filename", "Original Format", "End Format", "Original Backed Up?"],
 }
 
-@cwa_history.route("/cwa-history-show", methods=["GET", "POST"])
+@cwa_stats.route("/cwa-history-show", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
-def cwa_history_show():
+def cwa_stats_show():
     cwa_db = CWA_DB()
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
     data_enforcement_with_paths = cwa_db.enforce_show(paths=True, verbose=False, web_ui=True)
@@ -225,7 +235,8 @@ def cwa_history_show():
     data_epub_fixer = cwa_db.get_epub_fixer_history(fixes=False, verbose=False)
     data_epub_fixer_with_fixes = cwa_db.get_epub_fixer_history(fixes=True, verbose=False)
 
-    return render_title_template("cwa_history.html", title=_("Calibre-Web Automated Stats"), page="cwa-history",
+    return render_title_template("cwa_stats.html", title=_("Calibre-Web Automated Stats"), page="cwa-history",
+                                cwa_stats=get_cwa_stats(),
                                 data_enforcement=data_enforcement, headers_enforcement=headers["enforcement"]["no_paths"], 
                                 data_enforcement_with_paths=data_enforcement_with_paths,headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 
                                 data_imports=data_imports, headers_import=headers["imports"],
@@ -233,58 +244,58 @@ def cwa_history_show():
                                 data_epub_fixer=data_epub_fixer, headers_epub_fixer=headers["epub_fixer"]["no_fixes"],
                                 data_epub_fixer_with_fixes=data_epub_fixer_with_fixes, headers_epub_fixer_with_fixes=headers["epub_fixer"]["with_fixes"])
                                     
-@cwa_history.route("/cwa-history-show/full-enforcement", methods=["GET", "POST"])
+@cwa_stats.route("/cwa-history-show/full-enforcement", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_enforcement():
     cwa_db = CWA_DB()
     data = cwa_db.enforce_show(paths=False, verbose=True, web_ui=True)
-    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Enforcement History"), page="cwa-history-full",
+    return render_title_template("cwa_stats_full.html", title=_("Calibre-Web Automated - Full Enforcement History"), page="cwa-history-full",
                                     table_headers=headers["enforcement"]["no_paths"], data=data)
 
-@cwa_history.route("/cwa-history-show/full-enforcement-with-paths", methods=["GET", "POST"])
+@cwa_stats.route("/cwa-history-show/full-enforcement-with-paths", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_enforcement_path():
     cwa_db = CWA_DB()
     data = cwa_db.enforce_show(paths=True, verbose=True, web_ui=True)
-    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Enforcement History (w/ Paths)"), page="cwa-history-full",
+    return render_title_template("cwa_stats_full.html", title=_("Calibre-Web Automated - Full Enforcement History (w/ Paths)"), page="cwa-history-full",
                                     table_headers=headers["enforcement"]["with_paths"], data=data)
 
-@cwa_history.route("/cwa-history-show/full-imports", methods=["GET", "POST"])
+@cwa_stats.route("/cwa-history-show/full-imports", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_imports():
     cwa_db = CWA_DB()
     data = cwa_db.get_import_history(verbose=True)
-    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Import History"), page="cwa-history-full",
+    return render_title_template("cwa_stats_full.html", title=_("Calibre-Web Automated - Full Import History"), page="cwa-history-full",
                                     table_headers=headers["imports"], data=data)
 
-@cwa_history.route("/cwa-history-show/full-conversions", methods=["GET", "POST"])
+@cwa_stats.route("/cwa-history-show/full-conversions", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_conversions():
     cwa_db = CWA_DB()
     data = cwa_db.get_conversion_history(verbose=True)
-    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full Conversion History"), page="cwa-history-full",
+    return render_title_template("cwa_stats_full.html", title=_("Calibre-Web Automated - Full Conversion History"), page="cwa-history-full",
                                     table_headers=headers["conversions"], data=data)
 
-@cwa_history.route("/cwa-history-show/full-epub-fixer", methods=["GET", "POST"])
+@cwa_stats.route("/cwa-history-show/full-epub-fixer", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_epub_fixer():
     cwa_db = CWA_DB()
     data = cwa_db.get_epub_fixer_history(fixes=False, verbose=True)
-    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"), page="cwa-history-full",
+    return render_title_template("cwa_stats_full.html", title=_("Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"), page="cwa-history-full",
                                     table_headers=headers["epub_fixer"]["no_fixes"], data=data)
 
-@cwa_history.route("/cwa-history-show/full-epub-fixer-with-paths-fixes", methods=["GET", "POST"])
+@cwa_stats.route("/cwa-history-show/full-epub-fixer-with-paths-fixes", methods=["GET", "POST"])
 @login_required_if_no_ano
 @admin_required
 def show_full_epub_fixer_with_paths_fixes():
     cwa_db = CWA_DB()
     data = cwa_db.get_epub_fixer_history(fixes=True, verbose=True)
-    return render_title_template("cwa_history_full.html", title=_("Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"), page="cwa-history-full",
+    return render_title_template("cwa_stats_full.html", title=_("Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"), page="cwa-history-full",
                                     table_headers=headers["epub_fixer"]["with_fixes"], data=data)
 
 ##————————————————————————————————————————————————————————————————————————————##

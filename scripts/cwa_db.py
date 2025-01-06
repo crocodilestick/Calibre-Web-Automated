@@ -16,18 +16,14 @@ class CWA_DB:
         self.con, self.cur = self.connect_to_db() # type: ignore
 
         self.schema_path = "/app/calibre-web-automated/scripts/cwa_schema.sql"
-
         self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes"]
-
         self.tables, self.schema = self.make_tables()
 
         self.cwa_default_settings = self.get_cwa_default_settings()
         self.ensure_settings_schema_match()
         self.match_stat_table_columns_with_schema()
         self.set_default_settings()
-
         self.temp_disable_split_library()
-
         self.cwa_settings = self.get_cwa_settings()
 
 
@@ -383,6 +379,18 @@ class CWA_DB:
         self.cur.execute("INSERT INTO epub_fixes(timestamp, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied) VALUES (?, ?, ?, ?, ?, ?, ?);", (timestamp, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied))
         self.con.commit()
 
+    def get_stat_totals(self) -> dict[str,int]:
+        totals = {"cwa_enforcement":0,
+                "cwa_conversions":0,
+                "epub_fixes":0}
+        
+        for table in totals:
+            try:
+                totals[table] = self.cur.execute(f"SELECT count(*) FROM cwa_enforcement").fetchone()[0]
+            except Exception as e:
+                print(f"[cwa-db] ERROR - The following error occurred when fetching stat totals:\n{e}")
+
+        return totals
 
 def main():
     db = CWA_DB()

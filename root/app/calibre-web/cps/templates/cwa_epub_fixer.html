@@ -18,7 +18,9 @@
           <a class="btn btn-default" href="{{ url_for('epub_fixer.start_epub_fixer') }}" style="vertical-align: top; float: right; width: 100px;">{{_('Start')}}</a>
         </div>
       </div>
-
+      <div class="progress-container" style="margin: 20px 0;">
+        <div id="progress-bar" style="width: 0%; height: 25px; background-color: green; text-align: center; color: white;"></div>
+      </div>
       <div class="row">
         <div class="logging_window" style="padding-left: 15px;
                                           padding-right: 15px;

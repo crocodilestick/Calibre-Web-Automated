@@ -819,7 +819,7 @@ body:not(.read-frame) {
     -o-background-size: auto, cover !important;
     line-height: 1.71428571;
     background: url(images/caliblur/blur-noise.png), var(--color-background);
-    color: hsla(0, 0%, 100%, .45);
+    color: whitesmoke;
     font-family: Open Sans Semibold, Helvetica Neue, Helvetica, Arial, sans-serif;
     font-weight: 400;
     overflow: hidden;
@@ -8366,70 +8366,4 @@ select.cwa-settings-select {
     text-align: center;
     line-height: 25px;
     transition: width 0.3s ease-in-out;
-}
-
-.cwa_stats_container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr; /* Default: 4 equal columns */
-    gap: 10px; /* Space between sections */
-    padding: 20px;
-    height: 100vh; /* Full viewport height */
-}
-.cwa_stats_section {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-}
-.cwa_stats_header {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-.cwa_stats_value {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #333;
-}
-/* Styling for background colors */
-.cwa_stats_section:nth-child(1) { background-color: #e0f7fa; }
-.cwa_stats_section:nth-child(2) { background-color: #c8e6c9; }
-.cwa_stats_section:nth-child(3) { background-color: #ffcdd2; }
-.cwa_stats_section:nth-child(4) { background-color: #fff9c4; }
-
-/* Media Query for Medium Screens */
-@media (max-width: 1024px) {
-    .cwa_stats_container {
-        grid-template-columns: repeat(2, 1fr); /* 2 equal columns on medium screens */
-    }
-}
-
-/* Media Query for Mobile Screens or Thin Windows */
-@media (max-width: 480px) {
-.cwa_stats_container {
-    grid-template-columns: 1fr; /* 1 column, 4 sections stacked vertically */
-}
-}
-
-/* Media Query for Wide Screens */
-@media (min-width: 1200px) {
-    .cwa_stats_container {
-        grid-template-columns: 1fr 4fr; /* 1 tall column and 4 wide columns */
-        grid-template-rows: 1fr; /* Ensuring only one row for the 1 tall section */
-    }
-    .cwa_stats_section:nth-child(1) {
-        grid-column: 1 / 2;
-        grid-row: 1 / 2;
-        height: 100vh; /* Make the first section take up the full height */
-    }
-    .cwa_stats_section:nth-child(2), 
-    .cwa_stats_section:nth-child(3), 
-    .cwa_stats_section:nth-child(4) {
-        grid-column: 2 / 3;
-        grid-row: 1 / 2; /* Place the 4 sections in the same row */
-    }
 }

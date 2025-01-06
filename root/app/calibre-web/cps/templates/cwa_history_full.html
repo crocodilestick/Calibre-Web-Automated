@@ -10,10 +10,12 @@
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data %}
+        {% for row in data|reverse %}
         <tr>
           {% for cell in row %}
-          <td style="max-height: 20rem; overflow-y: scroll; display: flex;">{{ cell | replace("\n", "<br>") | safe }}</td>
+          <td>
+            <div style="max-height: 20rem; overflow-y: auto;">{{ cell | replace("\n", "<br>") | safe }}</div>
+          </td>
           {% endfor %}
         </tr>
         {% endfor %}

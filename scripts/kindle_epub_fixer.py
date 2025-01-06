@@ -261,7 +261,7 @@ class EPUBFixer:
             fixed_problems = "No fixes required"
 
         self.db.epub_fixer_add_entry(Path(input_path).stem,
-                                    self.manually_triggered,
+                                    bool(self.manually_triggered),
                                     len(self.fixed_problems),
                                     str(self.cwa_settings['auto_backup_epub_fixes']),
                                     output_path,

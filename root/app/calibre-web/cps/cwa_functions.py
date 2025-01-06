@@ -218,7 +218,7 @@ headers = {
 @admin_required
 def cwa_history_show():
     cwa_db = CWA_DB()
-    data_enforcement= cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
+    data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
     data_enforcement_with_paths = cwa_db.enforce_show(paths=True, verbose=False, web_ui=True)
     data_imports = cwa_db.get_import_history(verbose=False)
     data_conversions = cwa_db.get_conversion_history(verbose=False)

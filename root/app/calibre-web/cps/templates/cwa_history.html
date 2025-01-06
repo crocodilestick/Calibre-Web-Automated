@@ -4,6 +4,28 @@
   <h2>{{title}}</h2>
 
     <div>
+      <h3>Calibre-Web Automated - Server Stats</h3>
+      <div class="cwa_stats_container">
+        <div class="cwa_stats_section">
+          <div class="cwa_stats_header">Total Books</div>
+          <div class="cwa_stats_value">129</div>
+        </div>
+        <div class="cwa_stats_section">
+          <div class="cwa_stats_header">Books Enforced</div>
+          <div class="cwa_stats_value">123</div>
+        </div>
+        <div class="cwa_stats_section">
+          <div class="cwa_stats_header">Books Converted</div>
+          <div class="cwa_stats_value">672</div>
+        </div>
+        <div class="cwa_stats_section">
+          <div class="cwa_stats_header">Books Fixed</div>
+          <div class="cwa_stats_value">342</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
       <h3>Calibre-Web Automated Conversion History</h3>
       <a class="btn btn-default" href="{{ url_for('cwa_history.show_full_conversions') }}">{{_('Click to See More')}}</a><br>
       <table class="table table-striped">
@@ -12,7 +34,7 @@
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data_conversions %}
+        {% for row in data_conversions|reverse %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>
@@ -31,7 +53,7 @@
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data_imports %}
+        {% for row in data_imports|reverse %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>
@@ -50,7 +72,7 @@
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data_epub_fixer %}
+        {% for row in data_epub_fixer|reverse %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>
@@ -66,10 +88,12 @@
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data_epub_fixer_with_fixes %}
+        {% for row in data_epub_fixer_with_fixes|reverse %}
         <tr>
           {% for cell in row %}
-          <td style="max-height: 20rem; overflow-y: scroll; display: flex;">{{ cell | replace("\n", "<br>") | safe }}</td>
+          <td>
+            <div style="max-height: 20rem; overflow-y: auto;">{{ cell | replace("\n", "<br>") | safe }}</div>
+          </td>
           {% endfor %}
         </tr>
         {% endfor %}
@@ -85,7 +109,7 @@
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data_enforcement %}
+        {% for row in data_enforcement|reverse %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>
@@ -101,7 +125,7 @@
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
-        {% for row in data_enforcement_with_paths %}
+        {% for row in data_enforcement_with_paths|reverse %}
         <tr>
           {% for cell in row %}
           <td>{{ cell }}</td>

@@ -346,7 +346,7 @@ def extract_progress(log_content):
 
 def archive_run_log(log_path):
     try:
-        log_name = Path(log_path).stem + f"-{datetime.now().strftime("%Y-%m-%d-%H%M%S")}.log"
+        log_name = Path(log_path).stem + f"-{datetime.now().strftime('%Y-%m-%d-%H%M%S')}.log"
         shutil.copy2(log_path, f"/config/log_archive/{log_name}")
         print(f"[cwa-functions] Log '{log_path}' has been successfully archived as {log_name} in '/config/log_archive'")
     except Exception as e:

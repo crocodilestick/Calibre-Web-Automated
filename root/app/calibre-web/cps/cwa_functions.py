@@ -18,6 +18,7 @@ import os
 import tempfile
 from datetime import datetime
 import re
+import shutil
 
 from .web import cwa_get_num_books_in_library
 
@@ -343,6 +344,14 @@ def extract_progress(log_content):
         return {"current": current, "total": total}
     return {"current": 0, "total": 0}
 
+def archive_run_log(log_path):
+    try:
+        log_name = os.path.basename(log_path) + f"{datetime.now()}.log"
+        shutil.copy2(log_path, f"/config/log_archive/{log_name}")
+        print(f"[cwa-functions] Log '{log_path}' has been successfully archived as {log_name} in '/config/log_archive'")
+    except Exception as e:
+        print(f"[cwa-functions] The following error occurred when trying to back up {log_path} at {datetime.now()}:\n{e}")
+
 ##————————————————————————————————————————————————————————————————————————————##
 def convert_library_start(queue):
     cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
@@ -368,7 +377,8 @@ def empty_tmp_con_dir(tmp_conversion_dir) -> None:
         print(f"[cwa-functions]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
 
 def is_convert_library_finished() -> bool:
-    with open("/config/convert-library.log", 'r') as log:
+    log_path = "/config/convert-library.log"
+    with open(log_path, 'r') as log:
         if "CWA Convert Library Service - Run Ended: " in log.read():
             return True
         else:
@@ -376,6 +386,7 @@ def is_convert_library_finished() -> bool:
 
 def kill_convert_library(queue):
     trigger_file = Path(tempfile.gettempdir() + "/.kill_convert_library_trigger")
+    log_path = "/config/convert-library.log"
     while True:
         sleep(0.05) # Required to prevent high cpu usage
         if trigger_file.exists():
@@ -394,10 +405,14 @@ def kill_convert_library(queue):
                 os.remove(trigger_file)
             except FileNotFoundError:
                 ...
-            with open("/config/convert-library.log", 'a') as f:
+            # Add string to log to notify user of successful cancellation and to stop the JS update script
+            with open(log_path, 'a') as f:
                 f.write(f"\nCONVERT LIBRARY PROCESS TERMINATED BY USER AT {datetime.now()}")
+            # Add run log to log_archive
+            archive_run_log(log_path)
             break
         elif is_convert_library_finished():
+            archive_run_log(log_path)
             break
 
 @convert_library.route('/cwa-convert-library-overview', methods=["GET"])
@@ -451,7 +466,8 @@ def epub_fixer_start(queue):
     queue.put(ef_process)
 
 def is_epub_fixer_finished() -> bool:
-    with open("/config/epub-fixer.log", 'r') as log:
+    log_path = "/config/epub-fixer.log"
+    with open(log_path, 'r') as log:
         if "CWA Kindle EPUB Fixer Service - Run Ended: " in log.read():
             return True
         else:
@@ -459,6 +475,7 @@ def is_epub_fixer_finished() -> bool:
 
 def kill_epub_fixer(queue):
     trigger_file = Path(tempfile.gettempdir() + "/.kill_epub_fixer_trigger")
+    log_path = "/config/epub-fixer.log"
     while True:
         sleep(0.05) # Required to prevent high cpu usage
         if trigger_file.exists():
@@ -475,10 +492,14 @@ def kill_epub_fixer(queue):
                 os.remove(trigger_file)
             except FileNotFoundError:
                 ...
-            with open("/config/epub-fixer.log", 'a') as f:
+            # Add string to log to notify user of successful cancellation and to stop the JS update script
+            with open(log_path, 'a') as f:
                 f.write(f"\nCWA EPUB FIXER PROCESS TERMINATED BY USER AT {datetime.now()}")
+            # Add run log to log_archive
+            archive_run_log(log_path)
             break
         elif is_epub_fixer_finished():
+            archive_run_log(log_path)
             break
 
 @epub_fixer.route('/cwa-epub-fixer-overview', methods=["GET"])

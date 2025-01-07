@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, flash, url_for, request, Response
+from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, safe_join, abort
 from flask_babel import gettext as _
 
 from . import logger, config, constants, csrf
@@ -33,6 +33,14 @@ epub_fixer = Blueprint('epub_fixer', __name__)
 cwa_stats = Blueprint('cwa_stats', __name__)
 cwa_check_status = Blueprint('cwa_check_status', __name__)
 cwa_settings = Blueprint('cwa_settings', __name__)
+cwa_download = Blueprint('cwa_download', __name__)
+
+##——————————————————————————————GLOBAL VARIABLES——————————————————————————————##
+
+# Folder where the log files are stored
+LOG_ARCHIVE = "/config/log_archive"
+
+##———————————————————————————END OF GLOBAL VARIABLES——————————————————————————##
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
@@ -182,8 +190,6 @@ def set_cwa_settings():
             cwa_settings = cwa_db.get_cwa_settings()
 
     elif request.method == 'GET':
-        # cwa_db = CWA_DB()
-        # cwa_settings = cwa_db.cwa_settings
         ...
 
     return render_title_template("cwa_settings.html", title=_("Calibre-Web Automated User Settings"), page="cwa-settings",
@@ -328,11 +334,35 @@ def cwa_flash_status():
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
+##                                CWA DOWNLOAD                                ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
+
+@cwa_download.route('/download/<log_filename>')
+def download_log(log_filename):
+    try:
+        # Safely join the log directory and filename
+        file_path = safe_join(LOG_ARCHIVE, log_filename)
+        
+        # Check if the file exists before attempting to send it
+        if not os.path.exists(file_path):
+            abort(404)  # Return a 404 if the file does not exist
+
+        # Send the file as an attachment (to trigger a download)
+        return send_from_directory(LOG_ARCHIVE, log_filename, as_attachment=True)
+    
+    except Exception as e:
+        # Handle any errors (such as invalid paths)
+        abort(400)  # Bad request for malformed or unsafe file paths
+
+
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
 ##                        CWA LIBRARY CONVERSION SERVICE                      ##
 ##                                                                            ##
 ##————————————————————————————————————————————————————————————————————————————##
 
-##——————————————————————————————SHARED FUNCTIONS——————————————————————————————##
+##————————————————————————SHARED VARIABLES & FUNCTIONS————————————————————————##
 
 def extract_progress(log_content):
     """Analyses a log's given contents & returns the processes current progress as a dict"""
@@ -347,21 +377,22 @@ def extract_progress(log_content):
 def archive_run_log(log_path):
     try:
         log_name = Path(log_path).stem + f"-{datetime.now().strftime('%Y-%m-%d-%H%M%S')}.log"
-        shutil.copy2(log_path, f"/config/log_archive/{log_name}")
-        print(f"[cwa-functions] Log '{log_path}' has been successfully archived as {log_name} in '/config/log_archive'")
+        shutil.copy2(log_path, f"{LOG_ARCHIVE}/{log_name}")
+        print(f"[cwa-functions] Log '{log_path}' has been successfully archived as {log_name} in '{LOG_ARCHIVE}'")
     except Exception as e:
         print(f"[cwa-functions] The following error occurred when trying to back up {log_path} at {datetime.now()}:\n{e}")
 
 def get_logs_from_archive(log_name) -> dict[str,str]:
     logs = {}
-    logs_in_archive = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk("/config/log_archive") for f in filenames]
+    logs_in_archive = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(LOG_ARCHIVE) for f in filenames]
     for log in logs_in_archive:
         if log_name in log:
             logs |= {os.path.basename(log):log}
 
     return logs
 
-##————————————————————————————————————————————————————————————————————————————##
+##———————————————————END OF SHARED VARIABLES & FUNCTIONS———————————————————————##
+
 def convert_library_start(queue):
     cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
     queue.put(cl_process)
@@ -429,7 +460,7 @@ def show_convert_library_page():
     return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
                                 target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
 
-@convert_library.route('/cwa-convert-library-logs', methods=["GET"])
+@convert_library.route('/cwa-convert-library/log-archive', methods=["GET"])
 def show_convert_library_logs():
     return render_title_template('cwa_list_logs.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert-logs",
                                 logs=get_logs_from_archive("convert-library"))
@@ -520,7 +551,7 @@ def kill_epub_fixer(queue):
 def show_epub_fixer_page():
     return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer")
 
-@epub_fixer.route('/cwa-epub-fixer-logs', methods=["GET"])
+@epub_fixer.route('/cwa-epub-fixer/log-archive', methods=["GET"])
 def show_epub_fixer_logs():
     return render_title_template('cwa_list_logs.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer-logs",
                                 logs=get_logs_from_archive("epub-fixer"))

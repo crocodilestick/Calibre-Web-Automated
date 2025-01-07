@@ -5,8 +5,11 @@
   <h2>{{title}}</h2>
     <div>
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="color: whitesmoke;">CWA Library Convertor - Current Target Format - {{target_format}}</h3><br>
-        <a class="btn btn-default" href="{{ url_for('convert_library.show_convert_library_logs') }}">{{_('Run Archive')}}</a>
+        <h3 style="color: whitesmoke; margin-top: 0px !important; margin-bottom: 2.4rem;">CWA Library Convertor - Current Target Format - {{target_format}}</h3>
+        <div>
+          <a class="btn btn-default" href="{{ url_for('convert_library.show_convert_library_logs') }}" style="background-color: #334148; vertical-align: top; float: right; margin-left: 10px;">{{_('Run Archive')}}</a>
+          <a class="btn btn-default" href="{{ url_for('convert_library.download_current_log', log_filename='convert-library.log') }}" style="background-color: #334148; vertical-align: top; float: right;">{{_('Download Log')}}</a>
+        </div>
       </div>
       <div style="display: flex;
                   justify-content: space-between;
@@ -32,7 +35,7 @@
                                           padding-bottom: 1px;
                                           max-height: calc(100vh - 40rem);
                                           overflow-y: scroll;">
-          <p id="innerStatus" style="color: whitesmoke; font-size: small;">No current or previous run to display. Press the Start button above to initiate a run.</h2>
+          <p id="innerStatus" style="color: whitesmoke; font-size: small;">No current or previous run to display. Press the Start button above to initiate a run.</p>
         </div>
       </div>
     </div>

@@ -16,13 +16,17 @@
     <br>
     <table class="table table-striped">
       <tr>
-        <th>Log Name</th>
-        <th>Log Path</th>
+        <th>Log Date</th>
+        <th>Log Filename</th>
+        <th>Open Log</th>
+        <th>Download Log</th>
       </tr>
-      {% for log in logs %}
+      {% for log, log_path in logs.items() %}
       <tr>
+        <td>{{ log_dates[log]["date"] }} {{ log_dates[log]["time"] }}</td>
         <td>{{ log }}</td>
-        <td>{{ logs[log] }}</td> <a href="{{ url_for('cwa_download.download_log', log_filename=log_path) }}">{{ log_path }}</a>
+        <td><a href="{{ url_for('cwa_logs.read_log', log_filename=log) }}">Open in Browser</a></td>
+        <td><a href="{{ url_for('cwa_logs.download_log', log_filename=log) }}">{{ log_path }}</a></td>
       </tr>
       {% endfor %}
     </table>

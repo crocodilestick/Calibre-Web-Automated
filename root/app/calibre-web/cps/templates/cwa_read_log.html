@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="discover">
+  <h2>{{title}}</h2>
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: whitesmoke; margin-bottom: 4rem !important; margin-top: 1rem !important;">{{ title }}</h3><br>
+        <a class="btn btn-default" style="margin-bottom: 2.6rem; margin-left: 20px;" href="{{ url_for('cwa_logs.download_log', log_filename=log_filename) }}">{{_('Download Log')}}</a>
+      </div>
+
+      <div class="row">
+        <div class="logging_window" style="padding-left: 15px;
+                                          padding-right: 15px;
+                                          background: #0000003d;
+                                          padding-top: 11px;
+                                          padding-bottom: 1px;
+                                          max-height: calc(100vh - 27rem);
+                                          overflow-y: scroll;">
+          <p id="innerStatus" style="color: whitesmoke; font-size: small;">{{ log | replace("\n", "<br>") | safe }}</p>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+</script>
+{% endblock %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, safe_join, abort
+from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort
 from flask_babel import gettext as _
 
 from . import logger, config, constants, csrf
@@ -19,6 +19,7 @@ import tempfile
 from datetime import datetime
 import re
 import shutil
+from werkzeug.utils import secure_filename
 
 from .web import cwa_get_num_books_in_library
 
@@ -33,7 +34,7 @@ epub_fixer = Blueprint('epub_fixer', __name__)
 cwa_stats = Blueprint('cwa_stats', __name__)
 cwa_check_status = Blueprint('cwa_check_status', __name__)
 cwa_settings = Blueprint('cwa_settings', __name__)
-cwa_download = Blueprint('cwa_download', __name__)
+cwa_logs = Blueprint('cwa_logs', __name__)
 
 ##——————————————————————————————GLOBAL VARIABLES——————————————————————————————##
 
@@ -334,27 +335,61 @@ def cwa_flash_status():
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
-##                                CWA DOWNLOAD                                ##
+##                                 CWA LOGS                                   ##
 ##                                                                            ##
 ##————————————————————————————————————————————————————————————————————————————##
 
-@cwa_download.route('/download/<log_filename>')
+@cwa_logs.route('/cwa-logs/download/<log_filename>')
 def download_log(log_filename):
     try:
-        # Safely join the log directory and filename
-        file_path = safe_join(LOG_ARCHIVE, log_filename)
+        # Secure the filename to prevent directory traversal (e.g., '..')
+        safe_filename = secure_filename(log_filename)
         
-        # Check if the file exists before attempting to send it
+        # Join the logs directory with the filename and get the absolute path
+        file_path = os.path.abspath(os.path.join(LOG_ARCHIVE, safe_filename))
+        
+        # Check if the file path is within the allowed directory
+        if not file_path.startswith(os.path.abspath(LOG_ARCHIVE)):
+            abort(403)  # Forbidden if it's not within the logs directory
+
+        # Check if the file exists
         if not os.path.exists(file_path):
             abort(404)  # Return a 404 if the file does not exist
 
         # Send the file as an attachment (to trigger a download)
-        return send_from_directory(LOG_ARCHIVE, log_filename, as_attachment=True)
+        return send_from_directory(LOG_ARCHIVE, safe_filename, as_attachment=True)
     
     except Exception as e:
-        # Handle any errors (such as invalid paths)
+        # Handle any other errors
         abort(400)  # Bad request for malformed or unsafe file paths
 
+@cwa_logs.route('/cwa-logs/read/<log_filename>')
+def read_log(log_filename):
+    try:
+        # Secure the filename to prevent directory traversal (e.g., '..')
+        safe_filename = secure_filename(log_filename)
+        
+        # Join the logs directory with the filename and get the absolute path
+        file_path = os.path.abspath(os.path.join(LOG_ARCHIVE, safe_filename))
+        
+        # Check if the file path is within the allowed directory
+        if not file_path.startswith(os.path.abspath(LOG_ARCHIVE)):
+            abort(403)  # Forbidden if it's not within the logs directory
+
+        # Check if the file exists
+        if not os.path.exists(file_path):
+            abort(404)  # Return a 404 if the file does not exist
+
+        # Send the file as an attachment (to trigger a download)
+        with open(file_path, 'r') as f:
+            log = f.read()
+
+        return render_title_template('cwa_read_log.html', title=_(f"Calibre-Web Automated - Log Archive - Read Log - {log_filename}"), page="cwa-log-read",
+                                    log_filename=log_filename, log=log)
+    
+    except Exception as e:
+        # Handle any other errors
+        abort(400)  # Bad request for malformed or unsafe file paths
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
@@ -390,6 +425,15 @@ def get_logs_from_archive(log_name) -> dict[str,str]:
             logs |= {os.path.basename(log):log}
 
     return logs
+
+def get_log_dates(logs) -> dict[str,str]:
+    log_dates = {}
+    for log in logs:
+        log_date, time = re.findall(r"([0-9]{4}-[0-9]{2}-[0-9]{2})-([0-9]+)+", log)[0]
+        log_time = f"{time[:2]}:{time[2:4]}:{time[-2:]}"
+        log_dates |= {log:{"date":log_date,
+                            "time":log_time}}
+    return log_dates
 
 ##———————————————————END OF SHARED VARIABLES & FUNCTIONS———————————————————————##
 
@@ -462,8 +506,36 @@ def show_convert_library_page():
 
 @convert_library.route('/cwa-convert-library/log-archive', methods=["GET"])
 def show_convert_library_logs():
+    logs=get_logs_from_archive("convert-library")
+    log_dates = get_log_dates(logs)
     return render_title_template('cwa_list_logs.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert-logs",
-                                logs=get_logs_from_archive("convert-library"))
+                                logs=logs, log_dates=log_dates)
+
+@convert_library.route('/cwa-convert-library/download-current-log/<log_filename>')
+def download_current_log(log_filename):
+    log_filename = "convert-library.log"
+    LOG_DIR = "/config"
+    try:
+        # Secure the filename to prevent directory traversal (e.g., '..')
+        safe_filename = secure_filename(log_filename)
+        
+        # Join the logs directory with the filename and get the absolute path
+        file_path = os.path.abspath(os.path.join(LOG_DIR, safe_filename))
+        
+        # Check if the file path is within the allowed directory
+        if not file_path.startswith(os.path.abspath(LOG_DIR)):
+            abort(403)  # Forbidden if it's not within the logs directory
+
+        # Check if the file exists
+        if not os.path.exists(file_path):
+            abort(404)  # Return a 404 if the file does not exist
+
+        # Send the file as an attachment (to trigger a download)
+        return send_from_directory(LOG_DIR, safe_filename, as_attachment=True)
+    
+    except Exception as e:
+        # Handle any other errors
+        abort(400)  # Bad request for malformed or unsafe file paths
 
 @convert_library.route('/cwa-convert-library-start', methods=["GET"])
 def start_conversion():
@@ -553,8 +625,36 @@ def show_epub_fixer_page():
 
 @epub_fixer.route('/cwa-epub-fixer/log-archive', methods=["GET"])
 def show_epub_fixer_logs():
+    logs = get_logs_from_archive("epub-fixer")
+    log_dates = get_log_dates(logs)
     return render_title_template('cwa_list_logs.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer-logs",
-                                logs=get_logs_from_archive("epub-fixer"))
+                                logs=logs, log_dates=log_dates)
+
+@epub_fixer.route('/cwa-epub-fixer/download-current-log/<log_filename>')
+def download_current_log(log_filename):
+    log_filename = "epub-fixer.log"
+    LOG_DIR = "/config"
+    try:
+        # Secure the filename to prevent directory traversal (e.g., '..')
+        safe_filename = secure_filename(log_filename)
+        
+        # Join the logs directory with the filename and get the absolute path
+        file_path = os.path.abspath(os.path.join(LOG_DIR, safe_filename))
+        
+        # Check if the file path is within the allowed directory
+        if not file_path.startswith(os.path.abspath(LOG_DIR)):
+            abort(403)  # Forbidden if it's not within the logs directory
+
+        # Check if the file exists
+        if not os.path.exists(file_path):
+            abort(404)  # Return a 404 if the file does not exist
+
+        # Send the file as an attachment (to trigger a download)
+        return send_from_directory(LOG_DIR, safe_filename, as_attachment=True)
+    
+    except Exception as e:
+        # Handle any other errors
+        abort(400)  # Bad request for malformed or unsafe file paths
 
 @epub_fixer.route('/cwa-epub-fixer-start', methods=["GET"])
 def start_epub_fixer():

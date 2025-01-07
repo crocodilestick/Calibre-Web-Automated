@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block body %}
+
+{% block header %}
+<style>
+</style>
+{% endblock %}
+
+<div class="discover">
+  <h2>{{title}}</h2>
+
+  <div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin: 0;">{{title}} - Logs</h3>
+    </div>
+    <br>
+    <table class="table table-striped">
+      <tr>
+        <th>Log Name</th>
+        <th>Log Path</th>
+      </tr>
+      {% for log in logs %}
+      <tr>
+        <td>{{ log }}</td>
+        <td>{{ logs[log] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+</div>
+{% endblock %}

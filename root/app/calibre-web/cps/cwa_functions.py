@@ -346,11 +346,20 @@ def extract_progress(log_content):
 
 def archive_run_log(log_path):
     try:
-        log_name = os.path.basename(log_path) + f"{datetime.now()}.log"
+        log_name = Path(log_path).stem + f"-{datetime.now().strftime("%Y-%m-%d-%H%M%S")}.log"
         shutil.copy2(log_path, f"/config/log_archive/{log_name}")
         print(f"[cwa-functions] Log '{log_path}' has been successfully archived as {log_name} in '/config/log_archive'")
     except Exception as e:
         print(f"[cwa-functions] The following error occurred when trying to back up {log_path} at {datetime.now()}:\n{e}")
+
+def get_logs_from_archive(log_name) -> dict[str,str]:
+    logs = {}
+    logs_in_archive = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk("/config/log_archive") for f in filenames]
+    for log in logs_in_archive:
+        if log_name in log:
+            logs |= {os.path.basename(log):log}
+
+    return logs
 
 ##————————————————————————————————————————————————————————————————————————————##
 def convert_library_start(queue):
@@ -419,6 +428,11 @@ def kill_convert_library(queue):
 def show_convert_library_page():
     return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
                                 target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
+
+@convert_library.route('/cwa-convert-library-logs', methods=["GET"])
+def show_convert_library_logs():
+    return render_title_template('cwa_list_logs.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert-logs",
+                                logs=get_logs_from_archive("convert-library"))
 
 @convert_library.route('/cwa-convert-library-start', methods=["GET"])
 def start_conversion():
@@ -505,6 +519,11 @@ def kill_epub_fixer(queue):
 @epub_fixer.route('/cwa-epub-fixer-overview', methods=["GET"])
 def show_epub_fixer_page():
     return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer")
+
+@epub_fixer.route('/cwa-epub-fixer-logs', methods=["GET"])
+def show_epub_fixer_logs():
+    return render_title_template('cwa_list_logs.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer-logs",
+                                logs=get_logs_from_archive("epub-fixer"))
 
 @epub_fixer.route('/cwa-epub-fixer-start', methods=["GET"])
 def start_epub_fixer():

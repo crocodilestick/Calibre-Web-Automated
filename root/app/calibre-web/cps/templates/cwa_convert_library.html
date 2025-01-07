@@ -4,7 +4,10 @@
 <div class="discover">
   <h2>{{title}}</h2>
     <div>
-      <h3 style="color: whitesmoke;">CWA Library Convertor - Current Target Format - {{target_format}}</h3><br>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: whitesmoke;">CWA Library Convertor - Current Target Format - {{target_format}}</h3><br>
+        <a class="btn btn-default" href="{{ url_for('convert_library.show_convert_library_logs') }}">{{_('Run Archive')}}</a>
+      </div>
       <div style="display: flex;
                   justify-content: space-between;
                   gap: 20px;">

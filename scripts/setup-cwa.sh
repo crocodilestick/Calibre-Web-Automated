@@ -2,13 +2,13 @@
 
 # Make required directories and files for metadata enforcement
 make_dirs () {
-    mkdir /app/calibre-web-automated/metadata_change_logs
+    mkdir -p /app/calibre-web-automated/metadata_change_logs
     chown -R abc:abc /app/calibre-web-automated/metadata_change_logs
-    mkdir /app/calibre-web-automated/metadata_temp
+    mkdir -p /app/calibre-web-automated/metadata_temp
     chown -R abc:abc /app/calibre-web-automated/metadata_temp
-    mkdir /cwa-book-ingest
-    chown abc:abc /cwa-book-ingest
-    mkdir /calibre-library
+    mkdir -p /cwa-book-ingest
+    chown -R abc:abc /cwa-book-ingest
+    mkdir -p /calibre-library
     chown -R abc:abc /calibre-library
 }
 
@@ -33,15 +33,15 @@ add_aliases () {
     echo "# Calibre-Web Automated Aliases" | cat >> ~/.bashrc
     echo "alias cwa-check='bash /app/calibre-web-automated/scripts/check-cwa-services.sh'" | cat >> ~/.bashrc
     echo "alias cwa-change-dirs='nano /app/calibre-web-automated/dirs.json'" | cat >> ~/.bashrc
-    
+
     echo "cover-enforcer () {" | cat >> ~/.bashrc
     echo '    python3 /app/calibre-web-automated/scripts/cover_enforcer.py "$@"' | cat >> ~/.bashrc
     echo "}" | cat >> ~/.bashrc
-    
+
     echo "convert-library () {" | cat >> ~/.bashrc
     echo '    python3 /app/calibre-web-automated/scripts/convert_library.py "$@"' | cat >> ~/.bashrc
     echo "}" | cat >> ~/.bashrc
-    
+
     source ~/.bashrc
 }
 

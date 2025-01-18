@@ -23,9 +23,8 @@ from urllib.parse import quote
 import requests
 from cps import logger
 from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
-from importlib import reload
 
-from flask import g
+from ..cw_login import current_user
 
 log = logger.create()
 
@@ -119,9 +118,9 @@ class Hardcover(Metadata):
     FORMATS = ["","Physical Book","","","E-Book"] # Map reading_format_id to text equivelant.
 
     def search(
-        self, query: str, generic_cover: str = "", locale: str = "en", **kwargs
+        self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
-        token = kwargs.get("token")
+        token = current_user.hardcover_token
         if not token:
             log.warning("Hardcover token not set for user")
             return None

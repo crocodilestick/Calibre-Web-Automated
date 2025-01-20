@@ -112,9 +112,9 @@ class HardcoverClient:
             book = self.add_book(ids, status=2)
         if book.get("status_id") is not 2:
             book = self.change_book_status(book, 2)
-        pages = round(book.get("edition",{}).get("pages",0))
+        pages = book.get("edition",{}).get("pages",0)
         if pages:
-            pages_read = pages * (progress_percent / 100)
+            pages_read = round(pages * (progress_percent / 100))
             read = next(iter(book.get("user_book_reads")),None)
             if not read:
                 read = self.add_read(book, pages_read) 

@@ -35,28 +35,6 @@ class Hardcover(Metadata):
     DESCRIPTION = "Hardcover Books"
     META_URL = "https://hardcover.app"
     BASE_URL = "https://api.hardcover.app/v1/graphql"
-    # SEARCH_QUERY = """{
-    #     books(
-    #       where: {title: {_eq: "%s"}}
-    #       limit: 10
-    #       order_by: {users_read_count: desc}
-    #     ) {
-    #       title
-    #       book_series {
-    #         series {
-    #           name
-    #         }
-    #         position
-    #       }
-    #       cached_contributors
-    #       id
-    #       cached_image
-    #       slug
-    #       description
-    #       release_date
-    #       cached_tags
-    #     }
-    # }"""
     SEARCH_QUERY = """query Search($query: String!) {
         search(query: $query, query_type: "Book", per_page: 50) {
             results

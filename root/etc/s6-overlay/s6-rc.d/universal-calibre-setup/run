@@ -20,6 +20,7 @@ export DEBIAN_FRONTEND="noninteractive"
 CALIBRE_INSTALLED_TEST="$(calibredb --version)"
 
 if [[ $CALIBRE_INSTALLED_TEST != "calibredb (calibre 7.16)" ]]; then
+    echo "[universal-calibre-setup] USER NOTE: 'Ignore calibredb: command not found' above, nothing is wrong, this just indicates to CWA that Calibre still needs to be installed"
     echo "[universal-calibre-setup] Installing Calibre version $(cat /CALIBRE_RELEASE)..."
     /app/calibre/calibre_postinstall &> /dev/null
     if [[ $? == 0 ]]

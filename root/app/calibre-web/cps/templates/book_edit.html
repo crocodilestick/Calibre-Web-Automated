@@ -275,7 +275,7 @@
       </div>
       <button class="btn btn-default">Save</button>
       <div><a class="meta_source" href="<%= book.source.link %>" target="_blank" rel="noopener"><%= book.source.description %></a></div>
-      <% if(book.format !== "") { %>
+      <% if(book.format) { %>
       <div>Format: <%= book.format %></div>
       <% } %>
     </div>
@@ -311,8 +311,12 @@
       <% if (Object.keys(book.identifiers).length !== 0 ) { %>
         <% for (const key in book.identifiers) { %>
           <% if (book.identifiers[key] !== "") { %>
-            <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="identifiers">Identifier</dt>
-            <dd class="meta_description"><%= key %>:<%= book.identifiers[key] %></dd>
+            <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="<%= key %>">Identifier</dt>
+            <dd class="meta_identifier"><%= key %>:<%= book.identifiers[key] %>
+              <% if (key === "hardcover-id" && !document.getElementById("keyword").value.includes("hardcover-id")) { %>
+                <a href="#" data-hardcover-id="<%= book.identifiers[key] %>" ><span class="glyphicon glyphicon-search" style="padding-left: 10px; padding-right: 6px;"></span>Editions</a>
+              <% } %>
+            </dd>
           <% } %>
         <% } %>
       <% } %>
@@ -353,6 +357,12 @@
       el.nextElementSibling.classList.add("larger")
     }
   }
+  $(document).on('click','.meta_identifier a',
+    function (e) {
+      e.preventDefault()
+      document.getElementById("keyword").value = `hardcover-id:${e.target.dataset.hardcoverId}`
+      document.getElementById("do-search").click()
+    })
 </script>
 <script src="{{ url_for('static', filename='js/libs/typeahead.bundle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-rating-input.min.js') }}"></script>

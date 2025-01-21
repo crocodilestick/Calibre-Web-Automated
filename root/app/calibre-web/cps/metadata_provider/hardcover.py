@@ -18,16 +18,15 @@
 
 # Hardcover api document: https://Hardcover.gamespot.com/api/documentation
 from typing import Dict, List, Optional
-from urllib.parse import quote
 
 import requests
 from cps import logger
 from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
 
 from ..cw_login import current_user
+from os import getenv
 
 log = logger.create()
-
 
 class Hardcover(Metadata):
     __name__ = "Hardcover"
@@ -98,33 +97,29 @@ class Hardcover(Metadata):
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
-        token = current_user.hardcover_token
-        if not token:
-            log.warning("Hardcover token not set for user")
-            return None
         val = list()
         if self.active:
             try:
-                if (token == ""):
-                    raise Exception("Current user does not have Hardcover API token")
-                else:
-                    edition_seach = query.split(":")[0] == "hardcover-id"
-                    Hardcover.HEADERS["Authorization"] = "Bearer %s" % token
-                    result = requests.post(
-                        Hardcover.BASE_URL,
-                        json={
-                            "query":Hardcover.SEARCH_QUERY if not edition_seach else Hardcover.EDITION_QUERY,
-                            "variables":{"query":query if not edition_seach else query.split(":")[1]}
-                        },
-                        headers=Hardcover.HEADERS,
-                    )
-                    result.raise_for_status()
+                token = current_user.hardcover_token or getenv("HARDCOVER_TOKEN")
+                if not token:
+                    self.set_status(False)
+                    raise Exception("Hardcover token not set for user, and no global token provided.")
+                edition_seach = query.split(":")[0] == "hardcover-id"
+                Hardcover.HEADERS["Authorization"] = "Bearer %s" % token.replace("Bearer ","")
+                result = requests.post(
+                    Hardcover.BASE_URL,
+                    json={
+                        "query":Hardcover.SEARCH_QUERY if not edition_seach else Hardcover.EDITION_QUERY,
+                        "variables":{"query":query if not edition_seach else query.split(":")[1]}
+                    },
+                    headers=Hardcover.HEADERS,
+                )
+                result.raise_for_status()
             except Exception as e:
                 log.warning(e)
                 return None
             if edition_seach:
                 result = result.json()["data"]["books"][0]
-                log.debug(result)
                 val = self._parse_edition_results(result=result, generic_cover=generic_cover, locale=locale)
             else:
                 for result in result.json()["data"]["search"]["results"]["hits"]:
@@ -151,7 +146,6 @@ class Hardcover(Metadata):
             ),
             series=series,
         )
-        # TODO Add parse cover function to get better size
         match.cover = result["document"]["image"].get("url", generic_cover)
         
         match.description = result["document"].get("description","")
@@ -183,7 +177,6 @@ class Hardcover(Metadata):
                 ),
                 series=result.get("book_series",[{}])[0].get("series",{}).get("name", ""),
             )
-            # TODO Add parse cover function to get better size
             match.cover = (edition.get("image") or {}).get("url", generic_cover)
             match.description = result.get("description","")
             match.publisher = (edition.get("publisher") or {}).get("name","")
@@ -197,6 +190,9 @@ class Hardcover(Metadata):
                 "hardcover-edition": edition.get("id",""),
                 "isbn": (edition.get("isbn_13",edition.get("isbn_10")) or "")
             }
+            isbn = edition.get("isbn_13",edition.get("isbn_10"))
+            if isbn:
+                match.identifiers["isbn"] = isbn
             match.format = Hardcover.FORMATS[edition.get("reading_format_id",0)]
             editions.append(match)
         return editions
@@ -209,10 +205,10 @@ class Hardcover(Metadata):
         return url
 
     @staticmethod
-    def _parse_edition_url(edition: Dict, url: str) -> str:
+    def _parse_edition_url(result: Dict, edition: Dict, url: str) -> str:
         hardcover_edition = edition.get("id", "")
         if hardcover_edition:
-            return f"https://hardcover.app/books/jurassic-park/editions/{hardcover_edition}"
+            return f"https://hardcover.app/books/{result.get("slug", "")}/editions/{hardcover_edition}"
         return url
     
     @staticmethod

@@ -554,7 +554,6 @@ input.pill:not(:checked) + label .glyphicon {
 
 #meta-info #book-list .media .media-body dt {
   font-weight: bold;
-  color: #333;
   display: flex;
   align-items: center;
 }

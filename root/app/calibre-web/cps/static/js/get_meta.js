@@ -84,26 +84,26 @@ $(function () {
             $("#series_index").val(book.series_index);
         }
         if (
-            updateItems.identifiers &&
             typeof book.identifiers !== "undefined"
         ) {
-            populateIdentifiers(book.identifiers);
+            selectedIdentifiers = Object.keys(book.identifiers)
+                .filter((key) => updateItems[key])
+                .reduce((result, key) => {
+                    result[key] = book.identifiers[key];
+                    return result;
+                }, {});
+            populateIdentifiers(selectedIdentifiers);
         }
     }
 
-    function populateIdentifiers(identifiers) {
+    function populateIdentifiers(identifiers){
         for (const property in identifiers) {
-            if (identifiers[property].length !== 0) {
-                console.log(`${property}: ${identifiers[property]}`);
-                if (
-                    $('input[name="identifier-type-' + property + '"]').length
-                ) {
-                    $('input[name="identifier-val-' + property + '"]').val(
-                        identifiers[property]
-                    );
-                } else {
-                    addIdentifier(property, identifiers[property]);
-                }
+            console.log(`${property}: ${identifiers[property]}`);
+            if ($('input[name="identifier-type-'+property+'"]').length) {
+                $('input[name="identifier-val-'+property+'"]').val(identifiers[property])
+            }
+            else {
+                addIdentifier(property, identifiers[property])
             }
         }
     }

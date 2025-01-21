@@ -22,7 +22,7 @@ from typing import Dict, List, Optional
 import requests
 from cps import logger
 from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
-
+from cps.isoLanguages import get_language_name
 from ..cw_login import current_user
 from os import getenv
 
@@ -175,15 +175,15 @@ class Hardcover(Metadata):
                     description=Hardcover.DESCRIPTION,
                     link=Hardcover.META_URL,
                 ),
-                series=result.get("book_series",[{}])[0].get("series",{}).get("name", ""),
+                series=(result.get("book_series") or [{}])[0].get("series",{}).get("name", ""),
             )
             match.cover = (edition.get("image") or {}).get("url", generic_cover)
             match.description = result.get("description","")
             match.publisher = (edition.get("publisher") or {}).get("name","")
             match.publishedDate = edition.get("release_date", "")
-            match.series_index = result.get("book_series",[{}])[0].get("position", "")
+            match.series_index = (result.get("book_series") or [{}])[0].get("position", "")
             match.tags = self._parse_tags(result,[])
-            match.languages = (edition.get("language") or {}).get("code3","")
+            match.languages = self._parse_languages(edition,locale)
             match.identifiers = {
                 "hardcover-id": id,
                 "hardcover-slug": result.get("slug", ""),
@@ -227,3 +227,13 @@ class Hardcover(Metadata):
         except Exception as e:
             log.warning(e)
             return tags
+        
+    @staticmethod
+    def _parse_languages(edition: Dict, locale: str) -> List[str]:
+        language_iso = (edition.get("language") or {}).get("code3","")
+        languages = (
+            [get_language_name(locale, language_iso)]
+            if language_iso
+            else []
+        )
+        return languages

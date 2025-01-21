@@ -206,9 +206,10 @@ class Hardcover(Metadata):
 
     @staticmethod
     def _parse_edition_url(result: Dict, edition: Dict, url: str) -> str:
-        hardcover_edition = edition.get("id", "")
-        if hardcover_edition:
-            return f"https://hardcover.app/books/{result.get("slug", "")}/editions/{hardcover_edition}"
+        edition = edition.get("id", "")
+        slug = result.get("slug","")
+        if edition:
+            return f"https://hardcover.app/books/{slug}/editions/{edition}"
         return url
     
     @staticmethod

@@ -619,7 +619,7 @@ def migrate_Database(_session):
     add_missing_tables(engine, _session)
     migrate_registration_table(engine, _session)
     migrate_user_session_table(engine, _session)
-
+    migrate_user_table(engine, _session)
 
 def clean_database(_session):
     # Remove expired remote login tokens

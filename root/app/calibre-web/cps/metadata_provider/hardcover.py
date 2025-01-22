@@ -169,7 +169,7 @@ class Hardcover(Metadata):
                 id=id,
                 title=edition.get("title",""),       
                 authors=self._parse_edition_authors(edition,[]),
-                url=self._parse_edition_url(edition, ""),
+                url=self._parse_edition_url(result, edition, ""),
                 source=MetaSourceInfo(
                     id=self.__id__,
                     description=Hardcover.DESCRIPTION,

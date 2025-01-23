@@ -176,7 +176,10 @@ class NewBookProcessor:
         import_path = Path(book_path)
         import_filename = os.path.basename(book_path)
         try:
-            subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], check=True)
+            # Ensure the home of user abc is used. This enables persistent plugins. This is a relative hacky way and should be done better in the future
+            env = os.environ.copy()
+            env["HOME"] = "/config"
+            subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], check=True, env=env)
             print(f"[ingest-processor] Added {import_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:

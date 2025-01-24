@@ -72,7 +72,7 @@ def cwa_switch_theme():
         config.config_default_show |= constants.DETAIL_RANDOM
 
     config.save()
-    return redirect("/", code=302)
+    return redirect(url_for("web.index"), code=302)
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
@@ -96,7 +96,7 @@ def cwa_library_refresh():
     else:
         flash(_("Library Refresh: An unexpected error occurred, check the logs."), category="cwa_refresh")
 
-    return redirect("/", code=302)
+    return redirect(url_for("web.index"), code=302)
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##

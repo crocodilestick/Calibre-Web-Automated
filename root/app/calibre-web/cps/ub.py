@@ -257,7 +257,7 @@ class User(UserBase, Base):
     remote_auth_token = relationship('RemoteAuthToken', backref='user', lazy='dynamic')
     view_settings = Column(JSON, default={})
     kobo_only_shelves_sync = Column(Integer, default=0)
-    hardcover_token = Column(String, unique=True, default="")
+    hardcover_token = Column(String, unique=True, default=None)
 
 
 if oauth_support:
@@ -281,6 +281,7 @@ class OAuthProvider(Base):
 # anonymous user
 class Anonymous(AnonymousUserMixin, UserBase):
     def __init__(self):
+        self.hardcover_token = None
         self.kobo_only_shelves_sync = None
         self.view_settings = None
         self.allowed_column_value = None
@@ -311,6 +312,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.allowed_column_value = data.allowed_column_value
         self.view_settings = data.view_settings
         self.kobo_only_shelves_sync = data.kobo_only_shelves_sync
+        self.hardcover_token = data.hardcover_token
 
     def role_admin(self):
         return False

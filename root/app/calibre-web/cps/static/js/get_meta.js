@@ -58,7 +58,7 @@ $(function () {
             var ampSeparatedAuthors = (book.authors || []).join(" & ");
             $("#authors").val(ampSeparatedAuthors);
         }
-        if (updateItems.titles) {
+        if (updateItems.title) {
             $("#title").val(book.title);
         }
         $("#languages").val(uniqueLanguages.join(", "));

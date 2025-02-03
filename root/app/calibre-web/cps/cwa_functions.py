@@ -84,7 +84,7 @@ def cwa_switch_theme():
 @login_required_if_no_ano
 def cwa_library_refresh():
     flash(_("Library Refresh: Initialising Book Ingest System, please wait..."), category="cwa_refresh")
-    result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest_processor.py', '/cwa-book-ingest'])
+    result = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/ingest_processor.py', '/cwa-book-ingest'])
     return_code = result.returncode
 
     # if return_code == 100:

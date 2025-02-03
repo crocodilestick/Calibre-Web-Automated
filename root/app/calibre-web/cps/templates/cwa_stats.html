@@ -7,66 +7,6 @@
     margin: 0;
     font-family: Arial, sans-serif;
   }
-
-  .cwa_stats_container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr; /* Default: 4 equal columns */
-    gap: 10px; /* Space between sections */
-    padding: 20px;
-    width: 100%; /* Ensure it spans the full width */
-    height: auto; /* Allow height to adjust based on content */
-  }
-
-  .cwa_stats_section {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    background-color: #1520268a;
-  }
-
-  .cwa_stats_header {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: whitesmoke;
-  }
-
-  .cwa_stats_value {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #cc7b19;
-  }
-
-  /* Styling for background colors */
-  /* .cwa_stats_section:nth-child(1) { background-color: #e0f7fa; } */
-  /* .cwa_stats_section:nth-child(2) { background-color: #c8e6c9; } */
-  /* .cwa_stats_section:nth-child(3) { background-color: #ffcdd2; } */
-  /* .cwa_stats_section:nth-child(4) { background-color: #fff9c4; } */
-
-  /* Media Query for Medium Screens */
-  @media (max-width: 1024px) {
-    .cwa_stats_container {
-      grid-template-columns: repeat(2, 1fr); /* 2 equal columns on medium screens */
-    }
-  }
-
-  /* Media Query for Mobile Screens or Thin Windows */
-  @media (max-width: 480px) {
-    .cwa_stats_container {
-      grid-template-columns: 1fr; /* 1 column, 4 sections stacked vertically */
-    }
-  }
-
-  .stats_see_more_btn {
-  border-radius: 6px !important;
-  margin-bottom: 0px !important;
-}
-
 </style>
 {% endblock %}
 

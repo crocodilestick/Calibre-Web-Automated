@@ -1,5 +1,14 @@
 #!/bin/bash
 
+echo "[cwa-set-binary-paths] Checking for an existing app.db in /config..."
+
+if [ ! -f /config/app.db ]; then
+    echo "[cwa-set-binary-paths] Existing app.db found! Creating new one..."
+    cp /app/calibre-web-automated/empty_library/app.db /config/app.db
+else
+    echo "[cwa-set-binary-paths] Existing app.db found!"
+fi
+
 echo "[cwa-set-binary-paths] Setting binary paths in '/config/app.db' to the correct ones..."
 
 sqlite3 /config/app.db <<EOS

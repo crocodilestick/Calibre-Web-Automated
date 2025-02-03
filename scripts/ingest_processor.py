@@ -29,12 +29,12 @@ def removeLock():
 # Will automatically run when the script exits
 atexit.register(removeLock)
 
+# Generates dictionary of available backup directories and their paths
 backup_destinations = {
         entry.name: entry.path
         for entry in os.scandir("/config/processed_books")
         if entry.is_dir()
     }
-
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
@@ -81,6 +81,9 @@ class NewBookProcessor:
     def backup(self, input_file, backup_type):
         try:
             output_path = backup_destinations[backup_type]
+        except Exception as e:
+            print(f"[ingest-processor] The following error occurred when trying to fetch the available backup dirs in /config/processed_books:\n{e}")
+        try:
             shutil.copy2(input_file, output_path)
         except Exception as e:
             print(f"[ingest-processor]: ERROR - The following error occurred when trying to copy {input_file} to {output_path}:\n{e}")

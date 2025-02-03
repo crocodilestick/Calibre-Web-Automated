@@ -8,9 +8,11 @@ mkdir -p /config/processed_books/imported
 mkdir -p /config/processed_books/failed
 mkdir -p /config/processed_books/fixed_originals
 mkdir -p /config/log_archive
+mkdir -p /config/.cwa_conversion_tmp
 
 chown -R abc:abc /config/processed_books
 chown -R abc:abc /config/log_archive
+chown -R abc:abc /config/.cwa_conversion_tmp
 
 
 tz=$(printcontenv TZ)

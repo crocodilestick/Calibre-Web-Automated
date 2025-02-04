@@ -258,6 +258,7 @@ class User(UserBase, Base):
     view_settings = Column(JSON, default={})
     kobo_only_shelves_sync = Column(Integer, default=0)
     hardcover_token = Column(String, unique=True, default=None)
+    kosync_password = Column(String)
 
 
 if oauth_support:
@@ -568,14 +569,37 @@ class Thumbnail(Base):
     generated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     expiration = Column(DateTime, nullable=True)
 
+class Kosync(Base):
+    __tablename__ = 'kosync'
 
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    username = 
+    document_hash = Column(String)
+    progress = Column(String)
+    percentage = Column(Float)
+    device = Column(String)
+    device_id = Column(String)
+    timestamp = Column(DateTime, nullable=True)
+
+class KosyncBooks(Base):
+    __tablename__ = 'kosync_books'
+
+    id = Column(Integer, primary_key=True)
+    data_id = Column(Integer, nullable=False)
+    book = Column(Integer, nullable=False)
+    document_hash = Column(String, nullable=False)
+    
 # Add missing tables during migration of database
 def add_missing_tables(engine, _session):
     if not engine.dialect.has_table(engine.connect(), "archived_book"):
         ArchivedBook.__table__.create(bind=engine)
     if not engine.dialect.has_table(engine.connect(), "thumbnail"):
         Thumbnail.__table__.create(bind=engine)
-
+    if not engine.dialect.has_table(engine.connect(), "kosync"):
+        Kosync.__table__.create(bind=engine)
+    if not engine.dialect.has_table(engine.connect(), "kosync_books"):
+        KosyncBooks.__table__.create(bind=engine)
 
 # migrate all settings missing in registration table
 def migrate_registration_table(engine, _session):
@@ -611,6 +635,14 @@ def migrate_user_table(engine, _session):
         with engine.connect() as conn:
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'hardcover_token' String"))
+            trans.commit()
+    try:
+        _session.query(exists().where(User.kosync_password)).scalar()
+        _session.commit()
+    except exc.OperationalError:  # Database is not compatible, some columns are missing
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'kosync_password' String"))
             trans.commit()
 
 # Migrate database to current version, has to be updated after every database change. Currently migration from

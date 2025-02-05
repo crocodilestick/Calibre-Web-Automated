@@ -51,6 +51,9 @@ class NewBookProcessor:
         self.hierarchy_of_success = {'epub', 'lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt'}
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
 
+        # Create the tmp_conversion_dir if it does not already exist
+        Path(self.tmp_conversion_dir).mkdir(exist_ok=True)
+        
         self.filepath = filepath # path of the book we're targeting
         self.filename = os.path.basename(filepath)
         self.is_target_format = bool(self.filepath.endswith(self.target_format))

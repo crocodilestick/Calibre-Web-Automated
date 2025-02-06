@@ -267,6 +267,7 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
 
 - CWA has been designed to make switching over as easy as possible. To migrate your CW instance to CWA, simply:
   1. Stop your instance of CW if it's still running
+  2. Whatever your `/books` bind was in Calibre-Web, should be your `/calibre-library` bind for CWA
   2. Mount the same `/config` folder in your Docker Compose that you were using for CW (or a copy of it to be extra safe)
   3. Mount the same folder containing your Calibre Library (the Docker Compose for the Linuxserver image of Calibre Web has this as `/books` by default)
 - And then you're done! All of your users, settings ect. should be automatically carried over into your new CWA instance! Enjoy!

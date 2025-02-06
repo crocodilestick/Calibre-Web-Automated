@@ -6,50 +6,7 @@
 {% endblock %}
 
 {% block header %}
-<style>
-  .settings-container {
-    background: #1f2c3554;
-    padding-left: 4rem;
-    padding-right: 6rem;
-    margin-right: 2rem;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .settings-section-header {
-    color: #ffc200;
-    padding-bottom: 14px;
-  }
-
-  .settings-explanation {
-    color: #e9e9e9;
-    font-size: small !important;
-    line-height: normal;
-    max-width: 90rem;
-    font-style: normal !important;
-    padding-left: 0px !important;
-    margin: 0 !important;
-    margin-bottom: 20px !important;
-  }
-
-  .settings-disclaimer {
-    font-size: x-small !important;
-    font-style: normal !important;
-    color: #e9e9e9;
-    padding-left: 0px !important;
-    line-height: normal;
-    margin: 0 !important;
-  }
-
-  .settings-divider {
-    margin-top: 3rem;
-    margin-bottom: 3rem;
-    border-color: #5c6b74;
-    border-width: 2px;
-  }
-
-</style>
+<style></style>
 {% endblock %}
 
 {% block body %}
@@ -169,7 +126,7 @@
         formats selected in the ignore list below)
       </p>
       <label for="auto_convert_target_format" style="padding-right: 10px; margin-bottom: 16px !important;">Choose a target format:</label>
-      <select class="cwa-settings-select" style="width: 8rem; background-color: #151e26 !important;" name="auto_convert_target_format" id="auto_convert_target_format">
+      <select class="cwa-settings-select" name="auto_convert_target_format" id="auto_convert_target_format">
         {% for format in target_formats -%}
           {% if cwa_settings['auto_convert_target_format'] == format %}
             <option value="{{ format }}" selected>{{ format }}</option>

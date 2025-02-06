@@ -4,11 +4,11 @@ echo "========== STARTING METADATA CHANGE DETECTOR ==========="
 
 # Folder to monitor
 WATCH_FOLDER="/app/calibre-web-automated/metadata_change_logs"
-echo "[metadata-change-detector]: Watching folder: $WATCH_FOLDER"
+echo "[metadata-change-detector] Watching folder: $WATCH_FOLDER"
 
 # Monitor the folder for new files
 s6-setuidgid abc inotifywait -m -e close_write -e moved_to --exclude '^.*\.(swp)$' "$WATCH_FOLDER" |
 while read -r directory events filename; do
-        echo "[metadata-change-detector]: New file detected: $filename"
+        echo "[metadata-change-detector] New file detected: $filename"
         python3 /app/calibre-web-automated/scripts/cover_enforcer.py "--log" "$filename"
 done

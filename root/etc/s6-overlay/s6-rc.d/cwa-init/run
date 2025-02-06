@@ -73,7 +73,7 @@ fi
 echo "[cwa-init] Checking for an existing app.db in /config..."
 
 if [ ! -f /config/app.db ]; then
-    echo "[cwa-init] Existing app.db found! Creating new one..."
+    echo "[cwa-init] No existing app.db found! Creating new one..."
     cp /app/calibre-web-automated/empty_library/app.db /config/app.db
 else
     echo "[cwa-init] Existing app.db found!"

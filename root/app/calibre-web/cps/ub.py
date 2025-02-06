@@ -574,7 +574,6 @@ class Kosync(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
-    username = 
     document_hash = Column(String)
     progress = Column(String)
     percentage = Column(Float)

@@ -11,10 +11,6 @@ mkdir -p /config/processed_books/fixed_originals
 mkdir -p /config/log_archive
 mkdir -p /config/.cwa_conversion_tmp
 
-chown -R abc:abc /config/processed_books
-chown -R abc:abc /config/log_archive
-chown -R abc:abc /config/.cwa_conversion_tmp
-
 #------------------------------------------------------------------------------------------------------------------------
 #  Set required permissions
 #------------------------------------------------------------------------------------------------------------------------
@@ -28,7 +24,7 @@ echo "[cwa-init] Recursively setting ownership of everything in$dirs to abc:abc.
 
 for d in "${requiredDirs[@]}"
 do
-    chown -R abc:abc /config
+    chown -R abc:abc $d
     if [[ $? == 0 ]]
     then
         echo "[cwa-init] Successfully set permissions for '$d'!"

@@ -11,21 +11,37 @@ import tempfile
 import atexit
 from datetime import datetime
 
+import pwd
+import grp
+
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 
+### Global Variables
+convert_library_log_file = "/config/convert-library.log"
 
 # Define the logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
 # Create a FileHandler
-file_handler = logging.FileHandler('/config/convert-library.log', mode='w')
+file_handler = logging.FileHandler(convert_library_log_file, mode='w')
 # Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
 formatter = logging.Formatter(LOG_FORMAT)
 file_handler.setFormatter(formatter)
 # Add the handler to the logger
 logger.addHandler(file_handler)
+
+# Define user and group
+USER_NAME = "abc"
+GROUP_NAME = "abc"
+
+# Get UID and GID
+uid = pwd.getpwnam(USER_NAME).pw_uid
+gid = grp.getgrnam(GROUP_NAME).gr_gid
+
+# Set permissions for log file
+os.chown(convert_library_log_file, uid, gid)
 
 def print_and_log(string) -> None:
     """ Ensures the provided string is passed to STDOUT and stored in the runs log file """

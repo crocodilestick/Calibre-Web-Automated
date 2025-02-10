@@ -2387,10 +2387,10 @@ body > div.row-fluid {
     opacity: 0.7;
     word-wrap: break-word;
     white-space: normal;
-    -webkit-animation: cssAnimation 0s ease-in 10s forwards;
-    /*animation: cssAnimation 0s ease-in 10s forwards;*/
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards
+    -webkit-animation: none;
+    animation: none;
+    max-width: 70rem;
+    justify-content: space-between
 }
 
 .alert {
@@ -8462,4 +8462,10 @@ select.cwa-settings-select {
 .stats_see_more_btn {
     border-radius: 6px !important;
     margin-bottom: 0px !important;
+}
+
+#refresh_message_dismiss_btn {
+    color: white !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
 }

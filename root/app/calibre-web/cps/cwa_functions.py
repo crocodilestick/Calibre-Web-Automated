@@ -106,7 +106,7 @@ def refresh_library(app):
         # Display message to user in Web UI
         current_app.config["library_refresh_messages"].append(message)
         # Print result to docker log
-        print(message, flush=True)
+        print(message.replace('Library Refresh -', '[library-refresh]'), flush=True)
 
 @csrf.exempt
 @library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])

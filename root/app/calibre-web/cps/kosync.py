@@ -24,18 +24,30 @@ kosync = Blueprint("kosync", __name__, url_prefix="/kosync")
 
 log = logger.create()
 
+def filename_hash(book_data):
+    filename = f'{book_data.name}.{book_data.format.lower()}'
+    hash = md5(filename.encode()).hexdigest()
+    return hash
+
 def populate_document_hashes():
-    start = time.time()
     books_missing_hash = calibre_db.session.query(db.Data).outerjoin(ub.KosyncBooks,db.Data.id == ub.KosyncBooks.data_id).where(ub.KosyncBooks.data_id == None).all()
-    log.debug(len(books_missing_hash))
     for missing_hash in books_missing_hash:
-        filename = f'{missing_hash.name}.{missing_hash.format.lower()}'
-        hash = md5(filename.encode()).hexdigest()
+        hash = filename_hash(missing_hash)
         kosync_book = ub.KosyncBooks(data_id=missing_hash.id, book=missing_hash.book, document_hash=hash)
         ub.session.add(kosync_book)
     ub.session_commit()
-    end = time.time()
-    log.debug(f'Migrated {len(books_missing_hash)} records in {(end-start) * 10**3}ms')
+
+def update_document_hash(book_id):
+    books_formats = calibre_db.session.query(db.Data).where(db.Data.book == book_id).all()
+    for format in books_formats:
+        sync = ub.session.query(ub.KosyncBooks.data_id == format.id).scalar()
+        if sync:
+            sync.document_hash = filename_hash(format)
+        if not sync:
+            hash = filename_hash(format)
+            sync = ub.KosyncBooks(data_id = format.id, book = format.book, document_hash = hash)
+            ub.session.add(sync)
+    ub.session_commit()
 
 def requires_kosync_auth(f):
     @wraps(f)

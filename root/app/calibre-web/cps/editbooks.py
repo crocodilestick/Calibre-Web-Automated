@@ -48,6 +48,7 @@ from .redirect import get_redirect_location
 from .file_helper import validate_mime_type
 from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
+from kosync import update_document_hash
 
 editbook = Blueprint('edit-book', __name__)
 log = logger.create()
@@ -145,7 +146,8 @@ def upload():
                     calibre_db.set_metadata_dirty(book_id)
                 # save data to database, reread data
                 calibre_db.session.commit()
-
+                # update document_hash for kosync
+                update_document_hash(book_id)
                 if config.config_use_google_drive:
                     gdriveutils.updateGdriveCalibreFromLocal()
                 if error:
@@ -307,6 +309,7 @@ def edit_list_book(param):
         book.last_modified = datetime.now(timezone.utc)
 
         calibre_db.session.commit()
+        update_document_hash(book.id)
         # revert change for sort if automatic fields link is deactivated
         if param == 'title' and vals.get('checkT') == "false":
             book.sort = sort_param
@@ -424,6 +427,7 @@ def table_xchange_author_title():
                 calibre_db.set_metadata_dirty(book.id)
             try:
                 calibre_db.session.commit()
+                update_document_hash(book.id)
             except (OperationalError, IntegrityError, StaleDataError) as e:
                 calibre_db.session.rollback()
                 log.error_or_exception("Database error: {}".format(e))
@@ -552,6 +556,7 @@ def do_edit_book(book_id, upload_formats=None):
 
         calibre_db.session.merge(book)
         calibre_db.session.commit()
+        update_document_hash(book.id)
         if config.config_use_google_drive:
             gdriveutils.updateGdriveCalibreFromLocal()
         if edit_error is not True and title_author_error is not True and cover_upload_success is not False:

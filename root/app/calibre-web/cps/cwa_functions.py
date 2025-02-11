@@ -97,16 +97,16 @@ def refresh_library(app):
             current_app.config["library_refresh_messages"] = []
 
         if return_code == 2:
-            message = "Library Refresh 🔄 - The book ingest service is already running ✋ Please wait until it has finished before trying again ⌛"
+            message = "Library Refresh 🔄 The book ingest service is already running ✋ Please wait until it has finished before trying again ⌛"
         elif return_code == 0:
-            message = "Library Refresh 🔄 - Library refreshed & ingest process complete! ✅"
+            message = "Library Refresh 🔄 Library refreshed & ingest process complete! ✅"
         else:
-            message = "Library Refresh 🔄 - An unexpected error occurred, check the logs ⛔"
+            message = "Library Refresh 🔄 An unexpected error occurred, check the logs ⛔"
         
         # Display message to user in Web UI
         current_app.config["library_refresh_messages"].append(message)
         # Print result to docker log
-        print(message.replace('Library Refresh -', '[library-refresh]'), flush=True)
+        print(message.replace('Library Refresh 🔄', '[library-refresh]'), flush=True)
 
 @csrf.exempt
 @library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])
@@ -121,7 +121,7 @@ def cwa_library_refresh():
     library_refresh_thread = Thread(target=refresh_library, args=(app,))
     library_refresh_thread.start()
 
-    return jsonify({"message": "Library Refresh: Checking for any books that may have been missed, please wait..."}), 200
+    return jsonify({"message": "Library Refresh 🔄 Checking for any books that may have been missed, please wait..."}), 200
 
 @csrf.exempt
 @library_refresh.route("/cwa-library-refresh/messages", methods=["GET"])

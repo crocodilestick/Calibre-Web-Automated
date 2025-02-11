@@ -11,33 +11,6 @@ mkdir -p /config/processed_books/fixed_originals
 mkdir -p /config/log_archive
 mkdir -p /config/.cwa_conversion_tmp
 
-chown -R abc:abc /config/processed_books
-chown -R abc:abc /config/log_archive
-chown -R abc:abc /config/.cwa_conversion_tmp
-
-#------------------------------------------------------------------------------------------------------------------------
-#  Set required permissions
-#------------------------------------------------------------------------------------------------------------------------
-
-declare -a requiredDirs=("/config" "/calibre-library" "/app/calibre-web-automated")
-
-dirs=$(printf ", %s" "${requiredDirs[@]}")
-dirs=${dirs:1}
-
-echo "[cwa-init] Recursively setting ownership of everything in$dirs to abc:abc..."
-
-for d in "${requiredDirs[@]}"
-do
-    chown -R abc:abc /config
-    if [[ $? == 0 ]]
-    then
-        echo "[cwa-init] Successfully set permissions for '$d'!"
-    elif [[ $? > 0 ]]
-    then
-        echo "[cwa-init] Service could not successfully set permissions for '$d' (see errors above)."
-    fi
-done
-
 #------------------------------------------------------------------------------------------------------------------------
 #  Remove any leftover lock files
 #------------------------------------------------------------------------------------------------------------------------
@@ -99,3 +72,26 @@ fi
 
 
 echo "[cwa-init] CWA-init complete! Service exiting now..."
+
+#------------------------------------------------------------------------------------------------------------------------
+#  Set required permissions
+#------------------------------------------------------------------------------------------------------------------------
+
+declare -a requiredDirs=("/config" "/calibre-library" "/app/calibre-web-automated")
+
+dirs=$(printf ", %s" "${requiredDirs[@]}")
+dirs=${dirs:1}
+
+echo "[cwa-init] Recursively setting ownership of everything in$dirs to abc:abc..."
+
+for d in "${requiredDirs[@]}"
+do
+    chown -R abc:abc $d
+    if [[ $? == 0 ]]
+    then
+        echo "[cwa-init] Successfully set permissions for '$d'!"
+    elif [[ $? > 0 ]]
+    then
+        echo "[cwa-init] Service could not successfully set permissions for '$d' (see errors above)."
+    fi
+done

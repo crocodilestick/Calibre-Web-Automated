@@ -756,3 +756,8 @@ select.cwa-settings-select {
   border-radius: 6px !important;
   margin-bottom: 0px !important;
 }
+
+.refresh-cwa {
+  width: -webkit-fill-available;
+  justify-content: space-evenly;
+}

@@ -97,11 +97,11 @@ def refresh_library(app):
             current_app.config["library_refresh_messages"] = []
 
         if return_code == 2:
-            message = "Library Refresh - The book ingest service is already running, please wait until it has finished before trying again."
+            message = "Library Refresh 🔄 - The book ingest service is already running ✋ Please wait until it has finished before trying again ⌛"
         elif return_code == 0:
-            message = "Library Refresh - Library refreshed & ingest process complete."
+            message = "Library Refresh 🔄 - Library refreshed & ingest process complete! ✅"
         else:
-            message = "Library Refresh - An unexpected error occurred, check the logs."
+            message = "Library Refresh 🔄 - An unexpected error occurred, check the logs ⛔"
         
         # Display message to user in Web UI
         current_app.config["library_refresh_messages"].append(message)

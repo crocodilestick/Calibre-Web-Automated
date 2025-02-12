@@ -33,4 +33,3 @@ while read -r events filepath ; do
         #         done
         # fi
 done
-

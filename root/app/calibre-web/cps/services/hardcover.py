@@ -108,10 +108,15 @@ class HardcoverClient:
     def update_reading_progress(self, identifiers, progress_percent):
         ids = self.parse_identifiers(identifiers)
         book = self.get_user_book(ids)
-        if not book: # Book doesn't exist, add it in Reading status
+        # Book doesn't exist, add it in Reading status
+        if not book: 
             book = self.add_book(ids, status=2)
-        if book.get("status_id") != 2: # Book is either WTR or Read
+        # Book is either WTR or Read, and we aren't finished reading
+        if book.get("status_id") != 2 and progress_percent != 100: 
             book = self.change_book_status(book, 2)
+        # Book is already marked as read, and we are also done
+        if book.get("status_id") == 3 and progress_percent == 100: 
+            return
         pages = book.get("edition",{}).get("pages",0)
         if pages:
             pages_read = round(pages * (progress_percent / 100))
@@ -220,16 +225,12 @@ class HardcoverClient:
             "query": query,
             "variables": variables or {}
         }
-
-
         response = requests.post(self.endpoint, json=payload, headers=self.headers)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             raise Exception(f"HTTP error occurred: {e}")
-
         result = response.json()
         if "errors" in result:
             raise Exception(f"GraphQL error: {result['errors']}")
-
         return result.get("data", {})

@@ -1,20 +1,38 @@
 name: Build & Push - Dev
-# Automatically builds and pushes a multi-platform dev image based on commits involving key files
+# Automatically builds and pushes a multi-platform dev image based on commits involving key files in any branch
 
 on:
   push:
+    branches:
+      - '**'  # Runs on pushes to any branch
     paths:
       - 'empty_library/**'
       - 'root/**'
       - 'scripts/**'
       - '**/Dockerfile'
+  create:
+    branches:
+      - '**'  # Runs when a new branch is created
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.event.ref_type == 'branch' || github.event_name == 'push'  # Ensures it runs for branch creation & push events
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout correct branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Determine Docker Image Tag
+        id: tag
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "IMAGE_TAG=dev" >> $GITHUB_ENV
+          else
+            echo "IMAGE_TAG=dev-${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
 
       - name: DockerHub Login
         uses: docker/login-action@v3
@@ -31,15 +49,15 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          provenance: false  # Disable provenance metadata to fix BuildKit issues
+          provenance: false # Disable provenance metadata to fix BuildKit issues
           context: .
           file: ./Dockerfile
           push: true
           build-args: |
             BUILD_DATE=${{ github.event.repository.updated_at }}
-            VERSION=${{ vars.CURRENT_DEV_VERSION }}-DEV_BUILD-${{ vars.CURRENT_DEV_BUILD_NUM }}
+            VERSION=${{ vars.CURRENT_DEV_VERSION }}-DEV_BUILD-${{ env.IMAGE_TAG }}-${{ vars.CURRENT_DEV_BUILD_NUM }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:dev
+            ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:dev-${{ env.IMAGE_TAG }}
           
           platforms: linux/amd64,linux/arm64
 

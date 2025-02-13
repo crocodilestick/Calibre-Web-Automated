@@ -147,7 +147,7 @@ def cwa_update_notification() -> None:
 
         update_available, current_version, tag_name = cwa_update_available()
         if update_available:
-            message = f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_version} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day"
+            message = f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_version} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day |"
             flash(_(message), category="cwa_update")
             print(f"[cwa-update-notification-service] {message}", flush=True)
 

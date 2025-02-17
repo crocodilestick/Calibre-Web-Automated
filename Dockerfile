@@ -89,7 +89,7 @@ RUN \
   pip install -U --no-cache-dir --find-links https://wheel-index.linuxserver.io/ubuntu/ -r \
     requirements.txt -r \
     optional-requirements.txt && \
-  # STEP 1.8 - Installs the latest release of kepubify
+  # STEP 1.8 - Installs kepubify
   echo "**** install kepubify ****" && \
   if [[ $KEPUBIFY_RELEASE == 'newest' ]]; then \
     KEPUBIFY_RELEASE=$(curl -sX GET "https://api.github.com/repos/pgaskin/kepubify/releases/latest" \

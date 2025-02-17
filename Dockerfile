@@ -98,11 +98,11 @@ RUN \
   if [ "$(uname -m)" == "x86_64" ]; then \
     curl -o \
       /usr/bin/kepubify -L \
-      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit && \
+      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit; \
   elif [ "$(uname -m)" == "aarch64" ]; then \
     curl -o \
       /usr/bin/kepubify -L \
-      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-arm64 && \
+      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-arm64; \
   fi && \
 # STEP 2 - Install Calibre-Web Automated
   echo "~~~~ CWA Install - installing additional required packages ~~~~" && \

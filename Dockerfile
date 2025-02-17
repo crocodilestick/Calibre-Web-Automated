@@ -28,6 +28,7 @@ ARG VERSION
 ARG CALIBREWEB_RELEASE=0.6.24
 ARG LSCW_RELEASE=0.6.24-ls304
 ARG UNIVERSAL_CALIBRE_RELEASE=7.16.0
+ARG KEPUBIFY_RELEASE=v4.0.4
 LABEL build_version="Version:- ${VERSION}"
 LABEL build_date="${BUILD_DATE}" 
 LABEL CW-Stock-version="${CALIBREWEB_RELEASE}"
@@ -89,14 +90,20 @@ RUN \
     requirements.txt -r \
     optional-requirements.txt && \
   # STEP 1.8 - Installs the latest release of kepubify
-  echo "***install kepubify" && \
-  if [ -z ${KEPUBIFY_RELEASE+x} ]; then \
+  echo "**** install kepubify ****" && \
+  if [[ $KEPUBIFY_RELEASE == 'newest' ]]; then \
     KEPUBIFY_RELEASE=$(curl -sX GET "https://api.github.com/repos/pgaskin/kepubify/releases/latest" \
     | awk '/tag_name/{print $4;exit}' FS='[""]'); \
   fi && \
-  curl -o \
-    /usr/bin/kepubify -L \
-    https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit && \
+  if [ "$(uname -m)" == "x86_64" ]; then \
+    curl -o \
+      /usr/bin/kepubify -L \
+      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit && \
+  elif [ "$(uname -m)" == "aarch64" ]; then \
+    curl -o \
+      /usr/bin/kepubify -L \
+      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-arm64 && \
+  fi && \
 # STEP 2 - Install Calibre-Web Automated
   echo "~~~~ CWA Install - installing additional required packages ~~~~" && \
   # STEP 2.1 - Install additional required packages

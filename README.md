@@ -277,7 +277,7 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
 
 ## _Calibre-Web Quick Start Guide_
 
-1. Open your browser and navigate to http://localhost:8084 or http://localhost:8084/opds for the OPDS catalog
+1. Open your browser and navigate to http://localhost:8083 or http://localhost:8083/opds for the OPDS catalog
 2. Log in with the default admin credentials (_below_)
 3. Configure your Calibre-Web Automated instance via the Admin Page
   - A guide to what all of the stock CW Settings do can be found [here](https://github.com/janeczku/calibre-web/wiki/Configuration#basic-configuration)

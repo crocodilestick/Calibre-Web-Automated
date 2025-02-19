@@ -193,9 +193,7 @@ class NewBookProcessor:
             if text:
                 subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], check=True)
             else: #if audiobook
-                meta = audiobook.get_audio_file_info(
-                    book_path, format, os.path.basename(book_path), False
-                )
+                meta = audiobook.get_audio_file_info(book_path, format, os.path.basename(book_path), False)
                 identifiers = ""
                 if len(meta[12]) != 0:
                     for i in meta[12]:

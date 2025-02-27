@@ -168,7 +168,7 @@ class NewBookProcessor:
     def delete_current_file(self) -> None:
         """Deletes file just processed from ingest folder"""
         os.remove(self.filepath) # Removes processed file
-        if os.path.dirname(self.filepath) != self.ingest_folder: # File was in ingest_folder, no directories to delete
+        if not os.path.samefile(os.path.dirname(self.filepath),self.ingest_folder): # File not in ingest_folder, subdirectories to delete
             subprocess.run(["find", f"{os.path.dirname(self.filepath)}", "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
 
 

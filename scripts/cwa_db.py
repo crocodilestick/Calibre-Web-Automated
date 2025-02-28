@@ -8,12 +8,13 @@ from tabulate import tabulate
 
 
 class CWA_DB:
+    """Class for managing the CWA DB"""
     def __init__(self, verbose=False):
         self.verbose = verbose
 
         self.db_file = "cwa.db"
         self.db_path = "/config/"
-        self.con, self.cur = self.connect_to_db() # type: ignore
+        self.con, self.cur = self.connect_to_db()  # type: ignore
 
         self.schema_path = "/app/calibre-web-automated/scripts/cwa_schema.sql"
         self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes"]
@@ -27,7 +28,7 @@ class CWA_DB:
         self.cwa_settings = self.get_cwa_settings()
 
 
-    def temp_disable_split_library(self): # Temporary measure to disable split library functionality until it can be supported in V2.2.0
+    def temp_disable_split_library(self) -> None: # Temporary measure to disable split library functionality until it can be supported in V2.2.0
         con = sqlite3.connect("/config/app.db")
         cur = con.cursor()
 
@@ -54,7 +55,6 @@ class CWA_DB:
                 print("[cwa-db]: Connection with the CWA Enforcement DB Successful!")
             return con, cur
 
-
     def make_tables(self) -> tuple[list[str], list[str]]:
         """Creates the tables for the CWA DB if they don't already exist"""
         schema = []
@@ -74,7 +74,7 @@ class CWA_DB:
         return tables, schema
 
 
-    def get_cwa_default_settings(self):
+    def get_cwa_default_settings(self) -> dict:
         for table in self.tables:
             if "cwa_settings" in table:
                 settings_table = table.strip()
@@ -96,7 +96,7 @@ class CWA_DB:
             except ValueError:
                 setting_value = setting_value.replace('"', '')
 
-            default_settings |= {setting_name:setting_value}
+            default_settings |= {setting_name: setting_value}
 
         return default_settings
 
@@ -125,7 +125,7 @@ class CWA_DB:
                     print(f"[cwa-db] The following error occurred when trying to remove {setting} from cwa.db:\n{e}")
 
 
-    def add_missing_setting(self, setting) -> bool:
+    def add_missing_setting(self, setting: str) -> bool:
         for line in self.schema:
             match = re.findall(setting, line)
             if match:
@@ -150,7 +150,7 @@ class CWA_DB:
         for table in self.stats_tables:
             self.cur.execute(f"SELECT * FROM {table}")
             setting_names = [header[0] for header in self.cur.description]
-            current_column_names |= {table:setting_names}
+            current_column_names |= {table: setting_names}
 
         # Produces a dict with all of the column names for each table, from the schema
         column_names_in_schema = {}
@@ -189,7 +189,7 @@ class CWA_DB:
         If the argument 'force' is set to True, the function instead sets all settings to their default values"""
         if force:
             for setting in self.cwa_default_settings:                    
-                if type(self.cwa_default_settings[setting]) == int:
+                if isinstance(self.cwa_default_settings[setting], int):
                     self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
                     self.con.commit()
                 else:
@@ -205,7 +205,7 @@ class CWA_DB:
         except IndexError:
             print("[cwa-db]: No existing CWA settings detected, applying default CWA settings...")
             for setting in self.cwa_default_settings:                    
-                if type(self.cwa_default_settings[setting]) == int:
+                if isinstance(self.cwa_default_settings[setting], int):
                     self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
                 else:
                     self.cur.execute(f'UPDATE cwa_settings SET {setting}="{self.cwa_default_settings[setting]}";')
@@ -233,27 +233,26 @@ class CWA_DB:
     def get_cwa_settings(self) -> dict:
         """Gets the current cwa_settings values from the table of the same name in cwa.db and returns them as a dict"""
         self.cur.execute("SELECT * FROM cwa_settings")
-        if self.cur.fetchall() == []: # If settings table is empty, populates it with default values
+        if self.cur.fetchall() == []:  # If settings table is empty, populates it with default values
             self.cur.execute("INSERT INTO cwa_settings DEFAULT VALUES;")
             self.con.commit()
             
         self.cur.execute("SELECT * FROM cwa_settings")
         headers = [header[0] for header in self.cur.description]
-        cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
+        cwa_settings = [dict(zip(headers, row)) for row in self.cur.fetchall()][0]
 
         for header in headers:
-            if type(cwa_settings[header]) == int:
+            if isinstance(cwa_settings[header], int):
                 cwa_settings[header] = bool(cwa_settings[header])
-            elif type(cwa_settings[header]) == str and ',' in cwa_settings[header]:
+            elif isinstance(cwa_settings[header], str) and ',' in cwa_settings[header]:
                 cwa_settings[header] = cwa_settings[header].split(',')
 
         return cwa_settings
 
-
     def update_cwa_settings(self, result) -> None:
         """Sets settings using POST request from set_cwa_settings()"""
         for setting in result.keys():
-            if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats":
+            if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats" or setting == "auto_convert_retained_formats":
                 result[setting] = ','.join(result[setting])
 
             if type(result[setting]) == int:
@@ -270,14 +269,15 @@ class CWA_DB:
         self.con.commit()
 
 
-    def enforce_add_entry_from_dir(self, book_dicts: list[dict[str,str]]):
-        """Adds an entry to the db when cover_enforcer is ran with a directory"""
+    def enforce_add_entry_from_dir(self, book_dicts: list[dict[str, str]]):
+        """Adds an entry to the db when cover_enforcer is ran with a directory
+        """
         for book in book_dicts:
             self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book['timestamp'], book['book_id'], book['book_title'], book['author_name'], book['file_path'], 'manual -dir'))
             self.con.commit()
 
 
-    def enforce_add_entry_from_all(self, book_dicts: list[dict[str,str]]):
+    def enforce_add_entry_from_all(self, book_dicts: list[dict[str, str]]):
         """Adds an entry to the db when cover_enforcer is ran with the -all flag"""
         for book in book_dicts:
             self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (book['timestamp'], book['book_id'], book['book_title'], book['author_name'], book['file_path'], 'manual -all'))
@@ -292,7 +292,7 @@ class CWA_DB:
             headers = ["Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"]
         else:
             results = results_no_path
-            headers = ["Timestamp","Book ID", "Filepath"]
+            headers = ["Timestamp", "Book ID", "Filepath"]
 
         if verbose:
             results.reverse()
@@ -346,7 +346,7 @@ class CWA_DB:
             return newest_ten
 
 
-    def get_epub_fixer_history(self, fixes:bool, verbose: bool):
+    def get_epub_fixer_history(self, fixes: bool, verbose: bool):
         results_no_fixes = self.cur.execute("SELECT timestamp, filename, manually_triggered, num_of_fixes_applied, original_backed_up FROM epub_fixes ORDER BY timestamp DESC;").fetchall()
         results_with_fixes = self.cur.execute("SELECT timestamp, filename, file_path, fixes_applied FROM epub_fixes ORDER BY timestamp DESC;").fetchall()
         if fixes:
@@ -368,26 +368,26 @@ class CWA_DB:
             return newest_ten
 
 
-    def import_add_entry(self, filename, original_backed_up):
+    def import_add_entry(self, filename: str, original_backed_up: str) -> None:
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_import(timestamp, filename, original_backed_up) VALUES (?, ?, ?);", (timestamp, filename, original_backed_up))
         self.con.commit()
 
 
-    def conversion_add_entry(self, filename, original_format, end_format, original_backed_up): # TODO Add end_format - 22.11.2024 - Done?
+    def conversion_add_entry(self, filename: str, original_format: str, end_format: str, original_backed_up: str) -> None: # TODO Add end_format - 22.11.2024 - Done?
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_format, end_format, original_backed_up) VALUES (?, ?, ?, ?, ?);", (timestamp, filename, original_format, end_format, original_backed_up))
         self.con.commit()
 
-    def epub_fixer_add_entry(self, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied=""):
+    def epub_fixer_add_entry(self, filename: str, manually_triggered: str, num_of_fixes_applied: str, original_backed_up: str, file_path: str, fixes_applied: str = "") -> None:
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO epub_fixes(timestamp, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied) VALUES (?, ?, ?, ?, ?, ?, ?);", (timestamp, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied))
         self.con.commit()
 
-    def get_stat_totals(self) -> dict[str,int]:
-        totals = {"cwa_enforcement":0,
-                "cwa_conversions":0,
-                "epub_fixes":0}
+    def get_stat_totals(self) -> dict[str, int]:
+        totals = {"cwa_enforcement": 0,
+                "cwa_conversions": 0,
+                "epub_fixes": 0}
         
         for table in totals:
             try:

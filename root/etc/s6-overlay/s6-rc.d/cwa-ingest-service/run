@@ -7,7 +7,7 @@
 echo "========== STARTING CWA-INGEST SERVICE =========="
 
 WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
-echo "[cwa-ingest-service]: Watching folder: $WATCH_FOLDER"
+echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
 # Monitor the folder for new files
 s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
@@ -16,7 +16,7 @@ while read -r events filepath ; do
         #         CURRENT_TIME=$(date +'%s')
         #         TIME_OF_MATCH=$(grep "$filepath" ingest-log-test.txt | egrep -o '[0-9]{10}')
         #         TODO NEED TO GET DIFFERENCE BETWEEN THE 2 TIMES AND IF LESS THAN 60 SECONDS, IGNORE
-        echo "[cwa-ingest-service]: New files detected - $filepath - Starting Ingest Processor..."
+        echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
         python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath" # &
         # echo "'${filepath}' - $(date +'%s')" >> /config/.ingest_dupe_list
         # INGEST_PROCESSOR_PID=$!

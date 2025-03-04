@@ -3,16 +3,6 @@
 echo "[cwa-auto-zipper] Starting CWA-Auto-Zipper service..."
 echo "[cwa-auto-zipper] Matching internal localtime & timezone with the one provided..."
 
-mkdir -p /config/processed_books/converted
-mkdir -p /config/processed_books/imported
-mkdir -p /config/processed_books/failed
-mkdir -p /config/processed_books/fixed_originals
-mkdir -p /config/log_archive
-
-chown -R abc:abc /config/processed_books
-chown -R abc:abc /config/log_archive
-
-
 tz=$(printcontenv TZ)
 if [[ $tz == "" ]]
 then

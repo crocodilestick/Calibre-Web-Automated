@@ -147,8 +147,9 @@ def cwa_update_notification() -> None:
 
         update_available, current_version, tag_name = cwa_update_available()
         if update_available:
-            message = f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_version} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day"
+            message = f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_version} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day |"
             flash(_(message), category="cwa_update")
+            print(f"[cwa-update-notification-service] {message}", flush=True)
 
         with open('/app/cwa_update_notice', 'w') as f:
             f.write(current_date)
@@ -161,7 +162,10 @@ def cwa_update_notification() -> None:
 def render_title_template(*args, **kwargs):
     sidebar, simple = get_sidebar_config(kwargs)
     if current_user.role_admin():
-        cwa_update_notification()
+        try:
+            cwa_update_notification()
+        except Exception as e:
+            print(f"[cwa-update-notification-service] The following error occurred when checking for available updates:\n{e}", flush=True)
     try:
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
                                accept=config.config_upload_formats.split(','),

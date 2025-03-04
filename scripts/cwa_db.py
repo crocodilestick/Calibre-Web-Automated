@@ -233,6 +233,11 @@ class CWA_DB:
     def get_cwa_settings(self) -> dict:
         """Gets the current cwa_settings values from the table of the same name in cwa.db and returns them as a dict"""
         self.cur.execute("SELECT * FROM cwa_settings")
+        if self.cur.fetchall() == []: # If settings table is empty, populates it with default values
+            self.cur.execute("INSERT INTO cwa_settings DEFAULT VALUES;")
+            self.con.commit()
+            
+        self.cur.execute("SELECT * FROM cwa_settings")
         headers = [header[0] for header in self.cur.description]
         cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
 

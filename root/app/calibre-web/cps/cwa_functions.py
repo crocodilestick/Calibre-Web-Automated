@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort
+from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort, jsonify, current_app
 from flask_babel import gettext as _
 
 from . import logger, config, constants, csrf
@@ -40,6 +40,7 @@ cwa_logs = Blueprint('cwa_logs', __name__)
 
 # Folder where the log files are stored
 LOG_ARCHIVE = "/config/log_archive"
+DIRS_JSON = "/app/calibre-web-automated/dirs.json"
 
 ##———————————————————————————END OF GLOBAL VARIABLES——————————————————————————##
 
@@ -72,7 +73,7 @@ def cwa_switch_theme():
         config.config_default_show |= constants.DETAIL_RANDOM
 
     config.save()
-    return redirect("/", code=302)
+    return redirect(url_for("web.index"), code=302)
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
@@ -80,23 +81,58 @@ def cwa_switch_theme():
 ##                                                                            ##
 ##————————————————————————————————————————————————————————————————————————————##
 
+def get_ingest_dir():
+    with open(DIRS_JSON, 'r') as f:
+        dirs = json.load(f)
+        return dirs['ingest_folder']
+
+def refresh_library(app):
+    with app.app_context():  # Create app context for session
+        ingest_dir = get_ingest_dir()
+        result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest_processor.py', ingest_dir])
+        return_code = result.returncode
+
+        # Add empty list for messages in app context if a list doesn't already exist
+        if "library_refresh_messages" not in current_app.config:
+            current_app.config["library_refresh_messages"] = []
+
+        if return_code == 2:
+            message = "Library Refresh 🔄 The book ingest service is already running ✋ Please wait until it has finished before trying again ⌛"
+        elif return_code == 0:
+            message = "Library Refresh 🔄 Library refreshed & ingest process complete! ✅"
+        else:
+            message = "Library Refresh 🔄 An unexpected error occurred, check the logs ⛔"
+        
+        # Display message to user in Web UI
+        current_app.config["library_refresh_messages"].append(message)
+        # Print result to docker log
+        print(message.replace('Library Refresh 🔄', '[library-refresh]'), flush=True)
+
+@csrf.exempt
 @library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_library_refresh():
-    flash(_("Library Refresh: Initialising Book Ingest System, please wait..."), category="cwa_refresh")
-    result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest_processor.py', '/cwa-book-ingest'])
-    return_code = result.returncode
+    print("[library-refresh] Library refresh manually triggered by user...", flush=True)
+    app = current_app._get_current_object()  # Get actual app instance
 
-    # if return_code == 100:
-    #     flash(_(f"Library Refresh: Ingest process complete. New books ingested."), category="cwa_refresh")
-    if return_code == 2:
-        flash(_("Library Refresh: The book ingest service is already running, please wait until it has finished before trying again."), category="cwa_refresh")
-    elif return_code == 0:
-        flash(_("Library Refresh: Library refreshed & ingest process complete."), category="cwa_refresh")
-    else:
-        flash(_("Library Refresh: An unexpected error occurred, check the logs."), category="cwa_refresh")
+    current_app.config["library_refresh_messages"] = []
 
-    return redirect("/", code=302)
+    # Run refresh_library() in a background thread
+    library_refresh_thread = Thread(target=refresh_library, args=(app,))
+    library_refresh_thread.start()
+
+    return jsonify({"message": "Library Refresh 🔄 Checking for any books that may have been missed, please wait..."}), 200
+
+@csrf.exempt
+@library_refresh.route("/cwa-library-refresh/messages", methods=["GET"])
+@login_required_if_no_ano
+def get_library_refresh_messages():
+    messages = current_app.config.get("library_refresh_messages", [])
+
+    # Clear messages after they have been retrieved
+    current_app.config["library_refresh_messages"] = []
+
+    return jsonify({"messages": messages})
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##

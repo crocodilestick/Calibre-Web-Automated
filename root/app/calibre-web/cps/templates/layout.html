@@ -25,8 +25,66 @@
       <link href="{{ url_for('static', filename='css/caliBlur_cwa.css') }}" rel="stylesheet" media="screen">
     {% endif %}
     <script>
-      const flash_success = document.getElementById("flash_success");
-      target.addEventListener('transitionend', () => flash_success.remove());
+      let checkMessagesInterval = null; // Store interval ID
+
+      function refreshLibrary() {
+          fetch("/cwa-library-refresh", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              }
+          })
+          .then(response => response.json())
+          .then(data => {
+            updateLibraryRefreshMessage(data.message);  // Show immediate confirmation
+            startCheckingMessages(); // Start checking for messages
+          })
+          .catch(error => console.error("Error:", error));
+      }
+
+      function checkLibraryMessages() {
+          fetch("/cwa-library-refresh/messages")
+              .then(response => response.json())
+              .then(data => {
+                  if (data.messages.length > 0) {
+                    updateLibraryRefreshMessage(data.messages.join("<br>")); // Show messages
+                      stopCheckingMessages(); // Stop checking once we get a message
+                  }
+              })
+              .catch(error => console.error("Error fetching messages:", error));
+      }
+
+      function startCheckingMessages() {
+          if (!checkMessagesInterval) { // Prevent multiple intervals
+              checkMessagesInterval = setInterval(checkLibraryMessages, 500);
+          }
+      }
+
+      function stopCheckingMessages() {
+          if (checkMessagesInterval) {
+              clearInterval(checkMessagesInterval);
+              checkMessagesInterval = null;
+          }
+      }
+
+      function updateLibraryRefreshMessage(message) {
+        const messageDiv = document.getElementById("message_library_refresh");
+        const messagePara = document.getElementById("library_refresh_message")
+        if (messageDiv) {
+            messagePara.innerHTML = message; // Set the message inside the div
+            messageDiv.style.display = "inline-flex"; // Make sure it's visible
+        }
+      }
+
+    function dismissLibraryRefreshMessage() {
+        const messageDiv = document.getElementById("message_library_refresh");
+        const messagePara = document.getElementById("library_refresh_message")
+        if (messageDiv) {
+            messagePara.innerHTML = ""; // Set the message inside the div
+            messageDiv.style.display = "none"; // Make sure it's visible
+        }
+      }
+
     </script>
   </head>
   <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
@@ -103,7 +161,7 @@
               {% if current_user.role_admin() %}
                 <li><a id="top_admin" data-text="{{_('Settings')}}" href="{{url_for('admin.admin')}}"><span class="glyphicon glyphicon-dashboard"></span> <span class="hidden-sm">{{_('Admin')}}</span></a></li>
               {% endif %}
-              <li><a id="refresh-library" data-text="{{_('Refresh Library')}}" href="{{url_for('library_refresh.cwa_library_refresh')}}"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Refresh Library')}}</span></a></li>
+              <li><a id="refresh-library" style="cursor: pointer;" data-text="{{_('Refresh Library')}}" onclick="refreshLibrary()"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Refresh Library')}}</span></a></li>
               {% if g.current_theme == 0 %}
               <li><a id="top_user" data-text="{{_('Account')}}" href="{% if not current_user.is_anonymous %}{{url_for('web.profile')}}{% else %}{{url_for('web.login', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}{% endif %}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
                 {% if not current_user.is_anonymous %}
@@ -119,6 +177,16 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
+    
+    <div class="row-fluid text-center">
+      <div id="message_library_refresh" style="display: none;" class="alert alert-info refresh-cwa">
+        <p id="library_refresh_message"></p>
+        <button id="refresh_message_dismiss_btn" type="button" class="close" onclick="dismissLibraryRefreshMessage()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+
     {% for message in get_flashed_messages(with_categories=True) %}
       {%if message[0] == "error" %}
       <div class="row-fluid text-center" >
@@ -130,10 +198,11 @@
         <div id="flash_info" class="alert alert-info">{{ message[1] }}</div>
       </div>
       {%endif%}
+      <div id="messageContainer"></div>
       {%if message[0] == "cwa_update" %}
       <div class="row-fluid text-center">
         <div id="flash_info" class="alert alert-info alert-cwa">
-          {{ message[1] }}
+          {{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/releases">See Changelog</a>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

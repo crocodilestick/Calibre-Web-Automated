@@ -44,6 +44,7 @@ class NewBookProcessor:
         self.auto_convert_on = self.cwa_settings['auto_convert']
         self.target_format = self.cwa_settings['auto_convert_target_format']
         self.ingest_ignored_formats = self.cwa_settings['auto_ingest_ignored_formats']
+        self.ingest_ignored_formats.append(".crdownload")
         self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats']
         self.is_kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
 

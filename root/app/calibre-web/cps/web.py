@@ -1571,7 +1571,7 @@ def profile():
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
     kobo_support = feature_support['kobo'] and config.config_kobo_sync
-    hardcover_support = feature_support['hardcover'] and config.config_hardcover_sync
+    hardcover_support = feature_support['hardcover']
     if feature_support['oauth'] and config.config_login_type == 2:
         oauth_status = get_oauth_status()
         local_oauth_check = oauth_check

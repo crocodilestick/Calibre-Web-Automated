@@ -20,7 +20,7 @@
 from typing import Dict, List, Optional
 
 import requests
-from cps import logger
+from cps import logger, config
 from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
 from cps.isoLanguages import get_language_name
 from ..cw_login import current_user
@@ -100,7 +100,7 @@ class Hardcover(Metadata):
         val = list()
         if self.active:
             try:
-                token = current_user.hardcover_token or getenv("HARDCOVER_TOKEN")
+                token = current_user.hardcover_token or config.config_hardcover_token or getenv("HARDCOVER_TOKEN")
                 if not token:
                     self.set_status(False)
                     raise Exception("Hardcover token not set for user, and no global token provided.")

@@ -551,8 +551,18 @@ def db_configuration():
 @user_login_required
 @admin_required
 def configuration():
+    subtitle_columns = (
+        calibre_db.session
+        .query(db.CustomColumns)
+        .filter(
+            db.CustomColumns.datatype.in_(["int", "text", "comments"]),
+            db.CustomColumns.mark_for_delete == 0
+        )
+        .all()
+    )
     return render_title_template("config_edit.html",
                                  config=config,
+                                 subtitleColumns=subtitle_columns,
                                  provider=oauth_bb.oauthblueprints,
                                  feature_support=feature_support,
                                  title=_("Basic Configuration"), page="config")
@@ -2307,6 +2317,9 @@ def _configuration_update_helper():
         _config_int(to_save, "config_external_port")
         _config_checkbox_int(to_save, "config_kobo_proxy")
         _config_checkbox_int(to_save, "config_hardcover_sync")
+        _config_int(to_save, "config_kobo_subtitle_cc")
+        _config_string(to_save, "config_kobo_subtitle_prefix")
+        _config_string(to_save, "config_kobo_subtitle_suffix")
 
         if "config_upload_formats" in to_save:
             to_save["config_upload_formats"] = ','.join(

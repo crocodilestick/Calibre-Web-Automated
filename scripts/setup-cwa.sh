@@ -10,6 +10,7 @@ make_dirs () {
 
 # Change ownership & permissions as required
 change_script_permissions () {
+    echo ""
     #chmod 775 /app/calibre-web/cps/editbooks.py
     #chmod 775 /app/calibre-web/cps/admin.py
 }

@@ -40,7 +40,7 @@ cwa_logs = Blueprint('cwa_logs', __name__)
 
 # Folder where the log files are stored
 LOG_ARCHIVE = "/config/log_archive"
-DIRS_JSON = "/app/calibre-web-automated/dirs.json"
+DIRS_JSON = "/config/dirs.json"
 
 ##———————————————————————————END OF GLOBAL VARIABLES——————————————————————————##
 
@@ -478,7 +478,7 @@ def convert_library_start(queue):
     queue.put(cl_process)
 
 def get_tmp_conversion_dir() -> str:
-    dirs_json_path = "/app/calibre-web-automated/dirs.json"
+    dirs_json_path = "/config/dirs.json"
     dirs = {}
     with open(dirs_json_path, 'r') as f:
         dirs: dict[str, str] = json.load(f)

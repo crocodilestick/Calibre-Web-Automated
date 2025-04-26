@@ -37,6 +37,8 @@ from cwa_db import CWA_DB
 
 log = logger.create()
 
+CWA_UPDATE_NOTICE_PATH = '/config/cwa_update_notice'
+
 def get_sidebar_config(kwargs=None):
     kwargs = kwargs or []
     simple = bool([e for e in ['kindle', 'tolino', "kobo", "bookeen"]
@@ -125,12 +127,12 @@ def cwa_update_available() -> tuple[bool, str, str]:
 # Gets the date the last cwa update notification was displayed
 def get_cwa_last_notification() -> str:
     current_date = datetime.now().strftime("%Y-%m-%d")
-    if not os.path.isfile('/app/cwa_update_notice'):
-        with open('/app/cwa_update_notice', 'w') as f:
+    if not os.path.isfile(CWA_UPDATE_NOTICE_PATH):
+        with open(CWA_UPDATE_NOTICE_PATH, 'w') as f:
             f.write(current_date)
         return "0001-01-01"
     else:
-        with open('/app/cwa_update_notice', 'r') as f:
+        with open(CWA_UPDATE_NOTICE_PATH, 'r') as f:
             last_notification = f.read()
     return last_notification
 
@@ -151,7 +153,7 @@ def cwa_update_notification() -> None:
             flash(_(message), category="cwa_update")
             print(f"[cwa-update-notification-service] {message}", flush=True)
 
-        with open('/app/cwa_update_notice', 'w') as f:
+        with open(CWA_UPDATE_NOTICE_PATH, 'w') as f:
             f.write(current_date)
         return
     else:

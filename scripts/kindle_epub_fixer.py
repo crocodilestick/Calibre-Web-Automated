@@ -22,9 +22,9 @@ from cwa_db import CWA_DB
 ### Translated from Javascript to Python & modified by crocodilestick
 
 ### Global Variables
-dirs_json = "/app/calibre-web-automated/dirs.json"
-change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
-metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
+dirs_json = "/config/dirs.json"
+change_logs_dir = "/config/metadata_change_logs"
+metadata_temp_dir = "/config/metadata_temp"
 # Log file path
 epub_fixer_log_file = "/config/epub-fixer.log"
 
@@ -41,16 +41,6 @@ file_handler.setFormatter(formatter)
 # Add the handler to the logger
 logger.addHandler(file_handler)
 
-# Define user and group
-USER_NAME = "abc"
-GROUP_NAME = "abc"
-
-# Get UID and GID
-uid = pwd.getpwnam(USER_NAME).pw_uid
-gid = grp.getgrnam(GROUP_NAME).gr_gid
-
-# Set permissions for log file
-os.chown(epub_fixer_log_file, uid, gid)
 
 def print_and_log(string, log=True) -> None:
     """ Ensures the provided string is passed to STDOUT AND stored in the run's log file """

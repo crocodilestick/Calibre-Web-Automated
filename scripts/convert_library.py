@@ -32,16 +32,6 @@ file_handler.setFormatter(formatter)
 # Add the handler to the logger
 logger.addHandler(file_handler)
 
-# Define user and group
-USER_NAME = "abc"
-GROUP_NAME = "abc"
-
-# Get UID and GID
-uid = pwd.getpwnam(USER_NAME).pw_uid
-gid = grp.getgrnam(GROUP_NAME).gr_gid
-
-# Set permissions for log file
-os.chown(convert_library_log_file, uid, gid)
 
 def print_and_log(string) -> None:
     """ Ensures the provided string is passed to STDOUT and stored in the runs log file """
@@ -92,7 +82,7 @@ class LibraryConverter:
         self.hierarchy_of_success = {'epub', 'lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt'}
 
         self.current_book = 1
-        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
+        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/config/dirs.json')
         self.to_convert = self.get_books_to_convert()
 
 
@@ -321,11 +311,7 @@ class LibraryConverter:
 
 
     def set_library_permissions(self):
-        try:
-            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
-            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Successfully set ownership of new files in {self.library_dir} to abc:abc.")
-        except subprocess.CalledProcessError as e:
-            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
+        pass
 
 
 def main():

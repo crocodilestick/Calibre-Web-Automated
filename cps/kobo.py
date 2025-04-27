@@ -616,14 +616,15 @@ def get_metadata(book):
     if cover_image_id != str(book_uuid):
         log.debug("Kobo Sync: cache-busting cover id for book %s: %s", book.id, cover_image_id)
 
+    subtitle = ""
     if config.config_kobo_subtitle_cc:
-        subtitle = (
-            f"{config.config_kobo_subtitle_prefix or ''} "
-            f"{getattr(book, f'custom_column_{config.config_kobo_subtitle_cc}')[0].value} "
-            f"{config.config_kobo_subtitle_suffix or ''}"
-        ).strip()
-    else:
-        subtitle = ""
+        subtitleColumn = getattr(book, f'custom_column_{config.config_kobo_subtitle_cc}')
+        if len(subtitleColumn):
+            subtitle = (
+                f"{config.config_kobo_subtitle_prefix or ''} "
+                f"{subtitleColumn[0].value} "
+                f"{config.config_kobo_subtitle_suffix or ''}"
+            ).strip()
 
     metadata = {
         "Categories": ["00000000-0000-0000-0000-000000000001", ],

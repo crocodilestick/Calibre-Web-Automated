@@ -13,9 +13,9 @@ import atexit
 from cwa_db import CWA_DB
 
 # Global Variables
-dirs_json = "/app/calibre-web-automated/dirs.json"
-change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
-metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
+dirs_json = "/config/dirs.json"
+change_logs_dir = "/config/metadata_change_logs"
+metadata_temp_dir = "/config/metadata_temp"
 
 
 # Creates a lock file unless one already exists meaning an instance of the script is

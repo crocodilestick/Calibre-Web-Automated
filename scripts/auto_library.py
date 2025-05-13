@@ -22,7 +22,7 @@ class AutoLibrary:
     def __init__(self):
         self.config_dir = "/config"
         self.library_dir = "/calibre-library"
-        self.dirs_path = "/app/calibre-web-automated/dirs.json"
+        self.dirs_path = "/config/dirs.json"
         self.app_db = "/config/app.db"
 
         self.empty_appdb = "/app/calibre-web-automated/empty_library/app.db"
@@ -51,7 +51,6 @@ class AutoLibrary:
         if len(db_files) == 0:
             print(f"[cwa-auto-library] No app.db found in {self.config_dir}, copying from /app/calibre-web-automated/empty_library/app.db")
             shutil.copyfile(self.empty_appdb, f"{self.config_dir}/app.db")
-            os.system(f"chown -R abc:abc {self.config_dir}")
             print(f"[cwa-auto-library] app.db successfully copied to {self.config_dir}")
         else:
             return
@@ -127,7 +126,6 @@ class AutoLibrary:
     def make_new_library(self):
         print("[cwa-auto-library]: No existing library found. Creating new library...")
         shutil.copyfile(self.empty_metadb, f"{self.library_dir}/metadata.db")
-        os.system(f"chown -R abc:abc {self.library_dir}")
         self.metadb_path = f"{self.library_dir}/metadata.db"
         return
 

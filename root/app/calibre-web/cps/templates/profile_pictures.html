@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <style>
+    body {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+      background-color: #455e77;
+      font-size: 16px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: bold;
+    }
+
+    p {
+      font-size: 1.2rem;
+      line-height: 0.5;
+    }
+
+    button {
+      font-size: 1rem;
+    }
+
+    .form-wrapper {
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      width: 100%;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    form {
+      text-align: left;
+      width: 100%;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+    }
+
+    textarea {
+      height: 300px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+    }
+
+    .back-button {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.back-button a {
+  background-color: #ffffff;
+  color: #455e77;
+  border: 2px solid #ffffff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.back-button a:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+  </style>
+</head>
+<body>
+  <h1 class="mb-4">{{ title }}</h1>
+
+  <br>
+  <p>This is the admin page for managing profile pictures. This feature is currently in development.</p>
+  <p>To upload a profile picture, please use the following form. Note: The image data must be in Base64 format.</p>
+  <p>You can convert an image to Base64 using various online tools. If you use a website such as www.base64-image.de</p>
+  <p>then make sure you use the version that starts with the line "data:image/png;base64," not the url version.</p>
+  <p>To display the image as a round shape, it must already be in PNG format with a round frame applied.</p>
+  <p>It is recommended to use images no larger than 100x100px to avoid using excessive storage space.</p>
+  <br>
+
+  <div class="form-wrapper">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="form-group">
+        <label for="username">Username to add the image to:</label>
+        <input type="text" class="form-control" id="username" name="username" required />
+      </div>
+
+      <div class="form-group mt-3">
+        <label for="image_data">Base64 Image Data:</label>
+        <textarea class="form-control" id="image_data" name="image_data" rows="30" required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-4">Submit</button>
+    </form>
+  </div>
+
+  <div class="back-button">
+    <a class="btn btn-secondary" href="{{ url_for('admin.admin') }}">Back to Admin Page</a>
+  </div>
+</body>
+</html>

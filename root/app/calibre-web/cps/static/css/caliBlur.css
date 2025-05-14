@@ -2758,13 +2758,20 @@ input.pill + label:hover {
     margin: 0
 }
 
+#meta-info #book-list .media:nth-of-type(even) {
+    background: none;
+}
+
 #meta-info #book-list .media:nth-of-type(odd) {
     background: hsla(0, 0%, 100%, .02)
 }
 
 #meta-info #book-list .media {
     margin-top: 0;
-    padding: 20px 15px 5px
+    margin-bottom: 0;
+    padding: 20px 15px 5px;
+    box-shadow: none;
+    border-radius: 0;
 }
 
 #meta-info #book-list .media > .media-body > p > a {

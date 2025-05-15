@@ -210,9 +210,3 @@ EXPOSE 8083
 VOLUME /config
 VOLUME /cwa-book-ingest
 VOLUME /calibre-library
-
-#########################################################################
-#add permission for editing the json from the webui for profile pictures
-
-RUN chmod -R 777 /app/calibre-web/cps/static/user-profile-data
-##########################################################################

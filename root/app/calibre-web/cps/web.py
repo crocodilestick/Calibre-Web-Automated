@@ -1696,6 +1696,18 @@ def show_book(book_id):
 
 # ################################### Profile Pictures ###################################################
 
+@web.route("/user_profiles.json")
+@user_login_required
+def user_profiles_json():
+    try:
+        json_path = "/config/user_profiles.json"
+        with open(json_path, "r") as file:
+            data = json.load(file)
+        return jsonify(data)
+    except Exception as e:
+        log.error(f"Error reading user_profiles.json: {str(e)}")
+        return jsonify({}), 500
+
 @web.route("/me/cwa/profilepictures", methods=["GET", "POST"])
 @user_login_required
 def profile_pictures():
@@ -1724,7 +1736,7 @@ def profile_pictures():
 
         try:
             # Path to the JSON file
-            json_path = "/app/calibre-web/cps/static/user-profile-data/user_profiles.json"
+            json_path = "/config/user_profiles.json"
             log.debug(f"Opening JSON file at: {json_path}")
 
             # Read the existing data from the JSON file and update it
@@ -1749,5 +1761,5 @@ def profile_pictures():
     # Handle the GET request and render the page
     log.debug("Rendering GET view for profile_pictures page.")
     return render_title_template("profile_pictures.html", 
-                                 title=_("Profile Pictures Management"), 
+                                 title=_("Profile Picture Management"), 
                                  page="profilepictures")

@@ -163,7 +163,7 @@ class LibraryConverter:
                 continue
 
             if self.target_format == "kepub":
-                convert_successful, target_filepath = self.convert_to_kepub(filename, file_extension)
+                convert_successful, target_filepath = self.convert_to_kepub(file, file_extension)
                 if not convert_successful:
                     print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Conversion of {os.path.basename(file)} was unsuccessful. Moving to next book...")
                     self.current_book += 1

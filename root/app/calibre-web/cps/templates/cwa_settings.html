@@ -168,6 +168,33 @@
       </div>
     </div>
 
+    <div class="settings-container">
+      <h4 class="settings-section-header">CWA Auto-Convert - Retained Formats</h4>
+      <p class="cwa-settings-explanation settings-explanation">
+        The formats selected here will always be added to the library, even after they have been converted. However, if the format is in the "CWA Auto-Ingest - Ignored Formats" list, it will not be imported. Note that the target format is always retained.
+      </p>
+      <div style="max-width: 90rem; padding-left: 30px;">
+        {% for format in ignorable_formats -%}
+          <label for="convert_retained_{{ format }}" style="width: 75px; padding-right: 6px;">
+            {% if format in cwa_settings['auto_convert_retained_formats'] %}
+              {% if format in cwa_settings['auto_ingest_ignored_formats'] %}
+                <input type="checkbox" id="convert_retained_{{ format }}" name="convert_retained_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary);">
+              {% else %}
+                <input type="checkbox" id="convert_retained_{{ format }}" name="convert_retained_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary);">
+              {% endif %}
+            {% else %}
+              {% if format in cwa_settings['auto_ingest_ignored_formats'] %}
+                <input type="checkbox" id="convert_retained_{{ format }}" name="convert_retained_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary);">
+              {% else %}
+                <input type="checkbox" id="convert_retained_{{ format }}" name="convert_retained_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary);">
+              {% endif %}
+            {% endif %}
+            <span style="padding-left: 4px; vertical-align: middle;">{{ format }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
     <div class="settings-container" style="margin-bottom: 0.8rem !important;">
       <h4 class="settings-section-header">CWA Auto-Ingest - Ignored Formats</h4>
       <p class="cwa-settings-explanation settings-explanation">

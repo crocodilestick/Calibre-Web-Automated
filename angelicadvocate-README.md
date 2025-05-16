@@ -24,3 +24,6 @@
 - **File:** `ingest_processor.py`  
   Implemented filename truncation to prevent issues with excessively long file names.  
   This resolves errors when processing files that exceed filesystem limits or break internal logic.
+  Improve file renaming logic in ingest_processor.py
+  Avoids concatenating the original filename with the path and extension in a way that could exceed filesystem limits.
+  Resolves edge cases where the filename could still be too long even after truncation.

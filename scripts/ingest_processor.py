@@ -185,9 +185,9 @@ class NewBookProcessor:
     def add_book_to_library(self, book_path:str) -> None:
         if self.target_format == "epub" and self.is_kindle_epub_fixer:
             self.run_kindle_epub_fixer(book_path, dest=self.tmp_conversion_dir)
-            fixed_epub_path = str(self.empty_tmp_con_dir) + str(os.path.basename(book_path))
+            fixed_epub_path = Path(self.tmp_conversion_dir) / os.path.basename(book_path)
             if Path(fixed_epub_path).exists():
-                book_path = self.empty_tmp_con_dir + os.path.basename(book_path)
+                book_path = str(fixed_epub_path)
 
         print("[ingest-processor]: Importing new book to CWA...")
         import_path = Path(book_path)

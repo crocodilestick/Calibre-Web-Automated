@@ -174,7 +174,8 @@ class NewBookProcessor:
     def delete_current_file(self) -> None:
         """Deletes file just processed from ingest folder"""
         os.remove(self.filepath) # Removes processed file
-        subprocess.run(["find", f"{self.ingest_folder}", "-mindepth", "1", "-type", "d", "-empty", "-delete"]) # Removes any now empty folders in the ingest folder
+        if not os.path.samefile(os.path.dirname(self.filepath),self.ingest_folder): # File not in ingest_folder, subdirectories to delete
+            subprocess.run(["find", f"{os.path.dirname(self.filepath)}", "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
 
 
     def add_book_to_library(self, book_path:str) -> None:

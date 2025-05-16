@@ -44,6 +44,10 @@ class NewBookProcessor:
         self.auto_convert_on = self.cwa_settings['auto_convert']
         self.target_format = self.cwa_settings['auto_convert_target_format']
         self.ingest_ignored_formats = self.cwa_settings['auto_ingest_ignored_formats']
+
+        # Make sure it's a list, if it's a string convert it to a single-item list
+        if isinstance(self.ingest_ignored_formats, str):
+            self.ingest_ignored_formats = [self.ingest_ignored_formats]
         
         # Ignore temporary files during download
         self.ingest_ignored_formats.append(".crdownload") # Chromium based 
@@ -233,6 +237,19 @@ class NewBookProcessor:
 def main(filepath=sys.argv[1]):
     """Checks if filepath is a directory. If it is, main will be ran on every file in the given directory
     Inotifywait won't detect files inside folders if the folder was moved rather than copied"""
+    ##############################################################################################
+    # Truncates the filename if it is too long
+    MAX_LENGTH = 150
+    filename = os.path.basename(filepath)
+    name, ext = os.path.splitext(filename)
+    allowed_len = MAX_LENGTH - len(ext)
+
+    if len(name) > allowed_len:
+        new_name = name[:allowed_len] + ext
+        new_path = os.path.join(os.path.dirname(filepath), new_name)
+        os.rename(filepath, new_path)
+        filepath = new_path
+    ###############################################################################################
     if os.path.isdir(filepath) and Path(filepath).exists():
         # print(os.listdir(filepath))
         for filename in os.listdir(filepath):

@@ -3,6 +3,9 @@
 FROM ghcr.io/linuxserver/unrar:latest AS unrar
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 
+# Sets HOME ENV to /config to allow plugins to be installed
+ENV HOME /config
+
 # Set the default shell for the following RUN instructions to bash instead of sh
 SHELL ["/bin/bash", "-c"]
 

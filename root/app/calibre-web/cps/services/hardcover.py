@@ -142,9 +142,9 @@ class HardcoverClient:
                     "pages": pages_read,
                     "editionId": int(book.get("edition").get("id")),
                     "startedAt":read.get("started_at",datetime.now().strftime("%Y-%m-%d")),
-                    "finishedAt": datetime.now().strftime("%Y-%m-%d") if progress_percent is 100 else None
+                    "finishedAt": datetime.now().strftime("%Y-%m-%d") if progress_percent == 100 else None
                 }
-                if progress_percent is 100:
+                if progress_percent == 100:
                     self.change_book_status(book, 3)
                 self.execute(query=mutation, variables=variables)
         return

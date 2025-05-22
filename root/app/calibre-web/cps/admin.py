@@ -62,6 +62,7 @@ feature_support = {
     'ldap': bool(services.ldap),
     'goodreads': bool(services.goodreads_support),
     'kobo': bool(services.kobo),
+    'hardcover' : bool(services.hardcover),
     'updater': constants.UPDATER_AVAILABLE,
     'gmail': bool(services.gmail),
     'scheduler': schedule.use_APScheduler,
@@ -189,8 +190,8 @@ def reconnect():
 
 
 @admi.route("/ajax/updateThumbnails", methods=['POST'])
-@admin_required
 @user_login_required
+@admin_required
 def update_thumbnails():
     content = config.get_scheduled_task_settings()
     if content['schedule_generate_book_covers']:
@@ -1831,6 +1832,7 @@ def _configuration_update_helper():
         reboot_required |= _config_checkbox_int(to_save, "config_kobo_sync")
         _config_int(to_save, "config_external_port")
         _config_checkbox_int(to_save, "config_kobo_proxy")
+        _config_checkbox_int(to_save, "config_hardcover_sync")
 
         if "config_upload_formats" in to_save:
             to_save["config_upload_formats"] = ','.join(
@@ -1868,6 +1870,10 @@ def _configuration_update_helper():
             services.goodreads_support.connect(config.config_goodreads_api_key,
                                                config.config_use_goodreads)
 
+        # Hardcover configuration
+        _config_checkbox(to_save, "config_use_hardcover")
+        _config_string(to_save, "config_hardcover_token")
+            
         _config_int(to_save, "config_updatechannel")
 
         # Reverse proxy login configuration

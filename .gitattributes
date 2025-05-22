@@ -1,1 +1,8 @@
+# Enforce LF for all shell scripts and related files
 *.sh text eol=lf
+*.bash text eol=lf
+*.env text eol=lf
+*.conf text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf
+**/run text eol=lf

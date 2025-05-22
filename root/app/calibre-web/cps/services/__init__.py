@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+
+#  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
+#    Copyright (C) 2019 pwr
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+from .. import logger
+
+log = logger.create()
+
+try:
+    from . import goodreads_support
+except ImportError as err:
+    log.debug("Cannot import goodreads, showing authors-metadata will not work: %s", err)
+    goodreads_support = None
+
+
+try:
+    from . import simpleldap as ldap
+    from .simpleldap import ldapVersion
+except ImportError as err:
+    log.debug("Cannot import simpleldap, logging in with ldap will not work: %s", err)
+    ldap = None
+    ldapVersion = None
+
+try:
+    from . import SyncToken as SyncToken
+    kobo = True
+except ImportError as err:
+    log.debug("Cannot import SyncToken, syncing books with Kobo Devices will not work: %s", err)
+    kobo = None
+    SyncToken = None
+
+try:
+    from . import gmail
+except ImportError as err:
+    log.debug("Cannot import gmail, sending books via Gmail Oauth2 Verification will not work: %s", err)
+    gmail = None
+
+try:
+    from . import hardcover
+except ImportError as err:
+    log.debug("Cannot import hardcover, syncing Kobo read progress to Hardcover will not work: %s", err)
+    hardcover = None

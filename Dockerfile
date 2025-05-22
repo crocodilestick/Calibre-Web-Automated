@@ -164,7 +164,8 @@ RUN \
     libxdamage1 \
     libgl1 \
     libglx-mesa0 \
-    xz-utils && \
+    xz-utils \
+    binutils && \
   # STEP 3.2 - Make the /app/calibre directory for the installed files
   mkdir -p \
   /app/calibre && \
@@ -182,6 +183,8 @@ RUN \
   tar xf \
       /calibre.txz -C \
       /app/calibre && \
+  # STEP 3.4.1 - Remove the ABI tag from the extracted libQt6* files to allow them to be used on older kernels
+  strip --remove-section=.note.ABI-tag /app/calibre/lib/libQt6* && \
   # STEP 3.5 - Delete the extracted calibre.txz to save space in final image
   rm /calibre.txz && \
   # STEP 3.6 - Store the UNIVERSAL_CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE

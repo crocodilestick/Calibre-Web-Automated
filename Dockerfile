@@ -27,7 +27,7 @@ ARG BUILD_DATE
 ARG VERSION
 ARG CALIBREWEB_RELEASE=0.6.24
 ARG LSCW_RELEASE=0.6.24-ls304
-ARG UNIVERSAL_CALIBRE_RELEASE=7.16.0
+ARG CALIBRE_RELEASE=8.4.0
 ARG KEPUBIFY_RELEASE=v4.0.4
 LABEL build_version="Version:- ${VERSION}"
 LABEL build_date="${BUILD_DATE}" 
@@ -169,15 +169,15 @@ RUN \
   # STEP 3.2 - Make the /app/calibre directory for the installed files
   mkdir -p \
   /app/calibre && \
-  # STEP 3.3 - Download the desired version of Calibre, determined by the UNIVERSAL_CALIBRE_RELEASE variable and the architecture of the build environment
+  # STEP 3.3 - Download the desired version of Calibre, determined by the CALIBRE_RELEASE variable and the architecture of the build environment
   if [ "$(uname -m)" == "x86_64" ]; then \
     curl -o \
       /calibre.txz -L \
-      "https://download.calibre-ebook.com/${UNIVERSAL_CALIBRE_RELEASE}/calibre-${UNIVERSAL_CALIBRE_RELEASE}-x86_64.txz"; \
+      "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-x86_64.txz"; \
   elif [ "$(uname -m)" == "aarch64" ]; then \
     curl -o \
       /calibre.txz -L \
-      "https://download.calibre-ebook.com/${UNIVERSAL_CALIBRE_RELEASE}/calibre-${UNIVERSAL_CALIBRE_RELEASE}-arm64.txz"; \
+      "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-arm64.txz"; \
   fi && \
   # STEP 3.4 - Extract the downloaded file to /app/calibre
   tar xf \
@@ -187,8 +187,8 @@ RUN \
   strip --remove-section=.note.ABI-tag /app/calibre/lib/libQt6* && \
   # STEP 3.5 - Delete the extracted calibre.txz to save space in final image
   rm /calibre.txz && \
-  # STEP 3.6 - Store the UNIVERSAL_CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
-  echo $UNIVERSAL_CALIBRE_RELEASE > /CALIBRE_RELEASE
+  # STEP 3.6 - Store the CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
+  echo $CALIBRE_RELEASE > /CALIBRE_RELEASE
 
 # Removes packages that are no longer required, also emptying dirs used to build the image that are no longer needed
 RUN \

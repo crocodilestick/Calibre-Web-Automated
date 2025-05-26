@@ -38,7 +38,7 @@ USER_BOOK_FRAGMENT = """
             id
             pages
         }
-        user_book_reads(order_by: {started_at: desc}, limit: 1) {
+        user_book_reads(order_by: {started_at: desc}, where: {finished_at: {_is_null: true}}) {
             id
             started_at
             finished_at
@@ -108,37 +108,45 @@ class HardcoverClient:
     def update_reading_progress(self, identifiers, progress_percent):
         ids = self.parse_identifiers(identifiers)
         book = self.get_user_book(ids)
-        if not book:
+        # Book doesn't exist, add it in Reading status
+        if not book: 
             book = self.add_book(ids, status=2)
-        if book.get("status_id") is not 2:
+        # Book is either WTR or Read, and we aren't finished reading
+        if book.get("status_id") != 2 and progress_percent != 100: 
             book = self.change_book_status(book, 2)
+        # Book is already marked as read, and we are also done
+        if book.get("status_id") == 3 and progress_percent == 100: 
+            return
         pages = book.get("edition",{}).get("pages",0)
         if pages:
             pages_read = round(pages * (progress_percent / 100))
             read = next(iter(book.get("user_book_reads")),None)
             if not read:
-                read = self.add_read(book, pages_read) 
-            mutation = """
-            mutation ($readId: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
-                update_user_book_read(id: $readId, object: {
-                    progress_pages: $pages,
-                    edition_id: $editionId,
-                    started_at: $startedAt,
-                    finished_at: $finishedAt
-                }) {
-                    id
+                # read = self.add_read(book, pages_read) 
+                # No read exists for some reason, return since we can't update anything.
+                return
+            else:
+                mutation = """
+                mutation ($readId: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
+                    update_user_book_read(id: $readId, object: {
+                        progress_pages: $pages,
+                        edition_id: $editionId,
+                        started_at: $startedAt,
+                        finished_at: $finishedAt
+                    }) {
+                        id
+                    }
+                }""" 
+                variables = {
+                    "readId": int(read.get("id")),
+                    "pages": pages_read,
+                    "editionId": int(book.get("edition").get("id")),
+                    "startedAt":read.get("started_at",datetime.now().strftime("%Y-%m-%d")),
+                    "finishedAt": datetime.now().strftime("%Y-%m-%d") if progress_percent == 100 else None
                 }
-            }""" 
-            variables = {
-                "readId": int(read.get("id")),
-                "pages": pages_read,
-                "editionId": int(book.get("edition").get("id")),
-                "startedAt":read.get("started_at",datetime.now().strftime("%Y-%m-%d")),
-                "finishedAt": datetime.now().strftime("%Y-%m-%d") if progress_percent is 100 else None
-            }
-            if progress_percent is 100:
-                self.change_book_status(book, 3)
-            return self.execute(query=mutation, variables=variables)
+                if progress_percent == 100:
+                    self.change_book_status(book, 3)
+                self.execute(query=mutation, variables=variables)
         return
     
     def change_book_status(self, book, status):
@@ -217,16 +225,12 @@ class HardcoverClient:
             "query": query,
             "variables": variables or {}
         }
-
-
         response = requests.post(self.endpoint, json=payload, headers=self.headers)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             raise Exception(f"HTTP error occurred: {e}")
-
         result = response.json()
         if "errors" in result:
             raise Exception(f"GraphQL error: {result['errors']}")
-
         return result.get("data", {})

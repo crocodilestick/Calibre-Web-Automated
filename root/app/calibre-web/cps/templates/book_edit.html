@@ -271,7 +271,7 @@
           alt="Cover"
         >
         <div class="image-dimensions"></div>
-        <input type="checkbox" data-meta-index="<%= index %>" data-meta-value="cover">
+        <input type="checkbox" data-meta-index="<%= index %>" data-meta-value="cover" checked>
       </div>
       <button class="btn btn-default">Save</button>
       <div><a class="meta_source" href="<%= book.source.link %>" target="_blank" rel="noopener"><%= book.source.description %></a></div>
@@ -280,38 +280,38 @@
       <% } %>
     </div>
     <dl class="media-body">
-      <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="title">Title:</dt>
+      <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="title" checked>Title:</dt>
       <dd><a class="meta_title" href="<%= book.url %>" target="_blank" rel="noopener"><%= book.title %></a></dd>
-      <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="authors">Author:</dt>
+      <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="authors" checked>Author:</dt>
       <dd class="meta_author"><%= book.authors.join(" & ") %></dd>
       <% if (book.publisher) { %>
-        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="publisher">Publisher:</dt>
+        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="publisher" checked>Publisher:</dt>
         <dd class="meta_publisher"><%= book.publisher %></dd>
       <% } %>
       <% if (book.publishedDate) { %>
-        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="pubDate">Published Date:</dt>
+        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="pubDate" checked>Published Date:</dt>
         <dd class="meta_publishedDate"><%= book.publishedDate %></dd>
       <% } %>
       <% if (book.series) { %>
-        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="series">Series:</dt>
+        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="series" checked>Series:</dt>
         <dd class="meta_publishedDate"><%= book.series %></dd>
       <% } %>
       <% if (book.series_index) { %>
-        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="seriesIndex">Series Index:</dt>
+        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="seriesIndex" checked>Series Index:</dt>
         <dd class="meta_publishedDate"><%= book.series_index %></dd>
       <% } %>
       <% if (book.description) { %>
-        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="description">Description:</dt>
+        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="description" checked>Description:</dt>
         <dd class="meta_description"><%= book.description %></dd>
       <% } %>
       <% if (book.tags.length !== 0) { %>
-        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="tags">Tags:</dt>
+        <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="tags" checked>Tags:</dt>
         <dd class="meta_author"><%= book.tags.join(", ") %></dd>
       <% } %>
       <% if (Object.keys(book.identifiers).length !== 0 ) { %>
         <% for (const key in book.identifiers) { %>
           <% if (book.identifiers[key] !== "") { %>
-            <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="<%= key %>">Identifier</dt>
+            <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="<%= key %>" checked>Identifier</dt>
             <dd class="meta_identifier"><%= key %>:<%= book.identifiers[key] %>
               <% if (key === "hardcover-id" && !document.getElementById("keyword").value.includes("hardcover-id")) { %>
                 <a href="#" data-hardcover-id="<%= book.identifiers[key] %>" ><span class="glyphicon glyphicon-search" style="padding-left: 10px; padding-right: 6px;"></span>Editions</a>

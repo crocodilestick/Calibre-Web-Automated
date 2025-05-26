@@ -10,22 +10,39 @@ import subprocess
 import tempfile
 import atexit
 from datetime import datetime
+import sqlite3
+
+import pwd
+import grp
 
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 
+### Global Variables
+convert_library_log_file = "/config/convert-library.log"
 
 # Define the logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
 # Create a FileHandler
-file_handler = logging.FileHandler('/config/convert-library.log', mode='w')
+file_handler = logging.FileHandler(convert_library_log_file, mode='w')
 # Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
 formatter = logging.Formatter(LOG_FORMAT)
 file_handler.setFormatter(formatter)
 # Add the handler to the logger
 logger.addHandler(file_handler)
+
+# Define user and group
+USER_NAME = "abc"
+GROUP_NAME = "abc"
+
+# Get UID and GID
+uid = pwd.getpwnam(USER_NAME).pw_uid
+gid = grp.getgrnam(GROUP_NAME).gr_gid
+
+# Set permissions for log file
+os.chown(convert_library_log_file, uid, gid)
 
 def print_and_log(string) -> None:
     """ Ensures the provided string is passed to STDOUT and stored in the runs log file """
@@ -78,6 +95,26 @@ class LibraryConverter:
         self.current_book = 1
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
         self.to_convert = self.get_books_to_convert()
+
+        # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.split_library = self.get_split_library()
+        if self.split_library:
+            self.library_dir = self.split_library
+
+    
+    def get_split_library() -> bool | None:
+        """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
+        con = sqlite3.connect("/config/app.db")
+        cur = con.cursor()
+        split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+        if split_library:
+            split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            con.close()
+            return split_path
+        else:
+            con.close()
+            return None
 
 
     def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:
@@ -147,7 +184,7 @@ class LibraryConverter:
                 continue
 
             if self.target_format == "kepub":
-                convert_successful, target_filepath = self.convert_to_kepub(filename, file_extension)
+                convert_successful, target_filepath = self.convert_to_kepub(file, file_extension)
                 if not convert_successful:
                     print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Conversion of {os.path.basename(file)} was unsuccessful. Moving to next book...")
                     self.current_book += 1

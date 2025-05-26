@@ -5,6 +5,7 @@ from xml.dom import minidom
 import argparse
 from pathlib import Path
 import sys
+import sqlite3
 
 import logging
 import tempfile
@@ -12,6 +13,9 @@ import atexit
 from datetime import datetime
 import json
 import shutil
+
+import pwd
+import grp
 
 from cwa_db import CWA_DB
 
@@ -22,19 +26,32 @@ from cwa_db import CWA_DB
 dirs_json = "/app/calibre-web-automated/dirs.json"
 change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
 metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
+# Log file path
+epub_fixer_log_file = "/config/epub-fixer.log"
 
 ### LOGGING
 # Define the logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
 # Create a FileHandler
-file_handler = logging.FileHandler('/config/epub-fixer.log', mode='w')
+file_handler = logging.FileHandler(epub_fixer_log_file, mode='w')
 # Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
 formatter = logging.Formatter(LOG_FORMAT)
 file_handler.setFormatter(formatter)
 # Add the handler to the logger
 logger.addHandler(file_handler)
+
+# Define user and group
+USER_NAME = "abc"
+GROUP_NAME = "abc"
+
+# Get UID and GID
+uid = pwd.getpwnam(USER_NAME).pw_uid
+gid = grp.getgrnam(GROUP_NAME).gr_gid
+
+# Set permissions for log file
+os.chown(epub_fixer_log_file, uid, gid)
 
 def print_and_log(string, log=True) -> None:
     """ Ensures the provided string is passed to STDOUT AND stored in the run's log file """
@@ -309,10 +326,20 @@ class EPUBFixer:
 
 
 def get_library_location() -> str:
-    """Gets Calibre-Library location from dirs_json path"""
-    with open(dirs_json, 'r') as f:
-        dirs = json.load(f)
-    return dirs['calibre_library_dir'] # Returns without / on the end
+    con = sqlite3.connect("/config/app.db")
+    cur = con.cursor()
+    split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+    if split_library:
+        split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+        con.close()
+        return split_path
+    else:
+        dirs = {}
+        with open('/app/calibre-web-automated/dirs.json', 'r') as f:
+            dirs: dict[str, str] = json.load(f)
+        library_dir = f"{dirs['calibre_library_dir']}/"
+        return library_dir
 
 def get_all_epubs_in_library() -> list[str]:
     """ Returns a list if the book dir given contains files of one or more of the supported formats"""

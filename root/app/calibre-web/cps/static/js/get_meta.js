@@ -17,248 +17,238 @@
 /* global _, i18nMsg, tinymce, getPath */
 
 $(function () {
-    var msg = i18nMsg;
-    var keyword = "";
+  var msg = i18nMsg;
+  var keyword = "";
 
-    var templates = {
-        bookResult: _.template($("#template-book-result").html()),
-    };
+  var templates = {
+    bookResult: _.template($("#template-book-result").html()),
+  };
 
-    function getUniqueValues(attribute_name, book) {
-        var presentArray = $.map(
-            $("#" + attribute_name)
-                .val()
-                .split(","),
-            $.trim
+  function getUniqueValues(attribute_name, book) {
+    var presentArray = $.map(
+      $("#" + attribute_name)
+        .val()
+        .split(","),
+      $.trim
+    );
+    if (presentArray.length === 1 && presentArray[0] === "") {
+      presentArray = [];
+    }
+    $.each(book[attribute_name], function (i, el) {
+      if ($.inArray(el, presentArray) === -1) presentArray.push(el);
+    });
+    return presentArray;
+  }
+
+  function populateForm(book, idx) {
+    var updateItems = Object.fromEntries(
+      Array.from(document.querySelectorAll(`[data-meta-index="${idx}"]`)).map(
+        (value) => [value.dataset.metaValue, value.checked]
+      )
+    );
+    if (updateItems.description) {
+      tinymce.get("comments").setContent(book.description);
+    }
+    if (updateItems.tags) {
+      var uniqueTags = getUniqueValues("tags", book);
+      $("#tags").val(uniqueTags.join(", "));
+    }
+    var uniqueLanguages = getUniqueValues("languages", book);
+    if (updateItems.authors) {
+      var ampSeparatedAuthors = (book.authors || []).join(" & ");
+      $("#authors").val(ampSeparatedAuthors);
+    }
+    if (updateItems.title) {
+      $("#title").val(book.title);
+    }
+    $("#languages").val(uniqueLanguages.join(", "));
+    $("#rating").data("rating").setValue(Math.round(book.rating));
+
+    if (updateItems.cover && book.cover && $("#cover_url").length) {
+      $(".cover img").attr("src", book.cover);
+      $("#cover_url").val(book.cover);
+    }
+    if (updateItems.pubDate) {
+      $("#pubdate").val(book.publishedDate);
+    }
+    if (updateItems.publisher) {
+      $("#publisher").val(book.publisher);
+    }
+    if (updateItems.series && typeof book.series !== "undefined") {
+      $("#series").val(book.series);
+    }
+    if (updateItems.seriesIndex && typeof book.series_index !== "undefined") {
+      $("#series_index").val(book.series_index);
+    }
+    if (typeof book.identifiers !== "undefined") {
+      selectedIdentifiers = Object.keys(book.identifiers)
+        .filter((key) => updateItems[key])
+        .reduce((result, key) => {
+          result[key] = book.identifiers[key];
+          return result;
+        }, {});
+      populateIdentifiers(selectedIdentifiers);
+    }
+  }
+
+  function populateIdentifiers(identifiers) {
+    for (const property in identifiers) {
+      console.log(`${property}: ${identifiers[property]}`);
+      if ($('input[name="identifier-type-' + property + '"]').length) {
+        $('input[name="identifier-val-' + property + '"]').val(
+          identifiers[property]
         );
-        if (presentArray.length === 1 && presentArray[0] === "") {
-            presentArray = [];
-        }
-        $.each(book[attribute_name], function (i, el) {
-            if ($.inArray(el, presentArray) === -1) presentArray.push(el);
-        });
-        return presentArray;
+      } else {
+        addIdentifier(property, identifiers[property]);
+      }
     }
+  }
 
-    function populateForm(book, idx) {
-        var updateItems = Object.fromEntries(
-            Array.from(
-                document.querySelectorAll(`[data-meta-index="${idx}"]`)
-            ).map((value) => [value.dataset.metaValue, value.checked])
-        );
-        if (updateItems.description) {
-            tinymce.get("comments").setContent(book.description);
-        }
-        if (updateItems.tags) {
-            var uniqueTags = getUniqueValues("tags", book);
-            $("#tags").val(uniqueTags.join(", "));
-        }
-        var uniqueLanguages = getUniqueValues("languages", book);
-        if (updateItems.authors) {
-            var ampSeparatedAuthors = (book.authors || []).join(" & ");
-            $("#authors").val(ampSeparatedAuthors);
-        }
-        if (updateItems.title) {
-            $("#title").val(book.title);
-        }
-        $("#languages").val(uniqueLanguages.join(", "));
-        $("#rating").data("rating").setValue(Math.round(book.rating));
+  function addIdentifier(name, value) {
+    var line = "<tr>";
+    line +=
+      '<td><input type="text" class="form-control" name="identifier-type-' +
+      name +
+      '" required="required" placeholder="' +
+      _("Identifier Type") +
+      '" value="' +
+      name +
+      '"></td>';
+    line +=
+      '<td><input type="text" class="form-control" name="identifier-val-' +
+      name +
+      '" required="required" placeholder="' +
+      _("Identifier Value") +
+      '" value="' +
+      value +
+      '"></td>';
+    line +=
+      '<td><a class="btn btn-default" onclick="removeIdentifierLine(this)">' +
+      _("Remove") +
+      "</a></td>";
+    line += "</tr>";
+    $("#identifier-table").append(line);
+  }
 
-        if (updateItems.cover && book.cover && $("#cover_url").length) {
-            $(".cover img").attr("src", book.cover);
-            $("#cover_url").val(book.cover);
-        }
-        if (updateItems.pubDate) {
-            $("#pubdate").val(book.publishedDate);
-        }
-        if (updateItems.publisher) {
-            $("#publisher").val(book.publisher);
-        }
-        if (updateItems.series && typeof book.series !== "undefined") {
-            $("#series").val(book.series);
-        }
-        if (
-            updateItems.series_index &&
-            typeof book.series_index !== "undefined"
-        ) {
-            $("#series_index").val(book.series_index);
-        }
-        if (
-            typeof book.identifiers !== "undefined"
-        ) {
-            selectedIdentifiers = Object.keys(book.identifiers)
-                .filter((key) => updateItems[key])
-                .reduce((result, key) => {
-                    result[key] = book.identifiers[key];
-                    return result;
-                }, {});
-            populateIdentifiers(selectedIdentifiers);
-        }
-    }
-
-    function populateIdentifiers(identifiers){
-        for (const property in identifiers) {
-            console.log(`${property}: ${identifiers[property]}`);
-            if ($('input[name="identifier-type-'+property+'"]').length) {
-                $('input[name="identifier-val-'+property+'"]').val(identifiers[property])
-            }
-            else {
-                addIdentifier(property, identifiers[property])
-            }
-        }
-    }
-
-    function addIdentifier(name, value) {
-        var line = "<tr>";
-        line +=
-            '<td><input type="text" class="form-control" name="identifier-type-' +
-            name +
-            '" required="required" placeholder="' +
-            _("Identifier Type") +
-            '" value="' +
-            name +
-            '"></td>';
-        line +=
-            '<td><input type="text" class="form-control" name="identifier-val-' +
-            name +
-            '" required="required" placeholder="' +
-            _("Identifier Value") +
-            '" value="' +
-            value +
-            '"></td>';
-        line +=
-            '<td><a class="btn btn-default" onclick="removeIdentifierLine(this)">' +
-            _("Remove") +
-            "</a></td>";
-        line += "</tr>";
-        $("#identifier-table").append(line);
-    }
-
-    function doSearch(keyword) {
-        if (keyword) {
-            $("#meta-info").text(msg.loading);
-            $.ajax({
-                url: getPath() + "/metadata/search",
-                type: "POST",
-                data: { query: keyword },
-                dataType: "json",
-                success: function success(data) {
-                    if (data.length) {
-                        $("#meta-info").html(
-                            '<ul id="book-list" class="media-list"></ul>'
-                        );
-                        data.forEach(function (book, idx) {
-                            var $book = $(
-                                templates.bookResult({ book: book, index: idx })
-                            );
-                            $book.find("button").on("click", function () {
-                                populateForm(book, idx);
-                            });
-                            $("#book-list").append($book);
-                        });
-                    } else {
-                        $("#meta-info").html(
-                            '<p class="text-danger">' +
-                                msg.no_result +
-                                "!</p>" +
-                                $("#meta-info")[0].innerHTML
-                        );
-                    }
-                },
-                error: function error() {
-                    $("#meta-info").html(
-                        '<p class="text-danger">' +
-                            msg.search_error +
-                            "!</p>" +
-                            $("#meta-info")[0].innerHTML
-                    );
-                },
+  function doSearch(keyword) {
+    if (keyword) {
+      $("#meta-info").text(msg.loading);
+      $.ajax({
+        url: getPath() + "/metadata/search",
+        type: "POST",
+        data: { query: keyword },
+        dataType: "json",
+        success: function success(data) {
+          if (data.length) {
+            $("#meta-info").html('<ul id="book-list" class="media-list"></ul>');
+            data.forEach(function (book, idx) {
+              var $book = $(templates.bookResult({ book: book, index: idx }));
+              $book.find("button").on("click", function () {
+                populateForm(book, idx);
+              });
+              $("#book-list").append($book);
             });
-        }
+          } else {
+            $("#meta-info").html(
+              '<p class="text-danger">' +
+                msg.no_result +
+                "!</p>" +
+                $("#meta-info")[0].innerHTML
+            );
+          }
+        },
+        error: function error() {
+          $("#meta-info").html(
+            '<p class="text-danger">' +
+              msg.search_error +
+              "!</p>" +
+              $("#meta-info")[0].innerHTML
+          );
+        },
+      });
     }
+  }
 
-    function populate_provider() {
-        $("#metadata_provider").empty();
-        $.ajax({
-            url: getPath() + "/metadata/provider",
-            type: "get",
-            dataType: "json",
-            success: function success(data) {
-                data.forEach(function (provider) {
-                    var checked = "";
-                    if (provider.active) {
-                        checked = "checked";
-                    }
-                    var $provider_button =
-                        '<input type="checkbox" id="show-' +
-                        provider.name +
-                        '" class="pill" data-initial="' +
-                        provider.initial +
-                        '" data-control="' +
-                        provider.id +
-                        '" ' +
-                        checked +
-                        '><label for="show-' +
-                        provider.name +
-                        '">' +
-                        provider.name +
-                        ' <span class="glyphicon glyphicon-ok"></span></label>';
-                    $("#metadata_provider").append($provider_button);
-                });
-            },
+  function populate_provider() {
+    $("#metadata_provider").empty();
+    $.ajax({
+      url: getPath() + "/metadata/provider",
+      type: "get",
+      dataType: "json",
+      success: function success(data) {
+        data.forEach(function (provider) {
+          var checked = "";
+          if (provider.active) {
+            checked = "checked";
+          }
+          var $provider_button =
+            '<input type="checkbox" id="show-' +
+            provider.name +
+            '" class="pill" data-initial="' +
+            provider.initial +
+            '" data-control="' +
+            provider.id +
+            '" ' +
+            checked +
+            '><label for="show-' +
+            provider.name +
+            '">' +
+            provider.name +
+            ' <span class="glyphicon glyphicon-ok"></span></label>';
+          $("#metadata_provider").append($provider_button);
         });
+      },
+    });
+  }
+
+  $(document).on("change", ".pill", function () {
+    var element = $(this);
+    var id = element.data("control");
+    var initial = element.data("initial");
+    var val = element.prop("checked");
+    var params = { id: id, value: val };
+    if (!initial) {
+      params["initial"] = initial;
+      params["query"] = keyword;
     }
-
-    $(document).on("change", ".pill", function () {
-        var element = $(this);
-        var id = element.data("control");
-        var initial = element.data("initial");
-        var val = element.prop("checked");
-        var params = { id: id, value: val };
-        if (!initial) {
-            params["initial"] = initial;
-            params["query"] = keyword;
-        }
-        $.ajax({
-            method: "post",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            url: getPath() + "/metadata/provider/" + id,
-            data: JSON.stringify(params),
-            success: function success(data) {
-                element.data("initial", "true");
-                data.forEach(function (book, idx) {
-                    var $book = $(
-                        templates.bookResult({ book: book, index: idx })
-                    );
-                    $book.find("button").on("click", function () {
-                        populateForm(book, idx);
-                    });
-                    $("#book-list").append($book);
-                });
-            },
+    $.ajax({
+      method: "post",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      url: getPath() + "/metadata/provider/" + id,
+      data: JSON.stringify(params),
+      success: function success(data) {
+        element.data("initial", "true");
+        data.forEach(function (book, idx) {
+          var $book = $(templates.bookResult({ book: book, index: idx }));
+          $book.find("button").on("click", function () {
+            populateForm(book, idx);
+          });
+          $("#book-list").append($book);
         });
+      },
     });
+  });
 
-    $("#meta-search").on("submit", function (e) {
-        e.preventDefault();
-        keyword = $("#keyword").val();
-        $(".pill").each(function () {
-            $(this).data("initial", $(this).prop("checked"));
-        });
-        doSearch(keyword);
+  $("#meta-search").on("submit", function (e) {
+    e.preventDefault();
+    keyword = $("#keyword").val();
+    $(".pill").each(function () {
+      $(this).data("initial", $(this).prop("checked"));
     });
+    doSearch(keyword);
+  });
 
-    $("#get_meta").click(function () {
-        populate_provider();
-        var bookTitle = $("#title").val();
-        $("#keyword").val(bookTitle);
-        keyword = bookTitle;
-        doSearch(bookTitle);
+  $("#get_meta").click(function () {
+    populate_provider();
+    var bookTitle = $("#title").val();
+    $("#keyword").val(bookTitle);
+    keyword = bookTitle;
+    doSearch(bookTitle);
+  });
+  $("#metaModal").on("show.bs.modal", function (e) {
+    $(e.relatedTarget).one("focus", function (e) {
+      $(this).blur();
     });
-    $("#metaModal").on("show.bs.modal", function (e) {
-        $(e.relatedTarget).one("focus", function (e) {
-            $(this).blur();
-        });
-    });
+  });
 });

@@ -2,27 +2,21 @@
 
 # Make required directories and files for metadata enforcement
 make_dirs () {
-    mkdir /app/calibre-web-automated/metadata_change_logs
-    chown -R abc:abc /app/calibre-web-automated/metadata_change_logs
-    mkdir /app/calibre-web-automated/metadata_temp
-    chown -R abc:abc /app/calibre-web-automated/metadata_temp
-    mkdir /cwa-book-ingest
-    chown abc:abc /cwa-book-ingest
-    mkdir /calibre-library
-    chown -R abc:abc /calibre-library
+    install -d -o abc -g abc /app/calibre-web-automated/metadata_change_logs
+    install -d -o abc -g abc /app/calibre-web-automated/metadata_temp
+    install -d -o abc -g abc /cwa-book-ingest
+    install -d -o abc -g abc /calibre-library
 }
 
 # Change ownership & permissions as required
 change_script_permissions () {
-    chmod +x /app/calibre-web-automated/scripts/check-cwa-services.sh
-    chmod +x /etc/s6-overlay/s6-rc.d/cwa-ingest-service/run
-    chmod +x /etc/s6-overlay/s6-rc.d/cwa-init-remove-locks/run
-    chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
-    chmod +x /etc/s6-overlay/s6-rc.d/cwa-set-perms/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-auto-library/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-auto-zipper/run
-    chmod +x /etc/s6-overlay/s6-rc.d/cwa-set-binary-paths/run
+    chmod +x /etc/s6-overlay/s6-rc.d/cwa-ingest-service/run
+    chmod +x /etc/s6-overlay/s6-rc.d/cwa-init/run
+    chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
     chmod +x /etc/s6-overlay/s6-rc.d/universal-calibre-setup/run
+    chmod +x /app/calibre-web-automated/scripts/check-cwa-services.sh
     chmod 775 /app/calibre-web/cps/editbooks.py
     chmod 775 /app/calibre-web/cps/admin.py
 }

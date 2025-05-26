@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import time
+import sqlite3
 from datetime import datetime
 from pathlib import Path
 
@@ -56,9 +57,18 @@ class Book:
     
     def get_calibre_library(self) -> str:
         """Gets Calibre-Library location from dirs_json path"""
-        with open(dirs_json, 'r') as f:
-            dirs = json.load(f)
-        return dirs['calibre_library_dir'] # Returns without / on the end
+        con = sqlite3.connect("/config/app.db")
+        cur = con.cursor()
+        split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+        if split_library:
+            split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            con.close()
+            return split_path
+        else:
+            with open(dirs_json, 'r') as f:
+                dirs = json.load(f)
+            return dirs['calibre_library_dir'] # Returns without / on the end
 
 
     def get_time(self) -> str:
@@ -110,9 +120,18 @@ class Enforcer:
 
     def get_calibre_library(self) -> str:
         """Gets Calibre-Library location from dirs_json path"""
-        with open(dirs_json, 'r') as f:
-            dirs = json.load(f)
-        return dirs['calibre_library_dir'] # Returns without / on the end
+        con = sqlite3.connect("/config/app.db")
+        cur = con.cursor()
+        split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+        if split_library:
+            split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            con.close()
+            return split_path
+        else:
+            with open(dirs_json, 'r') as f:
+                dirs = json.load(f)
+            return dirs['calibre_library_dir'] # Returns without / on the end
 
     def read_log(self, auto=True, log_path: str = "None") -> dict:
         """Reads pertinent information from the given log file, adds the book_id from the log name and returns the info as a dict"""

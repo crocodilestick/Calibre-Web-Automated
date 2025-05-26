@@ -57,7 +57,7 @@ jobs:
             BUILD_DATE=${{ github.event.repository.updated_at }}
             VERSION=${{ vars.CURRENT_DEV_VERSION }}-DEV_BUILD-${{ env.IMAGE_TAG }}-${{ vars.CURRENT_DEV_BUILD_NUM }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:dev-${{ env.IMAGE_TAG }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:dev
           
           platforms: linux/amd64,linux/arm64
 

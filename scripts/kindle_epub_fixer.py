@@ -5,6 +5,7 @@ from xml.dom import minidom
 import argparse
 from pathlib import Path
 import sys
+import sqlite3
 
 import logging
 import tempfile
@@ -325,10 +326,20 @@ class EPUBFixer:
 
 
 def get_library_location() -> str:
-    """Gets Calibre-Library location from dirs_json path"""
-    with open(dirs_json, 'r') as f:
-        dirs = json.load(f)
-    return dirs['calibre_library_dir'] # Returns without / on the end
+    con = sqlite3.connect("/config/app.db")
+    cur = con.cursor()
+    split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+    if split_library:
+        split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+        con.close()
+        return split_path
+    else:
+        dirs = {}
+        with open('/app/calibre-web-automated/dirs.json', 'r') as f:
+            dirs: dict[str, str] = json.load(f)
+        library_dir = f"{dirs['calibre_library_dir']}/"
+        return library_dir
 
 def get_all_epubs_in_library() -> list[str]:
     """ Returns a list if the book dir given contains files of one or more of the supported formats"""

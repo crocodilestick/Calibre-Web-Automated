@@ -6,6 +6,7 @@ import sys
 import tempfile
 import time
 import shutil
+import sqlite3
 from pathlib import Path
 
 from cwa_db import CWA_DB
@@ -68,6 +69,26 @@ class NewBookProcessor:
         self.filename = os.path.basename(filepath)
         self.is_target_format = bool(self.filepath.endswith(self.target_format))
         self.can_convert, self.input_format = self.can_convert_check()
+
+        # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.split_library = self.get_split_library()
+        if self.split_library:
+            self.library_dir = self.split_library
+
+    
+    def get_split_library() -> bool | None:
+        """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
+        con = sqlite3.connect("/config/app.db")
+        cur = con.cursor()
+        split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+        if split_library:
+            split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            con.close()
+            return split_path
+        else:
+            con.close()
+            return None
 
 
     def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:

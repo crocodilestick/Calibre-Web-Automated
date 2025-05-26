@@ -478,9 +478,8 @@ def convert_library_start(queue):
     queue.put(cl_process)
 
 def get_tmp_conversion_dir() -> str:
-    dirs_json_path = "/app/calibre-web-automated/dirs.json"
     dirs = {}
-    with open(dirs_json_path, 'r') as f:
+    with open(DIRS_JSON, 'r') as f:
         dirs: dict[str, str] = json.load(f)
     tmp_conversion_dir = f"{dirs['tmp_conversion_dir']}/"
 

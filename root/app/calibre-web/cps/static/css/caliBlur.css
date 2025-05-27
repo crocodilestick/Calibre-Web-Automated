@@ -3531,7 +3531,8 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9
 body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9.col-xs-12 > a:last-of-type {
     float: right;
     background: hsla(0, 0%, 100%, .25);
-    margin-right: 10px
+    margin-right: 10px;
+    margin-bottom: 2.5rem;
 }
 
 body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9.col-xs-12 > a:last-of-type:hover {

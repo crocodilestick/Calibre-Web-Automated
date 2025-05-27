@@ -102,7 +102,7 @@ class LibraryConverter:
             self.library_dir = self.split_library
 
     
-    def get_split_library() -> bool | None:
+    def get_split_library(self) -> bool | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
         con = sqlite3.connect("/config/app.db")
         cur = con.cursor()

@@ -7,6 +7,7 @@ import time
 import sqlite3
 from datetime import datetime
 from pathlib import Path
+import subprocess
 
 import tempfile
 import atexit
@@ -41,6 +42,8 @@ class Book:
     def __init__(self, book_dir: str, file_path: str):
         self.book_dir: str = book_dir
         self.file_path: str = file_path
+
+        self.split_library_enabled = self.is_split_library_enabled()
         self.calibre_library = self.get_calibre_library()
 
         self.file_format: str = Path(file_path).suffix.replace('.', '')
@@ -54,21 +57,40 @@ class Book:
 
         self.log_info = None
 
+        # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.split_library = self.get_split_library()
+        if self.split_library:
+            self.calibre_library = self.split_library["split_path"]
+            my_env = os.environ.copy()
+            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
+            self.calibre_env = my_env
+        else:
+            self.calibre_env = os.environ.copy()
+
     
-    def get_calibre_library(self) -> str:
-        """Gets Calibre-Library location from dirs_json path"""
+    def get_split_library(self) -> dict[str, str] | None:
+        """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
         con = sqlite3.connect("/config/app.db")
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
         if split_library:
             split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
             con.close()
-            return split_path
+            return {
+                "split_path":split_path,
+                "db_path":db_path
+                }
         else:
-            with open(dirs_json, 'r') as f:
-                dirs = json.load(f)
-            return dirs['calibre_library_dir'] # Returns without / on the end
+            con.close()
+            return None
+    
+    def get_calibre_library(self) -> str:
+        """Gets Calibre-Library location from dirs.json"""
+        with open(dirs_json, 'r') as f:
+            dirs = json.load(f)
+        return dirs['calibre_library_dir'] # Returns without / on the end
 
 
     def get_time(self) -> str:
@@ -86,9 +108,10 @@ class Book:
 
     def get_new_metadata_path(self) -> str:
         """Uses the export function of the calibredb utility to export any new metadata for the given book to metadata_temp, and returns the path to the new metadata.opf"""
-        os.system(f"calibredb export --with-library '{self.calibre_library}' --to-dir '{metadata_temp_dir}' {self.book_id}")
+        subprocess.run(["calibredb", "export", "--with-library", f"'{self.calibre_library}'", "--to-dir", f"'{metadata_temp_dir}'", {self.book_id}], env=self.calibre_env, check=True)
         temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
         return [f for f in temp_files if f.endswith('.opf')][0]
+
 
     def export_as_dict(self) -> dict[str,str | None]:
         return {"book_dir":self.book_dir,
@@ -248,7 +271,7 @@ class Enforcer:
 
     def print_library_list(self) -> None:
         """Uses the calibredb command line utility to list the books in the library"""
-        os.system(f'calibredb list --with-library "{self.calibre_library}"')
+        subprocess.run(["calibredb", "list", "--with-library", f"'{self.calibre_library}'"], env=self.calibre_env, check=True)
 
     def delete_log(self, auto=True, log_path="None"):
         """Deletes the log file"""

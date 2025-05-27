@@ -99,10 +99,15 @@ class LibraryConverter:
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
-            self.library_dir = self.split_library
+            self.library_dir = self.split_library["split_path"]
+            my_env = os.environ.copy()
+            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
+            self.calibre_env = my_env
+        else:
+            self.calibre_env = os.environ.copy()
 
     
-    def get_split_library(self) -> bool | None:
+    def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
         con = sqlite3.connect("/config/app.db")
         cur = con.cursor()
@@ -110,8 +115,12 @@ class LibraryConverter:
 
         if split_library:
             split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
             con.close()
-            return split_path
+            return {
+                "split_path":split_path,
+                "db_path":db_path
+                }
         else:
             con.close()
             return None
@@ -228,6 +237,7 @@ class LibraryConverter:
             try: # Import converted book to library. As of V3.0.0, "add_format" is used instead of "add"
                 with subprocess.Popen(
                     ["calibredb", "add_format", book_id, target_filepath, f"--library-path={self.library_dir}"],
+                    env=self.calibre_env,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True

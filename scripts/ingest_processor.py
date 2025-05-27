@@ -73,10 +73,15 @@ class NewBookProcessor:
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
-            self.library_dir = self.split_library
+            self.library_dir = self.split_library["split_path"]
+            my_env = os.environ.copy()
+            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
+            self.calibre_env = my_env
+        else:
+            self.calibre_env = os.environ.copy()
 
     
-    def get_split_library(self) -> bool | None:
+    def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
         con = sqlite3.connect("/config/app.db")
         cur = con.cursor()
@@ -84,8 +89,12 @@ class NewBookProcessor:
 
         if split_library:
             split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
             con.close()
-            return split_path
+            return {
+                "split_path":split_path,
+                "db_path":db_path
+                }
         else:
             con.close()
             return None
@@ -214,7 +223,7 @@ class NewBookProcessor:
         import_path = Path(book_path)
         import_filename = os.path.basename(book_path)
         try:
-            subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], check=True)
+            subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
             print(f"[ingest-processor] Added {import_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:

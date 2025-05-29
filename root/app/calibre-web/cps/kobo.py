@@ -1015,6 +1015,8 @@ def handle_getests():
 @kobo.route("/v1/products", methods=["GET", "POST"])
 @kobo.route("/v1/affiliate", methods=["GET", "POST"])
 @kobo.route("/v1/deals", methods=["GET", "POST"])
+@kobo.route("/v1/categories/<dummy>", methods=["GET", "POST"])
+@kobo.route("/v1/categories/<dummy>/featured", methods=["GET", "POST"])
 def HandleProductsRequest(dummy=None):
     log.debug("Unimplemented Products Request received: %s (request is forwarded to kobo if configured)",
               request.base_url)

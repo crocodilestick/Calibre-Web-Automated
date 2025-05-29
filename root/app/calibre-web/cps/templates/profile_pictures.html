@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="{{ current_user.locale }}">
+  <head>
+  <title>{{instance}} | {{title}}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="140x140" href="favicon.ico">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- Bootstrap CSS -->
+  <link href="css/libs/bootstrap.min.css" rel="stylesheet" media="screen">
+
+  <!-- Theme CSS -->
+  {% if g.current_theme == 1 %}
+    <link href="{{ url_for('static', filename='css/caliBlur.css') }}" rel="stylesheet" media="screen">
+    <link href="{{ url_for('static', filename='css/caliBlur_override.css') }}" rel="stylesheet" media="screen">
+    <link href="{{ url_for('static', filename='css/caliBlur_cwa.css') }}" rel="stylesheet" media="screen">
+  {% endif %}
+  
+</head>
+
+  <style>
+
+    html, body {
+      height: auto;
+      min-height: 100%;
+      overflow-y: auto;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin: 6px 0;
+      line-height: 1.5;
+    }
+
+    .container h1 {
+      text-align: center;
+    }
+
+    .container p {
+      text-align: center;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .back-button {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .back-button a.btn {
+      background-color: #CC7B19;
+      color: #ffffff;
+      border: 2px solid #CC7B19;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, color 0.3s;
+      display: inline-block;
+      width: auto;
+      max-width: fit-content;
+     }
+
+    .back-button a.btn:hover {
+      background-color: #E59029;
+      border: 2px solid #E59029;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .form-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+
+    .pseudo-header {
+      background-color: #15191d;
+      padding: 0.1px 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      color: white;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .image-box {
+      height: 300px;
+    }
+
+    .lead-line {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+  </style>
+
+<body>
+  <div class="pseudo-header">
+    <h1>{{ title }}</h1>
+  </div>
+
+  <div class="container mt-5">
+<p class="lead-line">This is the admin page for managing profile pictures. This feature is currently in development.</p>
+
+<p>
+  To upload a profile picture, please use the following form. Note: The image data must be in Base64 format.
+  You can convert an image to Base64 using various online tools. If you use a website such as
+  <a href="https://www.base64-image.de" target="_blank" rel="noopener noreferrer">www.base64-image.de</a>,
+  then make sure you use the version that starts with the line "data:image/png;base64," not the URL version.
+  To display the image as a round shape, it must already be in PNG format with a round frame applied.
+  It is recommended to use images no larger than 100x100px to avoid using excessive storage space.
+</p>
+
+      <div class="form-wrapper">
+        <form method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="form-group">
+            <label for="username">Username to add the image to:</label>
+            <input type="text" class="form-control" id="username" name="username" required aria-describedby="usernameHelp" />
+            <small id="usernameHelp" class="form-text text-muted">Enter the exact username for the profile picture assignment.</small>
+          </div>
+
+          <div class="form-group mt-3">
+            <label for="image_data">Base64 Image Data:</label>
+            <textarea class="form-control image-box" id="image_data" name="image_data" rows="30" required aria-describedby="imageDataHelp"></textarea>
+            <small id="imageDataHelp" class="form-text text-muted">Paste the full Base64 encoded PNG image data here.</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary mt-4">Submit</button>
+        </form>
+      </div>
+
+      <div class="back-button mt-4">
+        <a class="btn btn-secondary" href="{{ url_for('admin.admin') }}">Back to Admin Page</a>
+      </div>
+    </div>
+  </body>
+</html>
+<!--
+  This template is for the profile picture upload page in Calibre-Web.
+  It includes a form for uploading Base64 encoded images and provides instructions for users.
+  The form submits the data to the server for processing.
+-->

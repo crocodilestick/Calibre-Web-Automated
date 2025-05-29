@@ -2758,13 +2758,20 @@ input.pill + label:hover {
     margin: 0
 }
 
+#meta-info #book-list .media:nth-of-type(even) {
+    background: none;
+}
+
 #meta-info #book-list .media:nth-of-type(odd) {
     background: hsla(0, 0%, 100%, .02)
 }
 
 #meta-info #book-list .media {
     margin-top: 0;
-    padding: 20px 15px 5px
+    margin-bottom: 0;
+    padding: 20px 15px 5px;
+    box-shadow: none;
+    border-radius: 0;
 }
 
 #meta-info #book-list .media > .media-body > p > a {
@@ -3524,7 +3531,8 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9
 body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9.col-xs-12 > a:last-of-type {
     float: right;
     background: hsla(0, 0%, 100%, .25);
-    margin-right: 10px
+    margin-right: 10px;
+    margin-bottom: 2.5rem;
 }
 
 body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9.col-xs-12 > a:last-of-type:hover {
@@ -7219,12 +7227,11 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-3, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-3 {
-        max-width: 130px;
-        width: 130px;
-        height: 180px;
-        margin: 0;
+        position: relative;
+        max-width: unset;
+        width: 100%;
+        height: unset;
         padding: 15px;
-        position: absolute
     }
 
     body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 {
@@ -7233,9 +7240,9 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         width: 100%
     }
 
-    body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(1), body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(2), body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(1), body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(2) {
+    /* body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(1), body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(2), body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(1), body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(2) {
         padding-left: 120px
-    }
+    } */
 
     #deleteButton, body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-3 > div.text-center > #delete, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-3 > div.text-center > #delete {
         top: 48px;

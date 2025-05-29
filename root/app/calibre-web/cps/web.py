@@ -70,7 +70,8 @@ from .string_helper import strip_whitespaces
 feature_support = {
     'ldap': bool(services.ldap),
     'goodreads': bool(services.goodreads_support),
-    'kobo': bool(services.kobo)
+    'kobo': bool(services.kobo),
+    'hardcover' : bool(services.hardcover)
 }
 
 try:
@@ -381,11 +382,20 @@ def get_sort_function(sort_param, data):
 
 
 def cwa_get_library_location() -> str:
-    dirs = {}
-    with open('/app/calibre-web-automated/dirs.json', 'r') as f:
-        dirs: dict[str, str] = json.load(f)
-    library_dir = f"{dirs['calibre_library_dir']}/"
-    return library_dir
+    con = sqlite3.connect("/config/app.db")
+    cur = con.cursor()
+    split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+    if split_library:
+        split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+        con.close()
+        return split_path
+    else:
+        dirs = {}
+        with open('/app/calibre-web-automated/dirs.json', 'r') as f:
+            dirs: dict[str, str] = json.load(f)
+        library_dir = f"{dirs['calibre_library_dir']}/"
+        return library_dir
 
 def cwa_get_num_books_in_library() -> int:
     try:
@@ -1232,7 +1242,7 @@ def serve_book(book_id, book_format, anyname):
         try:
             headers = Headers()
             headers["Content-Type"] = mimetypes.types_map.get('.' + book_format, "application/octet-stream")
-            if not range_header:
+            if not range_header:                
                 log.info('Serving book: %s', data.name)
                 headers['Accept-Ranges'] = 'bytes'
             df = getFileFromEbooksFolder(book.path, data.name + "." + book_format)
@@ -1497,7 +1507,7 @@ def logout():
 
 
 # ################################### Users own configuration #########################################################
-def change_profile(kobo_support, local_oauth_check, oauth_status, translations, languages):
+def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_status, translations, languages):
     to_save = request.form.to_dict()
     current_user.random_books = 0
     try:
@@ -1525,6 +1535,7 @@ def change_profile(kobo_support, local_oauth_check, oauth_status, translations, 
         current_user.kobo_only_shelves_sync = int(to_save.get("kobo_only_shelves_sync") == "on") or 0
         if old_state == 0 and current_user.kobo_only_shelves_sync == 1:
             kobo_sync_status.update_on_sync_shelfs(current_user.id)
+        current_user.hardcover_token = to_save.get("hardcover_token","").replace("Bearer ","") or None
 
     except Exception as ex:
         flash(str(ex), category="error")
@@ -1537,6 +1548,7 @@ def change_profile(kobo_support, local_oauth_check, oauth_status, translations, 
                                      title=_("%(name)s's Profile", name=current_user.name),
                                      page="me",
                                      kobo_support=kobo_support,
+                                     hardcover_support=hardcover_support,
                                      registered_oauth=local_oauth_check,
                                      oauth_status=oauth_status)
 
@@ -1568,6 +1580,7 @@ def profile():
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
     kobo_support = feature_support['kobo'] and config.config_kobo_sync
+    hardcover_support = feature_support['hardcover']
     if feature_support['oauth'] and config.config_login_type == 2:
         oauth_status = get_oauth_status()
         local_oauth_check = oauth_check
@@ -1576,7 +1589,7 @@ def profile():
         local_oauth_check = {}
 
     if request.method == "POST":
-        change_profile(kobo_support, local_oauth_check, oauth_status, translations, languages)
+        change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_status, translations, languages)
     return render_title_template("user_edit.html",
                                  translations=translations,
                                  profile=1,
@@ -1584,6 +1597,7 @@ def profile():
                                  content=current_user,
                                  config=config,
                                  kobo_support=kobo_support,
+                                 hardcover_support=hardcover_support,
                                  title=_("%(name)s's Profile", name=current_user.name),
                                  page="me",
                                  registered_oauth=local_oauth_check,
@@ -1693,3 +1707,73 @@ def show_book(book_id):
         flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
               category="error")
         return redirect(url_for("web.index"))
+
+# ################################### Profile Pictures ###################################################
+
+@web.route("/user_profiles.json")
+@user_login_required
+def user_profiles_json():
+    try:
+        json_path = "/config/user_profiles.json"
+        with open(json_path, "r") as file:
+            data = json.load(file)
+        return jsonify(data)
+    except Exception as e:
+        log.error(f"Error reading user_profiles.json: {str(e)}")
+        return jsonify({}), 500
+
+@web.route("/me/cwa/profilepictures", methods=["GET", "POST"])
+@user_login_required
+def profile_pictures():
+    log.debug("Accessed /me/cwa/profilepictures route.")
+
+    # Check if the user is an admin
+    if not current_user.role_admin():
+        flash(_("You must be an admin to access this page."), category="error")
+        log.warning(f"Unauthorized access attempt by user: {current_user.name}")
+        return redirect(url_for('web.profile'))
+
+    if request.method == "POST":
+        log.debug("POST request received on profile_pictures page.")
+
+        # Get the form data (username and image data)
+        username = request.form.get("username")
+        image_data = request.form.get("image_data")
+
+        log.debug(f"Form data received - Username: {username}, Image Data Length: {len(image_data) if image_data else 'None'}")
+
+        # Validate form fields
+        if not username or not image_data:
+            flash(_("Both username and image data are required."), category="error")
+            log.warning("Form submission missing username or image_data.")
+            return redirect(url_for('web.profile_pictures'))
+
+        try:
+            # Path to the JSON file
+            json_path = "/config/user_profiles.json"
+            log.debug(f"Opening JSON file at: {json_path}")
+
+            # Read the existing data from the JSON file and update it
+            with open(json_path, "r+") as file:
+                user_data = json.load(file)
+                user_data[username] = image_data  # Add new or update existing entry
+                file.seek(0)  # Move to the start of the file for writing
+                json.dump(user_data, file, indent=4)  # Write back the updated data
+                file.truncate()  # Ensure there is no leftover content
+
+            # Success feedback and logging
+            flash(_("Profile picture updated successfully."), category="success")
+            log.info(f"Profile picture updated for user: {username}")
+
+        except Exception as e:
+            # Error handling in case of an issue
+            flash(f"Error: {str(e)}", category="error")
+            log.error(f"Exception while updating profile picture JSON: {str(e)}")
+
+        return redirect(url_for('web.profile_pictures'))
+
+    # Handle the GET request and render the page
+    log.debug("Rendering GET view for profile_pictures page.")
+    return render_title_template("profile_pictures.html", 
+                                 title=_("Profile Picture Management"), 
+                                 page="profilepictures")

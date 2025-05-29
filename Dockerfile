@@ -27,7 +27,8 @@ ARG BUILD_DATE
 ARG VERSION
 ARG CALIBREWEB_RELEASE=0.6.24
 ARG LSCW_RELEASE=0.6.24-ls304
-ARG UNIVERSAL_CALIBRE_RELEASE=7.16.0
+ARG CALIBRE_RELEASE=8.4.0
+ARG KEPUBIFY_RELEASE=v4.0.4
 LABEL build_version="Version:- ${VERSION}"
 LABEL build_date="${BUILD_DATE}" 
 LABEL CW-Stock-version="${CALIBREWEB_RELEASE}"
@@ -88,15 +89,21 @@ RUN \
   pip install -U --no-cache-dir --find-links https://wheel-index.linuxserver.io/ubuntu/ -r \
     requirements.txt -r \
     optional-requirements.txt && \
-  # STEP 1.8 - Installs the latest release of kepubify
-  echo "***install kepubify" && \
-  if [ -z ${KEPUBIFY_RELEASE+x} ]; then \
+  # STEP 1.8 - Installs kepubify
+  echo "**** install kepubify ****" && \
+  if [[ $KEPUBIFY_RELEASE == 'newest' ]]; then \
     KEPUBIFY_RELEASE=$(curl -sX GET "https://api.github.com/repos/pgaskin/kepubify/releases/latest" \
     | awk '/tag_name/{print $4;exit}' FS='[""]'); \
   fi && \
-  curl -o \
-    /usr/bin/kepubify -L \
-    https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit && \
+  if [ "$(uname -m)" == "x86_64" ]; then \
+    curl -o \
+      /usr/bin/kepubify -L \
+      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit; \
+  elif [ "$(uname -m)" == "aarch64" ]; then \
+    curl -o \
+      /usr/bin/kepubify -L \
+      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-arm64; \
+  fi && \
 # STEP 2 - Install Calibre-Web Automated
   echo "~~~~ CWA Install - installing additional required packages ~~~~" && \
   # STEP 2.1 - Install additional required packages
@@ -157,28 +164,31 @@ RUN \
     libxdamage1 \
     libgl1 \
     libglx-mesa0 \
-    xz-utils && \
+    xz-utils \
+    binutils && \
   # STEP 3.2 - Make the /app/calibre directory for the installed files
   mkdir -p \
   /app/calibre && \
-  # STEP 3.3 - Download the desired version of Calibre, determined by the UNIVERSAL_CALIBRE_RELEASE variable and the architecture of the build environment
+  # STEP 3.3 - Download the desired version of Calibre, determined by the CALIBRE_RELEASE variable and the architecture of the build environment
   if [ "$(uname -m)" == "x86_64" ]; then \
     curl -o \
       /calibre.txz -L \
-      "https://download.calibre-ebook.com/${UNIVERSAL_CALIBRE_RELEASE}/calibre-${UNIVERSAL_CALIBRE_RELEASE}-x86_64.txz"; \
+      "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-x86_64.txz"; \
   elif [ "$(uname -m)" == "aarch64" ]; then \
     curl -o \
       /calibre.txz -L \
-      "https://download.calibre-ebook.com/${UNIVERSAL_CALIBRE_RELEASE}/calibre-${UNIVERSAL_CALIBRE_RELEASE}-arm64.txz"; \
+      "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-arm64.txz"; \
   fi && \
   # STEP 3.4 - Extract the downloaded file to /app/calibre
   tar xf \
       /calibre.txz -C \
       /app/calibre && \
+  # STEP 3.4.1 - Remove the ABI tag from the extracted libQt6* files to allow them to be used on older kernels
+  strip --remove-section=.note.ABI-tag /app/calibre/lib/libQt6* && \
   # STEP 3.5 - Delete the extracted calibre.txz to save space in final image
   rm /calibre.txz && \
-  # STEP 3.6 - Store the UNIVERSAL_CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
-  echo $UNIVERSAL_CALIBRE_RELEASE > /CALIBRE_RELEASE
+  # STEP 3.6 - Store the CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
+  echo $CALIBRE_RELEASE > /CALIBRE_RELEASE
 
 # Removes packages that are no longer required, also emptying dirs used to build the image that are no longer needed
 RUN \

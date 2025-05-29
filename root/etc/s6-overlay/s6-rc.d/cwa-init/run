@@ -74,6 +74,17 @@ fi
 echo "[cwa-init] CWA-init complete! Service exiting now..."
 
 #------------------------------------------------------------------------------------------------------------------------
+#  Create blank json file for profile pictures if one doesn't exist
+#------------------------------------------------------------------------------------------------------------------------
+
+if [ ! -f /config/user_profiles.json ]; then
+    echo "[cwa-init] No existing user_profiles.json found! Creating blank one..."
+    echo -e "{\n}" > /config/user_profiles.json
+else
+    echo "[cwa-init] Existing user_profiles.json found!"
+fi
+
+#------------------------------------------------------------------------------------------------------------------------
 #  Set required permissions
 #------------------------------------------------------------------------------------------------------------------------
 

@@ -71,14 +71,14 @@ class NewBookProcessor:
         self.can_convert, self.input_format = self.can_convert_check()
 
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.calibre_env = os.environ.copy()
         self.split_library = self.get_split_library()
         if self.split_library:
             self.library_dir = self.split_library["split_path"]
             my_env = os.environ.copy()
             my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
             self.calibre_env = my_env
-        else:
-            self.calibre_env = os.environ.copy()
+            print(f"[New Book Processor] - DEBUG - {my_env['CALIBRE_OVERRIDE_DATABASE_PATH']}")            
 
     
     def get_split_library(self) -> dict[str, str] | None:
@@ -209,7 +209,7 @@ class NewBookProcessor:
         """Deletes file just processed from ingest folder"""
         os.remove(self.filepath) # Removes processed file
         if not os.path.samefile(os.path.dirname(self.filepath),self.ingest_folder): # File not in ingest_folder, subdirectories to delete
-            subprocess.run(["find", f"{os.path.dirname(self.filepath)}", "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
+            subprocess.run(["find", os.path.dirname(self.filepath), "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
 
 
     def add_book_to_library(self, book_path:str) -> None:

@@ -96,6 +96,7 @@ class LibraryConverter:
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
         self.to_convert = self.get_books_to_convert()
 
+        self.calibre_env = os.environ.copy()
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
@@ -103,8 +104,7 @@ class LibraryConverter:
             my_env = os.environ.copy()
             my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
             self.calibre_env = my_env
-        else:
-            self.calibre_env = os.environ.copy()
+            print(f"[Library Converter] - DEBUG - {my_env['CALIBRE_OVERRIDE_DATABASE_PATH']}")
 
     
     def get_split_library(self) -> dict[str, str] | None:

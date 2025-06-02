@@ -97,14 +97,13 @@ class LibraryConverter:
         self.to_convert = self.get_books_to_convert()
 
         self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
             self.library_dir = self.split_library["split_path"]
-            my_env = os.environ.copy()
-            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
-            self.calibre_env = my_env
-            print(f"[Library Converter] - DEBUG - {my_env['CALIBRE_OVERRIDE_DATABASE_PATH']}")
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
 
     
     def get_split_library(self) -> dict[str, str] | None:

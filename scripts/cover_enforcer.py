@@ -51,14 +51,13 @@ class Book:
         self.book_title, self.author_name, self.title_author = self.get_title_and_author()
 
         self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
             self.calibre_library = self.split_library["split_path"]
-            my_env = os.environ.copy()
-            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
-            self.calibre_env = my_env
-            print(f"[Book] - DEBUG - {my_env['CALIBRE_OVERRIDE_DATABASE_PATH']}")
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
 
         self.cover_path = book_dir + '/cover.jpg'
         self.old_metadata_path = book_dir + '/metadata.opf'
@@ -141,14 +140,13 @@ class Enforcer:
         self.illegal_characters = ["<", ">", ":", '"', "/", "\\", "|", "?", "*"]
 
         self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
             self.calibre_library = self.split_library["split_path"]
-            my_env = os.environ.copy()
-            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
-            self.calibre_env = my_env
-            print(f"[enforcer] - DEBUG - {my_env['CALIBRE_OVERRIDE_DATABASE_PATH']}")
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
             
     
     def get_split_library(self) -> dict[str, str] | None:

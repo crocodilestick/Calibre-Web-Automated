@@ -382,25 +382,16 @@ def get_sort_function(sort_param, data):
 
 
 def cwa_get_library_location() -> str:
-    con = sqlite3.connect("/config/app.db")
-    cur = con.cursor()
-    split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
-
-    if split_library:
-        split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
-        con.close()
-        return split_path
-    else:
-        dirs = {}
-        with open('/app/calibre-web-automated/dirs.json', 'r') as f:
-            dirs: dict[str, str] = json.load(f)
-        library_dir = f"{dirs['calibre_library_dir']}/"
-        return library_dir
+    dirs = {}
+    with open('/app/calibre-web-automated/dirs.json', 'r') as f:
+        dirs: dict[str, str] = json.load(f)
+    library_dir = dirs['calibre_library_dir']
+    return library_dir
 
 def cwa_get_num_books_in_library() -> int:
     try:
         # Path to user's Calibre library's metadata.db
-        db_path = cwa_get_library_location() + "metadata.db"
+        db_path = os.path.join(cwa_get_library_location(), "metadata.db")
         # Connect to the SQLite database
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()

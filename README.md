@@ -124,7 +124,7 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 #### **Server Stats Tracking Page** 📍📊
   - Ever wondered how many times CWA has been there for you in the background? Check out the CWA Stats page to see a fun list of statistics showing how many times CWA has been there to make your life just that little bit easier
 - A database also exists to keep track of any and all enforcements, imports, conversions & fixes both for peace of mind and to make the checking of any bugs or weird behaviour easier
-  - Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
+  <!-- - Full documentation can be found below [here](#checking-the-cover-enforcement-logs) -->
 
 ![CWA Server Stats Page](/README_images/cwa-server-stats-page.png)
 

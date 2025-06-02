@@ -4,12 +4,16 @@
 #  Make sure required directories exist
 #------------------------------------------------------------------------------------------------------------------------
 
-mkdir -p /config/processed_books/converted
-mkdir -p /config/processed_books/imported
-mkdir -p /config/processed_books/failed
-mkdir -p /config/processed_books/fixed_originals
-mkdir -p /config/log_archive
-mkdir -p /config/.cwa_conversion_tmp
+install -d -o abc -g abc /config/processed_books/converted
+install -d -o abc -g abc /config/processed_books/imported
+install -d -o abc -g abc /config/processed_books/failed
+install -d -o abc -g abc /config/processed_books/fixed_originals
+install -d -o abc -g abc /config/log_archive
+install -d -o abc -g abc /config/.cwa_conversion_tmp
+
+# For Calibre Plugins
+install -d -o abc -g abc /config/.config/calibre/plugins
+ln -sf /config/.config/calibre/plugins /config/calibre_plugins
 
 #------------------------------------------------------------------------------------------------------------------------
 #  Remove any leftover lock files

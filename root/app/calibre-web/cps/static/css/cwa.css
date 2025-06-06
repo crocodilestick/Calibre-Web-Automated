@@ -1,0 +1,7 @@
+/* Truncates a books description if if spans more than 8 lines */
+dd.meta_description {
+    display: -webkit-box;
+    -webkit-line-clamp: 15;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

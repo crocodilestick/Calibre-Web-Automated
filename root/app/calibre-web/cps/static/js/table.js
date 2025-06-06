@@ -99,6 +99,8 @@ $(function() {
 
                 $("#edit_selected_books").removeClass("disabled");
                 $("#edit_selected_books").attr("aria-disabled", false);
+                $("#add_to_shelf_btn").removeClass("disabled");
+                $("#add_to_shelf_btn").attr("aria-disabled", false);
             } else {
                 $("#delete_selected_books").addClass("disabled");
                 $("#delete_selected_books").attr("aria-disabled", true);
@@ -117,6 +119,8 @@ $(function() {
 
                 $("#edit_selected_books").addClass("disabled");
                 $("#edit_selected_books").attr("aria-disabled", true);
+                $("#add_to_shelf_btn").addClass("disabled");
+                $("#add_to_shelf_btn").attr("aria-disabled", true);
             }
             if (selections.length < 1) {
                 $("#delete_selection").addClass("disabled");
@@ -1226,3 +1230,79 @@ function shorten_html(value, response) {
         // value.split('\n').slice(0, 2).join("") +
     }
 }
+
+    $("#add_to_shelf_btn").click(function(event) {
+        if ($(this).hasClass("disabled")) {
+            event.stopPropagation();
+        } else {
+            // Clear previous selections in dropdown and any error messages
+            $('#shelf_selection_dropdown').val('');
+            $('#addToShelfModal .modal-body .alert-danger').remove();
+            $('#addToShelfModal').modal("show");
+        }
+    });
+
+    $("#confirm_add_to_shelf_btn").click(function() {
+        var selectedShelfId = $("#shelf_selection_dropdown").val();
+        var bookIds = selections; // 'selections' is already maintained globally
+
+        // Clear previous error messages
+        $('#addToShelfModal .modal-body .alert-danger').remove();
+
+        if (!selectedShelfId) {
+            $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">Please select a shelf.</div>');
+            return;
+        }
+        if (bookIds.length === 0) {
+            $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">No books selected.</div>');
+            return;
+        }
+
+        var csrfToken = $('input[name="csrf_token"]').val();
+
+        $.ajax({
+            method: "POST",
+            url: getPath() + "/shelf/add_selected_to_shelf",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({
+                "shelf_id": parseInt(selectedShelfId),
+                "book_ids": bookIds
+            }),
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            success: function(response) {
+                $('#addToShelfModal').modal("hide");
+                var messages = [];
+                if (response.status === 'success' || (response.status === 'partial_success' && response.added_count > 0)) {
+                    messages.push({type: "success", message: response.message || `Successfully added ${response.added_count} books.`});
+                }
+                if (response.errors && response.errors.length > 0) {
+                    messages.push({type: "warning", message: "Some books could not be added: " + response.errors.join(", ")});
+                }
+                if (messages.length >0) {
+                    handleListServerResponse(messages);
+                }
+                $("#books-table").bootstrapTable("uncheckAll");
+            },
+            error: function(xhr, status, error) {
+                $('#addToShelfModal .modal-body .alert-danger').remove(); // Remove old errors just in case
+                var errorMsg = "Error adding books to shelf.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
+                    errorMsg = xhr.responseJSON.errors.join("<br>");
+                } else if (xhr.responseText) {
+                    try {
+                        var errResponse = JSON.parse(xhr.responseText);
+                        errorMsg = errResponse.message || errResponse.error || errorMsg;
+                    } catch (e) {
+                        // xhr.responseText might not be JSON
+                        errorMsg = xhr.responseText.substring(0,200); // Show a snippet
+                    }
+                }
+                $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">' + errorMsg + '</div>');
+            }
+        });
+    });

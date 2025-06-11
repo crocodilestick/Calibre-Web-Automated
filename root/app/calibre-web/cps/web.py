@@ -385,13 +385,13 @@ def cwa_get_library_location() -> str:
     dirs = {}
     with open('/app/calibre-web-automated/dirs.json', 'r') as f:
         dirs: dict[str, str] = json.load(f)
-    library_dir = f"{dirs['calibre_library_dir']}/"
+    library_dir = dirs['calibre_library_dir']
     return library_dir
 
 def cwa_get_num_books_in_library() -> int:
     try:
         # Path to user's Calibre library's metadata.db
-        db_path = cwa_get_library_location() + "metadata.db"
+        db_path = os.path.join(cwa_get_library_location(), "metadata.db")
         # Connect to the SQLite database
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -1698,3 +1698,73 @@ def show_book(book_id):
         flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
               category="error")
         return redirect(url_for("web.index"))
+
+# ################################### Profile Pictures ###################################################
+
+@web.route("/user_profiles.json")
+@user_login_required
+def user_profiles_json():
+    try:
+        json_path = "/config/user_profiles.json"
+        with open(json_path, "r") as file:
+            data = json.load(file)
+        return jsonify(data)
+    except Exception as e:
+        log.error(f"Error reading user_profiles.json: {str(e)}")
+        return jsonify({}), 500
+
+@web.route("/me/cwa/profilepictures", methods=["GET", "POST"])
+@user_login_required
+def profile_pictures():
+    log.debug("Accessed /me/cwa/profilepictures route.")
+
+    # Check if the user is an admin
+    if not current_user.role_admin():
+        flash(_("You must be an admin to access this page."), category="error")
+        log.warning(f"Unauthorized access attempt by user: {current_user.name}")
+        return redirect(url_for('web.profile'))
+
+    if request.method == "POST":
+        log.debug("POST request received on profile_pictures page.")
+
+        # Get the form data (username and image data)
+        username = request.form.get("username")
+        image_data = request.form.get("image_data")
+
+        log.debug(f"Form data received - Username: {username}, Image Data Length: {len(image_data) if image_data else 'None'}")
+
+        # Validate form fields
+        if not username or not image_data:
+            flash(_("Both username and image data are required."), category="error")
+            log.warning("Form submission missing username or image_data.")
+            return redirect(url_for('web.profile_pictures'))
+
+        try:
+            # Path to the JSON file
+            json_path = "/config/user_profiles.json"
+            log.debug(f"Opening JSON file at: {json_path}")
+
+            # Read the existing data from the JSON file and update it
+            with open(json_path, "r+") as file:
+                user_data = json.load(file)
+                user_data[username] = image_data  # Add new or update existing entry
+                file.seek(0)  # Move to the start of the file for writing
+                json.dump(user_data, file, indent=4)  # Write back the updated data
+                file.truncate()  # Ensure there is no leftover content
+
+            # Success feedback and logging
+            flash(_("Profile picture updated successfully."), category="success")
+            log.info(f"Profile picture updated for user: {username}")
+
+        except Exception as e:
+            # Error handling in case of an issue
+            flash(f"Error: {str(e)}", category="error")
+            log.error(f"Exception while updating profile picture JSON: {str(e)}")
+
+        return redirect(url_for('web.profile_pictures'))
+
+    # Handle the GET request and render the page
+    log.debug("Rendering GET view for profile_pictures page.")
+    return render_title_template("profile_pictures.html", 
+                                 title=_("Profile Picture Management"), 
+                                 page="profilepictures")

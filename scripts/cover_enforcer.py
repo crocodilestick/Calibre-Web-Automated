@@ -4,8 +4,10 @@ import os
 import re
 import sys
 import time
+import sqlite3
 from datetime import datetime
 from pathlib import Path
+import subprocess
 
 import tempfile
 import atexit
@@ -40,12 +42,22 @@ class Book:
     def __init__(self, book_dir: str, file_path: str):
         self.book_dir: str = book_dir
         self.file_path: str = file_path
+
         self.calibre_library = self.get_calibre_library()
 
         self.file_format: str = Path(file_path).suffix.replace('.', '')
         self.timestamp: str = self.get_time()
-        self.book_id: str = (list(re.findall(r'\(\d*\)', book_dir))[-1])[1:-1]
+        self.book_id: str = re.findall(r'\((\d*)\)', book_dir)[-1]
         self.book_title, self.author_name, self.title_author = self.get_title_and_author()
+
+        self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
+        # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.split_library = self.get_split_library()
+        if self.split_library:
+            self.calibre_library = self.split_library["split_path"]
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
 
         self.cover_path = book_dir + '/cover.jpg'
         self.old_metadata_path = book_dir + '/metadata.opf'
@@ -54,8 +66,26 @@ class Book:
         self.log_info = None
 
     
+    def get_split_library(self) -> dict[str, str] | None:
+        """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
+        con = sqlite3.connect("/config/app.db")
+        cur = con.cursor()
+        split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+        if split_library:
+            split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
+            con.close()
+            return {
+                "split_path":split_path,
+                "db_path":db_path
+                }
+        else:
+            con.close()
+            return None
+    
     def get_calibre_library(self) -> str:
-        """Gets Calibre-Library location from dirs_json path"""
+        """Gets Calibre-Library location from dirs.json"""
         with open(dirs_json, 'r') as f:
             dirs = json.load(f)
         return dirs['calibre_library_dir'] # Returns without / on the end
@@ -76,9 +106,10 @@ class Book:
 
     def get_new_metadata_path(self) -> str:
         """Uses the export function of the calibredb utility to export any new metadata for the given book to metadata_temp, and returns the path to the new metadata.opf"""
-        os.system(f"calibredb export --with-library '{self.calibre_library}' --to-dir '{metadata_temp_dir}' {self.book_id}")
+        subprocess.run(["calibredb", "export", "--with-library", self.calibre_library, "--to-dir", metadata_temp_dir, self.book_id], env=self.calibre_env, check=True)
         temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
         return [f for f in temp_files if f.endswith('.opf')][0]
+
 
     def export_as_dict(self) -> dict[str,str | None]:
         return {"book_dir":self.book_dir,
@@ -108,11 +139,40 @@ class Enforcer:
 
         self.illegal_characters = ["<", ">", ":", '"', "/", "\\", "|", "?", "*"]
 
+        self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
+        # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.split_library = self.get_split_library()
+        if self.split_library:
+            self.calibre_library = self.split_library["split_path"]
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
+            
+    
+    def get_split_library(self) -> dict[str, str] | None:
+        """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
+        con = sqlite3.connect("/config/app.db")
+        cur = con.cursor()
+        split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+        if split_library:
+            split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
+            con.close()
+            return {
+                "split_path":split_path,
+                "db_path":db_path
+                }
+        else:
+            con.close()
+            return None
+
+
     def get_calibre_library(self) -> str:
-        """Gets Calibre-Library location from dirs_json path"""
         with open(dirs_json, 'r') as f:
             dirs = json.load(f)
         return dirs['calibre_library_dir'] # Returns without / on the end
+
 
     def read_log(self, auto=True, log_path: str = "None") -> dict:
         """Reads pertinent information from the given log file, adds the book_id from the log name and returns the info as a dict"""
@@ -140,6 +200,7 @@ class Enforcer:
 
         return log_info
 
+
     def get_book_dir_from_log(self, log_info: dict) -> str:
         book_title = log_info['title'].replace(':', '_')
         author_name = (log_info['authors'].split(', ')[0]).split(' & ')[0]
@@ -156,6 +217,7 @@ class Enforcer:
         log_info['file_path'] = book_dir
 
         return book_dir
+
 
     def get_supported_files_from_dir(self, dir: str) -> list[str]:
         """ Returns a list if the book dir given contains files of one or more of the supported formats"""
@@ -187,6 +249,7 @@ class Enforcer:
             print(f"[cover-metadata-enforcer]: No supported file formats found in {book_dir}.", flush=True)
             print("[cover-metadata-enforcer]: *** NOTICE **** Only EPUB & AZW3 formats are currently supported.", flush=True)
             return []
+
 
     def enforce_all_covers(self) -> tuple[int, float, int] | tuple[bool, bool, bool]:
         """Will force the covers and metadata to be re-generated for all books in the library"""
@@ -223,13 +286,16 @@ class Enforcer:
         else: # No supported files found
             return False, False, False
 
+
     def replace_old_metadata(self, old_metadata: str, new_metadata: str) -> None:
         """Switches the metadata in metadata_temp with the metadata in the Calibre-Library"""
         os.system(f'cp "{new_metadata}" "{old_metadata}"')
 
+
     def print_library_list(self) -> None:
         """Uses the calibredb command line utility to list the books in the library"""
-        os.system(f'calibredb list --with-library "{self.calibre_library}"')
+        subprocess.run(["calibredb", "list", "--with-library", self.calibre_library], env=self.calibre_env, check=True)
+
 
     def delete_log(self, auto=True, log_path="None"):
         """Deletes the log file"""
@@ -239,9 +305,11 @@ class Enforcer:
         else:
             os.remove(log_path)
 
+
     def empty_metadata_temp(self):
         """Empties the metadata_temp folder"""
         os.system(f"rm -r {metadata_temp_dir}/*")
+
 
     def check_for_other_logs(self):
         log_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(change_logs_dir) for f in filenames]

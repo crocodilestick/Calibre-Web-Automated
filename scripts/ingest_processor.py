@@ -6,6 +6,7 @@ import sys
 import tempfile
 import time
 import shutil
+import sqlite3
 from pathlib import Path
 
 from cwa_db import CWA_DB
@@ -44,6 +45,16 @@ class NewBookProcessor:
         self.auto_convert_on = self.cwa_settings['auto_convert']
         self.target_format = self.cwa_settings['auto_convert_target_format']
         self.ingest_ignored_formats = self.cwa_settings['auto_ingest_ignored_formats']
+
+        # Make sure it's a list, if it's a string convert it to a single-item list
+        if isinstance(self.ingest_ignored_formats, str):
+            self.ingest_ignored_formats = [self.ingest_ignored_formats]
+        
+        # Ignore temporary files during download
+        self.ingest_ignored_formats.append(".crdownload") # Chromium based 
+        self.ingest_ignored_formats.append(".download") # Safari
+        self.ingest_ignored_formats.append(".part") #Firefox and tools (ie curl)
+        
         self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats']
         self.is_kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
 
@@ -58,6 +69,34 @@ class NewBookProcessor:
         self.filename = os.path.basename(filepath)
         self.is_target_format = bool(self.filepath.endswith(self.target_format))
         self.can_convert, self.input_format = self.can_convert_check()
+
+        # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
+        self.split_library = self.get_split_library()
+        if self.split_library:
+            self.library_dir = self.split_library["split_path"]
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")          
+
+    
+    def get_split_library(self) -> dict[str, str] | None:
+        """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
+        con = sqlite3.connect("/config/app.db")
+        cur = con.cursor()
+        split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+        if split_library:
+            split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+            db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
+            con.close()
+            return {
+                "split_path":split_path,
+                "db_path":db_path
+                }
+        else:
+            con.close()
+            return None
 
 
     def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:
@@ -168,21 +207,22 @@ class NewBookProcessor:
     def delete_current_file(self) -> None:
         """Deletes file just processed from ingest folder"""
         os.remove(self.filepath) # Removes processed file
-        subprocess.run(["find", f"{self.ingest_folder}", "-mindepth", "1", "-type", "d", "-empty", "-delete"]) # Removes any now empty folders in the ingest folder
+        if not os.path.samefile(os.path.dirname(self.filepath),self.ingest_folder): # File not in ingest_folder, subdirectories to delete
+            subprocess.run(["find", os.path.dirname(self.filepath), "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
 
 
     def add_book_to_library(self, book_path:str) -> None:
         if self.target_format == "epub" and self.is_kindle_epub_fixer:
             self.run_kindle_epub_fixer(book_path, dest=self.tmp_conversion_dir)
-            fixed_epub_path = str(self.empty_tmp_con_dir) + str(os.path.basename(book_path))
+            fixed_epub_path = Path(self.tmp_conversion_dir) / os.path.basename(book_path)
             if Path(fixed_epub_path).exists():
-                book_path = self.empty_tmp_con_dir + os.path.basename(book_path)
+                book_path = str(fixed_epub_path)
 
         print("[ingest-processor]: Importing new book to CWA...")
         import_path = Path(book_path)
         import_filename = os.path.basename(book_path)
         try:
-            subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], check=True)
+            subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
             print(f"[ingest-processor] Added {import_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:
@@ -226,6 +266,19 @@ class NewBookProcessor:
 def main(filepath=sys.argv[1]):
     """Checks if filepath is a directory. If it is, main will be ran on every file in the given directory
     Inotifywait won't detect files inside folders if the folder was moved rather than copied"""
+    ##############################################################################################
+    # Truncates the filename if it is too long
+    MAX_LENGTH = 150
+    filename = os.path.basename(filepath)
+    name, ext = os.path.splitext(filename)
+    allowed_len = MAX_LENGTH - len(ext)
+
+    if len(name) > allowed_len:
+        new_name = name[:allowed_len] + ext
+        new_path = os.path.join(os.path.dirname(filepath), new_name)
+        os.rename(filepath, new_path)
+        filepath = new_path
+    ###############################################################################################
     if os.path.isdir(filepath) and Path(filepath).exists():
         # print(os.listdir(filepath))
         for filename in os.listdir(filepath):

@@ -47,15 +47,16 @@ USER_BOOK_FRAGMENT = """
         }
     }"""
 
+
 class HardcoverClient:
     def __init__(self, token):
         self.endpoint = GRAPHQL_ENDPOINT
         self.headers = {
             "Content-Type": "application/json",
-            "Authorization" : f"Bearer {token}"
+            "Authorization": f"Bearer {token}",
         }
         self.privacy = self.get_privacy()
-        
+
     def get_privacy(self):
         query = """
             {
@@ -64,12 +65,12 @@ class HardcoverClient:
                 }
             }"""
         response = self.execute(query)
-        return (response.get("me")[0] or [{}]).get("account_privacy_setting_id",1)
+        return (response.get("me")[0] or [{}]).get("account_privacy_setting_id", 1)
 
     def get_user_book(self, ids):
         query = ""
-        variables={}
-        if "hardcover-edition" in ids: 
+        variables = {}
+        if "hardcover-edition" in ids:
             query = """
                 query ($query: Int) {
                     me {
@@ -100,57 +101,66 @@ class HardcoverClient:
                 }"""
             variables["query"] = ids["hardcover-slug"]
         query += USER_BOOK_FRAGMENT
-        response = self.execute(query,variables)
-        return next(iter(response.get("me")[0].get("user_books")),None)
-        
+        response = self.execute(query, variables)
+        return next(iter(response.get("me")[0].get("user_books")), None)
 
     # TODO Add option for autocreate if missing books instead of forcing it.
     def update_reading_progress(self, identifiers, progress_percent):
         ids = self.parse_identifiers(identifiers)
-        book = self.get_user_book(ids)
-        # Book doesn't exist, add it in Reading status
-        if not book: 
-            book = self.add_book(ids, status=2)
-        # Book is either WTR or Read, and we aren't finished reading
-        if book.get("status_id") != 2 and progress_percent != 100: 
-            book = self.change_book_status(book, 2)
-        # Book is already marked as read, and we are also done
-        if book.get("status_id") == 3 and progress_percent == 100: 
-            return
-        pages = book.get("edition",{}).get("pages",0)
-        if pages:
-            pages_read = round(pages * (progress_percent / 100))
-            read = next(iter(book.get("user_book_reads")),None)
-            if not read:
-                # read = self.add_read(book, pages_read) 
-                # No read exists for some reason, return since we can't update anything.
+        if len(ids) is not 0:
+            book = self.get_user_book(ids)
+            # Book doesn't exist, add it in Reading status
+            if not book:
+                book = self.add_book(ids, status=2)
+            # Book is either WTR or Read, and we aren't finished reading
+            if book.get("status_id") != 2 and progress_percent != 100:
+                book = self.change_book_status(book, 2)
+            # Book is already marked as read, and we are also done
+            if book.get("status_id") == 3 and progress_percent == 100:
                 return
-            else:
-                mutation = """
-                mutation ($readId: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
-                    update_user_book_read(id: $readId, object: {
-                        progress_pages: $pages,
-                        edition_id: $editionId,
-                        started_at: $startedAt,
-                        finished_at: $finishedAt
-                    }) {
-                        id
+            pages = book.get("edition", {}).get("pages", 0)
+            if pages:
+                pages_read = round(pages * (progress_percent / 100))
+                read = next(iter(book.get("user_book_reads")), None)
+                if not read:
+                    # read = self.add_read(book, pages_read)
+                    # No read exists for some reason, return since we can't update anything.
+                    return
+                else:
+                    mutation = """
+                    mutation ($readId: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
+                        update_user_book_read(id: $readId, object: {
+                            progress_pages: $pages,
+                            edition_id: $editionId,
+                            started_at: $startedAt,
+                            finished_at: $finishedAt
+                        }) {
+                            id
+                        }
+                    }"""
+                    variables = {
+                        "readId": int(read.get("id")),
+                        "pages": pages_read,
+                        "editionId": int(book.get("edition").get("id")),
+                        "startedAt": read.get(
+                            "started_at", datetime.now().strftime("%Y-%m-%d")
+                        ),
+                        "finishedAt": (
+                            datetime.now().strftime("%Y-%m-%d")
+                            if progress_percent == 100
+                            else None
+                        ),
                     }
-                }""" 
-                variables = {
-                    "readId": int(read.get("id")),
-                    "pages": pages_read,
-                    "editionId": int(book.get("edition").get("id")),
-                    "startedAt":read.get("started_at",datetime.now().strftime("%Y-%m-%d")),
-                    "finishedAt": datetime.now().strftime("%Y-%m-%d") if progress_percent is 100 else None
-                }
-                if progress_percent is 100:
-                    self.change_book_status(book, 3)
-                self.execute(query=mutation, variables=variables)
-        return
-    
+                    if progress_percent == 100:
+                        self.change_book_status(book, 3)
+                    self.execute(query=mutation, variables=variables)
+            return
+        else:
+            return
+
     def change_book_status(self, book, status):
-        mutation = """
+        mutation = (
+            """
             mutation ($id:Int!, $status_id: Int!) {
                 update_user_book(id: $id, object: {status_id: $status_id}) {
                     error
@@ -158,17 +168,17 @@ class HardcoverClient:
                         ...userBookFragment
                     }
                 }
-            }""" + USER_BOOK_FRAGMENT
-        variables = {
-            "id":book.get("id"),
-            "status_id":status
-        }
+            }"""
+            + USER_BOOK_FRAGMENT
+        )
+        variables = {"id": book.get("id"), "status_id": status}
         response = self.execute(query=mutation, variables=variables)
-        return response.get("update_user_book",{}).get("user_book",{})
-    
+        return response.get("update_user_book", {}).get("user_book", {})
+
     def add_book(self, identifiers, status=1):
         ids = self.parse_identifiers(identifiers)
-        mutation = """     
+        mutation = (
+            """     
             mutation ($object: UserBookCreateInput!) {
                 insert_user_book(object: $object) {
                     error
@@ -176,17 +186,23 @@ class HardcoverClient:
                         ...userBookFragment
                     }
                 }
-            }""" + USER_BOOK_FRAGMENT
+            }"""
+            + USER_BOOK_FRAGMENT
+        )
         variables = {
             "object": {
-                "book_id":int(ids.get("hardcover-id")),
-                "edition_id":int(ids.get("hardcover-edition")) if ids.get("hardcover-edition") else None,
+                "book_id": int(ids.get("hardcover-id")),
+                "edition_id": (
+                    int(ids.get("hardcover-edition"))
+                    if ids.get("hardcover-edition")
+                    else None
+                ),
                 "status_id": status,
-                "privacy_setting_id": self.privacy
+                "privacy_setting_id": self.privacy,
             }
         }
         response = self.execute(query=mutation, variables=variables)
-        return response.get("insert_user_book",{}).get("user_book",{})
+        return response.get("insert_user_book", {}).get("user_book", {})
 
     def add_read(self, book, pages=0):
         mutation = """     
@@ -205,26 +221,27 @@ class HardcoverClient:
                         progress_pages
                     }
                 }
-            }""" 
+            }"""
         variables = {
-            "id":int(book.get("id")),
-            "editionId":int(book.get("edition").get("id")) if book.get("edition").get("id") else None,
+            "id": int(book.get("id")),
+            "editionId": (
+                int(book.get("edition").get("id"))
+                if book.get("edition").get("id")
+                else None
+            ),
             "pages": pages,
-            "startedAt": datetime.now().strftime("%Y-%m-%d")
+            "startedAt": datetime.now().strftime("%Y-%m-%d"),
         }
         response = self.execute(query=mutation, variables=variables)
         return response.get("insert_user_book_read").get("user_book_read")
-        
+
     def parse_identifiers(self, identifiers):
         if type(identifiers) != dict:
-            return {id.type:id.val for id in identifiers if "hardcover" in id.type}
+            return {id.type: id.val for id in identifiers if "hardcover" in id.type}
         return identifiers
-    
+
     def execute(self, query, variables=None):
-        payload = {
-            "query": query,
-            "variables": variables or {}
-        }
+        payload = {"query": query, "variables": variables or {}}
         response = requests.post(self.endpoint, json=payload, headers=self.headers)
         try:
             response.raise_for_status()

@@ -1,0 +1,16 @@
+*** cps/templates/remote_login.html	Thu Dec 26 10:33:32 2024
+--- ../calibre-web/cps/templates/remote_login.html	Thu Dec 26 10:32:13 2024
+***************
+*** 7,12 ****
+--- 7,17 ----
+      {{_('On another device, login and visit:')}}
+    <h4><a id="verify_url" data-token="{{token}}" href="{{verify_url}}">{{verify_url}}</a><b></b>
+    </h4>
++   {% if qrcode %}
++   <center>
++     <img src="{{qrcode_url}}" width="150" height="150">
++   </center>
++   {% endif %}
+    <p>
+      {{_('Once verified, you will automatically be logged in on this device.')}}
+    </p>

@@ -9,28 +9,117 @@ echo "========== STARTING CWA-INGEST SERVICE =========="
 WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
 echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
+# Create queue file for pending files
+QUEUE_FILE="/tmp/cwa_ingest_queue"
+touch "$QUEUE_FILE"
+
+# Create status file to track current processing
+STATUS_FILE="/tmp/cwa_ingest_status"
+echo "idle" > "$STATUS_FILE"
+
+# Function to process a single file
+process_file() {
+    local filepath="$1"
+    local timeout=900  # 15 minutes timeout
+    local filename=$(basename "$filepath")
+    echo "[cwa-ingest-service] Processing: $filepath (timeout: ${timeout}s)"
+    
+    # Update status file
+    echo "processing:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+    
+    # Run with timeout to prevent hanging
+    timeout $timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+    local exit_code=$?
+    
+    if [ $exit_code -eq 124 ]; then
+        echo "[cwa-ingest-service] TIMEOUT: $filepath took longer than ${timeout} seconds, moving to failed backup"
+        echo "timeout:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+        # Move problematic file to failed backup if available
+        if [ -d "/config/processed_books/failed" ]; then
+            cp "$filepath" "/config/processed_books/failed/" 2>/dev/null || true
+        fi
+        rm -f "$filepath" 2>/dev/null || true
+        echo "idle" > "$STATUS_FILE"
+    elif [ $exit_code -eq 2 ]; then
+        echo "[cwa-ingest-service] Ingest processor busy, queuing: $filepath"
+        echo "queued:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+        echo "$filepath" >> "$QUEUE_FILE"
+        echo "idle" > "$STATUS_FILE"
+    elif [ $exit_code -eq 0 ]; then
+        echo "[cwa-ingest-service] Successfully processed: $filepath"
+        echo "completed:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+        # Process any queued files
+        process_queue
+        echo "idle" > "$STATUS_FILE"
+    else
+        echo "[cwa-ingest-service] Error processing $filepath (exit code: $exit_code)"
+        echo "error:$filename:$exit_code:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+        echo "idle" > "$STATUS_FILE"
+    fi
+}
+
+# Function to process queued files
+process_queue() {
+    if [ -s "$QUEUE_FILE" ]; then
+        echo "[cwa-ingest-service] Processing queued files..."
+        while IFS= read -r queued_file; do
+            if [ -f "$queued_file" ]; then
+                local timeout=900  # 15 minutes timeout
+                echo "[cwa-ingest-service] Processing queued: $queued_file (timeout: ${timeout}s)"
+                timeout $timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
+                local exit_code=$?
+                
+                if [ $exit_code -eq 124 ]; then
+                    echo "[cwa-ingest-service] TIMEOUT: Queued $queued_file took longer than ${timeout} seconds, moving to failed backup"
+                    # Move problematic file to failed backup if available
+                    if [ -d "/config/processed_books/failed" ]; then
+                        cp "$queued_file" "/config/processed_books/failed/" 2>/dev/null || true
+                    fi
+                    rm -f "$queued_file" 2>/dev/null || true
+                elif [ $exit_code -eq 2 ]; then
+                    echo "[cwa-ingest-service] Still busy, keeping in queue: $queued_file"
+                    break  # Stop processing queue if still busy
+                elif [ $exit_code -eq 0 ]; then
+                    echo "[cwa-ingest-service] Successfully processed queued: $queued_file"
+                else
+                    echo "[cwa-ingest-service] Error processing queued $queued_file (exit code: $exit_code)"
+                fi
+            fi
+        done < "$QUEUE_FILE"
+        
+        # Remove processed files from queue
+        temp_queue=$(mktemp)
+        while IFS= read -r queued_file; do
+            if [ -f "$queued_file" ]; then
+                # Check if file was processed by trying again (with timeout)
+                timeout 900 python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
+                local check_exit=$?
+                if [ $check_exit -eq 2 ]; then
+                    # Still busy, keep in queue
+                    echo "$queued_file" >> "$temp_queue"
+                elif [ $check_exit -eq 124 ]; then
+                    # Timeout during check, remove problematic file
+                    echo "[cwa-ingest-service] TIMEOUT during queue check: $queued_file, removing from queue"
+                    if [ -d "/config/processed_books/failed" ]; then
+                        cp "$queued_file" "/config/processed_books/failed/" 2>/dev/null || true
+                    fi
+                    rm -f "$queued_file" 2>/dev/null || true
+                fi
+            fi
+        done < "$QUEUE_FILE"
+        
+        mv "$temp_queue" "$QUEUE_FILE"
+        
+        # If queue still has files, they'll be processed on next successful completion
+        if [ -s "$QUEUE_FILE" ]; then
+            echo "[cwa-ingest-service] $(wc -l < "$QUEUE_FILE") files remain queued"
+        fi
+    fi
+}
+
 # Monitor the folder for new files
 s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
 while read -r events filepath ; do
-        # if [[ $(grep "$filepath" ingest-log-test.txt | egrep -o '[0-9]{10}') ]]; then
-        #         CURRENT_TIME=$(date +'%s')
-        #         TIME_OF_MATCH=$(grep "$filepath" ingest-log-test.txt | egrep -o '[0-9]{10}')
-        #         TODO NEED TO GET DIFFERENCE BETWEEN THE 2 TIMES AND IF LESS THAN 60 SECONDS, IGNORE
-        echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
-        python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath" # &
-        # echo "'${filepath}' - $(date +'%s')" >> /config/.ingest_dupe_list
-        # INGEST_PROCESSOR_PID=$!
-        # Wait for the ingest processor to finish
-        # wait $INGEST_PROCESSOR_PID
-        # if ! [[ $(ls -A "$WATCH_FOLDER") ]]; then
-        #         FILES="${WATCH_FOLDER}/*"
-        #         for f in $FILES
-        #         do
-        #                 python3 /app/calibre-web-automated/scripts/ingest_processor.py "$f" &
-        #                 INGEST_PROCESSOR_PID=$!
-        #                 # Wait for the ingest processor to finish
-        #                 wait $INGEST_PROCESSOR_PID
-        #         done
-        # fi
+    echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
+    process_file "$filepath"
 done
-

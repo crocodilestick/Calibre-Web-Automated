@@ -12,6 +12,34 @@ from pathlib import Path
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 
+# --- NEW: Wait for file stability before processing --- #
+def wait_for_file_stable(filepath, stable_seconds=5, timeout=120):
+    """Wait until the file at filepath has not changed in size for stable_seconds.
+    Will time out after timeout seconds."""
+    last_size = -1
+    stable_time = 0
+    start_time = time.time()
+
+    while True:
+        try:
+            current_size = os.path.getsize(filepath)
+        except FileNotFoundError:
+            current_size = -1
+
+        if current_size == last_size and current_size != -1:
+            stable_time += 1
+        else:
+            stable_time = 0
+            last_size = current_size
+
+        if stable_time >= stable_seconds:
+            break
+
+        if time.time() - start_time > timeout:
+            raise TimeoutError(f"File '{filepath}' did not become stable within {timeout} seconds.")
+
+        time.sleep(1)
+# ------------------------------------------------------ #
 
 # Creates a lock file unless one already exists meaning an instance of the script is
 # already running, then the script is closed, the user is notified and the program
@@ -132,13 +160,12 @@ class NewBookProcessor:
 
 
     def convert_book(self, end_format=None) -> tuple[bool, str]:
-        """Uses the following terminal command to convert the books provided using the calibre converter tool:\n\n--- ebook-convert myfile.input_format myfile.output_format\n\nAnd then saves the resulting files to the calibre-web import folder."""
         print(f"[ingest-processor]: Starting conversion process for {self.filename}...", flush=True)
         print(f"[ingest-processor]: Converting file from {self.input_format} to {self.target_format} format...\n", flush=True)
         print(f"\n[ingest-processor]: START_CON: Converting {self.filename}...\n", flush=True)
 
         if end_format == None:
-            end_format = self.target_format # If end_format isn't given, the file is converted to the target format specified in the CWA Settings page
+            end_format = self.target_format
 
         original_filepath = Path(self.filepath)
         target_filepath = f"{self.tmp_conversion_dir}{original_filepath.stem}.{end_format}"
@@ -165,9 +192,7 @@ class NewBookProcessor:
             return False, ""
 
 
-    # Kepubify can only convert EPUBs to Kepubs
     def convert_to_kepub(self) -> tuple[bool,str]:
-        """Kepubify is limited in that it can only convert from epub to kepub, therefore any files not already in epub need to first be converted to epub, and then to kepub"""
         if self.input_format == "epub":
             print(f"[ingest-processor]: File in epub format, converting directly to kepub...", flush=True)
             converted_filepath = self.filepath
@@ -205,10 +230,9 @@ class NewBookProcessor:
 
 
     def delete_current_file(self) -> None:
-        """Deletes file just processed from ingest folder"""
-        os.remove(self.filepath) # Removes processed file
-        if not os.path.samefile(os.path.dirname(self.filepath),self.ingest_folder): # File not in ingest_folder, subdirectories to delete
-            subprocess.run(["find", os.path.dirname(self.filepath), "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
+        os.remove(self.filepath)
+        if not os.path.samefile(os.path.dirname(self.filepath),self.ingest_folder):
+            subprocess.run(["find", os.path.dirname(self.filepath), "-type", "d", "-empty", "-delete"])
 
 
     def add_book_to_library(self, book_path:str) -> None:
@@ -264,10 +288,6 @@ class NewBookProcessor:
 
 
 def main(filepath=sys.argv[1]):
-    """Checks if filepath is a directory. If it is, main will be ran on every file in the given directory
-    Inotifywait won't detect files inside folders if the folder was moved rather than copied"""
-    ##############################################################################################
-    # Truncates the filename if it is too long
     MAX_LENGTH = 150
     filename = os.path.basename(filepath)
     name, ext = os.path.splitext(filename)
@@ -278,14 +298,20 @@ def main(filepath=sys.argv[1]):
         new_path = os.path.join(os.path.dirname(filepath), new_name)
         os.rename(filepath, new_path)
         filepath = new_path
-    ###############################################################################################
+
     if os.path.isdir(filepath) and Path(filepath).exists():
-        # print(os.listdir(filepath))
         for filename in os.listdir(filepath):
             f = os.path.join(filepath, filename)
             if Path(f).exists():
                 main(f)
         return
+
+    # --- Wait for file stability before starting processing ---
+    try:
+        wait_for_file_stable(filepath)
+    except TimeoutError as e:
+        print(f"[ingest-processor] Skipping file due to timeout: {e}", flush=True)
+        return  # Skips this file, continues with others
 
     nbp = NewBookProcessor(filepath)
 
@@ -293,34 +319,30 @@ def main(filepath=sys.argv[1]):
     if Path(nbp.filename).suffix in nbp.ingest_ignored_formats:
         pass
     else:
-        if nbp.is_target_format: # File can just be imported
+        if nbp.is_target_format:
             print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...", flush=True)
             nbp.add_book_to_library(filepath)
         else:
-            if nbp.auto_convert_on and nbp.can_convert: # File can be converted to target format and Auto-Converter is on
-
-                if nbp.input_format in nbp.convert_ignored_formats: # File could be converted & the converter is activated but the user has specified files of this format should not be converted
+            if nbp.auto_convert_on and nbp.can_convert:
+                if nbp.input_format in nbp.convert_ignored_formats:
                     print(f"\n[ingest-processor]: {nbp.filename} not in target format but user has told CWA not to convert this format so importing the file anyway...", flush=True)
                     nbp.add_book_to_library(filepath)
                     convert_successful = False
-                elif nbp.target_format == "kepub": # File is not in the convert ignore list and target is kepub, so we start the kepub conversion process
+                elif nbp.target_format == "kepub":
                     convert_successful, converted_filepath = nbp.convert_to_kepub()
-                else: # File is not in the convert ignore list and target is not kepub, so we start the regular conversion process
+                else:
                     convert_successful, converted_filepath = nbp.convert_book()
-                    
-                if convert_successful: # If previous conversion process was successful, remove tmp files and import into library
-                    nbp.add_book_to_library(converted_filepath) # type: ignore
-
-            elif nbp.can_convert and not nbp.auto_convert_on: # Books not in target format but Auto-Converter is off so files are imported anyway
+                if convert_successful:
+                    nbp.add_book_to_library(converted_filepath)
+            elif nbp.can_convert and not nbp.auto_convert_on:
                 print(f"\n[ingest-processor]: {nbp.filename} not in target format but CWA Auto-Convert is deactivated so importing the file anyway...", flush=True)
                 nbp.add_book_to_library(filepath)
             else:
                 print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {nbp.input_format} is currently unsupported / is not a known ebook format.", flush=True)
-
         nbp.empty_tmp_con_dir()
         nbp.set_library_permissions()
         nbp.delete_current_file()
-        del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
+        del nbp
 
 if __name__ == "__main__":
     main()

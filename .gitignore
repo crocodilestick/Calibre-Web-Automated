@@ -16,6 +16,10 @@ pyproject.toml
 .venv
 .vscode
 .history
+docker-compose.yml.dev
+docker-compose.override.yml
+*.local
+.env.local
 
 # Test Scripts
 test*
@@ -24,6 +28,7 @@ DEV
 */REFERENCE
 cwa.db
 *.epub
+temp-cwa-repo/
 
 # Dev files
 changelogs/

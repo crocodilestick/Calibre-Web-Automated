@@ -43,6 +43,7 @@ def main():
     from .tasks_status import tasks
     from .error_handler import init_errorhandler
     from .remotelogin import remotelogin
+    from .duplicates import duplicates
     try:
         from .kobo import kobo, get_kobo_activated
         from .kobo_auth import kobo_auth
@@ -86,6 +87,7 @@ def main():
     app.register_blueprint(meta)
     app.register_blueprint(gdrive)
     app.register_blueprint(editbook)
+    app.register_blueprint(duplicates)
     if kobo_available:
         app.register_blueprint(kobo)
         app.register_blueprint(kobo_auth)

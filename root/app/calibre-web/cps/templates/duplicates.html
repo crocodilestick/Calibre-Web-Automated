@@ -1,0 +1,422 @@
+{% extends "layout.html" %}
+
+{% block header %}
+<style>
+  .duplicate-group {
+      margin-bottom: 35px;
+      border: 1px solid #e0e6ed;
+      border-radius: 12px;
+      padding: 25px;
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+  }
+  .duplicate-group:hover {
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+  }
+  .duplicate-header {
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #e74c3c;
+      background: linear-gradient(90deg, rgba(231, 76, 60, 0.05) 0%, rgba(231, 76, 60, 0.02) 100%);
+      border-radius: 8px;
+      padding: 15px;
+      margin: -10px -10px 25px -10px;
+  }
+  .duplicate-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2c3e50;
+      text-shadow: 0 1px 3px rgba(44, 62, 80, 0.1);
+  }
+  .duplicate-author {
+      font-size: 16px;
+      color: #34495e;
+      margin-bottom: 8px;
+      font-weight: 500;
+  }
+  .duplicate-count {
+      color: #e74c3c;
+      font-weight: 700;
+      font-style: italic;
+      background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(231, 76, 60, 0.05) 100%);
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      border: 1px solid rgba(231, 76, 60, 0.2);
+  }
+  .books-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-start;
+  }
+  .book-item {
+      display: flex;
+      max-width: 450px;
+      padding: 20px;
+      border: 1px solid #e1e8ed;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+  }
+  .book-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+  }
+  .book-item:hover {
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
+      border-color: #3498db;
+  }
+  .book-item:hover::before {
+      opacity: 1;
+  }
+  .book-item.selected {
+      border-color: #e74c3c;
+      background: linear-gradient(145deg, #fff5f5 0%, #fef2f2 100%);
+      box-shadow: 0 4px 8px rgba(231, 76, 60, 0.15), 0 2px 4px rgba(231, 76, 60, 0.1);
+  }
+  .book-item.selected::before {
+      background: #e74c3c;
+      opacity: 1;
+  }
+  .book-cover {
+      flex-shrink: 0;
+      margin-right: 18px;
+      margin-left: 18px;
+      position: relative;
+  }
+  .book-cover img {
+      width: 85px;
+      height: 125px;
+      object-fit: cover;
+      border-radius: 6px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0,0,0,0.1);
+  }
+  .book-item:hover .book-cover img {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .book-details {
+      flex: 1;
+      min-width: 0;
+  }
+  .book-checkbox {
+      margin-right: 20px;
+      margin-top: 8px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #e74c3c;
+      transform: scale(1.2);
+  }
+  .book-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      line-height: 1.3;
+      color: #2c3e50;
+      font-size: 15px;
+      text-shadow: 0 1px 2px rgba(44, 62, 80, 0.1);
+  }
+  .book-meta {
+      color: #34495e;
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 400;
+  }
+  .book-meta div {
+      margin-bottom: 6px;
+      color: #7d7d7d !important;
+  }
+  .book-meta strong {
+      color: #2c3e50;
+      font-weight: 600;
+  }
+  .no-duplicates {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 10px;
+      border: 1px solid #dee2e6;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .no-duplicates h3 {
+      color: #495057;
+      margin-bottom: 15px;
+  }
+  h2 {
+      color: #2c3e50;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-shadow: 0 1px 3px rgba(44, 62, 80, 0.1);
+  }
+  .text-muted {
+      color: #6c757d !important;
+  }
+  /* Success Modal Styling */
+  #success_modal .modal-header {
+      background-color: #28a745;
+      color: white;
+      border-radius: 6px 6px 0 0;
+  }
+  #success_modal .modal-content {
+      border-radius: 6px;
+      border: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.1);
+  }
+  #success_modal .modal-body {
+      padding: 30px;
+  }
+  #success_modal .success-icon {
+      animation: success-bounce 0.6s ease-out;
+  }
+  @keyframes success-bounce {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+  }
+  /* Error Modal Styling */
+  #error_modal .modal-header {
+      background-color: #dc3545;
+      color: white;
+      border-radius: 6px 6px 0 0;
+  }
+  #error_modal .modal-content {
+      border-radius: 6px;
+      border: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.1);
+  }
+  #error_modal .modal-body {
+      padding: 30px;
+  }
+  #error_modal .error-icon {
+      animation: error-shake 0.6s ease-out;
+  }
+  @keyframes error-shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  .bulk-actions {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 10px;
+      border: 1px solid #dee2e6;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .btn {
+      display: inline-block;
+      padding: 6px 16px;
+      font-family: Open Sans Bold, Helvetica Neue, Helvetica, Arial, sans-serif;
+      border: 0;
+      margin-bottom: 0;
+      line-height: 1.71428571;
+      text-align: center;
+      border-radius: 3px;
+      white-space: nowrap;
+      user-select: none;
+      transition: background-color .1s;
+  }
+  .btn-default {
+      border-color: #CC7B19;
+      color: #fff;
+      background-color: #CC7B19;
+  }
+  .btn-default:hover {
+      border-color: #E59029;
+      color: #fff;
+      background-color: #E59029;
+  }
+  .btn-danger {
+      color: #fff;
+      background-color: #ac3323;
+      border-color: #ac3323;
+      margin-left: 10px;
+  }
+  .btn-danger:hover:not(.disabled) {
+      background-color: #ce3d2a;
+      border-color: #641e14;
+  }
+  .btn-danger.disabled {
+      background-color: #6c757d;
+      opacity: 0.65;
+      cursor: not-allowed;
+  }
+  .selection-info {
+      margin-left: 15px;
+      font-weight: 600;
+      color: #28a745;
+      text-shadow: 0 1px 2px rgba(40, 167, 69, 0.1);
+  }
+  @media (max-width: 768px) {
+    .books-grid {
+      flex-direction: column;
+    }
+    .book-item {
+      max-width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <h2>{{_('Duplicate Books')}}</h2>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <p class="text-muted">{{_('Books with matching titles and authors. Visual inspection recommended to identify true duplicates.')}}</p>
+      
+      {% if duplicate_groups %}
+        <div class="bulk-actions">
+          <div class="form-inline">
+            <button type="button" class="btn btn-sm btn-default" id="select_all">{{_('Select Duplicates')}}</button>
+            <button type="button" class="btn btn-sm btn-default" id="select_none">{{_('Select None')}}</button>
+            <button type="button" class="btn btn-sm btn-danger disabled" id="delete_selected" aria-disabled="true">{{_('Delete Selected')}}</button>
+            <span id="selection_count" class="selection-info"></span>
+          </div>
+        </div>
+
+        <div class="duplicates-container">
+          {% for group in duplicate_groups %}
+          <div class="duplicate-group">
+            <div class="duplicate-header">
+              <div class="duplicate-title">{{ group.title }}</div>
+              <div class="duplicate-author">by {{ group.author }}</div>
+              <div class="duplicate-count">{{ group.count }} duplicate{{ 's' if group.count > 1 else '' }} found</div>
+            </div>
+            
+            <div class="books-grid">
+              {% for book in group.books %}
+              <div class="book-item" data-book-id="{{ book.id }}">
+                <input type="checkbox" class="book-checkbox" value="{{ book.id }}" data-title="{{ book.title }}" data-authors="{{ book.author_names }}">
+                
+                <div class="book-cover">
+                  <img src="{{ book.cover_url }}" alt="Cover for {{ book.title }}" onerror="this.src='/static/generic_cover.jpg'">
+                </div>
+                
+                <div class="book-details">
+                  <div class="book-title">{{ book.title }}</div>
+                  <div class="book-meta">
+                    <div><strong>Authors:</strong> {{ book.author_names }}</div>
+                    <div><strong>Added:</strong> {{ book.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <div><strong>Book ID:</strong> {{ book.id }}</div>
+                    {% if book.series %}
+                      <div><strong>Series:</strong> 
+                        {% for series in book.series %}
+                          {{ series.name }}{% if book.series_index %} ({{ book.series_index }}){% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    {% if book.data %}
+                      <div><strong>Formats:</strong> 
+                        {% for data in book.data %}{{ data.format }}{% if not loop.last %}, {% endif %}{% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-duplicates">
+          <h3>{{_('No Duplicate Books Found')}}</h3>
+          <p>{{_('Your library has no books with duplicate title and author combinations.')}}</p>
+          <p class="text-muted">{{_('This search looks for books with identical titles AND authors to avoid false positives.')}}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="delete_selected_modal" role="dialog" aria-labelledby="deleteSelectedLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-center">
+        <span>{{_('Are you really sure?')}}</span>
+      </div>
+      <div class="modal-body">
+        <p></p>
+        <div class="text-left">{{_('The following books will be permanently deleted:')}}</div>
+        <p></p>
+        <div class="text-left" id="display-delete-selected-books"></div>
+        <p></p>
+        <div class="text-left"><strong>{{_('This action cannot be undone!')}}</strong></div>
+      </div>
+      <div class="modal-footer">
+        <input id="delete_selected_confirm" type="button" class="btn btn-danger" value="{{_('Delete')}}" name="delete_selected_confirm" data-dismiss="modal">
+        <button id="delete_selected_abort" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="success_modal" role="dialog" aria-labelledby="successModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-center">
+        <span id="success_modal_title">{{_('Success')}}</span>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <div class="success-icon" style="font-size: 48px; color: #28a745; margin-bottom: 20px;">
+            <i class="glyphicon glyphicon-ok-circle"></i>
+          </div>
+          <p id="success_modal_message">{{_('Selected duplicate books have been deleted successfully!')}}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="success_modal_ok" type="button" class="btn btn-default" data-dismiss="modal">{{_('OK')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="error_modal" role="dialog" aria-labelledby="errorModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-center">
+        <span id="error_modal_title">{{_('Error')}}</span>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <div class="error-icon" style="font-size: 48px; color: #dc3545; margin-bottom: 20px;">
+            <i class="glyphicon glyphicon-remove-circle"></i>
+          </div>
+          <p id="error_modal_message">{{_('An error occurred while processing your request.')}}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="error_modal_ok" type="button" class="btn btn-default" data-dismiss="modal">{{_('OK')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/duplicates.js') }}"></script>
+{% endblock %} 

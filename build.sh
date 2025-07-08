@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Enter location for cwa repo files below
-REPO_DIR="/home/cwa-repo-download"
+REPO_DIR="$(pwd)/temp-cwa-repo"
 # Enter your DockerHub username here
 DH_USER="crocodilestick"
 
@@ -40,7 +40,7 @@ done
 
 NOW="$(date +"%Y-%m-%d %H:%M:%S")"
 
-if [ type == "dev" ]; then
+if [ "$type" == "dev" ]; then
   docker build --tag $DH_USER/calibre-web-automated:dev --build-arg="BUILD_DATE=$NOW" --build-arg="VERSION=$version-TEST-$testnum" .
   echo
   echo "Dev image Version $version - Test $testnum created! Exiting now... "
@@ -50,4 +50,7 @@ else
   echo "Prod image Version $version created! Exiting now..."
 fi
 
-cd
+# Clean up temporary directory and return to original location
+cd "$(dirname "$0")"
+rm -rf "$REPO_DIR"
+echo "Cleanup complete."

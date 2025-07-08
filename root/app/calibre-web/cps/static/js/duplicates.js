@@ -63,13 +63,26 @@ $(document).ready(function() {
         updateBookItemVisuals();
     });
     
-    // Select All button
+    // Select All button - intelligently select duplicates to delete
     $('#select_all').click(function() {
-        $('.book-checkbox').prop('checked', true);
         selectedBooks = [];
-        $('.book-checkbox').each(function() {
-            selectedBooks.push($(this).val());
+        
+        // For each duplicate group, select all books except the first one
+        $('.duplicate-group').each(function() {
+            var checkboxes = $(this).find('.book-checkbox');
+            
+            // Skip the first checkbox (index 0) and check the rest
+            checkboxes.each(function(index) {
+                if (index > 0) {
+                    $(this).prop('checked', true);
+                    selectedBooks.push($(this).val());
+                } else {
+                    // Ensure the first book is unchecked
+                    $(this).prop('checked', false);
+                }
+            });
         });
+        
         updateSelectionCount();
         updateBookItemVisuals();
     });

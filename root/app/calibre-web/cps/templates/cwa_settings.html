@@ -196,6 +196,35 @@
       </div>
     </div>
 
+    <div class="settings-container">
+      <h4 class="settings-section-header">CWA Auto-Ingest Automerge</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        CalibreDB can detect duplicate book titles on import and depending on the automerge setting, delete either of the instances
+        or keep both (default).
+      </p>
+      <label for="auto_ingest_automerge" style="padding-right: 10px; margin-bottom: 16px !important;">Choose how to handle duplicates:</label>
+      <select class="cwa-settings-select" name="auto_ingest_automerge" id="auto_ingest_automerge">
+        {% for automerge in automerge_options -%}
+          {% if cwa_settings['auto_ingest_automerge'] == automerge %}
+            <option value="{{ automerge }}" selected>{{ automerge }}</option>
+          {% else %}
+            <option value="{{ automerge }}">{{ automerge }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+
+      <p>Possible values:</p>
+      <dl>
+        <dt>ignore</dt>
+        <dd style="margin-left: revert;">Discard duplicate import, keep library copy</dd>
+        <dt>overwrite</dt>
+        <dd style="margin-left: revert;">Overwrite library copy with newly imported file</dd>
+        <dt>new_record (default)</dt>
+        <dd style="margin-left: revert;">Create a duplicate record, keeping both copies</dd>
+      </dl>
+    </div>
+
     <br>
     <div class="row form-group" style="text-align-last: justify;">
       <input type="submit" name="submit_button" value="Submit" class="btn btn-default">

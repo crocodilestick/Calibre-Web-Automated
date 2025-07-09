@@ -222,7 +222,7 @@ class NewBookProcessor:
         import_path = Path(book_path)
         import_filename = os.path.basename(book_path)
         try:
-            subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
+            subprocess.run(["calibredb", "add", book_path, "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
             print(f"[ingest-processor] Added {import_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:

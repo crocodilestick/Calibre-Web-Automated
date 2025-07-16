@@ -20,7 +20,7 @@ from flask import Blueprint, request, jsonify, g
 from flask_babel import gettext as _
 from werkzeug.security import check_password_hash
 
-from . import logger, ub, config
+from . import logger, ub, config, csrf
 from .cw_login import current_user
 from .usermanagement import user_login_required
 
@@ -119,6 +119,7 @@ def handle_sync_error(error: KOSyncError) -> tuple:
 ################################################################################
 # Routes
 ################################################################################
+@csrf.exempt
 @kosync.route("/kosync/users/auth", methods=["GET"])
 def auth_user():
     """
@@ -138,6 +139,7 @@ def auth_user():
         }, 401)
 
 
+@csrf.exempt
 @kosync.route("/kosync/users/create", methods=["POST"])
 def create_user():
     """
@@ -151,6 +153,7 @@ def create_user():
     }, 409)
 
 
+@csrf.exempt
 @kosync.route("/kosync/syncs/progress/<document>", methods=["GET"])
 def get_progress(document: str):
     """
@@ -201,6 +204,7 @@ def get_progress(document: str):
         return handle_sync_error(KOSyncError(ERROR_INTERNAL, "Internal server error"))
 
 
+@csrf.exempt
 @kosync.route("/kosync/syncs/progress", methods=["PUT"])
 def update_progress():
     """

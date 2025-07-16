@@ -19,8 +19,9 @@ from typing import Dict, Optional, Any, Tuple
 from flask import Blueprint, request, jsonify, g
 from flask_babel import gettext as _
 from werkzeug.security import check_password_hash
+from sqlalchemy import func
 
-from . import logger, ub, config, csrf
+from . import logger, ub, config, csrf, constants, services
 from .cw_login import current_user
 from .usermanagement import user_login_required
 
@@ -70,21 +71,19 @@ def is_valid_key_field(field: Any) -> bool:
 def authenticate_user() -> Optional[ub.User]:
     """
     Authenticate user using x-auth-user and x-auth-key headers
-    Similar to the original authorize() function
+    Similar to the original authorize() function and Calibre-Web's verify_password
     """
     auth_user = request.headers.get('x-auth-user')
     auth_key = request.headers.get('x-auth-key')
 
-    log.debug(f"authenticate_user: headers received - x-auth-user: {auth_user}, x-auth-key: {'[REDACTED]' if auth_key else 'None'}")
+    log.debug(f"authenticate_user: headers received - x-auth-user: {auth_user}, x-auth-key: {auth_key}")
 
     if not is_valid_field(auth_key) or not is_valid_key_field(auth_user):
         log.warning("authenticate_user: Invalid auth fields")
         return None
 
-    # Find user by username
-    user = ub.session.query(ub.User).filter(
-        ub.User.name == auth_user
-    ).first()
+    # Find user by username (case-insensitive, like Calibre-Web)
+    user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == auth_user.lower()).first()
 
     if not user:
         log.warning(f"authenticate_user: User not found: {auth_user}")
@@ -94,20 +93,13 @@ def authenticate_user() -> Optional[ub.User]:
     log.debug(f"authenticate_user: User password hash starts with: {user.password[:20]}...")
     log.debug(f"authenticate_user: Auth key length: {len(auth_key) if auth_key else 0}")
 
-    # Check if the auth key matches the user's password hash
-    # auth_key should be the plain text password
-    if check_password_hash(user.password, auth_key):
+    # Standard password check (convert password to string like Calibre-Web does)
+    if check_password_hash(str(user.password), auth_key):
         log.info(f"authenticate_user: Successfully authenticated user: {user.name}")
         return user
 
-    # Also try checking if auth_key is already a hash (for backwards compatibility)
-    if user.password == auth_key:
-        log.info(f"authenticate_user: Successfully authenticated user with hash: {user.name}")
-        return user
-
     log.warning(f"authenticate_user: Password mismatch for user: {user.name}")
-    log.debug(f"authenticate_user: Tried plain text password check: {check_password_hash(user.password, auth_key)}")
-    log.debug(f"authenticate_user: Tried hash comparison: {user.password == auth_key}")
+    log.debug(f"authenticate_user: Tried password check with str(password): {check_password_hash(str(user.password), auth_key)}")
     return None
 
 

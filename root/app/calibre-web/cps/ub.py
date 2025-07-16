@@ -527,7 +527,7 @@ class KOSyncProgress(Base):
     percentage = Column(Float, nullable=False)
     device = Column(String, nullable=False)
     device_id = Column(String)
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc), 
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc),
                        onupdate=lambda: datetime.now(timezone.utc))
 
     def __repr__(self):

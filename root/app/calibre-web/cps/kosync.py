@@ -119,7 +119,7 @@ def handle_sync_error(error: KOSyncError) -> tuple:
 ################################################################################
 # Routes
 ################################################################################
-@kosync.route("/users/auth", methods=["GET"])
+@kosync.route("/kosync/users/auth", methods=["GET"])
 def auth_user():
     """
     Authenticate user endpoint
@@ -138,7 +138,7 @@ def auth_user():
         }, 401)
 
 
-@kosync.route("/users/create", methods=["POST"])
+@kosync.route("/kosync/users/create", methods=["POST"])
 def create_user():
     """
     Create user endpoint - not implemented as we use existing Calibre-Web users
@@ -151,7 +151,7 @@ def create_user():
     }, 409)
 
 
-@kosync.route("/syncs/progress/<document>", methods=["GET"])
+@kosync.route("/kosync/syncs/progress/<document>", methods=["GET"])
 def get_progress(document: str):
     """
     Get reading progress for a document
@@ -201,7 +201,7 @@ def get_progress(document: str):
         return handle_sync_error(KOSyncError(ERROR_INTERNAL, "Internal server error"))
 
 
-@kosync.route("/syncs/progress", methods=["PUT"])
+@kosync.route("/kosync/syncs/progress", methods=["PUT"])
 def update_progress():
     """
     Update reading progress for a document

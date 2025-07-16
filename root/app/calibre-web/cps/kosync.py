@@ -55,12 +55,16 @@ class KOSyncError(Exception):
 
 def is_valid_field(field: Any) -> bool:
     """Check if a field is valid (not empty string)"""
-    return isinstance(field, str) and len(field) > 0
+    result = isinstance(field, str) and len(field) > 0
+    log.debug(f"is_valid_field check: field={field}, result={result}")
+    return result
 
 
 def is_valid_key_field(field: Any) -> bool:
     """Check if a field is valid as a key (not empty string and contains no colon)"""
-    return is_valid_field(field) and ":" not in field
+    result = is_valid_field(field) and ":" not in field
+    log.debug(f"is_valid_key_field check: field={field}, result={result}")
+    return result
 
 
 def authenticate_user() -> Optional[ub.User]:
@@ -71,7 +75,10 @@ def authenticate_user() -> Optional[ub.User]:
     auth_user = request.headers.get('x-auth-user')
     auth_key = request.headers.get('x-auth-key')
 
+    log.debug(f"authenticate_user: headers received - x-auth-user: {auth_user}, x-auth-key: {'[REDACTED]' if auth_key else 'None'}")
+
     if not is_valid_field(auth_key) or not is_valid_key_field(auth_user):
+        log.warning("authenticate_user: Invalid auth fields")
         return None
 
     # Find user by username
@@ -80,17 +87,23 @@ def authenticate_user() -> Optional[ub.User]:
     ).first()
 
     if not user:
+        log.warning(f"authenticate_user: User not found: {auth_user}")
         return None
+
+    log.debug(f"authenticate_user: Found user: {user.name} (ID: {user.id})")
 
     # Check if the auth key matches the user's password hash
     if check_password_hash(user.password, auth_key):
+        log.info(f"authenticate_user: Successfully authenticated user: {user.name}")
         return user
 
+    log.warning(f"authenticate_user: Password mismatch for user: {user.name}")
     return None
 
 
 def create_sync_response(data: Dict[str, Any], status_code: int = 200) -> tuple:
     """Create a standardized sync response"""
+    log.debug(f"create_sync_response: status_code={status_code}, data={json.dumps(data, indent=2)}")
     return jsonify(data), status_code
 
 
@@ -112,10 +125,13 @@ def auth_user():
     Authenticate user endpoint
     Returns 200 if user is authenticated, 401 otherwise
     """
+    log.info("auth_user: Starting authentication check")
     user = authenticate_user()
     if user:
+        log.info(f"auth_user: Successfully authenticated user: {user.name}")
         return create_sync_response({"authorized": "OK"})
     else:
+        log.warning("auth_user: Authentication failed")
         return create_sync_response({
             "error": ERROR_UNAUTHORIZED_USER,
             "message": "Unauthorized user"
@@ -128,9 +144,10 @@ def create_user():
     Create user endpoint - not implemented as we use existing Calibre-Web users
     Returns an error indicating users should be created through Calibre-Web
     """
+    log.info("create_user: User creation attempt (not implemented)")
     return create_sync_response({
         "error": ERROR_USER_EXISTS,
-        "message": "User management is handled by Web. Please create users through the admin interface."
+        "message": "User management is handled by Calibre-Web. Please create users through the admin interface."
     }, 409)
 
 
@@ -139,13 +156,19 @@ def get_progress(document: str):
     """
     Get reading progress for a document
     """
+    log.info(f"get_progress: Starting progress retrieval for document: {document}")
+
     try:
         user = authenticate_user()
         if not user:
+            log.warning("get_progress: Authentication failed")
             raise KOSyncError(ERROR_UNAUTHORIZED_USER, "Unauthorized user")
 
         if not is_valid_key_field(document):
+            log.warning(f"get_progress: Invalid document field: {document}")
             raise KOSyncError(ERROR_DOCUMENT_FIELD_MISSING, "Invalid document field")
+
+        log.debug(f"get_progress: Querying progress for user_id={user.id}, document={document}")
 
         # Query progress from database
         progress_record = ub.session.query(ub.KOSyncProgress).filter(
@@ -154,6 +177,7 @@ def get_progress(document: str):
         ).first()
 
         if not progress_record:
+            log.info(f"get_progress: No progress found for document: {document}")
             return create_sync_response({})
 
         response_data = {
@@ -165,12 +189,15 @@ def get_progress(document: str):
             "timestamp": int(progress_record.timestamp.timestamp())
         }
 
+        log.info(f"get_progress: Found progress for document: {document}")
+        log.debug(f"get_progress: Progress data: {json.dumps(response_data, indent=2)}")
+
         return create_sync_response(response_data)
 
     except KOSyncError as e:
         return handle_sync_error(e)
     except Exception as e:
-        log.error(f"Error getting progress: {str(e)}")
+        log.error(f"get_progress: Error getting progress: {str(e)}")
         return handle_sync_error(KOSyncError(ERROR_INTERNAL, "Internal server error"))
 
 
@@ -179,17 +206,24 @@ def update_progress():
     """
     Update reading progress for a document
     """
+    log.info("update_progress: Starting progress update")
+
     try:
         user = authenticate_user()
         if not user:
+            log.warning("update_progress: Authentication failed")
             raise KOSyncError(ERROR_UNAUTHORIZED_USER, "Unauthorized user")
 
         data = request.get_json()
+        log.debug(f"update_progress: Received data: {json.dumps(data, indent=2)}")
+
         if not data:
+            log.warning("update_progress: No JSON data received")
             raise KOSyncError(ERROR_INVALID_FIELDS, "Invalid request data")
 
         document = data.get("document")
         if not is_valid_key_field(document):
+            log.warning(f"update_progress: Invalid document field: {document}")
             raise KOSyncError(ERROR_DOCUMENT_FIELD_MISSING, "Invalid document field")
 
         progress = data.get("progress")
@@ -198,9 +232,11 @@ def update_progress():
         device_id = data.get("device_id")
 
         if not (progress and percentage is not None and device):
+            log.warning(f"update_progress: Missing required fields - progress: {progress}, percentage: {percentage}, device: {device}")
             raise KOSyncError(ERROR_INVALID_FIELDS, "Missing required fields")
 
         timestamp = datetime.now(timezone.utc)
+        log.debug(f"update_progress: Processing update for document: {document}, user_id: {user.id}")
 
         # Check if progress record exists
         progress_record = ub.session.query(ub.KOSyncProgress).filter(
@@ -209,6 +245,7 @@ def update_progress():
         ).first()
 
         if progress_record:
+            log.info(f"update_progress: Updating existing progress record for document: {document}")
             # Update existing record
             progress_record.progress = progress
             progress_record.percentage = float(percentage)
@@ -216,6 +253,7 @@ def update_progress():
             progress_record.device_id = device_id
             progress_record.timestamp = timestamp
         else:
+            log.info(f"update_progress: Creating new progress record for document: {document}")
             # Create new record
             progress_record = ub.KOSyncProgress(
                 user_id=user.id,
@@ -229,6 +267,7 @@ def update_progress():
             ub.session.add(progress_record)
 
         ub.session.commit()
+        log.info(f"update_progress: Successfully updated progress for document: {document}")
 
         return create_sync_response({
             "document": document,
@@ -238,7 +277,7 @@ def update_progress():
     except KOSyncError as e:
         return handle_sync_error(e)
     except Exception as e:
-        log.error(f"Error updating progress: {str(e)}")
+        log.error(f"update_progress: Error updating progress: {str(e)}")
         ub.session.rollback()
         return handle_sync_error(KOSyncError(ERROR_INTERNAL, "Internal server error"))
 
@@ -246,6 +285,7 @@ def update_progress():
 # Error handlers
 @kosync.errorhandler(400)
 def handle_bad_request(error):
+    log.warning("handle_bad_request: Bad request received")
     return create_sync_response({
         "error": ERROR_INVALID_FIELDS,
         "message": "Bad request"
@@ -254,6 +294,7 @@ def handle_bad_request(error):
 
 @kosync.errorhandler(401)
 def handle_unauthorized(error):
+    log.warning("handle_unauthorized: Unauthorized access attempt")
     return create_sync_response({
         "error": ERROR_UNAUTHORIZED_USER,
         "message": "Unauthorized"
@@ -262,6 +303,7 @@ def handle_unauthorized(error):
 
 @kosync.errorhandler(500)
 def handle_internal_error(error):
+    log.error("handle_internal_error: Internal server error occurred")
     return create_sync_response({
         "error": ERROR_INTERNAL,
         "message": "Internal server error"

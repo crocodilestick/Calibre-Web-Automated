@@ -91,13 +91,23 @@ def authenticate_user() -> Optional[ub.User]:
         return None
 
     log.debug(f"authenticate_user: Found user: {user.name} (ID: {user.id})")
+    log.debug(f"authenticate_user: User password hash starts with: {user.password[:20]}...")
+    log.debug(f"authenticate_user: Auth key length: {len(auth_key) if auth_key else 0}")
 
     # Check if the auth key matches the user's password hash
+    # auth_key should be the plain text password
     if check_password_hash(user.password, auth_key):
         log.info(f"authenticate_user: Successfully authenticated user: {user.name}")
         return user
 
+    # Also try checking if auth_key is already a hash (for backwards compatibility)
+    if user.password == auth_key:
+        log.info(f"authenticate_user: Successfully authenticated user with hash: {user.name}")
+        return user
+
     log.warning(f"authenticate_user: Password mismatch for user: {user.name}")
+    log.debug(f"authenticate_user: Tried plain text password check: {check_password_hash(user.password, auth_key)}")
+    log.debug(f"authenticate_user: Tried hash comparison: {user.password == auth_key}")
     return None
 
 

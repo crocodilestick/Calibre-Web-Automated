@@ -97,7 +97,7 @@
       </div>
 
       <div class="text-center">
-        <a href="{{ url_for('static', filename='cwasync.zip') }}" class="kosync-download-btn">
+        <a href="{{ url_for('static', filename='cwasync.koplugin.zip') }}" class="kosync-download-btn">
           📥 Download CWA Sync Plugin
         </a>
       </div>
@@ -108,18 +108,19 @@
 
       <div class="kosync-step">
         <span class="kosync-step-number">Step 1:</span>
-        Download the plugin file <a href="{{ url_for('static', filename='cwasync.zip') }}">cwasync.zip</a> to your device and save it to the <span class="kosync-code">/koreader/plugins/</span> folder.
+        Download the plugin file <span class="kosync-code">cwasync.koplugin.zip</span> using the button above.
       </div>
 
       <div class="kosync-step">
         <span class="kosync-step-number">Step 2:</span>
-        Extract the contents of <span class="kosync-code">cwasync.zip</span> to get the
-        <span class="kosync-code">cwasync.koplugin</span> folder.
+        Extract <span class="kosync-code">cwasync.koplugin.zip</span> directly to your device's
+        <span class="kosync-code">/koreader/plugins/</span> folder. This will create the
+        <span class="kosync-code">cwasync.koplugin</span> folder with all the plugin files.
       </div>
 
       <div class="kosync-warning">
-        <strong>Important:</strong> Make sure the folder structure is correct. The folder should be named exactly
-        <code>cwasync.koplugin</code> and placed directly in the <code>/koreader/plugins/</code> directory.
+        <strong>Important:</strong> Extract the zip file directly to the <code>/koreader/plugins/</code> directory.
+        The extraction will automatically create the <code>cwasync.koplugin</code> folder with the correct structure.
       </div>
     </div>
 

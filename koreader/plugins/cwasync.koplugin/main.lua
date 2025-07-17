@@ -42,10 +42,6 @@ local SYNC_STRATEGY = {
     DISABLE = 3,
 }
 
-local CHECKSUM_METHOD = {
-    BINARY = 0,
-    FILENAME = 1
-}
 
 -- Debounce push/pull attempts
 local API_CALL_DEBOUNCE_DELAY = time.s(25)
@@ -61,7 +57,6 @@ CWASync.default_settings = {
     pages_before_update = nil,
     sync_forward = SYNC_STRATEGY.PROMPT,
     sync_backward = SYNC_STRATEGY.DISABLE,
-    checksum_method = CHECKSUM_METHOD.BINARY,
 }
 
 function CWASync:init()
@@ -368,29 +363,6 @@ If set to 0, updating progress based on page turns will be disabled.]]),
                 end,
                 separator = true,
             },
-            {
-                text = _("Document matching method"),
-                sub_item_table = {
-                    {
-                        text = _("Binary. Only identical files will be kept in sync."),
-                        checked_func = function()
-                            return self.settings.checksum_method == CHECKSUM_METHOD.BINARY
-                        end,
-                        callback = function()
-                            self:setChecksumMethod(CHECKSUM_METHOD.BINARY)
-                        end,
-                    },
-                    {
-                        text = _("Filename. Files with matching names will be kept in sync."),
-                        checked_func = function()
-                            return self.settings.checksum_method == CHECKSUM_METHOD.FILENAME
-                        end,
-                        callback = function()
-                            self:setChecksumMethod(CHECKSUM_METHOD.FILENAME)
-                        end,
-                    },
-                }
-            },
         }
     }
 end
@@ -410,10 +382,6 @@ end
 
 function CWASync:setSyncBackward(strategy)
     self.settings.sync_backward = strategy
-end
-
-function CWASync:setChecksumMethod(method)
-    self.settings.checksum_method = method
 end
 
 function CWASync:login(menu)
@@ -536,25 +504,7 @@ function CWASync:getLastProgress()
 end
 
 function CWASync:getDocumentDigest()
-    if self.settings.checksum_method == CHECKSUM_METHOD.FILENAME then
-        return self:getFileNameDigest()
-    else
-        return self:getFileDigest()
-    end
-end
-
-function CWASync:getFileDigest()
     return self.ui.doc_settings:readSetting("partial_md5_checksum")
-end
-
-function CWASync:getFileNameDigest()
-    local file = self.ui.document.file
-    if not file then return end
-
-    local file_path, file_name = util.splitFilePathName(file) -- luacheck: no unused
-    if not file_name then return end
-
-    return md5(file_name)
 end
 
 function CWASync:syncToProgress(progress)

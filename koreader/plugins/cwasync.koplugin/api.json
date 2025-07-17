@@ -1,20 +1,6 @@
 {
-    "base_url" : "https://sync.koreader.rocks:443/",
     "name" : "koreader-sync-api",
     "methods" : {
-        "register" : {
-            "path" : "/users/create",
-            "method" : "POST",
-            "required_params" : [
-                "username",
-                "password"
-            ],
-            "payload" : [
-                "username",
-                "password"
-            ],
-            "expected_status" : [201, 402]
-        },
         "authorize" : {
             "path" : "/users/auth",
             "method" : "GET",

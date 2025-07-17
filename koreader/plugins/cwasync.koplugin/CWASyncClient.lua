@@ -32,7 +32,7 @@ function CWASyncClient:init()
     package.loaded["Spore.Middleware.CWASyncAuth"] = {}
     require("Spore.Middleware.CWASyncAuth").call = function(args, req)
         req.headers["x-auth-user"] = args.username
-        req.headers["x-auth-key"] = args.userkey
+        req.headers["x-auth-key"] = args.password
     end
     package.loaded["Spore.Middleware.AsyncHTTP"] = {}
     require("Spore.Middleware.AsyncHTTP").call = function(args, req)
@@ -88,7 +88,7 @@ function CWASyncClient:authorize(username, password)
     self.client:enable("GinClient")
     self.client:enable("CWASyncAuth", {
         username = username,
-        userkey = password,
+        password = password,
     })
     socketutil:set_timeout(AUTH_TIMEOUTS[1], AUTH_TIMEOUTS[2])
     local ok, res = pcall(function()
@@ -117,7 +117,7 @@ function CWASyncClient:update_progress(
     self.client:enable("GinClient")
     self.client:enable("CWASyncAuth", {
         username = username,
-        userkey = password,
+        password = password,
     })
     -- Set *very* tight timeouts to avoid blocking for too long...
     socketutil:set_timeout(PROGRESS_TIMEOUTS[1], PROGRESS_TIMEOUTS[2])
@@ -154,7 +154,7 @@ function CWASyncClient:get_progress(
     self.client:enable("GinClient")
     self.client:enable("CWASyncAuth", {
         username = username,
-        userkey = password,
+        password = password,
     })
     socketutil:set_timeout(PROGRESS_TIMEOUTS[1], PROGRESS_TIMEOUTS[2])
     local co = coroutine.create(function()

@@ -55,7 +55,7 @@ local API_CALL_DEBOUNCE_DELAY = time.s(25)
 CWASync.default_settings = {
     custom_server = nil,
     username = nil,
-    userkey = nil,
+    password = nil,
     -- Do *not* default to auto-sync, as wifi may not be on at all times, and the nagging enabling this may cause requires careful consideration.
     auto_sync = false,
     pages_before_update = nil,
@@ -203,12 +203,12 @@ function CWASync:addToMainMenu(menu_items)
             },
             {
                 text_func = function()
-                    return self.settings.userkey and (_("Logout"))
+                    return self.settings.password and (_("Logout"))
                         or _("Register") .. " / " .. _("Login")
                 end,
                 keep_menu_open = true,
                 callback_func = function()
-                    if self.settings.userkey then
+                    if self.settings.password then
                         return function(menu)
                             self:logout(menu)
                         end
@@ -352,7 +352,7 @@ If set to 0, updating progress based on page turns will be disabled.]]),
             {
                 text = _("Push progress from this device now"),
                 enabled_func = function()
-                    return self.settings.userkey ~= nil
+                    return self.settings.password ~= nil
                 end,
                 callback = function()
                     self:updateProgress(true, true)
@@ -361,7 +361,7 @@ If set to 0, updating progress based on page turns will be disabled.]]),
             {
                 text = _("Pull progress from other devices now"),
                 enabled_func = function()
-                    return self.settings.userkey ~= nil
+                    return self.settings.password ~= nil
                 end,
                 callback = function()
                     self:getProgress(true, true)
@@ -504,8 +504,7 @@ function CWASync:doRegister(username, password, menu)
     }
     -- on Android to avoid ANR (no-op on other platforms)
     Device:setIgnoreInput(true)
-    local userkey = md5(password)
-    local ok, status, body = pcall(client.register, client, username, userkey)
+    local ok, status, body = pcall(client.register, client, username, password)
     if not ok then
         if status then
             UIManager:show(InfoMessage:new{
@@ -519,7 +518,7 @@ function CWASync:doRegister(username, password, menu)
         end
     elseif status then
         self.settings.username = username
-        self.settings.userkey = userkey
+        self.settings.password = password
         if menu then
             menu:updateItems()
         end
@@ -541,8 +540,7 @@ function CWASync:doLogin(username, password, menu)
         service_spec = self.path .. "/api.json"
     }
     Device:setIgnoreInput(true)
-    local userkey = md5(password)
-    local ok, status, body = pcall(client.authorize, client, username, userkey)
+    local ok, status, body = pcall(client.authorize, client, username, password)
     if not ok then
         if status then
             UIManager:show(InfoMessage:new{
@@ -558,7 +556,7 @@ function CWASync:doLogin(username, password, menu)
         return
     elseif status then
         self.settings.username = username
-        self.settings.userkey = userkey
+        self.settings.password = password
         if menu then
             menu:updateItems()
         end
@@ -574,7 +572,7 @@ function CWASync:doLogin(username, password, menu)
 end
 
 function CWASync:logout(menu)
-    self.settings.userkey = nil
+    self.settings.password = nil
     self.settings.auto_sync = true
     if menu then
         menu:updateItems()
@@ -629,7 +627,7 @@ function CWASync:syncToProgress(progress)
 end
 
 function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
-    if not self.settings.username or not self.settings.userkey then
+    if not self.settings.username or not self.settings.password then
         if interactive then
             promptLogin()
         end
@@ -657,7 +655,7 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
     local ok, err = pcall(client.update_progress,
         client,
         self.settings.username,
-        self.settings.userkey,
+        self.settings.password,
         doc_digest,
         progress,
         percentage,
@@ -708,7 +706,7 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
 end
 
 function CWASync:getProgress(ensure_networking, interactive)
-    if not self.settings.username or not self.settings.userkey then
+    if not self.settings.username or not self.settings.password then
         if interactive then
             promptLogin()
         end
@@ -734,7 +732,7 @@ function CWASync:getProgress(ensure_networking, interactive)
     local ok, err = pcall(client.get_progress,
         client,
         self.settings.username,
-        self.settings.userkey,
+        self.settings.password,
         doc_digest,
         function(ok, body)
             logger.dbg("CWASync: [Pull] progress for", self.view.document.file)

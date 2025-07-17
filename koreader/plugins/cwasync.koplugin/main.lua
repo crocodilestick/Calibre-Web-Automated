@@ -23,7 +23,7 @@ end
 local CWASync = WidgetContainer:extend{
     name = "cwasync",
     is_doc_only = true,
-    title = _("Register/login to KOReader server"),
+    title = _("Login to CWA Server"),
 
     push_timestamp = nil,
     pull_timestamp = nil,
@@ -124,7 +124,7 @@ end
 
 local function promptLogin()
     UIManager:show(InfoMessage:new{
-        text = _("Please register or login before using the progress synchronization feature."),
+        text = _("Please login before using the progress synchronization feature."),
         timeout = 3,
     })
 end
@@ -185,15 +185,15 @@ end
 
 function CWASync:addToMainMenu(menu_items)
     menu_items.progress_sync = {
-        text = _("Progress sync"),
+        text = _("CWA Progress Sync"),
         sub_item_table = {
             {
-                text = _("Custom sync server"),
+                text = _("Set CWA Server"),
                 keep_menu_open = true,
                 tap_input_func = function()
                     return {
                         -- @translators Server address defined by user for progress sync.
-                        title = _("Custom progress sync server address"),
+                        title = _("CWA Server Address"),
                         input = self.settings.custom_server or "https://",
                         callback = function(input)
                             self:setCustomServer(input)
@@ -204,7 +204,7 @@ function CWASync:addToMainMenu(menu_items)
             {
                 text_func = function()
                     return self.settings.password and (_("Logout"))
-                        or _("Register") .. " / " .. _("Login")
+                        or _("Login")
                 end,
                 keep_menu_open = true,
                 callback_func = function()
@@ -466,71 +466,11 @@ function CWASync:login(menu)
                         end
                     end,
                 },
-                {
-                    text = _("Register"),
-                    callback = function()
-                        local username, password = unpack(dialog:getFields())
-                        username = util.trim(username)
-                        local ok, err = validateUser(username, password)
-                        if not ok then
-                            UIManager:show(InfoMessage:new{
-                                text = T(_("Cannot register: %1"), err),
-                                timeout = 2,
-                            })
-                        else
-                            UIManager:close(dialog)
-                            UIManager:scheduleIn(0.5, function()
-                                self:doRegister(username, password, menu)
-                            end)
-                            UIManager:show(InfoMessage:new{
-                                text = _("Registering. Please wait…"),
-                                timeout = 1,
-                            })
-                        end
-                    end,
-                },
             },
         },
     }
     UIManager:show(dialog)
     dialog:onShowKeyboard()
-end
-
-function CWASync:doRegister(username, password, menu)
-    local CWASyncClient = require("CWASyncClient")
-    local client = CWASyncClient:new{
-        custom_url = self.settings.custom_server,
-        service_spec = self.path .. "/api.json"
-    }
-    -- on Android to avoid ANR (no-op on other platforms)
-    Device:setIgnoreInput(true)
-    local ok, status, body = pcall(client.register, client, username, password)
-    if not ok then
-        if status then
-            UIManager:show(InfoMessage:new{
-                text = _("An error occurred while registering:") ..
-                    "\n" .. status,
-            })
-        else
-            UIManager:show(InfoMessage:new{
-                text = _("An unknown error occurred while registering."),
-            })
-        end
-    elseif status then
-        self.settings.username = username
-        self.settings.password = password
-        if menu then
-            menu:updateItems()
-        end
-        UIManager:show(InfoMessage:new{
-            text = _("Registered to KOReader server."),
-        })
-    else
-        UIManager:show(InfoMessage:new{
-            text = body and body.message or _("Unknown server error"),
-        })
-    end
-    Device:setIgnoreInput(false)
 end
 
 function CWASync:doLogin(username, password, menu)
@@ -561,7 +501,7 @@ function CWASync:doLogin(username, password, menu)
             menu:updateItems()
         end
         UIManager:show(InfoMessage:new{
-            text = _("Logged in to KOReader server."),
+            text = _("Logged in to CWA server."),
         })
     else
         UIManager:show(InfoMessage:new{

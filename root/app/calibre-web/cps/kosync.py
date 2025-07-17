@@ -149,21 +149,6 @@ def auth_user():
             "message": "Unauthorized user"
         }, 401)
 
-
-@csrf.exempt
-@kosync.route("/kosync/users/create", methods=["POST"])
-def create_user():
-    """
-    Create user endpoint - not implemented as we use existing Calibre-Web users
-    Returns an error indicating users should be created through Calibre-Web
-    """
-    log.info("create_user: User creation attempt (not implemented)")
-    return create_sync_response({
-        "error": ERROR_USER_EXISTS,
-        "message": "User management is handled by Calibre-Web. Please create users through the admin interface."
-    }, 409)
-
-
 @csrf.exempt
 @kosync.route("/kosync/syncs/progress/<document>", methods=["GET"])
 def get_progress(document: str):

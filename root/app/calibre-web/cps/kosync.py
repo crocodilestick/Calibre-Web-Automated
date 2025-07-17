@@ -16,7 +16,7 @@ import hashlib
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any, Tuple
 
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, render_template
 from flask_babel import gettext as _
 from werkzeug.security import check_password_hash
 from sqlalchemy import func
@@ -121,6 +121,15 @@ def handle_sync_error(error: KOSyncError) -> tuple:
 ################################################################################
 # Routes
 ################################################################################
+@kosync.route("/kosync")
+def kosync_plugin_page():
+    """
+    Display the KOReader plugin download and installation page
+    """
+    log.info("kosync_plugin_page: Displaying KOReader plugin page")
+    return render_template("kosync_plugin.html", title=_("KOReader Sync Plugin"))
+
+
 @csrf.exempt
 @kosync.route("/kosync/users/auth", methods=["GET"])
 def auth_user():

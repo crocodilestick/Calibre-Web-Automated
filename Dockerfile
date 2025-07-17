@@ -30,7 +30,7 @@ ARG LSCW_RELEASE=0.6.24-ls304
 ARG CALIBRE_RELEASE=8.4.0
 ARG KEPUBIFY_RELEASE=v4.0.4
 LABEL build_version="Version:- ${VERSION}"
-LABEL build_date="${BUILD_DATE}" 
+LABEL build_date="${BUILD_DATE}"
 LABEL CW-Stock-version="${CALIBREWEB_RELEASE}"
 LABEL LSCW_Image_Release="${LSCW_RELEASE}"
 LABEL maintainer="CrocodileStick"
@@ -114,9 +114,19 @@ RUN \
     python3 \
     python3-pip \
     nano \
-    sqlite3 && \
+    sqlite3 \
+    zip && \
   # STEP 2.2 - Install additional required python packages
   pip install -r /app/calibre-web-automated/requirements.txt && \
+  # STEP 2.2.1 - Create cwasync.zip from KOReader plugin folder
+  echo "~~~~ Creating cwasync.zip from KOReader plugin folder... ~~~~" && \
+  if [ -d "/app/calibre-web-automated/koreader/plugins/cwasync.koplugin" ]; then \
+    cd /app/calibre-web-automated/koreader/plugins && \
+    zip -r cwasync.zip cwasync.koplugin && \
+    echo "Created cwasync.zip from cwasync.koplugin folder"; \
+  else \
+    echo "Warning: cwasync.koplugin folder not found, skipping zip creation"; \
+  fi && \
   # STEP 2.3 - Get required 'root' dir from the linuxserver/docker-calibre-web repo
   echo "~~~~ Getting required files from linuxserver/docker-calibre-web... ~~~~" && \
     # STEP 2.4.1 - Check the most recent release of linuxserver/docker-calibre-web and store it's tag in LSCW_RELEASE if one was not specified as an ARG
@@ -138,7 +148,15 @@ RUN \
     # STEP 2.4.5 - Move contents of 'root' dirs to root dir
   cp -R /tmp/lscw/root/* / && \
   cp -R /app/calibre-web-automated/root/* / && \
-    # STEP 2.4.6 - Remove the temp files
+    # STEP 2.4.6 - Move cwasync.zip to static directory
+  if [ -f "/app/calibre-web-automated/koreader/plugins/cwasync.zip" ]; then \
+    mkdir -p /app/calibre-web/cps/static && \
+    cp /app/calibre-web-automated/koreader/plugins/cwasync.zip /app/calibre-web/cps/static/ && \
+    echo "Moved cwasync.zip to static directory"; \
+  else \
+    echo "Warning: cwasync.zip not found, skipping move to static directory"; \
+  fi && \
+    # STEP 2.4.7 - Remove the temp files
   rm -R /app/calibre-web-automated/root/ && \
   rm -R /tmp/lscw/root/ && \
   # STEP 2.5 - ADD files referencing the versions of the installed main packages

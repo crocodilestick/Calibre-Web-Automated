@@ -1,0 +1,37 @@
+{
+    "name" : "koreader-sync-api",
+    "methods" : {
+        "authorize" : {
+            "path" : "/users/auth",
+            "method" : "GET",
+            "expected_status" : [200, 401]
+        },
+        "update_progress" : {
+            "path" : "/syncs/progress",
+            "method" : "PUT",
+            "required_params" : [
+                "document",
+                "progress",
+                "percentage",
+                "device",
+                "device_id"
+            ],
+            "payload" : [
+                "document",
+                "progress",
+                "percentage",
+                "device",
+                "device_id"
+            ],
+            "expected_status" : [200, 202, 401]
+        },
+        "get_progress" : {
+            "path" : "/syncs/progress/:document",
+            "method" : "GET",
+            "required_params" : [
+                "document"
+            ],
+            "expected_status" : [200, 401]
+        }
+    }
+}

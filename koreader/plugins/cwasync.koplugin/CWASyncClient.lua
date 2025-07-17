@@ -7,12 +7,12 @@ local PROGRESS_TIMEOUTS = { 2,  5 }
 -- Login/Register
 local AUTH_TIMEOUTS     = { 5, 10 }
 
-local KOSyncClient = {
+local CWASyncClient = {
     service_spec = nil,
     custom_url = nil,
 }
 
-function KOSyncClient:new(o)
+function CWASyncClient:new(o)
     if o == nil then o = {} end
     setmetatable(o, self)
     self.__index = self
@@ -20,7 +20,7 @@ function KOSyncClient:new(o)
     return o
 end
 
-function KOSyncClient:init()
+function CWASyncClient:init()
     local Spore = require("Spore")
     self.client = Spore.new_from_spec(self.service_spec, {
         base_url = self.custom_url,
@@ -29,8 +29,8 @@ function KOSyncClient:init()
     require("Spore.Middleware.GinClient").call = function(_, req)
         req.headers["accept"] = "application/vnd.koreader.v1+json"
     end
-    package.loaded["Spore.Middleware.KOSyncAuth"] = {}
-    require("Spore.Middleware.KOSyncAuth").call = function(args, req)
+    package.loaded["Spore.Middleware.CWASyncAuth"] = {}
+    require("Spore.Middleware.CWASyncAuth").call = function(args, req)
         req.headers["x-auth-user"] = args.username
         req.headers["x-auth-key"] = args.userkey
     end
@@ -62,7 +62,7 @@ function KOSyncClient:init()
     end
 end
 
-function KOSyncClient:register(username, password)
+function CWASyncClient:register(username, password)
     self.client:reset_middlewares()
     self.client:enable("Format.JSON")
     self.client:enable("GinClient")
@@ -77,16 +77,16 @@ function KOSyncClient:register(username, password)
     if ok then
         return res.status == 201, res.body
     else
-        logger.dbg("KOSyncClient:register failure:", res)
+        logger.dbg("CWASyncClient:register failure:", res)
         return false, res.body
     end
 end
 
-function KOSyncClient:authorize(username, password)
+function CWASyncClient:authorize(username, password)
     self.client:reset_middlewares()
     self.client:enable("Format.JSON")
     self.client:enable("GinClient")
-    self.client:enable("KOSyncAuth", {
+    self.client:enable("CWASyncAuth", {
         username = username,
         userkey = password,
     })
@@ -98,12 +98,12 @@ function KOSyncClient:authorize(username, password)
     if ok then
         return res.status == 200, res.body
     else
-        logger.dbg("KOSyncClient:authorize failure:", res)
+        logger.dbg("CWASyncClient:authorize failure:", res)
         return false, res.body
     end
 end
 
-function KOSyncClient:update_progress(
+function CWASyncClient:update_progress(
         username,
         password,
         document,
@@ -115,7 +115,7 @@ function KOSyncClient:update_progress(
     self.client:reset_middlewares()
     self.client:enable("Format.JSON")
     self.client:enable("GinClient")
-    self.client:enable("KOSyncAuth", {
+    self.client:enable("CWASyncAuth", {
         username = username,
         userkey = password,
     })
@@ -134,7 +134,7 @@ function KOSyncClient:update_progress(
         if ok then
             callback(res.status == 200, res.body)
         else
-            logger.dbg("KOSyncClient:update_progress failure:", res)
+            logger.dbg("CWASyncClient:update_progress failure:", res)
             callback(false, res.body)
         end
     end)
@@ -144,7 +144,7 @@ function KOSyncClient:update_progress(
     socketutil:reset_timeout()
 end
 
-function KOSyncClient:get_progress(
+function CWASyncClient:get_progress(
         username,
         password,
         document,
@@ -152,7 +152,7 @@ function KOSyncClient:get_progress(
     self.client:reset_middlewares()
     self.client:enable("Format.JSON")
     self.client:enable("GinClient")
-    self.client:enable("KOSyncAuth", {
+    self.client:enable("CWASyncAuth", {
         username = username,
         userkey = password,
     })
@@ -166,7 +166,7 @@ function KOSyncClient:get_progress(
         if ok then
             callback(res.status == 200, res.body)
         else
-            logger.dbg("KOSyncClient:get_progress failure:", res)
+            logger.dbg("CWASyncClient:get_progress failure:", res)
             callback(false, res.body)
         end
     end)
@@ -176,4 +176,4 @@ function KOSyncClient:get_progress(
     socketutil:reset_timeout()
 end
 
-return KOSyncClient
+return CWASyncClient

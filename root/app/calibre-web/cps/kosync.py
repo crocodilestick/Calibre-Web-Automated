@@ -13,6 +13,7 @@ Based on the reference implementation from koreader-sync-server
 import json
 import time
 import hashlib
+import base64
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any, Tuple
 
@@ -66,25 +67,44 @@ def is_valid_key_field(field: Any) -> bool:
 
 def authenticate_user() -> Optional[ub.User]:
     """
-    Authenticate user using x-auth-user and x-auth-key headers
-    Similar to the original authorize() function and Calibre-Web's verify_password
+    Authenticate user using standard HTTP Basic Authentication
+    Expects Authorization header with 'Basic <base64(username:password)>'
     """
-    auth_user = request.headers.get('x-auth-user')
-    auth_key = request.headers.get('x-auth-key')
+    auth_header = request.headers.get('Authorization')
 
-    if not is_valid_field(auth_key) or not is_valid_key_field(auth_user):
-        log.warning("authenticate_user: Invalid auth fields")
+    if not auth_header or not auth_header.startswith('Basic '):
+        log.warning("authenticate_user: Missing or invalid Authorization header")
+        return None
+
+    try:
+        # Extract and decode the base64 encoded credentials
+        encoded_credentials = auth_header[6:]  # Remove 'Basic ' prefix
+        decoded_credentials = base64.b64decode(encoded_credentials).decode('utf-8')
+
+        # Split username and password
+        if ':' not in decoded_credentials:
+            log.warning("authenticate_user: Invalid credentials format")
+            return None
+
+        username, password = decoded_credentials.split(':', 1)
+
+    except (ValueError, UnicodeDecodeError) as e:
+        log.warning(f"authenticate_user: Failed to decode credentials: {str(e)}")
+        return None
+
+    if not is_valid_field(password) or not is_valid_key_field(username):
+        log.warning("authenticate_user: Invalid username or password format")
         return None
 
     # Find user by username (case-insensitive, like Calibre-Web)
-    user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == auth_user.lower()).first()
+    user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == username.lower()).first()
 
     if not user:
-        log.warning(f"authenticate_user: User not found: {auth_user}")
+        log.warning(f"authenticate_user: User not found: {username}")
         return None
 
     # Standard password check (convert password to string like Calibre-Web does)
-    if check_password_hash(str(user.password), auth_key):
+    if check_password_hash(str(user.password), password):
         log.info(f"authenticate_user: Successfully authenticated user: {user.name}")
         return user
 

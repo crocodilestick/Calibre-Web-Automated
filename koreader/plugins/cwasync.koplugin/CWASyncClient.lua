@@ -4,7 +4,7 @@ local socketutil = require("socketutil")
 
 -- Push/Pull
 local PROGRESS_TIMEOUTS = { 2,  5 }
--- Login/Register
+-- Authentication
 local AUTH_TIMEOUTS     = { 5, 10 }
 
 local CWASyncClient = {
@@ -31,8 +31,49 @@ function CWASyncClient:init()
     end
     package.loaded["Spore.Middleware.CWASyncAuth"] = {}
     require("Spore.Middleware.CWASyncAuth").call = function(args, req)
-        req.headers["x-auth-user"] = args.username
-        req.headers["x-auth-key"] = args.password
+        -- Use HTTP Basic Authentication
+        local credentials = args.username .. ":" .. args.password
+        -- Base64 encode the credentials (compatible implementation)
+        local base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+        local function base64_encode(data)
+            local encoded = ""
+            local i = 1
+            while i <= #data do
+                local a = string.byte(data, i) or 0
+                local b = string.byte(data, i + 1) or 0
+                local c = string.byte(data, i + 2) or 0
+
+                -- Use bit operations compatible with Lua 5.1+
+                local bitmap = a * 65536 + b * 256 + c
+
+                -- Extract 6-bit chunks
+                local c1 = math.floor(bitmap / 262144) % 64  -- bits 18-23
+                local c2 = math.floor(bitmap / 4096) % 64    -- bits 12-17
+                local c3 = math.floor(bitmap / 64) % 64      -- bits 6-11
+                local c4 = bitmap % 64                       -- bits 0-5
+
+                encoded = encoded .. string.sub(base64_chars, c1 + 1, c1 + 1)
+                encoded = encoded .. string.sub(base64_chars, c2 + 1, c2 + 1)
+
+                if i + 1 <= #data then
+                    encoded = encoded .. string.sub(base64_chars, c3 + 1, c3 + 1)
+                else
+                    encoded = encoded .. "="
+                end
+
+                if i + 2 <= #data then
+                    encoded = encoded .. string.sub(base64_chars, c4 + 1, c4 + 1)
+                else
+                    encoded = encoded .. "="
+                end
+
+                i = i + 3
+            end
+            return encoded
+        end
+
+        local base64_credentials = base64_encode(credentials)
+        req.headers["Authorization"] = "Basic " .. base64_credentials
     end
     package.loaded["Spore.Middleware.AsyncHTTP"] = {}
     require("Spore.Middleware.AsyncHTTP").call = function(args, req)
@@ -59,26 +100,6 @@ function CWASyncClient:init()
             coroutine.resume(args.thread)
         end)
         return coroutine.create(function() coroutine.yield(result) end)
-    end
-end
-
-function CWASyncClient:register(username, password)
-    self.client:reset_middlewares()
-    self.client:enable("Format.JSON")
-    self.client:enable("GinClient")
-    socketutil:set_timeout(AUTH_TIMEOUTS[1], AUTH_TIMEOUTS[2])
-    local ok, res = pcall(function()
-        return self.client:register({
-            username = username,
-            password = password,
-        })
-    end)
-    socketutil:reset_timeout()
-    if ok then
-        return res.status == 201, res.body
-    else
-        logger.dbg("CWASyncClient:register failure:", res)
-        return false, res.body
     end
 end
 

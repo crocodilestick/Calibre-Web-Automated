@@ -49,7 +49,7 @@ local API_CALL_DEBOUNCE_DELAY = time.s(25)
 -- NOTE: This is used in a migration script by ui/data/onetime_migration,
 --       which is why it's public.
 CWASync.default_settings = {
-    custom_server = nil,
+    server = nil,
     username = nil,
     password = nil,
     -- Do *not* default to auto-sync, as wifi may not be on at all times, and the nagging enabling this may cause requires careful consideration.
@@ -189,9 +189,9 @@ function CWASync:addToMainMenu(menu_items)
                     return {
                         -- @translators Server address defined by user for progress sync.
                         title = _("CWA Server Address"),
-                        input = self.settings.custom_server or "https://",
+                        input = self.settings.server or "https://",
                         callback = function(input)
-                            self:setCustomServer(input)
+                            self:setServer(input)
                         end,
                     }
                 end,
@@ -371,9 +371,9 @@ function CWASync:setPagesBeforeUpdate(pages_before_update)
     self.settings.pages_before_update = pages_before_update > 0 and pages_before_update or nil
 end
 
-function CWASync:setCustomServer(server)
-    logger.dbg("CWASync: Setting custom server to:", server)
-    self.settings.custom_server = server ~= "" and server or nil
+function CWASync:setServer(server)
+    logger.dbg("CWASync: Setting server to:", server)
+    self.settings.server = server ~= "" and server or nil
 end
 
 function CWASync:setSyncForward(strategy)
@@ -444,7 +444,7 @@ end
 function CWASync:doLogin(username, password, menu)
     local CWASyncClient = require("CWASyncClient")
     local client = CWASyncClient:new{
-        custom_url = self.settings.custom_server,
+        service_url = self.settings.server .. "/kosync",
         service_spec = self.path .. "/api.json"
     }
     Device:setIgnoreInput(true)
@@ -536,7 +536,7 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
 
     local CWASyncClient = require("CWASyncClient")
     local client = CWASyncClient:new{
-        custom_url = self.settings.custom_server,
+        service_url = self.settings.server .. "/kosync",
         service_spec = self.path .. "/api.json"
     }
     local doc_digest = self:getDocumentDigest()
@@ -615,7 +615,7 @@ function CWASync:getProgress(ensure_networking, interactive)
 
     local CWASyncClient = require("CWASyncClient")
     local client = CWASyncClient:new{
-        custom_url = self.settings.custom_server,
+        service_url = self.settings.server .. "/kosync",
         service_spec = self.path .. "/api.json"
     }
     local doc_digest = self:getDocumentDigest()

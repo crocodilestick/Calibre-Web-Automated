@@ -9,7 +9,7 @@ local AUTH_TIMEOUTS     = { 5, 10 }
 
 local CWASyncClient = {
     service_spec = nil,
-    custom_url = nil,
+    service_url = nil,
 }
 
 function CWASyncClient:new(o)
@@ -23,7 +23,7 @@ end
 function CWASyncClient:init()
     local Spore = require("Spore")
     self.client = Spore.new_from_spec(self.service_spec, {
-        base_url = self.custom_url,
+        base_url = self.service_url,
     })
     package.loaded["Spore.Middleware.GinClient"] = {}
     require("Spore.Middleware.GinClient").call = function(_, req)

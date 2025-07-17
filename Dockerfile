@@ -122,8 +122,17 @@ RUN \
   echo "~~~~ Creating koplugin.zip from KOReader plugin folder... ~~~~" && \
   if [ -d "/app/calibre-web-automated/koreader/plugins/cwasync.koplugin" ]; then \
     cd /app/calibre-web-automated/koreader/plugins && \
+    # Calculate digest of all files in the plugin for debugging purposes
+    echo "Calculating digest of plugin files..." && \
+    PLUGIN_DIGEST=$(find cwasync.koplugin -type f -name "*.lua" -o -name "*.json" | sort | xargs sha256sum | sha256sum | cut -d' ' -f1) && \
+    echo "Plugin digest: $PLUGIN_DIGEST" && \
+    # Create a file named after the digest inside the plugin folder
+    echo "Plugin files digest: $PLUGIN_DIGEST" > cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
+    echo "Build date: $(date)" >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
+    echo "Files included:" >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
+    find cwasync.koplugin -type f -name "*.lua" -o -name "*.json" | sort >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
     zip -r koplugin.zip cwasync.koplugin/ && \
-    echo "Created koplugin.zip from cwasync.koplugin folder"; \
+    echo "Created koplugin.zip from cwasync.koplugin folder with digest file: ${PLUGIN_DIGEST}.digest"; \
   else \
     echo "Warning: cwasync.koplugin folder not found, skipping zip creation"; \
   fi && \

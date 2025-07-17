@@ -130,7 +130,17 @@
     </div>
 
     <div class="kosync-section">
-      <h3>⚙️ Enabling the Plugin in KOReader</h3>
+      <h3>🔌 Enabling the Plugin</h3>
+
+      <div class="kosync-warning">
+        <strong>Important:</strong> We recommend disabling the stock "Progress sync" plugin to avoid conflicts.
+        Look for it in the plugin management list and disable it.
+      </div>
+
+      <div class="kosync-info">
+        <strong>Good news!</strong> The CWA Sync plugin should automatically enable after installation and restarting KOReader.
+        However, if it doesn't appear or isn't working, follow these steps:
+      </div>
 
       <div class="kosync-step">
         <span class="kosync-step-number">Step 1:</span>
@@ -149,22 +159,21 @@
 
       <div class="kosync-step">
         <span class="kosync-step-number">Step 4:</span>
-        Find "CWA Sync" in the plugin list and enable it.
+        Find "CWA Progress Sync" in the plugin list and enable it if it's not already enabled.
       </div>
+    </div>
+
+    <div class="kosync-section">
+      <h3>⚙️ Plugin Configuration</h3>
 
       <div class="kosync-step">
-        <span class="kosync-step-number">Step 5:</span>
-        Configure the sync settings:
-        <ul style="margin-top: 10px;">
-          <li><strong>Server URL:</strong> <span class="kosync-code">{{ request.host_url }}kosync</span></li>
-          <li><strong>Username:</strong> Your Calibre-Web-Automated username</li>
-          <li><strong>Password:</strong> Your Calibre-Web-Automated password</li>
-        </ul>
-      </div>
-
-      <div class="kosync-step">
-        <span class="kosync-step-number">Step 6:</span>
-        Restart KOReader to activate the plugin.
+      <span class="kosync-step-number">Step 5:</span>
+      Configure the sync settings:
+      <ul style="margin-top: 10px;">
+        <li><strong>Server URL:</strong> <span class="kosync-code">{{ request.host_url }}</span></li>
+        <li><strong>Username:</strong> Your Calibre-Web-Automated username</li>
+        <li><strong>Password:</strong> Your Calibre-Web-Automated password</li>
+      </ul>
       </div>
     </div>
 

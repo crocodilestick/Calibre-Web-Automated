@@ -7,11 +7,11 @@
             "method" : "POST",
             "required_params" : [
                 "username",
-                "password",
+                "password"
             ],
             "payload" : [
                 "username",
-                "password",
+                "password"
             ],
             "expected_status" : [201, 402]
         },
@@ -28,14 +28,14 @@
                 "progress",
                 "percentage",
                 "device",
-                "device_id",
+                "device_id"
             ],
             "payload" : [
                 "document",
                 "progress",
                 "percentage",
                 "device",
-                "device_id",
+                "device_id"
             ],
             "expected_status" : [200, 202, 401]
         },
@@ -43,9 +43,9 @@
             "path" : "/syncs/progress/:document",
             "method" : "GET",
             "required_params" : [
-                "document",
+                "document"
             ],
             "expected_status" : [200, 401]
-        },
+        }
     }
 }

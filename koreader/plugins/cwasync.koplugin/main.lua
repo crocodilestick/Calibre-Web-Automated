@@ -20,8 +20,8 @@ if G_reader_settings:hasNot("device_id") then
     G_reader_settings:saveSetting("device_id", random.uuid())
 end
 
-local KOSync = WidgetContainer:extend{
-    name = "kosync",
+local CWASync = WidgetContainer:extend{
+    name = "cwasync",
     is_doc_only = true,
     title = _("Register/login to KOReader server"),
 
@@ -52,7 +52,7 @@ local API_CALL_DEBOUNCE_DELAY = time.s(25)
 
 -- NOTE: This is used in a migration script by ui/data/onetime_migration,
 --       which is why it's public.
-KOSync.default_settings = {
+CWASync.default_settings = {
     custom_server = nil,
     username = nil,
     userkey = nil,
@@ -64,7 +64,7 @@ KOSync.default_settings = {
     checksum_method = CHECKSUM_METHOD.BINARY,
 }
 
-function KOSync:init()
+function CWASync:init()
     self.push_timestamp = 0
     self.pull_timestamp = 0
     self.page_update_counter = 0
@@ -80,19 +80,19 @@ function KOSync:init()
         self:updateProgress(false, false)
     end
 
-    self.settings = G_reader_settings:readSetting("kosync", self.default_settings)
+    self.settings = G_reader_settings:readSetting("cwasync", self.default_settings)
     self.device_id = G_reader_settings:readSetting("device_id")
 
     -- Disable auto-sync if beforeWifiAction was reset to "prompt" behind our back...
     if self.settings.auto_sync and Device:hasSeamlessWifiToggle() and G_reader_settings:readSetting("wifi_enable_action") ~= "turn_on" then
         self.settings.auto_sync = false
-        logger.warn("KOSync: Automatic sync has been disabled because wifi_enable_action is *not* turn_on")
+        logger.warn("CWASync: Automatic sync has been disabled because wifi_enable_action is *not* turn_on")
     end
 
     self.ui.menu:registerToMainMenu(self)
 end
 
-function KOSync:getSyncPeriod()
+function CWASync:getSyncPeriod()
     if not self.settings.auto_sync then
         return _("Not available")
     end
@@ -163,12 +163,12 @@ local function validateUser(user, pass)
     end
 end
 
-function KOSync:onDispatcherRegisterActions()
-    Dispatcher:registerAction("kosync_push_progress", { category="none", event="KOSyncPushProgress", title=_("Push progress from this device"), reader=true,})
-    Dispatcher:registerAction("kosync_pull_progress", { category="none", event="KOSyncPullProgress", title=_("Pull progress from other devices"), reader=true, separator=true,})
+function CWASync:onDispatcherRegisterActions()
+    Dispatcher:registerAction("cwasync_push_progress", { category="none", event="CWASyncPushProgress", title=_("Push progress from this device"), reader=true,})
+    Dispatcher:registerAction("cwasync_pull_progress", { category="none", event="CWASyncPullProgress", title=_("Pull progress from other devices"), reader=true, separator=true,})
 end
 
-function KOSync:onReaderReady()
+function CWASync:onReaderReady()
     if self.settings.auto_sync then
         UIManager:nextTick(function()
             self:getProgress(true, false)
@@ -183,7 +183,7 @@ function KOSync:onReaderReady()
     self.last_page = self.ui:getCurrentPage()
 end
 
-function KOSync:addToMainMenu(menu_items)
+function CWASync:addToMainMenu(menu_items)
     menu_items.progress_sync = {
         text = _("Progress sync"),
         sub_item_table = {
@@ -395,28 +395,28 @@ If set to 0, updating progress based on page turns will be disabled.]]),
     }
 end
 
-function KOSync:setPagesBeforeUpdate(pages_before_update)
+function CWASync:setPagesBeforeUpdate(pages_before_update)
     self.settings.pages_before_update = pages_before_update > 0 and pages_before_update or nil
 end
 
-function KOSync:setCustomServer(server)
-    logger.dbg("KOSync: Setting custom server to:", server)
+function CWASync:setCustomServer(server)
+    logger.dbg("CWASync: Setting custom server to:", server)
     self.settings.custom_server = server ~= "" and server or nil
 end
 
-function KOSync:setSyncForward(strategy)
+function CWASync:setSyncForward(strategy)
     self.settings.sync_forward = strategy
 end
 
-function KOSync:setSyncBackward(strategy)
+function CWASync:setSyncBackward(strategy)
     self.settings.sync_backward = strategy
 end
 
-function KOSync:setChecksumMethod(method)
+function CWASync:setChecksumMethod(method)
     self.settings.checksum_method = method
 end
 
-function KOSync:login(menu)
+function CWASync:login(menu)
     if NetworkMgr:willRerunWhenOnline(function() self:login(menu) end) then
         return
     end
@@ -496,9 +496,9 @@ function KOSync:login(menu)
     dialog:onShowKeyboard()
 end
 
-function KOSync:doRegister(username, password, menu)
-    local KOSyncClient = require("KOSyncClient")
-    local client = KOSyncClient:new{
+function CWASync:doRegister(username, password, menu)
+    local CWASyncClient = require("CWASyncClient")
+    local client = CWASyncClient:new{
         custom_url = self.settings.custom_server,
         service_spec = self.path .. "/api.json"
     }
@@ -534,9 +534,9 @@ function KOSync:doRegister(username, password, menu)
     Device:setIgnoreInput(false)
 end
 
-function KOSync:doLogin(username, password, menu)
-    local KOSyncClient = require("KOSyncClient")
-    local client = KOSyncClient:new{
+function CWASync:doLogin(username, password, menu)
+    local CWASyncClient = require("CWASyncClient")
+    local client = CWASyncClient:new{
         custom_url = self.settings.custom_server,
         service_spec = self.path .. "/api.json"
     }
@@ -573,7 +573,7 @@ function KOSync:doLogin(username, password, menu)
     Device:setIgnoreInput(false)
 end
 
-function KOSync:logout(menu)
+function CWASync:logout(menu)
     self.settings.userkey = nil
     self.settings.auto_sync = true
     if menu then
@@ -581,7 +581,7 @@ function KOSync:logout(menu)
     end
 end
 
-function KOSync:getLastPercent()
+function CWASync:getLastPercent()
     if self.ui.document.info.has_pages then
         return Math.roundPercent(self.ui.paging:getLastPercent())
     else
@@ -589,7 +589,7 @@ function KOSync:getLastPercent()
     end
 end
 
-function KOSync:getLastProgress()
+function CWASync:getLastProgress()
     if self.ui.document.info.has_pages then
         return self.ui.paging:getLastProgress()
     else
@@ -597,7 +597,7 @@ function KOSync:getLastProgress()
     end
 end
 
-function KOSync:getDocumentDigest()
+function CWASync:getDocumentDigest()
     if self.settings.checksum_method == CHECKSUM_METHOD.FILENAME then
         return self:getFileNameDigest()
     else
@@ -605,11 +605,11 @@ function KOSync:getDocumentDigest()
     end
 end
 
-function KOSync:getFileDigest()
+function CWASync:getFileDigest()
     return self.ui.doc_settings:readSetting("partial_md5_checksum")
 end
 
-function KOSync:getFileNameDigest()
+function CWASync:getFileNameDigest()
     local file = self.ui.document.file
     if not file then return end
 
@@ -619,8 +619,8 @@ function KOSync:getFileNameDigest()
     return md5(file_name)
 end
 
-function KOSync:syncToProgress(progress)
-    logger.dbg("KOSync: [Sync] progress to", progress)
+function CWASync:syncToProgress(progress)
+    logger.dbg("CWASync: [Sync] progress to", progress)
     if self.ui.document.info.has_pages then
         self.ui:handleEvent(Event:new("GotoPage", tonumber(progress)))
     else
@@ -628,7 +628,7 @@ function KOSync:syncToProgress(progress)
     end
 end
 
-function KOSync:updateProgress(ensure_networking, interactive, on_suspend)
+function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
     if not self.settings.username or not self.settings.userkey then
         if interactive then
             promptLogin()
@@ -638,7 +638,7 @@ function KOSync:updateProgress(ensure_networking, interactive, on_suspend)
 
     local now = UIManager:getElapsedTimeSinceBoot()
     if not interactive and now - self.push_timestamp <= API_CALL_DEBOUNCE_DELAY then
-        logger.dbg("KOSync: We've already pushed progress less than 25s ago!")
+        logger.dbg("CWASync: We've already pushed progress less than 25s ago!")
         return
     end
 
@@ -646,8 +646,8 @@ function KOSync:updateProgress(ensure_networking, interactive, on_suspend)
         return
     end
 
-    local KOSyncClient = require("KOSyncClient")
-    local client = KOSyncClient:new{
+    local CWASyncClient = require("CWASyncClient")
+    local client = CWASyncClient:new{
         custom_url = self.settings.custom_server,
         service_spec = self.path .. "/api.json"
     }
@@ -664,8 +664,8 @@ function KOSync:updateProgress(ensure_networking, interactive, on_suspend)
         Device.model,
         self.device_id,
         function(ok, body)
-            logger.dbg("KOSync: [Push] progress to", percentage * 100, "% =>", progress, "for", self.view.document.file)
-            logger.dbg("KOSync: ok:", ok, "body:", body)
+            logger.dbg("CWASync: [Push] progress to", percentage * 100, "% =>", progress, "for", self.view.document.file)
+            logger.dbg("CWASync: ok:", ok, "body:", body)
             if interactive then
                 if ok then
                     UIManager:show(InfoMessage:new{
@@ -707,7 +707,7 @@ function KOSync:updateProgress(ensure_networking, interactive, on_suspend)
     self.push_timestamp = now
 end
 
-function KOSync:getProgress(ensure_networking, interactive)
+function CWASync:getProgress(ensure_networking, interactive)
     if not self.settings.username or not self.settings.userkey then
         if interactive then
             promptLogin()
@@ -717,7 +717,7 @@ function KOSync:getProgress(ensure_networking, interactive)
 
     local now = UIManager:getElapsedTimeSinceBoot()
     if not interactive and now - self.pull_timestamp <= API_CALL_DEBOUNCE_DELAY then
-        logger.dbg("KOSync: We've already pulled progress less than 25s ago!")
+        logger.dbg("CWASync: We've already pulled progress less than 25s ago!")
         return
     end
 
@@ -725,8 +725,8 @@ function KOSync:getProgress(ensure_networking, interactive)
         return
     end
 
-    local KOSyncClient = require("KOSyncClient")
-    local client = KOSyncClient:new{
+    local CWASyncClient = require("CWASyncClient")
+    local client = CWASyncClient:new{
         custom_url = self.settings.custom_server,
         service_spec = self.path .. "/api.json"
     }
@@ -737,8 +737,8 @@ function KOSync:getProgress(ensure_networking, interactive)
         self.settings.userkey,
         doc_digest,
         function(ok, body)
-            logger.dbg("KOSync: [Pull] progress for", self.view.document.file)
-            logger.dbg("KOSync: ok:", ok, "body:", body)
+            logger.dbg("CWASync: [Pull] progress for", self.view.document.file)
+            logger.dbg("CWASync: ok:", ok, "body:", body)
             if not ok or not body then
                 if interactive then
                     showSyncError()
@@ -770,7 +770,7 @@ function KOSync:getProgress(ensure_networking, interactive)
             body.percentage = Math.roundPercent(body.percentage)
             local progress = self:getLastProgress()
             local percentage = self:getLastPercent()
-            logger.dbg("KOSync: Current progress:", percentage * 100, "% =>", progress)
+            logger.dbg("CWASync: Current progress:", percentage * 100, "% =>", progress)
 
             if percentage == body.percentage
             or body.progress == progress then
@@ -837,8 +837,8 @@ function KOSync:getProgress(ensure_networking, interactive)
     self.pull_timestamp = now
 end
 
-function KOSync:_onCloseDocument()
-    logger.dbg("KOSync: onCloseDocument")
+function CWASync:_onCloseDocument()
+    logger.dbg("CWASync: onCloseDocument")
     -- NOTE: Because everything is terrible, on Android, opening the system settings to enable WiFi means we lose focus,
     --       and we handle those system focus events via... Suspend & Resume events, so we need to neuter those handlers early.
     self.onResume = nil
@@ -853,14 +853,14 @@ function KOSync:_onCloseDocument()
     end)
 end
 
-function KOSync:schedulePeriodicPush()
+function CWASync:schedulePeriodicPush()
     UIManager:unschedule(self.periodic_push_task)
     -- Use a sizable delay to make debouncing this on skim feasible...
     UIManager:scheduleIn(10, self.periodic_push_task)
     self.periodic_push_scheduled = true
 end
 
-function KOSync:_onPageUpdate(page)
+function CWASync:_onPageUpdate(page)
     if page == nil then
         return
     end
@@ -876,8 +876,8 @@ function KOSync:_onPageUpdate(page)
     end
 end
 
-function KOSync:_onResume()
-    logger.dbg("KOSync: onResume")
+function CWASync:_onResume()
+    logger.dbg("CWASync: onResume")
     -- If we have auto_restore_wifi enabled, skip this to prevent both the "Connecting..." UI to pop-up,
     -- *and* a duplicate NetworkConnected event from firing...
     if Device:hasWifiRestore() and NetworkMgr.wifi_was_on and G_reader_settings:isTrue("auto_restore_wifi") then
@@ -891,35 +891,35 @@ function KOSync:_onResume()
     end)
 end
 
-function KOSync:_onSuspend()
-    logger.dbg("KOSync: onSuspend")
+function CWASync:_onSuspend()
+    logger.dbg("CWASync: onSuspend")
     -- We request an extra flashing refresh on success, to deal with potential ghosting left by the NetworkMgr UI
     self:updateProgress(true, false, true)
 end
 
-function KOSync:_onNetworkConnected()
-    logger.dbg("KOSync: onNetworkConnected")
+function CWASync:_onNetworkConnected()
+    logger.dbg("CWASync: onNetworkConnected")
     UIManager:scheduleIn(0.5, function()
         -- Network is supposed to be on already, don't wrap this in willRerunWhenOnline
         self:getProgress(false, false)
     end)
 end
 
-function KOSync:_onNetworkDisconnecting()
-    logger.dbg("KOSync: onNetworkDisconnecting")
+function CWASync:_onNetworkDisconnecting()
+    logger.dbg("CWASync: onNetworkDisconnecting")
     -- Network is supposed to be on already, don't wrap this in willRerunWhenOnline
     self:updateProgress(false, false)
 end
 
-function KOSync:onKOSyncPushProgress()
+function CWASync:onCWASyncPushProgress()
     self:updateProgress(true, true)
 end
 
-function KOSync:onKOSyncPullProgress()
+function CWASync:onCWASyncPullProgress()
     self:getProgress(true, true)
 end
 
-function KOSync:registerEvents()
+function CWASync:registerEvents()
     if self.settings.auto_sync then
         self.onCloseDocument = self._onCloseDocument
         self.onPageUpdate = self._onPageUpdate
@@ -937,9 +937,9 @@ function KOSync:registerEvents()
     end
 end
 
-function KOSync:onCloseWidget()
+function CWASync:onCloseWidget()
     UIManager:unschedule(self.periodic_push_task)
     self.periodic_push_task = nil
 end
 
-return KOSync
+return CWASync

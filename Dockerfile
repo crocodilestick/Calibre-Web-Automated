@@ -118,12 +118,12 @@ RUN \
     zip && \
   # STEP 2.2 - Install additional required python packages
   pip install -r /app/calibre-web-automated/requirements.txt && \
-  # STEP 2.2.1 - Create cwasync.koplugin.zip from KOReader plugin folder
-  echo "~~~~ Creating cwasync.koplugin.zip from KOReader plugin folder... ~~~~" && \
+  # STEP 2.2.1 - Create koplugin.zip from KOReader plugin folder
+  echo "~~~~ Creating koplugin.zip from KOReader plugin folder... ~~~~" && \
   if [ -d "/app/calibre-web-automated/koreader/plugins/cwasync.koplugin" ]; then \
     cd /app/calibre-web-automated/koreader/plugins && \
-    zip -r cwasync.koplugin.zip cwasync.koplugin && \
-    echo "Created cwasync.koplugin.zip from cwasync.koplugin folder"; \
+    zip -r koplugin.zip cwasync.koplugin/ && \
+    echo "Created koplugin.zip from cwasync.koplugin folder"; \
   else \
     echo "Warning: cwasync.koplugin folder not found, skipping zip creation"; \
   fi && \
@@ -148,13 +148,13 @@ RUN \
     # STEP 2.4.5 - Move contents of 'root' dirs to root dir
   cp -R /tmp/lscw/root/* / && \
   cp -R /app/calibre-web-automated/root/* / && \
-    # STEP 2.4.6 - Move cwasync.koplugin.zip to static directory
-  if [ -f "/app/calibre-web-automated/koreader/plugins/cwasync.koplugin.zip" ]; then \
+    # STEP 2.4.6 - Move koplugin.zip to static directory
+  if [ -f "/app/calibre-web-automated/koreader/plugins/koplugin.zip" ]; then \
     mkdir -p /app/calibre-web/cps/static && \
-    cp /app/calibre-web-automated/koreader/plugins/cwasync.koplugin.zip /app/calibre-web/cps/static/ && \
-    echo "Moved cwasync.koplugin.zip to static directory"; \
+    cp /app/calibre-web-automated/koreader/plugins/koplugin.zip /app/calibre-web/cps/static/ && \
+    echo "Moved koplugin.zip to static directory"; \
   else \
-    echo "Warning: cwasync.koplugin.zip not found, skipping move to static directory"; \
+    echo "Warning: koplugin.zip not found, skipping move to static directory"; \
   fi && \
     # STEP 2.4.7 - Remove the temp files
   rm -R /app/calibre-web-automated/root/ && \

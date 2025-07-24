@@ -290,7 +290,8 @@ def main(filepath=sys.argv[1]):
     nbp = NewBookProcessor(filepath)
 
     # Check if the user has chosen to exclude files of this type from the ingest process
-    if Path(nbp.filename).suffix in nbp.ingest_ignored_formats:
+    # Remove . (dot), check is against exclude whitout dot
+    if Path(nbp.filename).suffix.replace('.', '') in nbp.ingest_ignored_formats:
         pass
     else:
         if nbp.is_target_format: # File can just be imported

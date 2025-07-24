@@ -16,6 +16,10 @@ pyproject.toml
 .venv
 .vscode
 .history
+docker-compose.yml.dev
+docker-compose.override.yml
+*.local
+.env.local
 
 # Test Scripts
 test*
@@ -24,6 +28,7 @@ DEV
 */REFERENCE
 cwa.db
 *.epub
+temp-cwa-repo/
 
 # Dev files
 changelogs/
@@ -182,3 +187,4 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+build-local.sh

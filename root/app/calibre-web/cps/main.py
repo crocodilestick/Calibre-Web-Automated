@@ -58,7 +58,12 @@ def main():
     except ImportError:
         oauth_available = False
         oauth = None
-
+    #TODO Better loading checks, possible find a better place for first run document hash population
+    try:
+        from .kosync import kosync, populate_document_hashes
+        populate_document_hashes()
+    except:
+        kosync = None
     from . import web_server
     init_errorhandler()
 
@@ -71,6 +76,7 @@ def main():
     app.register_blueprint(cwa_check_status)
     app.register_blueprint(cwa_settings)
     app.register_blueprint(cwa_logs)
+    app.register_blueprint(kosync)
 
     # Stock CW
     app.register_blueprint(search)

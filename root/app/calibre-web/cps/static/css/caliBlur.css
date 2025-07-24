@@ -1295,6 +1295,10 @@ body > div.container-fluid > div > div.col-sm-10 > div > form > a:hover {
     border-color: hsla(0, 0%, 100%, .25)
 }
 
+button#btn-book-convert {
+    margin-bottom: 15px;
+}
+
 .btn-primary:hover {
     border-color: hsla(0, 0%, 100%, .3)
 }

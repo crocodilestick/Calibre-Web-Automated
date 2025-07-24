@@ -157,6 +157,7 @@ def set_cwa_settings():
                         'prc', 'pdb', 'pml', 'rb',
                         'rtf', 'snb', 'tcr', 'txt', 'txtz']
     target_formats = ['epub', 'azw3', 'kepub', 'mobi', 'pdf']
+    automerge_options = ['ignore', 'overwrite', 'new_record']
 
     boolean_settings = []
     string_settings = []
@@ -231,7 +232,7 @@ def set_cwa_settings():
 
     return render_title_template("cwa_settings.html", title=_("Calibre-Web Automated User Settings"), page="cwa-settings",
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats,
-                                    target_formats=target_formats)
+                                    target_formats=target_formats, automerge_options=automerge_options)
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##

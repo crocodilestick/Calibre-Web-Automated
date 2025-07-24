@@ -196,33 +196,36 @@
       </div>
     </div>
 
-    <div class="settings-container">
+<div class="settings-container">
       <h4 class="settings-section-header">CWA Auto-Ingest Automerge</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
-        CalibreDB can detect duplicate book titles on import and depending on the automerge setting, delete either of the instances
-        or keep both (default).
+        Calibre can detect Duplicate Book Titles on Import and depending on the <code>automerge</code>
+        setting. It can be set to delete either instance of a duplicated book or keep both (default).
       </p>
-      <label for="auto_ingest_automerge" style="padding-right: 10px; margin-bottom: 16px !important;">Choose how to handle duplicates:</label>
-      <select class="cwa-settings-select" name="auto_ingest_automerge" id="auto_ingest_automerge">
-        {% for automerge in automerge_options -%}
-          {% if cwa_settings['auto_ingest_automerge'] == automerge %}
-            <option value="{{ automerge }}" selected>{{ automerge }}</option>
-          {% else %}
-            <option value="{{ automerge }}">{{ automerge }}</option>
-          {% endif %}
-        {% endfor %}
+      <label for="auto_ingest_automerge" style="padding-right: 10px;margin-bottom: 16px !important;color: #c98b3f;">Choose how to handle duplicates:</label>
+      <select style="width: fit-content;" class="cwa-settings-select" name="auto_ingest_automerge" id="auto_ingest_automerge">
+            <option value="ignore">ignore</option>
+            <option value="overwrite">overwrite</option>
+            <option value="new_record" selected="">new_record</option>
       </select>
 
-      <p>Possible values:</p>
-      <dl>
-        <dt>ignore</dt>
-        <dd style="margin-left: revert;">Discard duplicate import, keep library copy</dd>
-        <dt>overwrite</dt>
-        <dd style="margin-left: revert;">Overwrite library copy with newly imported file</dd>
-        <dt>new_record (default)</dt>
-        <dd style="margin-left: revert;">Create a duplicate record, keeping both copies</dd>
-      </dl>
+      <h4>Possible Values:</h4>
+      <table style="width: -webkit-fill-available;">
+        <tbody>
+        <tr>
+            <td><code>ignore</code></td>
+            <td>Discards duplicate import, keeps library copy</td>
+        </tr>
+        <tr>
+            <td><code>overwrite</code></td>
+            <td>Overwrites library copy with newly imported file</td>
+        </tr>
+        <tr>
+            <td><code>new_record</code> (Default)</td>
+            <td>Creates a duplicate record, keeping both copies</td>
+        </tr>
+      </tbody></table>
     </div>
 
     <br>

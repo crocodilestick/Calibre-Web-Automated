@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="well">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h2 style="margin-top: 0">{{_('Magic Link - Authorise New Device')}}</h2>
+  <p>
+    {{_('On another device, login and visit:')}}
+  <h4 style="margin-top: 2rem; justify-self: center; text-align: center;">
+      <a style="color: #f9be03;"id="verify_url" data-token="{{token}}" href="{{verify_url}}">{{verify_url}}</a><b></b>
+  </h4>
+  {% if qrcode %}
+  <center>
+    <img style="margin-top: 3rem; margin-bottom: 3rem;" src="{{qrcode_url}}" width="150" height="150">
+  </center>
+  {% endif %}
+  <p style="justify-self: anchor-center; font-size: large; line-height: normal; text-align: center; margin-bottom: 2rem;">
+    {{_('Once verified, you will automatically be logged in on this device.')}}
+  </p>
+  <p>
+    {{_('This verification link will expire in 10 minutes.')}}
+  </p>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ url_for('static', filename='js/remote_login.js') }}"></script>
+{% endblock %}

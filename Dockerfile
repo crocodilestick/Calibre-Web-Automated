@@ -37,7 +37,6 @@ LABEL maintainer="CrocodileStick"
 
 # Copy local files into the container
 COPY --chown=abc:abc . /app/calibre-web-automated/
-COPY --chown=abc:abc patches /tmp/patches
 # STEP 1 - Install stock Calibre-Web
 RUN \
   # STEP 1.1 - Installs required build & runtime packages
@@ -216,15 +215,6 @@ RUN \
   rm /calibre.txz && \
   # STEP 3.6 - Store the CALIBRE_RELEASE in the root of the image in CALIBRE_RELEASE
   echo $CALIBRE_RELEASE > /CALIBRE_RELEASE
-
-  # STEP 3.7 - Patch the sources of calibre-web to add qrcode magic link
-RUN echo "**** apply calibre-web patches ****" 1>&2 \
-    && pip install -U --no-cache-dir qrcode \
-    && cd /app/calibre-web \
-    && for p in /tmp/patches/*.patch ; do \
-           echo Applying patch : $p ; \
-           patch --verbose -p0 < ${p} ; \
-       done 
 
 # Removes packages that are no longer required, also emptying dirs used to build the image that are no longer needed
 RUN \

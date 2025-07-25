@@ -2302,7 +2302,8 @@ body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
     right: 0;
     bottom: 0;
     margin: 0 auto;
-    padding: 60px
+    padding: 60px;
+    justify-items: anchor-center;
 }
 
 .well > form {
@@ -5050,7 +5051,8 @@ body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div
 
 .checkbox input[type=checkbox] {
     margin-left: -19px;
-    margin-top: 5px
+    margin-top: 5px;
+    accent-color: #cc7b19;
 }
 
 body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover {
@@ -5308,7 +5310,8 @@ body.admin > div.container-fluid div.scheduled_tasks_details {
 }
 
 body.admin .btn-default {
-    margin-bottom: 10px
+    margin-bottom: 10px;
+    margin-left: 8px;
 }
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
@@ -5985,10 +5988,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         -o-transition: all 0s
     }
 
-    body.login:not(.read-frame), body:not(.read-frame) {
+    /* body.login:not(.read-frame), body:not(.read-frame) {
         background-color: var(--color-background-mobile) !important;
         background-image: none !important
-    }
+    } */
 
     .navbar-default {
         height: 48px;
@@ -8485,4 +8488,20 @@ select.cwa-settings-select {
     color: white !important;
     opacity: 1 !important;
     text-shadow: none !important;
+}
+
+a#remote_login {
+    width: -webkit-fill-available;
+    text-align: center;
+    margin-top: 2rem;
+    padding: 6px 30px 5px;
+    border: transparent solid 1px;
+    border-radius: 4px;
+    margin-bottom: 3rem;
+}
+
+.login .well > form {
+    max-width: 480px;
+    margin: auto;
+    height: 47rem;
 }

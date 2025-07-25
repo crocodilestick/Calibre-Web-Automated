@@ -5,3 +5,9 @@ dd.meta_description {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+body.admin h2 {
+    font-size: 28px !important;
+    font-weight: bold !important;
+    margin-bottom: 30px !important;
+}

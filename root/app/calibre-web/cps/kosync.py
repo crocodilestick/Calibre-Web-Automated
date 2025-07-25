@@ -16,8 +16,9 @@ import hashlib
 import base64
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any, Tuple
+from .render_template import render_title_template
 
-from flask import Blueprint, request, jsonify, g, render_template
+from flask import Blueprint, request, jsonify, g
 from flask_babel import gettext as _
 from werkzeug.security import check_password_hash
 from sqlalchemy import func
@@ -134,7 +135,7 @@ def kosync_plugin_page():
     """
     Display the KOReader plugin download and installation page
     """
-    return render_template("kosync_plugin.html", title=_("KOReader Sync Plugin"))
+    return render_title_template("kosync_plugin.html", title=_("KOReader Sync Plugin"), page="cwa-kosync")
 
 
 @csrf.exempt

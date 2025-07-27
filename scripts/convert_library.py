@@ -204,6 +204,7 @@ class LibraryConverter:
                         ["ebook-convert", file, target_filepath],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
+                        env=self.calibre_env
                         text=True
                     ) as process:
                         for line in process.stdout: # Read from the combined stdout (which includes stderr)
@@ -288,6 +289,7 @@ class LibraryConverter:
                     ["ebook-convert", filepath, epub_filepath],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
+                    env=self.calibre_env
                     text=True
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)

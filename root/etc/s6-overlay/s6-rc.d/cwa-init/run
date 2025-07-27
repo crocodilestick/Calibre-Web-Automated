@@ -13,7 +13,7 @@ install -d -o abc -g abc /config/.cwa_conversion_tmp
 
 # For Calibre Plugins
 install -d -o abc -g abc /config/.config/calibre/plugins
-ln -sf /config/.config/calibre/plugins /config/calibre_plugins
+# ln -sf /config/.config/calibre/plugins /config/calibre_plugins
 
 #------------------------------------------------------------------------------------------------------------------------
 #  Remove any leftover lock files

@@ -74,6 +74,7 @@ class NewBookProcessor:
         self.calibre_env = os.environ.copy()
         # Enables Calibre plugins to be used from /config/plugins
         self.calibre_env["HOME"] = "/config"
+
         self.split_library = self.get_split_library()
         if self.split_library:
             self.library_dir = self.split_library["split_path"]
@@ -144,7 +145,7 @@ class NewBookProcessor:
         target_filepath = f"{self.tmp_conversion_dir}{original_filepath.stem}.{end_format}"
         try:
             t_convert_book_start = time.time()
-            subprocess.run(['ebook-convert', self.filepath, target_filepath], check=True)
+            subprocess.run(['ebook-convert', self.filepath, env=self.calibre_env, target_filepath], check=True)
             t_convert_book_end = time.time()
             time_book_conversion = t_convert_book_end - t_convert_book_start
             print(f"\n[ingest-processor]: END_CON: Conversion of {self.filename} complete in {time_book_conversion:.2f} seconds.\n", flush=True)

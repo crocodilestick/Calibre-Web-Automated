@@ -51,7 +51,7 @@
           <a class="btn btn-default" id="admin_user_table" href="{{url_for('admin.edit_user_table')}}">{{_('Edit Users')}}</a>
         {% endif %}
         <a class="btn btn-default" id="admin_new_user" href="{{url_for('admin.new_user')}}">{{_('Add New User')}}</a>
-        <a class="btn btn-default" id="admin_profile_pictures" href="{{ url_for('web.profile_pictures') }}">{{ _('Manage Profile Pictures') }}</a>
+        <a class="btn btn-default" id="admin_profile_pictures" href="{{ url_for('profile_pictures.set_profile_picture') }}">{{ _('Manage Profile Pictures') }}</a>
       {% if (config.config_login_type == 1) %}
         <div class="btn btn-default" id="import_ldap_users" data-toggle="modal" data-target="#StatusDialog">{{_('Import LDAP Users')}}</div>
       {% endif %}
@@ -202,7 +202,7 @@
 {%  endif %}
 
   <div class="row form-group">
-    <h2>{{_('CWA Admin Functions⚡')}}</h2>
+    <h2>{{_('CWA Admin Functions ⚡')}}</h2>
     <a class="btn btn-default" id="cwa-settings" href="{{url_for('cwa_settings.set_cwa_settings')}}">{{_('CWA Settings')}}</a>
     <a class="btn btn-default" id="cwa_stats" href="{{url_for('cwa_stats.cwa_stats_show')}}">{{_('Show CWA Stats')}}</a>
     <a class="btn btn-default" id="check_mon_srvs" href="{{url_for('cwa_check_status.cwa_flash_status')}}">{{_('Check CWA Status')}}</a>
@@ -218,7 +218,7 @@
   </div>
 
   <div class="row form-group">
-    <h2>{{_('Administration')}}</h2>
+    <h2>{{_('Administration 🚀')}}</h2>
     <a class="btn btn-default" id="debug" href="{{url_for('admin.download_debug')}}">{{_('Download Debug Package')}}</a>
     <a class="btn btn-default" id="logfile" href="{{url_for('admin.view_logfile')}}">{{_('View Logs')}}</a>
   </div>

@@ -35,6 +35,7 @@ cwa_stats = Blueprint('cwa_stats', __name__)
 cwa_check_status = Blueprint('cwa_check_status', __name__)
 cwa_settings = Blueprint('cwa_settings', __name__)
 cwa_logs = Blueprint('cwa_logs', __name__)
+profile_pictures = Blueprint('profile_pictures', __name__)
 
 ##——————————————————————————————GLOBAL VARIABLES——————————————————————————————##
 
@@ -163,9 +164,9 @@ def set_cwa_settings():
     string_settings = []
     list_settings = []
     for setting in cwa_default_settings:
-        if type(cwa_default_settings[setting]) == int:
+        if isinstance(cwa_default_settings[setting], int):
             boolean_settings.append(setting)
-        elif type(cwa_default_settings[setting]) == str and cwa_default_settings[setting] != "":
+        elif isinstance(cwa_default_settings[setting], str) and cwa_default_settings[setting] != "":
             string_settings.append(setting)
         else:
             list_settings.append(setting)
@@ -725,3 +726,74 @@ def get_status():
     statusList = {'status':status,
                   'progress':progress}
     return json.dumps(statusList)
+
+
+# ################################### Profile Pictures ###################################################
+
+@profile_pictures.route("/user_profiles.json")
+@user_login_required
+def user_profiles_json():
+    try:
+        json_path = "/config/user_profiles.json"
+        with open(json_path, "r") as file:
+            data = json.load(file)
+        return jsonify(data)
+    except Exception as e:
+        log.error(f"Error reading user_profiles.json: {str(e)}")
+        return jsonify({}), 500
+
+@profile_pictures.route("/me/profile-picture", methods=["GET", "POST"])
+@user_login_required
+def set_profile_picture():
+    log.debug("Accessed /me/profile-picture route.")
+
+    # Check if the user is an admin
+    if not current_user.role_admin():
+        flash(_("You must be an admin to access this page."), category="error")
+        log.warning(f"Unauthorized access attempt by user: {current_user.name}")
+        return redirect(url_for('web.profile'))
+
+    if request.method == "POST":
+        log.debug("POST request received on profile_pictures page.")
+
+        # Get the form data (username and image data)
+        username = request.form.get("username")
+        image_data = request.form.get("image_data")
+
+        log.debug(f"Form data received - Username: {username}, Image Data Length: {len(image_data) if image_data else 'None'}")
+
+        # Validate form fields
+        if not username or not image_data:
+            flash(_("Both username and image data are required."), category="error")
+            log.warning("Form submission missing username or image_data.")
+            return redirect(url_for('profile_pictures.setprofile_picture'))
+
+        try:
+            # Path to the JSON file
+            json_path = "/config/user_profiles.json"
+            log.debug(f"Opening JSON file at: {json_path}")
+
+            # Read the existing data from the JSON file and update it
+            with open(json_path, "r+") as file:
+                user_data = json.load(file)
+                user_data[username] = image_data  # Add new or update existing entry
+                file.seek(0)  # Move to the start of the file for writing
+                json.dump(user_data, file, indent=4)  # Write back the updated data
+                file.truncate()  # Ensure there is no leftover content
+
+            # Success feedback and logging
+            flash(_("Profile picture updated successfully."), category="success")
+            log.info(f"Profile picture updated for user: {username}")
+
+        except Exception as e:
+            # Error handling in case of an issue
+            flash(f"Error: {str(e)}", category="error")
+            log.error(f"Exception while updating profile picture JSON: {str(e)}")
+
+        return redirect(url_for('profile_pictures.set_profile_picture'))
+
+    # Handle the GET request and render the page
+    log.debug("Rendering GET view for profile_pictures page.")
+    return render_title_template("profile_pictures.html", 
+                                title=_("CWA Profile Picture Management (WIP)"), 
+                                page="profile-picture")

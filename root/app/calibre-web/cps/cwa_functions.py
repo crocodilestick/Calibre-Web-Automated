@@ -37,6 +37,8 @@ cwa_settings = Blueprint('cwa_settings', __name__)
 cwa_logs = Blueprint('cwa_logs', __name__)
 profile_pictures = Blueprint('profile_pictures', __name__)
 
+log = logger.create()
+
 ##——————————————————————————————GLOBAL VARIABLES——————————————————————————————##
 
 # Folder where the log files are stored

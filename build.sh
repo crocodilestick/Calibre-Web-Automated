@@ -3,7 +3,7 @@
 # Enter location for cwa repo files below
 REPO_DIR="/home/cwa-repo-download"
 # Enter your DockerHub username here
-DH_USER="crocodilestick"
+DH_USER="not-crocodilestick"
 
 # Use the following guide to set up buildx on your own system to build multi-platform images
 # https://a-berahman.medium.com/simplifying-docker-multiplatform-builds-with-buildx-3d7efd670f58

@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, flash, url_for, request, send_from_direct
 from flask_babel import gettext as _
 
 from . import logger, config, constants, csrf
-from .usermanagement import login_required_if_no_ano
+from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
 

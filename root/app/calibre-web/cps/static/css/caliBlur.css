@@ -5064,7 +5064,8 @@ body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover {
 
 body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover > div.bootstrap-table > div.fixed-table-container, body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover > div.bootstrap-table > div.fixed-table-container > div.fixed-table-body > #table {
     border: none;
-    border-radius: 0
+    border-radius: 0;
+    padding: 2rem;
 }
 
 body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover > div.bootstrap-table > div.fixed-table-container > div.fixed-table-body > #table > thead > tr > th {

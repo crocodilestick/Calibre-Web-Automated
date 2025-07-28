@@ -13,34 +13,6 @@
     margin-right: auto;
   }
 
-  .back-button {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-  }
-
-  .back-button a.btn {
-    background-color: #CC7B19;
-    color: #ffffff;
-    border: 2px solid #CC7B19;
-    padding: 10px 20px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s, color 0.3s;
-    display: inline-block;
-    width: auto;
-    max-width: fit-content;
-  }
-
-  .back-button a.btn:hover {
-    background-color: #E59029;
-    border: 2px solid #E59029;
-    color: #333;
-    cursor: pointer;
-  }
-
   .form-wrapper {
     max-width: 1000px;
     margin: 0 auto;
@@ -63,9 +35,18 @@
   .pp-content {
       background-color: #1f2c3554;
       width: -webkit-fill-available;
-      max-width: 50rem;
+      max-width: 80rem;
       justify-self: anchor-center;
       padding: 30px;
+  }
+
+  .pp-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    flex-wrap: wrap;
+    flex-direction: column;
   }
 
   </style>
@@ -76,7 +57,6 @@
   <h2>{{title}}</h2>
 
   <div class="pp-content">
-    <div class="container mt-5">
       <h2 class="lead-line">This feature is currently still in development.</h2>
 
       <p>
@@ -105,15 +85,15 @@
             <small id="imageDataHelp" class="form-text text-muted">Paste the full Base64 encoded PNG image data here.</small>
           </div>
 
-          <button type="submit" class="btn btn-primary mt-4">Submit</button>
+          
         </form>
       </div>
 
-      <div class="back-button mt-4">
-        <a class="btn btn-secondary" href="{{ url_for('admin.admin') }}">Back to Admin Page</a>
+      <div class="pp-buttons">
+        <a class="btn btn-default" href="{{ url_for('admin.admin') }}">Back to Admin Page</a>
+        <button type="submit" class="btn btn-primary mt-4">Submit</button>
       </div>
       
-    </div>
   </div>
 </div>
 {% endblock %}

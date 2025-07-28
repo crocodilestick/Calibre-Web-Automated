@@ -28,8 +28,8 @@
   .lead-line {
     font-weight: bold;
     text-align: center;
-    margin-top: 0;
-    margin-bottom: 2rem;
+    margin-top: 3rem;
+    margin-bottom: 2.5rem;
   }
 
   .pp-content {
@@ -38,6 +38,7 @@
       max-width: 80rem;
       justify-self: anchor-center;
       padding: 30px;
+      margin-top: 2rem;
   }
 
   .pp-buttons {
@@ -59,7 +60,7 @@
   <div class="pp-content">
       <h2 class="lead-line">This feature is currently still in development.</h2>
 
-      <p>
+      <p style="padding:2rem;">
         To upload a profile picture, please use the following form. Note: The image data must be in Base64 format.
         You can convert an image to Base64 using various online tools. If you use a website such as
         <a href="https://www.base64-image.de" target="_blank" rel="noopener noreferrer">www.base64-image.de</a>,
@@ -68,9 +69,10 @@
         To display the image as a round shape, it must already be in PNG format with a round frame applied.
         It is recommended to use images no larger than 100x100px to avoid using excessive storage space.
       </p>
-
-      <div class="form-wrapper">
-        <form method="POST" action="{{ url_for('profile_pictures.set_profile_picture')}}">
+      
+      <form method="POST" action="{{ url_for('profile_pictures.set_profile_picture')}}">
+      
+        <div class="form-wrapper">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
           <div class="form-group">
@@ -84,9 +86,6 @@
             <textarea class="form-control image-box" id="image_data" name="image_data" rows="30" required aria-describedby="imageDataHelp"></textarea>
             <small id="imageDataHelp" class="form-text text-muted">Paste the full Base64 encoded PNG image data here.</small>
           </div>
-
-          
-        </form>
       </div>
 
       <div class="pp-buttons">
@@ -94,6 +93,7 @@
         <button type="submit" class="btn btn-primary mt-4">Submit</button>
       </div>
       
+    </form>
   </div>
 </div>
 {% endblock %}

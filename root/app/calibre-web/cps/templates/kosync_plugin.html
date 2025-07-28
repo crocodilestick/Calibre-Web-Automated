@@ -69,21 +69,21 @@
 
 
   .kosync-warning {
-    background-color: #fff3cd;
-    color: #856404;
-    padding: 12px;
-    border-radius: 4px;
-    border: 1px solid #ffeaa7;
-    margin: 15px 0;
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 2rem;
+      border-radius: 4px;
+      border: 1px solid #ffeaa7;
+      margin-top: 2rem;
   }
 
   .kosync-info {
-    background-color: #d1ecf1;
-    color: #0c5460;
-    padding: 12px;
-    border-radius: 4px;
-    border: 1px solid #b8daff;
-    margin: 15px 0;
+      background-color: #d1ecf1;
+      color: #0c5460;
+      padding: 2rem;
+      border-radius: 4px;
+      border: 1px solid #b8daff;
+      margin-top: 3rem;
   }
 
   .kosync-table {
@@ -93,8 +93,11 @@
   }
 
   .kosync-issue {
-    font-weight: bold;
-    vertical-align: baseline;
+      color: var(--color-secondary);
+      margin-right: 10px;
+      margin-left: 20px;
+      vertical-align: baseline;
+      padding-left: 16px;
   }
 
 </style>
@@ -106,7 +109,7 @@
 
   <div class="kosync-container">
     <div class="kosync-section">
-      <h3 class="kosync-heading">📱 Get the KOReader Sync Plugin</h3>
+      <h3 class="kosync-heading">📱 Get the CWA KOReader Sync Plugin</h3>
       <p>
         This plugin allows you to synchronize your reading progress across multiple devices using KOReader.
         Your progress will be automatically saved and synced with this Calibre-Web-Automated server.
@@ -158,14 +161,13 @@
     <div class="kosync-section">
       <h3 class="kosync-heading">🔌 Enabling the Plugin</h3>
 
-      <div class="kosync-warning">
-        <strong>Important:</strong> We recommend disabling the stock "Progress sync" plugin to avoid conflicts.
-        Look for it in the plugin management list and disable it.
-      </div>
-
       <div class="kosync-info" style="margin-top: 3rem;">
         <strong>Good news!</strong> The CWA Sync plugin should automatically enable after installation and restarting KOReader.
         However, if it doesn't appear or isn't working, follow these steps:
+        <div class="kosync-warning">
+          <strong>Important:</strong> We recommend disabling the stock "Progress sync" plugin to avoid conflicts.
+          Look for it in the plugin management list and disable it.
+        </div>
       </div>
 
       <table class="kosync-table">
@@ -197,9 +199,9 @@
 
       <div class="kosync-step">
       <ul style="margin-top: 10px;">
-        <li><strong>Server URL:</strong> <code>http://cwa-dev.crocodilestick.com/</code></li>
-        <li><strong>Username:</strong> Your Calibre-Web-Automated username</li>
-        <li><strong>Password:</strong> Your Calibre-Web-Automated password</li>
+        <li><strong>Server URL:</strong>&nbsp;&nbsp;<code>http://cwa-dev.crocodilestick.com/</code></li>
+        <li><strong>Username:</strong>&nbsp;&nbsp;&nbsp;&nbsp;Your Calibre-Web-Automated username</li>
+        <li><strong>Password:</strong>&nbsp;&nbsp;&nbsp;&nbsp;Your Calibre-Web-Automated password</li>
       </ul>
       </div>
     </div>
@@ -219,13 +221,11 @@
           <li>Switch between books</li>
           <li>Exit KOReader</li>
         </ul>
+        <div class="kosync-warning">
+          <strong>Note:</strong> Make sure you have an internet connection for the sync to work.
+          The plugin will automatically retry failed sync attempts when connectivity is restored.
+        </div>
       </div>
-    </div>
-
-    <div class="kosync-warning">
-      <strong>Note:</strong> Make sure you have an internet connection for the sync to work.
-      The plugin will automatically retry failed sync attempts when connectivity is restored.
-    </div>
     </div>
   </div>
 
@@ -235,7 +235,7 @@
 
       <table class="kosync-table">
         <tr>
-          <th style="width: 30%; color: var(--color-secondary);">Issue</th>
+          <th style="width: 30%;">Issue</th>
           <th style="color: var(--color-secondary);">Solution</th>
         </tr>
         <tr>

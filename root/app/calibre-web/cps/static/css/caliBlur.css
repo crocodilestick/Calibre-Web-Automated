@@ -1291,8 +1291,8 @@ body > div.container-fluid > div > div.col-sm-10 > div > form > a:hover {
 
 .btn-primary {
     color: #fff;
-    background-color: hsla(0, 0%, 100%, .25);
-    border-color: hsla(0, 0%, 100%, .25)
+    background-color: #161f27b3;
+    border-color: hsla(0, 0%, 100%, .25);
 }
 
 button#btn-book-convert {
@@ -3326,12 +3326,12 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
 }
 
 .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open .dropdown-toggle.btn-primary {
-    background-color: hsla(0, 0%, 100%, .3)
+    background-color: #cc7b19;
 }
 
 .btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .open > .dropdown-toggle.btn-primary.focus, .open > .dropdown-toggle.btn-primary:focus, .open > .dropdown-toggle.btn-primary:hover {
     color: #fff;
-    background-color: hsla(0, 0%, 100%, .3);
+    background-color: hsl(42.26deg 78.17% 44.9%);
     border-color: transparent
 }
 
@@ -6190,18 +6190,17 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     .navbar-collapse.collapse {
         height: calc(100%) !important;
-        width: 240px;
-        background: #3f4245;
+        width: 260px;
+        background: #ba741ded;
         border: 0;
         -webkit-box-shadow: none;
         box-shadow: none;
-        margin: 0;
-        padding: 0;
+        padding-left: 2rem;
         position: fixed;
         top: 0;
         left: 0;
         overflow-y: auto !important;
-        overflow-x: hidden !important
+        overflow-x: hidden !important;
     }
 
     #form-upload, #main-nav > li:nth-child(1) {
@@ -6217,7 +6216,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     #main-nav > li:nth-child(1) {
         margin-left: 0;
         width: 100%;
-        height: 120px;
+        height: 130px;
         z-index: 99
     }
 
@@ -6255,7 +6254,9 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         top: 70px;
         left: 15px;
         color: #fff;
-        pointer-events: none
+        pointer-events: none;
+        font-weight: bold;
+        font-size: x-large;
     }
 
     #main-nav > li {
@@ -6279,10 +6280,11 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         content: "Upload Book";
         color: #fff;
         font-size: 13px !important;
-        padding-left: 15px;
+        padding-left: 5rem;
         height: 60px;
         line-height: 60px;
-        position: absolute
+        position: absolute;
+        font-weight: bold;
     }
 
     #form-upload .form-group .btn {
@@ -6305,31 +6307,33 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         border-radius: 50%;
         width: 20px;
         height: 20px;
-        display: inline-block;
+        display: block;
         margin: 0;
         padding: 23px 0 23px 202px;
-        z-index: -9
+        z-index: -9;
+        position: absolute;
+        left: -185px;
     }
 
-    #form-upload .form-group .btn:after {
-        content: "\EA13";
-        position: absolute;
-        font-family: plex-icons-new, serif;
-        font-size: 8px;
-        background: #3c444a;
-        color: #fff;
-        border-radius: 50%;
-        padding: .25px .25px 0 0;
-        z-index: 9;
-        left: 198px;
-        top: 32px;
-        width: 10px;
-        height: 10px;
-        line-height: 10px;
-        font-weight: 400;
-        text-align: center;
-        pointer-events: none
-    }
+#form-upload .form-group .btn:after {
+    content: "\EA13";
+    position: absolute;
+    font-family: plex-icons-new, serif;
+    font-size: 8px;
+    background: #ff9a64 !important;
+    color: #3c444a !important;
+    border-radius: 50%;
+    padding: .25px .25px 0 0;
+    z-index: 9;
+    left: 198px;
+    top: 32px;
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
+    font-weight: 400;
+    text-align: center;
+    pointer-events: none;
+}
 
     #main-nav > li.top_admin, #main-nav > li.top_tasks {
         height: 45px;
@@ -8062,7 +8066,7 @@ div.comments[data-readmore] {
 
 #form-upload .form-group .btn:after {
     content: "\EA13";
-    position: absolute;
+    position: abdsolute;
     font-family: plex-icons-new, serif;
     font-size: 8px;
     background: #3c444a;
@@ -8077,7 +8081,7 @@ div.comments[data-readmore] {
     line-height: 10px;
     font-weight: 400;
     text-align: center;
-    pointer-events: none
+    pointer-events: none;
 }
 
 #cwa-switch-theme > .glyphicon-tasks::before {

@@ -38,3 +38,17 @@ input.datepicker:focus + input {color: #555}
         visibility: hidden;
     }
 }
+
+/* Makes the filter buttons on the homepage occupy the title bar space until there's no more room for them */
+
+.filterheader {
+  margin-bottom: 20px;
+}
+
+@media (min-width: 915px) {
+  .filterheader {
+    position: fixed;
+    top: 72px;
+    right: 20px;
+  }
+}

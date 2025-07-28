@@ -17,9 +17,17 @@
 
 var direction = $("#asc").data('order');  // 0=Descending order; 1= ascending order
 
+let selectedLayoutMode;
+
+if ($("body").hasClass("blur")) {
+    selectedLayoutMode = "fitRowsCentered";
+} else {
+    selectedLayoutMode = "fitRows";
+}
+
 var $list = $("#list").isotope({
     itemSelector: ".book",
-    layoutMode: "fitRowsCentered",
+    layoutMode: selectedLayoutMode,
     getSortData: {
         title: ".title"
     },

@@ -382,10 +382,18 @@ $(function() {
         });
     }
 
+    let selectedLayoutMode;
+
+    if ($("body").hasClass("blur")) {
+        selectedLayoutMode = "fitRowsCentered";
+    } else {
+        selectedLayoutMode = "fitRows";
+    }
+
     $(".discover .row").isotope({
         // options
         itemSelector : ".book",
-        layoutMode : "fitRowsCentered"
+        layoutMode : selectedLayoutMode
     });
 
     if ($(".load-more").length && $(".next").length) {

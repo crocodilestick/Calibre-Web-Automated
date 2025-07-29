@@ -78,7 +78,7 @@ def list_classes(provider_list):
 
 cl = list_classes(new_list)
 # Alphabetises the list of Metadata providers
-cl.sort(key=lambda x: x.name)
+cl.sort(key=lambda x: x.__class__.__name__)
 
 @meta.route("/metadata/provider")
 @user_login_required

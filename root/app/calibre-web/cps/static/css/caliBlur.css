@@ -6190,7 +6190,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     .navbar-collapse.collapse {
         height: calc(100%) !important;
-        width: 260px;
+        width: 255px;
         background: #ba741ded;
         border: 0;
         -webkit-box-shadow: none;
@@ -6226,11 +6226,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a.profileDrop:before {
-        right: auto;
         position: absolute;
-        left: 211px;
-        top: 80px;
-        color: #fff;
+        left: 192px;
+        top: 90px;
+        color: #ff9a64;
         content: '';
         display: inline-block;
         width: 0;
@@ -6238,7 +6237,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         vertical-align: middle;
         border-top: 5px dashed;
         border-right: 4px solid transparent;
-        border-left: 4px solid transparent
+        border-left: 4px solid transparent;
     }
 
     .profileDrop > span {
@@ -6532,7 +6531,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     .author > .container-fluid > .row-fluid > .col-sm-10 > h2:before, body.admin.config > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type, body.admin.uiconfig > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type, body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row:first-of-type > div.col > h2:before, body.admin > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type:before, body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before, body.mailset > div.container-fluid > div > div.col-sm-10 > div.discover > h1, body.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h1, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h2, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-8 > form > #test:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > div:nth-child(10) > label:before, body > div.container-fluid > div > div.col-sm-10 > div.col-sm-6.col-lg-6.col-xs-6 > h2, body > div.container-fluid > div > div.col-sm-10 > h1, body > div.container-fluid > div > div.col-sm-10 > h3:first-of-type {
         top: 48px;
         left: 0;
-        padding-left: 10px;
+        padding-left: 20px;
         height: 42px;
         width: calc(100%);
         line-height: 42px;

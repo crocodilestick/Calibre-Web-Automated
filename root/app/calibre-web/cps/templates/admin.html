@@ -8,44 +8,46 @@
     <div class="col">
       <h2>{{_('Users 👤')}}</h2>
     {% if allUser.__len__() < 10 %}
-      <table class="table table-striped" id="table_user">
-        <tr>
-            <th>{{_('Username')}}</th>
-            <th>{{_('Email')}}</th>
-            <th>{{_('Send to eReader Email')}}</th>
-            <th>{{_('Downloads')}}</th>
-            <th class="hidden-xs ">{{_('Admin')}}</th>
-            <th class="hidden-xs hidden-sm">{{_('Password')}}</th>
-          {% if config.config_uploading %}
-            <th class="hidden-xs hidden-sm">{{_('Upload')}}</th>
-          {%  endif %}
-            <th class="hidden-xs hidden-sm">{{_('Download')}}</th>
-            <th class="hidden-xs hidden-sm hidden-md">{{_('View Books')}}</th>
-            <th class="hidden-xs hidden-sm hidden-md">{{_('Edit')}}</th>
-            <th class="hidden-xs hidden-sm hidden-md">{{_('Delete')}}</th>
-            <th class="hidden-xs hidden-sm hidden-md">{{_('Public Shelf')}}</th>
-        </tr>
-        {% for user in allUser %}
-          {% if not user.role_anonymous() or config.config_anonbrowse %}
+      <div style="overflow-x: auto; margin-bottom: 1rem;">
+        <table style="margin-bottom: 0;" class="table table-striped" id="table_user">
           <tr>
-            <td><a class="session" href="{{url_for('admin.edit_user', user_id=user.id)}}">{{user.name}}</a></td>
-            <td>{{user.email}}</td>
-            <td>{{user.kindle_mail}}</td>
-            <td>{{user.downloads.count()}}</td>
-            <td class="hidden-xs">{{ display_bool_setting(user.role_admin()) }}</td>
-            <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_passwd()) }}</td>
+              <th>{{_('Username')}}</th>
+              <th>{{_('Email')}}</th>
+              <th>{{_('Send to eReader Email')}}</th>
+              <th>{{_('Downloads')}}</th>
+              <th class="hidden-xs ">{{_('Admin')}}</th>
+              <th class="hidden-xs hidden-sm">{{_('Password')}}</th>
             {% if config.config_uploading %}
-            <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_upload()) }}</td>
+              <th class="hidden-xs hidden-sm">{{_('Upload')}}</th>
             {%  endif %}
-            <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_download()) }}</td>
-            <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_viewer()) }}</td>
-            <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_edit()) }}</td>
-            <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_delete_books()) }}</td>
-            <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_edit_shelfs()) }}</td>
+              <th class="hidden-xs hidden-sm">{{_('Download')}}</th>
+              <th class="hidden-xs hidden-sm hidden-md">{{_('View Books')}}</th>
+              <th class="hidden-xs hidden-sm hidden-md">{{_('Edit')}}</th>
+              <th class="hidden-xs hidden-sm hidden-md">{{_('Delete')}}</th>
+              <th class="hidden-xs hidden-sm hidden-md">{{_('Public Shelf')}}</th>
           </tr>
-          {% endif %}
-        {% endfor %}
-      </table>
+          {% for user in allUser %}
+            {% if not user.role_anonymous() or config.config_anonbrowse %}
+            <tr>
+              <td><a class="session" href="{{url_for('admin.edit_user', user_id=user.id)}}">{{user.name}}</a></td>
+              <td>{{user.email}}</td>
+              <td>{{user.kindle_mail}}</td>
+              <td>{{user.downloads.count()}}</td>
+              <td class="hidden-xs">{{ display_bool_setting(user.role_admin()) }}</td>
+              <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_passwd()) }}</td>
+              {% if config.config_uploading %}
+              <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_upload()) }}</td>
+              {%  endif %}
+              <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_download()) }}</td>
+              <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_viewer()) }}</td>
+              <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_edit()) }}</td>
+              <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_delete_books()) }}</td>
+              <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_edit_shelfs()) }}</td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+        </table>
+      </div>
     {% endif %}
         {% if not simple %}
           <a class="btn btn-default" id="admin_user_table" href="{{url_for('admin.edit_user_table')}}">{{_('Edit Users')}}</a>

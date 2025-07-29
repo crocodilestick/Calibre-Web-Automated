@@ -77,7 +77,8 @@ def list_classes(provider_list):
 
 
 cl = list_classes(new_list)
-
+# Alphabetises the list of Metadata providers
+cl.sort()
 
 @meta.route("/metadata/provider")
 @user_login_required

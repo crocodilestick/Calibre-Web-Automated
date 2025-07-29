@@ -21,12 +21,27 @@ body.serieslist.grid-view div.container-fluid > div > div.col-sm-10::before {
 .cover .read {
   line-height: 15px;
   font-size: xx-small;
-  position: relative;
-  top: -20px;
+  position: absolute;
+  top: 192px;
   width: 20px;
   height: 20px;
   display: inline-block;
   padding: 2px !important;
+  left: 4px;
+}
+
+@media (max-width: 767px) {
+  .cover .read {
+    line-height: 15px;
+    font-size: xx-small;
+    position: absolute;
+    top: 121px;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    padding: 2px !important;
+    left: 1px;
+  }
 }
 
 input.datepicker {color: transparent}
@@ -51,4 +66,8 @@ input.datepicker:focus + input {color: #555}
     top: 72px;
     right: 20px;
   }
+}
+
+ul#scnd-nav {
+    margin-bottom: 4rem;
 }

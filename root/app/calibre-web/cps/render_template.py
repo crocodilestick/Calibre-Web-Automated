@@ -116,11 +116,15 @@ def get_sidebar_config(kwargs=None):
 
 # Checks if an update for CWA is available, returning True if yes
 def cwa_update_available() -> tuple[bool, str, str]:
-    with open("/app/CWA_RELEASE", 'r') as f:
-        current_version = f.read().strip()
-    response = requests.get("https://api.github.com/repos/crocodilestick/calibre-web-automated/releases/latest")
-    tag_name = response.json().get('tag_name', current_version)
-    return (tag_name != current_version), current_version, tag_name
+    try:
+        with open("/app/CWA_RELEASE", 'r') as f:
+            current_version = f.read().strip()
+        response = requests.get("https://api.github.com/repos/crocodilestick/calibre-web-automated/releases/latest", timeout=3)
+        tag_name = response.json().get('tag_name', current_version)
+        return (tag_name != current_version), current_version, tag_name
+    except Exception as e:
+        print(f"[cwa-update-notification-service] Error checking for CWA updates: {e}", flush=True)
+        return False, "0.0.0", "0.0.0"
 
 # Gets the date the last cwa update notification was displayed
 def get_cwa_last_notification() -> str:

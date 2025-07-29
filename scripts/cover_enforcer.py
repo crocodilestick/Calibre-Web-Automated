@@ -47,24 +47,23 @@ class Book:
 
         self.file_format: str = Path(file_path).suffix.replace('.', '')
         self.timestamp: str = self.get_time()
-        self.book_id: str = (list(re.findall(r'\(\d*\)', book_dir))[-1])[1:-1]
+        self.book_id: str = re.findall(r'\((\d*)\)', book_dir)[-1]
         self.book_title, self.author_name, self.title_author = self.get_title_and_author()
+
+        self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
+        # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.split_library = self.get_split_library()
+        if self.split_library:
+            self.calibre_library = self.split_library["split_path"]
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
 
         self.cover_path = book_dir + '/cover.jpg'
         self.old_metadata_path = book_dir + '/metadata.opf'
         self.new_metadata_path = self.get_new_metadata_path()
 
         self.log_info = None
-
-        # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
-        self.split_library = self.get_split_library()
-        if self.split_library:
-            self.calibre_library = self.split_library["split_path"]
-            my_env = os.environ.copy()
-            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
-            self.calibre_env = my_env
-        else:
-            self.calibre_env = os.environ.copy()
 
     
     def get_split_library(self) -> dict[str, str] | None:
@@ -107,7 +106,7 @@ class Book:
 
     def get_new_metadata_path(self) -> str:
         """Uses the export function of the calibredb utility to export any new metadata for the given book to metadata_temp, and returns the path to the new metadata.opf"""
-        subprocess.run(["calibredb", "export", "--with-library", f"'{self.calibre_library}'", "--to-dir", f"'{metadata_temp_dir}'", {self.book_id}], env=self.calibre_env, check=True)
+        subprocess.run(["calibredb", "export", "--with-library", self.calibre_library, "--to-dir", metadata_temp_dir, self.book_id], env=self.calibre_env, check=True)
         temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
         return [f for f in temp_files if f.endswith('.opf')][0]
 
@@ -140,16 +139,15 @@ class Enforcer:
 
         self.illegal_characters = ["<", ">", ":", '"', "/", "\\", "|", "?", "*"]
 
+        self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
             self.calibre_library = self.split_library["split_path"]
-            my_env = os.environ.copy()
-            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
-            self.calibre_env = my_env
-        else:
-            self.calibre_env = os.environ.copy()
-
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
+            
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
@@ -296,7 +294,7 @@ class Enforcer:
 
     def print_library_list(self) -> None:
         """Uses the calibredb command line utility to list the books in the library"""
-        subprocess.run(["calibredb", "list", "--with-library", f"'{self.calibre_library}'"], env=self.calibre_env, check=True)
+        subprocess.run(["calibredb", "list", "--with-library", self.calibre_library], env=self.calibre_env, check=True)
 
 
     def delete_log(self, auto=True, log_path="None"):

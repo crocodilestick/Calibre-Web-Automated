@@ -7,7 +7,7 @@ WATCH_FOLDER="/app/calibre-web-automated/metadata_change_logs"
 echo "[metadata-change-detector] Watching folder: $WATCH_FOLDER"
 
 # Create the folder if it doesn't exist
-mkdir -p "$WATCH_FOLDER"
+install -d -o abc -g abc "$WATCH_FOLDER"
 
 # Monitor the folder for new files
 s6-setuidgid abc inotifywait -m -e close_write -e moved_to --exclude '^.*\.(swp)$' "$WATCH_FOLDER" |

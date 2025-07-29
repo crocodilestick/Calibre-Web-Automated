@@ -72,14 +72,14 @@ class NewBookProcessor:
         self.can_convert, self.input_format = self.can_convert_check()
 
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
+        self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
+
         self.split_library = self.get_split_library()
         if self.split_library:
             self.library_dir = self.split_library["split_path"]
-            my_env = os.environ.copy()
-            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
-            self.calibre_env = my_env
-        else:
-            self.calibre_env = os.environ.copy()
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")          
 
     
     def get_split_library(self) -> dict[str, str] | None:
@@ -153,7 +153,7 @@ class NewBookProcessor:
         target_filepath = f"{self.tmp_conversion_dir}{original_filepath.stem}.{end_format}"
         try:
             t_convert_book_start = time.time()
-            subprocess.run(['ebook-convert', self.filepath, target_filepath], check=True)
+            subprocess.run(['ebook-convert', self.filepath, target_filepath], env=self.calibre_env, check=True)
             t_convert_book_end = time.time()
             time_book_conversion = t_convert_book_end - t_convert_book_start
             print(f"\n[ingest-processor]: END_CON: Conversion of {self.filename} complete in {time_book_conversion:.2f} seconds.\n", flush=True)
@@ -217,7 +217,7 @@ class NewBookProcessor:
         """Deletes file just processed from ingest folder"""
         os.remove(self.filepath) # Removes processed file
         if not os.path.samefile(os.path.dirname(self.filepath),self.ingest_folder): # File not in ingest_folder, subdirectories to delete
-            subprocess.run(["find", f"{os.path.dirname(self.filepath)}", "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
+            subprocess.run(["find", os.path.dirname(self.filepath), "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
 
 
     def add_book_to_library(self, book_path:str, text: bool=True, format: str="text" ) -> None:
@@ -231,9 +231,8 @@ class NewBookProcessor:
         import_path = Path(book_path)
         import_filename = os.path.basename(book_path)
         try:
-
             if text:
-                subprocess.run(["calibredb", "add", book_path, "--automerge", "new_record", f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
+                subprocess.run(["calibredb", "add", book_path, "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
             else: #if audiobook
                 meta = audiobook.get_audio_file_info(book_path, format, os.path.basename(book_path), False)
                 identifiers = ""
@@ -243,7 +242,7 @@ class NewBookProcessor:
 
                 subprocess.run(
                     [
-                        "calibredb", "add", book_path, "--automerge", "new_record",
+                        "calibredb", "add", book_path, "--automerge", self.cwa_settings['auto_ingest_automerge'],
                         "--title", meta[2],
                         "--authors", meta[3],
                         "--cover", meta[4],
@@ -325,7 +324,8 @@ def main(filepath=sys.argv[1]):
     nbp = NewBookProcessor(filepath)
 
     # Check if the user has chosen to exclude files of this type from the ingest process
-    if Path(nbp.filename).suffix in nbp.ingest_ignored_formats:
+    # Remove . (dot), check is against exclude whitout dot
+    if Path(nbp.filename).suffix.replace('.', '') in nbp.ingest_ignored_formats:
         pass
     else:
         if nbp.is_target_format: # File can just be imported

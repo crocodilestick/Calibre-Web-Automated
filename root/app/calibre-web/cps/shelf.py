@@ -23,7 +23,7 @@
 import sys
 from datetime import datetime, timezone
 
-from flask import Blueprint, flash, redirect, request, url_for, abort
+from flask import Blueprint, flash, redirect, request, url_for, abort, jsonify
 from flask_babel import gettext as _
 from .cw_login import current_user
 from sqlalchemy.exc import InvalidRequestError, OperationalError
@@ -490,3 +490,88 @@ def render_show_shelf(shelf_type, shelf_id, page_no, sort_param):
     else:
         flash(_("Error opening shelf. Shelf does not exist or is not accessible"), category="error")
         return redirect(url_for("web.index"))
+
+
+@shelf.route("/shelf/add_selected_to_shelf", methods=["POST"])
+@user_login_required
+def add_selected_to_shelf():
+    data = request.get_json()
+    shelf_id = data.get("shelf_id")
+    book_ids = data.get("book_ids", [])
+
+    shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.id == shelf_id).first()
+    if shelf is None:
+        log.error(f"Invalid shelf specified: {shelf_id}")
+        return jsonify({'status': 'error', 'message': 'Shelf not found'}), 404
+
+    if not check_shelf_edit_permissions(shelf):
+        log.warning(f"User {current_user.id} not allowed to edit shelf: {shelf.name}")
+        return jsonify({'status': 'error', 'message': 'You are not allowed to add books to this shelf'}), 403
+
+    success_count = 0
+    errors = []
+
+    if not book_ids:
+        return jsonify({'status': 'error', 'message': 'No books selected'}), 400
+
+    for book_id in book_ids:
+        book = calibre_db.session.query(db.Books).filter(db.Books.id == book_id).one_or_none()
+        if not book:
+            errors.append(f"Book with ID {book_id} not found.")
+            log.error(f"Invalid Book Id: {book_id}. Could not be added to shelf {shelf.name}")
+            continue
+
+        book_in_shelf = ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id,
+                                                              ub.BookShelf.book_id == book_id).first()
+        if book_in_shelf:
+            errors.append(f"Book '{book.title}' (ID: {book_id}) is already in shelf '{shelf.name}'.")
+            log.info(f"Book {book_id} is already part of {shelf.name}")
+            continue
+
+        maxOrder = ub.session.query(func.max(ub.BookShelf.order)).filter(ub.BookShelf.shelf == shelf_id).scalar()
+        if maxOrder is None:
+            maxOrder = 0
+        
+        new_entry = ub.BookShelf(shelf=shelf.id, book_id=book_id, order=maxOrder + 1)
+        shelf.books.append(new_entry)
+        success_count += 1
+
+    if success_count > 0:
+        shelf.last_modified = datetime.now(timezone.utc)
+        try:
+            ub.session.merge(shelf)
+            ub.session.commit()
+            log.info(f"Successfully added {success_count} books to shelf: {shelf.name}")
+        except (OperationalError, InvalidRequestError) as e:
+            ub.session.rollback()
+            log.error_or_exception(f"Database error while adding books to shelf {shelf.name}: {e}")
+            # Check if any books were actually added before this error, if so, it's a partial success
+            if success_count > len(errors): # if some books were added before the error
+                 return jsonify({
+                     'status': 'partial_success',
+                     'message': f'Successfully added {success_count - len(errors)} books, but a database error occurred. Please try again.',
+                     'errors': errors,
+                     'added_count': success_count - len(errors) # Adjust count if error happened mid-process
+                 }), 207 # Multi-Status
+            return jsonify({'status': 'error', 'message': f'Database error: {e.orig}'}), 500
+
+    if errors:
+        if success_count > 0:
+            return jsonify({
+                'status': 'partial_success',
+                'message': f'Added {success_count} books, but some errors occurred.',
+                'errors': errors,
+                'added_count': success_count
+            }), 207  # Multi-Status
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Failed to add any books.',
+                'errors': errors
+            }), 400
+    else:
+        return jsonify({
+            'status': 'success',
+            'message': f'Successfully added {success_count} books to shelf {shelf.name}.',
+            'added_count': success_count
+        }), 200

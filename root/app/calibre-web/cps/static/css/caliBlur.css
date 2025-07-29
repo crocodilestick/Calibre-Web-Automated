@@ -1291,8 +1291,12 @@ body > div.container-fluid > div > div.col-sm-10 > div > form > a:hover {
 
 .btn-primary {
     color: #fff;
-    background-color: hsla(0, 0%, 100%, .25);
-    border-color: hsla(0, 0%, 100%, .25)
+    background-color: #161f27b3;
+    border-color: hsla(0, 0%, 100%, .25);
+}
+
+button#btn-book-convert {
+    margin-bottom: 15px;
 }
 
 .btn-primary:hover {
@@ -2298,7 +2302,8 @@ body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
     right: 0;
     bottom: 0;
     margin: 0 auto;
-    padding: 60px
+    padding: 60px;
+    justify-items: anchor-center;
 }
 
 .well > form {
@@ -2583,8 +2588,8 @@ textarea {
 
 #metaModal > .modal-dialog > .modal-content > .modal-header {
     padding: 0;
-    background: #282828;
-    border-radius: 3px 3px 0 0
+    background: #323232;
+    border-radius: 3px 3px 0 0;
 }
 
 #metaModal > .modal-dialog > .modal-content > .modal-header > h4 {
@@ -2632,24 +2637,30 @@ textarea {
 }
 
 #metaModal > .modal-dialog > .modal-content > .modal-header > #meta-search {
-    margin: 25px 0 0
+    /* margin: 25px 0 0 */
 }
 
 #metaModal > .modal-dialog > .modal-content > .modal-header > #meta-search > .input-group > input {
-    width: calc(100% - 51px);
-    border-radius: 0;
+    width: 80%;
+    border-radius: 8px;
     background-color: hsla(0, 0%, 100%, .15)
 }
 
 #metaModal > .modal-dialog > .modal-content > .modal-header > #meta-search > .input-group {
     max-width: 100%;
-    width: 100%
+    width: 100%;
+    background-color: #323232;
+    display: flex !important;
+    justify-content: space-around !important;
+    position: unset !important;
+    border-collapse: unset;
 }
 
 #metaModal > .modal-dialog > .modal-content > .modal-header > #meta-search > .input-group > span > button {
-    height: 40px;
-    width: 50px;
-    padding: 0;
+    height: 36px;
+    /* width: 50px; */
+    padding-left: 10px;
+    padding-right: 10px;
     font-family: "Open Sans Semibold", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px !important;
     -webkit-font-variant-ligatures: normal;
@@ -2660,8 +2671,8 @@ textarea {
     color: #eee;
     vertical-align: middle;
     background-color: hsla(0, 0%, 100%, .15);
-    border-radius: 0;
-    margin: 0 0 0 -1px
+    border-radius: 10%;
+    margin: 0 0 0 -1px;
 }
 
 .dropdown-menu > li > a, .plexBack {
@@ -2672,7 +2683,7 @@ textarea {
 #metaModal > .modal-dialog > .modal-content > .modal-header > #meta-search > .input-group > span {
     float: right;
     text-align: right;
-    width: 50px;
+    width: fit-content;
     margin: 0
 }
 
@@ -2693,7 +2704,7 @@ textarea {
 }
 
 #metaModal > .modal-dialog > .modal-content > .modal-body > .text-center {
-    text-align: left;
+    text-align: center;
     margin-bottom: 0;
     padding-top: 10px
 }
@@ -3183,7 +3194,7 @@ body.book .author {
 }
 
 .more-stuff {
-    margin-top: 0;
+    /* margin-top: 0; */
     padding-top: 0;
     border-top: 0
 }
@@ -3315,12 +3326,12 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
 }
 
 .btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open .dropdown-toggle.btn-primary {
-    background-color: hsla(0, 0%, 100%, .3)
+    background-color: #cc7b19;
 }
 
 .btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .open > .dropdown-toggle.btn-primary.focus, .open > .dropdown-toggle.btn-primary:focus, .open > .dropdown-toggle.btn-primary:hover {
     color: #fff;
-    background-color: hsla(0, 0%, 100%, .3);
+    background-color: hsl(42.26deg 78.17% 44.9%);
     border-color: transparent
 }
 
@@ -5040,7 +5051,8 @@ body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div
 
 .checkbox input[type=checkbox] {
     margin-left: -19px;
-    margin-top: 5px
+    margin-top: 5px;
+    accent-color: #cc7b19;
 }
 
 body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover {
@@ -5052,7 +5064,8 @@ body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover {
 
 body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover > div.bootstrap-table > div.fixed-table-container, body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover > div.bootstrap-table > div.fixed-table-container > div.fixed-table-body > #table {
     border: none;
-    border-radius: 0
+    border-radius: 0;
+    padding: 2rem;
 }
 
 body.tasks > div.container-fluid > div > div.col-sm-10 > div.discover > div.bootstrap-table > div.fixed-table-container > div.fixed-table-body > #table > thead > tr > th {
@@ -5298,7 +5311,8 @@ body.admin > div.container-fluid div.scheduled_tasks_details {
 }
 
 body.admin .btn-default {
-    margin-bottom: 10px
+    margin-bottom: 10px;
+    margin-left: 8px;
 }
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
@@ -5975,10 +5989,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         -o-transition: all 0s
     }
 
-    body.login:not(.read-frame), body:not(.read-frame) {
+    /* body.login:not(.read-frame), body:not(.read-frame) {
         background-color: var(--color-background-mobile) !important;
         background-image: none !important
-    }
+    } */
 
     .navbar-default {
         height: 48px;
@@ -6176,18 +6190,17 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     .navbar-collapse.collapse {
         height: calc(100%) !important;
-        width: 240px;
-        background: #3f4245;
+        width: 255px;
+        background: #ba741ded;
         border: 0;
         -webkit-box-shadow: none;
         box-shadow: none;
-        margin: 0;
-        padding: 0;
+        padding-left: 2rem;
         position: fixed;
         top: 0;
         left: 0;
         overflow-y: auto !important;
-        overflow-x: hidden !important
+        overflow-x: hidden !important;
     }
 
     #form-upload, #main-nav > li:nth-child(1) {
@@ -6203,7 +6216,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     #main-nav > li:nth-child(1) {
         margin-left: 0;
         width: 100%;
-        height: 120px;
+        height: 130px;
         z-index: 99
     }
 
@@ -6213,11 +6226,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a.profileDrop:before {
-        right: auto;
         position: absolute;
-        left: 211px;
-        top: 80px;
-        color: #fff;
+        left: 192px;
+        top: 90px;
+        color: #ff9a64;
         content: '';
         display: inline-block;
         width: 0;
@@ -6225,7 +6237,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         vertical-align: middle;
         border-top: 5px dashed;
         border-right: 4px solid transparent;
-        border-left: 4px solid transparent
+        border-left: 4px solid transparent;
     }
 
     .profileDrop > span {
@@ -6241,7 +6253,9 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         top: 70px;
         left: 15px;
         color: #fff;
-        pointer-events: none
+        pointer-events: none;
+        font-weight: bold;
+        font-size: x-large;
     }
 
     #main-nav > li {
@@ -6265,10 +6279,11 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         content: "Upload Book";
         color: #fff;
         font-size: 13px !important;
-        padding-left: 15px;
+        padding-left: 5rem;
         height: 60px;
         line-height: 60px;
-        position: absolute
+        position: absolute;
+        font-weight: bold;
     }
 
     #form-upload .form-group .btn {
@@ -6291,31 +6306,33 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         border-radius: 50%;
         width: 20px;
         height: 20px;
-        display: inline-block;
+        display: block;
         margin: 0;
         padding: 23px 0 23px 202px;
-        z-index: -9
+        z-index: -9;
+        position: absolute;
+        left: -185px;
     }
 
-    #form-upload .form-group .btn:after {
-        content: "\EA13";
-        position: absolute;
-        font-family: plex-icons-new, serif;
-        font-size: 8px;
-        background: #3c444a;
-        color: #fff;
-        border-radius: 50%;
-        padding: .25px .25px 0 0;
-        z-index: 9;
-        left: 198px;
-        top: 32px;
-        width: 10px;
-        height: 10px;
-        line-height: 10px;
-        font-weight: 400;
-        text-align: center;
-        pointer-events: none
-    }
+#form-upload .form-group .btn:after {
+    content: "\EA13";
+    position: absolute;
+    font-family: plex-icons-new, serif;
+    font-size: 8px;
+    background: #ff9a64 !important;
+    color: #3c444a !important;
+    border-radius: 50%;
+    padding: .25px .25px 0 0;
+    z-index: 9;
+    left: 198px;
+    top: 32px;
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
+    font-weight: 400;
+    text-align: center;
+    pointer-events: none;
+}
 
     #main-nav > li.top_admin, #main-nav > li.top_tasks {
         height: 45px;
@@ -6514,7 +6531,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     .author > .container-fluid > .row-fluid > .col-sm-10 > h2:before, body.admin.config > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type, body.admin.uiconfig > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type, body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row:first-of-type > div.col > h2:before, body.admin > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type:before, body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before, body.mailset > div.container-fluid > div > div.col-sm-10 > div.discover > h1, body.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h1, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h2, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-8 > form > #test:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > div:nth-child(10) > label:before, body > div.container-fluid > div > div.col-sm-10 > div.col-sm-6.col-lg-6.col-xs-6 > h2, body > div.container-fluid > div > div.col-sm-10 > h1, body > div.container-fluid > div > div.col-sm-10 > h3:first-of-type {
         top: 48px;
         left: 0;
-        padding-left: 10px;
+        padding-left: 20px;
         height: 42px;
         width: calc(100%);
         line-height: 42px;
@@ -6690,10 +6707,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .well > h2, body.shelf > div.container-fluid > div > div.col-sm-10 > div.discover > h2, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover:only-of-type > h2 {
-        top: 3.4em !important;
+        top: 3.1em !important;
         left: 0 !important;
         padding-left: 1em !important;
-        height: 3em !important;
+        height: 4em !important;
         width: calc(100%) !important;
         line-height: 42px !important;
         padding-right: 130px !important;
@@ -6701,9 +6718,11 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         -o-text-overflow: ellipsis !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
-        background: rgba(0, 0, 0, .15) !important;
+        background: rgb(39 59 74) !important;
         font-size: 1.2em !important;
-        max-width: 100% !important
+        max-width: 100% !important;
+        padding-top: 1rem;
+        margin-bottom: 1rem;
     }
 
     .author > .container-fluid > .row-fluid > .col-sm-10 > h2:after {
@@ -8046,7 +8065,7 @@ div.comments[data-readmore] {
 
 #form-upload .form-group .btn:after {
     content: "\EA13";
-    position: absolute;
+    position: abdsolute;
     font-family: plex-icons-new, serif;
     font-size: 8px;
     background: #3c444a;
@@ -8061,7 +8080,7 @@ div.comments[data-readmore] {
     line-height: 10px;
     font-weight: 400;
     text-align: center;
-    pointer-events: none
+    pointer-events: none;
 }
 
 #cwa-switch-theme > .glyphicon-tasks::before {
@@ -8475,4 +8494,37 @@ select.cwa-settings-select {
     color: white !important;
     opacity: 1 !important;
     text-shadow: none !important;
+}
+
+a#remote_login {
+    width: -webkit-fill-available;
+    text-align: center;
+    margin-top: 2rem;
+    padding: 6px 30px 5px;
+    border: transparent solid 1px;
+    border-radius: 4px;
+    margin-bottom: 3rem;
+}
+
+.login .well > form {
+    max-width: 480px;
+    margin: auto;
+    height: 47rem;
+}
+
+p.cwa-settings-tooltip {
+    margin: 1px 4px 16px 32px;
+    padding: 5px 10px;
+    line-height: normal;
+    color: #e9e9e9 !important;
+    max-width: 100rem;
+}
+
+code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #f9be03;
+    background-color: #202c35;
+    border-radius: 4px;
+    font-weight: bold;
 }

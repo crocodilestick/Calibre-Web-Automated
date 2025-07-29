@@ -30,7 +30,7 @@ def request_username():
 def main():
     app = create_app()
 
-    from .cwa_functions import switch_theme, library_refresh, convert_library, epub_fixer, cwa_stats, cwa_check_status, cwa_settings, cwa_logs
+    from .cwa_functions import switch_theme, library_refresh, convert_library, epub_fixer, cwa_stats, cwa_check_status, cwa_settings, cwa_logs, profile_pictures
     from .web import web
     from .opds import opds
     from .admin import admi
@@ -43,6 +43,7 @@ def main():
     from .tasks_status import tasks
     from .error_handler import init_errorhandler
     from .remotelogin import remotelogin
+    from .kosync import kosync
     try:
         from .kobo import kobo, get_kobo_activated
         from .kobo_auth import kobo_auth
@@ -71,6 +72,7 @@ def main():
     app.register_blueprint(cwa_check_status)
     app.register_blueprint(cwa_settings)
     app.register_blueprint(cwa_logs)
+    app.register_blueprint(profile_pictures)
 
     # Stock CW
     app.register_blueprint(search)
@@ -86,6 +88,7 @@ def main():
     app.register_blueprint(meta)
     app.register_blueprint(gdrive)
     app.register_blueprint(editbook)
+    app.register_blueprint(kosync)
     if kobo_available:
         app.register_blueprint(kobo)
         app.register_blueprint(kobo_auth)

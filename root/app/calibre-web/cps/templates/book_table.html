@@ -64,6 +64,9 @@
       <div class="btn btn-default disabled" id="delete_selected_books" aria-disabled="true">
         {{_('Delete selected books')}}
       </div>
+      <div class="btn btn-default disabled" id="add_to_shelf_btn" aria-disabled="true">
+        {{_('Add to Shelf')}}
+      </div>
         <div class="btn btn-default disabled" id="table_xchange" ><span class="glyphicon glyphicon-arrow-up"></span><span class="glyphicon glyphicon-arrow-down"></span>{{_(' Exchange author & title')}}
       </div>
     </div>
@@ -321,6 +324,41 @@
   </div>
 </div>
 {% endif %}
+
+<!-- Add to Shelf Modal -->
+<div class="modal fade" id="addToShelfModal" role="dialog" aria-labelledby="addToShelfModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="{{_('Close')}}"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addToShelfModalLabel">{{_('Select a Shelf')}}</h4>
+      </div>
+      <div class="modal-body">
+        <p>{{_('Please select a shelf to add the selected books to:')}}</p>
+        <select class="form-control" id="shelf_selection_dropdown">
+            <option value="">{{_('-- Select a Shelf --')}}</option>
+            {% if g.shelves_access %}
+                {% for shelf in g.shelves_access %}
+                    {% if current_user.is_anonymous == False %}
+                        {% if shelf.user_id == current_user.id or (shelf.is_public and current_user.role_edit_shelfs()) %}
+                            <option value="{{ shelf.id }}">{{ shelf.name }}</option>
+                        {% endif %}
+                    {% elif shelf.is_public and config.config_anon_browse %}
+                        {# Anonymous users can only see public shelves if anon browse is enabled #}
+                        {# Permissions to edit public shelves for anonymous would be odd, so we assume they can't add to public shelves #}
+                        {# This part might need adjustment based on how `check_shelf_edit_permissions` handles anonymous users for public shelves #}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel_add_to_shelf_btn" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+        <input id="confirm_add_to_shelf_btn" type="button" class="btn btn-primary" value="{{_('Add')}}">
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block js %}

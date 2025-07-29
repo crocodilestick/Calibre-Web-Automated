@@ -176,7 +176,7 @@ class CWA_DB:
         If the argument 'force' is set to True, the function instead sets all settings to their default values"""
         if force:
             for setting in self.cwa_default_settings:                    
-                if type(self.cwa_default_settings[setting]) == int:
+                if isinstance(self.cwa_default_settings[setting], int):
                     self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
                     self.con.commit()
                 else:
@@ -192,7 +192,7 @@ class CWA_DB:
         except IndexError:
             print("[cwa-db]: No existing CWA settings detected, applying default CWA settings...")
             for setting in self.cwa_default_settings:                    
-                if type(self.cwa_default_settings[setting]) == int:
+                if isinstance(self.cwa_default_settings[setting], int):
                     self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
                 else:
                     self.cur.execute(f'UPDATE cwa_settings SET {setting}="{self.cwa_default_settings[setting]}";')
@@ -229,9 +229,9 @@ class CWA_DB:
         cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
 
         for header in headers:
-            if type(cwa_settings[header]) == int:
+            if isinstance(cwa_settings[header], int):
                 cwa_settings[header] = bool(cwa_settings[header])
-            elif type(cwa_settings[header]) == str and ',' in cwa_settings[header]:
+            elif isinstance(cwa_settings[header], str) and ',' in cwa_settings[header]:
                 cwa_settings[header] = cwa_settings[header].split(',')
 
         return cwa_settings
@@ -243,7 +243,7 @@ class CWA_DB:
             if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats":
                 result[setting] = ','.join(result[setting])
 
-            if type(result[setting]) == int:
+            if isinstance(result[setting], int):
                 self.cur.execute(f"UPDATE cwa_settings SET {setting}={result[setting]};")
             else:
                 self.cur.execute(f'UPDATE cwa_settings SET {setting}="{result[setting]}";')

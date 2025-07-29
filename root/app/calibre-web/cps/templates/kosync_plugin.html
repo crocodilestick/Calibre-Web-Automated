@@ -1,0 +1,258 @@
+{% extends "layout.html" %}
+
+{% block header %}
+<style>
+  .kosync-container {
+      max-width: 100rem;
+      margin-top: 3rem;
+      padding-left: 20px;
+      background: #1f2c3554;
+      padding-right: 10px;
+      padding-bottom: 4rem;
+      margin-bottom: 3rem;
+      align-content: center;
+      justify-self: anchor-center;
+      width: -webkit-fill-available;
+  }
+
+  .kosync-heading {
+      margin-bottom: 3rem;
+      margin-left: -10px;
+      font-weight: bold;
+  }
+
+  .kosync-section {
+      padding-left: 20px;
+      background-color: var(--color-bg-light);
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      padding-right: 20px;
+      padding-top: 2rem;
+  }
+
+  .kosync-download-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: var(--color-secondary);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+    margin-top: 3rem;
+  }
+
+  .kosync-download-btn:hover {
+    background-color: var(--color-secondary-hover);
+    color: white;
+    text-decoration: none;
+  }
+
+  .kosync-step {
+    margin-bottom: 15px;
+    background-color: var(--color-bg);
+    border-left: 4px solid var(--color-secondary);
+    border-radius: 4px;
+  }
+
+  .kosync-step-number {
+      font-weight: bold;
+      color: var(--color-secondary);
+      margin-right: 10px;
+      margin-left: 20px;
+      vertical-align: baseline;
+      padding-left: 16px;
+  }
+
+
+  .kosync-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 2rem;
+      border-radius: 4px;
+      border: 1px solid #ffeaa7;
+      margin-top: 2rem;
+  }
+
+  .kosync-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      padding: 2rem;
+      border-radius: 4px;
+      border: 1px solid #b8daff;
+      margin-top: 3rem;
+  }
+
+  .kosync-table {
+    width: 100%;
+    border-left: 4px solid var(--color-secondary);
+    border-radius: 4px;
+  }
+
+  .kosync-issue {
+      color: var(--color-secondary);
+      margin-right: 10px;
+      margin-left: 20px;
+      vertical-align: baseline;
+      padding-left: 16px;
+  }
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="discover">
+  <h2>{{title}}</h2>
+
+  <div class="kosync-container">
+    <div class="kosync-section">
+      <h3 class="kosync-heading">📱&nbsp;&nbsp;&nbsp;Get the CWA KOReader Sync Plugin</h3>
+      <p>
+        This plugin allows you to synchronize your reading progress across multiple devices using KOReader.
+        Your progress will be automatically saved and synced with this Calibre-Web-Automated server.
+      </p>
+
+      <div class="kosync-info">
+        <strong>Compatible with:</strong> KOReader on Android, iOS, Kindle, Kobo, and other supported devices
+      </div>
+
+      <div class="text-center">
+        <a href="{{ url_for('static', filename='koplugin.zip') }}" class="kosync-download-btn">
+          📥 Download CWA Sync Plugin
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="kosync-container">
+    <div class="kosync-section">
+      <h3 class="kosync-heading">🔧&nbsp;&nbsp;&nbsp;Installation Instructions</h3>
+
+      <table class="kosync-table">
+        <tbody>
+          <tr>
+            <td class="kosync-step-number" style="width: 16%;">Step 1</td>
+            <td>Download the plugin file <code>koplugin.zip</code> using the button above.</td>
+          </tr>
+          <tr>
+              <td class="kosync-step-number">Step 2</td>
+              <td>Extract <code>koplugin.zip</code> to a temporary location. This will create a
+              <code>cwasync.koplugin</code> folder containing all the plugin files.</td>
+          </tr>
+          <tr>
+            <td class="kosync-step-number">Step 3</td>
+            <td>Move the <code>cwasync.koplugin</code> folder into your device's
+            <code>/koreader/plugins/</code> directory.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top: 4rem;" class="kosync-warning">
+        <strong>Important:</strong> Extract the zip file directly to the <code>/koreader/plugins/</code> directory.
+        The extraction will automatically create the <code>cwasync.koplugin</code> folder with the correct structure.
+      </div>
+    </div>
+  </div>
+
+  <div class="kosync-container">
+    <div class="kosync-section">
+      <h3 class="kosync-heading">🔌&nbsp;&nbsp;&nbsp;Enabling the Plugin</h3>
+
+      <div class="kosync-info" style="margin-top: 3rem; margin-bottom: 3rem;">
+        <strong>Good news!</strong> The CWA Sync plugin should automatically enable after installation and restarting KOReader.
+        However, if it doesn't appear or isn't working, follow these steps:
+        <div class="kosync-warning">
+          <strong>Important:</strong> We recommend disabling the stock "Progress sync" plugin to avoid conflicts.
+          Look for it in the plugin management list and disable it.
+        </div>
+      </div>
+
+      <table class="kosync-table">
+        <tbody>
+          <tr>
+            <td class="kosync-step-number" style="width: 16%;">Step 1</td>
+            <td>Open KOReader on your device.</td>
+          </tr>
+          <tr>
+              <td class="kosync-step-number">Step 2</td>
+              <td>Tap the top menu area to bring up the navigation bar.</td>
+          </tr>
+          <tr>
+            <td class="kosync-step-number">Step 3</td>
+            <td>Navigate to: <strong>Settings</strong> → <strong>Tools</strong> → <strong>Plugin management</strong></td>
+          </tr>
+          <tr>
+            <td class="kosync-step-number">Step 4</td>
+            <td>Find "CWA Progress Sync" in the plugin list and enable it if it's not already enabled.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="kosync-container">
+    <div class="kosync-section">
+      <h3 class="kosync-heading">⚙️&nbsp;&nbsp;&nbsp;Plugin Configuration</h3>
+
+      <div class="kosync-step">
+      <ul style="margin-top: 10px;">
+        <li><strong>Server URL:</strong>&nbsp;&nbsp;&nbsp;<code>http://cwa-dev.crocodilestick.com/</code></li>
+        <li><strong>Username:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Your Calibre-Web-Automated username</li>
+        <li><strong>Password:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Your Calibre-Web-Automated password</li>
+      </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="kosync-container">
+    <div class="kosync-section">
+      <h3 class="kosync-heading">🔄&nbsp;&nbsp;&nbsp;Using the Sync Feature</h3>
+
+      <div class="kosync-info">
+        Once configured, the plugin will automatically sync your reading progress in the background.
+        <br><br>
+        <span style="font-weight: bold;">Your progress will be saved when you:</span>
+        <ul style="margin-top: 10px;">
+          <li>Turn pages</li>
+          <li>Close a book</li>
+          <li>Switch between books</li>
+          <li>Exit KOReader</li>
+        </ul>
+        <div class="kosync-warning">
+          <strong>Note:</strong> Make sure you have an internet connection for the sync to work.
+          The plugin will automatically retry failed sync attempts when connectivity is restored.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kosync-container">
+    <div class="kosync-section">
+      <h3 class="kosync-heading">❓&nbsp;&nbsp;&nbsp;Troubleshooting</h3>
+
+      <table class="kosync-table">
+        <tr>
+          <th style="width: 30%; padding-left: 16px;">Issue</th>
+          <th style="color: var(--color-secondary);">Solution</th>
+        </tr>
+        <tr>
+          <td class="kosync-issue">Plugin not appearing in KOReader</td>
+          <td>Ensure the folder structure is correct and restart KOReader completely.</td>
+        </tr>
+        <tr>
+          <td class="kosync-issue">Authentication failed</td>
+          <td>Double-check your username and password. Make sure you're using your correct credentials.</td>
+        </tr>
+        <tr>
+          <td class="kosync-issue">Sync not working</td>
+          <td>Check your internet connection and verify the server URL is correct.</td>
+        </tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

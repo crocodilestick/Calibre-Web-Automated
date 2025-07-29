@@ -21,6 +21,8 @@
   - [Post-Install Tasks](#post-install-tasks) 🏁
     - [Default Login Credentials 🔑](#default-admin-login)
 - [Usage](#usage-) 🔧
+  - [Adding Books to Your Library](#adding-books-to-your-library)
+  - [KOReader Syncing (KOSync)](#koreader-syncing-kosync-) 📖⚡
 - [For Developers](#for-developers---building-custom-docker-image) 🚀
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
@@ -48,8 +50,8 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 | Modern & responsive Bootstrap 3 HTML5 interface | Comprehensive user management with per-user permissions | OPDS feed for ereader apps |
 | eBook metadata editing and deletion support | Metadata download from various sources (extensible via plugins) | eBook download restriction to logged-in users |
 | Public user registration support | Send eBooks to E-Readers with a single click | Sync Kobo devices with your Calibre library |
-| In-browser eBook reading support for multiple formats | Content hiding based on categories and Custom Column content per user | "Magic Link" login for easy access on eReaders | 
-| LDAP, Google/GitHub OAuth, and proxy authentication support | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) | 
+| In-browser eBook reading support for multiple formats | Content hiding based on categories and Custom Column content per user | "Magic Link" login for easy access on eReaders |
+| LDAP, Google/GitHub OAuth, and proxy authentication support | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
 
 ## Plus these _**CWA Specific Features**_ on top:
 
@@ -60,8 +62,9 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 | [Automatic Ingest Service ✨](#automatic-ingest-service-) | [Automatic Conversion Service 🔃](#automatic-conversion-service-) | [Automatic Enforcement of Covers & Metadata 👀📔](#automatic-enforcement-of-changes-made-to-covers--metadata-through-the-calibre-web-ui-) |
 | [Batch Editing & Deletion 🗂️](#batch-editing--deletion-️️) | [Automated Back Up Service 🔒](#automated-back-up-service-) | [Automated Setup Experience for New Users 🦮](#library-auto-detect-️) |
 | [Automatic EPUB Fixer Service 🔨](#automatic-epub-fixer-service-) | [Multi-Format Conversion Service 🌌](#simple-to-use-multi-format-conversion-service-) | [Library Auto-Detect 📚🕵️](#library-auto-detect-️) |
-| [Server Stats Tracking Page 📍](#server-stats-tracking-page-) | [Server Stats Tracking 📊](#server-stats-tracking-page-) | [Easy Dark/ Light Mode Switching ☀️🌙](#easy-dark-light-mode-switching-️) | 
-| [Internal Update Notification System 🛎️](#internal-update-notification-system-️) | [Auto-Compression of Backed Up Files 🤐](#auto-compression-of-backed-up-files-) | [Additional Metadata Providers 🗃️](#additional-metadata-providers-️) | 
+| [Server Stats Tracking Page 📍](#server-stats-tracking-page-) | [Server Stats Tracking 📊](#server-stats-tracking-page-) | [Easy Dark/ Light Mode Switching ☀️🌙](#easy-dark-light-mode-switching-️) |
+| [Internal Update Notification System 🛎️](#internal-update-notification-system-️) | [Auto-Compression of Backed Up Files 🤐](#auto-compression-of-backed-up-files-) | [Additional Metadata Providers 🗃️](#additional-metadata-providers-️) |
+| [KOReader Syncing (KOSync) 📖⚡](#koreader-syncing-kosync-) | | |
 
 #### **Automatic Ingest Service** ✨
 - CWA currently supports automatic ingest of 27 different popular ebook formats
@@ -73,7 +76,7 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 #### **Automatic Conversion Service** 🔃
 - On by default though can be toggled of in the CWA Settings page, with EPUB as the default target format
   - _Available target formats include:_ **EPUB**, **MOBI**, **AZW3**, **KEPUB** & **PDF**
-- Upon detecting new files in the Ingest Directory, if any of the files are in formats the user has configured CWA to auto-convert to the current target format, 
+- Upon detecting new files in the Ingest Directory, if any of the files are in formats the user has configured CWA to auto-convert to the current target format,
 - The following **28 file types are currently supported:**
   - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txtz_
 
@@ -103,11 +106,11 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
   - Fixes hyperlink problem (result in Amazon rejecting the EPUB) when NCX table of content link to `<body>` with ID hash.
   - Detect invalid and/or missing language tag in metadata, and prompt user to select new language.
   - Remove stray `<img>` tags with no source field.
-  - Resolves several EPUB compatibility issues, such as UTF-8 encoding, hyperlink problems, invalid/missing language tags, and stray image tags. 
+  - Resolves several EPUB compatibility issues, such as UTF-8 encoding, hyperlink problems, invalid/missing language tags, and stray image tags.
 - This **ensures maximum comparability** for each EPUB file with the Amazon **Send-to-Kindle** service and for those who don't use Amazon devices, has the side benefit of cleaning up your lower quality files!
 - Enabled by default but can be toggled in settings.
 - Files processed by the EPUB-Fixer service are by default automatically backed up to `/config/processed_books` however this can also be toggled in the settings.
-- Bulk processing of whole library with progress tracking available in the Admin Panel 
+- Bulk processing of whole library with progress tracking available in the Admin Panel
 - Available via both the Web UI and CLI
 
 #### **Simple to use Multi-Format Conversion Service** 🌌
@@ -121,10 +124,17 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 - Access is being provided via [ibdb.dev](https://ibdb.dev/) thanks to a generous donation to the community by [@chad3814](https://www.github.com/chad3814)
 - [Hardcover](https://hardcover.app/) is also currently in the process of being added to CWA as a Metadata Provider
 
+#### **KOReader Syncing (KOSync)** 📖⚡
+- CWA now includes built-in KOReader syncing functionality, providing a modern alternative to traditional KOReader sync servers
+- **Universal KOReader Syncer:** Works across all KOReader-compatible devices, storing sync data in a readable format for future CWA features
+- **Modern Authentication:** Uses RFC 7617 compliant header-based authentication instead of legacy MD5 hashing for enhanced security
+- **CWA Integration:** Leverages your existing CWA user accounts and permissions - no additional server setup required
+- **Easy Installation:** Plugin and setup instructions are available directly from your CWA instance at `/kosync`
+
 #### **Server Stats Tracking Page** 📍📊
   - Ever wondered how many times CWA has been there for you in the background? Check out the CWA Stats page to see a fun list of statistics showing how many times CWA has been there to make your life just that little bit easier
 - A database also exists to keep track of any and all enforcements, imports, conversions & fixes both for peace of mind and to make the checking of any bugs or weird behaviour easier
-  - Full documentation can be found below [here](#checking-the-cover-enforcement-logs)
+  <!-- - Full documentation can be found below [here](#checking-the-cover-enforcement-logs) -->
 
 ![CWA Server Stats Page](/README_images/cwa-server-stats-page.png)
 
@@ -235,17 +245,17 @@ And that's you off to the races! 🥳 HOWEVER to avoid potential problems and en
         - PUID=1000
         - PGID=1000
         # Edit to match your current timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-        - TZ=UTC 
+        - TZ=UTC
       volumes:
         # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
-        - /path/to/config/folder:/config 
+        - /path/to/config/folder:/config
         # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
         - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
         # If you don't have an existing library, CWA will automatically create one at the bind provided here
-        - /path/to/your/calibre/library:/calibre-library 
+        - /path/to/your/calibre/library:/calibre-library
       ports:
         # Change the first number to change the port you want to access the Web UI, not the second
-        - 8083:8083 
+        - 8083:8083
       restart: unless-stopped
   ~~~
 
@@ -302,6 +312,10 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
     - Be sure that the books you are transferring to `/cwa-book-ingest` are owned by your user rather than root. Otherwise, permission errors may occur and may result in incomplete importing.
     - In the event you're expecting a book to be ingested and it hasn't been, use the "Library Refresh" button on the Upper Navbar to manually trigger the ingest process
 
+## KOReader Syncing (KOSync) 📖⚡
+
+CWA now includes built-in KOReader syncing functionality, allowing you to sync your reading progress across devices using KOReader. This feature provides a modern, secure alternative to traditional KOReader sync servers. Navigate to `http://your-cwa-instance:8083/kosync` in your browser where you'll find download links and installation instructions for the CWA KOReader plugin.
+
 <!-- # CWA CLI Tools 🧑‍💻
 
 ## The Cover-Enforcer CLI Tool
@@ -348,7 +362,7 @@ options:
 ## For Developers - Building Custom Docker Image
 If you want to contribute to this project, you can build a local version with your changes by running `build.sh` in the repository.
 
-The resultant image will then be automatically deployed using the `docker-compose.yml.dev` (make changes as necessary beforehand) in the directory and the `build/` folder will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary. 
+The resultant image will then be automatically deployed using the `docker-compose.yml.dev` (make changes as necessary beforehand) in the directory and the `build/` folder will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary.
 
 ```bash
 $ chmod +x build.sh

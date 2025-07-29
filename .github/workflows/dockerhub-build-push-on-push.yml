@@ -10,6 +10,7 @@ on:
       - 'root/**'
       - 'scripts/**'
       - '**/Dockerfile'
+      - '**/requirements.txt'
   create:
     branches:
       - '**'  # Runs when a new branch is created

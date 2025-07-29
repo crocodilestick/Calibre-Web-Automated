@@ -20,6 +20,13 @@ services:
       - /path/to/your/calibre/library:/calibre-library
       # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to it's workflow (WIP)
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
+
+      # DEV SPECIFIC BINDS
+      ### The current easiest way to develop CWA is to live edit a running instance.
+      ### To do so, use docker binds to bind the files your working on to their counterparts in the running container.
+      ### This will let you see your changes in realtime, test ect. You can use build.sh to prepare images with your changes.
+      # /your/dev/env/file:/location/of/the/file/in/the/container_name
+
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
       - 8083:8083 

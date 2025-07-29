@@ -96,15 +96,14 @@ class LibraryConverter:
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
         self.to_convert = self.get_books_to_convert()
 
+        self.calibre_env = os.environ.copy()
+        # Enables Calibre plugins to be used from /config/plugins
+        self.calibre_env["HOME"] = "/config"
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
             self.library_dir = self.split_library["split_path"]
-            my_env = os.environ.copy()
-            my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
-            self.calibre_env = my_env
-        else:
-            self.calibre_env = os.environ.copy()
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
 
     
     def get_split_library(self) -> dict[str, str] | None:
@@ -205,6 +204,7 @@ class LibraryConverter:
                         ["ebook-convert", file, target_filepath],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
+                        env=self.calibre_env,
                         text=True
                     ) as process:
                         for line in process.stdout: # Read from the combined stdout (which includes stderr)
@@ -289,6 +289,7 @@ class LibraryConverter:
                     ["ebook-convert", filepath, epub_filepath],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
+                    env=self.calibre_env,
                     text=True
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)

@@ -29,7 +29,7 @@
 
 ## _Affiliated Projects_ 👬
 
-### [Calibre-Web Automated Book Downloader](https://github.com/calibrain/calibre-web-automated-book-downloader)
+### Calibre-Web Automated Book Downloader
 
 - An intuitive web interface for searching and requesting book downloads, designed to work seamlessly with Calibre-Web-Automated. This project streamlines the process of downloading books and preparing them for integration into your Calibre library
 
@@ -37,7 +37,7 @@
 
 ___
 
-### [Calibre-Web Companion](https://github.com/doen1el/calibre-web-companion)
+### Calibre-Web Companion
 
 - Built with **Flutter** and using **Material You**, [**Calibre Web Companion**](https://github.com/doen1el/calibre-web-companion) is an **unofficial companion application** for **Calibre Web** & **Calibre Web Automated** that allows you to browse your book collection and download books directly on your device, providing a much **more modern, mobile-friendly UX** than either service can currently provide on its own
 
@@ -45,7 +45,7 @@ ___
 
 [![Calibre Web Companion Preview](README_images/cw-companion-screenshots.png)](https://github.com/doen1el/calibre-web-companion)
 
-[<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" height="53" style="margin-bottom: 1rem; padding-left: 14px; padding-right: 10px">](https://play.google.com/store/apps/details?id=de.doen1el.calibreWebCompanion)
+[<img src="README_images/google-play.png" alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=de.doen1el.calibreWebCompanion)
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/en/packages/de.doen1el.calibreWebCompanion/)
 [<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png" alt="Get it on GitHub" height="80">](https://github.com/doen1el/calibre-web-companion)
 

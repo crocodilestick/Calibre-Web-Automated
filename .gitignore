@@ -26,7 +26,6 @@ cwa.db
 *.epub
 
 # Dev files
-changelogs/
 *.txz
 
 # Distribution / packaging

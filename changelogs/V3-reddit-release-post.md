@@ -1,0 +1,153 @@
+![cwa-banner](https://i.ibb.co/gJBgJG6/CWAutomated.png "Your dream, all-in-one, digital library management solution")
+
+# MAJOR UPDATE! 🚨
+
+**TLDR: CWA no longer requires library files to be in EPUB format, Users can now select from multiple Target Formats for CWA's Automation Functions and can also set CWA to ignore certain formats for certain functions & not others, making CWA infinitely more configurable than previous versions. New EPUB Fixer service, New Web UI for Conversion Tools, New Metadata Provider, Server Stats, DockerMod no Longer Required and more!**
+
+[Link to GitHub Project Page](https://github.com/crocodilestick/Calibre-Web-Automated)
+
+# 🚨 _**NOTE TO NEW USERS / USERS SWITCHING FROM CW / THOSE UPDATING**_ 🚨
+
+- **For those planning to use the same config dir as their existing CW instance**, that is totally supported however CW store's the applications port in it's `app.db`, so **when switching you'll need to initially boot up CWA with the same port as your old CW instance**
+
+- Calibre, Calibre-Web and CWA are all SQLite3 based applications and as a result **don't like being run over network shares (especially NFS)**
+    - SQLite is designed as a lightweight, file-based database system, and it assumes the underlying file system supports certain guarantees about **file locking, atomic writes, and consistency**
+    - **Network file systems (e.g., NFS, SMB/CIFS, etc.) often do not meet these assumptions, which can lead to issues.**
+  - Some users are successful in deploying CWA across NFS shares however doing so **can produce a lot of hard to diagnose issues** that take time away from users with actual issues
+  - **Therefore as of V3.0.0, deployments over NFS shares are "unsupported"**, meaning **you are free to do so**, but **support will not be provided for users facing issues**
+
+- Users migrating from older versions of CWA that encounter errors with their `cwa.db` when updating are recommended to delete their existing `cwa.db` in their config bind.
+  - A new one will be made automatically on startup and this **won't affect the contents of your library or your users**, just your CWA specific settings that you will need to set again if different from the default
+  - The docker-compose template has changed, please edit your existing one accordingly (DockerMod no longer required):
+
+~~~ bash
+  ---
+  services:
+    calibre-web-automated:
+      image: crocodilestick/calibre-web-automated:latest
+      container_name: calibre-web-automated
+      environment:
+        # Only change these if you know what you're doing
+        - PUID=1000
+        - PGID=1000
+        # Edit to match your current timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        - TZ=UTC 
+      volumes:
+        # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
+        - /path/to/config/folder:/config 
+        # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
+        - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
+        # If you don't have an existing library, CWA will automatically create one at the bind provided here
+        - /path/to/your/calibre/library:/calibre-library 
+      ports:
+        # Change the first number to change the port you want to access the Web UI, not the second
+        - 8083:8083 
+      restart: unless-stopped
+~~~
+
+# New Features 🔥
+
+# Complete App-Wide Multi-Format Support, No Longer Just EPUB! 🌍
+
+- **CWA is no longer EPUB only!**
+- As of **V3.0.0**, CWA supports library files in the following formats:
+  - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txtz_
+- **And now allows all books to exist in multiple formats!**
+  - For example, you have **Kobo and Kindle users using the same library**, now each book can exist both as an EPUB for Send-to-Kindle **AND** a KEPUB so Kobo users can sync their read progress ect.!
+  - As of this version, the default behavior of both the Ingest & Library Conversion services is now **ADDITIVE** (for more details, see below)
+- **Users can now choose a Target Format** for the **Ingest & Conversion Services** from the following 5 formats:
+  - **EPUB** *(default)*, **KEPUB**, **MOBI**, **PDF**, **AZW3**
+  - This means that in combination with the new settings detailed below, user's can now choose which format they want the auto-conversion feature to use on ingest, as well as which filetypes to ignore ect.
+
+# Power to the People ✊ More User Configurable than ever before!
+
+- A plethora of new settings have been added to CWA, all giving users the ability to now personally change & configure CWA's services behaviors to their liking!
+- Users now have the **ability to toggle all of CWA features on & off!** including:
+  - *CWA Auto-Converter*
+  - *CWA Metadata Enforcer*
+  - *CWA EPUB Fixer Service*
+  - *CWA Auto Backup Service*
+  - *CWA Auto Zipper Service*
+  - *CWA Update Notification Service*
+- Users can now **set certain formats to be ignored** by the **Auto-Convert** and **Auto-Ingest** services, separately!
+- By combining these settings, **users now have much more granular control over the behavior of CWA's functions** and can really tailor them to serve their specific use cases!
+
+![CWA V3 Settings Infographic](https://i.ibb.co/gMrv1Vp6/V3-settings-infographic.png)
+
+# NEW SERVICE - EPUB Fixer Service - Say Goodbye to failed Send-to-Kindle runs! 👋✈️
+
+- Ever had it where you're super excited to start reading your next book but for some reason, Amazon's Send-to-Kindle service just keeps rejecting it? Well no more!
+
+- Originally developed by [innocenat](https://github.com/innocenat/kindle-epub-fix), this tool corrects the following potential issues for every EPUB processed by CWA:
+    - Fixes UTF-8 encoding problem by adding UTF-8 declaration if no encoding is specified
+    - Fixes hyperlink problem (result in Amazon rejecting the EPUB) when NCX table of content link to `<body>` with ID hash.
+    - Detect invalid and/or missing language tag in metadata, and prompt user to select new language.
+    - Remove stray `<img>` tags with no source field.
+    - Resolves several EPUB compatibility issues, such as UTF-8 encoding, hyperlink problems, invalid/missing language tags, and stray image tags. 
+- This **ensures maximum comparability** for each EPUB file with the Amazon **Send-to-Kindle** service and for those who don't use Amazon devices, has the side benefit of cleaning up your lower quality files!
+- Enabled by default but can be toggled in settings.
+- Files processed by the EPUB-Fixer service are by default automatically backed up to `/config/processed_books` however this can also be toggled in the settings.
+- Bulk processing of whole library with progress tracking available in the Admin Panel 
+- Available via both the Web UI and CLI
+
+# Major Improvements to the CWA Convert Library Service 🔃✨
+
+- The CWA Library Conversion service (as well as the EPUB Fixer) is now asynchronous with the rest of the application meaning you and your users can do whatever you want while it's running and come back whenever you want to check it's progress!
+- The processes are now also able to be cancelled mid-run quickly and easily from the Web UI
+- The logs for each run are stored in `/config/log_archive` and can be accessed, read and downloaded all through the Web UI using the "RUN ARCHIVE" button in the Web UI
+- **New User Friendly UI** for both the Convert Library & EPUB Fixer Services! 🦋
+
+![CWA New Process UI](https://i.ibb.co/0pmfrmnG/cwa-new-process-ui.gif)
+
+# New Metadata Provider! - [ibdb.dev](http://ibdb.dev) / [ISBNDb](https://isbndb.com/) - Thanks to [u/chad3814](https://www.github.com/chad3814)!
+
+- Users can now make use of [isbndb.com](https://isbndb.com/)'s huge database when fetching metadata for the books in their library!
+- Access is being provided via [ibdb.dev](https://ibdb.dev/) thanks to a generous donation to the community by [@chad3814](https://www.github.com/chad3814)
+
+# New Sever Stats Page 📊
+
+- The CWA History page has now been renamed to CWA Stats
+- Not only has the page been reorganized to prioritize CWA's most commonly used functions but a section displaying fun stats about your particular instance of CWA has been added to the top of the page (more stats being added soon)
+
+![CWA Server Stats Page](https://i.ibb.co/j9Dv5Qvg/cwa-server-stats-page.png)
+
+# Major Changes 🍂
+
+**Updated to Latest CW Base Version 🆙**
+
+- Updated from Stock CW Version 0.6.23 ➡️ 0.6.24 Nicolette bringing [these changes](https://github.com/janeczku/calibre-web/releases/tag/0.6.24)
+
+**DockerMod No Longer Required! ⛓️‍💥**
+
+- Calibre is now bundled in the CWA Image itself, meaning the **DOCKER_MOD environment tag is no longer required** and provides the following benefits:
+  - **Container start up is much quicker** (though the images are now a little bigger & that is something being actively looked into)
+  - This change also **makes CWA much more widely-compatible** with a wider number of possible configurations
+
+**CWA Ingest & Auto-Convert are now ADDITIVE by default,  rather than replacing existing entries / files 🤝**
+
+- Formerly if a book being ingested already existed in the library, the ingested file would replace the existing file
+  - Now, the new files will be **MERGED** with the existing entry, making the process not only less destructive but also allows for **each book to have multiple formats**
+- In this same vein, the Convert-Library service would previously convert all non-EPUB files to EPUB format
+  - Now, the service will **CREATE** a new version of a book in the user's selected target format (EPUB by default) and **leave the original file in the original format in the library**
+
+# Coming Soon 🌄:
+
+- Integration of CWA with [Hardcover](https://hardcover.app/) 📚
+  - Ability to use Hardcover as a Metadata Provider
+  - Ability to sync read progress with your Hardcover account! (Kobo users only)
+- A companion project to integrate CWA with the Friendliest & Warmest Place on the Internet 🐭🧀
+- Support for Calibre Plugins e.g. deDRM 🔌
+- Notification system integrations e.g. Telegram, Gotify, ntfy ect. 📧
+- Possible Prowlarr Integration 🐯
+
+# Message to the community 🤗
+
+I just want to say a huge thanks to the very active and passionate community that has built up around CWA since it's release just a few months ago and a special thanks to all of those who contributed to this update those still being prepared for release ❤️
+
+If you have any ideas that you would like to see implemented CWA, get involved and reach out on the [Discord](https://discord.gg/EjgSeek94R)!
+
+___
+
+**TLDR: CWA no longer requires library files to be in EPUB format, Users can now select from multiple Target Formats for CWA's Automation Functions and can also set CWA to ignore certain formats for certain functions & not others, making CWA infinitely more configurable than previous versions. New EPUB Fixer service, New Web UI for Conversion Tools, New Metadata Provider, Server Stats, DockerMod no Longer Required and more!**
+
+[Link to GitHub Project Page](https://github.com/crocodilestick/Calibre-Web-Automated)

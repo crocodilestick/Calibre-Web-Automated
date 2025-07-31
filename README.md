@@ -64,6 +64,15 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 ![Calibre-Web Automated Example Homepage](README_images/CWA-Homepage.png)
 <p style="text-align:center;"><i>CWA allows you to keep your ebook library accessible & organised and looks good while doing it</i> 😎🦚</p>
 
+## Join our Community! ❤️
+
+- I want to say a **big thanks** 🙏 to all the members of this community that have taken the time to participate in the testing and development of this project and we encourage anyone who would like to to contribute in some way. Anyone of any level is welcome and every little helps!
+- **For anyone that wish to contribute to this project in some way**, please reach out on our Discord Server and see how you can best get involved:\
+    \
+    [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
+
+- Or alternativly make your own companion project, come hang out and or come get help if you're facing issues :)
+
 ## **_Features:_**
 
 ### CWA supports all Stock CW Features:
@@ -191,26 +200,6 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 
 ![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
 
-<!-- - **Simple CLI Tools** for manual fixes, conversions, enforcements, history viewing ect. 👨‍💻
-
-  - Built-in command-line tools now also exist for:
-    - Viewing the Edit History of your Library files _(detailed above)_
-    - Listing all of the books currently in your Library with their current Book IDs
-    - **Manually enforcing the covers & metadata for ALL BOOKS** in your library using the `cover-enforcer -all` command from within the container **(RECOMMENDED WITH FIRST TIME USE)**
-    - Manually Enforcing the Covers & Metadata for any individual books by using the following command
-    - `cover-enforcer --dir <path-to-folder-containing-the-books-epub-here>`
-  - Full usage and documentation for all new CLI Commands can be found [here](#the-cover-enforcer-cli-tool)
-    ![CWA Database](README_images/cwa-db-diagram.png "CWA 1.2.0 Cover Database Diagram") -->
-
-
-## UNDER ACTIVE DEVELOPMENT ⚠️
-
-- Please be aware that while CWA currently works for most people, it is still under active development and that bugs and unexpected behaviours can occur while we work and the code base matures
-- I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project and we encourage anyone who would like to to contribute in some way. Anyone of any level is welcome and every little helps!
-  - For any others that wish to contribute to this project in some way, please reach out on our Discord Server and see how you can best get involved:\
-    \
-    [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
-
 # Features Currently Under Active Development and on our Roadmap 🏗️🛣️
 
 #### High Priority 🚨
@@ -337,48 +326,6 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
 ## KOReader Syncing (KOSync) 📖⚡
 
 CWA now includes built-in KOReader syncing functionality, allowing you to sync your reading progress across devices using KOReader. This feature provides a modern, secure alternative to traditional KOReader sync servers. Navigate to `http://your-cwa-instance:8083/kosync` in your browser where you'll find download links and installation instructions for the CWA KOReader plugin.
-
-<!-- # CWA CLI Tools 🧑‍💻
-
-## The Cover-Enforcer CLI Tool
-
-```
-usage: cover-enforcer [-h] [--log LOG] [--dir DIR] [-all] [-list] [-history] [-paths] [-v]
-
-Upon receiving a log, valid directory or an "-all" flag, this script will enforce the covers and metadata of the corresponding books, making sure that each are correctly stored in
-both the epubs themselves and the user's Calibre Library. Additionally, if an epub happens to be in EPUB 2 format, it will also be automatically upgraded to EPUB 3.
-
-options:
-  -h, --help     show this help message and exit
-  --log LOG      Will enforce the covers and metadata of the books in the given log file.
-  --dir DIR      Will enforce the covers and metadata of the books in the given directory.
-  -all           Will enforce covers & metadata for ALL books currently in your calibre-library-dir
-  -list, -l      List all books in your calibre-library-dir
-  -history       Display a history of all enforcements ever carried out on your machine (not yet implemented)
-  -paths, -p     Use with '-history' flag to display stored paths of all epubs in enforcement database
-  -v, --verbose  Use with history to display entire enforcement history instead of only the most recent 10 entries
-```
-
-![CWA Cover-Enforcer History Usage](README_images/cwa-db-diagram.png)
-
-## The Convert-Library Tool
-
-```
-usage: convert-library [-h] [--replace] [--keep] [-setup]
-
-Made for the purpose of converting ebooks in a calibre library not in epub format, to epub format
-
-options:
-  -h, --help     show this help message and exit
-  --replace, -r  Replaces the old library with the new one
-  --keep, -k     Creates a new epub library with the old one but stores the old files in /config/processed_books
-  -setup         Indicates to the function whether or not it's being ran from the setup script or manually (DO NOT USE MANUALLY)
-```
-
-## Checking the Monitoring Services are working correctly
-
-- Simply run the following command from within the container: `cwa-check`
-- If all 3 services come back as green and running they are working properly, otherwise there may be problems with your configuration/install -->
 
 ---
 ## For Developers - Building Custom Docker Image

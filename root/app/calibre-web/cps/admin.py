@@ -1871,7 +1871,7 @@ def _configuration_update_helper():
                                                config.config_use_goodreads)
 
         # Hardcover configuration
-        _config_checkbox(to_save, "config_use_hardcover")
+        _config_checkbox(to_save, "config_hardcover_sync")
         _config_string(to_save, "config_hardcover_token")
             
         _config_int(to_save, "config_updatechannel")

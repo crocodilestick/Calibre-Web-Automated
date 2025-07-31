@@ -208,6 +208,13 @@
             <option value="ignore">ignore</option>
             <option value="overwrite">overwrite</option>
             <option value="new_record" selected="">new_record</option>
+        {% for option in autoingest_options -%}
+          {% if cwa_settings['auto_ingest_automerge'] == option %}
+            <option value="{{ format }}" selected>{{ format }}</option>
+          {% else %}
+            <option value="{{ format }}">{{ format }}</option>
+          {% endif %}
+        {% endfor %}
       </select>
 
       <h4>Possible Values:</h4>

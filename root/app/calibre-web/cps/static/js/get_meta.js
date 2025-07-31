@@ -62,7 +62,8 @@ $(function () {
       $("#title").val(book.title);
     }
     $("#languages").val(uniqueLanguages.join(", "));
-    $("#rating").data("rating").setValue(Math.round(book.rating));
+    // Removed as users can't fetch ratings from metadata providers
+    // $("#rating").data("rating").setValue(Math.round(book.rating)); 
 
     if (updateItems.cover && book.cover && $("#cover_url").length) {
       $(".cover img").attr("src", book.cover);

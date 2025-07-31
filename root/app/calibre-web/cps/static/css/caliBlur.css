@@ -8297,11 +8297,12 @@ body h2 {
   --color-secondary-hover: #839ffc
 }
 
-.pagination > li > a
-{
+.pagination > li > a {
     background-color: #202c35;
     color: white;
     border: 1px solid #202c35;
+    border-radius: 4px;
+    margin-left: 5px;
 }
 
 .pagination > li > a:focus,

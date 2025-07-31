@@ -60,8 +60,16 @@ input.datepicker:focus + input {color: #555}
   margin-bottom: 20px;
 }
 
+/* Fallback for browsers without :has() support: use JS to add .filterheader-fixed */
+.filterheader-fixed {
+  position: fixed;
+  top: 72px;
+  right: 20px;
+}
+
 @media (min-width: 915px) {
-  .filterheader {
+  /* Only fix .filterheader if there is NOT a .pagination element in the same .row-fluid (for browsers with :has() support) */
+  .row-fluid:not(:has(.pagination)) .filterheader {
     position: fixed;
     top: 72px;
     right: 20px;

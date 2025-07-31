@@ -205,14 +205,11 @@
       </p>
       <label for="auto_ingest_automerge"  class="settings-section-header" style="padding-right: 10px; margin-bottom: 16px !important; padding-bottom: 0px !important;">Choose how to handle duplicates:</label>
       <select style="width: fit-content;" class="cwa-settings-select" name="auto_ingest_automerge" id="auto_ingest_automerge">
-            <option value="ignore">ignore</option>
-            <option value="overwrite">overwrite</option>
-            <option value="new_record" selected="">new_record</option>
         {% for option in autoingest_options -%}
           {% if cwa_settings['auto_ingest_automerge'] == option %}
-            <option value="{{ format }}" selected>{{ format }}</option>
+            <option value="{{ option }}" selected>{{ option }}</option>
           {% else %}
-            <option value="{{ format }}">{{ format }}</option>
+            <option value="{{ option }}">{{ option }}</option>
           {% endif %}
         {% endfor %}
       </select>

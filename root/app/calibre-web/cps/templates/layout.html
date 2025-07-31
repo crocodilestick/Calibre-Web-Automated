@@ -328,5 +328,22 @@
     {% endif %}
     {% block js %}{% endblock %}
     <script src="{{ url_for('static', filename='user-profile-data/CWA-profile-updater.js') }}"></script>
+    <!-- Makes sure filter buttons are only on the title bar of the page when there is no pagination -->
+    <script>
+      function updateFilterHeaderFixed() {
+        document.querySelectorAll('.row-fluid').forEach(function(row) {
+          var filterheader = row.querySelector('.filterheader');
+          if (!filterheader) return;
+          var hasPagination = !!row.querySelector('.pagination');
+          if (window.innerWidth >= 915 && !hasPagination) {
+            filterheader.classList.add('filterheader-fixed');
+          } else {
+            filterheader.classList.remove('filterheader-fixed');
+          }
+        });
+      }
+      window.addEventListener('DOMContentLoaded', updateFilterHeaderFixed);
+      window.addEventListener('resize', updateFilterHeaderFixed);
+      </script>
   </body>
 </html>

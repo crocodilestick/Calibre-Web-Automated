@@ -115,4 +115,4 @@ done
 #  Remove scholar.py to ensure metadata providers list is alphabetized
 #------------------------------------------------------------------------------------------------------------------------
 
-rm -f /app/calibre-web/cps/metadata_provider/scholar.py
+# rm -f /app/calibre-web/cps/metadata_provider/scholar.py

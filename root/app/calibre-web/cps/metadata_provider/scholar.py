@@ -34,7 +34,7 @@ from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
 log = logger.create()
 
 
-class scholar(Metadata):
+class google_scholar(Metadata):
     __name__ = "Google Scholar"
     __id__ = "googlescholar"
     META_URL = "https://scholar.google.com/"

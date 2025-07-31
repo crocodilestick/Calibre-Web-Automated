@@ -1538,11 +1538,10 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form
     top: 0;
     left: 0;
     opacity: 0;
-    background: -webkit-radial-gradient(farthest-corner at 50% 50%, rgba(50, 50, 50, .5) 50%, #323232 100%);
-    background: -o-radial-gradient(farthest-corner at 50% 50%, rgba(50, 50, 50, .5) 50%, #323232 100%);
-    background: radial-gradient(farthest-corner at 50% 50%, rgba(50, 50, 50, .5) 50%, #323232 100%);
-    z-index: -9
+    background: #00000085;
+    z-index: -9;
 }
+
 
 body.me > div.container-fluid > div > div.col-sm-10 > div.discover {
     left: 240px;
@@ -1586,9 +1585,9 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form
 
 #books > .cover > a:hover:after, #books_rand > .cover > a:hover:after, .book.isotope-item > .cover > a:hover:after, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:after {
     opacity: 1;
-    -o-transition: opacity .2s;
-    transition: opacity .2s;
-    -webkit-transition: opacity .2s
+    -o-transition: opacity .1s;
+    transition: opacity .1s;
+    -webkit-transition: opacity .1s;
 }
 
 .container-fluid .book .cover {

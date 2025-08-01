@@ -71,7 +71,7 @@ class google_scholar(Metadata):
             authors=result["bib"].get("author", []),
             url=result.get("pub_url", result.get("eprint_url", "")),
             source=MetaSourceInfo(
-                id=self.__id__, description=self.__name__, link=scholar.META_URL
+                id=self.__id__, description=self.__name__, link=self.META_URL
             ),
         )
 

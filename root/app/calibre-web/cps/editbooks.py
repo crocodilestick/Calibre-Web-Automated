@@ -1255,6 +1255,8 @@ def edit_cc_data_value(book_id, book, c, to_save, cc_db_value, cc_string):
             new_cc = cc_class(value=to_save[cc_string], book=book_id)
             calibre_db.session.add(new_cc)
             changed = True
+        if type(to_save[cc_string]) is datetime:
+            to_save[cc_string] = to_save[cc_string].strftime("%Y-%m-%d")
     return changed, to_save
 
 

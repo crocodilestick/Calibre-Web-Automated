@@ -3383,10 +3383,12 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] .dropd
 .dropdown-menu:not(.datepicker-dropdown):not(.profileDropli) {
     left: auto !important;
 }
+
 #add-to-shelves {
-  min-height: 48px;
-  max-height: calc(100% - 120px);
-  overflow-y: auto;
+    min-height: 48px;
+    overflow-y: auto;
+    max-height: 300px;
+    scrollbar-color: hsla(0, 0%, 100%, .2) #000000;
 }
 
 .dropdown-menu > li > a {

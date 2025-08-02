@@ -27,7 +27,7 @@ import importlib
 
 # CWA Imports
 import sqlite3
-import json
+import time
 
 from flask import Blueprint, jsonify
 from flask import request, redirect, send_from_directory, make_response, flash, abort, url_for, Response
@@ -94,6 +94,7 @@ except ImportError:
 sql_version = importlib.metadata.version("sqlalchemy")
 sqlalchemy_version2 = ([int(x) for x in sql_version.split('.')] >= [2, 0, 0])
 
+_start_time = time.time()
 
 @app.after_request
 def add_security_headers(resp):
@@ -831,9 +832,28 @@ def render_archived_books(page, sort_param):
     return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
                                  title=name, page=page_name, order=sort_param[1])
 
+# ################################### Health Check ##################################################################
+
+@web.route("/health")
+def health_check():
+    uptime = time.time() - _start_time
+
+    try:
+        db_path = cwa_get_library_location() + "metadata.db"
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        db_up = True
+    except Exception:
+        db_up = False
+
+    return jsonify({
+        "status": "ok" if db_up else "degraded",
+        "uptime": uptime,
+        "version": f"CWA/{constants.VERSION}",
+    }), 200 if db_up else 503
 
 # ################################### View Books list ##################################################################
-
 
 @web.route("/", defaults={'page': 1})
 @web.route('/page/<int:page>')

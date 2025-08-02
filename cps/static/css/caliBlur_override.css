@@ -79,3 +79,14 @@ input.datepicker:focus + input {color: #555}
 ul#scnd-nav {
     margin-bottom: 4rem;
 }
+
+div#Downloads {
+  margin: 0;
+  justify-self: center;
+  margin-top: 5rem !important;
+}
+
+div#Downloads_list {
+    width: 100%;
+    padding-bottom: 3rem;
+}

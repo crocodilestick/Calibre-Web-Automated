@@ -22,16 +22,20 @@
       <button class="update-view btn btn-primary" data-target="series_view" id="grid-button" data-view="grid">{{_('Grid')}}</button>
       {% endif %}
     </div>
-  <div class="container">
-    <div id="list" class="col-xs-12 col-sm-6">
+  <div class="container" id="{{_(title)}}">
+    {% if title == "Downloads" %}
+      <h1 style="padding-top: 1rem; padding-bottom: 2rem;">Users Downloaded Books:</h1>
+    {% endif %}
+    <div id="{{_(title)}}_list" class="col-xs-12 col-sm-6">
     {% for entry in entries %}
       {% if loop.index0 == (loop.length/2+loop.length%2)|int and loop.length > 20 %}
         </div>
         <div id="second" class="col-xs-12 col-sm-6">
       {% endif %}
-      <div class="row" {% if entry[0].sort %}data-name="{{entry[0].name}}"{% endif %} data-id="{% if entry[0].sort %}{{entry[0].sort}}{% else %}{% if entry[0].format %}{{entry[0].format}}{% else %}{% if entry[0].rating %}{{entry[0].rating}}{% else %}{{entry[0].name}}{% endif %}{% endif %}{% endif %}">
+      <div class="row" id="{{_(title)}}_row" {% if entry[0].sort %}data-name="{{entry[0].name}}"{% endif %} data-id="{% if entry[0].sort %}{{entry[0].sort}}{% else %}{% if entry[0].format %}{{entry[0].format}}{% else %}{% if entry[0].rating %}{{entry[0].rating}}{% else %}{{entry[0].name}}{% endif %}{% endif %}{% endif %}">
         <div class="col-xs-2 col-sm-2 col-md-1" align="left"><span class="badge">{{entry[1]}}</span></div>
-        <div class="col-xs-10 col-sm-10 col-md-11"><a id="list_{{loop.index0}}" href="{% if entry.format %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry.format )}}{% else %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry[0].id )}}{% endif %}">
+        <div class="col-xs-10 col-sm-10 col-md-11">
+          <a style="width: -webkit-fill-available; display: block;" id="list_{{loop.index0}}" href="{% if entry.format %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry.format )}}{% else %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry[0].id )}}{% endif %}">
           {% if entry.name %}
           <div class="rating">
           {% for number in range(entry.name|int) %}

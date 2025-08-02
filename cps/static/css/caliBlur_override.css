@@ -90,3 +90,10 @@ div#Downloads_list {
     width: 100%;
     padding-bottom: 3rem;
 }
+
+/* Prevents the character button group from showing on smaller screens */
+@media (max-width: 1605px) {
+    .btn-group.character.hidden-sm {
+        display: none;
+    }
+}

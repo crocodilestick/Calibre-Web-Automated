@@ -101,7 +101,7 @@ echo "[cwa-init] Recursively setting ownership of everything in$dirs to abc:abc.
 
 for d in "${requiredDirs[@]}"
 do
-    chown -R abc:abc $d
+    lsiown -R abc:abc $d
     if [[ $? == 0 ]]
     then
         echo "[cwa-init] Successfully set permissions for '$d'!"

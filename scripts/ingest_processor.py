@@ -259,7 +259,7 @@ class NewBookProcessor:
 
     def set_library_permissions(self):
         try:
-            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+            subprocess.run(["lsiown", "-R", "abc:abc", self.library_dir], check=True)
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}", flush=True)
 

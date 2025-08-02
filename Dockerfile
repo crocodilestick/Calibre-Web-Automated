@@ -74,7 +74,7 @@ RUN \
     # This provides the install maximum compatibility with multiple different architectures including: x86_64, armv71 and aarch64
     # You can read more about python wheels here: https://realpython.com/python-wheels/
   pip install -U --no-cache-dir --find-links https://wheel-index.linuxserver.io/ubuntu/ -r \
-    requirements.txt -r && \
+    requirements.txt -r optional-requirements.txt && \
 # STEP 2 - Move contents of /app/calibre-web-automated/root to / and delete the /app/calibre-web-automated/root directory
   cp -R /app/calibre-web-automated/root/* / && \
   rm -R /app/calibre-web-automated/root/ && \
@@ -102,7 +102,7 @@ RUN \
   # STEP 4.1 - Move koplugin.zip to static directory
   if [ -f "/app/calibre-web-automated/koreader/plugins/koplugin.zip" ]; then \
     mkdir -p /app/calibre-web-automated/cps/static && \
-    cp /app/calibre-web-automated/koreader/plugins/koplugin.zip /app/calibre-web/cps/static/ && \
+    cp /app/calibre-web-automated/koreader/plugins/koplugin.zip /app/calibre-web-automated/cps/static/ && \
     echo "Moved koplugin.zip to static directory"; \
   else \
     echo "Warning: koplugin.zip not found, skipping move to static directory"; \

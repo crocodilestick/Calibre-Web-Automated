@@ -224,8 +224,16 @@ class NewBookProcessor:
         if self.target_format == "epub" and self.is_kindle_epub_fixer:
             self.run_kindle_epub_fixer(book_path, dest=self.tmp_conversion_dir)
             fixed_epub_path = Path(self.tmp_conversion_dir) / os.path.basename(book_path)
-            if Path(fixed_epub_path).exists():
-                book_path = str(fixed_epub_path)
+            try:
+                if Path(fixed_epub_path).exists():
+                    book_path = str(fixed_epub_path)
+            except OSError as e:
+                if e.errno == 36:
+                    print(f"[ingest-processor] Skipping file due to OS path length error: {book_path}", flush=True)
+                    return
+                else:
+                    print(f"[ingest-processor] An error occurred while trying to run the kindle-epub-fixer on {book_path}:\n{e}", flush=True)
+                    raise
 
         print("[ingest-processor]: Importing new book to CWA...")
         import_path = Path(book_path)

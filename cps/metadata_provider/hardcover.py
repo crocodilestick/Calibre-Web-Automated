@@ -132,7 +132,7 @@ class Hardcover(Metadata):
     def _parse_title_result(
         self, result: Dict, generic_cover: str, locale: str
     ) -> MetaRecord:
-        series = result["document"].get("featured_series",{}).get("series_name", "")
+        series = result["document"].get("featured_series",{}).get("series",{}).get("name", "")
         series_index = result["document"].get("featured_series",{}).get("position", "")
         match = MetaRecord(
             id=result["document"].get("id",""),

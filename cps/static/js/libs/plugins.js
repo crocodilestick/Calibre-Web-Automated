@@ -158,19 +158,41 @@ function(t,e){"use strict";"function"==typeof define&&define.amd?define(["ev-emi
         this.maxY = 0;
         this._getMeasurement('gutter', 'outerWidth');
         this.centerX = [];
+        this.rowWidths = [];
         this.currentRow = 0;
         this.initializing = true;
 
-        console.log(this.isotope);
-
+        var prevRow = 0;
+        var rowItemWidths = [];
         for (var i = 0, len = this.isotope.items.length; i < len; i++) {
             var item = this.isotope.items[i];
+            var beforeX = this.x;
+            var beforeRow = this.currentRow;
             this._getItemLayoutPosition(item);
+            // If we moved to a new row, store the previous row's width
+            if (this.currentRow !== beforeRow) {
+                this.rowWidths.push(beforeX);
+                rowItemWidths = [];
+            }
+            rowItemWidths.push(item.size.outerWidth + this.gutter);
         }
+        // Store last row's width
+        this.rowWidths.push(this.x);
 
-        //alert(this.isotope.filteredItems.length);
-
-        this.centerX[this.currentRow].offset = (this.isotope.size.innerWidth + this.gutter - this.x) / 2;
+        var rowCount = this.rowWidths.length;
+        // Set offset for last row and single-row grids to 0 (left align)
+        for (var r = 0; r < rowCount; r++) {
+            if (rowCount === 1) {
+                // Single row: left align
+                this.centerX[r] = { offset: 0 };
+            } else if (r === rowCount - 1) {
+                // Last row: align with first centered row
+                this.centerX[r] = { offset: this.centerX[0] ? this.centerX[0].offset : 0 };
+            } else {
+                var rowWidth = this.rowWidths[r];
+                this.centerX[r] = { offset: Math.round((this.isotope.size.innerWidth - rowWidth) / 2) };
+            }
+        }
 
         this.initializing = false;
         this.currentRow = 0;
@@ -185,43 +207,33 @@ function(t,e){"use strict";"function"==typeof define&&define.amd?define(["ev-emi
 
     proto._getItemLayoutPosition = function (item) {
         item.getSize();
-        var itemWidth = item.size.outerWidth + this.gutter;
-        // if this element cannot fit in the current row
-        var containerWidth = this.isotope.size.innerWidth + this.gutter;
+        var isLastItem = (this.isotope.items.indexOf(item) === this.isotope.items.length - 1);
+        var itemWidth = item.size.outerWidth + (isLastItem ? 0 : this.gutter); // Only add gutter between items
+        var containerWidth = this.isotope.size.innerWidth;
         if (this.x !== 0 && itemWidth + this.x > containerWidth) {
-
             if (this.initializing)
-                this.centerX[this.currentRow].offset = (containerWidth - this.x) / 2;
+                this.centerX[this.currentRow].offset = Math.round((containerWidth - this.x) / 2); // Round offset
             this.currentRow++;
-
             this.x = 0;
             this.y = this.maxY;
         }
-
         if (this.initializing && this.x == 0) {
             this.centerX.push({ offset: 0 });
-          //  alert("kokot");
         }
-
         var position;
-
         if (typeof this.centerX[this.currentRow] !== 'undefined') {
-             position = {
+            position = {
                 x: this.x + (this.initializing ? 0 : this.centerX[this.currentRow].offset),
                 y: this.y
             };
         } else {
-             position = {
+            position = {
                 x: this.x,
                 y: this.y
             };
         }
-
-       
-
         this.maxY = Math.max(this.maxY, this.y + item.size.outerHeight);
         this.x += itemWidth;
-
         return position;
     };
 

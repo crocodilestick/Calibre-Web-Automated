@@ -396,7 +396,8 @@ $(function() {
         layoutMode : selectedLayoutMode
     });
 
-    if ($(".load-more").length && $(".next").length) {
+    // Only initialize Infinite Scroll if pagination is NOT present
+    if ($(".load-more").length && $(".next").length && $(".pagination").length === 0) {
         var $loadMore = $(".load-more .row").infiniteScroll({
             debug: false,
             // selector for the paged navigation (it will be hidden)
@@ -413,6 +414,11 @@ $(function() {
                   .removeAttr("data-toggle");
             }
             $(".load-more .row").isotope( "appended", $(data), null );
+
+            // Disable infinite scroll if no .next link exists (last page)
+            if (!$(response).find(".next").length) {
+                $loadMore.infiniteScroll('destroy');
+            }
         });
 
         // fix for infinite scroll on CaliBlur Theme (#981)

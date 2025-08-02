@@ -36,9 +36,9 @@ except ImportError as e:
 
 def get_mimetype(ext):
     # overwrite some mimetypes for proper file detection
-    mimes = {".fb2": "text/xml",
-             ".cbz": "application/zip",
-             ".cbr": "application/x-rar"
+    mimes = {".cbz": "application/zip",
+             ".cbr": "application/x-rar",
+             ".cbt": "application/x-tar"
              }
     return mimes.get(ext, mimetypes.types_map[ext])
 

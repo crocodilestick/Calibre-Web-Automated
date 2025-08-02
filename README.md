@@ -73,6 +73,14 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 
 - Or alternativly make your own companion project, come hang out and or come get help if you're facing issues :)
 
+## To users planning to deploy via Network Shares (particularly NFS) 🚨
+
+- Calibre, Calibre-Web and CWA are all SQLite3 based applications and as a result **don't like being run over network shares (especially NFS)**
+    - SQLite is designed as a lightweight, file-based database system, and it assumes the underlying file system supports certain guarantees about **file locking, atomic writes, and consistency**
+    - **Network file systems (e.g., NFS, SMB/CIFS, etc.) often do not meet these assumptions, which can lead to issues.**
+  - Some users are successful in deploying CWA across NFS shares however doing so **can produce a lot of hard to diagnose issues** that take time away from users with actual issues
+  - **Therefore as of V3.0.0, deployments over NFS shares are "unsupported"**, meaning **you are free to do so**, but **support will not be provided for users facing issues**
+
 ## **_Features:_**
 
 ### CWA supports all Stock CW Features:

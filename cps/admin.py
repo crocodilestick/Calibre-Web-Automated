@@ -219,13 +219,7 @@ def cwa_get_package_versions() -> tuple[str, str, str, str]:
     except Exception:
         calibre_version = "Unknown"
 
-    try:
-        with open("/app/LSCW_RELEASE", "r") as f:
-            lscw_version = f.read()
-    except Exception:
-        lscw_version = "Unknown"
-
-    return cwa_version, kepubify_version, calibre_version, lscw_version
+    return cwa_version, kepubify_version, calibre_version
 
 
 @admi.route("/admin/view")
@@ -233,7 +227,7 @@ def cwa_get_package_versions() -> tuple[str, str, str, str]:
 @admin_required
 def admin():
     version = updater_thread.get_current_version_info()
-    cwa_version, kepubify_version, calibre_version, lscw_version = cwa_get_package_versions()
+    cwa_version, kepubify_version, calibre_version = cwa_get_package_versions()
     if version is False:
         commit = _('Unknown')
     else:
@@ -259,9 +253,8 @@ def admin():
 
     return render_title_template("admin.html", allUser=all_user, config=config, commit=commit,
                                  cwa_version=cwa_version, kepubify_version=kepubify_version,
-                                 calibre_version=calibre_version, lscw_version=lscw_version,
-                                 feature_support=feature_support, schedule_time=schedule_time,
-                                 schedule_duration=schedule_duration,
+                                 calibre_version=calibre_version, feature_support=feature_support,
+                                 schedule_time=schedule_time, schedule_duration=schedule_duration,
                                  title=_("Admin page"), page="admin")
 
 

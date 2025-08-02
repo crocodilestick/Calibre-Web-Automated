@@ -2057,7 +2057,7 @@ body.serieslist > div.container-fluid > div > div.col-sm-10:before {
     font-size: 6vw;
     position: fixed;
     left: 240px;
-    top: 240px;
+    top: 180px;
     width: calc(20% - 55px);
     text-align: center
 }
@@ -2161,7 +2161,7 @@ body.catlist > div.container-fluid > div.row-fluid > div.col-sm-10:before {
     font-size: 6vw;
     position: fixed;
     left: 240px;
-    top: 240px;
+    top: 180px;
     width: calc(20% - 55px);
     text-align: center
 }
@@ -2193,7 +2193,7 @@ body.authorlist > div.container-fluid > div.row-fluid > div.col-sm-10:before {
 
 @media screen and (max-width: 992px) {
   body.authorlist > div.container-fluid > div.row-fluid > div.col-sm-10:before {
-      top: 180px;
+    top: 180px;
   }
 }
 
@@ -2214,7 +2214,7 @@ body.authorlist > div.container-fluid > div > div.col-sm-10 > div.container:befo
 
 body.authorlist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "Authors";
-    top: 115px;
+    top: 60px;
 }
 
 @media screen and (max-width: 992px) {
@@ -2225,7 +2225,7 @@ body.authorlist > div.container-fluid > div > div.col-sm-10 > div.container:befo
 
 body.catlist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "Categories";
-    top: 115px;
+    top: 60px;
 }
 
 @media screen and (max-width: 992px) {
@@ -2236,7 +2236,7 @@ body.catlist > div.container-fluid > div > div.col-sm-10 > div.container:before 
 
 body.serieslist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "Series";
-    top: 115px;
+    top: 60px;
 }
 
 @media screen and (max-width: 992px) {
@@ -2247,7 +2247,7 @@ body.serieslist > div.container-fluid > div > div.col-sm-10 > div.container:befo
 
 body.ratingslist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "File formats";
-    top: 115px;
+    top: 60px;
 }
 
 @media screen and (max-width: 992px) {
@@ -2258,7 +2258,7 @@ body.ratingslist > div.container-fluid > div > div.col-sm-10 > div.container:bef
 
 body.formatslist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "File formats";
-    top: 115px;
+    top: 60px;
 }
 
 @media screen and (max-width: 992px) {
@@ -4896,7 +4896,7 @@ body.advsearch:not(.blur) > div.container-fluid > div.row-fluid > div.col-sm-10 
     -webkit-animation: loading .5s linear infinite;
     animation: loading .5s linear infinite;
     display: block;
-    top: 240px;
+    top: 180px;
     left: calc(50% + 120px);
     position: fixed;
     z-index: 999999999999999999999999999999999999
@@ -7633,7 +7633,7 @@ body.publisherlist > div.container-fluid > div > div.col-sm-10:before {
     font-size: 6vw;
     position: fixed;
     left: 240px;
-    top: 240px;
+    top: 180px;
     width: calc(20% - 55px);
     text-align: center
 }
@@ -7653,7 +7653,7 @@ body.ratingslist > div.container-fluid > div > div.col-sm-10:before {
     font-size: 6vw;
     position: fixed;
     left: 240px;
-    top: 240px;
+    top: 180px;
     width: calc(20% - 55px);
     text-align: center
 }
@@ -7679,7 +7679,7 @@ body.formatslist > div.container-fluid > div > div.col-sm-10:before {
     font-size: 6vw;
     position: fixed;
     left: 240px;
-    top: 240px;
+    top: 180px;
     width: calc(20% - 55px);
     text-align: center
 }
@@ -7698,7 +7698,7 @@ body.formatslist > div.container-fluid > div > div.col-sm-10:before {
 
 body.publisherlist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "Publishers";
-    top: 115px;
+    top: 60px;
     font-size: 24px;
     color: #eee;
     line-height: 1;
@@ -7716,7 +7716,7 @@ body.publisherlist > div.container-fluid > div > div.col-sm-10 > div.container:b
 
 body.ratingslist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "Ratings";
-    top: 115px;
+    top: 60px;
     font-size: 24px;
     color: #eee;
     line-height: 1;
@@ -7740,7 +7740,7 @@ body.ratingslist > div.container-fluid > div > div.col-sm-10 > div.container:bef
 
 body.formatslist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "File formats";
-    top: 115px;
+    top: 60px;
     font-size: 24px;
     color: #eee;
     line-height: 1;

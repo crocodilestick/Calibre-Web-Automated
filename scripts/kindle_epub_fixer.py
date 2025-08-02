@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 import sqlite3
+impoort subprocess
 
 import logging
 import tempfile

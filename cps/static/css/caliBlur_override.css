@@ -97,3 +97,21 @@ div#Downloads_list {
         display: none;
     }
 }
+
+/* Fixes add to shelf elements positioning */
+@media (max-width: 915px) {
+    div#shelf-actions {
+        float: left !important;
+        padding: 2rem;
+    }
+}
+@media (max-width: 768px) {
+    div#shelf-actions {
+        float: left;
+        display: inline-flex;
+        margin-top: 2rem;
+    }
+}
+div#shelf-actions {
+    float: none;
+}

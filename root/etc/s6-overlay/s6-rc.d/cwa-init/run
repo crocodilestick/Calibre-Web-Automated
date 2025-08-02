@@ -110,9 +110,3 @@ do
         echo "[cwa-init] Service could not successfully set permissions for '$d' (see errors above)."
     fi
 done
-
-#------------------------------------------------------------------------------------------------------------------------
-#  Remove scholar.py to ensure metadata providers list is alphabetized
-#------------------------------------------------------------------------------------------------------------------------
-
-# rm -f /app/calibre-web/cps/metadata_provider/scholar.py

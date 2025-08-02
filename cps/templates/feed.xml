@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:dcterms="http://purl.org/dc/terms/">
+  <icon>{{ url_for('static', filename='favicon.ico') }}</icon>
+  <id>urn:uuid:2853dacf-ed79-42f5-8e8a-a7bb3d1ae6a2</id>
+  <updated>{{ current_time }}</updated>
+  <link rel="self"
+        href="{{request.script_root + request.full_path}}"
+        type="application/atom+xml;profile=opds-catalog;type=feed;kind=navigation"/>
+  <link rel="start"
+        href="{{url_for('opds.feed_index')}}"
+        type="application/atom+xml;profile=opds-catalog;type=feed;kind=navigation"/>
+  <link rel="up"
+        href="{{url_for('opds.feed_index')}}"
+        type="application/atom+xml;profile=opds-catalog;type=feed;kind=navigation"/>
+{% if pagination and pagination.has_prev %}
+  <link rel="first"
+        href="{{request.script_root + request.path}}"
+        type="application/atom+xml;profile=opds-catalog;type=feed;kind=navigation"/>
+{% endif %}
+{% if pagination and pagination.has_next %}
+  <link rel="next"
+        title="{{_('Next')}}"
+        href="{{ request.script_root + request.path }}?offset={{ pagination.next_offset }}"
+        type="application/atom+xml;profile=opds-catalog;type=feed;kind=navigation"/>
+{% endif %}
+{% if pagination and pagination.has_prev %}
+  <link rel="previous"
+        href="{{request.script_root + request.path}}?offset={{ pagination.previous_offset }}"
+        type="application/atom+xml;profile=opds-catalog;type=feed;kind=navigation"/>
+{% endif %}
+    <link rel="search"
+      href="{{url_for('opds.feed_osd')}}"
+      type="application/opensearchdescription+xml"/>
+  <link type="application/atom+xml" rel="search" title="{{_('Search')}}" href="{{url_for('opds.feed_normal_search')}}/{searchTerms}" />
+  <title>{{instance}}</title>
+  <author>
+    <name>{{instance}}</name>
+    <uri>https://github.com/janeczku/calibre-web</uri>
+  </author>
+
+  {% if entries and entries[0] %}
+  {% for entry in entries %}
+  <entry>
+    <title>{{entry.Books.title}}</title>
+    <id>urn:uuid:{{entry.Books.uuid}}</id>
+    <updated>{{entry.Books.atom_timestamp}}</updated>
+    {% for author in entry.Books.authors %}
+      <author>
+        <name>{{author.name}}</name>
+      </author>
+    {% endfor %}
+    {% if entry.Books.publishers.__len__() > 0 %}
+      <publisher>
+        <name>{{entry.Books.publishers[0].name}}</name>
+      </publisher>
+    {% endif %}
+    <published>{{entry.Books.pubdate.strftime("%Y-%m-%dT%H:%M:%S+00:00")}}</published>
+    {% for lang in entry.Books.languages %}
+      <dcterms:language>{{lang.lang_code}}</dcterms:language>
+    {% endfor %}
+    {% for tag in entry.Books.tags %}
+    <category scheme="http://www.bisg.org/standards/bisac_subject/index.html"
+              term="{{tag.name}}"
+              label="{{tag.name}}"/>
+    {% endfor %}
+    {% if entry.Books.comments[0] %}<summary>{{entry.Books.comments[0].text|striptags}}</summary>{% endif %}
+    {% if entry.Books.has_cover %}
+    <link type="image/jpeg" href="{{url_for('opds.feed_get_cover', book_id=entry.Books.id)}}" rel="http://opds-spec.org/image"/>
+    <link type="image/jpeg" href="{{url_for('opds.feed_get_cover', book_id=entry.Books.id)}}" rel="http://opds-spec.org/image/thumbnail"/>
+    {% endif %}
+    {% for format in entry.Books.data %}
+    <link rel="http://opds-spec.org/acquisition" href="{{ url_for('opds.opds_download_link', book_id=entry.Books.id, book_format=format.format|lower)}}"
+          length="{{format.uncompressed_size}}" mtime="{{entry.Books.atom_timestamp}}" type="{{format.format|lower|mimetype}}"/>
+    {% endfor %}
+  </entry>
+  {% endfor %}
+  {% endif %}
+  {% for entry in listelements %}
+  <entry>
+    {% if entry.__class__.__name__ == 'Shelf' and entry.is_public == 1 %}
+    <title>{{entry.name}} {{_('(Public)')}}</title>
+    {% else %}
+    <title>{{entry.name}}</title>
+    {% endif %}
+    <id>{{ url_for(folder, book_id=entry.id) }}</id>
+    <link rel="subsection" type="application/atom+xml;profile=opds-catalog" href="{{url_for(folder, book_id=entry.id)}}"/>
+  </entry>
+  {% endfor %}
+  {% for entry in letterelements %}
+  <entry>
+    <title>{{entry['name']}}</title>
+    <id>{{ url_for(folder, book_id=entry['id']) }}</id>
+    <link rel="subsection" type="application/atom+xml;profile=opds-catalog" href="{{url_for(folder, book_id=entry['id'])}}"/>
+  </entry>
+  {% endfor %}
+</feed>

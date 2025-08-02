@@ -1,0 +1,254 @@
+body {
+  background: #444;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: white;
+  font-family: sans-serif;
+  margin: 0;
+}
+
+#main {
+  text-align: center;
+  z-index: 2;
+}
+
+.view {
+  padding-top: 0;
+}
+
+#sidebar a,
+#sidebar ul,
+#sidebar li,
+#sidebar li img {
+  max-width: 100%;
+  text-align: center;
+}
+
+#sidebar ul {
+  position: relative;
+}
+
+#sidebar a {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  padding: 4px;
+  transition: all 0.2s ease;
+}
+
+#sidebar a:hover,
+#sidebar a:focus {
+  outline: none;
+  box-shadow: 0 2px 8px 1px black;
+}
+
+#sidebar a.active,
+#sidebar a.active img + span {
+  background-color: #45b29d;
+}
+
+#sidebar li img {
+  display: block;
+  max-height: 200px;
+}
+
+#sidebar li img + span {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 2px;
+  min-width: 25px;
+  line-height: 25px;
+  background: #6b6b6b;
+  border-top-left-radius: 5px;
+}
+
+#sidebar #panels {
+  z-index: 1;
+}
+
+#progress {
+  position: absolute;
+  display: inline;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 4px;
+  font-family: sans-serif;
+  font-size: 10px;
+  line-height: 10px;
+  text-align: right;
+  transition: min-height 150ms ease-in-out;
+}
+
+#progress .bar-load,
+#progress .bar-read {
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transition: width 150ms ease-in-out;
+}
+
+#progress .from-left {
+  left: 0;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+#progress .from-right {
+  right: 0;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+#progress .bar-load {
+  color: #000;
+  background-color: #ccc;
+}
+
+#progress .bar-read {
+  color: #fff;
+  background-color: #45b29d;
+}
+
+#progress .text {
+  display: none;
+  padding: 0 5px;
+}
+
+#progress.loading,
+#titlebar:hover #progress {
+  min-height: 10px;
+}
+
+#progress.loading .text,
+#titlebar:hover #progress .text {
+  display: inline-block;
+}
+
+.hide {
+  display: none !important;
+}
+
+#mainContent {
+  overflow: auto;
+  outline: none;
+}
+
+#mainText {
+  text-align: left;
+  width: 90%;
+  position: relative;
+  top: 10px;
+  background: #ccc;
+  color: black;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+#mainContent > canvas {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.long-strip > .mainImage {
+  margin-bottom: 4px;
+}
+
+.long-strip > .mainImage:last-child {
+  margin-bottom: 0px !important;
+}
+
+#titlebar {
+  min-height: 25px;
+  height: auto;
+}
+
+#metainfo {
+  max-width: 70%;
+}
+
+th,
+td {
+  padding: 5px;
+}
+
+th {
+  text-align: right;
+  vertical-align: top;
+}
+
+.modal {
+  /* Makes the modal responsive. Note sure if this should be moved to main.css */
+  margin: 0;
+  max-width: 96%;
+  transform: translate(-50%, -50%);
+}
+
+.md-content {
+  min-height: 320px;
+  height: auto;
+}
+
+.md-content > div {
+  overflow: hidden;
+}
+
+.md-content > div p {
+  padding: 5px 0;
+}
+
+.settings-column {
+  float: left;
+  min-width: 35%;
+  padding-bottom: 10px;
+}
+
+.inputs {
+  margin: -5px;
+}
+
+.inputs input {
+  vertical-align: middle;
+}
+
+.inputs label {
+  display: inline-block;
+  margin: 5px;
+  white-space: nowrap;
+}
+
+.dark-theme #main {
+  background-color: #000;
+}
+
+.dark-theme #titlebar {
+  color: #ddd;
+}
+
+.dark-theme #titlebar a:active {
+  color: #fff;
+}
+
+.dark-theme #progress .bar-read {
+  background-color: red;
+}
+
+.dark-theme .overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.disabled-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.disabled-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

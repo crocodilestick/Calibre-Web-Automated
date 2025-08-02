@@ -17,8 +17,8 @@ change_script_permissions () {
     chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
     chmod +x /etc/s6-overlay/s6-rc.d/universal-calibre-setup/run
     chmod +x /app/calibre-web-automated/scripts/check-cwa-services.sh
-    chmod 775 /app/calibre-web/cps/editbooks.py
-    chmod 775 /app/calibre-web/cps/admin.py
+    chmod 775 /app/calibre-web-automated/cps/editbooks.py
+    chmod 775 /app/calibre-web-automated/cps/admin.py
 }
 
 # Add aliases to .bashrc

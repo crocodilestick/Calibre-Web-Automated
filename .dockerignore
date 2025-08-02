@@ -4,11 +4,15 @@ docker-compose.yml
 .github
 .gitignore
 .github/workflows
+.gitattributes
 build.sh
 README.md
 LICENSE
 Dockerfile
 .dockerignore
-build
+build.sh
 .history
-Dockerfile_calibre_not_included
+docker-compose.yml.dev
+changelogs
+cwa-wiki
+wiki_images

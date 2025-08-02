@@ -280,7 +280,7 @@ And that's you off to the races! 🥳 HOWEVER to avoid potential problems and en
     - **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
     - **Existing/ CW Users** - If there are multiple libraries in the mounted directory, CWA will automatically find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
   <!-- - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient -->
-  - `/app/calibre-web/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
+  - `/app/calibre-web-automated/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
 
 And just like that, Calibre-Web Automated should be up and running! **HOWEVER** to avoid potential problems and ensure maximum functionality,we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 

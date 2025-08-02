@@ -43,7 +43,7 @@ gid = grp.getgrnam(GROUP_NAME).gr_gid
 
 # Set permissions for log file
 try:
-    subprocess.run(["lsiown", f"{uid}:{gid}", convert_library_log_file], check=True)
+    subprocess.run(["chown", f"{uid}:{gid}", convert_library_log_file], check=True)
 except subprocess.CalledProcessError as e:
     print(f"[convert-library] An error occurred while attempting to recursively set ownership of {convert_library_log_file} to abc:abc. See the following error:\n{e}", flush=True)
 
@@ -357,7 +357,7 @@ class LibraryConverter:
 
     def set_library_permissions(self):
         try:
-            subprocess.run(["lsiown", "-R", "abc:abc", self.library_dir], check=True)
+            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Successfully set ownership of new files in {self.library_dir} to abc:abc.")
         except subprocess.CalledProcessError as e:
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")

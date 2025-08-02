@@ -53,7 +53,7 @@ gid = grp.getgrnam(GROUP_NAME).gr_gid
 
 # Set permissions for log file
 try:
-    subprocess.run(["lsiown", f"{uid}:{gid}", epub_fixer_log_file], check=True)
+    subprocess.run(["chown", f"{uid}:{gid}", epub_fixer_log_file], check=True)
 except subprocess.CalledProcessError as e:
     print(f"[cwa-kindle-epub-fixer] An error occurred while attempting to recursively set ownership of {epub_fixer_log_file} to abc:abc. See the following error:\n{e}", flush=True)
 

@@ -53,7 +53,7 @@ class AutoLibrary:
             print(f"[cwa-auto-library] No app.db found in {self.config_dir}, copying from /app/calibre-web-automated/empty_library/app.db")
             shutil.copyfile(self.empty_appdb, f"{self.config_dir}/app.db")
             try:
-                subprocess.run(["lsiown", "-R", "abc:abc", self.config_dir], check=True)
+                subprocess.run(["chown", "-R", "abc:abc", self.config_dir], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"[cwa-auto-library] An error occurred while attempting to recursively set ownership of {self.config_dir} to abc:abc. See the following error:\n{e}", flush=True)
             print(f"[cwa-auto-library] app.db successfully copied to {self.config_dir}")
@@ -132,7 +132,7 @@ class AutoLibrary:
         print("[cwa-auto-library]: No existing library found. Creating new library...")
         shutil.copyfile(self.empty_metadb, f"{self.library_dir}/metadata.db")
         try:
-            subprocess.run(["lsiown", "-R", "abc:abc", self.library_dir], check=True)
+            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
         except subprocess.CalledProcessError as e:
             print(f"[cwa-auto-library] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}", flush=True)
         self.metadb_path = f"{self.library_dir}/metadata.db"

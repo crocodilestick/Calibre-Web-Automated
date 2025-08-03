@@ -45,6 +45,7 @@ from sqlalchemy.sql.expression import func, or_, text
 from . import constants, logger, helper, services, cli_param
 from . import db, calibre_db, ub, web_server, config, updater_thread, gdriveutils, \
     kobo_sync_status, schedule
+from .theme_manager import theme_manager
 from .helper import check_valid_domain, send_test_mail, reset_password, generate_password_hash, check_email, \
     valid_email, check_username
 from .embed_helper import get_calibre_binarypath
@@ -118,6 +119,8 @@ def before_request():
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
     g.current_theme = config.config_theme
+    g.current_theme_config = theme_manager.get_current_theme(config.config_theme)
+    g.all_themes = theme_manager.get_all_themes()
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',

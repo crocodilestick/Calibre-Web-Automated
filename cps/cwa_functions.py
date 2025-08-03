@@ -6,6 +6,7 @@ from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
 from .cw_login import login_user, logout_user, current_user
+from .theme_manager import theme_manager
 
 import subprocess
 import sqlite3
@@ -61,12 +62,10 @@ def cwa_switch_theme():
     cur = con.cursor()
     current_theme = cur.execute('SELECT config_theme FROM settings;').fetchone()[0]
 
-    if current_theme == 1:
-        new_theme = 0
-    else:
-        new_theme = 1
+    # Use theme manager to get next theme
+    new_theme = theme_manager.get_next_theme_id(current_theme)
 
-    to_save = {"config_theme":new_theme}
+    to_save = {"config_theme": new_theme}
 
     config.set_from_dictionary(to_save, "config_theme", int)
     config.config_default_role = constants.selected_roles(to_save)
@@ -77,6 +76,32 @@ def cwa_switch_theme():
         config.config_default_show |= constants.DETAIL_RANDOM
 
     config.save()
+    return redirect(url_for("web.index"), code=302)
+
+@switch_theme.route("/cwa-select-theme/<int:theme_id>", methods=["GET", "POST"])
+@login_required_if_no_ano
+def cwa_select_theme(theme_id):
+    # Validate theme exists
+    theme = theme_manager.get_theme_by_id(theme_id)
+    if theme is None:
+        flash(_('Invalid theme selected'), 'error')
+        return redirect(url_for("web.index"), code=302)
+    
+    con = sqlite3.connect("/config/app.db")
+    cur = con.cursor()
+    
+    to_save = {"config_theme": theme_id}
+
+    config.set_from_dictionary(to_save, "config_theme", int)
+    config.config_default_role = constants.selected_roles(to_save)
+    config.config_default_role &= ~constants.ROLE_ANONYMOUS
+
+    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith('show_'))
+    if "Show_detail_random" in to_save:
+        config.config_default_show |= constants.DETAIL_RANDOM
+
+    config.save()
+    flash(_('Theme changed to: ') + theme['name'], 'success')
     return redirect(url_for("web.index"), code=302)
 
 ##————————————————————————————————————————————————————————————————————————————##

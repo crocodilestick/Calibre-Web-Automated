@@ -11,7 +11,7 @@
 
 ## _Quick Access_
 
-- [Features](#what-does-it-do-) 🪄
+- [Features](#features) 🪄
 - [Releases](https://github.com/crocodilestick/Calibre-Web-Automated/releases) 🆕
 - [Roadmap](#features-currently-under-active-development-and-on-our-roadmap-️️) 🛣️
 - [How to Install](#how-to-install-): 📖

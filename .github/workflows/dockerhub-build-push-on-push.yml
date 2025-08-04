@@ -7,10 +7,14 @@ on:
       - '**'  # Runs on pushes to any branch
     paths:
       - 'empty_library/**'
-      - 'root/**'
+      - 'cps/**'
       - 'scripts/**'
       - '**/Dockerfile'
       - '**/requirements.txt'
+      - '**/optional-requirements.txt'
+      - '**/compile_translations.sh'
+      - 'koreader/**'
+      - '**/cps.py'
   create:
     branches:
       - '**'  # Runs when a new branch is created

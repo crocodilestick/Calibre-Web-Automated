@@ -99,7 +99,8 @@ div#Downloads_list {
 }
 
 /* Fixes add to shelf elements positioning */
-@media (max-width: 915px) {
+/* Temporarily disabled as it screws up the book pages */
+/* @media (max-width: 915px) {
     div#shelf-actions {
         float: left !important;
         padding: 2rem;
@@ -114,4 +115,4 @@ div#Downloads_list {
 }
 div#shelf-actions {
     float: none;
-}
+} */

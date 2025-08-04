@@ -5538,7 +5538,7 @@ body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm
 
 .modal-dialog {
     margin: 0 auto 60px;
-    transform: translate(0px,20vh) !important;
+    transform: translate(0px,10vh) !important;
     padding: 2rem;
 }
 
@@ -6608,7 +6608,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     #books .cover img, #books_rand .cover img, .book.isotope-item .cover img {
-        width: 100px !important
+        width: 150px !important
     }
 
     #books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before {

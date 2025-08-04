@@ -14,6 +14,9 @@ fetch('/user_profiles.json')
           body.me > div.container-fluid > div.row-fluid > div.col-sm-10:before {
             background-image: url(${usernameToImage[username]}) !important;
           }
+          .navbar > .container-fluid > .navbar-header > button.navbar-toggle:before {
+            background-image: url(${usernameToImage[username]}) !important;
+          }
         `;
         document.head.appendChild(style);
       }

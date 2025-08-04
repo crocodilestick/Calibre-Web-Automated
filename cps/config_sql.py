@@ -78,7 +78,7 @@ class _Settings(_Base):
     config_certfile = Column(String)
     config_keyfile = Column(String)
     config_trustedhosts = Column(String, default='')
-    config_calibre_web_title = Column(String, default='Calibre-Web')
+    config_calibre_web_title = Column(String, default='Calibre-Web Automated')
     config_books_per_page = Column(Integer, default=60)
     config_random_books = Column(Integer, default=4)
     config_authors_max = Column(Integer, default=0)
@@ -181,7 +181,7 @@ class _Settings(_Base):
         return self.__class__.__name__
 
 
-# Class holds all application specific settings in calibre-web
+# Class holds all application specific settings in calibre-web automated
 class ConfigSQL(object):
     # pylint: disable=no-member
     def __init__(self):

@@ -5645,19 +5645,19 @@ body.admin.modal-open .navbar {
 }
 
 #RestartDialog > .modal-dialog > .modal-content > .modal-header:after {
-    content: "Restart Calibre-Web";
+    content: "Restart Calibre-Web Automated";
     display: inline-block;
     font-size: 20px
 }
 
 #ShutdownDialog > .modal-dialog > .modal-content > .modal-header:after {
-    content: "Stop Calibre-Web";
+    content: "Stop Calibre-Web Automated";
     display: inline-block;
     font-size: 20px
 }
 
 #StatusDialog > .modal-dialog > .modal-content > .modal-header:after {
-    content: "Update Calibre-Web";
+    content: "Update Calibre-Web Automated";
     display: inline-block;
     font-size: 20px
 }

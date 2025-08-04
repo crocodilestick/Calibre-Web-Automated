@@ -31,7 +31,7 @@
   <div class="row">
     <div class="col-md-offset-4 text-left">
         {% if unconfigured %}
-            <div>{{_('Calibre-Web Instance is unconfigured, please contact your administrator')}}</div>
+            <div>{{_('Calibre-Web Automated Instance is unconfigured, please contact your administrator')}}</div>
         {% endif %}
       {% for element in error_stack %}
         <div>{{ element }}</div>
@@ -41,7 +41,7 @@
   {% if issue %}
     <div class="row">
     <div class="col errorlink">Please report this issue with all related information:
-        <a href="https://github.com/janeczku/calibre-web/issues/new/choose">{{_('Create Issue')}}</a>
+        <a href="https://github.com/crocodilestick/calibre-web-automated/issues/new/choose">{{_('Create Issue')}}</a>
     </div>
       </div>
     {% endif %}

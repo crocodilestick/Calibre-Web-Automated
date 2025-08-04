@@ -52,7 +52,7 @@ class CliParameter(object):
         self.arg_parser()
 
     def arg_parser(self):
-        parser = argparse.ArgumentParser(description='Calibre Web is a web app providing '
+        parser = argparse.ArgumentParser(description='Calibre-Web Automated is a web app providing '
                                                      'a interface for browsing, reading and downloading eBooks\n',
                                          prog='cps.py')
         parser.add_argument('-p', metavar='path', help='path and name to settings db, e.g. /opt/cw.db')
@@ -61,19 +61,19 @@ class CliParameter(object):
                                                        'e.g. /opt/test.cert, works only in combination with keyfile')
         parser.add_argument('-k', metavar='path', help='path and name to SSL keyfile, e.g. /opt/test.key, '
                                                        'works only in combination with certfile')
-        parser.add_argument('-o', metavar='path', help='path and name Calibre-Web logfile')
+        parser.add_argument('-o', metavar='path', help='path and name Calibre-Web Automated logfile')
         parser.add_argument('-v', '--version', action='version', help='Shows version number '
-                                                                      'and exits Calibre-Web',
+                                                                      'and exits Calibre-Web Automated',
                             version=version_info())
         parser.add_argument('-i', metavar='ip-address', help='Server IP-Address to listen')
         parser.add_argument('-m', action='store_true',
                             help='Use Memory-backend as limiter backend, use this parameter '
                                  'in case of miss configured backend')
         parser.add_argument('-s', metavar='user:pass',
-                            help='Sets specific username to new password and exits Calibre-Web')
+                            help='Sets specific username to new password and exits Calibre-Web Automated')
         parser.add_argument('-l', action='store_true', help='Allow loading covers from localhost')
         parser.add_argument('-d', action='store_true', help='Dry run of updater to check file permissions '
-                                                            'in advance and exits Calibre-Web')
+                                                            'in advance and exits Calibre-Web Automated')
         parser.add_argument('-r', action='store_true', help='Enable public database reconnect '
                                                             'route under /reconnect')
         args = parser.parse_args()

@@ -35,7 +35,7 @@
   <title>{{instance}}</title>
   <author>
     <name>{{instance}}</name>
-    <uri>https://github.com/janeczku/calibre-web</uri>
+    <uri>https://github.com/crocodilestick/calibre-web-automated</uri>
   </author>
 
   {% if entries and entries[0] %}

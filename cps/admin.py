@@ -629,8 +629,8 @@ def update_view_configuration():
         config.config_default_show |= constants.DETAIL_RANDOM
 
     config.save()
-    flash(_("Calibre-Web configuration updated"), category="success")
-    log.debug("Calibre-Web configuration updated")
+    flash(_("Calibre-Web Automated configuration updated"), category="success")
+    log.debug("Calibre-Web Automated configuration updated")
     before_request()
 
     return view_configuration()
@@ -664,10 +664,10 @@ def load_dialogtexts(element_id):
     elif element_id == "db_submit":
         texts["main"] = _('Are you sure you want to change Calibre library location?')
     elif element_id == "admin_refresh_cover_cache":
-        texts["main"] = _('Calibre-Web will search for updated Covers '
+        texts["main"] = _('Calibre-Web Automated will search for updated Covers '
                           'and update Cover Thumbnails, this may take a while?')
     elif element_id == "btnfullsync":
-        texts["main"] = _("Are you sure you want delete Calibre-Web's sync database "
+        texts["main"] = _("Are you sure you want delete Calibre-Web Automated's sync database "
                           "to force a full sync with your Kobo Reader?")
     return json.dumps(texts)
 
@@ -1772,7 +1772,7 @@ def _db_configuration_update_helper():
         config.store_calibre_uuid(calibre_db, db.Library_Id)
         # if db changed -> delete shelfs, delete download books, delete read books, kobo sync...
         if db_change:
-            log.info("Calibre Database changed, all Calibre-Web info related to old Database gets deleted")
+            log.info("Calibre Database changed, all Calibre-Web Automated info related to old Database gets deleted")
             ub.session.query(ub.Downloads).delete()
             ub.session.query(ub.ArchivedBook).delete()
             ub.session.query(ub.ReadBook).delete()
@@ -1925,7 +1925,7 @@ def _configuration_result(error_flash=None, reboot=False):
         config.load()
         resp['result'] = [{'type': "danger", 'message': error_flash}]
     else:
-        resp['result'] = [{'type': "success", 'message': _("Calibre-Web configuration updated")}]
+        resp['result'] = [{'type': "success", 'message': _("Calibre-Web Automated configuration updated")}]
     resp['reboot'] = reboot
     resp['config_upload'] = config.config_upload_formats
     return Response(json.dumps(resp), mimetype='application/json')

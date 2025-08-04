@@ -89,7 +89,7 @@ def generate_auth_token(user_id):
     else:
         host = ':'.join(host_list[0:-1])
     if host.startswith('127.') or host.lower() == 'localhost' or host.startswith('[::ffff:7f') or host == "[::1]":
-        warning = _('Please access Calibre-Web from non localhost to get valid api_endpoint for kobo device')
+        warning = _('Please access Calibre-Web Automated from non localhost to get valid api_endpoint for kobo device')
 
     # Generate auth token if none is existing for this user
     auth_token = ub.session.query(ub.RemoteAuthToken).filter(

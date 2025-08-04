@@ -20,6 +20,7 @@ change_script_permissions () {
     chmod +x /etc/s6-overlay/s6-rc.d/init-calibre-web-config/run
     chmod +x /etc/s6-overlay/s6-rc.d/svc-calibre-web/run
     chmod +x /app/calibre-web-automated/scripts/check-cwa-services.sh
+    chmod +x /app/calibre-web-automated/compile_translations.sh
     chmod 775 /app/calibre-web-automated/cps/editbooks.py
     chmod 775 /app/calibre-web-automated/cps/admin.py
 }

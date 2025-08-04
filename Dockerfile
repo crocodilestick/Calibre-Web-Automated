@@ -173,6 +173,7 @@ RUN \
     build-essential \
     libldap2-dev \
     libsasl2-dev \
+    gettext \
     python3-dev && \
   apt-get -y autoremove && \
   rm -rf \

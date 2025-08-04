@@ -6,7 +6,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col">
-      <h2>{{_('Users 👤')}}</h2>
+      <h2>{{_('Users&nbsp;&nbsp;👤')}}</h2>
     {% if allUser.__len__() < 10 %}
       <div style="overflow-x: auto; margin-bottom: 1rem;">
         <table style="margin-bottom: 0;" class="table table-striped" id="table_user">
@@ -62,7 +62,7 @@
 
   <div class="row">
     <div class="col">
-      <h2>{{_('Email Server Settings 📬')}}</h2>
+      <h2>{{_('Email Server Settings&nbsp;&nbsp;📬')}}</h2>
       {% if config.get_mail_server_configured() %}
         {% if config.mail_server_type == 0 %}
         <div class="col-xs-12 col-sm-12">
@@ -106,7 +106,7 @@
 
   <div class="row">
     <div class="col">
-      <h2>{{_('Configuration ⚙️')}}</h2>
+      <h2>{{_('Configuration&nbsp;&nbsp;⚙️')}}</h2>
       <div class="col-xs-12 col-sm-6">
         <div class="row">
             <div class="col-xs-6 col-sm-6">{{_('Calibre Database Directory')}}</div>
@@ -167,7 +167,7 @@
 {%  if feature_support['scheduler'] %}
   <div class="row">
     <div class="col">
-      <h2>{{_('Scheduled Tasks ⌛')}}</h2>
+      <h2>{{_('Scheduled Tasks&nbsp;&nbsp;⌛')}}</h2>
         <div class="col-xs-12 col-sm-12 scheduled_tasks_details">
           <div class="row">
             <div class="col-xs-6 col-sm-3">{{_('Start Time')}}</div>
@@ -204,7 +204,7 @@
 {%  endif %}
 
   <div class="row form-group">
-    <h2>{{_('CWA Admin Functions ⚡')}}</h2>
+    <h2>{{_('CWA Admin Functions&nbsp;&nbsp;⚡')}}</h2>
     <a class="btn btn-default" id="cwa-settings" href="{{url_for('cwa_settings.set_cwa_settings')}}">{{_('CWA Settings')}}</a>
     <a class="btn btn-default" id="cwa_stats" href="{{url_for('cwa_stats.cwa_stats_show')}}">{{_('Show CWA Stats')}}</a>
     <a class="btn btn-default" id="check_mon_srvs" href="{{url_for('cwa_check_status.cwa_flash_status')}}">{{_('Check CWA Status')}}</a>
@@ -220,7 +220,7 @@
   </div>
 
   <div class="row form-group">
-    <h2>{{_('Administration 🚀')}}</h2>
+    <h2>{{_('Administration&nbsp;&nbsp;🚀')}}</h2>
     <a class="btn btn-default" id="debug" href="{{url_for('admin.download_debug')}}">{{_('Download Debug Package')}}</a>
     <a class="btn btn-default" id="logfile" href="{{url_for('admin.view_logfile')}}">{{_('View Logs')}}</a>
   </div>
@@ -238,7 +238,7 @@
 {%  endif %}
   <div class="row">
     <div class="col">
-      <h2>{{_('Version Information 📜')}}</h2>
+      <h2>{{_('Version Information&nbsp;&nbsp;📜')}}</h2>
       <table class="table table-striped" id="update_table">
         <thead>
           <tr>

@@ -1678,6 +1678,13 @@ def read_book(book_id, book_format):
 @web.route("/book/<int:book_id>")
 @login_required_if_no_ano
 def show_book(book_id):
+    # Ensure book_id is a plain int to avoid SQLite binding errors
+    try:
+        book_id = int(book_id)
+    except (ValueError, TypeError):
+        log.error(f"Invalid book_id passed to show_book: {book_id}")
+        flash(_("Invalid book ID."), category="error")
+        return redirect(url_for("web.index"))
     entries = calibre_db.get_book_read_archived(book_id, config.config_read_column, allow_show_archived=True)
     if entries:
         read_book = entries[1]

@@ -1,15 +1,15 @@
 {% extends "fragment.html" %}
 {% block body %}
 <div class="well">
-<p>
+<h3 style="margin-top: 0; margin-bottom: 3rem;">
   {% if not warning %}
       {{_('Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or edit):')}}
-    </p><p>
+</h3><code style="font-size: larger; overflow-wrap: anywhere;">
       api_endpoint={{url_for("kobo.TopLevelEndpoint", auth_token=auth_token, _external=True)}}
   {% else %}
       {{warning}}
-    </p><p>{{_('Kobo Token:')}} {{ auth_token }}
+</code><code style="font-size: larger; overflow-wrap: anywhere;">{{_('Kobo Token:')}} {{ auth_token }}
   {% endif %}
-  </p>
+</code>
 </div>
 {% endblock %}

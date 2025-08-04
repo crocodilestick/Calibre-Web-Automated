@@ -2286,23 +2286,24 @@ body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
 }
 
 .well {
-    max-height: 520px;
-    height: auto;
-    background-color: transparent;
-    border: none;
-    border-radius: 0;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    min-width: 600px;
-    max-width: 700px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0 auto;
-    padding: 60px;
-    justify-items: anchor-center;
+    /* max-height: 520px; */
+    /* height: auto; */
+    background-color: #5b5b5b;
+    /* border: none; */
+    /* border-radius: 0; */
+    /* -webkit-box-shadow: none; */
+    /* box-shadow: none; */
+    /* min-width: 600px; */
+    /* max-width: 700px; */
+    /* position: absolute; */
+    /* top: 0; */
+    /* left: 0; */
+    /* right: 0; */
+    /* bottom: 0; */
+    /* margin: 0 auto; */
+    /* padding: 60px; */
+    /* justify-items: anchor-center; */
+    text-align: left;
 }
 
 .well > form {
@@ -5536,7 +5537,9 @@ body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm
 }
 
 .modal-dialog {
-    margin: 0 auto 60px
+    margin: 0 auto 60px;
+    transform: translate(0px,20vh) !important;
+    padding: 2rem;
 }
 
 body.admin.modal-open .navbar {
@@ -6773,7 +6776,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .well {
-        padding: 60px 0;
+        /* padding: 60px 0; */
         max-width: calc(100% - 30px);
         min-width: auto
     }

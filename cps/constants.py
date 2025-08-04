@@ -21,7 +21,7 @@ import os
 from collections import namedtuple
 
 # APP_MODE - production, development, or test
-APP_MODE             = os.environ.get('APP_MODE', 'production')
+APP_MODE            = os.environ.get('APP_MODE', 'production')
 
 # if installed via pip this variable is set to true (empty file with name .HOMEDIR present)
 HOME_CONFIG = os.path.isfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.HOMEDIR'))
@@ -42,7 +42,7 @@ DEFAULT_CACHE_DIR   = os.path.join(BASE_DIR, 'cps', 'cache')
 CACHE_DIR           = os.environ.get('CACHE_DIR', DEFAULT_CACHE_DIR)
 
 if HOME_CONFIG:
-    home_dir = os.path.join(os.path.expanduser("~"), ".calibre-web")
+    home_dir = os.path.join(os.path.expanduser("~"), ".calibre-web-automated")
     if not os.path.exists(home_dir):
         os.makedirs(home_dir)
     CONFIG_DIR = os.environ.get('CALIBRE_DBPATH', home_dir)

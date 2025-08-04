@@ -44,6 +44,7 @@ RUN \
     build-essential \
     libldap2-dev \
     libsasl2-dev \
+    gettext \
     python3-dev && \
   echo "**** install runtime packages ****" && \
   apt-get install -y --no-install-recommends \

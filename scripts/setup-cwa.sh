@@ -46,3 +46,5 @@ echo "Running docker image setup script..."
 make_dirs
 change_script_permissions
 add_aliases
+# Generate .mo files from .po files in translations directory
+bash /app/calibre-web-automated/compile_translations.sh

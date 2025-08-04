@@ -6008,17 +6008,19 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .navbar > .container-fluid > .navbar-header {
-        margin: 0
+        margin: 0;
+        background-color: #253747;
     }
 
     .navbar > .container-fluid > .navbar-header > button.navbar-toggle {
         border: 0;
-        float: left;
+        /* float: left; */
         padding: 0;
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
         margin: 0;
-        top: 0
+        top: 50px;
+        position: relative;
     }
 
     .navbar > .container-fluid > .navbar-header > button.navbar-toggle:active, .navbar > .container-fluid > .navbar-header > button.navbar-toggle:focus, .navbar > .container-fluid > .navbar-header > button.navbar-toggle:hover {
@@ -6031,12 +6033,12 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         overflow: hidden;
         border-radius: 50%;
         background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYwIiBoZWlnaHQ9IjU2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgPHBhdGggZD0iTTE0NC4yOTEgNDkyLjMyNUMxNjYuNjI0IDQ3Ni4yNjUgMTkzLjE5NCA0NjYuMTU2IDIyNCA0NjJjMTIuNDQ0IDkuMzMzIDMxLjExMSAxNCA1NiAxNHM0My41NTYtNC42NjcgNTYtMTRjMzAuODA2IDQuMTU2IDU3LjM3NiAxNC4yNjQgNzkuNzA5IDMwLjMyNUMzNzYuNTI3IDUxNy40MzUgMzI5Ljk1MSA1MzIgMjgwIDUzMmMtNDkuOTUxIDAtOTYuNTI3LTE0LjU2NS0xMzUuNzA5LTM5LjY3NXoiIGZpbGwtb3BhY2l0eT0iLjYiLz4KICAgICAgICA8cGF0aCBkPSJNMjI0IDQ2MmwxMi44OC00MC4yNTFDMTk2LjQyOSAzOTcuNDYyIDE2OCAzNDAuMDM1IDE2OCAyNzMuMDU5YzAtMzUuMTkzIDcuODQ5LTY3Ljc1IDIxLjE2OC05NC4yNDggMTYuMTczIDQuOTc3IDM1LjMxNSA3Ljg1NiA1NS44MzIgNy44NTYgNTEuMTA0IDAgOTMuNjgtMTcuODYgMTAzLjA3Mi00MS41MTZDMzc0Ljc3OSAxNzQuNTg4IDM5MiAyMjAuOTMxIDM5MiAyNzMuMDU5YzAgNjYuOTc2LTI4LjQyOSAxMjQuNDAzLTY4Ljg4IDE0OC42OUwzMzYgNDYyYy0xMi40NDQgOS4zMzMtMzEuMTExIDE0LTU2IDE0LTI0LjY5NCAwLTQzLjI2My00LjU5NC01NS43MDctMTMuNzgyTDIyNCA0NjJ6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgICAgIDxwYXRoIGQ9Ik0xODAuMDY0IDM0NS44NDlDMTU1LjI4MiAzMTguMDY3IDE0MCAyNzkuOTk3IDE0MCAyMzhjMC04NS4wNTIgNjIuNjgtMTU0IDE0MC0xNTRzMTQwIDY4Ljk0OCAxNDAgMTU0YzAgNDEuOTk3LTE1LjI4MiA4MC4wNjctNDAuMDY0IDEwNy44NDkgNy43MTYtMjEuODYyIDEyLjA2NC00Ni41OTYgMTIuMDY0LTcyLjc5IDAtNTIuMTI4LTE3LjIyMS05OC40NzEtNDMuOTI4LTEyNy45MDgtOS4zOTIgMjMuNjU2LTUxLjk2OCA0MS41MTYtMTAzLjA3MiA0MS41MTYtMjAuNTE3IDAtMzkuNjU5LTIuODc5LTU1LjgzMi03Ljg1NkMxNzUuODQ5IDIwNS4zMDkgMTY4IDIzNy44NjYgMTY4IDI3My4wNTljMCAyNi4xOTQgNC4zNDggNTAuOTI4IDEyLjA2NCA3Mi43OXoiIGZpbGwtb3BhY2l0eT0iLjQ1Ii8+CiAgICAgICAgPHBhdGggZD0iTTI4MCA1MzJjMTM5LjE3NiAwIDI1Mi0xMTIuODI0IDI1Mi0yNTJTNDE5LjE3NiAyOCAyODAgMjggMjggMTQwLjgyNCAyOCAyODBzMTEyLjgyNCAyNTIgMjUyIDI1MnptMCAyOEMxMjUuMzYgNTYwIDAgNDM0LjY0IDAgMjgwUzEyNS4zNiAwIDI4MCAwczI4MCAxMjUuMzYgMjgwIDI4MC0xMjUuMzYgMjgwLTI4MCAyODB6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgPC9nPgo8L3N2Zz4K);
-        background-size: contain;
+        background-size: cover;
         position: absolute;
-        width: 30px;
-        height: 30px;
-        top: 9px;
-        left: 9px
+        width: 40px;
+        height: 40px;
+        top: 3px;
+        right: 32px;
     }
 
     .navbar > .container-fluid > .navbar-header > button.navbar-toggle > span {
@@ -6050,9 +6052,11 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         line-height: 48px;
         width: calc(100vw - 138px);
         background: 0 0 !important;
-        color: hsla(0, 0%, 100%, .7) !important;
+        color: whitesmoke !important;
         font-family: Open Sans Semibold, Helvetica Neue, Helvetica, Arial, sans-serif;
-        pointer-events: none
+        pointer-events: none;
+        font-size: x-large;
+        padding-top: 8px;
     }
 
     .home-btn {
@@ -6522,21 +6526,21 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     body > div.container-fluid > div.row-fluid > div.col-sm-10 {
         width: 100%;
-        top: 42px;
+        top: 60px;
         height: calc(100% - 42px)
     }
 
     body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid, body > div.container-fluid > div > div.col-sm-10 > div.discover {
         width: 100%;
         margin: 0 !important;
-        padding: 10px !important
+        padding: 10px !important;
     }
 
     .author > .container-fluid > .row-fluid > .col-sm-10 > h2:before, body.admin.config > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type, body.admin.uiconfig > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type, body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row:first-of-type > div.col > h2:before, body.admin > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type:before, body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before, body.mailset > div.container-fluid > div > div.col-sm-10 > div.discover > h1, body.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h1, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h2, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-8 > form > #test:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > div:nth-child(10) > label:before, body > div.container-fluid > div > div.col-sm-10 > div.col-sm-6.col-lg-6.col-xs-6 > h2, body > div.container-fluid > div > div.col-sm-10 > h1, body > div.container-fluid > div > div.col-sm-10 > h3:first-of-type {
         top: 48px;
         left: 0;
         padding-left: 20px;
-        height: 42px;
+        height: 60px;
         width: calc(100%);
         line-height: 42px;
         padding-right: 130px;
@@ -6545,7 +6549,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         text-overflow: ellipsis;
         white-space: nowrap;
         background: rgba(0, 0, 0, .15);
-        font-size: 13px
+        font-size: 20px;
+        padding-top: 7px;
     }
 
     body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1, body.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1 {
@@ -6582,25 +6587,26 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .book:not(body) {
-        width: 110px !important;
-        max-width: 110px !important;
-        min-width: 110px !important;
-        padding: 0 5px;
+        width: 100% !important;
+        max-width: 180px !important;
+        min-width: 180px !important;
+        /* padding: 0 5px; */
         margin-left: auto;
-        margin-right: auto
+        margin-right: auto;
     }
 
     .container-fluid .book {
-        margin-top: 10px
+        /* margin-top: 10px */
     }
 
     .container-fluid .book .cover {
-        height: 150px;
-        margin-bottom: 0
+        height: 225px;
+        FONT-WEIGHT: 200;
     }
     .container-fluid .book .cover img {
-    width: 100px !important;
+        max-height: 100%;
     }
+
     #books .cover img, #books_rand .cover img, .book.isotope-item .cover img {
         width: 100px !important
     }
@@ -6610,7 +6616,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         width: 40px;
         height: 40px;
         font-size: 16px;
-        padding-left: 12px
+        padding-left: 12px;
     }
 
     body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10::before, body.me > div.container-fluid > div.row-fluid > div.col-sm-10:before, body.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10::before {

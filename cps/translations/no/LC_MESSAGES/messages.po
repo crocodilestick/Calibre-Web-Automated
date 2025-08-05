@@ -5,524 +5,562 @@
 # FIRST AUTHOR Vegard Fladby, 2022.
 msgid ""
 msgstr ""
-"Project-Id-Version:  Calibre-Web\n"
-"Report-Msgid-Bugs-To: https://github.com/janeczku/Calibre-Web\n"
-"POT-Creation-Date: 2024-11-02 20:20+0100\n"
+"Project-Id-Version:  Calibre-Web Automated\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-08-05 12:15+0200\n"
 "PO-Revision-Date: 2023-01-06 11:00+0000\n"
 "Last-Translator: Vegard Fladby <vegard.fladby@gmail.com>\n"
-"Language: no\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: no\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.13.1\n"
 
 #: cps/about.py:85
 msgid "Statistics"
 msgstr "Statistikk"
 
-#: cps/admin.py:151
+#: cps/admin.py:152
 #, fuzzy
 msgid "Server restarted, please reload page."
 msgstr "Server startet på nytt. Last inn siden på nytt"
 
-#: cps/admin.py:153
+#: cps/admin.py:154
 #, fuzzy
 msgid "Performing Server shutdown, please close window."
 msgstr "Utfører avslutning av server, vennligst lukk vinduet"
 
-#: cps/admin.py:161
+#: cps/admin.py:162
 msgid "Success! Database Reconnected"
 msgstr ""
 
-#: cps/admin.py:164
+#: cps/admin.py:165
 msgid "Unknown command"
 msgstr "Ukjent kommando"
 
-#: cps/admin.py:175
+#: cps/admin.py:176
 #, fuzzy
-msgid "Success! Books queued for Metadata Backup, please check Tasks for result"
-msgstr "Test e-post i kø for sending til %(email)s, sjekk Oppgaver for resultat"
+msgid ""
+"Success! Books queued for Metadata Backup, please check Tasks for result"
+msgstr ""
+"Test e-post i kø for sending til %(email)s, sjekk Oppgaver for resultat"
 
-#: cps/admin.py:208 cps/editbooks.py:629 cps/editbooks.py:672
-#: cps/editbooks.py:1317 cps/updater.py:615 cps/uploader.py:108
+#: cps/admin.py:232 cps/editbooks.py:759 cps/editbooks.py:802
+#: cps/editbooks.py:1453 cps/updater.py:615 cps/uploader.py:108
 #: cps/uploader.py:117
 msgid "Unknown"
 msgstr "Ukjent"
 
-#: cps/admin.py:233
+#: cps/admin.py:258
 msgid "Admin page"
 msgstr "Admin side"
 
-#: cps/admin.py:253
+#: cps/admin.py:278
 msgid "Basic Configuration"
 msgstr "Grunnleggende konfigurasjon"
 
-#: cps/admin.py:291
+#: cps/admin.py:316
 msgid "UI Configuration"
 msgstr "UI-konfigurasjon"
 
-#: cps/admin.py:315 cps/admin.py:999 cps/db.py:768 cps/search.py:150
-#: cps/web.py:754
+#: cps/admin.py:340 cps/admin.py:1024 cps/db.py:774 cps/search.py:150
+#: cps/web.py:785
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Egendefinert kolonnenr.%(column)d finnes ikke i caliber-databasen"
 
-#: cps/admin.py:333 cps/templates/admin.html:51
+#: cps/admin.py:358 cps/templates/admin.html:53
 msgid "Edit Users"
 msgstr "Rediger brukere"
 
-#: cps/admin.py:377 cps/opds.py:540 cps/templates/grid.html:14
+#: cps/admin.py:402 cps/opds.py:540 cps/templates/grid.html:14
 #: cps/templates/list.html:13
 msgid "All"
 msgstr "Alle"
 
-#: cps/admin.py:404 cps/admin.py:1429
+#: cps/admin.py:429 cps/admin.py:1454
 msgid "User not found"
 msgstr "Bruker ikke funnet"
 
-#: cps/admin.py:418
+#: cps/admin.py:443
+#, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} brukere ble slettet"
 
-#: cps/admin.py:441 cps/templates/config_view_edit.html:133
+#: cps/admin.py:466 cps/templates/config_view_edit.html:133
 #: cps/templates/user_edit.html:45 cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Vis alt"
 
-#: cps/admin.py:462 cps/admin.py:468
+#: cps/admin.py:487 cps/admin.py:493
 msgid "Malformed request"
 msgstr "Feil utformet forespørsel"
 
-#: cps/admin.py:480 cps/admin.py:2073
+#: cps/admin.py:505 cps/admin.py:2103
 msgid "Guest Name can't be changed"
 msgstr "Gjestenavn kan ikke endres"
 
-#: cps/admin.py:492
+#: cps/admin.py:517
 msgid "Guest can't have this role"
 msgstr "Gjesten kan ikke ha denne rollen"
 
-#: cps/admin.py:504 cps/admin.py:2027
+#: cps/admin.py:529 cps/admin.py:2057
 msgid "No admin user remaining, can't remove admin role"
 msgstr "Ingen administratorbruker igjen, kan ikke fjerne administratorrollen"
 
-#: cps/admin.py:508 cps/admin.py:522
+#: cps/admin.py:533 cps/admin.py:547
 msgid "Value has to be true or false"
 msgstr "Verdien må være sann eller usann"
 
-#: cps/admin.py:510
+#: cps/admin.py:535
 msgid "Invalid role"
 msgstr "Ugyldig rolle"
 
-#: cps/admin.py:514
+#: cps/admin.py:539
 msgid "Guest can't have this view"
 msgstr "Gjestene kan ikke ha denne utsikten"
 
-#: cps/admin.py:524
+#: cps/admin.py:549
 msgid "Invalid view"
 msgstr "Ugyldig visning"
 
-#: cps/admin.py:527
+#: cps/admin.py:552
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "Gjestenes lokalitet bestemmes automatisk og kan ikke angis"
 
-#: cps/admin.py:531
+#: cps/admin.py:556
 msgid "No Valid Locale Given"
 msgstr "Ingen gyldig lokalitet gitt"
 
-#: cps/admin.py:542
+#: cps/admin.py:567
 msgid "No Valid Book Language Given"
 msgstr "Ikke oppgitt gyldig bokspråk"
 
-#: cps/admin.py:544 cps/editbooks.py:306
+#: cps/admin.py:569 cps/editbooks.py:376
 msgid "Parameter not found"
 msgstr "Parameter ikke funnet"
 
-#: cps/admin.py:581
+#: cps/admin.py:606
 msgid "Invalid Read Column"
 msgstr "Ugyldig lesekolonne"
 
-#: cps/admin.py:587
+#: cps/admin.py:612
 msgid "Invalid Restricted Column"
 msgstr "Ugyldig begrenset kolonne"
 
-#: cps/admin.py:607 cps/admin.py:1898
-msgid "Calibre-Web configuration updated"
+#: cps/admin.py:632 cps/admin.py:1928
+#, fuzzy
+msgid "Calibre-Web Automated configuration updated"
 msgstr "Calibre-Web-konfigurasjonen er oppdatert"
 
-#: cps/admin.py:619
+#: cps/admin.py:644
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Vil du virkelig slette Kobo-tokenet?"
 
-#: cps/admin.py:621
+#: cps/admin.py:646
 msgid "Do you really want to delete this domain?"
 msgstr "Vil du virkelig slette dette domenet?"
 
-#: cps/admin.py:623
+#: cps/admin.py:648
 msgid "Do you really want to delete this user?"
 msgstr "Vil du virkelig slette denne brukeren?"
 
-#: cps/admin.py:625
+#: cps/admin.py:650
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Er du sikker på at du vil slette denne hyllen?"
 
-#: cps/admin.py:627
+#: cps/admin.py:652
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr "Er du sikker på at du vil endre lokaliteter for valgte bruker(e)?"
 
-#: cps/admin.py:629
-msgid "Are you sure you want to change visible book languages for selected user(s)?"
+#: cps/admin.py:654
+msgid ""
+"Are you sure you want to change visible book languages for selected user(s)?"
 msgstr "Er du sikker på at du vil endre synlige bokspråk for valgte bruker(e)?"
 
-#: cps/admin.py:631
-msgid "Are you sure you want to change the selected role for the selected user(s)?"
-msgstr "Er du sikker på at du vil endre den valgte rollen for den(e) valgte brukeren?"
+#: cps/admin.py:656
+msgid ""
+"Are you sure you want to change the selected role for the selected user(s)?"
+msgstr ""
+"Er du sikker på at du vil endre den valgte rollen for den(e) valgte brukeren?"
 
-#: cps/admin.py:633
-msgid "Are you sure you want to change the selected restrictions for the selected user(s)?"
-msgstr "Er du sikker på at du vil endre de valgte begrensningene for den(e) valgte brukeren?"
+#: cps/admin.py:658
+msgid ""
+"Are you sure you want to change the selected restrictions for the selected "
+"user(s)?"
+msgstr ""
+"Er du sikker på at du vil endre de valgte begrensningene for den(e) valgte "
+"brukeren?"
 
-#: cps/admin.py:635
-msgid "Are you sure you want to change the selected visibility restrictions for the selected user(s)?"
-msgstr "Er du sikker på at du vil endre de valgte synlighetsbegrensningene for valgte bruker(e)?"
+#: cps/admin.py:660
+msgid ""
+"Are you sure you want to change the selected visibility restrictions for the "
+"selected user(s)?"
+msgstr ""
+"Er du sikker på at du vil endre de valgte synlighetsbegrensningene for "
+"valgte bruker(e)?"
 
-#: cps/admin.py:638
-msgid "Are you sure you want to change shelf sync behavior for the selected user(s)?"
-msgstr "Er du sikker på at du vil endre atferden for hyllesynkronisering for de(n) valgte brukeren(e)?"
+#: cps/admin.py:663
+msgid ""
+"Are you sure you want to change shelf sync behavior for the selected user(s)?"
+msgstr ""
+"Er du sikker på at du vil endre atferden for hyllesynkronisering for de(n) "
+"valgte brukeren(e)?"
 
-#: cps/admin.py:640
+#: cps/admin.py:665
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Er du sikker på at du vil endre plassering av Caliber-biblioteket?"
 
-#: cps/admin.py:642
-msgid "Calibre-Web will search for updated Covers and update Cover Thumbnails, this may take a while?"
-msgstr "Calibre-Web vil søke etter oppdaterte omslag og oppdatere omslagsminiatyrbilder, kan dette ta litt tid?"
+#: cps/admin.py:667
+#, fuzzy
+msgid ""
+"Calibre-Web Automated will search for updated Covers and update Cover "
+"Thumbnails, this may take a while?"
+msgstr ""
+"Calibre-Web vil søke etter oppdaterte omslag og oppdatere "
+"omslagsminiatyrbilder, kan dette ta litt tid?"
 
-#: cps/admin.py:645
-msgid "Are you sure you want delete Calibre-Web's sync database to force a full sync with your Kobo Reader?"
-msgstr "Er du sikker på at du vil slette Calibre-Webs synkroniseringsdatabase for å tvinge frem en full synkronisering med Kobo Reader?"
+#: cps/admin.py:670
+#, fuzzy
+msgid ""
+"Are you sure you want delete Calibre-Web Automated's sync database to force "
+"a full sync with your Kobo Reader?"
+msgstr ""
+"Er du sikker på at du vil slette Calibre-Webs synkroniseringsdatabase for å "
+"tvinge frem en full synkronisering med Kobo Reader?"
 
-#: cps/admin.py:888 cps/admin.py:894 cps/admin.py:904 cps/admin.py:914
+#: cps/admin.py:913 cps/admin.py:919 cps/admin.py:929 cps/admin.py:939
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Benekte"
 
-#: cps/admin.py:890 cps/admin.py:896 cps/admin.py:906 cps/admin.py:916
+#: cps/admin.py:915 cps/admin.py:921 cps/admin.py:931 cps/admin.py:941
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Tillate"
 
-#: cps/admin.py:949
+#: cps/admin.py:974
+#, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} synkroniseringsoppføringer slettet"
 
-#: cps/admin.py:990
+#: cps/admin.py:1015
 msgid "Tag not found"
 msgstr "Merket ble ikke funnet"
 
-#: cps/admin.py:1008
+#: cps/admin.py:1033
 msgid "Invalid Action"
 msgstr "Ugyldig handling"
 
-#: cps/admin.py:1135
+#: cps/admin.py:1160
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json er ikke konfigurert for webapplikasjon"
 
-#: cps/admin.py:1180
+#: cps/admin.py:1205
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Loggfilplasseringen er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:1186
+#: cps/admin.py:1211
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
-msgstr "Plasseringen av tilgangsloggfilen er ikke gyldig, skriv inn riktig bane"
+msgstr ""
+"Plasseringen av tilgangsloggfilen er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:1220
+#: cps/admin.py:1245
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "Angi en LDAP-leverandør, port, DN og brukerobjektidentifikator"
 
-#: cps/admin.py:1226
+#: cps/admin.py:1251
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Vennligst skriv inn en LDAP-tjenestekonto og passord"
 
-#: cps/admin.py:1229
+#: cps/admin.py:1254
 msgid "Please Enter a LDAP Service Account"
 msgstr "Angi en LDAP-tjenestekonto"
 
-#: cps/admin.py:1234
+#: cps/admin.py:1259
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-gruppeobjektfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1236
+#: cps/admin.py:1261
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-gruppeobjektfilter har uovertruffen parentes"
 
-#: cps/admin.py:1240
+#: cps/admin.py:1265
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-brukerobjektfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1242
+#: cps/admin.py:1267
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-brukerobjektfilter har uovertruffen parentes"
 
-#: cps/admin.py:1249
+#: cps/admin.py:1274
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-medlemsbrukerfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1251
+#: cps/admin.py:1276
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "LDAP-medlemsbrukerfilter har uovertruffen parentes"
 
-#: cps/admin.py:1258
-msgid "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter Correct Path"
-msgstr "LDAP CA-sertifikat, sertifikat eller nøkkelplassering er ikke gyldig. Angi riktig bane"
+#: cps/admin.py:1283
+msgid ""
+"LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
+"Correct Path"
+msgstr ""
+"LDAP CA-sertifikat, sertifikat eller nøkkelplassering er ikke gyldig. Angi "
+"riktig bane"
 
-#: cps/admin.py:1289 cps/templates/admin.html:53
+#: cps/admin.py:1314 cps/templates/admin.html:55
 msgid "Add New User"
 msgstr "Legg til ny bruker"
 
-#: cps/admin.py:1298 cps/templates/admin.html:100
+#: cps/admin.py:1323 cps/templates/admin.html:103
 #, fuzzy
 msgid "Edit Email Server Settings"
 msgstr "Rediger e-postserverinnstillinger"
 
-#: cps/admin.py:1317
+#: cps/admin.py:1342
 msgid "Success! Gmail Account Verified."
 msgstr ""
 
-#: cps/admin.py:1337 cps/admin.py:1340 cps/admin.py:1725 cps/admin.py:1882
-#: cps/admin.py:1980 cps/admin.py:2101 cps/editbooks.py:168
-#: cps/editbooks.py:576 cps/editbooks.py:1271 cps/shelf.py:90 cps/shelf.py:150
-#: cps/shelf.py:193 cps/shelf.py:243 cps/shelf.py:280 cps/shelf.py:354
-#: cps/shelf.py:476 cps/tasks/convert.py:156 cps/web.py:1533
+#: cps/admin.py:1362 cps/admin.py:1365 cps/admin.py:1750 cps/admin.py:1912
+#: cps/admin.py:2010 cps/admin.py:2131 cps/editbooks.py:168
+#: cps/editbooks.py:706 cps/editbooks.py:1407 cps/shelf.py:91 cps/shelf.py:154
+#: cps/shelf.py:197 cps/shelf.py:247 cps/shelf.py:284 cps/shelf.py:358
+#: cps/shelf.py:480 cps/tasks/convert.py:156 cps/web.py:1585
 #, fuzzy, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Databasefeil: %(error)s."
 
-#: cps/admin.py:1347
+#: cps/admin.py:1372
 #, python-format
-msgid "Test e-mail queued for sending to %(email)s, please check Tasks for result"
-msgstr "Test e-post i kø for sending til %(email)s, sjekk Oppgaver for resultat"
+msgid ""
+"Test e-mail queued for sending to %(email)s, please check Tasks for result"
+msgstr ""
+"Test e-post i kø for sending til %(email)s, sjekk Oppgaver for resultat"
 
-#: cps/admin.py:1350
+#: cps/admin.py:1375
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Det oppsto en feil ved sending av test-e-posten: %(res)s"
 
-#: cps/admin.py:1352
+#: cps/admin.py:1377
 msgid "Please configure your e-mail address first..."
 msgstr "Vennligst konfigurer e-postadressen din først..."
 
-#: cps/admin.py:1354
+#: cps/admin.py:1379
 #, fuzzy
 msgid "Email Server Settings updated"
 msgstr "E-postserverinnstillinger oppdatert"
 
-#: cps/admin.py:1377 cps/templates/admin.html:195
+#: cps/admin.py:1402 cps/templates/admin.html:198
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Rediger innstillinger for planlagte oppgaver"
 
-#: cps/admin.py:1389
+#: cps/admin.py:1414
 msgid "Invalid start time for task specified"
 msgstr "Ugyldig starttidspunkt for spesifisert oppgave"
 
-#: cps/admin.py:1394
+#: cps/admin.py:1419
 msgid "Invalid duration for task specified"
 msgstr "Ugyldig varighet for spesifisert oppgave"
 
-#: cps/admin.py:1404
+#: cps/admin.py:1429
 msgid "Scheduled tasks settings updated"
 msgstr "Innstillinger for planlagte oppgaver er oppdatert"
 
-#: cps/admin.py:1414 cps/admin.py:1463 cps/admin.py:2097 cps/web.py:1323
+#: cps/admin.py:1439 cps/admin.py:1488 cps/admin.py:2127 cps/web.py:1373
 #, fuzzy
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "En ukjent feil oppstod. Prøv igjen senere."
 
-#: cps/admin.py:1418
+#: cps/admin.py:1443
 msgid "Settings DB is not Writeable"
 msgstr "Innstillinger DB er ikke skrivbar"
 
-#: cps/admin.py:1448 cps/admin.py:2089
+#: cps/admin.py:1473 cps/admin.py:2119
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Rediger bruker %(nick)s"
 
-#: cps/admin.py:1460
+#: cps/admin.py:1485
 #, fuzzy, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Passord for bruker %(user)s tilbakestilling"
 
-#: cps/admin.py:1466
+#: cps/admin.py:1491
 #, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Vennligst konfigurer SMTP-postinnstillingene først..."
 
-#: cps/admin.py:1477
+#: cps/admin.py:1502
 msgid "Logfile viewer"
 msgstr "Loggfilviser"
 
-#: cps/admin.py:1543
+#: cps/admin.py:1568
 msgid "Requesting update package"
 msgstr "Ber om oppdateringspakke"
 
-#: cps/admin.py:1544
+#: cps/admin.py:1569
 msgid "Downloading update package"
 msgstr "Laster ned oppdateringspakken"
 
-#: cps/admin.py:1545
+#: cps/admin.py:1570
 msgid "Unzipping update package"
 msgstr "Pakker ut oppdateringspakken"
 
-#: cps/admin.py:1546
+#: cps/admin.py:1571
 msgid "Replacing files"
 msgstr "Erstatter filer"
 
-#: cps/admin.py:1547
+#: cps/admin.py:1572
 msgid "Database connections are closed"
 msgstr "Databaseforbindelser er stengt"
 
-#: cps/admin.py:1548
+#: cps/admin.py:1573
 msgid "Stopping server"
 msgstr "Stopper server"
 
-#: cps/admin.py:1549
+#: cps/admin.py:1574
 msgid "Update finished, please press okay and reload page"
 msgstr "Oppdatering fullført, vennligst trykk OK og last inn siden på nytt"
 
-#: cps/admin.py:1550 cps/admin.py:1551 cps/admin.py:1552 cps/admin.py:1553
-#: cps/admin.py:1554 cps/admin.py:1555
+#: cps/admin.py:1575 cps/admin.py:1576 cps/admin.py:1577 cps/admin.py:1578
+#: cps/admin.py:1579 cps/admin.py:1580
 msgid "Update failed:"
 msgstr "Oppdatering mislyktes:"
 
-#: cps/admin.py:1550 cps/updater.py:391 cps/updater.py:626 cps/updater.py:628
+#: cps/admin.py:1575 cps/updater.py:391 cps/updater.py:626 cps/updater.py:628
 msgid "HTTP Error"
 msgstr "HTTP-feil"
 
-#: cps/admin.py:1551 cps/updater.py:393 cps/updater.py:630
+#: cps/admin.py:1576 cps/updater.py:393 cps/updater.py:630
 msgid "Connection error"
 msgstr "Tilkoblingsfeil"
 
-#: cps/admin.py:1552 cps/updater.py:395 cps/updater.py:632
+#: cps/admin.py:1577 cps/updater.py:395 cps/updater.py:632
 msgid "Timeout while establishing connection"
 msgstr "Tidsavbrudd under etablering av tilkobling"
 
-#: cps/admin.py:1553 cps/updater.py:397 cps/updater.py:634
+#: cps/admin.py:1578 cps/updater.py:397 cps/updater.py:634
 msgid "General error"
 msgstr "Generell feil"
 
-#: cps/admin.py:1554
+#: cps/admin.py:1579
 msgid "Update file could not be saved in temp dir"
 msgstr "Oppdateringsfilen kunne ikke lagres i temp dir"
 
-#: cps/admin.py:1555
+#: cps/admin.py:1580
 msgid "Files could not be replaced during update"
 msgstr "Filer kunne ikke erstattes under oppdatering"
 
-#: cps/admin.py:1579
+#: cps/admin.py:1604
 msgid "Failed to extract at least One LDAP User"
 msgstr "Kunne ikke pakke ut minst én LDAP-bruker"
 
-#: cps/admin.py:1624
+#: cps/admin.py:1649
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Kunne ikke opprette minst én LDAP-bruker"
 
-#: cps/admin.py:1637
+#: cps/admin.py:1662
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Feil: %(ldaperror)s"
 
-#: cps/admin.py:1641
+#: cps/admin.py:1666
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Feil: Ingen bruker ble returnert som svar fra LDAP-serveren"
 
-#: cps/admin.py:1677
+#: cps/admin.py:1702
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Minst én LDAP-bruker ikke funnet i databasen"
 
-#: cps/admin.py:1679
+#: cps/admin.py:1704
+#, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Bruker ble importert"
 
-#: cps/admin.py:1737
+#: cps/admin.py:1762
 msgid "Books path not valid"
 msgstr ""
 
-#: cps/admin.py:1744
+#: cps/admin.py:1769
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "DB-plassering er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:1772
+#: cps/admin.py:1797
 msgid "DB is not Writeable"
 msgstr "DB er ikke skrivbar"
 
-#: cps/admin.py:1786
+#: cps/admin.py:1811
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Nøkkelfilplasseringen er ikke gyldig. Angi riktig bane"
 
-#: cps/admin.py:1790
+#: cps/admin.py:1815
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
-msgstr "Sertifikatfilplasseringen er ikke gyldig, vennligst skriv inn riktig bane"
+msgstr ""
+"Sertifikatfilplasseringen er ikke gyldig, vennligst skriv inn riktig bane"
 
-#: cps/admin.py:1867
+#: cps/admin.py:1897
 msgid "Password length has to be between 1 and 40"
 msgstr ""
 
-#: cps/admin.py:1921
+#: cps/admin.py:1951
 msgid "Database Settings updated"
 msgstr "Databaseinnstillinger oppdatert"
 
-#: cps/admin.py:1929
+#: cps/admin.py:1959
 msgid "Database Configuration"
 msgstr "Databasekonfigurasjon"
 
-#: cps/admin.py:1944 cps/web.py:1297
+#: cps/admin.py:1974 cps/web.py:1347
 #, fuzzy
 msgid "Oops! Please complete all fields."
 msgstr "Vennligst fyll ut alle feltene!"
 
-#: cps/admin.py:1953
+#: cps/admin.py:1983
 msgid "E-mail is not from valid domain"
 msgstr "E-post er ikke fra gyldig domene"
 
-#: cps/admin.py:1959
+#: cps/admin.py:1989
 msgid "Add new user"
 msgstr "Legg til ny bruker"
 
-#: cps/admin.py:1970
+#: cps/admin.py:2000
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Bruker '%(user)s' opprettet"
 
-#: cps/admin.py:1976
+#: cps/admin.py:2006
 #, fuzzy
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "Fant en eksisterende konto for denne e-postadressen eller navnet."
 
-#: cps/admin.py:2006
+#: cps/admin.py:2036
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Brukeren '%(nick)s' slettet"
 
-#: cps/admin.py:2009
+#: cps/admin.py:2039
 msgid "Can't delete Guest User"
 msgstr "Kan ikke slette gjestebruker"
 
-#: cps/admin.py:2012
+#: cps/admin.py:2042
 msgid "No admin user remaining, can't delete user"
 msgstr "Ingen administratorbruker igjen, kan ikke slette bruker"
 
-#: cps/admin.py:2067 cps/web.py:1482
+#: cps/admin.py:2097 cps/web.py:1532
 #, fuzzy
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-postadresse kan ikke være tom og må være en gyldig e-post"
 
-#: cps/admin.py:2093
+#: cps/admin.py:2123
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Bruker '%(nick)s' oppdatert"
@@ -535,11 +573,92 @@ msgstr "ikke installert"
 msgid "Execution permissions missing"
 msgstr "Utførelsestillatelser mangler"
 
-#: cps/db.py:1012 cps/templates/config_edit.html:203
+#: cps/cwa_functions.py:238
+#, fuzzy
+msgid "Calibre-Web Automated User Settings"
+msgstr "Caliber ebook-convert %(tool)s ble ikke funnet"
+
+#: cps/cwa_functions.py:288
+msgid "Calibre-Web Automated Sever Stats & Archive"
+msgstr ""
+
+#: cps/cwa_functions.py:303
+msgid "Calibre-Web Automated - Full Enforcement History"
+msgstr ""
+
+#: cps/cwa_functions.py:312
+msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
+msgstr ""
+
+#: cps/cwa_functions.py:321
+msgid "Calibre-Web Automated - Full Import History"
+msgstr ""
+
+#: cps/cwa_functions.py:330
+msgid "Calibre-Web Automated - Full Conversion History"
+msgstr ""
+
+#: cps/cwa_functions.py:339
+msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
+msgstr ""
+
+#: cps/cwa_functions.py:348
+msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
+msgstr ""
+
+#: cps/cwa_functions.py:366
+msgid "✅ All Monitoring Services are running as intended! 👍"
+msgstr ""
+
+#: cps/cwa_functions.py:368
+msgid ""
+"🔴 The Ingest Service is running but the Metadata Change Detector is not"
+msgstr ""
+
+#: cps/cwa_functions.py:370
+msgid ""
+"🔴 The Metadata Change Detector is running but the Ingest Service is not"
+msgstr ""
+
+#: cps/cwa_functions.py:372
+msgid ""
+"⛔ Neither the Ingest Service or the Metadata Change Detector are running"
+msgstr ""
+
+#: cps/cwa_functions.py:374
+msgid "An Error has occurred"
+msgstr ""
+
+#: cps/cwa_functions.py:545 cps/cwa_functions.py:552
+msgid "Calibre-Web Automated - Convert Library"
+msgstr ""
+
+#: cps/cwa_functions.py:665 cps/cwa_functions.py:671
+msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
+msgstr ""
+
+#: cps/cwa_functions.py:756
+msgid "You must be an admin to access this page."
+msgstr ""
+
+#: cps/cwa_functions.py:771
+msgid "Both username and image data are required."
+msgstr ""
+
+#: cps/cwa_functions.py:789
+#, fuzzy
+msgid "Profile picture updated successfully."
+msgstr "{} brukere ble slettet"
+
+#: cps/cwa_functions.py:802
+msgid "CWA Profile Picture Management (WIP)"
+msgstr ""
+
+#: cps/db.py:1018 cps/templates/config_edit.html:217
 #: cps/templates/config_view_edit.html:62 cps/templates/email_edit.html:41
-#: cps/web.py:569 cps/web.py:603 cps/web.py:648 cps/web.py:688 cps/web.py:715
-#: cps/web.py:996 cps/web.py:1026 cps/web.py:1071 cps/web.py:1099
-#: cps/web.py:1138
+#: cps/web.py:600 cps/web.py:634 cps/web.py:679 cps/web.py:719 cps/web.py:746
+#: cps/web.py:1046 cps/web.py:1076 cps/web.py:1121 cps/web.py:1149
+#: cps/web.py:1188
 msgid "None"
 msgstr "Ingen"
 
@@ -562,137 +681,155 @@ msgstr "Boken ble satt i kø for konvertering til %(book_format)s"
 msgid "There was an error converting this book: %(res)s"
 msgstr "Det oppsto en feil ved konvertering av denne boken: %(res)s"
 
-#: cps/editbooks.py:448 cps/editbooks.py:943 cps/web.py:536 cps/web.py:1574
-#: cps/web.py:1619 cps/web.py:1664
+#: cps/editbooks.py:578 cps/editbooks.py:1073 cps/web.py:567 cps/web.py:1628
+#: cps/web.py:1673 cps/web.py:1725
 #, fuzzy
-msgid "Oops! Selected book is unavailable. File does not exist or is not accessible"
-msgstr "Oops! Den valgte boktittelen er utilgjengelig. Filen eksisterer ikke eller er ikke tilgjengelig"
+msgid ""
+"Oops! Selected book is unavailable. File does not exist or is not accessible"
+msgstr ""
+"Oops! Den valgte boktittelen er utilgjengelig. Filen eksisterer ikke eller "
+"er ikke tilgjengelig"
 
-#: cps/editbooks.py:494 cps/editbooks.py:1300
+#: cps/editbooks.py:624 cps/editbooks.py:1436
 msgid "User has no rights to upload cover"
 msgstr "Brukeren har ingen rettigheter til å laste opp cover"
 
-#: cps/editbooks.py:515 cps/editbooks.py:758
+#: cps/editbooks.py:645 cps/editbooks.py:888
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
-msgstr "Identifikatorer skiller ikke mellom store og små bokstaver, overskriver gammel identifikator"
+msgstr ""
+"Identifikatorer skiller ikke mellom store og små bokstaver, overskriver "
+"gammel identifikator"
 
-#: cps/editbooks.py:530 cps/editbooks.py:732 cps/editbooks.py:1070
+#: cps/editbooks.py:660 cps/editbooks.py:862 cps/editbooks.py:1200
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' er ikke et gyldig språk"
 
-#: cps/editbooks.py:558
+#: cps/editbooks.py:688
 msgid "Metadata successfully updated"
 msgstr "Metadata ble oppdatert"
 
-#: cps/editbooks.py:581
+#: cps/editbooks.py:711
+#, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Feil ved redigering av bok: {}"
 
-#: cps/editbooks.py:676
-msgid "Uploaded book probably exists in the library, consider to change before upload new: "
-msgstr "Opplastet bok finnes sannsynligvis i biblioteket, vurder å endre før du laster opp ny: "
+#: cps/editbooks.py:806
+msgid ""
+"Uploaded book probably exists in the library, consider to change before "
+"upload new: "
+msgstr ""
+"Opplastet bok finnes sannsynligvis i biblioteket, vurder å endre før du "
+"laster opp ny: "
 
-#: cps/editbooks.py:770 cps/editbooks.py:1217
+#: cps/editbooks.py:900 cps/editbooks.py:1353
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Filtypen «%(ext)s» er ikke tillatt å lastes opp til denne serveren"
 
-#: cps/editbooks.py:776 cps/editbooks.py:1228
+#: cps/editbooks.py:906 cps/editbooks.py:1364
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Filtypen «%(ext)s» er ikke tillatt å lastes opp til denne serveren"
 
-#: cps/editbooks.py:780 cps/editbooks.py:1233
+#: cps/editbooks.py:910 cps/editbooks.py:1369
 msgid "File to be uploaded must have an extension"
 msgstr "Filen som skal lastes opp må ha en utvidelse"
 
-#: cps/editbooks.py:788
+#: cps/editbooks.py:918
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Filen %(filename)s kunne ikke lagres i midlertidig dir"
 
-#: cps/editbooks.py:808
+#: cps/editbooks.py:938
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Kunne ikke flytte omslagsfil %(file)s: %(error)s"
 
-#: cps/editbooks.py:865 cps/editbooks.py:867
+#: cps/editbooks.py:995 cps/editbooks.py:997
 msgid "Book Format Successfully Deleted"
 msgstr "Bokformatet er slettet"
 
-#: cps/editbooks.py:874 cps/editbooks.py:876
+#: cps/editbooks.py:1004 cps/editbooks.py:1006
 msgid "Book Successfully Deleted"
 msgstr "Boken ble slettet"
 
-#: cps/editbooks.py:928
+#: cps/editbooks.py:1058
 msgid "You are missing permissions to delete books"
 msgstr "Du mangler tillatelser til å slette bøker"
 
-#: cps/editbooks.py:978
+#: cps/editbooks.py:1108
 msgid "edit metadata"
 msgstr "redigere metadata"
 
-#: cps/editbooks.py:1031
+#: cps/editbooks.py:1161
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s er ikke et gyldig tall, hopper over"
 
-#: cps/editbooks.py:1222
+#: cps/editbooks.py:1358
 msgid "User has no rights to upload additional file formats"
 msgstr "Brukeren har ingen rettigheter til å laste opp flere filformater"
 
-#: cps/editbooks.py:1246
+#: cps/editbooks.py:1382
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Kunne ikke opprette banen %(path)s (Tillatelse nektet)."
 
-#: cps/editbooks.py:1253
+#: cps/editbooks.py:1389
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Kunne ikke lagre filen %(file)s."
 
-#: cps/editbooks.py:1278
+#: cps/editbooks.py:1414
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Filformat %(ext)s lagt til %(book)s"
 
 #: cps/gdrive.py:58
-msgid "Google Drive setup not completed, try to deactivate and activate Google Drive again"
-msgstr "Google Disk-konfigurasjonen er ikke fullført. Prøv å deaktivere og aktivere Google Disk på nytt"
+msgid ""
+"Google Drive setup not completed, try to deactivate and activate Google "
+"Drive again"
+msgstr ""
+"Google Disk-konfigurasjonen er ikke fullført. Prøv å deaktivere og aktivere "
+"Google Disk på nytt"
 
 #: cps/gdrive.py:96
-msgid "Callback domain is not verified, please follow steps to verify domain in google developer console"
-msgstr "Tilbakeringingsdomene er ikke bekreftet. Følg fremgangsmåten for å bekrefte domenet i Googles utviklerkonsoll"
+msgid ""
+"Callback domain is not verified, please follow steps to verify domain in "
+"google developer console"
+msgstr ""
+"Tilbakeringingsdomene er ikke bekreftet. Følg fremgangsmåten for å bekrefte "
+"domenet i Googles utviklerkonsoll"
 
 #: cps/helper.py:87
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "%(format)s format ikke funnet for bok-ID: %(book)d"
 
-#: cps/helper.py:94 cps/tasks/convert.py:90
+#: cps/helper.py:93 cps/tasks/convert.py:88
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "%(format)s ikke funnet på Google Disk: %(fn)s"
 
-#: cps/helper.py:99
+#: cps/helper.py:98
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s ikke funnet: %(fn)s"
 
-#: cps/helper.py:104 cps/helper.py:233 cps/templates/detail.html:58
+#: cps/helper.py:104 cps/helper.py:233 cps/templates/detail.html:66
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Send til E-Reader"
 
-#: cps/helper.py:105 cps/helper.py:125 cps/helper.py:235
+#: cps/helper.py:105 cps/helper.py:125
 #, fuzzy
-msgid "This Email has been sent via Calibre-Web."
+msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Denne e-posten er sendt via Calibre-Web."
 
 #: cps/helper.py:123
 #, fuzzy
-msgid "Calibre-Web Test Email"
+msgid "Calibre-Web Automated Test Email"
 msgstr "Calibre-Web test e-post"
 
 #: cps/helper.py:124
@@ -701,7 +838,8 @@ msgid "Test Email"
 msgstr "Test e-post"
 
 #: cps/helper.py:141
-msgid "Get Started with Calibre-Web"
+#, fuzzy
+msgid "Get Started with Calibre-Web Automated"
 msgstr "Kom i gang med Calibre-Web"
 
 #: cps/helper.py:146
@@ -724,18 +862,27 @@ msgstr "Send %(format)s til E-Reader"
 msgid "%(book)s send to eReader"
 msgstr "%(book)s sendes til E-Reader"
 
+#: cps/helper.py:235
+#, fuzzy
+msgid "This Email has been sent via Automated."
+msgstr "Denne e-posten er sendt via Calibre-Web."
+
 #: cps/helper.py:237
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "Den forespurte filen kunne ikke leses. Kanskje feil tillatelser?"
 
 #: cps/helper.py:352
+#, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "Lesestatus kunne ikke angis: {}"
 
 #: cps/helper.py:375
 #, python-format
-msgid "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
-msgstr "Sletting av bokmappe for bok %(id)s mislyktes, banen har undermapper: %(path)s"
+msgid ""
+"Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
+msgstr ""
+"Sletting av bokmappe for bok %(id)s mislyktes, banen har undermapper: "
+"%(path)s"
 
 #: cps/helper.py:381
 #, python-format
@@ -744,23 +891,32 @@ msgstr "Sletting av bok %(id)s mislyktes: %(message)s"
 
 #: cps/helper.py:392
 #, python-format
-msgid "Deleting book %(id)s from database only, book path in database not valid: %(path)s"
-msgstr "Sletter bok %(id)s kun fra databasen, bokbanen i databasen er ikke gyldig: %(path)s"
+msgid ""
+"Deleting book %(id)s from database only, book path in database not valid: "
+"%(path)s"
+msgstr ""
+"Sletter bok %(id)s kun fra databasen, bokbanen i databasen er ikke gyldig: "
+"%(path)s"
 
-#: cps/helper.py:439
+#: cps/helper.py:438
 #, python-format
-msgid "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
-msgstr "Endre navn på forfatter fra: '%(src)s' til '%(dest)s' mislyktes med feil: %(error)s"
+msgid ""
+"Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
+msgstr ""
+"Endre navn på forfatter fra: '%(src)s' til '%(dest)s' mislyktes med feil: "
+"%(error)s"
 
 #: cps/helper.py:507 cps/helper.py:516
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Fil %(file)s ikke funnet på Google Disk"
 
-#: cps/helper.py:559
+#: cps/helper.py:558
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
-msgstr "Endre navn på tittel fra: '%(src)s' til '%(dest)s' mislyktes med feil: %(error)s"
+msgstr ""
+"Endre navn på tittel fra: '%(src)s' til '%(dest)s' mislyktes med feil: "
+"%(error)s"
 
 #: cps/helper.py:597
 #, python-format
@@ -786,8 +942,11 @@ msgid "Password doesn't comply with password validation rules"
 msgstr ""
 
 #: cps/helper.py:847
-msgid "Python module 'advocate' is not installed but is needed for cover uploads"
-msgstr "Python-modulen 'advocate' er ikke installert, men er nødvendig for omslagsopplastinger"
+msgid ""
+"Python module 'advocate' is not installed but is needed for cover uploads"
+msgstr ""
+"Python-modulen 'advocate' er ikke installert, men er nødvendig for "
+"omslagsopplastinger"
 
 #: cps/helper.py:857
 msgid "Error Downloading Cover"
@@ -798,8 +957,12 @@ msgid "Cover Format Error"
 msgstr "Omslagsformatfeil"
 
 #: cps/helper.py:863
-msgid "You are not allowed to access localhost or the local network for cover uploads"
-msgstr "Du har ikke tilgang til localhost eller det lokale nettverket for coveropplastinger"
+msgid ""
+"You are not allowed to access localhost or the local network for cover "
+"uploads"
+msgstr ""
+"Du har ikke tilgang til localhost eller det lokale nettverket for "
+"coveropplastinger"
 
 #: cps/helper.py:873
 msgid "Failed to create path for cover"
@@ -861,24 +1024,33 @@ msgstr "Utførelsestillatelser mangler"
 msgid "Error executing Calibre"
 msgstr "Feil ved kjøring av UnRar"
 
-#: cps/helper.py:1147 cps/templates/admin.html:216
+#: cps/helper.py:1147 cps/templates/admin.html:236
 msgid "Queue all books for metadata backup"
 msgstr "Sett alle bøker i kø for sikkerhetskopiering av metadata"
 
 #: cps/kobo_auth.py:92
-msgid "Please access Calibre-Web from non localhost to get valid api_endpoint for kobo device"
-msgstr "Gå til Calibre-Web fra ikke-lokale vert for å få gyldig api_endpoint for kobo-enhet"
+#, fuzzy
+msgid ""
+"Please access Calibre-Web Automated from non localhost to get valid "
+"api_endpoint for kobo device"
+msgstr ""
+"Gå til Calibre-Web fra ikke-lokale vert for å få gyldig api_endpoint for "
+"kobo-enhet"
 
 #: cps/kobo_auth.py:118
 msgid "Kobo Setup"
 msgstr "Kobo oppsett"
+
+#: cps/kosync.py:138
+msgid "KOReader Sync Plugin"
+msgstr ""
 
 #: cps/oauth_bb.py:78
 #, python-format
 msgid "Register with %(provider)s"
 msgstr "Registrer deg hos %(provider)s"
 
-#: cps/oauth_bb.py:139 cps/remotelogin.py:131
+#: cps/oauth_bb.py:139 cps/remotelogin.py:164
 #, fuzzy, python-format
 msgid "Success! You are now logged in as: %(nickname)s"
 msgstr "du er nå logget på som: '%(nickname)s'"
@@ -928,6 +1100,7 @@ msgid "GitHub Oauth error, please retry later."
 msgstr "GitHub Oauth-feil, prøv igjen senere."
 
 #: cps/oauth_bb.py:338
+#, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "GitHub Oauth-feil: {}"
 
@@ -936,182 +1109,184 @@ msgid "Google Oauth error, please retry later."
 msgstr "Google Oauth-feil, prøv igjen senere."
 
 #: cps/oauth_bb.py:362
+#, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Google Oauth-feil: {}"
 
 #: cps/opds.py:299
+#, python-brace-format
 msgid "{} Stars"
 msgstr "{} Stjerner"
 
-#: cps/remotelogin.py:63 cps/templates/layout.html:67
-#: cps/templates/layout.html:102 cps/templates/login.html:4
-#: cps/templates/login.html:21 cps/web.py:1359
+#: cps/remotelogin.py:91 cps/templates/layout.html:131
+#: cps/templates/layout.html:173 cps/templates/login.html:4
+#: cps/templates/login.html:21 cps/web.py:1409
 msgid "Login"
 msgstr "Logg Inn"
 
-#: cps/remotelogin.py:75 cps/remotelogin.py:109
+#: cps/remotelogin.py:108 cps/remotelogin.py:142
 msgid "Token not found"
 msgstr "Token ikke funnet"
 
-#: cps/remotelogin.py:84 cps/remotelogin.py:117
+#: cps/remotelogin.py:117 cps/remotelogin.py:150
 msgid "Token has expired"
 msgstr "Token har utløpt"
 
-#: cps/remotelogin.py:93
+#: cps/remotelogin.py:126
 msgid "Success! Please return to your device"
 msgstr "Suksess! Gå tilbake til enheten din"
 
-#: cps/render_template.py:41 cps/web.py:425
+#: cps/render_template.py:50
 msgid "Books"
 msgstr "Bøker"
 
-#: cps/render_template.py:43
+#: cps/render_template.py:52
 msgid "Show recent books"
 msgstr "Vis nyere bøker"
 
-#: cps/render_template.py:44 cps/templates/index.xml:27
+#: cps/render_template.py:53 cps/templates/index.xml:27
 msgid "Hot Books"
 msgstr "Hot bøker"
 
-#: cps/render_template.py:46
+#: cps/render_template.py:55
 msgid "Show Hot Books"
 msgstr "Vis populære bøker"
 
-#: cps/render_template.py:48 cps/render_template.py:53
+#: cps/render_template.py:57 cps/render_template.py:62
 msgid "Downloaded Books"
 msgstr "Nedlastede bøker"
 
-#: cps/render_template.py:50 cps/render_template.py:55
+#: cps/render_template.py:59 cps/render_template.py:64
 #: cps/templates/user_table.html:167
 msgid "Show Downloaded Books"
 msgstr "Vis nedlastede bøker"
 
-#: cps/render_template.py:58 cps/templates/index.xml:36 cps/web.py:440
+#: cps/render_template.py:67 cps/templates/index.xml:36 cps/web.py:471
 msgid "Top Rated Books"
 msgstr "Topprangerte bøker"
 
-#: cps/render_template.py:60 cps/templates/user_table.html:161
+#: cps/render_template.py:69 cps/templates/user_table.html:161
 msgid "Show Top Rated Books"
 msgstr "Vis best rangerte bøker"
 
-#: cps/render_template.py:61 cps/templates/index.xml:63
-#: cps/templates/index.xml:67 cps/web.py:773
+#: cps/render_template.py:70 cps/templates/index.xml:63
+#: cps/templates/index.xml:67 cps/web.py:804
 msgid "Read Books"
 msgstr "Lese bøker"
 
-#: cps/render_template.py:63
+#: cps/render_template.py:72
 #, fuzzy
 msgid "Show Read and Unread"
 msgstr "Vis lest og ulest"
 
-#: cps/render_template.py:65 cps/templates/index.xml:70
-#: cps/templates/index.xml:74 cps/web.py:776
+#: cps/render_template.py:74 cps/templates/index.xml:70
+#: cps/templates/index.xml:74 cps/web.py:807
 msgid "Unread Books"
 msgstr "Uleste bøker"
 
-#: cps/render_template.py:67
+#: cps/render_template.py:76
 msgid "Show unread"
 msgstr "Vis ulest"
 
-#: cps/render_template.py:68
+#: cps/render_template.py:77
 msgid "Discover"
 msgstr "Oppdage"
 
-#: cps/render_template.py:70 cps/templates/index.xml:58
+#: cps/render_template.py:79 cps/templates/index.xml:58
 #: cps/templates/user_table.html:159 cps/templates/user_table.html:162
 msgid "Show Random Books"
 msgstr "Vis tilfeldige bøker"
 
-#: cps/render_template.py:71 cps/templates/book_table.html:67
-#: cps/templates/index.xml:97 cps/web.py:1142
+#: cps/render_template.py:80 cps/templates/book_table.html:100
+#: cps/templates/index.xml:97 cps/web.py:1192
 msgid "Categories"
 msgstr "Kategorier"
 
-#: cps/render_template.py:73 cps/templates/user_table.html:158
+#: cps/render_template.py:82 cps/templates/user_table.html:158
 #, fuzzy
 msgid "Show Category Section"
 msgstr "Vis kategorivalg"
 
-#: cps/render_template.py:74 cps/templates/book_edit.html:106
-#: cps/templates/book_table.html:68 cps/templates/index.xml:106
-#: cps/templates/search_form.html:70 cps/web.py:1032 cps/web.py:1044
+#: cps/render_template.py:83 cps/templates/book_edit.html:86
+#: cps/templates/book_table.html:101 cps/templates/index.xml:106
+#: cps/templates/search_form.html:70 cps/web.py:1082 cps/web.py:1094
 msgid "Series"
 msgstr "Serie"
 
-#: cps/render_template.py:76 cps/templates/user_table.html:157
+#: cps/render_template.py:85 cps/templates/user_table.html:157
 #, fuzzy
 msgid "Show Series Section"
 msgstr "Vis serieutvalg"
 
-#: cps/render_template.py:77 cps/templates/book_table.html:66
+#: cps/render_template.py:86 cps/templates/book_table.html:99
 #: cps/templates/index.xml:79
 msgid "Authors"
 msgstr "Forfattere"
 
-#: cps/render_template.py:79 cps/templates/user_table.html:160
+#: cps/render_template.py:88 cps/templates/user_table.html:160
 #, fuzzy
 msgid "Show Author Section"
 msgstr "Vis forfattervalg"
 
-#: cps/render_template.py:81 cps/templates/book_table.html:72
-#: cps/templates/index.xml:88 cps/web.py:1000
+#: cps/render_template.py:90 cps/templates/book_table.html:105
+#: cps/templates/index.xml:88 cps/web.py:1050
 msgid "Publishers"
 msgstr "Forlag"
 
-#: cps/render_template.py:83 cps/templates/user_table.html:163
+#: cps/render_template.py:92 cps/templates/user_table.html:163
 #, fuzzy
 msgid "Show Publisher Section"
 msgstr "Vis utgivervalg"
 
-#: cps/render_template.py:84 cps/templates/book_table.html:70
+#: cps/render_template.py:93 cps/templates/book_table.html:103
 #: cps/templates/index.xml:115 cps/templates/search_form.html:108
-#: cps/web.py:1114
+#: cps/web.py:1164
 msgid "Languages"
 msgstr "Språk"
 
-#: cps/render_template.py:87 cps/templates/user_table.html:155
+#: cps/render_template.py:96 cps/templates/user_table.html:155
 #, fuzzy
 msgid "Show Language Section"
 msgstr "Vis språkvalg"
 
-#: cps/render_template.py:88 cps/templates/index.xml:124
+#: cps/render_template.py:97 cps/templates/index.xml:124
 msgid "Ratings"
 msgstr "Vurderinger"
 
-#: cps/render_template.py:90 cps/templates/user_table.html:164
+#: cps/render_template.py:99 cps/templates/user_table.html:164
 #, fuzzy
 msgid "Show Ratings Section"
 msgstr "Vis vurderingsvalg"
 
-#: cps/render_template.py:91 cps/templates/index.xml:133
+#: cps/render_template.py:100 cps/templates/index.xml:133
 msgid "File formats"
 msgstr "Filformater"
 
-#: cps/render_template.py:93 cps/templates/user_table.html:165
+#: cps/render_template.py:102 cps/templates/user_table.html:165
 #, fuzzy
 msgid "Show File Formats Section"
 msgstr "Vis valg av filformater"
 
-#: cps/render_template.py:95 cps/web.py:799
+#: cps/render_template.py:104 cps/web.py:830
 msgid "Archived Books"
 msgstr "Arkiverte bøker"
 
-#: cps/render_template.py:97 cps/templates/user_table.html:166
+#: cps/render_template.py:106 cps/templates/user_table.html:166
 #, fuzzy
 msgid "Show Archived Books"
 msgstr "Vis arkiverte bøker"
 
-#: cps/render_template.py:100 cps/web.py:830
+#: cps/render_template.py:109 cps/web.py:880
 msgid "Books List"
 msgstr "Bøker Liste"
 
-#: cps/render_template.py:102 cps/templates/user_table.html:168
+#: cps/render_template.py:111 cps/templates/user_table.html:168
 msgid "Show Books List"
 msgstr "Vis bokliste"
 
-#: cps/search.py:50 cps/search.py:426 cps/templates/book_edit.html:244
+#: cps/search.py:50 cps/search.py:426 cps/templates/book_edit.html:242
 #: cps/templates/feed.xml:34 cps/templates/index.xml:12
-#: cps/templates/layout.html:46 cps/templates/layout.html:49
+#: cps/templates/layout.html:110 cps/templates/layout.html:113
 #: cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Søk"
@@ -1143,11 +1318,11 @@ msgstr "Lesestatus = %(status)s"
 msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr "Feil ved søk etter egendefinerte kolonner. Start Calibre-Web på nytt"
 
-#: cps/search.py:370 cps/search.py:402 cps/templates/layout.html:57
+#: cps/search.py:370 cps/search.py:402 cps/templates/layout.html:121
 msgid "Advanced Search"
 msgstr "Avansert søk"
 
-#: cps/shelf.py:49 cps/shelf.py:111
+#: cps/shelf.py:49 cps/shelf.py:115
 msgid "Invalid shelf specified"
 msgstr "Ugyldig hylle er angitt"
 
@@ -1160,107 +1335,107 @@ msgstr "Beklager at du ikke har lov til å legge til en bok i den hyllen"
 msgid "Book is already part of the shelf: %(shelfname)s"
 msgstr "Boken er allerede en del av hyllen: %(shelfname)s"
 
-#: cps/shelf.py:77
+#: cps/shelf.py:78
 #, python-format
 msgid "%(book_id)s is a invalid Book Id. Could not be added to Shelf"
 msgstr ""
 
-#: cps/shelf.py:97
+#: cps/shelf.py:98
 #, python-format
 msgid "Book has been added to shelf: %(sname)s"
 msgstr "Boken er lagt til i hyllen: %(sname)s"
 
-#: cps/shelf.py:116
+#: cps/shelf.py:120
 msgid "You are not allowed to add a book to the shelf"
 msgstr "Du har ikke lov til å legge en bok i hyllen"
 
-#: cps/shelf.py:134
+#: cps/shelf.py:138
 #, python-format
 msgid "Books are already part of the shelf: %(name)s"
 msgstr "Bøker er allerede en del av hyllen: %(name)s"
 
-#: cps/shelf.py:146
+#: cps/shelf.py:150
 #, python-format
 msgid "Books have been added to shelf: %(sname)s"
 msgstr "Bøker er lagt til i hyllen: %(sname)s"
 
-#: cps/shelf.py:153
+#: cps/shelf.py:157
 #, python-format
 msgid "Could not add books to shelf: %(sname)s"
 msgstr "Kunne ikke legge til bøker i hyllen: %(sname)s"
 
-#: cps/shelf.py:199
+#: cps/shelf.py:203
 #, python-format
 msgid "Book has been removed from shelf: %(sname)s"
 msgstr "Boken er fjernet fra hyllen: %(sname)s"
 
-#: cps/shelf.py:208
+#: cps/shelf.py:212
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr "Beklager at du ikke har lov til å fjerne en bok fra denne hyllen"
 
-#: cps/shelf.py:218 cps/templates/layout.html:158
+#: cps/shelf.py:222 cps/templates/layout.html:260
 msgid "Create a Shelf"
 msgstr "Lag en hylle"
 
-#: cps/shelf.py:226
+#: cps/shelf.py:230
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Beklager at du ikke har lov til å redigere denne hyllen"
 
-#: cps/shelf.py:228
+#: cps/shelf.py:232
 msgid "Edit a shelf"
 msgstr "Rediger en hylle"
 
-#: cps/shelf.py:237
+#: cps/shelf.py:241
 msgid "Error deleting Shelf"
 msgstr "Feil ved sletting av hylle"
 
-#: cps/shelf.py:239
+#: cps/shelf.py:243
 msgid "Shelf successfully deleted"
 msgstr "Hylle slettet"
 
-#: cps/shelf.py:289
+#: cps/shelf.py:293
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "Endre rekkefølgen på hylle: '%(name)s'"
 
-#: cps/shelf.py:324
+#: cps/shelf.py:328
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr "Beklager at du ikke har lov til å opprette en offentlig hylle"
 
-#: cps/shelf.py:341
+#: cps/shelf.py:345
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "Hylle %(title)s opprettet"
 
-#: cps/shelf.py:344
+#: cps/shelf.py:348
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "Hylle %(title)s endret"
 
-#: cps/shelf.py:358
+#: cps/shelf.py:362
 msgid "There was an error"
 msgstr "det var en feil"
 
-#: cps/shelf.py:380
+#: cps/shelf.py:384
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr "En offentlig hylle med navnet '%(title)s' eksisterer allerede."
 
-#: cps/shelf.py:391
+#: cps/shelf.py:395
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr "En privat hylle med navnet '%(title)s' eksisterer allerede."
 
-#: cps/shelf.py:481
+#: cps/shelf.py:485
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Hylle: '%(name)s'"
 
-#: cps/shelf.py:487
+#: cps/shelf.py:491
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Feil ved åpning av hylle. Hylle finnes ikke eller er ikke tilgjengelig"
 
-#: cps/tasks_status.py:47 cps/templates/layout.html:89
+#: cps/tasks_status.py:47 cps/templates/layout.html:159
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Oppgaver"
@@ -1299,205 +1474,226 @@ msgstr "Uventede data under lesing av oppdateringsinformasjon"
 
 #: cps/updater.py:440 cps/updater.py:552
 msgid "No update available. You already have the latest version installed"
-msgstr "Ingen oppdatering tilgjengelig. Du har allerede den nyeste versjonen installert"
+msgstr ""
+"Ingen oppdatering tilgjengelig. Du har allerede den nyeste versjonen "
+"installert"
 
-#: cps/updater.py:458
-msgid "A new update is available. Click on the button below to update to the latest version."
-msgstr "En ny oppdatering er tilgjengelig. Klikk på knappen nedenfor for å oppdatere til siste versjon."
+#: cps/updater.py:459
+msgid ""
+"A new update is available. Click on the button below to update to the latest "
+"version."
+msgstr ""
+"En ny oppdatering er tilgjengelig. Klikk på knappen nedenfor for å oppdatere "
+"til siste versjon."
 
 #: cps/updater.py:476
 msgid "Could not fetch update information"
 msgstr "Kunne ikke hente oppdateringsinformasjon"
 
-#: cps/updater.py:486
+#: cps/updater.py:487
 msgid "Click on the button below to update to the latest stable version."
 msgstr "Klikk på knappen nedenfor for å oppdatere til siste stabile versjon."
 
 #: cps/updater.py:495 cps/updater.py:509 cps/updater.py:520
 #, python-format
-msgid "A new update is available. Click on the button below to update to version: %(version)s"
-msgstr "En ny oppdatering er tilgjengelig. Klikk på knappen nedenfor for å oppdatere til versjon: %(version)s"
+msgid ""
+"A new update is available. Click on the button below to update to version: "
+"%(version)s"
+msgstr ""
+"En ny oppdatering er tilgjengelig. Klikk på knappen nedenfor for å oppdatere "
+"til versjon: %(version)s"
 
 #: cps/updater.py:538
 msgid "No release information available"
 msgstr "Ingen utgivelsesinformasjon tilgjengelig"
 
-#: cps/templates/index.html:6 cps/web.py:452
+#: cps/templates/index.html:6 cps/web.py:483
 msgid "Discover (Random Books)"
 msgstr "Discover (tilfeldige bøker)"
 
-#: cps/web.py:488
+#: cps/web.py:519
 msgid "Hot Books (Most Downloaded)"
 msgstr "Hot Books (mest nedlastede)"
 
-#: cps/web.py:519
+#: cps/web.py:550
 #, python-format
 msgid "Downloaded books by %(user)s"
 msgstr "Lastet ned bøker av %(user)s"
 
-#: cps/web.py:552
+#: cps/web.py:583
 #, python-format
 msgid "Author: %(name)s"
 msgstr "Forfatter: %(name)s"
 
-#: cps/web.py:588
+#: cps/web.py:619
 #, python-format
 msgid "Publisher: %(name)s"
 msgstr "Utgiver: %(name)s"
 
-#: cps/web.py:616
+#: cps/web.py:647
 #, python-format
 msgid "Series: %(serie)s"
 msgstr "Serie: %(serie)s"
 
-#: cps/web.py:630
+#: cps/web.py:661
 msgid "Rating: None"
 msgstr "Vurdering: Ingen"
 
-#: cps/web.py:639
+#: cps/web.py:670
 #, python-format
 msgid "Rating: %(rating)s stars"
 msgstr "Rangering: %(rating)s stjerner"
 
-#: cps/web.py:670
+#: cps/web.py:701
 #, python-format
 msgid "File format: %(format)s"
 msgstr "Filformat: %(format)s"
 
-#: cps/web.py:705
+#: cps/web.py:736
 #, python-format
 msgid "Category: %(name)s"
 msgstr "Kategori: %(name)s"
 
-#: cps/web.py:734
+#: cps/web.py:765
 #, python-format
 msgid "Language: %(name)s"
 msgstr "Språk: %(name)s"
 
-#: cps/templates/admin.html:16 cps/web.py:972
+#: cps/templates/admin.html:17 cps/web.py:1022
 msgid "Downloads"
 msgstr "Nedlastinger"
 
-#: cps/web.py:1074
+#: cps/web.py:1124
 msgid "Ratings list"
 msgstr "Rangeringsliste"
 
-#: cps/web.py:1101
+#: cps/web.py:1151
 msgid "File formats list"
 msgstr "Liste over filformater"
 
-#: cps/web.py:1256
+#: cps/web.py:1306
 #, fuzzy
 msgid "Please configure the SMTP mail settings first..."
 msgstr "Vennligst konfigurer SMTP-postinnstillingene først..."
 
-#: cps/web.py:1263
+#: cps/web.py:1313
 #, fuzzy, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "Boken ble satt i kø for sending til %(eReadermail)s"
 
-#: cps/web.py:1266
+#: cps/web.py:1316
 #, fuzzy, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "Oops! Det oppsto en feil ved sending av denne boken: %(res)s"
 
-#: cps/web.py:1268
+#: cps/web.py:1318
 #, fuzzy
 msgid "Oops! Please update your profile with a valid eReader Email."
-msgstr "Vennligst oppdater profilen din med en gyldig Send til Kindle-e-postadresse."
+msgstr ""
+"Vennligst oppdater profilen din med en gyldig Send til Kindle-e-postadresse."
 
-#: cps/web.py:1284
+#: cps/web.py:1334
 msgid "Please wait one minute to register next user"
 msgstr ""
 
-#: cps/templates/layout.html:68 cps/templates/layout.html:103
-#: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1285
-#: cps/web.py:1289 cps/web.py:1294 cps/web.py:1298 cps/web.py:1304
-#: cps/web.py:1324 cps/web.py:1328 cps/web.py:1341 cps/web.py:1344
+#: cps/templates/layout.html:132 cps/templates/layout.html:174
+#: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1335
+#: cps/web.py:1339 cps/web.py:1344 cps/web.py:1348 cps/web.py:1354
+#: cps/web.py:1374 cps/web.py:1378 cps/web.py:1391 cps/web.py:1394
 msgid "Register"
 msgstr "Registrere"
 
-#: cps/web.py:1288 cps/web.py:1391
+#: cps/web.py:1338 cps/web.py:1441
 #, fuzzy
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "E-postserveren er ikke konfigurert, kontakt administratoren din!"
 
-#: cps/web.py:1293 cps/web.py:1340
+#: cps/web.py:1343 cps/web.py:1390
 #, fuzzy
-msgid "Oops! Email server is not configured, please contact your administrator."
+msgid ""
+"Oops! Email server is not configured, please contact your administrator."
 msgstr "E-postserveren er ikke konfigurert, kontakt administratoren din!"
 
-#: cps/web.py:1326
+#: cps/web.py:1376
 #, fuzzy
 msgid "Oops! Your Email is not allowed."
 msgstr "Din e-post kan ikke registreres"
 
-#: cps/web.py:1329
+#: cps/web.py:1379
 msgid "Success! Confirmation Email has been sent."
 msgstr ""
 
-#: cps/web.py:1374 cps/web.py:1397
+#: cps/web.py:1424 cps/web.py:1447
 #, fuzzy
 msgid "Cannot activate LDAP authentication"
 msgstr "Kan ikke aktivere LDAP-autentisering"
 
-#: cps/web.py:1387
+#: cps/web.py:1437
 msgid "Please wait one minute before next login"
 msgstr ""
 
-#: cps/web.py:1406
+#: cps/web.py:1456
 #, fuzzy, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "du er nå logget på som: '%(nickname)s'"
 
-#: cps/web.py:1413
+#: cps/web.py:1463
 #, fuzzy, python-format
-msgid "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not known"
-msgstr "Reservepålogging som: '%(nickname)s', LDAP-serveren er ikke tilgjengelig, eller brukeren er ukjent"
+msgid ""
+"Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
+"known"
+msgstr ""
+"Reservepålogging som: '%(nickname)s', LDAP-serveren er ikke tilgjengelig, "
+"eller brukeren er ukjent"
 
-#: cps/web.py:1418
+#: cps/web.py:1468
 #, fuzzy, python-format
 msgid "Could not login: %(message)s"
 msgstr "Kunne ikke logge på: %(message)s"
 
-#: cps/web.py:1422 cps/web.py:1447
+#: cps/web.py:1472 cps/web.py:1497
 #, fuzzy
 msgid "Wrong Username or Password"
 msgstr "Vennligst skriv inn gyldig brukernavn for å tilbakestille passordet"
 
-#: cps/web.py:1429
+#: cps/web.py:1479
 #, fuzzy
 msgid "New Password was sent to your email address"
 msgstr "Nytt passord ble sendt til e-postadressen din"
 
-#: cps/web.py:1433
+#: cps/web.py:1483
 #, fuzzy
 msgid "An unknown error occurred. Please try again later."
 msgstr "En ukjent feil oppstod. Prøv igjen senere."
 
-#: cps/web.py:1435
+#: cps/web.py:1485
 #, fuzzy
 msgid "Please enter valid username to reset password"
 msgstr "Vennligst skriv inn gyldig brukernavn for å tilbakestille passordet"
 
-#: cps/web.py:1443
+#: cps/web.py:1493
 #, fuzzy, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "du er nå logget på som: '%(nickname)s'"
 
-#: cps/web.py:1508 cps/web.py:1558
+#: cps/web.py:1559 cps/web.py:1612
 #, fuzzy, python-format
 msgid "%(name)s's Profile"
 msgstr "%(name)s sin profil"
 
-#: cps/web.py:1524
+#: cps/web.py:1576
 #, fuzzy
 msgid "Success! Profile Updated"
 msgstr "Profil oppdatert"
 
-#: cps/web.py:1528
+#: cps/web.py:1580
 msgid "Oops! An account already exists for this Email."
 msgstr ""
+
+#: cps/web.py:1686
+#, fuzzy
+msgid "Invalid book ID."
+msgstr "Ugyldig rolle"
 
 #: cps/services/gmail.py:59
 msgid "Found no valid gmail.json file with OAuth information"
@@ -1531,7 +1727,7 @@ msgstr "Ebook-konvertering mislyktes med ukjent feil"
 msgid "Kepubify-converter failed: %(error)s"
 msgstr "Kepubify-konvertering mislyktes: %(error)s"
 
-#: cps/tasks/convert.py:251
+#: cps/tasks/convert.py:250
 #, python-format
 msgid "Converted file not found or more than one file in folder %(folder)s"
 msgstr "Konvertert fil ikke funnet eller mer enn én fil i mappen %(folder)s"
@@ -1573,6 +1769,7 @@ msgid "Cover Thumbnails"
 msgstr "Forsideminiatyrbilder"
 
 #: cps/tasks/thumbnail.py:290
+#, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr "Genererte {0} serieminiatyrbilder"
 
@@ -1580,275 +1777,332 @@ msgstr "Genererte {0} serieminiatyrbilder"
 msgid "Clearing cover thumbnail cache"
 msgstr "Tømmer cache for miniatyrbilde for omslag"
 
-#: cps/tasks/upload.py:39 cps/templates/admin.html:20
-#: cps/templates/layout.html:81 cps/templates/user_table.html:145
+#: cps/tasks/upload.py:39 cps/templates/admin.html:21
+#: cps/templates/layout.html:151 cps/templates/user_table.html:145
 msgid "Upload"
 msgstr "Laste opp"
 
 #: cps/templates/admin.html:9
-msgid "Users"
-msgstr "Brukere"
+msgid "Users&nbsp;&nbsp;👤"
+msgstr ""
 
-#: cps/templates/admin.html:13 cps/templates/login.html:9
+#: cps/templates/admin.html:14 cps/templates/login.html:9
 #: cps/templates/login.html:10 cps/templates/register.html:9
 #: cps/templates/user_edit.html:10 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Brukernavn"
 
-#: cps/templates/admin.html:14 cps/templates/register.html:14
+#: cps/templates/admin.html:15 cps/templates/register.html:14
 #: cps/templates/user_edit.html:15 cps/templates/user_table.html:135
 #, fuzzy
 msgid "Email"
 msgstr "E-post"
 
-#: cps/templates/admin.html:15
+#: cps/templates/admin.html:16
 #, fuzzy
 msgid "Send to eReader Email"
 msgstr "Send til E-Reader E-postadresse"
 
-#: cps/templates/admin.html:17 cps/templates/layout.html:92
+#: cps/templates/admin.html:18 cps/templates/layout.html:162
 #: cps/templates/user_table.html:143
 msgid "Admin"
 msgstr "Admin"
 
-#: cps/templates/admin.html:18 cps/templates/login.html:13
+#: cps/templates/admin.html:19 cps/templates/login.html:13
 #: cps/templates/login.html:14 cps/templates/user_edit.html:23
 msgid "Password"
 msgstr "Passord"
 
-#: cps/templates/admin.html:22 cps/templates/detail.html:20
-#: cps/templates/detail.html:33 cps/templates/shelf.html:8
+#: cps/templates/admin.html:23 cps/templates/detail.html:28
+#: cps/templates/detail.html:41 cps/templates/shelf.html:8
 #: cps/templates/user_table.html:146
 msgid "Download"
 msgstr "nedlasting"
 
-#: cps/templates/admin.html:23
+#: cps/templates/admin.html:24
 msgid "View Books"
 msgstr "Se bøker"
 
-#: cps/templates/admin.html:24 cps/templates/user_table.html:131
-#: cps/templates/user_table.html:148
+#: cps/templates/admin.html:25 cps/templates/book_table.html:319
+#: cps/templates/user_table.html:131 cps/templates/user_table.html:148
 msgid "Edit"
 msgstr "Redigere"
 
-#: cps/templates/admin.html:25 cps/templates/book_edit.html:17
-#: cps/templates/book_table.html:100 cps/templates/modal_dialogs.html:63
-#: cps/templates/modal_dialogs.html:116 cps/templates/user_edit.html:67
-#: cps/templates/user_table.html:149
+#: cps/templates/admin.html:26 cps/templates/book_edit.html:17
+#: cps/templates/book_table.html:135 cps/templates/book_table.html:184
+#: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
+#: cps/templates/user_edit.html:73 cps/templates/user_table.html:149
 msgid "Delete"
 msgstr "Slett"
 
-#: cps/templates/admin.html:26
+#: cps/templates/admin.html:27
 msgid "Public Shelf"
 msgstr "Offentlig hylle"
 
-#: cps/templates/admin.html:55
+#: cps/templates/admin.html:56
+msgid "Manage Profile Pictures"
+msgstr ""
+
+#: cps/templates/admin.html:58
 msgid "Import LDAP Users"
 msgstr "Importer LDAP-brukere"
 
-#: cps/templates/admin.html:62
+#: cps/templates/admin.html:65
 #, fuzzy
-msgid "Email Server Settings"
+msgid "Email Server Settings&nbsp;&nbsp;📬"
 msgstr "Innstillinger for e-postserver"
 
-#: cps/templates/admin.html:67 cps/templates/email_edit.html:31
+#: cps/templates/admin.html:70 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"
 msgstr "SMTP vertsnavn"
 
-#: cps/templates/admin.html:71 cps/templates/email_edit.html:35
+#: cps/templates/admin.html:74 cps/templates/email_edit.html:35
 msgid "SMTP Port"
 msgstr "SMTP-port"
 
-#: cps/templates/admin.html:75 cps/templates/email_edit.html:39
+#: cps/templates/admin.html:78 cps/templates/email_edit.html:39
 msgid "Encryption"
 msgstr "Kryptering"
 
-#: cps/templates/admin.html:79 cps/templates/email_edit.html:47
+#: cps/templates/admin.html:82 cps/templates/email_edit.html:47
 msgid "SMTP Login"
 msgstr "SMTP-pålogging"
 
-#: cps/templates/admin.html:83 cps/templates/admin.html:94
+#: cps/templates/admin.html:86 cps/templates/admin.html:97
 #: cps/templates/email_edit.html:55
 #, fuzzy
 msgid "From Email"
 msgstr "Fra e-post"
 
-#: cps/templates/admin.html:90
+#: cps/templates/admin.html:93
 #, fuzzy
 msgid "Email Service"
 msgstr "E-posttjeneste"
 
-#: cps/templates/admin.html:91
+#: cps/templates/admin.html:94
 msgid "Gmail via Oauth2"
 msgstr "Gmail via Oauth2"
 
-#: cps/templates/admin.html:106
-msgid "Configuration"
-msgstr "Konfigurasjon"
-
 #: cps/templates/admin.html:109
+msgid "Configuration&nbsp;&nbsp;⚙️"
+msgstr ""
+
+#: cps/templates/admin.html:112
 msgid "Calibre Database Directory"
 msgstr "Caliber Database Directory"
 
-#: cps/templates/admin.html:113 cps/templates/config_edit.html:68
+#: cps/templates/admin.html:116 cps/templates/config_edit.html:68
 msgid "Log Level"
 msgstr "Loggnivå"
 
-#: cps/templates/admin.html:117
+#: cps/templates/admin.html:120
 msgid "Port"
 msgstr "Havn"
 
-#: cps/templates/admin.html:122
+#: cps/templates/admin.html:125
 msgid "External Port"
 msgstr "Ekstern port"
 
-#: cps/templates/admin.html:129 cps/templates/config_view_edit.html:28
+#: cps/templates/admin.html:132 cps/templates/config_view_edit.html:28
 msgid "Books per Page"
 msgstr "Bøker per side"
 
-#: cps/templates/admin.html:133
+#: cps/templates/admin.html:136
 msgid "Uploads"
 msgstr "Opplastinger"
 
-#: cps/templates/admin.html:137
+#: cps/templates/admin.html:140
 msgid "Anonymous Browsing"
 msgstr "Anonym surfing"
 
-#: cps/templates/admin.html:141
+#: cps/templates/admin.html:144
 msgid "Public Registration"
 msgstr "Offentlig registrering"
 
-#: cps/templates/admin.html:145
+#: cps/templates/admin.html:148
 msgid "Magic Link Remote Login"
 msgstr "Magic Link ekstern pålogging"
 
-#: cps/templates/admin.html:149
+#: cps/templates/admin.html:152
 msgid "Reverse Proxy Login"
 msgstr "Omvendt proxy-pålogging"
 
-#: cps/templates/admin.html:154 cps/templates/config_edit.html:172
+#: cps/templates/admin.html:157 cps/templates/config_edit.html:186
 msgid "Reverse Proxy Header Name"
 msgstr "Omvendt proxy-overskriftsnavn"
 
-#: cps/templates/admin.html:159
+#: cps/templates/admin.html:162
 msgid "Edit Calibre Database Configuration"
 msgstr "Rediger Caliber-databasekonfigurasjon"
 
-#: cps/templates/admin.html:160
+#: cps/templates/admin.html:163
 msgid "Edit Basic Configuration"
 msgstr "Rediger grunnleggende konfigurasjon"
 
-#: cps/templates/admin.html:161
+#: cps/templates/admin.html:164
 msgid "Edit UI Configuration"
 msgstr "Rediger UI-konfigurasjon"
 
-#: cps/templates/admin.html:167
-msgid "Scheduled Tasks"
+#: cps/templates/admin.html:170
+#, fuzzy
+msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
 msgstr "Planlagte oppgaver"
 
-#: cps/templates/admin.html:170 cps/templates/schedule_edit.html:12
+#: cps/templates/admin.html:173 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:18
+#, fuzzy
 msgid "Start Time"
-msgstr ""
+msgstr "Startet"
 
-#: cps/templates/admin.html:174 cps/templates/schedule_edit.html:20
+#: cps/templates/admin.html:177 cps/templates/schedule_edit.html:20
 #, fuzzy
 msgid "Maximum Duration"
 msgstr "Maksimal oppgavevarighet"
 
-#: cps/templates/admin.html:178 cps/templates/schedule_edit.html:29
+#: cps/templates/admin.html:181 cps/templates/schedule_edit.html:29
 #, fuzzy
 msgid "Generate Thumbnails"
 msgstr "Generer miniatyrbilder av bokomslag"
 
-#: cps/templates/admin.html:182
+#: cps/templates/admin.html:185
 msgid "Generate series cover thumbnails"
 msgstr "Generer serieomslagsminiatyrbilder"
 
-#: cps/templates/admin.html:186 cps/templates/admin.html:208
+#: cps/templates/admin.html:189 cps/templates/admin.html:228
 #: cps/templates/schedule_edit.html:37
 msgid "Reconnect Calibre Database"
 msgstr "Koble til Caliber-databasen på nytt"
 
-#: cps/templates/admin.html:190 cps/templates/schedule_edit.html:41
+#: cps/templates/admin.html:193 cps/templates/schedule_edit.html:41
 msgid "Generate Metadata Backup Files"
 msgstr ""
 
-#: cps/templates/admin.html:197
+#: cps/templates/admin.html:200
 #, fuzzy
 msgid "Refresh Thumbnail Cache"
 msgstr "Oppdater thumbnail cover Cache"
 
-#: cps/templates/admin.html:203
-msgid "Administration"
+#: cps/templates/admin.html:207
+msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
+msgstr ""
+
+#: cps/templates/admin.html:208
+#, fuzzy
+msgid "CWA Settings"
+msgstr "Vurderinger"
+
+#: cps/templates/admin.html:209
+#, fuzzy
+msgid "Show CWA Stats"
+msgstr "Vurderinger"
+
+#: cps/templates/admin.html:210
+#, fuzzy
+msgid "Check CWA Status"
+msgstr "Arkivstatus"
+
+#: cps/templates/admin.html:211
+msgid "Setup KOReader Sync"
+msgstr ""
+
+#: cps/templates/admin.html:214
+msgid "CWA Library Conversion Service"
+msgstr ""
+
+#: cps/templates/admin.html:215
+msgid "CWA Send-to-Kindle EPUB Fixer Service"
+msgstr ""
+
+#: cps/templates/admin.html:218
+msgid "CWA GitHub"
+msgstr ""
+
+#: cps/templates/admin.html:219
+#, fuzzy
+msgid "CWA Discord Server"
+msgstr "Oppdage"
+
+#: cps/templates/admin.html:223
+#, fuzzy
+msgid "Administration&nbsp;&nbsp;🚀"
 msgstr "Administrasjon"
 
-#: cps/templates/admin.html:204
+#: cps/templates/admin.html:224
 msgid "Download Debug Package"
 msgstr "Last ned feilsøkingspakken"
 
-#: cps/templates/admin.html:205
+#: cps/templates/admin.html:225
 msgid "View Logs"
 msgstr "Vis logger"
 
-#: cps/templates/admin.html:211
+#: cps/templates/admin.html:231
 msgid "Restart"
 msgstr "Omstart"
 
-#: cps/templates/admin.html:212
+#: cps/templates/admin.html:232
 msgid "Shutdown"
 msgstr "Skru av"
 
-#: cps/templates/admin.html:221
-msgid "Version Information"
+#: cps/templates/admin.html:241
+#, fuzzy
+msgid "Version Information&nbsp;&nbsp;📜"
 msgstr "Versjonsinformasjon"
 
-#: cps/templates/admin.html:225
+#: cps/templates/admin.html:246
 msgid "Version"
 msgstr "Versjon"
 
-#: cps/templates/admin.html:226
+#: cps/templates/admin.html:247
 msgid "Details"
 msgstr "Detaljer"
 
-#: cps/templates/admin.html:232
+#: cps/templates/admin.html:254 cps/templates/admin.html:259
 #, fuzzy
 msgid "Current Version"
 msgstr "Gjeldende versjon"
 
-#: cps/templates/admin.html:239
+#: cps/templates/admin.html:264 cps/templates/admin.html:269
+msgid "-"
+msgstr ""
+
+#: cps/templates/admin.html:276
 msgid "Check for Update"
 msgstr "Se etter oppdatering"
 
-#: cps/templates/admin.html:240
+#: cps/templates/admin.html:277
 msgid "Perform Update"
 msgstr "Utfør oppdatering"
 
-#: cps/templates/admin.html:253
+#: cps/templates/admin.html:290
 msgid "Are you sure you want to restart?"
 msgstr "Er du sikker på at du vil starte på nytt?"
 
-#: cps/templates/admin.html:258 cps/templates/admin.html:272
-#: cps/templates/admin.html:292 cps/templates/config_db.html:82
+#: cps/templates/admin.html:295 cps/templates/admin.html:309
+#: cps/templates/admin.html:329 cps/templates/config_db.html:82
 msgid "OK"
 msgstr "OK"
 
-#: cps/templates/admin.html:259 cps/templates/admin.html:273
-#: cps/templates/book_edit.html:222 cps/templates/book_table.html:127
-#: cps/templates/config_db.html:66 cps/templates/config_edit.html:427
-#: cps/templates/config_view_edit.html:175 cps/templates/detail.html:342
+#: cps/templates/admin.html:296 cps/templates/admin.html:310
+#: cps/templates/book_edit.html:220 cps/templates/book_table.html:166
+#: cps/templates/book_table.html:185 cps/templates/book_table.html:205
+#: cps/templates/book_table.html:225 cps/templates/book_table.html:245
+#: cps/templates/book_table.html:265 cps/templates/book_table.html:320
+#: cps/templates/book_table.html:356 cps/templates/config_db.html:66
+#: cps/templates/config_edit.html:441 cps/templates/config_view_edit.html:175
+#: cps/templates/cwa_convert_library.html:23
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:350
 #: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
 #: cps/templates/schedule_edit.html:45 cps/templates/shelf_edit.html:27
-#: cps/templates/tasks.html:47 cps/templates/user_edit.html:144
+#: cps/templates/tasks.html:47 cps/templates/user_edit.html:150
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: cps/templates/admin.html:271
+#: cps/templates/admin.html:308
 msgid "Are you sure you want to shutdown?"
 msgstr "Er du sikker på at du vil slå av?"
 
-#: cps/templates/admin.html:283
+#: cps/templates/admin.html:320
 msgid "Updating, please do not reload this page"
 msgstr "Oppdaterer, vennligst ikke last inn denne siden på nytt"
 
@@ -1917,6 +2171,7 @@ msgid "Convert from:"
 msgstr "Konverter fra:"
 
 #: cps/templates/book_edit.html:32 cps/templates/book_edit.html:39
+#, fuzzy
 msgid "select an option"
 msgstr "Velg et alternativ"
 
@@ -1928,24 +2183,25 @@ msgstr "Konvertere til:"
 msgid "Convert book"
 msgstr "Konverter bok"
 
-#: cps/templates/book_edit.html:53 cps/templates/layout.html:78
-#: cps/templates/layout.html:135
+#: cps/templates/book_edit.html:53 cps/templates/layout.html:148
+#: cps/templates/layout.html:237
 #, fuzzy
 msgid "Uploading..."
 msgstr "Laster inn..."
 
-#: cps/templates/book_edit.html:53 cps/templates/book_edit.html:259
-#: cps/templates/layout.html:78 cps/templates/layout.html:204
-#: cps/templates/modal_dialogs.html:34 cps/templates/user_edit.html:163
+#: cps/templates/book_edit.html:53 cps/templates/book_edit.html:256
+#: cps/templates/book_table.html:333 cps/templates/layout.html:148
+#: cps/templates/layout.html:306 cps/templates/modal_dialogs.html:34
+#: cps/templates/user_edit.html:169
 msgid "Close"
 msgstr "Lukk"
 
-#: cps/templates/book_edit.html:53 cps/templates/layout.html:78
+#: cps/templates/book_edit.html:53 cps/templates/layout.html:148
 #, fuzzy
 msgid "Error"
 msgstr "Serverport"
 
-#: cps/templates/book_edit.html:53 cps/templates/layout.html:78
+#: cps/templates/book_edit.html:53 cps/templates/layout.html:148
 msgid "Upload done, processing, please wait..."
 msgstr ""
 
@@ -1957,251 +2213,355 @@ msgstr "Last opp format"
 msgid "Book Title"
 msgstr "Boktittel"
 
-#: cps/templates/book_edit.html:78 cps/templates/book_edit.html:279
-#: cps/templates/book_edit.html:297 cps/templates/search_form.html:12
+#: cps/templates/book_edit.html:78 cps/templates/book_edit.html:331
+#: cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Forfatter"
 
-#: cps/templates/book_edit.html:83 cps/templates/book_edit.html:284
-#: cps/templates/book_edit.html:299 cps/templates/search_form.html:154
-msgid "Description"
-msgstr "Beskrivelse"
-
-#: cps/templates/book_edit.html:88
-msgid "Identifiers"
-msgstr "Identifikatorer"
-
-#: cps/templates/book_edit.html:92 cps/templates/book_edit.html:308
-msgid "Identifier Type"
-msgstr "Identifikatortype"
-
-#: cps/templates/book_edit.html:93 cps/templates/book_edit.html:309
-msgid "Identifier Value"
-msgstr "Identifikatorverdi"
-
-#: cps/templates/book_edit.html:94 cps/templates/book_edit.html:310
-#: cps/templates/user_table.html:24
-msgid "Remove"
-msgstr "Ta bort"
-
-#: cps/templates/book_edit.html:98
-msgid "Add Identifier"
-msgstr "Legg til identifikator"
-
-#: cps/templates/book_edit.html:102 cps/templates/search_form.html:52
+#: cps/templates/book_edit.html:82 cps/templates/search_form.html:52
 msgid "Tags"
 msgstr "Tagger"
 
-#: cps/templates/book_edit.html:110
+#: cps/templates/book_edit.html:90 cps/templates/book_table.html:102
 msgid "Series ID"
 msgstr "Serie-ID"
 
-#: cps/templates/book_edit.html:114
-msgid "Rating"
-msgstr "Vurdering"
-
-#: cps/templates/book_edit.html:119
-msgid "Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)"
-msgstr "Hent omslag fra URL (JPEG - Bilde vil bli lastet ned og lagret i databasen)"
-
-#: cps/templates/book_edit.html:123
-msgid "Upload Cover from Local Disk"
-msgstr "Last opp cover fra lokal disk"
-
-#: cps/templates/book_edit.html:128
+#: cps/templates/book_edit.html:93
 msgid "Published Date"
 msgstr "Publiseringsdato"
 
-#: cps/templates/book_edit.html:137 cps/templates/book_edit.html:281
-#: cps/templates/book_edit.html:298 cps/templates/detail.html:192
-#: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
+#: cps/templates/book_edit.html:102 cps/templates/book_edit.html:332
+#: cps/templates/detail.html:200 cps/templates/listenmp3.html:102
+#: cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Forlegger"
 
-#: cps/templates/book_edit.html:141 cps/templates/detail.html:157
+#: cps/templates/book_edit.html:106 cps/templates/detail.html:165
 #: cps/templates/listenmp3.html:69 cps/templates/user_edit.html:33
 msgid "Language"
 msgstr "Språk"
 
-#: cps/templates/book_edit.html:151 cps/templates/search_form.html:46
+#: cps/templates/book_edit.html:110
+msgid "Rating"
+msgstr "Vurdering"
+
+#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:333
+#: cps/templates/search_form.html:154
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: cps/templates/book_edit.html:118
+msgid "Identifiers"
+msgstr "Identifikatorer"
+
+#: cps/templates/book_edit.html:122 cps/templates/book_edit.html:342
+msgid "Identifier Type"
+msgstr "Identifikatortype"
+
+#: cps/templates/book_edit.html:123 cps/templates/book_edit.html:343
+msgid "Identifier Value"
+msgstr "Identifikatorverdi"
+
+#: cps/templates/book_edit.html:124 cps/templates/book_edit.html:344
+#: cps/templates/user_table.html:24
+msgid "Remove"
+msgstr "Ta bort"
+
+#: cps/templates/book_edit.html:129
+msgid "Add Identifier"
+msgstr "Legg til identifikator"
+
+#: cps/templates/book_edit.html:133
+msgid ""
+"Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)"
+msgstr ""
+"Hent omslag fra URL (JPEG - Bilde vil bli lastet ned og lagret i databasen)"
+
+#: cps/templates/book_edit.html:137
+msgid "Upload Cover from Local Disk"
+msgstr "Last opp cover fra lokal disk"
+
+#: cps/templates/book_edit.html:149 cps/templates/search_form.html:46
 #: cps/templates/search_form.html:167
 msgid "Yes"
 msgstr "Ja"
 
-#: cps/templates/book_edit.html:152 cps/templates/search_form.html:47
+#: cps/templates/book_edit.html:150 cps/templates/search_form.html:47
 #: cps/templates/search_form.html:168
 msgid "No"
 msgstr "Nei"
 
-#: cps/templates/book_edit.html:217
+#: cps/templates/book_edit.html:215
 msgid "View Book on Save"
 msgstr "Se bok på Lagre"
 
-#: cps/templates/book_edit.html:220 cps/templates/book_edit.html:238
+#: cps/templates/book_edit.html:218 cps/templates/book_edit.html:236
 msgid "Fetch Metadata"
 msgstr "Hent metadata"
 
-#: cps/templates/book_edit.html:221 cps/templates/config_db.html:65
-#: cps/templates/config_edit.html:426 cps/templates/config_view_edit.html:174
+#: cps/templates/book_edit.html:219 cps/templates/config_db.html:65
+#: cps/templates/config_edit.html:440 cps/templates/config_view_edit.html:174
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:44
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
-#: cps/templates/user_edit.html:142
+#: cps/templates/user_edit.html:148
 msgid "Save"
 msgstr "Lagre"
 
-#: cps/templates/book_edit.html:241
+#: cps/templates/book_edit.html:239
 msgid "Keyword"
 msgstr "Nøkkelord"
 
-#: cps/templates/book_edit.html:242
+#: cps/templates/book_edit.html:240
 msgid "Search keyword"
 msgstr "Søk nøkkelord"
 
-#: cps/templates/book_edit.html:248
-msgid "Click the cover to load metadata to the form"
-msgstr "Klikk på omslaget for å laste metadata til skjemaet"
-
-#: cps/templates/book_edit.html:255 cps/templates/book_edit.html:294
+#: cps/templates/book_edit.html:252 cps/templates/book_edit.html:328
 msgid "Loading..."
 msgstr "Laster inn..."
 
-#: cps/templates/book_edit.html:286 cps/templates/book_edit.html:300
-msgid "Source"
-msgstr "Kilde"
-
-#: cps/templates/book_edit.html:295
+#: cps/templates/book_edit.html:329
 msgid "Search error!"
 msgstr "Søkefeil!"
 
-#: cps/templates/book_edit.html:296
+#: cps/templates/book_edit.html:330
 msgid "No Result(s) found! Please try another keyword."
 msgstr "Ingen resultater! Prøv et annet søkeord."
 
-#: cps/templates/book_table.html:12 cps/templates/book_table.html:69
+#: cps/templates/book_edit.html:334
+msgid "Source"
+msgstr "Kilde"
+
+#: cps/templates/book_table.html:12 cps/templates/book_table.html:102
 #: cps/templates/user_table.html:14 cps/templates/user_table.html:77
 #: cps/templates/user_table.html:100
 msgid "This Field is Required"
 msgstr "Dette feltet er obligatorisk"
 
-#: cps/templates/book_table.html:37
+#: cps/templates/book_table.html:44
 msgid "Merge selected books"
 msgstr "Slå sammen valgte bøker"
 
-#: cps/templates/book_table.html:38 cps/templates/user_table.html:124
-msgid "Remove Selections"
+#: cps/templates/book_table.html:47
+#, fuzzy
+msgid "Clear selections"
 msgstr "Fjern valg"
 
-#: cps/templates/book_table.html:41
-msgid "Exchange author and title"
+#: cps/templates/book_table.html:50
+#, fuzzy
+msgid "Edit selected books"
+msgstr "Slå sammen valgte bøker"
+
+#: cps/templates/book_table.html:53
+#, fuzzy
+msgid "Archive selected books"
+msgstr "Slå sammen valgte bøker"
+
+#: cps/templates/book_table.html:56
+#, fuzzy
+msgid "Unarchive selected books"
+msgstr "Slå sammen valgte bøker"
+
+#: cps/templates/book_table.html:59
+#, fuzzy
+msgid "Mark selected books as read"
+msgstr "Slå sammen valgte bøker"
+
+#: cps/templates/book_table.html:62
+#, fuzzy
+msgid "Mark selected books as unread"
+msgstr "Slå sammen valgte bøker"
+
+#: cps/templates/book_table.html:65
+#, fuzzy
+msgid "Delete selected books"
+msgstr "Slå sammen valgte bøker"
+
+#: cps/templates/book_table.html:68
+#, fuzzy
+msgid "Add to Shelf"
+msgstr "Rediger en hylle"
+
+#: cps/templates/book_table.html:70
+#, fuzzy
+msgid " Exchange author & title"
 msgstr "Bytt forfatter og tittel"
 
-#: cps/templates/book_table.html:47
-msgid "Update Title Sort automatically"
+#: cps/templates/book_table.html:78
+#, fuzzy
+msgid "Update Title Sort automatically  "
 msgstr "Oppdater tittelsortering automatisk"
 
-#: cps/templates/book_table.html:51
+#: cps/templates/book_table.html:82
 msgid "Update Author Sort automatically"
 msgstr "Oppdater forfattersortering automatisk"
 
-#: cps/templates/book_table.html:63 cps/templates/book_table.html:69
+#: cps/templates/book_table.html:96 cps/templates/book_table.html:102
 msgid "Enter Title"
 msgstr "Skriv inn tittel"
 
-#: cps/templates/book_table.html:63 cps/templates/config_view_edit.html:24
+#: cps/templates/book_table.html:96 cps/templates/config_view_edit.html:24
 #: cps/templates/shelf_edit.html:8
 msgid "Title"
 msgstr "Tittel"
 
-#: cps/templates/book_table.html:64
+#: cps/templates/book_table.html:97
 msgid "Enter Title Sort"
 msgstr "Skriv inn tittelsortering"
 
-#: cps/templates/book_table.html:64
+#: cps/templates/book_table.html:97
 msgid "Title Sort"
 msgstr "Tittelsortering"
 
-#: cps/templates/book_table.html:65
+#: cps/templates/book_table.html:98
 msgid "Enter Author Sort"
 msgstr "Skriv inn forfattersortering"
 
-#: cps/templates/book_table.html:65
+#: cps/templates/book_table.html:98
 msgid "Author Sort"
 msgstr "Forfatter Sort"
 
-#: cps/templates/book_table.html:66
+#: cps/templates/book_table.html:99
 msgid "Enter Authors"
 msgstr "Skriv inn forfattere"
 
-#: cps/templates/book_table.html:67
+#: cps/templates/book_table.html:100
 msgid "Enter Categories"
 msgstr "Skriv inn kategorier"
 
-#: cps/templates/book_table.html:68
+#: cps/templates/book_table.html:101
 msgid "Enter Series"
 msgstr "Gå inn i serien"
 
-#: cps/templates/book_table.html:69
-msgid "Series Index"
-msgstr "Serieindeks"
-
-#: cps/templates/book_table.html:70
+#: cps/templates/book_table.html:103
 msgid "Enter Languages"
 msgstr "Skriv inn Språk"
 
-#: cps/templates/book_table.html:71
+#: cps/templates/book_table.html:104
 msgid "Publishing Date"
 msgstr "Publiseringsdato"
 
-#: cps/templates/book_table.html:72
+#: cps/templates/book_table.html:105
 msgid "Enter Publishers"
 msgstr "Skriv inn Publishers"
 
-#: cps/templates/book_table.html:73
+#: cps/templates/book_table.html:106
 msgid "Enter comments"
 msgstr "Skriv inn kommentarer"
 
-#: cps/templates/book_table.html:73
+#: cps/templates/book_table.html:106
+#, fuzzy
 msgid "Comments"
 msgstr "Kommentarer"
 
-#: cps/templates/book_table.html:75
-msgid "Archive Status"
-msgstr "Arkivstatus"
+#: cps/templates/book_table.html:108
+#, fuzzy
+msgid "Archived?"
+msgstr "Arkiverte bøker"
 
-#: cps/templates/book_table.html:77 cps/templates/search_form.html:42
-msgid "Read Status"
-msgstr "Les status"
+#: cps/templates/book_table.html:110
+#, fuzzy
+msgid "Read?"
+msgstr "redusere"
 
-#: cps/templates/book_table.html:80 cps/templates/book_table.html:82
-#: cps/templates/book_table.html:84 cps/templates/book_table.html:86
-#: cps/templates/book_table.html:90 cps/templates/book_table.html:92
-#: cps/templates/book_table.html:96
+#: cps/templates/book_table.html:113 cps/templates/book_table.html:115
+#: cps/templates/book_table.html:117 cps/templates/book_table.html:119
+#: cps/templates/book_table.html:123 cps/templates/book_table.html:125
+#: cps/templates/book_table.html:129
 msgid "Enter "
 msgstr "Tast inn "
 
-#: cps/templates/book_table.html:113 cps/templates/modal_dialogs.html:46
-#: cps/templates/tasks.html:37
+#: cps/templates/book_table.html:152 cps/templates/book_table.html:176
+#: cps/templates/book_table.html:196 cps/templates/book_table.html:216
+#: cps/templates/book_table.html:236 cps/templates/book_table.html:256
+#: cps/templates/modal_dialogs.html:46 cps/templates/tasks.html:37
 msgid "Are you really sure?"
 msgstr "Er du virkelig sikker?"
 
-#: cps/templates/book_table.html:117
+#: cps/templates/book_table.html:156
 msgid "Books with Title will be merged from:"
 msgstr "Bøker med tittel vil bli slått sammen fra:"
 
-#: cps/templates/book_table.html:121
+#: cps/templates/book_table.html:160
 msgid "Into Book with Title:"
 msgstr "Til bok med tittel:"
 
-#: cps/templates/book_table.html:126
+#: cps/templates/book_table.html:165
 msgid "Merge"
 msgstr "Slå sammen"
+
+#: cps/templates/book_table.html:180
+msgid "The following books will be deleted:"
+msgstr ""
+
+#: cps/templates/book_table.html:200
+msgid "The following books will be archived:"
+msgstr ""
+
+#: cps/templates/book_table.html:204 cps/templates/detail.html:275
+#, fuzzy
+msgid "Archive"
+msgstr "Arkiverte bøker"
+
+#: cps/templates/book_table.html:220
+msgid "The following books will be unarchived:"
+msgstr ""
+
+#: cps/templates/book_table.html:224
+#, fuzzy
+msgid "Unarchive"
+msgstr "Arkiverte bøker"
+
+#: cps/templates/book_table.html:240
+msgid "The following books will be marked read:"
+msgstr ""
+
+#: cps/templates/book_table.html:244
+msgid "Mark as read"
+msgstr ""
+
+#: cps/templates/book_table.html:260
+msgid "The following books will be marked unread:"
+msgstr ""
+
+#: cps/templates/book_table.html:264
+msgid "Mark as unread"
+msgstr ""
+
+#: cps/templates/book_table.html:276 cps/templates/detail.html:348
+#, fuzzy
+msgid "Edit Metadata"
+msgstr "redigere metadata"
+
+#: cps/templates/book_table.html:279
+msgid "Edit the fields you want changed. Blank fields will be ignored:"
+msgstr ""
+
+#: cps/templates/book_table.html:334
+#, fuzzy
+msgid "Select a Shelf"
+msgstr "Lag en hylle"
+
+#: cps/templates/book_table.html:337
+msgid "Please select a shelf to add the selected books to:"
+msgstr ""
+
+#: cps/templates/book_table.html:339
+msgid "-- Select a Shelf --"
+msgstr ""
+
+#: cps/templates/book_table.html:357 cps/templates/email_edit.html:81
+#: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
+msgid "Add"
+msgstr ""
 
 #: cps/templates/config_db.html:12
 msgid "Location of Calibre Database"
 msgstr "Plassering av Caliber-databasen"
 
 #: cps/templates/config_db.html:21
-msgid "Separate Book Files from Library"
+msgid ""
+"Separate Book Files from Library - metadata.db file should remain in /"
+"calibre-library, however your library files can be wherever you desire"
 msgstr ""
 
 #: cps/templates/config_db.html:34
@@ -2277,15 +2637,19 @@ msgid "Location and name of access logfile (access.log for no entry)"
 msgstr "Plassering og navn på tilgangsloggfil (access.log for ingen oppføring)"
 
 #: cps/templates/config_edit.html:96
+#, fuzzy
 msgid "Feature Configuration"
-msgstr "Funksjonskonfigurasjon"
+msgstr "Serverkonfigurasjon"
 
 #: cps/templates/config_edit.html:104
 msgid "Convert non-English characters in title and author while saving to disk"
-msgstr "Konverter ikke-engelske tegn i tittel og forfatter mens du lagrer på disk"
+msgstr ""
+"Konverter ikke-engelske tegn i tittel og forfatter mens du lagrer på disk"
 
 #: cps/templates/config_edit.html:108
-msgid "Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/Kepubify binaries)"
+msgid ""
+"Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/"
+"Kepubify binaries)"
 msgstr ""
 
 #: cps/templates/config_edit.html:112
@@ -2329,229 +2693,248 @@ msgstr "Ukjente proxy-forespørsler til Kobo Store"
 msgid "Server External Port (for port forwarded API calls)"
 msgstr "Server ekstern port (for portviderekoblede API-anrop)"
 
-#: cps/templates/config_edit.html:157
+#: cps/templates/config_edit.html:154
+msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
+msgstr ""
+
+#: cps/templates/config_edit.html:161
 msgid "Use Goodreads"
 msgstr "Bruk Goodreads"
 
-#: cps/templates/config_edit.html:161
+#: cps/templates/config_edit.html:165
 msgid "Goodreads API Key"
 msgstr "Goodreads API-nøkkel"
 
-#: cps/templates/config_edit.html:168
+#: cps/templates/config_edit.html:172
+#, fuzzy
+msgid "Enable Hardcover Sync"
+msgstr "Aktiver Kobo-synkronisering"
+
+#: cps/templates/config_edit.html:176
+msgid "Hardcover API Key"
+msgstr ""
+
+#: cps/templates/config_edit.html:182
 msgid "Allow Reverse Proxy Authentication"
 msgstr "Tillat omvendt proxy-autentisering"
 
-#: cps/templates/config_edit.html:179
+#: cps/templates/config_edit.html:193
 msgid "Login type"
 msgstr "Påloggingstype"
 
-#: cps/templates/config_edit.html:181
+#: cps/templates/config_edit.html:195
 msgid "Use Standard Authentication"
 msgstr "Bruk standardautentisering"
 
-#: cps/templates/config_edit.html:183
+#: cps/templates/config_edit.html:197
 msgid "Use LDAP Authentication"
 msgstr "Bruk LDAP-autentisering"
 
-#: cps/templates/config_edit.html:186
+#: cps/templates/config_edit.html:200
 msgid "Use OAuth"
 msgstr "Bruk OAuth"
 
-#: cps/templates/config_edit.html:193
+#: cps/templates/config_edit.html:207
 msgid "LDAP Server Host Name or IP Address"
 msgstr "LDAP-serverens vertsnavn eller IP-adresse"
 
-#: cps/templates/config_edit.html:197
+#: cps/templates/config_edit.html:211
 msgid "LDAP Server Port"
 msgstr "LDAP-serverport"
 
-#: cps/templates/config_edit.html:201
+#: cps/templates/config_edit.html:215
 msgid "LDAP Encryption"
 msgstr "LDAP-kryptering"
 
-#: cps/templates/config_edit.html:204
+#: cps/templates/config_edit.html:218
 msgid "TLS"
 msgstr "TLS"
 
-#: cps/templates/config_edit.html:205
+#: cps/templates/config_edit.html:219
 msgid "SSL"
 msgstr "SSL"
 
-#: cps/templates/config_edit.html:209
-msgid "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
-msgstr "LDAP CACertificate Path (Kun nødvendig for klientsertifikatautentisering)"
+#: cps/templates/config_edit.html:223
+msgid ""
+"LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
+msgstr ""
+"LDAP CACertificate Path (Kun nødvendig for klientsertifikatautentisering)"
 
-#: cps/templates/config_edit.html:216
-msgid "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
+#: cps/templates/config_edit.html:230
+msgid ""
+"LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP-sertifikatbane (kun nødvendig for klientsertifikatautentisering)"
 
-#: cps/templates/config_edit.html:223
+#: cps/templates/config_edit.html:237
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP-nøkkelfilbane (kun nødvendig for klientsertifikatautentisering)"
 
-#: cps/templates/config_edit.html:232
+#: cps/templates/config_edit.html:246
 msgid "LDAP Authentication"
 msgstr "LDAP-autentisering"
 
-#: cps/templates/config_edit.html:234
+#: cps/templates/config_edit.html:248
 msgid "Anonymous"
 msgstr "Anonym"
 
-#: cps/templates/config_edit.html:235
+#: cps/templates/config_edit.html:249
 msgid "Unauthenticated"
 msgstr "Uautentisert"
 
-#: cps/templates/config_edit.html:236
+#: cps/templates/config_edit.html:250
 msgid "Simple"
 msgstr "Enkel"
 
-#: cps/templates/config_edit.html:241
+#: cps/templates/config_edit.html:255
 msgid "LDAP Administrator Username"
 msgstr "LDAP-administratorbrukernavn"
 
-#: cps/templates/config_edit.html:247
+#: cps/templates/config_edit.html:261
 msgid "LDAP Administrator Password"
 msgstr "LDAP-administratorpassord"
 
-#: cps/templates/config_edit.html:252
+#: cps/templates/config_edit.html:266
 msgid "LDAP Distinguished Name (DN)"
 msgstr "LDAP Distinguished Name (DN)"
 
-#: cps/templates/config_edit.html:256
+#: cps/templates/config_edit.html:270
 msgid "LDAP User Object Filter"
 msgstr "LDAP-brukerobjektfilter"
 
-#: cps/templates/config_edit.html:261
+#: cps/templates/config_edit.html:275
 msgid "LDAP Server is OpenLDAP?"
 msgstr "LDAP Server er OpenLDAP?"
 
-#: cps/templates/config_edit.html:263
+#: cps/templates/config_edit.html:277
 msgid "Following Settings are Needed For User Import"
 msgstr "Følgende innstillinger er nødvendig for brukerimport"
 
-#: cps/templates/config_edit.html:265
+#: cps/templates/config_edit.html:279
 msgid "LDAP Group Object Filter"
 msgstr "LDAP gruppeobjektfilter"
 
-#: cps/templates/config_edit.html:269
+#: cps/templates/config_edit.html:283
 msgid "LDAP Group Name"
 msgstr "LDAP-gruppenavn"
 
-#: cps/templates/config_edit.html:273
+#: cps/templates/config_edit.html:287
 msgid "LDAP Group Members Field"
 msgstr "Felt for LDAP-gruppemedlemmer"
 
-#: cps/templates/config_edit.html:277
+#: cps/templates/config_edit.html:291
 msgid "LDAP Member User Filter Detection"
 msgstr "LDAP-medlemsbrukerfilterdeteksjon"
 
-#: cps/templates/config_edit.html:279
+#: cps/templates/config_edit.html:293
 msgid "Autodetect"
 msgstr ""
 
-#: cps/templates/config_edit.html:280
+#: cps/templates/config_edit.html:294
 msgid "Custom Filter"
 msgstr ""
 
-#: cps/templates/config_edit.html:285
+#: cps/templates/config_edit.html:299
+#, fuzzy
 msgid "LDAP Member User Filter"
-msgstr ""
+msgstr "LDAP-medlemsbrukerfilterdeteksjon"
 
-#: cps/templates/config_edit.html:296
+#: cps/templates/config_edit.html:310
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
 msgstr ""
 
-#: cps/templates/config_edit.html:299
+#: cps/templates/config_edit.html:313
 #, python-format
 msgid "%(provider)s OAuth Client Id"
 msgstr ""
 
-#: cps/templates/config_edit.html:303
+#: cps/templates/config_edit.html:317
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
 msgstr ""
 
-#: cps/templates/config_edit.html:319
+#: cps/templates/config_edit.html:333
 #, fuzzy
 msgid "External binaries"
 msgstr "Ekstern port"
 
-#: cps/templates/config_edit.html:325
+#: cps/templates/config_edit.html:339
 msgid "Path to Calibre Binaries"
 msgstr ""
 
-#: cps/templates/config_edit.html:333
+#: cps/templates/config_edit.html:347
 #, fuzzy
 msgid "Calibre E-Book Converter Settings"
 msgstr "Caliber ebook-convert %(tool)s ble ikke funnet"
 
-#: cps/templates/config_edit.html:336
+#: cps/templates/config_edit.html:350
 msgid "Path to Kepubify E-Book Converter"
 msgstr ""
 
-#: cps/templates/config_edit.html:344
+#: cps/templates/config_edit.html:358
+#, fuzzy
 msgid "Location of Unrar binary"
-msgstr ""
+msgstr "Plassering av Caliber-databasen"
 
-#: cps/templates/config_edit.html:360
+#: cps/templates/config_edit.html:374
 #, fuzzy
 msgid "Security Settings"
 msgstr "Vis forfattervalg"
 
-#: cps/templates/config_edit.html:368
+#: cps/templates/config_edit.html:382
 msgid "Limit failed login attempts"
 msgstr ""
 
-#: cps/templates/config_edit.html:372
+#: cps/templates/config_edit.html:386
 msgid "Configure Backend for Limiter"
 msgstr ""
 
-#: cps/templates/config_edit.html:376
+#: cps/templates/config_edit.html:390
 msgid "Options for Limiter Backend"
 msgstr ""
 
-#: cps/templates/config_edit.html:382
+#: cps/templates/config_edit.html:396
 msgid "Check if file extensions matches file content on upload"
 msgstr ""
 
-#: cps/templates/config_edit.html:385
+#: cps/templates/config_edit.html:399
+#, fuzzy
 msgid "Session protection"
-msgstr ""
+msgstr "Velg et alternativ"
 
-#: cps/templates/config_edit.html:387
+#: cps/templates/config_edit.html:401
 msgid "Basic"
 msgstr ""
 
-#: cps/templates/config_edit.html:388
+#: cps/templates/config_edit.html:402
 msgid "Strong"
 msgstr ""
 
-#: cps/templates/config_edit.html:393
+#: cps/templates/config_edit.html:407
 msgid "User Password policy"
 msgstr ""
 
-#: cps/templates/config_edit.html:397
+#: cps/templates/config_edit.html:411
 msgid "Minimum password length"
 msgstr ""
 
-#: cps/templates/config_edit.html:402
+#: cps/templates/config_edit.html:416
 msgid "Enforce number"
 msgstr ""
 
-#: cps/templates/config_edit.html:406
+#: cps/templates/config_edit.html:420
 msgid "Enforce lowercase characters"
 msgstr ""
 
-#: cps/templates/config_edit.html:410
+#: cps/templates/config_edit.html:424
 msgid "Enforce uppercase characters"
 msgstr ""
 
-#: cps/templates/config_edit.html:414
+#: cps/templates/config_edit.html:428
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
 msgstr ""
 
-#: cps/templates/config_edit.html:418
+#: cps/templates/config_edit.html:432
 msgid "Enforce special characters"
 msgstr ""
 
@@ -2600,60 +2983,66 @@ msgstr ""
 msgid "Default Settings for New Users"
 msgstr ""
 
-#: cps/templates/config_view_edit.html:88 cps/templates/user_edit.html:96
+#: cps/templates/config_view_edit.html:88 cps/templates/user_edit.html:102
 #, fuzzy
 msgid "Admin User"
 msgstr "Legg til ny bruker"
 
-#: cps/templates/config_view_edit.html:92 cps/templates/user_edit.html:101
+#: cps/templates/config_view_edit.html:92 cps/templates/user_edit.html:107
 #, fuzzy
 msgid "Allow Downloads"
 msgstr "Nedlastinger"
 
-#: cps/templates/config_view_edit.html:96 cps/templates/user_edit.html:105
+#: cps/templates/config_view_edit.html:96 cps/templates/user_edit.html:111
+#, fuzzy
 msgid "Allow eBook Viewer"
-msgstr ""
+msgstr "Vis nyere bøker"
 
-#: cps/templates/config_view_edit.html:101 cps/templates/user_edit.html:110
+#: cps/templates/config_view_edit.html:101 cps/templates/user_edit.html:116
 #, fuzzy
 msgid "Allow Uploads"
 msgstr "Aktiver opplastinger"
 
-#: cps/templates/config_view_edit.html:106 cps/templates/user_edit.html:115
+#: cps/templates/config_view_edit.html:106 cps/templates/user_edit.html:121
+#, fuzzy
 msgid "Allow Edit"
-msgstr ""
+msgstr "Tillate"
 
-#: cps/templates/config_view_edit.html:111 cps/templates/user_edit.html:120
+#: cps/templates/config_view_edit.html:111 cps/templates/user_edit.html:126
 #, fuzzy
 msgid "Allow Delete Books"
 msgstr "Vis nyere bøker"
 
-#: cps/templates/config_view_edit.html:116 cps/templates/user_edit.html:126
+#: cps/templates/config_view_edit.html:116 cps/templates/user_edit.html:132
+#, fuzzy
 msgid "Allow Changing Password"
-msgstr ""
+msgstr "Passord"
 
-#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:130
+#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:136
 msgid "Allow Editing Public Shelves"
 msgstr ""
 
 #: cps/templates/config_view_edit.html:123
+#, fuzzy
 msgid "Default Language"
-msgstr ""
+msgstr "Språk"
 
 #: cps/templates/config_view_edit.html:131
+#, fuzzy
 msgid "Default Visible Language of Books"
-msgstr ""
+msgstr "Språk"
 
 #: cps/templates/config_view_edit.html:147
 msgid "Default Visibilities for New Users"
 msgstr ""
 
-#: cps/templates/config_view_edit.html:163 cps/templates/user_edit.html:84
+#: cps/templates/config_view_edit.html:163 cps/templates/user_edit.html:90
 #: cps/templates/user_table.html:154
+#, fuzzy
 msgid "Show Random Books in Detail View"
-msgstr ""
+msgstr "Vis tilfeldige bøker"
 
-#: cps/templates/config_view_edit.html:166 cps/templates/user_edit.html:87
+#: cps/templates/config_view_edit.html:166 cps/templates/user_edit.html:93
 msgid "Add Allowed/Denied Tags"
 msgstr ""
 
@@ -2661,80 +3050,99 @@ msgstr ""
 msgid "Add Allowed/Denied custom column values"
 msgstr ""
 
-#: cps/templates/detail.html:77 cps/templates/detail.html:91
-msgid "Read in Browser"
+#: cps/templates/cwa_convert_library.html:10
+#: cps/templates/cwa_epub_fixer.html:10
+#, fuzzy
+msgid "Run Archive"
+msgstr "Arkiverte bøker"
+
+#: cps/templates/cwa_convert_library.html:11
+#: cps/templates/cwa_epub_fixer.html:11 cps/templates/cwa_read_log.html:9
+#, fuzzy
+msgid "Download Log"
+msgstr "nedlasting"
+
+#: cps/templates/cwa_convert_library.html:24
+#: cps/templates/cwa_epub_fixer.html:24 cps/templates/index.xml:7
+#, fuzzy
+msgid "Start"
+msgstr "Omstart"
+
+#: cps/templates/cwa_stats.html:43 cps/templates/cwa_stats.html:65
+#: cps/templates/cwa_stats.html:87 cps/templates/cwa_stats.html:106
+#: cps/templates/cwa_stats.html:130 cps/templates/cwa_stats.html:149
+msgid "Click to See More"
 msgstr ""
 
-#: cps/templates/detail.html:100 cps/templates/detail.html:120
+#: cps/templates/detail.html:85 cps/templates/detail.html:99
+#, fuzzy
+msgid "Read in Browser"
+msgstr "Lese bøker"
+
+#: cps/templates/detail.html:108 cps/templates/detail.html:128
 msgid "Listen in Browser"
 msgstr ""
 
-#: cps/templates/detail.html:150 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:158 cps/templates/listenmp3.html:62
 #, fuzzy, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "Sletting av bok %(index)s mislyktes: %(range)s"
 
-#: cps/templates/detail.html:201 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:209 cps/templates/listenmp3.html:111
 #, fuzzy
 msgid "Published"
 msgstr "Forlegger"
 
-#: cps/templates/detail.html:251 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:259 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr ""
 
-#: cps/templates/detail.html:252 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:260 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr ""
 
-#: cps/templates/detail.html:254
+#: cps/templates/detail.html:262
 msgid "Mark Book as Read or Unread"
 msgstr ""
 
-#: cps/templates/detail.html:254 cps/templates/listenmp3.html:159
+#: cps/templates/detail.html:262 cps/templates/listenmp3.html:159
 #, fuzzy
 msgid "Read"
 msgstr "redusere"
 
-#: cps/templates/detail.html:264 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:272 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr ""
 
-#: cps/templates/detail.html:265 cps/templates/listenmp3.html:166
-msgid "Add to archive"
-msgstr ""
-
-#: cps/templates/detail.html:267
-msgid "Mark Book as archived or not, to hide it in Calibre-Web and delete it from Kobo Reader"
-msgstr ""
-
-#: cps/templates/detail.html:267
+#: cps/templates/detail.html:273 cps/templates/listenmp3.html:166
 #, fuzzy
-msgid "Archive"
-msgstr "Arkiverte bøker"
+msgid "Add to archive"
+msgstr "Rediger en hylle"
 
-#: cps/templates/detail.html:278 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:275
+msgid ""
+"Mark Book as archived or not, to hide it in Calibre-Web and delete it from "
+"Kobo Reader"
+msgstr ""
+
+#: cps/templates/detail.html:286 cps/templates/listenmp3.html:177
 #, fuzzy
 msgid "Description:"
 msgstr "Beskrivelse"
 
-#: cps/templates/detail.html:293 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:301 cps/templates/listenmp3.html:190
 #: cps/templates/search.html:16
 #, fuzzy
 msgid "Add to shelf"
 msgstr "Rediger en hylle"
 
-#: cps/templates/detail.html:305 cps/templates/detail.html:324
-#: cps/templates/feed.xml:81 cps/templates/layout.html:155
+#: cps/templates/detail.html:313 cps/templates/detail.html:332
+#: cps/templates/feed.xml:81 cps/templates/layout.html:257
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
-msgid "(Public)"
-msgstr ""
-
-#: cps/templates/detail.html:340
 #, fuzzy
-msgid "Edit Metadata"
-msgstr "redigere metadata"
+msgid "(Public)"
+msgstr "Offentlig hylle"
 
 #: cps/templates/email_edit.html:13
 msgid "Email Account Type"
@@ -2775,10 +3183,11 @@ msgid "Attachment Size Limit"
 msgstr ""
 
 #: cps/templates/email_edit.html:66
+#, fuzzy
 msgid "Save and Send Test Email"
-msgstr ""
+msgstr "Send til E-Reader E-postadresse"
 
-#: cps/templates/email_edit.html:70 cps/templates/layout.html:26
+#: cps/templates/email_edit.html:70 cps/templates/layout.html:90
 #: cps/templates/shelf_order.html:42 cps/templates/user_table.html:174
 msgid "Back"
 msgstr ""
@@ -2791,11 +3200,6 @@ msgstr ""
 msgid "Add Domain"
 msgstr ""
 
-#: cps/templates/email_edit.html:81 cps/templates/email_edit.html:108
-#: cps/templates/user_table.html:27
-msgid "Add"
-msgstr ""
-
 #: cps/templates/email_edit.html:86 cps/templates/email_edit.html:96
 #, fuzzy
 msgid "Enter domainname"
@@ -2805,12 +3209,15 @@ msgstr "Skriv inn kommentarer"
 msgid "Denied Domains (Blacklist)"
 msgstr ""
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:188
+#: cps/templates/feed.xml:22 cps/templates/layout.html:290
+#, fuzzy
 msgid "Next"
-msgstr ""
+msgstr "Admin side"
 
 #: cps/templates/generate_kobo_auth_url.html:6
-msgid "Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or edit):"
+msgid ""
+"Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or "
+"edit):"
 msgstr ""
 
 #: cps/templates/generate_kobo_auth_url.html:11
@@ -2823,20 +3230,24 @@ msgstr ""
 
 #: cps/templates/http_error.html:34
 #, fuzzy
-msgid "Calibre-Web Instance is unconfigured, please contact your administrator"
+msgid ""
+"Calibre-Web Automated Instance is unconfigured, please contact your "
+"administrator"
 msgstr "E-postserveren er ikke konfigurert, kontakt administratoren din!"
 
 #: cps/templates/http_error.html:44
+#, fuzzy
 msgid "Create Issue"
-msgstr ""
+msgstr "Lag en hylle"
 
 #: cps/templates/http_error.html:51
 msgid "Return to Home"
 msgstr ""
 
 #: cps/templates/http_error.html:53
+#, fuzzy
 msgid "Logout User"
-msgstr ""
+msgstr "Rediger brukere"
 
 #: cps/templates/index.html:71
 msgid "Sort ascending according to download count"
@@ -2865,11 +3276,6 @@ msgstr ""
 #: cps/templates/index.html:84
 msgid "Sort descending according to series index"
 msgstr ""
-
-#: cps/templates/index.xml:7
-#, fuzzy
-msgid "Start"
-msgstr "Omstart"
 
 #: cps/templates/index.xml:19
 msgid "Alphabetical Books"
@@ -2919,8 +3325,9 @@ msgid "Books ordered by series"
 msgstr ""
 
 #: cps/templates/index.xml:119
+#, fuzzy
 msgid "Books ordered by Languages"
-msgstr ""
+msgstr "Bøker per side"
 
 #: cps/templates/index.xml:128
 msgid "Books ordered by Rating"
@@ -2930,7 +3337,7 @@ msgstr ""
 msgid "Books ordered by file formats"
 msgstr ""
 
-#: cps/templates/index.xml:142 cps/templates/layout.html:153
+#: cps/templates/index.xml:142 cps/templates/layout.html:255
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr ""
@@ -2939,51 +3346,61 @@ msgstr ""
 msgid "Books organized in shelves"
 msgstr ""
 
-#: cps/templates/layout.html:26 cps/templates/login.html:30
+#: cps/templates/layout.html:90 cps/templates/login.html:30
 msgid "Home"
 msgstr ""
 
-#: cps/templates/layout.html:32
+#: cps/templates/layout.html:96
 #, fuzzy
 msgid "Toggle Navigation"
 msgstr "Loggfilkonfigurasjon"
 
-#: cps/templates/layout.html:47
+#: cps/templates/layout.html:111
+#, fuzzy
 msgid "Search Library"
-msgstr ""
+msgstr "I biblioteket"
 
-#: cps/templates/layout.html:65 cps/templates/layout.html:95
+#: cps/templates/layout.html:129 cps/templates/layout.html:166
 msgid "Account"
 msgstr ""
 
-#: cps/templates/layout.html:71 cps/templates/layout.html:97
+#: cps/templates/layout.html:135 cps/templates/layout.html:168
 msgid "Logout"
 msgstr ""
 
-#: cps/templates/layout.html:92 cps/templates/read.html:78
+#: cps/templates/layout.html:143
+msgid "Switch Theme"
+msgstr ""
+
+#: cps/templates/layout.html:162 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
 msgstr "Vurderinger"
 
-#: cps/templates/layout.html:136
+#: cps/templates/layout.html:164
+#, fuzzy
+msgid "Refresh Library"
+msgstr "I biblioteket"
+
+#: cps/templates/layout.html:238
 #, fuzzy
 msgid "Please do not refresh the page"
 msgstr "Oppdaterer, vennligst ikke last inn denne siden på nytt"
 
-#: cps/templates/layout.html:146
+#: cps/templates/layout.html:248
 msgid "Browse"
 msgstr ""
 
-#: cps/templates/layout.html:159 cps/templates/stats.html:3
+#: cps/templates/layout.html:261 cps/templates/stats.html:3
 msgid "About"
 msgstr ""
 
-#: cps/templates/layout.html:173
+#: cps/templates/layout.html:275
 msgid "Previous"
 msgstr ""
 
-#: cps/templates/layout.html:200
+#: cps/templates/layout.html:302
 #, fuzzy
 msgid "Book Details"
 msgstr "Detaljer"
@@ -3002,8 +3419,9 @@ msgid "Remember Me"
 msgstr ""
 
 #: cps/templates/login.html:23
+#, fuzzy
 msgid "Forgot Password?"
-msgstr ""
+msgstr "Passord"
 
 #: cps/templates/login.html:34
 msgid "Log in with Magic Link"
@@ -3014,20 +3432,23 @@ msgid "Show Calibre-Web Log: "
 msgstr ""
 
 #: cps/templates/logviewer.html:8
+#, fuzzy
 msgid "Calibre-Web Log: "
-msgstr ""
+msgstr "Calibre-Web test e-post"
 
 #: cps/templates/logviewer.html:8
 msgid "Stream output, can't be displayed"
 msgstr ""
 
 #: cps/templates/logviewer.html:12
+#, fuzzy
 msgid "Show Access Log: "
-msgstr ""
+msgstr "Aktiver tilgangslogg"
 
 #: cps/templates/logviewer.html:18
+#, fuzzy
 msgid "Download Calibre-Web Log"
-msgstr ""
+msgstr "Aktiver tilgangslogg"
 
 #: cps/templates/logviewer.html:21
 #, fuzzy
@@ -3072,16 +3493,20 @@ msgid "and hard disk"
 msgstr ""
 
 #: cps/templates/modal_dialogs.html:56
-msgid "Important Kobo Note: deleted books will remain on any paired Kobo device."
+msgid ""
+"Important Kobo Note: deleted books will remain on any paired Kobo device."
 msgstr ""
 
 #: cps/templates/modal_dialogs.html:57
-msgid "Books must first be archived and the device synced before a book can safely be deleted."
+msgid ""
+"Books must first be archived and the device synced before a book can safely "
+"be deleted."
 msgstr ""
 
 #: cps/templates/modal_dialogs.html:76
+#, fuzzy
 msgid "Choose File Location"
-msgstr ""
+msgstr "Vis valg av filformater"
 
 #: cps/templates/modal_dialogs.html:82
 msgid "type"
@@ -3097,8 +3522,9 @@ msgid "size"
 msgstr ""
 
 #: cps/templates/modal_dialogs.html:90
+#, fuzzy
 msgid "Parent Directory"
-msgstr ""
+msgstr "Caliber Database Directory"
 
 #: cps/templates/modal_dialogs.html:98
 #, fuzzy
@@ -3110,12 +3536,14 @@ msgid "Ok"
 msgstr ""
 
 #: cps/templates/osd.xml:5
-msgid "Calibre-Web eBook Catalog"
-msgstr ""
+#, fuzzy
+msgid "Calibre-Web Automated eBook Catalog"
+msgstr "Calibre-Web test e-post"
 
 #: cps/templates/read.html:7
+#, fuzzy
 msgid "epub Reader"
-msgstr ""
+msgstr "Send til E-Reader"
 
 #: cps/templates/read.html:84 cps/templates/readcbr.html:104
 #, fuzzy
@@ -3175,8 +3603,9 @@ msgid "Spread"
 msgstr "redusere"
 
 #: cps/templates/read.html:114
+#, fuzzy
 msgid "Two columns"
-msgstr ""
+msgstr "Ugyldig lesekolonne"
 
 #: cps/templates/read.html:115
 #, fuzzy
@@ -3201,8 +3630,9 @@ msgid "Next Page"
 msgstr "Admin side"
 
 #: cps/templates/readcbr.html:80
+#, fuzzy
 msgid "Single Page Display"
-msgstr ""
+msgstr "Admin side"
 
 #: cps/templates/readcbr.html:81
 msgid "Long Strip Display"
@@ -3225,12 +3655,14 @@ msgid "Scale to Native"
 msgstr ""
 
 #: cps/templates/readcbr.html:86
+#, fuzzy
 msgid "Rotate Right"
-msgstr ""
+msgstr "Startet"
 
 #: cps/templates/readcbr.html:87
+#, fuzzy
 msgid "Rotate Left"
-msgstr ""
+msgstr "Startet"
 
 #: cps/templates/readcbr.html:88
 msgid "Flip Image"
@@ -3291,7 +3723,7 @@ msgstr ""
 #: cps/templates/readcbr.html:150
 #, fuzzy
 msgid "Direction"
-msgstr "Administrasjon"
+msgstr "Beskrivelse"
 
 #: cps/templates/readcbr.html:153
 msgid "Left to Right"
@@ -3314,8 +3746,9 @@ msgid "Scrollbar"
 msgstr ""
 
 #: cps/templates/readcbr.html:171
+#, fuzzy
 msgid "Show"
-msgstr ""
+msgstr "Vis alt"
 
 #: cps/templates/readcbr.html:172
 msgid "Hide"
@@ -3330,8 +3763,9 @@ msgid "PDF Reader"
 msgstr ""
 
 #: cps/templates/readtxt.html:6
+#, fuzzy
 msgid "txt Reader"
-msgstr ""
+msgstr "Send til E-Reader"
 
 #: cps/templates/register.html:4
 msgid "Register New Account"
@@ -3343,8 +3777,9 @@ msgid "Choose a username"
 msgstr "Bruk e-post som brukernavn"
 
 #: cps/templates/register.html:15
+#, fuzzy
 msgid "Your Email"
-msgstr ""
+msgstr "Fra e-post"
 
 #: cps/templates/remote_login.html:5
 msgid "Magic Link - Authorise New Device"
@@ -3354,11 +3789,11 @@ msgstr ""
 msgid "On another device, login and visit:"
 msgstr ""
 
-#: cps/templates/remote_login.html:11
+#: cps/templates/remote_login.html:17
 msgid "Once verified, you will automatically be logged in on this device."
 msgstr ""
 
-#: cps/templates/remote_login.html:14
+#: cps/templates/remote_login.html:20
 msgid "This verification link will expire in 10 minutes."
 msgstr ""
 
@@ -3378,8 +3813,9 @@ msgid "Search Term:"
 msgstr "Søkefeil!"
 
 #: cps/templates/search.html:9
+#, fuzzy
 msgid "Results for:"
-msgstr ""
+msgstr "Merket ble ikke funnet"
 
 #: cps/templates/search_form.html:21
 #, fuzzy
@@ -3391,6 +3827,10 @@ msgstr "Publisert etter "
 msgid "Published Date To"
 msgstr "Publisert etter "
 
+#: cps/templates/search_form.html:42
+msgid "Read Status"
+msgstr "Les status"
+
 #: cps/templates/search_form.html:44 cps/templates/search_form.html:165
 msgid "Any"
 msgstr ""
@@ -3400,16 +3840,19 @@ msgid "Empty"
 msgstr ""
 
 #: cps/templates/search_form.html:60
+#, fuzzy
 msgid "Exclude Tags"
-msgstr ""
+msgstr "Skriv inn Språk"
 
 #: cps/templates/search_form.html:78
+#, fuzzy
 msgid "Exclude Series"
-msgstr ""
+msgstr "Gå inn i serien"
 
 #: cps/templates/search_form.html:96
+#, fuzzy
 msgid "Exclude Shelves"
-msgstr ""
+msgstr "Skriv inn Språk"
 
 #: cps/templates/search_form.html:116
 #, fuzzy
@@ -3430,8 +3873,9 @@ msgid "Rating Above"
 msgstr "Vurdering: Ingen"
 
 #: cps/templates/search_form.html:149
+#, fuzzy
 msgid "Rating Below"
-msgstr ""
+msgstr "Vurdering: Ingen"
 
 #: cps/templates/search_form.html:175 cps/templates/search_form.html:187
 #: cps/templates/search_form.html:201
@@ -3444,8 +3888,9 @@ msgid "To:"
 msgstr ""
 
 #: cps/templates/shelf.html:13
+#, fuzzy
 msgid "Delete this Shelf"
-msgstr ""
+msgstr "Lag en hylle"
 
 #: cps/templates/shelf.html:14
 msgid "Edit Shelf Properties"
@@ -3486,8 +3931,9 @@ msgid "Drag to Rearrange Order"
 msgstr ""
 
 #: cps/templates/shelf_order.html:33
+#, fuzzy
 msgid "Hidden Book"
-msgstr ""
+msgstr "Se bøker"
 
 #: cps/templates/stats.html:7
 #, fuzzy
@@ -3558,11 +4004,14 @@ msgid "Actions"
 msgstr "Vurderinger"
 
 #: cps/templates/tasks.html:41
-msgid "This task will be cancelled. Any progress made by this task will be saved."
+msgid ""
+"This task will be cancelled. Any progress made by this task will be saved."
 msgstr ""
 
 #: cps/templates/tasks.html:42
-msgid "If this is a scheduled task, it will be re-ran during the next scheduled time."
+msgid ""
+"If this is a scheduled task, it will be re-ran during the next scheduled "
+"time."
 msgstr ""
 
 #: cps/templates/user_edit.html:20
@@ -3570,7 +4019,9 @@ msgid "Reset user Password"
 msgstr ""
 
 #: cps/templates/user_edit.html:28
-msgid "Send to eReader Email Address. Use comma to separate emails for multiple eReaders"
+msgid ""
+"Send to eReader Email Address. Use comma to separate emails for multiple "
+"eReaders"
 msgstr ""
 
 #: cps/templates/user_edit.html:43
@@ -3591,38 +4042,47 @@ msgstr ""
 msgid "Unlink"
 msgstr ""
 
-#: cps/templates/user_edit.html:64
-msgid "Kobo Sync Token"
-msgstr ""
-
-#: cps/templates/user_edit.html:66
-msgid "Create/View"
+#: cps/templates/user_edit.html:65
+msgid "Hardcover API token"
 msgstr ""
 
 #: cps/templates/user_edit.html:70
+msgid "Kobo Sync Token"
+msgstr ""
+
+#: cps/templates/user_edit.html:72
+msgid "Create/View"
+msgstr ""
+
+#: cps/templates/user_edit.html:76
 msgid "Force full kobo sync"
 msgstr ""
 
-#: cps/templates/user_edit.html:88
+#: cps/templates/user_edit.html:94
 msgid "Add allowed/Denied Custom Column Values"
 msgstr ""
 
-#: cps/templates/user_edit.html:137
+#: cps/templates/user_edit.html:143
 msgid "Sync only books in selected shelves with Kobo"
 msgstr ""
 
-#: cps/templates/user_edit.html:147 cps/templates/user_table.html:169
+#: cps/templates/user_edit.html:153 cps/templates/user_table.html:169
 #, fuzzy
 msgid "Delete User"
 msgstr "Kan ikke slette gjestebruker"
 
-#: cps/templates/user_edit.html:159
+#: cps/templates/user_edit.html:165
 msgid "Generate Kobo Auth URL"
 msgstr ""
 
 #: cps/templates/user_table.html:80 cps/templates/user_table.html:103
+#, fuzzy
 msgid "Select..."
-msgstr ""
+msgstr "Slett"
+
+#: cps/templates/user_table.html:124
+msgid "Remove Selections"
+msgstr "Fjern valg"
 
 #: cps/templates/user_table.html:131
 #, fuzzy
@@ -3640,36 +4100,41 @@ msgid "Enter Email"
 msgstr "Test e-post"
 
 #: cps/templates/user_table.html:136
+#, fuzzy
 msgid "Enter eReader Email"
-msgstr ""
+msgstr "Send til E-Reader E-postadresse"
 
 #: cps/templates/user_table.html:136
+#, fuzzy
 msgid "eReader Email"
-msgstr ""
+msgstr "Send til E-Reader E-postadresse"
 
 #: cps/templates/user_table.html:137
 msgid "Locale"
 msgstr ""
 
 #: cps/templates/user_table.html:138
+#, fuzzy
 msgid "Visible Book Languages"
-msgstr ""
+msgstr "Ikke oppgitt gyldig bokspråk"
 
 #: cps/templates/user_table.html:139
 msgid "Edit Allowed Tags"
 msgstr ""
 
 #: cps/templates/user_table.html:139
+#, fuzzy
 msgid "Allowed Tags"
-msgstr ""
+msgstr "Aktiver opplastinger"
 
 #: cps/templates/user_table.html:140
 msgid "Edit Denied Tags"
 msgstr ""
 
 #: cps/templates/user_table.html:140
+#, fuzzy
 msgid "Denied Tags"
-msgstr ""
+msgstr "Tast inn "
 
 #: cps/templates/user_table.html:141
 msgid "Edit Allowed Column Values"
@@ -3693,12 +4158,14 @@ msgid "Change Password"
 msgstr "Passord"
 
 #: cps/templates/user_table.html:147
+#, fuzzy
 msgid "View"
-msgstr ""
+msgstr "Vis logger"
 
 #: cps/templates/user_table.html:150
+#, fuzzy
 msgid "Edit Public Shelves"
-msgstr ""
+msgstr "Offentlig hylle"
 
 #: cps/templates/user_table.html:152
 msgid "Sync selected Shelves with Kobo"
@@ -3709,3 +4176,97 @@ msgstr ""
 msgid "Show Read/Unread Section"
 msgstr "Vis serieutvalg"
 
+#, fuzzy, python-format
+#~ msgid "%(seriesindex)s is not a valid number, skipping"
+#~ msgstr "%(seriesindex)s er ikke et gyldig tall, hopper over"
+
+#, fuzzy
+#~ msgid "Calibre-Web Automated Stats"
+#~ msgstr "Calibre-Web-konfigurasjonen er oppdatert"
+
+#~ msgid "Calibre-Web configuration updated"
+#~ msgstr "Calibre-Web-konfigurasjonen er oppdatert"
+
+#~ msgid ""
+#~ "Are you sure you want delete Calibre-Web's sync database to force a full "
+#~ "sync with your Kobo Reader?"
+#~ msgstr ""
+#~ "Er du sikker på at du vil slette Calibre-Webs synkroniseringsdatabase for "
+#~ "å tvinge frem en full synkronisering med Kobo Reader?"
+
+#, fuzzy
+#~ msgid "This Email has been sent via Calibre-Web."
+#~ msgstr "Denne e-posten er sendt via Calibre-Web."
+
+#~ msgid "Get Started with Calibre-Web"
+#~ msgstr "Kom i gang med Calibre-Web"
+
+#~ msgid ""
+#~ "Please access Calibre-Web from non localhost to get valid api_endpoint "
+#~ "for kobo device"
+#~ msgstr ""
+#~ "Gå til Calibre-Web fra ikke-lokale vert for å få gyldig api_endpoint for "
+#~ "kobo-enhet"
+
+#~ msgid ""
+#~ "Calibre-Web will search for updated Covers and update Cover Thumbnails, "
+#~ "this may take a while?"
+#~ msgstr ""
+#~ "Calibre-Web vil søke etter oppdaterte omslag og oppdatere "
+#~ "omslagsminiatyrbilder, kan dette ta litt tid?"
+
+#, fuzzy
+#~ msgid "This Email has been sent via  Autmoated."
+#~ msgstr "Denne e-posten er sendt via Calibre-Web."
+
+#, fuzzy
+#~ msgid "This Email has been sent via  Automated."
+#~ msgstr "Denne e-posten er sendt via Calibre-Web."
+
+#, fuzzy
+#~ msgid "Downloads per User"
+#~ msgstr "Nedlastinger"
+
+#, fuzzy
+#~ msgid "This Email has been sent via  Autoated."
+#~ msgstr "Denne e-posten er sendt via Calibre-Web."
+
+#, fuzzy
+#~ msgid "unknown error"
+#~ msgstr "Tilkoblingsfeil"
+
+#, fuzzy
+#~ msgid "Could not open file {filename!r}: {message}"
+#~ msgstr "Kunne ikke logge på: %(message)s"
+
+#, fuzzy
+#~ msgid "{value!r} is not a valid boolean."
+#~ msgstr "E-post er ikke fra gyldig domene"
+
+#, fuzzy
+#~ msgid "directory"
+#~ msgstr "Administrasjon"
+
+#, fuzzy
+#~ msgid "{name} {filename!r} is not writable."
+#~ msgstr "DB er ikke skrivbar"
+
+#, fuzzy
+#~ msgid "Repeat for confirmation"
+#~ msgstr "Funksjonskonfigurasjon"
+
+#, fuzzy
+#~ msgid "Value must be an iterable."
+#~ msgstr "Verdien må være sann eller usann"
+
+#~ msgid "Users"
+#~ msgstr "Brukere"
+
+#~ msgid "Configuration"
+#~ msgstr "Konfigurasjon"
+
+#~ msgid "Click the cover to load metadata to the form"
+#~ msgstr "Klikk på omslaget for å laste metadata til skjemaet"
+
+#~ msgid "Series Index"
+#~ msgstr "Serieindeks"

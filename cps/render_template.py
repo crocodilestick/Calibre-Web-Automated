@@ -18,6 +18,8 @@
 
 from flask import render_template, g, abort, request, flash
 from flask_babel import gettext as _
+from flask_babel import get_locale
+import polib
 from werkzeug.local import LocalProxy
 from .cw_login import current_user
 from sqlalchemy.sql.expression import or_
@@ -162,6 +164,35 @@ def cwa_update_notification() -> None:
         return
 
 
+# Checks if translations are missing for the current language
+def translations_missing_notification() -> None:
+    lang = str(get_locale())
+    po_path = f"cps/translations/{lang}/LC_MESSAGES/messages.po"
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    notice_file = f"/app/cwa_translation_notice_{lang}"
+    missing_count = 0
+    if os.path.isfile(po_path):
+        try:
+            po = polib.pofile(po_path)
+            missing_count = sum(1 for entry in po if not entry.msgstr.strip())
+        except Exception as e:
+            print(f"[translation-notification-service] Error reading {po_path}: {e}", flush=True)
+    if missing_count > 0:
+        if not os.path.isfile(notice_file):
+            with open(notice_file, 'w') as f:
+                f.write(current_date)
+            last_notification = "0001-01-01"
+        else:
+            with open(notice_file, 'r') as f:
+                last_notification = f.read().strip()
+        if last_notification != current_date:
+            message = _(f"🌐 Help improve {lang} translations! {missing_count} strings in your language need translation. ")
+            flash(message, category="translation_missing")
+            print(f"[translation-notification-service] {message}", flush=True)
+            with open(notice_file, 'w') as f:
+                f.write(current_date)
+
+
 # Returns the template for rendering and includes the instance name
 def render_title_template(*args, **kwargs):
     sidebar, simple = get_sidebar_config(kwargs)
@@ -170,6 +201,11 @@ def render_title_template(*args, **kwargs):
             cwa_update_notification()
         except Exception as e:
             print(f"[cwa-update-notification-service] The following error occurred when checking for available updates:\n{e}", flush=True)
+    # Notify any user if translations are missing for their language
+    try:
+        translations_missing_notification()
+    except Exception as e:
+        print(f"[translation-notification-service] The following error occurred when checking for missing translations:\n{e}", flush=True)
     try:
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
                                accept=config.config_upload_formats.split(','),

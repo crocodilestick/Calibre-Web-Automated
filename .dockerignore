@@ -5,6 +5,7 @@ docker-compose.yml
 .gitignore
 .github/workflows
 .gitattributes
+.po~
 build.sh
 README.md
 LICENSE

@@ -33,9 +33,9 @@ jobs:
 
       - name: Clone wiki repo
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          git clone https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.wiki.git wiki-tmp
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.wiki.git wiki-tmp
 
       - name: Generate translation status table (in wiki repo)
         run: |

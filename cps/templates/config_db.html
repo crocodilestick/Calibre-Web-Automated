@@ -19,11 +19,11 @@
         </span>
       </div>
       <p style="margin-bottom: 4rem;">
-        {{_(CWA is configured so that your Calibre Database (<code>metadata.db</code> file) should always be somewhere in <code>/calibre-library</code>.
+        {{_("CWA is configured so that your Calibre Database (<code>metadata.db</code> file) should always be somewhere in <code>/calibre-library</code>.
         CWA automatically searches whatever directory you've bound to <code>/calibre-library</code> in your docker-compose file for existing Calibre
         Libraries/metadata.db files on start up. If it finds just one exisitng library, it mounts it automatically, if it find multiple, by default
         it will mount the largest one automatically and if it doesn't find any, it will automatically create and mount a new one. For more details,
-        <a href="https://github.com/crocodilestick/Calibre-Web-Automated/wiki/Configuration#database-configuration">see here</a>!
+        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/wiki/Configuration#database-configuration\">see here</a>!
         <br><br>
         Therefore, when configuring your docker-compose file for CWA, <b>DO NOT CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>
         These paths are internal to CWA only, you can change what they're bind to to your heart's content on the left-hand side but there's no reason to
@@ -32,9 +32,9 @@
         <br><br>
         E.g. As long as your library's <code>metadata.db</code> file is bound somewhere within <code>/calibre-library</code>, you could bind the dir
         containing the corrisponding book files ect. to something like <code>/books</code> and enter <code>/books</code> in the field that pops up below
-        once you've checked the <b>Seperate Book Files from Library</b> option.) | safe }}
+        once you've checked the <b>Seperate Book Files from Library</b> option.") | safe }}
       </p>
-      <h1 style="margin-bottom: 4rem;">{{_(Split Library Functionality)}}</h1>
+      <h1 style="margin-bottom: 4rem;">{{_("Split Library Functionality")}}</h1>
         <div class="form-group required">
         <input type="checkbox" id="config_calibre_split" name="config_calibre_split" data-control="split_settings" data-t ="{{ config.config_calibre_split_dir  }}" {% if config.config_calibre_split %}checked{% endif %} >
         <label style="display: inline; padding: 1rem;" for="config_calibre_split">{{_('<b>Separate Book Files from Library</b> - <code>metadata.db</code> file should remain in <code>/calibre-library</code>, however your library files can be wherever you desire') | safe }}</label>

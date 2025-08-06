@@ -13,8 +13,10 @@ for po_path in sorted(glob.glob("cps/translations/*/LC_MESSAGES/messages.po")):
     status_lines.append(f"| {lang} | {total} | {untranslated} | {percent}% |")
 
 # Write to the wiki file (replace the table section)
+
 import re
-wiki_path = "cwa-wiki/Contributing-Translations.md"
+import sys
+wiki_path = sys.argv[1] if len(sys.argv) > 1 else "wiki-tmp/Contributing-Translations.md"
 with open(wiki_path, "r", encoding="utf-8") as f:
     content = f.read()
 

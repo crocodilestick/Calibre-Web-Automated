@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-06 11:34+0200\n"
+"POT-Creation-Date: 2025-08-06 18:17+0200\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -564,6 +564,116 @@ msgstr ""
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Пользователь '%(nick)s' обновлён"
+
+#: cps/constants.py:200
+msgid "Czech"
+msgstr ""
+
+#: cps/constants.py:201
+msgid "German"
+msgstr ""
+
+#: cps/constants.py:202
+msgid "Greek"
+msgstr ""
+
+#: cps/constants.py:203
+msgid "Spanish"
+msgstr ""
+
+#: cps/constants.py:204
+#, fuzzy
+msgid "Finnish"
+msgstr "Завершено"
+
+#: cps/constants.py:205
+msgid "French"
+msgstr ""
+
+#: cps/constants.py:206
+msgid "Galician"
+msgstr ""
+
+#: cps/constants.py:207
+msgid "Hungarian"
+msgstr ""
+
+#: cps/constants.py:208
+msgid "Indonesian"
+msgstr ""
+
+#: cps/constants.py:209
+msgid "Italian"
+msgstr ""
+
+#: cps/constants.py:210
+msgid "Japanese"
+msgstr ""
+
+#: cps/constants.py:211
+msgid "Khmer"
+msgstr ""
+
+#: cps/constants.py:212
+msgid "Korean"
+msgstr ""
+
+#: cps/constants.py:213
+msgid "Dutch"
+msgstr ""
+
+#: cps/constants.py:214
+msgid "Norwegian"
+msgstr ""
+
+#: cps/constants.py:215
+#, fuzzy
+msgid "Polish"
+msgstr "Издатель"
+
+#: cps/constants.py:216
+msgid "Portuguese"
+msgstr ""
+
+#: cps/constants.py:217
+msgid "Portuguese (Brazil)"
+msgstr ""
+
+#: cps/constants.py:218
+msgid "Russian"
+msgstr ""
+
+#: cps/constants.py:219
+msgid "Slovak"
+msgstr ""
+
+#: cps/constants.py:220
+msgid "Slovenian"
+msgstr ""
+
+#: cps/constants.py:221
+msgid "Swedish"
+msgstr ""
+
+#: cps/constants.py:222
+msgid "Turkish"
+msgstr ""
+
+#: cps/constants.py:223
+msgid "Ukrainian"
+msgstr ""
+
+#: cps/constants.py:224
+msgid "Vietnamese"
+msgstr ""
+
+#: cps/constants.py:225
+msgid "Chinese (Simplified, China)"
+msgstr ""
+
+#: cps/constants.py:226
+msgid "Chinese (Traditional, Taiwan)"
+msgstr ""
 
 #: cps/converter.py:31
 msgid "not installed"

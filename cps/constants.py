@@ -194,3 +194,34 @@ COVER_THUMBNAIL_LARGE    = 4
 
 # clean-up the module namespace
 del sys, os, namedtuple
+
+# Mapping of language codes to full language names
+LANGUAGE_NAMES = {
+    "cs": _("Czech"),
+    "de": _("German"),
+    "el": _("Greek"),
+    "es": _("Spanish"),
+    "fi": _("Finnish"),
+    "fr": _("French"),
+    "gl": _("Galician"),
+    "hu": _("Hungarian"),
+    "id": _("Indonesian"),
+    "it": _("Italian"),
+    "ja": _("Japanese"),
+    "km": _("Khmer"),
+    "ko": _("Korean"),
+    "nl": _("Dutch"),
+    "no": _("Norwegian"),
+    "pl": _("Polish"),
+    "pt": _("Portuguese"),
+    "pt_BR": _("Portuguese (Brazil)"),
+    "ru": _("Russian"),
+    "sk": _("Slovak"),
+    "sl": _("Slovenian"),
+    "sv": _("Swedish"),
+    "tr": _("Turkish"),
+    "uk": _("Ukrainian"),
+    "vi": _("Vietnamese"),
+    "zh_Hans_CN": _("Chinese (Simplified, China)"),
+    "zh_Hant_TW": _("Chinese (Traditional, Taiwan)"),
+}

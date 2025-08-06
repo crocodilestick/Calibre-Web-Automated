@@ -20,6 +20,8 @@ import sys
 import os
 from collections import namedtuple
 
+from flask_babel import gettext as _
+
 # APP_MODE - production, development, or test
 APP_MODE            = os.environ.get('APP_MODE', 'production')
 

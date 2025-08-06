@@ -7,8 +7,8 @@ status_lines.append("|---|---|---|---|")
 for po_path in sorted(glob.glob("cps/translations/*/LC_MESSAGES/messages.po")):
     lang = po_path.split("/")[2]
     po = polib.pofile(po_path)
-total = len([e for e in po if not e.obsolete])
-untranslated = sum(1 for entry in po if not entry.msgstr.strip() and not entry.obsolete)
+    total = len([e for e in po if not e.obsolete])
+    untranslated = sum(1 for entry in po if not entry.msgstr.strip() and not entry.obsolete)
     percent = 100 * (total - untranslated) // total if total else 0
     status_lines.append(f"| {lang} | {total} | {untranslated} | {percent}% |")
 

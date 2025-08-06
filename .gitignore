@@ -16,6 +16,7 @@ pyproject.toml
 .venv
 .vscode
 .history
+cwa-wiki/
 
 # Test Scripts
 test*

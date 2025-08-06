@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-05 12:15+0200\n"
+"POT-Creation-Date: 2025-08-06 11:34+0200\n"
 "PO-Revision-Date: 2020-06-09 21:11+0100\n"
 "Last-Translator: Lukas Heroudek <lukas.heroudek@gmail.com>\n"
 "Language-Team: \n"
@@ -1110,151 +1110,151 @@ msgstr "Token vypršel"
 msgid "Success! Please return to your device"
 msgstr "Úspěch! Vraťte se prosím do zařízení"
 
-#: cps/render_template.py:50
+#: cps/render_template.py:52
 msgid "Books"
 msgstr "Knihy"
 
-#: cps/render_template.py:52
+#: cps/render_template.py:54
 msgid "Show recent books"
 msgstr "Zobrazit nedávné knihy"
 
-#: cps/render_template.py:53 cps/templates/index.xml:27
+#: cps/render_template.py:55 cps/templates/index.xml:27
 msgid "Hot Books"
 msgstr "Žhavé knihy"
 
-#: cps/render_template.py:55
+#: cps/render_template.py:57
 msgid "Show Hot Books"
 msgstr "Zobrazit žhavé knihy"
 
-#: cps/render_template.py:57 cps/render_template.py:62
+#: cps/render_template.py:59 cps/render_template.py:64
 msgid "Downloaded Books"
 msgstr ""
 
-#: cps/render_template.py:59 cps/render_template.py:64
+#: cps/render_template.py:61 cps/render_template.py:66
 #: cps/templates/user_table.html:167
 msgid "Show Downloaded Books"
 msgstr ""
 
-#: cps/render_template.py:67 cps/templates/index.xml:36 cps/web.py:471
+#: cps/render_template.py:69 cps/templates/index.xml:36 cps/web.py:471
 msgid "Top Rated Books"
 msgstr "Nejlépe hodnocené knihy"
 
-#: cps/render_template.py:69 cps/templates/user_table.html:161
+#: cps/render_template.py:71 cps/templates/user_table.html:161
 msgid "Show Top Rated Books"
 msgstr "Zobrazit nejlépe hodnocené knihy"
 
-#: cps/render_template.py:70 cps/templates/index.xml:63
+#: cps/render_template.py:72 cps/templates/index.xml:63
 #: cps/templates/index.xml:67 cps/web.py:804
 msgid "Read Books"
 msgstr "Přečtené knihy"
 
-#: cps/render_template.py:72
+#: cps/render_template.py:74
 #, fuzzy
 msgid "Show Read and Unread"
 msgstr "Zobrazit prečtené a nepřečtené"
 
-#: cps/render_template.py:74 cps/templates/index.xml:70
+#: cps/render_template.py:76 cps/templates/index.xml:70
 #: cps/templates/index.xml:74 cps/web.py:807
 msgid "Unread Books"
 msgstr "Nepřečtené knihy"
 
-#: cps/render_template.py:76
+#: cps/render_template.py:78
 msgid "Show unread"
 msgstr "Zobrazit nepřečtené"
 
-#: cps/render_template.py:77
+#: cps/render_template.py:79
 msgid "Discover"
 msgstr "Objevte"
 
-#: cps/render_template.py:79 cps/templates/index.xml:58
+#: cps/render_template.py:81 cps/templates/index.xml:58
 #: cps/templates/user_table.html:159 cps/templates/user_table.html:162
 msgid "Show Random Books"
 msgstr "Zobrazit náhodné knihy"
 
-#: cps/render_template.py:80 cps/templates/book_table.html:100
+#: cps/render_template.py:82 cps/templates/book_table.html:100
 #: cps/templates/index.xml:97 cps/web.py:1192
 msgid "Categories"
 msgstr "Kategorie"
 
-#: cps/render_template.py:82 cps/templates/user_table.html:158
+#: cps/render_template.py:84 cps/templates/user_table.html:158
 #, fuzzy
 msgid "Show Category Section"
 msgstr "Zobrazit výběr kategorie"
 
-#: cps/render_template.py:83 cps/templates/book_edit.html:86
+#: cps/render_template.py:85 cps/templates/book_edit.html:86
 #: cps/templates/book_table.html:101 cps/templates/index.xml:106
 #: cps/templates/search_form.html:70 cps/web.py:1082 cps/web.py:1094
 msgid "Series"
 msgstr "Série"
 
-#: cps/render_template.py:85 cps/templates/user_table.html:157
+#: cps/render_template.py:87 cps/templates/user_table.html:157
 #, fuzzy
 msgid "Show Series Section"
 msgstr "Zobrazit výběr sérií"
 
-#: cps/render_template.py:86 cps/templates/book_table.html:99
+#: cps/render_template.py:88 cps/templates/book_table.html:99
 #: cps/templates/index.xml:79
 msgid "Authors"
 msgstr "Autoři"
 
-#: cps/render_template.py:88 cps/templates/user_table.html:160
+#: cps/render_template.py:90 cps/templates/user_table.html:160
 #, fuzzy
 msgid "Show Author Section"
 msgstr "Zobrazit výběr autora"
 
-#: cps/render_template.py:90 cps/templates/book_table.html:105
+#: cps/render_template.py:92 cps/templates/book_table.html:105
 #: cps/templates/index.xml:88 cps/web.py:1050
 msgid "Publishers"
 msgstr "Vydavatelé"
 
-#: cps/render_template.py:92 cps/templates/user_table.html:163
+#: cps/render_template.py:94 cps/templates/user_table.html:163
 #, fuzzy
 msgid "Show Publisher Section"
 msgstr "Zobrazit výběr vydavatele"
 
-#: cps/render_template.py:93 cps/templates/book_table.html:103
+#: cps/render_template.py:95 cps/templates/book_table.html:103
 #: cps/templates/index.xml:115 cps/templates/search_form.html:108
 #: cps/web.py:1164
 msgid "Languages"
 msgstr "Jazyky"
 
-#: cps/render_template.py:96 cps/templates/user_table.html:155
+#: cps/render_template.py:98 cps/templates/user_table.html:155
 #, fuzzy
 msgid "Show Language Section"
 msgstr "Zobrazit výběr jazyka"
 
-#: cps/render_template.py:97 cps/templates/index.xml:124
+#: cps/render_template.py:99 cps/templates/index.xml:124
 msgid "Ratings"
 msgstr "Hodnocení"
 
-#: cps/render_template.py:99 cps/templates/user_table.html:164
+#: cps/render_template.py:101 cps/templates/user_table.html:164
 #, fuzzy
 msgid "Show Ratings Section"
 msgstr "Zobrazit výběr hodnocení"
 
-#: cps/render_template.py:100 cps/templates/index.xml:133
+#: cps/render_template.py:102 cps/templates/index.xml:133
 msgid "File formats"
 msgstr "Formáty souborů"
 
-#: cps/render_template.py:102 cps/templates/user_table.html:165
+#: cps/render_template.py:104 cps/templates/user_table.html:165
 #, fuzzy
 msgid "Show File Formats Section"
 msgstr "Zobrazit výběr formátů"
 
-#: cps/render_template.py:104 cps/web.py:830
+#: cps/render_template.py:106 cps/web.py:830
 msgid "Archived Books"
 msgstr "Archivované knihy"
 
-#: cps/render_template.py:106 cps/templates/user_table.html:166
+#: cps/render_template.py:108 cps/templates/user_table.html:166
 #, fuzzy
 msgid "Show Archived Books"
 msgstr "Zobrazit archivované knihy"
 
-#: cps/render_template.py:109 cps/web.py:880
+#: cps/render_template.py:111 cps/web.py:880
 msgid "Books List"
 msgstr ""
 
-#: cps/render_template.py:111 cps/templates/user_table.html:168
+#: cps/render_template.py:113 cps/templates/user_table.html:168
 msgid "Show Books List"
 msgstr ""
 
@@ -1348,7 +1348,7 @@ msgstr "Kniha byla odebrána z police: %(sname)s"
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr ""
 
-#: cps/shelf.py:222 cps/templates/layout.html:260
+#: cps/shelf.py:222 cps/templates/layout.html:270
 msgid "Create a Shelf"
 msgstr "Vytvořit polici"
 
@@ -2160,13 +2160,13 @@ msgid "Convert book"
 msgstr "Převést knihu"
 
 #: cps/templates/book_edit.html:53 cps/templates/layout.html:148
-#: cps/templates/layout.html:237
+#: cps/templates/layout.html:247
 msgid "Uploading..."
 msgstr "Nahrávání..."
 
 #: cps/templates/book_edit.html:53 cps/templates/book_edit.html:256
 #: cps/templates/book_table.html:333 cps/templates/layout.html:148
-#: cps/templates/layout.html:306 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:316 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:169
 msgid "Close"
 msgstr "Zavřít"
@@ -3106,7 +3106,7 @@ msgid "Add to shelf"
 msgstr "Přidat do police"
 
 #: cps/templates/detail.html:313 cps/templates/detail.html:332
-#: cps/templates/feed.xml:81 cps/templates/layout.html:257
+#: cps/templates/feed.xml:81 cps/templates/layout.html:267
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -3178,7 +3178,7 @@ msgstr "Zadejte jméno domény"
 msgid "Denied Domains (Blacklist)"
 msgstr "Zakázané domény pro registraci"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:290
+#: cps/templates/feed.xml:22 cps/templates/layout.html:300
 msgid "Next"
 msgstr "Další"
 
@@ -3301,7 +3301,7 @@ msgstr "Knihy řazené podle hodnocení"
 msgid "Books ordered by file formats"
 msgstr "Knihy seřazené podle souboru formátů"
 
-#: cps/templates/index.xml:142 cps/templates/layout.html:255
+#: cps/templates/index.xml:142 cps/templates/layout.html:265
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Police"
@@ -3346,23 +3346,23 @@ msgstr "Nastavení"
 msgid "Refresh Library"
 msgstr "Hledat v knihovně"
 
-#: cps/templates/layout.html:238
+#: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
 msgstr "Prosím neobnovujte stránku"
 
-#: cps/templates/layout.html:248
+#: cps/templates/layout.html:258
 msgid "Browse"
 msgstr "Procházet"
 
-#: cps/templates/layout.html:261 cps/templates/stats.html:3
+#: cps/templates/layout.html:271 cps/templates/stats.html:3
 msgid "About"
 msgstr "O knihovně"
 
-#: cps/templates/layout.html:275
+#: cps/templates/layout.html:285
 msgid "Previous"
 msgstr "Předchozí"
 
-#: cps/templates/layout.html:302
+#: cps/templates/layout.html:312
 msgid "Book Details"
 msgstr "Podrobnosti o knize"
 

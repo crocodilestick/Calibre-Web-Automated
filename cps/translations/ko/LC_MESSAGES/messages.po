@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-05 12:15+0200\n"
+"POT-Creation-Date: 2025-08-06 11:34+0200\n"
 "PO-Revision-Date: 2024-11-01 17:50+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -1089,142 +1089,142 @@ msgstr "토큰이 만료되었습니다."
 msgid "Success! Please return to your device"
 msgstr "인증되었습니다. 기기로 돌아가 주세요."
 
-#: cps/render_template.py:50
+#: cps/render_template.py:52
 msgid "Books"
 msgstr "전체"
 
-#: cps/render_template.py:52
+#: cps/render_template.py:54
 msgid "Show recent books"
 msgstr "최근 책 보기"
 
-#: cps/render_template.py:53 cps/templates/index.xml:27
+#: cps/render_template.py:55 cps/templates/index.xml:27
 msgid "Hot Books"
 msgstr "인기"
 
-#: cps/render_template.py:55
+#: cps/render_template.py:57
 msgid "Show Hot Books"
 msgstr "인기 책 보기"
 
-#: cps/render_template.py:57 cps/render_template.py:62
+#: cps/render_template.py:59 cps/render_template.py:64
 msgid "Downloaded Books"
 msgstr "받은 적 있는"
 
-#: cps/render_template.py:59 cps/render_template.py:64
+#: cps/render_template.py:61 cps/render_template.py:66
 #: cps/templates/user_table.html:167
 msgid "Show Downloaded Books"
 msgstr "다운로드 받은 적 있는 책 보기"
 
-#: cps/render_template.py:67 cps/templates/index.xml:36 cps/web.py:471
+#: cps/render_template.py:69 cps/templates/index.xml:36 cps/web.py:471
 msgid "Top Rated Books"
 msgstr "베스트"
 
-#: cps/render_template.py:69 cps/templates/user_table.html:161
+#: cps/render_template.py:71 cps/templates/user_table.html:161
 msgid "Show Top Rated Books"
 msgstr "평점 높은 책 보기"
 
-#: cps/render_template.py:70 cps/templates/index.xml:63
+#: cps/render_template.py:72 cps/templates/index.xml:63
 #: cps/templates/index.xml:67 cps/web.py:804
 msgid "Read Books"
 msgstr "읽음"
 
-#: cps/render_template.py:72
+#: cps/render_template.py:74
 msgid "Show Read and Unread"
 msgstr "읽은 책과 안 읽은 책 보기"
 
-#: cps/render_template.py:74 cps/templates/index.xml:70
+#: cps/render_template.py:76 cps/templates/index.xml:70
 #: cps/templates/index.xml:74 cps/web.py:807
 msgid "Unread Books"
 msgstr "읽지 않음"
 
-#: cps/render_template.py:76
+#: cps/render_template.py:78
 msgid "Show unread"
 msgstr "읽지 않은 책 보기"
 
-#: cps/render_template.py:77
+#: cps/render_template.py:79
 msgid "Discover"
 msgstr "둘러보기"
 
-#: cps/render_template.py:79 cps/templates/index.xml:58
+#: cps/render_template.py:81 cps/templates/index.xml:58
 #: cps/templates/user_table.html:159 cps/templates/user_table.html:162
 msgid "Show Random Books"
 msgstr "무작위 추천 보기"
 
-#: cps/render_template.py:80 cps/templates/book_table.html:100
+#: cps/render_template.py:82 cps/templates/book_table.html:100
 #: cps/templates/index.xml:97 cps/web.py:1192
 msgid "Categories"
 msgstr "카테고리"
 
-#: cps/render_template.py:82 cps/templates/user_table.html:158
+#: cps/render_template.py:84 cps/templates/user_table.html:158
 msgid "Show Category Section"
 msgstr "카테고리 보기"
 
-#: cps/render_template.py:83 cps/templates/book_edit.html:86
+#: cps/render_template.py:85 cps/templates/book_edit.html:86
 #: cps/templates/book_table.html:101 cps/templates/index.xml:106
 #: cps/templates/search_form.html:70 cps/web.py:1082 cps/web.py:1094
 msgid "Series"
 msgstr "시리즈"
 
-#: cps/render_template.py:85 cps/templates/user_table.html:157
+#: cps/render_template.py:87 cps/templates/user_table.html:157
 msgid "Show Series Section"
 msgstr "시리즈 보기"
 
-#: cps/render_template.py:86 cps/templates/book_table.html:99
+#: cps/render_template.py:88 cps/templates/book_table.html:99
 #: cps/templates/index.xml:79
 msgid "Authors"
 msgstr "저자"
 
-#: cps/render_template.py:88 cps/templates/user_table.html:160
+#: cps/render_template.py:90 cps/templates/user_table.html:160
 msgid "Show Author Section"
 msgstr "저자 보기"
 
-#: cps/render_template.py:90 cps/templates/book_table.html:105
+#: cps/render_template.py:92 cps/templates/book_table.html:105
 #: cps/templates/index.xml:88 cps/web.py:1050
 msgid "Publishers"
 msgstr "출판사"
 
-#: cps/render_template.py:92 cps/templates/user_table.html:163
+#: cps/render_template.py:94 cps/templates/user_table.html:163
 msgid "Show Publisher Section"
 msgstr "출판사 보기"
 
-#: cps/render_template.py:93 cps/templates/book_table.html:103
+#: cps/render_template.py:95 cps/templates/book_table.html:103
 #: cps/templates/index.xml:115 cps/templates/search_form.html:108
 #: cps/web.py:1164
 msgid "Languages"
 msgstr "언어"
 
-#: cps/render_template.py:96 cps/templates/user_table.html:155
+#: cps/render_template.py:98 cps/templates/user_table.html:155
 msgid "Show Language Section"
 msgstr "언어 보기"
 
-#: cps/render_template.py:97 cps/templates/index.xml:124
+#: cps/render_template.py:99 cps/templates/index.xml:124
 msgid "Ratings"
 msgstr "평점"
 
-#: cps/render_template.py:99 cps/templates/user_table.html:164
+#: cps/render_template.py:101 cps/templates/user_table.html:164
 msgid "Show Ratings Section"
 msgstr "평점 보기"
 
-#: cps/render_template.py:100 cps/templates/index.xml:133
+#: cps/render_template.py:102 cps/templates/index.xml:133
 msgid "File formats"
 msgstr "파일 형식"
 
-#: cps/render_template.py:102 cps/templates/user_table.html:165
+#: cps/render_template.py:104 cps/templates/user_table.html:165
 msgid "Show File Formats Section"
 msgstr "파일 형식 보기"
 
-#: cps/render_template.py:104 cps/web.py:830
+#: cps/render_template.py:106 cps/web.py:830
 msgid "Archived Books"
 msgstr "보관함"
 
-#: cps/render_template.py:106 cps/templates/user_table.html:166
+#: cps/render_template.py:108 cps/templates/user_table.html:166
 msgid "Show Archived Books"
 msgstr "보관된 책 보기"
 
-#: cps/render_template.py:109 cps/web.py:880
+#: cps/render_template.py:111 cps/web.py:880
 msgid "Books List"
 msgstr "책 목록"
 
-#: cps/render_template.py:111 cps/templates/user_table.html:168
+#: cps/render_template.py:113 cps/templates/user_table.html:168
 msgid "Show Books List"
 msgstr "책 목록 보기"
 
@@ -1319,7 +1319,7 @@ msgstr "책이 서재에서 삭제되었습니다: %(sname)s"
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr "서재에서 책을 삭제할 권한이 없습니다."
 
-#: cps/shelf.py:222 cps/templates/layout.html:260
+#: cps/shelf.py:222 cps/templates/layout.html:270
 msgid "Create a Shelf"
 msgstr "서재 생성"
 
@@ -2111,13 +2111,13 @@ msgid "Convert book"
 msgstr "책 변환"
 
 #: cps/templates/book_edit.html:53 cps/templates/layout.html:148
-#: cps/templates/layout.html:237
+#: cps/templates/layout.html:247
 msgid "Uploading..."
 msgstr "업로드 중"
 
 #: cps/templates/book_edit.html:53 cps/templates/book_edit.html:256
 #: cps/templates/book_table.html:333 cps/templates/layout.html:148
-#: cps/templates/layout.html:306 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:316 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:169
 msgid "Close"
 msgstr "닫기"
@@ -3038,7 +3038,7 @@ msgid "Add to shelf"
 msgstr "서재에 추가"
 
 #: cps/templates/detail.html:313 cps/templates/detail.html:332
-#: cps/templates/feed.xml:81 cps/templates/layout.html:257
+#: cps/templates/feed.xml:81 cps/templates/layout.html:267
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -3105,7 +3105,7 @@ msgstr "도메인 입력"
 msgid "Denied Domains (Blacklist)"
 msgstr "차단 도메인 (블랙리스트)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:290
+#: cps/templates/feed.xml:22 cps/templates/layout.html:300
 msgid "Next"
 msgstr "다음"
 
@@ -3226,7 +3226,7 @@ msgstr "평점별 정렬"
 msgid "Books ordered by file formats"
 msgstr "파일 형식별 정렬"
 
-#: cps/templates/index.xml:142 cps/templates/layout.html:255
+#: cps/templates/index.xml:142 cps/templates/layout.html:265
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "서재"
@@ -3271,23 +3271,23 @@ msgstr "설정"
 msgid "Refresh Library"
 msgstr "검색"
 
-#: cps/templates/layout.html:238
+#: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
 msgstr "페이지를 새로고침하지 마세요."
 
-#: cps/templates/layout.html:248
+#: cps/templates/layout.html:258
 msgid "Browse"
 msgstr "탐색"
 
-#: cps/templates/layout.html:261 cps/templates/stats.html:3
+#: cps/templates/layout.html:271 cps/templates/stats.html:3
 msgid "About"
 msgstr "서재 정보"
 
-#: cps/templates/layout.html:275
+#: cps/templates/layout.html:285
 msgid "Previous"
 msgstr "이전"
 
-#: cps/templates/layout.html:302
+#: cps/templates/layout.html:312
 msgid "Book Details"
 msgstr "책 상세정보"
 

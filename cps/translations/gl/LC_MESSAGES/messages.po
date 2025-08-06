@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-05 12:15+0200\n"
+"POT-Creation-Date: 2025-08-06 11:34+0200\n"
 "PO-Revision-Date: 2022-08-11 16:46+0200\n"
 "Last-Translator: pollitor <pollitor@gmx.com>\n"
 "Language-Team: gl\n"
@@ -1142,151 +1142,151 @@ msgstr "O token expirou"
 msgid "Success! Please return to your device"
 msgstr "Correcto! Por favor volte ao seu dispositivo"
 
-#: cps/render_template.py:50
+#: cps/render_template.py:52
 msgid "Books"
 msgstr "Libros"
 
-#: cps/render_template.py:52
+#: cps/render_template.py:54
 msgid "Show recent books"
 msgstr "Mostrar libros recentes"
 
-#: cps/render_template.py:53 cps/templates/index.xml:27
+#: cps/render_template.py:55 cps/templates/index.xml:27
 msgid "Hot Books"
 msgstr "Libros populares"
 
-#: cps/render_template.py:55
+#: cps/render_template.py:57
 msgid "Show Hot Books"
 msgstr "Mostrar libros populares"
 
-#: cps/render_template.py:57 cps/render_template.py:62
+#: cps/render_template.py:59 cps/render_template.py:64
 msgid "Downloaded Books"
 msgstr "Libros descargados"
 
-#: cps/render_template.py:59 cps/render_template.py:64
+#: cps/render_template.py:61 cps/render_template.py:66
 #: cps/templates/user_table.html:167
 msgid "Show Downloaded Books"
 msgstr "Mostrar libros descargados"
 
-#: cps/render_template.py:67 cps/templates/index.xml:36 cps/web.py:471
+#: cps/render_template.py:69 cps/templates/index.xml:36 cps/web.py:471
 msgid "Top Rated Books"
 msgstr "Libros mellor valorados"
 
-#: cps/render_template.py:69 cps/templates/user_table.html:161
+#: cps/render_template.py:71 cps/templates/user_table.html:161
 msgid "Show Top Rated Books"
 msgstr "Mostrar libros mellor valorados"
 
-#: cps/render_template.py:70 cps/templates/index.xml:63
+#: cps/render_template.py:72 cps/templates/index.xml:63
 #: cps/templates/index.xml:67 cps/web.py:804
 msgid "Read Books"
 msgstr "Libros lidos"
 
-#: cps/render_template.py:72
+#: cps/render_template.py:74
 #, fuzzy
 msgid "Show Read and Unread"
 msgstr "Mostrar lidos e non lidos"
 
-#: cps/render_template.py:74 cps/templates/index.xml:70
+#: cps/render_template.py:76 cps/templates/index.xml:70
 #: cps/templates/index.xml:74 cps/web.py:807
 msgid "Unread Books"
 msgstr "Libros non lidos"
 
-#: cps/render_template.py:76
+#: cps/render_template.py:78
 msgid "Show unread"
 msgstr "Mostrar non lidos"
 
-#: cps/render_template.py:77
+#: cps/render_template.py:79
 msgid "Discover"
 msgstr "Descubrir"
 
-#: cps/render_template.py:79 cps/templates/index.xml:58
+#: cps/render_template.py:81 cps/templates/index.xml:58
 #: cps/templates/user_table.html:159 cps/templates/user_table.html:162
 msgid "Show Random Books"
 msgstr "Mostrar libros ao chou"
 
-#: cps/render_template.py:80 cps/templates/book_table.html:100
+#: cps/render_template.py:82 cps/templates/book_table.html:100
 #: cps/templates/index.xml:97 cps/web.py:1192
 msgid "Categories"
 msgstr "Categorías"
 
-#: cps/render_template.py:82 cps/templates/user_table.html:158
+#: cps/render_template.py:84 cps/templates/user_table.html:158
 #, fuzzy
 msgid "Show Category Section"
 msgstr "Mostrar selección de categorías"
 
-#: cps/render_template.py:83 cps/templates/book_edit.html:86
+#: cps/render_template.py:85 cps/templates/book_edit.html:86
 #: cps/templates/book_table.html:101 cps/templates/index.xml:106
 #: cps/templates/search_form.html:70 cps/web.py:1082 cps/web.py:1094
 msgid "Series"
 msgstr "Series"
 
-#: cps/render_template.py:85 cps/templates/user_table.html:157
+#: cps/render_template.py:87 cps/templates/user_table.html:157
 #, fuzzy
 msgid "Show Series Section"
 msgstr "Mostrar selección de series"
 
-#: cps/render_template.py:86 cps/templates/book_table.html:99
+#: cps/render_template.py:88 cps/templates/book_table.html:99
 #: cps/templates/index.xml:79
 msgid "Authors"
 msgstr "Autores"
 
-#: cps/render_template.py:88 cps/templates/user_table.html:160
+#: cps/render_template.py:90 cps/templates/user_table.html:160
 #, fuzzy
 msgid "Show Author Section"
 msgstr "Mostrar selección de autores"
 
-#: cps/render_template.py:90 cps/templates/book_table.html:105
+#: cps/render_template.py:92 cps/templates/book_table.html:105
 #: cps/templates/index.xml:88 cps/web.py:1050
 msgid "Publishers"
 msgstr "Editores"
 
-#: cps/render_template.py:92 cps/templates/user_table.html:163
+#: cps/render_template.py:94 cps/templates/user_table.html:163
 #, fuzzy
 msgid "Show Publisher Section"
 msgstr "Mostrar selección de editores"
 
-#: cps/render_template.py:93 cps/templates/book_table.html:103
+#: cps/render_template.py:95 cps/templates/book_table.html:103
 #: cps/templates/index.xml:115 cps/templates/search_form.html:108
 #: cps/web.py:1164
 msgid "Languages"
 msgstr "Linguas"
 
-#: cps/render_template.py:96 cps/templates/user_table.html:155
+#: cps/render_template.py:98 cps/templates/user_table.html:155
 #, fuzzy
 msgid "Show Language Section"
 msgstr "Mostrar selección de linguas"
 
-#: cps/render_template.py:97 cps/templates/index.xml:124
+#: cps/render_template.py:99 cps/templates/index.xml:124
 msgid "Ratings"
 msgstr "Valoracións"
 
-#: cps/render_template.py:99 cps/templates/user_table.html:164
+#: cps/render_template.py:101 cps/templates/user_table.html:164
 #, fuzzy
 msgid "Show Ratings Section"
 msgstr "Mostrar selección de valoracións"
 
-#: cps/render_template.py:100 cps/templates/index.xml:133
+#: cps/render_template.py:102 cps/templates/index.xml:133
 msgid "File formats"
 msgstr "Formatos de arquivo"
 
-#: cps/render_template.py:102 cps/templates/user_table.html:165
+#: cps/render_template.py:104 cps/templates/user_table.html:165
 #, fuzzy
 msgid "Show File Formats Section"
 msgstr "Mostrar selección de formatos de arquivo"
 
-#: cps/render_template.py:104 cps/web.py:830
+#: cps/render_template.py:106 cps/web.py:830
 msgid "Archived Books"
 msgstr "Libros arquivados"
 
-#: cps/render_template.py:106 cps/templates/user_table.html:166
+#: cps/render_template.py:108 cps/templates/user_table.html:166
 #, fuzzy
 msgid "Show Archived Books"
 msgstr "Mostrar libros arquivados"
 
-#: cps/render_template.py:109 cps/web.py:880
+#: cps/render_template.py:111 cps/web.py:880
 msgid "Books List"
 msgstr "Lista de libros"
 
-#: cps/render_template.py:111 cps/templates/user_table.html:168
+#: cps/render_template.py:113 cps/templates/user_table.html:168
 msgid "Show Books List"
 msgstr "Mostrar lista de libros"
 
@@ -1381,7 +1381,7 @@ msgstr "O libro eliminouse do andel: %(sname)s"
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr "Síntoo, non ten permiso para quitar un libro do andel"
 
-#: cps/shelf.py:222 cps/templates/layout.html:260
+#: cps/shelf.py:222 cps/templates/layout.html:270
 msgid "Create a Shelf"
 msgstr "Crear un andel"
 
@@ -2187,13 +2187,13 @@ msgid "Convert book"
 msgstr "Convertir libro"
 
 #: cps/templates/book_edit.html:53 cps/templates/layout.html:148
-#: cps/templates/layout.html:237
+#: cps/templates/layout.html:247
 msgid "Uploading..."
 msgstr "Cargando..."
 
 #: cps/templates/book_edit.html:53 cps/templates/book_edit.html:256
 #: cps/templates/book_table.html:333 cps/templates/layout.html:148
-#: cps/templates/layout.html:306 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:316 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:169
 msgid "Close"
 msgstr "Pechar"
@@ -3139,7 +3139,7 @@ msgid "Add to shelf"
 msgstr "Engadir ao andel"
 
 #: cps/templates/detail.html:313 cps/templates/detail.html:332
-#: cps/templates/feed.xml:81 cps/templates/layout.html:257
+#: cps/templates/feed.xml:81 cps/templates/layout.html:267
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -3210,7 +3210,7 @@ msgstr "Introducir nome de dominio"
 msgid "Denied Domains (Blacklist)"
 msgstr "Dominios prohibidos (Blaclist)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:290
+#: cps/templates/feed.xml:22 cps/templates/layout.html:300
 msgid "Next"
 msgstr "Seguinte"
 
@@ -3333,7 +3333,7 @@ msgstr "Libros ordeados por valoración"
 msgid "Books ordered by file formats"
 msgstr "Libros ordeados por formato de arquivo"
 
-#: cps/templates/index.xml:142 cps/templates/layout.html:255
+#: cps/templates/index.xml:142 cps/templates/layout.html:265
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Andeis"
@@ -3378,23 +3378,23 @@ msgstr "Axustes"
 msgid "Refresh Library"
 msgstr "Buscar na librería"
 
-#: cps/templates/layout.html:238
+#: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
 msgstr "Por favor, non actualice a páxina"
 
-#: cps/templates/layout.html:248
+#: cps/templates/layout.html:258
 msgid "Browse"
 msgstr "Navegar"
 
-#: cps/templates/layout.html:261 cps/templates/stats.html:3
+#: cps/templates/layout.html:271 cps/templates/stats.html:3
 msgid "About"
 msgstr "Acerca de"
 
-#: cps/templates/layout.html:275
+#: cps/templates/layout.html:285
 msgid "Previous"
 msgstr "Previo"
 
-#: cps/templates/layout.html:302
+#: cps/templates/layout.html:312
 msgid "Book Details"
 msgstr "Detalles do libro"
 

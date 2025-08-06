@@ -6021,7 +6021,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         margin: 0;
         top: 10px;
         position: relative;
-        right; 60px;
+        right: 60px;
     }
 
     .navbar > .container-fluid > .navbar-header > button.navbar-toggle:active, .navbar > .container-fluid > .navbar-header > button.navbar-toggle:focus, .navbar > .container-fluid > .navbar-header > button.navbar-toggle:hover {

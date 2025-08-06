@@ -18,6 +18,7 @@ on:
   create:
     branches:
       - '**'  # Runs when a new branch is created
+  workflow_dispatch:
 
 jobs:
   build:

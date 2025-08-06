@@ -36,7 +36,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git clone https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.wiki.git wiki-tmp
-          cp cwa-wiki/Contributing-Translations.md wiki-tmp/Contributing-Translations.md
 
       - name: Generate translation status table (in wiki repo)
         run: |

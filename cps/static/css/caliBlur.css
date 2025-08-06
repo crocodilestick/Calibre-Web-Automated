@@ -6036,10 +6036,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYwIiBoZWlnaHQ9IjU2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgPHBhdGggZD0iTTE0NC4yOTEgNDkyLjMyNUMxNjYuNjI0IDQ3Ni4yNjUgMTkzLjE5NCA0NjYuMTU2IDIyNCA0NjJjMTIuNDQ0IDkuMzMzIDMxLjExMSAxNCA1NiAxNHM0My41NTYtNC42NjcgNTYtMTRjMzAuODA2IDQuMTU2IDU3LjM3NiAxNC4yNjQgNzkuNzA5IDMwLjMyNUMzNzYuNTI3IDUxNy40MzUgMzI5Ljk1MSA1MzIgMjgwIDUzMmMtNDkuOTUxIDAtOTYuNTI3LTE0LjU2NS0xMzUuNzA5LTM5LjY3NXoiIGZpbGwtb3BhY2l0eT0iLjYiLz4KICAgICAgICA8cGF0aCBkPSJNMjI0IDQ2MmwxMi44OC00MC4yNTFDMTk2LjQyOSAzOTcuNDYyIDE2OCAzNDAuMDM1IDE2OCAyNzMuMDU5YzAtMzUuMTkzIDcuODQ5LTY3Ljc1IDIxLjE2OC05NC4yNDggMTYuMTczIDQuOTc3IDM1LjMxNSA3Ljg1NiA1NS44MzIgNy44NTYgNTEuMTA0IDAgOTMuNjgtMTcuODYgMTAzLjA3Mi00MS41MTZDMzc0Ljc3OSAxNzQuNTg4IDM5MiAyMjAuOTMxIDM5MiAyNzMuMDU5YzAgNjYuOTc2LTI4LjQyOSAxMjQuNDAzLTY4Ljg4IDE0OC42OUwzMzYgNDYyYy0xMi40NDQgOS4zMzMtMzEuMTExIDE0LTU2IDE0LTI0LjY5NCAwLTQzLjI2My00LjU5NC01NS43MDctMTMuNzgyTDIyNCA0NjJ6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgICAgIDxwYXRoIGQ9Ik0xODAuMDY0IDM0NS44NDlDMTU1LjI4MiAzMTguMDY3IDE0MCAyNzkuOTk3IDE0MCAyMzhjMC04NS4wNTIgNjIuNjgtMTU0IDE0MC0xNTRzMTQwIDY4Ljk0OCAxNDAgMTU0YzAgNDEuOTk3LTE1LjI4MiA4MC4wNjctNDAuMDY0IDEwNy44NDkgNy43MTYtMjEuODYyIDEyLjA2NC00Ni41OTYgMTIuMDY0LTcyLjc5IDAtNTIuMTI4LTE3LjIyMS05OC40NzEtNDMuOTI4LTEyNy45MDgtOS4zOTIgMjMuNjU2LTUxLjk2OCA0MS41MTYtMTAzLjA3MiA0MS41MTYtMjAuNTE3IDAtMzkuNjU5LTIuODc5LTU1LjgzMi03Ljg1NkMxNzUuODQ5IDIwNS4zMDkgMTY4IDIzNy44NjYgMTY4IDI3My4wNTljMCAyNi4xOTQgNC4zNDggNTAuOTI4IDEyLjA2NCA3Mi43OXoiIGZpbGwtb3BhY2l0eT0iLjQ1Ii8+CiAgICAgICAgPHBhdGggZD0iTTI4MCA1MzJjMTM5LjE3NiAwIDI1Mi0xMTIuODI0IDI1Mi0yNTJTNDE5LjE3NiAyOCAyODAgMjggMjggMTQwLjgyNCAyOCAyODBzMTEyLjgyNCAyNTIgMjUyIDI1MnptMCAyOEMxMjUuMzYgNTYwIDAgNDM0LjY0IDAgMjgwUzEyNS4zNiAwIDI4MCAwczI4MCAxMjUuMzYgMjgwIDI4MC0xMjUuMzYgMjgwLTI4MCAyODB6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgPC9nPgo8L3N2Zz4K);
         background-size: cover;
         position: absolute;
-        width: 26px;
-        height: 26px;
+        width: 22px;
+        height: 22px;
         top: 3px;
-        right: 46px;
+        right: 105px;
     }
 
     .navbar > .container-fluid > .navbar-header > button.navbar-toggle > span {
@@ -6141,7 +6141,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     #query:focus {
-        background: #555 !important;
+        background: #141e25 !important;
         color: #eee !important;
         cursor: text;
         left: 50px;
@@ -6162,7 +6162,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         color: #eee;
         font-weight: 400;
         font-size: 14px;
-        background: #555;
+        background: #141e25 !important;
         line-height: 48px;
         text-align: center;
         cursor: pointer
@@ -6177,7 +6177,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body > div.navbar.navbar-default.navbar-static-top > div > form > div > span.input-group-btn {
-        background: #555;
+        background: #141e25 !important;
         position: absolute;
         left: auto;
         right: 0;
@@ -6527,14 +6527,14 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     body > div.container-fluid > div.row-fluid > div.col-sm-10 {
         width: 100%;
-        top: 60px;
+        top: 75px;
         height: calc(100% - 42px)
     }
 
     body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid, body > div.container-fluid > div > div.col-sm-10 > div.discover {
         width: 100%;
-        margin: 0 !important;
-        padding: 10px !important;
+        /* margin: 0 !important;
+        padding: 10px !important; */
     }
 
     .author > .container-fluid > .row-fluid > .col-sm-10 > h2:before, body.admin.config > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type, body.admin.uiconfig > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type, body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row:first-of-type > div.col > h2:before, body.admin > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type:before, body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before, body.mailset > div.container-fluid > div > div.col-sm-10 > div.discover > h1, body.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h1, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h2, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-8 > form > #test:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > div:nth-child(10) > label:before, body > div.container-fluid > div > div.col-sm-10 > div.col-sm-6.col-lg-6.col-xs-6 > h2, body > div.container-fluid > div > div.col-sm-10 > h1, body > div.container-fluid > div > div.col-sm-10 > h3:first-of-type {

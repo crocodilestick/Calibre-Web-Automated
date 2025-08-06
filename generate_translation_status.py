@@ -42,7 +42,7 @@ for po_path in sorted(glob.glob("cps/translations/*/LC_MESSAGES/messages.po")):
     total = len([e for e in po if not e.obsolete])
     untranslated = sum(1 for entry in po if not entry.msgstr.strip() and not entry.obsolete)
     percent = 100 * (total - untranslated) // total if total else 0
-    status_lines.append(f"| {f"{lang_name} ({lang})"} | {total} | {untranslated} | {percent}% |")
+    status_lines.append(f"| {f"{lang_name} ([{lang}](https://github.com/crocodilestick/Calibre-Web-Automated/tree/main/cps/translations/{lang}/LC_MESSAGES))"} | {total} | {untranslated} | {percent}% |")
 
 # Write to the wiki file (replace the table section)
 

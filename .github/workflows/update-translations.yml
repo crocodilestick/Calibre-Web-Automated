@@ -6,7 +6,7 @@ on:
       - 'cps/**'
       - 'update_translations.sh'
       - 'compile_translations.sh'
-      - 'scripts/generate_translation_status.py'
+      - 'generate_translation_status.py'
       - '.github/workflows/update-translations.yml'
   workflow_dispatch:
 

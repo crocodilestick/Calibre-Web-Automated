@@ -23,7 +23,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install Babel polib
+        run: pip install Babel polib jinja2
 
       - name: Run update_translations.sh
         run: bash update_translations.sh

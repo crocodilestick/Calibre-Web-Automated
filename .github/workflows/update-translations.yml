@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: pip install Babel polib jinja2
 
+      - name: Install gettext
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
       - name: Run update_translations.sh
         run: bash update_translations.sh
 

@@ -1,16 +1,48 @@
 import polib
 import glob
 
+# Mapping of language codes to full language names
+LANGUAGE_NAMES = {
+    "cs": "Czech",
+    "de": "German",
+    "el": "Greek",
+    "es": "Spanish",
+    "fi": "Finnish",
+    "fr": "French",
+    "gl": "Galician",
+    "hu": "Hungarian",
+    "id": "Indonesian",
+    "it": "Italian",
+    "ja": "Japanese",
+    "km": "Khmer",
+    "ko": "Korean",
+    "nl": "Dutch",
+    "no": "Norwegian",
+    "pl": "Polish",
+    "pt": "Portuguese",
+    "pt_BR": "Portuguese (Brazil)",
+    "ru": "Russian",
+    "sk": "Slovak",
+    "sl": "Slovenian",
+    "sv": "Swedish",
+    "tr": "Turkish",
+    "uk": "Ukrainian",
+    "vi": "Vietnamese",
+    "zh_Hans_CN": "Chinese (Simplified, China)",
+    "zh_Hant_TW": "Chinese (Traditional, Taiwan)",
+}
+
 status_lines = []
 status_lines.append("| Language | Total Strings | Untranslated | Completion |")
 status_lines.append("|---|---|---|---|")
 for po_path in sorted(glob.glob("cps/translations/*/LC_MESSAGES/messages.po")):
     lang = po_path.split("/")[2]
+    lang_name = LANGUAGE_NAMES.get(lang, lang)
     po = polib.pofile(po_path)
     total = len([e for e in po if not e.obsolete])
     untranslated = sum(1 for entry in po if not entry.msgstr.strip() and not entry.obsolete)
     percent = 100 * (total - untranslated) // total if total else 0
-    status_lines.append(f"| {lang} | {total} | {untranslated} | {percent}% |")
+    status_lines.append(f"| {f"{lang_name} ({lang})"} | {total} | {untranslated} | {percent}% |")
 
 # Write to the wiki file (replace the table section)
 

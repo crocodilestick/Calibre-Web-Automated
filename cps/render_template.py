@@ -166,32 +166,39 @@ def cwa_update_notification() -> None:
 
 # Checks if translations are missing for the current language
 def translations_missing_notification() -> None:
-    lang = str(get_locale())
-    po_path = f"cps/translations/{lang}/LC_MESSAGES/messages.po"
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    notice_file = f"/app/cwa_translation_notice_{lang}"
-    missing_count = 0
-    if os.path.isfile(po_path):
-        try:
-            po = polib.pofile(po_path)
-            missing_count = sum(1 for entry in po if not entry.msgstr.strip())
-        except Exception as e:
-            print(f"[translation-notification-service] Error reading {po_path}: {e}", flush=True)
-    if missing_count > 0:
-        if not os.path.isfile(notice_file):
-            with open(notice_file, 'w') as f:
-                f.write(current_date)
-            last_notification = "0001-01-01"
-        else:
-            with open(notice_file, 'r') as f:
-                last_notification = f.read().strip()
-        if last_notification != current_date:
-            message = _(f"🌐 Help improve {lang} translations! {missing_count} strings in your language need translation. ")
-            flash(message, category="translation_missing")
-            print(f"[translation-notification-service] {message}", flush=True)
-            with open(notice_file, 'w') as f:
-                f.write(current_date)
-
+    db = CWA_DB()
+    if db.cwa_settings['contribute_translations_notifications']:
+        lang = str(get_locale())
+        # Skip English as it is the default language
+        if lang == 'en':
+            return
+        po_path = f"cps/translations/{lang}/LC_MESSAGES/messages.po"
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        notice_file = f"/app/cwa_translation_notice_{lang}"
+        missing_count = 0
+        if os.path.isfile(po_path):
+            try:
+                po = polib.pofile(po_path)
+                missing_count = sum(1 for entry in po if not entry.msgstr.strip())
+            except Exception as e:
+                print(f"[translation-notification-service] Error reading {po_path}: {e}", flush=True)
+        if missing_count > 0:
+            if not os.path.isfile(notice_file):
+                with open(notice_file, 'w') as f:
+                    f.write(current_date)
+                last_notification = "0001-01-01"
+            else:
+                with open(notice_file, 'r') as f:
+                    last_notification = f.read().strip()
+            if last_notification != current_date:
+                message = _(f"🌐 Help improve {lang} translations! {missing_count} strings in your language need translation. ")
+                flash(message, category="translation_missing")
+                print(f"[translation-notification-service] {message}", flush=True)
+                with open(notice_file, 'w') as f:
+                    f.write(current_date)
+        return
+    else:
+        return
 
 # Returns the template for rendering and includes the instance name
 def render_title_template(*args, **kwargs):

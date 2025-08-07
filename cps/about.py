@@ -61,15 +61,22 @@ def collect_stats():
     elif constants.HOME_CONFIG:
         calibre_web_version += " - pyPi"
 
-    _VERSIONS = {'Calibre Web': calibre_web_version}
+    try:
+        with open("/app/CWA_RELEASE", "r") as f:
+            cwa_version = f.read()
+    except Exception:
+        cwa_version = "Unknown"
+
+    _VERSIONS = {'Calibre-Web Automated': cwa_version}
     _VERSIONS.update(OrderedDict(
         Python=sys.version,
         Platform='{0[0]} {0[2]} {0[3]} {0[4]} {0[5]}'.format(platform.uname()),
     ))
-    _VERSIONS.update(uploader.get_magick_version())
+    _VERSIONS['Calibre-Web'] = calibre_web_version
     _VERSIONS['Unrar'] = converter.get_unrar_version()
     _VERSIONS['Ebook converter'] = converter.get_calibre_version()
     _VERSIONS['Kepubify'] = converter.get_kepubify_version()
+    _VERSIONS.update(uploader.get_magick_version())
     _VERSIONS.update(sorted_modules)
     return _VERSIONS
 

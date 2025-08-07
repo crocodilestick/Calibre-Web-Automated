@@ -3016,7 +3016,7 @@ a:focus {
 
 body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 {
     padding: 15px;
-    height: 300px;
+    max-height: 500px;
     pointer-events: none
 }
 
@@ -3707,7 +3707,7 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a
     -webkit-transition: color .2s;
     -o-transition: color .2s;
     transition: color .2s;
-    background-color: rgba(0, 0, 0, .55) !important
+    background-color: rgb(0 0 0 / 12%) !important;
 }
 
 .blur-wrapper:after {
@@ -6019,9 +6019,9 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         width: 40px;
         height: 40px;
         margin: 0;
-        top: 10px;
+        top: 5px;
         position: relative;
-        right: 60px;
+        right: 50px;
     }
 
     .navbar > .container-fluid > .navbar-header > button.navbar-toggle:active, .navbar > .container-fluid > .navbar-header > button.navbar-toggle:focus, .navbar > .container-fluid > .navbar-header > button.navbar-toggle:hover {
@@ -6038,8 +6038,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         position: absolute;
         width: 22px;
         height: 22px;
-        top: 3px;
-        right: 105px;
+        top: 8px;
+        right: 9px;
     }
 
     .navbar > .container-fluid > .navbar-header > button.navbar-toggle > span {
@@ -6055,7 +6055,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         background: 0 0 !important;
         color: whitesmoke !important;
         font-family: Open Sans Semibold, Helvetica Neue, Helvetica, Arial, sans-serif;
-        pointer-events: none;
+        pointer-events: visible;
         font-size: large;
         padding-top: 2px;
     }
@@ -6064,12 +6064,13 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         height: 48px;
         line-height: 28px;
         right: 10px;
-        left: auto
+        left: auto;
+        display: none;
     }
 
     .home-btn > a {
         height: 48px;
-        line-height: 48px
+        line-height: 48px;
     }
 
     .plexBack {
@@ -6091,7 +6092,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         box-shadow: none;
         -webkit-box-shadow: none;
         position: absolute;
-        right: 50px;
+        right: 10px;
         top: 0;
         height: 48px
     }
@@ -6099,7 +6100,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     body > div.navbar.navbar-default.navbar-static-top > div > form:before {
         top: 12px;
         left: auto;
-        right: 15px;
+        right: 12px;
         color: hsla(0, 0%, 100%, .7)
     }
 
@@ -6527,7 +6528,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     body > div.container-fluid > div.row-fluid > div.col-sm-10 {
         width: 100%;
-        top: 75px;
+        top: 60px;
         height: calc(100% - 42px)
     }
 
@@ -6873,7 +6874,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body {
-        font-size: 13px
+        font-size: 13px;
+        margin-left: 220px;
     }
 
     body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row > div.col > h2, body.admin > div.container-fluid > div > div.col-sm-10 > div.discover > h2 {
@@ -6967,8 +6969,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     .col-sm-10 .book-meta > div.btn-toolbar {
         position: relative;
         top: 0;
-        width: calc(100% + 30px);
-        margin-left: -15px
+        width: 100%;
+        justify-content: center;
     }
 
     .book-meta .btn-toolbar > h2 {
@@ -6977,7 +6979,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     .book-meta .btn-toolbar > .btn-group {
         float: none;
-        margin: auto
+        display: flex;
+        flex-wrap: wrap;
     }
 
     .btn-toolbar {
@@ -6985,7 +6988,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     #shelf-actions {
-        width: 50px
+        width: 50px;
     }
 
     div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] {
@@ -7015,21 +7018,24 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     body > div.container-fluid > div > div.col-sm-10 > div.single {
         width: 100%;
-        padding: 15px !important
+        padding-left: 40px !important;
+        padding-right: 40px !important;
+        padding-top: 20px !important;
     }
 
     body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 {
         position: absolute;
-        height: 150px;
-        width: 100px;
+        height: 300px;
+        width: 100%;
         padding: 0;
-        max-width: 100px;
-        margin-top: 75px
+        max-width: 200px;
+        margin-top: 83px;
     }
 
     #bookDetailsModal > .modal-dialog.modal-lg > .modal-content > .modal-body > div > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover > img, body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover > img {
-        width: 100px;
-        height: 150px
+        max-width: 200px;
+        max-height: 300px;
+        width: 100%;
     }
 
     body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-9.col-lg-9.book-meta {
@@ -7040,16 +7046,16 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     .book-meta > h2 {
         max-width: 100%;
-        margin-left: 120px;
+        margin-left: 220px;
         font-size: 16px;
         padding: 15px 0 10px;
         min-height: 60px;
         line-height: 20px;
-        margin-top: 10px
+        margin-top: 10px;
     }
 
     .book-meta > .bookinfo > p:first-of-type, body.book .author {
-        margin-left: 120px;
+        margin-left: 220px;
         line-height: 1
     }
 
@@ -7068,7 +7074,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     .book-meta > .bookinfo > .hr {
         background: 0 0;
-        margin: 45px
+        margin: 45px;
+        margin-left: 220px;
     }
 
     .book-meta > .bookinfo > .languages > span:first-of-type,
@@ -7082,7 +7089,9 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     .book-meta > .bookinfo .publishers {
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis
+        text-overflow: ellipsis;
+        display: flex;
+        flex-wrap: wrap;
     }
 
     div.comments + [data-readmore-toggle], div.description + [data-readmore-toggle] {

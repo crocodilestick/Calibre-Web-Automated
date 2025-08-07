@@ -98,21 +98,93 @@ div#Downloads_list {
     }
 }
 
-/* Fixes add to shelf elements positioning */
-/* Temporarily disabled as it screws up the book pages */
-/* @media (max-width: 915px) {
-    div#shelf-actions {
-        float: left !important;
-        padding: 2rem;
+/* Fixing mobile book view */
+@media only screen and (max-width: 767px) {
+    .identifiers {
+        margin-left: 220px !important;
+        max-height: 26px;
+        overflow: auto;
+    }
+    .publishers {
+        margin-left: 220px !important;
+    }
+    .publishing-date {
+        margin-left: 220px !important;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .more-stuff {
+        margin-left: 220px !important;
+    }
+    .languages {
+        margin-left: 220px !important;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .book-meta > .bookinfo > .comments, .book-meta > .description {
+        font-size: 13px;
+        height: 350px !important;
+        margin-top: 40px;
+    }
+    #bookDetailsModal > .modal-dialog.modal-lg > .modal-content > .modal-body > div > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover, body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover {
+        width: 100%;
+        max-width: 200px;
     }
 }
-@media (max-width: 768px) {
-    div#shelf-actions {
-        float: left;
-        display: inline-flex;
-        margin-top: 2rem;
+
+@media only screen and (max-width: 545px) {
+    .book-meta > .bookinfo > .hr {
+        margin: 30px;
     }
 }
-div#shelf-actions {
-    float: none;
-} */
+
+@media only screen and (max-width: 470px) {
+    .book-meta > h2 {
+        position: absolute;
+        top: 380px;
+        left: -220px;
+    }
+    body.book .author {
+        position: absolute;
+        top: 440px;
+        left: -220px;
+        width: 100% !important;
+        max-width: none;
+    }
+    .book-meta > .bookinfo > .comments, .book-meta > .description {
+        margin-top: 40rem;
+    }
+    .publishers {
+        position: absolute;
+        top: 465px;
+        left: -220px !important;
+        margin-top: 0 !important;
+    }
+    .publishing-date {
+        position: absolute;
+        top: 465px;
+        left: -80px !important;
+        margin-top: 0 !important;
+    }
+    .more-stuff {
+        display: none;
+    }
+    .languages {
+        position: absolute;
+        top: 465px;
+        left: 36px !important;
+        margin-top: 0 !important;
+    }
+    .identifiers {
+        display: none;
+    }
+    body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 {
+        justify-self: center;
+    }
+}
+
+@media only screen and (max-width: 445px) {
+    .btn-group {
+        height: 30px;
+    }
+}

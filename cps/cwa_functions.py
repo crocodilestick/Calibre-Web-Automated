@@ -101,12 +101,12 @@ def refresh_library(app):
             current_app.config["library_refresh_messages"] = []
 
         if return_code == 2:
-            message = "Library Refresh 🔄 The book ingest service is already running ✋ Please wait until it has finished before trying again ⌛"
+            message = _("Library Refresh 🔄 The book ingest service is already running ✋ Please wait until it has finished before trying again ⌛")
         elif return_code == 0:
-            message = "Library Refresh 🔄 Library refreshed & ingest process complete! ✅"
+            message = _("Library Refresh 🔄 Library refreshed & ingest process complete! ✅")
         else:
-            message = "Library Refresh 🔄 An unexpected error occurred, check the logs ⛔"
-        
+            message = _("Library Refresh 🔄 An unexpected error occurred, check the logs ⛔")
+
         # Display message to user in Web UI
         current_app.config["library_refresh_messages"].append(message)
         # Print result to docker log
@@ -125,7 +125,7 @@ def cwa_library_refresh():
     library_refresh_thread = Thread(target=refresh_library, args=(app,))
     library_refresh_thread.start()
 
-    return jsonify({"message": "Library Refresh 🔄 Checking for any books that may have been missed, please wait..."}), 200
+    return jsonify({"message": _("Library Refresh 🔄 Checking for any books that may have been missed, please wait...")}), 200
 
 @csrf.exempt
 @library_refresh.route("/cwa-library-refresh/messages", methods=["GET"])
@@ -257,20 +257,20 @@ def get_cwa_stats() -> dict[str,int]:
 headers = {
     "enforcement":{
         "no_paths":[
-            "Timestamp", "Book ID", "Book Title", "Book Author", "Trigger Type"],
+            _("Timestamp"), _("Book ID"), _("Book Title"), _("Book Author"), _("Trigger Type")],
         "with_paths":[
-            "Timestamp","Book ID", "Filepath"]
+            _("Timestamp"), _("Book ID"), _("Filepath")]
         },
     "epub_fixer":{
         "no_fixes":[
-            "Timestamp", "Filename", "Manual?", "No. Fixes", "Original Backed Up?"],
+            _("Timestamp"), _("Filename"), _("Manual?"), _("No. Fixes"), _("Original Backed Up?")],
         "with_fixes":[
-            "Timestamp", "Filename", "Filepath", "Fixes Applied"]
+            _("Timestamp"), _("Filename"), _("Filepath"), _("Fixes Applied")]
         },
     "imports":[
-        "Timestamp", "Filename", "Original Backed Up?"],
+        _("Timestamp"), _("Filename"), _("Original Backed Up?")],
     "conversions":[
-        "Timestamp", "Filename", "Original Format", "End Format", "Original Backed Up?"],
+        _("Timestamp"), _("Filename"), _("Original Format"), _("End Format"), _("Original Backed Up?")],
 }
 
 @cwa_stats.route("/cwa-stats-show", methods=["GET", "POST"])

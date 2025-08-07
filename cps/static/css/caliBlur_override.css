@@ -130,6 +130,11 @@ div#Downloads_list {
         width: 100%;
         max-width: 200px;
     }
+    .tags {
+        position: absolute;
+        left: 220px;
+        top: 160px;
+    }
 }
 
 @media only screen and (max-width: 545px) {
@@ -180,6 +185,18 @@ div#Downloads_list {
     }
     body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 {
         justify-self: center;
+    }
+    .tags {
+        position: absolute;
+        top: 408px;
+        left: 220px;
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    .tags a.btn.btn-xs.btn-info {
+        position: fixed;
     }
 }
 

@@ -1789,7 +1789,7 @@ body > div.container-fluid > div > div.col-sm-10 > div.discover {
     height: auto;
     width: calc(100vw - 257px);
     margin: 40px 0 !important;
-    padding: 0 10px 0 40px !important
+    padding: 0 10px 0 20px !important
 }
 
 body > div.container-fluid > div > div.col-sm-10 > div.single {

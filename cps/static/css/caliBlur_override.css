@@ -133,7 +133,12 @@ div#Downloads_list {
     .tags {
         position: absolute;
         left: 220px;
-        top: 160px;
+        top: 200px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        max-height: 50px;
+        overflow: auto;
     }
 }
 
@@ -204,4 +209,48 @@ div#Downloads_list {
     .btn-group {
         height: 30px;
     }
+}
+
+/* Fix metadata fetch screen */
+.editbook .modal-dialog.modal-lg {
+    transform: translate(0px, -20px) !important;
+}
+
+/* Fix login screen */
+.login .well {
+    max-height: 520px;
+    height: auto;
+    border: none;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    min-width: 600px;
+    max-width: 700px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
+    padding: 60px;
+    justify-items: anchor-center;
+    text-align: left;
+    background: none;
+}
+
+.login .well > form {
+    background: rgba(0, 0, 0, .4);
+    color: hsla(0, 0%, 100%, .45);
+    padding: 60px !important;
+    margin-top: 60px !important;
+}
+
+body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a:hover {
+    color: #ccc !important;
+    background: none !important;
+}
+
+.login .navbar > .container-fluid > .navbar-header {
+    margin: 0;
+    background: none;
 }

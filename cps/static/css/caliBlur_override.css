@@ -254,3 +254,26 @@ body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-head
     margin: 0;
     background: none;
 }
+
+/* Fixes edit users page */
+h2.usertable {
+    padding-left: 30px;
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+}
+
+.usertable .bootstrap-table.bootstrap3 {
+    padding: 40px;
+}
+
+.usertable .errorlink {
+    padding-left: 40px;
+}
+
+.usertable .col-xs-12.col-sm-12 {
+    padding-left: 40px;
+}
+
+.usertable ul.pagination {
+    top: 5.1em;
+}

@@ -125,7 +125,7 @@
         </div>
     </div>
     <table id="user-table" class="table table-no-bordered table-striped"
-           data-url="{{url_for('admin.list_users')}}"  data-locale="{{ current_user.locale }}">
+           data-url="{{url_for('admin.list_users')}}"  data-locale="{{ current_user.locale }}" data-classes="table table-no-bordered table-hover">
       <thead>
         <tr>
             <th data-name="edit" data-buttontext="{{_('Edit User')}}" data-visible="{{visiblility.get('edit')}}" data-formatter="singleUserFormatter">{{_('Edit')}}</th>

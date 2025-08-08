@@ -14,6 +14,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 // Move advanced search to side-menu
 $("a[href*='advanced']").parent().insertAfter("#nav_new");
 $("body.stat").addClass("stats");
@@ -489,12 +491,16 @@ $(".plexBack > a").attr({
     .addClass("back-btn-tooltip");
 
 $("#cwa-switch-theme").attr({
-    "data-toggle": "tooltip",
+    "data-toggle": "modal",
+    "data-target": "#themeSelectionModal",
     "title": $("#cwa-switch-theme").text(),              // "Switch Theme"
     "data-placement": "bottom",
     "data-viewport": "#main-nav"
 })
-    .addClass("switch-btn-tooltip");
+    .addClass("switch-btn-tooltip")
+    .on('click', function(e) {
+        // Theme button click handler
+    });
 
 $("#refresh-library").attr({
     "data-toggle": "tooltip",

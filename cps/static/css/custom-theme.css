@@ -1,0 +1,275 @@
+/* Swan Theme - Minimal overrides for book sizing and badge positioning */
+
+/* Custom responsive book grid overrides */
+@media only screen and (min-width: 400px) and (max-width: 500px) {
+    /* Override grid template columns for both containers */
+    body > div.container-fluid > div > div.col-sm-10 > div.discover > div.isotope,
+    body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+    }
+    
+    /* Override book width and container height */
+    .book:not(body) {
+        width: 100px !important;
+        max-width: 100px !important;
+        min-width: 100px !important;
+        padding: 0 5px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .container-fluid .book .cover {
+        height: 135px !important;
+        margin-bottom: 0;
+    }
+    
+    /* Combine all book cover image rules */
+    .container-fluid .book .cover img,
+    #books .cover img, 
+    #books_rand .cover img, 
+    .book.isotope-item .cover img {
+        width: 90px !important;
+        height: 135px !important;
+    }
+    
+    /* Position read badge elements in bottom left corner */
+    .book .cover .badge,
+    .book .cover .glyphicon-check {
+        position: absolute !important;
+        left: 5px !important;
+        bottom: 5px !important;
+        top: auto !important;
+        right: auto !important;
+        margin: 0 !important;
+    }
+    
+    /* Reduce left and right margins for all discover containers */
+    body.edituser.admin > div.container-fluid > div > div.col-sm-10 > div.discover, 
+    body.me > div.container-fluid > div > div.col-sm-10 > div.discover, 
+    body.newuser.admin > div.container-fluid > div > div.col-sm-10 > div.discover {
+        margin: 75px 7.5px 0 !important;
+    }
+}
+
+/* Text wrapping for book metadata */
+.container-fluid .book .meta .author,
+.container-fluid .book .meta .author > a {
+    font-size: 11px !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.container-fluid .book .meta .title {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Header z-index fix */
+.discover.load-more h2 {
+    z-index: 11 !important;
+    margin-bottom: 10px !important;
+}
+
+/* Badge styling */
+.book .cover .badge {
+    font-size: 14px !important;
+    background-color: var(--color-secondary) !important;
+}
+
+/* Fix account dropdown visibility in Swan theme */
+body.blur > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a#top_user {
+    display: block !important;
+}
+
+body.blur > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a#top_user > span.hidden-sm {
+    display: inline !important;
+}
+
+body.blur > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a#top_user > span.glyphicon-user {
+    display: inline-block !important;
+}
+
+body.blur > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a#top_user > span.glyphicon-user:before {
+    display: inline-block !important;
+}
+
+body.blur > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a#top_user > span.glyphicon-user:after {
+    display: inline-block !important;
+}
+
+/* Color overrides */
+:root {
+    --color-secondary: #839 !important;
+    --color-secondary-hover: #839 !important;
+    --color-primary: #BE5ED1 !important;
+}
+
+.pagination > li > a:focus, .pagination > li > a:hover, .pagination > li > span:focus, .pagination > li > span:hover {
+    color: #fff !important;
+    background-color: #69C !important;
+    border-color: #69C !important;
+}
+
+.pagination > .active > a {
+    color: #fff !important;
+    background-color: #2C76B8 !important;
+    border: solid 1px #2C76B8 !important;
+}
+
+.checkbox input[type=checkbox] {
+    accent-color: #2C76B8 !important;
+}
+
+.cwa_stats_value {
+    color: #2C76B8 !important;
+}
+
+.pagination > .active > a:hover {
+    background-color: #2C76B8 !important;
+    border: solid 1px #2C76B8 !important;
+}
+
+.btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open .dropdown-toggle.btn-primary {
+    background-color: #2C76B8 !important;
+}
+
+.btn-primary:hover, .btn-primary.active:hover {
+    background-color: #69C !important;
+}
+
+@media (max-width: 768px) {
+    .navbar-collapse.collapse {
+        background: #283d51BF !important;
+    }
+
+    body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a.profileDrop:before {
+        color: #fff !important;
+    }
+
+    #form-upload .form-group .btn:after {
+        background: #A3C1E0 !important;
+    }
+}
+
+.cover .badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #fff;
+    border-radius: 100px;
+    box-shadow: 0 0 4px #0009;
+    margin-left: 4px;
+    margin-top: 4px;
+}
+
+.cover {
+    box-shadow: 0 0 4px #0009;
+}
+
+.cover .read {
+    line-height: 15px;
+    font-size: xx-small;
+    position: absolute;
+    top: 192px;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    padding: 2px !important;
+    left: 4px;
+}
+
+@media (max-width: 767px) {
+    .cover .read {
+        line-height: 15px;
+        font-size: xx-small;
+        position: absolute;
+        top: 121px;
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        padding: 2px !important;
+        left: 1px;
+    }
+}
+
+input.datepicker {
+    color: transparent;
+}
+
+input.datepicker:focus {
+    color: transparent;
+}
+
+input.datepicker:focus + input {
+    color: #555;
+}
+
+@media only screen and (max-width: 767px) {
+    .row-fluid > .col-sm-2 {
+        visibility: hidden;
+    }
+}
+
+.filterheader {
+    margin-bottom: 20px;
+}
+
+.filterheader-fixed {
+    position: fixed;
+    top: 72px;
+    right: 20px;
+}
+
+@media (min-width: 915px) {
+    .row-fluid:not(:has(.pagination)) .filterheader {
+        position: fixed;
+        top: 72px;
+        right: 20px;
+    }
+}
+
+ul#scnd-nav {
+    margin-bottom: 4rem;
+}
+
+div#Downloads {
+    margin: 0;
+    justify-self: center;
+    margin-top: 5rem !important;
+}
+
+div#Downloads_list {
+    width: 100%;
+    padding-bottom: 3rem;
+}
+
+@media (max-width: 1605px) {
+    .btn-group.character.hidden-sm {
+        display: none;
+    }
+}
+
+@media (max-width: 915px) {
+    div#shelf-actions {
+        float: left !important;
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    div#shelf-actions {
+        float: left;
+        display: inline-flex;
+        margin-top: 2rem;
+    }
+    
+    body.newest.blur div.container-fluid div.row-fluid div.col-sm-10 div.discover.load-more div.row.display-flex {
+        margin-top: 21px !important;
+    }
+
+    div#shelf-actions {
+        float: none;
+    }
+} 

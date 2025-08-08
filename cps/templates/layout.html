@@ -19,9 +19,10 @@
     {% block header %}{% endblock %}
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/upload.css') }}" rel="stylesheet" media="screen">
-    {% if g.current_theme == 1 %}
-      <link href="{{ url_for('static', filename='css/caliBlur.css') }}" rel="stylesheet" media="screen">
-      <link href="{{ url_for('static', filename='css/caliBlur_override.css') }}" rel="stylesheet" media="screen">
+    {% if g.current_theme_config %}
+      {% for css_file in g.current_theme_config.css_files %}
+        <link href="{{ url_for('static', filename='css/' + css_file) }}" rel="stylesheet" media="screen">
+      {% endfor %}
     {% endif %}
     <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
     <script>
@@ -87,7 +88,7 @@
 
     </script>
   </head>
-  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
+  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme_config.body_class %} {{ g.current_theme_config.body_class }}{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container-fluid">
@@ -100,7 +101,7 @@
           </button>
           <a class="navbar-brand" href="{{url_for('web.index')}}">{{instance}}</a>
         </div>
-        {% if g.current_theme == 1 %}
+        {% if g.current_theme == 1 or g.current_theme == 2 %}
             <div class="home-btn"><a class="home-btn-tooltip" href="{{url_for("web.index",page=1)}}" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Home"></a></div>
             <div class="plexBack"><a href="{{url_for('web.index')}}"></a></div>
         {% endif %}
@@ -123,7 +124,7 @@
           {% endif %}
           <ul class="nav navbar-nav navbar-right" id="main-nav">
             {% if current_user.is_authenticated or g.allow_anonymous %}
-              {% if g.current_theme == 1 %}
+              {% if g.current_theme == 1 or g.current_theme == 2 %}
               <li class="dropdown"><a href="#" class="dropdown-toggle profileDrop" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span></a>
                 <ul class="dropdown-menu profileDropli">
                     <li><a id="top_user" data-text="{{_('Account')}}" href="{{url_for('web.profile')}}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
@@ -138,9 +139,9 @@
               </li>
               {% endif %}
               <li class="cwa-switch-theme">
-                <a id="cwa-switch-theme" href="{{ url_for('switch_theme.cwa_switch_theme') }}" title="Switch Theme">
-                  <span class="glyphicon glyphicon-sunglasses"></span>
-                  <span class="hidden-sm">{{_('Switch Theme')}}</span>
+                <a id="cwa-switch-theme" href="#" data-toggle="modal" data-target="#themeSelectionModal" title="Select Theme (Current: {{ g.current_theme_config.name if g.current_theme_config else 'Default' }})">
+                  <span class="glyphicon {{ g.current_theme_config.icon if g.current_theme_config else 'glyphicon-book' }}"></span>
+                  <span class="hidden-sm">{{_('Select Theme')}} ({{ g.current_theme_config.name if g.current_theme_config else 'Default' }})</span>
                 </a>
               </li>
               {% if current_user.role_upload() and g.allow_upload %}
@@ -241,7 +242,7 @@
       {%endif%}
     {% endfor %}
     {% block flash %}{% endblock %}
-    {% if g.current_theme == 1 %}
+    {% if g.current_theme == 1 or g.current_theme == 2 %}
       <div id="loader" hidden="true">
         <center>
           <h3>{{_('Uploading...')}}</h3>
@@ -318,6 +319,41 @@
         </div>
       </div>
     </div>
+    
+    <!-- Theme Selection Modal -->
+    <div class="modal fade" id="themeSelectionModal" tabindex="-1" role="dialog" aria-labelledby="themeSelectionModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="themeSelectionModalLabel">{{_('Select Theme')}}</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              {% for theme in g.all_themes %}
+              <div class="col-sm-6 col-md-4">
+                <div class="theme-option {% if theme.id == g.current_theme %}active{% endif %}">
+                  <a href="{{ url_for('switch_theme.cwa_select_theme', theme_id=theme.id) }}" class="theme-link">
+                    <div class="theme-icon">
+                      <span class="glyphicon {{ theme.icon }}"></span>
+                    </div>
+                    <div class="theme-info">
+                      <h5>{{ theme.name|title }}</h5>
+                      <p class="text-muted">{{ theme.description }}</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     {% block modal %}{% endblock %}
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="{{ url_for('static', filename='js/libs/jquery.min.js') }}"></script>
@@ -330,7 +366,7 @@
     <script src="{{ url_for('static', filename='js/libs/jquery.form.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/uploadprogress.js') }}"> </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    {% if g.current_theme == 1 %}
+    {% if g.current_theme == 1 or g.current_theme == 2 %}
       <script src="{{ url_for('static', filename='js/libs/jquery.visible.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/libs/compromise.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/libs/readmore.min.js') }}"></script>

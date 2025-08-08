@@ -1,0 +1,28 @@
+{
+  "themes": [
+    {
+      "id": 0,
+      "name": "default",
+      "description": "Default Calibre-Web theme",
+      "css_files": ["style.css"],
+      "body_class": "",
+      "icon": "glyphicon-book"
+    },
+    {
+      "id": 1,
+      "name": "caliblur", 
+      "description": "CaliBlur theme with blur effects",
+      "css_files": ["caliBlur.css", "caliBlur_override.css"],
+      "body_class": "blur",
+      "icon": "glyphicon-sunglasses"
+    },
+    {
+      "id": 2,
+      "name": "swan",
+      "description": "Swan's custom theme with overrides",
+      "css_files": ["caliBlur.css", "caliBlur_override.css", "custom-theme.css"],
+      "body_class": "blur",
+      "icon": "glyphicon-bookmark"
+    }
+  ]
+} 

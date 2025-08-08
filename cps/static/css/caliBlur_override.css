@@ -136,18 +136,12 @@ div#Downloads_list {
     .tags {
         position: absolute;
         left: 220px;
-        top: 200px;
+        top: 190px;
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        max-height: 50px;
+        max-height: 40px;
         overflow: auto;
-    }
-}
-
-@media only screen and (max-width: 545px) {
-    .book-meta > .bookinfo > .hr {
-        margin: 30px;
     }
 }
 
@@ -172,6 +166,9 @@ div#Downloads_list {
         top: 465px;
         left: -220px !important;
         margin-top: 0 !important;
+        max-width: 115px;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
     }
     .publishing-date {
         position: absolute;
@@ -202,15 +199,32 @@ div#Downloads_list {
         flex-wrap: nowrap;
         flex-direction: column;
         overflow-y: auto;
+        max-height: 26px;
+        max-width: 130px;
+        overflow-x: clip;
+        flex-wrap: nowrap;
     }
     .tags a.btn.btn-xs.btn-info {
-        position: fixed;
+        position: sticky;
+    }
+    .bookinfo p#book_of {
+        position: absolute;
+        top: 535px;
+        padding: 0;
+        margin: 0;
+        max-width: 400px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-height: 20px;
+        height: 100%;
     }
 }
 
 @media only screen and (max-width: 445px) {
     .btn-group {
         height: 30px;
+        min-width: max-content;
     }
 }
 

@@ -17,3 +17,4 @@ docker-compose.yml.dev
 changelogs
 cwa-wiki
 wiki_images
+.devcontainer

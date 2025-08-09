@@ -20,7 +20,7 @@ class CWA_DB:
         self.db_path = "/config/"
         self.con, self.cur = self.connect_to_db() # type: ignore
 
-        self.schema_path = "/app/calibre-web-automated/scripts/cwa_schema.sql"
+        self.schema_path = "/app/calibre-web-automated/cwa_schema.sql"
         self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes"]
         self.tables, self.schema = self.make_tables()
 

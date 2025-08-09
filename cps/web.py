@@ -52,8 +52,6 @@ from .string_helper import strip_whitespaces
 import sqlite3
 import time
 
-import sys
-sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
 
 feature_support = {

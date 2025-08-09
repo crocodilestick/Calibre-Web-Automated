@@ -21,8 +21,6 @@ import requests
 from datetime import datetime
 import os.path
 
-import sys
-sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
 
 

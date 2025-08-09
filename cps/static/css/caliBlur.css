@@ -497,7 +497,7 @@ body.shelforder > div.container-fluid > div.row-fluid > div.col-sm-10:before {
     width: 60px;
     top: -48px;
     left: 16px;
-    z-index: -999999999999999999999999999999999999999999999999999999;
+    z-index: 1;
     font-style: normal;
     font-weight: 400;
     display: inline-block;
@@ -558,7 +558,7 @@ body.shelforder > div.container-fluid > div.row-fluid > div.col-sm-10:before {
     width: 60px;
     top: -48px;
     left: 16px;
-    z-index: -999999999999999999999999999999999999999999999999999999;
+    z-index: 1;
     font-style: normal;
     font-weight: 400;
     display: inline-block;
@@ -3308,7 +3308,8 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
     overflow: hidden;
     -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
-    padding-right: 25px
+    padding-right: 25px;
+    max-width: 32vw;
 }
 
 .book-meta .btn-toolbar > .btn-group {

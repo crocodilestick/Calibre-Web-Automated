@@ -305,11 +305,3 @@ h2.usertable {
 @media (max-width: 767px) {
   body.allow-mobile-blur .blur-wrapper { display:block !important; }
 }
-
-/* Restore read/archive icons above blurred background when mobile blur enabled */
-body.allow-mobile-blur #have_read_cb + label:before,
-body.allow-mobile-blur #have_read_cb:checked + label:before,
-body.allow-mobile-blur #archived_cb + label:before,
-body.allow-mobile-blur #archived_cb:checked + label:before {
-  z-index: 2 !important; /* override huge negative z-index in base theme */
-}

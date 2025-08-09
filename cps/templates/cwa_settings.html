@@ -68,6 +68,16 @@
       <p class="cwa-settings-tooltip">
         When active, you will no longer receive notifications in the Web UI when a new version of CWA is released
       </p>
+
+      {% if cwa_settings['enable_mobile_blur'] %}
+      <input type="checkbox" id="enable_mobile_blur" name="enable_mobile_blur" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="May impact performance on low-end mobile devices">
+      {% else %}
+      <input type="checkbox" id="enable_mobile_blur" name="enable_mobile_blur" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="May impact performance on low-end mobile devices">
+      {% endif %}
+      <label for="enable_mobile_blur" style="padding-left: 10px;">Enable Blurred Backgrounds on Mobile (&lt;768px)</label><br>
+      <p class="cwa-settings-tooltip">
+        When active, the blurred cover background effect is also rendered on small screens. Disable if you notice scrolling or animation lag.
+      </p>
     </div>
 
     <div class="settings-container">

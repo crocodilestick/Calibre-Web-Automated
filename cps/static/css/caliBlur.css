@@ -6009,7 +6009,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     .navbar > .container-fluid > .navbar-header {
         margin: 0;
-        background-color: #253747;
+        background: none;
     }
 
     .navbar > .container-fluid > .navbar-header > button.navbar-toggle {

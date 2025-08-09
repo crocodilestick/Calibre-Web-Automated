@@ -45,5 +45,6 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_ingest_automerge TEXT DEFAULT "new_record" NOT NULL,
     auto_metadata_enforcement SMALLINT DEFAULT 1 NOT NULL,
     kindle_epub_fixer SMALLINT DEFAULT 1 NOT NULL,
-    auto_backup_epub_fixes SMALLINT DEFAULT 1 NOT NULL
+    auto_backup_epub_fixes SMALLINT DEFAULT 1 NOT NULL,
+    enable_mobile_blur SMALLINT DEFAULT 1 NOT NULL
 );

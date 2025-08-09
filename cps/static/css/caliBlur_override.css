@@ -294,3 +294,8 @@ h2.usertable {
 .usertable ul.pagination {
     top: 5.1em;
 }
+
+/* Enable mobile blur only when user setting applied */
+@media (max-width: 767px) {
+  body.allow-mobile-blur .blur-wrapper { display:block !important; }
+}

@@ -25,10 +25,6 @@ import chardet  # dependency of requests
 import copy
 import importlib
 
-# CWA Imports
-import sqlite3
-import time
-
 from flask import Blueprint, jsonify
 from flask import request, redirect, send_from_directory, make_response, flash, abort, url_for, Response
 from flask import session as flask_session
@@ -66,6 +62,13 @@ from .tasks_status import render_task_status
 from .usermanagement import user_login_required
 from .string_helper import strip_whitespaces
 
+# CWA Imports
+import sqlite3
+import time
+
+import sys
+sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+from cwa_db import CWA_DB
 
 feature_support = {
     'ldap': bool(services.ldap),
@@ -1713,12 +1716,16 @@ def show_book(book_id):
             if media_format.format.lower() in constants.EXTENSIONS_AUDIO:
                 entry.audio_entries.append(media_format.format.lower())
 
+        cwa_db = CWA_DB()
+        cwa_settings = cwa_db.cwa_settings
+
         return render_title_template('detail.html',
                                      entry=entry,
                                      cc=cc,
                                      is_xhr=request.headers.get('X-Requested-With') == 'XMLHttpRequest',
                                      title=entry.title,
                                      books_shelfs=book_in_shelves,
+                                     cwa_settings=cwa_settings,
                                      page="book")
     else:
         log.debug("Selected book is unavailable. File does not exist or is not accessible")

@@ -82,12 +82,17 @@ if ($("body.book").length > 0) {
     $("#remove-from-shelves").insertAfter(".hr");
     $(description).appendTo(".bookinfo")
 
-    // Sexy blurred backgrounds
-    cover = $(".cover img").attr("src");
-    $("#loader + .container-fluid")
-        .prepend("<div class='blur-wrapper'></div>");
-    $(".blur-wrapper")
-        .prepend('<div><img alt="Blurred cover" class="bg-blur" src="' + cover + '"></div>');
+    // Sexy blurred backgrounds (desktop always; mobile only if allow-mobile-blur class present)
+    if ( $(window).width() >= 768 || $('body').hasClass('allow-mobile-blur') ) {
+        cover = $(".cover img").attr("src");
+        if (cover) {
+            if ($("#loader + .container-fluid > .blur-wrapper").length === 0) {
+                $("#loader + .container-fluid")
+                    .prepend("<div class='blur-wrapper'></div>");
+            }
+            $(".blur-wrapper").prepend('<div><img loading="lazy" alt="Blurred cover" class="bg-blur" src="' + cover + '"></div>');
+        }
+    }
 
     // Metadata Fields - Publishers, Published, Languages and Custom
     $('.publishers, .publishing-date, .real_custom_columns, .languages').each(function () {
@@ -256,7 +261,7 @@ if ($("body.book").length > 0) {
 // Hide dropdown and collapse menus on click-off
 $(document).mouseup(function (e) {
     var container = new Array();
-    container.push($('ul[aria-labelledby="read-in-browser"]'));
+    container.push($("ul[aria-labelledby=\"read-in-browser\"]"));
     container.push($(".sendtoereader-drop"));
     container.push($(".leramslist"));
     container.push($("#add-to-shelves"));
@@ -380,14 +385,16 @@ if($("body.advsearch").length > 0) {
 
 // Author Page Background Blur
 if ($("body.author").length > 0) {
-    cover = $(".author-bio img").attr("src");
-    $("#loader + .container-fluid")
-        .prepend('<div class="blur-wrapper"></div>');
-    $(".blur-wrapper").prepend('<img alt="Blurred author bio" class="bg-blur" src="' + cover + '">');
-    // Place undefined cover images inside container
-    if ($('.bg-blur[src="undefined"]').length > 0) {
-        $(".bg-blur").before('<div class="bg-blur undefined-img"></div>');
-        $("img.bg-blur").appendTo('.undefined-img');
+    if ( $(window).width() >= 768 || $('body').hasClass('allow-mobile-blur') ) {
+        cover = $(".author-bio img").attr("src");
+        $("#loader + .container-fluid")
+            .prepend('<div class="blur-wrapper"></div>');
+        $(".blur-wrapper").prepend('<img loading="lazy" alt="Blurred author bio" class="bg-blur" src="' + cover + '">');
+        // Place undefined cover images inside container
+        if ($('.bg-blur[src="undefined"]').length > 0) {
+            $(".bg-blur").before('<div class="bg-blur undefined-img"></div>');
+            $("img.bg-blur").appendTo('.undefined-img');
+        }
     }
 }
 
@@ -438,18 +445,18 @@ if ($.trim($('ul[aria-labelledby="read-in-browser"] li').html()).length === 0) {
 
 // Shelf Buttons and Tooltips
 if ($("body.shelf").length > 0) {
-    $('div[data-target="#DeleteShelfDialog"]')
-        .before('<div class=".btn-group shelf-btn-group"></div>')
-        .appendTo(".shelf-btn-group")
-        .addClass("delete-shelf-btn");
+    $('div[data-target="#DeleteShelfDialog"]').
+        before('<div class=".btn-group shelf-btn-group"></div>').
+        appendTo(".shelf-btn-group").
+        addClass("delete-shelf-btn");
 
-    $('a[href*="edit"]')
-        .appendTo(".shelf-btn-group")
-        .addClass("edit-shelf-btn");
+    $('a[href*="edit"]').
+        appendTo(".shelf-btn-group").
+        addClass("edit-shelf-btn");
 
-    $('a[href*="order"]')
-        .appendTo(".shelf-btn-group")
-        .addClass("order-shelf-btn");
+    $('a[href*="order"]').
+        appendTo(".shelf-btn-group").
+        addClass("order-shelf-btn");
     $(".delete-shelf-btn").attr({
         "data-toggle-two": "tooltip",
         "title": $(".delete-shelf-btn").text(),     // "Delete Shelf"

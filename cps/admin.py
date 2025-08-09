@@ -1759,7 +1759,7 @@ def _db_configuration_update_helper():
             db_change = True
     except Exception as ex:
         return _db_configuration_result('{}'.format(ex), gdrive_error)
-    config.config_calibre_split = to_save.get('config_calibre_split',  0) == "on"
+    config.config_calibre_split = to_save.get('config_calibre_split', 0) == "on"
     if config.config_calibre_split:
         split_dir = to_save.get("config_calibre_split_dir")
         if not os.path.exists(split_dir):
@@ -1972,6 +1972,12 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.sidebar_view |= constants.DETAIL_RANDOM
 
     content.role = constants.selected_roles(to_save)
+    # Set default theme (caliBlur = 1) for new users
+    try:
+        # Use global default theme config (acts as default for new users)
+        content.theme = getattr(config, 'config_theme', 1)
+    except Exception:
+        pass
     try:
         if not to_save["name"] or not to_save["email"] or not to_save["password"]:
             log.info("Missing entries on new user")
@@ -2054,6 +2060,14 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             log.error(ex)
             flash(str(ex), category="error")
         return redirect(url_for('admin.admin'))
+    # Theme update for admin editing user
+    if 'theme' in to_save:
+        try:
+            theme_val = int(to_save.get('theme'))
+            if theme_val in (0,1):
+                content.theme = theme_val
+        except Exception:
+            pass
     else:
         if not ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
                                                 ub.User.id != content.id).count() and 'admin_role' not in to_save:

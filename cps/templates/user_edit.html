@@ -48,6 +48,15 @@
             {% endfor %}
         </select>
     </div>
+    {% if not content.role_anonymous() %}
+    <div class="form-group">
+      <label for="theme">{{ _('Theme') }}</label>
+      <select name="theme" id="theme" class="form-control">
+        <option value="0" {% if content.theme == 0 %}selected{% endif %}>Standard</option>
+        <option value="1" {% if content.theme == 1 %}selected{% endif %}>caliBlur (Dark)</option>
+      </select>
+    </div>
+    {% endif %}
     {% if registered_oauth.keys()| length > 0 and not new_user and profile %}
       {% for id, name in registered_oauth.items() %}
     <div class="form-group">

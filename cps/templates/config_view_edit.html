@@ -37,7 +37,7 @@
           <input type="number" min="0" max="999" class="form-control" name="config_authors_max" id="config_authors_max" value="{% if conf.config_authors_max != None %}{{ conf.config_authors_max }}{% endif %}" autocomplete="off">
         </div>
         <div class="form-group">
-        <label for="config_theme">{{_('Theme')}}</label>
+        <label for="config_theme">{{_('Default Theme (users can select their own preferred theme however new users will receive this theme by default)')}}</label>
             <select name="config_theme" id="config_theme" class="form-control">
                 <option value="0" {% if conf.config_theme == 0 %}selected{% endif %}>{{ _("Standard Theme") }}</option>
                 <option value="1" {% if conf.config_theme == 1 %}selected{% endif %}>{{ _("caliBlur! Dark Theme") }}</option>

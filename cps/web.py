@@ -1365,6 +1365,11 @@ def register_post():
         content.role = config.config_default_role
         content.locale = config.config_default_locale
         content.sidebar_view = config.config_default_show
+        # Default to configured theme for new self-registered users (fallback to caliBlur=1)
+        try:
+            content.theme = getattr(config, 'config_theme', 1)
+        except Exception:
+            pass
         try:
             ub.session.add(content)
             ub.session.commit()
@@ -1549,7 +1554,15 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         current_user.kobo_only_shelves_sync = int(to_save.get("kobo_only_shelves_sync") == "on") or 0
         if old_state == 0 and current_user.kobo_only_shelves_sync == 1:
             kobo_sync_status.update_on_sync_shelfs(current_user.id)
-        current_user.hardcover_token = to_save.get("hardcover_token","").replace("Bearer ","") or None
+        current_user.hardcover_token = to_save.get("hardcover_token","" ).replace("Bearer ","" ) or None
+        # Theme change
+        if 'theme' in to_save:
+            try:
+                new_theme = int(to_save.get('theme'))
+                if new_theme in (0,1):
+                    current_user.theme = new_theme
+            except Exception:
+                pass
 
     except Exception as ex:
         flash(str(ex), category="error")

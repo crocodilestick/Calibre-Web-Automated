@@ -40,7 +40,7 @@ do
     echo "[cwa-auto-zipper] Next run in $SECS seconds."
     sleep $SECS &  # We sleep in the background to make the script interruptible via SIGTERM when running in docker
     wait $!
-    python3 -m cps.auto_zip
+    python3 /app/calibre-web-automated/scripts/auto_zip.py
     if [[ $? == 1 ]]
     then
         echo "[cwa-auto-zipper] Error occurred during script initialisation (see errors above)."

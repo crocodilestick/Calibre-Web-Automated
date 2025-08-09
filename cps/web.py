@@ -52,8 +52,9 @@ from .string_helper import strip_whitespaces
 import sqlite3
 import time
 
-from .cwa_db import CWA_DB
-from .paths import DIRS_JSON as DIRS_JSON_PATH
+import sys
+sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+from cwa_db import CWA_DB
 
 feature_support = {
     'ldap': bool(services.ldap),
@@ -372,7 +373,7 @@ def get_sort_function(sort_param, data):
 
 def cwa_get_library_location() -> str:
     dirs = {}
-    with open(str(DIRS_JSON_PATH), 'r') as f:
+    with open('/app/calibre-web-automated/dirs.json', 'r') as f:
         dirs: dict[str, str] = json.load(f)
     library_dir = dirs['calibre_library_dir']
     return library_dir

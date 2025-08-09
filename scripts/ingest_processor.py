@@ -15,10 +15,9 @@ import shutil
 import sqlite3
 from pathlib import Path
 
-from .kindle_epub_fixer import EPUBFixer
-from .cwa_db import CWA_DB
-from .paths import DIRS_JSON as DIRS_JSON_PATH, METADATA_TEMP_DIR, CHANGE_LOGS_DIR
-from . import audiobook
+from cwa_db import CWA_DB
+from kindle_epub_fixer import EPUBFixer
+import audiobook
 
 # Creates a lock file unless one already exists meaning an instance of the script is
 # already running, then the script is closed, the user is notified and the program
@@ -68,7 +67,7 @@ class NewBookProcessor:
         self.supported_book_formats = {'azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txtz', 'txt', 'kepub'}
         self.hierarchy_of_success = {'epub', 'lit', 'mobi', 'azw', 'epub', 'azw3', 'fb2', 'fbz', 'azw4',  'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt'}
         self.supported_audiobook_formats = {'m4b', 'm4a', 'mp4'}
-        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs(str(DIRS_JSON_PATH))
+        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
 
         # Create the tmp_conversion_dir if it does not already exist
         Path(self.tmp_conversion_dir).mkdir(exist_ok=True)
@@ -189,8 +188,10 @@ class NewBookProcessor:
             converted_filepath = self.filepath
             convert_successful = True
         else:
-            print("\n[ingest-processor]: *** NOTICE TO USER: Kepubify can only convert from epubs. Non-epub formats will be converted to epub first, then to kepub. Multi-step conversions may reduce quality; starting with epubs yields best results.***\n", flush=True)
-            convert_successful, converted_filepath = self.convert_book(end_format="epub")  # type: ignore
+            print("\n[ingest-processor]: *** NOTICE TO USER: Kepubify is limited in that it can only convert from epubs. To get around this, CWA will automatically convert other"
+            "supported formats to epub using the Calibre's conversion tools & then use Kepubify to produce your desired kepubs. Obviously multi-step conversions aren't ideal"
+            "so if you notice issues with your converted files, bare in mind starting with epubs will ensure the best possible results***\n", flush=True)
+            convert_successful, converted_filepath = self.convert_book(self.input_format, end_format="epub") # type: ignore
             
         if convert_successful:
             converted_filepath = Path(converted_filepath)
@@ -220,9 +221,9 @@ class NewBookProcessor:
 
     def delete_current_file(self) -> None:
         """Deletes file just processed from ingest folder"""
-        os.remove(self.filepath)
-        if not os.path.samefile(os.path.dirname(self.filepath), self.ingest_folder):
-            subprocess.run(["find", os.path.dirname(self.filepath), "-type", "d", "-empty", "-delete"])
+        os.remove(self.filepath) # Removes processed file
+        if not os.path.samefile(os.path.dirname(self.filepath),self.ingest_folder): # File not in ingest_folder, subdirectories to delete
+            subprocess.run(["find", os.path.dirname(self.filepath), "-type", "d", "-empty", "-delete"]) # Removes any now empty folders including parent directory
 
 
     def add_book_to_library(self, book_path:str, text: bool=True, format: str="text" ) -> None:
@@ -311,7 +312,7 @@ class NewBookProcessor:
 
 
 def main(filepath=sys.argv[1]):
-    """Checks if filepath is a directory. If it is, main will run on every file inside it.
+    """Checks if filepath is a directory. If it is, main will be ran on every file in the given directory
     Inotifywait won't detect files inside folders if the folder was moved rather than copied"""
     ##############################################################################################
     # Truncates the filename if it is too long

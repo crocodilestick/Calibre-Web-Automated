@@ -6,13 +6,7 @@
 # Reference: https://manual.calibre-ebook.com/generated/en/calibredb.html#add
 echo "========== STARTING CWA-INGEST SERVICE =========="
 
-REPO_ROOT="/app/calibre-web-automated"
-if [[ -f "/etc/cwa-repo-root" ]]; then
-  REPO_ROOT="$(cat /etc/cwa-repo-root)"
-fi
-DIRS_JSON="${REPO_ROOT}/dirs.json"
-
-WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' "$DIRS_JSON" | grep -o '[^"]*$')
+WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
 echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
 # Monitor the folder for new files
@@ -23,7 +17,7 @@ while read -r events filepath ; do
         #         TIME_OF_MATCH=$(grep "$filepath" ingest-log-test.txt | egrep -o '[0-9]{10}')
         #         TODO NEED TO GET DIFFERENCE BETWEEN THE 2 TIMES AND IF LESS THAN 60 SECONDS, IGNORE
         echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
-        python3 -m cps.ingest_processor "$filepath" # &
+        python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath" # &
         # echo "'${filepath}' - $(date +'%s')" >> /config/.ingest_dupe_list
         # INGEST_PROCESSOR_PID=$!
         # Wait for the ingest processor to finish
@@ -32,7 +26,7 @@ while read -r events filepath ; do
         #         FILES="${WATCH_FOLDER}/*"
         #         for f in $FILES
         #         do
-        #                 python3 /app/calibre-web-automated/ingest_processor.py "$f" &
+        #                 python3 /app/calibre-web-automated/scripts/ingest_processor.py "$f" &
         #                 INGEST_PROCESSOR_PID=$!
         #                 # Wait for the ingest processor to finish
         #                 wait $INGEST_PROCESSOR_PID

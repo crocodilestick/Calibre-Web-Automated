@@ -23,17 +23,15 @@ import shutil
 import pwd
 import grp
 
-from .cwa_db import CWA_DB
-from .paths import DIRS_JSON as DIRS_JSON_PATH, CHANGE_LOGS_DIR, METADATA_TEMP_DIR, ensure_runtime_dirs
+from cwa_db import CWA_DB
 
 ### Code adapted from https://github.com/innocenat/kindle-epub-fix
 ### Translated from Javascript to Python & modified by crocodilestick
 
 ### Global Variables
-ensure_runtime_dirs()
-dirs_json = str(DIRS_JSON_PATH)
-change_logs_dir = str(CHANGE_LOGS_DIR)
-metadata_temp_dir = str(METADATA_TEMP_DIR)
+dirs_json = "/app/calibre-web-automated/dirs.json"
+change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
+metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
 # Log file path
 epub_fixer_log_file = "/config/epub-fixer.log"
 
@@ -348,7 +346,7 @@ def get_library_location() -> str:
         return split_path
     else:
         dirs = {}
-        with open(dirs_json, 'r') as f:
+        with open('/app/calibre-web-automated/dirs.json', 'r') as f:
             dirs: dict[str, str] = json.load(f)
         library_dir = f"{dirs['calibre_library_dir']}/"
         return library_dir

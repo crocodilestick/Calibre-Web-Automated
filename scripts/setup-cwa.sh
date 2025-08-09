@@ -33,11 +33,11 @@ add_aliases () {
     echo "alias cwa-change-dirs='nano /app/calibre-web-automated/dirs.json'" | cat >> ~/.bashrc
     
     echo "cover-enforcer () {" | cat >> ~/.bashrc
-    echo '    python3 -m cps.cover_enforcer "$@"' | cat >> ~/.bashrc
+    echo '    python3 /app/calibre-web-automated/scripts/cover_enforcer.py "$@"' | cat >> ~/.bashrc
     echo "}" | cat >> ~/.bashrc
     
     echo "convert-library () {" | cat >> ~/.bashrc
-    echo '    python3 -m cps.convert_library "$@"' | cat >> ~/.bashrc
+    echo '    python3 /app/calibre-web-automated/scripts/convert_library.py "$@"' | cat >> ~/.bashrc
     echo "}" | cat >> ~/.bashrc
     
     source ~/.bashrc

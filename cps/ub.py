@@ -258,6 +258,8 @@ class User(UserBase, Base):
     view_settings = Column(JSON, default={})
     kobo_only_shelves_sync = Column(Integer, default=0)
     hardcover_token = Column(String, unique=True, default=None)
+    # New per-user theme (0=default/light, 1=caliBlur) replacing global-only behavior
+    theme = Column(Integer, default=0)
 
 
 if oauth_support:
@@ -631,6 +633,15 @@ def migrate_user_table(engine, _session):
         with engine.connect() as conn:
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'hardcover_token' String"))
+            trans.commit()
+    # Migration for per-user theme column
+    try:
+        _session.query(exists().where(User.theme)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
             trans.commit()
 
 # Migrate database to current version, has to be updated after every database change. Currently migration from

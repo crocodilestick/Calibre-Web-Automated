@@ -117,7 +117,13 @@ def before_request():
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
-    g.current_theme = config.config_theme
+    # Use per-user theme if available; fallback to global config.config_theme for legacy/anonymous
+    try:
+        g.current_theme = getattr(current_user, 'theme', config.config_theme)
+        if current_user.is_anonymous and not hasattr(current_user, 'theme'):
+            g.current_theme = config.config_theme
+    except Exception:
+        g.current_theme = getattr(config, 'config_theme', 0)
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',
@@ -841,12 +847,10 @@ def add_restriction(res_type, user_id):
             usr = current_user
         if 'submit_allow' in element:
             usr.allowed_column_value = restriction_addition(element, usr.list_allowed_column_values)
-            ub.session_commit("Changed allowed columns of user {} to {}".format(usr.name,
-                                                                                usr.list_allowed_column_values()))
+            ub.session_commit("Changed allowed columns of user {} to {}".format(usr.name, usr.list_allowed_column_values()))
         elif 'submit_deny' in element:
             usr.denied_column_value = restriction_addition(element, usr.list_denied_column_values)
-            ub.session_commit("Changed denied columns of user {} to {}".format(usr.name,
-                                                                               usr.list_denied_column_values()))
+            ub.session_commit("Changed denied columns of user {} to {}".format(usr.name, usr.list_denied_column_values()))
     return ""
 
 
@@ -1755,7 +1759,7 @@ def _db_configuration_update_helper():
             db_change = True
     except Exception as ex:
         return _db_configuration_result('{}'.format(ex), gdrive_error)
-    config.config_calibre_split = to_save.get('config_calibre_split', 0) == "on"
+    config.config_calibre_split = to_save.get('config_calibre_split',  0) == "on"
     if config.config_calibre_split:
         split_dir = to_save.get("config_calibre_split_dir")
         if not os.path.exists(split_dir):

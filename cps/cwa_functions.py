@@ -57,26 +57,20 @@ DIRS_JSON = "/app/calibre-web-automated/dirs.json"
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_switch_theme():
-    con = sqlite3.connect("/config/app.db")
-    cur = con.cursor()
-    current_theme = cur.execute('SELECT config_theme FROM settings;').fetchone()[0]
-
-    if current_theme == 1:
-        new_theme = 0
-    else:
-        new_theme = 1
-
-    to_save = {"config_theme":new_theme}
-
-    config.set_from_dictionary(to_save, "config_theme", int)
-    config.config_default_role = constants.selected_roles(to_save)
-    config.config_default_role &= ~constants.ROLE_ANONYMOUS
-
-    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith('show_'))
-    if "Show_detail_random" in to_save:
-        config.config_default_show |= constants.DETAIL_RANDOM
-
-    config.save()
+    # Switch theme for current user only
+    try:
+        # current_user.theme may not exist for old sessions before migration; default to 0
+        current = getattr(current_user, 'theme', 0)
+        new_theme = 0 if current == 1 else 1
+        from . import ub
+        user = ub.session.query(ub.User).filter(ub.User.id == current_user.id).first()
+        if user:
+            user.theme = new_theme
+            ub.session_commit()
+        else:
+            log.error("Theme switch: user not found in DB")
+    except Exception as e:
+        log.error(f"Error switching theme: {e}")
     return redirect(url_for("web.index"), code=302)
 
 ##————————————————————————————————————————————————————————————————————————————##

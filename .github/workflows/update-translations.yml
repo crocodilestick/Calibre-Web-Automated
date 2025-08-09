@@ -4,9 +4,9 @@ on:
   push:
     paths:
       - 'cps/**'
-      - 'update_translations.sh'
-      - 'compile_translations.sh'
-      - 'generate_translation_status.py'
+      - 'scripts/compile_translations.sh'
+      - 'scripts/update_translations.sh'
+      - 'scripts/generate_translation_status.py'
       - '.github/workflows/update-translations.yml'
   workflow_dispatch:
 
@@ -29,7 +29,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gettext
 
       - name: Run update_translations.sh
-        run: bash update_translations.sh
+        run: bash scripts/update_translations.sh
 
       - name: Clone wiki repo
         env:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Generate translation status table (in wiki repo)
         run: |
-          python generate_translation_status.py wiki-tmp/Contributing-Translations.md
+          python scripts/generate_translation_status.py wiki-tmp/Contributing-Translations.md
 
       - name: Commit and push wiki update
         run: |

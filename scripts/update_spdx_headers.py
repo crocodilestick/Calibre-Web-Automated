@@ -19,6 +19,7 @@ Behavior:
   * Respects existing shebang (kept as first line).
   * Avoids duplicating if header already normalized.
   * Updates year range dynamically (current year) and fork start year (2024).
+  * DEFAULT ROOT: When --paths is omitted the repository root is inferred as two directories up from this script (scripts/../).
 
 Resulting header (example):
   # Calibre-Web Automated – fork of Calibre-Web
@@ -212,7 +213,14 @@ def main() -> int:
     args = parse_args()
     exts = [e if e.startswith('.') else f'.{e}' for e in args.ext.split(',') if e.strip()]
 
-    targets = list(collect_paths(args.paths, exts, args.exclude))
+    # Anchor default scan root to repository root (script directory's parent) if --paths omitted.
+    if not args.paths:
+        repo_root = pathlib.Path(__file__).resolve().parent.parent
+        default_paths = [str(repo_root)]
+    else:
+        default_paths = args.paths
+
+    targets = list(collect_paths(default_paths, exts, args.exclude))
     if not targets:
         print("No matching files.")
         return 0

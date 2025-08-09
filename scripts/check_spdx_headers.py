@@ -87,7 +87,7 @@ def main(argv: List[str]) -> int:
         print("SPDX / attribution header check failed:")
         for p in problems:
             print("  ", p)
-        print("Hint: run: python update_spdx_headers.py --apply")
+        print("Hint: run: python scripts/update_spdx_headers.py --apply")
         return 1
     print("All headers OK.")
     return 0

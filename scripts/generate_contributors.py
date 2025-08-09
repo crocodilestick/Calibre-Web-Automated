@@ -41,6 +41,7 @@ import json
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 try:
@@ -208,10 +209,12 @@ def build_contributors(upstream: str, fork: str, include_avatars: bool, timeout:
 
 def main() -> int:
     args = parse_args()
+    repo_root = Path(__file__).resolve().parent.parent
+    output_path = repo_root / args.output
     content = build_contributors(args.upstream, args.fork, args.include_avatars, args.timeout, args.retries)
-    with open(args.output, "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(content)
-    print(f"Wrote {args.output} (contributors from {args.upstream} and {args.fork})")
+    print(f"Wrote {output_path} (contributors from {args.upstream} and {args.fork})")
     return 0
 
 

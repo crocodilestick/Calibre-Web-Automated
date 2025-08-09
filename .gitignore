@@ -8,6 +8,7 @@ __pycache__/
 
 # Enviroment Guff
 
+.devcontainer
 poetry.lock
 replit.nix
 pyproject.toml

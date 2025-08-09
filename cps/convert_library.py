@@ -20,8 +20,9 @@ import sqlite3
 import pwd
 import grp
 
-from cwa_db import CWA_DB
-from kindle_epub_fixer import EPUBFixer
+from .kindle_epub_fixer import EPUBFixer
+from .cwa_db import CWA_DB
+from .paths import DIRS_JSON as DIRS_JSON_PATH, METADATA_TEMP_DIR, CHANGE_LOGS_DIR
 
 ### Global Variables
 convert_library_log_file = "/config/convert-library.log"
@@ -101,7 +102,7 @@ class LibraryConverter:
         self.hierarchy_of_success = {'epub', 'lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt'}
 
         self.current_book = 1
-        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json') 
+        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs(str(DIRS_JSON_PATH)) 
         self.to_convert = self.get_books_to_convert()
 
         self.calibre_env = os.environ.copy()

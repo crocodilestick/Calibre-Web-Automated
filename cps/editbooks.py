@@ -33,6 +33,7 @@ from .redirect import get_redirect_location
 from .file_helper import validate_mime_type
 from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
+from .paths import CHANGE_LOGS_DIR
 
 editbook = Blueprint('edit-book', __name__)
 log = logger.create()
@@ -985,7 +986,7 @@ def render_delete_book_result(book_format, json_response, warning, book_id, loca
         if json_response:
             return json.dumps([warning, {"location": get_redirect_location(location, "web.index"),
                                          "type": "success",
-                                         "format": book_format,
+                                         "format": "",
                                          "message": _('Book Successfully Deleted')}])
         else:
             flash(_('Book Successfully Deleted'), category="success")
@@ -1320,7 +1321,8 @@ def edit_cc_data(book_id, book, to_save, cc):
                                                   'custom')
     # CWA Export of changed Metadata
     now = datetime.now()
-    with open(f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book_id}.json', 'w') as f:
+    # Use centralized CHANGE_LOGS_DIR instead of hard-coded path
+    with open(f'{CHANGE_LOGS_DIR}/{now.strftime("%Y%m%d%H%M%S")}-{book_id}.json', 'w') as f:
         json.dump(to_save, f, indent=4)
     return changed
 

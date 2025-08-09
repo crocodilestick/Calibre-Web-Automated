@@ -14,17 +14,17 @@
   <h2>{{title}}</h2>
   <form action="{{ url_for('cwa_settings.set_cwa_settings')}}" method="post">
     <div class="settings-container" style="margin-top: 3rem;">
-      <h4 class="settings-section-header">Enable/Disable Calibre-Web Automated Services</h4>
+      <h4 class="settings-section-header">{{_('Enable/Disable Calibre-Web Automated Services')}}</h4>
       
       {% if cwa_settings['auto_convert'] %}
       <input type="checkbox" id="auto_convert" name="auto_convert" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip"data-placement="right" data-html="true" title="Placeholder">
       {% else %}
       <input type="checkbox" id="auto_convert" name="auto_convert" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" data-html="true" title="Placeholder">
       {% endif %}
-      <label for="auto_convert" style="padding-left: 10px;">Enable CWA Auto-Convert</label><br>
+      <label for="auto_convert" style="padding-left: 10px;">{{_('Enable CWA Auto-Convert')}}</label><br>
       <p class="cwa-settings-tooltip">
-        On by default, when active all ingested books will automatically be converted to the target format specified below (epub by default) 
-        <em>EXCEPT</em> those you have specifically told CWA to ignore below.
+          {{_('On by default, when active all ingested books will automatically be converted to the target format specified below (epub by default) 
+          <em>EXCEPT</em> those you have specifically told CWA to ignore below.')}}
       </p>
 
       {% if cwa_settings['auto_metadata_enforcement'] %}
@@ -32,12 +32,12 @@
       {% else %}
       <input type="checkbox" id="auto_metadata_enforcement" name="auto_metadata_enforcement" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" data-html="true" title="Placeholder">
       {% endif %}
-      <label for="auto_metadata_enforcement" style="padding-left: 10px;">Enable CWA Automatic Cover & Metadata Enforcement Service</label><br>
+      <label for="auto_metadata_enforcement" style="padding-left: 10px;">{{_('Enable CWA Automatic Cover & Metadata Enforcement Service')}}</label><br>
       <p class="cwa-settings-tooltip">
-        On by default, when active, whenever the Metadata and/or Cover Image is edited in the Web UI, the CWA Metadata Enforcement service 
+        {{_('On by default, when active, whenever the Metadata and/or Cover Image is edited in the Web UI, the CWA Metadata Enforcement service 
         will then apply those changes the ebook files themselves. Normally in Stock CW or when this setting is disabled, the changes made 
         are only applied to what you see in the Web UI, not the ebook files themselves. This feature currently only supports files in EPUB 
-        or AZW3 format.
+        or AZW3 format.')}}
       </p>
 
       {% if cwa_settings['kindle_epub_fixer'] %}
@@ -45,28 +45,28 @@
       {% else %}
       <input type="checkbox" id="kindle_epub_fixer" name="kindle_epub_fixer" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
       {% endif %}
-      <label for="kindle_epub_fixer" style="padding-left: 10px;">Enable CWA Kindle EPUB Fixer</label><br>
+      <label for="kindle_epub_fixer" style="padding-left: 10px;">{{_('Enable CWA Kindle EPUB Fixer')}}</label><br>
       <p class="cwa-settings-tooltip">
-        When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
-        compatibility with Amazon's Send-to-Kindle Service.
+        {{_('When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
+        compatibility with Amazon's Send-to-Kindle Service.')}}
         <br><br>
-        <i>(TLDR: if you've ever had EPUB files that Amazon just constantly rejects for seemingly no reason, this should prevent that 
-          from happening again). This tool was adapted from the <a href="https://kindle-epub-fix.netlify.app/">kindle-epub-fix.netlify.app</a> 
-          tool made by <a href="https://github.com/innocenat">innocenat</a>.</i>
+        {{_('<i>(TLDR: if you\'ve ever had EPUB files that Amazon just constantly rejects for seemingly no reason, this should prevent that 
+        from happening again). This tool was adapted from the <a href="https://kindle-epub-fix.netlify.app/">kindle-epub-fix.netlify.app</a> 
+        tool made by <a href="https://github.com/innocenat">innocenat</a>.</i>')}}
       </p>
     </div>
 
     <div class="settings-container">
-        <h4 class="settings-section-header">Web UI Settings</h4>
+        <h4 class="settings-section-header">{{_('Web UI Settings')}}</h4>
 
       {% if cwa_settings['cwa_update_notifications'] %}
       <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
       {% else %}
       <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
       {% endif %}
-      <label for="cwa_update_notifications" style="padding-left: 10px;">Enable CWA Update Notifications</label><br>
+      <label for="cwa_update_notifications" style="padding-left: 10px;">{{_('Enable CWA Update Notifications')}}</label><br>
       <p class="cwa-settings-tooltip">
-        When active, you will no longer receive notifications in the Web UI when a new version of CWA is released
+        {{_('When active, you will no longer receive notifications in the Web UI when a new version of CWA is released')}}
       </p>
 
       {% if cwa_settings['enable_mobile_blur'] %}
@@ -74,23 +74,23 @@
       {% else %}
       <input type="checkbox" id="enable_mobile_blur" name="enable_mobile_blur" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="May impact performance on low-end mobile devices">
       {% endif %}
-      <label for="enable_mobile_blur" style="padding-left: 10px;">Enable Blurred Backgrounds on Mobile (&lt;768px)</label><br>
+      <label for="enable_mobile_blur" style="padding-left: 10px;">{{_('Enable Blurred Backgrounds on Mobile (&lt;768px)')}}</label><br>
       <p class="cwa-settings-tooltip">
-        When active, the blurred cover background effect is also rendered on small screens. Disable if you notice scrolling or animation lag.
+        {{_('When active, the blurred cover background effect is also rendered on small screens. Disable if you notice scrolling or animation lag.')}}
       </p>
     </div>
 
     <div class="settings-container">
-      <h4 class="settings-section-header">Automatic Backup Settings</h4>
+      <h4 class="settings-section-header">{{_('Automatic Backup Settings')}}</h4>
 
       {% if cwa_settings['auto_backup_imports'] %}
       <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="If deactivated, imported files can only be found in your Calibre Library" >
       {% else %}
       <input type="checkbox" id="auto_backup_imports" name="auto_backup_imports" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="If deactivated, imported files can only be found in your Calibre Library" >
       {% endif %}
-      <label for="auto_backup_imports" style="padding-left: 10px;">Enable CWA Import Auto-Backup</label><br>
+      <label for="auto_backup_imports" style="padding-left: 10px;">{{_('Enable CWA Import Auto-Backup')}}</label><br>
       <p class="cwa-settings-tooltip">
-        When active, a copy of all imported files will be stored in <i>/config/processed_books/imported</i>
+        {{_('When active, a copy of all imported files will be stored in <i>/config/processed_books/imported</i>')}}
       </p>
 
       {% if cwa_settings['auto_backup_conversions'] %}
@@ -98,9 +98,9 @@
       {% else %}
       <input type="checkbox" id="auto_backup_conversions" name="auto_backup_conversions" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="If deactivated, the originals of converted files will not be stored (except in the case of a failed conversion)">
       {% endif %}
-      <label for="auto_backup_conversions" style="padding-left: 10px;">Enable CWA Conversion Auto-Backup</label><br>
+      <label for="auto_backup_conversions" style="padding-left: 10px;">{{_('Enable CWA Conversion Auto-Backup')}}</label><br>
       <p class="cwa-settings-tooltip">
-        When active, the originals of ingested files that undergo conversion will be stored in /config/processed_books/converted
+        {{_('When active, the originals of ingested files that undergo conversion will be stored in /config/processed_books/converted')}}
       </p>
 
       {% if cwa_settings['auto_backup_epub_fixes'] %}
@@ -108,9 +108,9 @@
       {% else %}
       <input type="checkbox" id="auto_backup_epub_fixes" name="auto_backup_epub_fixes" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="If deactivated, the originals of EPUB's that have been fixed will not be stored (except in the case of a process failure)">
       {% endif %}
-      <label for="auto_backup_epub_fixes" style="padding-left: 10px;">Enable CWA EPUB Fixer Auto-Backup</label><br>
+      <label for="auto_backup_epub_fixes" style="padding-left: 10px;">{{_('Enable CWA EPUB Fixer Auto-Backup')}}</label><br>
       <p class="cwa-settings-tooltip">
-        When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer service will be stored in /config/processed_books/fixed_originals
+        {{_('When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer service will be stored in /config/processed_books/fixed_originals')}}
       </p>
 
       <hr class="settings-divider">
@@ -120,20 +120,17 @@
       {% else %}
       <input type="checkbox" id="auto_zip_backups" name="auto_zip_backups" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" data-html="true" title="If deactivated, backed up files will be left alone in their respective folders">
       {% endif %}
-      <label for="auto_zip_backups" style="padding-left: 10px;">Enable CWA Auto Zip Backups</label><br>
+      <label for="auto_zip_backups" style="padding-left: 10px;">{{_('Enable CWA Auto Zip Backups')}}</label><br>
       <p class="cwa-settings-tooltip">
-        When active, just before midnight each day, the cwa-auto-zipper service will make zip archives of all the backed up converted, imported 
-        and failed files from that day. This is to help keep the subdirectories of /config/processed_books organised and to minimise disk space 
-        usage.
+        {{_('When active, just before midnight each day, the cwa-auto-zipper service will make zip archives of all the backed up converted, imported and failed files from that day. This is to help keep the subdirectories of <code>/config/processed_books</code> organised and to minimise disk space usage.')}}
       </p>
     </div>
     
     <div class="settings-container">
-      <h4 class="settings-section-header">CWA Auto-Conversion Target Format - EPUB by Default</h4>
+      <h4 class="settings-section-header">{{_('CWA Auto-Conversion Target Format - EPUB by Default')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
-        When the Auto-Convert feature is active, all ingested books will be automatically converted to the format chosen here (except those 
-        formats selected in the ignore list below)
+        {{_('When the Auto-Convert feature is active, all ingested books will be automatically converted to the format chosen here (except those formats selected in the ignore list below)')}}
       </p>
       <label for="auto_convert_target_format" style="padding-right: 10px; margin-bottom: 16px !important;">Choose a target format:</label>
       <select class="cwa-settings-select" name="auto_convert_target_format" id="auto_convert_target_format">
@@ -146,15 +143,14 @@
         {% endfor %}
       </select>
       <p class="cwa-settings-disclaimer settings-disclaimer" style="margin-bottom: 2rem !important;">
-        * CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply 
-        be ignored by the service
+        {{_('CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service')}}
       </p>
     </div>
 
     <div class="settings-container">
-      <h4 class="settings-section-header">CWA Auto-Convert - Ignored Formats</h4>
+      <h4 class="settings-section-header">{{_('CWA Auto-Convert - Ignored Formats')}}</h4>
       <p class="cwa-settings-explanation settings-explanation">
-        The formats selected here will be ignored by CWA's Auto-Conversion feature when it's active, meaning they will be imported as is.
+        {{_('The formats selected here will be ignored by CWA's Auto-Conversion feature when it's active, meaning they will be imported as is.')}}
       </p>
       <div style="max-width: 90rem; padding-left: 30px;">
         {% for format in ignorable_formats -%}
@@ -179,10 +175,9 @@
     </div>
 
     <div class="settings-container">
-      <h4 class="settings-section-header">CWA Auto-Ingest - Ignored Formats</h4>
+      <h4 class="settings-section-header">{{_('CWA Auto-Ingest - Ignored Formats')}}</h4>
       <p class="cwa-settings-explanation settings-explanation">
-        The formats selected here will be ignored by CWA's Auto-Ingest feature, meaning files in these formats won't be added to the 
-        library by CWA during the ingest process
+        {{_('The formats selected here will be ignored by CWA's Auto-Ingest feature, meaning files in these formats won't be added to the library by CWA during the ingest process')}}
       </p>
       <div style="max-width: 90rem; padding-left: 30px;">
         {% for format in ignorable_formats -%}
@@ -207,13 +202,13 @@
     </div>
 
 <div class="settings-container">
-      <h4 class="settings-section-header">CWA Auto-Ingest Automerge</h4>
+      <h4 class="settings-section-header">{{_('CWA Auto-Ingest Automerge')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
-        Calibre can detect Duplicate Book Titles on Import and depending on the <code style="color: var(--color-secondary); background-color: #4e5254;">automerge</code>
-        setting. It can be set to delete either instance of a duplicated book or keep both (default).
+        {{_('Calibre can detect Duplicate Book Titles on Import and depending on the')}} <code style="color: var(--color-secondary); background-color: #4e5254;">{{_('automerge')}}</code>
+        {{_('setting. It can be set to delete either instance of a duplicated book or keep both (default).')}}
       </p>
-      <label for="auto_ingest_automerge"  class="settings-section-header" style="padding-right: 10px; margin-bottom: 16px !important; padding-bottom: 0px !important;">Choose how to handle duplicates:</label>
+      <label for="auto_ingest_automerge"  class="settings-section-header" style="padding-right: 10px; margin-bottom: 16px !important; padding-bottom: 0px !important;">{{_('Choose how to handle duplicates:')}}</label>
       <select style="width: fit-content;" class="cwa-settings-select" name="auto_ingest_automerge" id="auto_ingest_automerge">
         {% for option in autoingest_options -%}
           {% if cwa_settings['auto_ingest_automerge'] == option %}
@@ -224,20 +219,20 @@
         {% endfor %}
       </select>
 
-      <h4>Possible Values:</h4>
+      <h4>{{_('Possible Values:')}}</h4>
       <table style="width: -webkit-fill-available; margin-bottom: 2rem;">
         <tbody>
         <tr>
             <td><code style="color: var(--color-secondary); background-color: #4e5254;">ignore</code></td>
-            <td>Discards duplicate import, keeps library copy</td>
+            <td>{{_('Discards duplicate import, keeps library copy')}}</td>
         </tr>
         <tr>
             <td><code style="color: var(--color-secondary); background-color: #4e5254;">overwrite</code></td>
-            <td>Overwrites library copy with newly imported file</td>
+            <td>{{_('Overwrites library copy with newly imported file')}}</td>
         </tr>
         <tr>
             <td><code style="color: var(--color-secondary); background-color: #4e5254;">new_record</code> (Default)</td>
-            <td>Creates a duplicate record, keeping both copies</td>
+            <td>{{_('Creates a duplicate record, keeping both copies')}}</td>
         </tr>
       </tbody></table>
     </div>

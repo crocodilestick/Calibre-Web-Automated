@@ -9,6 +9,8 @@ import shutil
 import sqlite3
 import sys
 import subprocess
+from pathlib import Path
+from .paths import REPO_ROOT, DIRS_JSON as DIRS_JSON_PATH
 
 
 def main():
@@ -26,13 +28,14 @@ def main():
 
 class AutoLibrary:
     def __init__(self):
+        # Determine repository root dynamically (centralized in paths.py)
+        self.repo_root = REPO_ROOT
         self.config_dir = "/config"
         self.library_dir = "/calibre-library"
-        self.dirs_path = "/app/calibre-web-automated/dirs.json"
+        self.dirs_path = str(DIRS_JSON_PATH)
         self.app_db = "/config/app.db"
-
-        self.empty_appdb = "/app/calibre-web-automated/empty_library/app.db"
-        self.empty_metadb = "/app/calibre-web-automated/empty_library/metadata.db"
+        self.empty_appdb = str(self.repo_root / "empty_library" / "app.db")
+        self.empty_metadb = str(self.repo_root / "empty_library" / "metadata.db")
 
         self.metadb_path = None
         self.lib_path = None
@@ -55,7 +58,7 @@ class AutoLibrary:
         files_in_config = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.config_dir) for f in filenames]
         db_files = [f for f in files_in_config if "app.db" in f]
         if len(db_files) == 0:
-            print(f"[cwa-auto-library] No app.db found in {self.config_dir}, copying from /app/calibre-web-automated/empty_library/app.db")
+            print(f"[cwa-auto-library] No app.db found in {self.config_dir}, copying from {self.empty_appdb}")
             shutil.copyfile(self.empty_appdb, f"{self.config_dir}/app.db")
             try:
                 subprocess.run(["chown", "-R", "abc:abc", self.config_dir], check=True)

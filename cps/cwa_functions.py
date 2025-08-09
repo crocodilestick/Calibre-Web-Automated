@@ -11,6 +11,7 @@ from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
 from .cw_login import login_user, logout_user, current_user
+from .paths import DIRS_JSON as DIRS_JSON_PATH, REPO_ROOT
 
 import subprocess
 import sqlite3
@@ -29,9 +30,7 @@ from werkzeug.utils import secure_filename
 
 from .web import cwa_get_num_books_in_library
 
-import sys
-sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
 
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
@@ -49,7 +48,8 @@ log = logger.create()
 
 # Folder where the log files are stored
 LOG_ARCHIVE = "/config/log_archive"
-DIRS_JSON = "/app/calibre-web-automated/dirs.json"
+# Replace hard-coded DIRS_JSON path with centralized path
+DIRS_JSON = str(DIRS_JSON_PATH)
 
 ##———————————————————————————END OF GLOBAL VARIABLES——————————————————————————##
 
@@ -102,7 +102,7 @@ def get_ingest_dir():
 def refresh_library(app):
     with app.app_context():  # Create app context for session
         ingest_dir = get_ingest_dir()
-        result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest_processor.py', ingest_dir])
+        result = subprocess.run(['python3', '-m', 'cps.ingest_processor', ingest_dir])
         return_code = result.returncode
 
         # Add empty list for messages in app context if a list doesn't already exist
@@ -367,7 +367,7 @@ def show_full_epub_fixer_with_paths_fixes():
 @login_required_if_no_ano
 @admin_required
 def cwa_flash_status():
-    result = subprocess.run(['/app/calibre-web-automated/scripts/check-cwa-services.sh'])
+    result = subprocess.run([str(REPO_ROOT / 'scripts' / 'check-cwa-services.sh')])
     services_status = result.returncode
 
     match services_status:
@@ -489,7 +489,7 @@ def get_log_dates(logs) -> dict[str,str]:
 ##———————————————————END OF SHARED VARIABLES & FUNCTIONS———————————————————————##
 
 def convert_library_start(queue):
-    cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
+    cl_process = subprocess.Popen(['python3', '-m', 'cps.convert_library'])
     queue.put(cl_process)
 
 def get_tmp_conversion_dir() -> str:
@@ -629,7 +629,7 @@ def get_status():
 ##————————————————————————————————————————————————————————————————————————————##
 
 def epub_fixer_start(queue):
-    ef_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/kindle_epub_fixer.py', '--all'])
+    ef_process = subprocess.Popen(['python3', '-m', 'cps.kindle_epub_fixer', '--all'])
     queue.put(ef_process)
 
 def is_epub_fixer_finished() -> bool:

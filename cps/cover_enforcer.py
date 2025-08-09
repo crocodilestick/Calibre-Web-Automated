@@ -17,12 +17,14 @@ import subprocess
 import tempfile
 import atexit
 
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
+from .paths import DIRS_JSON as DIRS_JSON_PATH, CHANGE_LOGS_DIR, METADATA_TEMP_DIR, ensure_runtime_dirs
 
-# Global Variables
-dirs_json = "/app/calibre-web-automated/dirs.json"
-change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
-metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
+# Replace hard-coded absolute paths with dynamic ones (centralized in paths.py)
+dirs_json = str(DIRS_JSON_PATH)
+change_logs_dir = str(CHANGE_LOGS_DIR)
+metadata_temp_dir = str(METADATA_TEMP_DIR)
+ensure_runtime_dirs()
 
 
 # Creates a lock file unless one already exists meaning an instance of the script is
@@ -294,7 +296,11 @@ class Enforcer:
 
     def replace_old_metadata(self, old_metadata: str, new_metadata: str) -> None:
         """Switches the metadata in metadata_temp with the metadata in the Calibre-Library"""
-        os.system(f'cp "{new_metadata}" "{old_metadata}"')
+        try:
+            import shutil
+            shutil.copy2(new_metadata, old_metadata)
+        except Exception:
+            subprocess.run(["cp", new_metadata, old_metadata], check=True)
 
 
     def print_library_list(self) -> None:

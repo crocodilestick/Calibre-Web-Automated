@@ -10,7 +10,7 @@ from datetime import datetime
 import pathlib
 from zipfile import ZipFile 
 
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
 
 class AutoZipper:
     def __init__(self):

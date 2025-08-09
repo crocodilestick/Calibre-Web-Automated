@@ -238,7 +238,11 @@ div#Downloads_list {
 .editbook .modal-dialog.modal-lg {
     transform: translate(0px, -20px) !important;
 }
-
+@media only screen and (max-width: 767px) {
+    .editbook .more-stuff {
+        margin: 0 !important;
+    }
+}
 /* Fix login screen */
 .login .well {
     max-height: 520px;

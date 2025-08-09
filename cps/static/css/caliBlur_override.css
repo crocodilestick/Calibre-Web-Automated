@@ -140,7 +140,7 @@ div#Downloads_list {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        max-height: 40px;
+        max-height: 32px;
         overflow: auto;
     }
 }
@@ -150,6 +150,12 @@ div#Downloads_list {
         position: absolute;
         top: 380px;
         left: -220px;
+    }
+    .book h2#title {
+        max-width: 70vw;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
     body.book .author {
         position: absolute;
@@ -298,4 +304,12 @@ h2.usertable {
 /* Enable mobile blur only when user setting applied */
 @media (max-width: 767px) {
   body.allow-mobile-blur .blur-wrapper { display:block !important; }
+}
+
+/* Restore read/archive icons above blurred background when mobile blur enabled */
+body.allow-mobile-blur #have_read_cb + label:before,
+body.allow-mobile-blur #have_read_cb:checked + label:before,
+body.allow-mobile-blur #archived_cb + label:before,
+body.allow-mobile-blur #archived_cb:checked + label:before {
+  z-index: 2 !important; /* override huge negative z-index in base theme */
 }

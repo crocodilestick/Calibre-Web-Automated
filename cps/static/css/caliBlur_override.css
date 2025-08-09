@@ -126,7 +126,7 @@ div#Downloads_list {
     }
     .book-meta > .bookinfo > .comments, .book-meta > .description {
         font-size: 13px;
-        height: 350px !important;
+        min-height: 350px !important;
         margin-top: 40px;
     }
     #bookDetailsModal > .modal-dialog.modal-lg > .modal-content > .modal-body > div > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover, body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover {
@@ -304,4 +304,12 @@ h2.usertable {
 /* Enable mobile blur only when user setting applied */
 @media (max-width: 767px) {
   body.allow-mobile-blur .blur-wrapper { display:block !important; }
+}
+
+@media only screen and (max-width: 767px) {
+    /* Readmore.js fix: allow plugin to control height by removing forced min-height */
+    .book-meta > .bookinfo > .comments[data-readmore],
+    .book-meta > .description[data-readmore] {
+        min-height: 0 !important; /* Option B */
+    }
 }

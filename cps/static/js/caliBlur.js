@@ -327,14 +327,46 @@ $(document).on("click", ".dropdown-toggle", function () {
     });
 });
 
-// Collapse long text into read-more
-$("div.comments").readmore({
-    collapsedHeight: 134,
-    heightMargin: 45,
-    speed: 300,
-    moreLink: '<a href="#">READ MORE</a>',    // ToDo: make translateable
-    lessLink: '<a href="#">READ LESS</a>',    // ToDo: make translateable
-});
+// Collapse long text into read-more (responsive collapsed height)
+(function(){
+    function initCommentsReadmore(){
+        var isMobile = $(window).width() <= 767;
+        var collapsed = isMobile ? 350 : 134;
+        var opts = {
+            collapsedHeight: collapsed,
+            heightMargin: 45,
+            speed: 300,
+            moreLink: '<a href="#">READ MORE</a>',    // ToDo: make translateable
+            lessLink: '<a href="#">READ LESS</a>'     // ToDo: make translateable
+        };
+        $("div.comments").each(function(){
+            var $el = $(this);
+            var plugin = $el.data("plugin_readmore");
+            if(plugin){
+                // If current collapsedHeight differs, destroy and re-init
+                if($el.data("collapsedHeight") !== collapsed){
+                    $el.readmore('destroy');
+                    $el.readmore(opts);
+                }
+            } else {
+                $el.readmore(opts);
+            }
+        });
+    }
+    var lastIsMobile = null;
+    $(function(){
+        initCommentsReadmore();
+        lastIsMobile = $(window).width() <= 767;
+    });
+    $(window).on('resize.readmoreBreakpoint', function(){
+        var isMobile = $(window).width() <= 767;
+        if(isMobile !== lastIsMobile){
+            initCommentsReadmore();
+            lastIsMobile = isMobile;
+        }
+    });
+})();
+
 /////////////////////////////////
 //     End of Global Work     //
 ///////////////////////////////

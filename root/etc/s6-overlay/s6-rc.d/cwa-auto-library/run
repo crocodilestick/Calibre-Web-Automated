@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python3 /app/calibre-web-automated/cps/auto_library.py
+python3 -m cps.auto_library
 
 if [[ $? == 1 ]]
 then

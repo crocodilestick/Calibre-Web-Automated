@@ -8,6 +8,7 @@ import sys
 from sqlite3 import Error as sqlError
 import re
 from datetime import datetime
+from pathlib import Path
 
 from tabulate import tabulate
 
@@ -20,7 +21,8 @@ class CWA_DB:
         self.db_path = "/config/"
         self.con, self.cur = self.connect_to_db() # type: ignore
 
-        self.schema_path = "/app/calibre-web-automated/cwa_schema.sql"
+        # Dynamic schema path (file resides alongside this module)
+        self.schema_path = str(Path(__file__).resolve().parent / "cwa_schema.sql")
         self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes"]
         self.tables, self.schema = self.make_tables()
 

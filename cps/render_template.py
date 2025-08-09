@@ -21,7 +21,7 @@ import requests
 from datetime import datetime
 import os.path
 
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
 
 
 log = logger.create()

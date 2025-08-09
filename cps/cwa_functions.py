@@ -71,7 +71,17 @@ def cwa_switch_theme():
             log.error("Theme switch: user not found in DB")
     except Exception as e:
         log.error(f"Error switching theme: {e}")
-    return redirect(url_for("web.index"), code=302)
+    # Redirect back to the page user was on (fallback to index)
+    target = request.referrer or url_for("web.index")
+    # Basic safety: only allow same-host redirects
+    try:
+        from urllib.parse import urlparse
+        ref_p = urlparse(target)
+        if ref_p.netloc and ref_p.netloc != request.host:
+            target = url_for("web.index")
+    except Exception:
+        target = url_for("web.index")
+    return redirect(target, code=302)
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##

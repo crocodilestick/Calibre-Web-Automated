@@ -265,6 +265,12 @@ div#Downloads_list {
     background: none;
 }
 
+.login .well {
+    padding: 60px 10px !important;
+    max-width: none !important;
+    min-width: 0 !important;
+}
+
 .login .well > form {
     background: rgba(0, 0, 0, .4);
     color: hsla(0, 0%, 100%, .45);

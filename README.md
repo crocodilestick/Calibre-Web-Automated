@@ -117,7 +117,8 @@ ___
   - _Available target formats include:_ **EPUB**, **MOBI**, **AZW3**, **KEPUB** & **PDF**
 - Upon detecting new files in the Ingest Directory, if any of the files are in formats the user has configured CWA to auto-convert to the current target format,
 - The following **28 file types are currently supported:**
-  - _.azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txtz_
+  - _.acsm, .azw, .azw3, .azw4, .mobi, .cbz, .cbr, .cb7, .cbc, .chm, .djvu, .docx, .epub, .fb2, .fbz, .html, .htmlz, .lit, .lrf, .odt, .pdf, .prc, .pdb, .pml, .rb, .rtf, .snb, .tcr, .txtz_
+  - _Note: .acsm requires an additional Calibre plugin_
 
 #### **Automatic Enforcement of Changes made to Covers & Metadata through the Calibre-Web UI!** 👀📔
 - In stock Calibre-Web, any changes made to a book's **Cover and/or Metadata** are only applied to how the book appears in the Calibre-Web UI, changing nothing in the ebook's files like you would expect

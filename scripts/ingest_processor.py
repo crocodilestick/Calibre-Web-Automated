@@ -13,6 +13,7 @@ import tempfile
 import time
 import shutil
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 
 from cwa_db import CWA_DB
@@ -227,6 +228,16 @@ class NewBookProcessor:
 
 
     def add_book_to_library(self, book_path:str, text: bool=True, format: str="text" ) -> None:
+        # Capture the current max(timestamp) in Calibre DB so we can detect rows whose last_modified was bumped by an overwrite
+        pre_import_max_timestamp = None
+        if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
+            try:
+                calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
+                with sqlite3.connect(calibre_db_path) as con:
+                    cur = con.cursor()
+                    pre_import_max_timestamp = cur.execute('SELECT MAX(timestamp) FROM books').fetchone()[0]
+            except Exception as e:
+                print(f"[ingest-processor] WARN: Could not read pre-import max timestamp: {e}", flush=True)
         if self.target_format == "epub" and self.is_kindle_epub_fixer:
             self.run_kindle_epub_fixer(book_path, dest=self.tmp_conversion_dir)
             fixed_epub_path = Path(self.tmp_conversion_dir) / os.path.basename(book_path)
@@ -278,6 +289,24 @@ class NewBookProcessor:
 
             self.db.import_add_entry(import_path.stem,
                                     str(self.cwa_settings["auto_backup_imports"]))
+
+            # If we overwrote an existing book, Calibre does not bump books.timestamp, only last_modified.
+            # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.
+            if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
+                try:
+                    calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
+                    with sqlite3.connect(calibre_db_path) as con:
+                        cur = con.cursor()
+                        # pre_import_max_timestamp may be None (empty library) -> update all rows where timestamp < last_modified
+                        if pre_import_max_timestamp is None:
+                            cur.execute('UPDATE books SET timestamp = last_modified WHERE timestamp < last_modified')
+                        else:
+                            cur.execute('UPDATE books SET timestamp = last_modified WHERE last_modified > ? AND timestamp < last_modified', (pre_import_max_timestamp,))
+                        affected = cur.rowcount
+                        if affected:
+                            print(f"[ingest-processor] INFO: Updated timestamp for {affected} overwritten book(s) to reflect latest import.", flush=True)
+                except Exception as e:
+                    print(f"[ingest-processor] WARN: Failed to adjust timestamps after overwrite import: {e}", flush=True)
 
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {import_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)

@@ -8424,6 +8424,9 @@ select.cwa-settings-select {
     padding-top: 2rem;
     padding-bottom: 2rem;
     margin-bottom: 2rem;
+    max-width: 900px;
+    justify-self: anchor-center;
+    margin-left: 2rem;
 }
 
 .settings-section-header {

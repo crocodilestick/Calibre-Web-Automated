@@ -90,6 +90,24 @@ def admin_required(f):
 
 @admi.before_app_request
 def before_request():
+    # Safety net: if not configured but metadata.db now exists at default location, auto-set without redirect loop
+    if not config.db_configured:
+        try:
+            default_metadata = '/calibre-library/metadata.db'
+            if (not config.config_calibre_dir or not os.path.isfile(os.path.join(config.config_calibre_dir, 'metadata.db'))) \
+                    and os.path.isfile(default_metadata):
+                config.config_calibre_dir = os.path.dirname(default_metadata)
+                log.info('[autoconfig] Late-detected calibre library at %s; updating config and rebuilding db session', config.config_calibre_dir)
+                try:
+                    config.save()
+                except Exception as e:
+                    log.error('Failed to save late autoconfig: %s', e)
+                # Re-run calibre db setup so subsequent handlers see a configured DB
+                from . import db as _db, cli_param as _cli_param
+                _db.CalibreDB.update_config(config)
+                _db.CalibreDB.setup_db(config.config_calibre_dir, _cli_param.settings_path)
+        except Exception as e:
+            log.error('Autoconfig safety net error: %s', e)
     #try:
         #if not ub.check_user_session(current_user.id,
         #                             flask_session.get('_id')) and 'opds' not in request.path \

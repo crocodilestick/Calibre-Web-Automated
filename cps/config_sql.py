@@ -187,6 +187,18 @@ class ConfigSQL(object):
 
         change = False
 
+        # Fallback auto-detect: if calibre library not configured but default metadata.db exists, set it
+        if (not self.config_calibre_dir or not os.path.isfile(os.path.join(self.config_calibre_dir, 'metadata.db'))):
+            fallback_db = '/calibre-library/metadata.db'
+            if os.path.isfile(fallback_db):
+                detected_dir = os.path.dirname(fallback_db)
+                if not self.config_calibre_dir:
+                    log.info("[autoconfig] Detected calibre library at %s (fallback)", detected_dir)
+                else:
+                    log.info("[autoconfig] Existing configured path invalid, switching to detected library at %s", detected_dir)
+                self.config_calibre_dir = detected_dir
+                change = True
+
         if self.config_binariesdir is None:
             change = True
             self.config_binariesdir = autodetect_calibre_binaries()

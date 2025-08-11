@@ -152,3 +152,45 @@ do
         echo "[cwa-init] Service could not successfully set permissions for '$d' (see errors above)."
     fi
 done
+
+#------------------------------------------------------------------------------------------------------------------------
+#  Qt6 / Kernel compatibility check (conditional ABI tag stripping)
+#------------------------------------------------------------------------------------------------------------------------
+
+MIN_KERNEL="5.4"
+HOST_KERNEL_RAW="$(uname -r)"
+HOST_KERNEL="${HOST_KERNEL_RAW%%-*}"
+
+version_ge() { [ "$(printf '%s\n' "$2" "$1" | sort -V | tail -n1)" = "$1" ]; }
+
+QT_SENTINEL="/app/calibre/.qt6_processed"
+if [ ! -f "$QT_SENTINEL" ]; then
+  if version_ge "$HOST_KERNEL" "$MIN_KERNEL"; then
+    echo "[cwa-init][qt6] Host kernel $HOST_KERNEL_RAW >= $MIN_KERNEL: leaving Qt6 libs intact for full functionality." \
+         "(PDF/WebEngine features enabled)"
+  else
+    echo "[cwa-init][qt6] Host kernel $HOST_KERNEL_RAW < $MIN_KERNEL: attempting legacy compatibility by stripping .note.ABI-tag." \
+         "(This does NOT guarantee full functionality.)"
+    if command -v strip >/dev/null 2>&1; then
+      any_stripped=0
+      for f in /app/calibre/lib/libQt6*.so*; do
+        [ -f "$f" ] || continue
+        if readelf -S "$f" 2>/dev/null | grep -q '.note.ABI-tag'; then
+          strip --remove-section=.note.ABI-tag "$f" 2>/dev/null || true
+          any_stripped=1
+        fi
+      done
+      if [ $any_stripped -eq 1 ]; then
+        echo "[cwa-init][qt6] ************************************* ATTENTION *************************************"
+        echo "[cwa-init][qt6] Stripped ABI note from some Qt6 libs. Features may still be limited on very old kernels. This will enable devices with kernels >= $MIN_KERNEL to run CWA however features that require Qt6 may not work as expected (e.g. working with PDF files).";
+      else
+        echo "[cwa-init][qt6] No ABI note sections found to strip (nothing changed).";
+      fi
+    else
+      echo "[cwa-init][qt6] 'strip' tool not available; cannot attempt ABI tag removal."
+    fi
+  fi
+  touch "$QT_SENTINEL"
+else
+  echo "[cwa-init][qt6] Qt6 compatibility confirmed; skipping."
+fi

@@ -23,7 +23,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.ref_type == 'branch' || github.event_name == 'push'
+    if: github.event.ref_type == 'branch' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' # <--- CORRECT THIS LINE
 
     steps:
       - name: Checkout correct branch

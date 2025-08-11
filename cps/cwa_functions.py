@@ -162,7 +162,7 @@ def set_cwa_settings():
     cwa_default_settings = cwa_db.cwa_default_settings
     cwa_settings = cwa_db.cwa_settings
 
-    ignorable_formats = ['azw', 'azw3', 'azw4', 'cbz',
+    ignorable_formats = ['acsm', 'azw', 'azw3', 'azw4', 'cbz',
                         'cbr', 'cb7', 'cbc', 'chm',
                         'djvu', 'docx', 'epub', 'fb2',
                         'fbz', 'html', 'htmlz', 'kepub', 'lit',

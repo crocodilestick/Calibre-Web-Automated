@@ -276,6 +276,7 @@ services:
       # If you don't have an existing library, CWA will automatically create one at the bind provided here
       - /path/to/your/calibre/library:/calibre-library
       # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to it's workflow (WIP)
+      # If you are starting with a fresh install, you also need to copy plugins\..\customize.py.json to the corresponding docker location (the config path above + .config/calibre/customize.py.json)
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second

@@ -4,7 +4,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort, jsonify, current_app
-from flask_babel import gettext as _
+from flask_babel import gettext as _, lazy_gettext as _l
 
 from . import logger, config, constants, csrf
 from .usermanagement import login_required_if_no_ano, user_login_required
@@ -110,16 +110,16 @@ def refresh_library(app):
             current_app.config["library_refresh_messages"] = []
 
         if return_code == 2:
-            message = _("Library Refresh 🔄 The book ingest service is already running ✋ Please wait until it has finished before trying again ⌛")
+            message = _l("Library Refresh 🔄 The book ingest service is already running ✋ Please wait until it has finished before trying again ⌛")
         elif return_code == 0:
-            message = _("Library Refresh 🔄 Library refreshed & ingest process complete! ✅")
+            message = _l("Library Refresh 🔄 Library refreshed & ingest process complete! ✅")
         else:
-            message = _("Library Refresh 🔄 An unexpected error occurred, check the logs ⛔")
+            message = _l("Library Refresh 🔄 An unexpected error occurred, check the logs ⛔")
 
-        # Display message to user in Web UI
+        # Store lazy message objects (will be translated when converted to string)
         current_app.config["library_refresh_messages"].append(message)
-        # Print result to docker log
-        print(message.replace('Library Refresh 🔄', '[library-refresh]'), flush=True)
+        # Print result to docker log (force English by casting within temporary locale guard if desired)
+        print(str(message).replace('Library Refresh 🔄', '[library-refresh]'), flush=True)
 
 @csrf.exempt
 @library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])
@@ -142,10 +142,13 @@ def cwa_library_refresh():
 def get_library_refresh_messages():
     messages = current_app.config.get("library_refresh_messages", [])
 
+    # Convert lazy messages to strings (translation occurs here)
+    rendered = [str(m) for m in messages]
+
     # Clear messages after they have been retrieved
     current_app.config["library_refresh_messages"] = []
 
-    return jsonify({"messages": messages})
+    return jsonify({"messages": rendered})
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##

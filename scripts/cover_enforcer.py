@@ -4,18 +4,17 @@
 # See CONTRIBUTORS for full list of authors.
 
 import argparse
+import atexit
 import json
 import os
 import re
-import sys
-import time
 import sqlite3
+import subprocess
+import sys
+import tempfile
+import time
 from datetime import datetime
 from pathlib import Path
-import subprocess
-
-import tempfile
-import atexit
 
 from cwa_db import CWA_DB
 
@@ -52,7 +51,7 @@ class Book:
 
         self.file_format: str = Path(file_path).suffix.replace('.', '')
         self.timestamp: str = self.get_time()
-        self.book_id: str = re.findall(r'\((\d*)\)', book_dir)[-1]
+        self.book_id: str = (list(re.findall(r"\(\d*\)", book_dir))[-1])[1:-1]
         self.book_title, self.author_name, self.title_author = self.get_title_and_author()
 
         self.calibre_env = os.environ.copy()
@@ -117,19 +116,21 @@ class Book:
 
 
     def export_as_dict(self) -> dict[str,str | None]:
-        return {"book_dir":self.book_dir,
-                "file_path":self.file_path,
-                "calibre_library":self.calibre_library,
-                "file_format":self.file_format,
-                "timestamp":self.timestamp,
-                "book_id":self.book_id,
-                "book_title":self.book_title,
-                "author_name":self.author_name,
-                "title_author":self.title_author,
-                "cover_path":self.cover_path,
-                "old_metadata_path":self.old_metadata_path,
-                "self.new_metadata_path":self.new_metadata_path,
-                "log_info":self.log_info}
+        return {
+            "book_dir":self.book_dir,
+            "file_path":self.file_path,
+            "calibre_library":self.calibre_library,
+            "file_format":self.file_format,
+            "timestamp":self.timestamp,
+            "book_id":self.book_id,
+            "book_title":self.book_title,
+            "author_name":self.author_name,
+            "title_author":self.title_author,
+            "cover_path":self.cover_path,
+            "old_metadata_path":self.old_metadata_path,
+            "self.new_metadata_path":self.new_metadata_path,
+            "log_info":self.log_info
+        }
 
 
 class Enforcer:

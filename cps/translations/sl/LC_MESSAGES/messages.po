@@ -5,18 +5,22 @@
 # FIRST AUTHOR Andrej Kralj, 2024.
 msgid ""
 msgstr ""
-"Project-Id-Version:  Calibre-Web Automated\n"
+"Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-08-09 17:32+0200\n"
-"PO-Revision-Date: 2024-09-18 19:45+0200\n"
+"PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
-"Language-Team: \n"
+"Language-Team: Slovenian\n"
 "Language: sl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Loco-Source-Locale: sl_SI\n"
 "Generated-By: Babel 2.13.1\n"
+"\n"
+"X-Loco-Parser: loco_parse_po\n"
+"X-Generator: Loco https://localise.biz/"
 
 #: cps/about.py:77
 msgid "Statistics"
@@ -45,8 +49,8 @@ msgstr ""
 "Uspeh! Knjige so v čakalni vrsti za varnostno kopiranje metapodatkov, za "
 "rezultat preverite opravila"
 
-#: cps/admin.py:223 cps/editbooks.py:744 cps/editbooks.py:787
-#: cps/editbooks.py:1438 cps/updater.py:604 cps/uploader.py:97
+#: cps/admin.py:223 cps/editbooks.py:744 cps/editbooks.py:787 
+#: cps/editbooks.py:1438 cps/updater.py:604 cps/uploader.py:97 
 #: cps/uploader.py:106
 msgid "Unknown"
 msgstr "Neznano"
@@ -63,7 +67,7 @@ msgstr "Osnovne nastavitve"
 msgid "UI Configuration"
 msgstr "Nastavitve uporabniškega vmesnika"
 
-#: cps/admin.py:331 cps/admin.py:1013 cps/db.py:762 cps/search.py:140
+#: cps/admin.py:331 cps/admin.py:1013 cps/db.py:762 cps/search.py:140 
 #: cps/web.py:774
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -73,7 +77,7 @@ msgstr "Stolpec po meri št. %(column)d ne obstaja v zbirki podatkov Calibre"
 msgid "Edit Users"
 msgstr "Urejanje uporabnikov"
 
-#: cps/admin.py:393 cps/opds.py:525 cps/templates/grid.html:14
+#: cps/admin.py:393 cps/opds.py:525 cps/templates/grid.html:14 
 #: cps/templates/list.html:13
 msgid "All"
 msgstr "Vse"
@@ -83,11 +87,10 @@ msgid "User not found"
 msgstr "Ne najdem uporabnika"
 
 #: cps/admin.py:434
-#, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} uporabnikov uspešno izbrisanih"
 
-#: cps/admin.py:457 cps/templates/config_view_edit.html:134
+#: cps/admin.py:457 cps/templates/config_view_edit.html:134 
 #: cps/templates/user_edit.html:45 cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Pokaži vse"
@@ -233,20 +236,19 @@ msgstr ""
 "Ali ste prepričani, da želite izbrisati sinhronizacijsko podatkovno bazo "
 "Calibre-Web, da bi vsilili popolno sinhronizacijo z bralnikom Kobo?"
 
-#: cps/admin.py:902 cps/admin.py:908 cps/admin.py:918 cps/admin.py:928
-#: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
+#: cps/admin.py:902 cps/admin.py:908 cps/admin.py:918 cps/admin.py:928 
+#: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41 
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Onemogoči"
 
-#: cps/admin.py:904 cps/admin.py:910 cps/admin.py:920 cps/admin.py:930
-#: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
+#: cps/admin.py:904 cps/admin.py:910 cps/admin.py:920 cps/admin.py:930 
+#: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44 
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Omogoči"
 
 #: cps/admin.py:963
-#, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} izbrisanih vnosov za sinhronizacijo"
 
@@ -332,10 +334,10 @@ msgstr "Urejanje nastavitev e-poštnega strežnika"
 msgid "Success! Gmail Account Verified."
 msgstr "Uspeh! Račun Gmail je potrjen."
 
-#: cps/admin.py:1351 cps/admin.py:1354 cps/admin.py:1739 cps/admin.py:1901
-#: cps/admin.py:2005 cps/admin.py:2134 cps/editbooks.py:153
-#: cps/editbooks.py:691 cps/editbooks.py:1392 cps/shelf.py:76 cps/shelf.py:139
-#: cps/shelf.py:182 cps/shelf.py:232 cps/shelf.py:269 cps/shelf.py:343
+#: cps/admin.py:1351 cps/admin.py:1354 cps/admin.py:1739 cps/admin.py:1901 
+#: cps/admin.py:2005 cps/admin.py:2134 cps/editbooks.py:153 
+#: cps/editbooks.py:691 cps/editbooks.py:1392 cps/shelf.py:76 cps/shelf.py:139 
+#: cps/shelf.py:182 cps/shelf.py:232 cps/shelf.py:269 cps/shelf.py:343 
 #: cps/shelf.py:465 cps/tasks/convert.py:145 cps/web.py:1587
 #, python-format
 msgid "Oops! Database Error: %(error)s."
@@ -433,7 +435,7 @@ msgstr "Ustavitev strežnika"
 msgid "Update finished, please press okay and reload page"
 msgstr "Posodobitev je končana, pritisnite OK in ponovno naložite stran"
 
-#: cps/admin.py:1564 cps/admin.py:1565 cps/admin.py:1566 cps/admin.py:1567
+#: cps/admin.py:1564 cps/admin.py:1565 cps/admin.py:1566 cps/admin.py:1567 
 #: cps/admin.py:1568 cps/admin.py:1569
 msgid "Update failed:"
 msgstr "Posodobitev ni uspela:"
@@ -484,7 +486,6 @@ msgid "At Least One LDAP User Not Found in Database"
 msgstr "V podatkovni zbirki ni najden vsaj en uporabnik LDAP"
 
 #: cps/admin.py:1693
-#, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Uporabnik je bil uspešno uvožen"
 
@@ -566,19 +567,19 @@ msgstr "Uporabnik '%(nick)s' je posodobljen"
 
 #: cps/constants.py:191
 msgid "Czech"
-msgstr ""
+msgstr "Češčina"
 
 #: cps/constants.py:192
 msgid "German"
-msgstr ""
+msgstr "Neščina"
 
 #: cps/constants.py:193
 msgid "Greek"
-msgstr ""
+msgstr "Grščina"
 
 #: cps/constants.py:194
 msgid "Spanish"
-msgstr ""
+msgstr "Španščina"
 
 #: cps/constants.py:195
 #, fuzzy
@@ -587,43 +588,43 @@ msgstr "Končano"
 
 #: cps/constants.py:196
 msgid "French"
-msgstr ""
+msgstr "Francoščina"
 
 #: cps/constants.py:197
 msgid "Galician"
-msgstr ""
+msgstr "Galščina"
 
 #: cps/constants.py:198
 msgid "Hungarian"
-msgstr ""
+msgstr "Madžarščina"
 
 #: cps/constants.py:199
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonezijščina"
 
 #: cps/constants.py:200
 msgid "Italian"
-msgstr ""
+msgstr "Italijanščina"
 
 #: cps/constants.py:201
 msgid "Japanese"
-msgstr ""
+msgstr "Japonščina"
 
 #: cps/constants.py:202
 msgid "Khmer"
-msgstr ""
+msgstr "Kmerščina"
 
 #: cps/constants.py:203
 msgid "Korean"
-msgstr ""
+msgstr "Korejščina"
 
 #: cps/constants.py:204
 msgid "Dutch"
-msgstr ""
+msgstr "Nizozemščina"
 
 #: cps/constants.py:205
 msgid "Norwegian"
-msgstr ""
+msgstr "Norveščina"
 
 #: cps/constants.py:206
 #, fuzzy
@@ -632,47 +633,47 @@ msgstr "Založnik"
 
 #: cps/constants.py:207
 msgid "Portuguese"
-msgstr ""
+msgstr "Portugalščina"
 
 #: cps/constants.py:208
 msgid "Portuguese (Brazil)"
-msgstr ""
+msgstr "Portugalščina (Brazilija)"
 
 #: cps/constants.py:209
 msgid "Russian"
-msgstr ""
+msgstr "Ruščina"
 
 #: cps/constants.py:210
 msgid "Slovak"
-msgstr ""
+msgstr "Sloveščina"
 
 #: cps/constants.py:211
 msgid "Slovenian"
-msgstr ""
+msgstr "Slovenščina"
 
 #: cps/constants.py:212
 msgid "Swedish"
-msgstr ""
+msgstr "Švedščina"
 
 #: cps/constants.py:213
 msgid "Turkish"
-msgstr ""
+msgstr "Turščina"
 
 #: cps/constants.py:214
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukrajinščina"
 
 #: cps/constants.py:215
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnamščina"
 
 #: cps/constants.py:216
 msgid "Chinese (Simplified, China)"
-msgstr ""
+msgstr "Kitajščina (poenostavljena, Kitajska)"
 
 #: cps/constants.py:217
 msgid "Chinese (Traditional, Taiwan)"
-msgstr ""
+msgstr "kitajščina (tradicionalna, Tajvan)"
 
 #: cps/converter.py:20
 msgid "not installed"
@@ -687,37 +688,44 @@ msgid ""
 "Library Refresh 🔄 The book ingest service is already running ✋ Please wait "
 "until it has finished before trying again ⌛"
 msgstr ""
+"Osvežitev knjižnice 🔄 Storitev vnosa knjig se že izvaja ✋ Pred ponovnim "
+"poskusom počakajte, da se konča ⌛"
 
 #: cps/cwa_functions.py:115
 msgid "Library Refresh 🔄 Library refreshed & ingest process complete! ✅"
 msgstr ""
+"Osvežitev knjižnice 🔄 Osvežitev knjižnice in postopek vnosa zaključen! ✅"
 
 #: cps/cwa_functions.py:117
 msgid "Library Refresh 🔄 An unexpected error occurred, check the logs ⛔"
 msgstr ""
+"Osvežitev knjižnice 🔄 Prišlo je do nepričakovane napake, preverite dnevnike "
+"⛔"
 
 #: cps/cwa_functions.py:137
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr ""
+"Osvežitev knjižnice 🔄 Preverjamo morebitne spregledane knjige, prosimo, "
+"počakajte ..."
 
 #: cps/cwa_functions.py:247
 #, fuzzy
 msgid "Calibre-Web Automated User Settings"
 msgstr "Nastavitve pretvornika e-knjig Calibre"
 
-#: cps/cwa_functions.py:269 cps/cwa_functions.py:271 cps/cwa_functions.py:275
+#: cps/cwa_functions.py:269 cps/cwa_functions.py:271 cps/cwa_functions.py:275 
 #: cps/cwa_functions.py:277 cps/cwa_functions.py:280 cps/cwa_functions.py:282
 msgid "Timestamp"
-msgstr ""
+msgstr "Časovni žig"
 
 #: cps/cwa_functions.py:269 cps/cwa_functions.py:271
 #, fuzzy
 msgid "Book ID"
 msgstr "Knjige"
 
-#: cps/cwa_functions.py:269 cps/templates/book_edit.html:71
+#: cps/cwa_functions.py:269 cps/templates/book_edit.html:71 
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Naslov knjige"
@@ -729,14 +737,14 @@ msgstr "Avtor"
 
 #: cps/cwa_functions.py:269
 msgid "Trigger Type"
-msgstr ""
+msgstr "Vrsta sprožilca"
 
 #: cps/cwa_functions.py:271 cps/cwa_functions.py:277
 #, fuzzy
 msgid "Filepath"
 msgstr "Vrste datotek"
 
-#: cps/cwa_functions.py:275 cps/cwa_functions.py:277 cps/cwa_functions.py:280
+#: cps/cwa_functions.py:275 cps/cwa_functions.py:277 cps/cwa_functions.py:280 
 #: cps/cwa_functions.py:282
 #, fuzzy
 msgid "Filename"
@@ -744,23 +752,23 @@ msgstr "ime"
 
 #: cps/cwa_functions.py:275
 msgid "Manual?"
-msgstr ""
+msgstr "Ročno?"
 
 #: cps/cwa_functions.py:275
 msgid "No. Fixes"
-msgstr ""
+msgstr "Brez sprememb"
 
 #: cps/cwa_functions.py:275 cps/cwa_functions.py:280 cps/cwa_functions.py:282
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "Izvirnik varnostno kopiran?"
 
 #: cps/cwa_functions.py:277
 msgid "Fixes Applied"
-msgstr ""
+msgstr "Uporabljeni popravki"
 
 #: cps/cwa_functions.py:282
 msgid "Original Format"
-msgstr ""
+msgstr "Izvirna oblika"
 
 #: cps/cwa_functions.py:282
 #, fuzzy
@@ -769,70 +777,77 @@ msgstr "Nalaganje vrsta"
 
 #: cps/cwa_functions.py:297
 msgid "Calibre-Web Automated Sever Stats & Archive"
-msgstr ""
+msgstr "Avtomatizirana statistika in arhiv strežnikov Calibre-Web"
 
 #: cps/cwa_functions.py:312
 msgid "Calibre-Web Automated - Full Enforcement History"
-msgstr ""
+msgstr "Calibre-Web Automated - Celotna zgodovina uveljavljanja"
 
 #: cps/cwa_functions.py:321
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
-msgstr ""
+msgstr "Calibre-Web Automated - Celotna zgodovina uveljavljanja (s potmi)"
 
 #: cps/cwa_functions.py:330
 msgid "Calibre-Web Automated - Full Import History"
-msgstr ""
+msgstr "Calibre-Web Automated - Celotna zgodovina uvoza"
 
 #: cps/cwa_functions.py:339
 msgid "Calibre-Web Automated - Full Conversion History"
-msgstr ""
+msgstr "Calibre-Web Automated - Celotna zgodovina pretvorb"
 
 #: cps/cwa_functions.py:348
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
+"Calibre-Web Automated - Celotna zgodovina popravljanja EPUB (brez poti in "
+"popravkov)"
 
 #: cps/cwa_functions.py:357
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
+"Calibre-Web Automated - Celotna zgodovina popravljanja EPUB (s potmi in "
+"popravki)"
 
 #: cps/cwa_functions.py:375
 msgid "✅ All Monitoring Services are running as intended! 👍"
-msgstr ""
+msgstr "✅ Vse nadzorne storitve delujejo po načrtih! 👍"
 
 #: cps/cwa_functions.py:377
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
-msgstr ""
+msgstr "🔴 Storitev vnosa se izvaja, detektor sprememb metapodatkov pa ne."
 
 #: cps/cwa_functions.py:379
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
-msgstr ""
+msgstr "🔴 Detektor sprememb metapodatkov deluje, storitev vnosa pa ne."
 
 #: cps/cwa_functions.py:381
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
+"⛔ Niti storitev vnosa niti detektor sprememb metapodatkov se ne izvajata"
 
 #: cps/cwa_functions.py:383
 msgid "An Error has occurred"
-msgstr ""
+msgstr "Prišlo je do napake"
 
 #: cps/cwa_functions.py:554 cps/cwa_functions.py:561
 msgid "Calibre-Web Automated - Convert Library"
-msgstr ""
+msgstr "Calibre-Web Automated - Pretvori knjižnico"
 
 #: cps/cwa_functions.py:674 cps/cwa_functions.py:680
 msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
 msgstr ""
+"Calibre-Web Automated - Storitev za popravljanje datotek EPUB za pošiljanje "
+"v Kindle"
 
 #: cps/cwa_functions.py:765
 msgid "You must be an admin to access this page."
-msgstr ""
+msgstr "Za dostop do te strani morate biti skrbnik."
 
 #: cps/cwa_functions.py:780
 msgid "Both username and image data are required."
-msgstr ""
+msgstr "Zahtevani so tako uporabniško ime kot podatki o sliki."
 
 #: cps/cwa_functions.py:798
 #, fuzzy
@@ -841,12 +856,12 @@ msgstr "{} uporabnikov uspešno izbrisanih"
 
 #: cps/cwa_functions.py:811
 msgid "CWA Profile Picture Management (WIP)"
-msgstr ""
+msgstr "CWA Upravljanje profilnih slik (v teku)"
 
-#: cps/db.py:1006 cps/templates/config_edit.html:217
-#: cps/templates/config_view_edit.html:63 cps/templates/email_edit.html:41
-#: cps/web.py:589 cps/web.py:623 cps/web.py:668 cps/web.py:708 cps/web.py:735
-#: cps/web.py:1035 cps/web.py:1065 cps/web.py:1110 cps/web.py:1138
+#: cps/db.py:1006 cps/templates/config_edit.html:217 
+#: cps/templates/config_view_edit.html:63 cps/templates/email_edit.html:41 
+#: cps/web.py:589 cps/web.py:623 cps/web.py:668 cps/web.py:708 cps/web.py:735 
+#: cps/web.py:1035 cps/web.py:1065 cps/web.py:1110 cps/web.py:1138 
 #: cps/web.py:1177
 msgid "None"
 msgstr "Nobeno"
@@ -871,7 +886,7 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr "Pri pretvorbi te knjige je prišlo do napake: %(res)s"
 
-#: cps/editbooks.py:563 cps/editbooks.py:1058 cps/web.py:556 cps/web.py:1630
+#: cps/editbooks.py:563 cps/editbooks.py:1058 cps/web.py:556 cps/web.py:1630 
 #: cps/web.py:1675 cps/web.py:1731
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
@@ -897,7 +912,6 @@ msgid "Metadata successfully updated"
 msgstr "Metapodatki so bili uspešno posodobljeni"
 
 #: cps/editbooks.py:696
-#, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Napaka pri urejanju knjige: {}"
 
@@ -1056,7 +1070,6 @@ msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "Zahtevane datoteke ni bilo mogoče prebrati. Morda napačna dovoljenja?"
 
 #: cps/helper.py:340
-#, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "Stanja branja ni bilo mogoče nastaviti: {}"
 
@@ -1225,7 +1238,7 @@ msgstr "Nastavitev za Kobo"
 
 #: cps/kosync.py:143
 msgid "KOReader Sync Plugin"
-msgstr ""
+msgstr "Vtičnik za sinhronizacijo KOReader"
 
 #: cps/oauth_bb.py:63
 #, python-format
@@ -1282,7 +1295,6 @@ msgid "GitHub Oauth error, please retry later."
 msgstr "Napaka GitHub Oauth, prosimo, poskusite pozneje."
 
 #: cps/oauth_bb.py:323
-#, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "Napaka GitHub Oauth: {}"
 
@@ -1291,17 +1303,15 @@ msgid "Google Oauth error, please retry later."
 msgstr "Napaka Google Oauth, poskusite pozneje."
 
 #: cps/oauth_bb.py:347
-#, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Napaka Google Oauth: {}"
 
 #: cps/opds.py:284
-#, python-brace-format
 msgid "{} Stars"
 msgstr "{} zvezdic"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:131
-#: cps/templates/layout.html:173 cps/templates/login.html:4
+#: cps/remotelogin.py:76 cps/templates/layout.html:131 
+#: cps/templates/layout.html:173 cps/templates/login.html:4 
 #: cps/templates/login.html:21 cps/web.py:1403
 msgid "Login"
 msgstr "Prijava"
@@ -1338,7 +1348,7 @@ msgstr "Prikaži vroče knjige"
 msgid "Downloaded Books"
 msgstr "Prenesene knjige"
 
-#: cps/render_template.py:50 cps/render_template.py:55
+#: cps/render_template.py:50 cps/render_template.py:55 
 #: cps/templates/user_table.html:167
 msgid "Show Downloaded Books"
 msgstr "Prikaži prenesene knjige"
@@ -1351,7 +1361,7 @@ msgstr "Najbolje ocenjene knjige"
 msgid "Show Top Rated Books"
 msgstr "Prikaži najbolje ocenjene knjige"
 
-#: cps/render_template.py:61 cps/templates/index.xml:63
+#: cps/render_template.py:61 cps/templates/index.xml:63 
 #: cps/templates/index.xml:67 cps/web.py:793
 msgid "Read Books"
 msgstr "Prebrane knjige"
@@ -1360,7 +1370,7 @@ msgstr "Prebrane knjige"
 msgid "Show Read and Unread"
 msgstr "Prikaži prebrano in neprebrano"
 
-#: cps/render_template.py:65 cps/templates/index.xml:70
+#: cps/render_template.py:65 cps/templates/index.xml:70 
 #: cps/templates/index.xml:74 cps/web.py:796
 msgid "Unread Books"
 msgstr "Neprebrane knjige"
@@ -1373,12 +1383,12 @@ msgstr "Prikaži neprebrane"
 msgid "Discover"
 msgstr "Odkrivanje"
 
-#: cps/render_template.py:70 cps/templates/index.xml:58
+#: cps/render_template.py:70 cps/templates/index.xml:58 
 #: cps/templates/user_table.html:159 cps/templates/user_table.html:162
 msgid "Show Random Books"
 msgstr "Prikaži naključne knjige"
 
-#: cps/render_template.py:71 cps/templates/book_table.html:100
+#: cps/render_template.py:71 cps/templates/book_table.html:100 
 #: cps/templates/index.xml:97 cps/web.py:1181
 msgid "Categories"
 msgstr "Kategorije"
@@ -1387,8 +1397,8 @@ msgstr "Kategorije"
 msgid "Show Category Section"
 msgstr "Prikaži oddelek kategorije"
 
-#: cps/render_template.py:74 cps/templates/book_edit.html:86
-#: cps/templates/book_table.html:101 cps/templates/index.xml:106
+#: cps/render_template.py:74 cps/templates/book_edit.html:86 
+#: cps/templates/book_table.html:101 cps/templates/index.xml:106 
 #: cps/templates/search_form.html:70 cps/web.py:1071 cps/web.py:1083
 msgid "Series"
 msgstr "Serije"
@@ -1397,7 +1407,7 @@ msgstr "Serije"
 msgid "Show Series Section"
 msgstr "Prikaži razdelek serij"
 
-#: cps/render_template.py:77 cps/templates/book_table.html:99
+#: cps/render_template.py:77 cps/templates/book_table.html:99 
 #: cps/templates/index.xml:79
 msgid "Authors"
 msgstr "Avtorji"
@@ -1406,7 +1416,7 @@ msgstr "Avtorji"
 msgid "Show Author Section"
 msgstr "Prikaži razdelek avtorjev"
 
-#: cps/render_template.py:81 cps/templates/book_table.html:105
+#: cps/render_template.py:81 cps/templates/book_table.html:105 
 #: cps/templates/index.xml:88 cps/web.py:1039
 msgid "Publishers"
 msgstr "Založniki"
@@ -1415,8 +1425,8 @@ msgstr "Založniki"
 msgid "Show Publisher Section"
 msgstr "Prikaži razdelek založnikov"
 
-#: cps/render_template.py:84 cps/templates/book_table.html:103
-#: cps/templates/index.xml:115 cps/templates/search_form.html:108
+#: cps/render_template.py:84 cps/templates/book_table.html:103 
+#: cps/templates/index.xml:115 cps/templates/search_form.html:108 
 #: cps/web.py:1153
 msgid "Languages"
 msgstr "Jeziki"
@@ -1457,9 +1467,9 @@ msgstr "Seznam knjig"
 msgid "Show Books List"
 msgstr "Prikaži seznam knjig"
 
-#: cps/search.py:40 cps/search.py:416 cps/templates/book_edit.html:242
-#: cps/templates/feed.xml:34 cps/templates/index.xml:12
-#: cps/templates/layout.html:110 cps/templates/layout.html:113
+#: cps/search.py:40 cps/search.py:416 cps/templates/book_edit.html:242 
+#: cps/templates/feed.xml:34 cps/templates/index.xml:12 
+#: cps/templates/layout.html:110 cps/templates/layout.html:113 
 #: cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Iskanje"
@@ -1609,7 +1619,7 @@ msgstr "Polica: '%(name)s'"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Napaka pri odpiranju police. Polica ne obstaja ali ni dostopna"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:159
+#: cps/tasks_status.py:37 cps/templates/layout.html:159 
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Opravila"
@@ -1765,9 +1775,9 @@ msgstr "Ups! Posodobite svoj profil z veljavnim e-poštnim naslovom eReaderja."
 msgid "Please wait one minute to register next user"
 msgstr "Počakajte eno minuto za registracijo naslednjega uporabnika"
 
-#: cps/templates/layout.html:132 cps/templates/layout.html:174
-#: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1324
-#: cps/web.py:1328 cps/web.py:1333 cps/web.py:1337 cps/web.py:1343
+#: cps/templates/layout.html:132 cps/templates/layout.html:174 
+#: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1324 
+#: cps/web.py:1328 cps/web.py:1333 cps/web.py:1337 cps/web.py:1343 
 #: cps/web.py:1368 cps/web.py:1372 cps/web.py:1385 cps/web.py:1388
 msgid "Register"
 msgstr "Registriraj"
@@ -1926,13 +1936,12 @@ msgstr "Varnostno kopiranje metapodatkov"
 msgid "Generated %(count)s cover thumbnails"
 msgstr "Ustvarjene sličice naslovnic %(count)s"
 
-#: cps/tasks/thumbnail.py:220 cps/tasks/thumbnail.py:433
+#: cps/tasks/thumbnail.py:220 cps/tasks/thumbnail.py:433 
 #: cps/tasks/thumbnail.py:501
 msgid "Cover Thumbnails"
 msgstr "Sličicah naslovnice"
 
 #: cps/tasks/thumbnail.py:279
-#, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr "Ustvarjene sličice serije {0}"
 
@@ -1940,22 +1949,22 @@ msgstr "Ustvarjene sličice serije {0}"
 msgid "Clearing cover thumbnail cache"
 msgstr "Čiščenje predpomnilnika sličic naslovnice"
 
-#: cps/tasks/upload.py:28 cps/templates/admin.html:21
+#: cps/tasks/upload.py:28 cps/templates/admin.html:21 
 #: cps/templates/layout.html:151 cps/templates/user_table.html:145
 msgid "Upload"
 msgstr "Naloži"
 
 #: cps/templates/admin.html:9
 msgid "Users&nbsp;&nbsp;👤"
-msgstr ""
+msgstr "Uporabniki&nbsp;&nbsp;👤"
 
-#: cps/templates/admin.html:14 cps/templates/login.html:9
-#: cps/templates/login.html:10 cps/templates/register.html:9
+#: cps/templates/admin.html:14 cps/templates/login.html:9 
+#: cps/templates/login.html:10 cps/templates/register.html:9 
 #: cps/templates/user_edit.html:10 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Uporabniško ime"
 
-#: cps/templates/admin.html:15 cps/templates/register.html:14
+#: cps/templates/admin.html:15 cps/templates/register.html:14 
 #: cps/templates/user_edit.html:15 cps/templates/user_table.html:135
 msgid "Email"
 msgstr "E-pošta"
@@ -1964,18 +1973,18 @@ msgstr "E-pošta"
 msgid "Send to eReader Email"
 msgstr "Pošlji v e-pošto e-bralnika"
 
-#: cps/templates/admin.html:18 cps/templates/layout.html:162
+#: cps/templates/admin.html:18 cps/templates/layout.html:162 
 #: cps/templates/user_table.html:143
 msgid "Admin"
 msgstr "Administator"
 
-#: cps/templates/admin.html:19 cps/templates/login.html:13
+#: cps/templates/admin.html:19 cps/templates/login.html:13 
 #: cps/templates/login.html:14 cps/templates/user_edit.html:23
 msgid "Password"
 msgstr "Geslo"
 
-#: cps/templates/admin.html:23 cps/templates/detail.html:28
-#: cps/templates/detail.html:41 cps/templates/shelf.html:8
+#: cps/templates/admin.html:23 cps/templates/detail.html:28 
+#: cps/templates/detail.html:41 cps/templates/shelf.html:8 
 #: cps/templates/user_table.html:146
 msgid "Download"
 msgstr "Prenesi"
@@ -1984,14 +1993,14 @@ msgstr "Prenesi"
 msgid "View Books"
 msgstr "Oglejte si knjige"
 
-#: cps/templates/admin.html:25 cps/templates/book_table.html:319
+#: cps/templates/admin.html:25 cps/templates/book_table.html:319 
 #: cps/templates/user_table.html:131 cps/templates/user_table.html:148
 msgid "Edit"
 msgstr "Uredi"
 
-#: cps/templates/admin.html:26 cps/templates/book_edit.html:17
-#: cps/templates/book_table.html:135 cps/templates/book_table.html:184
-#: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
+#: cps/templates/admin.html:26 cps/templates/book_edit.html:17 
+#: cps/templates/book_table.html:135 cps/templates/book_table.html:184 
+#: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116 
 #: cps/templates/user_edit.html:82 cps/templates/user_table.html:149
 msgid "Delete"
 msgstr "Izbriši"
@@ -2002,7 +2011,7 @@ msgstr "Javna polica"
 
 #: cps/templates/admin.html:56
 msgid "Manage Profile Pictures"
-msgstr ""
+msgstr "Upravljanje profilnih slik"
 
 #: cps/templates/admin.html:58
 msgid "Import LDAP Users"
@@ -2029,7 +2038,7 @@ msgstr "Šifriranje"
 msgid "SMTP Login"
 msgstr "Prijava v SMTP"
 
-#: cps/templates/admin.html:86 cps/templates/admin.html:97
+#: cps/templates/admin.html:86 cps/templates/admin.html:97 
 #: cps/templates/email_edit.html:55
 msgid "From Email"
 msgstr "Iz e-poštnega naslova"
@@ -2044,7 +2053,7 @@ msgstr "Gmail prek Oauth2"
 
 #: cps/templates/admin.html:109
 msgid "Configuration&nbsp;&nbsp;⚙️"
-msgstr ""
+msgstr "Nastavitve⚙️"
 
 #: cps/templates/admin.html:112
 msgid "Calibre Database Directory"
@@ -2107,7 +2116,7 @@ msgstr "Urejanje nastavitev uporabniškega vmesnika"
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
 msgstr "Načrtovana opravila"
 
-#: cps/templates/admin.html:173 cps/templates/schedule_edit.html:12
+#: cps/templates/admin.html:173 cps/templates/schedule_edit.html:12 
 #: cps/templates/tasks.html:18
 msgid "Start Time"
 msgstr "Čas začetka"
@@ -2124,7 +2133,7 @@ msgstr "Ustvarjanje sličic"
 msgid "Generate series cover thumbnails"
 msgstr "Ustvarjanje sličic naslovnic serij"
 
-#: cps/templates/admin.html:189 cps/templates/admin.html:228
+#: cps/templates/admin.html:189 cps/templates/admin.html:228 
 #: cps/templates/schedule_edit.html:37
 msgid "Reconnect Calibre Database"
 msgstr "Ponovna povezava podatkovne zbirke Calibre"
@@ -2139,7 +2148,7 @@ msgstr "Osvežitev predpomnilnika sličic"
 
 #: cps/templates/admin.html:207
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
-msgstr ""
+msgstr "Skrbniške funkcije CWA ⚡"
 
 #: cps/templates/admin.html:208
 #, fuzzy
@@ -2163,15 +2172,15 @@ msgstr "epub bralnik"
 
 #: cps/templates/admin.html:214
 msgid "CWA Library Conversion Service"
-msgstr ""
+msgstr "CWA Storitev pretvorbe knjižnice"
 
 #: cps/templates/admin.html:215
 msgid "CWA Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+msgstr "CWA Storitev popravljanja datotek EPUB za pošiljanje v Kindle"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
-msgstr ""
+msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
 #, fuzzy
@@ -2232,23 +2241,23 @@ msgstr "Izvedite posodobitev"
 msgid "Are you sure you want to restart?"
 msgstr "Ali ste prepričani, da želite znova zagnati računalnik?"
 
-#: cps/templates/admin.html:295 cps/templates/admin.html:309
+#: cps/templates/admin.html:295 cps/templates/admin.html:309 
 #: cps/templates/admin.html:329 cps/templates/config_db.html:101
 msgid "OK"
 msgstr "V redu"
 
-#: cps/templates/admin.html:296 cps/templates/admin.html:310
-#: cps/templates/book_edit.html:220 cps/templates/book_table.html:166
-#: cps/templates/book_table.html:185 cps/templates/book_table.html:205
-#: cps/templates/book_table.html:225 cps/templates/book_table.html:245
-#: cps/templates/book_table.html:265 cps/templates/book_table.html:320
-#: cps/templates/book_table.html:356 cps/templates/config_db.html:85
-#: cps/templates/config_edit.html:441 cps/templates/config_view_edit.html:176
-#: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:350
-#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
-#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
-#: cps/templates/schedule_edit.html:45 cps/templates/shelf_edit.html:27
+#: cps/templates/admin.html:296 cps/templates/admin.html:310 
+#: cps/templates/book_edit.html:220 cps/templates/book_table.html:166 
+#: cps/templates/book_table.html:185 cps/templates/book_table.html:205 
+#: cps/templates/book_table.html:225 cps/templates/book_table.html:245 
+#: cps/templates/book_table.html:265 cps/templates/book_table.html:320 
+#: cps/templates/book_table.html:356 cps/templates/config_db.html:85 
+#: cps/templates/config_edit.html:441 cps/templates/config_view_edit.html:176 
+#: cps/templates/cwa_convert_library.html:23 
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:350 
+#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99 
+#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135 
+#: cps/templates/schedule_edit.html:45 cps/templates/shelf_edit.html:27 
 #: cps/templates/tasks.html:47 cps/templates/user_edit.html:159
 msgid "Cancel"
 msgstr "Prekliči"
@@ -2269,38 +2278,38 @@ msgstr "preko"
 msgid "In Library"
 msgstr "V knjižnici"
 
-#: cps/templates/author.html:26 cps/templates/index.html:74
+#: cps/templates/author.html:26 cps/templates/index.html:74 
 #: cps/templates/search.html:31 cps/templates/shelf.html:20
 msgid "Sort according to book date, newest first"
 msgstr "Razvrstite glede na datum knjige, najprej najnovejši"
 
-#: cps/templates/author.html:27 cps/templates/index.html:75
+#: cps/templates/author.html:27 cps/templates/index.html:75 
 #: cps/templates/search.html:32 cps/templates/shelf.html:21
 msgid "Sort according to book date, oldest first"
 msgstr "Razvrsti po datumu knjige, najprej najstarejši"
 
-#: cps/templates/author.html:28 cps/templates/index.html:76
+#: cps/templates/author.html:28 cps/templates/index.html:76 
 #: cps/templates/search.html:33 cps/templates/shelf.html:22
 msgid "Sort title in alphabetical order"
 msgstr "Razvrsti naslov po abecednem vrstnem redu"
 
-#: cps/templates/author.html:29 cps/templates/index.html:77
+#: cps/templates/author.html:29 cps/templates/index.html:77 
 #: cps/templates/search.html:34 cps/templates/shelf.html:23
 msgid "Sort title in reverse alphabetical order"
 msgstr "Razvrsti naslov v obratnem abecednem vrstnem redu"
 
-#: cps/templates/author.html:30 cps/templates/index.html:80
+#: cps/templates/author.html:30 cps/templates/index.html:80 
 #: cps/templates/search.html:37 cps/templates/shelf.html:26
 msgid "Sort according to publishing date, newest first"
 msgstr "Razvrsti glede na datum objave, najprej najnovejše"
 
-#: cps/templates/author.html:31 cps/templates/index.html:81
+#: cps/templates/author.html:31 cps/templates/index.html:81 
 #: cps/templates/search.html:38 cps/templates/shelf.html:27
 msgid "Sort according to publishing date, oldest first"
 msgstr "Razvrsti glede na datum objave, najprej najstarejši"
 
-#: cps/templates/author.html:56 cps/templates/author.html:113
-#: cps/templates/index.html:30 cps/templates/index.html:113
+#: cps/templates/author.html:56 cps/templates/author.html:113 
+#: cps/templates/index.html:30 cps/templates/index.html:113 
 #: cps/templates/search.html:67 cps/templates/shelf.html:58
 msgid "reduce"
 msgstr "zmanjšaj"
@@ -2337,14 +2346,14 @@ msgstr "Pretvori v:"
 msgid "Convert book"
 msgstr "Pretvori knjigo"
 
-#: cps/templates/book_edit.html:53 cps/templates/layout.html:148
+#: cps/templates/book_edit.html:53 cps/templates/layout.html:148 
 #: cps/templates/layout.html:247
 msgid "Uploading..."
 msgstr "Nalaganje..."
 
-#: cps/templates/book_edit.html:53 cps/templates/book_edit.html:256
-#: cps/templates/book_table.html:333 cps/templates/layout.html:148
-#: cps/templates/layout.html:316 cps/templates/modal_dialogs.html:34
+#: cps/templates/book_edit.html:53 cps/templates/book_edit.html:256 
+#: cps/templates/book_table.html:333 cps/templates/layout.html:148 
+#: cps/templates/layout.html:316 cps/templates/modal_dialogs.html:34 
 #: cps/templates/user_edit.html:178
 msgid "Close"
 msgstr "Zapri"
@@ -2361,7 +2370,7 @@ msgstr "Prenos opravljen, obdelujem, prosim počakajte..."
 msgid "Upload Format"
 msgstr "Nalaganje vrsta"
 
-#: cps/templates/book_edit.html:78 cps/templates/book_edit.html:331
+#: cps/templates/book_edit.html:78 cps/templates/book_edit.html:331 
 #: cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Avtor"
@@ -2378,13 +2387,13 @@ msgstr "Številka serije"
 msgid "Published Date"
 msgstr "Datum objave"
 
-#: cps/templates/book_edit.html:102 cps/templates/book_edit.html:332
-#: cps/templates/detail.html:200 cps/templates/listenmp3.html:102
+#: cps/templates/book_edit.html:102 cps/templates/book_edit.html:332 
+#: cps/templates/detail.html:200 cps/templates/listenmp3.html:102 
 #: cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Založnik"
 
-#: cps/templates/book_edit.html:106 cps/templates/detail.html:165
+#: cps/templates/book_edit.html:106 cps/templates/detail.html:165 
 #: cps/templates/listenmp3.html:69 cps/templates/user_edit.html:33
 msgid "Language"
 msgstr "Jezik"
@@ -2393,7 +2402,7 @@ msgstr "Jezik"
 msgid "Rating"
 msgstr "Ocena"
 
-#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:333
+#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:333 
 #: cps/templates/search_form.html:154
 msgid "Description"
 msgstr "Opis"
@@ -2410,7 +2419,7 @@ msgstr "Vrsta identifikatorja"
 msgid "Identifier Value"
 msgstr "Vrednost identifikatorja"
 
-#: cps/templates/book_edit.html:124 cps/templates/book_edit.html:344
+#: cps/templates/book_edit.html:124 cps/templates/book_edit.html:344 
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "Odstrani"
@@ -2430,12 +2439,12 @@ msgstr ""
 msgid "Upload Cover from Local Disk"
 msgstr "Prenesi naslovnico iz lokalnega diska"
 
-#: cps/templates/book_edit.html:149 cps/templates/search_form.html:46
+#: cps/templates/book_edit.html:149 cps/templates/search_form.html:46 
 #: cps/templates/search_form.html:167
 msgid "Yes"
 msgstr "Da"
 
-#: cps/templates/book_edit.html:150 cps/templates/search_form.html:47
+#: cps/templates/book_edit.html:150 cps/templates/search_form.html:47 
 #: cps/templates/search_form.html:168
 msgid "No"
 msgstr "Ne"
@@ -2448,10 +2457,10 @@ msgstr "Oglej si knjigo po shranjevanju"
 msgid "Fetch Metadata"
 msgstr "Pridobivanje metapodatkov"
 
-#: cps/templates/book_edit.html:219 cps/templates/config_db.html:84
-#: cps/templates/config_edit.html:440 cps/templates/config_view_edit.html:175
-#: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:44
-#: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
+#: cps/templates/book_edit.html:219 cps/templates/config_db.html:84 
+#: cps/templates/config_edit.html:440 cps/templates/config_view_edit.html:175 
+#: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:44 
+#: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41 
 #: cps/templates/user_edit.html:157
 msgid "Save"
 msgstr "Shrani"
@@ -2480,8 +2489,8 @@ msgstr "Ni najden noben rezultat! Poskusite z drugo ključno besedo."
 msgid "Source"
 msgstr "Vir:"
 
-#: cps/templates/book_table.html:12 cps/templates/book_table.html:102
-#: cps/templates/user_table.html:14 cps/templates/user_table.html:77
+#: cps/templates/book_table.html:12 cps/templates/book_table.html:102 
+#: cps/templates/user_table.html:14 cps/templates/user_table.html:77 
 #: cps/templates/user_table.html:100
 msgid "This Field is Required"
 msgstr "To polje je obvezno"
@@ -2548,7 +2557,7 @@ msgstr "Samodejna posodobitev razvrščanja po avtorju"
 msgid "Enter Title"
 msgstr "Vnesi naslov"
 
-#: cps/templates/book_table.html:96 cps/templates/config_view_edit.html:24
+#: cps/templates/book_table.html:96 cps/templates/config_view_edit.html:24 
 #: cps/templates/shelf_edit.html:8
 msgid "Title"
 msgstr "Naslov"
@@ -2612,16 +2621,16 @@ msgstr "Arhivirano"
 msgid "Read?"
 msgstr "Preberi"
 
-#: cps/templates/book_table.html:113 cps/templates/book_table.html:115
-#: cps/templates/book_table.html:117 cps/templates/book_table.html:119
-#: cps/templates/book_table.html:123 cps/templates/book_table.html:125
+#: cps/templates/book_table.html:113 cps/templates/book_table.html:115 
+#: cps/templates/book_table.html:117 cps/templates/book_table.html:119 
+#: cps/templates/book_table.html:123 cps/templates/book_table.html:125 
 #: cps/templates/book_table.html:129
 msgid "Enter "
 msgstr "Vnesi "
 
-#: cps/templates/book_table.html:152 cps/templates/book_table.html:176
-#: cps/templates/book_table.html:196 cps/templates/book_table.html:216
-#: cps/templates/book_table.html:236 cps/templates/book_table.html:256
+#: cps/templates/book_table.html:152 cps/templates/book_table.html:176 
+#: cps/templates/book_table.html:196 cps/templates/book_table.html:216 
+#: cps/templates/book_table.html:236 cps/templates/book_table.html:256 
 #: cps/templates/modal_dialogs.html:46 cps/templates/tasks.html:37
 msgid "Are you really sure?"
 msgstr "Ste res prepričani?"
@@ -2640,11 +2649,11 @@ msgstr "Združitev"
 
 #: cps/templates/book_table.html:180
 msgid "The following books will be deleted:"
-msgstr ""
+msgstr "Naslednje knjige bodo izbrisane:"
 
 #: cps/templates/book_table.html:200
 msgid "The following books will be archived:"
-msgstr ""
+msgstr "Naslednje knjige bodo arhivirane:"
 
 #: cps/templates/book_table.html:204 cps/templates/detail.html:275
 msgid "Archive"
@@ -2652,7 +2661,7 @@ msgstr "Arhiv"
 
 #: cps/templates/book_table.html:220
 msgid "The following books will be unarchived:"
-msgstr ""
+msgstr "Naslednje knjige bodo odstranjene iz arhiva:"
 
 #: cps/templates/book_table.html:224
 #, fuzzy
@@ -2661,7 +2670,7 @@ msgstr "Arhiv"
 
 #: cps/templates/book_table.html:240
 msgid "The following books will be marked read:"
-msgstr ""
+msgstr "Naslednje knjige bodo označene kot prebrane:"
 
 #: cps/templates/book_table.html:244
 #, fuzzy
@@ -2670,7 +2679,7 @@ msgstr "Označi kot neprebrano"
 
 #: cps/templates/book_table.html:260
 msgid "The following books will be marked unread:"
-msgstr ""
+msgstr "Naslednje knjige bodo označene kot neprebrane:"
 
 #: cps/templates/book_table.html:264
 #, fuzzy
@@ -2683,7 +2692,7 @@ msgstr "Urejanje metapodatkov"
 
 #: cps/templates/book_table.html:279
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
-msgstr ""
+msgstr "Uredite polja, ki jih želite spremeniti. Prazna polja bodo prezrta:"
 
 #: cps/templates/book_table.html:334
 #, fuzzy
@@ -2692,13 +2701,13 @@ msgstr "Ustvari polico"
 
 #: cps/templates/book_table.html:337
 msgid "Please select a shelf to add the selected books to:"
-msgstr ""
+msgstr "Izberite polico, na katero želite dodati izbrane knjige:"
 
 #: cps/templates/book_table.html:339
 msgid "-- Select a Shelf --"
 msgstr ""
 
-#: cps/templates/book_table.html:357 cps/templates/email_edit.html:81
+#: cps/templates/book_table.html:357 cps/templates/email_edit.html:81 
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
 msgid "Add"
 msgstr "Dodaj"
@@ -2712,15 +2721,15 @@ msgstr "Lokacija podatkovne zbirke Calibre"
 msgid ""
 "CWA is configured so that your Calibre Database (<code>metadata.db</code> "
 "file) should always be somewhere in <code>/calibre-library</code>.\n"
-"        CWA automatically searches whatever directory you've bound to <code>/"
-"calibre-library</code> in your docker-compose file for existing Calibre\n"
+"        CWA automatically searches whatever directory you've bound to <code>"
+"/calibre-library</code> in your docker-compose file for existing Calibre\n"
 "        Libraries/metadata.db files on start up. If it finds just one "
 "exisitng library, it mounts it automatically, if it find multiple, by "
 "default\n"
 "        it will mount the largest one automatically and if it doesn't find "
 "any, it will automatically create and mount a new one. For more details,\n"
-"        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
-"wiki/Configuration#database-configuration\">see here</a>!\n"
+"        <a href=\"https://github.com/crocodilestick/Calibre-Web-"
+"Automated/wiki/Configuration#database-configuration\">see here</a>!\n"
 "        <br><br>\n"
 "        Therefore, when configuring your docker-compose file for CWA, <b>DO "
 "NOT CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!"
@@ -2737,16 +2746,40 @@ msgid ""
 "        E.g. As long as your library's <code>metadata.db</code> file is "
 "bound somewhere within <code>/calibre-library</code>, you could bind the "
 "dir\n"
-"        containing the corrisponding book files ect. to something like "
-"<code>/books</code> and enter <code>/books</code> in the field that pops up "
-"below\n"
+"        containing the corrisponding book files ect. to something like <code>"
+"/books</code> and enter <code>/books</code> in the field that pops up below\n"
 "        once you've checked the <b>Seperate Book Files from Library</b> "
 "option."
 msgstr ""
+"CWA je konfiguriran tako, da mora biti vaša zbirka podatkov Calibre "
+"(datoteka <code>metadata.db</code>) vedno nekje v <code>/calibre-"
+"library</code>.\n"
+"CWA ob zagonu samodejno preišče kateri koli imenik, ki ste ga povezali z "
+"<code>/calibre-library</code> v datoteki docker-compose, za obstoječe "
+"datoteke Calibre Libraries/metadata.db. Če najde samo eno obstoječo "
+"knjižnico, jo samodejno priklopi, če jih najde več, privzeto samodejno "
+"priklopi največjo, če pa ne najde nobene, samodejno ustvari in priklopi novo."
+" Za več podrobnosti si oglejte <a href=\"https://github."
+"com/crocodilestick/Calibre-Web-Automated/wiki/Configuration#database-"
+"configuration\">tukaj</a>!\n"
+"<br><br>\n"
+"Zato pri konfiguriranju datoteke docker-compose za CWA <b>NE SPREMINJAJTE "
+"POTI V RAZDELKU VOLUMES NA DESNI STRANI DVOPIJ!</b>\n"
+"Te poti so notranje samo za CWA, na levi strani lahko poljubno spremenite, "
+"na kaj so vezane, vendar ni razloga, da bi spreminjali poti na desni strani."
+"<br><br>Če želite, da je vaša datoteka <code>metadata.db</code> na drugi "
+"lokaciji kot preostali del vaše knjižnice, uporabite spodnjo možnost <b>Loči "
+"datoteke knjig od knjižnice in tam vnesite pot do preostale knjižnice</b>\n"
+"<br><br>\n"
+"Npr. Dokler je datoteka <code>metadata.db</code> vaše knjižnice vezana nekje "
+"znotraj <code>/calibre-library</code>, lahko vežete imenik, ki vsebuje "
+"ustrezne datoteke knjig itd. na nekaj takega kot <code>/books</code> in v "
+"spodnje polje vnesite <code>/books</code>, ko označite možnost <b>Loči "
+"knjižne datoteke iz knjižnice</b>."
 
 #: cps/templates/config_db.html:37
 msgid "Split Library Functionality"
-msgstr ""
+msgstr "Funkcionalnost razdeljene knjižnice"
 
 #: cps/templates/config_db.html:40
 msgid ""
@@ -2754,6 +2787,9 @@ msgid ""
 "should remain in <code>/calibre-library</code>, however your library files "
 "can be wherever you desire"
 msgstr ""
+"<b>Ločite datoteke knjig od knjižnice</b> - datoteka <code>metadata.db</code>"
+" naj ostane v <code>/calibre-library</code>, vendar so lahko datoteke vaše "
+"knjižnice kjer koli želite"
 
 #: cps/templates/config_db.html:53
 msgid "Use Google Drive?"
@@ -2844,11 +2880,12 @@ msgstr ""
 
 #: cps/templates/config_edit.html:108
 msgid ""
-"Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/"
-"Kepubify binaries)"
+"Embed Metadata to Ebook File on Download/Conversion/e-mail (needs "
+"Calibre/Kepubify binaries)"
 msgstr ""
-"Vstavljanje metapodatkov v datoteko e-knjige ob prenosu/pretvorbi/"
-"elektronski pošti (potrebujete binarne datoteke Calibre/Kepubify)"
+"Vstavljanje metapodatkov v datoteko e-knjige ob "
+"prenosu/pretvorbi/elektronski pošti (potrebujete binarne datoteke "
+"Calibre/Kepubify)"
 
 #: cps/templates/config_edit.html:112
 msgid "Enable Uploads"
@@ -2893,6 +2930,8 @@ msgstr "Zunanja vrata strežnika (za posredovane klice API)"
 #: cps/templates/config_edit.html:154
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr ""
+"Sinhronizacija napredka branja Kobo s knjigo (zahteva ključ API za "
+"uporabnika)"
 
 #: cps/templates/config_edit.html:161
 msgid "Use Goodreads"
@@ -2909,7 +2948,7 @@ msgstr "Omogoči sinhronizacijo s Kobo"
 
 #: cps/templates/config_edit.html:176
 msgid "Hardcover API Key"
-msgstr ""
+msgstr "Hardcover API ključ"
 
 #: cps/templates/config_edit.html:182
 msgid "Allow Reverse Proxy Authentication"
@@ -3155,6 +3194,8 @@ msgid ""
 "Default Theme (users can select their own preferred theme however new users "
 "will receive this theme by default)"
 msgstr ""
+"Privzeta tema (uporabniki lahko izberejo svojo želeno temo, vendar bodo novi "
+"uporabniki to temo privzeto prejeli)"
 
 #: cps/templates/config_view_edit.html:42
 msgid "Standard Theme"
@@ -3169,6 +3210,8 @@ msgid ""
 "Per-user theme switching enabled; this global default only affects new users "
 "& anonymous"
 msgstr ""
+"Preklapljanje tem za posamezne uporabnike je omogočeno; ta globalna privzeta "
+"nastavitev vpliva samo na nove uporabnike in anonimne uporabnike."
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
@@ -3234,7 +3277,7 @@ msgstr "Privzet vidni jezik knjig"
 msgid "Default Visibilities for New Users"
 msgstr "Privzete vidnosti za nove uporabnike"
 
-#: cps/templates/config_view_edit.html:164 cps/templates/user_edit.html:99
+#: cps/templates/config_view_edit.html:164 cps/templates/user_edit.html:99 
 #: cps/templates/user_table.html:154
 msgid "Show Random Books in Detail View"
 msgstr "Prikaži naključne knjige v podrobnem pogledu"
@@ -3247,28 +3290,28 @@ msgstr "Dodajanje oznak dovoljeno/zavrnjeno"
 msgid "Add Allowed/Denied custom column values"
 msgstr "Dodajanje vrednosti stolpca dovoljeno/zavrnjeno po meri"
 
-#: cps/templates/cwa_convert_library.html:10
+#: cps/templates/cwa_convert_library.html:10 
 #: cps/templates/cwa_epub_fixer.html:10
 #, fuzzy
 msgid "Run Archive"
 msgstr "Arhiv"
 
-#: cps/templates/cwa_convert_library.html:11
+#: cps/templates/cwa_convert_library.html:11 
 #: cps/templates/cwa_epub_fixer.html:11 cps/templates/cwa_read_log.html:9
 #, fuzzy
 msgid "Download Log"
 msgstr "Prenesi"
 
-#: cps/templates/cwa_convert_library.html:24
+#: cps/templates/cwa_convert_library.html:24 
 #: cps/templates/cwa_epub_fixer.html:24 cps/templates/index.xml:7
 msgid "Start"
 msgstr "Začetek"
 
-#: cps/templates/cwa_stats.html:43 cps/templates/cwa_stats.html:65
-#: cps/templates/cwa_stats.html:87 cps/templates/cwa_stats.html:106
+#: cps/templates/cwa_stats.html:43 cps/templates/cwa_stats.html:65 
+#: cps/templates/cwa_stats.html:87 cps/templates/cwa_stats.html:106 
 #: cps/templates/cwa_stats.html:130 cps/templates/cwa_stats.html:149
 msgid "Click to See More"
-msgstr ""
+msgstr "Kliknite za ogled več"
 
 #: cps/templates/detail.html:85 cps/templates/detail.html:99
 msgid "Read in Browser"
@@ -3301,7 +3344,7 @@ msgstr "Označite knjigo kot prebrano ali neprebrano"
 
 #: cps/templates/detail.html:262 cps/templates/listenmp3.html:159
 msgid "Read"
-msgstr "Preberi"
+msgstr "Prebrano"
 
 #: cps/templates/detail.html:272 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
@@ -3323,14 +3366,14 @@ msgstr ""
 msgid "Description:"
 msgstr "Opis:"
 
-#: cps/templates/detail.html:301 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:301 cps/templates/listenmp3.html:190 
 #: cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "Dodaj na polico"
 
-#: cps/templates/detail.html:313 cps/templates/detail.html:332
-#: cps/templates/feed.xml:81 cps/templates/layout.html:267
-#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/detail.html:313 cps/templates/detail.html:332 
+#: cps/templates/feed.xml:81 cps/templates/layout.html:267 
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218 
 #: cps/templates/search.html:22
 msgid "(Public)"
 msgstr "(Javno)"
@@ -3375,7 +3418,7 @@ msgstr "Omejitev velikosti priloge"
 msgid "Save and Send Test Email"
 msgstr "Shrani in pošlji testno e-pošto"
 
-#: cps/templates/email_edit.html:70 cps/templates/layout.html:90
+#: cps/templates/email_edit.html:70 cps/templates/layout.html:90 
 #: cps/templates/shelf_order.html:42 cps/templates/user_table.html:174
 msgid "Back"
 msgstr "Nazaj"
@@ -3402,8 +3445,8 @@ msgstr "Naslednji"
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""
-"Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or "
-"edit):"
+"Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or edit)"
+":"
 msgstr ""
 "V urejevalniku besedila odprite datoteko .kobo/Kobo/Kobo eReader.conf in "
 "dodajte (ali uredite):"
@@ -3443,12 +3486,12 @@ msgstr "Razvrsti naraščajoče glede na število prenosov"
 msgid "Sort descending according to download count"
 msgstr "Razvrsti padajoče glede na število prenosov"
 
-#: cps/templates/index.html:78 cps/templates/search.html:35
+#: cps/templates/index.html:78 cps/templates/search.html:35 
 #: cps/templates/shelf.html:24
 msgid "Sort authors in alphabetical order"
 msgstr "Razvrsti avtorje po abecednem vrstnem redu"
 
-#: cps/templates/index.html:79 cps/templates/search.html:36
+#: cps/templates/index.html:79 cps/templates/search.html:36 
 #: cps/templates/shelf.html:25
 msgid "Sort authors in reverse alphabetical order"
 msgstr "Razvrsti avtorje v obratnem abecednem vrstnem redu"
@@ -3517,7 +3560,7 @@ msgstr "Knjige, razvrščene po oceni"
 msgid "Books ordered by file formats"
 msgstr "Knjige, razvrščene po vrstah datotek"
 
-#: cps/templates/index.xml:142 cps/templates/layout.html:265
+#: cps/templates/index.xml:142 cps/templates/layout.html:265 
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Police"
@@ -3551,7 +3594,7 @@ msgstr "Odjava"
 msgid "Switch Theme"
 msgstr "Standardna tema"
 
-#: cps/templates/layout.html:162 cps/templates/read.html:78
+#: cps/templates/layout.html:162 cps/templates/read.html:78 
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
@@ -3564,11 +3607,11 @@ msgstr "Iskanje po knjižnici"
 
 #: cps/templates/layout.html:205
 msgid "See Changelog"
-msgstr ""
+msgstr "Poglej dnevnik sprememb"
 
 #: cps/templates/layout.html:215
 msgid "Contribute here!"
-msgstr ""
+msgstr "Prispevajte tukaj!"
 
 #: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
@@ -3986,7 +4029,7 @@ msgstr "Datum objave do"
 
 #: cps/templates/search_form.html:42
 msgid "Read Status"
-msgstr "Preberi stanje"
+msgstr "Stanje branje"
 
 #: cps/templates/search_form.html:44 cps/templates/search_form.html:165
 msgid "Any"
@@ -4028,12 +4071,12 @@ msgstr "Zgornja ocena"
 msgid "Rating Below"
 msgstr "Spodnja ocena"
 
-#: cps/templates/search_form.html:175 cps/templates/search_form.html:187
+#: cps/templates/search_form.html:175 cps/templates/search_form.html:187 
 #: cps/templates/search_form.html:201
 msgid "From:"
 msgstr "Od:"
 
-#: cps/templates/search_form.html:179 cps/templates/search_form.html:191
+#: cps/templates/search_form.html:179 cps/templates/search_form.html:191 
 #: cps/templates/search_form.html:211
 msgid "To:"
 msgstr "Za:"
@@ -4190,7 +4233,7 @@ msgstr "Odklop povezave"
 
 #: cps/templates/user_edit.html:74
 msgid "Hardcover API token"
-msgstr ""
+msgstr "Hardcover API žeton"
 
 #: cps/templates/user_edit.html:79
 msgid "Kobo Sync Token"
@@ -4307,103 +4350,3 @@ msgstr "Usklajevanje izbrane police s Kobo"
 #: cps/templates/user_table.html:156
 msgid "Show Read/Unread Section"
 msgstr "Prikaži razdelek Prebrano/neprebrano"
-
-#, fuzzy, python-format
-#~ msgid "%(seriesindex)s is not a valid number, skipping"
-#~ msgstr "Številka serije: %(seriesindex)s ni veljavno število, preskočim"
-
-#, fuzzy
-#~ msgid "Calibre-Web Automated Stats"
-#~ msgstr "Dnevnik Calibre-Web:"
-
-#~ msgid "Calibre-Web configuration updated"
-#~ msgstr "Posodobljena nastavitev Calibre-Web"
-
-#~ msgid ""
-#~ "Are you sure you want delete Calibre-Web's sync database to force a full "
-#~ "sync with your Kobo Reader?"
-#~ msgstr ""
-#~ "Ali ste prepričani, da želite izbrisati sinhronizacijsko podatkovno bazo "
-#~ "Calibre-Web, da bi vsilili popolno sinhronizacijo z bralnikom Kobo?"
-
-#~ msgid "Calibre-Web Test Email"
-#~ msgstr "Testna e-pošta Calibre-Web"
-
-#~ msgid "This Email has been sent via Calibre-Web."
-#~ msgstr "To e-poštno sporočilo je bilo poslano prek programa Calibre-Web."
-
-#~ msgid "Get Started with Calibre-Web"
-#~ msgstr "Začnite s programom Calibre-Web"
-
-#~ msgid ""
-#~ "Please access Calibre-Web from non localhost to get valid api_endpoint "
-#~ "for kobo device"
-#~ msgstr ""
-#~ "Dostopajte do Calibre-Web z nelokalnega gostitelja, da pridobite veljavno "
-#~ "api_endpoint za napravo kobo"
-
-#~ msgid ""
-#~ "Calibre-Web will search for updated Covers and update Cover Thumbnails, "
-#~ "this may take a while?"
-#~ msgstr ""
-#~ "Calibre-Web bo poiskal posodobljene naslovnice in posodobil sličice "
-#~ "naslovnic, kar lahko traja nekaj časa."
-
-#, fuzzy
-#~ msgid "This Email has been sent via  Autmoated."
-#~ msgstr "To e-poštno sporočilo je bilo poslano prek programa Calibre-Web."
-
-#, fuzzy
-#~ msgid "This Email has been sent via  Automated."
-#~ msgstr "To e-poštno sporočilo je bilo poslano prek programa Calibre-Web."
-
-#, fuzzy
-#~ msgid "Downloads per User"
-#~ msgstr "Prenosi"
-
-#, fuzzy
-#~ msgid "This Email has been sent via  Autoated."
-#~ msgstr "To e-poštno sporočilo je bilo poslano prek programa Calibre-Web."
-
-#, fuzzy
-#~ msgid "unknown error"
-#~ msgstr "Napaka povezave"
-
-#, fuzzy
-#~ msgid "Could not open file {filename!r}: {message}"
-#~ msgstr "Ni se mogel prijaviti: %(message)s"
-
-#, fuzzy
-#~ msgid "{value!r} is not a valid boolean."
-#~ msgstr "E-pošta ni iz veljavne domene"
-
-#, fuzzy
-#~ msgid "directory"
-#~ msgstr "Smer"
-
-#, fuzzy
-#~ msgid "{name} {filename!r} is not writable."
-#~ msgstr "Binarne datoteke Calibre niso izvedljive"
-
-#, fuzzy
-#~ msgid "Repeat for confirmation"
-#~ msgstr "Nastavitve funkcij"
-
-#, fuzzy
-#~ msgid "Value must be an iterable."
-#~ msgstr "Vrednost mora biti true ali false"
-
-#~ msgid "Users"
-#~ msgstr "Uporabniki"
-
-#~ msgid "Configuration"
-#~ msgstr "Nastavitev"
-
-#~ msgid "Click the cover to load metadata to the form"
-#~ msgstr "Klikni na naslovnico, da se v obrazec naložijo metapodatki."
-
-#~ msgid "Series Index"
-#~ msgstr "Številka serije"
-
-#~ msgid "Separate Book Files from Library"
-#~ msgstr "Loči knjižne datoteke od knjižnice"

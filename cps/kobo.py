@@ -155,14 +155,15 @@ def HandleSyncRequest():
     
 
     # Two-Way-Sync Deletion Logic
+    if current_user.kobo_only_shelves_sync:
     try:
-        # Check all books that are on Kobo according to the database.
+        # Check all books that are on Kobo according to the database
         synced_books_query = ub.session.query(ub.KoboSyncedBooks.book_id).filter(ub.KoboSyncedBooks.user_id == current_user.id)
         synced_book_ids = {item.book_id for item in synced_books_query}
 
         # Check all books currently on a Kobo Sync shelf
         allowed_books_query = (ub.session.query(ub.BookShelf.book_id)
-                               .join(ub.Shelf, ub.BookShelf.shelf_id == ub.Shelf.id)
+                               .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id) # KORRIGIERTE ZEILE
                                .filter(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True))
         allowed_book_ids = {item.book_id for item in allowed_books_query}
 
@@ -183,7 +184,7 @@ def HandleSyncRequest():
                     }
                     sync_results.append({"ChangedEntitlement": entitlement})
 
-             # Remove all books from the tracking table in one go
+            # Remove all books from the tracking table in one go
             if books_to_delete_ids:
                 ub.session.query(ub.KoboSyncedBooks).filter(
                     ub.KoboSyncedBooks.user_id == current_user.id,

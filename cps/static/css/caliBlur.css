@@ -1,3 +1,9 @@
+/* Calibre-Web Automated – fork of Calibre-Web
+Copyright (C) 2018-2025 Calibre-Web contributors
+Copyright (C) 2024-2025 Calibre-Web Automated contributors
+SPDX-License-Identifier: GPL-3.0-or-later
+See CONTRIBUTORS for full list of authors. */
+
 .form-control, .home-btn, .home-btn > a, body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
     font-variant-caps: normal;
     font-variant-numeric: normal;
@@ -1078,12 +1084,12 @@ span.hidden-sm.top_admin {
     outline: 0;
     -webkit-box-shadow: none;
     box-shadow: none;
-    background: #eee !important;
-    color: #555
+    background: #1e2b34 !important;
+    color: whitesmoke;
 }
 
 .form-control.tt-hint {
-    background: hsla(0, 0%, 100%, .25) !important
+    background: hsla(0, 0%, 100%, 0.90) !important
 }
 
 body > div.navbar.navbar-default.navbar-static-top > div > form > div > span > button:before {

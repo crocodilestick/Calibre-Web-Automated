@@ -939,7 +939,7 @@ def HandleBookDeletionRequest(book_uuid):
     if not book:
         log.info("Book %s not found in database", book_uuid)
         return redirect_or_proxy_request()
-
+    book_id = book.id
     if not current_user.kobo_only_shelves_sync and current_user.check_visibility(32768):
         kobo_sync_status.change_archived_books(book_id, True)
     kobo_sync_status.remove_synced_book(book_id)

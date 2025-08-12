@@ -17,7 +17,6 @@ from . import config, constants, logger, ub
 from .ub import User
 
 # CWA specific imports
-import requests
 from datetime import datetime
 import os.path
 
@@ -108,10 +107,12 @@ def get_sidebar_config(kwargs=None):
 # Checks if an update for CWA is available, returning True if yes
 def cwa_update_available() -> tuple[bool, str, str]:
     try:
-        with open("/app/CWA_RELEASE", 'r') as f:
-            current_version = f.read().strip()
-        response = requests.get("https://api.github.com/repos/crocodilestick/calibre-web-automated/releases/latest", timeout=3)
-        tag_name = response.json().get('tag_name', current_version)
+        current_version = constants.INSTALLED_VERSION
+        tag_name = constants.STABLE_VERSION
+
+        if current_version == "V0.0.0" or tag_name == "V0.0.0":
+            return False, "0.0.0", "0.0.0"
+
         return (tag_name != current_version), current_version, tag_name
     except Exception as e:
         print(f"[cwa-update-notification-service] Error checking for CWA updates: {e}", flush=True)

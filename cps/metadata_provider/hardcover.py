@@ -1,3 +1,4 @@
+"""
 # -*- coding: utf-8 -*-
 # Calibre-Web Automated – fork of Calibre-Web
 # Copyright (C) 2018-2025 Calibre-Web contributors
@@ -8,6 +9,7 @@
 # Version from AutoCaliWeb - Optimized by - gelbphoenix & UsamaFoad
 
 # Hardcover api document: https://Hardcover.gamespot.com/api/documentation
+"""
 from typing import Dict, List, Optional, Union
 
 import requests
@@ -29,9 +31,7 @@ except Exception:  # pragma: no cover - CLI/testing path
             _log = _logging.getLogger("hardcover")
             if not _log.handlers:
                 _h = _logging.StreamHandler()
-                _h.setFormatter(
-                    _logging.Formatter("%(levelname)s:%(name)s:%(message)s")
-                )
+                _h.setFormatter(_logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
                 _log.addHandler(_h)
                 _log.setLevel(_logging.INFO)
             return _log
@@ -39,7 +39,7 @@ except Exception:  # pragma: no cover - CLI/testing path
     logger = _FallbackLogger()  # type: ignore
 
     class _FallbackConfig:
-        config_hardcover_api_token: Optional[str] = None
+        config_hardcover_token: Optional[str] = None
 
     config = _FallbackConfig()  # type: ignore
 
@@ -48,7 +48,7 @@ except Exception:  # pragma: no cover - CLI/testing path
 
     constants = _FallbackConstants()  # type: ignore
 
-    # Minimal stand-in for Metadata/MetaRecord to allow CLI runs
+    # Minimal stand-ins for CLI runs
     @dataclass
     class MetaSourceInfo:  # type: ignore
         id: str
@@ -91,147 +91,113 @@ except Exception:  # pragma: no cover - CLI/testing path
 
 log = logger.create()
 
+
 class Hardcover(Metadata):
     __name__ = "Hardcover"
     __id__ = "hardcover"
-    DESCRIPTION = "Hardcover Books"
-    META_URL = "https://hardcover.app"
+    DESCRIPTION = "Hardcover"
+    META_URL = "https://hardcover.app/"
     BASE_URL = "https://api.hardcover.app/v1/graphql"
-    SEARCH_QUERY = """query Search($query: String!) {
-        search(query: $query, query_type: "Book", per_page: 50) {
-            results
-        }
-    }
-    """
-    EDITION_QUERY = """query getEditions($query: Int!) {
-        books(
-            where: { id: { _eq: $query } }
-            order_by: { users_read_count: desc_nulls_last }
-        ) {
-            title
-            slug
-            id
-            
-            book_series {
-                series {
-                    name
-                }
-                position
-            }
-            rating
-            editions(
-                where: {
-                    _or: [{ reading_format_id: { _neq: 2 } }, { edition_format: { _is_null: true } }]
-                }
-                order_by: [{ reading_format_id: desc_nulls_last },{users_count: desc_nulls_last }]
-            ) {
-                id
-                isbn_13
-                isbn_10
-                title
-                reading_format_id
-                contributions {
-                    author {
-                        name
-                    }
-                }
-                image {
-                    url
-                }
-                language {
-                    code3
-                }
-                publisher {
-                    name
-                }
-                release_date
-                
-            }
-            description
-            cached_tags(path: "Genre")
-        }
-    }
-    """
     HEADERS = {
         "Content-Type": "application/json",
         "User-Agent": constants.USER_AGENT,
     }
-    FORMATS = ["","Physical Book","","","E-Book"] # Map reading_format_id to text equivalent
+    # reading_format_id mapping (indices observed in API). Leave blanks for unknowns to keep indices aligned.
+    FORMATS = ["", "Physical Book", "", "", "E-Book"]
+
+    # Results is a scalar JSON string; we decode client-side.
+    SEARCH_QUERY = (
+        "query SearchBooks($query: String!) { "
+        "search(query: $query, query_type: \"Book\", per_page: 50) { results } "
+        "}"
+    )
+
+    EDITION_QUERY = (
+        "query BookEditions($query: Int!) { "
+        "books(where: {id: {_eq: $query}}) { "
+        "  id slug description "
+        "  book_series { position series { name } } "
+        "  cached_tags(path: \"Genre\") { tag } "
+        "  editions { "
+        "    id title release_date isbn_13 isbn_10 reading_format_id "
+        "    image { url } "
+        "    language { code3 } "
+        "    publisher { name } "
+        "    contributions { author { name } } "
+        "  } "
+        "} }"
+    )
 
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
-        val = list()
-        if self.active:
-            try:
-                token = (current_user.hardcover_token or config.config_hardcover_api_token or getenv("HARDCOVER_TOKEN"))
-                if not token:
-                    self.set_status(False)
-                    raise Exception("Hardcover token not set for user, and no global token provided.")
-                edition_search = query.split(":")[0] == "hardcover-id"
-                Hardcover.HEADERS["Authorization"] = "Bearer %s" % token.replace("Bearer ","")
-                result = requests.post(
-                    Hardcover.BASE_URL,
-                    json={
-                        "query":Hardcover.SEARCH_QUERY if not edition_search else Hardcover.EDITION_QUERY,
-                        "variables":{
-                            "query": query if not edition_search else int(query.split(":")[1])
-                        }
-                    },
-                    headers=Hardcover.HEADERS,
-                )
-                result.raise_for_status()
-                response_data = result.json()
-                
-                # Check for GraphQL errors  
-                if "errors" in response_data:  
-                    log.error(f"GraphQL errors: {response_data['errors']}")  
-                    return []
-                    
-                # Validate response structure  
-                if "data" not in response_data:  
-                    log.warning("Invalid response structure: missing 'data' field")  
-                    return []  
+        val: List[MetaRecord] = []
+        if not self.active:
+            return val
 
-            except requests.exceptions.RequestException as e:  
-                log.warning(f"HTTP request failed: {e}")  
-                return []  
-            except ValueError as e:  
-                log.warning(f"JSON parsing failed: {e}")  
-                return []  
-            except Exception as e:
-                log.warning(f"Unexpected error: {e}")
-                return [] # Return empty list instead of None
+        token = (
+            getattr(current_user, "hardcover_token", None)
+            or getattr(config, "config_hardcover_token", None)
+            or getenv("HARDCOVER_TOKEN")
+        )
+        if not token:
+            log.warning("Hardcover token missing; set a user token or global token to enable results.")
+            return []
 
-            # Process results with error handling
-            try:
-                if edition_search:
-                    books_data = self._safe_get(response_data, "data", "books", default=[])
-                    if books_data:
-                        result = books_data[0]
-                        val = self._parse_edition_results(result=result, generic_cover=generic_cover, locale=locale)
-                else:
-                    raw_results = self._safe_get(response_data, "data", "search", "results", default=[])
-                    # Hardcover may return a JSON string in results; handle both string and dict
-                    try:
-                        if isinstance(raw_results, str):
-                            import json as _json
-                            parsed = _json.loads(raw_results)
-                        else:
-                            parsed = raw_results
-                    except Exception as _:
-                        parsed = []
+        try:
+            edition_search = query.split(":")[0] == "hardcover-id"
+            Hardcover.HEADERS["Authorization"] = "Bearer %s" % token.replace("Bearer ", "")
+            resp = requests.post(
+                Hardcover.BASE_URL,
+                json={
+                    "query": Hardcover.EDITION_QUERY if edition_search else Hardcover.SEARCH_QUERY,
+                    "variables": {"query": int(query.split(":")[1]) if edition_search else query},
+                },
+                headers=Hardcover.HEADERS,
+            )
+            resp.raise_for_status()
+            response_data = resp.json()
 
-                    search_hits = self._safe_get(parsed, "hits", default=[])
-                    for result in search_hits:
-                        match = self._parse_title_result(
-                            result=result, generic_cover=generic_cover, locale=locale
-                        )
-                        if match:  # Only add valid results
-                            val.append(match)
-            except Exception as e:
-                log.warning(f"Error processing results: {e}")
+            if "errors" in response_data:
+                log.error(f"GraphQL errors: {response_data['errors']}")
                 return []
+            if "data" not in response_data:
+                log.warning("Invalid response structure: missing 'data' field")
+                return []
+        except requests.exceptions.RequestException as e:
+            log.warning(f"HTTP request failed: {e}")
+            return []
+        except ValueError as e:
+            log.warning(f"JSON parsing failed: {e}")
+            return []
+        except Exception as e:
+            log.warning(f"Unexpected error: {e}")
+            return []
+
+        try:
+            if edition_search:
+                books_data = self._safe_get(response_data, "data", "books", default=[])
+                if books_data:
+                    book = books_data[0]
+                    val = self._parse_edition_results(result=book, generic_cover=generic_cover, locale=locale)
+            else:
+                raw_results = self._safe_get(response_data, "data", "search", "results", default=[])
+                if isinstance(raw_results, str):
+                    import json as _json
+                    try:
+                        parsed = _json.loads(raw_results)
+                    except Exception:
+                        parsed = []
+                else:
+                    parsed = raw_results
+
+                for hit in self._safe_get(parsed, "hits", default=[]):
+                    match = self._parse_title_result(result=hit, generic_cover=generic_cover, locale=locale)
+                    if match:
+                        val.append(match)
+        except Exception as e:
+            log.warning(f"Error processing results: {e}")
+            return []
 
         return val
 
@@ -260,7 +226,6 @@ class Hardcover(Metadata):
                 series=series,
             )
 
-            # Safe cover image access
             image_data = self._safe_get(document, "image", default={})
             match.cover = self._safe_get(image_data, "url", default=generic_cover)
 
@@ -270,7 +235,7 @@ class Hardcover(Metadata):
             match.tags = self._safe_get(document, "genres", default=[])
             match.identifiers = {
                 "hardcover-id": match.id,
-                "hardcover-slug": self._safe_get(document, "slug", default="")
+                "hardcover-slug": self._safe_get(document, "slug", default=""),
             }
             return match
         except Exception as e:
@@ -280,35 +245,34 @@ class Hardcover(Metadata):
     def _parse_edition_results(
         self, result: Dict, generic_cover: str, locale: str
     ) -> List[MetaRecord]:
-        editions = list()
-        id = result.get("id","")
-        for edition in result["editions"]:
+        editions: List[MetaRecord] = []
+        book_id = result.get("id", "")
+        for edition in result.get("editions", []) or []:
             match = MetaRecord(
-                id=id,
-                title=edition.get("title",""),
-                authors=self._parse_edition_authors(edition,[]),
+                id=book_id,
+                title=edition.get("title", ""),
+                authors=self._parse_edition_authors(edition, []),
                 url=self._parse_edition_url(result, edition, ""),
                 source=MetaSourceInfo(
                     id=self.__id__,
                     description=Hardcover.DESCRIPTION,
                     link=Hardcover.META_URL,
                 ),
-                series=(result.get("book_series") or [{}])[0].get("series",{}).get("name", ""),
+                series=(result.get("book_series") or [{}])[0].get("series", {}).get("name", ""),
             )
             match.cover = (edition.get("image") or {}).get("url", generic_cover)
-            match.description = result.get("description","")
-            match.publisher = (edition.get("publisher") or {}).get("name","")
+            match.description = result.get("description", "")
+            match.publisher = (edition.get("publisher") or {}).get("name", "")
             match.publishedDate = edition.get("release_date", "")
             match.series_index = (result.get("book_series") or [{}])[0].get("position", "")
-            match.tags = self._parse_tags(result,[])
-            match.languages = self._parse_languages(edition,locale)
+            match.tags = self._parse_tags(result, [])
+            match.languages = self._parse_languages(edition, locale)
             match.identifiers = {
-                "hardcover-id": id,
+                "hardcover-id": book_id,
                 "hardcover-slug": result.get("slug", ""),
-                "hardcover-edition": edition.get("id",""),
-                "isbn": (edition.get("isbn_13",edition.get("isbn_10")) or "")
+                "hardcover-edition": edition.get("id", ""),
             }
-            isbn = edition.get("isbn_13",edition.get("isbn_10"))
+            isbn = edition.get("isbn_13", edition.get("isbn_10"))
             if isbn:
                 match.identifiers["isbn"] = isbn
             rf_id = edition.get("reading_format_id")
@@ -321,20 +285,18 @@ class Hardcover(Metadata):
 
     @staticmethod
     def _parse_title_url(result: Dict, url: str) -> str:
-        # Use safe access instead of direct dictionary access  
-        document = result.get("document", {})  
-        hardcover_slug = document.get("slug", "")  
-        if hardcover_slug:  
-            return f"https://hardcover.app/books/{hardcover_slug}"  
+        document = result.get("document", {})
+        hardcover_slug = document.get("slug", "")
+        if hardcover_slug:
+            return f"https://hardcover.app/books/{hardcover_slug}"
         return url
-
 
     @staticmethod
     def _parse_edition_url(result: Dict, edition: Dict, url: str) -> str:
-        edition = edition.get("id", "")
-        slug = result.get("slug","")
-        if edition:
-            return f"https://hardcover.app/books/{slug}/editions/{edition}"
+        edition_id = edition.get("id", "")
+        slug = result.get("slug", "")
+        if edition_id:
+            return f"https://hardcover.app/books/{slug}/editions/{edition_id}"
         return url
 
     @staticmethod
@@ -343,14 +305,13 @@ class Hardcover(Metadata):
             contributions = edition.get("contributions", [])
             if not isinstance(contributions, list):
                 return authors
-
-            result = []
+            result_authors: List[str] = []
             for contrib in contributions:
                 if isinstance(contrib, dict) and "author" in contrib:
-                    author_data = contrib["author"]
+                    author_data = contrib.get("author")
                     if isinstance(author_data, dict) and "name" in author_data:
-                        result.append(author_data["name"])
-            return result if result else authors
+                        result_authors.append(author_data["name"])
+            return result_authors if result_authors else authors
         except Exception as e:
             log.warning(f"Error parsing edition authors: {e}")
             return authors
@@ -361,10 +322,9 @@ class Hardcover(Metadata):
             cached_tags = result.get("cached_tags", [])
             if not isinstance(cached_tags, list):
                 return tags
-
-            result_tags = []
+            result_tags: List[str] = []
             for item in cached_tags:
-                if isinstance(item, dict) and "tag" in item and item["tag"]:
+                if isinstance(item, dict) and item.get("tag"):
                     result_tags.append(item["tag"])
             return result_tags if result_tags else tags
         except Exception as e:
@@ -373,12 +333,8 @@ class Hardcover(Metadata):
 
     @staticmethod
     def _parse_languages(edition: Dict, locale: str) -> List[str]:
-        language_iso = (edition.get("language") or {}).get("code3","")
-        languages = (
-            [get_language_name(locale, language_iso)]
-            if language_iso
-            else []
-        )
+        language_iso = (edition.get("language") or {}).get("code3", "")
+        languages = [get_language_name(locale, language_iso)] if language_iso else []
         return languages
 
     @staticmethod
@@ -399,7 +355,11 @@ if __name__ == "__main__":
     # Lightweight CLI for manual testing of Hardcover searches
     import argparse
     import json
-    from dataclasses import asdict, is_dataclass
+    try:
+        from dataclasses import asdict, is_dataclass
+    except Exception:  # pragma: no cover
+        asdict = None
+        is_dataclass = None
 
     parser = argparse.ArgumentParser(description="Test Hardcover metadata provider")
     parser.add_argument("query", help="Search text or 'hardcover-id:ID' to fetch editions")
@@ -408,16 +368,13 @@ if __name__ == "__main__":
     parser.add_argument("--cover", dest="generic_cover", default="", help="Generic cover URL fallback")
     args = parser.parse_args()
 
-    # Provide token via config/env and avoid depending on Flask-Login current_user in CLI
     token = args.token or getenv("HARDCOVER_TOKEN")
     if token:
         try:
-            # Prefer config-based token to bypass current_user lookup in CLI context
-            config.config_hardcover_api_token = token
+            setattr(config, "config_hardcover_token", token)
         except Exception:
             pass
 
-    # Override current_user with a dummy to avoid request context access
     class _DummyUser:
         hardcover_token = None
 
@@ -429,10 +386,9 @@ if __name__ == "__main__":
     provider = Hardcover()
     results = provider.search(args.query, generic_cover=args.generic_cover, locale=args.locale) or []
 
-    # Pretty-print results
     def _to_dict(obj):
         try:
-            if is_dataclass(obj):
+            if is_dataclass and is_dataclass(obj):
                 return asdict(obj)
         except Exception:
             pass

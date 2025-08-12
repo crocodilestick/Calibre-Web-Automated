@@ -882,6 +882,10 @@ def save_cover_from_filestorage(filepath, saved_filename, img):
 def save_cover(img, book_path):
     content_type = img.headers.get('content-type')
 
+    # Clean content-type by removing charset and other parameters  
+    if content_type:  
+        content_type = content_type.split(';')[0].strip()  
+        
     if use_IM:
         if content_type not in ('image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp'):
             log.error("Only jpg/jpeg/png/webp/bmp files are supported as coverfile")

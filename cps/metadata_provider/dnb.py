@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+# Version from AutoCaliWeb - Created by - UsamaFoad & gelbphoenix
+
 import re
 import datetime
 from typing import List, Optional

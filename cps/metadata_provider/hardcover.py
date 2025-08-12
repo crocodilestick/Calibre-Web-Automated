@@ -8,14 +8,86 @@
 # Version from AutoCaliWeb - Optimized by - gelbphoenix & UsamaFoad
 
 # Hardcover api document: https://Hardcover.gamespot.com/api/documentation
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import requests
-from cps import logger, config, constants
-from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
-from cps.isoLanguages import get_language_name
-from ..cw_login import current_user
 from os import getenv
+
+# Try importing from full app; if unavailable (CLI), use light fallbacks
+try:  # pragma: no cover - normal app path
+    from cps import logger, config, constants  # type: ignore
+    from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata  # type: ignore
+    from cps.isoLanguages import get_language_name  # type: ignore
+    from ..cw_login import current_user  # type: ignore
+except Exception:  # pragma: no cover - CLI/testing path
+    import logging as _logging
+    from dataclasses import dataclass, field
+
+    class _FallbackLogger:
+        @staticmethod
+        def create():
+            _log = _logging.getLogger("hardcover")
+            if not _log.handlers:
+                _h = _logging.StreamHandler()
+                _h.setFormatter(
+                    _logging.Formatter("%(levelname)s:%(name)s:%(message)s")
+                )
+                _log.addHandler(_h)
+                _log.setLevel(_logging.INFO)
+            return _log
+
+    logger = _FallbackLogger()  # type: ignore
+
+    class _FallbackConfig:
+        config_hardcover_api_token: Optional[str] = None
+
+    config = _FallbackConfig()  # type: ignore
+
+    class _FallbackConstants:
+        USER_AGENT = "Calibre-Web-Automated/HardcoverTest"
+
+    constants = _FallbackConstants()  # type: ignore
+
+    # Minimal stand-in for Metadata/MetaRecord to allow CLI runs
+    @dataclass
+    class MetaSourceInfo:  # type: ignore
+        id: str
+        description: str
+        link: str
+
+    @dataclass
+    class MetaRecord:  # type: ignore
+        id: Union[str, int]
+        title: str
+        authors: List[str]
+        url: str
+        source: MetaSourceInfo
+        cover: str = ""
+        description: Optional[str] = ""
+        series: Optional[str] = None
+        series_index: Optional[Union[int, float]] = 0
+        identifiers: Dict[str, Union[str, int]] = field(default_factory=dict)
+        publisher: Optional[str] = None
+        publishedDate: Optional[str] = None
+        rating: Optional[int] = 0
+        languages: Optional[List[str]] = field(default_factory=list)
+        tags: Optional[List[str]] = field(default_factory=list)
+        format: Optional[str] = None
+
+    class Metadata:  # type: ignore
+        def __init__(self):
+            self.active = True
+
+        def set_status(self, state):
+            self.active = state
+
+    def get_language_name(locale: str, code3: str) -> str:  # type: ignore
+        return code3 or ""
+
+    class _DummyUser:
+        hardcover_token: Optional[str] = None
+
+    current_user = _DummyUser()  # type: ignore
 
 log = logger.create()
 
@@ -102,7 +174,9 @@ class Hardcover(Metadata):
                     Hardcover.BASE_URL,
                     json={
                         "query":Hardcover.SEARCH_QUERY if not edition_search else Hardcover.EDITION_QUERY,
-                        "variables":{"query":query if not edition_search else query.split(":")[1]}
+                        "variables":{
+                            "query": query if not edition_search else int(query.split(":")[1])
+                        }
                     },
                     headers=Hardcover.HEADERS,
                 )
@@ -137,8 +211,19 @@ class Hardcover(Metadata):
                         result = books_data[0]
                         val = self._parse_edition_results(result=result, generic_cover=generic_cover, locale=locale)
                 else:
-                    search_results = self._safe_get(response_data, "data", "search", "results", "hits", default=[])
-                    for result in search_results:
+                    raw_results = self._safe_get(response_data, "data", "search", "results", default=[])
+                    # Hardcover may return a JSON string in results; handle both string and dict
+                    try:
+                        if isinstance(raw_results, str):
+                            import json as _json
+                            parsed = _json.loads(raw_results)
+                        else:
+                            parsed = raw_results
+                    except Exception as _:
+                        parsed = []
+
+                    search_hits = self._safe_get(parsed, "hits", default=[])
+                    for result in search_hits:
                         match = self._parse_title_result(
                             result=result, generic_cover=generic_cover, locale=locale
                         )
@@ -226,7 +311,11 @@ class Hardcover(Metadata):
             isbn = edition.get("isbn_13",edition.get("isbn_10"))
             if isbn:
                 match.identifiers["isbn"] = isbn
-            match.format = Hardcover.FORMATS[edition.get("reading_format_id",0)]
+            rf_id = edition.get("reading_format_id")
+            if isinstance(rf_id, int) and 0 <= rf_id < len(Hardcover.FORMATS):
+                match.format = Hardcover.FORMATS[rf_id]
+            else:
+                match.format = ""
             editions.append(match)
         return editions
 
@@ -304,3 +393,53 @@ class Hardcover(Metadata):
             return data
         except (TypeError, KeyError):
             return default
+
+
+if __name__ == "__main__":
+    # Lightweight CLI for manual testing of Hardcover searches
+    import argparse
+    import json
+    from dataclasses import asdict, is_dataclass
+
+    parser = argparse.ArgumentParser(description="Test Hardcover metadata provider")
+    parser.add_argument("query", help="Search text or 'hardcover-id:ID' to fetch editions")
+    parser.add_argument("--token", dest="token", help="Hardcover API token (or set HARDCOVER_TOKEN)")
+    parser.add_argument("--locale", default="en", help="Locale for language names (default: en)")
+    parser.add_argument("--cover", dest="generic_cover", default="", help="Generic cover URL fallback")
+    args = parser.parse_args()
+
+    # Provide token via config/env and avoid depending on Flask-Login current_user in CLI
+    token = args.token or getenv("HARDCOVER_TOKEN")
+    if token:
+        try:
+            # Prefer config-based token to bypass current_user lookup in CLI context
+            config.config_hardcover_api_token = token
+        except Exception:
+            pass
+
+    # Override current_user with a dummy to avoid request context access
+    class _DummyUser:
+        hardcover_token = None
+
+    try:
+        globals()["current_user"] = _DummyUser()
+    except Exception:
+        pass
+
+    provider = Hardcover()
+    results = provider.search(args.query, generic_cover=args.generic_cover, locale=args.locale) or []
+
+    # Pretty-print results
+    def _to_dict(obj):
+        try:
+            if is_dataclass(obj):
+                return asdict(obj)
+        except Exception:
+            pass
+        if isinstance(obj, (list, tuple)):
+            return [_to_dict(x) for x in obj]
+        if isinstance(obj, dict):
+            return {k: _to_dict(v) for k, v in obj.items()}
+        return obj
+
+    print(json.dumps([_to_dict(r) for r in results], ensure_ascii=False, indent=2))

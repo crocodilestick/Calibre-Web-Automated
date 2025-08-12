@@ -152,7 +152,6 @@ def HandleSyncRequest():
     sync_results = []
     
     calibre_db.reconnect_db(config, ub.app_DB_path)
-    
 
     # Two-Way-Sync Deletion Logic
     if current_user.kobo_only_shelves_sync:
@@ -163,7 +162,7 @@ def HandleSyncRequest():
 
         # Check all books currently on a Kobo Sync shelf
         allowed_books_query = (ub.session.query(ub.BookShelf.book_id)
-                               .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id) # KORRIGIERTE ZEILE
+                               .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id) 
                                .filter(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True))
         allowed_book_ids = {item.book_id for item in allowed_books_query}
 
@@ -179,7 +178,7 @@ def HandleSyncRequest():
                 if book:
                     # Create a “Remove” command for the Kobo
                     entitlement = {
-                        "BookEntitlement": create_book_entitlement(book, archived=True), # "archived=True" setzt das Flag "IsRemoved: True"
+                        "BookEntitlement": create_book_entitlement(book, archived=True),
                         "BookMetadata": get_metadata(book),
                     }
                     sync_results.append({"ChangedEntitlement": entitlement})

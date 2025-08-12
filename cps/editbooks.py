@@ -102,8 +102,6 @@ def upload():
              log.info('Copying %s to cwa ingest directory', requested_file)
              copyfile(meta.file_path, os.path.join(get_ingest_dir(), os.path.basename(meta.file_path) + '.' + meta.extension))
 
-             return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
-
         return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
     abort(404)
 

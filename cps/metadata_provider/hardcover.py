@@ -84,7 +84,7 @@ class Hardcover(Metadata):
         "Content-Type": "application/json",
         "User-Agent": constants.USER_AGENT,
     }
-    FORMATS = ["","Physical Book","","","E-Book"] # Map reading_format_id to text equivelant.
+    FORMATS = ["","Physical Book","","","E-Book"] # Map reading_format_id to text equivalent
 
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"

@@ -10,6 +10,7 @@ import os
 from collections import namedtuple
 
 from flask_babel import gettext as _
+import requests
 
 # APP_MODE - production, development, or test
 APP_MODE            = os.environ.get('APP_MODE', 'production')
@@ -163,7 +164,35 @@ BookMeta = namedtuple('BookMeta', 'file_path, extension, title, author, cover, d
                                   'series_id, languages, publisher, pubdate, identifiers')
 
 # python build process likes to have x.y.zbw -> b for beta and w a counting number
-STABLE_VERSION =  '0.6.24'
+def get_version(type: str) -> str:
+    """Returns the specified Version of Calibre-Web-Automated\n\n
+        OPTIONS:\n
+            STABLE - returns the latest stable release version
+            INSTALLED - returns the currently installed version
+    """
+    if type == "STABLE":
+        try:
+            response = requests.get("https://api.github.com/repos/crocodilestick/calibre-web-automated/releases/latest", timeout=3)
+            current_release = response.json().get('tag_name', current_version)
+            return current_release
+        except Exception as e:
+            print(f"[cwa-constants] Error checking for most recent CWA Release: {e}", flush=True)
+            return "V0.0.0"
+    elif type == "INSTALLED":
+        try:
+            with open("/app/CWA_RELEASE", 'r') as f:
+                current_version = f.read().strip()
+            return current_version
+        except Exception as e:
+            print(f"[cwa-constants] Error checking for current CWA Version: {e}", flush=True)
+            return "V0.0.0"
+    else:
+        return "V0.0.0"
+
+STABLE_VERSION =  get_version("STABLE")
+INSTALLED_VERSION = get_version("INSTALLED")
+
+USER_AGENT = f"Calibre-Web-Automated/{INSTALLED_VERSION}"
 
 NIGHTLY_VERSION = dict()
 NIGHTLY_VERSION[0] = '0af52f205358b0147ee3430f9e6c8fe007c0ea77'

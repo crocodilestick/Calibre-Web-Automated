@@ -1725,10 +1725,12 @@ def cancel_task():
 def _db_simulate_change():
     param = request.form.to_dict()
     to_save = dict()
-    to_save['config_calibre_dir'] = strip_whitespaces(re.sub(r'[\\/]metadata\.db$',
-                                           '',
-                                           param['config_calibre_dir'],
-                                           flags=re.IGNORECASE))
+    incoming = param.get('config_calibre_dir', config.config_calibre_dir or '')
+    incoming = strip_whitespaces(re.sub(r'[\\/]metadata\.db$', '', incoming, flags=re.IGNORECASE))
+    # Fallback: if nothing provided and default metadata exists, assume /calibre-library
+    if not incoming and os.path.isfile('/calibre-library/metadata.db'):
+        incoming = '/calibre-library'
+    to_save['config_calibre_dir'] = incoming
     db_valid, db_change = calibre_db.check_valid_db(to_save["config_calibre_dir"],
                                                     ub.app_DB_path,
                                                     config.config_calibre_uuid)
@@ -1741,10 +1743,11 @@ def _db_configuration_update_helper():
     to_save = request.form.to_dict()
     gdrive_error = None
 
-    to_save['config_calibre_dir'] = re.sub(r'[\\/]metadata\.db$',
-                                           '',
-                                           to_save['config_calibre_dir'],
-                                           flags=re.IGNORECASE)
+    incoming = to_save.get('config_calibre_dir', config.config_calibre_dir or '')
+    incoming = re.sub(r'[\\/]metadata\.db$', '', incoming, flags=re.IGNORECASE)
+    if not incoming and os.path.isfile('/calibre-library/metadata.db'):
+        incoming = '/calibre-library'
+    to_save['config_calibre_dir'] = incoming
     db_valid = False
     try:
         db_change, db_valid = _db_simulate_change()

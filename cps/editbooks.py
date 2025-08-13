@@ -95,14 +95,17 @@ def upload():
         return do_edit_book(book_id, request.files.getlist("btn-upload-format"))
     elif len(request.files.getlist("btn-upload")):
         for requested_file in request.files.getlist("btn-upload"):
-             meta, error = file_handling_on_upload(requested_file)
-             if error:
-                 return error
+            meta, error = file_handling_on_upload(requested_file)
+            if error:
+                return error
 
-             log.info('Copying %s to cwa ingest directory', requested_file)
-             copyfile(meta.file_path, os.path.join(get_ingest_dir(), os.path.basename(meta.file_path) + '.' + meta.extension))
+            log.info('Copying %s to cwa ingest directory', requested_file)
+            copyfile(meta.file_path, os.path.join(get_ingest_dir(), os.path.basename(meta.file_path) + '.' + meta.extension))
+             
+            upload_text = N_("Moved %(file)s to ingest directory.", file=meta.title)
+            WorkerThread.add(current_user.name, TaskUpload(upload_text, escape(meta.title)))
 
-        return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+        return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
     abort(404)
 
 

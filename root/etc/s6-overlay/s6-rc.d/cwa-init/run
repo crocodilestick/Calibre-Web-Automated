@@ -194,3 +194,32 @@ if [ ! -f "$QT_SENTINEL" ]; then
 else
   echo "[cwa-init][qt6] Qt6 compatibility confirmed; skipping."
 fi
+
+#------------------------------------------------------------------------------------------------------------------------
+#  Resolve and persist CWA version values once at container initialization
+#------------------------------------------------------------------------------------------------------------------------
+
+echo "[cwa-init] Resolving CWA versions (installed + latest stable) ..."
+
+# Installed version baked at build time
+export CWA_INSTALLED_VERSION="$(cat /app/CWA_RELEASE 2>/dev/null || echo 'V0.0.0')"
+
+# Latest stable release from GitHub (best-effort, fast timeout)
+if command -v jq >/dev/null 2>&1; then
+  CWA_STABLE_VERSION="$(
+    curl -sS --max-time 3 https://api.github.com/repos/crocodilestick/calibre-web-automated/releases/latest \
+      | jq -r '.tag_name' 2>/dev/null || true
+  )"
+else
+  # Fallback parse without jq
+  CWA_STABLE_VERSION="$(
+    curl -sS --max-time 3 https://api.github.com/repos/crocodilestick/calibre-web-automated/releases/latest \
+      | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1
+  )"
+fi
+export CWA_STABLE_VERSION="${CWA_STABLE_VERSION:-V0.0.0}"
+
+# Persist the resolved stable release for other services/processes
+printf '%s\n' "$CWA_STABLE_VERSION" > /app/CWA_STABLE_RELEASE || true
+
+echo "[cwa-init] Versions resolved: INSTALLED=$CWA_INSTALLED_VERSION, STABLE=$CWA_STABLE_VERSION"

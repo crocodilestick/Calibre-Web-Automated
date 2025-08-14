@@ -1,24 +1,28 @@
-/* This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
- *    Copyright (C) 2018 OzzieIsaacs
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <http://www.gnu.org/licenses/>.
+/* Calibre-Web Automated – fork of Calibre-Web
+Copyright (C) 2018-2025 Calibre-Web contributors
+Copyright (C) 2024-2025 Calibre-Web Automated contributors
+SPDX-License-Identifier: GPL-3.0-or-later
+See CONTRIBUTORS for full list of authors.
  */
 
 var direction = $("#asc").data('order');  // 0=Descending order; 1= ascending order
 var sort = 0;       // Show sorted entries
 
-$("#sort_name").click(function() {
+// Helper: get the primary list container regardless of template id
+function getListContainer() {
+    var $l = $("#list");
+    if ($l.length) return $l;
+    // Prefer the container right after the filter header
+    var $near = $(".filterheader").nextAll(".container").first().find("div[id$='_list']").first();
+    if ($near.length) return $near;
+    $l = $("div[id$='_list']");
+    if ($l.length) return $l.first();
+    $l = $(".col-xs-12.col-sm-6").not("#second").first();
+    return $l;
+}
+
+// Delegate events to handle dynamically rendered elements
+$(document).on("click", "#sort_name", function() {
     $("#sort_name").toggleClass("active");
     var className = $("h1").attr("Class") + "_sort_name";
     var obj = {};
@@ -27,14 +31,15 @@ $("#sort_name").click(function() {
     var count = 0;
     var index = 0;
     var store;
+    var list = getListContainer();
     // Append 2nd half of list to first half for easier processing
     var cnt = $("#second").contents();
-    $("#list").append(cnt);
+    list.append(cnt);
     // Count no of elements
-    var listItems = $("#list").children(".row");
+    var listItems = list.children(".row");
     var listlength = listItems.length;
     // check for each element if its Starting character matches
-    $(".row").each(function() {
+    listItems.each(function() {
         if ( sort === 1) {
             store = this.attributes["data-name"];
         } else {
@@ -49,8 +54,8 @@ $("#sort_name").click(function() {
     // Find count of middle element
     if (count > 20) {
         var middle = parseInt(count / 2, 10) + (count % 2);
-        // search for the middle of all visibe elements
-        $(".row").each(function() {
+        // search for the middle of all visible elements
+        listItems.each(function() {
             index++;
             if ($(this).css("display") !== "none") {
                 middle--;
@@ -65,10 +70,10 @@ $("#sort_name").click(function() {
     sort = (sort + 1) % 2;
 });
 
-$("#desc").click(function() {
-    if (direction === 0) {
-        return;
-    }
+$(document).on("click", "#desc", function() {
+    // Recompute direction from DOM to avoid stale value after dynamic updates
+    direction = $("#asc").hasClass("active") ? 1 : 0;
+    // Always apply desc sort (no early return)
     $("#asc").removeClass("active");
     $("#desc").addClass("active");
 
@@ -81,21 +86,17 @@ $("#desc").click(function() {
         data: "{\"" + page + "\": {\"dir\": \"desc\"}}",
     });
     var index = 0;
-    var list = $("#list");
+    var list = getListContainer();
     var second = $("#second");
-    // var cnt = ;
     list.append(second.contents());
     var listItems = list.children(".row");
     var reversed, elementLength, middle;
     reversed = listItems.get().reverse();
     elementLength = reversed.length;
     // Find count of middle element
-    var count = $(".row:visible").length;
+    var count = list.find("> .row:visible").length;
     if (count > 20) {
         middle = parseInt(count / 2, 10) + (count % 2);
-
-        //var middle = parseInt(count / 2) + (count % 2);
-        // search for the middle of all visible elements
         $(reversed).each(function() {
             index++;
             if ($(this).css("display") !== "none") {
@@ -105,7 +106,6 @@ $("#desc").click(function() {
                 }
             }
         });
-
         list.append(reversed.slice(0, index));
         second.append(reversed.slice(index, elementLength));
     } else {
@@ -115,10 +115,10 @@ $("#desc").click(function() {
 });
 
 
-$("#asc").click(function() {
-    if (direction === 1) {
-        return;
-    }
+$(document).on("click", "#asc", function() {
+    // Recompute direction from DOM to avoid stale value after dynamic updates
+    direction = $("#asc").hasClass("active") ? 1 : 0;
+    // Always apply asc sort (no early return)
     $("#desc").removeClass("active");
     $("#asc").addClass("active");
 
@@ -131,7 +131,7 @@ $("#asc").click(function() {
         data: "{\"" + page + "\": {\"dir\": \"asc\"}}",
     });
     var index = 0;
-    var list = $("#list");
+    var list = getListContainer();
     var second = $("#second");
     list.append(second.contents());
     var listItems = list.children(".row");
@@ -139,12 +139,9 @@ $("#asc").click(function() {
     var elementLength = reversed.length;
 
     // Find count of middle element
-    var count = $(".row:visible").length;
+    var count = list.find("> .row:visible").length;
     if (count > 20) {
         var middle = parseInt(count / 2, 10) + (count % 2);
-
-        //var middle = parseInt(count / 2) + (count % 2);
-        // search for the middle of all visible elements
         $(reversed).each(function() {
             index++;
             if ($(this).css("display") !== "none") {
@@ -154,8 +151,6 @@ $("#asc").click(function() {
                 }
             }
         });
-
-        // middle = parseInt(elementLength / 2) + (elementLength % 2);
         list.append(reversed.slice(0, index));
         second.append(reversed.slice(index, elementLength));
     } else {
@@ -164,13 +159,19 @@ $("#asc").click(function() {
     direction = 1;
 });
 
-$("#all").click(function() {
+$(document).on("click", "#all", function() {
     $("#all").addClass("active");
     $(".char").removeClass("active");
+    // Reset dropdown selection if present
+    var dd = $("#char-dropdown");
+    if (dd.length) {
+        dd.prop("selectedIndex", 0);
+    }
     var cnt = $("#second").contents();
-    $("#list").append(cnt);
+    var list = getListContainer();
+    list.append(cnt);
     // Find count of middle element
-    var listItems = $("#list").children(".row");
+    var listItems = list.children(".row");
     var listlength = listItems.length;
     var middle = parseInt(listlength / 2, 10) + (listlength % 2);
     // go through all elements and make them visible
@@ -183,21 +184,22 @@ $("#all").click(function() {
     }
 });
 
-$(".char").click(function() {
+$(document).on("click", ".char", function() {
     $(".char").removeClass("active");
     $(this).addClass("active");
     $("#all").removeClass("active");
     var character = this.innerText;
     var count = 0;
     var index = 0;
+    var list = getListContainer();
     // Append 2nd half of list to first half for easier processing
     var cnt = $("#second").contents();
-    $("#list").append(cnt);
+    list.append(cnt);
     // Count no of elements
-    var listItems = $("#list").children(".row");
+    var listItems = list.children(".row");
     var listlength = listItems.length;
     // check for each element if its Starting character matches
-    $(".row").each(function() {
+    listItems.each(function() {
         if (this.attributes["data-id"].value.charAt(0).toUpperCase() !== character) {
             $(this).hide();
         } else {
@@ -208,8 +210,51 @@ $(".char").click(function() {
     if (count > 20) {
         // Find count of middle element
         var middle = parseInt(count / 2, 10) + (count % 2);
-        // search for the middle of all visibe elements
-        $(".row").each(function() {
+        // search for the middle of all visible elements
+        listItems.each(function() {
+            index++;
+            if ($(this).css("display") !== "none") {
+                middle--;
+                if (middle <= 0) {
+                    return false;
+                }
+            }
+        });
+        // Move second half of visible elements
+        $("#second").append(listItems.slice(index, listlength));
+    }
+});
+
+// Support dropdown-based initial filtering when many characters
+$(document).on("change", "#char-dropdown", function() {
+    var character = $(this).val();
+    if (!character) return;
+    $("#all").removeClass("active");
+    $(".char").removeClass("active");
+    var count = 0;
+    var index = 0;
+    var list = getListContainer();
+    // Append 2nd half of list to first half for easier processing
+    var cnt = $("#second").contents();
+    list.append(cnt);
+    // Count no of elements
+    var listItems = list.children(".row");
+    var listlength = listItems.length;
+    // check for each element if its Starting character matches
+    listItems.each(function() {
+        var id = this.attributes["data-id"].value;
+        if (id.charAt(0).toUpperCase() !== character.toUpperCase()) {
+            $(this).hide();
+        } else {
+            $(this).show();
+            count++;
+        }
+    });
+    if (count > 20) {
+        // Find count of middle element
+        var middle = parseInt(count / 2, 10) + (count % 2);
+        // search for the middle of all visible elements
+        listItems.each(function() {
             index++;
             if ($(this).css("display") !== "none") {
                 middle--;

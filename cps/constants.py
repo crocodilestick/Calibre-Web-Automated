@@ -162,8 +162,19 @@ def selected_roles(dictionary):
 BookMeta = namedtuple('BookMeta', 'file_path, extension, title, author, cover, description, tags, series, '
                                   'series_id, languages, publisher, pubdate, identifiers')
 
-# python build process likes to have x.y.zbw -> b for beta and w a counting number
-STABLE_VERSION =  '0.6.24'
+def _read_text(path: str, default: str = "") -> str:
+    try:
+        with open(path, 'r') as f:
+            return f.read().strip()
+    except Exception:
+        return default
+
+# Versions are resolved at container startup by cwa-init and provided via env and persisted files.
+# Avoid any network or slow I/O during module import.
+INSTALLED_VERSION = os.environ.get("CWA_INSTALLED_VERSION") or _read_text("/app/CWA_RELEASE", "V0.0.0")
+STABLE_VERSION = os.environ.get("CWA_STABLE_VERSION") or _read_text("/app/CWA_STABLE_RELEASE", "V0.0.0")
+
+USER_AGENT = f"Calibre-Web-Automated/{INSTALLED_VERSION}"
 
 NIGHTLY_VERSION = dict()
 NIGHTLY_VERSION[0] = '0af52f205358b0147ee3430f9e6c8fe007c0ea77'

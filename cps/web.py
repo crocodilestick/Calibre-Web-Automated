@@ -828,7 +828,7 @@ def health_check():
     uptime = time.time() - _start_time
 
     try:
-        db_path = cwa_get_library_location() + "metadata.db"
+        db_path = os.path.join(cwa_get_library_location(), "metadata.db")
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute("SELECT 1")

@@ -254,7 +254,7 @@ And that's you off to the races! 🥳 HOWEVER to avoid potential problems and en
 
 ### 1. Setup the container using the Docker Compose template below: 🐋📜
 
-  ~~~ bash
+~~~ bash
 ---
 services:
   calibre-web-automated:
@@ -275,14 +275,14 @@ services:
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
       # If you don't have an existing library, CWA will automatically create one at the bind provided here
       - /path/to/your/calibre/library:/calibre-library
-      # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to it's workflow (WIP)
+      # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to its workflow (WIP)
       # If you are starting with a fresh install, you also need to copy plugins\..\customize.py.json to the corresponding docker location (the config path above + .config/calibre/customize.py.json)
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
       - 8083:8083 
     restart: unless-stopped
-  ~~~
+~~~
 
 ### Explanation of the Container Bindings:
   - Make sure all 3 of the main bindings are separate directories, errors can occur when binds are made within other binds
@@ -293,6 +293,8 @@ services:
   - `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` & book(s) files reside.
     - **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
     - **Existing/ CW Users** - If there are multiple libraries in the mounted directory, CWA will automatically find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
+  - `/config/.config/calibre/plugins` - This should be bound to a directory containing a copy of your existing Calibre plugins. Configuration will be retained. (There is currently no way to configure plugins via CWA.)
+    - You must also copy the customize.py.json file from the Calibre plugins' parent directory to the corresponding location (i.e. /path/to/config/folder/.config/calibre/customize.py.json)
   <!-- - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient -->
   - `/app/calibre-web-automated/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
 

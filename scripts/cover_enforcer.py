@@ -209,8 +209,9 @@ class Enforcer:
 
 
     def get_book_dir_from_log(self, log_info: dict) -> str:
-        book_title = log_info['title'].replace(':', '_')
-        author_name = (log_info['authors'].split(', ')[0]).split(' & ')[0]
+        book_title = log_info['title'].strip().replace(':', '_')
+        # Correctly handle multiple authors by replacing ' & ' with ', ' before splitting
+        author_name = log_info['authors'].strip().replace(' & ', ', ').split(', ')[0]
         book_id = log_info['book_id']
 
         for char in book_title:

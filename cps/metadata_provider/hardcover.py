@@ -210,7 +210,7 @@ class Hardcover(Metadata):
                 return None
 
             series_info = self._safe_get(document, "featured_series", default={})
-            series = self._safe_get(series_info, "series_name", default="")
+            series = self._safe_get(document, "featured_series", "series", "name", default="")
             series_index = self._safe_get(series_info, "position", default="")
 
             match = MetaRecord(

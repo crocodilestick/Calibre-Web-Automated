@@ -207,15 +207,6 @@ def edit_list_book(param):
 def edit_selected_books():
     d = request.get_json()
     selections = d.get('selections')
-    title = d.get('title')
-    title_sort = d.get('title_sort')
-    author_sort = d.get('author_sort')
-    authors = d.get('authors')
-    categories = d.get('categories')
-    series = d.get('series')
-    languages = d.get('languages')
-    publishers = d.get('publishers')
-    comments = d.get('comments')
     checkA = d.get('checkA')
 
     if len(selections) != 0:
@@ -225,33 +216,73 @@ def edit_selected_books():
                 "value": None,
                 "checkA": checkA,
             }
-            if title:
-                vals['value'] = title
-                edit_book_param('title', vals)
-            if title_sort:
-                vals['value'] = title_sort
-                edit_book_param('sort', vals)
-            if author_sort:
-                vals['value'] = author_sort
-                edit_book_param('author_sort', vals)
-            if authors:
-                vals['value'] = authors
-                edit_book_param('authors', vals)
-            if categories:
-                vals['value'] = categories
-                edit_book_param('tags', vals)
-            if series:
-                vals['value'] = series
-                edit_book_param('series', vals)
-            if languages:
-                vals['value'] = languages
-                edit_book_param('languages', vals)
-            if publishers:
-                vals['value'] = publishers
-                edit_book_param('publishers', vals)
-            if comments:
-                vals['value'] = comments
-                edit_book_param('comments', vals)
+            book = calibre_db.get_book(book_id)
+            if not book:
+                continue
+
+            # Collect all changes
+            changes = {key: d.get(key) for key in ['title', 'title_sort', 'author_sort', 'authors', 'categories', 'series', 'languages', 'publishers', 'comments'] if d.get(key)}
+
+            # Apply changes without committing or updating directory structure yet
+            title_changed = False
+            authors_changed = False
+            input_authors = [author.name for author in book.authors]
+
+            if 'title' in changes:
+                vals['value'] = changes['title']
+                handle_title_on_edit(book, vals.get('value', ""))
+                title_changed = True
+
+            if 'title_sort' in changes:
+                vals['value'] = changes['title_sort']
+                book.sort = vals['value']
+
+            if 'author_sort' in changes:
+                vals['value'] = changes['author_sort']
+                book.author_sort = vals['value']
+
+            if 'authors' in changes:
+                vals['value'] = changes['authors']
+                input_authors, __ = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
+                authors_changed = True
+
+            if 'categories' in changes:
+                vals['value'] = changes['categories']
+                edit_book_tags(vals['value'], book)
+
+            if 'series' in changes:
+                vals['value'] = changes['series']
+                edit_book_series(vals['value'], book)
+
+            if 'languages' in changes:
+                vals['value'] = changes['languages']
+                invalid = list()
+                edit_book_languages(vals['value'], book, invalid=invalid)
+
+            if 'publishers' in changes:
+                vals['value'] = changes['publishers']
+                edit_book_publisher(vals['value'], book)
+
+            if 'comments' in changes:
+                vals['value'] = changes['comments']
+                edit_book_comments(vals['value'], book)
+
+            # Update directory structure once if title or authors changed
+            if title_changed or authors_changed:
+                rename_error = helper.update_dir_structure(book.id, config.get_book_path(), input_authors[0])
+                if rename_error:
+                    # Handle error appropriately, maybe flash a message
+                    calibre_db.session.rollback()
+                    continue # or return an error response
+
+            book.last_modified = datetime.now(timezone.utc)
+            try:
+                calibre_db.session.commit()
+            except (OperationalError, IntegrityError, StaleDataError) as e:
+                calibre_db.session.rollback()
+                log.error_or_exception("Database error: {}".format(e))
+                # Handle error appropriately
+
         return json.dumps({'success': True})
     return ""
 
@@ -309,7 +340,9 @@ def edit_book_param(param, vals):
         elif param == 'title':
             sort_param = book.sort
             if handle_title_on_edit(book, vals.get('value', "")):
-                rename_error = helper.update_dir_structure(book.id, config.get_book_path())
+                # Pass the current author to prevent directory structure issues
+                current_author = book.authors[0].name if book.authors else None
+                rename_error = helper.update_dir_structure(book.id, config.get_book_path(), current_author)
                 if not rename_error:
                     ret = Response(json.dumps({'success': True, 'newValue':  book.title}),
                                    mimetype='application/json')
@@ -567,51 +600,37 @@ def do_edit_book(book_id, upload_formats=None):
     to_save = request.form.to_dict()
 
     try:
-        # Update folder of book on local disk
-        edited_books_id = None
+        title_change = False
+        author_change = False
         title_author_error = None
-        # upload_mode = False
-        # handle book title change
+        input_authors = [author.name for author in book.authors]
+
+        # Stage 1: Collect all metadata changes and apply them to the book object in the session
         if "title" in to_save:
             title_change = handle_title_on_edit(book, to_save["title"])
-        # handle book author change
-        if not upload_formats:
-            input_authors, author_change = handle_author_on_edit(book, to_save["authors"])
-            if author_change or title_change:
-                edited_books_id = book.id
-                modify_date = True
-                title_author_error = helper.update_dir_structure(edited_books_id,
-                                                                 config.get_book_path(),
-                                                                 input_authors[0])
-            if title_author_error:
-                flash(title_author_error, category="error")
-                calibre_db.session.rollback()
-                book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
 
-            # handle book ratings
+        if not upload_formats:
+            new_input_authors, author_change = handle_author_on_edit(book, to_save["authors"])
+            if author_change:
+                input_authors = new_input_authors
             modify_date |= edit_book_ratings(to_save, book)
         else:
-            # handle upload other formats from local disk
             to_save, edit_error = upload_book_formats(upload_formats, book, book_id, book.has_cover)
-        # handle upload covers from local disk
+
         cover_upload_success = upload_cover(request, book)
         if cover_upload_success or to_save.get("format_cover"):
             book.has_cover = 1
             modify_date = True
 
-        # upload new covers or new file formats to google drive
-        if config.config_use_google_drive:
-            gdriveutils.updateGdriveCalibreFromLocal()
-
-        if to_save.get("cover_url",):
+        if to_save.get("cover_url"):
             if not current_user.role_edit():
                 edit_error = True
                 flash(_("User has no rights to upload cover"), category="error")
-            if to_save["cover_url"].endswith('/static/generic_cover.jpg'):
+            elif to_save["cover_url"].endswith('/static/generic_cover.jpg'):
                 book.has_cover = 0
             else:
                 result, error = helper.save_cover_from_url(to_save["cover_url"].strip(), book.path)
-                if result is True:
+                if result:
                     book.has_cover = 1
                     modify_date = True
                     helper.replace_cover_thumbnail_cache(book.id)
@@ -619,74 +638,76 @@ def do_edit_book(book_id, upload_formats=None):
                     edit_error = True
                     flash(error, category="error")
 
-        # Add default series_index to book
         modify_date |= edit_book_series_index(to_save.get("series_index"), book)
-        # Handle book comments/description
         modify_date |= edit_book_comments(Markup(to_save.get('comments')).unescape(), book)
-        # Handle identifiers
+        
         input_identifiers = identifier_list(to_save, book)
         modification, warning = modify_identifiers(input_identifiers, book.identifiers, calibre_db.session)
         if warning:
             flash(_("Identifiers are not Case Sensitive, Overwriting Old Identifier"), category="warning")
         modify_date |= modification
-        # Handle book tags
+        
         modify_date |= edit_book_tags(to_save.get('tags'), book)
-        # Handle book series
         modify_date |= edit_book_series(to_save.get("series"), book)
-        # handle book publisher
         modify_date |= edit_book_publisher(to_save.get('publisher'), book)
-        # handle book languages
+        
         try:
             invalid = []
-            modify_date |= edit_book_languages(to_save.get('languages'), book, upload_mode=upload_formats,
-                                               invalid=invalid)
+            modify_date |= edit_book_languages(to_save.get('languages'), book, upload_mode=upload_formats, invalid=invalid)
             if invalid:
                 for lang in invalid:
                     flash(_("'%(langname)s' is not a valid language", langname=lang), category="warning")
         except ValueError as e:
             flash(str(e), category="error")
             edit_error = True
-        # handle cc data
+            
         modify_date |= edit_all_cc_data(book_id, book, to_save)
 
-        if to_save.get("pubdate") is not None:
-            if to_save.get("pubdate"):
-                try:
-                    book.pubdate = datetime.strptime(to_save["pubdate"], "%Y-%m-%d")
-                except ValueError as e:
-                    book.pubdate = db.Books.DEFAULT_PUBDATE
-                    flash(str(e), category="error")
-                    edit_error = True
-            else:
+        if to_save.get("pubdate"):
+            try:
+                book.pubdate = datetime.strptime(to_save["pubdate"], "%Y-%m-%d")
+            except ValueError as e:
                 book.pubdate = db.Books.DEFAULT_PUBDATE
+                flash(str(e), category="error")
+                edit_error = True
+        else:
+            book.pubdate = db.Books.DEFAULT_PUBDATE
 
+        # Stage 2: Perform filesystem operations if necessary
+        if title_change or author_change:
+            title_author_error = helper.update_dir_structure(book.id, config.get_book_path(), input_authors[0])
+            if title_author_error:
+                flash(title_author_error, category="error")
+                calibre_db.session.rollback()
+                return render_edit_book(book_id)
+            modify_date = True
+
+        # Stage 3: Commit all changes to the database
         if modify_date:
             book.last_modified = datetime.now(timezone.utc)
-            kobo_sync_status.remove_synced_book(edited_books_id, all=True)
+            kobo_sync_status.remove_synced_book(book.id, all=True)
             calibre_db.set_metadata_dirty(book.id)
 
         calibre_db.session.merge(book)
         calibre_db.session.commit()
+
+        # Stage 4: Post-commit operations (like cloud sync)
         if config.config_use_google_drive:
             gdriveutils.updateGdriveCalibreFromLocal()
-        if edit_error is not True and title_author_error is not True and cover_upload_success is not False:
+
+        if not edit_error and not title_author_error and cover_upload_success is not False:
             flash(_("Metadata successfully updated"), category="success")
 
         if upload_formats:
-            resp = {"location": url_for('edit-book.show_edit_book', book_id=book_id)}
-            return Response(json.dumps(resp), mimetype='application/json')
+            return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
 
         if "detail_view" in to_save:
             return redirect(url_for('web.show_book', book_id=book.id))
         else:
             return render_edit_book(book_id)
-    except ValueError as e:
-        log.error_or_exception("Error: {}".format(e))
-        calibre_db.session.rollback()
-        flash(str(e), category="error")
-        return redirect(url_for('web.show_book', book_id=book.id))
-    except (OperationalError, IntegrityError, StaleDataError, InterfaceError) as e:
-        log.error_or_exception("Database error: {}".format(e))
+
+    except (ValueError, OperationalError, IntegrityError, StaleDataError, InterfaceError) as e:
+        log.error_or_exception("Database or Value error: {}".format(e))
         calibre_db.session.rollback()
         flash(_("Oops! Database Error: %(error)s.", error=e.orig if hasattr(e, "orig") else e), category="error")
         return redirect(url_for('web.show_book', book_id=book.id))

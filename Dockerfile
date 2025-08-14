@@ -185,6 +185,9 @@ RUN \
 # add unrar
 COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
 
+# set calibre environment variable
+ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
+
 # ports and volumes
 WORKDIR /config
 EXPOSE 8083

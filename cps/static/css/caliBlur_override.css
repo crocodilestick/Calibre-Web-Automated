@@ -185,6 +185,9 @@ div#Downloads_list {
     .more-stuff {
         display: none;
     }
+    .editbook .more-stuff {
+        display: inherit;
+    }
     .languages {
         position: absolute;
         top: 465px;

@@ -117,7 +117,7 @@ if ($("body.book").length > 0) {
     // If only one download type exists still put the items into a drop-drown list.
     downloads = $("a[id^=btnGroupDrop]").get();
     if ($(downloads).length === 1) {
-        $('<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-download"></span>Download :<span class="caret"></span></button><ul class="dropdown-menu leramslist aria-labelledby="btnGroupDrop1"></ul>').insertBefore(downloads[downloads.length - 1]);
+        $('<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-download"></span>Download<span class="caret"></span></button><ul class="dropdown-menu leramslist aria-labelledby="btnGroupDrop1"></ul>').insertBefore(downloads[downloads.length - 1]);
         $(downloads).detach();
         $.each(downloads, function (i, val) {
             $("<li>" + downloads[i].outerHTML + "</li>").appendTo(".leramslist");
@@ -649,7 +649,8 @@ $('.btn-group[aria-label="Edit/Delete book"] a').attr({
 
 $("#sendbtn").attr({
     "data-toggle": "tooltip",
-    "title": $("#sendbtn").attr("data-text"),
+    // Use provided data-text if present, otherwise fall back to visible button text
+    "title": ($("#sendbtn").attr("data-text") || $.trim($("#sendbtn").text())),
     "data-placement": "bottom",
     "data-viewport": ".btn-toolbar"
 })
@@ -665,11 +666,32 @@ $("#sendbtn2").attr({
 
 $("#read-in-browser").attr({
     "data-toggle-two": "tooltip",
-    "title": $("#read-in-browser").text(),
+    "title": $.trim($("#read-in-browser").text()),
     "data-placement": "bottom",
     "data-viewport": ".btn-toolbar"
 })
     .addClass("send-btn-tooltip");
+
+// Ensure tooltip is initialized even though the button already uses data-toggle="dropdown"
+$(function() {
+    var $rib = $("#read-in-browser");
+    if ($rib.length) {
+        try {
+            // Use body as viewport to avoid clipping/overlap from toolbar overlays
+            $rib.tooltip({ container: "body", trigger: "hover", viewport: "body", placement: "bottom", title: $.trim($rib.text()) });
+        } catch (e) { /* noop */ }
+    }
+});
+
+// Initialize tooltip for single-format Read in Browser link
+$(function() {
+    var $rb = $("#readbtn");
+    if ($rb.length) {
+        try {
+            $rb.tooltip({ container: "body", trigger: "hover", viewport: "body", placement: "bottom", title: $.trim($rb.attr("title") || $rb.text()) });
+        } catch (e) { /* noop */ }
+    }
+});
 
 $("#btnGroupDrop1").attr({
     "data-toggle-two": "tooltip",

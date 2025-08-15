@@ -4,6 +4,11 @@ Copyright (C) 2024-2025 Calibre-Web Automated contributors
 SPDX-License-Identifier: GPL-3.0-or-later
 See CONTRIBUTORS for full list of authors. */
 
+/* --- CWA: Boost tooltip stacking to appear above all overlays --- */
+.tooltip {
+    z-index: 2147483647 !important; /* max practical */
+}
+
 .form-control, .home-btn, .home-btn > a, body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
     font-variant-caps: normal;
     font-variant-numeric: normal;
@@ -252,7 +257,7 @@ body.blur .row-fluid .col-sm-10 {
     right: 0;
     width: 300px;
     height: 7px;
-    z-index: 999999999999999999999999999999999999999999999999999999
+    z-index: 100;
 }
 
 .plexBack.noBack > a {

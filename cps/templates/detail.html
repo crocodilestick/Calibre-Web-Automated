@@ -81,7 +81,8 @@
                         <div class="btn-group" role="group">
                             {% if entry.reader_list|length > 1 %}
                                 <button id="read-in-browser" type="button" class="btn btn-primary dropdown-toggle"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        data-toggle-two="tooltip" title="{{ _('Read in Browser') }}" data-placement="bottom" data-viewport=".btn-toolbar">
                                     <span class="glyphicon glyphicon-book"></span> {{ _('Read in Browser') }}
                                     <span class="caret"></span>
                                 </button>
@@ -95,8 +96,8 @@
                             {% else %}
                                 <a target="_blank"
                                    href="{{ url_for('web.read_book', book_id=entry.id, book_format=entry.reader_list[0]) }}"
-                                   id="readbtn" class="btn btn-primary" role="button"><span
-                                        class="glyphicon glyphicon-book"></span> {{ _('Read in Browser') }}
+                                   id="readbtn" class="btn btn-primary" role="button" data-toggle="tooltip" title="{{ _('Read in Browser') }}" data-placement="bottom" data-viewport=".btn-toolbar">
+                                   <span class="glyphicon glyphicon-book"></span> {{ _('Read in Browser') }}
                                     - {{ entry.reader_list[0] }}</a>
                             {% endif %}
                         </div>

@@ -344,17 +344,27 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
 CWA now includes built-in KOReader syncing functionality, allowing you to sync your reading progress across devices using KOReader. This feature provides a modern, secure alternative to traditional KOReader sync servers. Navigate to `http://your-cwa-instance:8083/kosync` in your browser where you'll find download links and installation instructions for the CWA KOReader plugin.
 
 ---
-## For Developers - Building Custom Docker Image
-If you want to contribute to this project, you can build a local version with your changes by running `build.sh` in the repository.
 
-The resultant image will then be automatically deployed using the `docker-compose.yml.dev` (make changes as necessary beforehand) in the directory and the `build/` folder will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary.
+## Local Development Setup
 
-```bash
-$ chmod +x build.sh
-$ ./build.sh
+1. **Build the image**  
+   Edit and run [`build.sh`](https://github.com/kevpam/Calibre-Web-Automated/blob/main/build.sh) to build a local Docker image of Calibre-Web-Automated.  See the script itself for usage details.
+
+2. **Edit [`docker-compose.yml.dev`](https://github.com/kevpam/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**  
+   Update at minimum:  
+   - `image:` → your image tag from step 1  
+   - `volumes mounts` → paths for config, ingest, library, plugins  
+  
+ To have the app refresh dynamically in response to code changes, see comments in the  [`docker-compose.yml.dev`](https://github.com/kevpam/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)** for details and examples on "live-edit" mounts.
+
+3. **Start the service**  
+```
+$ docker compose -f docker-compose.yml.dev up -d
 ```
 
-Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
+4. **Log in & configure**  
+   - Sign in with the [default admin login](https://github.com/kevpam/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)  
+   - Optionally follow [Post-Install Tasks](https://github.com/kevpam/Calibre-Web-Automated?tab=readme-ov-file#post-install-tasks)-
 
 ---
 

@@ -255,12 +255,10 @@
                     <form id="have_read_form" action="{{ url_for('web.toggle_read', book_id=entry.id) }}"
                           method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <label class="block-label">
-                            <input id="have_read_cb" data-checked="{{ _('Mark As Unread') }}"
-                                   data-unchecked="{{ _('Mark As Read') }}" type="checkbox"
-                                   {% if entry.read_status %}checked{% endif %}>
-                            <span data-toggle="tooltip" title="{{_('Mark Book as Read or Unread')}}">{{ _('Read') }}</span>
-                        </label>
+                        <!-- Checkbox first, then label sibling so theme CSS (#have_read_cb + label:before) applies -->
+                        <input id="have_read_cb" data-checked="{{ _('Mark As Unread') }}"
+                               data-unchecked="{{ _('Mark As Read') }}" type="checkbox"
+                               {% if entry.read_status %}checked{% endif %}>
                     </form>
                     </p>
                     {% if current_user.check_visibility(32768) %}
@@ -268,12 +266,10 @@
                         <form id="archived_form" action="{{ url_for('web.toggle_archived', book_id=entry.id) }}"
                               method="POST">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <label class="block-label">
-                                <input id="archived_cb" data-checked="{{ _('Restore from archive') }}"
-                                       data-unchecked="{{ _('Add to archive') }}" type="checkbox"
-                                       {% if entry.is_archived %}checked{% endif %}>
-                                <span data-toggle="tooltip" title="{{_('Mark Book as archived or not, to hide it in Calibre-Web and delete it from Kobo Reader')}}">{{ _('Archive') }}</span>
-                            </label>
+                            <!-- Checkbox first, then label sibling so theme CSS (#archived_cb + label:before) applies -->
+                            <input id="archived_cb" data-checked="{{ _('Restore from archive') }}"
+                                   data-unchecked="{{ _('Add to archive') }}" type="checkbox"
+                                   {% if entry.is_archived %}checked{% endif %}>
                         </form>
                         </p>
                     {% endif %}

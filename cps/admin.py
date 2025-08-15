@@ -901,13 +901,11 @@ def delete_restriction(res_type, user_id):
             usr = current_user
         if element['id'].startswith('a'):
             usr.allowed_column_value = restriction_deletion(element, usr.list_allowed_column_values)
-            ub.session_commit("Deleted allowed columns of user {}: {}".format(usr.name,
-                                                                              usr.list_allowed_column_values()))
+            ub.session_commit("Deleted allowed columns of user {}: {}".format(usr.name, usr.list_allowed_column_values()))
 
         elif element['id'].startswith('d'):
             usr.denied_column_value = restriction_deletion(element, usr.list_denied_column_values)
-            ub.session_commit("Deleted denied columns of user {}: {}".format(usr.name,
-                                                                             usr.list_denied_column_values()))
+            ub.session_commit("Deleted denied columns of user {}: {}".format(usr.name, usr.list_denied_column_values()))
     return ""
 
 
@@ -2074,74 +2072,74 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
                 content.theme = theme_val
         except Exception:
             pass
+    # Proceed with remaining updates (previously skipped when 'theme' in to_save)
+    if not ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
+                                            ub.User.id != content.id).count() and 'admin_role' not in to_save:
+        log.warning("No admin user remaining, can't remove admin role from {}".format(content.name))
+        flash(_("No admin user remaining, can't remove admin role"), category="error")
+        return redirect(url_for('admin.admin'))
+
+    val = [int(k[5:]) for k in to_save if k.startswith('show_')]
+    sidebar, __ = get_sidebar_config()
+    for element in sidebar:
+        value = element['visibility']
+        if value in val and not content.check_visibility(value):
+            content.sidebar_view |= value
+        elif value not in val and content.check_visibility(value):
+            content.sidebar_view &= ~value
+
+    if to_save.get("Show_detail_random"):
+        content.sidebar_view |= constants.DETAIL_RANDOM
     else:
-        if not ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
-                                                ub.User.id != content.id).count() and 'admin_role' not in to_save:
-            log.warning("No admin user remaining, can't remove admin role from {}".format(content.name))
-            flash(_("No admin user remaining, can't remove admin role"), category="error")
-            return redirect(url_for('admin.admin'))
+        content.sidebar_view &= ~constants.DETAIL_RANDOM
 
-        val = [int(k[5:]) for k in to_save if k.startswith('show_')]
-        sidebar, __ = get_sidebar_config()
-        for element in sidebar:
-            value = element['visibility']
-            if value in val and not content.check_visibility(value):
-                content.sidebar_view |= value
-            elif value not in val and content.check_visibility(value):
-                content.sidebar_view &= ~value
-
-        if to_save.get("Show_detail_random"):
-            content.sidebar_view |= constants.DETAIL_RANDOM
+    old_state = content.kobo_only_shelves_sync
+    content.kobo_only_shelves_sync = int(to_save.get("kobo_only_shelves_sync") == "on") or 0
+    # 1 -> 0: nothing has to be done
+    # 0 -> 1: all synced books have to be added to archived books, + currently synced shelfs
+    # which don't have to be synced have to be removed (added to Shelf archive)
+    if old_state == 0 and content.kobo_only_shelves_sync == 1:
+        kobo_sync_status.update_on_sync_shelfs(content.id)
+    if to_save.get("default_language"):
+        content.default_language = to_save["default_language"]
+    if to_save.get("locale"):
+        content.locale = to_save["locale"]
+    try:
+        anonymous = content.is_anonymous
+        content.role = constants.selected_roles(to_save)
+        if anonymous:
+            content.role |= constants.ROLE_ANONYMOUS
         else:
-            content.sidebar_view &= ~constants.DETAIL_RANDOM
+            content.role &= ~constants.ROLE_ANONYMOUS
+            if to_save.get("password", ""):
+                content.password = generate_password_hash(helper.valid_password(to_save.get("password", "")))
 
-        old_state = content.kobo_only_shelves_sync
-        content.kobo_only_shelves_sync = int(to_save.get("kobo_only_shelves_sync") == "on") or 0
-        # 1 -> 0: nothing has to be done
-        # 0 -> 1: all synced books have to be added to archived books, + currently synced shelfs
-        # which don't have to be synced have to be removed (added to Shelf archive)
-        if old_state == 0 and content.kobo_only_shelves_sync == 1:
-            kobo_sync_status.update_on_sync_shelfs(content.id)
-        if to_save.get("default_language"):
-            content.default_language = to_save["default_language"]
-        if to_save.get("locale"):
-            content.locale = to_save["locale"]
-        try:
-            anonymous = content.is_anonymous
-            content.role = constants.selected_roles(to_save)
-            if anonymous:
-                content.role |= constants.ROLE_ANONYMOUS
-            else:
-                content.role &= ~constants.ROLE_ANONYMOUS
-                if to_save.get("password", ""):
-                    content.password = generate_password_hash(helper.valid_password(to_save.get("password", "")))
-
-            new_email = valid_email(to_save.get("email", content.email))
-            if not new_email:
-                raise Exception(_("Email can't be empty and has to be a valid Email"))
-            if new_email != content.email:
-                content.email = check_email(new_email)
-            # Query username, if not existing, change
-            if to_save.get("name", content.name) != content.name:
-                if to_save.get("name") == "Guest":
-                    raise Exception(_("Guest Name can't be changed"))
-                content.name = check_username(to_save["name"])
-            if to_save.get("kindle_mail") != content.kindle_mail:
-                content.kindle_mail = valid_email(to_save["kindle_mail"]) if to_save["kindle_mail"] else ""
-        except Exception as ex:
-            log.error(ex)
-            flash(str(ex), category="error")
-            return render_title_template("user_edit.html",
-                                         translations=translations,
-                                         languages=languages,
-                                         mail_configured=config.get_mail_server_configured(),
-                                         kobo_support=kobo_support,
-                                         new_user=0,
-                                         content=content,
-                                         config=config,
-                                         registered_oauth=oauth_check,
-                                         title=_("Edit User %(nick)s", nick=content.name),
-                                         page="edituser")
+        new_email = valid_email(to_save.get("email", content.email))
+        if not new_email:
+            raise Exception(_("Email can't be empty and has to be a valid Email"))
+        if new_email != content.email:
+            content.email = check_email(new_email)
+        # Query username, if not existing, change
+        if to_save.get("name", content.name) != content.name:
+            if to_save.get("name") == "Guest":
+                raise Exception(_("Guest Name can't be changed"))
+            content.name = check_username(to_save["name"])
+        if to_save.get("kindle_mail") != content.kindle_mail:
+            content.kindle_mail = valid_email(to_save["kindle_mail"]) if to_save["kindle_mail"] else ""
+    except Exception as ex:
+        log.error(ex)
+        flash(str(ex), category="error")
+        return render_title_template("user_edit.html",
+                                     translations=translations,
+                                     languages=languages,
+                                     mail_configured=config.get_mail_server_configured(),
+                                     kobo_support=kobo_support,
+                                     new_user=0,
+                                     content=content,
+                                     config=config,
+                                     registered_oauth=oauth_check,
+                                     title=_("Edit User %(nick)s", nick=content.name),
+                                     page="edituser")
     try:
         ub.session_commit()
         flash(_("User '%(nick)s' updated", nick=content.name), category="success")

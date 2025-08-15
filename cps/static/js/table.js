@@ -46,6 +46,10 @@ $(function() {
         $('#books-table').bootstrapTable('checkAll');
     });
 
+    $(document).on('click', '#unselect_all', function() {
+        $('#books-table').bootstrapTable('uncheckAll');
+    });
+
     $("#cancel_task_confirm").click(function() {
         //get data-id attribute of the clicked element
         var taskId = $(this).data("task-id");

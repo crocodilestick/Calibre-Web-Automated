@@ -58,9 +58,9 @@ class NewBookProcessor:
             self.ingest_ignored_formats = [self.ingest_ignored_formats]
         
         # Ignore temporary files during download
-        self.ingest_ignored_formats.append(".crdownload") # Chromium based 
-        self.ingest_ignored_formats.append(".download") # Safari
-        self.ingest_ignored_formats.append(".part") #Firefox and tools (ie curl)
+        self.ingest_ignored_formats.append("crdownload") # Chromium based 
+        self.ingest_ignored_formats.append("download") # Safari
+        self.ingest_ignored_formats.append("part") #Firefox and tools (ie curl)
         
         self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats']
         self.is_kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']

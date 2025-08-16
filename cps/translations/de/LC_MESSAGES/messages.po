@@ -635,7 +635,7 @@ msgstr "Portugisisch"
 
 #: cps/constants.py:208
 msgid "Portuguese (Brazil)"
-msgstr "Portugizisch (Brasilien)"
+msgstr "Portugisisch (Brasilien)"
 
 #: cps/constants.py:209
 msgid "Russian"
@@ -686,20 +686,25 @@ msgid ""
 "Library Refresh 🔄 The book ingest service is already running ✋ Please wait "
 "until it has finished before trying again ⌛"
 msgstr ""
+"Bibliothek aktualisieren 🔄 Der Ingest-Dienst läuft bereits ✋ Bitte warte "
+"bis der Lauf beendet wurde, vor erneuter Aktualisierung ⌛"
 
 #: cps/cwa_functions.py:115
 msgid "Library Refresh 🔄 Library refreshed & ingest process complete! ✅"
-msgstr ""
+msgstr "Bibliothek aktualisieren 🔄 Bibliothek aktualisiert & Eingangsverarbeitung beendet! ✅"
 
 #: cps/cwa_functions.py:117
 msgid "Library Refresh 🔄 An unexpected error occurred, check the logs ⛔"
 msgstr ""
+"Bibliothek aktualisieren 🔄 Ein unerwarteter Fehler ist aufgetreten, "
+"bitte Logs prüfen ⛔"
 
 #: cps/cwa_functions.py:137
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr ""
+"Bibliothek aktualisieren 🔄 Prüfe auf nicht aktualisierte Bücher, bitte warten..."
 
 #: cps/cwa_functions.py:247
 msgid "Calibre-Web Automated User Settings"
@@ -708,7 +713,7 @@ msgstr "Calibre-Web Automated Benutzereinstellungen"
 #: cps/cwa_functions.py:269 cps/cwa_functions.py:271 cps/cwa_functions.py:275
 #: cps/cwa_functions.py:277 cps/cwa_functions.py:280 cps/cwa_functions.py:282
 msgid "Timestamp"
-msgstr ""
+msgstr "Zeitstempel"
 
 #: cps/cwa_functions.py:269 cps/cwa_functions.py:271
 #, fuzzy
@@ -727,7 +732,7 @@ msgstr "Autor"
 
 #: cps/cwa_functions.py:269
 msgid "Trigger Type"
-msgstr ""
+msgstr "Trigger Typ"
 
 #: cps/cwa_functions.py:271 cps/cwa_functions.py:277
 #, fuzzy
@@ -742,23 +747,23 @@ msgstr "Vietnamesisch"
 
 #: cps/cwa_functions.py:275
 msgid "Manual?"
-msgstr ""
+msgstr "Manuell?"
 
 #: cps/cwa_functions.py:275
 msgid "No. Fixes"
-msgstr ""
+msgstr "Anz. Korrekturen"
 
 #: cps/cwa_functions.py:275 cps/cwa_functions.py:280 cps/cwa_functions.py:282
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "Original gesichert?"
 
 #: cps/cwa_functions.py:277
 msgid "Fixes Applied"
-msgstr ""
+msgstr "Korrekturen angewendet"
 
 #: cps/cwa_functions.py:282
 msgid "Original Format"
-msgstr ""
+msgstr "Originalformat"
 
 #: cps/cwa_functions.py:282
 #, fuzzy
@@ -2741,7 +2746,7 @@ msgstr ""
 
 #: cps/templates/config_db.html:37
 msgid "Split Library Functionality"
-msgstr ""
+msgstr "Bibliothek abspalten"
 
 #: cps/templates/config_db.html:40
 #, fuzzy
@@ -3150,6 +3155,8 @@ msgid ""
 "Default Theme (users can select their own preferred theme however new users "
 "will receive this theme by default)"
 msgstr ""
+"Default Design (Benutzer können ihr präferiertes Design selbst einstellen, "
+"standardmäßig verwenden neue Benutzer dieses Design)"
 
 #: cps/templates/config_view_edit.html:42
 msgid "Standard Theme"
@@ -3164,10 +3171,12 @@ msgid ""
 "Per-user theme switching enabled; this global default only affects new users "
 "& anonymous"
 msgstr ""
+"Design-Wechsel pro Benutzer aktiviert; diese globale Standardeinstellung “
+"wirkt sich nur auf neue & anonyme Benutzer aus.“
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
-msgstr "Regulärer Ausdruck, um Spalten zu ignorien"
+msgstr "Regulärer Ausdruck, um Spalten zu ignorieren"
 
 #: cps/templates/config_view_edit.html:52
 msgid "Link Read/Unread Status to Calibre Column"
@@ -3544,7 +3553,7 @@ msgstr "Logout"
 
 #: cps/templates/layout.html:143
 msgid "Switch Theme"
-msgstr "Thema wechseln"
+msgstr "Design wechseln"
 
 #: cps/templates/layout.html:162 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
@@ -3557,11 +3566,11 @@ msgstr "Bibliothek aktualisieren"
 
 #: cps/templates/layout.html:205
 msgid "See Changelog"
-msgstr ""
+msgstr "Siehe Änderungsprotokoll"
 
 #: cps/templates/layout.html:215
 msgid "Contribute here!"
-msgstr ""
+msgstr "Hier mitmachen!"
 
 #: cps/templates/layout.html:248
 msgid "Please do not refresh the page"

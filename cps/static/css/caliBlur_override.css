@@ -101,6 +101,19 @@ div#Downloads_list {
     }
 }
 
+/* Fixes Archive and Have Read checkboxes in book view from being uniteractable */
+form#have_read_form > label.block-label::before {
+    top: 19px !important;
+    left: 20px;
+    z-index: -1 !important;
+}
+
+form#archived_form > label.block-label::before {
+    top: 14px !important;
+    left: 69px;
+    z-index: -1 !important;
+}
+
 /* Fixing mobile book view */
 @media only screen and (max-width: 767px) {
     .identifiers {

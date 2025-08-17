@@ -140,3 +140,17 @@ $("#archived_cb").on("change", function() {
             });
     });
 })();
+
+// Ensure tooltip on single-format Read in Browser link
+$(function () {
+    var $rb = $("#readbtn");
+    if ($rb.length) {
+        // Fallback title if missing
+        if (!$.trim($rb.attr("title"))) {
+            $rb.attr("title", $.trim($rb.text()));
+        }
+        try {
+            $rb.tooltip({ container: "body", trigger: "hover focus", placement: "bottom", viewport: "body" });
+        } catch (e) { /* noop */ }
+    }
+});

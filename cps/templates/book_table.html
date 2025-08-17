@@ -69,6 +69,15 @@
       </div>
         <div class="btn btn-default disabled" id="table_xchange" ><span class="glyphicon glyphicon-arrow-up"></span><span class="glyphicon glyphicon-arrow-down"></span>{{_(' Exchange author & title')}}
       </div>
+      <!-- New Select all button -->
+      {% if current_user.role_edit() %}
+      <div class="btn btn-default" id="select_all">
+        {{ _('Select all') }}
+      </div>
+      <div class="btn btn-default" id="unselect_all">
+        {{ _('Unselect all') }}
+      </div>
+      {% endif %}
     </div>
     <div>
       <br>

@@ -398,7 +398,9 @@ def copyToDrive(drive, uploadFile, createRoot, replaceFiles,
             if len(existingFiles) > 0:
                 driveFile = existingFiles[0]
             else:
-                driveFile = drive.CreateFile({'title': os.path.basename(uploadFile).replace("'", r"\'"),
+                # Do not escape apostrophes in the actual file title; escaping is only needed in Drive query strings.
+                # Using a raw backslash here causes filenames like "An insider\'s guide.epub" to be created.
+                driveFile = drive.CreateFile({'title': os.path.basename(uploadFile),
                                               'parents': [{"kind": "drive#fileLink", 'id': parent['id']}], })
             driveFile.SetContentFile(os.path.join(prevDir, uploadFile))
             driveFile.Upload()

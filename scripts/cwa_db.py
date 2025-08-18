@@ -37,7 +37,7 @@ class CWA_DB:
         con = None
         cur = None
         try:
-            con = sqlite3.connect(self.db_path + self.db_file)
+            con = sqlite3.connect(self.db_path + self.db_file, timeout=30)
         except sqlError as e:
             print(f"[cwa-db]: The following error occurred while trying to connect to the CWA Enforcement DB: {e}")
             sys.exit(0)

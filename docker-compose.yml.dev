@@ -11,6 +11,9 @@ services:
       - TZ=UTC
       # Hardcover API Key required for Hardcover as a Metadata Provider, get one here: https://docs.hardcover.app/api/getting-started/
       - HARDCOVER_TOKEN=your_hardcover_api_key_here
+      # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues & chown to prevent permissions issues
+      # Accepts: true/false (default: false)
+      - NETWORK_SHARE_MODE=false
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
       - /path/to/config/folder:/config 

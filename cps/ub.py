@@ -708,7 +708,8 @@ def create_admin_user(_session):
 
 def init_db_thread():
     global app_DB_path
-    engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False)
+    engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False,
+                           connect_args={'timeout': 30})
 
     Session = scoped_session(sessionmaker())
     Session.configure(bind=engine)
@@ -721,7 +722,8 @@ def init_db(app_db_path):
     global app_DB_path
 
     app_DB_path = app_db_path
-    engine = create_engine('sqlite:///{0}'.format(app_db_path), echo=False)
+    engine = create_engine('sqlite:///{0}'.format(app_db_path), echo=False,
+                           connect_args={'timeout': 30})
 
     Session = scoped_session(sessionmaker())
     Session.configure(bind=engine)
@@ -762,7 +764,8 @@ def password_change(user_credentials=None):
 
 
 def get_new_session_instance():
-    new_engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False)
+    new_engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False,
+                               connect_args={'timeout': 30})
     new_session = scoped_session(sessionmaker())
     new_session.configure(bind=new_engine)
 

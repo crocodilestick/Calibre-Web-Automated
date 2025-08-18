@@ -91,7 +91,7 @@ class NewBookProcessor:
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db")
+    con = sqlite3.connect("/config/app.db", timeout=30)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -233,7 +233,7 @@ class NewBookProcessor:
         if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
             try:
                 calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-                with sqlite3.connect(calibre_db_path) as con:
+                with sqlite3.connect(calibre_db_path, timeout=30) as con:
                     cur = con.cursor()
                     pre_import_max_timestamp = cur.execute('SELECT MAX(timestamp) FROM books').fetchone()[0]
             except Exception as e:
@@ -295,7 +295,7 @@ class NewBookProcessor:
             if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
                 try:
                     calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-                    with sqlite3.connect(calibre_db_path) as con:
+                    with sqlite3.connect(calibre_db_path, timeout=30) as con:
                         cur = con.cursor()
                         # pre_import_max_timestamp may be None (empty library) -> update all rows where timestamp < last_modified
                         if pre_import_max_timestamp is None:
@@ -335,7 +335,11 @@ class NewBookProcessor:
 
     def set_library_permissions(self):
         try:
-            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+            if not nsm:
+                subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+            else:
+                print(f"[ingest-processor] NETWORK_SHARE_MODE=true detected; skipping chown of {self.library_dir}", flush=True)
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}", flush=True)
 

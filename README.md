@@ -81,6 +81,16 @@ ___
   - Some users are successful in deploying CWA across NFS shares however doing so **can produce a lot of hard to diagnose issues** that take time away from users with actual issues
   - **Therefore as of V3.0.0, deployments over NFS shares are "unsupported"**, meaning **you are free to do so**, but **support will not be provided for users facing issues**
 
+### Network shares and SQLite WAL mode
+
+- CWA optimizes SQLite concurrency by enabling Write-Ahead Logging (WAL) on local disks.
+- Some network filesystems (NFS/SMB) do not fully support WAL or reliable file locking, which can cause intermittent "database is locked" errors or corruption risks.
+- If you are deploying on a network share, set the following environment variable to disable WAL:
+
+  - `NETWORK_SHARE_MODE=true`
+
+This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.db` settings database. It also disables recursive ownership changes (`chown`) performed by init/maintenance scripts to avoid permission issues on network filesystems. Default is `false` (WAL enabled) for better performance on local disks.
+
 ## **_Features:_**
 
 ### CWA supports all Stock CW Features:
@@ -268,6 +278,12 @@ services:
       - TZ=UTC
       # Hardcover API Key required for Hardcover as a Metadata Provider, get one here: https://docs.hardcover.app/api/getting-started/
       - HARDCOVER_TOKEN=your_hardcover_api_key_here
+  # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
+  # Accepts: true/false (default: false)
+  - NETWORK_SHARE_MODE=false
+  # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
+  # Accepts: true/false (default: false)
+  - NETWORK_SHARE_MODE=false
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
       - /path/to/config/folder:/config 

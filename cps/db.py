@@ -612,11 +612,20 @@ class CalibreDB:
             check_engine = create_engine('sqlite://',
                                          echo=False,
                                          isolation_level="SERIALIZABLE",
-                                         connect_args={'check_same_thread': False},
+                                         connect_args={'check_same_thread': False, 'timeout': 30},
                                          poolclass=StaticPool)
             with check_engine.begin() as connection:
                 connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
                 connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                # Try enabling WAL to improve concurrency unless running on a network share
+                # Controlled by env var NETWORK_SHARE_MODE (default False)
+                try:
+                    nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+                    if not nsm:
+                        connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
+                        connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
+                except Exception:
+                    pass
                 local_session = scoped_session(sessionmaker())
                 local_session.configure(bind=connection)
                 database_uuid = local_session().query(Library_Id).one_or_none()
@@ -649,11 +658,20 @@ class CalibreDB:
             cls.engine = create_engine('sqlite://',
                                        echo=False,
                                        isolation_level="SERIALIZABLE",
-                                       connect_args={'check_same_thread': False},
+                                       connect_args={'check_same_thread': False, 'timeout': 30},
                                        poolclass=StaticPool)
             with cls.engine.begin() as connection:
                 connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
                 connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                # Try enabling WAL to improve concurrency unless running on a network share
+                # Controlled by env var NETWORK_SHARE_MODE (default False)
+                try:
+                    nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+                    if not nsm:
+                        connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
+                        connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
+                except Exception:
+                    pass
 
             conn = cls.engine.connect()
             # conn.text_factory = lambda b: b.decode(errors = 'ignore') possible fix for #1302

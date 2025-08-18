@@ -51,6 +51,7 @@ from .string_helper import strip_whitespaces
 # CWA Imports
 import sqlite3
 import time
+import time
 
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
@@ -382,14 +383,22 @@ def cwa_get_num_books_in_library() -> int:
     try:
         # Path to user's Calibre library's metadata.db
         db_path = os.path.join(cwa_get_library_location(), "metadata.db")
-        # Connect to the SQLite database
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        # Query the number of books
-        cursor.execute("SELECT COUNT(*) FROM books")
-        count = cursor.fetchone()[0]
-        # Close the connection
-        conn.close()
+        # Connect to the SQLite database with simple retry for transient locks
+        retries, count = 3, 0
+        while retries:
+            try:
+                conn = sqlite3.connect(db_path, timeout=30)
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM books")
+                count = cursor.fetchone()[0]
+                conn.close()
+                break
+            except sqlite3.OperationalError as e:
+                if 'locked' in str(e).lower() and retries > 1:
+                    time.sleep(0.1)
+                    retries -= 1
+                    continue
+                raise
         # Return the result
         return count
     except Exception:
@@ -829,10 +838,21 @@ def health_check():
 
     try:
         db_path = os.path.join(cwa_get_library_location(), "metadata.db")
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1")
-        db_up = True
+        retries = 3
+        while retries:
+            try:
+                conn = sqlite3.connect(db_path, timeout=30)
+                cursor = conn.cursor()
+                cursor.execute("SELECT 1")
+                db_up = True
+                conn.close()
+                break
+            except sqlite3.OperationalError as e:
+                if 'locked' in str(e).lower() and retries > 1:
+                    time.sleep(0.1)
+                    retries -= 1
+                    continue
+                raise
     except Exception:
         db_up = False
 

@@ -47,11 +47,15 @@ GROUP_NAME = "abc"
 uid = pwd.getpwnam(USER_NAME).pw_uid
 gid = grp.getgrnam(GROUP_NAME).gr_gid
 
-# Set permissions for log file
+# Set permissions for log file (skip on network shares)
 try:
-    subprocess.run(["chown", f"{uid}:{gid}", convert_library_log_file], check=True)
+    nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+    if not nsm:
+        subprocess.run(["chown", f"{uid}:{gid}", convert_library_log_file], check=True)
+    else:
+        print(f"[convert-library] NETWORK_SHARE_MODE=true detected; skipping chown of {convert_library_log_file}", flush=True)
 except subprocess.CalledProcessError as e:
-    print(f"[convert-library] An error occurred while attempting to recursively set ownership of {convert_library_log_file} to abc:abc. See the following error:\n{e}", flush=True)
+    print(f"[convert-library] An error occurred while attempting to set ownership of {convert_library_log_file} to abc:abc. See the following error:\n{e}", flush=True)
 
 def print_and_log(string) -> None:
     """ Ensures the provided string is passed to STDOUT and stored in the runs log file """
@@ -117,7 +121,7 @@ class LibraryConverter:
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db")
+    con = sqlite3.connect("/config/app.db", timeout=30)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -363,8 +367,12 @@ class LibraryConverter:
 
     def set_library_permissions(self):
         try:
-            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
-            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Successfully set ownership of new files in {self.library_dir} to abc:abc.")
+            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+            if not nsm:
+                subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Successfully set ownership of new files in {self.library_dir} to abc:abc.")
+            else:
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) NETWORK_SHARE_MODE=true detected; skipping chown of {self.library_dir}")
         except subprocess.CalledProcessError as e:
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
 

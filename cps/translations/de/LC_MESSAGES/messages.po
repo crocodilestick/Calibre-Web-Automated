@@ -3171,8 +3171,7 @@ msgid ""
 "Per-user theme switching enabled; this global default only affects new users "
 "& anonymous"
 msgstr ""
-"Design-Wechsel pro Benutzer aktiviert; diese globale Standardeinstellung “
-"wirkt sich nur auf neue & anonyme Benutzer aus.“
+"Design-Wechsel pro Benutzer aktiviert; diese globale Standardeinstellung wirkt sich nur auf neue & anonyme Benutzer aus."
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"

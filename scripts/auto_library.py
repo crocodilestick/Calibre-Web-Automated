@@ -75,7 +75,12 @@ class AutoLibrary:
     # In the case of multiple metadata.db files, the user is notified and the one with the largest filesize is chosen
     def check_for_existing_library(self) -> bool: 
         files_in_library = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(self.library_dir) for f in filenames]
-        db_files = [f for f in files_in_library if "metadata.db" in f]
+        # Consider metadata.db files across subfolders, but ignore SQLite sidecars created by WAL/journal modes
+        db_files = []
+        for f in files_in_library:
+            base = os.path.basename(f)
+            if "metadata.db" in base and not (base.endswith("-wal") or base.endswith("-shm") or base.endswith("-journal")):
+                db_files.append(f)
         if len(db_files) == 1:
             self.metadb_path = db_files[0]
             print(f"[cwa-auto-library]: Existing library found at {self.lib_path}, mounting now...")

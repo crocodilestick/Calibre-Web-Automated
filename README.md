@@ -93,8 +93,9 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 
 #### File watching on network shares
 
-- By default, CWA uses Linux inotify (via `inotifywait`) to detect new files in the ingest folder with minimal latency and overhead.
+- By default, CWA uses Linux `inotify` (via `inotifywait`) to detect new files in the ingest folder with minimal latency and overhead.
 - On network shares (NFS/SMB), filesystem events can be unreliable or unavailable. When `NETWORK_SHARE_MODE=true` is set, CWA switches the ingest and metadata watcher services to a polling-based watcher that periodically scans for changes. This improves reliability on NAS/network mounts at the cost of slightly higher I/O and up to a few seconds of latency.
+- On Docker Desktop (Windows/macOS), the container runs on a LinuxKit/WSL2 VM and host-mounted paths may not propagate `inotify` events reliably. CWA auto-detects Docker Desktop at startup and prefers the same polling watcher for reliability.
 - Advanced: You can also force polling regardless of share mode by setting `CWA_WATCH_MODE=poll`.
 
 ## **_Features:_**

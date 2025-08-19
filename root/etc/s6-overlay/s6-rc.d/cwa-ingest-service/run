@@ -22,6 +22,26 @@ run_fallback() {
         done
 }
 
+# Detect if running under Docker Desktop (Windows/macOS) and prefer polling
+is_docker_desktop() {
+        local osr mounts
+        osr=$(cat /proc/sys/kernel/osrelease 2>/dev/null || true)
+        # WSL2 / Windows kernel markers
+        if echo "$osr" | grep -qi 'microsoft'; then
+                return 0
+        fi
+        # LinuxKit kernel used by Docker Desktop VM
+        if echo "$osr" | grep -qi 'linuxkit'; then
+                return 0
+        fi
+        # Mount hints for Desktop host path mappings
+        mounts=$(cat /proc/self/mountinfo 2>/dev/null || true)
+        if echo "$mounts" | grep -Eqi '/host_mnt/|/Users/|osxfs|virtiofs.*docker'; then
+                return 0
+        fi
+        return 1
+}
+
 # Prefer polling when running over network shares to better handle NFS/SMB semantics
 if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
         echo "[cwa-ingest-service] NETWORK_SHARE_MODE=true detected; using polling watcher instead of inotify"
@@ -31,6 +51,13 @@ fi
 
 # Allow admins to force polling mode explicitly (defaults to inotify)
 if [ "${CWA_WATCH_MODE:-inotify}" = "poll" ]; then
+        run_fallback
+        exit 0
+fi
+
+# Prefer polling on Docker Desktop (Windows/macOS) for reliable detection on host-mounted paths
+if is_docker_desktop; then
+        echo "[cwa-ingest-service] Docker Desktop environment detected; using polling watcher instead of inotify"
         run_fallback
         exit 0
 fi

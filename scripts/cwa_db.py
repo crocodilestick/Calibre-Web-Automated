@@ -181,13 +181,9 @@ class CWA_DB:
         """Sets default settings for new tables and keeps track if the user is using the default settings or not.\n\n
         If the argument 'force' is set to True, the function instead sets all settings to their default values"""
         if force:
-            for setting in self.cwa_default_settings:                    
-                if isinstance(self.cwa_default_settings[setting], int):
-                    self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
-                    self.con.commit()
-                else:
-                    self.cur.execute(f'UPDATE cwa_settings SET {setting}="{self.cwa_default_settings[setting]}";')
-                    self.con.commit()
+            for setting in self.cwa_default_settings:
+                self.cur.execute(f"UPDATE cwa_settings SET {setting}=?;", (self.cwa_default_settings[setting],))
+                self.con.commit()
             print("[cwa-db] CWA Default Settings successfully applied!")
             return
         try:
@@ -197,11 +193,8 @@ class CWA_DB:
     
         except IndexError:
             print("[cwa-db]: No existing CWA settings detected, applying default CWA settings...")
-            for setting in self.cwa_default_settings:                    
-                if isinstance(self.cwa_default_settings[setting], int):
-                    self.cur.execute(f"UPDATE cwa_settings SET {setting}={self.cwa_default_settings[setting]};")
-                else:
-                    self.cur.execute(f'UPDATE cwa_settings SET {setting}="{self.cwa_default_settings[setting]}";')
+            for setting in self.cwa_default_settings:
+                self.cur.execute(f"UPDATE cwa_settings SET {setting}=?;", (self.cwa_default_settings[setting],))
                 self.con.commit()
             print("[cwa-db] CWA Default Settings successfully applied!")
             return
@@ -249,10 +242,8 @@ class CWA_DB:
             if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats":
                 result[setting] = ','.join(result[setting])
 
-            if isinstance(result[setting], int):
-                self.cur.execute(f"UPDATE cwa_settings SET {setting}={result[setting]};")
-            else:
-                self.cur.execute(f'UPDATE cwa_settings SET {setting}="{result[setting]}";')
+            # Use parameterized queries to safely handle non-English characters and quotes
+            self.cur.execute(f"UPDATE cwa_settings SET {setting}=?;", (result[setting],))
             self.con.commit()
         self.set_default_settings()
 

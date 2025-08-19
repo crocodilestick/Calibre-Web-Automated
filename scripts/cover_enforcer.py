@@ -16,8 +16,13 @@ import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
+import unicodedata
 
 from cwa_db import CWA_DB
+try:
+    from unidecode import unidecode  # transliteration used when unicode-filename mode is on
+except Exception:
+    unidecode = None
 
 # Global Variables
 dirs_json = "/app/calibre-web-automated/dirs.json"
@@ -73,7 +78,7 @@ class Book:
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-    con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect("/config/app.db", timeout=30)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -82,9 +87,9 @@ class Book:
             db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
             con.close()
             return {
-                "split_path":split_path,
-                "db_path":db_path
-                }
+                "split_path": split_path,
+                "db_path": db_path
+            }
         else:
             con.close()
             return None
@@ -129,7 +134,7 @@ class Book:
             "title_author":self.title_author,
             "cover_path":self.cover_path,
             "old_metadata_path":self.old_metadata_path,
-            "self.new_metadata_path":self.new_metadata_path,
+            "new_metadata_path":self.new_metadata_path,
             "log_info":self.log_info
         }
 
@@ -154,11 +159,29 @@ class Enforcer:
         if self.split_library:
             self.calibre_library = self.split_library["split_path"]
             self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
+
+        # Read Calibre-Web setting: config_unicode_filename (True -> transliterate non-English in filenames)
+        try:
+            with sqlite3.connect("/config/app.db", timeout=30) as con:
+                cur = con.cursor()
+                self.unicode_filename = bool(cur.execute('SELECT config_unicode_filename FROM settings;').fetchone()[0])
+        except Exception:
+            self.unicode_filename = False
+
+    def _ascii_transliterate(self, s: str) -> str:
+        """Transliterate non-English characters to ASCII when configured.
+        Prefer unidecode if available; otherwise use NFKD normalization and drop diacritics."""
+        if not s:
+            return s
+        if unidecode is not None:
+            return unidecode(s)
+        # Fallback transliteration
+        return unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
             
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-    con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect("/config/app.db", timeout=30)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -167,9 +190,9 @@ class Enforcer:
             db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
             con.close()
             return {
-                "split_path":split_path,
-                "db_path":db_path
-                }
+                "split_path": split_path,
+                "db_path": db_path
+            }
         else:
             con.close()
             return None
@@ -189,7 +212,7 @@ class Enforcer:
             timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
 
             log_info = {}
-            with open(f'{change_logs_dir}/{self.args.log}', 'r') as f:
+            with open(f'{change_logs_dir}/{self.args.log}', 'r', encoding='utf-8') as f:
                 log_info = json.load(f)
             log_info['book_id'] = book_id
             log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -200,7 +223,7 @@ class Enforcer:
             timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
 
             log_info = {}
-            with open(log_path, 'r') as f:
+            with open(log_path, 'r', encoding='utf-8') as f:
                 log_info = json.load(f)
             log_info['book_id'] = book_id
             log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -209,31 +232,113 @@ class Enforcer:
 
 
     def get_book_dir_from_log(self, log_info: dict) -> str:
-        book_title = log_info['title'].strip().replace(':', '_')
-        # Correctly handle multiple authors by replacing ' & ' with ', ' before splitting
-        author_name = log_info['authors'].strip().replace(' & ', ', ').split(', ')[0]
-        book_id = log_info['book_id']
+        """Resolve the on-disk book directory prioritizing ones that contain supported files.
+        Order of preference: DB path -> any (id)-suffix dirs -> reconstructed ASCII/raw (based on config).
+        Within each, prefer the one that actually contains EPUB/AZW3. When config_unicode_filename is True,
+        prefer the ASCII path over a diacritic sibling if both exist."""
+        book_id = str(log_info['book_id']).strip()
 
-        for char in book_title:
-            if char in self.illegal_characters:
-                book_title = book_title.replace(char, '_')
-        for char in author_name:
-            if char in self.illegal_characters:
-                author_name = author_name.replace(char, '_')
+        candidate_dirs: list[str] = []
 
-        book_dir = f"{self.calibre_library}/{author_name}/{book_title} ({book_id})/"
-        log_info['file_path'] = book_dir
+        # 1) DB-based resolution (split-library aware)
+        try:
+            with sqlite3.connect(self.calibre_library, timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute('SELECT path FROM books WHERE id = ?', (book_id,)).fetchone()
+            if row and row[0]:
+                resolved = os.path.join(self.calibre_library, row[0])
+                resolved = resolved if resolved.endswith(os.sep) else resolved + os.sep
+                if os.path.isdir(resolved):
+                    candidate_dirs.append(resolved)
+                    if self.args and getattr(self.args, 'verbose', False):
+                        print(f"[cover-metadata-enforcer] Candidate from DB: {resolved}", flush=True)
+        except Exception as e:
+            if self.args and getattr(self.args, 'verbose', False):
+                print(f"[cover-metadata-enforcer] WARN: DB lookup failed for id={book_id}: {e}", flush=True)
 
-        return book_dir
+        # 2) All directories that end with (book_id)
+        target_suffix = f"({book_id})"
+        try:
+            for dirpath, dirnames, _ in os.walk(self.calibre_library):
+                for d in dirnames:
+                    if d.endswith(target_suffix):
+                        p = os.path.join(dirpath, d)
+                        p = p if p.endswith(os.sep) else p + os.sep
+                        if os.path.isdir(p):
+                            candidate_dirs.append(p)
+            if self.args and getattr(self.args, 'verbose', False):
+                if candidate_dirs:
+                    print(f"[cover-metadata-enforcer] Found {len(candidate_dirs)} candidate(s) including DB/ID-search", flush=True)
+        except Exception:
+            pass
+
+        # 3) Reconstruct from log names (ASCII vs raw) and add as last candidates
+        raw_title = str(log_info.get('title', '')).strip().replace(':', '_')
+        raw_author = str(log_info.get('authors', '')).strip().replace(' & ', ', ').split(', ')[0]
+        for ch in self.illegal_characters:
+            raw_title = raw_title.replace(ch, '_')
+            raw_author = raw_author.replace(ch, '_')
+
+        ascii_title = self._ascii_transliterate(raw_title)
+        ascii_author = self._ascii_transliterate(raw_author)
+
+        reconstructed_ascii = os.path.join(self.calibre_library, ascii_author, f"{ascii_title} ({book_id})")
+        reconstructed_raw = os.path.join(self.calibre_library, raw_author, f"{raw_title} ({book_id})")
+        # Prefer ASCII first when config demands transliteration
+        recon_order = [reconstructed_ascii, reconstructed_raw] if self.unicode_filename else [reconstructed_raw, reconstructed_ascii]
+        candidate_dirs.extend([(p if p.endswith(os.sep) else p + os.sep) for p in recon_order])
+
+        # Deduplicate while preserving order
+        seen = set()
+        deduped_candidates = []
+        for c in candidate_dirs:
+            if c not in seen:
+                seen.add(c)
+                deduped_candidates.append(c)
+
+        # Choose the first candidate that exists and contains supported files
+        for c in deduped_candidates:
+            if os.path.isdir(c):
+                sf = self.get_supported_files_from_dir(c)
+                if sf:
+                    if self.args and getattr(self.args, 'verbose', False):
+                        print(f"[cover-metadata-enforcer] Selected candidate with supported files: {c}", flush=True)
+                    log_info['file_path'] = c
+                    return c
+
+        # If none have supported files, but some dirs exist, choose best available (prefer ASCII if exists)
+        existing = [c for c in deduped_candidates if os.path.isdir(c)]
+        if existing:
+            # Try to pick ASCII-looking path if config is True
+            preferred = None
+            if self.unicode_filename:
+                for c in existing:
+                    if c.startswith(os.path.join(self.calibre_library, ascii_author) + os.sep):
+                        preferred = c
+                        break
+            if not preferred:
+                preferred = existing[0]
+            if self.args and getattr(self.args, 'verbose', False):
+                print(f"[cover-metadata-enforcer] No supported files in candidates; falling back to existing dir: {preferred}", flush=True)
+            log_info['file_path'] = preferred
+            return preferred
+
+        # Nothing exists; fall back to first reconstructed (primarily for logging)
+        fallback = deduped_candidates[0] if deduped_candidates else os.path.join(self.calibre_library, ascii_author, f"{ascii_title} ({book_id})")
+        fallback = fallback if fallback.endswith(os.sep) else fallback + os.sep
+        if self.args and getattr(self.args, 'verbose', False):
+            print(f"[cover-metadata-enforcer] Resolved via reconstructed path (not found on disk): {fallback}", flush=True)
+        log_info['file_path'] = fallback
+        return fallback
 
 
     def get_supported_files_from_dir(self, dir: str) -> list[str]:
         """ Returns a list if the book dir given contains files of one or more of the supported formats"""
-        library_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(dir) for f in filenames]
+        library_files = [os.path.join(dirpath, f) for (dirpath, dirnames, filenames) in os.walk(dir) for f in filenames]
         
         supported_files = []
         for format in self.supported_formats:
-            supported_files = supported_files + [f for f in library_files if f.endswith(f'.{format}')]
+            supported_files += [f for f in library_files if f.lower().endswith(f'.{format}')]
 
         return supported_files
 

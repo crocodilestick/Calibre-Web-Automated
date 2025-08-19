@@ -41,7 +41,7 @@ epub_fixer_log_file = "/config/epub-fixer.log"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
 # Create a FileHandler
-file_handler = logging.FileHandler(epub_fixer_log_file, mode='w')
+file_handler = logging.FileHandler(epub_fixer_log_file, mode='w', encoding='utf-8')
 # Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
 formatter = logging.Formatter(LOG_FORMAT)
@@ -413,7 +413,7 @@ def main():
         print(f"[cwa-kindle-epub-fixer] Processing given file - {args.input_file}...")
         try:
             EPUBFixer(manually_triggered=True).process(args.input_file, output_path, args.language)
-        except:
+        except Exception as e:
             print(f"[cwa-kindle-epub-fixer] ERROR - Error processing {args.input_file}: {e}")
             # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(6)

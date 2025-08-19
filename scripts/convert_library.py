@@ -31,7 +31,7 @@ convert_library_log_file = "/config/convert-library.log"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
 # Create a FileHandler
-file_handler = logging.FileHandler(convert_library_log_file, mode='w')
+file_handler = logging.FileHandler(convert_library_log_file, mode='w', encoding='utf-8')
 # Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
 formatter = logging.Formatter(LOG_FORMAT)
@@ -190,8 +190,10 @@ class LibraryConverter:
 
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Converting {filename} from {file_extension} format to {self.target_format} format...")
 
-            try: # Get Calibre Library Book ID
-                book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1] # type: ignore
+            try: # Get Calibre Library Book ID from the immediate book folder (e.g., "Title (6120)")
+                book_folder = os.path.basename(os.path.dirname(file))
+                m = re.search(r"\((\d+)\)$", book_folder)
+                book_id = m.group(1)  # type: ignore[attr-defined]
             except Exception as e:
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) A Calibre Library Book ID could not be determined for {file}. Make sure the structure of your calibre library matches the following example:\n")
                 print_and_log("Terry Goodkind/")
@@ -218,7 +220,8 @@ class LibraryConverter:
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         env=self.calibre_env,
-                        text=True
+                        text=True,
+                        encoding='utf-8'
                     ) as process:
                         for line in process.stdout: # Read from the combined stdout (which includes stderr)
                             if self.verbose:
@@ -253,7 +256,8 @@ class LibraryConverter:
                     env=self.calibre_env,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
-                    text=True
+                    text=True,
+                    encoding='utf-8'
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)
                         if self.verbose:
@@ -328,7 +332,8 @@ class LibraryConverter:
                     ['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, epub_filepath],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
-                    text=True
+                    text=True,
+                    encoding='utf-8'
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)
                         if self.verbose:

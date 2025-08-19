@@ -91,6 +91,12 @@ ___
 
 This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.db` settings database. It also disables recursive ownership changes (`chown`) performed by init/maintenance scripts to avoid permission issues on network filesystems. Default is `false` (WAL enabled) for better performance on local disks.
 
+#### File watching on network shares
+
+- By default, CWA uses Linux inotify (via `inotifywait`) to detect new files in the ingest folder with minimal latency and overhead.
+- On network shares (NFS/SMB), filesystem events can be unreliable or unavailable. When `NETWORK_SHARE_MODE=true` is set, CWA switches the ingest and metadata watcher services to a polling-based watcher that periodically scans for changes. This improves reliability on NAS/network mounts at the cost of slightly higher I/O and up to a few seconds of latency.
+- Advanced: You can also force polling regardless of share mode by setting `CWA_WATCH_MODE=poll`.
+
 ## **_Features:_**
 
 ### CWA supports all Stock CW Features:

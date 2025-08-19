@@ -229,23 +229,16 @@ def get_valid_filename(value, replace_whitespace=True, chars=128):
     """
     Returns the given string converted to a string that can be used for a clean
     filename. Limits num characters to 128 max.
+    Implementation is delegated to shared sanitizer so scripts can mirror behavior.
     """
-    if value[-1:] == '.':
-        value = value[:-1]+'_'
-    value = value.replace("/", "_").replace(":", "_").strip('\0')
-    if config.config_unicode_filename:
-        value = (unidecode.unidecode(value))
-    if replace_whitespace:
-        #  *+:\"/<>? are replaced by _
-        value = re.sub(r'[*+:\\\"/<>?]+', '_', value, flags=re.U)
-        # pipe has to be replaced with comma
-        value = re.sub(r'[|]+', ',', value, flags=re.U)
-
-    value = strip_whitespaces(value.encode('utf-8')[:chars].decode('utf-8', errors='ignore'))
-
-    if not value:
-        raise ValueError("Filename cannot be empty")
-    return value
+    # Local import to avoid import cycles at app boot
+    from cps.utils.filename_sanitizer import get_valid_filename_shared
+    return get_valid_filename_shared(
+        value,
+        replace_whitespace=replace_whitespace,
+        chars=chars,
+        unicode_filename=bool(config.config_unicode_filename)
+    )
 
 
 def split_authors(values):

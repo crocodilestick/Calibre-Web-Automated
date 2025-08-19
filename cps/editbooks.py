@@ -691,6 +691,18 @@ def do_edit_book(book_id, upload_formats=None):
         calibre_db.session.merge(book)
         calibre_db.session.commit()
 
+        # CWA: Export of changed Metadata after commit, to avoid race conditions with folder renames
+        try:
+            payload = dict(to_save)
+            payload.setdefault('title', book.title)
+            payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
+            now = datetime.now()
+            log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+            with open(log_path, 'w', encoding='utf-8') as f:
+                json.dump(payload, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            log.error_or_exception(f"Failed to write metadata change log for book {book.id}: {e}")
+
         # Stage 4: Post-commit operations (like cloud sync)
         if config.config_use_google_drive:
             gdriveutils.updateGdriveCalibreFromLocal()
@@ -790,14 +802,16 @@ def prepare_authors(authr, calibre_path, gdrive=False):
                     one_titledir = one_book.path.split('/')[1]
                     one_old_authordir = one_book.path.split('/')[0]
                     # rename author path only once per renamed author -> search all books with author name in book.path
+                    # Pass the NEW author name as target for the directory rename to avoid path mismatches
                     # das muss einmal geschehen aber pro Buch geprüft werden ansonsten habe ich das Problem das vlt. 2 gleiche Ordner bis auf Groß/Kleinschreibung vorhanden sind im Umzug
-                    new_author_dir = helper.rename_author_path(in_aut, one_old_authordir, renamed_author.name, calibre_path, gdrive)
+                    new_author_dir = helper.rename_author_path(in_aut, one_old_authordir, in_aut, calibre_path, gdrive)
                     one_book.path = os.path.join(new_author_dir, one_titledir).replace('\\', '/')
                     # rename all books in book data with the new author name and move corresponding files to new locations
                     # old_path = os.path.join(calibre_path, new_author_dir, one_titledir)
                     new_path = os.path.join(calibre_path, new_author_dir, one_titledir)
+                    # Use the NEW author for filenames as well
                     all_new_name = helper.get_valid_filename(one_book.title, chars=42) + ' - ' \
-                                   + helper.get_valid_filename(renamed_author.name, chars=42)
+                                   + helper.get_valid_filename(in_aut, chars=42)
                     # change location in database to new author/title path
                     helper.rename_all_files_on_change(one_book, new_path, new_path, all_new_name, gdrive)
 
@@ -1339,10 +1353,7 @@ def edit_cc_data(book_id, book, to_save, cc):
                                                   db.cc_classes[c.id],
                                                   calibre_db.session,
                                                   'custom')
-    # CWA Export of changed Metadata
-    now = datetime.now()
-    with open(f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book_id}.json', 'w') as f:
-        json.dump(to_save, f, indent=4)
+    # CWA: Export of changed metadata moved to do_edit_book after commit to avoid race conditions
     return changed
 
 

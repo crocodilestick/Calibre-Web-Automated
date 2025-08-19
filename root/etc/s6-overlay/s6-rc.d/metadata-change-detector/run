@@ -9,9 +9,38 @@ echo "[metadata-change-detector] Watching folder: $WATCH_FOLDER"
 # Create the folder if it doesn't exist
 install -d -o abc -g abc "$WATCH_FOLDER"
 
-# Monitor the folder for new files
-s6-setuidgid abc inotifywait -m -e close_write -e moved_to --exclude '^.*\.(swp)$' "$WATCH_FOLDER" |
-while read -r directory events filename; do
-        echo "[metadata-change-detector] New file detected: $filename"
-        python3 /app/calibre-web-automated/scripts/cover_enforcer.py "--log" "$filename"
-done
+# Monitor the folder for new files; on inotify errors, fall back to polling
+run_fallback() {
+        echo "[metadata-change-detector] Falling back to polling watcher (inotify unavailable or out of watches)" >&2
+        python3 /app/calibre-web-automated/scripts/watch_fallback.py \
+                --path "$WATCH_FOLDER" \
+                --interval 5 \
+                --exts "json,log" |
+        while read -r events filepath; do
+                filename=$(basename -- "$filepath")
+                echo "[metadata-change-detector] New file detected: $filename"
+                python3 /app/calibre-web-automated/scripts/cover_enforcer.py "--log" "$filename"
+        done
+}
+
+# Prefer polling when running over network shares to better handle NFS/SMB semantics
+if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+        echo "[metadata-change-detector] NETWORK_SHARE_MODE=true detected; using polling watcher instead of inotify"
+        run_fallback
+        exit 0
+fi
+
+# Allow admins to force polling mode explicitly (defaults to inotify)
+if [ "${CWA_WATCH_MODE:-inotify}" = "poll" ]; then
+        run_fallback
+        exit 0
+fi
+
+(
+        set -o pipefail
+        s6-setuidgid abc inotifywait -m -e close_write -e moved_to --exclude '^.*\.(swp)$' "$WATCH_FOLDER" |
+        while read -r directory events filename; do
+                echo "[metadata-change-detector] New file detected: $filename"
+                python3 /app/calibre-web-automated/scripts/cover_enforcer.py "--log" "$filename"
+        done
+) || run_fallback

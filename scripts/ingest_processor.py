@@ -91,7 +91,7 @@ class NewBookProcessor:
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-    con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect("/config/app.db", timeout=30)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -100,9 +100,9 @@ class NewBookProcessor:
             db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
             con.close()
             return {
-                "split_path":split_path,
-                "db_path":db_path
-                }
+                "split_path": split_path,
+                "db_path": db_path,
+            }
         else:
             con.close()
             return None
@@ -130,11 +130,11 @@ class NewBookProcessor:
         return can_convert, input_format
 
     def is_supported_audiobook(self) -> bool:
-         input_format = Path(self.filepath).suffix[1:]
-         if input_format in self.supported_audiobook_formats:
-             return True
-         else:
-             return False
+        input_format = Path(self.filepath).suffix[1:]
+        if input_format in self.supported_audiobook_formats:
+            return True
+        else:
+            return False
 
     def backup(self, input_file, backup_type):
         try:

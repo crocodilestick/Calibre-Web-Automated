@@ -17,6 +17,9 @@ services:
       - NETWORK_SHARE_MODE=false
       # If you want to force polling mode regardless of share type, set CWA_WATCH_MODE=poll
       # - CWA_WATCH_MODE=poll
+      # Skip the automatic library detection/mount at startup. When enabled, the auto-library service will not run.
+      # Accepts: true/yes/1 to disable auto-mount (default: false)
+      # - DISABLE_LIBRARY_AUTOMOUNT=false
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings etc.
       - /path/to/config/folder:/config 

@@ -530,6 +530,27 @@ class CalibreDB:
         self.session.expire_on_commit = expire_on_commit
         self.create_functions(self.config)
 
+    def ensure_session(self, expire_on_commit=True):
+        """Ensure a valid SQLAlchemy session exists.
+        This protects against brief windows where dispose() nulled the session during a reconnect.
+        """
+        try:
+            if self.session is None:
+                # Recreate a session from the factory if available
+                if self.session_factory is not None:
+                    self.init_session(expire_on_commit)
+                else:
+                    # As a last resort, try to rebuild the setup if config is present
+                    if self.config and getattr(self.config, 'config_calibre_dir', None):
+                        try:
+                            self.setup_db(self.config.config_calibre_dir, ub.app_DB_path)
+                            self.init_session(expire_on_commit)
+                        except Exception as ex:
+                            log.error_or_exception(ex)
+        except Exception:
+            # Never let session recovery raise in callers; they will fail later with proper logging
+            pass
+
     @classmethod
     def setup_db_cc_classes(cls, cc):
         cc_ids = []
@@ -698,13 +719,16 @@ class CalibreDB:
         cls._init = True
 
     def get_book(self, book_id):
+        self.ensure_session()
         return self.session.query(Books).filter(Books.id == book_id).first()
 
     def get_filtered_book(self, book_id, allow_show_archived=False):
+        self.ensure_session()
         return self.session.query(Books).filter(Books.id == book_id). \
             filter(self.common_filters(allow_show_archived)).first()
 
     def get_book_read_archived(self, book_id, read_column, allow_show_archived=False):
+        self.ensure_session()
         if not read_column:
             bd = (self.session.query(Books, ub.ReadBook.read_status, ub.ArchivedBook.is_archived).select_from(Books)
                   .join(ub.ReadBook, and_(ub.ReadBook.user_id == int(current_user.id), ub.ReadBook.book_id == book_id),
@@ -725,16 +749,20 @@ class CalibreDB:
                 .filter(self.common_filters(allow_show_archived)).first())
 
     def get_book_by_uuid(self, book_uuid):
+        self.ensure_session()
         return self.session.query(Books).filter(Books.uuid == book_uuid).first()
 
     def get_book_format(self, book_id, file_format):
+        self.ensure_session()
         return self.session.query(Data).filter(Data.book == book_id).filter(Data.format == file_format).first()
 
     def set_metadata_dirty(self, book_id):
+        self.ensure_session()
         if not self.session.query(Metadata_Dirtied).filter(Metadata_Dirtied.book == book_id).one_or_none():
             self.session.add(Metadata_Dirtied(book_id))
 
     def delete_dirty_metadata(self, book_id):
+        self.ensure_session()
         try:
             self.session.query(Metadata_Dirtied).filter(Metadata_Dirtied.book == book_id).delete()
             self.session.commit()
@@ -788,6 +816,8 @@ class CalibreDB:
                     pos_content_cc_filter, ~neg_content_cc_filter, archived_filter)
 
     def generate_linked_query(self, config_read_column, database):
+        # Safety: session can be briefly None during DB reconnects
+        self.ensure_session()
         if not config_read_column:
             query = (self.session.query(database, ub.ArchivedBook.is_archived, ub.ReadBook.read_status)
                      .select_from(Books)
@@ -828,11 +858,13 @@ class CalibreDB:
     # Fill indexpage with all requested data from database
     def fill_indexpage(self, page, pagesize, database, db_filter, order,
                        join_archive_read=False, config_read_column=0, *join):
+        self.ensure_session()
         return self.fill_indexpage_with_archived_books(page, database, pagesize, db_filter, order, False,
                                                        join_archive_read, config_read_column, *join)
 
     def fill_indexpage_with_archived_books(self, page, database, pagesize, db_filter, order, allow_show_archived,
                                            join_archive_read, config_read_column, *join):
+        self.ensure_session()
         pagesize = pagesize or self.config.config_books_per_page
         if current_user.show_detail_random():
             random_query = self.generate_linked_query(config_read_column, database)
@@ -877,6 +909,7 @@ class CalibreDB:
 
     # Orders all Authors in the list according to authors sort
     def order_authors(self, entries, list_return=False, combined=False):
+        self.ensure_session()
         for entry in entries:
             if combined:
                 sort_authors = entry.Books.author_sort.split('&')
@@ -913,6 +946,7 @@ class CalibreDB:
         return entries
 
     def get_typeahead(self, database, query, replace=('', ''), tag_filter=true()):
+        self.ensure_session()
         query = query or ''
         self.create_functions()
         # self.session.connection().connection.connection.create_function("lower", 1, lcase)
@@ -923,6 +957,7 @@ class CalibreDB:
         return json_dumps
 
     def check_exists_book(self, authr, title):
+        self.ensure_session()
         self.create_functions()
         # self.session.connection().connection.connection.create_function("lower", 1, lcase)
         q = list()
@@ -934,6 +969,7 @@ class CalibreDB:
             .filter(and_(Books.authors.any(and_(*q)), func.lower(Books.title).ilike("%" + title + "%"))).first()
 
     def search_query(self, term, config, *join):
+        self.ensure_session()
         strip_whitespaces(term).lower()
         self.create_functions()
         # self.session.connection().connection.connection.create_function("lower", 1, lcase)
@@ -966,6 +1002,7 @@ class CalibreDB:
         return query.filter(self.common_filters(True)).filter(or_(*filter_expression))
 
     def get_cc_columns(self, config, filter_config_custom_read=False):
+        self.ensure_session()
         tmp_cc = self.session.query(CustomColumns).filter(CustomColumns.datatype.notin_(cc_exceptions)).all()
         cc = []
         r = None
@@ -983,6 +1020,7 @@ class CalibreDB:
 
     # read search results from calibre-database and return it (function is used for feed and simple search
     def get_search_results(self, term, config, offset=None, order=None, limit=None, *join):
+        self.ensure_session()
         order = order[0] if order else [Books.sort]
         pagination = None
         result = self.search_query(term, config, *join).order_by(*order).all()
@@ -1002,6 +1040,7 @@ class CalibreDB:
 
     # Creates for all stored languages a translated speaking name in the array for the UI
     def speaking_language(self, languages=None, return_all_languages=False, with_count=False, reverse_order=False):
+        self.ensure_session()
 
         if with_count:
             if not languages:
@@ -1035,6 +1074,7 @@ class CalibreDB:
             return sorted(languages, key=lambda x: x.name, reverse=reverse_order)
 
     def create_functions(self, config=None):
+        self.ensure_session()
         # user defined sort function for calibre databases (Series, etc.)
         def _title_sort(title):
             # calibre sort stuff

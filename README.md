@@ -348,14 +348,14 @@ CWA now includes built-in KOReader syncing functionality, allowing you to sync y
 ## Local Development Setup
 
 1. **Build the image**  
-   Edit and run [`build.sh`](https://github.com/kevpam/Calibre-Web-Automated/blob/main/build.sh) to build a local Docker image of Calibre-Web-Automated.  See the script itself for usage details.
+   Edit and run [`build.sh`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/build.sh) to build a local Docker image of Calibre-Web-Automated.  See the script itself for usage details.
 
-2. **Edit [`docker-compose.yml.dev`](https://github.com/kevpam/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**  
+2. **Edit [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**  
    Update at minimum:  
    - `image:` → your image tag from step 1  
    - `volumes mounts` → paths for config, ingest, library, plugins  
   
- To have the app refresh dynamically in response to code changes, see comments in the  [`docker-compose.yml.dev`](https://github.com/kevpam/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)** for details and examples on "live-edit" mounts.
+ To have the app refresh dynamically in response to code changes, see comments in the  [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)** for details and examples on "live-edit" mounts.
 
 3. **Start the service**  
 ```
@@ -363,8 +363,8 @@ $ docker compose -f docker-compose.yml.dev up -d
 ```
 
 4. **Log in & configure**  
-   - Sign in with the [default admin login](https://github.com/kevpam/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)  
-   - Optionally follow [Post-Install Tasks](https://github.com/kevpam/Calibre-Web-Automated?tab=readme-ov-file#post-install-tasks)-
+   - Sign in with the [default admin login](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)  
+   - Optionally follow [Post-Install Tasks](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#post-install-tasks)-
 
 ---
 

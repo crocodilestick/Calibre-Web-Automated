@@ -113,6 +113,62 @@ $(function() {
         lastBooksTableIndex = null;
     });
 
+    // Add tooltip to row-select checkboxes (and reapply on table updates)
+    function applyBooksTableCheckboxTooltips() {
+        var $checks = $('#books-table tbody td.bs-checkbox input[type="checkbox"]');
+        if (!$checks.length) return;
+        $checks.attr('title', 'Shift-click to select a range');
+        $checks.attr('aria-label', 'Select row (Shift-click to select a range)');
+        if ($.fn.tooltip) {
+            try {
+                $checks.tooltip('destroy');
+            } catch (__) { /* ignore if not initialized */ }
+            $checks.tooltip({ container: 'body', placement: 'right' });
+        }
+    }
+
+    // Move Select/Clear buttons into the columns-right toolbar group
+    function moveBooksToolbarButtons() {
+        var $table = $('#books-table');
+        if (!$table.length) return;
+        var $toolbarRight = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns.columns-right.btn-group.pull-right');
+        if (!$toolbarRight.length) return;
+
+        var $selectAll = $('#select_all');
+        var $unselectAll = $('#unselect_all');
+        if (!$selectAll.length && !$unselectAll.length) return;
+
+        // Place before the columns dropdown toggle if present; otherwise append at end
+        var $columnsBtn = $toolbarRight.find('button.dropdown-toggle').first();
+
+        if ($selectAll.length && !$selectAll.data('moved-to-columns')) {
+            if ($columnsBtn.length) {
+                $selectAll.insertBefore($columnsBtn);
+            } else {
+                $toolbarRight.append($selectAll);
+            }
+            $selectAll.data('moved-to-columns', true);
+        }
+        if ($unselectAll.length && !$unselectAll.data('moved-to-columns')) {
+            if ($columnsBtn.length) {
+                $unselectAll.insertBefore($columnsBtn);
+            } else {
+                $toolbarRight.append($unselectAll);
+            }
+            $unselectAll.data('moved-to-columns', true);
+        }
+    }
+
+    // Apply on initial render and on table updates
+    $('#books-table')
+        .on('post-body.bs.table load-success.bs.table page-change.bs.table sort.bs.table search.bs.table', function () {
+            applyBooksTableCheckboxTooltips();
+            moveBooksToolbarButtons();
+        });
+    // Also try once after DOM ready in case table is already present
+    applyBooksTableCheckboxTooltips();
+    moveBooksToolbarButtons();
+
 
     $("#cancel_task_confirm").click(function() {
         //get data-id attribute of the clicked element

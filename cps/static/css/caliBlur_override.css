@@ -339,3 +339,17 @@ h2.usertable {
         min-height: 0 !important; /* Option B */
     }
 }
+
+/* Fix table highlight on hover */
+.table-hover>tbody>tr:hover {
+    background-color: #7b7b7b29 !important;
+}
+
+/* move select all and clear all buttons to above the table in book list */
+.columns.columns-right.btn-group.pull-right > .keep-open.btn-group {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}

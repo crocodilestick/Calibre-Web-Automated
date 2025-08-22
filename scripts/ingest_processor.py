@@ -20,6 +20,25 @@ from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 import audiobook
 
+# Optional: enable GDrive sync by importing cps module when available
+_GDRIVE_AVAILABLE = False
+try:
+    # Ensure project root is on sys.path to import cps
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+    from cps import gdriveutils as _gdriveutils, config as _cps_config  # type: ignore
+    _GDRIVE_AVAILABLE = True
+except Exception:
+    _GDRIVE_AVAILABLE = False
+
+def gdrive_sync_if_enabled():
+    """Sync Calibre library to Google Drive if enabled in app config."""
+    if _GDRIVE_AVAILABLE and getattr(_cps_config, "config_use_google_drive", False):
+        try:
+            _gdriveutils.updateGdriveCalibreFromLocal()
+            print("[ingest-processor] GDrive sync completed.", flush=True)
+        except Exception as e:
+            print(f"[ingest-processor] WARN: GDrive sync failed: {e}", flush=True)
+
 # Creates a lock file unless one already exists meaning an instance of the script is
 # already running, then the script is closed, the user is notified and the program
 # exits with code 2
@@ -290,6 +309,9 @@ class NewBookProcessor:
             self.db.import_add_entry(import_path.stem,
                                     str(self.cwa_settings["auto_backup_imports"]))
 
+            # Optional post-import GDrive sync
+            gdrive_sync_if_enabled()
+
             # If we overwrote an existing book, Calibre does not bump books.timestamp, only last_modified.
             # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.
             if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
@@ -313,6 +335,23 @@ class NewBookProcessor:
             self.backup(book_path, backup_type="failed")
         except Exception as e:
             print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
+
+    def add_format_to_book(self, book_id:int, book_path:str) -> None:
+        """Attach a new format file to an existing Calibre book using calibredb add_format"""
+        try:
+            subprocess.run([
+                "calibredb", "add_format", str(book_id), book_path, f"--library-path={self.library_dir}"
+            ], env=self.calibre_env, check=True)
+            print(f"[ingest-processor] Added new format for book id {book_id}: {os.path.basename(book_path)}", flush=True)
+            if self.cwa_settings['auto_backup_imports']:
+                self.backup(book_path, backup_type="imported")
+            # Optional post-add-format GDrive sync
+            gdrive_sync_if_enabled()
+        except subprocess.CalledProcessError as e:
+            print(f"[ingest-processor] Failed to add format for book id {book_id}: {os.path.basename(book_path)}\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
+            self.backup(book_path, backup_type="failed")
+        except Exception as e:
+            print(f"[ingest-processor] Unexpected error while adding format for book id {book_id}: {e}", flush=True)
 
 
     def run_kindle_epub_fixer(self, filepath:str, dest=None) -> None:
@@ -369,6 +408,35 @@ def main(filepath=sys.argv[1]):
         return
 
     nbp = NewBookProcessor(filepath)
+
+    # Sidecar manifest handling for explicit actions (e.g., add_format)
+    manifest_path = filepath + ".cwa.json"
+    try:
+        if Path(manifest_path).exists():
+            with open(manifest_path, 'r', encoding='utf-8') as mf:
+                manifest = json.load(mf)
+            action = manifest.get("action")
+            if action == "add_format":
+                try:
+                    book_id = int(manifest.get("book_id", -1))
+                except Exception:
+                    book_id = -1
+                if book_id > -1:
+                    nbp.add_format_to_book(book_id, filepath)
+                else:
+                    print(f"[ingest-processor] Invalid book_id in manifest for {os.path.basename(filepath)}", flush=True)
+                # Cleanup file and manifest regardless of outcome
+                try:
+                    os.remove(manifest_path)
+                except Exception:
+                    ...
+                nbp.empty_tmp_con_dir()
+                nbp.set_library_permissions()
+                nbp.delete_current_file()
+                del nbp
+                return
+    except Exception as e:
+        print(f"[ingest-processor] Error handling manifest for {os.path.basename(filepath)}: {e}", flush=True)
 
     # Check if the user has chosen to exclude files of this type from the ingest process
     # Remove . (dot), check is against exclude whitout dot

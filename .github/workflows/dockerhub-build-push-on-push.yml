@@ -15,15 +15,16 @@ on:
       - '**/compile_translations.sh'
       - 'koreader/**'
       - '**/cps.py'
-  create:
-    branches:
-      - '**'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.ref_type == 'branch' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' # <--- CORRECT THIS LINE
+    # Run only for code pushes (already path-filtered) or manual dispatch
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    env:
+      IMAGE_TAG: placeholder
+      LOWER_REPO_NAME: placeholder
 
     steps:
       - name: Checkout correct branch

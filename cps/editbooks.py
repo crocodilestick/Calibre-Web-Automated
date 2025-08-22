@@ -31,8 +31,13 @@ from .render_template import render_title_template
 from .kobo_sync_status import change_archived_books
 from .redirect import get_redirect_location
 from .file_helper import validate_mime_type
+from .cwa_functions import get_ingest_dir
 from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
+from werkzeug.utils import secure_filename
+import uuid
+import os
+import json
 from .cwa_functions import get_ingest_dir
 
 editbook = Blueprint('edit-book', __name__)
@@ -90,23 +95,61 @@ def edit_book(book_id):
 @login_required_if_no_ano
 @upload_required
 def upload():
+    # Upload a new format to an existing book via ingest sidecar manifest
     if len(request.files.getlist("btn-upload-format")):
-        book_id = request.form.get('book_id', -1)
-        return do_edit_book(book_id, request.files.getlist("btn-upload-format"))
+        raw_book_id = request.form.get('book_id', -1)
+        try:
+            book_id = int(raw_book_id)
+        except Exception:
+            book_id = -1
+        if book_id == -1:
+            flash(_("Missing or invalid book id for format upload"), category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+
+        for requested_file in request.files.getlist("btn-upload-format"):
+            if not _validate_uploaded_file(requested_file):
+                return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+
+            try:
+                saved_path = _save_to_ingest_atomically(requested_file, prefix_parts=["format", book_id])
+                # Write sidecar manifest instructing ingest to add this file as a new format
+                manifest = {
+                    "action": "add_format",
+                    "book_id": book_id,
+                    "original_filename": requested_file.filename,
+                }
+                manifest_path = saved_path + ".cwa.json"
+                with open(manifest_path, 'w', encoding='utf-8') as mf:
+                    json.dump(manifest, mf, ensure_ascii=False)
+
+                # Queue a task entry for UX feedback
+                upload_text = N_("Upload done, processing, please wait...")
+                WorkerThread.add(current_user.name, TaskUpload(upload_text, escape(requested_file.filename)))
+
+            except Exception as e:
+                log.error_or_exception("Failed to queue format upload for ingest: {}".format(e))
+                flash(_("Failed to queue upload for processing"), category="error")
+                return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+
+        # Redirect back to the book edit page
+        return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+
+    # New book uploads: queue files to ingest atomically
     elif len(request.files.getlist("btn-upload")):
         for requested_file in request.files.getlist("btn-upload"):
-            meta, error = file_handling_on_upload(requested_file)
-            if error:
-                return error
-
-            log.info('Copying %s to cwa ingest directory', requested_file)
-            copyfile(meta.file_path, os.path.join(get_ingest_dir(), os.path.basename(meta.file_path) + '.' + meta.extension))
-             
-            upload_text = N_("Moved %(file)s to ingest directory.", file=meta.title)
-            WorkerThread.add(current_user.name, TaskUpload(upload_text, escape(meta.title)))
+            if not _validate_uploaded_file(requested_file):
+                return Response(json.dumps({"location": url_for('web.index')}), mimetype='application/json')
+            try:
+                _ = _save_to_ingest_atomically(requested_file, prefix_parts=["new", current_user.id])
+                upload_text = N_("Upload done, processing, please wait...")
+                WorkerThread.add(current_user.name, TaskUpload(upload_text, escape(requested_file.filename)))
+            except Exception as e:
+                log.error_or_exception("Failed to queue upload for ingest: {}".format(e))
+                flash(_("Failed to queue upload for processing"), category="error")
+                return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
 
         return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
-    abort(404)
+    abort(400)
 
 
 @editbook.route("/admin/book/convert/<int:book_id>", methods=['POST'])
@@ -238,6 +281,40 @@ def edit_selected_books():
 
         return json.dumps({'success': True})
     return ""
+
+# Helper to validate upload according to server settings
+def _validate_uploaded_file(uploaded_file):
+    allowed_extensions = config.config_upload_formats.split(',')
+    if uploaded_file:
+        if config.config_check_extensions and allowed_extensions != ['']:
+            if not validate_mime_type(uploaded_file, allowed_extensions):
+                flash(_("File type isn't allowed to be uploaded to this server"), category="error")
+                return False
+    if '.' in uploaded_file.filename:
+        file_ext = uploaded_file.filename.rsplit('.', 1)[-1].lower()
+        if file_ext not in allowed_extensions and '' not in allowed_extensions:
+            flash(_("File extension '%(ext)s' is not allowed to be uploaded to this server",
+                    ext=file_ext), category="error")
+            return False
+    else:
+        flash(_('File to be uploaded must have an extension'), category="error")
+        return False
+    return True
+
+# Helper to atomically write to ingest directory
+def _save_to_ingest_atomically(uploaded_file, prefix_parts=None):
+    ingest_dir = get_ingest_dir()
+    os.makedirs(ingest_dir, exist_ok=True)
+    base_name = secure_filename(uploaded_file.filename)
+    unique = uuid.uuid4().hex
+    prefix = "_".join([str(p) for p in (prefix_parts or []) if p])
+    final_name = f"{prefix + '_' if prefix else ''}{unique}_{base_name}"
+    final_path = os.path.join(ingest_dir, final_name)
+    tmp_path = final_path + ".uploading"
+    # Stream directly into ingest dir, then atomically rename
+    uploaded_file.save(tmp_path)
+    os.replace(tmp_path, final_path)
+    return final_path
 
 # Separated from /editbooks so that /editselectedbooks can also use this
 #

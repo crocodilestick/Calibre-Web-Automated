@@ -875,9 +875,11 @@ def save_cover_from_filestorage(filepath, saved_filename, img):
 def save_cover(img, book_path):
     content_type = img.headers.get('content-type')
 
-    # Clean content-type by removing charset and other parameters  
-    if content_type:  
-        content_type = content_type.split(';')[0].strip()  
+    # Clean content-type by removing charset and other parameters
+    if content_type:
+        separator = ';' if ';' in content_type else ',' if ',' in content_type else None
+        if separator:
+            content_type = content_type.split(separator)[0].strip()
         
     if use_IM:
         if content_type not in ('image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp'):

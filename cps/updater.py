@@ -204,6 +204,14 @@ class Updater(threading.Thread):
         new_permissions = os.stat(root_dst_dir)
         log.debug('Performing Update on OS-System: %s', sys.platform)
         change_permissions = not (sys.platform == "win32" or sys.platform == "darwin")
+        # Skip permission changes entirely in network share mode
+        try:
+            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+            if nsm:
+                change_permissions = False
+                log.debug('NETWORK_SHARE_MODE=true detected; skipping chown operations during update')
+        except Exception:
+            pass
         for src_dir, __, files in os.walk(root_src_dir):
             dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
             if not os.path.exists(dst_dir):

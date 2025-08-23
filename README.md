@@ -81,6 +81,23 @@ ___
   - Some users are successful in deploying CWA across NFS shares however doing so **can produce a lot of hard to diagnose issues** that take time away from users with actual issues
   - **Therefore as of V3.0.0, deployments over NFS shares are "unsupported"**, meaning **you are free to do so**, but **support will not be provided for users facing issues**
 
+### Network shares and SQLite WAL mode
+
+- CWA optimizes SQLite concurrency by enabling Write-Ahead Logging (WAL) on local disks.
+- Some network filesystems (NFS/SMB) do not fully support WAL or reliable file locking, which can cause intermittent "database is locked" errors or corruption risks.
+- If you are deploying on a network share, set the following environment variable to disable WAL:
+
+  - `NETWORK_SHARE_MODE=true`
+
+This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.db` settings database. It also disables recursive ownership changes (`chown`) performed by init/maintenance scripts to avoid permission issues on network filesystems. Default is `false` (WAL enabled) for better performance on local disks.
+
+#### File watching on network shares
+
+- By default, CWA uses Linux `inotify` (via `inotifywait`) to detect new files in the ingest folder with minimal latency and overhead.
+- On network shares (NFS/SMB), filesystem events can be unreliable or unavailable. When `NETWORK_SHARE_MODE=true` is set, CWA switches the ingest and metadata watcher services to a polling-based watcher that periodically scans for changes. This improves reliability on NAS/network mounts at the cost of slightly higher I/O and up to a few seconds of latency.
+- On Docker Desktop (Windows/macOS), the container runs on a LinuxKit/WSL2 VM and host-mounted paths may not propagate `inotify` events reliably. CWA auto-detects Docker Desktop at startup and prefers the same polling watcher for reliability.
+- Advanced: You can also force polling regardless of share mode by setting `CWA_WATCH_MODE=poll`.
+
 ## **_Features:_**
 
 ### CWA supports all Stock CW Features:
@@ -268,6 +285,12 @@ services:
       - TZ=UTC
       # Hardcover API Key required for Hardcover as a Metadata Provider, get one here: https://docs.hardcover.app/api/getting-started/
       - HARDCOVER_TOKEN=your_hardcover_api_key_here
+  # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
+  # Accepts: true/false (default: false)
+  - NETWORK_SHARE_MODE=false
+  # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
+  # Accepts: true/false (default: false)
+  - NETWORK_SHARE_MODE=false
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
       - /path/to/config/folder:/config 
@@ -344,17 +367,27 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
 CWA now includes built-in KOReader syncing functionality, allowing you to sync your reading progress across devices using KOReader. This feature provides a modern, secure alternative to traditional KOReader sync servers. Navigate to `http://your-cwa-instance:8083/kosync` in your browser where you'll find download links and installation instructions for the CWA KOReader plugin.
 
 ---
-## For Developers - Building Custom Docker Image
-If you want to contribute to this project, you can build a local version with your changes by running `build.sh` in the repository.
 
-The resultant image will then be automatically deployed using the `docker-compose.yml.dev` (make changes as necessary beforehand) in the directory and the `build/` folder will be created, primarily housing the development docker-compose.yml file and its mount points. Add a calibre library here for testing if necessary.
+## Local Development Setup
 
-```bash
-$ chmod +x build.sh
-$ ./build.sh
+1. **Build the image**  
+   Edit and run [`build.sh`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/build.sh) to build a local Docker image of Calibre-Web-Automated.  See the script itself for usage details.
+
+2. **Edit [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**  
+   Update at minimum:  
+   - `image:` → your image tag from step 1  
+   - `volumes mounts` → paths for config, ingest, library, plugins  
+  
+ To have the app refresh dynamically in response to code changes, see comments in the  [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)** for details and examples on "live-edit" mounts.
+
+3. **Start the service**  
+```
+$ docker compose -f docker-compose.yml.dev up -d
 ```
 
-Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
+4. **Log in & configure**  
+   - Sign in with the [default admin login](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)  
+   - Optionally follow [Post-Install Tasks](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#post-install-tasks)-
 
 ---
 

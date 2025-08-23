@@ -31,7 +31,7 @@ convert_library_log_file = "/config/convert-library.log"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
 # Create a FileHandler
-file_handler = logging.FileHandler(convert_library_log_file, mode='w')
+file_handler = logging.FileHandler(convert_library_log_file, mode='w', encoding='utf-8')
 # Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
 formatter = logging.Formatter(LOG_FORMAT)
@@ -47,11 +47,15 @@ GROUP_NAME = "abc"
 uid = pwd.getpwnam(USER_NAME).pw_uid
 gid = grp.getgrnam(GROUP_NAME).gr_gid
 
-# Set permissions for log file
+# Set permissions for log file (skip on network shares)
 try:
-    subprocess.run(["chown", f"{uid}:{gid}", convert_library_log_file], check=True)
+    nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+    if not nsm:
+        subprocess.run(["chown", f"{uid}:{gid}", convert_library_log_file], check=True)
+    else:
+        print(f"[convert-library] NETWORK_SHARE_MODE=true detected; skipping chown of {convert_library_log_file}", flush=True)
 except subprocess.CalledProcessError as e:
-    print(f"[convert-library] An error occurred while attempting to recursively set ownership of {convert_library_log_file} to abc:abc. See the following error:\n{e}", flush=True)
+    print(f"[convert-library] An error occurred while attempting to set ownership of {convert_library_log_file} to abc:abc. See the following error:\n{e}", flush=True)
 
 def print_and_log(string) -> None:
     """ Ensures the provided string is passed to STDOUT and stored in the runs log file """
@@ -117,7 +121,7 @@ class LibraryConverter:
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db")
+    con = sqlite3.connect("/config/app.db", timeout=30)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -186,8 +190,10 @@ class LibraryConverter:
 
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Converting {filename} from {file_extension} format to {self.target_format} format...")
 
-            try: # Get Calibre Library Book ID
-                book_id = (re.search(r'\(\d*\)', file).group(0))[1:-1] # type: ignore
+            try: # Get Calibre Library Book ID from the immediate book folder (e.g., "Title (6120)")
+                book_folder = os.path.basename(os.path.dirname(file))
+                m = re.search(r"\((\d+)\)$", book_folder)
+                book_id = m.group(1)  # type: ignore[attr-defined]
             except Exception as e:
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) A Calibre Library Book ID could not be determined for {file}. Make sure the structure of your calibre library matches the following example:\n")
                 print_and_log("Terry Goodkind/")
@@ -214,7 +220,8 @@ class LibraryConverter:
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         env=self.calibre_env,
-                        text=True
+                        text=True,
+                        encoding='utf-8'
                     ) as process:
                         for line in process.stdout: # Read from the combined stdout (which includes stderr)
                             if self.verbose:
@@ -249,7 +256,8 @@ class LibraryConverter:
                     env=self.calibre_env,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
-                    text=True
+                    text=True,
+                    encoding='utf-8'
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)
                         if self.verbose:
@@ -324,7 +332,8 @@ class LibraryConverter:
                     ['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, epub_filepath],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
-                    text=True
+                    text=True,
+                    encoding='utf-8'
                 ) as process:
                     for line in process.stdout: # Read from the combined stdout (which includes stderr)
                         if self.verbose:
@@ -363,8 +372,12 @@ class LibraryConverter:
 
     def set_library_permissions(self):
         try:
-            subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
-            print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Successfully set ownership of new files in {self.library_dir} to abc:abc.")
+            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+            if not nsm:
+                subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Successfully set ownership of new files in {self.library_dir} to abc:abc.")
+            else:
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) NETWORK_SHARE_MODE=true detected; skipping chown of {self.library_dir}")
         except subprocess.CalledProcessError as e:
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}")
 

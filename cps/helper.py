@@ -227,22 +227,53 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id)
 
 def get_valid_filename(value, replace_whitespace=True, chars=128):
     """
-    Returns the given string converted to a string that can be used for a clean
-    filename. Limits num characters to 128 max.
+    Return a sanitized filename (max length chars) mirroring shared sanitizer.
+    Uses cps.utils.filename_sanitizer if available; falls back to legacy logic if import fails.
     """
+    get_valid_filename_shared = None
+    try:
+        from cps.utils.filename_sanitizer import get_valid_filename_shared  # type: ignore
+    except ModuleNotFoundError:
+        # Attempt path adjustment (similar to scripts/cover_enforcer)
+        try:  # pragma: no cover
+            import sys as _sys, os as _os
+            project_root = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), '..'))
+            if project_root not in _sys.path:
+                _sys.path.insert(0, project_root)
+            from cps.utils.filename_sanitizer import get_valid_filename_shared  # type: ignore
+        except Exception as ex:  # pragma: no cover
+            log.debug('Shared filename sanitizer import failed (%s); using legacy implementation', ex)
+            get_valid_filename_shared = None  # type: ignore
+    except Exception as ex:  # pragma: no cover
+        log.debug('Unexpected sanitizer import error (%s); using legacy implementation', ex)
+        get_valid_filename_shared = None  # type: ignore
+
+    if callable(get_valid_filename_shared):  # type: ignore
+        try:
+            return get_valid_filename_shared(
+                value,
+                replace_whitespace=replace_whitespace,
+                chars=chars,
+                unicode_filename=bool(config.config_unicode_filename)
+            )
+        except Exception as ex:  # pragma: no cover
+            log.debug('Shared sanitizer execution failed (%s); falling back to legacy logic', ex)
+
+    # Legacy local implementation (must mirror shared logic)
+    if not isinstance(value, str):
+        value = str(value) if value is not None else ""
     if value[-1:] == '.':
         value = value[:-1]+'_'
     value = value.replace("/", "_").replace(":", "_").strip('\0')
     if config.config_unicode_filename:
-        value = (unidecode.unidecode(value))
+        try:
+            value = (unidecode.unidecode(value))
+        except Exception:  # pragma: no cover
+            pass
     if replace_whitespace:
-        #  *+:\"/<>? are replaced by _
-        value = re.sub(r'[*+:\\\"/<>?]+', '_', value, flags=re.U)
-        # pipe has to be replaced with comma
+        value = re.sub(r'[*+:\\"/<>?]+', '_', value, flags=re.U)
         value = re.sub(r'[|]+', ',', value, flags=re.U)
-
     value = strip_whitespaces(value.encode('utf-8')[:chars].decode('utf-8', errors='ignore'))
-
     if not value:
         raise ValueError("Filename cannot be empty")
     return value
@@ -317,7 +348,7 @@ def edit_book_read_status(book_id, read_status=None):
     else:
         try:
             calibre_db.create_functions(config)
-            book = calibre_db.get_filtered_book(book_id)
+            book = calibre_db.get_filtered_book(book_id, True)
             book_read_status = getattr(book, 'custom_column_' + str(config.config_read_column))
             if len(book_read_status):
                 if read_status is None:
@@ -882,9 +913,11 @@ def save_cover_from_filestorage(filepath, saved_filename, img):
 def save_cover(img, book_path):
     content_type = img.headers.get('content-type')
 
-    # Clean content-type by removing charset and other parameters  
-    if content_type:  
-        content_type = content_type.split(';')[0].strip()  
+    # Clean content-type by removing charset and other parameters
+    if content_type:
+        separator = ';' if ';' in content_type else ',' if ',' in content_type else None
+        if separator:
+            content_type = content_type.split(separator)[0].strip()
         
     if use_IM:
         if content_type not in ('image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp'):

@@ -20,6 +20,9 @@
 
 var selections = [];
 var reload = false;
+// Remember last clicked row index for shift-range selection on books table
+var lastBooksTableIndex = null;
+// No row-based shift logic; we handle shift ranges on checkbox clicks only to avoid conflicts
 
 $(function() {
     $('#tasktable').bootstrapTable({
@@ -49,6 +52,123 @@ $(function() {
     $(document).on('click', '#unselect_all', function() {
         $('#books-table').bootstrapTable('uncheckAll');
     });
+
+    // Shift-click range selection for books table checkboxes (capture phase to bypass stopPropagation in plugin)
+    (function setupBooksTableShiftClick() {
+        document.addEventListener('click', function (e) {
+            var target = e.target;
+            if (!target || target.type !== 'checkbox') return;
+            // Only handle row selection checkboxes inside the books table
+            var td = target.closest('td');
+            if (!td || !td.classList || !td.classList.contains('bs-checkbox')) return;
+            var tableEl = document.getElementById('books-table');
+            if (!tableEl || !tableEl.contains(target)) return;
+
+            // If no shift, just update the anchor index and exit
+            if (!e.shiftKey) {
+                var tr0 = target.closest('tr');
+                lastBooksTableIndex = tr0 ? parseInt(tr0.getAttribute('data-index'), 10) : null;
+                return;
+            }
+
+            // Run after the checkbox default toggled state is applied
+            setTimeout(function () {
+                var tr = target.closest('tr');
+                if (!tr) return;
+                var currentIndex = parseInt(tr.getAttribute('data-index'), 10);
+                if (isNaN(currentIndex)) return;
+
+                // If no previous anchor, just set it and exit
+                if (lastBooksTableIndex === null) {
+                    lastBooksTableIndex = currentIndex;
+                    return;
+                }
+
+                var start = Math.min(lastBooksTableIndex, currentIndex);
+                var end = Math.max(lastBooksTableIndex, currentIndex);
+                var $table = $('#books-table');
+                if (!$table.length) return;
+                var data = $table.bootstrapTable('getData') || [];
+                var idsInRange = [];
+                for (var i = start; i <= end; i++) {
+                    if (data[i] && typeof data[i].id !== 'undefined') idsInRange.push(data[i].id);
+                }
+
+                if (idsInRange.length) {
+                    if (target.checked) {
+                        $table.bootstrapTable('checkBy', { field: 'id', values: idsInRange });
+                    } else {
+                        $table.bootstrapTable('uncheckBy', { field: 'id', values: idsInRange });
+                    }
+                }
+
+                // Set anchor to current row
+                lastBooksTableIndex = currentIndex;
+            }, 0);
+        }, true); // capture phase
+    })();
+
+    // Reset the anchor when table view changes (pagination, sorting, searching, reload)
+    $('#books-table').on('page-change.bs.table sort.bs.table search.bs.table load-success.bs.table', function () {
+        lastBooksTableIndex = null;
+    });
+
+    // Add tooltip to row-select checkboxes (and reapply on table updates)
+    function applyBooksTableCheckboxTooltips() {
+        var $checks = $('#books-table tbody td.bs-checkbox input[type="checkbox"]');
+        if (!$checks.length) return;
+        $checks.attr('title', 'Shift-click to select a range');
+        $checks.attr('aria-label', 'Select row (Shift-click to select a range)');
+        if ($.fn.tooltip) {
+            try {
+                $checks.tooltip('destroy');
+            } catch (__) { /* ignore if not initialized */ }
+            $checks.tooltip({ container: 'body', placement: 'right' });
+        }
+    }
+
+    // Move Select/Clear buttons into the columns-right toolbar group
+    function moveBooksToolbarButtons() {
+        var $table = $('#books-table');
+        if (!$table.length) return;
+        var $toolbarRight = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns.columns-right.btn-group.pull-right');
+        if (!$toolbarRight.length) return;
+
+        var $selectAll = $('#select_all');
+        var $unselectAll = $('#unselect_all');
+        if (!$selectAll.length && !$unselectAll.length) return;
+
+        // Place before the columns dropdown toggle if present; otherwise append at end
+        var $columnsBtn = $toolbarRight.find('button.dropdown-toggle').first();
+
+        if ($selectAll.length && !$selectAll.data('moved-to-columns')) {
+            if ($columnsBtn.length) {
+                $selectAll.insertBefore($columnsBtn);
+            } else {
+                $toolbarRight.append($selectAll);
+            }
+            $selectAll.data('moved-to-columns', true);
+        }
+        if ($unselectAll.length && !$unselectAll.data('moved-to-columns')) {
+            if ($columnsBtn.length) {
+                $unselectAll.insertBefore($columnsBtn);
+            } else {
+                $toolbarRight.append($unselectAll);
+            }
+            $unselectAll.data('moved-to-columns', true);
+        }
+    }
+
+    // Apply on initial render and on table updates
+    $('#books-table')
+        .on('post-body.bs.table load-success.bs.table page-change.bs.table sort.bs.table search.bs.table', function () {
+            applyBooksTableCheckboxTooltips();
+            moveBooksToolbarButtons();
+        });
+    // Also try once after DOM ready in case table is already present
+    applyBooksTableCheckboxTooltips();
+    moveBooksToolbarButtons();
+
 
     $("#cancel_task_confirm").click(function() {
         //get data-id attribute of the clicked element
@@ -496,8 +616,9 @@ $(function() {
         searchAlign: "left",
         showSearchButton : true,
         searchOnEnterKey: true,
-        checkboxHeader: false,
+    checkboxHeader: false,
         maintainMetaData: true,
+    clickToSelect: true,
         responseHandler: responseHandler,
         columns: column,
         formatNoMatches: function () {

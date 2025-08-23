@@ -1,11 +1,16 @@
 #!/bin/bash
 
-python3 /app/calibre-web-automated/scripts/auto_library.py
+# Optionally skip auto-library based on DISABLE_LIBRARY_AUTOMOUNT env var
+if [[ "${DISABLE_LIBRARY_AUTOMOUNT,,}" == "true" || "${DISABLE_LIBRARY_AUTOMOUNT,,}" == "yes" || "${DISABLE_LIBRARY_AUTOMOUNT}" == "1" ]]; then
+    echo "[cwa-auto-library] DISABLE_LIBRARY_AUTOMOUNT=${DISABLE_LIBRARY_AUTOMOUNT:-unset}. Skipping auto-library service as requested."
+    exit 0
+fi
 
-if [[ $? == 1 ]]
-then
-    echo "[cwa-auto-library] Service did not complete successfully (see errors above). Ending service..."
-elif [[ $? == 0 ]]
-then
+python3 /app/calibre-web-automated/scripts/auto_library.py
+exit_code=$?
+
+if [[ ${exit_code} -eq 0 ]]; then
     echo "[cwa-auto-library] Service completed successfully! Ending service..."
+else
+    echo "[cwa-auto-library] Service did not complete successfully (exit code: ${exit_code}). Ending service..."
 fi

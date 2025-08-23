@@ -41,28 +41,25 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="row form-group" style="display: inline-block;">
       <div class="btn btn-default disabled" id="merge_books" aria-disabled="true">
-        {{_('Merge selected books')}}
-      </div>
-      <div class="btn btn-default disabled" id="delete_selection" aria-disabled="true">
-        {{_('Clear selections')}}
+        {{_('Merge')}}
       </div>
       <div class="btn btn-default disabled" id="edit_selected_books" aria-disabled="true">
-        {{_('Edit selected books')}}
+        {{_('Edit')}}
       </div>
       <div class="btn btn-default disabled" id="archive_selected_books" aria-disabled="true">
-        {{_('Archive selected books')}}
+        {{_('Archive')}}
       </div>
       <div class="btn btn-default disabled" id="unarchive_selected_books" aria-disabled="true">
-        {{_('Unarchive selected books')}}
+        {{_('Unarchive')}}
       </div>
       <div class="btn btn-default disabled" id="read_selected_books" aria-disabled="true">
-        {{_('Mark selected books as read')}}
+        {{_('Mark as read')}}
       </div>
       <div class="btn btn-default disabled" id="unread_selected_books" aria-disabled="true">
-        {{_('Mark selected books as unread')}}
+        {{_('Mark as unread')}}
       </div>
       <div class="btn btn-default disabled" id="delete_selected_books" aria-disabled="true">
-        {{_('Delete selected books')}}
+        {{_('Delete')}}
       </div>
       <div class="btn btn-default disabled" id="add_to_shelf_btn" aria-disabled="true">
         {{_('Add to Shelf')}}
@@ -75,13 +72,13 @@
         {{ _('Select all') }}
       </div>
       <div class="btn btn-default" id="unselect_all">
-        {{ _('Unselect all') }}
+        {{ _('Clear all') }}
       </div>
       {% endif %}
     </div>
     <div>
       <br>
-      <div class="filterheader" style="display: inline-block;">
+      <div class="filterhead" style="display: inline-block;">
         <div style="display: inline-block; padding-inline-start: 10px;">
           <input type="checkbox" id="autoupdate_titlesort" name="autoupdate_titlesort" checked>
           <label for="autoupdate_titlesort" style="padding-left: 0.4em">{{_('Update Title Sort automatically  ')}}</label>

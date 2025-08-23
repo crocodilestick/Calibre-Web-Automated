@@ -117,7 +117,7 @@ class Hardcover(Metadata):
         "books(where: {id: {_eq: $query}}) { "
         "  id slug description "
         "  book_series { position series { name } } "
-        "  cached_tags(path: \"Genre\") { tag } "
+        "  cached_tags(path: \"Genre\") "
         "  editions { "
         "    id title release_date isbn_13 isbn_10 reading_format_id "
         "    image { url } "
@@ -320,13 +320,38 @@ class Hardcover(Metadata):
     def _parse_tags(result: Dict, tags: List[str]) -> List[str]:
         try:
             cached_tags = result.get("cached_tags", [])
-            if not isinstance(cached_tags, list):
-                return tags
-            result_tags: List[str] = []
-            for item in cached_tags:
-                if isinstance(item, dict) and item.get("tag"):
-                    result_tags.append(item["tag"])
-            return result_tags if result_tags else tags
+            # Hardcover GraphQL now returns cached_tags as a scalar JSON value (!json)
+            # It may be:
+            # - a list of dicts: [{"tag": "..."}] (old shape)
+            # - a list of strings: ["..."] (possible shape)
+            # - a JSON-encoded string: "[\"...\"]" (defensive handling)
+            # - a single string: "..."
+            parsed: List[str] = []
+            # If it's a string, try to json-decode, otherwise treat as single tag
+            if isinstance(cached_tags, str):
+                try:
+                    import json as _json
+                    decoded = _json.loads(cached_tags)
+                    cached_tags = decoded
+                except Exception:
+                    cached_tags = [cached_tags] if cached_tags else []
+
+            if isinstance(cached_tags, list):
+                for item in cached_tags:
+                    if isinstance(item, dict):
+                        val = item.get("tag") or item.get("name")
+                        if val:
+                            parsed.append(str(val))
+                    elif isinstance(item, str):
+                        if item:
+                            parsed.append(item)
+            elif isinstance(cached_tags, dict):
+                # Some backends might return an object; try common keys
+                val = cached_tags.get("tag") or cached_tags.get("name")
+                if isinstance(val, str) and val:
+                    parsed.append(val)
+
+            return parsed if parsed else tags
         except Exception as e:
             log.warning(f"Error parsing tags: {e}")
             return tags

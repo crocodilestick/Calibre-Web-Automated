@@ -41,7 +41,7 @@ epub_fixer_log_file = "/config/epub-fixer.log"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
 # Create a FileHandler
-file_handler = logging.FileHandler(epub_fixer_log_file, mode='w')
+file_handler = logging.FileHandler(epub_fixer_log_file, mode='w', encoding='utf-8')
 # Create a Formatter and set it for the handler
 LOG_FORMAT = '%(message)s'
 formatter = logging.Formatter(LOG_FORMAT)
@@ -57,11 +57,15 @@ GROUP_NAME = "abc"
 uid = pwd.getpwnam(USER_NAME).pw_uid
 gid = grp.getgrnam(GROUP_NAME).gr_gid
 
-# Set permissions for log file
+# Set permissions for log file (skip on network shares)
 try:
-    subprocess.run(["chown", f"{uid}:{gid}", epub_fixer_log_file], check=True)
+    nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+    if not nsm:
+        subprocess.run(["chown", f"{uid}:{gid}", epub_fixer_log_file], check=True)
+    else:
+        print(f"[cwa-kindle-epub-fixer] NETWORK_SHARE_MODE=true detected; skipping chown of {epub_fixer_log_file}", flush=True)
 except subprocess.CalledProcessError as e:
-    print(f"[cwa-kindle-epub-fixer] An error occurred while attempting to recursively set ownership of {epub_fixer_log_file} to abc:abc. See the following error:\n{e}", flush=True)
+    print(f"[cwa-kindle-epub-fixer] An error occurred while attempting to set ownership of {epub_fixer_log_file} to abc:abc. See the following error:\n{e}", flush=True)
 
 
 def print_and_log(string, log=True) -> None:
@@ -337,7 +341,7 @@ class EPUBFixer:
 
 
 def get_library_location() -> str:
-    con = sqlite3.connect("/config/app.db")
+    con = sqlite3.connect("/config/app.db", timeout=30)
     cur = con.cursor()
     split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -409,7 +413,7 @@ def main():
         print(f"[cwa-kindle-epub-fixer] Processing given file - {args.input_file}...")
         try:
             EPUBFixer(manually_triggered=True).process(args.input_file, output_path, args.language)
-        except:
+        except Exception as e:
             print(f"[cwa-kindle-epub-fixer] ERROR - Error processing {args.input_file}: {e}")
             # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(6)

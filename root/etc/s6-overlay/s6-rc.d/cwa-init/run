@@ -19,10 +19,14 @@ fi
 # Pre-stage some files & directories for permissions purposes
 mkdir -p /app/calibre-web-automated/cps/cache
 
-# permissions
-chown -R abc:abc \
+# permissions (skip chown on network shares)
+if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+  echo "[cwa-init] NETWORK_SHARE_MODE=true detected; skipping initial chown of /config and cps/cache"
+else
+  chown -R abc:abc \
     /config \
     /app/calibre-web-automated/cps/cache
+fi
 
 export CALIBRE_DBPATH=/config
 
@@ -139,18 +143,19 @@ declare -a requiredDirs=("/config" "/calibre-library" "/app/calibre-web-automate
 dirs=$(printf ", %s" "${requiredDirs[@]}")
 dirs=${dirs:1}
 
-echo "[cwa-init] Recursively setting ownership of everything in$dirs to abc:abc..."
+echo "[cwa-init] Preparing to set ownership of everything in$dirs to abc:abc..."
 
-for d in "${requiredDirs[@]}"
-do
-    chown -R abc:abc $d
-    if [[ $? == 0 ]]
-    then
-        echo "[cwa-init] Successfully set permissions for '$d'!"
-    elif [[ $? > 0 ]]
-    then
-        echo "[cwa-init] Service could not successfully set permissions for '$d' (see errors above)."
-    fi
+for d in "${requiredDirs[@]}"; do
+  if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+    echo "[cwa-init] NETWORK_SHARE_MODE=true detected; skipping chown of $d"
+    continue
+  fi
+  chown -R abc:abc "$d"
+  if [[ $? == 0 ]]; then
+    echo "[cwa-init] Successfully set permissions for '$d'!"
+  elif [[ $? > 0 ]]; then
+    echo "[cwa-init] Service could not successfully set permissions for '$d' (see errors above)."
+  fi
 done
 
 #------------------------------------------------------------------------------------------------------------------------

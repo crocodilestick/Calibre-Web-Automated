@@ -198,6 +198,14 @@ def create_app():
         limiter.init_app(app)
 
     # Register scheduled tasks
+    # Ensure a valid calibre_db session exists before handling each request
+    @app.before_request
+    def _cwa_ensure_db_session():
+        try:
+            calibre_db.ensure_session()
+        except Exception:
+            # Failsafe: let route-level code handle specific DB errors
+            pass
     from .schedule import register_scheduled_tasks, register_startup_tasks
     register_scheduled_tasks(config.schedule_reconnect)
     register_startup_tasks()

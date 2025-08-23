@@ -9,15 +9,70 @@ echo "========== STARTING CWA-INGEST SERVICE =========="
 WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
 echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
-# Monitor the folder for new files
-s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
-while read -r events filepath ; do
+# Helper to run fallback watcher if inotify fails (e.g., ENOSPC on Synology)
+run_fallback() {
+        echo "[cwa-ingest-service] Falling back to polling watcher (inotify unavailable or out of watches)" >&2
+        # Only act on typical ebook archive formats by default
+                python3 /app/calibre-web-automated/scripts/watch_fallback.py \
+                        --path "$WATCH_FOLDER" \
+                        --interval 5 |
+        while read -r events filepath ; do
+                echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
+                python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath" # &
+        done
+}
+
+# Detect if running under Docker Desktop (Windows/macOS) and prefer polling
+is_docker_desktop() {
+        local osr mounts
+        osr=$(cat /proc/sys/kernel/osrelease 2>/dev/null || true)
+        # WSL2 / Windows kernel markers
+        if echo "$osr" | grep -qi 'microsoft'; then
+                return 0
+        fi
+        # LinuxKit kernel used by Docker Desktop VM
+        if echo "$osr" | grep -qi 'linuxkit'; then
+                return 0
+        fi
+        # Mount hints for Desktop host path mappings
+        mounts=$(cat /proc/self/mountinfo 2>/dev/null || true)
+        if echo "$mounts" | grep -Eqi '/host_mnt/|/Users/|osxfs|virtiofs.*docker'; then
+                return 0
+        fi
+        return 1
+}
+
+# Prefer polling when running over network shares to better handle NFS/SMB semantics
+if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+        echo "[cwa-ingest-service] NETWORK_SHARE_MODE=true detected; using polling watcher instead of inotify"
+        run_fallback
+        exit 0
+fi
+
+# Allow admins to force polling mode explicitly (defaults to inotify)
+if [ "${CWA_WATCH_MODE:-inotify}" = "poll" ]; then
+        run_fallback
+        exit 0
+fi
+
+# Prefer polling on Docker Desktop (Windows/macOS) for reliable detection on host-mounted paths
+if is_docker_desktop; then
+        echo "[cwa-ingest-service] Docker Desktop environment detected; using polling watcher instead of inotify"
+        run_fallback
+        exit 0
+fi
+
+# Monitor the folder for new files using inotify; on error, switch to fallback.
+(
+        set -o pipefail
+        s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
+        while read -r events filepath ; do
         # if [[ $(grep "$filepath" ingest-log-test.txt | egrep -o '[0-9]{10}') ]]; then
         #         CURRENT_TIME=$(date +'%s')
         #         TIME_OF_MATCH=$(grep "$filepath" ingest-log-test.txt | egrep -o '[0-9]{10}')
         #         TODO NEED TO GET DIFFERENCE BETWEEN THE 2 TIMES AND IF LESS THAN 60 SECONDS, IGNORE
-        echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
-        python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath" # &
+                echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
+                python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath" # &
         # echo "'${filepath}' - $(date +'%s')" >> /config/.ingest_dupe_list
         # INGEST_PROCESSOR_PID=$!
         # Wait for the ingest processor to finish
@@ -29,8 +84,9 @@ while read -r events filepath ; do
         #                 python3 /app/calibre-web-automated/scripts/ingest_processor.py "$f" &
         #                 INGEST_PROCESSOR_PID=$!
         #                 # Wait for the ingest processor to finish
-        #                 wait $INGEST_PROCESSOR_PID
-        #         done
-        # fi
-done
+                #                 wait $INGEST_PROCESSOR_PID
+                #         done
+                # fi
+        done
+) || run_fallback
 

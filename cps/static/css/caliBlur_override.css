@@ -6,7 +6,7 @@ body.serieslist.grid-view div.container-fluid > div > div.col-sm-10::before {
 input[type=checkbox] {accent-color: #ffffff;}
 
 .cover .badge {
-  position: absolute;
+  position: absolute !important;
   top: 0;
   left: 0;
   color: #fff;
@@ -24,7 +24,7 @@ input[type=checkbox] {accent-color: #ffffff;}
 .cover .read {
   line-height: 15px;
   font-size: xx-small;
-  position: absolute;
+  position: absolute !important;
   top: 192px;
   width: 20px;
   height: 20px;
@@ -37,7 +37,7 @@ input[type=checkbox] {accent-color: #ffffff;}
   .cover .read {
     line-height: 15px;
     font-size: xx-small;
-    position: absolute;
+    position: absolute !important;
     top: 193px;
     width: 20px;
     height: 20px;
@@ -101,19 +101,6 @@ div#Downloads_list {
     }
 }
 
-/* Fixes Archive and Have Read checkboxes in book view from being uniteractable */
-form#have_read_form > label.block-label::before {
-    top: 19px !important;
-    left: 20px;
-    z-index: -1 !important;
-}
-
-form#archived_form > label.block-label::before {
-    top: 14px !important;
-    left: 69px;
-    z-index: -1 !important;
-}
-
 /* Fixing mobile book view */
 @media only screen and (max-width: 767px) {
     .identifiers {
@@ -147,7 +134,7 @@ form#archived_form > label.block-label::before {
         max-width: 200px;
     }
     .tags {
-        position: absolute;
+        position: absolute !important;
         left: 220px;
         top: 190px;
         display: flex;
@@ -160,7 +147,7 @@ form#archived_form > label.block-label::before {
 
 @media only screen and (max-width: 470px) {
     .book-meta > h2 {
-        position: absolute;
+        position: absolute !important;
         top: 380px;
         left: -220px;
     }
@@ -171,7 +158,7 @@ form#archived_form > label.block-label::before {
         overflow: hidden;
     }
     body.book .author {
-        position: absolute;
+        position: absolute !important;
         top: 440px;
         left: -220px;
         width: 100% !important;
@@ -181,7 +168,7 @@ form#archived_form > label.block-label::before {
         margin-top: 40rem;
     }
     .publishers {
-        position: absolute;
+        position: absolute !important;
         top: 465px;
         left: -220px !important;
         margin-top: 0 !important;
@@ -190,7 +177,7 @@ form#archived_form > label.block-label::before {
         white-space: nowrap !important;
     }
     .publishing-date {
-        position: absolute;
+        position: absolute !important;
         top: 465px;
         left: -80px !important;
         margin-top: 0 !important;
@@ -202,7 +189,7 @@ form#archived_form > label.block-label::before {
         display: inherit;
     }
     .languages {
-        position: absolute;
+        position: absolute !important;
         top: 465px;
         left: 36px !important;
         margin-top: 0 !important;
@@ -214,7 +201,7 @@ form#archived_form > label.block-label::before {
         justify-self: center;
     }
     .tags {
-        position: absolute;
+        position: absolute !important;
         top: 408px;
         left: 220px;
         display: flex;
@@ -230,7 +217,7 @@ form#archived_form > label.block-label::before {
         position: sticky;
     }
     .bookinfo p#book_of {
-        position: absolute;
+        position: absolute !important;
         top: 535px;
         padding: 0;
         margin: 0;
@@ -269,7 +256,7 @@ form#archived_form > label.block-label::before {
     box-shadow: none;
     min-width: 600px;
     max-width: 700px;
-    position: absolute;
+    position: absolute !important;
     top: 0;
     left: 0;
     right: 0;
@@ -338,4 +325,31 @@ h2.usertable {
     .book-meta > .description[data-readmore] {
         min-height: 0 !important; /* Option B */
     }
+}
+
+/* Fix table highlight on hover */
+.table-hover>tbody>tr:hover {
+    background-color: #7b7b7b29 !important;
+}
+
+/* move select all and clear all buttons to above the table in book list */
+.columns.columns-right.btn-group.pull-right > .keep-open.btn-group {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+/* Fixes Archive and Have Read checkboxes in book view from being uniteractable */
+form#have_read_form > label.block-label::before {
+    top: 19px !important;
+    left: 20px;
+    z-index: -1 !important;
+}
+
+form#archived_form > label.block-label::before {
+    top: 14px !important;
+    left: 69px;
+    z-index: -1 !important;
 }

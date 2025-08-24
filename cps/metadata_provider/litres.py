@@ -187,12 +187,12 @@ class Litres(Metadata):
                 log.debug("Skipping item without ID")
                 return None
 
-            title = item.get("title") or item.get("name") or ""
+            detailed_data = self._get_detailed_info(item_id, locale)
+
+            title = self._get_title(item, detailed_data)
             if not title:
                 log.debug("Skipping item without title")
                 return None
-
-            detailed_data = self._get_detailed_info(item_id, locale)
 
             meta_record = MetaRecord(
                 id=str(item_id),
@@ -250,12 +250,18 @@ class Litres(Metadata):
 
     @staticmethod
     def _get_title(item: Dict, detailed_data: Dict) -> str:
-        return (
+        title =  (
                 item.get("title")
                 or detailed_data.get("title")
                 or item.get("name")
                 or ""
         ).strip()
+
+        formats = ['pdf', 'epub']
+        pattern = r'\s*\([^)]*(' + '|'.join(formats) + ')[^)]*\)'
+
+        title =  re.sub(pattern, '', title, flags=re.IGNORECASE)
+        return title
 
     @staticmethod
     def _get_authors(item: Dict, detailed_data: Dict) -> List[str]:

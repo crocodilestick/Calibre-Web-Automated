@@ -19,9 +19,9 @@ class Litres(Metadata):
     BOOK_URL = "https://www.litres.ru"
     API_URL = "https://api.litres.ru/foundation/api/search"
     API_ARTS_URL = "https://api.litres.ru/foundation/api/arts/{}"
-    DEFAULT_LIMIT = 5
+    DEFAULT_LIMIT = 7
     TIMEOUT = 20
-    DEFAULT_TYPES = [  # Add this constant back
+    DEFAULT_TYPES = [
         "text_book",
         "audiobook",
         "podcast",

@@ -308,12 +308,15 @@ class Litres(Metadata):
         else:
             raw_html = item.get("annotation") or item.get("description") or item.get("lead") or ""
 
-        if not raw_html:
-            return ""
+        description = raw_html or ""
 
-        pattern = r'<p\b[^>]*>(?:(?!</p>).)*?(?:epub|pdf|fb2|mobi)(?:(?!</p>).)*?</p>'
+        patterns =  [
+            r'<p\b[^>]*>(?:(?!</p>).)*?(?:покупк|скачать|загрузить|предоставляется|формат|epub|pdf|fb2|mobi)(?:(?!</p>).)*?</p>',
+            r'<p><br/></p>'
+        ]
 
-        description = re.sub(pattern, '', raw_html, flags=re.IGNORECASE | re.DOTALL)
+        for pattern in patterns:
+            description = re.sub(pattern, '', description, flags=re.IGNORECASE | re.DOTALL)
 
         return description
 

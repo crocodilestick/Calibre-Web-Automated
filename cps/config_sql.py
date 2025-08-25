@@ -62,7 +62,6 @@ class _Settings(_Base):
     config_calibre_uuid = Column(String)
     config_calibre_split = Column(Boolean, default=False)
     config_calibre_split_dir = Column(String)
-    config_port = Column(Integer, default=constants.DEFAULT_PORT)
     config_external_port = Column(Integer, default=constants.DEFAULT_PORT)
     config_certfile = Column(String)
     config_keyfile = Column(String)

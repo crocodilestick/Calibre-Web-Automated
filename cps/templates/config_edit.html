@@ -21,10 +21,10 @@
     </div>
     <div id="collapseone" class="panel-collapse collapse">
       <div class="panel-body">
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label for="config_port">{{_('Server Port')}}</label>
           <input type="number" min="1" max="65535" class="form-control" name="config_port" id="config_port" value="{% if config.config_port != None %}{{ config.config_port }}{% endif %}" autocomplete="off" required>
-        </div>
+        </div> -->
         <label for="config_certfile">{{_('SSL certfile location (leave it empty for non-SSL Servers)')}}</label>
          <div class="form-group input-group">
           <input type="text" class="form-control" id="config_certfile" name="config_certfile" value="{% if config.config_certfile != None %}{{ config.config_certfile }}{% endif %}" autocomplete="off">

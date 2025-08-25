@@ -191,6 +191,7 @@ ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
 
 # ports and volumes
 WORKDIR /config
+# The default port CWA listens on. Can be overridden with the CWA_PORT_OVERRIDE environment variable.
 EXPOSE 8083
 VOLUME /config
 VOLUME /cwa-book-ingest

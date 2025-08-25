@@ -127,12 +127,13 @@ DEFAULT_MAIL_SERVER = "mail.example.org"
 
 DEFAULT_PASSWORD    = "admin123"  # nosec
 DEFAULT_PORT        = 8083
-env_CALIBRE_PORT = os.environ.get("CALIBRE_PORT", DEFAULT_PORT)
-try:
-    DEFAULT_PORT = int(env_CALIBRE_PORT)
-except ValueError:
-    print('Environment variable CALIBRE_PORT has invalid value (%s), faling back to default (8083)' % env_CALIBRE_PORT)
-del env_CALIBRE_PORT
+env_CWA_PORT_OVERRIDE = os.environ.get("CWA_PORT_OVERRIDE")
+if env_CWA_PORT_OVERRIDE:
+    try:
+        DEFAULT_PORT = int(env_CWA_PORT_OVERRIDE)
+    except (ValueError, TypeError):
+        print(f"Environment variable CWA_PORT_OVERRIDE has invalid value ('{env_CWA_PORT_OVERRIDE}'), falling back to default (8083)")
+        DEFAULT_PORT = 8083
 
 
 EXTENSIONS_AUDIO = {'mp3', 'mp4', 'ogg', 'opus', 'wav', 'flac', 'm4a', 'm4b'}

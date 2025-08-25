@@ -288,6 +288,9 @@ services:
       # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
       # Accepts: true/false (default: false)
       - NETWORK_SHARE_MODE=false
+      # Override the default port (8083) for the web server.
+      # Accepts any valid port number.
+      - CWA_PORT_OVERRIDE=8083
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
       - /path/to/config/folder:/config 

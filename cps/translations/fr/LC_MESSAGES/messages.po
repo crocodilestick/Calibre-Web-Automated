@@ -18,12 +18,13 @@
 # Xotes <alois.glibert@gmail.com>, 2014
 # Dekani <dekani1500@gmail.com>, 2020
 # Thomas <thovi98@gmail.com>, 2021
+# DeadBone <deadbone2000@yahoo.fr>, 2025
 msgid ""
 msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-08-09 17:32+0200\n"
-"PO-Revision-Date: 2025-08-25 11:57+0200\n"
+"PO-Revision-Date: 2025-08-25 15:45+0200\n"
 "Last-Translator: Deadbone <deadbone2000@yahoo.fr>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -48,7 +49,7 @@ msgstr "Arrêt du serveur en cours, merci de fermer la fenêtre."
 
 #: cps/admin.py:153
 msgid "Success! Database Reconnected"
-msgstr ""
+msgstr "Bravo ! Base de données reconnectée"
 
 #: cps/admin.py:156
 msgid "Unknown command"
@@ -89,7 +90,6 @@ msgstr ""
 "calibre"
 
 #: cps/admin.py:349 cps/templates/admin.html:53
-#, fuzzy
 msgid "Edit Users"
 msgstr "Éditer les utilisateurs"
 
@@ -171,7 +171,6 @@ msgid "Invalid Restricted Column"
 msgstr "Colonne restreinte non valide"
 
 #: cps/admin.py:623 cps/admin.py:1917
-#, fuzzy
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Configuration de Calibre-Web mise à jour"
 
@@ -212,7 +211,6 @@ msgstr ""
 "utilisateurs sélectionnés ?"
 
 #: cps/admin.py:649
-#, fuzzy
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -249,7 +247,6 @@ msgstr ""
 "de livres et mettre à jour les images, cela peut prendre du temps"
 
 #: cps/admin.py:661
-#, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
@@ -366,7 +363,7 @@ msgstr "Modifier les paramètres du serveur de courriels"
 
 #: cps/admin.py:1331
 msgid "Success! Gmail Account Verified."
-msgstr ""
+msgstr "Bravo ! Compte Gmail vérifié"
 
 #: cps/admin.py:1351 cps/admin.py:1354 cps/admin.py:1739 cps/admin.py:1901
 #: cps/admin.py:2005 cps/admin.py:2134 cps/editbooks.py:153
@@ -400,19 +397,19 @@ msgstr "Les paramètres du serveur de courriels ont été mis à jour"
 
 #: cps/admin.py:1391 cps/templates/admin.html:198
 msgid "Edit Scheduled Tasks Settings"
-msgstr ""
+msgstr "Modifier les paramètres des tâches planifiées"
 
 #: cps/admin.py:1403
 msgid "Invalid start time for task specified"
-msgstr ""
+msgstr "Heure de début non valide pour la tâche spécifiée"
 
 #: cps/admin.py:1408
 msgid "Invalid duration for task specified"
-msgstr ""
+msgstr "Durée non valide pour la tâche spécifiée"
 
 #: cps/admin.py:1418
 msgid "Scheduled tasks settings updated"
-msgstr ""
+msgstr "Paramètres des tâches planifiées mis à jour"
 
 #: cps/admin.py:1428 cps/admin.py:1477 cps/admin.py:2130 cps/web.py:1367
 msgid "Oops! An unknown error occurred. Please try again later."
@@ -420,7 +417,7 @@ msgstr "Une erreur inconnue est survenue. Veuillez réessayer plus tard."
 
 #: cps/admin.py:1432
 msgid "Settings DB is not Writeable"
-msgstr ""
+msgstr "La base de données des paramètres n'est pas accessible en écriture."
 
 #: cps/admin.py:1462 cps/admin.py:2122
 #, python-format
@@ -433,9 +430,8 @@ msgid "Success! Password for user %(user)s reset"
 msgstr "Le mot de passe de l’utilisateur %(user)s a été réinitialisé"
 
 #: cps/admin.py:1480
-#, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
-msgstr "Veuillez configurer les paramètres SMTP au préalable..."
+msgstr "Oups ! Veuillez configurer les paramètres de messagerie SMTP."
 
 #: cps/admin.py:1491
 msgid "Logfile viewer"
@@ -532,7 +528,7 @@ msgstr "{} utilisateur importé avec succès"
 
 #: cps/admin.py:1751
 msgid "Books path not valid"
-msgstr ""
+msgstr "Chemin d'accès aux livres non valide"
 
 #: cps/admin.py:1758
 msgid "DB Location is not Valid, Please Enter Correct Path"
@@ -559,6 +555,7 @@ msgstr ""
 #: cps/admin.py:1886
 msgid "Password length has to be between 1 and 40"
 msgstr ""
+"La longueur du mot de passe doit être comprise entre 1 et 40 caractères."
 
 #: cps/admin.py:1940
 #, fuzzy
@@ -609,7 +606,7 @@ msgstr "Aucun utilisateur admin restant, impossible de supprimer l’utilisateur
 
 #: cps/admin.py:2100 cps/web.py:1526
 msgid "Email can't be empty and has to be a valid Email"
-msgstr ""
+msgstr "L'adresse e-mail ne peut pas être vide et doit être valide."
 
 #: cps/admin.py:2126
 #, python-format
@@ -618,48 +615,47 @@ msgstr "Utilisateur '%(nick)s'  mis à jour"
 
 #: cps/constants.py:191
 msgid "Czech"
-msgstr ""
+msgstr "Tchèque"
 
 #: cps/constants.py:192
 msgid "German"
-msgstr ""
+msgstr "Allemand"
 
 #: cps/constants.py:193
 msgid "Greek"
-msgstr ""
+msgstr "Grec"
 
 #: cps/constants.py:194
 msgid "Spanish"
-msgstr ""
+msgstr "Espagnol"
 
 #: cps/constants.py:195
-#, fuzzy
 msgid "Finnish"
-msgstr "Terminé"
+msgstr "Finlandais"
 
 #: cps/constants.py:196
 msgid "French"
-msgstr ""
+msgstr "Français"
 
 #: cps/constants.py:197
 msgid "Galician"
-msgstr ""
+msgstr "Galicien"
 
 #: cps/constants.py:198
 msgid "Hungarian"
-msgstr ""
+msgstr "Hongrois"
 
 #: cps/constants.py:199
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonésien"
 
 #: cps/constants.py:200
 msgid "Italian"
-msgstr ""
+msgstr "Italien"
 
 #: cps/constants.py:201
 msgid "Japanese"
-msgstr ""
+msgstr "Japonais"
 
 #: cps/constants.py:202
 msgid "Khmer"
@@ -739,20 +735,29 @@ msgid ""
 "Library Refresh 🔄 The book ingest service is already running ✋ Please wait "
 "until it has finished before trying again ⌛"
 msgstr ""
+"Actualisation de la bibliothèque 🔄 Le service d'importation des livres est "
+"déjà en cours d'exécution ✋ Veuillez patienter jusqu'à ce qu'il soit "
+"terminé avant de réessayer ⌛"
 
 #: cps/cwa_functions.py:115
 msgid "Library Refresh 🔄 Library refreshed & ingest process complete! ✅"
 msgstr ""
+"Actualisation de la bibliothèque 🔄 Actualisation de la bibliothèque et "
+"processus d'ingestion terminés ! ✅"
 
 #: cps/cwa_functions.py:117
 msgid "Library Refresh 🔄 An unexpected error occurred, check the logs ⛔"
 msgstr ""
+"Actualisation de la bibliothèque 🔄 Une erreur inattendue s'est produite, "
+"vérifiez les journaux ⛔"
 
 #: cps/cwa_functions.py:137
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr ""
+"Actualisation de la bibliothèque 🔄 Recherche des livres qui auraient pu "
+"être oubliés, veuillez patienter..."
 
 #: cps/cwa_functions.py:247
 #, fuzzy
@@ -762,7 +767,7 @@ msgstr "Paramètres du convertisseur de livres Calibre"
 #: cps/cwa_functions.py:269 cps/cwa_functions.py:271 cps/cwa_functions.py:275
 #: cps/cwa_functions.py:277 cps/cwa_functions.py:280 cps/cwa_functions.py:282
 msgid "Timestamp"
-msgstr ""
+msgstr "Horodatage"
 
 #: cps/cwa_functions.py:269 cps/cwa_functions.py:271
 #, fuzzy
@@ -812,7 +817,7 @@ msgstr ""
 
 #: cps/cwa_functions.py:282
 msgid "Original Format"
-msgstr ""
+msgstr "Format original"
 
 #: cps/cwa_functions.py:282
 #, fuzzy
@@ -4013,7 +4018,7 @@ msgstr "Vertical"
 #: cps/templates/readcbr.html:150
 #, fuzzy
 msgid "Direction"
-msgstr "Description"
+msgstr "Direction"
 
 #: cps/templates/readcbr.html:153
 msgid "Left to Right"
@@ -4133,9 +4138,8 @@ msgid "Exclude Series"
 msgstr "Exclure les séries"
 
 #: cps/templates/search_form.html:96
-#, fuzzy
 msgid "Exclude Shelves"
-msgstr "Exclure les séries"
+msgstr "Etagères exclues"
 
 #: cps/templates/search_form.html:116
 msgid "Exclude Languages"
@@ -4267,9 +4271,8 @@ msgid "Run Time"
 msgstr "Durée"
 
 #: cps/templates/tasks.html:19
-#, fuzzy
 msgid "Message"
-msgstr "Fusionner"
+msgstr "Message"
 
 #: cps/templates/tasks.html:21
 msgid "Actions"
@@ -4364,9 +4367,8 @@ msgid "Enter Username"
 msgstr "Choisissez un nom d'utilisateur"
 
 #: cps/templates/user_table.html:135
-#, fuzzy
 msgid "Enter Email"
-msgstr "Courriel de test"
+msgstr "Entrez l’adresse email"
 
 #: cps/templates/user_table.html:136
 #, fuzzy
@@ -4388,42 +4390,36 @@ msgid "Visible Book Languages"
 msgstr "Langues de livre visibles"
 
 #: cps/templates/user_table.html:139
-#, fuzzy
 msgid "Edit Allowed Tags"
-msgstr "Sélectionner les étiquettes autorisées/refusées"
+msgstr "Modifier les étiquettes autorisées"
 
 #: cps/templates/user_table.html:139
 msgid "Allowed Tags"
 msgstr "Étiquettes autorisées"
 
 #: cps/templates/user_table.html:140
-#, fuzzy
 msgid "Edit Denied Tags"
-msgstr "Sélectionner les étiquettes autorisées/refusées"
+msgstr "Modifier les étiquettes efusées"
 
 #: cps/templates/user_table.html:140
 msgid "Denied Tags"
 msgstr "Étiquettes refusées"
 
 #: cps/templates/user_table.html:141
-#, fuzzy
 msgid "Edit Allowed Column Values"
-msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
+msgstr "Modifier les valeurs de colonnes autorisées"
 
 #: cps/templates/user_table.html:141
-#, fuzzy
 msgid "Allowed Column Values"
-msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
+msgstr "Valeurs de colonnes autorisées"
 
 #: cps/templates/user_table.html:142
-#, fuzzy
 msgid "Edit Denied Column Values"
-msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
+msgstr "Modifier les valeurs de colonnes refusées"
 
 #: cps/templates/user_table.html:142
-#, fuzzy
 msgid "Denied Column Values"
-msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
+msgstr "Valeurs de colonnes refusées"
 
 #: cps/templates/user_table.html:144
 #, fuzzy

@@ -31,8 +31,14 @@ from .render_template import render_title_template
 from .kobo_sync_status import change_archived_books
 from .redirect import get_redirect_location
 from .file_helper import validate_mime_type
+from .cwa_functions import get_ingest_dir
 from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
+from werkzeug.utils import secure_filename
+import uuid
+import os
+import json
+from .cwa_functions import get_ingest_dir
 
 editbook = Blueprint('edit-book', __name__)
 log = logger.create()
@@ -89,71 +95,68 @@ def edit_book(book_id):
 @login_required_if_no_ano
 @upload_required
 def upload():
+    # Upload a new format to an existing book via ingest sidecar manifest
     if len(request.files.getlist("btn-upload-format")):
-        book_id = request.form.get('book_id', -1)
-        return do_edit_book(book_id, request.files.getlist("btn-upload-format"))
+        raw_book_id = request.form.get('book_id', -1)
+        try:
+            book_id = int(raw_book_id)
+        except Exception:
+            book_id = -1
+        if book_id == -1:
+            flash(_("Missing or invalid book id for format upload"), category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+
+        for requested_file in request.files.getlist("btn-upload-format"):
+            if not _validate_uploaded_file(requested_file):
+                return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+
+            try:
+                final_path = _get_ingest_path(requested_file, prefix_parts=["format", book_id])
+                tmp_path, final_path = _save_to_ingest_atomic_rename(requested_file, final_path)
+                
+                # Write sidecar manifest instructing ingest to add this file as a new format
+                manifest = {
+                    "action": "add_format",
+                    "book_id": book_id,
+                    "original_filename": requested_file.filename,
+                }
+                manifest_path = final_path + ".cwa.json"
+                with open(manifest_path, 'w', encoding='utf-8') as mf:
+                    json.dump(manifest, mf, ensure_ascii=False)
+
+                # Now that manifest is written, perform the atomic rename to trigger ingest
+                os.replace(tmp_path, final_path)
+
+                # Queue a task entry for UX feedback
+                upload_text = N_("Upload done, processing, please wait...")
+                WorkerThread.add(current_user.name, TaskUpload(upload_text, escape(requested_file.filename)))
+
+            except Exception as e:
+                log.error_or_exception("Failed to queue format upload for ingest: {}".format(e))
+                flash(_("Failed to queue upload for processing"), category="error")
+                return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+
+        # Redirect back to the book edit page
+        return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+
+    # New book uploads: queue files to ingest atomically
     elif len(request.files.getlist("btn-upload")):
         for requested_file in request.files.getlist("btn-upload"):
+            if not _validate_uploaded_file(requested_file):
+                return Response(json.dumps({"location": url_for('web.index')}), mimetype='application/json')
             try:
-                modify_date = False
-                # create the function for sorting...
-                calibre_db.create_functions(config)
-                meta, error = file_handling_on_upload(requested_file)
-                if error:
-                    return error
+                final_path = _get_ingest_path(requested_file, prefix_parts=["new", current_user.id])
+                tmp_path, final_path = _save_to_ingest_atomic_rename(requested_file, final_path)
+                os.replace(tmp_path, final_path) # No manifest needed, just rename
+                upload_text = N_("Upload done, processing, please wait...")
+                WorkerThread.add(current_user.name, TaskUpload(upload_text, escape(requested_file.filename)))
+            except Exception as e:
+                log.error_or_exception("Failed to queue upload for ingest: {}".format(e))
+                flash(_("Failed to queue upload for processing"), category="error")
+                return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
 
-                db_book, input_authors, title_dir = create_book_on_upload(modify_date, meta)
-
-                # Comments need book id therefore only possible after flush
-                modify_date |= edit_book_comments(Markup(meta.description).unescape(), db_book)
-
-                book_id = db_book.id
-                title = db_book.title
-                if config.config_use_google_drive:
-                    helper.upload_new_file_gdrive(book_id,
-                                                  input_authors[0],
-                                                  title,
-                                                  title_dir,
-                                                  meta.file_path,
-                                                  meta.extension.lower())
-                    for file_format in db_book.data:
-                        file_format.name = (helper.get_valid_filename(title, chars=42) + ' - '
-                                            + helper.get_valid_filename(input_authors[0], chars=42))
-                else:
-                    error = helper.update_dir_structure(book_id,
-                                                        config.get_book_path(),
-                                                        input_authors[0],
-                                                        meta.file_path,
-                                                        title_dir + meta.extension.lower())
-                move_coverfile(meta, db_book)
-                if modify_date:
-                    calibre_db.set_metadata_dirty(book_id)
-                # save data to database, reread data
-                calibre_db.session.commit()
-
-                if config.config_use_google_drive:
-                    gdriveutils.updateGdriveCalibreFromLocal()
-                if error:
-                    flash(error, category="error")
-                link = '<a href="{}">{}</a>'.format(url_for('web.show_book', book_id=book_id), escape(title))
-                upload_text = N_("File %(file)s uploaded", file=link)
-                WorkerThread.add(current_user.name, TaskUpload(upload_text, escape(title)))
-                helper.add_book_to_thumbnail_cache(book_id)
-
-                if len(request.files.getlist("btn-upload")) < 2:
-                    if current_user.role_edit() or current_user.role_admin():
-                        resp = {"location": url_for('edit-book.show_edit_book', book_id=book_id)}
-                        return Response(json.dumps(resp), mimetype='application/json')
-                    else:
-                        resp = {"location": url_for('web.show_book', book_id=book_id)}
-                        return Response(json.dumps(resp), mimetype='application/json')
-            except (OperationalError, IntegrityError, StaleDataError) as e:
-                calibre_db.session.rollback()
-                log.error_or_exception("Database error: {}".format(e))
-                flash(_("Oops! Database Error: %(error)s.", error=e.orig if hasattr(e, "orig") else e),
-                      category="error")
-        return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
-    abort(404)
+        return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
+    abort(400)
 
 
 @editbook.route("/admin/book/convert/<int:book_id>", methods=['POST'])
@@ -285,6 +288,50 @@ def edit_selected_books():
 
         return json.dumps({'success': True})
     return ""
+
+# Helper to validate upload according to server settings
+def _validate_uploaded_file(uploaded_file):
+    allowed_extensions = config.config_upload_formats.split(',')
+    if uploaded_file:
+        if config.config_check_extensions and allowed_extensions != ['']:
+            if not validate_mime_type(uploaded_file, allowed_extensions):
+                flash(_("File type isn't allowed to be uploaded to this server"), category="error")
+                return False
+    if '.' in uploaded_file.filename:
+        file_ext = uploaded_file.filename.rsplit('.', 1)[-1].lower()
+        if file_ext not in allowed_extensions and '' not in allowed_extensions:
+            flash(_("File extension '%(ext)s' is not allowed to be uploaded to this server",
+                    ext=file_ext), category="error")
+            return False
+    else:
+        flash(_('File to be uploaded must have an extension'), category="error")
+        return False
+    return True
+
+# Helper to get a unique, prefixed path in the ingest directory
+def _get_ingest_path(uploaded_file, prefix_parts=None):
+    ingest_dir = get_ingest_dir()
+    os.makedirs(ingest_dir, exist_ok=True)
+    base_name = secure_filename(uploaded_file.filename)
+    # CWA change: use timestamp for more predictable sorting vs uuid
+    unique = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
+    prefix = "_".join([str(p) for p in (prefix_parts or []) if p])
+    final_name = f"{prefix + '_' if prefix else ''}{unique}_{base_name}"
+    final_path = os.path.join(ingest_dir, final_name)
+    return final_path
+
+# Helper to save file to a temporary path, then atomically rename to final path
+def _save_to_ingest_atomic_rename(uploaded_file, final_path):
+    tmp_path = final_path + ".uploading"
+    try:
+        # Stream directly into ingest dir, then atomically rename
+        uploaded_file.save(tmp_path)
+        return tmp_path, final_path
+    except Exception as e:
+        # Ensure partial uploads are cleaned up on error
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise e
 
 # Separated from /editbooks so that /editselectedbooks can also use this
 #

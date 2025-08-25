@@ -62,6 +62,7 @@ RUN \
     nano \
     sqlite3 \
     zip \
+    lsof \
     python3-venv && \
   # STEP 1.2 - Set up a python virtual environment and install pip and wheel packages
   cd /app/calibre-web-automated && \

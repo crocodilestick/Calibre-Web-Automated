@@ -64,6 +64,20 @@
   </div>
 {% endif %}
 </div>
+<div class="modal fade" id="progress" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog upload-modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>{{_('Uploading...')}}</h1>
+      </div>
+      <div class="modal-body">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <form role="form" action="{{ url_for('edit-book.edit_book', book_id=book.id) }}" method="post" enctype="multipart/form-data" id="book_edit_frm">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <div class="col-sm-9 col-xs-12">

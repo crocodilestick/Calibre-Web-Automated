@@ -618,7 +618,7 @@ $("#archived_cb:checked").attr({
 $("button#delete").attr({
     "data-toggle-two": "tooltip",
     "title": $("button#delete").text(),           //"Delete"
-    "data-placement": "bottom",
+    "data-placement": "left",
     "data-viewport": ".btn-toolbar"
 })
     .addClass("delete-book-btn-tooltip");
@@ -767,15 +767,26 @@ if ($(" body.stat p").length > 0) {
     $(" body.stat p").html(str);
 }
 // Collect delete buttons in editbook to single dropdown
-$(".editbook .text-center.more-stuff").prepend('<button id="deleteButton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-remove"></span>Delete Format<span class="caret"></span></button><ul class="dropdown-menu delete-dropdown"></ul>');
+var deleteButtons = $(".editbook .text-center.more-stuff button[data-delete-format]").get();
 
-deleteButtons = $(".editbook .text-center.more-stuff a").removeClass("btn btn-danger").attr("type", "").get();
+if (deleteButtons.length > 0) {
+    $(".editbook .text-center.more-stuff").prepend('<button id="deleteButton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-remove"></span>Delete Format<span class="caret"></span></button><ul class="dropdown-menu delete-dropdown"></ul>');
 
-$(deleteButtons).detach();
-$(".editbook .text-center.more-stuff h4").remove();
-$.each(deleteButtons, function (i, val) {
-    $("<li>" + deleteButtons[i].outerHTML + "</li>").appendTo(".delete-dropdown");
-});
+    $(deleteButtons).each(function() {
+        var format = $(this).data('delete-format');
+        var bookId = $(this).data('delete-id');
+        // Rebuild the button as a link to fit in the dropdown list
+        var listItem = '<li><a href="#" data-toggle="modal" data-delete-id="' + bookId + '" data-delete-format="' + format + '" data-target="#deleteModal">Delete - ' + format + '</a></li>';
+        $(listItem).appendTo(".delete-dropdown");
+        // Remove original button and its container
+        $(this).closest('.form-group').remove();
+    });
+}
+
+// Remove the now-empty "Delete formats:" heading if it exists
+if ($(".editbook .text-center.more-stuff h4").length > 0 && deleteButtons.length > 0) {
+    $(".editbook .text-center.more-stuff h4").remove();
+}
 
 // Turn off bootstrap animations
 $(function () {

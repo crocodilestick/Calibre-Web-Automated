@@ -207,8 +207,8 @@ class EPUBFixer:
             language = default_language
             original_language = 'undefined'
 
-            if not language_tags:
-                # Use default language if no language tag exists
+            if not language_tags or not language_tags[0].firstChild:
+                # Use default language if no language tag exists or tag is empty
                 self.fixed_problems.append(f"No language tag found. Setting to default: {default_language}")
             else:
                 language = language_tags[0].firstChild.nodeValue
@@ -227,7 +227,11 @@ class EPUBFixer:
                 metadata = opf.getElementsByTagName('metadata')[0]
                 metadata.appendChild(language_tag)
             else:
-                language_tags[0].firstChild.nodeValue = language
+                if language_tags[0].firstChild:
+                    language_tags[0].firstChild.nodeValue = language
+                else:
+                    text_node = opf.createTextNode(language)
+                    language_tags[0].appendChild(text_node)
 
             if language != original_language:
                 self.files[opf_filename] = opf.toxml()

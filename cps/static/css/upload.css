@@ -1,8 +1,32 @@
-@media (min-device-width: 768px) {
-  .upload-modal-dialog {
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%) !important;
-  }
+#progress.modal.in {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-modal-dialog > .modal-content {
+  position: absolute !important;
+  width: 40vw !important;
+  margin: 0 !important;
+  top: 50% !important;  /* Move top edge to the middle */
+  left: 50% !important; /* Move left edge to the middle */
+  /* Pull the modal back by half its own width and height */
+  transform: translate(-50%, 100%) !important;
+  border-radius: 6px !important;
+}
+
+/* .modal-content {
+    position: relative;
+    background-color: #323232;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 0;
+    border-radius: 0 0 3px 3px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+} */
+
+.progress-bar {
+    background-color: #cc7b19;
 }

@@ -8544,7 +8544,7 @@ a#remote_login {
 .login .well > form {
     max-width: 480px;
     margin: auto;
-    height: 47rem;
+    height: fit-content;
 }
 
 p.cwa-settings-tooltip {

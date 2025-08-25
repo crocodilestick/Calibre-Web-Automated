@@ -5593,7 +5593,7 @@ body.admin.modal-open .navbar {
 #RestartDialog.in:before, #ShutdownDialog.in:before, #StatusDialog.in:before, #deleteModal.in:before, #cancelTaskModal.in:before {
     -webkit-transform: translate(0, 0);
     -ms-transform: translate(0, 0);
-    transform: translate(0, 0)
+    transform: translate(0px, 120px);
 }
 
 #RestartDialog > .modal-dialog, #ShutdownDialog > .modal-dialog, #StatusDialog > .modal-dialog, #deleteModal > .modal-dialog, #cancelTaskModal > .modal-dialog {
@@ -8544,7 +8544,7 @@ a#remote_login {
 .login .well > form {
     max-width: 480px;
     margin: auto;
-    height: 47rem;
+    height: fit-content;
 }
 
 p.cwa-settings-tooltip {

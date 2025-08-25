@@ -2,6 +2,8 @@ name: Update Translations and Wiki Status
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'cps/**'
       - 'scripts/compile_translations.sh'

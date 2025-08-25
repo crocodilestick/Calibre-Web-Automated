@@ -1,92 +1,88 @@
 #!/bin/bash
 
-# https://github.com/janeczku/calibre-web/wiki/Automatically-import-new-books-(Linux)
-
-# This script is used to automatically import downloaded ebooks into a Calibre database.
-# Reference: https://manual.calibre-ebook.com/generated/en/calibredb.html#add
 echo "========== STARTING CWA-INGEST SERVICE =========="
 
 WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
 echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
-# Helper to run fallback watcher if inotify fails (e.g., ENOSPC on Synology)
+# Tunables (override via env)
+STABLE_CHECKS=${CWA_INGEST_STABLE_CHECKS:-6}
+STABLE_CONSEC_MATCH=${CWA_INGEST_STABLE_CONSEC_MATCH:-2}
+STABLE_INTERVAL=${CWA_INGEST_STABLE_INTERVAL:-0.5}
+SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|cwa.json)$'
+TEMP_SUFFIXES='crdownload download part uploading'
+
+wait_for_stable_file() {
+        local file="$1" last_size="" same_count=0 i sz
+        for (( i=0; i<STABLE_CHECKS; i++ )); do
+                [ -f "$file" ] || return 1
+                sz=$(stat -c %s "$file" 2>/dev/null || echo "") || return 1
+                [ -n "$sz" ] || return 1
+                if [ "$sz" = "$last_size" ]; then
+                        same_count=$((same_count+1))
+                        if [ $same_count -ge $((STABLE_CONSEC_MATCH-1)) ]; then
+                                return 0
+                        fi
+                else
+                        same_count=0
+                        last_size="$sz"
+                fi
+                sleep "$STABLE_INTERVAL"
+        done
+        return 0
+}
+
 run_fallback() {
-        echo "[cwa-ingest-service] Falling back to polling watcher (inotify unavailable or out of watches)" >&2
-        # Only act on typical ebook archive formats by default
-                python3 /app/calibre-web-automated/scripts/watch_fallback.py \
-                        --path "$WATCH_FOLDER" \
-                        --interval 5 |
-        while read -r events filepath ; do
-                echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
-                python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath" # &
+        echo "[cwa-ingest-service] Falling back to polling watcher" >&2
+        python3 /app/calibre-web-automated/scripts/watch_fallback.py --path "$WATCH_FOLDER" --interval 5 |
+        while read -r events filepath; do
+                handle_event "$filepath"
         done
 }
 
-# Detect if running under Docker Desktop (Windows/macOS) and prefer polling
 is_docker_desktop() {
         local osr mounts
         osr=$(cat /proc/sys/kernel/osrelease 2>/dev/null || true)
-        # WSL2 / Windows kernel markers
-        if echo "$osr" | grep -qi 'microsoft'; then
-                return 0
-        fi
-        # LinuxKit kernel used by Docker Desktop VM
-        if echo "$osr" | grep -qi 'linuxkit'; then
-                return 0
-        fi
-        # Mount hints for Desktop host path mappings
+        echo "$osr" | grep -qi 'microsoft' && return 0
+        echo "$osr" | grep -qi 'linuxkit' && return 0
         mounts=$(cat /proc/self/mountinfo 2>/dev/null || true)
-        if echo "$mounts" | grep -Eqi '/host_mnt/|/Users/|osxfs|virtiofs.*docker'; then
-                return 0
-        fi
+        echo "$mounts" | grep -Eqi '/host_mnt/|/Users/|osxfs|virtiofs.*docker' && return 0
         return 1
 }
 
-# Prefer polling when running over network shares to better handle NFS/SMB semantics
+handle_event() {
+        local filepath="$1"
+        # temp suffixes
+        for suf in $TEMP_SUFFIXES; do
+                [[ "$filepath" == *.$suf ]] && return 0
+        done
+        # extension filter
+        if ! [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]; then
+                return 0
+        fi
+        
+        echo "[cwa-ingest-service] New file detected - $filepath - Starting Ingest Processor..."
+        python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+}
+
 if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
-        echo "[cwa-ingest-service] NETWORK_SHARE_MODE=true detected; using polling watcher instead of inotify"
-        run_fallback
-        exit 0
+        echo "[cwa-ingest-service] NETWORK_SHARE_MODE=true -> using fallback watcher"
+        run_fallback; exit 0
 fi
 
-# Allow admins to force polling mode explicitly (defaults to inotify)
 if [ "${CWA_WATCH_MODE:-inotify}" = "poll" ]; then
-        run_fallback
-        exit 0
+        run_fallback; exit 0
 fi
 
-# Prefer polling on Docker Desktop (Windows/macOS) for reliable detection on host-mounted paths
 if is_docker_desktop; then
-        echo "[cwa-ingest-service] Docker Desktop environment detected; using polling watcher instead of inotify"
-        run_fallback
-        exit 0
+        echo "[cwa-ingest-service] Docker Desktop detected -> using fallback watcher"
+        run_fallback; exit 0
 fi
 
-# Monitor the folder for new files using inotify; on error, switch to fallback.
-(
-        set -o pipefail
-        s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" |
-        while read -r events filepath ; do
-        # if [[ $(grep "$filepath" ingest-log-test.txt | egrep -o '[0-9]{10}') ]]; then
-        #         CURRENT_TIME=$(date +'%s')
-        #         TIME_OF_MATCH=$(grep "$filepath" ingest-log-test.txt | egrep -o '[0-9]{10}')
-        #         TODO NEED TO GET DIFFERENCE BETWEEN THE 2 TIMES AND IF LESS THAN 60 SECONDS, IGNORE
-                echo "[cwa-ingest-service] New files detected - $filepath - Starting Ingest Processor..."
-                python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath" # &
-        # echo "'${filepath}' - $(date +'%s')" >> /config/.ingest_dupe_list
-        # INGEST_PROCESSOR_PID=$!
-        # Wait for the ingest processor to finish
-        # wait $INGEST_PROCESSOR_PID
-        # if ! [[ $(ls -A "$WATCH_FOLDER") ]]; then
-        #         FILES="${WATCH_FOLDER}/*"
-        #         for f in $FILES
-        #         do
-        #                 python3 /app/calibre-web-automated/scripts/ingest_processor.py "$f" &
-        #                 INGEST_PROCESSOR_PID=$!
-        #                 # Wait for the ingest processor to finish
-                #                 wait $INGEST_PROCESSOR_PID
-                #         done
-                # fi
+( set -o pipefail
+        s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" | \
+        while read -r events filepath; do
+                handle_event "$filepath"
         done
 ) || run_fallback
 

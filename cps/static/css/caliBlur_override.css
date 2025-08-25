@@ -279,6 +279,7 @@ div#Downloads_list {
     color: hsla(0, 0%, 100%, .45);
     padding: 60px !important;
     margin-top: 60px !important;
+    display: flow-root;
 }
 
 body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a:hover {

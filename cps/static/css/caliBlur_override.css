@@ -277,9 +277,10 @@ div#Downloads_list {
 .login .well > form {
     background: rgba(0, 0, 0, .4);
     color: hsla(0, 0%, 100%, .45);
-    padding: 60px !important;
+    padding: 60px;
     margin-top: 60px !important;
     display: flow-root;
+    min-width: 480px;
 }
 
 body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a:hover {

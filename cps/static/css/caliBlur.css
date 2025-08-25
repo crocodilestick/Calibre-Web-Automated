@@ -7599,7 +7599,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
 @media only screen and (max-width: 500px) {
     .login .well > form {
-        padding: 30px 15px
+        padding: 60px 25px !important;
+        min-width: calc(100vw - 30px) !important;
     }
 
     #RestartDialog.in:before, #ShutdownDialog.in:before, #StatusDialog.in:before, #deleteModal.in:before, #cancelTaskModal.in:before {

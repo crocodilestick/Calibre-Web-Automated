@@ -34,5 +34,8 @@ services:
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
-      - 8083:8083 
+      - 8083:8083
+    # If you set CWA_PORT_OVERRIDE to a port below 1024, you may need to uncomment the following line:
+    # cap_add:
+    #   - NET_BIND_SERVICE
     restart: unless-stopped

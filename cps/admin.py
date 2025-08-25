@@ -827,10 +827,10 @@ def add_restriction(res_type, user_id):
             config.save()
     if res_type == 1:  # CCustom as template
         if 'submit_allow' in element:
-            config.config_allowed_column_value = restriction_addition(element, config.list_denied_column_values)
+            config.config_allowed_column_value = restriction_addition(element, config.list_allowed_column_values)
             config.save()
         elif 'submit_deny' in element:
-            config.config_denied_column_value = restriction_addition(element, config.list_allowed_column_values)
+            config.config_denied_column_value = restriction_addition(element, config.list_denied_column_values)
             config.save()
     if res_type == 2:  # Tags per user
         if isinstance(user_id, int):

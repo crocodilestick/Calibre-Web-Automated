@@ -17,6 +17,10 @@ See CONTRIBUTORS for full list of authors. */
     letter-spacing: normal
 }
 
+a, button {
+    transition: all .2s ease-in-out;
+}
+
 .pagination, .plexBack.noBack, .root .plexBack, .root .plexBack > a {
     cursor: default;
 }
@@ -196,7 +200,7 @@ See CONTRIBUTORS for full list of authors. */
     }
 }
 
-@media only screen and (max-width: 991px) and (min-width: 768px) {
+@media only screen and (min-width: 768px) {
     body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a > span:before {
         font-size: 18px
     }

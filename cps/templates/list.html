@@ -72,7 +72,8 @@ See CONTRIBUTORS for full list of authors. -->
           {% if entry.format %}
             {{entry.format}}
           {% else %}
-            {{entry[0].name}}{% endif %}{% endif %}</a></div>
+            {% if page == "authorlist" %}{{ entry[0].name.replace('|', ', ') }}{% else %}{{entry[0].name}}{% endif %}
+          {% endif %}{% endif %}</a></div>
       </div>
     {% endfor %}
     </div>

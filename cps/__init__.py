@@ -11,7 +11,7 @@ import sys
 import os
 import mimetypes
 
-from flask import Flask
+from flask import Flask, g
 from .MyLoginManager import MyLoginManager
 from flask_principal import Principal
 
@@ -201,6 +201,11 @@ def create_app():
     # Ensure a valid calibre_db session exists before handling each request
     @app.before_request
     def _cwa_ensure_db_session():
+        from .cw_login import current_user
+        if current_user.is_authenticated:
+            g.magic_shelves_access = ub.session.query(ub.MagicShelf).filter(ub.MagicShelf.user_id == current_user.id).all()
+        else:
+            g.magic_shelves_access = []
         try:
             calibre_db.ensure_session()
         except Exception:

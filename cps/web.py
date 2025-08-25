@@ -40,6 +40,7 @@ from .redirect import get_redirect_location
 from .cw_babel import get_available_locale
 from .usermanagement import login_required_if_no_ano
 from .kobo_sync_status import remove_synced_book
+from . import magic_shelf
 from .render_template import render_title_template
 from .kobo_sync_status import change_archived_books
 from . import limiter
@@ -443,6 +444,8 @@ def render_books_list(data, sort_param, book_id, page):
         term = json.loads(flask_session.get('query', '{}'))
         offset = int(int(config.config_books_per_page) * (page - 1))
         return render_adv_search_results(term, offset, order, config.config_books_per_page)
+    elif data == "magicshelf":
+        return render_magic_shelf(book_id, order)
     else:
         website = data or "newest"
         entries, random, pagination = calibre_db.fill_indexpage(page, 0, db.Books, True, order[0],
@@ -844,6 +847,33 @@ def render_archived_books(page, sort_param):
     return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
                                  title=name, page=page_name, order=sort_param[1])
 
+
+@web.route("/magicshelf/view/<int:shelf_id>")
+@user_login_required
+def render_magic_shelf(shelf_id):
+    # Use default order if not provided
+    order = get_sort_function('stored', 'magicshelf')
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        abort(404)
+    
+    # For now, we ignore the sort order and pagination, but this is where it would be handled
+    books = magic_shelf.get_books_for_magic_shelf(shelf_id)
+    
+    # Wrap each book in a simple object with a .Books attribute
+    class EntryWrapper:
+        def __init__(self, book):
+            self.Books = book
+    entries = [EntryWrapper(book) for book in books]
+    per_page = getattr(config, 'config_books_per_page', 20) or 20
+    # Avoid per_page=0
+    if per_page <= 0:
+        per_page = 20
+    pagination = Pagination(1, per_page, len(entries))
+    return render_title_template('index.html', entries=entries, pagination=pagination,
+                                 title=shelf.name, page="magicshelf", id=shelf_id, order=order[1])
+
+
 # ################################### Health Check ##################################################################
 
 @web.route("/health")
@@ -893,6 +923,65 @@ def index(page):
 @login_required_if_no_ano
 def books_list(data, sort_param, book_id, page):
     return render_books_list(data, sort_param, book_id, page)
+
+
+@web.route("/magicshelf", methods=["GET", "POST"])
+@user_login_required
+def create_magic_shelf():
+    if request.method == "POST":
+        data = request.get_json()
+        name = data.get('name')
+        rules = data.get('rules')
+        icon = data.get('icon', 'fa-wand-magic-sparkles')
+
+        if not name or not rules:
+            return jsonify({"success": False, "message": "Name and rules are required."}), 400
+
+        new_shelf = ub.MagicShelf(
+            name=name,
+            user_id=current_user.id,
+            rules=rules,
+            icon=icon
+        )
+        ub.session.add(new_shelf)
+        ub.session_commit()
+        return jsonify({"success": True, "shelf_id": new_shelf.id})
+    
+    # For GET request, we'll need a template to build the shelf
+    # This will be implemented in a future step
+    return render_title_template('magic_shelf_edit.html', title=_("Create Magic Shelf"), page="magic_shelf_create")
+
+
+@web.route("/magicshelf/<int:shelf_id>", methods=["GET", "POST"])
+@user_login_required
+def edit_magic_shelf(shelf_id):
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf or shelf.user_id != current_user.id:
+        abort(404)
+
+    if request.method == "POST":
+        data = request.get_json()
+        shelf.name = data.get('name', shelf.name)
+        shelf.rules = data.get('rules', shelf.rules)
+        shelf.icon = data.get('icon', shelf.icon)
+        flag_modified(shelf, "rules")
+        ub.session_commit()
+        return jsonify({"success": True})
+
+    # For GET request
+    return render_title_template('magic_shelf_edit.html', shelf=shelf, title=_("Edit Magic Shelf"), page="magic_shelf_edit")
+
+
+@web.route("/magicshelf/<int:shelf_id>/delete", methods=["POST"])
+@user_login_required
+def delete_magic_shelf(shelf_id):
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf or shelf.user_id != current_user.id:
+        abort(404)
+    
+    ub.session.delete(shelf)
+    ub.session_commit()
+    return jsonify({"success": True})
 
 
 @web.route("/table")

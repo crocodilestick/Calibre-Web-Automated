@@ -9,7 +9,7 @@ import sys
 
 from . import create_app, limiter
 from .jinjia import jinjia
-from flask import request
+from flask import request, g
 
 
 def request_username():
@@ -51,6 +51,7 @@ def main():
 
     from . import web_server
     init_errorhandler()
+
 
     # CWA Blueprints
     app.register_blueprint(switch_theme)

@@ -234,6 +234,7 @@ class User(UserBase, Base):
     password = Column(String)
     kindle_mail = Column(String(120), default="")
     shelf = relationship('Shelf', backref='user', lazy='dynamic', order_by='Shelf.name')
+    magic_shelf = relationship('MagicShelf', backref='user', lazy='dynamic', order_by='MagicShelf.name')
     downloads = relationship('Downloads', backref='user', lazy='dynamic')
     locale = Column(String(2), default="en")
     sidebar_view = Column(Integer, default=1)
@@ -367,6 +368,24 @@ class Shelf(Base):
 
     def __repr__(self):
         return '<Shelf %d:%r>' % (self.id, self.name)
+
+
+# Baseclass representing Magic Shelfs in calibre-web in app.db
+class MagicShelf(Base):
+    __tablename__ = 'magic_shelf'
+
+    id = Column(Integer, primary_key=True)
+    uuid = Column(String, default=lambda: str(uuid.uuid4()))
+    name = Column(String)
+    is_public = Column(Integer, default=0)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    icon = Column(String, default="fa-wand-magic-sparkles")
+    rules = Column(JSON, default={})
+    created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return '<MagicShelf %d:%r>' % (self.id, self.name)
 
 
 # Baseclass representing Relationship between books and Shelfs in Calibre-Web in app.db (N:M)
@@ -585,6 +604,8 @@ def add_missing_tables(engine, _session):
         Thumbnail.__table__.create(bind=engine)
     if not engine.dialect.has_table(engine.connect(), "kosync_progress"):
         KOSyncProgress.__table__.create(bind=engine)
+    if not engine.dialect.has_table(engine.connect(), "magic_shelf"):
+        MagicShelf.__table__.create(bind=engine)
 
 
 # migrate all settings missing in registration table

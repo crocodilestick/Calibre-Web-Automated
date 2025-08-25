@@ -618,7 +618,7 @@ $("#archived_cb:checked").attr({
 $("button#delete").attr({
     "data-toggle-two": "tooltip",
     "title": $("button#delete").text(),           //"Delete"
-    "data-placement": "bottom",
+    "data-placement": "left",
     "data-viewport": ".btn-toolbar"
 })
     .addClass("delete-book-btn-tooltip");

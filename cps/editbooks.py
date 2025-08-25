@@ -111,16 +111,21 @@ def upload():
                 return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
 
             try:
-                saved_path = _save_to_ingest_atomically(requested_file, prefix_parts=["format", book_id])
+                final_path = _get_ingest_path(requested_file, prefix_parts=["format", book_id])
+                tmp_path, final_path = _save_to_ingest_atomic_rename(requested_file, final_path)
+                
                 # Write sidecar manifest instructing ingest to add this file as a new format
                 manifest = {
                     "action": "add_format",
                     "book_id": book_id,
                     "original_filename": requested_file.filename,
                 }
-                manifest_path = saved_path + ".cwa.json"
+                manifest_path = final_path + ".cwa.json"
                 with open(manifest_path, 'w', encoding='utf-8') as mf:
                     json.dump(manifest, mf, ensure_ascii=False)
+
+                # Now that manifest is written, perform the atomic rename to trigger ingest
+                os.replace(tmp_path, final_path)
 
                 # Queue a task entry for UX feedback
                 upload_text = N_("Upload done, processing, please wait...")
@@ -140,7 +145,9 @@ def upload():
             if not _validate_uploaded_file(requested_file):
                 return Response(json.dumps({"location": url_for('web.index')}), mimetype='application/json')
             try:
-                _ = _save_to_ingest_atomically(requested_file, prefix_parts=["new", current_user.id])
+                final_path = _get_ingest_path(requested_file, prefix_parts=["new", current_user.id])
+                tmp_path, final_path = _save_to_ingest_atomic_rename(requested_file, final_path)
+                os.replace(tmp_path, final_path) # No manifest needed, just rename
                 upload_text = N_("Upload done, processing, please wait...")
                 WorkerThread.add(current_user.name, TaskUpload(upload_text, escape(requested_file.filename)))
             except Exception as e:
@@ -301,20 +308,30 @@ def _validate_uploaded_file(uploaded_file):
         return False
     return True
 
-# Helper to atomically write to ingest directory
-def _save_to_ingest_atomically(uploaded_file, prefix_parts=None):
+# Helper to get a unique, prefixed path in the ingest directory
+def _get_ingest_path(uploaded_file, prefix_parts=None):
     ingest_dir = get_ingest_dir()
     os.makedirs(ingest_dir, exist_ok=True)
     base_name = secure_filename(uploaded_file.filename)
-    unique = uuid.uuid4().hex
+    # CWA change: use timestamp for more predictable sorting vs uuid
+    unique = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
     prefix = "_".join([str(p) for p in (prefix_parts or []) if p])
     final_name = f"{prefix + '_' if prefix else ''}{unique}_{base_name}"
     final_path = os.path.join(ingest_dir, final_name)
-    tmp_path = final_path + ".uploading"
-    # Stream directly into ingest dir, then atomically rename
-    uploaded_file.save(tmp_path)
-    os.replace(tmp_path, final_path)
     return final_path
+
+# Helper to save file to a temporary path, then atomically rename to final path
+def _save_to_ingest_atomic_rename(uploaded_file, final_path):
+    tmp_path = final_path + ".uploading"
+    try:
+        # Stream directly into ingest dir, then atomically rename
+        uploaded_file.save(tmp_path)
+        return tmp_path, final_path
+    except Exception as e:
+        # Ensure partial uploads are cleaned up on error
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise e
 
 # Separated from /editbooks so that /editselectedbooks can also use this
 #

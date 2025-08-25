@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+
+{% block header %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/query-builder.default.min.css') }}">
+<style>
+    .rule-group-container, .rule-container {
+        border-left: 2px solid #ccc;
+        padding-left: 15px;
+        margin-top: 10px;
+    }
+    .rule-group-header {
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h2>{{ title }}</h2>
+    <form id="magic-shelf-form">
+        <div class="form-group">
+            <label for="shelf-name">Shelf Name</label>
+            <input type="text" class="form-control" id="shelf-name" value="{{ shelf.name if shelf else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="shelf-icon">Icon</label>
+            <input type="text" class="form-control" id="shelf-icon" value="{{ shelf.icon if shelf else 'fa-wand-magic-sparkles' }}">
+            <small class="form-text text-muted">Enter a Font Awesome icon class (e.g., 'fa-book').</small>
+        </div>
+
+        <hr>
+
+        <h4>Rules</h4>
+        <div id="builder"></div>
+
+        <hr>
+
+        <button type="submit" class="btn btn-primary">Save Shelf</button>
+        <a href="{{ url_for('web.index') }}" class="btn btn-secondary">Cancel</a>
+        {% if shelf %}
+        <button type="button" class="btn btn-danger float-right" id="delete-shelf-btn">Delete Shelf</button>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
+
+{% set rules_json = shelf.rules|tojson if shelf and shelf.rules else 'null' %}
+{% block js %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/query-builder.standalone.min.js') }}"></script>
+<script>
+$(function() {
+    var fields = [
+        {id: 'title', label: 'Title', type: 'string'},
+        {id: 'author', label: 'Author', type: 'string'},
+        {id: 'tag', label: 'Tag', type: 'string'},
+        {id: 'series', label: 'Series', type: 'string'},
+        {id: 'publisher', label: 'Publisher', type: 'string'},
+        {id: 'rating', label: 'Rating', type: 'integer', input: 'select', values: {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10}},
+        {id: 'pubdate', label: 'Published Date', type: 'date', validation: {format: 'YYYY-MM-DD'}},
+        {id: 'timestamp', label: 'Date Added', type: 'date', validation: {format: 'YYYY-MM-DD'}},
+        {id: 'has_cover', label: 'Has Cover', type: 'boolean', input: 'radio', values: {1: 'Yes', 0: 'No'}},
+        {id: 'series_index', label: 'Series Index', type: 'double'}
+    ];
+
+    var operators = [
+        {type: 'equal', optgroup: 'basic'},
+        {type: 'not_equal', optgroup: 'basic'},
+        {type: 'in', optgroup: 'basic'},
+        {type: 'not_in', optgroup: 'basic'},
+        {type: 'less', optgroup: 'number'},
+        {type: 'less_or_equal', optgroup: 'number'},
+        {type: 'greater', optgroup: 'number'},
+        {type: 'greater_or_equal', optgroup: 'number'},
+        {type: 'between', optgroup: 'number'},
+        {type: 'not_between', optgroup: 'number'},
+        {type: 'begins_with', optgroup: 'string'},
+        {type: 'not_begins_with', optgroup: 'string'},
+        {type: 'contains', optgroup: 'string'},
+        {type: 'not_contains', optgroup: 'string'},
+        {type: 'ends_with', optgroup: 'string'},
+        {type: 'not_ends_with', optgroup: 'string'},
+        {type: 'is_empty'},
+        {type: 'is_not_empty'},
+        {type: 'is_null'},
+        {type: 'is_not_null'}
+    ];
+
+    var rules = {{ rules_json|safe }};
+
+    $('#builder').queryBuilder({
+        plugins: ['bt-tooltip-errors'],
+        filters: fields,
+        operators: operators,
+        rules: rules
+    });
+
+    $('#magic-shelf-form').on('submit', function(e) {
+        e.preventDefault();
+        var rules = $('#builder').queryBuilder('getRules');
+
+        if (!rules) {
+            alert('Please define at least one rule.');
+            return;
+        }
+
+        var shelfData = {
+            name: $('#shelf-name').val(),
+            icon: $('#shelf-icon').val(),
+            rules: rules
+        };
+
+        var url = "{{ url_for('web.create_magic_shelf') }}";
+        var method = "POST";
+
+        {% if shelf %}
+        url = "{{ url_for('web.edit_magic_shelf', shelf_id=shelf.id) }}";
+        {% endif %}
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: 'application/json',
+            data: JSON.stringify(shelfData),
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = "{{ url_for('web.index') }}";
+                } else {
+                    alert('Error saving shelf: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('An unexpected error occurred.');
+            }
+        });
+    });
+
+    {% if shelf %}
+    $('#delete-shelf-btn').on('click', function() {
+        if (confirm('Are you sure you want to delete this shelf?')) {
+            $.ajax({
+                url: "{{ url_for('web.delete_magic_shelf', shelf_id=shelf.id) }}",
+                method: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = "{{ url_for('web.index') }}";
+                    } else {
+                        alert('Error deleting shelf.');
+                    }
+                },
+                error: function() {
+                    alert('An unexpected error occurred.');
+                }
+            });
+        }
+    });
+    {% endif %}
+});
+</script>
+{% endblock %}

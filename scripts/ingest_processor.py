@@ -232,7 +232,7 @@ class NewBookProcessor:
             print("\n[ingest-processor]: *** NOTICE TO USER: Kepubify is limited in that it can only convert from epubs. To get around this, CWA will automatically convert other"
             "supported formats to epub using the Calibre's conversion tools & then use Kepubify to produce your desired kepubs. Obviously multi-step conversions aren't ideal"
             "so if you notice issues with your converted files, bare in mind starting with epubs will ensure the best possible results***\n", flush=True)
-            convert_successful, converted_filepath = self.convert_book(self.input_format, end_format="epub") # type: ignore
+            convert_successful, converted_filepath = self.convert_book(end_format="epub") # type: ignore
             
         if convert_successful:
             converted_filepath = Path(converted_filepath)

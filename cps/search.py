@@ -340,18 +340,29 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
             log.debug_or_exception(ex)
             flash(_("Error on search for custom columns, please restart Calibre-Web"), category="error")
 
-    q = q.order_by(*sort).all()
+    q = q.order_by(*sort)
     flask_session['query'] = json.dumps(term)
-    ub.store_combo_ids(q)
-    result_count = len(q)
+
+    # Perform a count query for pagination, which is much faster than fetching all results.
+    result_count = q.count()
+
     if offset is not None and limit is not None:
         offset = int(offset)
-        limit_all = offset + int(limit)
-        pagination = Pagination((offset / (int(limit)) + 1), limit, result_count)
+        pagination = Pagination(page=(offset // limit + 1), per_page=limit, total=result_count)
+        # Fetch only the required page of results from the database
+        results = q.offset(offset).limit(limit).all()
     else:
         offset = 0
-        limit_all = result_count
-    entries = calibre_db.order_authors(q[offset:limit_all], list_return=True, combined=True)
+        limit = result_count if result_count > 0 else 1
+        pagination = Pagination(page=1, per_page=limit, total=result_count)
+        results = q.all()
+
+    # Note: store_combo_ids will now only contain the IDs of the currently visible page.
+    # This improves performance drastically for large search results, but affects
+    # functionality that relies on having all search result IDs (e.g., "download all").
+    ub.store_combo_ids(results)
+
+    entries = calibre_db.order_authors(results, list_return=True, combined=True)
     return render_title_template('search.html',
                                  adv_searchterm=search_term,
                                  pagination=pagination,

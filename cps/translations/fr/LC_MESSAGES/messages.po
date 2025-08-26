@@ -24,7 +24,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-08-09 17:32+0200\n"
-"PO-Revision-Date: 2025-08-25 15:45+0200\n"
+"PO-Revision-Date: 2025-08-26 11:17+0200\n"
 "Last-Translator: Deadbone <deadbone2000@yahoo.fr>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -659,68 +659,67 @@ msgstr "Japonais"
 
 #: cps/constants.py:202
 msgid "Khmer"
-msgstr ""
+msgstr "Khmer"
 
 #: cps/constants.py:203
 msgid "Korean"
-msgstr ""
+msgstr "Coréen"
 
 #: cps/constants.py:204
 msgid "Dutch"
-msgstr ""
+msgstr "Néerlandais"
 
 #: cps/constants.py:205
 msgid "Norwegian"
-msgstr ""
+msgstr "Norvégien"
 
 #: cps/constants.py:206
-#, fuzzy
 msgid "Polish"
-msgstr "Éditeur"
+msgstr "Polonais"
 
 #: cps/constants.py:207
 msgid "Portuguese"
-msgstr ""
+msgstr "Portugais"
 
 #: cps/constants.py:208
 msgid "Portuguese (Brazil)"
-msgstr ""
+msgstr "Portugais (Brésil)"
 
 #: cps/constants.py:209
 msgid "Russian"
-msgstr ""
+msgstr "Russe"
 
 #: cps/constants.py:210
 msgid "Slovak"
-msgstr ""
+msgstr "Slovaque"
 
 #: cps/constants.py:211
 msgid "Slovenian"
-msgstr ""
+msgstr "Slovène"
 
 #: cps/constants.py:212
 msgid "Swedish"
-msgstr ""
+msgstr "Suédois"
 
 #: cps/constants.py:213
 msgid "Turkish"
-msgstr ""
+msgstr "Turque"
 
 #: cps/constants.py:214
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukrainien"
 
 #: cps/constants.py:215
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnamien"
 
 #: cps/constants.py:216
 msgid "Chinese (Simplified, China)"
-msgstr ""
+msgstr "Chinois (Simplifié, Chine)"
 
 #: cps/constants.py:217
 msgid "Chinese (Traditional, Taiwan)"
-msgstr ""
+msgstr "Chinois (Traditionnel, Taïwan)"
 
 #: cps/converter.py:20
 msgid "not installed"
@@ -789,9 +788,8 @@ msgid "Trigger Type"
 msgstr ""
 
 #: cps/cwa_functions.py:271 cps/cwa_functions.py:277
-#, fuzzy
 msgid "Filepath"
-msgstr "Formats de fichier"
+msgstr "Chemin du fichier"
 
 #: cps/cwa_functions.py:275 cps/cwa_functions.py:277 cps/cwa_functions.py:280
 #: cps/cwa_functions.py:282
@@ -801,19 +799,19 @@ msgstr "nom"
 
 #: cps/cwa_functions.py:275
 msgid "Manual?"
-msgstr ""
+msgstr "Manuel ?"
 
 #: cps/cwa_functions.py:275
 msgid "No. Fixes"
-msgstr ""
+msgstr "Nb Corrections"
 
 #: cps/cwa_functions.py:275 cps/cwa_functions.py:280 cps/cwa_functions.py:282
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "Original sauvegardé ?"
 
 #: cps/cwa_functions.py:277
 msgid "Fixes Applied"
-msgstr ""
+msgstr "Corrections appliquées "
 
 #: cps/cwa_functions.py:282
 msgid "Original Format"
@@ -892,9 +890,8 @@ msgid "Both username and image data are required."
 msgstr ""
 
 #: cps/cwa_functions.py:798
-#, fuzzy
 msgid "Profile picture updated successfully."
-msgstr "{} utilisateurs supprimés avec succès"
+msgstr "Image de profil mise à jour."
 
 #: cps/cwa_functions.py:811
 msgid "CWA Profile Picture Management (WIP)"
@@ -939,7 +936,7 @@ msgstr ""
 
 #: cps/editbooks.py:609 cps/editbooks.py:1421
 msgid "User has no rights to upload cover"
-msgstr ""
+msgstr "L’utilisateur n’a pas les droits pour envoyer une couverture de livre"
 
 #: cps/editbooks.py:630 cps/editbooks.py:873
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
@@ -4127,7 +4124,7 @@ msgstr ""
 
 #: cps/templates/search_form.html:45 cps/templates/search_form.html:166
 msgid "Empty"
-msgstr ""
+msgstr "Vide"
 
 #: cps/templates/search_form.html:60
 msgid "Exclude Tags"
@@ -4422,18 +4419,16 @@ msgid "Denied Column Values"
 msgstr "Valeurs de colonnes refusées"
 
 #: cps/templates/user_table.html:144
-#, fuzzy
 msgid "Change Password"
-msgstr "Permettre le changement de mot de passe"
+msgstr "Changer le mot de passe"
 
 #: cps/templates/user_table.html:147
 msgid "View"
 msgstr "Vue"
 
 #: cps/templates/user_table.html:150
-#, fuzzy
 msgid "Edit Public Shelves"
-msgstr "Étagère publique"
+msgstr "Modifier les étagères publiques"
 
 #: cps/templates/user_table.html:152
 #, fuzzy

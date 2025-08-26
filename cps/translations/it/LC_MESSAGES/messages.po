@@ -4384,3 +4384,103 @@ msgstr "Sincronizza gli scaffali selezionati con Kobo"
 #: cps/templates/user_table.html:156
 msgid "Show Read/Unread Section"
 msgstr "Mostra sezione Libri letti e Libri da leggere"
+
+#, fuzzy, python-format
+#~ msgid "%(seriesindex)s is not a valid number, skipping"
+#~ msgstr "Indice serie: %(seriesindex)s non è un numero valido, lo salto"
+
+#, fuzzy
+#~ msgid "Calibre-Web Automated Stats"
+#~ msgstr "Calibre-Web log: "
+
+#~ msgid "Calibre-Web configuration updated"
+#~ msgstr "La configurazione di Calibre-Web è stata aggiornata"
+
+#~ msgid ""
+#~ "Are you sure you want delete Calibre-Web's sync database to force a full "
+#~ "sync with your Kobo Reader?"
+#~ msgstr ""
+#~ "Sei sicuro di voler eliminare il database sincronizzato di Calibre-Web e "
+#~ "forzare una sincronizzazione completa con il tuo lettore Kobo?"
+
+#~ msgid "Calibre-Web Test Email"
+#~ msgstr "E-mail di prova di Calibre-Web"
+
+#~ msgid "This Email has been sent via Calibre-Web."
+#~ msgstr "Questa e-mail è stata inviata tramite Calibre-Web."
+
+#~ msgid "Get Started with Calibre-Web"
+#~ msgstr "Inizia con Calibre-Web"
+
+#~ msgid ""
+#~ "Please access Calibre-Web from non localhost to get valid api_endpoint "
+#~ "for kobo device"
+#~ msgstr ""
+#~ "Accedi a Calibre-Web da un host non locale per ottenere un api_endpoint "
+#~ "valido per il dispositivo Kobo"
+
+#~ msgid ""
+#~ "Calibre-Web will search for updated Covers and update Cover Thumbnails, "
+#~ "this may take a while?"
+#~ msgstr ""
+#~ "Calibre-Web cercherà le copertine aggiornate e aggiornerà le miniature "
+#~ "delle copertine, ma ci vorrà un po' di tempo."
+
+#, fuzzy
+#~ msgid "This Email has been sent via  Autmoated."
+#~ msgstr "Questa e-mail è stata inviata tramite Calibre-Web."
+
+#, fuzzy
+#~ msgid "This Email has been sent via  Automated."
+#~ msgstr "Questa e-mail è stata inviata tramite Calibre-Web."
+
+#, fuzzy
+#~ msgid "Downloads per User"
+#~ msgstr "Scaricati"
+
+#, fuzzy
+#~ msgid "This Email has been sent via  Autoated."
+#~ msgstr "Questa e-mail è stata inviata tramite Calibre-Web."
+
+#, fuzzy
+#~ msgid "unknown error"
+#~ msgstr "Errore di connessione"
+
+#, fuzzy
+#~ msgid "Could not open file {filename!r}: {message}"
+#~ msgstr "Impossibile accedere: %(message)s"
+
+#, fuzzy
+#~ msgid "{value!r} is not a valid boolean."
+#~ msgstr "L'e-mail non proviene da un dominio valido"
+
+#, fuzzy
+#~ msgid "directory"
+#~ msgstr "Orientamento"
+
+#, fuzzy
+#~ msgid "{name} {filename!r} is not writable."
+#~ msgstr "Eseguibili di Calibre non validi"
+
+#, fuzzy
+#~ msgid "Repeat for confirmation"
+#~ msgstr "Configurazione funzionalità"
+
+#, fuzzy
+#~ msgid "Value must be an iterable."
+#~ msgstr "Il valore deve essere vero o falso"
+
+#~ msgid "Users"
+#~ msgstr "Utenti"
+
+#~ msgid "Configuration"
+#~ msgstr "Configurazione"
+
+#~ msgid "Click the cover to load metadata to the form"
+#~ msgstr "Fai clic sulla copertina per caricare i metadati nel modulo"
+
+#~ msgid "Series Index"
+#~ msgstr "Indice serie"
+
+#~ msgid "Separate Book Files from Library"
+#~ msgstr "Separa i file dei libri dalla biblioteca"

@@ -3,45 +3,42 @@
 {% block header %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/query-builder.default.min.css') }}">
-<style>
-    .rule-group-container, .rule-container {
-        border-left: 2px solid #ccc;
-        padding-left: 15px;
-        margin-top: 10px;
-    }
-    .rule-group-header {
-        margin-bottom: 10px;
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/query_builder.css') }}">
 {% endblock %}
 
 {% block body %}
-<div class="container">
+<div class="discover">
     <h2>{{ title }}</h2>
-    <form id="magic-shelf-form">
-        <div class="form-group">
-            <label for="shelf-name">Shelf Name</label>
-            <input type="text" class="form-control" id="shelf-name" value="{{ shelf.name if shelf else '' }}" required>
-        </div>
-        <div class="form-group">
-            <label for="shelf-icon">Icon</label>
-            <input type="text" class="form-control" id="shelf-icon" value="{{ shelf.icon if shelf else 'fa-wand-magic-sparkles' }}">
-            <small class="form-text text-muted">Enter a Font Awesome icon class (e.g., 'fa-book').</small>
-        </div>
+    <div class="settings-container" style="max-width: none; width: -webkit-fill-available;">
+        <h1>Magic Shelves ✨ - Let CWA organise your shelves for you!</h1>
+        <p>Say goodbye to manually organising your library! Using the configurator below, you can create rules that will decide how your shelves are dynamically populated!</p>
+    </div>
+    <div class="settings-container" style="max-width: none; width: -webkit-fill-available;">
+        <form id="magic-shelf-form">
+            <div class="form-group">
+                <label for="shelf-name">Shelf Name</label>
+                <input type="text" class="form-control" id="shelf-name" value="{{ shelf.name if shelf else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="shelf-icon">Icon</label>
+                <input type="text" class="form-control" id="shelf-icon" value="{{ shelf.icon if shelf else 'fa-wand-magic-sparkles' }}">
+                <small class="form-text text-muted">Enter a Font Awesome icon class (e.g., 'fa-book').</small>
+            </div>
 
-        <hr>
+            <hr>
 
-        <h4>Rules</h4>
-        <div id="builder"></div>
+            <h4>Rules</h4>
+            <div id="builder"></div>
 
-        <hr>
+            <hr>
 
-        <button type="submit" class="btn btn-primary">Save Shelf</button>
-        <a href="{{ url_for('web.index') }}" class="btn btn-secondary">Cancel</a>
-        {% if shelf %}
-        <button type="button" class="btn btn-danger float-right" id="delete-shelf-btn">Delete Shelf</button>
-        {% endif %}
-    </form>
+            <button type="submit" class="btn btn-primary">Save Shelf</button>
+            <a href="{{ url_for('web.index') }}" class="btn btn-secondary">Cancel</a>
+            {% if shelf %}
+            <button type="button" class="btn btn-danger float-right" id="delete-shelf-btn">Delete Shelf</button>
+            {% endif %}
+        </form>
+    </div>
 </div>
 {% endblock %}
 

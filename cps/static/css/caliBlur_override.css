@@ -355,3 +355,11 @@ form#archived_form > label.block-label::before {
     left: 69px;
     z-index: -1 !important;
 }
+
+/* Fixes Create Magic Shelf spacing in sidebar */
+li#nav_createmagicshelf {
+    margin-left: 2rem;
+}
+li#nav_createmagicshelf {
+    margin-left: 1rem !important;
+}

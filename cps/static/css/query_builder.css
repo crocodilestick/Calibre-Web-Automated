@@ -1,0 +1,117 @@
+.query-builder .rule-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    background-color: #3f3f3fad;
+    border: 1px solid transparent;
+    width: fit-content;
+}
+
+.btn-group.group-conditions {
+    display: flex;
+    gap: 0.8rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.btn-group.float-end.group-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+.rules-group-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.rule-group-container, .rule-container {
+    border-left: 2px solid #ccc;
+    padding-left: 15px;
+    margin-top: 10px;
+}
+
+.group-actions > button.btn.btn-sm.btn-success {
+    background-color: #cc7b19;
+}
+.group-actions > button.btn.btn-sm.btn-success:hover {
+    background-color: #df9844;
+}
+
+.group-actions > button.btn.btn-sm.btn-success {
+    background-color: #cc7b19;
+}
+.group-actions > button.btn.btn-sm.btn-success:hover {
+    background-color: #df9844;
+}
+.rules-list > .rule-container > .rule-filter-container > select {
+    background-color: rgb(187 187 187 / 34%);
+    color: whitesmoke;
+    text-align: center;
+    padding: 0.3rem;
+    border-radius: 6px;
+    width: --webkit-fill-available;
+}
+.rules-list > .rule-container > .rule-operator-container > select {
+    background-color: rgb(187 187 187 / 34%);
+    color: whitesmoke;
+    text-align: center;
+    padding: 0.3rem;
+    border-radius: 6px;
+}
+.rule-actions > button.btn.btn-sm.btn-danger {
+    border-radius: 6px;
+    margin: 0.3rem;
+    padding: 0.3rem 1.6rem;
+}
+.rule-value-container {
+    border-left: none !important;
+}
+
+.query-builder .rules-group-container {
+    padding: 10px;
+    padding-bottom: 6px;
+    border: 1px solid transparent;
+    background: rgb(196 200 202 / 21%);
+}
+
+.rule-value-container > select.form-select {
+    background-color: #1a252ea3;
+    padding: 0.35rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    text-align: center;
+}
+.rules-list > .rule-container > .rule-operator-container > select > option {
+    background-color: #3c4d55;
+    text-align: left;
+}
+.rules-list > .rule-container > .rule-operator-container > select > optgroup > option {
+    background-color: #4f565bad;
+    margin-left: 0px !important;
+}
+.rules-list > .rule-container > .rule-operator-container > select > optgroup {
+    background-color: #384850;
+    text-align: left;
+}
+
+.rules-list > .rule-container > .rule-filter-container > select > option {
+    background-color: #3c4d55;
+    text-align: left;
+}
+
+a.btn.btn-secondary {
+    background-color: #cc7b19;
+    color: whitesmoke;
+    margin-left: 10px;
+}
+
+a.btn.btn-secondary:hover {
+    background-color: #1a252e;
+    color: whitesmoke;
+    transition: 0.2s;
+}

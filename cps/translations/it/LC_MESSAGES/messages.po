@@ -83,7 +83,7 @@ msgstr "Utente non trovato"
 
 #: cps/admin.py:434
 msgid "{} users deleted successfully"
-msgstr "utenti eliminati correttamente"
+msgstr "{} utenti eliminati correttamente"
 
 #: cps/admin.py:457 cps/templates/config_view_edit.html:134
 #: cps/templates/user_edit.html:45 cps/templates/user_table.html:81
@@ -151,7 +151,6 @@ msgid "Invalid Restricted Column"
 msgstr "Colonna con restrizioni non valida"
 
 #: cps/admin.py:623 cps/admin.py:1917
-#, fuzzy
 msgid "Calibre-Web Automated configuration updated"
 msgstr "La configurazione di Calibre-Web è stata aggiornata"
 
@@ -218,7 +217,6 @@ msgid "Are you sure you want to change Calibre library location?"
 msgstr "Sei sicuro di voler cambiare la posizione della biblioteca di Calibre?"
 
 #: cps/admin.py:658
-#, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
@@ -227,12 +225,11 @@ msgstr ""
 "copertine, ma ci vorrà un po' di tempo."
 
 #: cps/admin.py:661
-#, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
 msgstr ""
-"Sei sicuro di voler eliminare il database sincronizzato di Calibre-Web e "
+"Sei sicuro di voler eliminare la sincronizzazione automatica del database di Calibre-Web e "
 "forzare una sincronizzazione completa con il tuo lettore Kobo?"
 
 #: cps/admin.py:902 cps/admin.py:908 cps/admin.py:918 cps/admin.py:928
@@ -589,9 +586,8 @@ msgid "Spanish"
 msgstr "Spagnolo"
 
 #: cps/constants.py:195
-#, fuzzy
 msgid "Finnish"
-msgstr "Finito"
+msgstr "Finlandese"
 
 #: cps/constants.py:196
 msgid "French"
@@ -634,9 +630,8 @@ msgid "Norwegian"
 msgstr "Norvegese"
 
 #: cps/constants.py:206
-#, fuzzy
 msgid "Polish"
-msgstr "Editore"
+msgstr "Polacco"
 
 #: cps/constants.py:207
 msgid "Portuguese"
@@ -719,9 +714,8 @@ msgstr ""
 "stati tralasciati, attendere prego..."
 
 #: cps/cwa_functions.py:247
-#, fuzzy
 msgid "Calibre-Web Automated User Settings"
-msgstr "Impostazioni del convertitore di libri di Calibre"
+msgstr "Impostazioni utente Calibre-Web Automated"
 
 #: cps/cwa_functions.py:269 cps/cwa_functions.py:271 cps/cwa_functions.py:275
 #: cps/cwa_functions.py:277 cps/cwa_functions.py:280 cps/cwa_functions.py:282
@@ -729,9 +723,8 @@ msgid "Timestamp"
 msgstr "Timestamp"
 
 #: cps/cwa_functions.py:269 cps/cwa_functions.py:271
-#, fuzzy
 msgid "Book ID"
-msgstr "Libri"
+msgstr "Book ID"
 
 #: cps/cwa_functions.py:269 cps/templates/book_edit.html:71
 #: cps/templates/search_form.html:8
@@ -739,49 +732,45 @@ msgid "Book Title"
 msgstr "Titolo del libro"
 
 #: cps/cwa_functions.py:269
-#, fuzzy
 msgid "Book Author"
-msgstr "Autore"
+msgstr "Autore del libro"
 
 #: cps/cwa_functions.py:269
 msgid "Trigger Type"
-msgstr ""
+msgstr "Tipo di attivazione"
 
 #: cps/cwa_functions.py:271 cps/cwa_functions.py:277
-#, fuzzy
 msgid "Filepath"
-msgstr "Formati di file"
+msgstr "Percorso del file"
 
 #: cps/cwa_functions.py:275 cps/cwa_functions.py:277 cps/cwa_functions.py:280
 #: cps/cwa_functions.py:282
-#, fuzzy
 msgid "Filename"
-msgstr "nome"
+msgstr "Nome del file"
 
 #: cps/cwa_functions.py:275
 msgid "Manual?"
-msgstr ""
+msgstr "Manuale?"
 
 #: cps/cwa_functions.py:275
 msgid "No. Fixes"
-msgstr ""
+msgstr "N. Correzioni"
 
 #: cps/cwa_functions.py:275 cps/cwa_functions.py:280 cps/cwa_functions.py:282
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "Effettuato backup dell'originale?"
 
 #: cps/cwa_functions.py:277
 msgid "Fixes Applied"
-msgstr "Modifiche Applicate"
+msgstr "Correzioni Applicate"
 
 #: cps/cwa_functions.py:282
 msgid "Original Format"
 msgstr "Formato Originale"
 
 #: cps/cwa_functions.py:282
-#, fuzzy
 msgid "End Format"
-msgstr "Carica formato"
+msgstr "Formato Finale"
 
 #: cps/cwa_functions.py:297
 msgid "Calibre-Web Automated Sever Stats & Archive"
@@ -864,13 +853,12 @@ msgid "Both username and image data are required."
 msgstr "I campi username ed image data sono obbligatori"
 
 #: cps/cwa_functions.py:798
-#, fuzzy
 msgid "Profile picture updated successfully."
-msgstr "utenti eliminati correttamente"
+msgstr "Immagine del profilo aggiornata correttamente."
 
 #: cps/cwa_functions.py:811
 msgid "CWA Profile Picture Management (WIP)"
-msgstr ""
+msgstr "CWA Profile Picture Management (In lavorazione)"
 
 #: cps/db.py:1006 cps/templates/config_edit.html:217
 #: cps/templates/config_view_edit.html:63 cps/templates/email_edit.html:41
@@ -1038,12 +1026,10 @@ msgid "Send to eReader"
 msgstr "Invia all'eReader"
 
 #: cps/helper.py:93 cps/helper.py:113
-#, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Questa e-mail è stata inviata tramite Calibre-Web."
 
 #: cps/helper.py:111
-#, fuzzy
 msgid "Calibre-Web Automated Test Email"
 msgstr "E-mail di prova di Calibre-Web"
 
@@ -1052,7 +1038,6 @@ msgid "Test Email"
 msgstr "E-mail di prova"
 
 #: cps/helper.py:129
-#, fuzzy
 msgid "Get Started with Calibre-Web Automated"
 msgstr "Inizia con Calibre-Web"
 
@@ -1077,7 +1062,6 @@ msgid "%(book)s send to eReader"
 msgstr "%(book)s inviato all'eReader"
 
 #: cps/helper.py:223
-#, fuzzy
 msgid "This Email has been sent via Automated."
 msgstr "Questa e-mail è stata inviata tramite Calibre-Web."
 
@@ -1122,7 +1106,7 @@ msgstr ""
 #: cps/helper.py:495 cps/helper.py:504
 #, python-format
 msgid "File %(file)s not found on Google Drive"
-msgstr "Il file %(file) non è stato trovato su Google Drive"
+msgstr "Il file %(file)s non è stato trovato su Google Drive"
 
 #: cps/helper.py:546
 #, python-format
@@ -1241,7 +1225,6 @@ msgid "Queue all books for metadata backup"
 msgstr "Metti in coda tutti i libri per il backup dei metadati"
 
 #: cps/kobo_auth.py:80
-#, fuzzy
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
 "api_endpoint for kobo device"
@@ -1255,7 +1238,7 @@ msgstr "Configurazione di Kobo"
 
 #: cps/kosync.py:143
 msgid "KOReader Sync Plugin"
-msgstr ""
+msgstr "KOReader Sync Plugin"
 
 #: cps/oauth_bb.py:63
 #, python-format
@@ -1888,9 +1871,8 @@ msgid "Oops! An account already exists for this Email."
 msgstr "Esiste già un account per questa e-mail."
 
 #: cps/web.py:1688
-#, fuzzy
 msgid "Invalid book ID."
-msgstr "Ruolo non valido"
+msgstr "Book ID non valido"
 
 #: cps/services/gmail.py:48
 msgid "Found no valid gmail.json file with OAuth information"
@@ -2042,9 +2024,8 @@ msgid "Import LDAP Users"
 msgstr "Importa utenti LDAP"
 
 #: cps/templates/admin.html:65
-#, fuzzy
 msgid "Email Server Settings&nbsp;&nbsp;📬"
-msgstr "Impostazioni server e-mail"
+msgstr "Impostazioni Server Email&nbsp;&nbsp;📬
 
 #: cps/templates/admin.html:70 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"
@@ -2138,7 +2119,7 @@ msgstr "Modifica la configurazione dell'interfaccia utente"
 #: cps/templates/admin.html:170
 #, fuzzy
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
-msgstr "Attività pianificate"
+msgstr "Attività pianificate&nbsp;&nbsp;⌛"
 
 #: cps/templates/admin.html:173 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:18
@@ -2175,24 +2156,20 @@ msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
 msgstr "CWA Impostazioni di amministrazione&nbsp;&nbsp;⚡"
 
 #: cps/templates/admin.html:208
-#, fuzzy
 msgid "CWA Settings"
-msgstr "Impostazioni"
+msgstr "Impostazioni CWA"
 
 #: cps/templates/admin.html:209
-#, fuzzy
 msgid "Show CWA Stats"
-msgstr "Impostazioni"
+msgstr "Visualizza le statistiche CWA"
 
 #: cps/templates/admin.html:210
-#, fuzzy
 msgid "Check CWA Status"
-msgstr "Stato archivio"
+msgstr "Verifica stato CWA"
 
 #: cps/templates/admin.html:211
-#, fuzzy
 msgid "Setup KOReader Sync"
-msgstr "Lettore epub"
+msgstr "Configura KOReader Sync"
 
 #: cps/templates/admin.html:214
 msgid "CWA Library Conversion Service"
@@ -2207,14 +2184,12 @@ msgid "CWA GitHub"
 msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
-#, fuzzy
 msgid "CWA Discord Server"
-msgstr "Libri casuali"
+msgstr "CWA Discord Server"
 
 #: cps/templates/admin.html:223
-#, fuzzy
 msgid "Administration&nbsp;&nbsp;🚀"
-msgstr "Amministrazione"
+msgstr "Amministrazione&nbsp;&nbsp;🚀"
 
 #: cps/templates/admin.html:224
 msgid "Download Debug Package"
@@ -2233,9 +2208,8 @@ msgid "Shutdown"
 msgstr "Arresta Calibre-Web"
 
 #: cps/templates/admin.html:241
-#, fuzzy
 msgid "Version Information&nbsp;&nbsp;📜"
-msgstr "Informazioni sulla versione"
+msgstr "Informazioni sulla versione&nbsp;&nbsp;📜"
 
 #: cps/templates/admin.html:246
 msgid "Version"
@@ -2251,7 +2225,7 @@ msgstr "Versione attuale"
 
 #: cps/templates/admin.html:264 cps/templates/admin.html:269
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: cps/templates/admin.html:276
 msgid "Check for Update"
@@ -2524,52 +2498,42 @@ msgid "Merge selected books"
 msgstr "Unisci i libri selezionati"
 
 #: cps/templates/book_table.html:47
-#, fuzzy
 msgid "Clear selections"
 msgstr "Rimuovi le selezioni"
 
 #: cps/templates/book_table.html:50
-#, fuzzy
 msgid "Edit selected books"
-msgstr "Unisci i libri selezionati"
+msgstr "Modifica i libri selezionati"
 
 #: cps/templates/book_table.html:53
-#, fuzzy
 msgid "Archive selected books"
-msgstr "Unisci i libri selezionati"
+msgstr "Archivia i libri selezionati"
 
 #: cps/templates/book_table.html:56
-#, fuzzy
 msgid "Unarchive selected books"
-msgstr "Unisci i libri selezionati"
+msgstr "Rimuovi dall'archivio i libri selezionati"
 
 #: cps/templates/book_table.html:59
-#, fuzzy
 msgid "Mark selected books as read"
-msgstr "Unisci i libri selezionati"
+msgstr "Segna i libri selezionati come letti"
 
 #: cps/templates/book_table.html:62
-#, fuzzy
 msgid "Mark selected books as unread"
-msgstr "Unisci i libri selezionati"
+msgstr "Segna i libri selezionati come non letti"
 
 #: cps/templates/book_table.html:65
-#, fuzzy
 msgid "Delete selected books"
-msgstr "Unisci i libri selezionati"
+msgstr "Elimina i libri selezionati"
 
 #: cps/templates/book_table.html:68
-#, fuzzy
 msgid "Add to Shelf"
 msgstr "Aggiungi allo scaffale"
 
 #: cps/templates/book_table.html:70
-#, fuzzy
 msgid " Exchange author & title"
 msgstr "Inverti autore e titolo"
 
 #: cps/templates/book_table.html:78
-#, fuzzy
 msgid "Update Title Sort automatically  "
 msgstr "Aggiorna automaticamente l'ordinamento per titolo"
 
@@ -2631,26 +2595,23 @@ msgid "Enter comments"
 msgstr "Inserisci commenti"
 
 #: cps/templates/book_table.html:106
-#, fuzzy
 msgid "Comments"
 msgstr "Commenti"
 
 #: cps/templates/book_table.html:108
-#, fuzzy
 msgid "Archived?"
-msgstr "Archiviato"
+msgstr "Archiviato?"
 
 #: cps/templates/book_table.html:110
-#, fuzzy
 msgid "Read?"
-msgstr "Letto"
+msgstr "Letto?"
 
 #: cps/templates/book_table.html:113 cps/templates/book_table.html:115
 #: cps/templates/book_table.html:117 cps/templates/book_table.html:119
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
 #: cps/templates/book_table.html:129
 msgid "Enter "
-msgstr "Inserisci"
+msgstr "Inserisci "
 
 #: cps/templates/book_table.html:152 cps/templates/book_table.html:176
 #: cps/templates/book_table.html:196 cps/templates/book_table.html:216
@@ -2688,25 +2649,22 @@ msgid "The following books will be unarchived:"
 msgstr "I seguenti libri saranno rimossi dall'archivio:"
 
 #: cps/templates/book_table.html:224
-#, fuzzy
 msgid "Unarchive"
-msgstr "Archivio"
+msgstr "Rimuovi dall'archivio"
 
 #: cps/templates/book_table.html:240
 msgid "The following books will be marked read:"
 msgstr "I libri seguenti verrano segnati come letti:"
 
 #: cps/templates/book_table.html:244
-#, fuzzy
 msgid "Mark as read"
-msgstr "Contrassegna come da leggere"
+msgstr "Contrassegna come letto"
 
 #: cps/templates/book_table.html:260
 msgid "The following books will be marked unread:"
 msgstr "I libri seguenti verranno segnati come non letti:"
 
 #: cps/templates/book_table.html:264
-#, fuzzy
 msgid "Mark as unread"
 msgstr "Contrassegna come da leggere"
 
@@ -2719,9 +2677,8 @@ msgid "Edit the fields you want changed. Blank fields will be ignored:"
 msgstr "Modifica i campi che desideri. I campi vuoti saranno ignorati:"
 
 #: cps/templates/book_table.html:334
-#, fuzzy
 msgid "Select a Shelf"
-msgstr "Crea uno scaffale"
+msgstr "Seleziona uno scaffale"
 
 #: cps/templates/book_table.html:337
 msgid "Please select a shelf to add the selected books to:"
@@ -2737,9 +2694,8 @@ msgid "Add"
 msgstr "Aggiungi"
 
 #: cps/templates/config_db.html:12
-#, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
-msgstr "Posizione del database di Calibre"
+msgstr "Posizione del database di Calibre (metadata.db file)"
 
 #: cps/templates/config_db.html:22
 msgid ""
@@ -2804,7 +2760,7 @@ msgstr ""
 
 #: cps/templates/config_db.html:37
 msgid "Split Library Functionality"
-msgstr ""
+msgstr "Funzionalità Split Library"
 
 #: cps/templates/config_db.html:40
 msgid ""
@@ -2897,9 +2853,8 @@ msgstr ""
 "access.log)"
 
 #: cps/templates/config_edit.html:96
-#, fuzzy
 msgid "Feature Configuration"
-msgstr "Configurazione del server"
+msgstr "Configurazione delle funzionalità"
 
 #: cps/templates/config_edit.html:104
 msgid "Convert non-English characters in title and author while saving to disk"
@@ -2972,9 +2927,8 @@ msgid "Goodreads API Key"
 msgstr "Chiave API Goodreads"
 
 #: cps/templates/config_edit.html:172
-#, fuzzy
 msgid "Enable Hardcover Sync"
-msgstr "Abilita la sincronizzazione Kobo"
+msgstr "Abilita Hardcover Sync"
 
 #: cps/templates/config_edit.html:176
 msgid "Hardcover API Key"
@@ -3133,7 +3087,6 @@ msgid "Path to Calibre Binaries"
 msgstr "Percorso dei file eseguibili di Calibre"
 
 #: cps/templates/config_edit.html:347
-#, fuzzy
 msgid "Calibre E-Book Converter Settings"
 msgstr "Impostazioni del convertitore di libri di Calibre"
 
@@ -3168,13 +3121,12 @@ msgstr ""
 "momento del caricamento"
 
 #: cps/templates/config_edit.html:399
-#, fuzzy
 msgid "Session protection"
-msgstr "Protezione sessione"
+msgstr "Protezione della sessione"
 
 #: cps/templates/config_edit.html:401
 msgid "Basic"
-msgstr "Di base"
+msgstr "Base"
 
 #: cps/templates/config_edit.html:402
 msgid "Strong"
@@ -3326,15 +3278,13 @@ msgstr "Aggiungi valori di colonna personalizzati consentiti/negati"
 
 #: cps/templates/cwa_convert_library.html:10
 #: cps/templates/cwa_epub_fixer.html:10
-#, fuzzy
 msgid "Run Archive"
-msgstr "Archivio"
+msgstr "Esegui archiviazione"
 
 #: cps/templates/cwa_convert_library.html:11
 #: cps/templates/cwa_epub_fixer.html:11 cps/templates/cwa_read_log.html:9
-#, fuzzy
 msgid "Download Log"
-msgstr "Download"
+msgstr "Scarica i log"
 
 #: cps/templates/cwa_convert_library.html:24
 #: cps/templates/cwa_epub_fixer.html:24 cps/templates/index.xml:7
@@ -3494,7 +3444,6 @@ msgid "List"
 msgstr "Elenco"
 
 #: cps/templates/http_error.html:34
-#, fuzzy
 msgid ""
 "Calibre-Web Automated Instance is unconfigured, please contact your "
 "administrator"
@@ -3625,20 +3574,17 @@ msgid "Logout"
 msgstr "Disconnetti"
 
 #: cps/templates/layout.html:143
-#, fuzzy
 msgid "Switch Theme"
-msgstr "Tema standard"
+msgstr "Cambia tema"
 
 #: cps/templates/layout.html:162 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
-#, fuzzy
 msgid "Settings"
 msgstr "Impostazioni"
 
 #: cps/templates/layout.html:164
-#, fuzzy
 msgid "Refresh Library"
-msgstr "Cerca nella biblioteca"
+msgstr "Aggiorna la libreria"
 
 #: cps/templates/layout.html:205
 msgid "See Changelog"
@@ -3693,7 +3639,6 @@ msgid "Show Calibre-Web Log: "
 msgstr "Mostra log di Calibre-Web: "
 
 #: cps/templates/logviewer.html:8
-#, fuzzy
 msgid "Calibre-Web Log: "
 msgstr "Mostra log di Calibre-Web: "
 
@@ -3794,7 +3739,6 @@ msgid "Ok"
 msgstr "OK"
 
 #: cps/templates/osd.xml:5
-#, fuzzy
 msgid "Calibre-Web Automated eBook Catalog"
 msgstr "Catalogo eBook Calibre-Web"
 
@@ -3967,9 +3911,8 @@ msgid "Vertical"
 msgstr "Verticale"
 
 #: cps/templates/readcbr.html:150
-#, fuzzy
 msgid "Direction"
-msgstr "Descrizione"
+msgstr "Orientamento"
 
 #: cps/templates/readcbr.html:153
 msgid "Left to Right"
@@ -4218,7 +4161,6 @@ msgid "Message"
 msgstr "Messaggio"
 
 #: cps/templates/tasks.html:21
-#, fuzzy
 msgid "Actions"
 msgstr "Azioni"
 

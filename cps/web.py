@@ -931,6 +931,8 @@ def list_books():
             else [db.Authors.name.desc(), db.Series.name.desc(), db.Books.series_index.desc()]
         join = db.books_authors_link, db.Books.id == db.books_authors_link.c.book, db.Authors, db.books_series_link, \
             db.Books.id == db.books_series_link.c.book, db.Series
+    elif sort_param == "author_sort":
+        order = [db.Books.author_sort.asc()] if order == "asc" else [db.Books.author_sort.desc()]
     elif sort_param == "languages":
         order = [db.Languages.lang_code.asc()] if order == "asc" else [db.Languages.lang_code.desc()]
         join = db.books_languages_link, db.Books.id == db.books_languages_link.c.book, db.Languages

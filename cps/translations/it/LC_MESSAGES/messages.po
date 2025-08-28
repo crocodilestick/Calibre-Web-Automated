@@ -2025,7 +2025,7 @@ msgstr "Importa utenti LDAP"
 
 #: cps/templates/admin.html:65
 msgid "Email Server Settings&nbsp;&nbsp;📬"
-msgstr "Impostazioni Server Email&nbsp;&nbsp;📬
+msgstr "Impostazioni Server Email&nbsp;&nbsp;📬"
 
 #: cps/templates/admin.html:70 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"

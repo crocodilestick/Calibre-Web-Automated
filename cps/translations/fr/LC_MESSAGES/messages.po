@@ -836,11 +836,11 @@ msgstr ""
 
 #: cps/cwa_functions.py:330
 msgid "Calibre-Web Automated - Full Import History"
-msgstr ""
+msgstr "Calibre-Web Automated - Historique complet des imports"
 
 #: cps/cwa_functions.py:339
 msgid "Calibre-Web Automated - Full Conversion History"
-msgstr ""
+msgstr "Calibre-Web Automated - Historique complet des conversions"
 
 #: cps/cwa_functions.py:348
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
@@ -871,11 +871,11 @@ msgstr ""
 
 #: cps/cwa_functions.py:383
 msgid "An Error has occurred"
-msgstr ""
+msgstr "Une erreur s'est produite"
 
 #: cps/cwa_functions.py:554 cps/cwa_functions.py:561
 msgid "Calibre-Web Automated - Convert Library"
-msgstr ""
+msgstr "Calibre-Web Automated - Convertir la bibliothèque"
 
 #: cps/cwa_functions.py:674 cps/cwa_functions.py:680
 msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
@@ -883,11 +883,11 @@ msgstr ""
 
 #: cps/cwa_functions.py:765
 msgid "You must be an admin to access this page."
-msgstr ""
+msgstr "Vous devez être un administrateur pour accéder à cette page."
 
 #: cps/cwa_functions.py:780
 msgid "Both username and image data are required."
-msgstr ""
+msgstr "Le nom d’utilisateur et les données d’images sont requis."
 
 #: cps/cwa_functions.py:798
 msgid "Profile picture updated successfully."
@@ -956,7 +956,7 @@ msgstr "Les métadonnées ont bien été mises à jour"
 #: cps/editbooks.py:696
 #, python-brace-format
 msgid "Error editing book: {}"
-msgstr ""
+msgstr "Erreur d'édition du livre: {}"
 
 #: cps/editbooks.py:791
 msgid ""
@@ -1019,7 +1019,7 @@ msgstr "%(seriesindex)s n’est pas un nombre valide, ignoré"
 
 #: cps/editbooks.py:1343
 msgid "User has no rights to upload additional file formats"
-msgstr ""
+msgstr "L’utilisateur n’a pas le droit de télécharger des formats de fichiers supplémentaires"
 
 #: cps/editbooks.py:1367
 #, python-format
@@ -1175,7 +1175,7 @@ msgstr "Le chemin du livre %(path)s n'a pas été trouvé dans Google Drive"
 
 #: cps/helper.py:645
 msgid "Found an existing account for this Email address"
-msgstr ""
+msgstr "Un compte existant a été trouvé pour cette adresse mail"
 
 #: cps/helper.py:653
 msgid "This username is already taken"
@@ -1188,12 +1188,12 @@ msgstr "Format de l’adresse courriel invalide"
 
 #: cps/helper.py:689
 msgid "Password doesn't comply with password validation rules"
-msgstr ""
+msgstr "Le mot de passe saisi ne respecte pas les règles de validation du mot de passe"
 
 #: cps/helper.py:835
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
-msgstr ""
+msgstr "Le module Python "advocate" n'est pas installé mais celui-ci est requis pour téléverser les couvertures"
 
 #: cps/helper.py:845
 msgid "Error Downloading Cover"
@@ -1249,11 +1249,11 @@ msgstr "Une erreur est survenue lors de l'exécution d'UnRar"
 
 #: cps/helper.py:1012
 msgid "Could not find the specified directory"
-msgstr ""
+msgstr "Impossible de trouver le répertoire spécifié"
 
 #: cps/helper.py:1015
 msgid "Please specify a directory, not a file"
-msgstr ""
+msgstr "Merci de spécifier un répertoire, pas un fichier"
 
 #: cps/helper.py:1029
 #, fuzzy
@@ -1277,7 +1277,7 @@ msgstr "Une erreur est survenue lors de l'exécution d'UnRar"
 
 #: cps/helper.py:1135 cps/templates/admin.html:236
 msgid "Queue all books for metadata backup"
-msgstr ""
+msgstr "Mettre en file d’attente tous les livres pour la sauvegarde des métadonnées"
 
 #: cps/kobo_auth.py:80
 #, fuzzy
@@ -1294,7 +1294,7 @@ msgstr "Configuration Kobo"
 
 #: cps/kosync.py:143
 msgid "KOReader Sync Plugin"
-msgstr ""
+msgstr "Plugin KOReader Sync"
 
 #: cps/oauth_bb.py:63
 #, python-format
@@ -1647,7 +1647,7 @@ msgstr "Modifier une étagère"
 
 #: cps/shelf.py:226
 msgid "Error deleting Shelf"
-msgstr ""
+msgstr "Erreur lors de la suppression de l’étagère"
 
 #: cps/shelf.py:228
 #, fuzzy
@@ -1721,11 +1721,11 @@ msgstr "Terminé"
 
 #: cps/tasks_status.py:61
 msgid "Ended"
-msgstr ""
+msgstr "Terminé"
 
 #: cps/tasks_status.py:63
 msgid "Cancelled"
-msgstr ""
+msgstr "Annulée"
 
 #: cps/tasks_status.py:65
 msgid "Unknown Status"
@@ -1799,7 +1799,7 @@ msgstr "Séries : %(serie)s"
 
 #: cps/web.py:650
 msgid "Rating: None"
-msgstr ""
+msgstr "Évaluation : Aucune"
 
 #: cps/web.py:659
 #, python-format
@@ -1859,7 +1859,7 @@ msgstr ""
 
 #: cps/web.py:1323
 msgid "Please wait one minute to register next user"
-msgstr ""
+msgstr "Merci d'attente une minute pour enregistrer un nouvel utilisateur"
 
 #: cps/templates/layout.html:132 cps/templates/layout.html:174
 #: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1324
@@ -2033,21 +2033,21 @@ msgstr "Sauvegarde  des métadonnées"
 #: cps/tasks/thumbnail.py:85
 #, python-format
 msgid "Generated %(count)s cover thumbnails"
-msgstr ""
+msgstr "%(count)s vignettes de couverture générées"
 
 #: cps/tasks/thumbnail.py:220 cps/tasks/thumbnail.py:433
 #: cps/tasks/thumbnail.py:501
 msgid "Cover Thumbnails"
-msgstr ""
+msgstr "Vgnettes de couvertures"
 
 #: cps/tasks/thumbnail.py:279
 #, python-brace-format
 msgid "Generated {0} series thumbnails"
-msgstr ""
+msgstr "{0} vignettes de couverture des séries générées"
 
 #: cps/tasks/thumbnail.py:444
 msgid "Clearing cover thumbnail cache"
-msgstr ""
+msgstr "Effacement du cache des vignettes de couverture"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:21
 #: cps/templates/layout.html:151 cps/templates/user_table.html:145
@@ -2056,7 +2056,7 @@ msgstr "Téléverser"
 
 #: cps/templates/admin.html:9
 msgid "Users&nbsp;&nbsp;👤"
-msgstr ""
+msgstr "Utilisateurs&nbsp;&nbsp;👤"
 
 #: cps/templates/admin.html:14 cps/templates/login.html:9
 #: cps/templates/login.html:10 cps/templates/register.html:9
@@ -2067,12 +2067,12 @@ msgstr "Nom d'utilisateur"
 #: cps/templates/admin.html:15 cps/templates/register.html:14
 #: cps/templates/user_edit.html:15 cps/templates/user_table.html:135
 msgid "Email"
-msgstr "Adresse de courriel"
+msgstr "Adresse mail"
 
 #: cps/templates/admin.html:16
 #, fuzzy
 msgid "Send to eReader Email"
-msgstr "Envoyer vers une adresse de courriel Kindle"
+msgstr "Envoyer vers une adresse mail Kindle"
 
 #: cps/templates/admin.html:18 cps/templates/layout.html:162
 #: cps/templates/user_table.html:143
@@ -2112,7 +2112,7 @@ msgstr "Étagère publique"
 
 #: cps/templates/admin.html:56
 msgid "Manage Profile Pictures"
-msgstr ""
+msgstr "Gérer les photos de profil"
 
 #: cps/templates/admin.html:58
 msgid "Import LDAP Users"
@@ -2121,7 +2121,7 @@ msgstr "Importer des utilisateurs LDAP"
 #: cps/templates/admin.html:65
 #, fuzzy
 msgid "Email Server Settings&nbsp;&nbsp;📬"
-msgstr "Paramètres du serveur de courriels"
+msgstr "Paramètres du serveur mail"
 
 #: cps/templates/admin.html:70 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"
@@ -2155,7 +2155,7 @@ msgstr "Gmail via Oauth2"
 
 #: cps/templates/admin.html:109
 msgid "Configuration&nbsp;&nbsp;⚙️"
-msgstr ""
+msgstr "Configuration"
 
 #: cps/templates/admin.html:112
 msgid "Calibre Database Directory"
@@ -2171,7 +2171,7 @@ msgstr "Port"
 
 #: cps/templates/admin.html:125
 msgid "External Port"
-msgstr "Port exeterne"
+msgstr "Port externe"
 
 #: cps/templates/admin.html:132 cps/templates/config_view_edit.html:28
 msgid "Books per Page"
@@ -2216,25 +2216,25 @@ msgstr "Éditer la configuration de l’interface utilisateur"
 
 #: cps/templates/admin.html:170
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
-msgstr ""
+msgstr "Tâches planifiées"
 
 #: cps/templates/admin.html:173 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:18
 #, fuzzy
 msgid "Start Time"
-msgstr "Débuté"
+msgstr "Heure de début"
 
 #: cps/templates/admin.html:177 cps/templates/schedule_edit.html:20
 msgid "Maximum Duration"
-msgstr ""
+msgstr "Durée maximale"
 
 #: cps/templates/admin.html:181 cps/templates/schedule_edit.html:29
 msgid "Generate Thumbnails"
-msgstr ""
+msgstr "Génération des vignettes"
 
 #: cps/templates/admin.html:185
 msgid "Generate series cover thumbnails"
-msgstr ""
+msgstr "Génération des vignettes de couvertures des séries"
 
 #: cps/templates/admin.html:189 cps/templates/admin.html:228
 #: cps/templates/schedule_edit.html:37
@@ -2243,11 +2243,11 @@ msgstr "Reconnecter la base de données Calibre"
 
 #: cps/templates/admin.html:193 cps/templates/schedule_edit.html:41
 msgid "Generate Metadata Backup Files"
-msgstr ""
+msgstr "Générer un fichier de sauvegarde des métadonnées"
 
 #: cps/templates/admin.html:200
 msgid "Refresh Thumbnail Cache"
-msgstr ""
+msgstr "Actualiser le cache des vignettes"
 
 #: cps/templates/admin.html:207
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
@@ -2271,7 +2271,7 @@ msgstr "Paramétrer la synchronisation KOReader"
 
 #: cps/templates/admin.html:214
 msgid "CWA Library Conversion Service"
-msgstr ""
+msgstr "CWA Service de Conversion de Librairie"
 
 #: cps/templates/admin.html:215
 msgid "CWA Send-to-Kindle EPUB Fixer Service"
@@ -2279,11 +2279,11 @@ msgstr ""
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
-msgstr ""
+msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
 msgid "CWA Discord Server"
-msgstr "Server Discord CWA"
+msgstr "Serveur Discord CWA"
 
 #: cps/templates/admin.html:223
 #, fuzzy

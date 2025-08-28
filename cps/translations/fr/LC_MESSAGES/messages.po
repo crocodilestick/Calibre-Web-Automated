@@ -1859,7 +1859,7 @@ msgstr ""
 
 #: cps/web.py:1323
 msgid "Please wait one minute to register next user"
-msgstr "Merci d'attente une minute pour enregistrer un nouvel utilisateur"
+msgstr "Merci de patienter une minute pour enregistrer un nouvel utilisateur"
 
 #: cps/templates/layout.html:132 cps/templates/layout.html:174
 #: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1324
@@ -2038,7 +2038,7 @@ msgstr "%(count)s vignettes de couverture générées"
 #: cps/tasks/thumbnail.py:220 cps/tasks/thumbnail.py:433
 #: cps/tasks/thumbnail.py:501
 msgid "Cover Thumbnails"
-msgstr "Vgnettes de couvertures"
+msgstr "Vignettes de couvertures"
 
 #: cps/tasks/thumbnail.py:279
 #, python-brace-format
@@ -2275,7 +2275,7 @@ msgstr "CWA Service de Conversion de Librairie"
 
 #: cps/templates/admin.html:215
 msgid "CWA Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+msgstr "CWA Send-to-Kindle Service de correction EPUB"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
@@ -2308,7 +2308,7 @@ msgstr "Arrêter Calibre-Web"
 
 #: cps/templates/admin.html:241
 msgid "Version Information&nbsp;&nbsp;📜"
-msgstr ""
+msgstr "A propos"
 
 #: cps/templates/admin.html:246
 msgid "Version"
@@ -3184,7 +3184,7 @@ msgstr "Réglages OAuth"
 
 #: cps/templates/config_edit.html:382
 msgid "Limit failed login attempts"
-msgstr ""
+msgstr "Limiter le nombre de tentatives de connexion"
 
 #: cps/templates/config_edit.html:386
 msgid "Configure Backend for Limiter"
@@ -3196,7 +3196,7 @@ msgstr ""
 
 #: cps/templates/config_edit.html:396
 msgid "Check if file extensions matches file content on upload"
-msgstr ""
+msgstr "Vérifiez si les extensions de fichier correspondent au contenu du fichier lors du téléversement"
 
 #: cps/templates/config_edit.html:399
 #, fuzzy
@@ -3214,31 +3214,31 @@ msgstr ""
 #: cps/templates/config_edit.html:407
 #, fuzzy
 msgid "User Password policy"
-msgstr "Réinitialiser le mot de passe de l’utilisateur"
+msgstr "Politique de mot de passe utilisateur"
 
 #: cps/templates/config_edit.html:411
 msgid "Minimum password length"
-msgstr ""
+msgstr "Longueur minimum du mot de passe"
 
 #: cps/templates/config_edit.html:416
 msgid "Enforce number"
-msgstr ""
+msgstr "Imposer des chiffres"
 
 #: cps/templates/config_edit.html:420
 msgid "Enforce lowercase characters"
-msgstr ""
+msgstr "Imposer lettre en minuscule"
 
 #: cps/templates/config_edit.html:424
 msgid "Enforce uppercase characters"
-msgstr ""
+msgstr "Imposer lettre en majuscule"
 
 #: cps/templates/config_edit.html:428
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
-msgstr ""
+msgstr "Imposer des caractères (requis pour les caractères Chinois/Japonnais/Coréens)"
 
 #: cps/templates/config_edit.html:432
 msgid "Enforce special characters"
-msgstr ""
+msgstr "Imposer des caractères spéciaux"
 
 #: cps/templates/config_view_edit.html:17
 msgid "View Configuration"
@@ -3257,7 +3257,8 @@ msgstr ""
 msgid ""
 "Default Theme (users can select their own preferred theme however new users "
 "will receive this theme by default)"
-msgstr ""
+msgstr "Thème par défaut (les utilisateurs peuvent sélectionner leur propre thème préféré, mais les nouveaux utilisateurs "
+"recevront ce thème par défaut)"
 
 #: cps/templates/config_view_edit.html:42
 msgid "Standard Theme"
@@ -3271,7 +3272,8 @@ msgstr "Thème sombre caliBur!"
 msgid ""
 "Per-user theme switching enabled; this global default only affects new users "
 "& anonymous"
-msgstr ""
+msgstr "Changement de thème par utilisateur activé ; Cette valeur globale par défaut n’affecte que les nouveaux utilisateurs "
+"& anonymes"
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
@@ -3419,7 +3421,8 @@ msgstr "Ajouter comme archive"
 msgid ""
 "Mark Book as archived or not, to hide it in Calibre-Web and delete it from "
 "Kobo Reader"
-msgstr ""
+msgstr "Marquer le livre comme archivé ou non, pour le cacher dans Calibre-Web et le supprimer de "
+"Kobo Reader"
 
 #: cps/templates/detail.html:286 cps/templates/listenmp3.html:177
 msgid "Description:"
@@ -3439,22 +3442,22 @@ msgstr "(Public)"
 
 #: cps/templates/email_edit.html:13
 msgid "Email Account Type"
-msgstr "Choisissez le type de serveur"
+msgstr "Choisissez le type de serveur mail"
 
 #: cps/templates/email_edit.html:15
 #, fuzzy
 msgid "Standard Email Account"
-msgstr "Utilisez le compte courriel standard"
+msgstr "Utilisez le compte mail standard"
 
 #: cps/templates/email_edit.html:16
 #, fuzzy
 msgid "Gmail Account"
-msgstr "Choisissez le type de serveur"
+msgstr "Compte Gmail"
 
 #: cps/templates/email_edit.html:22
 #, fuzzy
 msgid "Setup Gmail Account"
-msgstr "Choisissez le type de serveur"
+msgstr "Configuration compte Gmail"
 
 #: cps/templates/email_edit.html:24
 msgid "Revoke Gmail Access"
@@ -3496,7 +3499,7 @@ msgstr "Ajouter un domaine"
 
 #: cps/templates/email_edit.html:86 cps/templates/email_edit.html:96
 msgid "Enter domainname"
-msgstr "Saisir le nom du domaine"
+msgstr "Saisir le nom de domaine"
 
 #: cps/templates/email_edit.html:92
 msgid "Denied Domains (Blacklist)"
@@ -3521,7 +3524,7 @@ msgstr "Jeton de synchro Kobo"
 
 #: cps/templates/grid.html:21
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 #: cps/templates/http_error.html:34
 #, fuzzy
@@ -3670,15 +3673,15 @@ msgstr "Paramètres"
 #: cps/templates/layout.html:164
 #, fuzzy
 msgid "Refresh Library"
-msgstr "Chercher dans librairie"
+msgstr "Actualiser la bibliothèque"
 
 #: cps/templates/layout.html:205
 msgid "See Changelog"
-msgstr ""
+msgstr "Voir le Changelog"
 
 #: cps/templates/layout.html:215
 msgid "Contribute here!"
-msgstr ""
+msgstr "Contribuer ici !"
 
 #: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
@@ -3702,7 +3705,7 @@ msgstr "Détails du livre"
 
 #: cps/templates/list.html:22
 msgid "Grid"
-msgstr ""
+msgstr "Grille"
 
 #: cps/templates/listenmp3.html:167
 msgid "Archived"
@@ -3834,7 +3837,7 @@ msgstr "Catalogue de livres électroniques Calibre-Web"
 #: cps/templates/read.html:7
 #, fuzzy
 msgid "epub Reader"
-msgstr "Lecteur PDF"
+msgstr "Lecteur epub"
 
 #: cps/templates/read.html:84 cps/templates/readcbr.html:104
 msgid "Light"
@@ -3846,12 +3849,12 @@ msgstr "Sombre"
 
 #: cps/templates/read.html:88
 msgid "Sepia"
-msgstr ""
+msgstr "Sépia"
 
 #: cps/templates/read.html:90
 #, fuzzy
 msgid "Black"
-msgstr "Retour"
+msgstr "Noir"
 
 #: cps/templates/read.html:95
 msgid "Reflow text when sidebars are open."
@@ -3861,11 +3864,11 @@ msgstr ""
 
 #: cps/templates/read.html:100
 msgid "Font Sizes"
-msgstr ""
+msgstr "Taille de police"
 
 #: cps/templates/read.html:105
 msgid "Font"
-msgstr ""
+msgstr "Police"
 
 #: cps/templates/read.html:106
 #, fuzzy
@@ -3888,7 +3891,7 @@ msgstr "En attente"
 #: cps/templates/read.html:110
 #, fuzzy
 msgid "Arial"
-msgstr "Vertical"
+msgstr "Arial"
 
 #: cps/templates/read.html:113
 #, fuzzy
@@ -3898,12 +3901,12 @@ msgstr "Lu"
 #: cps/templates/read.html:114
 #, fuzzy
 msgid "Two columns"
-msgstr "Colonne de lecture non valide"
+msgstr "Deux colonnes"
 
 #: cps/templates/read.html:115
 #, fuzzy
 msgid "One column"
-msgstr "Colonne de lecture non valide"
+msgstr "Une colonne"
 
 #: cps/templates/readcbr.html:8
 #, fuzzy
@@ -3925,11 +3928,11 @@ msgstr "Page suivante"
 #: cps/templates/readcbr.html:80
 #, fuzzy
 msgid "Single Page Display"
-msgstr "Page admin"
+msgstr "Affichage une seule page"
 
 #: cps/templates/readcbr.html:81
 msgid "Long Strip Display"
-msgstr ""
+msgstr "Affichage en bord long"
 
 #: cps/templates/readcbr.html:82
 msgid "Scale to Best"
@@ -3965,16 +3968,16 @@ msgstr "Thème"
 
 #: cps/templates/readcbr.html:110
 msgid "Display"
-msgstr ""
+msgstr "Affichage"
 
 #: cps/templates/readcbr.html:113
 #, fuzzy
 msgid "Single Page"
-msgstr "Page admin"
+msgstr "Page seule"
 
 #: cps/templates/readcbr.html:114
 msgid "Long Strip"
-msgstr ""
+msgstr "Bord long"
 
 #: cps/templates/readcbr.html:119
 msgid "Scale"
@@ -4028,12 +4031,12 @@ msgstr "De droite à gauche"
 #: cps/templates/readcbr.html:162
 #, fuzzy
 msgid "Reset to Top"
-msgstr "Retour à l’accueil"
+msgstr "Retour en haut"
 
 #: cps/templates/readcbr.html:163
 #, fuzzy
 msgid "Remember Position"
-msgstr "Se rappeler de moi"
+msgstr "Se souvenir de la position"
 
 #: cps/templates/readcbr.html:168
 msgid "Scrollbar"
@@ -4050,7 +4053,7 @@ msgstr "Cacher"
 #: cps/templates/readdjvu.html:5
 #, fuzzy
 msgid "DJVU Reader"
-msgstr "Lecteur PDF"
+msgstr "Lecteur DJVU"
 
 #: cps/templates/readpdf.html:31
 #, fuzzy
@@ -4060,7 +4063,7 @@ msgstr "Lecteur PDF"
 #: cps/templates/readtxt.html:6
 #, fuzzy
 msgid "txt Reader"
-msgstr "Lecteur PDF"
+msgstr "Lecteur TXT"
 
 #: cps/templates/register.html:4
 msgid "Register New Account"
@@ -4072,7 +4075,7 @@ msgstr "Choisissez un nom d'utilisateur"
 
 #: cps/templates/register.html:15
 msgid "Your Email"
-msgstr "Votre adresse de courriel"
+msgstr "Votre adresse mail"
 
 #: cps/templates/remote_login.html:5
 msgid "Magic Link - Authorise New Device"
@@ -4092,7 +4095,7 @@ msgstr "Le lien expirera après 10 minutes."
 
 #: cps/templates/schedule_edit.html:33
 msgid "Generate Series Cover Thumbnails"
-msgstr ""
+msgstr "Générer des miniatures de couverture des séries"
 
 #: cps/templates/search.html:6
 msgid "No Results Found"
@@ -4120,7 +4123,7 @@ msgstr "Status de lecture"
 
 #: cps/templates/search_form.html:44 cps/templates/search_form.html:165
 msgid "Any"
-msgstr ""
+msgstr "Tous"
 
 #: cps/templates/search_form.html:45 cps/templates/search_form.html:166
 msgid "Empty"
@@ -4273,12 +4276,12 @@ msgstr "Message"
 
 #: cps/templates/tasks.html:21
 msgid "Actions"
-msgstr ""
+msgstr "Actions"
 
 #: cps/templates/tasks.html:41
 msgid ""
 "This task will be cancelled. Any progress made by this task will be saved."
-msgstr ""
+msgstr "Cette tâche sera annulée. Tout progrès réalisé par cette tâche sera enregistré."
 
 #: cps/templates/tasks.html:42
 msgid ""
@@ -4294,11 +4297,12 @@ msgstr "Réinitialiser le mot de passe de l’utilisateur"
 msgid ""
 "Send to eReader Email Address. Use comma to separate emails for multiple "
 "eReaders"
-msgstr ""
+msgstr "Envoyer à l'adresse e-mail eReader. Utilisez des virgules pour séparer les e-mails pour plusieurs "
+"eReaders"
 
 #: cps/templates/user_edit.html:43
 msgid "Language of Books"
-msgstr "Montrer les livres dans la langue"
+msgstr "Langue des Livres"
 
 #: cps/templates/user_edit.html:63
 msgid "OAuth Settings"
@@ -4361,26 +4365,26 @@ msgstr "Éditer l’utilisateur"
 #: cps/templates/user_table.html:134
 #, fuzzy
 msgid "Enter Username"
-msgstr "Choisissez un nom d'utilisateur"
+msgstr "Entrer le nom d'utilisateur"
 
 #: cps/templates/user_table.html:135
 msgid "Enter Email"
-msgstr "Entrez l’adresse email"
+msgstr "Entrez l’adresse mail"
 
 #: cps/templates/user_table.html:136
 #, fuzzy
 msgid "Enter eReader Email"
-msgstr "Envoyer vers une adresse de courriel Kindle"
+msgstr "Envoyer vers une adresse mail eReader"
 
 #: cps/templates/user_table.html:136
 #, fuzzy
 msgid "eReader Email"
-msgstr "Courriel de test"
+msgstr "Mail eReader"
 
 #: cps/templates/user_table.html:137
 #, fuzzy
 msgid "Locale"
-msgstr "Échelle"
+msgstr "Localisation"
 
 #: cps/templates/user_table.html:138
 msgid "Visible Book Languages"
@@ -4438,7 +4442,7 @@ msgstr "Synchroniser les étagères sélectionnées avec Kobo"
 #: cps/templates/user_table.html:156
 #, fuzzy
 msgid "Show Read/Unread Section"
-msgstr "Montrer la sélection par séries"
+msgstr "Afficher la section Lu / Non lu"
 
 #, fuzzy, python-format
 #~ msgid "%(seriesindex)s is not a valid number, skipping"
@@ -4484,11 +4488,11 @@ msgstr "Montrer la sélection par séries"
 
 #, fuzzy
 #~ msgid "This Email has been sent via  Automated."
-#~ msgstr "Ce courriel a été envoyé depuis Calibre-Web."
+#~ msgstr "Cet email a été envoyé depuis Calibre-Web."
 
 #, fuzzy
 #~ msgid "Downloads per User"
-#~ msgstr "Téléchargements"
+#~ msgstr "Téléchargements par utilisateur"
 
 #, fuzzy
 #~ msgid "This Email has been sent via  Autoated."

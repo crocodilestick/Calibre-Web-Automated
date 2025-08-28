@@ -1193,7 +1193,7 @@ msgstr "Le mot de passe saisi ne respecte pas les règles de validation du mot d
 #: cps/helper.py:835
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
-msgstr "Le module Python "advocate" n'est pas installé mais celui-ci est requis pour téléverser les couvertures"
+msgstr "Le module Python 'advocate' n'est pas installé mais celui-ci est requis pour téléverser les couvertures"
 
 #: cps/helper.py:845
 msgid "Error Downloading Cover"

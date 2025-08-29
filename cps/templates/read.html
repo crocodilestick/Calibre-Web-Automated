@@ -7,7 +7,7 @@
     <title>{{_('epub Reader')}} | {{title}}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     {% if g.google_site_verification|length > 0 %}
     <meta name="google-site-verification" content="{{g.google_site_verification}}">
     {% endif %}
@@ -157,60 +157,80 @@
 
         function selectTheme (id) {
             let tickSpans = document.getElementById("themes").querySelectorAll("span");
-
             // Remove tick mark from all theme buttons
             tickSpans.forEach(function (tickSpan) {
-                document.getElementById(tickSpan.id).textContent = "";
+              document.getElementById(tickSpan.id).textContent = "";
             });
-
             // Add tick mark to the button corresponding to the currently selected theme
             document.getElementById(id).querySelector("span").textContent = "✓";
-
             // Saving theme to local storage
             localStorage.setItem("calibre.reader.theme", id);
-            
             // Apply theme to epubjs iframe
             reader.rendition.themes.select(id);
-
             // Apply theme to rest of the page. 
             document.getElementById("main").style.backgroundColor = themes[id]["bgColor"];
             document.getElementById("titlebar").style.color = themes[id]["title-color"] || "#fff";
-        }
-
-        // font size settings logic
-        let fontSizeFader = document.getElementById('fontSizeFader');
-        fontSizeFader.addEventListener("change", function () {
-            reader.rendition.themes.fontSize(`${this.value}%`);
-        });
-
-        let defaultFont;
-
-        function selectFont(id) {
-          if (!defaultFont) {
-            defaultFont = reader.rendition.getContents()[0]?.css('font-family');
           }
 
-          spans = document.getElementById("font").querySelectorAll("span");
+        // Font size and font logic (wait for reader to be ready)
+        let defaultFont;
+        window.selectFont = function(id) {
+          if (!defaultFont) {
+            try {
+              defaultFont = reader.rendition.getContents()[0]?.css('font-family');
+            } catch (e) { defaultFont = null; }
+          }
+          let spans = document.getElementById("font").querySelectorAll("span");
           for(var i = 0; i < spans.length; i++) {
             spans[i].textContent = "";
           }
           document.getElementById(id).querySelector("span").textContent = "✓";
-          
-          if (id == 'default') {
+          localStorage.setItem("calibre.reader.font", id);
+          if (id == 'default' && defaultFont) {
             reader.rendition.themes.font(defaultFont);
             return;
           }
           reader.rendition.themes.font(id);
         }
 
-        function spread(id) {
-          spans = document.getElementById("layout").querySelectorAll("span");
+        window.spread = function(id) {
+          let spans = document.getElementById("layout").querySelectorAll("span");
           for(var i = 0; i < spans.length; i++) {
             spans[i].textContent = "";
           }
           document.getElementById(id).querySelector("span").textContent = "✓";
+          localStorage.setItem("calibre.reader.spread", id);
           reader.rendition.spread(id==='spread'?true:'none');
         }
+
+        // Font size slider logic
+        document.addEventListener("DOMContentLoaded", function() {
+          let fontSizeFader = document.getElementById('fontSizeFader');
+          if (fontSizeFader) {
+            let savedFontSize = localStorage.getItem("calibre.reader.fontSize");
+            if (savedFontSize) {
+              fontSizeFader.value = savedFontSize;
+            }
+            fontSizeFader.addEventListener("change", function () {
+              reader.rendition.themes.fontSize(`${this.value}%`);
+              localStorage.setItem("calibre.reader.fontSize", this.value);
+            });
+          }
+        });
+
+        // Reflow logic
+        document.addEventListener("DOMContentLoaded", function() {
+          let reflowBox = document.getElementById('sidebarReflow');
+          if (reflowBox) {
+            let savedReflow = localStorage.getItem("calibre.reader.reflow");
+            if (savedReflow !== null) {
+              reflowBox.checked = savedReflow === 'true';
+            }
+            reflowBox.addEventListener("change", function() {
+              localStorage.setItem("calibre.reader.reflow", this.checked);
+            });
+          }
+        });
       </script>
       <script src="{{ url_for('static', filename='js/libs/screenfull.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/libs/reader.min.js') }}"></script>

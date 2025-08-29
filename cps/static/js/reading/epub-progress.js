@@ -38,14 +38,36 @@ function calculateProgress(){
     });
 })();
 
+
+async function saveProgressToAPI(bookId, cfi, page, percent) {
+    try {
+        await fetch('/api/progress/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                book_id: bookId,
+                progress_cfi: cfi,
+                progress_page: page,
+                progress_percent: percent,
+                device: navigator.userAgent
+            })
+        });
+    } catch (e) {
+        // Optionally log or ignore
+    }
+}
+
 window.addEventListener('locationchange',()=>{
     let newPos=calculateProgress();
     progressDiv.textContent=newPos+"%";
-    // Save progress to localStorage per book
     if (window.calibre && window.calibre.bookUrl) {
-        // Use bookUrl as a unique key, or use bookid if available
         let bookKey = window.calibre.bookUrl;
+        // Save to localStorage
         localStorage.setItem("calibre.reader.progress." + bookKey, newPos);
+        // Save to API
+        let cfi = reader.rendition.location.end.cfi;
+        let page = reader.rendition.location.end.displayed ? reader.rendition.location.end.displayed.page : null;
+        saveProgressToAPI(bookKey, cfi, page, newPos);
     }
 });
 
@@ -54,17 +76,41 @@ var epub=ePub(calibre.bookUrl)
 let progressDiv=document.getElementById("progress");
 
 qFinished(()=>{
-    epub.locations.generate().then(()=> {
-        // Restore progress from localStorage if available
+    epub.locations.generate().then(async ()=> {
         if (window.calibre && window.calibre.bookUrl) {
             let bookKey = window.calibre.bookUrl;
-            let savedProgress = localStorage.getItem("calibre.reader.progress." + bookKey);
-            if (savedProgress) {
-                // Try to jump to the saved progress (percentage)
-                let percentage = parseInt(savedProgress, 10) / 100;
-                let cfi = epub.locations.cfiFromPercentage(percentage);
-                if (cfi) {
-                    reader.rendition.display(cfi);
+            // Try to restore from API first
+            let restored = false;
+            try {
+                let resp = await fetch(`/api/progress/get?book_id=${encodeURIComponent(bookKey)}`);
+                if (resp.ok) {
+                    let data = await resp.json();
+                    if (data.progress_cfi) {
+                        reader.rendition.display(data.progress_cfi);
+                        restored = true;
+                    } else if (data.progress_page) {
+                        // If you have page logic, implement here
+                        // Example: reader.rendition.displayPage(data.progress_page);
+                        restored = true;
+                    } else if (data.progress_percent) {
+                        let percentage = parseInt(data.progress_percent, 10) / 100;
+                        let cfi = epub.locations.cfiFromPercentage(percentage);
+                        if (cfi) {
+                            reader.rendition.display(cfi);
+                            restored = true;
+                        }
+                    }
+                }
+            } catch (e) {}
+            // Fallback to localStorage if nothing restored
+            if (!restored) {
+                let savedProgress = localStorage.getItem("calibre.reader.progress." + bookKey);
+                if (savedProgress) {
+                    let percentage = parseInt(savedProgress, 10) / 100;
+                    let cfi = epub.locations.cfiFromPercentage(percentage);
+                    if (cfi) {
+                        reader.rendition.display(cfi);
+                    }
                 }
             }
         }

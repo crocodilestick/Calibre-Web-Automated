@@ -524,6 +524,23 @@ class KOSyncProgress(Base):
         return '<KOSyncProgress %r - %r>' % (self.user_id, self.document)
 
 
+
+# Table for per-user, per-book reading progress (works for all formats)
+class ReadingProgress(Base):
+    __tablename__ = 'reading_progress'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    book_id = Column(Integer, nullable=False)
+    progress_cfi = Column(String, nullable=True)  # EPUB CFI location
+    progress_page = Column(Integer, nullable=True)  # Page number (PDF, etc)
+    progress_percent = Column(Float, nullable=True)  # Fallback for all formats
+    device = Column(String, nullable=True)  # Device identifier (optional)
+    last_updated = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return f"<ReadingProgress user={self.user_id} book={self.book_id} cfi={self.progress_cfi} page={self.progress_page} percent={self.progress_percent} device={self.device}>"
+
 # Baseclass representing allowed domains for registration
 class Registration(Base):
     __tablename__ = 'registration'
@@ -585,6 +602,8 @@ def add_missing_tables(engine, _session):
         Thumbnail.__table__.create(bind=engine)
     if not engine.dialect.has_table(engine.connect(), "kosync_progress"):
         KOSyncProgress.__table__.create(bind=engine)
+    if not engine.dialect.has_table(engine.connect(), "reading_progress"):
+        ReadingProgress.__table__.create(bind=engine)
 
 
 # migrate all settings missing in registration table

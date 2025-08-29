@@ -41,6 +41,12 @@ function calculateProgress(){
 window.addEventListener('locationchange',()=>{
     let newPos=calculateProgress();
     progressDiv.textContent=newPos+"%";
+    // Save progress to localStorage per book
+    if (window.calibre && window.calibre.bookUrl) {
+        // Use bookUrl as a unique key, or use bookid if available
+        let bookKey = window.calibre.bookUrl;
+        localStorage.setItem("calibre.reader.progress." + bookKey, newPos);
+    }
 });
 
 var epub=ePub(calibre.bookUrl)
@@ -49,6 +55,19 @@ let progressDiv=document.getElementById("progress");
 
 qFinished(()=>{
     epub.locations.generate().then(()=> {
-    window.dispatchEvent(new Event('locationchange'))
-});
+        // Restore progress from localStorage if available
+        if (window.calibre && window.calibre.bookUrl) {
+            let bookKey = window.calibre.bookUrl;
+            let savedProgress = localStorage.getItem("calibre.reader.progress." + bookKey);
+            if (savedProgress) {
+                // Try to jump to the saved progress (percentage)
+                let percentage = parseInt(savedProgress, 10) / 100;
+                let cfi = epub.locations.cfiFromPercentage(percentage);
+                if (cfi) {
+                    reader.rendition.display(cfi);
+                }
+            }
+        }
+        window.dispatchEvent(new Event('locationchange'))
+    });
 })

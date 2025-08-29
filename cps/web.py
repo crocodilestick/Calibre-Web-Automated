@@ -1785,3 +1785,59 @@ def show_book(book_id):
         flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
               category="error")
         return redirect(url_for("web.index"))
+
+
+# ################################### API Endpoints ##################################################################
+
+@web.route("/api/progress/save", methods=["POST"])
+@user_login_required
+def api_save_progress():
+    data = request.get_json(force=True)
+    book_id = data.get("book_id")
+    if not book_id:
+        return jsonify({"error": "Missing book_id"}), 400
+    # Accept any/all of these fields
+    progress_cfi = data.get("progress_cfi")
+    progress_page = data.get("progress_page")
+    progress_percent = data.get("progress_percent")
+    device = data.get("device")
+    now = ub.datetime.now(ub.timezone.utc)
+
+    # Upsert logic: find existing or create new
+    entry = ub.session.query(ub.ReadingProgress).filter_by(user_id=current_user.id, book_id=book_id).first()
+    if not entry:
+        entry = ub.ReadingProgress(user_id=current_user.id, book_id=book_id)
+        ub.session.add(entry)
+    # Update fields if provided
+    if progress_cfi is not None:
+        entry.progress_cfi = progress_cfi
+    if progress_page is not None:
+        entry.progress_page = progress_page
+    if progress_percent is not None:
+        entry.progress_percent = progress_percent
+    if device is not None:
+        entry.device = device
+    entry.last_updated = now
+    try:
+        ub.session.commit()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        ub.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@web.route("/api/progress/get", methods=["GET"])
+@user_login_required
+def api_get_progress():
+    book_id = request.args.get("book_id")
+    if not book_id:
+        return jsonify({"error": "Missing book_id"}), 400
+    entry = ub.session.query(ub.ReadingProgress).filter_by(user_id=current_user.id, book_id=book_id).first()
+    if not entry:
+        return jsonify({}), 200  # No progress yet
+    return jsonify({
+        "progress_cfi": entry.progress_cfi,
+        "progress_page": entry.progress_page,
+        "progress_percent": entry.progress_percent,
+        "device": entry.device,
+        "last_updated": entry.last_updated.isoformat() if entry.last_updated else None
+    }), 200

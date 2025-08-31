@@ -12,6 +12,7 @@ import operator
 import time
 import sys
 import string
+import requests
 from datetime import datetime, timedelta
 from datetime import time as datetime_time
 from functools import wraps
@@ -1180,25 +1181,51 @@ def _configuration_gdrive_helper(to_save):
 
 
 def _configuration_oauth_helper(to_save):
-    active_oauths = 0
     reboot_required = False
+
     for element in oauthblueprints:
-        if to_save["config_" + str(element['id']) + "_oauth_client_id"] != element['oauth_client_id'] \
-          or to_save["config_" + str(element['id']) + "_oauth_client_secret"] != element['oauth_client_secret']:
-            reboot_required = True
-            element['oauth_client_id'] = to_save["config_" + str(element['id']) + "_oauth_client_id"]
-            element['oauth_client_secret'] = to_save["config_" + str(element['id']) + "_oauth_client_secret"]
-        if to_save["config_" + str(element['id']) + "_oauth_client_id"] \
-          and to_save["config_" + str(element['id']) + "_oauth_client_secret"]:
-            active_oauths += 1
-            element["active"] = 1
+        update = {}
+        if element["provider_name"] == "generic":
+            if to_save["config_generic_oauth_client_id"] != element["oauth_client_id"]:
+                reboot_required = True
+                update["oauth_client_id"] = to_save["config_generic_oauth_client_id"]
+            if to_save["config_generic_oauth_client_secret"] != element["oauth_client_secret"]:
+                reboot_required = True
+                update["oauth_client_secret"] = to_save["config_generic_oauth_client_secret"]
+            if to_save["config_generic_oauth_server_url"] != element["oauth_base_url"]:
+                reboot_required = True
+                update["oauth_base_url"] = to_save["config_generic_oauth_server_url"]
+                try:
+                    resp = requests.get(
+                        os.path.join(update["oauth_base_url"], ".well-known/openid-configuration"),
+                        timeout=5,
+                        verify=constants.OAUTH_SSL_STRICT
+                    )
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        update["oauth_authorize_url"] = data.get("authorization_endpoint", "")
+                        update["oauth_token_url"] = data.get("token_endpoint", "")
+                        update["oauth_userinfo_url"] = data.get("userinfo_endpoint", "")
+                except Exception as ex:
+                    return False, _configuration_result(_('Unable to fetch OpenID configuration.'))
+            if to_save["config_generic_oauth_admin_group"] != element["oauth_admin_group"]:
+                reboot_required = True
+                update["oauth_admin_group"] = to_save["config_generic_oauth_admin_group"]
         else:
-            element["active"] = 0
-        ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.id == element['id']).update(
-            {"oauth_client_id": to_save["config_" + str(element['id']) + "_oauth_client_id"],
-             "oauth_client_secret": to_save["config_" + str(element['id']) + "_oauth_client_secret"],
-             "active": element["active"]})
-    return reboot_required
+            if to_save["config_" + str(element['id']) + "_oauth_client_id"] != element["oauth_client_id"]:
+                reboot_required = True
+                update["oauth_client_id"] = to_save["config_" + str(element['id']) + "_oauth_client_id"]
+            if to_save["config_" + str(element['id']) + "_oauth_client_secret"] != element["oauth_client_secret"]:
+                reboot_required = True
+                update["oauth_client_secret"] = to_save["config_" + str(element['id']) + "_oauth_client_secret"]
+
+        oauth_client_id = update.get("oauth_client_id", element["oauth_client_id"])
+        oauth_client_secret = update.get("oauth_client_secret", element["oauth_client_secret"])
+        update["active"] = 1 if oauth_client_id and oauth_client_secret else 0
+
+        ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.id == element['id']).update(update)
+
+    return reboot_required, None
 
 
 def _configuration_logfile_helper(to_save):
@@ -1882,7 +1909,10 @@ def _configuration_update_helper():
 
         # OAuth configuration
         if config.config_login_type == constants.LOGIN_OAUTH:
-            reboot_required |= _configuration_oauth_helper(to_save)
+            reboot, message = _configuration_oauth_helper(to_save)
+            if message:
+                return message
+            reboot_required |= reboot
 
         # logfile configuration
         reboot, message = _configuration_logfile_helper(to_save)

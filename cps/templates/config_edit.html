@@ -305,7 +305,26 @@
       {% endif %}
       {% if feature_support['oauth'] %}
         <div data-related="login-settings-2">
-          {% for prov in provider %}
+          {% set generic = provider | selectattr('provider_name', 'equalto', 'generic') | first %}
+          <p>{{ _('Generic OAuth Provider') }}</p>
+          <div class="form-group">
+            <label for="config_generic_oauth_server_url">{{_('OAuth Server Url')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_server_url" name="config_generic_oauth_server_url" value="{% if generic['oauth_base_url'] != None %}{{ generic['oauth_base_url'] }}{% endif %}" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="config_generic_oauth_client_id">{{_('OAuth Client Id')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_client_id" name="config_generic_oauth_client_id" value="{% if generic['oauth_client_id'] != None %}{{ generic['oauth_client_id'] }}{% endif %}" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="config_generic_oauth_client_secret">{{_('OAuth Client Secret')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_client_secret" name="config_generic_oauth_client_secret" value="{% if generic['oauth_client_secret'] != None %}{{ generic['oauth_client_secret'] }}{% endif %}" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="config_generic_oauth_admin_group">{{_('OAuth group for Admin')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_admin_group" name="config_generic_oauth_admin_group" value="{% if generic['oauth_admin_group'] != None %}{{ generic['oauth_admin_group'] }}{% endif %}" autocomplete="off">
+          </div>
+          <hr/>
+          {% for prov in provider if prov['provider_name'] != "generic" %}
           <div class="form-group">
             <a href="{{prov['obtain_link']}}" target="_blank">{{_('Obtain %(provider)s OAuth Credential', provider=prov['provider_name'])}}</a>
           </div>

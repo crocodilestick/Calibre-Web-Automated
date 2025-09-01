@@ -188,65 +188,40 @@ if ($("body.book").length > 0) {
     //Work to reposition dropdowns. Does not currently solve for
     //screen resizing
     function dropdownToggle() {
+        var topPos = $(".book-meta > .btn-toolbar:first").offset().top;
+        var windowWidth = $(window).width();
 
-        topPos = $(".book-meta > .btn-toolbar:first").offset().top
-
-        if ($("#read-in-browser").length > 0) {
-            position = $("#read-in-browser").offset().left
-            if (position + $(".readinbrowser-drop").width() > $(window).width()) {
-                positionOff = position + $(".readinbrowser-drop").width() - $(window).width();
-                ribPosition = position - positionOff - 5
-                $(".readinbrowser-drop").attr("style", "left: " + ribPosition + "px !important; right: auto; top: " + topPos + "px");
-            } else {
-                $(".readinbrowser-drop").attr("style", "left: " + position + "px !important; right: auto; top: " + topPos + "px");
+        function positionDropdown(trigger, dropdown) {
+            if (trigger.length > 0) {
+                var position = trigger.offset().left;
+                if (position + dropdown.width() > windowWidth) {
+                    var positionOff = position + dropdown.width() - windowWidth;
+                    var newPosition = position - positionOff - 5;
+                    dropdown.attr("style", "left: " + newPosition + "px !important; right: auto; top: " + topPos + "px");
+                } else {
+                    dropdown.attr("style", "left: " + position + "px !important; right: auto; top: " + topPos + "px");
+                }
             }
         }
 
-        if ($("#sendbtn2").length > 0) {
-            position = $("#sendbtn2").offset().left
-            if (position + $(".sendtoereader-drop").width() > $(window).width()) {
-                positionOff = position + $(".sendtoereader-drop").width() - $(window).width();
-                ribPosition = position - positionOff - 5
-                $(".sendtoereader-drop").attr("style", "left: " + ribPosition + "px !important; right: auto; top: " + topPos + "px");
-            } else {
-                $(".sendtoereader-drop").attr("style", "left: " + position + "px !important; right: auto; top: " + topPos + "px");
-            }
-        }
-
-        if ($(".downloadBtn").length > 0) {
-
-            position = $("#btnGroupDrop1").offset().left
-
-            if (position + $(".leramslist").width() > $(window).width()) {
-                positionOff = position + $(".leramslist").width() - $(window).width();
-                dlPosition = position - positionOff - 5
-                $(".leramslist").attr("style", "left: " + dlPosition + "px !important; right: auto;  top: " + topPos + "px");
-            } else {
-                $(".leramslist").attr("style", "left: " + position + "px !important; right: auto;  top: " + topPos + "px");
-            }
-        }
-
-        if ($('div[aria-label="Add to shelves"]').length > 0) {
-
-            position = $('div[aria-label="Add to shelves"]').offset().left
-
-            if (position + $("#add-to-shelves").width() > $(window).width()) {
-                positionOff = position + $("#add-to-shelves").width() - $(window).width();
-                adsPosition = position - positionOff - 5;
-                $("#add-to-shelves").attr("style", "left: " + adsPosition + "px !important; right: auto;  top: " + topPos + "px");
-            } else {
-                $("#add-to-shelves").attr("style", "left: " + position + "px !important; right: auto;  top: " + topPos + "px");
-            }
-        }
+        positionDropdown($("#read-in-browser"), $(".readinbrowser-drop"));
+        positionDropdown($("#sendbtn2"), $(".sendtoereader-drop"));
+        positionDropdown($("#btnGroupDrop1"), $(".leramslist"));
+        positionDropdown($('div[aria-label="Add to shelves"]'), $("#add-to-shelves"));
     }
 
     dropdownToggle();
 
+    var resizeTimer;
     $(window).on("resize", function () {
-        dropdownToggle();
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            dropdownToggle();
+        }, 250);
     });
 
 // Clone book rating for mobile view.
+    $(".book-meta > .bookinfo > .rating").clone().insertBefore(".book-meta > .description").addClass("rating-mobile");// Clone book rating for mobile view.
     $(".book-meta > .bookinfo > .rating").clone().insertBefore(".book-meta > .description").addClass("rating-mobile");
 }
 
@@ -618,7 +593,7 @@ $("#archived_cb:checked").attr({
 $("button#delete").attr({
     "data-toggle-two": "tooltip",
     "title": $("button#delete").text(),           //"Delete"
-    "data-placement": "bottom",
+    "data-placement": "left",
     "data-viewport": ".btn-toolbar"
 })
     .addClass("delete-book-btn-tooltip");
@@ -747,16 +722,26 @@ $(".shelforder .col-sm-10 .col-sm-6.col-lg-6.col-xs-6 h2:first").text(shelfText)
 
 
 function mobileSupport() {
-    if ($(window).width() <= 768) {
-        //Move menu to collapse
-        $(".row-fluid > .col-sm-2:first").appendTo(".navbar-collapse.collapse:first");
-        if ($(".sidebar-backdrop").length < 1) {
-            $(".navbar-collapse.collapse:first").after("<div class='sidebar-backdrop'></div>");
+    var windowWidth = $(window).width();
+    var sidebar = $(".row-fluid > .col-sm-2:first");
+    var content = $(".col-sm-10:first");
+
+    if (windowWidth <= 768) {
+        if (!sidebar.hasClass("sidebar-collapsed")) {
+            sidebar.addClass("sidebar-collapsed");
+            content.addClass("content-expanded");
+            sidebar.appendTo(".navbar-collapse.collapse:first");
+            if ($(".sidebar-backdrop").length < 1) {
+                $(".navbar-collapse.collapse:first").after("<div class='sidebar-backdrop'></div>");
+            }
         }
     } else {
-        //Move menu out of collapse
-        $(".col-sm-2:first").insertBefore(".col-sm-10:first");
-        $(".sidebar-backdrop").remove();
+        if (sidebar.hasClass("sidebar-collapsed")) {
+            sidebar.removeClass("sidebar-collapsed");
+            content.removeClass("content-expanded");
+            sidebar.insertBefore(content);
+            $(".sidebar-backdrop").remove();
+        }
     }
 }
 
@@ -767,15 +752,26 @@ if ($(" body.stat p").length > 0) {
     $(" body.stat p").html(str);
 }
 // Collect delete buttons in editbook to single dropdown
-$(".editbook .text-center.more-stuff").prepend('<button id="deleteButton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-remove"></span>Delete Format<span class="caret"></span></button><ul class="dropdown-menu delete-dropdown"></ul>');
+var deleteButtons = $(".editbook .text-center.more-stuff button[data-delete-format]").get();
 
-deleteButtons = $(".editbook .text-center.more-stuff a").removeClass("btn btn-danger").attr("type", "").get();
+if (deleteButtons.length > 0) {
+    $(".editbook .text-center.more-stuff").prepend('<button id="deleteButton" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-remove"></span>Delete Format<span class="caret"></span></button><ul class="dropdown-menu delete-dropdown"></ul>');
 
-$(deleteButtons).detach();
-$(".editbook .text-center.more-stuff h4").remove();
-$.each(deleteButtons, function (i, val) {
-    $("<li>" + deleteButtons[i].outerHTML + "</li>").appendTo(".delete-dropdown");
-});
+    $(deleteButtons).each(function() {
+        var format = $(this).data('delete-format');
+        var bookId = $(this).data('delete-id');
+        // Rebuild the button as a link to fit in the dropdown list
+        var listItem = '<li><a href="#" data-toggle="modal" data-delete-id="' + bookId + '" data-delete-format="' + format + '" data-target="#deleteModal">Delete - ' + format + '</a></li>';
+        $(listItem).appendTo(".delete-dropdown");
+        // Remove original button and its container
+        $(this).closest('.form-group').remove();
+    });
+}
+
+// Remove the now-empty "Delete formats:" heading if it exists
+if ($(".editbook .text-center.more-stuff h4").length > 0 && deleteButtons.length > 0) {
+    $(".editbook .text-center.more-stuff h4").remove();
+}
 
 // Turn off bootstrap animations
 $(function () {
@@ -785,9 +781,10 @@ $(function () {
 mobileSupport();
 
 // Only call function once resize is complete
-//var id;
+var resizeTimerMobile;
 $(window).on("resize", function () {
-//  clearTimeout(id);
-//  id = setTimeout(mobileSupport, 500);
-    mobileSupport();
+    clearTimeout(resizeTimerMobile);
+    resizeTimerMobile = setTimeout(function() {
+        mobileSupport();
+    }, 250);
 });

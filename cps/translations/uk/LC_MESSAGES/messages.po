@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-Automated\n"
 "POT-Creation-Date: 2025-08-09 17:32+0200\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
@@ -944,9 +944,9 @@ msgid "Failed to store file %(file)s."
 msgstr ""
 
 #: cps/editbooks.py:1399
-#, fuzzy, python-format
+#, python-format
 msgid "File format %(ext)s added to %(book)s"
-msgstr "Формат файлу: %(format)s"
+msgstr "Формат файлу %(ext)s додано до %(book)s"
 
 #: cps/gdrive.py:43
 msgid ""

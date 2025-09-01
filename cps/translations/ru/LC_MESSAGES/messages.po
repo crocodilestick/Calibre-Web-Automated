@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-Automated\n"
 "POT-Creation-Date: 2025-08-09 17:32+0200\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
@@ -1887,9 +1887,9 @@ msgid "Calibre ebook-convert %(tool)s not found"
 msgstr ""
 
 #: cps/tasks/convert.py:196
-#, fuzzy, python-format
+#, python-format
 msgid "%(format)s format not found on disk"
-msgstr "%(format)s форма не найден для книги с id: %(book)d"
+msgstr "Формат %(format)s не найден на диске"
 
 #: cps/tasks/convert.py:200
 #, fuzzy
@@ -1907,11 +1907,9 @@ msgid "Converted file not found or more than one file in folder %(folder)s"
 msgstr ""
 
 #: cps/tasks/convert.py:274 cps/tasks/convert.py:325
-#, fuzzy, python-format
+#, python-format
 msgid "Calibre failed with error: %(error)s"
-msgstr ""
-"Переименовывание заголовка с: '%(src)s' на '%(dest)s' не удалось из-за "
-"ошибки: %(error)s"
+msgstr "Calibre завершился с ошибкой: %(error)s"
 
 #: cps/tasks/convert.py:302
 #, python-format

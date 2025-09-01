@@ -62,7 +62,6 @@ class _Settings(_Base):
     config_calibre_uuid = Column(String)
     config_calibre_split = Column(Boolean, default=False)
     config_calibre_split_dir = Column(String)
-    config_port = Column(Integer, default=constants.DEFAULT_PORT)
     config_external_port = Column(Integer, default=constants.DEFAULT_PORT)
     config_certfile = Column(String)
     config_keyfile = Column(String)
@@ -406,7 +405,7 @@ class ConfigSQL(object):
         self.save()
 
     def get_book_path(self):
-        return self.config_calibre_split_dir if self.config_calibre_split_dir else self.config_calibre_dir
+        return self.config_calibre_split_dir if self.config_calibre_split else self.config_calibre_dir
 
     def store_calibre_uuid(self, calibre_db, Library_table):
         from . import app

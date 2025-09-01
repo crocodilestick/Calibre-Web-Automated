@@ -127,7 +127,7 @@ div#Downloads_list {
     .book-meta > .bookinfo > .comments, .book-meta > .description {
         font-size: 13px;
         min-height: 350px !important;
-        margin-top: 40px;
+        margin-top: 60px;
     }
     #bookDetailsModal > .modal-dialog.modal-lg > .modal-content > .modal-body > div > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover, body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover {
         width: 100%;
@@ -277,8 +277,10 @@ div#Downloads_list {
 .login .well > form {
     background: rgba(0, 0, 0, .4);
     color: hsla(0, 0%, 100%, .45);
-    padding: 60px !important;
+    padding: 60px;
     margin-top: 60px !important;
+    display: flow-root;
+    min-width: 480px;
 }
 
 body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a:hover {

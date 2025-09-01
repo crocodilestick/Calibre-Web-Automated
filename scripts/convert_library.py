@@ -121,7 +121,7 @@ class LibraryConverter:
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-    con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect("/config/app.db", timeout=30)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 

@@ -9,6 +9,8 @@ services:
       - PGID=1000
       # Edit to match your current timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - TZ=UTC
+      # Sets the listening port for the application. Defaults to 8083.
+      # - CWA_PORT_OVERRIDE=8083
       # Hardcover API Key required for Hardcover as a Metadata Provider, get one here: https://docs.hardcover.app/api/getting-started/
       - HARDCOVER_TOKEN=your_hardcover_api_key_here
       # If your library is on a network share (e.g., NFS/SMB), disables WAL and chown to reduce locking/permission issues,
@@ -32,5 +34,8 @@ services:
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
-      - 8083:8083 
+      - 8083:8083
+    # If you set CWA_PORT_OVERRIDE to a port below 1024, you may need to uncomment the following line:
+    # cap_add:
+    #   - NET_BIND_SERVICE
     restart: unless-stopped

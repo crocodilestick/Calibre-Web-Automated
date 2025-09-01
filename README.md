@@ -285,12 +285,12 @@ services:
       - TZ=UTC
       # Hardcover API Key required for Hardcover as a Metadata Provider, get one here: https://docs.hardcover.app/api/getting-started/
       - HARDCOVER_TOKEN=your_hardcover_api_key_here
-  # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
-  # Accepts: true/false (default: false)
-  - NETWORK_SHARE_MODE=false
-  # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
-  # Accepts: true/false (default: false)
-  - NETWORK_SHARE_MODE=false
+      # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
+      # Accepts: true/false (default: false)
+      - NETWORK_SHARE_MODE=false
+      # Override the default port (8083) for the web server.
+      # Accepts any valid port number.
+      - CWA_PORT_OVERRIDE=8083
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
       - /path/to/config/folder:/config 
@@ -303,7 +303,10 @@ services:
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
-      - 8083:8083 
+      - 8083:8083
+    # If you set CWA_PORT_OVERRIDE to a port below 1024, you may need to uncomment the following line:
+    # cap_add:
+    #   - NET_BIND_SERVICE
     restart: unless-stopped
 ~~~
 

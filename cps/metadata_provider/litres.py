@@ -1,3 +1,9 @@
+# Calibre-Web Automated – fork of Calibre-Web
+# Copyright (C) 2018-2025 Calibre-Web contributors
+# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# See CONTRIBUTORS for full list of authors.
+
 import json
 import re
 import requests
@@ -19,9 +25,9 @@ class Litres(Metadata):
     BOOK_URL = "https://www.litres.ru"
     API_URL = "https://api.litres.ru/foundation/api/search"
     API_ARTS_URL = "https://api.litres.ru/foundation/api/arts/{}"
-    DEFAULT_LIMIT = 5
+    DEFAULT_LIMIT = 7
     TIMEOUT = 20
-    DEFAULT_TYPES = [  # Add this constant back
+    DEFAULT_TYPES = [
         "text_book",
         "audiobook",
         "podcast",
@@ -187,12 +193,12 @@ class Litres(Metadata):
                 log.debug("Skipping item without ID")
                 return None
 
-            title = item.get("title") or item.get("name") or ""
+            detailed_data = self._get_detailed_info(item_id, locale)
+
+            title = self._get_title(item, detailed_data)
             if not title:
                 log.debug("Skipping item without title")
                 return None
-
-            detailed_data = self._get_detailed_info(item_id, locale)
 
             meta_record = MetaRecord(
                 id=str(item_id),
@@ -250,12 +256,18 @@ class Litres(Metadata):
 
     @staticmethod
     def _get_title(item: Dict, detailed_data: Dict) -> str:
-        return (
+        title =  (
                 item.get("title")
                 or detailed_data.get("title")
                 or item.get("name")
                 or ""
         ).strip()
+
+        formats = ['pdf', 'epub']
+        pattern = r'\s*\([^)]*(' + '|'.join(formats) + ')[^)]*\)'
+
+        title =  re.sub(pattern, '', title, flags=re.IGNORECASE)
+        return title
 
     @staticmethod
     def _get_authors(item: Dict, detailed_data: Dict) -> List[str]:
@@ -303,8 +315,14 @@ class Litres(Metadata):
             raw_html = item.get("annotation") or item.get("description") or item.get("lead") or ""
 
         description = raw_html or ""
-        if raw_html:
-            description = re.sub(r'<[^>]+>', '', raw_html)
+
+        patterns =  [
+            r'<p\b[^>]*>(?:(?!</p>).)*?(?:покупк|скачать|загрузить|предоставляется|формат|epub|pdf|fb2|mobi)(?:(?!</p>).)*?</p>',
+            r'<p><br/></p>'
+        ]
+
+        for pattern in patterns:
+            description = re.sub(pattern, '', description, flags=re.IGNORECASE | re.DOTALL)
 
         return description
 

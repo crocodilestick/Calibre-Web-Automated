@@ -30,7 +30,7 @@ except ImportError:
     VERSION = 'Tornado ' + _version
     _GEVENT = False
 
-from . import logger
+from . import logger, constants
 
 
 log = logger.create()
@@ -60,7 +60,7 @@ class WebServer(object):
     def init_app(self, application, config):
         self.app = application
         self.listen_address = config.get_config_ipaddress()
-        self.listen_port = config.config_port
+        self.listen_port = constants.DEFAULT_PORT
 
         if config.config_access_log:
             log_name = "gevent.access" if _GEVENT else "tornado.access"

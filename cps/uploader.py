@@ -164,6 +164,7 @@ def parse_xmp(pdf_file):
 def pdf_meta(tmp_file_path, original_file_name, original_file_extension, no_cover_processing):
     doc_info = None
     xmp_info = None
+    create_date = ""
 
     if use_pdf_meta:
         with open(tmp_file_path, 'rb') as f:
@@ -203,6 +204,9 @@ def pdf_meta(tmp_file_path, original_file_name, original_file_extension, no_cove
                     tags = keywords.decode('utf-8')
                 else:
                     tags = keywords
+        if create_date == '':
+            create_date = doc_info.creation_date
+
     else:
         title = original_file_name
 
@@ -218,7 +222,7 @@ def pdf_meta(tmp_file_path, original_file_name, original_file_extension, no_cove
         series_id="",
         languages=','.join(languages),
         publisher=publisher,
-        pubdate="",
+        pubdate=str(create_date),
         identifiers=[])
 
 

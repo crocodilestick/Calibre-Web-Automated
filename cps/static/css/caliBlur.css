@@ -17,6 +17,10 @@ See CONTRIBUTORS for full list of authors. */
     letter-spacing: normal
 }
 
+a, button {
+    transition: all .2s ease-in-out;
+}
+
 .pagination, .plexBack.noBack, .root .plexBack, .root .plexBack > a {
     cursor: default;
 }
@@ -196,7 +200,7 @@ See CONTRIBUTORS for full list of authors. */
     }
 }
 
-@media only screen and (max-width: 991px) and (min-width: 768px) {
+@media only screen and (min-width: 768px) {
     body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a > span:before {
         font-size: 18px
     }
@@ -5593,7 +5597,7 @@ body.admin.modal-open .navbar {
 #RestartDialog.in:before, #ShutdownDialog.in:before, #StatusDialog.in:before, #deleteModal.in:before, #cancelTaskModal.in:before {
     -webkit-transform: translate(0, 0);
     -ms-transform: translate(0, 0);
-    transform: translate(0, 0)
+    transform: translate(0px, 120px);
 }
 
 #RestartDialog > .modal-dialog, #ShutdownDialog > .modal-dialog, #StatusDialog > .modal-dialog, #deleteModal > .modal-dialog, #cancelTaskModal > .modal-dialog {
@@ -7595,7 +7599,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
 @media only screen and (max-width: 500px) {
     .login .well > form {
-        padding: 30px 15px
+        padding: 60px 25px !important;
+        min-width: calc(100vw - 30px) !important;
     }
 
     #RestartDialog.in:before, #ShutdownDialog.in:before, #StatusDialog.in:before, #deleteModal.in:before, #cancelTaskModal.in:before {
@@ -8538,13 +8543,12 @@ a#remote_login {
     padding: 6px 30px 5px;
     border: transparent solid 1px;
     border-radius: 4px;
-    margin-bottom: 3rem;
 }
 
 .login .well > form {
     max-width: 480px;
     margin: auto;
-    height: 47rem;
+    height: fit-content;
 }
 
 p.cwa-settings-tooltip {

@@ -264,6 +264,16 @@ class OAuthProvider(Base):
     provider_name = Column(String)
     oauth_client_id = Column(String)
     oauth_client_secret = Column(String)
+    oauth_base_url = Column(String, default=None)
+    oauth_authorize_url = Column(String, default=None)
+    oauth_token_url = Column(String, default=None)
+    oauth_userinfo_url = Column(String, default=None)
+    oauth_admin_group = Column(String, default=None)
+    metadata_url = Column(String, default=None)  # For OIDC auto-discovery
+    scope = Column(String, default="openid profile email")  # Customizable OAuth scopes
+    username_mapper = Column(String, default="preferred_username")  # JWT field for username
+    email_mapper = Column(String, default="email")  # JWT field for email
+    login_button = Column(String, default="OpenID Connect")  # Custom button text
     active = Column(Boolean)
 
 
@@ -632,6 +642,35 @@ def migrate_user_table(engine, _session):
             conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
             trans.commit()
 
+def migrate_oauth_provider_table(engine, _session):
+    try:
+        _session.query(exists().where(OAuthProvider.oauth_base_url)).scalar()
+        _session.commit()
+    except exc.OperationalError:  # Database is not compatible, some columns are missing
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_base_url' String DEFAULT NULL"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_authorize_url' String DEFAULT NULL"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_token_url' String DEFAULT NULL"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL"))
+            trans.commit()
+    
+    # Add new OAuth enhancement fields
+    try:
+        _session.query(exists().where(OAuthProvider.metadata_url)).scalar()
+        _session.commit()
+    except exc.OperationalError:  # New columns are missing
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'metadata_url' String DEFAULT NULL"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'scope' String DEFAULT 'openid profile email'"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'username_mapper' String DEFAULT 'preferred_username'"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'email_mapper' String DEFAULT 'email'"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'login_button' String DEFAULT 'OpenID Connect'"))
+            trans.commit()
+
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
@@ -641,6 +680,7 @@ def migrate_Database(_session):
     migrate_registration_table(engine, _session)
     migrate_user_session_table(engine, _session)
     migrate_user_table(engine, _session)
+    migrate_oauth_provider_table(engine, _session)
 
 def clean_database(_session):
     # Remove expired remote login tokens

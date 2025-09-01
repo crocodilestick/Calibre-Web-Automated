@@ -21,10 +21,10 @@
     </div>
     <div id="collapseone" class="panel-collapse collapse">
       <div class="panel-body">
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label for="config_port">{{_('Server Port')}}</label>
           <input type="number" min="1" max="65535" class="form-control" name="config_port" id="config_port" value="{% if config.config_port != None %}{{ config.config_port }}{% endif %}" autocomplete="off" required>
-        </div>
+        </div> -->
         <label for="config_certfile">{{_('SSL certfile location (leave it empty for non-SSL Servers)')}}</label>
          <div class="form-group input-group">
           <input type="text" class="form-control" id="config_certfile" name="config_certfile" value="{% if config.config_certfile != None %}{{ config.config_certfile }}{% endif %}" autocomplete="off">
@@ -305,7 +305,101 @@
       {% endif %}
       {% if feature_support['oauth'] %}
         <div data-related="login-settings-2">
-          {% for prov in provider %}
+          {% set generic = provider | selectattr('provider_name', 'equalto', 'generic') | first %}
+          <p>{{ _('Generic OAuth Provider') }}</p>
+          
+          <!-- Metadata URL for auto-discovery -->
+          <div class="form-group">
+            <label for="config_generic_oauth_metadata_url">{{_('OAuth Metadata URL (for auto-discovery)')}}</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="config_generic_oauth_metadata_url" name="config_generic_oauth_metadata_url" value="{% if generic.get('metadata_url') != None %}{{ generic['metadata_url'] }}{% endif %}" autocomplete="off" placeholder="https://your-provider.com/.well-known/openid-configuration">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" id="test_metadata_url">{{_('Test Metadata')}}</button>
+              </span>
+            </div>
+            <small class="form-text text-muted">{{_('Leave empty to use manual configuration below')}}</small>
+          </div>
+
+          <!-- Manual Override Toggle -->
+          <div class="form-group">
+            <input type="checkbox" id="config_oauth_manual_urls" name="config_oauth_manual_urls" value="1" data-control="oauth_manual_urls_settings">
+            <label for="config_oauth_manual_urls">{{_('Use Manual Endpoint URLs (override auto-discovery)')}}</label>
+            <small class="form-text text-muted">{{_('Check this to manually configure individual OAuth endpoints instead of using auto-discovery')}}</small>
+          </div>
+
+          <!-- Manual Endpoint Configuration (hidden by default) -->
+          <div data-related="oauth_manual_urls_settings" style="margin-left: 20px; border-left: 3px solid #ddd; padding-left: 15px;">
+            <h5>{{_('Manual Endpoint Configuration')}}</h5>
+            
+            <div class="form-group">
+              <label for="config_generic_oauth_server_url">{{_('OAuth Base URL')}}</label>
+              <input type="text" class="form-control" id="config_generic_oauth_server_url" name="config_generic_oauth_server_url" value="{% if generic['oauth_base_url'] != None %}{{ generic['oauth_base_url'] }}{% endif %}" autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+              <label for="config_generic_oauth_auth_url">{{_('Authorization Endpoint')}}</label>
+              <input type="text" class="form-control" id="config_generic_oauth_auth_url" name="config_generic_oauth_auth_url" value="{% if generic.get('oauth_authorize_url') != None %}{{ generic['oauth_authorize_url'] }}{% endif %}" autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+              <label for="config_generic_oauth_token_url">{{_('Token Endpoint')}}</label>
+              <input type="text" class="form-control" id="config_generic_oauth_token_url" name="config_generic_oauth_token_url" value="{% if generic.get('oauth_token_url') != None %}{{ generic['oauth_token_url'] }}{% endif %}" autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+              <label for="config_generic_oauth_userinfo_url">{{_('UserInfo Endpoint')}}</label>
+              <input type="text" class="form-control" id="config_generic_oauth_userinfo_url" name="config_generic_oauth_userinfo_url" value="{% if generic.get('oauth_userinfo_url') != None %}{{ generic['oauth_userinfo_url'] }}{% endif %}" autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+              <div class="input-group">
+                <input type="text" class="form-control" id="config_generic_oauth_server_url_test" readonly placeholder="Enter base URL above to test">
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" id="test_oidc_connection">{{_('Test Connection')}}</button>
+                </span>
+              </div>
+              <span id="oidc_test_result"></span>
+            </div>
+          </div>
+          
+          <!-- Advanced Configuration -->
+          <div class="form-group">
+            <label for="config_generic_oauth_scope">{{_('OAuth Scopes')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_scope" name="config_generic_oauth_scope" value="{% if generic.get('scope') != None %}{{ generic['scope'] }}{% endif %}" autocomplete="off" placeholder="openid profile email">
+            <small class="form-text text-muted">{{_('Space-separated list of OAuth scopes')}}</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="config_generic_oauth_client_id">{{_('OAuth Client Id')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_client_id" name="config_generic_oauth_client_id" value="{% if generic['oauth_client_id'] != None %}{{ generic['oauth_client_id'] }}{% endif %}" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="config_generic_oauth_client_secret">{{_('OAuth Client Secret')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_client_secret" name="config_generic_oauth_client_secret" value="{% if generic['oauth_client_secret'] != None %}{{ generic['oauth_client_secret'] }}{% endif %}" autocomplete="off">
+          </div>
+          
+          <!-- Field Mapping Configuration -->
+          <h5>{{_('Field Mapping Configuration')}}</h5>
+          <div class="form-group">
+            <label for="config_generic_oauth_username_mapper">{{_('Username Field')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_username_mapper" name="config_generic_oauth_username_mapper" value="{% if generic.get('username_mapper') != None %}{{ generic['username_mapper'] }}{% endif %}" autocomplete="off" placeholder="preferred_username">
+            <small class="form-text text-muted">{{_('JWT field to extract username from')}}</small>
+          </div>
+          <div class="form-group">
+            <label for="config_generic_oauth_email_mapper">{{_('Email Field')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_email_mapper" name="config_generic_oauth_email_mapper" value="{% if generic.get('email_mapper') != None %}{{ generic['email_mapper'] }}{% endif %}" autocomplete="off" placeholder="email">
+            <small class="form-text text-muted">{{_('JWT field to extract email from')}}</small>
+          </div>
+          <div class="form-group">
+            <label for="config_generic_oauth_admin_group">{{_('OAuth group for Admin')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_admin_group" name="config_generic_oauth_admin_group" value="{% if generic['oauth_admin_group'] != None %}{{ generic['oauth_admin_group'] }}{% endif %}" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="config_generic_oauth_login_button">{{_('Login Button Text')}}</label>
+            <input type="text" class="form-control" id="config_generic_oauth_login_button" name="config_generic_oauth_login_button" value="{% if generic.get('login_button') != None %}{{ generic['login_button'] }}{% endif %}" autocomplete="off" placeholder="OpenID Connect">
+          </div>
+          <hr/>
+          {% for prov in provider if prov['provider_name'] != "generic" %}
           <div class="form-group">
             <a href="{{prov['obtain_link']}}" target="_blank">{{_('Obtain %(provider)s OAuth Credential', provider=prov['provider_name'])}}</a>
           </div>
@@ -446,3 +540,99 @@
 {% block modal %}
 {{ filechooser_modal() }}
 {% endblock %}
+<script>
+$(document).ready(function() {
+  $('#test_oidc_connection').on('click', function() {
+    var serverUrl = $('#config_generic_oauth_server_url_test').val() || $('#config_generic_oauth_server_url').val();
+    var resultSpan = $('#oidc_test_result');
+    
+    if (!serverUrl) {
+      resultSpan.text('Please enter a server URL to test.').addClass('text-danger');
+      return;
+    }
+    
+    resultSpan.text('Testing...').removeClass('text-success text-danger');
+
+    $.ajax({
+      url: '{{ url_for("admin.test_oidc") }}',
+      type: 'POST',
+      data: JSON.stringify({url: serverUrl}),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response) {
+        if (response.success) {
+          resultSpan.text(response.message).addClass('text-success');
+        } else {
+          resultSpan.text(response.message).addClass('text-danger');
+        }
+      },
+      error: function() {
+        resultSpan.text('An unknown error occurred.').addClass('text-danger');
+      }
+    });
+  });
+
+  // Handle manual URLs checkbox toggle
+  $('input[data-control]').on('change', function() {
+    var controlId = $(this).data('control');
+    var isChecked = $(this).is(':checked');
+    var relatedElements = $('[data-related="' + controlId + '"]');
+    
+    if (isChecked) {
+      relatedElements.show();
+    } else {
+      relatedElements.hide();
+    }
+  });
+
+  // Initialize checkbox state on page load
+  $('input[data-control]').each(function() {
+    $(this).trigger('change');
+  });
+
+  // Update test URL field when base URL changes
+  $('#config_generic_oauth_server_url').on('input', function() {
+    var baseUrl = $(this).val();
+    var testField = $('#config_generic_oauth_server_url_test');
+    if (baseUrl) {
+      testField.val(baseUrl).attr('placeholder', 'Ready to test: ' + baseUrl);
+    } else {
+      testField.val('').attr('placeholder', 'Enter base URL above to test');
+    }
+  });
+
+  $('#test_metadata_url').on('click', function() {
+    var metadataUrl = $('#config_generic_oauth_metadata_url').val();
+    var button = $(this);
+    var originalText = button.text();
+    
+    if (!metadataUrl) {
+      alert('Please enter a metadata URL to test.');
+      return;
+    }
+    
+    button.text('Testing...').prop('disabled', true);
+
+    $.ajax({
+      url: '{{ url_for("admin.test_metadata") }}',
+      type: 'POST',
+      data: JSON.stringify({url: metadataUrl}),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response) {
+        if (response.success) {
+          alert('✅ ' + response.message);
+        } else {
+          alert('❌ ' + response.message);
+        }
+      },
+      error: function() {
+        alert('❌ An unknown error occurred while testing metadata URL.');
+      },
+      complete: function() {
+        button.text(originalText).prop('disabled', false);
+      }
+    });
+  });
+});
+</script>

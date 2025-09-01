@@ -26,7 +26,7 @@ SHELL ["/bin/bash", "-c"]
 ARG BUILD_DATE
 ARG VERSION
 ARG CALIBREWEB_RELEASE=0.6.24
-ARG CALIBRE_RELEASE=8.8.0
+ARG CALIBRE_RELEASE=8.9.0
 ARG KEPUBIFY_RELEASE=v4.0.4
 LABEL build_version="Version:- ${VERSION}"
 LABEL build_date="${BUILD_DATE}"
@@ -62,6 +62,7 @@ RUN \
     nano \
     sqlite3 \
     zip \
+    lsof \
     python3-venv && \
   # STEP 1.2 - Set up a python virtual environment and install pip and wheel packages
   cd /app/calibre-web-automated && \
@@ -190,6 +191,7 @@ ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
 
 # ports and volumes
 WORKDIR /config
+# The default port CWA listens on. Can be overridden with the CWA_PORT_OVERRIDE environment variable.
 EXPOSE 8083
 VOLUME /config
 VOLUME /cwa-book-ingest

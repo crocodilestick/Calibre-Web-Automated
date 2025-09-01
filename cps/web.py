@@ -486,33 +486,47 @@ def render_discover_books(book_id):
 def render_hot_books(page, order):
     if current_user.check_visibility(constants.SIDEBAR_HOT):
         if order[1] not in ['hotasc', 'hotdesc']:
-            # Unary expression comparison only working (for this expression) in sqlalchemy 1.4+
-            # if not (order[0][0].compare(func.count(ub.Downloads.book_id).desc()) or
-            #        order[0][0].compare(func.count(ub.Downloads.book_id).asc())):
             order = [func.count(ub.Downloads.book_id).desc()], 'hotdesc'
+        
+        random = false()
         if current_user.show_detail_random():
             random_query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
             random = (random_query.filter(calibre_db.common_filters())
                      .order_by(func.random())
                      .limit(config.config_random_books).all())
-        else:
-            random = false()
 
-        off = int(int(config.config_books_per_page) * (page - 1))
-        all_books = ub.session.query(ub.Downloads, func.count(ub.Downloads.book_id)) \
-            .order_by(*order[0]).group_by(ub.Downloads.book_id)
-        hot_books = all_books.offset(off).limit(config.config_books_per_page)
-        entries = list()
-        for book in hot_books:
+        off = int(config.config_books_per_page) * (page - 1)
+        
+        # Get total count for pagination
+        total_hot_books = ub.session.query(func.count(ub.Downloads.book_id.distinct())).scalar()
+
+        # Get the book_ids for the current page
+        hot_book_ids_query = (ub.session.query(ub.Downloads.book_id)
+                              .group_by(ub.Downloads.book_id)
+                              .order_by(*order[0])
+                              .offset(off)
+                              .limit(config.config_books_per_page))
+        
+        hot_book_ids = [item[0] for item in hot_book_ids_query]
+
+        entries = []
+        if hot_book_ids:
             query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
-            download_book = query.filter(calibre_db.common_filters()).filter(
-                book.Downloads.book_id == db.Books.id).first()
-            if download_book:
-                entries.append(download_book)
-            else:
-                ub.delete_download(book.Downloads.book_id)
-        num_books = entries.__len__()
-        pagination = Pagination(page, config.config_books_per_page, num_books)
+            # Fetch all book details in one query
+            book_details = query.filter(calibre_db.common_filters()).filter(db.Books.id.in_(hot_book_ids)).all()
+            
+            # Create a dictionary for quick lookups
+            book_map = {book.Books.id: book for book in book_details}
+
+            # Reorder the entries to match the "hotness" order
+            for book_id in hot_book_ids:
+                if book_id in book_map:
+                    entries.append(book_map[book_id])
+                else:
+                    # This book might have been deleted from calibre but still in downloads table
+                    ub.delete_download(book_id)
+
+        pagination = Pagination(page, config.config_books_per_page, total_hot_books)
         return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
                                      title=_("Hot Books (Most Downloaded)"), page="hot", order=order[1])
     else:
@@ -917,6 +931,8 @@ def list_books():
             else [db.Authors.name.desc(), db.Series.name.desc(), db.Books.series_index.desc()]
         join = db.books_authors_link, db.Books.id == db.books_authors_link.c.book, db.Authors, db.books_series_link, \
             db.Books.id == db.books_series_link.c.book, db.Series
+    elif sort_param == "author_sort":
+        order = [db.Books.author_sort.asc()] if order == "asc" else [db.Books.author_sort.desc()]
     elif sort_param == "languages":
         order = [db.Languages.lang_code.asc()] if order == "asc" else [db.Languages.lang_code.desc()]
         join = db.books_languages_link, db.Books.id == db.books_languages_link.c.book, db.Languages
@@ -1001,12 +1017,7 @@ def author_list():
             .join(db.books_authors_link).join(db.Books).filter(calibre_db.common_filters()) \
             .group_by(text('books_authors_link.author')).order_by(order).all()
         char_list = query_char_list(db.Authors.sort, db.books_authors_link)
-        # If not creating a copy, readonly databases can not display authornames with "|" in it as changing the name
-        # starts a change session
-        author_copy = copy.deepcopy(entries)
-        for entry in author_copy:
-            entry.Authors.name = entry.Authors.name.replace('|', ',')
-        return render_title_template('list.html', entries=author_copy, folder='web.books_list', charlist=char_list,
+        return render_title_template('list.html', entries=entries, folder='web.books_list', charlist=char_list,
                                      title="Authors", page="authorlist", data='author', order=order_no)
     else:
         abort(404)
@@ -1036,25 +1047,38 @@ def download_list():
 @web.route("/publisher")
 @login_required_if_no_ano
 def publisher_list():
-    if current_user.get_view_property('publisher', 'dir') == 'desc':
-        order = db.Publishers.name.desc()
-        order_no = 0
-    else:
-        order = db.Publishers.name.asc()
-        order_no = 1
     if current_user.check_visibility(constants.SIDEBAR_PUBLISHER):
-        entries = calibre_db.session.query(db.Publishers, func.count('books_publishers_link.book').label('count')) \
-            .join(db.books_publishers_link).join(db.Books).filter(calibre_db.common_filters()) \
-            .group_by(text('books_publishers_link.publisher')).order_by(order).all()
-        no_publisher_count = (calibre_db.session.query(db.Books)
-                           .outerjoin(db.books_publishers_link).outerjoin(db.Publishers)
-                           .filter(db.Publishers.name == None)
-                           .filter(calibre_db.common_filters())
-                           .count())
+        order_dir = current_user.get_view_property('publisher', 'dir')
+        order_no = 1 if order_dir != 'desc' else 0
+        order = db.Publishers.name.desc() if order_dir == 'desc' else db.Publishers.name.asc()
+
+        entries_query = (calibre_db.session.query(db.Publishers, func.count(db.books_publishers_link.c.book).label('count'))
+                         .join(db.books_publishers_link, db.Publishers.id == db.books_publishers_link.c.publisher)
+                         .join(db.Books, db.books_publishers_link.c.book == db.Books.id)
+                         .filter(calibre_db.common_filters())
+                         .group_by(db.Publishers.id)
+                         .order_by(order))
+        
+        entries = entries_query.all()
+
+        no_publisher_count = (calibre_db.session.query(func.count(db.Books.id))
+                              .outerjoin(db.books_publishers_link)
+                              .filter(db.books_publishers_link.c.book == None)
+                              .filter(calibre_db.common_filters())
+                              .scalar())
+
         if no_publisher_count:
-            entries.append([db.Category(_("None"), "-1"), no_publisher_count])
-        entries = sorted(entries, key=lambda x: x[0].name.lower(), reverse=not order_no)
-        char_list = generate_char_list(entries)
+            # Manually create a "None" category entry
+            none_publisher_entry = (db.Category(_("None"), "-1"), no_publisher_count)
+            # Decide where to insert it based on sort order
+            if order_no == 1: # ascending
+                entries.insert(0, none_publisher_entry)
+            else: # descending
+                entries.append(none_publisher_entry)
+
+        char_list = [entry[0].name[0].upper() for entry in entries if entry[0].name]
+        char_list = sorted(list(set(char_list)))
+
         return render_title_template('list.html', entries=entries, folder='web.books_list', charlist=char_list,
                                      title=_("Publishers"), page="publisherlist", data="publisher", order=order_no)
     else:
@@ -1110,27 +1134,37 @@ def series_list():
 @login_required_if_no_ano
 def ratings_list():
     if current_user.check_visibility(constants.SIDEBAR_RATING):
-        if current_user.get_view_property('ratings', 'dir') == 'desc':
-            order = db.Ratings.rating.desc()
-            order_no = 0
-        else:
-            order = db.Ratings.rating.asc()
-            order_no = 1
-        entries = calibre_db.session.query(db.Ratings, func.count('books_ratings_link.book').label('count'),
-                                           (db.Ratings.rating / 2).label('name')) \
-            .join(db.books_ratings_link).join(db.Books).filter(calibre_db.common_filters()) \
-            .filter(db.Ratings.rating > 0) \
-            .group_by(text('books_ratings_link.rating')).order_by(order).all()
-        no_rating_count = (calibre_db.session.query(db.Books)
-                           .outerjoin(db.books_ratings_link).outerjoin(db.Ratings)
-                           .filter(or_(db.Ratings.rating == None, db.Ratings.rating == 0))
+        order_dir = current_user.get_view_property('ratings', 'dir')
+        order_no = 1 if order_dir != 'desc' else 0
+        order = db.Ratings.rating.desc() if order_dir == 'desc' else db.Ratings.rating.asc()
+
+        entries_query = (calibre_db.session.query(db.Ratings, func.count(db.books_ratings_link.c.book).label('count'),
+                                           (db.Ratings.rating / 2).label('name'))
+                   .join(db.books_ratings_link, db.Ratings.id == db.books_ratings_link.c.rating)
+                   .join(db.Books, db.books_ratings_link.c.book == db.Books.id)
+                   .filter(calibre_db.common_filters())
+                   .filter(db.Ratings.rating > 0)
+                   .group_by(db.Ratings.id)
+                   .order_by(order))
+        
+        entries = entries_query.all()
+
+        no_rating_count = (calibre_db.session.query(func.count(db.Books.id))
+                           .outerjoin(db.books_ratings_link, db.Books.id == db.books_ratings_link.c.book)
+                           .outerjoin(db.Ratings, db.books_ratings_link.c.rating == db.Ratings.id)
                            .filter(calibre_db.common_filters())
-                           .count())
+                           .filter(or_(db.books_ratings_link.c.rating == None, db.Ratings.rating == 0))
+                           .scalar())
+
         if no_rating_count:
-            entries.append([db.Category(_("None"), "-1", -1), no_rating_count])
-        entries = sorted(entries, key=lambda x: x[0].rating, reverse=not order_no)
-        return render_title_template('list.html', entries=entries, folder='web.books_list', charlist=list(),
-                                     title=_("Ratings list"), page="ratingslist", data="ratings", order=order_no)
+            none_rating_entry = (db.Category(_("None"), "-1"), no_rating_count, 0)
+            if order_no == 1: # ascending
+                entries.insert(0, none_rating_entry)
+            else: # descending
+                entries.append(none_rating_entry)
+        
+        return render_title_template('list.html', entries=entries, folder='web.books_list',
+                                     title=_("Ratings"), page="ratingslist", data="ratings", order=order_no)
     else:
         abort(404)
 
@@ -1516,10 +1550,10 @@ def login_post():
 @user_login_required
 def logout():
     if current_user is not None and current_user.is_authenticated:
-        ub.delete_user_session(current_user.id, flask_session.get('_id', ""))
-        logout_user()
         if feature_support['oauth'] and (config.config_login_type == 2 or config.config_login_type == 3):
             logout_oauth_user()
+        ub.delete_user_session(current_user.id, flask_session.get('_id', ""))
+        logout_user()
     log.debug("User logged out")
     if config.config_anonbrowse:
         location = get_redirect_location(request.args.get('next', None), "web.login")

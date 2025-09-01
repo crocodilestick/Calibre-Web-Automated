@@ -269,6 +269,11 @@ class OAuthProvider(Base):
     oauth_token_url = Column(String, default=None)
     oauth_userinfo_url = Column(String, default=None)
     oauth_admin_group = Column(String, default=None)
+    metadata_url = Column(String, default=None)  # For OIDC auto-discovery
+    scope = Column(String, default="openid profile email")  # Customizable OAuth scopes
+    username_mapper = Column(String, default="preferred_username")  # JWT field for username
+    email_mapper = Column(String, default="email")  # JWT field for email
+    login_button = Column(String, default="OpenID Connect")  # Custom button text
     active = Column(Boolean)
 
 
@@ -649,6 +654,20 @@ def migrate_oauth_provider_table(engine, _session):
             conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_token_url' String DEFAULT NULL"))
             conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL"))
             conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL"))
+            trans.commit()
+    
+    # Add new OAuth enhancement fields
+    try:
+        _session.query(exists().where(OAuthProvider.metadata_url)).scalar()
+        _session.commit()
+    except exc.OperationalError:  # New columns are missing
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'metadata_url' String DEFAULT NULL"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'scope' String DEFAULT 'openid profile email'"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'username_mapper' String DEFAULT 'preferred_username'"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'email_mapper' String DEFAULT 'email'"))
+            conn.execute(text("ALTER TABLE oauthProvider ADD column 'login_button' String DEFAULT 'OpenID Connect'"))
             trans.commit()
 
 

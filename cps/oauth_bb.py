@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import json
+import requests
 from functools import wraps
 
 from flask import session, request, make_response, abort
@@ -77,49 +78,89 @@ def register_user_with_oauth(user=None):
             ub.session_commit("User {} with OAuth for provider {} registered".format(user.name, oauth_key))
 
 
+def fetch_metadata_from_url(metadata_url):
+    """Fetch OIDC metadata from a custom URL"""
+    if not metadata_url:
+        return None
+    
+    try:
+        resp = requests.get(metadata_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
+        resp.raise_for_status()
+        return resp.json()
+    except requests.exceptions.RequestException as e:
+        log.error("Failed to fetch OAuth metadata from %s: %s", metadata_url, e)
+        return None
+    except ValueError:
+        log.error("Failed to parse OAuth metadata JSON from %s", metadata_url)
+        return None
+
+
 def register_user_from_generic_oauth():
     generic = oauthblueprints[2]
     blueprint = generic['blueprint']
 
-    resp = blueprint.session.get(generic['oauth_userinfo_url'], verify=constants.OAUTH_SSL_STRICT)
-    if resp.ok:
+    try:
+        resp = blueprint.session.get(generic['oauth_userinfo_url'], verify=constants.OAUTH_SSL_STRICT)
+        resp.raise_for_status()
         userinfo = resp.json()
-        provider_username = str(userinfo['preferred_username'])
-        provider_user_id = str(userinfo['sub'])
+    except requests.exceptions.RequestException as e:
+        log.error("Failed to fetch user info from generic OIDC provider: %s", e)
+        flash(_("Login failed: Could not connect to the user info endpoint."), category="error")
+        return None
+    except ValueError:
+        log.error("Failed to parse user info from generic OIDC provider.")
+        flash(_("Login failed: The OAuth provider returned an invalid user profile."), category="error")
+        return None
 
-        user = (
-            ub.session.query(ub.User)
-            .filter(ub.User.name == provider_username)
-        ).first()
 
-        if not user:
-            user = ub.User()
-            user.name = provider_username
-            user.email = userinfo.get('email', f"{provider_username}@localhost")
-            if 'groups' in userinfo and generic['oauth_admin_group'] in userinfo['groups']:
-                user.role = constants.ROLE_ADMIN
-            else:
-                user.role = constants.ROLE_USER
-            ub.session.add(user)
-            ub.session_commit()
+    # Use configurable field mappers
+    username_field = generic.get('username_mapper', 'preferred_username')
+    email_field = generic.get('email_mapper', 'email')
+    
+    provider_username = userinfo.get(username_field)
+    provider_user_id = userinfo.get('sub')
 
-        oauth = ub.session.query(ub.OAuth).filter_by(
-            provider=str(generic['id']),
-            provider_user_id=provider_user_id,
-        ).first()
+    if not provider_username or not provider_user_id:
+        log.error(f"User info from OIDC provider is missing '{username_field}' or 'sub' field.")
+        flash(_("Login failed: User profile from provider is incomplete."), category="error")
+        return None
 
-        if not oauth:
-            oauth = ub.OAuth(
-                provider=str(generic['id']),
-                provider_user_id=provider_user_id,
-                token={},
-            )
-            ub.session.add(oauth)
+    provider_username = str(provider_username)
+    provider_user_id = str(provider_user_id)
 
-        oauth.user = user
+    user = (
+        ub.session.query(ub.User)
+        .filter(ub.User.name == provider_username)
+    ).first()
+
+    if not user:
+        user = ub.User()
+        user.name = provider_username
+        user.email = userinfo.get(email_field, f"{provider_username}@localhost")
+        if 'groups' in userinfo and generic['oauth_admin_group'] in userinfo['groups']:
+            user.role = constants.ROLE_ADMIN
+        else:
+            user.role = constants.ROLE_USER
+        ub.session.add(user)
         ub.session_commit()
 
-        return provider_user_id
+    oauth = ub.session.query(ub.OAuth).filter_by(
+        provider=str(generic['id']),
+        provider_user_id=provider_user_id,
+    ).first()
+
+    if not oauth:
+        oauth = ub.OAuth(
+            provider=str(generic['id']),
+            provider_user_id=provider_user_id,
+            token={},
+        )
+        ub.session.add(oauth)
+
+    oauth.user = user
+    ub.session_commit()
+
+    return provider_user_id
 
 
 def logout_oauth_user():
@@ -274,16 +315,37 @@ def generate_oauth_blueprints():
         generic.active = False
         ub.session.add(generic)
         ub.session_commit()
+    
+    # Update endpoints from metadata URL if available
+    if generic.metadata_url:
+        metadata = fetch_metadata_from_url(generic.metadata_url)
+        if metadata:
+            # Update from metadata (takes precedence over manual settings)
+            if metadata.get('issuer'):
+                generic.oauth_base_url = metadata.get('issuer')
+            if metadata.get('authorization_endpoint'):
+                generic.oauth_authorize_url = metadata.get('authorization_endpoint')
+            if metadata.get('token_endpoint'):
+                generic.oauth_token_url = metadata.get('token_endpoint')
+            if metadata.get('userinfo_endpoint'):
+                generic.oauth_userinfo_url = metadata.get('userinfo_endpoint')
+            ub.session_commit("Updated generic OAuth provider from metadata URL")
+            log.info("Updated OAuth endpoints from metadata URL: %s", generic.metadata_url)
+    
     ele3 = dict(provider_name='generic',
                 id=generic.id,
                 active=generic.active,
-                scope='openid profile email groups',
+                scope=generic.scope or 'openid profile email',
                 oauth_client_id=generic.oauth_client_id,
                 oauth_client_secret=generic.oauth_client_secret,
                 oauth_base_url=generic.oauth_base_url,
                 oauth_authorize_url=generic.oauth_authorize_url,
                 oauth_token_url=generic.oauth_token_url,
                 oauth_userinfo_url=generic.oauth_userinfo_url,
+                metadata_url=generic.metadata_url,
+                username_mapper=generic.username_mapper,
+                email_mapper=generic.email_mapper,
+                login_button=generic.login_button,
                 oauth_admin_group=generic.oauth_admin_group or 'admin')
     oauthblueprints.append(ele3)
 

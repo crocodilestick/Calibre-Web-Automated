@@ -1192,7 +1192,28 @@ def _configuration_oauth_helper(to_save):
             if to_save["config_generic_oauth_client_secret"] != element["oauth_client_secret"]:
                 reboot_required = True
                 update["oauth_client_secret"] = to_save["config_generic_oauth_client_secret"]
-            if to_save["config_generic_oauth_server_url"] != element["oauth_base_url"]:
+            
+            # Handle metadata URL (takes precedence over manual configuration)
+            metadata_url = to_save.get("config_generic_oauth_metadata_url", "")
+            if metadata_url != element.get("metadata_url", ""):
+                reboot_required = True
+                update["metadata_url"] = metadata_url
+                
+                # If metadata URL is provided, try to fetch endpoints
+                if metadata_url:
+                    try:
+                        resp = requests.get(metadata_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
+                        if resp.status_code == 200:
+                            data = resp.json()
+                            update["oauth_base_url"] = data.get("issuer", "")
+                            update["oauth_authorize_url"] = data.get("authorization_endpoint", "")
+                            update["oauth_token_url"] = data.get("token_endpoint", "")
+                            update["oauth_userinfo_url"] = data.get("userinfo_endpoint", "")
+                    except Exception as ex:
+                        return False, _configuration_result(_('Unable to fetch OAuth metadata from URL.'))
+            
+            # Handle manual server URL (fallback or override)
+            elif to_save["config_generic_oauth_server_url"] != element["oauth_base_url"]:
                 reboot_required = True
                 update["oauth_base_url"] = to_save["config_generic_oauth_server_url"]
                 try:
@@ -1208,6 +1229,41 @@ def _configuration_oauth_helper(to_save):
                         update["oauth_userinfo_url"] = data.get("userinfo_endpoint", "")
                 except Exception as ex:
                     return False, _configuration_result(_('Unable to fetch OpenID configuration.'))
+            
+            # Handle manual endpoint URLs if metadata URL is not used
+            if not metadata_url:
+                # Map form field names to database field names
+                endpoint_mappings = {
+                    "config_generic_oauth_auth_url": "oauth_authorize_url",
+                    "config_generic_oauth_token_url": "oauth_token_url", 
+                    "config_generic_oauth_userinfo_url": "oauth_userinfo_url"
+                }
+                
+                for form_field, db_field in endpoint_mappings.items():
+                    if form_field in to_save and to_save[form_field] != element.get(db_field, ""):
+                        reboot_required = True
+                        update[db_field] = to_save[form_field]
+            
+            # Handle scope
+            if to_save.get("config_generic_oauth_scope", "") != element.get("scope", ""):
+                reboot_required = True
+                update["scope"] = to_save.get("config_generic_oauth_scope", "")
+            
+            # Handle username mapper
+            if to_save.get("config_generic_oauth_username_mapper", "") != element.get("username_mapper", ""):
+                reboot_required = True
+                update["username_mapper"] = to_save.get("config_generic_oauth_username_mapper", "")
+            
+            # Handle email mapper
+            if to_save.get("config_generic_oauth_email_mapper", "") != element.get("email_mapper", ""):
+                reboot_required = True
+                update["email_mapper"] = to_save.get("config_generic_oauth_email_mapper", "")
+            
+            # Handle login button text
+            if to_save.get("config_generic_oauth_login_button", "") != element.get("login_button", ""):
+                reboot_required = True
+                update["login_button"] = to_save.get("config_generic_oauth_login_button", "")
+            
             if to_save["config_generic_oauth_admin_group"] != element["oauth_admin_group"]:
                 reboot_required = True
                 update["oauth_admin_group"] = to_save["config_generic_oauth_admin_group"]
@@ -2202,3 +2258,78 @@ def extract_dynamic_field_from_filter(user, filtr):
 def extract_user_identifier(user, filtr):
     dynamic_field = extract_dynamic_field_from_filter(user, filtr)
     return extract_user_data_from_field(user, dynamic_field)
+
+
+@admi.route("/admin/test_oidc", methods=["POST"])
+@user_login_required
+@admin_required
+def test_oidc():
+    url = request.get_json().get('url')
+    if not url:
+        return json.dumps({'success': False, 'message': 'URL is required.'}), 400
+
+    if not url.startswith('http'):
+        url = 'https://' + url
+
+    discovery_url = url.rstrip('/') + '/.well-known/openid-configuration'
+
+    try:
+        response = requests.get(discovery_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
+        response.raise_for_status()
+        # Try to parse the JSON to make sure it's valid
+        response.json()
+        return json.dumps({'success': True, 'message': _('Connection successful!')})
+    except requests.exceptions.HTTPError as e:
+        return json.dumps({'success': False, 'message': _('Connection failed: Server returned status code %(code)s', code=e.response.status_code)}), 200
+    except requests.exceptions.ConnectionError:
+        return json.dumps({'success': False, 'message': _('Connection failed: Could not connect to server.')}), 200
+    except requests.exceptions.Timeout:
+        return json.dumps({'success': False, 'message': _('Connection failed: Request timed out.')}), 200
+    except ValueError:
+        return json.dumps({'success': False, 'message': _('Connection failed: Invalid JSON in response.')}), 200
+    except Exception as e:
+        log.error("OIDC test connection failed: %s", e)
+        return json.dumps({'success': False, 'message': _('An unknown error occurred.')}), 200
+
+
+@admi.route("/admin/test_metadata", methods=["POST"])
+@user_login_required
+@admin_required
+def test_metadata():
+    metadata_url = request.get_json().get('url')
+    if not metadata_url:
+        return json.dumps({'success': False, 'message': 'Metadata URL is required.'}), 400
+
+    if not metadata_url.startswith('http'):
+        metadata_url = 'https://' + metadata_url
+
+    try:
+        response = requests.get(metadata_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
+        response.raise_for_status()
+        data = response.json()
+        
+        # Validate that it contains required OIDC fields
+        required_fields = ['issuer', 'authorization_endpoint', 'token_endpoint']
+        missing_fields = [field for field in required_fields if not data.get(field)]
+        
+        if missing_fields:
+            return json.dumps({
+                'success': False, 
+                'message': _('Metadata is missing required fields: %(fields)s', fields=', '.join(missing_fields))
+            }), 200
+            
+        return json.dumps({
+            'success': True, 
+            'message': _('Metadata URL is valid! Found %(count)s endpoints.', count=len([k for k in data.keys() if 'endpoint' in k]))
+        })
+    except requests.exceptions.HTTPError as e:
+        return json.dumps({'success': False, 'message': _('Connection failed: Server returned status code %(code)s', code=e.response.status_code)}), 200
+    except requests.exceptions.ConnectionError:
+        return json.dumps({'success': False, 'message': _('Connection failed: Could not connect to server.')}), 200
+    except requests.exceptions.Timeout:
+        return json.dumps({'success': False, 'message': _('Connection failed: Request timed out.')}), 200
+    except ValueError:
+        return json.dumps({'success': False, 'message': _('Connection failed: Invalid JSON in response.')}), 200
+    except Exception as e:
+        log.error("Metadata test failed: %s", e)
+        return json.dumps({'success': False, 'message': _('An unknown error occurred.')}), 200

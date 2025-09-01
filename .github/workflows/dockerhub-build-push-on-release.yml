@@ -9,7 +9,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Use a matrix to run a job for each platform on a native GitHub-hosted runner
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+    
+    # Select the runner based on the platform. Both are standard and free for public repos.
+    runs-on: ${{ matrix.platform == 'linux/arm64' ? 'ubuntu-latest-arm64' : 'ubuntu-latest' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -47,4 +54,4 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:latest
             ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:${{ github.event.release.tag_name }}
             ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:latest
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}

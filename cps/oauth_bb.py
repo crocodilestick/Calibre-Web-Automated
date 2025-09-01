@@ -11,7 +11,7 @@ from functools import wraps
 from flask import session, request, make_response, abort
 from flask import Blueprint, flash, redirect, url_for
 from flask_babel import gettext as _
-from flask_dance.consumer import oauth_authorized, oauth_error
+from flask_dance.consumer import oauth_authorized, oauth_error, OAuth2ConsumerBlueprint
 from flask_dance.contrib.github import make_github_blueprint, github
 from flask_dance.contrib.google import make_google_blueprint, google
 from oauthlib.oauth2 import TokenExpiredError, InvalidGrantError
@@ -77,10 +77,57 @@ def register_user_with_oauth(user=None):
             ub.session_commit("User {} with OAuth for provider {} registered".format(user.name, oauth_key))
 
 
+def register_user_from_generic_oauth():
+    generic = oauthblueprints[2]
+    blueprint = generic['blueprint']
+
+    resp = blueprint.session.get(generic['oauth_userinfo_url'], verify=constants.OAUTH_SSL_STRICT)
+    if resp.ok:
+        userinfo = resp.json()
+        provider_username = str(userinfo['preferred_username'])
+        provider_user_id = str(userinfo['sub'])
+
+        user = (
+            ub.session.query(ub.User)
+            .filter(ub.User.name == provider_username)
+        ).first()
+
+        if not user:
+            user = ub.User()
+            user.name = provider_username
+            user.email = userinfo.get('email', f"{provider_username}@localhost")
+            if 'groups' in userinfo and generic['oauth_admin_group'] in userinfo['groups']:
+                user.role = constants.ROLE_ADMIN
+            else:
+                user.role = constants.ROLE_USER
+            ub.session.add(user)
+            ub.session_commit()
+
+        oauth = ub.session.query(ub.OAuth).filter_by(
+            provider=str(generic['id']),
+            provider_user_id=provider_user_id,
+        ).first()
+
+        if not oauth:
+            oauth = ub.OAuth(
+                provider=str(generic['id']),
+                provider_user_id=provider_user_id,
+                token={},
+            )
+            ub.session.add(oauth)
+
+        oauth.user = user
+        ub.session_commit()
+
+        return provider_user_id
+
+
 def logout_oauth_user():
     for oauth_key in oauth_check.keys():
         if str(oauth_key) + '_oauth_user_id' in session:
             session.pop(str(oauth_key) + '_oauth_user_id')
+    if 'generic_oauth_token' in session:
+        session.pop('generic_oauth_token')
 
 
 def oauth_update_token(provider_id, token, provider_user_id):
@@ -201,7 +248,7 @@ def generate_oauth_blueprints():
             ub.session.add(oauthProvider)
             ub.session_commit("{} Blueprint Created".format(provider))
 
-    oauth_ids = ub.session.query(ub.OAuthProvider).all()
+    oauth_ids = ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.provider_name.in_(['github', 'google'])).all()
     ele1 = dict(provider_name='github',
                 id=oauth_ids[0].id,
                 active=oauth_ids[0].active,
@@ -219,17 +266,55 @@ def generate_oauth_blueprints():
     oauthblueprints.append(ele1)
     oauthblueprints.append(ele2)
 
+    generic = ub.session.query(ub.OAuthProvider).filter_by(provider_name='generic').first()
+    # Create generic provider if missing
+    if not generic:
+        generic = ub.OAuthProvider()
+        generic.provider_name = 'generic'
+        generic.active = False
+        ub.session.add(generic)
+        ub.session_commit()
+    ele3 = dict(provider_name='generic',
+                id=generic.id,
+                active=generic.active,
+                scope='openid profile email groups',
+                oauth_client_id=generic.oauth_client_id,
+                oauth_client_secret=generic.oauth_client_secret,
+                oauth_base_url=generic.oauth_base_url,
+                oauth_authorize_url=generic.oauth_authorize_url,
+                oauth_token_url=generic.oauth_token_url,
+                oauth_userinfo_url=generic.oauth_userinfo_url,
+                oauth_admin_group=generic.oauth_admin_group or 'admin')
+    oauthblueprints.append(ele3)
+
     for element in oauthblueprints:
         if element['provider_name'] == 'github':
-            blueprint_func = make_github_blueprint
+            blueprint = make_github_blueprint(
+                client_id=element['oauth_client_id'],
+                client_secret=element['oauth_client_secret'],
+                redirect_to="oauth."+element['provider_name']+"_login",
+                scope=element['scope']
+            )
+        elif element['provider_name'] == 'google':
+            blueprint = make_google_blueprint(
+                client_id=element['oauth_client_id'],
+                client_secret=element['oauth_client_secret'],
+                redirect_to="oauth."+element['provider_name']+"_login",
+                scope=element['scope']
+            )
         else:
-            blueprint_func = make_google_blueprint
-        blueprint = blueprint_func(
-            client_id=element['oauth_client_id'],
-            client_secret=element['oauth_client_secret'],
-            redirect_to="oauth."+element['provider_name']+"_login",
-            scope=element['scope']
-        )
+            blueprint = OAuth2ConsumerBlueprint(
+                "generic",
+                __name__,
+                client_id=element['oauth_client_id'],
+                client_secret=element['oauth_client_secret'],
+                base_url=element['oauth_base_url'],
+                authorization_url=element['oauth_authorize_url'],
+                token_url=element['oauth_token_url'],
+                token_url_params={'verify': constants.OAUTH_SSL_STRICT},
+                redirect_to="oauth.generic_login",
+                scope=element['scope']
+            )
         element['blueprint'] = blueprint
         element['blueprint'].backend = OAuthBackend(ub.OAuth, ub.session, str(element['id']),
                                                     user=current_user, user_required=True)
@@ -277,6 +362,16 @@ if ub.oauth_support:
         google_user_id = str(google_info["id"])
         return oauth_update_token(str(oauthblueprints[1]['id']), token, google_user_id)
 
+
+    @oauth_authorized.connect_via(oauthblueprints[2]['blueprint'])
+    def generic_logged_in(blueprint, token):
+        if not token:
+            flash(_("Failed to log in with Generic OAuth."), category="error")
+            log.error("Failed to log in with Generic OAuth")
+            return False
+
+        provider_user_id = register_user_from_generic_oauth()
+        return oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
 
 
     # notify on OAuth provider error
@@ -353,3 +448,27 @@ def google_login():
 @user_login_required
 def google_login_unlink():
     return unlink_oauth(oauthblueprints[1]['id'])
+
+
+@oauth.route('/link/generic')
+@oauth_required
+def generic_login():
+    if not oauthblueprints[2]['blueprint'].session.authorized:
+        return redirect(url_for("generic.login"))
+    try:
+        provider_user_id = register_user_from_generic_oauth()
+        return bind_oauth_or_register(oauthblueprints[2]['id'], provider_user_id, 'generic.login', 'generic')
+    except (TokenExpiredError) as e:
+        flash(_("OAuth error: {}").format(e), category="error")
+        log.error(e)
+        return redirect(url_for("generic.login"))
+    except (InvalidGrantError) as e:
+        flash(_("OAuth error: {}").format(e), category="error")
+        log.error(e)
+    return redirect(url_for("web.login"))
+
+
+@oauth.route('/unlink/generic', methods=["GET"])
+@user_login_required
+def generic_login_unlink():
+    return unlink_oauth(oauthblueprints[2]['id'])

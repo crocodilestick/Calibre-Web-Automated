@@ -14,6 +14,7 @@ import mimetypes
 from flask import Flask
 from .MyLoginManager import MyLoginManager
 from flask_principal import Principal
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from . import logger
 from .cli import CliParameter
@@ -77,6 +78,10 @@ app.config.update(
     SESSION_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "session",
     REMEMBER_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "remember_token"
 )
+
+# Fix for running behind reverse proxy (e.g. nginx, apache, caddy, ...)
+# Without it, url_for will generate http:// urls even if https:// is used
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 lm = MyLoginManager()
 

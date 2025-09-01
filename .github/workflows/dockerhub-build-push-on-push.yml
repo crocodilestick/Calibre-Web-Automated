@@ -19,14 +19,16 @@ on:
 
 jobs:
   build:
-    # Use a matrix to run a job for each platform on a native GitHub-hosted runner
     strategy:
       fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-latest-arm64
 
-    # Select the runner based on the platform. Both are standard and free for public repos.
-    runs-on: ${{ matrix.platform == 'linux/arm64' ? 'ubuntu-latest-arm64' : 'ubuntu-latest' }}
+    runs-on: ${{ matrix.runner }}
     
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     env:

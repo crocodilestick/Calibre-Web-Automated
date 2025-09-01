@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-Automated\n"
 "POT-Creation-Date: 2025-08-09 17:32+0200\n"
 "PO-Revision-Date: 2020-06-09 21:11+0100\n"
 "Last-Translator: Lukas Heroudek <lukas.heroudek@gmail.com>\n"
@@ -1876,9 +1876,9 @@ msgid "Calibre ebook-convert %(tool)s not found"
 msgstr "Calibre převaděč %(tool)s nenalezen"
 
 #: cps/tasks/convert.py:196
-#, fuzzy, python-format
+#, python-format
 msgid "%(format)s format not found on disk"
-msgstr "%(format)s formát pro knihu: %(book)d nenalezen"
+msgstr "%(format)s formát nenalezen na disku"
 
 #: cps/tasks/convert.py:200
 #, fuzzy
@@ -1898,10 +1898,9 @@ msgstr ""
 "%(folder)s"
 
 #: cps/tasks/convert.py:274 cps/tasks/convert.py:325
-#, fuzzy, python-format
+#, python-format
 msgid "Calibre failed with error: %(error)s"
-msgstr ""
-"Přejmenování názvu z: '%(src)s' na '%(dest)s'  selhalo chybou: %(error)s"
+msgstr "Calibre selhal s chybou: %(error)s"
 
 #: cps/tasks/convert.py:302
 #, python-format

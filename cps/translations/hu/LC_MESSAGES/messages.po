@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-Automated\n"
 "POT-Creation-Date: 2025-08-09 17:32+0200\n"
 "PO-Revision-Date: 2019-04-06 23:36+0200\n"
 "Last-Translator: \n"
@@ -1868,9 +1868,9 @@ msgid "Calibre ebook-convert %(tool)s not found"
 msgstr ""
 
 #: cps/tasks/convert.py:196
-#, fuzzy, python-format
+#, python-format
 msgid "%(format)s format not found on disk"
-msgstr "A(z) %(format)s formátum nem található a következő könyvhöz: %(book)d"
+msgstr "A(z) %(format)s formátum nem található a lemezen"
 
 #: cps/tasks/convert.py:200
 #, fuzzy
@@ -1888,11 +1888,9 @@ msgid "Converted file not found or more than one file in folder %(folder)s"
 msgstr ""
 
 #: cps/tasks/convert.py:274 cps/tasks/convert.py:325
-#, fuzzy, python-format
+#, python-format
 msgid "Calibre failed with error: %(error)s"
-msgstr ""
-"A cím átnevezése \"%(src)s\"-ról \"%(dest)s\"-ra nem sikerült a következő "
-"hiba miatt: %(error)s"
+msgstr "A Calibre a következő hibával tért vissza: %(error)s"
 
 #: cps/tasks/convert.py:302
 #, python-format

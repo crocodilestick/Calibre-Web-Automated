@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-Automated\n"
 "POT-Creation-Date: 2025-08-09 17:32+0200\n"
 "PO-Revision-Date: 2020-04-23 22:47+0300\n"
 "Last-Translator: iz <iz7iz7iz@protonmail.ch>\n"
@@ -1865,9 +1865,9 @@ msgid "Calibre ebook-convert %(tool)s not found"
 msgstr ""
 
 #: cps/tasks/convert.py:196
-#, fuzzy, python-format
+#, python-format
 msgid "%(format)s format not found on disk"
-msgstr "%(book)d nolu kitap için %(format)s biçimi bulunamadı"
+msgstr "%(format)s biçimi diskte bulunamadı"
 
 #: cps/tasks/convert.py:200
 #, fuzzy
@@ -1885,11 +1885,9 @@ msgid "Converted file not found or more than one file in folder %(folder)s"
 msgstr ""
 
 #: cps/tasks/convert.py:274 cps/tasks/convert.py:325
-#, fuzzy, python-format
+#, python-format
 msgid "Calibre failed with error: %(error)s"
-msgstr ""
-"Kitap adını değiştirme sırasında hata oluştu ('%(src)s' → '%(dest)s'): "
-"%(error)s"
+msgstr "Calibre hatası: %(error)s"
 
 #: cps/tasks/convert.py:302
 #, python-format

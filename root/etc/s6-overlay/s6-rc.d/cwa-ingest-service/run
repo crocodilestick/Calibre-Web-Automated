@@ -19,7 +19,24 @@ mkdir -p "/config/processed_books/failed" 2>/dev/null || true
 # Function to get timeout from database
 get_timeout_from_db() {
     local timeout_minutes
-    timeout_minutes=$(sqlite3 /config/cwa.db "SELECT ingest_timeout_minutes FROM cwa_settings LIMIT 1;" 2>/dev/null || echo "15")
+    # Try sqlite3 first, fallback to Python if not available
+    if command -v sqlite3 >/dev/null 2>&1; then
+        timeout_minutes=$(sqlite3 /config/cwa.db "SELECT ingest_timeout_minutes FROM cwa_settings LIMIT 1;" 2>/dev/null || echo "15")
+    else
+        # Fallback to Python
+        timeout_minutes=$(python3 -c "
+import sqlite3
+try:
+    conn = sqlite3.connect('/config/cwa.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT ingest_timeout_minutes FROM cwa_settings LIMIT 1')
+    result = cursor.fetchone()
+    conn.close()
+    print(result[0] if result else 15)
+except:
+    print(15)
+" 2>/dev/null || echo "15")
+    fi
     echo $((timeout_minutes * 60))  # Convert to seconds
 }
 

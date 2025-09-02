@@ -77,7 +77,7 @@ class NewBookProcessor:
             self.ingest_ignored_formats = [self.ingest_ignored_formats]
 
         # Add known temporary / partial extensions
-        for tmp_ext in ("crdownload", "download", "part", "uploading"):
+        for tmp_ext in ("crdownload", "download", "part", "uploading", "temp"):
             if tmp_ext not in self.ingest_ignored_formats:
                 self.ingest_ignored_formats.append(tmp_ext)
 

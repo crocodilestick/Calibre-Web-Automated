@@ -7,11 +7,12 @@
 {% block body %}
 <div class="discover">
   <h2>{{title}}</h2>
-  <form style="width: 70vw;" role="form" method="POST" class="col-md-10 col-lg-6" action="{{ url_for('admin.db_configuration') }}" autocomplete="off">
+  <form style="width: -webkit-fill-available;" role="form" method="POST" class="col-md-10 col-lg-6" action="{{ url_for('admin.db_configuration') }}" autocomplete="off">
+    <div class="settings-container">
        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-       <label style="font-size: 36px; margin-bottom: 3rem; line-height: 1.22;" for="config_calibre_dir">{{_('Location of Calibre Database (metadata.db file)')}}</label>
+       <label style="font-size: 32px; margin-bottom: 3rem; line-height: 1.22; margin-top: 2rem;" for="config_calibre_dir">{{_('Location of Calibre Database (metadata.db file)')}}</label>
        <div style="margin-bottom: 3rem; padding-left: 0;" class="form-group required input-group">
-        <input type="text" class="form-control" id="config_calibre_dir" name="config_calibre_dir" value="{% if config.config_calibre_dir != None %}{{ config.config_calibre_dir }}{% endif %}" autocomplete="off" readonly>
+        <input style="background-color: #ffedde33;" type="text" class="form-control" id="config_calibre_dir" name="config_calibre_dir" value="{% if config.config_calibre_dir != None %}{{ config.config_calibre_dir }}{% endif %}" autocomplete="off" readonly>
         <span class="input-group-btn">
           <button type="button" data-toggle="modal" id="calibre_modal_path" data-link="config_calibre_dir" data-filefilter="metadata.db" data-target="#fileModal" id="library_path" class="btn btn-default" disabled>
             <span class="glyphicon glyphicon-folder-open"></span>
@@ -34,7 +35,7 @@
         containing the corresponding book files ect. to something like <code>/books</code> and enter <code>/books</code> in the field that pops up below
         once you've checked the <b>Separate Book Files from Library</b> option.") | safe }}
       </p>
-      <h1 style="margin-bottom: 4rem;">{{_("Split Library Functionality")}}</h1>
+      <h1 style="margin-bottom: 4rem; font-size: 32px;">{{_("Split Library Functionality")}}</h1>
         <div class="form-group required">
         <input type="checkbox" id="config_calibre_split" name="config_calibre_split" data-control="split_settings" data-t ="{{ config.config_calibre_split_dir  }}" {% if config.config_calibre_split %}checked{% endif %} >
         <label style="display: inline; padding: 1rem;" for="config_calibre_split">{{_('<b>Separate Book Files from Library</b> - <code>metadata.db</code> file should remain in <code>/calibre-library</code>, however your library files can be wherever you desire') | safe }}</label>
@@ -80,9 +81,10 @@
         {% endif %}
       {% endif %}
     {% endif %}
-    <div style="display: inline-flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 3rem;" class="col-sm-12">
+    <div style="display: inline-flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 2rem; float: none; margin-bottom: 1rem; padding-left: 0px;" class="col-sm-12">
       <div id="db_submit" name="submit" class="btn btn-default">{{_('Save')}}</div>
-      <a style="margin-bottom: 4rem;" href="{{ url_for('admin.admin') }}" id="config_back" class="btn btn-default">{{_('Cancel')}}</a>
+      <a href="{{ url_for('admin.admin') }}" id="config_back" class="btn btn-default">{{_('Cancel')}}</a>
+    </div>
     </div>
   </form>
 </div>

@@ -5,21 +5,29 @@ echo "========== STARTING CWA-INGEST SERVICE =========="
 WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
 echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
-# Create queue file for retry processing
-QUEUE_FILE="/tmp/cwa_ingest_retry_queue"
+# Create queue file for retry processing (persistent across restarts)
+QUEUE_FILE="/config/cwa_ingest_retry_queue"
 touch "$QUEUE_FILE"
 
-# Create status file for basic status tracking
-STATUS_FILE="/tmp/cwa_ingest_status"
+# Create status file for basic status tracking (persistent across restarts)
+STATUS_FILE="/config/cwa_ingest_status"
 echo "idle" > "$STATUS_FILE"
 
 # Ensure failed backup directory exists
 mkdir -p "/config/processed_books/failed" 2>/dev/null || true
 
+# Function to get timeout from database
+get_timeout_from_db() {
+    local timeout_minutes
+    timeout_minutes=$(sqlite3 /config/cwa.db "SELECT ingest_timeout_minutes FROM cwa_settings LIMIT 1;" 2>/dev/null || echo "15")
+    echo $((timeout_minutes * 60))  # Convert to seconds
+}
+
 # Tunables (override via env)
 STABLE_CHECKS=${CWA_INGEST_STABLE_CHECKS:-6}
 STABLE_CONSEC_MATCH=${CWA_INGEST_STABLE_CONSEC_MATCH:-2}
 STABLE_INTERVAL=${CWA_INGEST_STABLE_INTERVAL:-0.5}
+MAX_QUEUE_SIZE=${CWA_INGEST_MAX_QUEUE_SIZE:-50}
 SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|cwa.json)$'
 TEMP_SUFFIXES='crdownload download part uploading'
 
@@ -69,7 +77,8 @@ process_retry_queue() {
                 while IFS= read -r queued_file; do
                         if [ -f "$queued_file" ]; then
                                 echo "[cwa-ingest-service] Retrying: $queued_file"
-                                timeout 900 python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
+                                local timeout=$(get_timeout_from_db)  # Get timeout from database
+                                timeout $timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
                                 local retry_exit=$?
                                 
                                 if [ $retry_exit -eq 2 ]; then
@@ -79,7 +88,9 @@ process_retry_queue() {
                                         # Timeout, remove problematic file
                                         echo "[cwa-ingest-service] TIMEOUT on retry: $queued_file, removing"
                                         if [ -d "/config/processed_books/failed" ]; then
-                                                cp "$queued_file" "/config/processed_books/failed/" 2>/dev/null || true
+                                                local timestamp=$(date '+%Y%m%d_%H%M%S')
+                                                local failed_filename="${timestamp}_retry_timeout_$(basename "$queued_file")"
+                                                cp "$queued_file" "/config/processed_books/failed/$failed_filename" 2>/dev/null || true
                                         fi
                                         rm -f "$queued_file" 2>/dev/null || true
                                 elif [ $retry_exit -eq 0 ]; then
@@ -100,7 +111,7 @@ process_retry_queue() {
 
 handle_event() {
         local filepath="$1"
-        local timeout=900  # 15 minutes timeout
+        local timeout=$(get_timeout_from_db)  # Get timeout from database
         local filename=$(basename "$filepath")
         
         # temp suffixes
@@ -122,16 +133,29 @@ handle_event() {
         if [ $exit_code -eq 124 ]; then
                 echo "[cwa-ingest-service] TIMEOUT: $filepath took longer than ${timeout} seconds"
                 echo "timeout:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
-                # Move problematic file to failed backup if available
+                # Move problematic file to failed backup with timestamp
                 if [ -d "/config/processed_books/failed" ]; then
-                        echo "[cwa-ingest-service] Moving $filename to failed backup"
-                        cp "$filepath" "/config/processed_books/failed/" 2>/dev/null || true
+                        local timestamp=$(date '+%Y%m%d_%H%M%S')
+                        local failed_filename="${timestamp}_timeout_${filename}"
+                        echo "[cwa-ingest-service] Moving $filename to failed backup as $failed_filename"
+                        cp "$filepath" "/config/processed_books/failed/$failed_filename" 2>/dev/null || true
                 fi
                 rm -f "$filepath" 2>/dev/null || true
         elif [ $exit_code -eq 2 ]; then
                 echo "[cwa-ingest-service] Processor busy, adding to retry queue: $filepath"
                 echo "queued:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                
+                # Add to queue with size management
                 echo "$filepath" >> "$QUEUE_FILE"
+                
+                # Check queue size and trim if necessary
+                local queue_size=$(wc -l < "$QUEUE_FILE" 2>/dev/null || echo 0)
+                if [ "$queue_size" -gt "$MAX_QUEUE_SIZE" ]; then
+                        echo "[cwa-ingest-service] Queue size ($queue_size) exceeds maximum ($MAX_QUEUE_SIZE), removing oldest entries"
+                        local temp_queue=$(mktemp)
+                        tail -n "$MAX_QUEUE_SIZE" "$QUEUE_FILE" > "$temp_queue"
+                        mv "$temp_queue" "$QUEUE_FILE"
+                fi
         elif [ $exit_code -ne 0 ]; then
                 echo "[cwa-ingest-service] Error processing $filepath (exit code: $exit_code)"
                 echo "error:$filename:$exit_code:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"

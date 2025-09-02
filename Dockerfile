@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM ghcr.io/linuxserver/unrar:latest AS unrar
-FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
+FROM ghcr.io/linuxserver/baseimage-ubuntu:noble
 
 # Set the default shell for the following RUN instructions to bash instead of sh
 SHELL ["/bin/bash", "-c"]
@@ -37,37 +37,44 @@ LABEL maintainer="CrocodileStick"
 COPY --chown=abc:abc . /app/calibre-web-automated/
 # STEP 1 - Install Required Packages
 RUN \
-  # STEP 1.1 - Install required apt packages
-  echo "**** install build packages ****" && \
+  # STEP 1.1 - Add deadsnakes PPA for Python 3.13 and install required apt packages
+  echo "**** add deadsnakes PPA for Python 3.13 ****" && \
   apt-get update && \
+  apt-get install -y --no-install-recommends software-properties-common && \
+  add-apt-repository ppa:deadsnakes/ppa && \
+  apt-get update && \
+  echo "**** install build packages ****" && \
   apt-get install -y --no-install-recommends \
     build-essential \
     libldap2-dev \
     libsasl2-dev \
     gettext \
-    python3-dev && \
+    python3.13-dev \
+    python3.13-venv && \
   echo "**** install runtime packages ****" && \
   apt-get install -y --no-install-recommends \
     imagemagick \
     ghostscript \
-    libldap-2.5-0 \
+    libldap2 \
     libmagic1 \
     libsasl2-2 \
     libxi6 \
     libxslt1.1 \
     xdg-utils \
     inotify-tools \
-    python3 \
-    python3-pip \
+    python3.13 \
     nano \
     sqlite3 \
     zip \
-    lsof \
-    python3-venv && \
+    lsof && \
+  # Create python3 symlink to point to python3.13
+  ln -sf /usr/bin/python3.13 /usr/bin/python3 && \
+  # Install pip for Python 3.13
+  curl -sS https://bootstrap.pypa.io/get-pip.py | python3.13 && \
   # STEP 1.2 - Set up a python virtual environment and install pip and wheel packages
   cd /app/calibre-web-automated && \
-  python3 -m venv /lsiopy && \
-  pip install -U --no-cache-dir \
+  python3.13 -m venv /lsiopy && \
+  /lsiopy/bin/pip install -U --no-cache-dir \
     pip \
     wheel && \
   # STEP 1.3 - Installing the required python packages listed in 'requirements.txt' and 'optional-requirements.txt'
@@ -75,7 +82,7 @@ RUN \
     # This is essentially a repository of precompiled some of the most popular packages with C/C++ source code
     # This provides the install maximum compatibility with multiple different architectures including: x86_64, armv71 and aarch64
     # You can read more about python wheels here: https://realpython.com/python-wheels/
-  pip install -U --no-cache-dir --find-links https://wheel-index.linuxserver.io/ubuntu/ -r \
+  /lsiopy/bin/pip install -U --no-cache-dir --find-links https://wheel-index.linuxserver.io/ubuntu/ -r \
     requirements.txt -r optional-requirements.txt && \
 # STEP 2 - Move contents of /app/calibre-web-automated/root to / and delete the /app/calibre-web-automated/root directory
   cp -R /app/calibre-web-automated/root/* / && \
@@ -175,7 +182,8 @@ RUN \
     libldap2-dev \
     libsasl2-dev \
     gettext \
-    python3-dev && \
+    python3.13-dev \
+    software-properties-common && \
   apt-get -y autoremove && \
   rm -rf \
     /tmp/* \

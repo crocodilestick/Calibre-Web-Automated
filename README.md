@@ -7,6 +7,7 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/crocodilestick/calibre-web-automated)
 ![GitHub Release](https://img.shields.io/github/v/release/crocodilestick/calibre-web-automated)
 ![GitHub commits since latest release](https://img.shields.io/github/commits-since/crocodilestick/calibre-web-automated/latest)
+![OAuth 2.0 + OIDC](https://img.shields.io/badge/OAuth-2.0%20%2B%20OIDC-blue?style=flat&logo=oauth)
 
 
 ## _Quick Access_
@@ -23,6 +24,7 @@
 - [Usage](#usage-) 🔧
   - [Adding Books to Your Library](#adding-books-to-your-library)
   - [KOReader Syncing (KOSync)](#koreader-syncing-kosync-) 📖⚡
+  - [OAuth Authentication Setup](#enhanced-oauth-20oidc-authentication-) 🔐
 - [For Developers](#for-developers---building-custom-docker-image) 🚀
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
@@ -107,7 +109,7 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 | eBook metadata editing and deletion support | Metadata download from various sources (extensible via plugins) | eBook download restriction to logged-in users |
 | Public user registration support | Send eBooks to E-Readers with a single click | Sync Kobo devices with your Calibre library |
 | In-browser eBook reading support for multiple formats | Content hiding based on categories and Custom Column content per user | "Magic Link" login for easy access on eReaders |
-| LDAP, Google/GitHub OAuth, and proxy authentication support | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
+| Enhanced OAuth 2.0/OIDC authentication with auto-discovery | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
 
 ## Plus these _**CWA Specific Features**_ on top:
 
@@ -120,7 +122,7 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 | [Automatic EPUB Fixer Service 🔨](#automatic-epub-fixer-service-) | [Multi-Format Conversion Service 🌌](#simple-to-use-multi-format-conversion-service-) | [Library Auto-Detect 📚🕵️](#library-auto-detect-️) |
 | [Server Stats Tracking Page 📍](#server-stats-tracking-page-) | [Server Stats Tracking 📊](#server-stats-tracking-page-) | [Easy Dark/ Light Mode Switching ☀️🌙](#easy-dark-light-mode-switching-️) |
 | [Internal Update Notification System 🛎️](#internal-update-notification-system-️) | [Auto-Compression of Backed Up Files 🤐](#auto-compression-of-backed-up-files-) | [Additional Metadata Providers 🗃️](#additional-metadata-providers-️) |
-| [KOReader Syncing (KOSync) 📖⚡](#koreader-syncing-kosync-) | | |
+| [KOReader Syncing (KOSync) 📖⚡](#koreader-syncing-kosync-) | [Enhanced OAuth 2.0/OIDC Authentication 🔐](#enhanced-oauth-20oidc-authentication-) | |
 
 #### **Automatic Ingest Service** ✨
 - CWA currently supports automatic ingest of 27 different popular ebook formats
@@ -187,6 +189,15 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - **Modern Authentication:** Uses RFC 7617 compliant header-based authentication instead of legacy MD5 hashing for enhanced security
 - **CWA Integration:** Leverages your existing CWA user accounts and permissions - no additional server setup required
 - **Easy Installation:** Plugin and setup instructions are available directly from your CWA instance at `/kosync`
+
+#### **Enhanced OAuth 2.0/OIDC Authentication** 🔐
+- **Auto-Discovery:** Automatic endpoint configuration via OIDC metadata URLs for seamless setup with providers like Keycloak, Authentik, Google, and Azure AD
+- **Manual Override:** Full manual control over OAuth endpoints when auto-discovery isn't available
+- **Field Mapping:** Configurable JWT field extraction for usernames and emails to work with any provider's token structure
+- **Group-Based Roles:** Automatic admin role assignment based on OAuth provider groups
+- **Testing Tools:** Built-in connection testing and validation to ensure your configuration works before going live
+- **Enterprise Ready:** Support for custom scopes, multiple authentication methods, and comprehensive troubleshooting
+- **📖 [Full OAuth Configuration Guide](https://github.com/crocodilestick/Calibre-Web-Automated/wiki/OAuth-Configuration)** for detailed setup instructions
 
 #### **Server Stats Tracking Page** 📍📊
   - Ever wondered how many times CWA has been there for you in the background? Check out the CWA Stats page to see a fun list of statistics showing how many times CWA has been there to make your life just that little bit easier

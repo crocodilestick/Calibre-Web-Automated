@@ -5,6 +5,17 @@ echo "========== STARTING CWA-INGEST SERVICE =========="
 WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
 echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
+# Create queue file for retry processing
+QUEUE_FILE="/tmp/cwa_ingest_retry_queue"
+touch "$QUEUE_FILE"
+
+# Create status file for basic status tracking
+STATUS_FILE="/tmp/cwa_ingest_status"
+echo "idle" > "$STATUS_FILE"
+
+# Ensure failed backup directory exists
+mkdir -p "/config/processed_books/failed" 2>/dev/null || true
+
 # Tunables (override via env)
 STABLE_CHECKS=${CWA_INGEST_STABLE_CHECKS:-6}
 STABLE_CONSEC_MATCH=${CWA_INGEST_STABLE_CONSEC_MATCH:-2}
@@ -50,8 +61,48 @@ is_docker_desktop() {
         return 1
 }
 
+process_retry_queue() {
+        if [ -s "$QUEUE_FILE" ]; then
+                echo "[cwa-ingest-service] Processing retry queue..."
+                local temp_queue=$(mktemp)
+                
+                while IFS= read -r queued_file; do
+                        if [ -f "$queued_file" ]; then
+                                echo "[cwa-ingest-service] Retrying: $queued_file"
+                                timeout 900 python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
+                                local retry_exit=$?
+                                
+                                if [ $retry_exit -eq 2 ]; then
+                                        # Still busy, keep in queue
+                                        echo "$queued_file" >> "$temp_queue"
+                                elif [ $retry_exit -eq 124 ]; then
+                                        # Timeout, remove problematic file
+                                        echo "[cwa-ingest-service] TIMEOUT on retry: $queued_file, removing"
+                                        if [ -d "/config/processed_books/failed" ]; then
+                                                cp "$queued_file" "/config/processed_books/failed/" 2>/dev/null || true
+                                        fi
+                                        rm -f "$queued_file" 2>/dev/null || true
+                                elif [ $retry_exit -eq 0 ]; then
+                                        echo "[cwa-ingest-service] Successfully processed retry: $queued_file"
+                                else
+                                        echo "[cwa-ingest-service] Error on retry: $queued_file (exit: $retry_exit)"
+                                fi
+                        fi
+                done < "$QUEUE_FILE"
+                
+                mv "$temp_queue" "$QUEUE_FILE"
+                
+                if [ -s "$QUEUE_FILE" ]; then
+                        echo "[cwa-ingest-service] $(wc -l < "$QUEUE_FILE") files remain in retry queue"
+                fi
+        fi
+}
+
 handle_event() {
         local filepath="$1"
+        local timeout=900  # 15 minutes timeout
+        local filename=$(basename "$filepath")
+        
         # temp suffixes
         for suf in $TEMP_SUFFIXES; do
                 [[ "$filepath" == *.$suf ]] && return 0
@@ -62,7 +113,36 @@ handle_event() {
         fi
         
         echo "[cwa-ingest-service] New file detected - $filepath - Starting Ingest Processor..."
-        python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+        echo "processing:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+        
+        # Add timeout protection to prevent hanging processes
+        timeout $timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+        local exit_code=$?
+        
+        if [ $exit_code -eq 124 ]; then
+                echo "[cwa-ingest-service] TIMEOUT: $filepath took longer than ${timeout} seconds"
+                echo "timeout:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                # Move problematic file to failed backup if available
+                if [ -d "/config/processed_books/failed" ]; then
+                        echo "[cwa-ingest-service] Moving $filename to failed backup"
+                        cp "$filepath" "/config/processed_books/failed/" 2>/dev/null || true
+                fi
+                rm -f "$filepath" 2>/dev/null || true
+        elif [ $exit_code -eq 2 ]; then
+                echo "[cwa-ingest-service] Processor busy, adding to retry queue: $filepath"
+                echo "queued:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                echo "$filepath" >> "$QUEUE_FILE"
+        elif [ $exit_code -ne 0 ]; then
+                echo "[cwa-ingest-service] Error processing $filepath (exit code: $exit_code)"
+                echo "error:$filename:$exit_code:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+        else
+                echo "[cwa-ingest-service] Successfully processed: $filepath"
+                echo "completed:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                # Try to process any queued files after successful completion
+                process_retry_queue
+        fi
+        
+        echo "idle" > "$STATUS_FILE"
 }
 
 if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then

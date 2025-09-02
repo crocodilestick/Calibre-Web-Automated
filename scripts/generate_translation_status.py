@@ -12,6 +12,7 @@ import sys
 
 # Mapping of language codes to full language names
 LANGUAGE_NAMES = {
+    "ar": "Arabic",
     "cs": "Czech",
     "de": "German",
     "el": "Greek",

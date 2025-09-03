@@ -247,6 +247,25 @@
     </div>
 
     <br>
+
+    <!-- Ingest Timeout Setting -->
+    <div class="form-group">
+      <h4 class="settings-section-header">{{_('Ingest Processing Timeout')}}</h4>
+      <p class="settings-description">
+        {{_('Maximum time (in minutes) to allow for processing a single book before timing out. Files that timeout are moved to the failed backup folder for investigation.')}}
+      </p>
+      <label for="ingest_timeout_minutes" class="settings-section-header" style="padding-right: 10px; margin-bottom: 16px !important; padding-bottom: 0px !important;">{{_('Timeout (minutes):')}}</label>
+      <input type="number" 
+             name="ingest_timeout_minutes" 
+             id="ingest_timeout_minutes" 
+             value="{{ cwa_settings['ingest_timeout_minutes'] }}" 
+             min="5" 
+             max="120" 
+             style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+      <small style="color: #666; margin-left: 10px;">{{_('Range: 5-120 minutes (default: 15)')}}</small>
+    </div>
+
+    <br>
     <div class="row form-group" style="text-align-last: justify; position: relative; height: 0px; margin-bottom: 6rem; margin-top: -1rem;">
       <input type="submit" name="submit_button" value="Submit" class="btn btn-default">
       <input type="submit" style="margin-right: 2rem;" name="submit_button" value="Apply Default Settings" class="btn btn-default">

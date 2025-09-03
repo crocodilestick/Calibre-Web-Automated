@@ -125,12 +125,18 @@ class Identifiers(Base):
             return "ISSN"
         elif format_type == "isfdb":
             return "ISFDB"
-        if format_type == "lubimyczytac":
+        elif format_type == "lubimyczytac":
             return "Lubimyczytac"
-        if format_type == "databazeknih":
+        elif format_type == "databazeknih":
             return "Databáze knih"
-        if format_type == "hardcover-slug":
+        elif format_type == "hardcover-slug":
             return "Hardcover"
+        elif format_type == "storygraph":
+            return "StoryGraph"
+        elif format_type == "smashwords":
+            return "Smashwords"
+        elif format_type == "ebooks":
+            return "Ebooks.com"
         else:
             return self.type
 
@@ -170,6 +176,12 @@ class Identifiers(Base):
             return "https://hardcover.app/books/{0}".format(self.val)
         elif format_type == "ibdb":
             return "https://ibdb.dev/book/{0}".format(self.val)
+        elif format_type == "storygraph":
+            return "https://app.thestorygraph.com/books/{0}".format(self.val)
+        elif format_type == "smashwords":
+            return "https://www.smashwords.com/books/view/{0}".format(self.val)
+        elif format_type == "ebooks":
+            return "https://www.ebooks.com/en-{0}".format(self.val)
         elif self.val.lower().startswith("javascript:"):
             return quote(self.val)
         elif self.val.lower().startswith("data:"):

@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_convert_ignored_formats TEXT DEFAULT "" NOT NULL,
     auto_ingest_ignored_formats TEXT DEFAULT "" NOT NULL,
     auto_ingest_automerge TEXT DEFAULT "new_record" NOT NULL,
+    ingest_timeout_minutes INTEGER DEFAULT 15 NOT NULL,
     auto_metadata_enforcement SMALLINT DEFAULT 1 NOT NULL,
     kindle_epub_fixer SMALLINT DEFAULT 1 NOT NULL,
     auto_backup_epub_fixes SMALLINT DEFAULT 1 NOT NULL,

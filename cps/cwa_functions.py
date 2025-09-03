@@ -100,6 +100,32 @@ def get_ingest_dir():
         dirs = json.load(f)
         return dirs['ingest_folder']
 
+def get_ingest_status():
+    """Read the current ingest service status"""
+    try:
+        with open('/config/cwa_ingest_status', 'r') as f:
+            status_line = f.read().strip()
+            if ':' in status_line:
+                parts = status_line.split(':')
+                return {
+                    'state': parts[0],
+                    'filename': parts[1] if len(parts) > 1 else '',
+                    'timestamp': parts[2] if len(parts) > 2 else '',
+                    'detail': parts[3] if len(parts) > 3 else ''
+                }
+            else:
+                return {'state': status_line, 'filename': '', 'timestamp': '', 'detail': ''}
+    except (FileNotFoundError, IOError):
+        return {'state': 'unknown', 'filename': '', 'timestamp': '', 'detail': ''}
+
+def get_ingest_queue_size():
+    """Get the number of files in the retry queue"""
+    try:
+        with open('/config/cwa_ingest_retry_queue', 'r') as f:
+            return len([line for line in f if line.strip()])
+    except (FileNotFoundError, IOError):
+        return 0
+
 def refresh_library(app):
     with app.app_context():  # Create app context for session
         ingest_dir = get_ingest_dir()
@@ -180,8 +206,12 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
+    integer_settings = ['ingest_timeout_minutes']  # Special handling for integer settings
+    
     for setting in cwa_default_settings:
-        if isinstance(cwa_default_settings[setting], int):
+        if setting in integer_settings:
+            continue  # Handle separately
+        elif isinstance(cwa_default_settings[setting], int):
             boolean_settings.append(setting)
         elif isinstance(cwa_default_settings[setting], str) and cwa_default_settings[setting] != "":
             string_settings.append(setting)
@@ -228,6 +258,22 @@ def set_cwa_settings():
                 result['auto_convert_ignored_formats'].remove(result['auto_convert_target_format'])
             if result['auto_convert_target_format'] in result['auto_ingest_ignored_formats']:
                 result['auto_ingest_ignored_formats'].remove(result['auto_convert_target_format'])
+
+            # Handle integer settings
+            for setting in integer_settings:
+                value = request.form.get(setting)
+                if value is not None:
+                    try:
+                        int_value = int(value)
+                        # Validate timeout range
+                        if setting == 'ingest_timeout_minutes':
+                            int_value = max(5, min(120, int_value))  # Clamp between 5 and 120 minutes
+                        result[setting] = int_value
+                    except (ValueError, TypeError):
+                        # Use current value if conversion fails
+                        result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
+                else:
+                    result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
 
             # DEBUGGING
             # with open("/config/post_request" ,"w") as f:

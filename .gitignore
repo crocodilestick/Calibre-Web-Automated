@@ -11,7 +11,6 @@ __pycache__/
 .devcontainer
 poetry.lock
 replit.nix
-pyproject.toml
 .replit
 .breakpoints
 .venv

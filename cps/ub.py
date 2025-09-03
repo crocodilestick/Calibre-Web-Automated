@@ -641,6 +641,23 @@ def migrate_user_table(engine, _session):
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
             trans.commit()
+    
+    # Migration to enable duplicates sidebar for existing admin users
+    try:
+        from . import constants
+        SIDEBAR_DUPLICATES = constants.SIDEBAR_DUPLICATES
+        
+        # Check if any admin users don't have duplicates enabled
+        admin_users = _session.query(User).filter(User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN).all()
+        for user in admin_users:
+            if not (user.sidebar_view & SIDEBAR_DUPLICATES):
+                user.sidebar_view |= SIDEBAR_DUPLICATES
+                print(f"[Migration] Enabled duplicates sidebar for admin user: {user.name}")
+        
+        _session.commit()
+    except Exception as e:
+        print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
+        _session.rollback()
 
 def migrate_oauth_provider_table(engine, _session):
     try:

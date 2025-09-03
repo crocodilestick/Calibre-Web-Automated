@@ -147,17 +147,17 @@
       color: #2c3e50;
       font-weight: 600;
   }
-  .no-duplicates {
-      text-align: center;
-      padding: 60px 20px;
-      color: #666;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border-radius: 10px;
-      border: 1px solid #dee2e6;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  }
+.no-duplicates {
+    text-align: center;
+    padding: 60px 20px;
+    color: #f9be03;
+    background: linear-gradient(135deg, #3e474c 0%, #00101a 100%);
+    border-radius: 10px;
+    border: 0px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
   .no-duplicates h3 {
-      color: #495057;
+      color: whitesmoke;
       margin-bottom: 15px;
   }
   h2 {
@@ -167,7 +167,7 @@
       text-shadow: 0 1px 3px rgba(44, 62, 80, 0.1);
   }
   .text-muted {
-      color: #6c757d !important;
+      color: whitesmoke !important;
   }
   /* Success Modal Styling */
   #success_modal .modal-header {
@@ -277,12 +277,12 @@
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-  <div class="row">
-    <div class="col">
-      <h2>{{_('Duplicate Books')}}</h2>
+<div class="discover">
+  <h2>{{title}}</h2>
+  <div class="settings-container" style="margin-top: 3rem; max-width: none; justify-self: auto;">
+    <h2>{{_('CWA Duplicates Manager')}}</h2>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <p class="text-muted">{{_('Books with matching titles and authors. Visual inspection recommended to identify true duplicates.')}}</p>
+      <p style="color: whitesmoke; margin-bottom: 2rem;" class="text-muted">{{_('Books with matching titles and authors. Visual inspection recommended to identify true duplicates.')}}</p>
       
       {% if duplicate_groups %}
         <div class="bulk-actions">
@@ -345,8 +345,6 @@
           <p class="text-muted">{{_('This search looks for books with identical titles AND authors to avoid false positives.')}}</p>
         </div>
       {% endif %}
-    </div>
-  </div>
 </div>
 
 <!-- Delete Confirmation Modal -->

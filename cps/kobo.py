@@ -150,10 +150,51 @@ def HandleSyncRequest():
 
     new_archived_last_modified = datetime.min
     sync_results = []
-
-    # We reload the book database so that the user gets a fresh view of the library
-    # in case of external changes (e.g: adding a book through Calibre).
+    
     calibre_db.reconnect_db(config, ub.app_DB_path)
+    
+
+    # Two-Way-Sync Deletion Logic
+    if current_user.kobo_only_shelves_sync:
+        try:
+            # Check all books that are on Kobo according to the database
+            synced_books_query = ub.session.query(ub.KoboSyncedBooks.book_id).filter(ub.KoboSyncedBooks.user_id == current_user.id)
+            synced_book_ids = {item.book_id for item in synced_books_query}
+
+            # Check all books currently on a Kobo Sync shelf
+            allowed_books_query = (ub.session.query(ub.BookShelf.book_id)
+                                   .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id)
+                                   .filter(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True))
+            allowed_book_ids = {item.book_id for item in allowed_books_query}
+
+            # Spot the difference: books that need to be deleted
+            books_to_delete_ids = synced_book_ids - allowed_book_ids
+
+            if books_to_delete_ids:
+                log.info(f"Kobo Sync: Found {len(books_to_delete_ids)} books to remove from device for user {current_user.name}")
+
+                # Go through the “To be deleted” list
+                for book_id in books_to_delete_ids:
+                    book = calibre_db.get_book(book_id)
+                    if book:
+                        # Create a “Remove” command for the Kobo
+                        entitlement = {
+                            "BookEntitlement": create_book_entitlement(book, archived=True),
+                            "BookMetadata": get_metadata(book),
+                        }
+                        sync_results.append({"ChangedEntitlement": entitlement})
+
+                # Remove all books from the tracking table in one go
+                if books_to_delete_ids:
+                    ub.session.query(ub.KoboSyncedBooks).filter(
+                        ub.KoboSyncedBooks.user_id == current_user.id,
+                        ub.KoboSyncedBooks.book_id.in_(books_to_delete_ids)
+                    ).delete(synchronize_session=False)
+                    ub.session_commit()
+
+        except Exception as e:
+            log.error(f"Kobo Sync: Error during deletion logic: {e}")
+            ub.session.rollback()
 
     only_kobo_shelves = current_user.kobo_only_shelves_sync
 
@@ -934,16 +975,22 @@ def TopLevelEndpoint():
 @kobo.route("/v1/library/<book_uuid>", methods=["DELETE"])
 @requires_kobo_auth
 def HandleBookDeletionRequest(book_uuid):
-    log.info("Kobo book delete request received for book %s" % book_uuid)
+    log.info("Kobo book delete request received for book %s", book_uuid)
     book = calibre_db.get_book_by_uuid(book_uuid)
     if not book:
         log.info("Book %s not found in database", book_uuid)
         return redirect_or_proxy_request()
 
     book_id = book.id
-    is_archived = kobo_sync_status.change_archived_books(book_id, True)
-    if is_archived:
-        kobo_sync_status.remove_synced_book(book_id)
+    # If the user has shelf sync enabled, do nothing.
+    # The book will be removed from the device on the next sync.
+    if current_user.kobo_only_shelves_sync:
+        pass
+    # Otherwise, archive the book if the user has permission to see archived books.
+    elif current_user.check_visibility(32768):
+        kobo_sync_status.change_archived_books(book_id, True)
+
+    kobo_sync_status.remove_synced_book(book_id)
     return "", 204
 
 

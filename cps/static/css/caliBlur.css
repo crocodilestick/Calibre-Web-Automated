@@ -2451,7 +2451,14 @@ body > div.row-fluid {
 
 .alert-danger {
     background-color: rgba(255, 85, 51, .3);
-    color: #fff
+    color: #fff;
+    width: fit-content !important;
+    width: max-content !important;
+    height: auto !important;
+    padding: 2rem;
+    max-width: 80vw;
+    text-overflow: ellipsis;
+    overflow-x: clip !important;
 }
 
 .table > thead > tr > th {
@@ -8567,4 +8574,8 @@ code {
     background-color: #202c35;
     border-radius: 4px;
     font-weight: bold;
+}
+
+button.close {
+    margin-left: 1rem;
 }

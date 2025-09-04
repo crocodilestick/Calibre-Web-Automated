@@ -6,6 +6,38 @@
 $(document).ready(function() {
     var currentBookId = null;
 
+    // Email validation function
+    function isValidEmail(email) {
+        // More comprehensive email validation
+        var emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        return emailRegex.test(email) && email.length <= 254; // RFC 5322 length limit
+    }
+
+    // Function to show validation message in modal
+    function showModalValidation(message) {
+        // Check if the validation message element exists, if not recreate it
+        if ($('#modal-validation-message').length === 0) {
+            // Recreate the validation message element
+            var validationHtml = '<div id="modal-validation-message" class="alert alert-danger text-center">' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                                '<span aria-hidden="true">&times;</span>' +
+                                '</button>' +
+                                '<span id="validation-message-text"></span>' +
+                                '</div>';
+            
+            // Insert at the beginning of modal body
+            $('#emailSelectModal .modal-body').prepend(validationHtml);
+        }
+        
+        $('#validation-message-text').text(message);
+        $('#modal-validation-message').show();
+    }
+
+    // Function to hide validation message in modal
+    function hideModalValidation() {
+        $('#modal-validation-message').hide();
+    }
+
     // Function to show page-level flash message (same as handleResponse in details.js)
     function showPageFlashMessage(message, type) {
         // Remove any existing flash messages (same as handleResponse)
@@ -24,17 +56,53 @@ $(document).ready(function() {
     $('#emailSelectModal').on('show.bs.modal', function (e) {
         var button = $(e.relatedTarget); // Button that triggered the modal
         currentBookId = button.data('book-id');
+        hideModalValidation(); // Clear any previous validation messages
+    });
+    
+    // Clear custom emails and validation when modal is hidden
+    $('#emailSelectModal').on('hidden.bs.modal', function () {
+        $('#custom_emails').val('');
+        hideModalValidation();
     });
 
     // Handle send button click in email selection modal
     $('#sendSelectedBtn').click(function() {
+        var $sendBtn = $(this); // Store button reference
         var selectedEmails = [];
+        
+        // Clear any previous validation messages
+        hideModalValidation();
+        
+        // Get checked email addresses from list
         $('input[name="selected_emails"]:checked').each(function() {
             selectedEmails.push($(this).val());
         });
+        
+        // Get custom email addresses from textarea
+        var customEmails = $('#custom_emails').val().trim();
+        var hasInvalidEmail = false;
+        
+        if (customEmails) {
+            // Split by comma and clean up each email
+            var customEmailList = customEmails.split(',');
+            for (var i = 0; i < customEmailList.length; i++) {
+                var cleanEmail = customEmailList[i].trim();
+                if (cleanEmail && isValidEmail(cleanEmail)) {
+                    selectedEmails.push(cleanEmail);
+                } else if (cleanEmail) {
+                    showModalValidation('Invalid email address: ' + cleanEmail);
+                    hasInvalidEmail = true;
+                    break;
+                }
+            }
+        }
+        
+        if (hasInvalidEmail) {
+            return;
+        }
 
         if (selectedEmails.length === 0) {
-            showPageFlashMessage('Please select at least one email address', 'error');
+            showModalValidation('Please select at least one email address or enter valid custom email addresses');
             return;
         }
 
@@ -43,7 +111,7 @@ $(document).ready(function() {
         var convertFlag = formatSelect.find(':selected').data('convert');
         
         // Disable send button to prevent double-clicking
-        $(this).prop('disabled', true);
+        $sendBtn.prop('disabled', true);
 
         // Send AJAX request to endpoint
         $.ajax({
@@ -73,7 +141,7 @@ $(document).ready(function() {
             },
             complete: function() {
                 // Re-enable send button
-                $('#sendSelectedBtn').prop('disabled', false);
+                $sendBtn.prop('disabled', false);
             }
         });
     });

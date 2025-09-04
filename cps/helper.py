@@ -220,7 +220,7 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id)
                 email = strip_whitespaces(email)
                 WorkerThread.add(user_id, TaskEmail(_("Send to eReader"), book.path, converted_file_name,
                                  config.get_mail_settings(), email,
-                                 email_text, _('This Email has been sent via Automated.'), book.id))
+                                 email_text, _('This Email has been sent via Calibre-Web Automated.'), book.id))
             return
     return _("The requested file could not be read. Maybe wrong permissions?")
 

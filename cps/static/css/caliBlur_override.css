@@ -360,3 +360,10 @@ form#archived_form > label.block-label::before {
 button.close > span {
     color: whitesmoke;
 }
+
+/* Fixes ill-aligned sort element in first column of book list table */
+.bs-checkbox > .th-inner.sortable {
+    position: relative;
+    right: 8px;
+    bottom: 10px;
+}

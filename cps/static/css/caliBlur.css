@@ -2489,7 +2489,8 @@ body > div.row-fluid {
     width: 100%;
     height: auto;
     max-width: 195px;
-    margin: auto
+    margin: auto;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
 }
 
 #bookDetailsModal .modal-footer, #bookDetailsModal .modal-header > .close, .modal-backdrop.in {
@@ -3237,7 +3238,7 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
     float: left
 }
 
-#add-to-shelf, #btnGroupDrop1, #readbtn,  #sendbtn, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type, .book-meta .btn-toolbar > .btn-group > .btn-warning, .btn-toolbar > .btn-group > #btnGroupDrop2, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2 {
+#add-to-shelf, #btnGroupDrop1, #readbtn,  #sendbtn, #sendToEReaderBtn, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type, .book-meta .btn-toolbar > .btn-group > .btn-warning, .btn-toolbar > .btn-group > #btnGroupDrop2, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2 {
     background: 0 0;
     color: transparent;
     width: 50px;
@@ -3251,11 +3252,11 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
     padding-bottom: 5px
 }
 
-#add-to-shelf > span, #btnGroupDrop1 > span, #readbtn > span, #sendbtn > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type > span, .book-meta .btn-toolbar > .btn-group > .btn-warning > span, .btn-toolbar > .btn-group > #btnGroupDrop2 > span, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2 > span {
+#add-to-shelf > span, #btnGroupDrop1 > span, #readbtn > span, #sendbtn, #sendToEReaderBtn > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type > span, .book-meta .btn-toolbar > .btn-group > .btn-warning > span, .btn-toolbar > .btn-group > #btnGroupDrop2 > span, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2 > span {
     color: hsla(0, 0%, 100%, .7)
 }
 
-#add-to-shelf:hover span, #btnGroupDrop1:hover > span, #readbtn:hover > span, #sendbtn:hover > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type:hover > span, .book-meta .btn-toolbar > .btn-group > .btn-warning:hover > span, .btn-toolbar > .btn-group > #btnGroupDrop2:hover > span, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2:hover > span {
+#add-to-shelf:hover span, #btnGroupDrop1:hover > span, #readbtn:hover > span, #sendbtn:hover, #sendToEReaderBtn:hover > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type:hover > span, .book-meta .btn-toolbar > .btn-group > .btn-warning:hover > span, .btn-toolbar > .btn-group > #btnGroupDrop2:hover > span, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2:hover > span {
     color: #fff
 }
 
@@ -3265,7 +3266,7 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
     font-size: 18px
 }
 
-#sendbtn > span, #readbtn > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type > span, .book-meta .btn-toolbar > .btn-group > .btn-warning > span.glyphicon-edit {
+#sendbtn, #sendToEReaderBtn > span, #readbtn > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type > span, .book-meta .btn-toolbar > .btn-group > .btn-warning > span.glyphicon-edit {
     font-size: 16px;
     line-height: 54px;
     width: 100%
@@ -4983,7 +4984,7 @@ body.read:not(.blur) a[href*=readbooks] {
     margin-top: -16px !important
 }
 
-#sendbtn > span {
+#sendbtn, #sendToEReaderBtn > span {
     height: 60px
 }
 

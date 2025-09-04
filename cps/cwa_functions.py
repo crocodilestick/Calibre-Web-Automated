@@ -206,10 +206,11 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
-    integer_settings = ['ingest_timeout_minutes']  # Special handling for integer settings
+    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']  # Special handling for integer settings
+    json_settings = ['metadata_provider_hierarchy']  # Special handling for JSON settings
     
     for setting in cwa_default_settings:
-        if setting in integer_settings:
+        if setting in integer_settings or setting in json_settings:
             continue  # Handle separately
         elif isinstance(cwa_default_settings[setting], int):
             boolean_settings.append(setting)
@@ -268,12 +269,50 @@ def set_cwa_settings():
                         # Validate timeout range
                         if setting == 'ingest_timeout_minutes':
                             int_value = max(5, min(120, int_value))  # Clamp between 5 and 120 minutes
+                        elif setting == 'auto_send_delay_minutes':
+                            int_value = max(1, min(60, int_value))  # Clamp between 1 and 60 minutes
                         result[setting] = int_value
                     except (ValueError, TypeError):
                         # Use current value if conversion fails
-                        result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
+                        if setting == 'ingest_timeout_minutes':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
+                        elif setting == 'auto_send_delay_minutes':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
                 else:
-                    result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
+                    if setting == 'ingest_timeout_minutes':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
+                    elif setting == 'auto_send_delay_minutes':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
+
+            # Handle JSON settings
+            for setting in json_settings:
+                value = request.form.get(setting)
+                if value is not None:
+                    try:
+                        # Try to parse as JSON
+                        import json
+                        json_value = json.loads(value)
+                        if setting == 'metadata_provider_hierarchy':
+                            # Validate that it's a list of strings (provider IDs)
+                            if isinstance(json_value, list) and all(isinstance(provider, str) for provider in json_value):
+                                result[setting] = json.dumps(json_value)  # Store as JSON string
+                            else:
+                                # Use current value if validation fails
+                                result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                        else:
+                            result[setting] = json.dumps(json_value)
+                    except (json.JSONDecodeError, ValueError, TypeError):
+                        # Use current value if JSON parsing fails
+                        if setting == 'metadata_provider_hierarchy':
+                            result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                        else:
+                            result[setting] = cwa_db.cwa_settings.get(setting, '[]')
+                else:
+                    # Use current value if not provided
+                    if setting == 'metadata_provider_hierarchy':
+                        result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                    else:
+                        result[setting] = cwa_db.cwa_settings.get(setting, '[]')
 
             # DEBUGGING
             # with open("/config/post_request" ,"w") as f:
@@ -292,7 +331,8 @@ def set_cwa_settings():
             cwa_settings = cwa_db.get_cwa_settings()
 
     elif request.method == 'GET':
-        ...
+        cwa_db = CWA_DB()
+        cwa_settings = cwa_db.get_cwa_settings()
 
     return render_title_template("cwa_settings.html", title=_("Calibre-Web Automated User Settings"), page="cwa-settings",
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats, target_formats=target_formats,

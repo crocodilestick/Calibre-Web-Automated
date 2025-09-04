@@ -8419,9 +8419,13 @@ p.cwa-settings-disclaimer {
 select.cwa-settings-select {
     color: #e9e9e9;
     text-align: center;
-    border-radius: 6px;
-    width: 8rem;
-    background-color: #151e26 !important;
+    border-radius: 4px;
+    width: fit-content;
+    background-color: #151e2680 !important;
+    border: 1px transparent;
+    padding: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .progress-container {

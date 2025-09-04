@@ -739,14 +739,53 @@ def do_edit_book(book_id, upload_formats=None):
         calibre_db.session.commit()
 
         # CWA: Export of changed Metadata after commit, to avoid race conditions with folder renames
+        # Only create log if there were actual meaningful metadata changes
         try:
-            payload = dict(to_save)
-            payload.setdefault('title', book.title)
-            payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
-            now = datetime.now()
-            log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
-            with open(log_path, 'w', encoding='utf-8') as f:
-                json.dump(payload, f, indent=4, ensure_ascii=False)
+            # Define metadata fields that represent actual content changes
+            metadata_fields = {
+                'title', 'authors', 'series', 'series_index', 'tags', 'comments', 
+                'cover_url', 'pubdate', 'publisher', 'languages', 'rating'
+            }
+            
+            # Filter to meaningful metadata changes (including empty values for legitimate clearing)
+            # but exclude pure form artifacts
+            meaningful_changes = {}
+            for key, value in to_save.items():
+                if (key in metadata_fields and 
+                    value is not None and 
+                    key not in ['csrf_token', 'book_format']):
+                    meaningful_changes[key] = value
+            
+            # Also include custom column changes (including empty values)
+            custom_column_changes = {k: v for k, v in to_save.items() 
+                                   if k.startswith('custom_column_') and v is not None}
+            meaningful_changes.update(custom_column_changes)
+            
+            # Create log if we have actual database changes (modify_date=True) 
+            # OR if this appears to be a metadata fetch with content (non-empty meaningful_changes)
+            should_create_log = (modify_date or 
+                               (meaningful_changes and any(v != '' for v in meaningful_changes.values())))
+            
+            if should_create_log:
+                payload = dict(meaningful_changes)
+                payload.setdefault('title', book.title)
+                payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
+                
+                # Add source information for debugging
+                payload['_cwa_meta'] = {
+                    'modify_date': modify_date,
+                    'change_count': len(meaningful_changes),
+                    'has_content': any(v != '' for v in meaningful_changes.values()),
+                    'timestamp': datetime.now().isoformat()
+                }
+                
+                now = datetime.now()
+                log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                with open(log_path, 'w', encoding='utf-8') as f:
+                    json.dump(payload, f, indent=4, ensure_ascii=False)
+                log.debug(f"Created metadata change log for book {book.id} with changes: {list(meaningful_changes.keys())}")
+            else:
+                log.debug(f"Skipped metadata change log for book {book.id} - no meaningful changes detected (modify_date={modify_date}, changes={list(meaningful_changes.keys())})")
         except Exception as e:
             log.error_or_exception(f"Failed to write metadata change log for book {book.id}: {e}")
 

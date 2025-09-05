@@ -265,11 +265,11 @@ msgstr "client_secrets.json ist nicht für Web Anwendungen konfiguriert"
 
 #: cps/admin.py:1213
 msgid "Unable to fetch OAuth metadata from URL."
-msgstr ""
+msgstr "Laden der OAuth-Metadaten von URL nicht möglich."
 
 #: cps/admin.py:1231
 msgid "Unable to fetch OpenID configuration."
-msgstr ""
+msgstr "Laden der OpenID-Metadaten nicht möglich."
 
 #: cps/admin.py:1293
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -582,19 +582,19 @@ msgstr "Verbindungsfehler"
 #: cps/admin.py:2283 cps/admin.py:2326
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
-msgstr ""
+msgstr "Verbindung fehlgeschlagen: Server hat Statsu Code code %(code)s zurückgegeben."
 
 #: cps/admin.py:2285 cps/admin.py:2328
 msgid "Connection failed: Could not connect to server."
-msgstr ""
+msgstr "Verbindung fehlgeschlagen: Verbindung zum Server nicht möglich."
 
 #: cps/admin.py:2287 cps/admin.py:2330
 msgid "Connection failed: Request timed out."
-msgstr ""
+msgstr "Verbindung fehlgeschlagen: Anfrage abgelaufen."
 
 #: cps/admin.py:2289 cps/admin.py:2332
 msgid "Connection failed: Invalid JSON in response."
-msgstr ""
+msgstr "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort."
 
 #: cps/admin.py:2292 cps/admin.py:2335
 #, fuzzy
@@ -605,12 +605,12 @@ msgstr ""
 #: cps/admin.py:2318
 #, python-format
 msgid "Metadata is missing required fields: %(fields)s"
-msgstr ""
+msgstr "Den Metadaten fehlt ein erforderliches Feld: %(fields)s"
 
 #: cps/admin.py:2323
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s endpoints."
-msgstr ""
+msgstr "Die Metadaten-URL ist gültig!" %(count)s Endpunkte gefunden.
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -900,7 +900,7 @@ msgstr "Buch löschen"
 
 #: cps/editbooks.py:106
 msgid "Missing or invalid book id for format upload"
-msgstr ""
+msgstr "Fehlende oder ungültige Buch-ID für den Upload des Formats."
 
 #: cps/editbooks.py:131 cps/editbooks.py:151 cps/templates/book_edit.html:53
 #: cps/templates/layout.html:148
@@ -1294,7 +1294,7 @@ msgstr ""
 
 #: cps/oauth_bb.py:125
 msgid "Login failed: User profile from provider is incomplete."
-msgstr ""
+msgstr "Anmeldung fehlgeschlagen: Benutzerprofil des Anbieters ist unvollständig."
 
 #: cps/oauth_bb.py:212 cps/remotelogin.py:149
 #, python-format
@@ -1534,12 +1534,12 @@ msgstr "Zeige Bücherliste"
 
 #: cps/render_template.py:104
 msgid "Duplicates"
-msgstr ""
+msgstr "Duplikate"
 
 #: cps/render_template.py:106
 #, fuzzy
 msgid "Show Duplicate Books"
-msgstr "Zeige am besten bewertete Bücher"
+msgstr "Zeige Duplikate"
 
 #: cps/search.py:40 cps/search.py:427 cps/templates/book_edit.html:256
 #: cps/templates/feed.xml:34 cps/templates/index.xml:12
@@ -1641,11 +1641,11 @@ msgstr "Bücherregal erzeugen"
 
 #: cps/shelf.py:215
 msgid "Sorry you are not allowed to edit this shelf"
-msgstr "Sie dürfen dieses Bücherregal nicht editieren"
+msgstr "Sie dürfen dieses Bücherregal nicht bearbeiten"
 
 #: cps/shelf.py:217
 msgid "Edit a shelf"
-msgstr "Bücherregal editieren"
+msgstr "Bücherregal bearbeiten"
 
 #: cps/shelf.py:226
 msgid "Error deleting Shelf"

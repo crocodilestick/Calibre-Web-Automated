@@ -123,7 +123,10 @@ class LubimyCzytac(Metadata):
                         lc_parser.parse_single_book,
                         [(match, generic_cover, locale) for match in matches],
                     )
-                return final_matches
+                # Filter out None values from failed individual book parsing
+                final_matches = [match for match in final_matches if match is not None]
+                # If all detailed parsing failed, return original matches with basic info
+                return final_matches if final_matches else matches
             return matches
 
     def _prepare_query(self, title: str) -> str:

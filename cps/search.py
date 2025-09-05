@@ -348,13 +348,13 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
 
     if offset is not None and limit is not None:
         offset = int(offset)
-        pagination = Pagination(page=(offset // limit + 1), per_page=limit, total=result_count)
+        pagination = Pagination(page=(offset // limit + 1), per_page=limit, total_count=result_count)
         # Fetch only the required page of results from the database
         results = q.offset(offset).limit(limit).all()
     else:
         offset = 0
         limit = result_count if result_count > 0 else 1
-        pagination = Pagination(page=1, per_page=limit, total=result_count)
+        pagination = Pagination(page=1, per_page=limit, total_count=result_count)
         results = q.all()
 
     # Note: store_combo_ids will now only contain the IDs of the currently visible page.

@@ -30,6 +30,13 @@
     </div>
     {% if not content.role_anonymous() %}
     <div class="form-group">
+      <input type="checkbox" id="auto_send_enabled" name="auto_send_enabled" {% if content.auto_send_enabled %}checked{% endif %}>
+      <label for="auto_send_enabled">{{_('Automatically send new books to my eReader(s)')}}</label>
+      <p class="help-block">{{_('When enabled, newly ingested books will be automatically sent to all configured eReader email addresses above.')}}</p>
+    </div>
+    {% endif %}
+    {% if not content.role_anonymous() %}
+    <div class="form-group">
     <label for="locale">{{_('Language')}}</label>
         <select name="locale" id="locale" class="form-control">
             {%  for translation in translations %}

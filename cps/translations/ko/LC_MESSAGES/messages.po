@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2025-09-02 16:42+0200\n"
+"POT-Creation-Date: 2025-09-03 14:59+0200\n"
 "PO-Revision-Date: 2024-11-01 17:50+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -62,7 +62,7 @@ msgstr "기본 설정"
 msgid "UI Configuration"
 msgstr "UI 설정"
 
-#: cps/admin.py:350 cps/admin.py:1030 cps/db.py:808 cps/search.py:140
+#: cps/admin.py:350 cps/admin.py:1030 cps/db.py:820 cps/search.py:140
 #: cps/web.py:797
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -327,7 +327,7 @@ msgstr "Gmail 계정 인증에 성공했습니다."
 #: cps/admin.py:2109 cps/admin.py:2238 cps/editbooks.py:771
 #: cps/editbooks.py:1471 cps/shelf.py:76 cps/shelf.py:139 cps/shelf.py:182
 #: cps/shelf.py:232 cps/shelf.py:269 cps/shelf.py:343 cps/shelf.py:465
-#: cps/tasks/convert.py:145 cps/web.py:1641
+#: cps/tasks/convert.py:145 cps/web.py:1669
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "데이터베이스 오류가 발생했습니다: %(error)s."
@@ -367,7 +367,7 @@ msgstr "작업 종료 시간이 올바르지 않습니다."
 msgid "Scheduled tasks settings updated"
 msgstr "예약 작업 설정이 업데이트되었습니다."
 
-#: cps/admin.py:1527 cps/admin.py:1576 cps/admin.py:2234 cps/web.py:1421
+#: cps/admin.py:1527 cps/admin.py:1576 cps/admin.py:2234 cps/web.py:1449
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
 
@@ -508,7 +508,7 @@ msgstr "데이터베이스 설정이 업데이트되었습니다."
 msgid "Database Configuration"
 msgstr "데이터베이스 설정"
 
-#: cps/admin.py:2073 cps/web.py:1390
+#: cps/admin.py:2073 cps/web.py:1418
 msgid "Oops! Please complete all fields."
 msgstr "모든 항목을 입력해주세요."
 
@@ -542,7 +542,7 @@ msgstr "게스트 사용자는 삭제할 수 없습니다."
 msgid "No admin user remaining, can't delete user"
 msgstr "남은 관리자가 없어 사용자를 삭제할 수 없습니다."
 
-#: cps/admin.py:2204 cps/web.py:1580
+#: cps/admin.py:2204 cps/web.py:1608
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "이메일 주소는 비워둘 수 없고, 올바른 형식이어야 합니다."
 
@@ -853,7 +853,7 @@ msgstr "{} 사용자를 삭제했습니다."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1063 cps/templates/config_edit.html:217
+#: cps/db.py:1075 cps/templates/config_edit.html:217
 #: cps/templates/config_view_edit.html:63 cps/templates/email_edit.html:41
 #: cps/web.py:612 cps/web.py:646 cps/web.py:691 cps/web.py:731 cps/web.py:758
 #: cps/web.py:1072 cps/web.py:1109 cps/web.py:1160 cps/web.py:1192
@@ -861,7 +861,7 @@ msgstr ""
 msgid "None"
 msgstr "None"
 
-#: cps/duplicates.py:38 cps/duplicates.py:47 cps/templates/duplicates.html:283
+#: cps/duplicates.py:38 cps/duplicates.py:47
 #, fuzzy
 msgid "Duplicate Books"
 msgstr "책 삭제"
@@ -907,8 +907,8 @@ msgstr "파일 확장자 '%(ext)s'은(는) 서버에 업로드할 수 없습니�
 msgid "File to be uploaded must have an extension"
 msgstr "확장자가 없는 파일은 업로드할 수 없습니다."
 
-#: cps/editbooks.py:643 cps/editbooks.py:1140 cps/web.py:579 cps/web.py:1684
-#: cps/web.py:1729 cps/web.py:1785
+#: cps/editbooks.py:643 cps/editbooks.py:1140 cps/web.py:579 cps/web.py:1712
+#: cps/web.py:1757 cps/web.py:1813
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "선택한 책을 사용할 수 없습니다. 파일이 없거나 접근할 수 없습니다."
@@ -1022,7 +1022,8 @@ msgstr "Google 드라이브에서 %(format)s 파일을 찾을 수 없습니다: 
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s을(를) 찾을 수 없습니다: %(fn)s"
 
-#: cps/helper.py:92 cps/helper.py:221 cps/templates/detail.html:66
+#: cps/helper.py:92 cps/helper.py:221 cps/templates/detail.html:59
+#: cps/templates/detail.html:60 cps/templates/detail.html:130
 msgid "Send to eReader"
 msgstr "전자책 리더로 보내기"
 
@@ -1331,7 +1332,7 @@ msgstr "{} Stars"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:131
 #: cps/templates/layout.html:173 cps/templates/login.html:4
-#: cps/templates/login.html:21 cps/web.py:1457
+#: cps/templates/login.html:21 cps/web.py:1485
 msgid "Login"
 msgstr "로그인"
 
@@ -1779,7 +1780,7 @@ msgstr "다운로드"
 msgid "File formats list"
 msgstr "파일 형식 목록"
 
-#: cps/web.py:1349
+#: cps/web.py:1349 cps/web.py:1370
 msgid "Please configure the SMTP mail settings first..."
 msgstr "SMTP 메일 설정을 해주세요."
 
@@ -1788,7 +1789,7 @@ msgstr "SMTP 메일 설정을 해주세요."
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "%(eReadermail)s에 전송 작업이 추가되었습니다."
 
-#: cps/web.py:1359
+#: cps/web.py:1359 cps/web.py:1388
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "전송 중 오류가 발생했습니다: %(res)s"
@@ -1798,49 +1799,58 @@ msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr ""
 "문제가 발생했습니다. 프로필에 유효한 전자책 리더 이메일을 설정해 주세요."
 
-#: cps/web.py:1377
+#: cps/web.py:1378
+msgid "No email addresses selected"
+msgstr ""
+
+#: cps/web.py:1386
+#, fuzzy
+msgid "Success! Book queued for sending to selected addresses"
+msgstr "%(eReadermail)s에 전송 작업이 추가되었습니다."
+
+#: cps/web.py:1405
 msgid "Please wait one minute to register next user"
 msgstr "다음 사용자를 등록은 1분 뒤 가능합니다."
 
 #: cps/templates/layout.html:132 cps/templates/layout.html:174
-#: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1378
-#: cps/web.py:1382 cps/web.py:1387 cps/web.py:1391 cps/web.py:1397
-#: cps/web.py:1422 cps/web.py:1426 cps/web.py:1439 cps/web.py:1442
+#: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1406
+#: cps/web.py:1410 cps/web.py:1415 cps/web.py:1419 cps/web.py:1425
+#: cps/web.py:1450 cps/web.py:1454 cps/web.py:1467 cps/web.py:1470
 msgid "Register"
 msgstr "등록"
 
-#: cps/web.py:1381 cps/web.py:1489
+#: cps/web.py:1409 cps/web.py:1517
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr ""
 "Flask-Limiter 시스템 연결에 문제가 발생했습니다. 관리자에게 문의하세요."
 
-#: cps/web.py:1386 cps/web.py:1438
+#: cps/web.py:1414 cps/web.py:1466
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr "이메일 서버가 설정되지 않았습니다. 관리자에게 문의하세요."
 
-#: cps/web.py:1424
+#: cps/web.py:1452
 msgid "Oops! Your Email is not allowed."
 msgstr "사용할 수 없는 이메일입니다."
 
-#: cps/web.py:1427
+#: cps/web.py:1455
 msgid "Success! Confirmation Email has been sent."
 msgstr "인증 이메일을 발송했습니다."
 
-#: cps/web.py:1472 cps/web.py:1495
+#: cps/web.py:1500 cps/web.py:1523
 msgid "Cannot activate LDAP authentication"
 msgstr "LDAP 인증을 활성화할 수 없습니다."
 
-#: cps/web.py:1485
+#: cps/web.py:1513
 msgid "Please wait one minute before next login"
 msgstr "1분 후 시도해 주세요."
 
-#: cps/web.py:1504
+#: cps/web.py:1532
 #, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "'%(nickname)s'로 로그인했습니다."
 
-#: cps/web.py:1511
+#: cps/web.py:1539
 #, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
@@ -1849,46 +1859,46 @@ msgstr ""
 "'%(nickname)s'(으)로 대체 로그인했습니다. LDAP 서버에 연결할 수 없거나 존재하"
 "지 않는 사용자입니다."
 
-#: cps/web.py:1516
+#: cps/web.py:1544
 #, python-format
 msgid "Could not login: %(message)s"
 msgstr "로그인할 수 없습니다: %(message)s"
 
-#: cps/web.py:1520 cps/web.py:1545
+#: cps/web.py:1548 cps/web.py:1573
 msgid "Wrong Username or Password"
 msgstr "사용자 이름 또는 비밀번호가 올바르지 않습니다."
 
-#: cps/web.py:1527
+#: cps/web.py:1555
 msgid "New Password was sent to your email address"
 msgstr "새 비밀번호가 이메일로 전송되었습니다"
 
-#: cps/web.py:1531
+#: cps/web.py:1559
 msgid "An unknown error occurred. Please try again later."
 msgstr "알 수 없는 오류가 발생했습니다. 나중에 다시 시도해 주세요."
 
-#: cps/web.py:1533
+#: cps/web.py:1561
 msgid "Please enter valid username to reset password"
 msgstr "비밀번호를 재설정하려면 올바른 사용자 이름을 입력하세요."
 
-#: cps/web.py:1541
+#: cps/web.py:1569
 #, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "'%(nickname)s'로 로그인했습니다."
 
-#: cps/web.py:1615 cps/web.py:1668
+#: cps/web.py:1643 cps/web.py:1696
 #, python-format
 msgid "%(name)s's Profile"
 msgstr "%(name)s 프로필"
 
-#: cps/web.py:1632
+#: cps/web.py:1660
 msgid "Success! Profile Updated"
 msgstr "프로필이 업데이트되었습니다."
 
-#: cps/web.py:1636
+#: cps/web.py:1664
 msgid "Oops! An account already exists for this Email."
 msgstr "이미 등록된 이메일 주소입니다."
 
-#: cps/web.py:1742
+#: cps/web.py:1770
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "잘못된 권한입니다."
@@ -2028,7 +2038,7 @@ msgstr "편집"
 
 #: cps/templates/admin.html:26 cps/templates/book_edit.html:17
 #: cps/templates/book_table.html:62 cps/templates/book_table.html:141
-#: cps/templates/book_table.html:190 cps/templates/duplicates.html:368
+#: cps/templates/book_table.html:190 cps/templates/duplicates.html:366
 #: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
 #: cps/templates/user_edit.html:82 cps/templates/user_table.html:149
 msgid "Delete"
@@ -2272,7 +2282,7 @@ msgstr "재시작하시겠습니까?"
 
 #: cps/templates/admin.html:295 cps/templates/admin.html:309
 #: cps/templates/admin.html:329 cps/templates/config_db.html:103
-#: cps/templates/duplicates.html:391 cps/templates/duplicates.html:413
+#: cps/templates/duplicates.html:389 cps/templates/duplicates.html:411
 msgid "OK"
 msgstr "예"
 
@@ -2284,12 +2294,12 @@ msgstr "예"
 #: cps/templates/book_table.html:362 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:535 cps/templates/config_view_edit.html:176
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:347
-#: cps/templates/duplicates.html:369 cps/templates/modal_dialogs.html:64
-#: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
-#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:45
-#: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:47
-#: cps/templates/user_edit.html:159
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:112
+#: cps/templates/detail.html:412 cps/templates/duplicates.html:367
+#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
+#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
+#: cps/templates/schedule_edit.html:45 cps/templates/shelf_edit.html:27
+#: cps/templates/tasks.html:47 cps/templates/user_edit.html:159
 msgid "Cancel"
 msgstr "취소"
 
@@ -2389,7 +2399,7 @@ msgstr "업로드 중"
 msgid "Close"
 msgstr "닫기"
 
-#: cps/templates/book_edit.html:53 cps/templates/duplicates.html:402
+#: cps/templates/book_edit.html:53 cps/templates/duplicates.html:400
 #: cps/templates/layout.html:148
 msgid "Error"
 msgstr "오류"
@@ -2416,12 +2426,12 @@ msgid "Published Date"
 msgstr "발행일"
 
 #: cps/templates/book_edit.html:116 cps/templates/book_edit.html:346
-#: cps/templates/detail.html:201 cps/templates/listenmp3.html:102
+#: cps/templates/detail.html:266 cps/templates/listenmp3.html:102
 #: cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "출판사"
 
-#: cps/templates/book_edit.html:120 cps/templates/detail.html:166
+#: cps/templates/book_edit.html:120 cps/templates/detail.html:231
 #: cps/templates/listenmp3.html:69 cps/templates/user_edit.html:33
 msgid "Language"
 msgstr "언어"
@@ -2650,7 +2660,7 @@ msgstr "입력 "
 #: cps/templates/book_table.html:158 cps/templates/book_table.html:182
 #: cps/templates/book_table.html:202 cps/templates/book_table.html:222
 #: cps/templates/book_table.html:242 cps/templates/book_table.html:262
-#: cps/templates/duplicates.html:357 cps/templates/modal_dialogs.html:46
+#: cps/templates/duplicates.html:355 cps/templates/modal_dialogs.html:46
 #: cps/templates/tasks.html:37
 msgid "Are you really sure?"
 msgstr "정말로 하시겠습니까?"
@@ -2683,7 +2693,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:345
+#: cps/templates/book_table.html:282 cps/templates/detail.html:410
 msgid "Edit Metadata"
 msgstr "메타데이터 편집"
 
@@ -3591,55 +3601,92 @@ msgstr ""
 msgid "Click to See More"
 msgstr ""
 
-#: cps/templates/detail.html:85 cps/templates/detail.html:86
-#: cps/templates/detail.html:99 cps/templates/detail.html:100
+#: cps/templates/detail.html:66
+#, fuzzy
+msgid "Please select at least one email address"
+msgstr "새 비밀번호가 이메일로 전송되었습니다"
+
+#: cps/templates/detail.html:67
+#, fuzzy
+msgid "Error sending email"
+msgstr "서재를 삭제하는 중 오류가 발생했습니다."
+
+#: cps/templates/detail.html:74
+#, fuzzy
+msgid "Select eReader Email Addresses"
+msgstr "전자책 리더로 보낼 이메일"
+
+#: cps/templates/detail.html:80
+msgid "Choose email addresses:"
+msgstr ""
+
+#: cps/templates/detail.html:84
+#, fuzzy
+msgid "Select All"
+msgstr "서재 생성"
+
+#: cps/templates/detail.html:100
+#, fuzzy
+msgid "Select format:"
+msgstr "형식 삭제:"
+
+#: cps/templates/detail.html:113
+msgid "Send"
+msgstr ""
+
+#: cps/templates/detail.html:150 cps/templates/detail.html:151
+#: cps/templates/detail.html:164 cps/templates/detail.html:165
 msgid "Read in Browser"
 msgstr "웹에서 보기"
 
-#: cps/templates/detail.html:109 cps/templates/detail.html:129
+#: cps/templates/detail.html:174 cps/templates/detail.html:194
 msgid "Listen in Browser"
 msgstr "웹에서 듣기"
 
-#: cps/templates/detail.html:159 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:224 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "책 %(index)s / %(range)s"
 
-#: cps/templates/detail.html:210 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:275 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "발행일"
 
-#: cps/templates/detail.html:260 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:325 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "읽지 않음으로 표시"
 
-#: cps/templates/detail.html:261 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:326 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "읽음으로 표시"
 
-#: cps/templates/detail.html:271 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:336 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "보관함에서 복원"
 
-#: cps/templates/detail.html:272 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:337 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "보관함에 추가"
 
-#: cps/templates/detail.html:283 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:348 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "설명:"
 
-#: cps/templates/detail.html:298 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:363 cps/templates/listenmp3.html:190
 #: cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "서재에 추가"
 
-#: cps/templates/detail.html:310 cps/templates/detail.html:329
+#: cps/templates/detail.html:375 cps/templates/detail.html:394
 #: cps/templates/feed.xml:81 cps/templates/layout.html:267
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
 msgstr "(공개)"
+
+#: cps/templates/duplicates.html:283
+msgid "CWA Duplicates Manager"
+msgstr ""
 
 #: cps/templates/duplicates.html:285
 msgid ""
@@ -3676,24 +3723,24 @@ msgid ""
 "positives."
 msgstr ""
 
-#: cps/templates/duplicates.html:361
+#: cps/templates/duplicates.html:359
 #, fuzzy
 msgid "The following books will be permanently deleted:"
 msgstr "이 책은 데이터베이스에서 삭제됩니다."
 
-#: cps/templates/duplicates.html:365
+#: cps/templates/duplicates.html:363
 msgid "This action cannot be undone!"
 msgstr ""
 
-#: cps/templates/duplicates.html:380
+#: cps/templates/duplicates.html:378
 msgid "Success"
 msgstr ""
 
-#: cps/templates/duplicates.html:387
+#: cps/templates/duplicates.html:385
 msgid "Selected duplicate books have been deleted successfully!"
 msgstr ""
 
-#: cps/templates/duplicates.html:409
+#: cps/templates/duplicates.html:407
 msgid "An error occurred while processing your request."
 msgstr ""
 

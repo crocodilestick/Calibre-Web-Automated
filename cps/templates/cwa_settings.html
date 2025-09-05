@@ -6,7 +6,88 @@
 {% endblock %}
 
 {% block header %}
-<style></style>
+<style>
+  .metadata-provider-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 5px 0;
+    background-color: #2a3441;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: move;
+    user-select: none;
+    transition: background-color 0.2s ease;
+  }
+  
+  .metadata-provider-item:hover {
+    background-color: #3a4451;
+  }
+  
+  .metadata-provider-item.dragging {
+    opacity: 0.5;
+    background-color: #2a3441;
+    z-index: 1000;
+    transform: rotate(2deg);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  
+  .metadata-provider-drag-handle {
+    margin-right: 10px;
+    color: #888;
+    font-size: 14px;
+  }
+  
+  .metadata-provider-name {
+    flex-grow: 1;
+    color: #fff;
+  }
+  
+  .metadata-provider-disabled {
+    color: #888;
+    font-style: italic;
+  }
+  
+  /* Prevent drag operations from affecting page styling */
+  #metadata_provider_list {
+    position: relative;
+    isolation: isolate;
+    contain: layout style;
+  }
+  
+  /* Prevent dragover effects from affecting the page */
+  body.drag-active {
+    overflow: hidden;
+  }
+  
+  /* Completely override any browser drag effects */
+  .metadata-provider-item::-webkit-drag-placeholder {
+    opacity: 0 !important;
+  }
+  
+  .metadata-provider-item:-moz-drag-over {
+    background-color: transparent !important;
+  }
+  
+  /* Prevent any global styles from being affected during drag */
+  body:has(.metadata-provider-item.dragging) {
+    filter: none !important;
+    backdrop-filter: none !important;
+    opacity: 1 !important;
+  }
+  
+  /* Ensure drag doesn't affect parent containers */
+  .discover,
+  .settings-container {
+    filter: none !important;
+    backdrop-filter: none !important;
+    opacity: 1 !important;
+  }
+  
+  .metadata-provider-item * {
+    pointer-events: none;
+  }
+</style>
 {% endblock %}
 
 {% block body %}
@@ -53,7 +134,86 @@
         from happening again). This tool was adapted from the <a href="https://kindle-epub-fix.netlify.app/">kindle-epub-fix.netlify.app</a> 
         tool made by <a href="https://github.com/innocenat">innocenat</a>.</i>') | safe }}
       </p>
+
+      {% if cwa_settings['auto_metadata_fetch_enabled'] %}
+      <input type="checkbox" id="auto_metadata_fetch_enabled" name="auto_metadata_fetch_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Automatically fetches metadata for newly ingested books">
+      {% else %}
+      <input type="checkbox" id="auto_metadata_fetch_enabled" name="auto_metadata_fetch_enabled" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Automatically fetches metadata for newly ingested books">
+      {% endif %}
+      <label for="auto_metadata_fetch_enabled" style="padding-left: 10px;">{{_('Enable Automatic Metadata Fetching for New Books')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_('When active, CWA will automatically attempt to fetch and apply metadata (title, author, description, cover, etc.) for newly ingested books using the configured metadata provider hierarchy. This helps improve the quality of book information, especially for books with poor or missing metadata.')}}
+      </p>
+
+      {% if cwa_settings['auto_metadata_smart_application'] %}
+      <input type="checkbox" id="auto_metadata_smart_application" name="auto_metadata_smart_application" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Apply intelligent criteria when replacing existing metadata">
+      {% else %}
+      <input type="checkbox" id="auto_metadata_smart_application" name="auto_metadata_smart_application" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Apply intelligent criteria when replacing existing metadata">
+      {% endif %}
+      <label for="auto_metadata_smart_application" style="padding-left: 10px;">{{_('Enable Smart Metadata Application')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_('When enabled, fetched metadata will only replace existing data if it appears to be better quality (e.g., longer descriptions, higher resolution covers). When disabled, fetched metadata will replace existing data as-is from the preferred provider.')}}
+      </p>
     </div>
+
+  <div class="settings-container">
+    <!-- Ingest Timeout Setting -->
+    <div class="form-group">
+      <h4 class="settings-section-header">{{_('Ingest Processing Timeout')}}</h4>
+      <p class="settings-description">
+        {{_('Maximum time (in minutes) to allow for processing a single book before timing out. Files that timeout are moved to the failed backup folder for investigation.')}}
+      </p>
+      <label for="ingest_timeout_minutes" class="settings-section-header" style="padding-right: 10px; margin-bottom: 16px !important; padding-bottom: 0px !important;">{{_('Timeout (minutes):')}}</label>
+      <input type="number" 
+             name="ingest_timeout_minutes" 
+             id="ingest_timeout_minutes" 
+             value="{{ cwa_settings['ingest_timeout_minutes'] }}" 
+             min="5" 
+             max="120" 
+             style="width: 100px;
+                    padding: 5px;
+                    border: 1px solid transparent;
+                    border-radius: 4px;
+                    background-color: #151e2680;">
+      <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 5-120 minutes (default: 15)')}}</small>
+    </div>
+
+    <!-- Auto-Send Delay Setting -->
+    <div class="form-group">
+      <h4 class="settings-section-header">{{_('Auto-Send Delay for New Books')}}</h4>
+      <p class="settings-description">
+        {{_('Delay (in minutes) before automatically sending newly ingested books to eReaders. This allows time for metadata fetching and other processing to complete before sending. Only applies to users who have enabled auto-send in their profile.')}}
+      </p>
+      <label for="auto_send_delay_minutes" class="settings-section-header" style="padding-right: 10px; margin-bottom: 16px !important; padding-bottom: 0px !important;">{{_('Delay (minutes):')}}</label>
+      <input type="number" 
+             name="auto_send_delay_minutes" 
+             id="auto_send_delay_minutes" 
+             value="{{ cwa_settings['auto_send_delay_minutes'] }}" 
+             min="1" 
+             max="60" 
+             style="width: 100px;
+                    padding: 5px;
+                    border: 1px solid transparent;
+                    border-radius: 4px;
+                    background-color: #151e2680;">
+      <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 1-60 minutes (default: 5)')}}</small>
+    </div>
+
+    <!-- Metadata Provider Hierarchy Setting -->
+    <div class="form-group">
+      <h4 class="settings-section-header">{{_('Auto Metadata Fetch Provider Hierarchy')}}</h4>
+      <p class="settings-description">
+        {{_('Configure the order in which metadata providers are searched when automatically fetching metadata for new books. Drag and drop to reorder providers. Only enabled providers will be used.')}}
+      </p>
+      <div id="metadata_provider_hierarchy_container" style="margin-top: 15px; max-width: 400px;">
+        <div id="metadata_provider_list" style="border: 1px solid #444; border-radius: 4px; padding: 10px; background-color: #151e2680;">
+          <!-- Providers will be populated here by JavaScript -->
+        </div>
+        <input type="hidden" name="metadata_provider_hierarchy" id="metadata_provider_hierarchy_hidden" value="">
+      </div>
+      <small style="color: #bbbbbb;">{{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
+    </div>
+  </div>
 
     <div class="settings-container">
         <h4 class="settings-section-header">{{_('Web UI Settings')}}</h4>
@@ -248,31 +408,176 @@
 
     <br>
 
-    <!-- Ingest Timeout Setting -->
-    <div class="form-group">
-      <h4 class="settings-section-header">{{_('Ingest Processing Timeout')}}</h4>
-      <p class="settings-description">
-        {{_('Maximum time (in minutes) to allow for processing a single book before timing out. Files that timeout are moved to the failed backup folder for investigation.')}}
-      </p>
-      <label for="ingest_timeout_minutes" class="settings-section-header" style="padding-right: 10px; margin-bottom: 16px !important; padding-bottom: 0px !important;">{{_('Timeout (minutes):')}}</label>
-      <input type="number" 
-             name="ingest_timeout_minutes" 
-             id="ingest_timeout_minutes" 
-             value="{{ cwa_settings['ingest_timeout_minutes'] }}" 
-             min="5" 
-             max="120" 
-             style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-      <small style="color: #666; margin-left: 10px;">{{_('Range: 5-120 minutes (default: 15)')}}</small>
-    </div>
-
     <br>
-    <div class="row form-group" style="text-align-last: justify; position: relative; height: 0px; margin-bottom: 6rem; margin-top: -1rem;">
+    <div style="margin-top: -2rem; max-width: 900px; justify-self: center; margin-bottom: 1rem; display: flex; flex-direction: row; flex-wrap: wrap; width: -webkit-fill-available; justify-content: space-between; margin-left: 2rem; margin-right: 2rem;">
       <input type="submit" name="submit_button" value="Submit" class="btn btn-default">
-      <input type="submit" style="margin-right: 2rem;" name="submit_button" value="Apply Default Settings" class="btn btn-default">
+      <input type="submit" name="submit_button" value="Apply Default Settings" class="btn btn-default">
     </div>
     <br>
 
     </div>
   </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get current hierarchy from CWA settings
+  const currentHierarchyStr = {{ cwa_settings.get("metadata_provider_hierarchy", '["ibdb","google","dnb"]') | tojson }};
+  let providerHierarchy = [];
+  
+  try {
+    if (typeof currentHierarchyStr === 'string') {
+      providerHierarchy = JSON.parse(currentHierarchyStr);
+    } else {
+      providerHierarchy = currentHierarchyStr;
+    }
+  } catch (e) {
+    console.error('Error parsing hierarchy:', e);
+    providerHierarchy = ["ibdb", "google", "dnb"]; // fallback
+  }
+  
+  // Fetch available providers from the API
+  fetch('/metadata/provider')
+    .then(response => response.json())
+    .then(providers => {
+      populateProviderList(providers, providerHierarchy);
+      setupDragAndDrop();
+    })
+    .catch(error => {
+      console.error('Error fetching providers:', error);
+      // Fallback with static list
+      const fallbackProviders = [
+        {id: 'google', name: 'Google Books', active: true},
+        {id: 'dnb', name: 'DNB', active: true},
+        {id: 'ibdb', name: 'IBDb', active: true},
+        {id: 'comicvine', name: 'ComicVine', active: true},
+        {id: 'douban', name: 'Douban', active: true}
+      ];
+      populateProviderList(fallbackProviders, providerHierarchy);
+      setupDragAndDrop();
+    });
+  
+  function populateProviderList(providers, hierarchy) {
+    const container = document.getElementById('metadata_provider_list');
+    const hiddenInput = document.getElementById('metadata_provider_hierarchy_hidden');
+    
+    // Clear any existing content
+    container.innerHTML = '';
+    
+    // Create a map of providers by ID for easy lookup
+    const providerMap = {};
+    providers.forEach(p => {
+      providerMap[p.id] = p;
+    });
+    
+    // First add providers in the current hierarchy order (this is the saved user preference)
+    hierarchy.forEach(providerId => {
+      if (providerMap[providerId]) {
+        addProviderItem(container, providerMap[providerId]);
+        delete providerMap[providerId]; // Remove so we don't add twice
+      }
+    });
+    
+    // Then add any remaining providers that weren't in the hierarchy (new providers)
+    // These will be added in the order they come from the API (alphabetical)
+    Object.values(providerMap).forEach(provider => {
+      addProviderItem(container, provider);
+    });
+    
+    updateHiddenInput();
+  }
+  
+  function addProviderItem(container, provider) {
+    const item = document.createElement('div');
+    item.className = 'metadata-provider-item';
+    item.draggable = false; // Disable native drag
+    item.dataset.providerId = provider.id;
+    
+    // For admin settings, show all providers as enabled/available
+    item.innerHTML = `
+      <span class="metadata-provider-drag-handle">⋮⋮</span>
+      <span class="metadata-provider-name">
+        ${provider.name}
+      </span>
+    `;
+    
+    container.appendChild(item);
+  }
+  
+  function setupDragAndDrop() {
+    const container = document.getElementById('metadata_provider_list');
+    let draggedElement = null;
+    let isDragging = false;
+    let startY = 0;
+    let startX = 0;
+    
+    container.addEventListener('mousedown', function(e) {
+      const item = e.target.closest('.metadata-provider-item');
+      if (!item) return;
+      
+      draggedElement = item;
+      isDragging = true;
+      startY = e.clientY;
+      startX = e.clientX;
+      
+      item.classList.add('dragging');
+      document.body.style.userSelect = 'none';
+      
+      e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging || !draggedElement) return;
+      
+      const container = document.getElementById('metadata_provider_list');
+      const afterElement = getMouseAfterElement(container, e.clientY);
+      
+      if (afterElement == null) {
+        container.appendChild(draggedElement);
+      } else {
+        container.insertBefore(draggedElement, afterElement);
+      }
+    });
+    
+    document.addEventListener('mouseup', function(e) {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      if (draggedElement) {
+        draggedElement.classList.remove('dragging');
+        draggedElement = null;
+      }
+      document.body.style.userSelect = '';
+      updateHiddenInput();
+    });
+  }
+  
+  function getMouseAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.metadata-provider-item:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+  
+  function updateHiddenInput() {
+    const container = document.getElementById('metadata_provider_list');
+    const hiddenInput = document.getElementById('metadata_provider_hierarchy_hidden');
+    const items = container.querySelectorAll('.metadata-provider-item');
+    
+    const hierarchy = Array.from(items).map(item => item.dataset.providerId);
+    hiddenInput.value = JSON.stringify(hierarchy);
+  }
+  
+  // Initialize the hidden input value
+  updateHiddenInput();
+});
+</script>
 {% endblock %}

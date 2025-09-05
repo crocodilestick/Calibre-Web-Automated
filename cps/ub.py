@@ -248,6 +248,8 @@ class User(UserBase, Base):
     hardcover_token = Column(String, unique=True, default=None)
     # New per-user theme (0=default/light, 1=caliBlur) replacing global-only behavior
     theme = Column(Integer, default=0)
+    # Auto-send settings for new books
+    auto_send_enabled = Column(Boolean, default=False)
 
 
 if oauth_support:
@@ -294,6 +296,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.id = None
         self.role = None
         self.name = None
+        self.auto_send_enabled = False
         self.loadSettings()
 
     def loadSettings(self):
@@ -313,7 +316,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.view_settings = data.view_settings
         self.kobo_only_shelves_sync = data.kobo_only_shelves_sync
         self.hardcover_token = data.hardcover_token
-
+        self.auto_send_enabled = data.auto_send_enabled
     def role_admin(self):
         return False
 
@@ -641,6 +644,33 @@ def migrate_user_table(engine, _session):
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
             trans.commit()
+    
+    # Migration for auto-send feature columns
+    try:
+        _session.query(exists().where(User.auto_send_enabled)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
+            trans.commit()
+    
+    # Migration to enable duplicates sidebar for existing admin users
+    try:
+        from . import constants
+        SIDEBAR_DUPLICATES = constants.SIDEBAR_DUPLICATES
+        
+        # Check if any admin users don't have duplicates enabled
+        admin_users = _session.query(User).filter(User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN).all()
+        for user in admin_users:
+            if not (user.sidebar_view & SIDEBAR_DUPLICATES):
+                user.sidebar_view |= SIDEBAR_DUPLICATES
+                print(f"[Migration] Enabled duplicates sidebar for admin user: {user.name}")
+        
+        _session.commit()
+    except Exception as e:
+        print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
+        _session.rollback()
 
 def migrate_oauth_provider_table(engine, _session):
     try:

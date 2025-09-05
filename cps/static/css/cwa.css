@@ -11,3 +11,14 @@ body.admin h2 {
     font-weight: bold !important;
     margin-bottom: 30px !important;
 }
+
+/* Fix z-index issues with specific elements that show through modals */
+body.modal-open .book-meta > .author > a:first-of-type:before,
+body.modal-open div.tags > p > span.glyphicon.glyphicon-tags,
+body.modal-open #remove-from-shelves + .identifiers,
+body.modal-open #remove-from-shelves + .languages, 
+body.modal-open #remove-from-shelves + .publishers,
+body.modal-open #remove-from-shelves + .publishing-date,
+body.modal-open #remove-from-shelves + .tags {
+    z-index: -1 !important;
+}

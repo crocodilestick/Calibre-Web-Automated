@@ -1362,6 +1362,34 @@ def send_to_ereader(book_id, book_format, convert):
     return Response(json.dumps(response), mimetype='application/json')
 
 
+@web.route('/send_selected/<int:book_id>', methods=["POST"])
+@login_required_if_no_ano
+@download_required
+def send_to_selected_ereaders(book_id):
+    if not config.get_mail_server_configured():
+        response = [{'type': "danger", 'message': _("Please configure the SMTP mail settings first...")}]
+        return Response(json.dumps(response), mimetype='application/json')
+
+    selected_emails = request.form.get('selected_emails', '')
+    book_format = request.form.get('book_format', '')
+    convert = request.form.get('convert', '0')
+
+    if not selected_emails:
+        response = [{'type': "danger", 'message': _("No email addresses selected")}]
+        return Response(json.dumps(response), mimetype='application/json')
+
+    result = send_mail(book_id, book_format, int(convert), selected_emails, config.get_book_path(),
+                       current_user.name)
+
+    if result is None:
+        ub.update_download(book_id, int(current_user.id))
+        response = [{'type': "success", 'message': _("Success! Book queued for sending to the selected address(es)!")}]
+    else:
+        response = [{'type': "danger", 'message': _("Oops! There was an error sending book: %(res)s", res=result)}]
+
+    return Response(json.dumps(response), mimetype='application/json')
+
+
 # ################################### Login Logout ##################################################################
 
 @web.route('/register', methods=['POST'])
@@ -1595,6 +1623,9 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         if old_state == 0 and current_user.kobo_only_shelves_sync == 1:
             kobo_sync_status.update_on_sync_shelfs(current_user.id)
         current_user.hardcover_token = to_save.get("hardcover_token","" ).replace("Bearer ","" ) or None
+        # Auto-send and metadata fetch settings
+        current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
+        current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
         # Theme change
         if 'theme' in to_save:
             try:

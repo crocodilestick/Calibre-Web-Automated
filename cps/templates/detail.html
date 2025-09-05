@@ -6,6 +6,14 @@
       <meta property="og:description" content="{{ entry.comments[0].text|striptags|truncate(65) }}" />
       <meta property="og:image" content="{{url_for('web.get_cover', book_id=entry.id, resolution='og', c=entry|last_modified)}}" />
     {% endif %}
+    <style>
+        .modal-card {
+            background-color: #6d6d6d40;
+            padding: 2rem;
+            margin: 2rem;
+            border-radius: 1rem;
+        }
+    </style>
 {% endblock %}
 {% block body %}
 <div class="single">
@@ -53,27 +61,108 @@
                         {% endif %}
                         {% if current_user.kindle_mail and entry.email_share_list %}
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            {% if entry.email_share_list.__len__() == 1 %}
+                            {% if ',' in current_user.kindle_mail %}
+                                <!-- Multi-email case: Show button that opens modal -->
                                 <div class="btn-group" role="group">
-                                    <button id="sendbtn" class="btn btn-primary sendbtn-form" data-href="{{url_for('web.send_to_ereader', book_id=entry.id, book_format=entry.email_share_list[0]['format'], convert=entry.email_share_list[0]['convert'])}}">
-                                        <span class="glyphicon glyphicon-send"></span> {{entry.email_share_list[0]['text']}}
+                                    <button id="sendToEReaderBtn" type="button" class="btn btn-primary" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send to eReader') }}">
+                                        <span class="glyphicon glyphicon-send"></span>
                                     </button>
+                                </div>
+                                <!-- Email Selection Modal -->
+                                <div class="modal fade" id="emailSelectModal" tabindex="-1" role="dialog" aria-labelledby="emailSelectModalLabel" style="animation: auto ease-in-out 0s 1 normal none running none;">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content" style="border-radius: 1rem; padding: 1px;">
+                                            <div class="modal-card">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h4 class="modal-title" id="emailSelectModalLabel">{{ _('Select eReader Email Addresses') }}</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Validation message area -->
+                                                <div id="modal-validation-message" style="display: none;" class="alert alert-danger text-center">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                    <span id="validation-message-text"></span>
+                                                </div>
+                                                
+                                                <form id="emailSelectForm">
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <legend style="color: whitesmoke !important;">{{ _('Choose email addresses:') }}</legend>
+                                                            <div class="checkbox">
+                                                                <label for="selectAllEmails">
+                                                                    <input type="checkbox" id="selectAllEmails" checked>
+                                                                    <strong>{{ _('Select All') }}</strong>
+                                                                </label>
+                                                            </div>
+                                                            <hr>
+                                                            {% for email in current_user.kindle_mail.split(',') %}
+                                                                <div class="checkbox">
+                                                                    <label for="email-{{ loop.index }}">
+                                                                        <input type="checkbox" id="email-{{ loop.index }}" name="selected_emails" value="{{ email.strip() }}" checked>
+                                                                        {{ email.strip() }}
+                                                                    </label>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </fieldset>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <fieldset>
+                                                            <legend style="color: whitesmoke !important;">{{ _('Additional email addresses:') }}</legend>
+                                                            <label for="custom_emails">{{ _('Enter additional email addresses (separated by commas):') }}</label>
+                                                            <textarea id="custom_emails" name="custom_emails" class="form-control" rows="3" placeholder="{{ _('example@domain.com, another@domain.com') }}"></textarea>
+                                                            <small class="help-block">{{ _('Enter one or more email addresses separated by commas') }}</small>
+                                                        </fieldset>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="format_selection">{{ _('Select format:') }}</label>
+                                                        <select id="format_selection" name="format_selection" class="form-control">
+                                                            {% for format in entry.email_share_list %}
+                                                                <option value="{{ format['format'] }}" data-convert="{{ format['convert'] }}">
+                                                                    {{ format['text'] }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer" style="display: inline-flex; align-items: flex-start; justify-content: flex-start; gap: 1rem;">
+                                                <button type="button" class="btn btn-default" id="sendSelectedBtn">{{ _('Send') }}</button>
+                                                <button type="button" class="btn btn-primary" data-dismiss="modal">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
                                 </div>
                             {% else %}
-                                <div class="btn-group" role="group">
-                                    <button id="sendbtn2" type="button" class="btn btn-primary dropdown-toggle"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="glyphicon glyphicon-send"></span>{{ _('Send to eReader') }}
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="send-to-ereader">
-                                        {% for format in entry.email_share_list %}
-                                            <li>
-                                                <a class="sendbtn-form" data-href="{{url_for('web.send_to_ereader', book_id=entry.id, book_format=format['format'], convert=format['convert'])}}">{{ format['text'] }}</a>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
+                                <!-- Single email case: Use existing logic -->
+                                {% if entry.email_share_list.__len__() == 1 %}
+                                    <div class="btn-group" role="group">
+                                        <button id="sendbtn" class="btn btn-primary sendbtn-form" data-href="{{url_for('web.send_to_ereader', book_id=entry.id, book_format=entry.email_share_list[0]['format'], convert=entry.email_share_list[0]['convert'])}}">
+                                            <span class="glyphicon glyphicon-send"></span> {{entry.email_share_list[0]['text']}}
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <div class="btn-group" role="group">
+                                        <button id="sendbtn2" type="button" class="btn btn-primary dropdown-toggle"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="glyphicon glyphicon-send"></span>{{ _('Send to eReader') }}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="send-to-ereader">
+                                            {% for format in entry.email_share_list %}
+                                                <li>
+                                                    <a class="sendbtn-form" data-href="{{url_for('web.send_to_ereader', book_id=entry.id, book_format=format['format'], convert=format['convert'])}}">{{ format['text'] }}</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     {% endif %}
@@ -367,6 +456,7 @@
     </a>
 </script>
 <script src="{{ url_for('static', filename='js/details.js') }}"></script>
+<script src="{{ url_for('static', filename='js/email_selection.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fullscreen.js') }}"></script>
 <script type="text/javascript">
 </script>

@@ -227,10 +227,16 @@ class CWA_DB:
         headers = [header[0] for header in self.cur.description]
         cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
 
+        # Define which settings should remain as integers (not converted to boolean)
+        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']
+        
+        # Define which settings should remain as JSON strings (not split by comma)
+        json_settings = ['metadata_provider_hierarchy']
+
         for header in headers:
-            if isinstance(cwa_settings[header], int):
+            if isinstance(cwa_settings[header], int) and header not in integer_settings:
                 cwa_settings[header] = bool(cwa_settings[header])
-            elif isinstance(cwa_settings[header], str) and ',' in cwa_settings[header]:
+            elif isinstance(cwa_settings[header], str) and ',' in cwa_settings[header] and header not in json_settings:
                 cwa_settings[header] = cwa_settings[header].split(',')
 
         return cwa_settings

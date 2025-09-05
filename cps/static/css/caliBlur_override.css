@@ -17,9 +17,9 @@ input[type=checkbox] {accent-color: #ffffff;}
   margin-top: 4px;
 }
 
-.cover {
+/* .cover {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
-}
+} */
 
 .cover .read {
   line-height: 15px;
@@ -354,4 +354,16 @@ form#archived_form > label.block-label::before {
     top: 14px !important;
     left: 69px;
     z-index: -1 !important;
+}
+
+/* Fixes close buttons colour */
+button.close > span {
+    color: whitesmoke;
+}
+
+/* Fixes ill-aligned sort element in first column of book list table */
+.bs-checkbox > .th-inner.sortable {
+    position: relative;
+    right: 8px;
+    bottom: 10px;
 }

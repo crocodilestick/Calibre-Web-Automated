@@ -310,7 +310,7 @@ services:
       # If you don't have an existing library, CWA will automatically create one at the bind provided here
       - /path/to/your/calibre/library:/calibre-library
       # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to its workflow (WIP)
-      # If you are starting with a fresh install, you also need to copy plugins\..\customize.py.json to the corresponding docker location (the config path above + .config/calibre/customize.py.json)
+      # If you are starting with a fresh install, you also need to copy customize.py.json to the Calibre config volume above, in /path/to/config/folder/.config/calibre/customize.py.json, see the note below for more info
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
@@ -320,6 +320,15 @@ services:
     #   - NET_BIND_SERVICE
     restart: unless-stopped
 ~~~
+
+### Plugins and `customize.py.json`:
+
+To allow plugins to be recognized by Calibre-Web-Automated, you must also copy the `customize.py.json` file from the parent directory of your Calibre plugins to the corresponding location in your config bind. For example, if your existing Calibre plugins are located at `/path/to/your/calibre/plugins/`, you should find the `customize.py.json` file at `/path/to/your/calibre/customize.py.json` and copy it to your docker config bind at `/path/to/config/.config/calibre/customize.py.json`.
+
+- On macOS, this file is typically found at `~/Library/Preferences/calibre/customize.py.json`.
+- On Linux, it is usually located at `~/.config/calibre/customize.py.json`.
+- On Windows, different generations of Calibre had different folders. Common ones are `C:\Program Files\Calibre\customize.py.json`, `C:\Program Files\Calibre2\customize.py.json` and  `C:\Users\<YourUsername>\AppData\Roaming\calibre\customize.py.json`.
+
 
 ### Explanation of the Container Bindings:
   - Make sure all 3 of the main bindings are separate directories, errors can occur when binds are made within other binds

@@ -4,8 +4,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2025-09-03 14:59+0200\n"
-"PO-Revision-Date: 2025-08-05 13:11+0000\n"
-"Last-Translator: Crocodilestick\n"
+"PO-Revision-Date: 2025-09-08 23:10+0200\n"
+"Last-Translator: Sven Fischer <git-dev@linux4tw.de>\n"
 "Language-Team: German\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -14,9 +14,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: de_DE\n"
 "Generated-By: Babel 2.15.0\n"
-"\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Loco https://localise.biz/\n"
+"X-Generator: Poedit 3.6\n"
 
 #: cps/about.py:77
 msgid "Statistics"
@@ -85,7 +84,6 @@ msgid "User not found"
 msgstr "Benutzer nicht gefunden"
 
 #: cps/admin.py:453
-#, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} Benutzer erfolgreich gelöscht"
 
@@ -247,7 +245,6 @@ msgid "Allow"
 msgstr "Erlauben"
 
 #: cps/admin.py:980
-#, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} Synchronisationseinträge gelöscht"
 
@@ -265,11 +262,11 @@ msgstr "client_secrets.json ist nicht für Web Anwendungen konfiguriert"
 
 #: cps/admin.py:1213
 msgid "Unable to fetch OAuth metadata from URL."
-msgstr ""
+msgstr "OAuth-Metadaten können nicht von der URL abgerufen werden."
 
 #: cps/admin.py:1231
 msgid "Unable to fetch OpenID configuration."
-msgstr ""
+msgstr "OpenID-Konfiguration abrufen ist nicht möglich."
 
 #: cps/admin.py:1293
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -493,7 +490,6 @@ msgid "At Least One LDAP User Not Found in Database"
 msgstr "Mindestens ein LDAP Benutzer wurde nicht in der Datenbank gefudnen"
 
 #: cps/admin.py:1792
-#, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Benutzer erfolgreich importiert"
 
@@ -575,42 +571,39 @@ msgid "User '%(nick)s' updated"
 msgstr "Benutzer '%(nick)s' aktualisiert"
 
 #: cps/admin.py:2281
-#, fuzzy
 msgid "Connection successful!"
-msgstr "Verbindungsfehler"
+msgstr "Verbindung erfolgreich!"
 
 #: cps/admin.py:2283 cps/admin.py:2326
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
-msgstr ""
+msgstr "Verbindung fehlgeschlagen: Server lieferte den Status-Code %(code)s"
 
 #: cps/admin.py:2285 cps/admin.py:2328
 msgid "Connection failed: Could not connect to server."
-msgstr ""
+msgstr "Verbindung fehlgeschlagen: Konnte nicht mit dem Server verbinden."
 
 #: cps/admin.py:2287 cps/admin.py:2330
 msgid "Connection failed: Request timed out."
-msgstr ""
+msgstr "Verbindung Fehlgeschlagen: Zeitüberschreitung der Anfrage."
 
 #: cps/admin.py:2289 cps/admin.py:2332
 msgid "Connection failed: Invalid JSON in response."
-msgstr ""
+msgstr "Verbindung fehlgeschlagen: Invalides JSON in der Antwort."
 
 #: cps/admin.py:2292 cps/admin.py:2335
-#, fuzzy
 msgid "An unknown error occurred."
-msgstr ""
-"Es ist ein unbekannter Fehler aufgetreten. Bitte später erneut versuchen."
+msgstr "Ein unbekannter Fehler ist aufgetreten."
 
 #: cps/admin.py:2318
 #, python-format
 msgid "Metadata is missing required fields: %(fields)s"
-msgstr ""
+msgstr "Den Metadaten fehlen erforderliche Felder: %(fields)s"
 
 #: cps/admin.py:2323
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s endpoints."
-msgstr ""
+msgstr "Metadaten-URL ist gültig! %(count)s Endpunkte gefunden."
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -746,9 +739,8 @@ msgid "Timestamp"
 msgstr "Zeitstempel"
 
 #: cps/cwa_functions.py:319 cps/cwa_functions.py:321
-#, fuzzy
 msgid "Book ID"
-msgstr "Bücher"
+msgstr "Buch-ID"
 
 #: cps/cwa_functions.py:319 cps/templates/book_edit.html:85
 #: cps/templates/search_form.html:8
@@ -756,24 +748,21 @@ msgid "Book Title"
 msgstr "Buchtitel"
 
 #: cps/cwa_functions.py:319
-#, fuzzy
 msgid "Book Author"
-msgstr "Autor"
+msgstr "Autor des Buches"
 
 #: cps/cwa_functions.py:319
 msgid "Trigger Type"
 msgstr "Trigger Typ"
 
 #: cps/cwa_functions.py:321 cps/cwa_functions.py:327
-#, fuzzy
 msgid "Filepath"
-msgstr "Dateiformate"
+msgstr "Dateipfad"
 
 #: cps/cwa_functions.py:325 cps/cwa_functions.py:327 cps/cwa_functions.py:330
 #: cps/cwa_functions.py:332
-#, fuzzy
 msgid "Filename"
-msgstr "Vietnamesisch"
+msgstr "Dateiname"
 
 #: cps/cwa_functions.py:325
 msgid "Manual?"
@@ -796,9 +785,8 @@ msgid "Original Format"
 msgstr "Originalformat"
 
 #: cps/cwa_functions.py:332
-#, fuzzy
 msgid "End Format"
-msgstr "Format hochladen"
+msgstr "Zielformat"
 
 #: cps/cwa_functions.py:347
 msgid "Calibre-Web Automated Sever Stats & Archive"
@@ -854,7 +842,7 @@ msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 "⛔ Weder der Ingest-Dienst noch der Metadaten-Änderungsdetektor werden "
-"ausgeführt."
+"ausgeführt"
 
 #: cps/cwa_functions.py:433
 msgid "An Error has occurred"
@@ -894,13 +882,13 @@ msgid "None"
 msgstr "Keine"
 
 #: cps/duplicates.py:38 cps/duplicates.py:47
-#, fuzzy
 msgid "Duplicate Books"
-msgstr "Buch löschen"
+msgstr "Bücherduplikate"
 
 #: cps/editbooks.py:106
+#, fuzzy
 msgid "Missing or invalid book id for format upload"
-msgstr ""
+msgstr "Fehlende oder ungültige Bücher-ID für den Upload"
 
 #: cps/editbooks.py:131 cps/editbooks.py:151 cps/templates/book_edit.html:53
 #: cps/templates/layout.html:148
@@ -908,9 +896,8 @@ msgid "Upload done, processing, please wait..."
 msgstr "Hochladen beendet, verarbeite Daten, bitte warten..."
 
 #: cps/editbooks.py:136 cps/editbooks.py:155
-#, fuzzy
 msgid "Failed to queue upload for processing"
-msgstr "Fehler beim Erzeugen des Ordners für die Coverdatei"
+msgstr "Fehler beim Hinzufügen des Uploads in die Verarbeitungswarteschlange"
 
 #: cps/editbooks.py:171
 msgid "Source or destination format for conversion missing"
@@ -968,7 +955,6 @@ msgid "Metadata successfully updated"
 msgstr "Metadaten wurden erfolgreich aktualisiert"
 
 #: cps/editbooks.py:776
-#, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Fehler beim Editieren des Buches: {}"
 
@@ -1113,7 +1099,6 @@ msgstr ""
 "Zugriffsrechte?"
 
 #: cps/helper.py:371
-#, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "Gelesen-Status konnte nicht aktualisiert werden: {}"
 
@@ -1287,14 +1272,18 @@ msgstr "Anmelden mit %(provider)s"
 #: cps/oauth_bb.py:108
 msgid "Login failed: Could not connect to the user info endpoint."
 msgstr ""
+"Login fehlgeschlagen: Konnte nicht zum Benutzerinformationsendpunkt "
+"verbinden."
 
 #: cps/oauth_bb.py:112
 msgid "Login failed: The OAuth provider returned an invalid user profile."
 msgstr ""
+"Login fehlgeschlagen: Der OAuth-Anbieter hat ein invalides Benutzerprofile "
+"geliefert."
 
 #: cps/oauth_bb.py:125
 msgid "Login failed: User profile from provider is incomplete."
-msgstr ""
+msgstr "Login fehlgeschlagen: Benutzerprofil vom Anbieter ist nicht komplett."
 
 #: cps/oauth_bb.py:212 cps/remotelogin.py:149
 #, python-format
@@ -1343,16 +1332,14 @@ msgid "Failed to fetch user info from Google."
 msgstr "Laden der Benutzerinformationen von Google fehlgeschlagen."
 
 #: cps/oauth_bb.py:431
-#, fuzzy
 msgid "Failed to log in with Generic OAuth."
-msgstr "Login mit GitHub fehlgeschlagen."
+msgstr "Login mit generischem OAuth fehlgeschlagen."
 
 #: cps/oauth_bb.py:477
 msgid "GitHub Oauth error, please retry later."
 msgstr "GitHub OAuth Fehler, bitte später erneut versuchen."
 
 #: cps/oauth_bb.py:480
-#, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "Github OAuth Fehler {}"
 
@@ -1361,17 +1348,14 @@ msgid "Google Oauth error, please retry later."
 msgstr "Google OAuth Fehler, bitte später erneut versuchen."
 
 #: cps/oauth_bb.py:504
-#, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Google OAuth Fehler: {}"
 
 #: cps/oauth_bb.py:524 cps/oauth_bb.py:528
-#, fuzzy, python-brace-format
 msgid "OAuth error: {}"
-msgstr "Github OAuth Fehler {}"
+msgstr "OAuth Fehler: {}"
 
 #: cps/opds.py:284
-#, python-brace-format
 msgid "{} Stars"
 msgstr "{} Sterne"
 
@@ -1534,12 +1518,11 @@ msgstr "Zeige Bücherliste"
 
 #: cps/render_template.py:104
 msgid "Duplicates"
-msgstr ""
+msgstr "Duplikate"
 
 #: cps/render_template.py:106
-#, fuzzy
 msgid "Show Duplicate Books"
-msgstr "Zeige am besten bewertete Bücher"
+msgstr "Zeige doppelte Bücher"
 
 #: cps/search.py:40 cps/search.py:427 cps/templates/book_edit.html:256
 #: cps/templates/feed.xml:34 cps/templates/index.xml:12
@@ -1855,12 +1838,11 @@ msgstr "Bitte zuerst die E-Reader E-Mailadresse konfigurieren."
 
 #: cps/web.py:1378
 msgid "No email addresses selected"
-msgstr ""
+msgstr "Keine gültige E-Mail-Adresse ausgewählt"
 
 #: cps/web.py:1386
-#, fuzzy
 msgid "Success! Book queued for sending to selected addresses"
-msgstr "Buch erfolgreich zum Senden an %(eReadermail)s eingereiht"
+msgstr "Erfolg! Buch erfolgreich zum Senden an ausgewählte Adressen eingereiht"
 
 #: cps/web.py:1405
 msgid "Please wait one minute to register next user"
@@ -2035,7 +2017,6 @@ msgid "Cover Thumbnails"
 msgstr "Cover Miniaturansichten"
 
 #: cps/tasks/thumbnail.py:279
-#, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr "{0} Serien Miniaturansichten erzeugt"
 
@@ -2298,7 +2279,7 @@ msgstr "Calibre-Web beenden"
 
 #: cps/templates/admin.html:241
 msgid "Version Information&nbsp;&nbsp;📜"
-msgstr "Informationen zur Version&nbsp;&nbsp;📜"
+msgstr "Versionsinformationen&nbsp;&nbsp;📜"
 
 #: cps/templates/admin.html:246
 msgid "Version"
@@ -2607,20 +2588,19 @@ msgstr "Zu Bücherregal hinzufügen"
 
 #: cps/templates/book_table.html:67
 msgid " Exchange author & title"
-msgstr "Autor und Titel tauschen"
+msgstr " Autor und Titel tauschen"
 
 #: cps/templates/book_table.html:72
-#, fuzzy
 msgid "Select all"
-msgstr "Wählen Sie ein Regal"
+msgstr "Wähle alle"
 
 #: cps/templates/book_table.html:75
 msgid "Clear all"
-msgstr ""
+msgstr "Lösche alle"
 
 #: cps/templates/book_table.html:84
 msgid "Update Title Sort automatically  "
-msgstr "Titel aktualisieren Automatisch sortieren"
+msgstr "Titel aktualisieren Automatisch sortieren "
 
 #: cps/templates/book_table.html:88
 msgid "Update Author Sort automatically"
@@ -2756,7 +2736,7 @@ msgstr ""
 
 #: cps/templates/book_table.html:345
 msgid "-- Select a Shelf --"
-msgstr "-- Wählen Sie ein Regal --"
+msgstr "-- Wähle ein Regal --"
 
 #: cps/templates/book_table.html:363 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
@@ -2764,9 +2744,8 @@ msgid "Add"
 msgstr "Hinzufügen"
 
 #: cps/templates/config_db.html:13
-#, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
-msgstr "Speicherort der Calibre-Datenbank"
+msgstr "Speicherort der Calibre-Datenbank (metadata.db-Datei)"
 
 #: cps/templates/config_db.html:23
 msgid ""
@@ -2788,6 +2767,9 @@ msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
 "CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
 msgstr ""
+"Deshalb, wenn du die docker-compose-Datei für CWA konfigurierst, <b>ändere "
+"nicht die Dateipfade in dem Abschnitt für Volumes auf der rechten Seite des "
+"Doppelpunkts!</b>"
 
 #: cps/templates/config_db.html:30
 msgid ""
@@ -2925,7 +2907,7 @@ msgstr "Hochladen aktivieren"
 #: cps/templates/config_edit.html:112
 msgid "(Please ensure that users also have upload permissions)"
 msgstr ""
-"(Bitte stellen Sie sicher, dass Sie über die Upload Berechtigung verfügen)"
+"(Bitte sicherstellen, dass Benutzer über die Upload Berechtigung verfügen)"
 
 #: cps/templates/config_edit.html:116
 msgid "Allowed Upload Fileformats"
@@ -3110,107 +3092,99 @@ msgstr "LDAP Member User Filter"
 
 #: cps/templates/config_edit.html:309
 msgid "Generic OAuth Provider"
-msgstr ""
+msgstr "Generischer OAuth-Anbieter"
 
 #: cps/templates/config_edit.html:313
 msgid "OAuth Metadata URL (for auto-discovery)"
-msgstr ""
+msgstr "OAuth-Metadaten-URL (für Autoerkennung)"
 
 #: cps/templates/config_edit.html:317
-#, fuzzy
 msgid "Test Metadata"
-msgstr "Metadaten laden"
+msgstr "Metadaten testen"
 
 #: cps/templates/config_edit.html:320
 msgid "Leave empty to use manual configuration below"
-msgstr ""
+msgstr "Freilassen, um die manuelle Konfiguration unterhalb zu nutzen"
 
 #: cps/templates/config_edit.html:326
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
-msgstr ""
+msgstr "Nutze manuelle Endpunkt-URLs (überschreibt Autoerkennung)"
 
 #: cps/templates/config_edit.html:327
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
 msgstr ""
+"Hake dies an, um manuell individuelle OAuth Endpunkte zu konfigurieren "
+"anstatt automatische Erkennung zu nutzen"
 
 #: cps/templates/config_edit.html:332
-#, fuzzy
 msgid "Manual Endpoint Configuration"
-msgstr "Benutzeroberflächenkonfiguration"
+msgstr "Manuelle Endpunktkonfiguration"
 
 #: cps/templates/config_edit.html:335
 msgid "OAuth Base URL"
-msgstr ""
+msgstr "OAuth Basis-URL"
 
 #: cps/templates/config_edit.html:340
 msgid "Authorization Endpoint"
-msgstr ""
+msgstr "Autorisierungsendpunkt"
 
 #: cps/templates/config_edit.html:345
-#, fuzzy
 msgid "Token Endpoint"
-msgstr "Token wurde nicht gefunden"
+msgstr "Token Endpunkt"
 
 #: cps/templates/config_edit.html:350
 msgid "UserInfo Endpoint"
-msgstr ""
+msgstr "UserInfo Endpunkt"
 
 #: cps/templates/config_edit.html:358
-#, fuzzy
 msgid "Test Connection"
-msgstr "Verbindungsfehler"
+msgstr "Verbindung testen"
 
 #: cps/templates/config_edit.html:367
-#, fuzzy
 msgid "OAuth Scopes"
-msgstr "OAuth Einstellungen"
+msgstr "OAuth Scopes"
 
 #: cps/templates/config_edit.html:369
 msgid "Space-separated list of OAuth scopes"
-msgstr ""
+msgstr "Leerzeichen-separierte Liste von OAuth Scopes"
 
 #: cps/templates/config_edit.html:373
-#, fuzzy
 msgid "OAuth Client Id"
-msgstr "%(provider)s OAuth Client Id"
+msgstr "OAuth Client ID"
 
 #: cps/templates/config_edit.html:377
-#, fuzzy
 msgid "OAuth Client Secret"
-msgstr "%(provider)s OAuth Client Secret"
+msgstr "OAuth Client Secret"
 
 #: cps/templates/config_edit.html:382
-#, fuzzy
 msgid "Field Mapping Configuration"
-msgstr "Ansichtskonfiguration"
+msgstr "Feldzuordnungskonfiguration"
 
 #: cps/templates/config_edit.html:384
-#, fuzzy
 msgid "Username Field"
-msgstr "Benutzername"
+msgstr "Benutzernamefeld"
 
 #: cps/templates/config_edit.html:386
 msgid "JWT field to extract username from"
-msgstr ""
+msgstr "JWT-Feld, von dem der Benutzername extrahiert wird"
 
 #: cps/templates/config_edit.html:389
-#, fuzzy
 msgid "Email Field"
-msgstr "E-Mail Service"
+msgstr "E-Mail-Feld"
 
 #: cps/templates/config_edit.html:391
 msgid "JWT field to extract email from"
-msgstr ""
+msgstr "JWT-Feld, von dem die E-Mail-Adresse extrahiert wird"
 
 #: cps/templates/config_edit.html:394
 msgid "OAuth group for Admin"
-msgstr ""
+msgstr "OAuth-Gruppe für Admins"
 
 #: cps/templates/config_edit.html:398
 msgid "Login Button Text"
-msgstr ""
+msgstr "Login Button-Text"
 
 #: cps/templates/config_edit.html:404
 #, python-format
@@ -3343,7 +3317,7 @@ msgid ""
 "& anonymous"
 msgstr ""
 "Design-Wechsel pro Benutzer aktiviert; diese globale Standardeinstellung "
-"wirkt sich nur auf neue & anonyme Benutzer aus."
+"wirkt sich nur auf neue & anonyme Benutzer aus"
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
@@ -3438,13 +3412,12 @@ msgid "Start"
 msgstr "Start"
 
 #: cps/templates/cwa_settings.html:17
-#, fuzzy
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "Calibre-Web Automated Benutzereinstellungen"
+msgstr "Aktiviere/Deaktiviere Calibre-Web Automated Services"
 
 #: cps/templates/cwa_settings.html:24
 msgid "Enable CWA Auto-Convert"
-msgstr ""
+msgstr "Aktiviere CWA Auto-Konvertierung"
 
 #: cps/templates/cwa_settings.html:26
 msgid ""
@@ -3455,7 +3428,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:35
 msgid "Enable CWA Automatic Cover & Metadata Enforcement Service"
-msgstr ""
+msgstr "Aktiviere CWA automatischen Cover & Metadaten Service"
 
 #: cps/templates/cwa_settings.html:37
 msgid ""
@@ -3469,9 +3442,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:48
-#, fuzzy
 msgid "Enable CWA Kindle EPUB Fixer"
-msgstr "CWA Send-to-Kindle EPUB Fixer-Dienst"
+msgstr "Aktiviere CWA Kindle EPUB Fixer"
 
 #: cps/templates/cwa_settings.html:50
 msgid ""
@@ -3481,23 +3453,24 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:59
-#, fuzzy
 msgid "Web UI Settings"
-msgstr "CWA Einstellungen"
+msgstr "Web UI Einstellungen"
 
 #: cps/templates/cwa_settings.html:66
 msgid "Enable CWA Update Notifications"
-msgstr ""
+msgstr "Aktiviere CWA Aktualisierungsbenachrichtigungen"
 
 #: cps/templates/cwa_settings.html:68
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
 msgstr ""
+"Wenn es aktiviert ist, wirst du Benachrichtigungen in der Web UI bekommen, "
+"wenn eine neue Version von CWA veröffentlicht wurde"
 
 #: cps/templates/cwa_settings.html:76
 msgid "Enable Contribute Translations Notifications"
-msgstr ""
+msgstr "Aktiviere Benachrichtigungen zur Übersetzungsbeitragung"
 
 #: cps/templates/cwa_settings.html:78
 msgid ""
@@ -3505,55 +3478,66 @@ msgid ""
 "using a language other than English if the translations for your chosen "
 "language are not complete."
 msgstr ""
+"Wenn es deaktiviert ist, wirst du keine Benachrichtigungen in der Web UI "
+"mehr erhalten, wenn du eine andere Sprache als Englisch nutzt und es "
+"fehlende Übersetzungen gibt."
 
 #: cps/templates/cwa_settings.html:86
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
-msgstr ""
+msgstr "Aktiviere unscharfe Hintergründe auf dem Handy (&lt;768px)"
 
 #: cps/templates/cwa_settings.html:88
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
 msgstr ""
+"Wenn es aktiviert ist, wird der Effekt für unscharfe Hintergründe bei Covern "
+"auf kleinen Bildschirm dargestellt. Deaktiviere es, wenn du beim Scrollen "
+"oder bei Animationen Stocken siehst."
 
 #: cps/templates/cwa_settings.html:93
-#, fuzzy
 msgid "Automatic Backup Settings"
-msgstr "OAuth Einstellungen"
+msgstr "Einstellungen für automatische Backups"
 
 #: cps/templates/cwa_settings.html:100
 msgid "Enable CWA Import Auto-Backup"
-msgstr ""
+msgstr "Aktiviere CWA Import Auto-Backup"
 
 #: cps/templates/cwa_settings.html:102
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
 msgstr ""
+"Wenn es aktiviert ist, wird eine Kopie aller importierten Dateien unter <i>/"
+"config/processed_books/imported</i> gespeichert"
 
 #: cps/templates/cwa_settings.html:110
 msgid "Enable CWA Conversion Auto-Backup"
-msgstr ""
+msgstr "Aktiviere CWA Konvertierer Auto-Backup"
 
 #: cps/templates/cwa_settings.html:112
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
 msgstr ""
+"Wenn es aktiviert ist, werden die Orignale der ingestierten Dateien, die "
+"konvertiert wurden, gespeichert unter /config/processed_books/converted"
 
 #: cps/templates/cwa_settings.html:120
 msgid "Enable CWA EPUB Fixer Auto-Backup"
-msgstr ""
+msgstr "Aktiviere CWA EPUB Fixer Auto-Backup"
 
 #: cps/templates/cwa_settings.html:122
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
 msgstr ""
+"Wenn es aktiviert ist, werden die Orignale der vom Kinde EPUB Fixer-Dienst "
+"verarbeiteten EPUBs gespeichert unter /config/processed_books/fixed_originals"
 
 #: cps/templates/cwa_settings.html:132
 msgid "Enable CWA Auto-Zip Backups"
-msgstr ""
+msgstr "Aktiviere CWA Auto-Zip Backups"
 
 #: cps/templates/cwa_settings.html:134
 msgid ""
@@ -3562,10 +3546,15 @@ msgid ""
 "from that day. This is to help keep the subdirectories of /config/"
 "processed_books organised and to minimise disk space usage."
 msgstr ""
+"Wenn es aktiviert ist, wird täglich kurz vor Mitternacht der CWA Auto-Zip-"
+"Dienst Zip-Archive von allen gespeicherten konvertierten, importierten und "
+"fehlgeschlagenen Dateien dieses Tages erstellen. Dies hilft, um die "
+"Unterverzeichnisse von /config/processed_books übersichtlich zu halten und "
+"die Festplattennutzung zu minimieren."
 
 #: cps/templates/cwa_settings.html:139
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
-msgstr ""
+msgstr "CWA Auto-Konvertierungszieldateiformat - Standard ist EPUB"
 
 #: cps/templates/cwa_settings.html:142
 msgid ""
@@ -3573,11 +3562,13 @@ msgid ""
 "automatically converted to the format chosen here (except those formats "
 "selected in the ignore list below)"
 msgstr ""
+"Wenn das automatische Konvertieren-Feature aktiv ist, werden alle "
+"ingestierten Bücher automatisch in das hier ausgewählte Format konvertiert "
+"(außer der gewählten Formate in der Liste mit ignorierten Formaten von unten)"
 
 #: cps/templates/cwa_settings.html:144
-#, fuzzy
 msgid "Choose a target format:"
-msgstr "Buchformat konvertieren:"
+msgstr "Wähle ein Zielformat:"
 
 #: cps/templates/cwa_settings.html:155
 msgid ""
@@ -3585,20 +3576,26 @@ msgid ""
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
 "by the service"
 msgstr ""
+"Hinweis: CWAs Metadatenerzwingungsdienst kann im Moment nur Dateien im "
+"Format EPUB oder AZW3 unterstützen. Dateien in anderen Formaten werden von "
+"dem Dienst einfach ignoriert"
 
 #: cps/templates/cwa_settings.html:160
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr ""
+msgstr "CWA Auto-Konvertierung - Ignorierte Dateiformate"
 
 #: cps/templates/cwa_settings.html:162
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
 msgstr ""
+"Die hier ausgewählten Formate werden von CWAs Autokonvertierungsdienstes "
+"ignoriert, wenn dieser aktiv ist, was bedeutet, dass sie importiert werden "
+"wie sie sind."
 
 #: cps/templates/cwa_settings.html:187
 msgid "CWA Auto-Ingest - Ignored Formats"
-msgstr ""
+msgstr "CWA Auto-Ingestierung - Ignorierte Dateiformate"
 
 #: cps/templates/cwa_settings.html:189
 msgid ""
@@ -3606,40 +3603,47 @@ msgid ""
 "meaning files in these formats won't be added to the library by CWA during "
 "the ingest process"
 msgstr ""
+"Die hier gewählten Formate werden von CWAs Auto-Ingestierungs-Feature "
+"ignoriert, was bedeutet, dass Dateien in diesen Formaten nicht zur "
+"Bibliothek von CWA hinzugefügt werden"
 
 #: cps/templates/cwa_settings.html:214
 msgid "CWA Auto-Ingest Automerge"
-msgstr ""
+msgstr "CWA Auto-Ingestierung automatisches Zusammenführen"
 
 #: cps/templates/cwa_settings.html:217
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
 msgstr ""
+"Calibre kann doppelte Buchtitel beim Import erkennen und abhängig von dem"
 
 #: cps/templates/cwa_settings.html:217
 msgid "automerge"
-msgstr ""
+msgstr "automatisches Zusammenführen"
 
 #: cps/templates/cwa_settings.html:218
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
 msgstr ""
+"Einstellung. Es kann gesetzt werden, eine Kopie des Bücherduplikats zu "
+"löschen oder beide zu behalten (Standard)."
 
 #: cps/templates/cwa_settings.html:236
 msgid "Discards duplicate import, keeps library copy"
-msgstr ""
+msgstr "Verwirft duplizierte Importe, behält die Kopie in der Bibliothek"
 
 #: cps/templates/cwa_settings.html:240
 msgid "Overwrites library copy with newly imported file"
 msgstr ""
+"Überschreibt die Kopie in der Bibliothek mit der neu importierten Datei"
 
 #: cps/templates/cwa_settings.html:244
 msgid "Creates a duplicate record, keeping both copies"
-msgstr ""
+msgstr "Erstellt einen doppelten Eintrag, wobei beide Kopien behalten werden"
 
 #: cps/templates/cwa_settings.html:253
 msgid "Ingest Processing Timeout"
-msgstr ""
+msgstr "Zeitüberschreitung des Ingestierungsprozesses"
 
 #: cps/templates/cwa_settings.html:255
 msgid ""
@@ -3647,14 +3651,18 @@ msgid ""
 "timing out. Files that timeout are moved to the failed backup folder for "
 "investigation."
 msgstr ""
+"Maximale Zeit (in Minuten), die es erlaubt ist, ein einzelnes Buch zu "
+"verarbeiten bevor eine Zeitüberschreitung auftritt. Dateien, bei denen eine "
+"Zeitüberschreitung auftritt werden in Ordner für fehlgeschlagen Dateien "
+"geschoben, um sie untersuchen zu können."
 
 #: cps/templates/cwa_settings.html:257
 msgid "Timeout (minutes):"
-msgstr ""
+msgstr "Zeitüberschreitung (Minuten):"
 
 #: cps/templates/cwa_settings.html:265
 msgid "Range: 5-120 minutes (default: 15)"
-msgstr ""
+msgstr "Bereich: 5-120 Minuten (Standard: 15)"
 
 #: cps/templates/cwa_stats.html:43 cps/templates/cwa_stats.html:65
 #: cps/templates/cwa_stats.html:87 cps/templates/cwa_stats.html:106
@@ -3663,37 +3671,32 @@ msgid "Click to See More"
 msgstr "Klicken Sie, um mehr zu sehen"
 
 #: cps/templates/detail.html:66
-#, fuzzy
 msgid "Please select at least one email address"
-msgstr "Das neue Passwort wurde an die E-Mail Adresse verschickt"
+msgstr "Bitte wähle mindestens eine E-Mail Adresse aus"
 
 #: cps/templates/detail.html:67
-#, fuzzy
 msgid "Error sending email"
-msgstr "Fehler beim Löschen des Bücherregals"
+msgstr "Fehler beim E-Mail senden"
 
 #: cps/templates/detail.html:74
-#, fuzzy
 msgid "Select eReader Email Addresses"
-msgstr "An E-Reader E-Mail Adresse senden"
+msgstr "Wähle E-Reader E-Mail.Adressen"
 
 #: cps/templates/detail.html:80
 msgid "Choose email addresses:"
-msgstr ""
+msgstr "Wähle die E-Mail-Adressen:"
 
 #: cps/templates/detail.html:84
-#, fuzzy
 msgid "Select All"
-msgstr "Wählen Sie ein Regal"
+msgstr "Wähle alle"
 
 #: cps/templates/detail.html:100
-#, fuzzy
 msgid "Select format:"
-msgstr "Lösche Formate:"
+msgstr "Wähle Formate:"
 
 #: cps/templates/detail.html:113
 msgid "Send"
-msgstr ""
+msgstr "Senden"
 
 #: cps/templates/detail.html:150 cps/templates/detail.html:151
 #: cps/templates/detail.html:164 cps/templates/detail.html:165
@@ -3747,63 +3750,65 @@ msgstr "(Öffentlich)"
 
 #: cps/templates/duplicates.html:283
 msgid "CWA Duplicates Manager"
-msgstr ""
+msgstr "CWA Duplikatmanager"
 
 #: cps/templates/duplicates.html:285
 msgid ""
 "Books with matching titles and authors. Visual inspection recommended to "
 "identify true duplicates."
 msgstr ""
+"Bücher mit übereinstimmenden Titel und Autoren. Visuelle Inspektion "
+"empfohlen, um wirkliche Duplikate zu identifizieren."
 
 #: cps/templates/duplicates.html:290
 msgid "Select Duplicates"
-msgstr ""
+msgstr "Duplikate auswählen"
 
 #: cps/templates/duplicates.html:291
-#, fuzzy
 msgid "Select None"
-msgstr "Auswahl"
+msgstr "Keines auswählen"
 
 #: cps/templates/duplicates.html:292
-#, fuzzy
 msgid "Delete Selected"
-msgstr "Ausgewählte Bücher löschen"
+msgstr "Ausgewählte löschen"
 
 #: cps/templates/duplicates.html:343
-#, fuzzy
 msgid "No Duplicate Books Found"
-msgstr "Keine Ergebnisse"
+msgstr "Keine Bücherduplikate gefunden"
 
 #: cps/templates/duplicates.html:344
 msgid "Your library has no books with duplicate title and author combinations."
 msgstr ""
+"Deine Bibliothek hat keine Bücher mit doppelten Titel- und "
+"Autorkombinationen."
 
 #: cps/templates/duplicates.html:345
 msgid ""
 "This search looks for books with identical titles AND authors to avoid false "
 "positives."
 msgstr ""
+"Diese Suche sucht nach Büchern mit identischen Titeln UND Autoren, um "
+"Fehlalarme zu vermeiden."
 
 #: cps/templates/duplicates.html:359
-#, fuzzy
 msgid "The following books will be permanently deleted:"
-msgstr "Die folgenden Bücher werden gelöscht:"
+msgstr "Die folgenden Bücher werden permanent gelöscht:"
 
 #: cps/templates/duplicates.html:363
 msgid "This action cannot be undone!"
-msgstr ""
+msgstr "Diese Aktion kann nicht rückgängig gemacht werden!"
 
 #: cps/templates/duplicates.html:378
 msgid "Success"
-msgstr ""
+msgstr "Erfolg"
 
 #: cps/templates/duplicates.html:385
 msgid "Selected duplicate books have been deleted successfully!"
-msgstr ""
+msgstr "Gewählte Bücherduplikate wurden erfolgreich gelöscht!"
 
 #: cps/templates/duplicates.html:407
 msgid "An error occurred while processing your request."
-msgstr ""
+msgstr "Ein Fehler trat während des Ausführens deiner Anfrage auf."
 
 #: cps/templates/email_edit.html:13
 msgid "Email Account Type"
@@ -4061,8 +4066,9 @@ msgid "Book Details"
 msgstr "Buchdetails"
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
+#, fuzzy
 msgid "Filter by initial"
-msgstr ""
+msgstr "Filtern nach Anfangsbuchstabe"
 
 #: cps/templates/list.html:43
 msgid "Grid"
@@ -4089,9 +4095,8 @@ msgid "Log in with Magic Link"
 msgstr "Einloggen mit magischem Link"
 
 #: cps/templates/login.html:53
-#, fuzzy
 msgid "Log in with SSO"
-msgstr "Einloggen mit magischem Link"
+msgstr "Einloggen mit SSO"
 
 #: cps/templates/logviewer.html:6
 msgid "Show Calibre-Web Log: "

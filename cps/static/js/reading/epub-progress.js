@@ -1,5 +1,12 @@
+// Globals
+var epub = ePub(calibre.bookUrl);
+let progressDiv = document.getElementById("progress");
+let blockKeysHandler = null;
+
+/* ---------- helpers ---------- */
+
 /**
- * waits until queue is finished, meaning the book is done loading
+ * Waits until queue is finished, meaning the book is done loading
  * @param callback
  */
 function qFinished(callback){
@@ -7,13 +14,101 @@ function qFinished(callback){
         if(reader.rendition.q.running===undefined)
             clearInterval(timeout);
             callback();
-        },300
+        }, 300
     )
 }
 
-function calculateProgress(){
-    let data=reader.rendition.location.end;
-    return Math.round(epub.locations.percentageFromCfi(data.cfi)*100);
+/**
+ * Extracts the CSRF token from the input element in read.html.
+ */
+function getCSRFToken() {
+    const input = document.querySelector('input[name="csrf_token"]');
+
+    return input ? input.value : '';
+}
+
+function sleep(ms) {
+    return new Promise(res => setTimeout(res, ms));
+}
+
+function showLoading(message = "Loading book…") {
+    let existing = document.getElementById("loading-overlay");
+
+    if (!existing) {
+        // full-screen overlay
+        let overlay = document.createElement("div");
+        overlay.id = "loading-overlay";
+
+        Object.assign(overlay.style, {
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.4)",
+            zIndex: 9998,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "all" // absorb all pointer input
+        });
+
+        // loading box
+        let div = document.createElement("div");
+        div.id = "loading-alert";
+        div.innerHTML = `<span class="spinner" style="margin-right:.5rem" aria-hidden="true">⏳</span> ${message}`;
+
+        Object.assign(div.style, {
+            background: "rgba(0,0,0,0.9)",
+            color: "white",
+            padding: "12px 20px",
+            borderRadius: "10px",
+            fontSize: "15px",
+            zIndex: 9999,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+            transition: "opacity 0.3s ease"
+        });
+
+        overlay.appendChild(div);
+        document.body.appendChild(overlay);
+
+        // block arrow keys while overlay is active
+        blockKeysHandler = function (e) {
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        };
+
+        document.addEventListener("keydown", blockKeysHandler, true);
+    }
+}
+
+function hideLoading() {
+    let overlay = document.getElementById("loading-overlay");
+
+    if (overlay) {
+        overlay.style.opacity = "0";
+
+        setTimeout(() => {
+            overlay.remove();
+
+            // remove key block when overlay disappears
+            if (blockKeysHandler) {
+                document.removeEventListener("keydown", blockKeysHandler, true);
+                blockKeysHandler = null;
+            }
+        }, 300);
+    }
+}
+
+/* ---------- progress calc + locationchange ---------- */
+
+function calculateProgress() {
+    let data = reader.rendition.location.end;
+
+    return Math.round(epub.locations.percentageFromCfi(data.cfi) * 100);
 }
 
 // register new event emitter locationchange that fires on urlchange
@@ -23,6 +118,7 @@ function calculateProgress(){
     history.pushState = function pushState() {
         let ret = oldPushState.apply(this, arguments);
         window.dispatchEvent(new Event('locationchange'));
+
         return ret;
     };
 
@@ -30,6 +126,7 @@ function calculateProgress(){
     history.replaceState = function replaceState() {
         let ret = oldReplaceState.apply(this, arguments);
         window.dispatchEvent(new Event('locationchange'));
+
         return ret;
     };
 
@@ -43,7 +140,10 @@ async function saveProgressToAPI(bookId, cfi, page, percent) {
     try {
         await fetch('/api/progress/save', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
             body: JSON.stringify({
                 book_id: bookId,
                 progress_cfi: cfi,
@@ -53,67 +153,88 @@ async function saveProgressToAPI(bookId, cfi, page, percent) {
             })
         });
     } catch (e) {
-        // Optionally log or ignore
+        console.error("Error saving to server: ", e);
     }
+
+    // console.log("Saved at cfi", cfi);
 }
 
-window.addEventListener('locationchange',()=>{
-    let newPos=calculateProgress();
-    progressDiv.textContent=newPos+"%";
-    if (window.calibre && window.calibre.bookUrl) {
-        let bookKey = window.calibre.bookUrl;
-        // Save to localStorage
-        localStorage.setItem("calibre.reader.progress." + bookKey, newPos);
-        // Save to API
+window.addEventListener('locationchange', () => {
+    if (!epub || !epub.locations || !epub.locations.length) return;
+    if (!reader || !reader.rendition || !reader.rendition.location) return;
+
+    let percent = calculateProgress();
+    progressDiv.textContent = percent + "%";
+
+    if (window.calibre && window.calibre.bookId) {
         let cfi = reader.rendition.location.end.cfi;
         let page = reader.rendition.location.end.displayed ? reader.rendition.location.end.displayed.page : null;
-        saveProgressToAPI(bookKey, cfi, page, newPos);
+        let bookId = window.calibre.bookId;
+
+        // Save to localStorage
+        localStorage.setItem("calibre.reader.progress." + bookId, percent);
+
+        // Save to API
+        if (percent > 0) {
+            saveProgressToAPI(bookId, cfi, page, percent);
+        }
     }
 });
 
-var epub=ePub(calibre.bookUrl)
+qFinished(() => {
+    showLoading("Preparing your book…");
 
-let progressDiv=document.getElementById("progress");
+    epub.locations.generate().then(async () => {
+        if (window.calibre && window.calibre.bookId) {
+            let bookId = window.calibre.bookId;
 
-qFinished(()=>{
-    epub.locations.generate().then(async ()=> {
-        if (window.calibre && window.calibre.bookUrl) {
-            let bookKey = window.calibre.bookUrl;
             // Try to restore from API first
             let restored = false;
+
             try {
-                let resp = await fetch(`/api/progress/get?book_id=${encodeURIComponent(bookKey)}`);
+                let resp = await fetch(`/api/progress/get?book_id=${encodeURIComponent(bookId)}`);
+
                 if (resp.ok) {
                     let data = await resp.json();
-                    if (data.progress_cfi) {
+
+                    if (data.progress_cfi != undefined) {
                         reader.rendition.display(data.progress_cfi);
                         restored = true;
-                    } else if (data.progress_page) {
+                    } else if (data.progress_page != undefined) {
                         // If you have page logic, implement here
                         // Example: reader.rendition.displayPage(data.progress_page);
                         restored = true;
-                    } else if (data.progress_percent) {
+                    } else if (data.progress_percent != undefined) {
                         let percentage = parseInt(data.progress_percent, 10) / 100;
                         let cfi = epub.locations.cfiFromPercentage(percentage);
+
                         if (cfi) {
                             reader.rendition.display(cfi);
                             restored = true;
                         }
                     }
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error("Error fetching from server: ", e);
+            }
+
             // Fallback to localStorage if nothing restored
             if (!restored) {
-                let savedProgress = localStorage.getItem("calibre.reader.progress." + bookKey);
+                let savedProgress = localStorage.getItem("calibre.reader.progress." + bookId);
+
                 if (savedProgress) {
                     let percentage = parseInt(savedProgress, 10) / 100;
                     let cfi = epub.locations.cfiFromPercentage(percentage);
+
                     if (cfi) {
                         reader.rendition.display(cfi);
                     }
                 }
             }
         }
+
         window.dispatchEvent(new Event('locationchange'))
+
+        hideLoading();
     });
 })

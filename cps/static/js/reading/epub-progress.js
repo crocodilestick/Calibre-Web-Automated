@@ -1,6 +1,7 @@
 // Globals
 var epub = ePub(calibre.bookUrl);
 let progressDiv = document.getElementById("progress");
+let blockKeysHandler = null;
 
 /* ---------- helpers ---------- */
 
@@ -31,37 +32,74 @@ function sleep(ms) {
 }
 
 function showLoading(message = "Loading book…") {
-    let existing = document.getElementById("loading-alert");
+    let existing = document.getElementById("loading-overlay");
 
     if (!existing) {
-        let div = document.createElement("div");
+        // full-screen overlay
+        let overlay = document.createElement("div");
+        overlay.id = "loading-overlay";
 
+        Object.assign(overlay.style, {
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.4)",
+            zIndex: 9998,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "all" // absorb all pointer input
+        });
+
+        // loading box
+        let div = document.createElement("div");
         div.id = "loading-alert";
         div.innerHTML = `<span class="spinner" style="margin-right:.5rem" aria-hidden="true">⏳</span> ${message}`;
 
         Object.assign(div.style, {
-            position: "fixed",
-            top: "10px",
-            right: "10px",
-            background: "rgba(0,0,0,0.8)",
+            background: "rgba(0,0,0,0.9)",
             color: "white",
-            padding: "10px 15px",
-            borderRadius: "8px",
-            fontSize: "14px",
+            padding: "12px 20px",
+            borderRadius: "10px",
+            fontSize: "15px",
             zIndex: 9999,
-            boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
             transition: "opacity 0.3s ease"
         });
 
-        document.body.appendChild(div);
+        overlay.appendChild(div);
+        document.body.appendChild(overlay);
+
+        // block arrow keys while overlay is active
+        blockKeysHandler = function (e) {
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        };
+
+        document.addEventListener("keydown", blockKeysHandler, true);
     }
 }
 
 function hideLoading() {
-    let div = document.getElementById("loading-alert");
-    if (div) {
-        div.style.opacity = "0";
-        setTimeout(() => div.remove(), 300); // let transition play
+    let overlay = document.getElementById("loading-overlay");
+
+    if (overlay) {
+        overlay.style.opacity = "0";
+
+        setTimeout(() => {
+            overlay.remove();
+
+            // remove key block when overlay disappears
+            if (blockKeysHandler) {
+                document.removeEventListener("keydown", blockKeysHandler, true);
+                blockKeysHandler = null;
+            }
+        }, 300);
     }
 }
 

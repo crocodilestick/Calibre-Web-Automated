@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
 # FROM lscio/docker-calibre-web - init-calibre-web-config.sh

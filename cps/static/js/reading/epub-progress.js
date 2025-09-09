@@ -1,3 +1,9 @@
+// Globals
+var epub = ePub(calibre.bookUrl)
+let progressDiv = document.getElementById("progress");
+let isReaderReady = false;
+
+
 /**
  * Extracts the CSRF token from the input element in read.html.
  */
@@ -72,8 +78,14 @@ async function saveProgressToAPI(bookId, cfi, page, percent) {
 }
 
 window.addEventListener('locationchange', () => {
+    if (!isReaderReady) {
+        console.warn("Reader is not yet ready, skipping save.");
+        return;
+    }
+
     let newPos = calculateProgress();
     progressDiv.textContent = newPos + "%";
+
     if (window.calibre && window.calibre.bookId) {
         let bookId = window.calibre.bookId;
 
@@ -88,9 +100,9 @@ window.addEventListener('locationchange', () => {
     }
 });
 
-var epub = ePub(calibre.bookUrl)
-
-let progressDiv = document.getElementById("progress");
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(function() { alert("Document loading, please wait..."); }, 1);
+});
 
 qFinished(() => {
     epub.locations.generate().then(async () => {
@@ -138,6 +150,10 @@ qFinished(() => {
                 }
             }
         }
+
+        // Mark the reader as ready
+        isReaderReady = true;
+
         window.dispatchEvent(new Event('locationchange'))
     });
 })

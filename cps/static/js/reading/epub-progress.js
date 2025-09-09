@@ -103,14 +103,15 @@ qFinished(() => {
                 let resp = await fetch(`/api/progress/get?book_id=${encodeURIComponent(bookId)}`);
                 if (resp.ok) {
                     let data = await resp.json();
-                    if (data.progress_cfi) {
+
+                    if (data.progress_cfi != undefined) {
                         reader.rendition.display(data.progress_cfi);
                         restored = true;
-                    } else if (data.progress_page) {
+                    } else if (data.progress_page != undefined) {
                         // If you have page logic, implement here
                         // Example: reader.rendition.displayPage(data.progress_page);
                         restored = true;
-                    } else if (data.progress_percent) {
+                    } else if (data.progress_percent != undefined) {
                         let percentage = parseInt(data.progress_percent, 10) / 100;
                         let cfi = epub.locations.cfiFromPercentage(percentage);
 
@@ -128,7 +129,7 @@ qFinished(() => {
             if (!restored) {
                 let savedProgress = localStorage.getItem("calibre.reader.progress." + bookId);
 
-                if (savedProgress) {
+                if (savedProgress != undefined) {
                     let percentage = parseInt(savedProgress, 10) / 100;
                     let cfi = epub.locations.cfiFromPercentage(percentage);
                     if (cfi) {

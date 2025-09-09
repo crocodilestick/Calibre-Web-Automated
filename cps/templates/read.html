@@ -127,6 +127,7 @@
             filePath: "{{ url_for('static', filename='js/libs/') }}",
             cssPath: "{{ url_for('static', filename='css/') }}",
             bookmarkUrl: "{{ url_for('web.set_bookmark', book_id=bookid, book_format='EPUB') }}",
+            bookId: "{{ bookid }}",
             bookUrl: "{{ url_for('web.serve_book', book_id=bookid, book_format='epub', anyname='file.epub') }}",
             bookmark: "{{ bookmark.bookmark_key if bookmark != None }}",
             useBookmarks: "{{ current_user.is_authenticated | tojson }}"

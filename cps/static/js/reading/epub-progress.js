@@ -1,7 +1,6 @@
 // Globals
 var epub = ePub(calibre.bookUrl)
 let progressDiv = document.getElementById("progress");
-let isReaderReady = false;
 
 
 /**
@@ -11,18 +10,6 @@ function getCSRFToken() {
     const input = document.querySelector('input[name="csrf_token"]');
 
     return input ? input.value : '';
-}
-
-/**
- * waits until queue is finished, meaning the book is done loading
- * @param callback
- */
-function qFinished(callback) {
-    let timeout = setInterval(() => {
-        if (reader.rendition.q.running === undefined)
-            clearInterval(timeout);
-        callback();
-    }, 300)
 }
 
 function calculateProgress() {
@@ -75,14 +62,11 @@ async function saveProgressToAPI(bookId, cfi, page, percent) {
     } catch (e) {
         console.error("Error saving to server: ", e);
     }
+
+    // console.log("Saved at cfi", cfi);
 }
 
 window.addEventListener('locationchange', () => {
-    if (!isReaderReady) {
-        console.warn("Reader is not yet ready, skipping save.");
-        return;
-    }
-
     let newPos = calculateProgress();
     progressDiv.textContent = newPos + "%";
 
@@ -100,60 +84,49 @@ window.addEventListener('locationchange', () => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(function() { alert("Document loading, please wait..."); }, 1);
-});
+document.addEventListener("DOMContentLoaded", async () => {
+    if (window.calibre && window.calibre.bookId) {
+        let bookId = window.calibre.bookId;
 
-qFinished(() => {
-    epub.locations.generate().then(async () => {
-        if (window.calibre && window.calibre.bookId) {
-            let bookId = window.calibre.bookId;
+        // Try to restore from API first
+        let restored = false;
+        try {
+            let resp = await fetch(`/api/progress/get?book_id=${encodeURIComponent(bookId)}`);
+            if (resp.ok) {
+                let data = await resp.json();
 
-            // Try to restore from API first
-            let restored = false;
-            try {
-                let resp = await fetch(`/api/progress/get?book_id=${encodeURIComponent(bookId)}`);
-                if (resp.ok) {
-                    let data = await resp.json();
-
-                    if (data.progress_cfi != undefined) {
-                        reader.rendition.display(data.progress_cfi);
-                        restored = true;
-                    } else if (data.progress_page != undefined) {
-                        // If you have page logic, implement here
-                        // Example: reader.rendition.displayPage(data.progress_page);
-                        restored = true;
-                    } else if (data.progress_percent != undefined) {
-                        let percentage = parseInt(data.progress_percent, 10) / 100;
-                        let cfi = epub.locations.cfiFromPercentage(percentage);
-
-                        if (cfi) {
-                            reader.rendition.display(cfi);
-                            restored = true;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error("Error fetching from server: ", e);
-            }
-
-            // Fallback to localStorage if nothing restored
-            if (!restored) {
-                let savedProgress = localStorage.getItem("calibre.reader.progress." + bookId);
-
-                if (savedProgress != undefined) {
-                    let percentage = parseInt(savedProgress, 10) / 100;
+                if (data.progress_cfi != undefined) {
+                    reader.rendition.display(data.progress_cfi);
+                    restored = true;
+                } else if (data.progress_page != undefined) {
+                    // If you have page logic, implement here
+                    // Example: reader.rendition.displayPage(data.progress_page);
+                    restored = true;
+                } else if (data.progress_percent != undefined) {
+                    let percentage = parseInt(data.progress_percent, 10) / 100;
                     let cfi = epub.locations.cfiFromPercentage(percentage);
+
                     if (cfi) {
                         reader.rendition.display(cfi);
+                        restored = true;
                     }
+                }
+            }
+        } catch (e) {
+            console.error("Error fetching from server: ", e);
+        }
+
+        // Fallback to localStorage if nothing restored
+        if (!restored) {
+            let savedProgress = localStorage.getItem("calibre.reader.progress." + bookId);
+
+            if (savedProgress != undefined) {
+                let percentage = parseInt(savedProgress, 10) / 100;
+                let cfi = epub.locations.cfiFromPercentage(percentage);
+                if (cfi) {
+                    reader.rendition.display(cfi);
                 }
             }
         }
-
-        // Mark the reader as ready
-        isReaderReady = true;
-
-        window.dispatchEvent(new Event('locationchange'))
-    });
-})
+    }
+});

@@ -286,7 +286,7 @@ msgstr "Kérjük, adja meg LDAP-szolgáltatási fiókját"
 #: cps/admin.py:1347
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
-msgstr "Az LDAP csoport objektumszűrőnek egy \%s\ formátumazonosítóval kell rendelkeznie"
+msgstr "Az LDAP csoport objektumszűrőnek egy \"%s\" formátumazonosítóval kell rendelkeznie"
 
 #: cps/admin.py:1349
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
@@ -548,7 +548,7 @@ msgstr "A felhasználó törölve: %(nick)s"
 
 #: cps/admin.py:2138
 msgid "Can't delete Guest User"
-msgstr "A vendég felhasználó nem törölhető""
+msgstr "A vendég felhasználó nem törölhető"
 
 #: cps/admin.py:2141
 msgid "No admin user remaining, can't delete user"
@@ -971,7 +971,7 @@ msgstr "A borítófájl %(file)s áthelyezése sikertelen: %(error)s"
 
 #: cps/editbooks.py:1062 cps/editbooks.py:1064
 msgid "Book Format Successfully Deleted"
-msgstr "A könyvformátum sikeresen törölve""
+msgstr "A könyvformátum sikeresen törölve"
 
 #: cps/editbooks.py:1071 cps/editbooks.py:1073
 msgid "Book Successfully Deleted"
@@ -1218,7 +1218,7 @@ msgstr "Hiba az UnRar végrehajtása közben"
 
 #: cps/helper.py:1049
 msgid "Could not find the specified directory"
-msgstr "A megadott könyvtár nem található""
+msgstr "A megadott könyvtár nem található"
 
 #: cps/helper.py:1052
 msgid "Please specify a directory, not a file"
@@ -2030,7 +2030,7 @@ msgstr "Borító bélyegképek"
 #: cps/tasks/thumbnail.py:279
 #, python-brace-format
 msgid "Generated {0} series thumbnails"
-msgstr "{0} sorozat bélyegképei létrehozva""
+msgstr "{0} sorozat bélyegképei létrehozva"
 
 #: cps/tasks/thumbnail.py:444
 msgid "Clearing cover thumbnail cache"
@@ -2080,7 +2080,7 @@ msgstr "Letöltés"
 #: cps/templates/admin.html:24
 #, fuzzy
 msgid "View Books"
-msgstr "Könyvek megjelenítése
+msgstr "Könyvek megjelenítése"
 
 #: cps/templates/admin.html:25 cps/templates/book_table.html:47
 #: cps/templates/book_table.html:325 cps/templates/user_table.html:131

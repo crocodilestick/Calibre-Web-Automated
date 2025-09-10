@@ -409,18 +409,18 @@
       </p>
       <div style="max-width: 90rem; padding-left: 30px;">
         {% for format in ignorable_formats -%}
-          <label for="ignore_convert_{{ format }}" style="width: 75px; padding-right: 6px;">
+          <label for="ignore_convert_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
             {% if format in cwa_settings['auto_convert_ignored_formats'] %}
               {% if format == cwa_settings['auto_convert_target_format'] %}
-                <input type="checkbox" id="ignore_convert_{{ format }}" name="ignore_convert_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary);">
+                <input type="checkbox" id="ignore_convert_{{ format }}" name="ignore_convert_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
               {% else %}
-                <input type="checkbox" id="ignore_convert_{{ format }}" name="ignore_convert_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary);">
+                <input type="checkbox" id="ignore_convert_{{ format }}" name="ignore_convert_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
               {% endif %}
             {% else %}
               {% if format == cwa_settings['auto_convert_target_format'] %}
-                <input type="checkbox" id="ignore_convert_{{ format }}" name="ignore_convert_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary);">
+                <input type="checkbox" id="ignore_convert_{{ format }}" name="ignore_convert_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
               {% else %}
-                <input type="checkbox" id="ignore_convert_{{ format }}" name="ignore_convert_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary);">
+                <input type="checkbox" id="ignore_convert_{{ format }}" name="ignore_convert_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
               {% endif %}
             {% endif %}
             <span style="padding-left: 4px; vertical-align: middle;">{{ format }}</span>
@@ -436,18 +436,18 @@
       </p>
       <div style="max-width: 90rem; padding-left: 30px;">
         {% for format in ignorable_formats -%}
-          <label for="ignore_ingest_{{ format }}" style="width: 75px; padding-right: 6px;">
+          <label for="ignore_ingest_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
             {% if format in cwa_settings['auto_ingest_ignored_formats'] %}
               {% if format == cwa_settings['auto_convert_target_format'] %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary);">
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
               {% else %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary);">
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
               {% endif %}
             {% else %}
               {% if format == cwa_settings['auto_convert_target_format'] %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary);">
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
               {% else %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary);">
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
               {% endif %}
             {% endif %}
             <span style="padding-left: 4px; vertical-align: middle;">{{ format }}</span>

@@ -610,7 +610,7 @@ msgstr "Den Metadaten fehlt ein erforderliches Feld: %(fields)s"
 #: cps/admin.py:2323
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s endpoints."
-msgstr "Die Metadaten-URL ist gültig!" %(count)s Endpunkte gefunden.
+msgstr "Die Metadaten-URL ist gültig! %(count)s Endpunkte gefunden."
 
 #: cps/constants.py:207
 msgid "Czech"

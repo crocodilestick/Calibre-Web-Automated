@@ -1093,12 +1093,12 @@ span.hidden-sm.top_admin {
     outline: 0;
     -webkit-box-shadow: none;
     box-shadow: none;
-    background: #1e2b34 !important;
+    background: #1e2b3469 !important;
     color: whitesmoke;
 }
 
 .form-control.tt-hint {
-    background: hsla(0, 0%, 100%, 0.90) !important
+background: hsla(0, 0%, 100%, .08) !important;
 }
 
 body > div.navbar.navbar-default.navbar-static-top > div > form > div > span > button:before {
@@ -1312,6 +1312,9 @@ body > div.container-fluid > div > div.col-sm-10 > div > form > a:hover {
 
 button#btn-book-convert {
     margin-bottom: 15px;
+    padding: 1rem;
+    padding-inline: 2.3rem;
+    margin-top: 1.3rem;
 }
 
 .btn-primary:hover {
@@ -2495,9 +2498,9 @@ body > div.row-fluid {
     display: block;
     width: 100%;
     height: auto;
-    max-width: 195px;
+    max-width: 26rem;
     margin: auto;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
 }
 
 #bookDetailsModal .modal-footer, #bookDetailsModal .modal-header > .close, .modal-backdrop.in {
@@ -2542,7 +2545,8 @@ body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-9.col-
 }
 
 label {
-    font-weight: 400
+    font-weight: 700;
+    display: inline !important;
 }
 
 body > div.container-fluid > div > div.col-sm-10 > div.col-sm-8 {
@@ -4820,7 +4824,7 @@ body.admin.config > div.container-fluid > div > div.col-sm-10 > div.discover > h
     background: rgba(0, 0, 0, .15);
     color: hsla(0, 0%, 100%, .7);
     font-family: "Open Sans Semibold", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 15px;
+    font-size: 16px !important;
     line-height: 60px;
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
@@ -5032,8 +5036,8 @@ body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div
 }
 
 body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 {
-    margin-left: 25% !important;
-    width: 75%
+    /* margin-left: 25% !important; */
+    width: 75%;
 }
 
 body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-3 > div.text-center > #delete, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-3 > div.text-center > #delete {
@@ -6575,7 +6579,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         text-overflow: ellipsis;
         white-space: nowrap;
         background: rgba(0, 0, 0, .15);
-        font-size: 16px;
+        font-size: 16px !important;
     }
 
     body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1, body.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1 {
@@ -6693,7 +6697,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .form-group > label {
-        font-size: 12px
+        font-size: 12px;
     }
 
     body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 {
@@ -6904,7 +6908,6 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row > div.col > h2, body.admin > div.container-fluid > div > div.col-sm-10 > div.discover > h2 {
         font-size: 14px;
-        text-transform: uppercase
     }
 
     .me .dropdown-menu > li > #top_user:hover {
@@ -7289,17 +7292,20 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-3, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-3 {
-        position: relative;
-        max-width: unset;
-        width: 100%;
-        height: unset;
+        position: relative !important;
+        max-width: unset !important;
+        width: 100% !important;
+        height: unset !important;
         padding: 15px;
+        margin-left: 0px !important;
     }
 
     body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 {
         padding: 15px;
-        margin: 0 !important;
-        width: 100%
+        margin-right: 2rem !important;
+        width: -webkit-fill-available !important;
+        margin-left: 2rem !important;
+        margin-top: 0px !important;
     }
 
     /* body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(1), body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(2), body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(1), body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(2) {
@@ -8455,6 +8461,7 @@ select.cwa-settings-select {
     max-width: 900px;
     justify-self: anchor-center;
     margin-left: 2rem;
+    width: -webkit-fill-available;
 }
 
 .settings-section-header {

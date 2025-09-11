@@ -4,23 +4,82 @@
     <div class="alert alert-info"><img id="img-spinner" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/></div>
 </div>
 {% endblock %}
+
+{% block header %}
+<style>
+.settings-container .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.settings-container .form-group label {
+    color: #b5b8bb;
+    font-weight: 700;
+    padding-bottom: 0.8rem;
+    display: inline;
+}
+
+.settings-container .form-control {
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+}
+
+.settings-container .input-group {
+    margin-bottom: 0;
+}
+
+.settings-container .input-group-btn .btn {
+    border-radius: 0 4px 4px 0;
+}
+
+.settings-container select.form-control {
+    height: auto;
+    padding: 8px 12px;
+}
+
+.settings-container .checkbox {
+    margin-bottom: 0;
+}
+
+.settings-container input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Indented form groups for sub-settings */
+.intend-form {
+    margin-left: 20px;
+    border-left: 3px solid #ddd;
+    padding-left: 15px;
+}
+
+/* Data-related sections styling */
+[data-related] {
+    margin-left: 20px;
+    border-left: 3px solid #cc7b19;
+    padding-left: 15px;
+}
+
+/* Save/Cancel buttons */
+.col-sm-12 {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.btn {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+}
+</style>
+{% endblock %}
 {% block body %}
 <div class="discover">
-  <h2>{{title}}</h2>
+  <h2 style="font-size: 15px;">{{title}}</h2>
 <form role="form" method="POST" autocomplete="off">
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-<div class="panel-group col-md-11 col-lg-8">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a class="accordion-toggle" data-toggle="collapse" href="#collapseone">
-          <span class="glyphicon glyphicon-plus"></span>
-          {{_('Server Configuration')}}
-        </a>
-      </h4>
-    </div>
-    <div id="collapseone" class="panel-collapse collapse">
-      <div class="panel-body">
+
+  <div class="settings-container">
+    <h4 class="settings-section-header">{{_('Server Configuration')}}</h4>
         <!-- <div class="form-group">
           <label for="config_port">{{_('Server Port')}}</label>
           <input type="number" min="1" max="65535" class="form-control" name="config_port" id="config_port" value="{% if config.config_port != None %}{{ config.config_port }}{% endif %}" autocomplete="off" required>
@@ -50,20 +109,10 @@
           <label for="config_trustedhosts">{{_('Trusted Hosts (Comma Separated)')}}</label>
           <input type="text" class="form-control" id="config_trustedhosts" name="config_trustedhosts" value="{% if config.trustedhosts != None %}{{ config.config_trustedhosts }}{% endif %}" autocomplete="off">
         </div>
-      </div>
-    </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a class="accordion-toggle" data-toggle="collapse" href="#collapsetwo">
-          <span class="glyphicon glyphicon-plus"></span>
-          {{_('Logfile Configuration')}}
-        </a>
-      </h4>
-    </div>
-    <div id="collapsetwo" class="panel-collapse collapse">
-      <div class="panel-body">
+
+  <div class="settings-container">
+    <h4 class="settings-section-header">{{_('Logfile Configuration')}}</h4>
         <div class="form-group">
         <label for="config_log_level">{{_('Log Level')}}</label>
             <select name="config_log_level" id="config_log_level" class="form-control">
@@ -85,20 +134,10 @@
           <label for="config_access_logfile">{{_('Location and name of access logfile (access.log for no entry)')}}</label>
           <input type="text" class="form-control" name="config_access_logfile" id="config_access_logfile" value="{% if config.config_access_logfile != None %}{{ config.config_access_logfile }}{% endif %}" autocomplete="off">
         </div>
-      </div>
-    </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a class="accordion-toggle" data-toggle="collapse" href="#collapsefour">
-          <span class="glyphicon glyphicon-plus"></span>
-          {{_('Feature Configuration')}}
-        </a>
-      </h4>
-    </div>
-    <div id="collapsefour" class="panel-collapse collapse">
-      <div class="panel-body">
+
+  <div class="settings-container">
+    <h4 class="settings-section-header">{{_('Feature Configuration')}}</h4>
     <div class="form-group">
       <input type="checkbox" id="config_unicode_filename" name="config_unicode_filename" {% if config.config_unicode_filename %}checked{% endif %}>
       <label for="config_unicode_filename">{{_('Convert non-English characters in title and author while saving to disk')}}</label>
@@ -416,20 +455,10 @@
       {% endif %}
       {% endif %}
     {% endif %}
-      </div>
-    </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a class="accordion-toggle" data-toggle="collapse" href="#collapsefive">
-          <span class="glyphicon glyphicon-plus"></span>
-           {{_('External binaries')}}
-        </a>
-      </h4>
-    </div>
-    <div id="collapsefive" class="panel-collapse collapse">
-      <div class="panel-body">
+
+  <div class="settings-container">
+    <h4 class="settings-section-header">{{_('External binaries')}}</h4>
            <label for="config_binariesdir">{{_('Path to Calibre Binaries')}}</label>
            <div class="form-group input-group">
            <input type="text" class="form-control" id="config_binariesdir" name="config_binariesdir" value="{% if config.config_binariesdir != None %}{{ config.config_binariesdir }}{% endif %}" autocomplete="off">
@@ -457,20 +486,10 @@
             </span>
           </div>
         {% endif %}
-      </div>
-    </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a class="accordion-toggle" data-toggle="collapse" href="#collapsesix">
-          <span class="glyphicon glyphicon-plus"></span>
-           {{_('Security Settings')}}
-        </a>
-      </h4>
-    </div>
-    <div id="collapsesix" class="panel-collapse collapse">
-      <div class="panel-body">
+
+  <div class="settings-container">
+    <h4 class="settings-section-header">{{_('Security Settings')}}</h4>
             <div class="form-group">
               <input type="checkbox" id="config_ratelimiter" name="config_ratelimiter" {% if config.config_ratelimiter %}checked{% endif %}>
               <label for="config_ratelimiter">{{_('Limit failed login attempts')}}</label>
@@ -528,11 +547,10 @@
             </div>
       </div>
     </div>
-  </div>
-</div>
-    <div class="col-sm-12">
-    <button type="button" name="submit" id="config_submit" class="btn btn-default">{{_('Save')}}</button>
-    <a href="{{ url_for('admin.admin') }}" id="config_back" class="btn btn-default">{{_('Cancel')}}</a>
+
+    <div style="margin-top: -2rem; max-width: 900px; justify-self: center; margin-bottom: 1rem; display: flex; flex-direction: row; flex-wrap: wrap; width: -webkit-fill-available; justify-content: space-between; margin-left: 2rem; margin-right: 2rem;">
+      <button type="button" name="submit" id="config_submit" class="btn btn-default">{{_('Save')}}</button>
+      <a href="{{ url_for('admin.admin') }}" id="config_back" class="btn btn-default">{{_('Cancel')}}</a>
     </div>
   </form>
 </div>
@@ -540,6 +558,7 @@
 {% block modal %}
 {{ filechooser_modal() }}
 {% endblock %}
+
 <script>
 $(document).ready(function() {
   $('#test_oidc_connection').on('click', function() {
@@ -572,7 +591,7 @@ $(document).ready(function() {
     });
   });
 
-  // Handle manual URLs checkbox toggle
+  // Handle checkbox toggles for showing/hiding related settings
   $('input[data-control]').on('change', function() {
     var controlId = $(this).data('control');
     var isChecked = $(this).is(':checked');

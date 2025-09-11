@@ -132,15 +132,16 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
         bool: True if metadata was successfully applied
     """
     try:
-        # Get CWA settings to check smart application preference
+        # Get CWA settings to check smart application preference and field selections
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.get_cwa_settings()
         use_smart_application = cwa_settings.get('auto_metadata_smart_application', False)
         
         updated = False
         
-        # Update title - smart mode: only if longer, normal mode: always replace
-        if metadata.title and metadata.title.strip():
+        # Update title - only if enabled in settings
+        if (cwa_settings.get('auto_metadata_update_title', True) and 
+            metadata.title and metadata.title.strip()):
             if use_smart_application:
                 if len(metadata.title.strip()) > len(book.title.strip()):
                     book.title = metadata.title.strip()
@@ -149,8 +150,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                 book.title = metadata.title.strip()
                 updated = True
             
-        # Update authors - always update if available (both modes)
-        if metadata.authors and len(metadata.authors) > 0:
+        # Update authors - only if enabled in settings
+        if (cwa_settings.get('auto_metadata_update_authors', True) and 
+            metadata.authors and len(metadata.authors) > 0):
             # Clear existing authors
             book.authors.clear()
             for author_name in metadata.authors:
@@ -162,8 +164,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                     book.authors.append(author)
             updated = True
             
-        # Update description - smart mode: only if longer, normal mode: always replace
-        if metadata.description and metadata.description.strip():
+        # Update description - only if enabled in settings
+        if (cwa_settings.get('auto_metadata_update_description', True) and 
+            metadata.description and metadata.description.strip()):
             current_description = book.comments[0].text if book.comments else ""
             if use_smart_application:
                 if len(metadata.description.strip()) > len(current_description):
@@ -181,8 +184,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                     calibre_db_instance.session.add(comment)
                 updated = True
             
-        # Update publisher - smart mode: only if current is empty, normal mode: always replace
-        if metadata.publisher and metadata.publisher.strip():
+        # Update publisher - only if enabled in settings
+        if (cwa_settings.get('auto_metadata_update_publisher', True) and 
+            metadata.publisher and metadata.publisher.strip()):
             if use_smart_application:
                 if not book.publishers or len(book.publishers) == 0:
                     publisher = calibre_db_instance.get_publisher_by_name(metadata.publisher.strip())
@@ -201,8 +205,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                 book.publishers = [publisher]
                 updated = True
                 
-        # Update tags if available (both modes)
-        if hasattr(metadata, 'tags') and metadata.tags:
+        # Update tags if available and enabled in settings
+        if (cwa_settings.get('auto_metadata_update_tags', True) and 
+            hasattr(metadata, 'tags') and metadata.tags):
             for tag_name in metadata.tags:
                 if tag_name and tag_name.strip():
                     tag = calibre_db_instance.get_tag_by_name(tag_name.strip())
@@ -213,8 +218,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                         book.tags.append(tag)
             updated = True
             
-        # Update series if available (both modes)
-        if hasattr(metadata, 'series') and metadata.series and metadata.series.strip():
+        # Update series if available and enabled in settings
+        if (cwa_settings.get('auto_metadata_update_series', True) and 
+            hasattr(metadata, 'series') and metadata.series and metadata.series.strip()):
             series = calibre_db_instance.get_series_by_name(metadata.series.strip())
             if not series:
                 series = db.Series(name=metadata.series.strip(), sort=metadata.series.strip())
@@ -230,8 +236,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                     book.series_index = 1.0
             updated = True
             
-        # Update published date if available (both modes)
-        if hasattr(metadata, 'publishedDate') and metadata.publishedDate:
+        # Update published date if available and enabled in settings
+        if (cwa_settings.get('auto_metadata_update_published_date', True) and 
+            hasattr(metadata, 'publishedDate') and metadata.publishedDate):
             try:
                 from datetime import datetime
                 if isinstance(metadata.publishedDate, str):
@@ -249,8 +256,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
             except Exception as e:
                 log.warning(f"Error parsing published date: {e}")
                 
-        # Update rating if available (both modes)
-        if hasattr(metadata, 'rating') and metadata.rating:
+        # Update rating if available and enabled in settings
+        if (cwa_settings.get('auto_metadata_update_rating', True) and 
+            hasattr(metadata, 'rating') and metadata.rating):
             try:
                 rating_value = float(metadata.rating)
                 if 0 <= rating_value <= 10:  # Calibre uses 0-10 scale
@@ -264,8 +272,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
             except (ValueError, TypeError):
                 pass
                 
-        # Update identifiers if available (both modes)
-        if hasattr(metadata, 'identifiers') and metadata.identifiers:
+        # Update identifiers if available and enabled in settings
+        if (cwa_settings.get('auto_metadata_update_identifiers', True) and 
+            hasattr(metadata, 'identifiers') and metadata.identifiers):
             for identifier_type, identifier_value in metadata.identifiers.items():
                 if identifier_type and identifier_value:
                     # Check if identifier already exists
@@ -281,8 +290,9 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                         book.identifiers.append(new_identifier)
                     updated = True
         
-        # Handle cover image - this will be enhanced with resolution checking
-        if hasattr(metadata, 'cover') and metadata.cover:
+        # Handle cover image - only if enabled in settings
+        if (cwa_settings.get('auto_metadata_update_cover', True) and 
+            hasattr(metadata, 'cover') and metadata.cover):
             # TODO: Implement cover resolution checking for smart mode
             # For now, just apply the cover in normal mode
             if not use_smart_application:

@@ -1,15 +1,14 @@
-# Korean translation for Calibre-Web
 # Copyright (C) 2024 limeade23
 # This file is distributed under the same license as the Calibre-Web
 # First Author <https://www.epubguide.net/>, 2022.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version:  Calibre-Web Automated\n"
+"Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2025-09-03 14:59+0200\n"
-"PO-Revision-Date: 2024-11-01 17:50+0900\n"
+"PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
 "Language: ko\n"
@@ -18,6 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.13.1\n"
+"X-Generator: Poedit 3.7\n"
 
 #: cps/about.py:77
 msgid "Statistics"
@@ -148,9 +148,8 @@ msgid "Invalid Restricted Column"
 msgstr "제한된 항목이 유효하지 않습니다."
 
 #: cps/admin.py:642 cps/admin.py:2021
-#, fuzzy
 msgid "Calibre-Web Automated configuration updated"
-msgstr "Calibre-Web 설정이 업데이트되었습니다."
+msgstr "Calibre-Web Automated 설정이 업데이트되었습니다."
 
 #: cps/admin.py:654
 msgid "Do you really want to delete the Kobo Token?"
@@ -204,22 +203,20 @@ msgid "Are you sure you want to change Calibre library location?"
 msgstr "Calibre 라이브러리 경로를 변경하시겠습니까?"
 
 #: cps/admin.py:677
-#, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
 msgstr ""
-"Calibre-Web이 업데이트된 표지를 검색하고 표지 미리보기를 업데이트합니다. 시간"
-"이 걸릴 수 있습니다."
+"Calibre-Web Automated가 업데이트된 표지를 검색하고, 표지 미리보기를 갱신합니"
+"다. 시간이 걸릴 수 있습니다."
 
 #: cps/admin.py:680
-#, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
 msgstr ""
-"Kobo Reader와 전체 동기화를 강제하기 위해 Calibre-Web의 동기화 데이터베이스"
-"를 삭제하시겠습니까?"
+"Calibre-Web Automated의 동기화 데이터베이스를 삭제하여 Kobo Reader와 전체 동"
+"기화를 강제하시겠습니까?"
 
 #: cps/admin.py:919 cps/admin.py:925 cps/admin.py:935 cps/admin.py:945
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
@@ -252,11 +249,11 @@ msgstr "client_secrets.json이 설정되지 않았습니다."
 
 #: cps/admin.py:1213
 msgid "Unable to fetch OAuth metadata from URL."
-msgstr ""
+msgstr "URL에서 OAuth 메타데이터를 불러올 수 없습니다."
 
 #: cps/admin.py:1231
 msgid "Unable to fetch OpenID configuration."
-msgstr ""
+msgstr "OpenID 설정을 불러올 수 없습니다."
 
 #: cps/admin.py:1293
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -552,151 +549,147 @@ msgid "User '%(nick)s' updated"
 msgstr "사용자 '%(nick)s의 정보를 수정했습니다."
 
 #: cps/admin.py:2281
-#, fuzzy
 msgid "Connection successful!"
-msgstr "연결 오류가 발생했습니다."
+msgstr "연결 성공!"
 
 #: cps/admin.py:2283 cps/admin.py:2326
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
-msgstr ""
+msgstr "연결 실패: 서버가 %(code)s 오류를 답신했습니다."
 
 #: cps/admin.py:2285 cps/admin.py:2328
 msgid "Connection failed: Could not connect to server."
-msgstr ""
+msgstr "연결 실패: 서버에 연결할 수 없습니다."
 
 #: cps/admin.py:2287 cps/admin.py:2330
 msgid "Connection failed: Request timed out."
-msgstr ""
+msgstr "연결 실패: 요청 시간 초과."
 
 #: cps/admin.py:2289 cps/admin.py:2332
 msgid "Connection failed: Invalid JSON in response."
-msgstr ""
+msgstr "연결 실패: 응답에 잘못된 JSON이 포함되어 있습니다."
 
 #: cps/admin.py:2292 cps/admin.py:2335
-#, fuzzy
 msgid "An unknown error occurred."
-msgstr "알 수 없는 오류가 발생했습니다. 나중에 다시 시도해 주세요."
+msgstr "알 수 없는 오류가 발생했습니다."
 
 #: cps/admin.py:2318
 #, python-format
 msgid "Metadata is missing required fields: %(fields)s"
-msgstr ""
+msgstr "다음 필드에 메타데이터가 없습니다: %(fields)s"
 
 #: cps/admin.py:2323
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s endpoints."
-msgstr ""
+msgstr "유효한 메타데이터 URL. %(count)s개의 엔드포인트를 발견했습니다."
 
 #: cps/constants.py:207
 msgid "Czech"
-msgstr ""
+msgstr "체코어"
 
 #: cps/constants.py:208
 msgid "German"
-msgstr ""
+msgstr "독일어"
 
 #: cps/constants.py:209
 msgid "Greek"
-msgstr ""
+msgstr "그리스어"
 
 #: cps/constants.py:210
 msgid "Spanish"
-msgstr ""
+msgstr "스페인어"
 
 #: cps/constants.py:211
-#, fuzzy
 msgid "Finnish"
-msgstr "종료됨"
+msgstr "핀란드어"
 
 #: cps/constants.py:212
 msgid "French"
-msgstr ""
+msgstr "프랑스어"
 
 #: cps/constants.py:213
 msgid "Galician"
-msgstr ""
+msgstr "갈리시아어"
 
 #: cps/constants.py:214
 msgid "Hungarian"
-msgstr ""
+msgstr "헝가리어"
 
 #: cps/constants.py:215
 msgid "Indonesian"
-msgstr ""
+msgstr "인도네시아어"
 
 #: cps/constants.py:216
 msgid "Italian"
-msgstr ""
+msgstr "이탈리아어"
 
 #: cps/constants.py:217
 msgid "Japanese"
-msgstr ""
+msgstr "일본어"
 
 #: cps/constants.py:218
 msgid "Khmer"
-msgstr ""
+msgstr "크메르어"
 
 #: cps/constants.py:219
 msgid "Korean"
-msgstr ""
+msgstr "한국어"
 
 #: cps/constants.py:220
 msgid "Dutch"
-msgstr ""
+msgstr "네덜란드어"
 
 #: cps/constants.py:221
 msgid "Norwegian"
-msgstr ""
+msgstr "노르웨이어"
 
 #: cps/constants.py:222
-#, fuzzy
 msgid "Polish"
-msgstr "출판사"
+msgstr "폴란드어"
 
 #: cps/constants.py:223
 msgid "Portuguese"
-msgstr ""
+msgstr "포르투갈어"
 
 #: cps/constants.py:224
 msgid "Portuguese (Brazil)"
-msgstr ""
+msgstr "포르투갈어 (브라질)"
 
 #: cps/constants.py:225
 msgid "Russian"
-msgstr ""
+msgstr "러시아어"
 
 #: cps/constants.py:226
 msgid "Slovak"
-msgstr ""
+msgstr "슬로바키아어"
 
 #: cps/constants.py:227
 msgid "Slovenian"
-msgstr ""
+msgstr "슬로베니아어"
 
 #: cps/constants.py:228
 msgid "Swedish"
-msgstr ""
+msgstr "스웨덴어"
 
 #: cps/constants.py:229
 msgid "Turkish"
-msgstr ""
+msgstr "터키어"
 
 #: cps/constants.py:230
 msgid "Ukrainian"
-msgstr ""
+msgstr "우크라이나어"
 
 #: cps/constants.py:231
 msgid "Vietnamese"
-msgstr ""
+msgstr "베트남어"
 
 #: cps/constants.py:232
 msgid "Chinese (Simplified, China)"
-msgstr ""
+msgstr "중국어 (간체, 중국 본토)"
 
 #: cps/constants.py:233
 msgid "Chinese (Traditional, Taiwan)"
-msgstr ""
+msgstr "중국어 (번체, 대만)"
 
 #: cps/converter.py:20
 msgid "not installed"
@@ -710,22 +703,20 @@ msgstr "실행 권한이 없습니다."
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
-msgstr ""
+msgstr "서재 새로고침 중 🔄 새 책을 찾고 있습니다. 잠시 기다려 주세요…"
 
 #: cps/cwa_functions.py:297
-#, fuzzy
 msgid "Calibre-Web Automated User Settings"
-msgstr "Calibre E-Book 컨버터 설정"
+msgstr "Calibre-Web Automated 사용자 설정"
 
 #: cps/cwa_functions.py:319 cps/cwa_functions.py:321 cps/cwa_functions.py:325
 #: cps/cwa_functions.py:327 cps/cwa_functions.py:330 cps/cwa_functions.py:332
 msgid "Timestamp"
-msgstr ""
+msgstr "타임스탬프"
 
 #: cps/cwa_functions.py:319 cps/cwa_functions.py:321
-#, fuzzy
 msgid "Book ID"
-msgstr "전체"
+msgstr "책 ID"
 
 #: cps/cwa_functions.py:319 cps/templates/book_edit.html:85
 #: cps/templates/search_form.html:8
@@ -733,125 +724,122 @@ msgid "Book Title"
 msgstr "책 제목"
 
 #: cps/cwa_functions.py:319
-#, fuzzy
 msgid "Book Author"
 msgstr "저자"
 
 #: cps/cwa_functions.py:319
 msgid "Trigger Type"
-msgstr ""
+msgstr "트리거 유형"
 
 #: cps/cwa_functions.py:321 cps/cwa_functions.py:327
-#, fuzzy
 msgid "Filepath"
-msgstr "파일 형식"
+msgstr "파일 위치"
 
 #: cps/cwa_functions.py:325 cps/cwa_functions.py:327 cps/cwa_functions.py:330
 #: cps/cwa_functions.py:332
-#, fuzzy
 msgid "Filename"
-msgstr "이름"
+msgstr "파일명"
 
 #: cps/cwa_functions.py:325
 msgid "Manual?"
-msgstr ""
+msgstr "수동?"
 
 #: cps/cwa_functions.py:325
 msgid "No. Fixes"
-msgstr ""
+msgstr "아니오, 고칩니다."
 
 #: cps/cwa_functions.py:325 cps/cwa_functions.py:330 cps/cwa_functions.py:332
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "원본이 백업되었습니까?"
 
 #: cps/cwa_functions.py:327
 msgid "Fixes Applied"
-msgstr ""
+msgstr "수정사항 적용."
 
 #: cps/cwa_functions.py:332
 msgid "Original Format"
-msgstr ""
+msgstr "원본 형식"
 
 #: cps/cwa_functions.py:332
-#, fuzzy
 msgid "End Format"
-msgstr "다른 형식 업로드"
+msgstr "결과 형식"
 
 #: cps/cwa_functions.py:347
 msgid "Calibre-Web Automated Sever Stats & Archive"
-msgstr ""
+msgstr "Calibre-Web Automated 서버 정보 & 아카이브"
 
 #: cps/cwa_functions.py:362
 msgid "Calibre-Web Automated - Full Enforcement History"
-msgstr ""
+msgstr "Calibre-Web Automated - 전체 적용 내역"
 
 #: cps/cwa_functions.py:371
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
-msgstr ""
+msgstr "Calibre-Web Automated - 전체 적용 내역 (경로 포함)"
 
 #: cps/cwa_functions.py:380
 msgid "Calibre-Web Automated - Full Import History"
-msgstr ""
+msgstr "Calibre-Web Automated - 전체 가져오기 내역"
 
 #: cps/cwa_functions.py:389
 msgid "Calibre-Web Automated - Full Conversion History"
-msgstr ""
+msgstr "Calibre-Web Automated - 전체 변환 내역"
 
 #: cps/cwa_functions.py:398
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
-msgstr ""
+msgstr "Calibre-Web Automated - 전체 EPUB Fixer 내역 (경로 & 수정 제외)"
 
 #: cps/cwa_functions.py:407
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
-msgstr ""
+msgstr "Calibre-Web Automated - 전체 EPUB Fixer 내역 (경로 & 수정 포함)"
 
 #: cps/cwa_functions.py:425
 msgid "✅ All Monitoring Services are running as intended! 👍"
-msgstr ""
+msgstr "✅ 모든 모니터링 서비스가 정상 실행중입니다! 👍"
 
 #: cps/cwa_functions.py:427
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
+"🔴 가져오기 서비스는 실행중이지만, 메타데이터 변경점 감지기가 정지되었습니다."
 
 #: cps/cwa_functions.py:429
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
+"🔴 메타데이터 변경점 감지기는 실행중이지만, 가져오기 서비스가 정지되었습니다."
 
 #: cps/cwa_functions.py:431
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
-msgstr ""
+msgstr "⛔ 가져오기 서비스와 메타데이터 변경점 감지기 모두 정지되었습니다."
 
 #: cps/cwa_functions.py:433
 msgid "An Error has occurred"
-msgstr ""
+msgstr "오류가 발생했습니다."
 
 #: cps/cwa_functions.py:604 cps/cwa_functions.py:611
 msgid "Calibre-Web Automated - Convert Library"
-msgstr ""
+msgstr "Calibre-Web Automated - 서재 변환"
 
 #: cps/cwa_functions.py:724 cps/cwa_functions.py:730
 msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+msgstr "Calibre-Web Automated - Send-to-Kindle EPUB Fixer 서비스"
 
 #: cps/cwa_functions.py:815
 msgid "You must be an admin to access this page."
-msgstr ""
+msgstr "이 페이지에 접근하려면 관리자권한이 필요합니다."
 
 #: cps/cwa_functions.py:830
 msgid "Both username and image data are required."
-msgstr ""
+msgstr "사용자명과 사진 데이터가 필요합니다."
 
 #: cps/cwa_functions.py:848
-#, fuzzy
 msgid "Profile picture updated successfully."
-msgstr "{} 사용자를 삭제했습니다."
+msgstr "프로필 사진이 갱신되었습니다."
 
 #: cps/cwa_functions.py:861
 msgid "CWA Profile Picture Management (WIP)"
-msgstr ""
+msgstr "CWA 프로필 사진 관리자 (개발중)"
 
 #: cps/db.py:1075 cps/templates/config_edit.html:217
 #: cps/templates/config_view_edit.html:63 cps/templates/email_edit.html:41
@@ -859,16 +847,15 @@ msgstr ""
 #: cps/web.py:1072 cps/web.py:1109 cps/web.py:1160 cps/web.py:1192
 #: cps/web.py:1231
 msgid "None"
-msgstr "None"
+msgstr "없음"
 
 #: cps/duplicates.py:38 cps/duplicates.py:47
-#, fuzzy
 msgid "Duplicate Books"
-msgstr "책 삭제"
+msgstr "책 복제"
 
 #: cps/editbooks.py:106
 msgid "Missing or invalid book id for format upload"
-msgstr ""
+msgstr "형식 업로드를 위한 책 ID가 없거나 잘못되었습니다."
 
 #: cps/editbooks.py:131 cps/editbooks.py:151 cps/templates/book_edit.html:53
 #: cps/templates/layout.html:148
@@ -876,9 +863,8 @@ msgid "Upload done, processing, please wait..."
 msgstr "업로드 완료, 처리 중입니다. 잠시만 기다려 주세요."
 
 #: cps/editbooks.py:136 cps/editbooks.py:155
-#, fuzzy
 msgid "Failed to queue upload for processing"
-msgstr "표지 경로 생성에 실패했습니다."
+msgstr "연산대기열로 업로드에 실패했습니다."
 
 #: cps/editbooks.py:171
 msgid "Source or destination format for conversion missing"
@@ -1028,23 +1014,20 @@ msgid "Send to eReader"
 msgstr "전자책 리더로 보내기"
 
 #: cps/helper.py:93 cps/helper.py:113
-#, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
-msgstr "이 이메일은 Calibre-Web으로 전송되었습니다."
+msgstr "이 이메일은 Calibre-Web Automated에서 전송되었습니다."
 
 #: cps/helper.py:111
-#, fuzzy
 msgid "Calibre-Web Automated Test Email"
-msgstr "Calibre-Web 테스트 이메일"
+msgstr "Calibre-Web Automated 테스트 이메일"
 
 #: cps/helper.py:112
 msgid "Test Email"
 msgstr "테스트 이메일"
 
 #: cps/helper.py:129
-#, fuzzy
 msgid "Get Started with Calibre-Web Automated"
-msgstr "Calibre-Web 시작하기"
+msgstr "Calibre-Web Automated 시작하기"
 
 #: cps/helper.py:134
 #, python-format
@@ -1067,9 +1050,8 @@ msgid "%(book)s send to eReader"
 msgstr "%(book)s을(를) 전자책 리더로 보내기"
 
 #: cps/helper.py:223
-#, fuzzy
 msgid "This Email has been sent via Automated."
-msgstr "이 이메일은 Calibre-Web으로 전송되었습니다."
+msgstr "이 이메일은 자동으로 전송되었습니다."
 
 #: cps/helper.py:225
 msgid "The requested file could not be read. Maybe wrong permissions?"
@@ -1206,9 +1188,9 @@ msgid "Missing calibre binaries: %(missing)s"
 msgstr "Calibre 바이너리 파일이 누락되었습니다: %(missing)s"
 
 #: cps/helper.py:1077
-#, fuzzy, python-format
+#, python-format
 msgid "Missing executable permissions: %(missing)s"
-msgstr "실행 권한이 누락되었습니다: %(missing)s"
+msgstr "실행 권한이 없습니다: %(missing)s"
 
 #: cps/helper.py:1082
 msgid "Error executing Calibre"
@@ -1219,12 +1201,11 @@ msgid "Queue all books for metadata backup"
 msgstr "메타데이터 백업이 작업에 추가되었습니다."
 
 #: cps/kobo_auth.py:80
-#, fuzzy
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
 "api_endpoint for kobo device"
 msgstr ""
-"Kobo 장치에 대한 유효한 api_endpoint를 얻으려면 로컬 호스트가 아닌 곳에서 "
+"Kobo 장치에 대한 유효한 api_endpoint를 얻으려면, 로컬 호스트가 아닌 곳에서 "
 "Calibre-Web에 접근하세요."
 
 #: cps/kobo_auth.py:106
@@ -1233,7 +1214,7 @@ msgstr "Kobo 설정"
 
 #: cps/kosync.py:143
 msgid "KOReader Sync Plugin"
-msgstr ""
+msgstr "KOReader Sync 플러그인"
 
 #: cps/oauth_bb.py:64
 #, python-format
@@ -1242,15 +1223,15 @@ msgstr "%(provider)s에 등록"
 
 #: cps/oauth_bb.py:108
 msgid "Login failed: Could not connect to the user info endpoint."
-msgstr ""
+msgstr "로그인 실패: 사용자 정보 엔드포인트에 접속할 수 없습니다."
 
 #: cps/oauth_bb.py:112
 msgid "Login failed: The OAuth provider returned an invalid user profile."
-msgstr ""
+msgstr "로그인 실패: OAuth 제공자가 잘못된 사용자 정보를 제공했습니다."
 
 #: cps/oauth_bb.py:125
 msgid "Login failed: User profile from provider is incomplete."
-msgstr ""
+msgstr "로그인 실패: 제공된 사용자 정보가 불완전합니다."
 
 #: cps/oauth_bb.py:212 cps/remotelogin.py:149
 #, python-format
@@ -1298,9 +1279,8 @@ msgid "Failed to fetch user info from Google."
 msgstr "Google에서 사용자 정보를 불러오지 못했습니다."
 
 #: cps/oauth_bb.py:431
-#, fuzzy
 msgid "Failed to log in with Generic OAuth."
-msgstr "GitHub 로그인에 실패했습니다."
+msgstr "일반 OAuth 로그인에 실패했습니다."
 
 #: cps/oauth_bb.py:477
 msgid "GitHub Oauth error, please retry later."
@@ -1321,9 +1301,9 @@ msgid "Google Oauth error: {}"
 msgstr "Google 인증 오류가 발생했습니다: {}"
 
 #: cps/oauth_bb.py:524 cps/oauth_bb.py:528
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "OAuth error: {}"
-msgstr "GitHub 인증 오류가 발생했습니다: {}"
+msgstr "OAuth 오류: {}"
 
 #: cps/opds.py:284
 #, python-brace-format
@@ -1489,12 +1469,11 @@ msgstr "책 목록 보기"
 
 #: cps/render_template.py:104
 msgid "Duplicates"
-msgstr ""
+msgstr "중복인 책"
 
 #: cps/render_template.py:106
-#, fuzzy
 msgid "Show Duplicate Books"
-msgstr "평점 높은 책 보기"
+msgstr "중복인 책 보기"
 
 #: cps/search.py:40 cps/search.py:427 cps/templates/book_edit.html:256
 #: cps/templates/feed.xml:34 cps/templates/index.xml:12
@@ -1899,9 +1878,8 @@ msgid "Oops! An account already exists for this Email."
 msgstr "이미 등록된 이메일 주소입니다."
 
 #: cps/web.py:1770
-#, fuzzy
 msgid "Invalid book ID."
-msgstr "잘못된 권한입니다."
+msgstr "잘못된 "
 
 #: cps/services/gmail.py:48
 msgid "Found no valid gmail.json file with OAuth information"
@@ -2050,16 +2028,15 @@ msgstr "공개 서재"
 
 #: cps/templates/admin.html:56
 msgid "Manage Profile Pictures"
-msgstr ""
+msgstr "계정 사진 변경"
 
 #: cps/templates/admin.html:58
 msgid "Import LDAP Users"
 msgstr "LDAP 사용자 가져오기"
 
 #: cps/templates/admin.html:65
-#, fuzzy
 msgid "Email Server Settings&nbsp;&nbsp;📬"
-msgstr "이메일 서버 설정"
+msgstr "이메일 서버 설정&nbsp;&nbsp;📬"
 
 #: cps/templates/admin.html:70 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"
@@ -2092,7 +2069,7 @@ msgstr "Gmail via Oauth2"
 
 #: cps/templates/admin.html:109
 msgid "Configuration&nbsp;&nbsp;⚙️"
-msgstr ""
+msgstr "설정&nbsp;&nbsp;⚙️"
 
 #: cps/templates/admin.html:112
 msgid "Calibre Database Directory"
@@ -2151,9 +2128,8 @@ msgid "Edit UI Configuration"
 msgstr "UI 설정"
 
 #: cps/templates/admin.html:170
-#, fuzzy
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
-msgstr "예약된 작업"
+msgstr "예약된 작업&nbsp;&nbsp;⌛"
 
 #: cps/templates/admin.html:173 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:18
@@ -2187,49 +2163,43 @@ msgstr "섬네일 캐시 새로 고침"
 
 #: cps/templates/admin.html:207
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
-msgstr ""
+msgstr "CWA 관리자 기능&nbsp;&nbsp;⚡"
 
 #: cps/templates/admin.html:208
-#, fuzzy
 msgid "CWA Settings"
-msgstr "설정"
+msgstr "CWA 설정"
 
 #: cps/templates/admin.html:209
-#, fuzzy
 msgid "Show CWA Stats"
-msgstr "설정"
+msgstr "CWA 통계 보기"
 
 #: cps/templates/admin.html:210
-#, fuzzy
 msgid "Check CWA Status"
-msgstr "보관 상태"
+msgstr "CWA 상태 확인"
 
 #: cps/templates/admin.html:211
-#, fuzzy
 msgid "Setup KOReader Sync"
-msgstr "epub 리더"
+msgstr "KOReader Sync 설치"
 
 #: cps/templates/admin.html:214
 msgid "CWA Library Conversion Service"
-msgstr ""
+msgstr "CWA 서재 변환 서비스"
 
 #: cps/templates/admin.html:215
 msgid "CWA Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+msgstr "CWA Send-to-Kindle EPUB 수정 서비스"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
-msgstr ""
+msgstr "CWA Github"
 
 #: cps/templates/admin.html:219
-#, fuzzy
 msgid "CWA Discord Server"
-msgstr "둘러보기"
+msgstr "CWA Discord 서버"
 
 #: cps/templates/admin.html:223
-#, fuzzy
 msgid "Administration&nbsp;&nbsp;🚀"
-msgstr "관리"
+msgstr "관리&nbsp;&nbsp;🚀"
 
 #: cps/templates/admin.html:224
 msgid "Download Debug Package"
@@ -2248,9 +2218,8 @@ msgid "Shutdown"
 msgstr "종료"
 
 #: cps/templates/admin.html:241
-#, fuzzy
 msgid "Version Information&nbsp;&nbsp;📜"
-msgstr "버전 정보"
+msgstr "버전 정보&nbsp;&nbsp;📜"
 
 #: cps/templates/admin.html:246
 msgid "Version"
@@ -2266,7 +2235,7 @@ msgstr "현재 버전"
 
 #: cps/templates/admin.html:264 cps/templates/admin.html:269
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: cps/templates/admin.html:276
 msgid "Check for Update"
@@ -2540,43 +2509,36 @@ msgid "Archive"
 msgstr "보관"
 
 #: cps/templates/book_table.html:53 cps/templates/book_table.html:230
-#, fuzzy
 msgid "Unarchive"
-msgstr "보관"
+msgstr "보관 해제"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
-#, fuzzy
 msgid "Mark as read"
-msgstr "읽지 않음으로 표시"
+msgstr "읽음으로 표시"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
-#, fuzzy
 msgid "Mark as unread"
 msgstr "읽지 않음으로 표시"
 
 #: cps/templates/book_table.html:65
-#, fuzzy
 msgid "Add to Shelf"
-msgstr "서재에 추가"
+msgstr "책장에 추가"
 
 #: cps/templates/book_table.html:67
-#, fuzzy
 msgid " Exchange author & title"
 msgstr "저자와 제목 바꾸기"
 
 #: cps/templates/book_table.html:72
-#, fuzzy
 msgid "Select all"
-msgstr "서재 생성"
+msgstr "모두 선택"
 
 #: cps/templates/book_table.html:75
 msgid "Clear all"
-msgstr ""
+msgstr "선택 해제"
 
 #: cps/templates/book_table.html:84
-#, fuzzy
 msgid "Update Title Sort automatically  "
-msgstr "자동으로 제목 정렬 업데이트"
+msgstr "자동으로 제목 정렬 업데이트 "
 
 #: cps/templates/book_table.html:88
 msgid "Update Author Sort automatically"
@@ -2636,19 +2598,16 @@ msgid "Enter comments"
 msgstr "설명 입력"
 
 #: cps/templates/book_table.html:112
-#, fuzzy
 msgid "Comments"
 msgstr "설명"
 
 #: cps/templates/book_table.html:114
-#, fuzzy
 msgid "Archived?"
-msgstr "보관됨"
+msgstr "보관됨?"
 
 #: cps/templates/book_table.html:116
-#, fuzzy
 msgid "Read?"
-msgstr "읽음"
+msgstr "읽음?"
 
 #: cps/templates/book_table.html:119 cps/templates/book_table.html:121
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
@@ -2675,23 +2634,23 @@ msgstr "다음 책으로 병합:"
 
 #: cps/templates/book_table.html:186
 msgid "The following books will be deleted:"
-msgstr ""
+msgstr "다음 책이 삭제됩니다:"
 
 #: cps/templates/book_table.html:206
 msgid "The following books will be archived:"
-msgstr ""
+msgstr "다음 책이 보관됩니다:"
 
 #: cps/templates/book_table.html:226
 msgid "The following books will be unarchived:"
-msgstr ""
+msgstr "다음 책이 보관해제됩니다:"
 
 #: cps/templates/book_table.html:246
 msgid "The following books will be marked read:"
-msgstr ""
+msgstr "다읍 책이 읽음표시됩니다:"
 
 #: cps/templates/book_table.html:266
 msgid "The following books will be marked unread:"
-msgstr ""
+msgstr "다음 책의 읽음표시가 해제됩니다:"
 
 #: cps/templates/book_table.html:282 cps/templates/detail.html:410
 msgid "Edit Metadata"
@@ -2699,20 +2658,19 @@ msgstr "메타데이터 편집"
 
 #: cps/templates/book_table.html:285
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
-msgstr ""
+msgstr "바꾸고자 하는 입력란을 수정하십시오. 빈 입력란은 무시됩니다:"
 
 #: cps/templates/book_table.html:340
-#, fuzzy
 msgid "Select a Shelf"
-msgstr "서재 생성"
+msgstr "책장 생성"
 
 #: cps/templates/book_table.html:343
 msgid "Please select a shelf to add the selected books to:"
-msgstr ""
+msgstr "선택한 책을 추가할 책장을 선택하십시오:"
 
 #: cps/templates/book_table.html:345
 msgid "-- Select a Shelf --"
-msgstr ""
+msgstr "-- 책장 선택 --"
 
 #: cps/templates/book_table.html:363 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
@@ -2720,9 +2678,8 @@ msgid "Add"
 msgstr "추가"
 
 #: cps/templates/config_db.html:13
-#, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
-msgstr "Calibre 데이터베이스 경로"
+msgstr "Calibre 데이터베이스 경로 (metadata.db 파일)"
 
 #: cps/templates/config_db.html:23
 msgid ""
@@ -2738,12 +2695,27 @@ msgid ""
 "        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
 "wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
+"CWA는 Calibre 데이터베이스(metadata.db 파일)가 항상 <code>/calibre-library</"
+"code>에 위치하도록 구성되어 있습니다.\n"
+"CWA는 시작 시, docker-compose 파일에서 <code>/calibre-library</code>에 지정"
+"한 디렉터리를 자동으로 검색하여 기존 Calibre 라이브러리(metadata.db 파일)를 "
+"탐색합니다.\n"
+"\t•\t서재가 하나인 경우 그 서재를 자동으로 연동합니다.\n"
+"\t•\t여러 개의 서재가 탐색된 경우, 기본적으로 가장 큰 서재에 자동으로 연결합"
+"니다.\n"
+"\t•\t서재를 찾지 못하면 새 서재를 자동으로 생성하고 연동합니다.\n"
+"\n"
+"       <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
+"wiki/Configuration#database-configuration\"> 자세한 내용은 여기에서 확인할 "
+"수 있습니다."
 
 #: cps/templates/config_db.html:29
 msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
 "CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
 msgstr ""
+"따라서, CWA에 docker-compose 파일을 설정할 때 <b>절대 콜론( : ) 오른쪽의 "
+"VOLUMES 경로는 변경하지 마십시오!</b>"
 
 #: cps/templates/config_db.html:30
 msgid ""
@@ -2755,6 +2727,12 @@ msgid ""
 "        library, use the <b>Separate Book Files from Library Option below "
 "and there, enter the path to the rest of the library</b>"
 msgstr ""
+"이 경로들은 CWA 내부에서만 사용됩니다. 콜론 왼쪽 경로는 자유롭게 변경가능하"
+"나,\n"
+"        오른쪽 경로는 변경할 이유가 없습니다.<br><br>만약 "
+"<code>metadata.db<code> 파일을 나머지 서재와 다른 위치에 두고 싶다면, \n"
+"<b>아래의 ‘책 파일을 서재와 분리하기’ 옵션을 사용하고, 거기에 라이브러리의 나"
+"머지 경로를 입력하십시오.</b>"
 
 #: cps/templates/config_db.html:34
 msgid ""
@@ -2766,10 +2744,14 @@ msgid ""
 "        once you've checked the <b>Separate Book Files from Library</b> "
 "option."
 msgstr ""
+"예시: 서재의 <code>metadata.db</code> 파일이 <code>/calibre-library</code> "
+"안 어딘가에 연동되어 있다면, <b>책 파일을 서재와 분리하기</b> 옵션을 선택하"
+"면 나타나는 입력란에 <code>/books</code>를 입력하여 해당 책 파일들이 들어 있"
+"는 경로를 <code>/books</code> 같은 경로에 연동할 수 있습니다."
 
 #: cps/templates/config_db.html:38
 msgid "Split Library Functionality"
-msgstr ""
+msgstr "서재 기능 분할"
 
 #: cps/templates/config_db.html:41
 msgid ""
@@ -2777,6 +2759,9 @@ msgid ""
 "should remain in <code>/calibre-library</code>, however your library files "
 "can be wherever you desire"
 msgstr ""
+"<b>책 파일을 서재에서 분리</b> - <code>metadata.db</code> 파일은 <code>/"
+"calibre-library</code> 내에 유지해야 합니다. 단, 서재 파일은 자유롭게 옮기셔"
+"도 됩니다."
 
 #: cps/templates/config_db.html:54
 msgid "Use Google Drive?"
@@ -2851,9 +2836,8 @@ msgid "Location and name of access logfile (access.log for no entry)"
 msgstr "액세스 로그 파일 경로 및 파일명 (공란일 경우 access.log로 저장됩니다)"
 
 #: cps/templates/config_edit.html:96
-#, fuzzy
 msgid "Feature Configuration"
-msgstr "서버 설정"
+msgstr "기능 설정"
 
 #: cps/templates/config_edit.html:104
 msgid "Convert non-English characters in title and author while saving to disk"
@@ -2910,6 +2894,7 @@ msgstr "서버 외부 포트 (포트 포워딩 API 호출용)"
 #: cps/templates/config_edit.html:154
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr ""
+"Kobo 읽기 진행 상황을 Hardcover와 동기화하기 (사용자별 API 키가 필요합니다)"
 
 #: cps/templates/config_edit.html:161
 msgid "Use Goodreads"
@@ -2920,13 +2905,12 @@ msgid "Goodreads API Key"
 msgstr "Goodreads API 키"
 
 #: cps/templates/config_edit.html:172
-#, fuzzy
 msgid "Enable Hardcover Sync"
-msgstr "Kobo sync 사용"
+msgstr "Kobo sync 활성화"
 
 #: cps/templates/config_edit.html:176
 msgid "Hardcover API Key"
-msgstr ""
+msgstr "Hardcover API 키"
 
 #: cps/templates/config_edit.html:182
 msgid "Allow Reverse Proxy Authentication"
@@ -3059,28 +3043,28 @@ msgid "OAuth Metadata URL (for auto-discovery)"
 msgstr ""
 
 #: cps/templates/config_edit.html:317
-#, fuzzy
 msgid "Test Metadata"
-msgstr "메타데이터 가져오기"
+msgstr "메타데이터 시험"
 
 #: cps/templates/config_edit.html:320
 msgid "Leave empty to use manual configuration below"
-msgstr ""
+msgstr "수동으로 설정하려면 이하를 빈칸으로 두십시오"
 
 #: cps/templates/config_edit.html:326
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
-msgstr ""
+msgstr "수동 엔드포인트 URL 사용 (자동 검색 무시)"
 
 #: cps/templates/config_edit.html:327
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
 msgstr ""
+"자동 검색 대신, 개별 OAuth 엔드포인트를 수동으로 설정하려면 이 항목을 체크하"
+"십시오."
 
 #: cps/templates/config_edit.html:332
-#, fuzzy
 msgid "Manual Endpoint Configuration"
-msgstr "UI 설정"
+msgstr "수동 엔드포인트 설정"
 
 #: cps/templates/config_edit.html:335
 msgid "OAuth Base URL"
@@ -3091,68 +3075,60 @@ msgid "Authorization Endpoint"
 msgstr ""
 
 #: cps/templates/config_edit.html:345
-#, fuzzy
 msgid "Token Endpoint"
-msgstr "토큰을 찾을 수 없습니다."
+msgstr "토큰 엔드포인트"
 
 #: cps/templates/config_edit.html:350
 msgid "UserInfo Endpoint"
-msgstr ""
+msgstr "UserInfo 엔드포인트"
 
 #: cps/templates/config_edit.html:358
-#, fuzzy
 msgid "Test Connection"
-msgstr "연결 오류가 발생했습니다."
+msgstr "연결 확인"
 
 #: cps/templates/config_edit.html:367
-#, fuzzy
 msgid "OAuth Scopes"
-msgstr "OAuth 설정"
+msgstr "OAuth 범위"
 
 #: cps/templates/config_edit.html:369
 msgid "Space-separated list of OAuth scopes"
-msgstr ""
+msgstr "공백으로 구분된 OAuth 범위 목록"
 
 #: cps/templates/config_edit.html:373
-#, fuzzy
 msgid "OAuth Client Id"
-msgstr "%(provider)s OAuth 클라이언트 ID"
+msgstr "OAuth 클라이언트 ID"
 
 #: cps/templates/config_edit.html:377
-#, fuzzy
 msgid "OAuth Client Secret"
-msgstr "%(provider)s OAuth 클라이언트 비밀키"
+msgstr "OAuth 클라이언트 비밀키"
 
 #: cps/templates/config_edit.html:382
-#, fuzzy
 msgid "Field Mapping Configuration"
-msgstr "환경 설정"
+msgstr "필드 매핑 설정"
 
 #: cps/templates/config_edit.html:384
-#, fuzzy
 msgid "Username Field"
-msgstr "사용자 이름"
+msgstr "사용자명 필드"
 
 #: cps/templates/config_edit.html:386
 msgid "JWT field to extract username from"
-msgstr ""
+msgstr "JWT에서 사용자 이름을 추출할 필드"
 
 #: cps/templates/config_edit.html:389
-#, fuzzy
 msgid "Email Field"
-msgstr "이메일 서비스"
+msgstr "이메일 필드"
 
 #: cps/templates/config_edit.html:391
 msgid "JWT field to extract email from"
-msgstr ""
+msgstr "이메일을 추출할 JWT 필드"
 
 #: cps/templates/config_edit.html:394
 msgid "OAuth group for Admin"
-msgstr ""
+msgstr "관리자용 OAuth 그룹"
 
 #: cps/templates/config_edit.html:398
 msgid "Login Button Text"
-msgstr ""
+msgstr "로그인 버튼 문자"
 
 #: cps/templates/config_edit.html:404
 #, python-format
@@ -3178,7 +3154,6 @@ msgid "Path to Calibre Binaries"
 msgstr "Calibre 바이너리 경로"
 
 #: cps/templates/config_edit.html:441
-#, fuzzy
 msgid "Calibre E-Book Converter Settings"
 msgstr "Calibre E-Book 컨버터 설정"
 
@@ -3211,7 +3186,6 @@ msgid "Check if file extensions matches file content on upload"
 msgstr "업로드 시 파일 형식 일치 검사"
 
 #: cps/templates/config_edit.html:493
-#, fuzzy
 msgid "Session protection"
 msgstr "세션 보호"
 
@@ -3268,6 +3242,8 @@ msgid ""
 "Default Theme (users can select their own preferred theme however new users "
 "will receive this theme by default)"
 msgstr ""
+"기본 테마 (새 사용자는 이 테마를 기본적으로 사용하게 됩니다. 사용자들은 각자 "
+"개별 설정도 가능합니다.)"
 
 #: cps/templates/config_view_edit.html:42
 msgid "Standard Theme"
@@ -3282,6 +3258,8 @@ msgid ""
 "Per-user theme switching enabled; this global default only affects new users "
 "& anonymous"
 msgstr ""
+"사용자별 테마 전환 활성화; 이 전역 기본값은 새 사용자와 익명 사용자에게만 적"
+"용됩니다"
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
@@ -3362,15 +3340,13 @@ msgstr "허용/거부 사용자 정의 열 값 추가"
 
 #: cps/templates/cwa_convert_library.html:10
 #: cps/templates/cwa_epub_fixer.html:10
-#, fuzzy
 msgid "Run Archive"
-msgstr "보관"
+msgstr "보관 적용"
 
 #: cps/templates/cwa_convert_library.html:11
 #: cps/templates/cwa_epub_fixer.html:11 cps/templates/cwa_read_log.html:9
-#, fuzzy
 msgid "Download Log"
-msgstr "다운로드"
+msgstr "로그 다운로드"
 
 #: cps/templates/cwa_convert_library.html:24
 #: cps/templates/cwa_epub_fixer.html:24 cps/templates/index.xml:7
@@ -3378,13 +3354,12 @@ msgid "Start"
 msgstr "시작하기"
 
 #: cps/templates/cwa_settings.html:17
-#, fuzzy
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "Calibre-Web 로그: "
+msgstr "Calibre-Web Automated 서비스 활성화/비활성화"
 
 #: cps/templates/cwa_settings.html:24
 msgid "Enable CWA Auto-Convert"
-msgstr ""
+msgstr "CWA 자동 컨버터 활성화"
 
 #: cps/templates/cwa_settings.html:26
 msgid ""
@@ -3392,10 +3367,13 @@ msgid ""
 "converted to the target format specified below (epub by default) \n"
 "        <em>EXCEPT</em> those you have specifically told CWA to ignore below."
 msgstr ""
+"활성화가 기본값입니다. 활성화된 경우, 가져온 모든 책을 이하의 확장자로 변환합"
+"니다. (기본값 epub)\n"
+"        CWA에 무시하도록 지정한 이하의 <em>예외</em>를 제외합니다."
 
 #: cps/templates/cwa_settings.html:35
 msgid "Enable CWA Automatic Cover & Metadata Enforcement Service"
-msgstr ""
+msgstr "CWA 자동 표지 & 메타데이터 적용 서비스 활성화"
 
 #: cps/templates/cwa_settings.html:37
 msgid ""
@@ -3407,10 +3385,17 @@ msgid ""
 "themselves. This feature currently only supports files in EPUB \n"
 "        or AZW3 format."
 msgstr ""
+"활성화가 기본값입니다. 활성화된 경우, Web UI에서 표지/메타데이터가 수정될 때 "
+"마다\n"
+"        CWA 자동 표지 & 메타데이터 적용 서비스가 수정된 점을 책 파일에 적용합"
+"니다. Normally in Stock CW or when this setting is disabled, the changes "
+"made CW 기본값 또는 비활성화된 경우, 수정된 내용은 Web UI에만 적용되고 책 파"
+"일에는 저장되지 않습니다.\n"
+"        이 기능은 현재 EPUB, AZW3 확장자만 지원합니다."
 
 #: cps/templates/cwa_settings.html:48
 msgid "Enable CWA Kindle EPUB Fixer"
-msgstr ""
+msgstr "CWA Kindle EPUB Fixer 활성화"
 
 #: cps/templates/cwa_settings.html:50
 msgid ""
@@ -3418,25 +3403,26 @@ msgid ""
 "by CWA will be checked and fixed to ensure maximum \n"
 "        compatibility with Amazon's Send-to-Kindle Service."
 msgstr ""
+"활성화된 경우, EPUB의 인코딩을 포함한 모든 속성을 CWA가 확인하고,\n"
+"        아마존 Send-to-Kindle 서비스와 최대한 호환되도록 수정합니다."
 
 #: cps/templates/cwa_settings.html:59
-#, fuzzy
 msgid "Web UI Settings"
-msgstr "설정"
+msgstr "Web UI 설정"
 
 #: cps/templates/cwa_settings.html:66
 msgid "Enable CWA Update Notifications"
-msgstr ""
+msgstr "CWA 업데이트 알림 켜기"
 
 #: cps/templates/cwa_settings.html:68
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
-msgstr ""
+msgstr "켜진 경우, Web UI에서 새 CWA 버전 알림을 받습니다."
 
 #: cps/templates/cwa_settings.html:76
 msgid "Enable Contribute Translations Notifications"
-msgstr ""
+msgstr "번역 공헌 알림 켜기"
 
 #: cps/templates/cwa_settings.html:78
 msgid ""
@@ -3444,55 +3430,64 @@ msgid ""
 "using a language other than English if the translations for your chosen "
 "language are not complete."
 msgstr ""
+"비활성화된 경우, 사용중인 언어가 번역 미완료인 경우 Web UI에서 알림을 받지 않"
+"습니다. (영어 제외)"
 
 #: cps/templates/cwa_settings.html:86
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
-msgstr ""
+msgstr "모바일에서 흐린 배경 활성화 (&lt;768px)"
 
 #: cps/templates/cwa_settings.html:88
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
 msgstr ""
+"활성화된 경우, 흐림 효과는 작은 창에서도 나타납니다. 스크롤이나 전환 효과가 "
+"느린 경우 비활성화하십시오."
 
 #: cps/templates/cwa_settings.html:93
-#, fuzzy
 msgid "Automatic Backup Settings"
-msgstr "OAuth 설정"
+msgstr "자동 백업 설정"
 
 #: cps/templates/cwa_settings.html:100
 msgid "Enable CWA Import Auto-Backup"
-msgstr ""
+msgstr "CWA 자동 백업 불러오기 활성화"
 
 #: cps/templates/cwa_settings.html:102
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
 msgstr ""
+"활성화된 경우, 모든 불러온 파일의 복사본이 <i>/config/processed_books/"
+"imported</i>에 저장됩니다."
 
 #: cps/templates/cwa_settings.html:110
 msgid "Enable CWA Conversion Auto-Backup"
-msgstr ""
+msgstr "CWA 변환 자동 백업 활성화"
 
 #: cps/templates/cwa_settings.html:112
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
 msgstr ""
+"활성화된 경우, 변환 대상인 원본 파일이 /config/processed_books/converted에 저"
+"장됩니다."
 
 #: cps/templates/cwa_settings.html:120
 msgid "Enable CWA EPUB Fixer Auto-Backup"
-msgstr ""
+msgstr "CWA EPUB Fixer 자동 백업 활성화"
 
 #: cps/templates/cwa_settings.html:122
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
 msgstr ""
+"활성화된 경우, CWA Kindle EPUB Fixer 서비스 대상인 원본 EPUB 파일이 /config/"
+"processed_books/fixed_originals에 저장됩니다."
 
 #: cps/templates/cwa_settings.html:132
 msgid "Enable CWA Auto-Zip Backups"
-msgstr ""
+msgstr "CWA 자동 압축 백업 활성화"
 
 #: cps/templates/cwa_settings.html:134
 msgid ""
@@ -3501,10 +3496,14 @@ msgid ""
 "from that day. This is to help keep the subdirectories of /config/"
 "processed_books organised and to minimise disk space usage."
 msgstr ""
+"활성화된 경우, 매일 자정 직전에 CWA-자동압축 서비스가 zip 아카이브 파일을 생"
+"성합니다. 당일 변환된 파일, 가져오기 한 파일, 변환/가져오기에 실패한 파일을 "
+"포합합니다. /config/processed_books 이하 경로를 정리하고 저장소 사용량을 최소"
+"화합니다."
 
 #: cps/templates/cwa_settings.html:139
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
-msgstr ""
+msgstr "CWA 자동 변환 목표 확장자 - 기본값 EPUB"
 
 #: cps/templates/cwa_settings.html:142
 msgid ""
@@ -3512,11 +3511,12 @@ msgid ""
 "automatically converted to the format chosen here (except those formats "
 "selected in the ignore list below)"
 msgstr ""
+"자동 변환이 활성화된 경우, 가져오기 한 모든 책이 지정된 형식으로 변환됩니다. "
+"(예외처리된 이하의 형식 목록 제외)"
 
 #: cps/templates/cwa_settings.html:144
-#, fuzzy
 msgid "Choose a target format:"
-msgstr "책 형식 변경:"
+msgstr "목표 책 형식 지정:"
 
 #: cps/templates/cwa_settings.html:155
 msgid ""
@@ -3524,20 +3524,24 @@ msgid ""
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
 "by the service"
 msgstr ""
+"참고: CWA 메타데이터 적용 서비스는, 현재 EPUB과 AZW3 형식만 지원합니다. 이외"
+"의 형식은 무시합니다."
 
 #: cps/templates/cwa_settings.html:160
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr ""
+msgstr "CWA 자동 변환 - 무시할 형식"
 
 #: cps/templates/cwa_settings.html:162
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
 msgstr ""
+"지정된 형식은 CWA 자동 변환이 활성화되어 있어도 변환하지 않고, 현재 형식 그대"
+"로 가져옵니다."
 
 #: cps/templates/cwa_settings.html:187
 msgid "CWA Auto-Ingest - Ignored Formats"
-msgstr ""
+msgstr "CWA 자동 가져오기 - 무시할 형식"
 
 #: cps/templates/cwa_settings.html:189
 msgid ""
@@ -3545,40 +3549,44 @@ msgid ""
 "meaning files in these formats won't be added to the library by CWA during "
 "the ingest process"
 msgstr ""
+"지정된 형식은 CWA 자동 가져오기 기능을 사용하지 않습니다. 이 형식의 파일들은 "
+"CWA 가져오기 프로세스를 통해서는 서재에 추가되지 않습니다."
 
 #: cps/templates/cwa_settings.html:214
 msgid "CWA Auto-Ingest Automerge"
-msgstr ""
+msgstr "CWA 자동 가져오기 자동병합"
 
 #: cps/templates/cwa_settings.html:217
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
-msgstr ""
+msgstr "Calibre는 가져오기 중 중복된 책을 감지합니다. 책 제목과 "
 
 #: cps/templates/cwa_settings.html:217
 msgid "automerge"
-msgstr ""
+msgstr "자동병합"
 
 #: cps/templates/cwa_settings.html:218
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
 msgstr ""
+"설정. 중복된 책 중 한 쪽을 삭제하거나, 모두 유지(기본값) 중 선택할 수 있습니"
+"다."
 
 #: cps/templates/cwa_settings.html:236
 msgid "Discards duplicate import, keeps library copy"
-msgstr ""
+msgstr "중복으로 가져오기 된 책을 삭제하고, 현재 서재에 있는 파일을 유지합니다"
 
 #: cps/templates/cwa_settings.html:240
 msgid "Overwrites library copy with newly imported file"
-msgstr ""
+msgstr "서재에 있는 책을 새로 가져오기한 파일로 덮어씁니다"
 
 #: cps/templates/cwa_settings.html:244
 msgid "Creates a duplicate record, keeping both copies"
-msgstr ""
+msgstr "중복된 항목을 모두 저장합니다."
 
 #: cps/templates/cwa_settings.html:253
 msgid "Ingest Processing Timeout"
-msgstr ""
+msgstr "가져오기 프로세스 시간 초과"
 
 #: cps/templates/cwa_settings.html:255
 msgid ""
@@ -3586,53 +3594,50 @@ msgid ""
 "timing out. Files that timeout are moved to the failed backup folder for "
 "investigation."
 msgstr ""
+"개별 책당 최대 연산 시간(단위: 분). 시간 초과한 책은 검사를 위해 실패한 백업 "
+"폴더로 이동됩니다."
 
 #: cps/templates/cwa_settings.html:257
 msgid "Timeout (minutes):"
-msgstr ""
+msgstr "시간 초과 (분):"
 
 #: cps/templates/cwa_settings.html:265
 msgid "Range: 5-120 minutes (default: 15)"
-msgstr ""
+msgstr "범위: 5-120분 (기본값: 15)"
 
 #: cps/templates/cwa_stats.html:43 cps/templates/cwa_stats.html:65
 #: cps/templates/cwa_stats.html:87 cps/templates/cwa_stats.html:106
 #: cps/templates/cwa_stats.html:130 cps/templates/cwa_stats.html:149
 msgid "Click to See More"
-msgstr ""
+msgstr "더보기"
 
 #: cps/templates/detail.html:66
-#, fuzzy
 msgid "Please select at least one email address"
-msgstr "새 비밀번호가 이메일로 전송되었습니다"
+msgstr "최소 하나 이상의 이메일 주소를 선택하십시오."
 
 #: cps/templates/detail.html:67
-#, fuzzy
 msgid "Error sending email"
-msgstr "서재를 삭제하는 중 오류가 발생했습니다."
+msgstr "이메일 전송 오류"
 
 #: cps/templates/detail.html:74
-#, fuzzy
 msgid "Select eReader Email Addresses"
-msgstr "전자책 리더로 보낼 이메일"
+msgstr "eReader 이메일 주소 선택"
 
 #: cps/templates/detail.html:80
 msgid "Choose email addresses:"
-msgstr ""
+msgstr "이메일 주소 선택:"
 
 #: cps/templates/detail.html:84
-#, fuzzy
 msgid "Select All"
-msgstr "서재 생성"
+msgstr "모두 선택"
 
 #: cps/templates/detail.html:100
-#, fuzzy
 msgid "Select format:"
-msgstr "형식 삭제:"
+msgstr "형식 선택:"
 
 #: cps/templates/detail.html:113
 msgid "Send"
-msgstr ""
+msgstr "보내기"
 
 #: cps/templates/detail.html:150 cps/templates/detail.html:151
 #: cps/templates/detail.html:164 cps/templates/detail.html:165
@@ -3686,63 +3691,59 @@ msgstr "(공개)"
 
 #: cps/templates/duplicates.html:283
 msgid "CWA Duplicates Manager"
-msgstr ""
+msgstr "CWA 중복 관리자"
 
 #: cps/templates/duplicates.html:285
 msgid ""
 "Books with matching titles and authors. Visual inspection recommended to "
 "identify true duplicates."
-msgstr ""
+msgstr "제목과 저자가 동일한 책. 실제로 중복인지 확인하는 것을 추천드립니다."
 
 #: cps/templates/duplicates.html:290
 msgid "Select Duplicates"
-msgstr ""
+msgstr "중복인 책을 선택"
 
 #: cps/templates/duplicates.html:291
-#, fuzzy
 msgid "Select None"
-msgstr "선택"
+msgstr "선택하지 않기"
 
 #: cps/templates/duplicates.html:292
-#, fuzzy
 msgid "Delete Selected"
-msgstr "선택한 책 병합"
+msgstr "선택한 책 삭제"
 
 #: cps/templates/duplicates.html:343
-#, fuzzy
 msgid "No Duplicate Books Found"
-msgstr "검색 결과가 없습니다."
+msgstr "중복된 책이 없습니다"
 
 #: cps/templates/duplicates.html:344
 msgid "Your library has no books with duplicate title and author combinations."
-msgstr ""
+msgstr "서재에 중복된 제목과 저자인 조합의 책이 없습니다."
 
 #: cps/templates/duplicates.html:345
 msgid ""
 "This search looks for books with identical titles AND authors to avoid false "
 "positives."
-msgstr ""
+msgstr "위양성을 피하기 위해, 완전히 동일한 제목과 저자인 책을 검색합니다."
 
 #: cps/templates/duplicates.html:359
-#, fuzzy
 msgid "The following books will be permanently deleted:"
-msgstr "이 책은 데이터베이스에서 삭제됩니다."
+msgstr "다음 책이 영구히 삭제됩니다:"
 
 #: cps/templates/duplicates.html:363
 msgid "This action cannot be undone!"
-msgstr ""
+msgstr "되돌릴 수 없습니다!"
 
 #: cps/templates/duplicates.html:378
 msgid "Success"
-msgstr ""
+msgstr "성공"
 
 #: cps/templates/duplicates.html:385
 msgid "Selected duplicate books have been deleted successfully!"
-msgstr ""
+msgstr "선택한 중복된 책이 삭제되었습니다!"
 
 #: cps/templates/duplicates.html:407
 msgid "An error occurred while processing your request."
-msgstr ""
+msgstr "요청 실행중 오류가 발생했습니다."
 
 #: cps/templates/email_edit.html:13
 msgid "Email Account Type"
@@ -3826,11 +3827,10 @@ msgid "List"
 msgstr "목록"
 
 #: cps/templates/http_error.html:34
-#, fuzzy
 msgid ""
 "Calibre-Web Automated Instance is unconfigured, please contact your "
 "administrator"
-msgstr "Calibre-Web이 설정되지 않았습니다. 관리자에게 문의하세요."
+msgstr "Calibre-Web이 아직 구성되지 않았습니다. 관리자에게 문의하세요."
 
 #: cps/templates/http_error.html:44
 msgid "Create Issue"
@@ -3956,28 +3956,25 @@ msgid "Logout"
 msgstr "로그아웃"
 
 #: cps/templates/layout.html:143
-#, fuzzy
 msgid "Switch Theme"
-msgstr "기본 테마"
+msgstr "테마 변경"
 
 #: cps/templates/layout.html:162 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
-#, fuzzy
 msgid "Settings"
 msgstr "설정"
 
 #: cps/templates/layout.html:164
-#, fuzzy
 msgid "Refresh Library"
-msgstr "검색"
+msgstr "서재 새로고침"
 
 #: cps/templates/layout.html:205
 msgid "See Changelog"
-msgstr ""
+msgstr "변경점 확인"
 
 #: cps/templates/layout.html:215
 msgid "Contribute here!"
-msgstr ""
+msgstr "여기에서 기여하세요!"
 
 #: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
@@ -4001,11 +3998,11 @@ msgstr "책 상세정보"
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
 msgid "Filter by initial"
-msgstr ""
+msgstr "초성 필터"
 
 #: cps/templates/list.html:43
 msgid "Grid"
-msgstr "그리드"
+msgstr "격자"
 
 #: cps/templates/listenmp3.html:159
 msgid "Read"
@@ -4028,18 +4025,16 @@ msgid "Log in with Magic Link"
 msgstr "매직 링크로 로그인"
 
 #: cps/templates/login.html:53
-#, fuzzy
 msgid "Log in with SSO"
-msgstr "매직 링크로 로그인"
+msgstr "SSO로 로그인"
 
 #: cps/templates/logviewer.html:6
 msgid "Show Calibre-Web Log: "
 msgstr "Calibre-Web 로그 표시: "
 
 #: cps/templates/logviewer.html:8
-#, fuzzy
 msgid "Calibre-Web Log: "
-msgstr "Calibre-Web 로그 표시: "
+msgstr "Calibre-Web 로그:"
 
 #: cps/templates/logviewer.html:8
 msgid "Stream output, can't be displayed"
@@ -4133,9 +4128,8 @@ msgid "Ok"
 msgstr "확인"
 
 #: cps/templates/osd.xml:5
-#, fuzzy
 msgid "Calibre-Web Automated eBook Catalog"
-msgstr "Calibre-Web 책 목록"
+msgstr "Calibre-Web Automated 책 목록"
 
 #: cps/templates/read.html:7
 msgid "epub Reader"
@@ -4306,9 +4300,8 @@ msgid "Vertical"
 msgstr "수직"
 
 #: cps/templates/readcbr.html:150
-#, fuzzy
 msgid "Direction"
-msgstr "설명"
+msgstr "방향"
 
 #: cps/templates/readcbr.html:153
 msgid "Left to Right"
@@ -4557,7 +4550,6 @@ msgid "Message"
 msgstr "메시지"
 
 #: cps/templates/tasks.html:21
-#, fuzzy
 msgid "Actions"
 msgstr "작업"
 
@@ -4577,13 +4569,12 @@ msgid "Reset user Password"
 msgstr "사용자 비밀번호 초기화"
 
 #: cps/templates/user_edit.html:28
-#, fuzzy
 msgid ""
 "Send to eReader Email Address. Use comma to separate emails for multiple "
 "eReaders"
 msgstr ""
-"전자책 리더로 전송할 이메일 (여러 전자책 리더를 사용할 경우 쉼표로 구분하여 "
-"입력)"
+"전자책 리더기로 전송할 이메일. 여러 전자책 리더기를 사용할 경우, 쉼표로 구분"
+"하여 입력하십시오."
 
 #: cps/templates/user_edit.html:43
 msgid "Language of Books"
@@ -4603,7 +4594,7 @@ msgstr "연결 해제"
 
 #: cps/templates/user_edit.html:74
 msgid "Hardcover API token"
-msgstr ""
+msgstr "Hardcover API 토큰"
 
 #: cps/templates/user_edit.html:79
 msgid "Kobo Sync Token"
@@ -4635,7 +4626,7 @@ msgstr "Kobo 인증 URL 생성"
 
 #: cps/templates/user_table.html:80 cps/templates/user_table.html:103
 msgid "Select..."
-msgstr "선택"
+msgstr "선택…"
 
 #: cps/templates/user_table.html:124
 msgid "Remove Selections"

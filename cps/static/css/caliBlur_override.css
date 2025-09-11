@@ -2,8 +2,8 @@ body.serieslist.grid-view div.container-fluid > div > div.col-sm-10::before {
   display: none;
 }
 
-/* Make checkboxes white */
-input[type=checkbox] {accent-color: #ffffff;}
+/* Make checkboxes orange */
+input[type=checkbox] {accent-color: #cc7b19;}
 
 .cover .badge {
   position: absolute !important;
@@ -366,4 +366,12 @@ button.close > span {
     position: relative;
     right: 8px;
     bottom: 10px;
+}
+
+.editbook-cover-section {
+    padding: 4rem !important;
+    margin-left: 2rem !important;
+    padding-top: 4rem !important;
+    max-width: none !important;
+    width: 36rem !important;
 }

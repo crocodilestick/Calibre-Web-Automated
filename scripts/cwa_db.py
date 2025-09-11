@@ -231,7 +231,7 @@ class CWA_DB:
         integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']
         
         # Define which settings should remain as JSON strings (not split by comma)
-        json_settings = ['metadata_provider_hierarchy']
+        json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled']
 
         for header in headers:
             if isinstance(cwa_settings[header], int) and header not in integer_settings:

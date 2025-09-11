@@ -45,10 +45,11 @@ Adjust storage classes, hostnames, and paths to match your cluster.
 - Edit `deployment.yaml`:
   - Set `TZ` to your timezone and adjust `PUID`/`PGID` to match file ownership on your volumes.
   - Update the ingest `hostPath` (`/nas/path/to/import-ebooks`) to an existing path on cluster nodes (or convert to PVC — see below).
-  - Optionally add more environment variables (e.g., `HARDCOVER_TOKEN`, `NETWORK_SHARE_MODE`). See “Environment variables” below.
+  - Optionally add more environment variables. 
+  
 - Edit storage classes in `pvc-*` files to match your cluster.
 
-2) Create the namespace
+1) Create the namespace
 
 ```bash
 kubectl create namespace media
@@ -158,32 +159,6 @@ spec:
 ```
 
 Apply this after cert-manager is installed and your issuer exists.
-
----
-
-## Environment variables
-
-The example `deployment.yaml` sets:
-- `PUID`, `PGID`: Run as a user/group that owns your mounted files (prevents permission errors).
-- `TZ`: Your timezone.
-
-Additional useful variables (see `docker-compose.yml` for examples):
-- `HARDCOVER_TOKEN`: API key for Hardcover metadata provider.
-- `NETWORK_SHARE_MODE`: `true`/`false` — optimize for network shares (disables WAL/chown, uses polling watcher).
-- `CWA_WATCH_MODE`: Force `poll` or use default inotify.
-- `DISABLE_LIBRARY_AUTOMOUNT`: `true/yes/1` to skip the auto-mount service at startup.
-
-Add them under `spec.template.spec.containers[0].env` in `deployment.yaml`, e.g.:
-
-```yaml
-- name: HARDCOVER_TOKEN
-  valueFrom:
-    secretKeyRef:
-      name: cwa-secrets
-      key: hardcover_token
-```
-
-Consider using `Secret`s for sensitive values.
 
 ---
 

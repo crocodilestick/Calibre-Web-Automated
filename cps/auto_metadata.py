@@ -79,12 +79,31 @@ def fetch_metadata_for_book(book_title: str, book_authors: str = "", user_id: Op
         
         # Get provider hierarchy
         provider_hierarchy = get_metadata_provider_hierarchy(cwa_settings)
+
+        # Get global enabled map for providers
+        enabled_map_raw = cwa_settings.get('metadata_providers_enabled', '{}')
+        try:
+            if isinstance(enabled_map_raw, str):
+                s = enabled_map_raw.strip()
+                if s.startswith("'") and s.endswith("'"):
+                    s = s[1:-1]
+                enabled_map = json.loads(s or '{}')
+            elif isinstance(enabled_map_raw, dict):
+                enabled_map = enabled_map_raw
+            else:
+                enabled_map = {}
+        except Exception:
+            enabled_map = {}
         
         # Get available metadata providers
         available_providers = {provider.__id__: provider for provider in cl if provider.active}
         
         # Try providers in order of preference
         for provider_id in provider_hierarchy:
+            # Skip if globally disabled
+            if not bool(enabled_map.get(provider_id, True)):
+                log.debug(f"Provider {provider_id} is globally disabled")
+                continue
             if provider_id not in available_providers:
                 log.debug(f"Provider {provider_id} not available or inactive")
                 continue

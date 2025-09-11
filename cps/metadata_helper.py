@@ -57,10 +57,29 @@ def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
             provider_hierarchy = json.loads(cwa_settings.get('metadata_provider_hierarchy', '["google","douban","dnb","ibdb","comicvine"]'))
         except (json.JSONDecodeError, TypeError):
             provider_hierarchy = ["google", "douban", "dnb", "ibdb", "comicvine"]
+
+        # Global provider enablement map
+        enabled_map_raw = cwa_settings.get('metadata_providers_enabled', '{}')
+        try:
+            if isinstance(enabled_map_raw, str):
+                s = enabled_map_raw.strip()
+                if s.startswith("'") and s.endswith("'"):
+                    s = s[1:-1]
+                enabled_map = json.loads(s or '{}')
+            elif isinstance(enabled_map_raw, dict):
+                enabled_map = enabled_map_raw
+            else:
+                enabled_map = {}
+        except Exception:
+            enabled_map = {}
             
         # Try each provider in order
         metadata_found = False
         for provider_id in provider_hierarchy:
+            # Skip if globally disabled
+            if not bool(enabled_map.get(provider_id, True)):
+                log.debug(f"Provider {provider_id} is globally disabled")
+                continue
             try:
                 # Find the provider
                 provider = None

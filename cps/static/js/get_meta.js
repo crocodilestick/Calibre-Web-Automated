@@ -182,6 +182,13 @@ $(function () {
           if (provider.active) {
             checked = "checked";
           }
+          var disabledAttr = "";
+          var title = "";
+          if (provider.hasOwnProperty('globally_enabled') && !provider.globally_enabled) {
+            disabledAttr = ' disabled="disabled"';
+            checked = ""; // Force unchecked
+            title = ' title="Globally disabled by administrator"';
+          }
           var $provider_button =
             '<input type="checkbox" id="show-' +
             provider.name +
@@ -191,6 +198,8 @@ $(function () {
             provider.id +
             '" ' +
             checked +
+            disabledAttr +
+            title +
             '><label for="show-' +
             provider.name +
             '">' +

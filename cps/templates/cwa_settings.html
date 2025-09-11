@@ -128,11 +128,11 @@
       {% endif %}
       <label for="kindle_epub_fixer" style="padding-left: 10px;">{{_('Enable CWA Kindle EPUB Fixer')}}</label><br>
       <p class="cwa-settings-tooltip">
-        {{_('When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
-        compatibility with Amazon\'s Send-to-Kindle Service.')}}<br><br>
-        {{('<i>(TLDR: if you\'ve ever had EPUB files that Amazon just constantly rejects for seemingly no reason, this should prevent that 
-        from happening again). This tool was adapted from the <a href="https://kindle-epub-fix.netlify.app/">kindle-epub-fix.netlify.app</a> 
-        tool made by <a href="https://github.com/innocenat">innocenat</a>.</i>') | safe }}
+        {{_("When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
+        compatibility with Amazon's Send-to-Kindle Service.")}}<br><br>
+        {{("<i>(TLDR: if you've ever had EPUB files that Amazon just constantly rejects for seemingly no reason, this should prevent that 
+        from happening again). This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> 
+        tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.</i>") | safe }}
       </p>
 
       {% if cwa_settings['auto_metadata_fetch_enabled'] %}
@@ -212,6 +212,21 @@
         <input type="hidden" name="metadata_provider_hierarchy" id="metadata_provider_hierarchy_hidden" value="">
       </div>
       <small style="color: #bbbbbb;">{{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
+    </div>
+
+    <!-- Global Provider Enable/Disable Setting -->
+    <div class="form-group">
+      <h4 class="settings-section-header">{{_('Metadata Providers (Global Enable/Disable)')}}</h4>
+      <p class="settings-description">
+        {{_('Disable a provider here to prevent its use by any user.')}}
+      </p>
+      <div id="metadata_provider_enabled_container" style="margin-top: 10px; max-width: 400px;">
+        <div id="metadata_provider_enabled_list" style="border: 1px solid #444; border-radius: 4px; padding: 10px; background-color: #151e2680;">
+          <!-- Provider toggles will be populated here by JavaScript -->
+        </div>
+        <input type="hidden" name="metadata_providers_enabled" id="metadata_providers_enabled_hidden" value="{}">
+      </div>
+      <small style="color: #bbbbbb;">{{_('Unchecked providers are globally disabled.')}}</small>
     </div>
   </div>
 
@@ -312,14 +327,14 @@
         {% endfor %}
       </select>
       <p class="cwa-settings-disclaimer settings-disclaimer" style="margin-bottom: 2rem !important;">
-        {{_('NOTE: CWA\'s Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service')}}
+        {{_("NOTE: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
       </p>
     </div>
 
     <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Auto-Convert - Ignored Formats')}}</h4>
       <p class="cwa-settings-explanation settings-explanation">
-        {{_('The formats selected here will be ignored by CWA\'s Auto-Conversion feature when it\'s active, meaning they will be imported as is.')}}
+        {{_("The formats selected here will be ignored by CWA's Auto-Conversion feature when it's active, meaning they will be imported as is.")}}
       </p>
       <div style="max-width: 90rem; padding-left: 30px;">
         {% for format in ignorable_formats -%}
@@ -346,7 +361,7 @@
     <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Auto-Ingest - Ignored Formats')}}</h4>
       <p class="cwa-settings-explanation settings-explanation">
-        {{_('The formats selected here will be ignored by CWA\'s Auto-Ingest feature, meaning files in these formats won\'t be added to the library by CWA during the ingest process')}}
+        {{_("The formats selected here will be ignored by CWA's Auto-Ingest feature, meaning files in these formats won't be added to the library by CWA during the ingest process")}}
       </p>
       <div style="max-width: 90rem; padding-left: 30px;">
         {% for format in ignorable_formats -%}
@@ -424,6 +439,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Get current hierarchy from CWA settings
   const currentHierarchyStr = {{ cwa_settings.get("metadata_provider_hierarchy", '["ibdb","google","dnb"]') | tojson }};
   let providerHierarchy = [];
+  // Get current global enabled map from CWA settings
+  const currentEnabledStr = {{ cwa_settings.get("metadata_providers_enabled", '{}') | tojson }};
+  let globalEnabledMap = {};
   
   try {
     if (typeof currentHierarchyStr === 'string') {
@@ -435,12 +453,29 @@ document.addEventListener('DOMContentLoaded', function() {
     console.error('Error parsing hierarchy:', e);
     providerHierarchy = ["ibdb", "google", "dnb"]; // fallback
   }
+
+  try {
+    if (typeof currentEnabledStr === 'string') {
+      const s = currentEnabledStr.startsWith("'") && currentEnabledStr.endsWith("'")
+        ? currentEnabledStr.slice(1, -1) : currentEnabledStr;
+      globalEnabledMap = JSON.parse(s || '{}');
+    } else {
+      globalEnabledMap = currentEnabledStr || {};
+    }
+    if (typeof globalEnabledMap !== 'object' || Array.isArray(globalEnabledMap)) {
+      globalEnabledMap = {};
+    }
+  } catch (e) {
+    console.error('Error parsing enabled map:', e);
+    globalEnabledMap = {};
+  }
   
-  // Fetch available providers from the API
-  fetch('/metadata/provider')
+  // Fetch available providers from the API (use correct app base URL)
+  fetch('{{ url_for("metadata.metadata_provider") }}')
     .then(response => response.json())
     .then(providers => {
       populateProviderList(providers, providerHierarchy);
+      populateEnabledToggles(providers, globalEnabledMap);
       setupDragAndDrop();
     })
     .catch(error => {
@@ -454,6 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {id: 'douban', name: 'Douban', active: true}
       ];
       populateProviderList(fallbackProviders, providerHierarchy);
+      populateEnabledToggles(fallbackProviders, globalEnabledMap);
       setupDragAndDrop();
     });
   
@@ -502,6 +538,47 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     
     container.appendChild(item);
+  }
+
+  function populateEnabledToggles(providers, enabledMap) {
+    const container = document.getElementById('metadata_provider_enabled_list');
+    const hidden = document.getElementById('metadata_providers_enabled_hidden');
+    container.innerHTML = '';
+    providers.forEach(p => {
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.padding = '6px 10px';
+      wrapper.style.margin = '4px 0';
+      wrapper.style.backgroundColor = '#151e2680';
+      wrapper.style.borderRadius = '4px';
+
+      const id = `global-provider-${p.id}`;
+      const checked = (enabledMap.hasOwnProperty(p.id) ? !!enabledMap[p.id] : true);
+      wrapper.innerHTML = `
+        <input type="checkbox" id="${id}" data-provider-id="${p.id}" ${checked ? 'checked' : ''}>
+        <label for="${id}" style="margin-left: 8px;">${p.name}</label>
+      `;
+      container.appendChild(wrapper);
+    });
+
+    function updateHidden() {
+      const toggles = container.querySelectorAll('input[type="checkbox"][data-provider-id]');
+      const map = {};
+      toggles.forEach(t => {
+        map[t.dataset.providerId] = !!t.checked;
+      });
+      hidden.value = JSON.stringify(map);
+    }
+
+    container.addEventListener('change', updateHidden);
+    updateHidden();
+
+    // Ensure the hidden input is up to date on submit
+    const form = document.querySelector('form[action$="/cwa-settings"]');
+    if (form) {
+      form.addEventListener('submit', updateHidden);
+    }
   }
   
   function setupDragAndDrop() {

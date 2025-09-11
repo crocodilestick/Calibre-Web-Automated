@@ -300,23 +300,24 @@
       <small style="color: #bbbbbb;">{{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
     </div>
 
-    <hr class="settings-divider">
-
-    <!-- Global Provider Enable/Disable Setting -->
-    <div class="form-group">
-      <h4 class="settings-section-header">{{_('Enabled Metadata Providers')}}</h4>
-      <p class="settings-description">
-        {{_('Disable a provider here to prevent its use by any user.')}}
-      </p>
-      <div id="metadata_provider_enabled_container" style="margin-top: 10px; max-width: 400px;">
-        <div id="metadata_provider_enabled_list" style="border: 1px solid #444; border-radius: 4px; padding: 10px; background-color: #151e2680;">
-          <!-- Provider toggles will be populated here by JavaScript -->
-        </div>
-        <input type="hidden" name="metadata_providers_enabled" id="metadata_providers_enabled_hidden" value="{}">
-      </div>
-      <small style="color: #bbbbbb;">{{_('Unchecked providers are globally disabled.')}}</small>
     </div>
-  </div>
+
+    <div class="settings-container">
+    <!-- Global Provider Enable/Disable Setting -->
+      <div class="form-group">
+        <h4 class="settings-section-header">{{_('Enabled Metadata Providers')}}</h4>
+        <p class="settings-description">
+          {{_('Disable a provider here to prevent its use by any user.')}}
+        </p>
+        <div id="metadata_provider_enabled_container" style="margin-top: 10px; max-width: 400px;">
+          <div id="metadata_provider_enabled_list" style="border: 1px solid #444; border-radius: 4px; padding: 10px; background-color: #151e2680;">
+            <!-- Provider toggles will be populated here by JavaScript -->
+          </div>
+          <input type="hidden" name="metadata_providers_enabled" id="metadata_providers_enabled_hidden" value="{}">
+        </div>
+        <small style="color: #bbbbbb;">{{_('Unchecked providers are globally disabled.')}}</small>
+      </div>
+    </div>
 
     <div class="settings-container">
         <h4 class="settings-section-header">{{_('Web UI Settings')}}</h4>

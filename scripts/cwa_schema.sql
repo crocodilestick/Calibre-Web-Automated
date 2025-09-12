@@ -50,6 +50,16 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     enable_mobile_blur SMALLINT DEFAULT 1 NOT NULL,
     auto_metadata_fetch_enabled SMALLINT DEFAULT 0 NOT NULL,
     auto_metadata_smart_application SMALLINT DEFAULT 0 NOT NULL,
+    auto_metadata_update_title SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_authors SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_description SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_publisher SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_tags SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_series SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_rating SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_published_date SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_identifiers SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_cover SMALLINT DEFAULT 1 NOT NULL,
     metadata_provider_hierarchy TEXT DEFAULT '["ibdb","google","dnb"]' NOT NULL,
     auto_send_delay_minutes INTEGER DEFAULT 5 NOT NULL
 );

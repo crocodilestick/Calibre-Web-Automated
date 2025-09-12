@@ -312,6 +312,19 @@ def _validate_uploaded_file(uploaded_file):
 def _get_ingest_path(uploaded_file, prefix_parts=None):
     ingest_dir = get_ingest_dir()
     os.makedirs(ingest_dir, exist_ok=True)
+    
+    # Ensure proper ownership of ingest directory (fix for issue #603)
+    try:
+        nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+        if not nsm:
+            # Set ownership to abc:abc (uid=1000, gid=1000)
+            os.chown(ingest_dir, 1000, 1000)
+    except OSError as e:
+        logger.log.warning('Failed to set ownership of ingest directory %s: %s', ingest_dir, e)
+    except Exception:
+        # Silently ignore any other permission-related errors
+        pass
+    
     base_name = secure_filename(uploaded_file.filename)
     # CWA change: use timestamp for more predictable sorting vs uuid
     unique = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")

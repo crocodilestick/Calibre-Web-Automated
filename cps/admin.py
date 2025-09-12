@@ -1202,15 +1202,21 @@ def _configuration_oauth_helper(to_save):
                 # If metadata URL is provided, try to fetch endpoints
                 if metadata_url:
                     try:
-                        resp = requests.get(metadata_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
+                        resp = requests.get(metadata_url, timeout=3, verify=constants.OAUTH_SSL_STRICT)
                         if resp.status_code == 200:
                             data = resp.json()
                             update["oauth_base_url"] = data.get("issuer", "")
                             update["oauth_authorize_url"] = data.get("authorization_endpoint", "")
                             update["oauth_token_url"] = data.get("token_endpoint", "")
                             update["oauth_userinfo_url"] = data.get("userinfo_endpoint", "")
+                        else:
+                            log.warning(f"Failed to fetch OAuth metadata: HTTP {resp.status_code}")
+                    except requests.exceptions.Timeout:
+                        log.warning("OAuth metadata fetch timed out - configuration saved but endpoints not auto-discovered")
+                    except requests.exceptions.RequestException as ex:
+                        log.warning(f"Failed to fetch OAuth metadata: {ex}")
                     except Exception as ex:
-                        return False, _configuration_result(_('Unable to fetch OAuth metadata from URL.'))
+                        log.error(f"Unexpected error fetching OAuth metadata: {ex}")
             
             # Handle manual server URL (fallback or override)
             elif to_save["config_generic_oauth_server_url"] != element["oauth_base_url"]:
@@ -1219,7 +1225,7 @@ def _configuration_oauth_helper(to_save):
                 try:
                     resp = requests.get(
                         os.path.join(update["oauth_base_url"], ".well-known/openid-configuration"),
-                        timeout=5,
+                        timeout=3,
                         verify=constants.OAUTH_SSL_STRICT
                     )
                     if resp.status_code == 200:
@@ -1227,8 +1233,14 @@ def _configuration_oauth_helper(to_save):
                         update["oauth_authorize_url"] = data.get("authorization_endpoint", "")
                         update["oauth_token_url"] = data.get("token_endpoint", "")
                         update["oauth_userinfo_url"] = data.get("userinfo_endpoint", "")
+                    else:
+                        log.warning(f"Failed to fetch OIDC configuration: HTTP {resp.status_code}")
+                except requests.exceptions.Timeout:
+                    log.warning("OIDC configuration fetch timed out - configuration saved but endpoints not auto-discovered")
+                except requests.exceptions.RequestException as ex:
+                    log.warning(f"Failed to fetch OIDC configuration: {ex}")
                 except Exception as ex:
-                    return False, _configuration_result(_('Unable to fetch OpenID configuration.'))
+                    log.error(f"Unexpected error fetching OIDC configuration: {ex}")
             
             # Handle manual endpoint URLs if metadata URL is not used
             if not metadata_url:
@@ -2279,20 +2291,39 @@ def test_oidc():
     try:
         response = requests.get(discovery_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
         response.raise_for_status()
-        # Try to parse the JSON to make sure it's valid
-        response.json()
-        return json.dumps({'success': True, 'message': _('Connection successful!')})
+        # Try to parse the JSON and extract useful information
+        oidc_config = response.json()
+        
+        # Extract key endpoints for validation
+        endpoints = []
+        if 'authorization_endpoint' in oidc_config:
+            endpoints.append('authorization')
+        if 'token_endpoint' in oidc_config:
+            endpoints.append('token')
+        if 'userinfo_endpoint' in oidc_config:
+            endpoints.append('userinfo')
+            
+        endpoint_info = " Found endpoints: " + ', '.join(endpoints) + "." if endpoints else ""
+        
+        return json.dumps({
+            'success': True, 
+            'message': _('Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s', 
+                        endpoints=endpoint_info)
+        })
     except requests.exceptions.HTTPError as e:
-        return json.dumps({'success': False, 'message': _('Connection failed: Server returned status code %(code)s', code=e.response.status_code)}), 200
+        if e.response.status_code == 404:
+            return json.dumps({'success': False, 'message': _('Connection failed: OIDC discovery endpoint not found (404). Check if the base URL is correct.')}), 200
+        else:
+            return json.dumps({'success': False, 'message': _('Connection failed: Server returned status code %(code)s', code=e.response.status_code)}), 200
     except requests.exceptions.ConnectionError:
-        return json.dumps({'success': False, 'message': _('Connection failed: Could not connect to server.')}), 200
+        return json.dumps({'success': False, 'message': _('Connection failed: Could not connect to server. Check the URL and network connectivity.')}), 200
     except requests.exceptions.Timeout:
-        return json.dumps({'success': False, 'message': _('Connection failed: Request timed out.')}), 200
+        return json.dumps({'success': False, 'message': _('Connection failed: Request timed out. The server may be slow or unreachable.')}), 200
     except ValueError:
-        return json.dumps({'success': False, 'message': _('Connection failed: Invalid JSON in response.')}), 200
+        return json.dumps({'success': False, 'message': _('Connection failed: Server returned invalid JSON. This may not be an OIDC endpoint.')}), 200
     except Exception as e:
         log.error("OIDC test connection failed: %s", e)
-        return json.dumps({'success': False, 'message': _('An unknown error occurred.')}), 200
+        return json.dumps({'success': False, 'message': _('Connection failed: %(error)s', error=str(e))}), 200
 
 
 @admi.route("/admin/test_metadata", methods=["POST"])
@@ -2318,17 +2349,31 @@ def test_metadata():
         if missing_fields:
             return json.dumps({
                 'success': False, 
-                'message': _('Metadata is missing required fields: %(fields)s', fields=', '.join(missing_fields))
+                'message': _('Metadata is missing required OIDC fields: %(fields)s. This may not be a valid OIDC metadata endpoint.', 
+                            fields=', '.join(missing_fields))
             }), 200
+        
+        # Count available OAuth endpoints for user feedback
+        oauth_endpoints = ['authorization_endpoint', 'token_endpoint', 'userinfo_endpoint', 
+                          'end_session_endpoint', 'introspection_endpoint', 'revocation_endpoint']
+        found_endpoints = [ep for ep in oauth_endpoints if ep in data]
+        endpoint_count = len(found_endpoints)
+        has_userinfo = 'userinfo_endpoint' in data
+        
+        message = _('Metadata URL is valid! Found %(count)s OAuth endpoints.', count=endpoint_count)
+        if has_userinfo:
+            message += _(' User info endpoint is available.')
+        else:
+            message += _(' Note: User info endpoint not found - this may cause authentication issues.')
             
-        return json.dumps({
-            'success': True, 
-            'message': _('Metadata URL is valid! Found %(count)s endpoints.', count=len([k for k in data.keys() if 'endpoint' in k]))
-        })
+        return json.dumps({'success': True, 'message': message})
     except requests.exceptions.HTTPError as e:
-        return json.dumps({'success': False, 'message': _('Connection failed: Server returned status code %(code)s', code=e.response.status_code)}), 200
+        if e.response.status_code == 404:
+            return json.dumps({'success': False, 'message': _('Metadata URL not found (404). Please check the URL is correct.')}), 200
+        else:
+            return json.dumps({'success': False, 'message': _('Connection failed: Server returned status code %(code)s', code=e.response.status_code)}), 200
     except requests.exceptions.ConnectionError:
-        return json.dumps({'success': False, 'message': _('Connection failed: Could not connect to server.')}), 200
+        return json.dumps({'success': False, 'message': _('Connection failed: Could not connect to metadata URL. Check the URL and network connectivity.')}), 200
     except requests.exceptions.Timeout:
         return json.dumps({'success': False, 'message': _('Connection failed: Request timed out.')}), 200
     except ValueError:

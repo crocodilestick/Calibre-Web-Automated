@@ -1,7 +1,29 @@
 {% extends "layout.html" %}
 {% block flash %}
 <div id="spinning_success" class="row-fluid text-center" style="display:none;">
-    <div class="alert alert-info"><img id="img-spinner" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/></div>
+    <div class="alert alert-info"><img id="img-spinner" src="{{ url_for('static', filename='css/libs/image        <select name="config_login_type" id="config_login_type" class="form-control" data-controlall="login-settings">
+           <option value="0" {% if config.config_login_type == 0 %}selected{% endif %}>{{_('Use Standard Authentication')}}</option>
+           {% if feature_support['ldap'] %}
+           <option value="1" {% if config.config_login_type == 1 %}selected{% endif %}>{{_('Use LDAP Authentication')}}</option>
+           {% endif %}
+           {% if feature_support['oauth'] %}
+           <option value="2" {% if config.config_login_type == 2 %}selected{% endif %}>{{_('Use OAuth')}}</option>
+           {% endif %}
+        </select>
+        
+        <!-- Authentication switching warning -->
+        {% if feature_support['oauth'] %}
+        <div id="auth-switch-warning" class="alert alert-warning" style="display: none; margin-top: 10px;">
+          <strong>⚠️ Warning:</strong> 
+          <p>Users created via OAuth authentication do not have passwords set. If you switch from OAuth to Standard Authentication, these users will be unable to log in until you manually set passwords for them.</p>
+          <p>Before switching:</p>
+          <ul>
+            <li>Identify which users were created via OAuth</li>
+            <li>Set passwords for these users in the User Management section</li>
+            <li>Notify affected users about the authentication change</li>
+          </ul>
+        </div>
+        {% endif %}-icon.gif') }}"/></div>
 </div>
 {% endblock %}
 
@@ -561,6 +583,20 @@
 
 <script>
 $(document).ready(function() {
+  // Check for authentication switching warning
+  $('#config_login_type').on('change', function() {
+    var currentAuthType = $(this).val();
+    var warningDiv = $('#auth-switch-warning');
+    
+    // Show warning when switching TO Standard Authentication (0)
+    // This warns about OAuth users who might lose access
+    if (currentAuthType === '0') {
+      warningDiv.show();
+    } else {
+      warningDiv.hide();
+    }
+  });
+
   $('#test_oidc_connection').on('click', function() {
     var serverUrl = $('#config_generic_oauth_server_url_test').val() || $('#config_generic_oauth_server_url').val();
     var resultSpan = $('#oidc_test_result');

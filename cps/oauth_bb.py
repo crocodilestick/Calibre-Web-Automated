@@ -105,11 +105,13 @@ def register_user_from_generic_oauth():
         userinfo = resp.json()
     except requests.exceptions.RequestException as e:
         log.error("Failed to fetch user info from generic OIDC provider: %s", e)
-        flash(_("Login failed: Could not connect to the user info endpoint."), category="error")
+        flash(_("Login failed: Could not connect to the OAuth provider's user info endpoint. "
+               "Please try again or contact your administrator."), category="error")
         return None
     except ValueError:
         log.error("Failed to parse user info from generic OIDC provider.")
-        flash(_("Login failed: The OAuth provider returned an invalid user profile."), category="error")
+        flash(_("Login failed: The OAuth provider returned invalid user profile data. "
+               "Please contact your administrator."), category="error")
         return None
 
 
@@ -121,8 +123,18 @@ def register_user_from_generic_oauth():
     provider_user_id = userinfo.get('sub')
 
     if not provider_username or not provider_user_id:
-        log.error(f"User info from OIDC provider is missing '{username_field}' or 'sub' field.")
-        flash(_("Login failed: User profile from provider is incomplete."), category="error")
+        missing_fields = []
+        if not provider_username:
+            missing_fields.append(username_field)
+        if not provider_user_id:
+            missing_fields.append("sub")
+        
+        missing_fields_str = ', '.join(missing_fields)
+        log.error(f"User info from OIDC provider is missing required fields: {missing_fields_str}. "
+                 f"Check your OAuth scopes and field mappings.")
+        flash(_("Login failed: OAuth provider response is missing required fields: %(fields)s. "
+               "Please check your OAuth configuration or contact your administrator.", 
+               fields=missing_fields_str), category="error")
         return None
 
     provider_username = str(provider_username)
@@ -226,8 +238,10 @@ def bind_oauth_or_register(provider_id, provider_user_id, redirect_url, provider
                     log.error_or_exception(ex)
                     ub.session.rollback()
             else:
-                flash(_("Login failed, No User Linked With OAuth Account"), category="error")
-            log.info('Login failed, No User Linked With OAuth Account')
+                flash(_("Login failed: No user account is linked to your %(provider)s account. "
+                       "Please contact your administrator to create an account or link your existing account.", 
+                       provider=provider_name), category="error")
+            log.info('Login failed, No User Linked With OAuth Account for provider %s', provider_name)
             return redirect(url_for('web.login'))
             # return redirect(url_for('web.login'))
             # if config.config_public_reg:

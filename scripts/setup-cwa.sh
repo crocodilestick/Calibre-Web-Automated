@@ -20,7 +20,7 @@ change_script_permissions () {
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-ingest-service/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-init/run
     chmod +x /etc/s6-overlay/s6-rc.d/metadata-change-detector/run
-    chmod +x /etc/s6-overlay/s6-rc.d/universal-calibre-setup/run
+    chmod +x /etc/s6-overlay/s6-rc.d/calibre-binaries-setup/run
     chmod +x /etc/s6-overlay/s6-rc.d/svc-calibre-web-automated/run
     chmod +x /app/calibre-web-automated/scripts/check-cwa-services.sh
     chmod +x /app/calibre-web-automated/scripts/compile_translations.sh

@@ -6,7 +6,7 @@ cat <<-EOF
     ********************************************************
     *                                                      *
     *                         !!!!                         *
-    *   universal-calibre mod is only supported on images  *
+    *   calibre binaries are only supported on images      *
     *             using an Ubuntu base image.              *
     *                                                      *
     ********************************************************
@@ -20,15 +20,15 @@ export DEBIAN_FRONTEND="noninteractive"
 CALIBRE_INSTALLED_TEST="$(calibredb --version)"
 
 if [[ ! $CALIBRE_INSTALLED_TEST =~ "calibredb (calibre [0-9]\.[0-9])" ]]; then
-    echo "[universal-calibre-setup] USER NOTE: 'Ignore calibredb: command not found' above, nothing is wrong, this just indicates to CWA that Calibre still needs to be installed"
-    echo "[universal-calibre-setup] Installing Calibre version $(cat /CALIBRE_RELEASE)..."
+    echo "[calibre-binary-setup] USER NOTE: 'Ignore calibredb: command not found' above, nothing is wrong, this just indicates to CWA that Calibre still needs to be installed"
+    echo "[calibre-binary-setup] Installing Calibre version $(cat /CALIBRE_RELEASE)..."
     /app/calibre/calibre_postinstall &> /dev/null
     if [[ $? == 0 ]]
     then
-        echo "[universal-calibre-setup] Calibre setup completed successfully! Exiting now..." 
+        echo "[calibre-binary-setup] Calibre setup completed successfully! Exiting now..." 
     else
-        echo "[universal-calibre-setup] Calibre setup was unsuccessful, 'calibre_postinstall' encountered an error. Exiting now..." 
+        echo "[calibre-binary-setup] Calibre setup was unsuccessful, 'calibre_postinstall' encountered an error. Exiting now..." 
     fi
 else
-    echo "[universal-calibre-setup] Skipping setup, Calibre already installed. Exiting now..."
+    echo "[calibre-binary-setup] Skipping setup, Calibre already installed. Exiting now..."
 fi

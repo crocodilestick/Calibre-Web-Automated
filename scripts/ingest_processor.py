@@ -41,10 +41,11 @@ try:
         from cps import gdriveutils as _gdriveutils, config as _cps_config
         _GDRIVE_AVAILABLE = True
         print("[ingest-processor] GDrive functionality available", flush=True)
-    except ImportError as e:
+    except (ImportError, TypeError, AttributeError) as e:
         print(f"[ingest-processor] GDrive functionality not available: {e}", flush=True)
         _gdriveutils = None
         _cps_config = None
+        _GDRIVE_AVAILABLE = False
 
     # Import auto-send and metadata functionality
     try:
@@ -60,11 +61,15 @@ try:
         TaskAutoSend = None
         WorkerThread = None
         _ub = None
+        _CPS_AVAILABLE = False
 
 except Exception as e:
-    print(f"[ingest-processor] WARN: Unexpected error during CPS module import: {e}", flush=True)
-    _GDRIVE_AVAILABLE = False
-    _CPS_AVAILABLE = False
+    print(f"[ingest-processor] WARN: Unexpected error during CPS path setup: {e}", flush=True)
+    # Only disable if there's a fundamental path/import issue
+    if '_GDRIVE_AVAILABLE' not in locals():
+        _GDRIVE_AVAILABLE = False
+    if '_CPS_AVAILABLE' not in locals():
+        _CPS_AVAILABLE = False
 
 def gdrive_sync_if_enabled():
     """Sync Calibre library to Google Drive if enabled in app config."""

@@ -78,25 +78,20 @@ def _get_global_provider_enabled_map() -> dict:
         from cwa_db import CWA_DB  # type: ignore
         cwa_db = CWA_DB()
         settings = cwa_db.get_cwa_settings()
-        raw = settings.get('metadata_providers_enabled', '{}')
-        if isinstance(raw, bytes):
-            raw = raw.decode('utf-8', errors='ignore')
-        if isinstance(raw, str):
-            s = raw.strip()
-            # Strip surrounding single quotes if present from default schema value
-            if s.startswith("'") and s.endswith("'"):
-                s = s[1:-1]
-            try:
-                data = json.loads(s or '{}')
-            except Exception:
-                return {}
-            return data if isinstance(data, dict) else {}
-        elif isinstance(raw, dict):
-            return raw
-    except Exception:
-        # On any failure, treat as all enabled
+        
+        if not settings:
+            log.warning("Could not get CWA settings for provider enabled map")
+            return {}
+        
+        from cps.cwa_functions import parse_metadata_providers_enabled
+        return parse_metadata_providers_enabled(
+            settings.get('metadata_providers_enabled', '{}')
+        )
+    except Exception as e:
+        # On any failure, treat as all enabled (empty dict = all default to enabled)
+        log.warning(f"Error loading provider enabled map: {e}")
         return {}
-    return {}
+    # Remove redundant return
 
 @meta.route("/metadata/provider")
 @user_login_required

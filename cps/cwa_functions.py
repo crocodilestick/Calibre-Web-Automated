@@ -60,6 +60,81 @@ DIRS_JSON = "/app/calibre-web-automated/dirs.json"
 ##                                                                            ##
 ##————————————————————————————————————————————————————————————————————————————##
 
+def parse_metadata_providers_enabled(raw_value):
+    """
+    Parse the metadata_providers_enabled setting from various formats into a dict.
+    
+    Args:
+        raw_value: The raw value from database/settings (str, dict, bytes, or None)
+        
+    Returns:
+        dict: Provider ID to enabled status mapping. Empty dict on error.
+    """
+    import json
+    
+    try:
+        # Handle None/null values
+        if raw_value is None:
+            return {}
+            
+        # Handle bytes (from some database drivers)
+        if isinstance(raw_value, bytes):
+            raw_value = raw_value.decode('utf-8', errors='ignore')
+        
+        # Handle string (most common case)
+        if isinstance(raw_value, str):
+            s = raw_value.strip()
+            # Handle empty strings
+            if not s:
+                return {}
+            # Strip surrounding single quotes if present from schema default
+            if s.startswith("'") and s.endswith("'"):
+                s = s[1:-1]
+            # Handle empty string after quote stripping
+            if not s:
+                return {}
+            data = json.loads(s)
+            return data if isinstance(data, dict) else {}
+        
+        # Handle dict (already parsed)
+        elif isinstance(raw_value, dict):
+            return raw_value
+        
+        # Unknown type, return empty dict
+        else:
+            return {}
+            
+    except (json.JSONDecodeError, ValueError, TypeError, AttributeError):
+        return {}
+
+def validate_and_cleanup_provider_enabled_map(enabled_map, available_provider_ids):
+    """
+    Validate and cleanup the provider enabled map.
+    
+    Args:
+        enabled_map (dict): Current provider enabled map
+        available_provider_ids (list): List of valid provider IDs
+        
+    Returns:
+        dict: Cleaned up enabled map with only valid providers
+    """
+    if not isinstance(enabled_map, dict):
+        return {}
+    
+    if not isinstance(available_provider_ids, (list, tuple, set)):
+        return {}
+    
+    # Keep only valid provider IDs and boolean values
+    cleaned_map = {}
+    for provider_id, enabled in enabled_map.items():
+        if (isinstance(provider_id, str) and 
+            provider_id.strip() and  # Non-empty string
+            provider_id in available_provider_ids):
+            # Convert to boolean, handling various truthy/falsy values
+            cleaned_map[provider_id] = bool(enabled)
+    
+    return cleaned_map
+
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_switch_theme():
@@ -313,8 +388,13 @@ def set_cwa_settings():
                                 result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
                         elif setting == 'metadata_providers_enabled':
                             # Validate dict mapping provider_id -> bool
-                            if isinstance(json_value, dict) and all(isinstance(k, str) and isinstance(v, bool) for k, v in json_value.items()):
-                                result[setting] = json.dumps(json_value)
+                            if isinstance(json_value, dict):
+                                # Just validate the basic structure - provider validation happens at runtime
+                                cleaned_map = {}
+                                for k, v in json_value.items():
+                                    if isinstance(k, str) and isinstance(v, bool):
+                                        cleaned_map[k] = v
+                                result[setting] = json.dumps(cleaned_map)
                             else:
                                 result[setting] = cwa_db.cwa_settings.get(setting, '{}')
                         else:

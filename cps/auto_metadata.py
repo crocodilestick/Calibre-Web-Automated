@@ -81,29 +81,36 @@ def fetch_metadata_for_book(book_title: str, book_authors: str = "", user_id: Op
         provider_hierarchy = get_metadata_provider_hierarchy(cwa_settings)
 
         # Get global enabled map for providers
-        enabled_map_raw = cwa_settings.get('metadata_providers_enabled', '{}')
-        try:
-            if isinstance(enabled_map_raw, str):
-                s = enabled_map_raw.strip()
-                if s.startswith("'") and s.endswith("'"):
-                    s = s[1:-1]
-                enabled_map = json.loads(s or '{}')
-            elif isinstance(enabled_map_raw, dict):
-                enabled_map = enabled_map_raw
-            else:
-                enabled_map = {}
-        except Exception:
-            enabled_map = {}
+        from cps.cwa_functions import parse_metadata_providers_enabled, validate_and_cleanup_provider_enabled_map
+        enabled_map_raw = parse_metadata_providers_enabled(
+            cwa_settings.get('metadata_providers_enabled', '{}')
+        )
         
         # Get available metadata providers
-        available_providers = {provider.__id__: provider for provider in cl if provider.active}
+        available_providers = {
+            provider.__id__: provider 
+            for provider in cl 
+            if (provider.active and hasattr(provider, '__id__') and provider.__id__)
+        }
+        
+        # Early return if no providers available
+        if not available_providers:
+            log.warning("No active metadata providers available")
+            return None
+        
+        # Validate and cleanup the enabled map
+        enabled_map = validate_and_cleanup_provider_enabled_map(
+            enabled_map_raw, list(available_providers.keys())
+        )
         
         # Try providers in order of preference
         for provider_id in provider_hierarchy:
-            # Skip if globally disabled
-            if not bool(enabled_map.get(provider_id, True)):
+            # Check if explicitly disabled (default is enabled if not specified)
+            is_enabled = enabled_map.get(provider_id, True)
+            if not is_enabled:
                 log.debug(f"Provider {provider_id} is globally disabled")
                 continue
+                
             if provider_id not in available_providers:
                 log.debug(f"Provider {provider_id} not available or inactive")
                 continue

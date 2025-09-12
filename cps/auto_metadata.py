@@ -115,7 +115,7 @@ def fetch_metadata_for_book(book_title: str, book_authors: str = "", user_id: Op
                 # Use ThreadPoolExecutor for timeout control
                 with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                     future = executor.submit(provider.search, query, "", "en")
-                    results = future.result(timeout=30)  # 30 second timeout
+                    results = future.result(timeout=15)  # 15 second timeout
                     
                 if results and len(results) > 0:
                     # Return the first (best) result
@@ -139,7 +139,7 @@ def fetch_metadata_for_book(book_title: str, book_authors: str = "", user_id: Op
                     }
                     
             except concurrent.futures.TimeoutError:
-                log.warning(f"Metadata provider {provider.__name__} timed out")
+                log.warning(f"Metadata provider {provider.__name__} timed out after 15 seconds")
                 continue
             except Exception as e:
                 log.warning(f"Error fetching metadata from {provider.__name__}: {str(e)}")

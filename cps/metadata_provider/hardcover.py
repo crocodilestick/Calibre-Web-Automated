@@ -154,6 +154,7 @@ class Hardcover(Metadata):
                     "variables": {"query": int(query.split(":")[1]) if edition_search else query},
                 },
                 headers=Hardcover.HEADERS,
+                timeout=15,
             )
             resp.raise_for_status()
             response_data = resp.json()

@@ -74,7 +74,7 @@ class _Settings(_Base):
     config_title_regex = Column(String,
                                 default=r'^(A|The|An|Der|Die|Das|Den|Ein|Eine'
                                         r'|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+')
-    config_theme = Column(Integer, default=0)
+    config_theme = Column(Integer, default=1)
 
     config_log_level = Column(SmallInteger, default=logger.DEFAULT_LOG_LEVEL)
     config_logfile = Column(String, default=logger.DEFAULT_LOG_FILE)

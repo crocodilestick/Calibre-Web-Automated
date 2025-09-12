@@ -127,7 +127,7 @@ def before_request():
         if current_user.is_anonymous and not hasattr(current_user, 'theme'):
             g.current_theme = config.config_theme
     except Exception:
-        g.current_theme = getattr(config, 'config_theme', 0)
+        g.current_theme = getattr(config, 'config_theme', 1)
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',

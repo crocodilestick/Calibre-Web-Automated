@@ -65,8 +65,8 @@ DIRS_JSON = "/app/calibre-web-automated/dirs.json"
 def cwa_switch_theme():
     # Switch theme for current user only
     try:
-        # current_user.theme may not exist for old sessions before migration; default to 0
-        current = getattr(current_user, 'theme', 0)
+        # current_user.theme may not exist for old sessions before migration; default to 1 (caliBlur)
+        current = getattr(current_user, 'theme', 1)
         new_theme = 0 if current == 1 else 1
         from . import ub
         user = ub.session.query(ub.User).filter(ub.User.id == current_user.id).first()

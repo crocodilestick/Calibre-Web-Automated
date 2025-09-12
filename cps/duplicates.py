@@ -60,7 +60,7 @@ def find_duplicate_books():
     all_books = books_query.all()
     print(f"[cwa-duplicates] Retrieved {len(all_books)} books with user filtering applied", flush=True)
     
-    # Group books by title + primary author combination (case-insensitive)
+    # Group books by title + primary author + language combination (case-insensitive)
     title_author_groups = {}
     
     for book in all_books:
@@ -72,14 +72,20 @@ def find_duplicate_books():
         book.ordered_authors = calibre_db.order_authors([book])
         primary_author = book.ordered_authors[0].name if book.ordered_authors else "Unknown"
         
-        # Create case-insensitive key
-        key = (book.title.lower().strip(), primary_author.lower().strip())
+        # Create case-insensitive key including language
+        if book.languages:
+            # Get primary language code
+            primary_language = book.languages[0].lang_code if book.languages else "unknown"
+        else:
+            primary_language = "unknown"
+            
+        key = (book.title.lower().strip(), primary_author.lower().strip(), primary_language.lower().strip())
         
         if key not in title_author_groups:
             title_author_groups[key] = []
         title_author_groups[key].append(book)
     
-    print(f"[cwa-duplicates] Grouped books into {len(title_author_groups)} unique title+author combinations", flush=True)
+    print(f"[cwa-duplicates] Grouped books into {len(title_author_groups)} unique title+author+language combinations", flush=True)
     
     # Filter to only groups with duplicates and prepare display data
     duplicate_groups = []

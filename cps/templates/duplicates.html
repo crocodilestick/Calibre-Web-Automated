@@ -282,7 +282,7 @@
   <div class="settings-container" style="margin-top: 3rem; max-width: none; justify-self: auto;">
     <h2>{{_('CWA Duplicates Manager')}}</h2>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <p style="color: whitesmoke; margin-bottom: 2rem;" class="text-muted">{{_('Books with matching titles and authors. Visual inspection recommended to identify true duplicates.')}}</p>
+      <p style="color: whitesmoke; margin-bottom: 2rem;" class="text-muted">{{_('Books with matching titles, authors, and languages. Books in different languages are not considered duplicates.')}}</p>
       
       {% if duplicate_groups %}
         <div class="bulk-actions">

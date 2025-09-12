@@ -123,6 +123,9 @@ class NewBookProcessor:
                 self.ingest_ignored_formats.append(tmp_ext)
 
         self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats']
+        self.convert_retained_formats = self.cwa_settings.get('auto_convert_retained_formats', [])
+        if isinstance(self.convert_retained_formats, str):
+            self.convert_retained_formats = self.convert_retained_formats.split(',') if self.convert_retained_formats else []
         self.is_kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
 
         # Formats
@@ -712,6 +715,35 @@ def main(filepath=sys.argv[1]):
                 
             if convert_successful: # If previous conversion process was successful, remove tmp files and import into library
                 nbp.add_book_to_library(converted_filepath) # type: ignore
+                
+                # If the original format should be retained, also add it as an additional format
+                if nbp.input_format in nbp.convert_retained_formats and nbp.input_format not in nbp.ingest_ignored_formats:
+                    print(f"[ingest-processor]: Retaining original format ({nbp.input_format}) for {nbp.filename}...", flush=True)
+                    # Find the book that was just added to get its ID
+                    try:
+                        calibre_db_path = os.path.join(nbp.library_dir, 'metadata.db')
+                        with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                            cur = con.cursor()
+                            # Get the most recently added book - use title/author for more reliable matching
+                            # in case of concurrent ingests
+                            cur.execute("""
+                                SELECT id FROM books 
+                                WHERE path = (SELECT path FROM books ORDER BY timestamp DESC LIMIT 1)
+                                ORDER BY timestamp DESC LIMIT 1
+                            """)
+                            result = cur.fetchone()
+                            
+                        if result:
+                            book_id = result[0]
+                            # Verify the original file still exists before trying to add it
+                            if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+                                nbp.add_format_to_book(book_id, filepath)
+                            else:
+                                print(f"[ingest-processor] Original file no longer exists or is empty, cannot retain format: {filepath}", flush=True)
+                        else:
+                            print(f"[ingest-processor] Could not find book ID to add retained format for: {nbp.filename}", flush=True)
+                    except Exception as e:
+                        print(f"[ingest-processor] Error adding retained format: {e}", flush=True)
 
         elif nbp.can_convert and not nbp.auto_convert_on: # Books not in target format but Auto-Converter is off so files are imported anyway
             print(f"\n[ingest-processor]: {nbp.filename} not in target format but CWA Auto-Convert is deactivated so importing the file anyway...", flush=True)

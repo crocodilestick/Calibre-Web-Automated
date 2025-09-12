@@ -245,7 +245,7 @@ class CWA_DB:
     def update_cwa_settings(self, result) -> None:
         """Sets settings using POST request from set_cwa_settings()"""
         for setting in result.keys():
-            if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats":
+            if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats" or setting == "auto_convert_retained_formats":
                 result[setting] = ','.join(result[setting])
 
             # Use parameterized queries to safely handle non-English characters and quotes

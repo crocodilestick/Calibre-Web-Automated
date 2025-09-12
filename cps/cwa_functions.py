@@ -222,14 +222,15 @@ def set_cwa_settings():
     for format in ignorable_formats:
         string_settings.append(f"ignore_ingest_{format}")
         string_settings.append(f"ignore_convert_{format}")
+        string_settings.append(f"convert_retained_{format}")
 
     if request.method == 'POST':
         if request.form['submit_button'] == "Submit":
-            result = {"auto_convert_ignored_formats":[], "auto_ingest_ignored_formats":[]}
+            result = {"auto_convert_ignored_formats":[], "auto_ingest_ignored_formats":[], "auto_convert_retained_formats":[]}
             # set boolean_settings
             for setting in boolean_settings:
                 value = request.form.get(setting)
-                if value == None:
+                if value is None:
                     value = 0
                 else:
                     value = 1
@@ -238,18 +239,20 @@ def set_cwa_settings():
             for setting in string_settings:
                 value = request.form.get(setting)
                 if setting[:14] == "ignore_convert":
-                    if value == None:
-                        continue
-                    else:
+                    if value is not None:
                         result["auto_convert_ignored_formats"].append(value)
-                        continue
+                    continue
                 elif setting[:13] == "ignore_ingest":
-                    if value == None:
-                        continue
-                    else:
+                    if value is not None:
                         result["auto_ingest_ignored_formats"].append(value)
-                        continue
-                elif setting == "auto_convert_target_format" and value == None:
+                    continue
+                elif setting.startswith("convert_retained"):
+                    if value is not None:
+                        result["auto_convert_retained_formats"].append(value)
+                    continue
+                elif setting == "auto_convert_target_format":
+                    if value is None:
+                        value = cwa_db.cwa_settings['auto_convert_target_format']
                     value = cwa_db.cwa_settings['auto_convert_target_format']
 
                 result |= {setting:value}
@@ -259,6 +262,15 @@ def set_cwa_settings():
                 result['auto_convert_ignored_formats'].remove(result['auto_convert_target_format'])
             if result['auto_convert_target_format'] in result['auto_ingest_ignored_formats']:
                 result['auto_ingest_ignored_formats'].remove(result['auto_convert_target_format'])
+
+            # Prevent retaining of ignored ingest formats (create a copy to avoid modification during iteration)
+            for ignored_format in result['auto_ingest_ignored_formats'][:]:
+                if ignored_format in result['auto_convert_retained_formats']:
+                    result['auto_convert_retained_formats'].remove(ignored_format)
+
+            # Force target format to be retained (ensure it's not already there to avoid duplicates)
+            if result['auto_convert_target_format'] not in result['auto_convert_retained_formats']:
+                result['auto_convert_retained_formats'].append(result['auto_convert_target_format'])
 
             # Handle integer settings
             for setting in integer_settings:

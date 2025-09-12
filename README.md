@@ -341,7 +341,9 @@ Please make sure all 3 of the main volume bindings are separate directories, err
 
 - On macOS, this file is typically found at `~/Library/Preferences/calibre/customize.py.json`.
 - On Linux, it is usually located at `~/.config/calibre/customize.py.json`.
-- On Windows, different generations of Calibre had different folders. Common ones are `C:\Program Files\Calibre\customize.py.json`, `C:\Program Files\Calibre2\customize.py.json` and  `C:\Users\<YourUsername>\AppData\Roaming\calibre\customize.py.json`.
+- On Windows, it is usually located at `%APPDATA%\calibre\customize.py.json` (typically `C:\Users\<YourUsername>\AppData\Roaming\calibre\customize.py.json`). Older installations might have it in `C:\Program Files\Calibre\customize.py.json` or `C:\Program Files\Calibre2\customize.py.json`.
+
+**Note:** If you can't find this file, it means you haven't configured any Calibre plugins yet. You can skip the plugins volume binding if you don't use Calibre plugins.
 
 
 And just like that, Calibre-Web Automated should be up and running! **HOWEVER** to avoid potential problems and ensure maximum functionality,we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).

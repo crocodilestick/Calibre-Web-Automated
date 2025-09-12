@@ -207,7 +207,7 @@ def set_cwa_settings():
     string_settings = []
     list_settings = []
     integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']  # Special handling for integer settings
-    json_settings = ['metadata_provider_hierarchy']  # Special handling for JSON settings
+    json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled']  # Special handling for JSON settings
     
     for setting in cwa_default_settings:
         if setting in integer_settings or setting in json_settings:
@@ -311,18 +311,28 @@ def set_cwa_settings():
                             else:
                                 # Use current value if validation fails
                                 result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                        elif setting == 'metadata_providers_enabled':
+                            # Validate dict mapping provider_id -> bool
+                            if isinstance(json_value, dict) and all(isinstance(k, str) and isinstance(v, bool) for k, v in json_value.items()):
+                                result[setting] = json.dumps(json_value)
+                            else:
+                                result[setting] = cwa_db.cwa_settings.get(setting, '{}')
                         else:
                             result[setting] = json.dumps(json_value)
                     except (json.JSONDecodeError, ValueError, TypeError):
                         # Use current value if JSON parsing fails
                         if setting == 'metadata_provider_hierarchy':
                             result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                        elif setting == 'metadata_providers_enabled':
+                            result[setting] = cwa_db.cwa_settings.get(setting, '{}')
                         else:
                             result[setting] = cwa_db.cwa_settings.get(setting, '[]')
                 else:
                     # Use current value if not provided
                     if setting == 'metadata_provider_hierarchy':
                         result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                    elif setting == 'metadata_providers_enabled':
+                        result[setting] = cwa_db.cwa_settings.get(setting, '{}')
                     else:
                         result[setting] = cwa_db.cwa_settings.get(setting, '[]')
 

@@ -94,12 +94,32 @@ backup_destinations = {
 class LibraryConverter:
     def __init__(self, args) -> None:
         self.args = args
-        self.verbose = args.verbose
+        self.verbose = getattr(args, 'verbose', False)  # Safe attribute access
 
         self.db = CWA_DB()
         self.cwa_settings = self.db.cwa_settings
         self.target_format = self.cwa_settings['auto_convert_target_format']
-        self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats'] if isinstance(self.cwa_settings['auto_convert_ignored_formats'], list) else [self.cwa_settings['auto_convert_ignored_formats']]
+        
+        # Validate target format
+        if not self.target_format or not isinstance(self.target_format, str):
+            raise ValueError(f"Invalid target format configuration: {self.target_format}. Must be a non-empty string.")
+        
+        # Enhanced convert_ignored_formats handling
+        ignored_formats_setting = self.cwa_settings.get('auto_convert_ignored_formats', [])
+        if isinstance(ignored_formats_setting, str):
+            # Handle single string
+            self.convert_ignored_formats = [ignored_formats_setting] if ignored_formats_setting else []
+        elif isinstance(ignored_formats_setting, list):
+            # Handle list, filter out empty/None values
+            self.convert_ignored_formats = [f for f in ignored_formats_setting if f and isinstance(f, str)]
+        else:
+            # Fallback for unexpected types
+            print_and_log(f"[convert-library]: WARNING - Unexpected type for auto_convert_ignored_formats: {type(ignored_formats_setting)}. Using empty list.")
+            self.convert_ignored_formats = []
+
+        if self.verbose and self.convert_ignored_formats:
+            print_and_log(f"[convert-library]: Ignoring formats: {', '.join(self.convert_ignored_formats)}")
+            
         self.kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
 
         self.supported_book_formats = {'acsm', 'azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz'}
@@ -152,27 +172,80 @@ class LibraryConverter:
     def get_library_book_formats(self) -> dict[int, list[str]]:
         """Returns a dictionary of formats for all books in the library.
         The key is the book ID and the value is a list of format paths."""
+        if self.verbose:
+            print_and_log(f"[convert-library]: Retrieving book format information from library: {self.library_dir}")
+            
         try:
             args = ["calibredb", "list", "--fields=id,formats", f"--library-path={self.library_dir}", "--for-machine"]
+            
+            if self.verbose:
+                print_and_log(f"[convert-library]: Running command: {' '.join(args)}")
+                
             cmd = subprocess.run(
                 args,
                 env=self.calibre_env,
                 capture_output=True,
                 check=True,
                 text=True,
-                encoding='utf-8'
+                encoding='utf-8',
+                timeout=300  # 5 minute timeout for large libraries
             )
 
+            # Validate output before parsing
+            raw_output = cmd.stdout.strip()
+            if not raw_output:
+                print_and_log("[convert-library]: No books found in library database.")
+                return {}
+            
+            try:
+                books_data = json.loads(raw_output)
+            except json.JSONDecodeError as e:
+                print_and_log(f"[convert-library]: Failed to parse calibredb command output as JSON: {e}")
+                print_and_log(f"[convert-library]: Raw output: {raw_output}")
+                return {}
+            
+            if not isinstance(books_data, list):
+                print_and_log(f"[convert-library]: Unexpected JSON format from calibredb. Expected list, got {type(books_data)}")
+                return {}
+
             book_formats = {}
-            for book in json.loads(cmd.stdout):
-                book_formats[book['id']] = book['formats']
+            for book in books_data:
+                if not isinstance(book, dict) or 'id' not in book:
+                    print_and_log(f"[convert-library]: Skipping malformed book entry: {book}")
+                    continue
+                    
+                try:
+                    book_id = int(book['id'])
+                    formats = book.get('formats', [])
+                    
+                    # Validate and clean format paths
+                    if formats and isinstance(formats, list):
+                        # Filter out None or invalid format entries
+                        valid_formats = [f for f in formats if f and isinstance(f, str)]
+                        book_formats[book_id] = valid_formats
+                    elif formats is None:
+                        book_formats[book_id] = []
+                    else:
+                        if self.verbose:
+                            print_and_log(f"[convert-library]: Unexpected formats data for book {book_id}: {formats}")
+                        book_formats[book_id] = []
+                        
+                except (ValueError, KeyError, TypeError) as e:
+                    print_and_log(f"[convert-library]: Error processing book entry {book}: {e}")
+                    continue
+            
+            if self.verbose:
+                print_and_log(f"[convert-library]: Found {len(book_formats)} books with format information")
+
+        except subprocess.TimeoutExpired:
+            print_and_log(f"[convert-library]: Timeout occurred while retrieving book formats from database. This may indicate a very large library or system performance issues.")
+            return {}
 
         except subprocess.CalledProcessError as e:
-            print_and_log(f"[convert-library]: An error occurred while running command {' '.join(args)}: {e}")
-            return {}
-        except json.JSONDecodeError as e:
-            print_and_log(f"[convert-library]: Failed to parse \"{args[0]}\" command output as JSON: {e}")
-            print_and_log(f"[convert-library]: Raw output: {cmd.stdout}")
+            print_and_log(f"[convert-library]: An error occurred while running calibredb command {' '.join(args)}: {e}")
+            print_and_log(f"[convert-library]: Return code: {e.returncode}")
+            if hasattr(e, 'stderr') and e.stderr:
+                print_and_log(f"[convert-library]: Error output: {e.stderr}")
             return {}
         except Exception as e:
             print_and_log(f"[convert-library]: Unexpected error retrieving book formats: {e}")
@@ -184,12 +257,41 @@ class LibraryConverter:
         """Returns a list of book format paths to convert."""
         library_formats = self.get_library_book_formats()
 
-        # Filter out books already in the target format.
-        already_in_target_format = [id for id in library_formats for format in library_formats[id] if format.endswith(f'.{self.target_format}')]
-        books_to_convert = [id for id in library_formats if id not in already_in_target_format]
+        if not library_formats:
+            print_and_log("[convert-library]: No books found in library or unable to retrieve format information.")
+            return []
+
+        # Filter out books already in the target format (case-insensitive)
+        books_with_target_format = set()
+        for book_id, formats in library_formats.items():
+            for format_path in formats:
+                if not format_path or not isinstance(format_path, str):
+                    continue
+                try:
+                    if format_path.lower().endswith(f'.{self.target_format.lower()}'):
+                        books_with_target_format.add(book_id)
+                        break  # No need to check other formats for this book
+                except (AttributeError, UnicodeError):
+                    # Skip problematic format paths
+                    if self.verbose:
+                        print_and_log(f"[convert-library]: Skipping problematic format path: {format_path}")
+                    continue
+        
+        if self.verbose:
+            print_and_log(f"[convert-library]: Found {len(books_with_target_format)} books already in {self.target_format} format")
+
+        books_to_convert = [book_id for book_id in library_formats.keys() 
+                           if book_id not in books_with_target_format]
+        
+        if self.verbose:
+            print_and_log(f"[convert-library]: {len(books_to_convert)} books need conversion to {self.target_format}")
 
         # Filter out source formats the user chose to ignore.
         hierarchy_of_success_formats = [format for format in self.hierarchy_of_success if format not in self.convert_ignored_formats]
+
+        if not hierarchy_of_success_formats:
+            print_and_log("[convert-library]: WARNING - No valid source formats available after applying ignored formats filter. No conversions will be performed.")
+            return []
 
         if self.convert_ignored_formats:
             print_and_log(f"{', '.join(self.convert_ignored_formats)} in list of user-defined ignored formats for conversion. To change this, navigate to the CWA Settings panel from the Settings page in the Web UI.")
@@ -199,15 +301,51 @@ class LibraryConverter:
         # rate, where that filepath is allow to be converted
         to_convert = []
 
-        for book in books_to_convert:
-            book_formats = library_formats[book]
+        for book_id in books_to_convert:
+            book_formats = library_formats.get(book_id, [])
+            if not book_formats:
+                if self.verbose:
+                    print_and_log(f"[convert-library]: Skipping book {book_id} - no formats found")
+                continue
+                
             # If multiple formats for a book exist, only the one with the highest
             # success rate will be converted and the rest will be left alone
-            for format in hierarchy_of_success_formats:
-                source_format = [filepath for filepath in book_formats if filepath.endswith(format)]
-                if len(source_format) > 0:
-                    to_convert.append(source_format[0])
+            for format_ext in hierarchy_of_success_formats:
+                if not format_ext or not isinstance(format_ext, str):
+                    continue  # Skip invalid format extensions
+                    
+                # Case-insensitive format matching and file existence validation
+                source_formats = []
+                for filepath in book_formats:
+                    if not filepath or not isinstance(filepath, str):
+                        continue
+                    try:
+                        if (filepath.lower().endswith(f'.{format_ext.lower()}') 
+                            and os.path.exists(filepath)):
+                            source_formats.append(filepath)
+                    except (OSError, AttributeError, UnicodeError):
+                        # Skip files with problematic paths
+                        if self.verbose:
+                            print_and_log(f"[convert-library]: Skipping problematic file path: {filepath}")
+                        continue
+                if source_formats:
+                    to_convert.append(source_formats[0])
+                    if self.verbose:
+                        print_and_log(f"[convert-library]: Selected {source_formats[0]} for conversion (format: {format_ext})")
                     break
+            else:
+                # No valid source format found for this book
+                if self.verbose:
+                    available_formats = []
+                    for f in book_formats:
+                        if f and os.path.exists(f):
+                            try:
+                                ext = os.path.splitext(f)[1][1:].lower()
+                                if ext:  # Only add non-empty extensions
+                                    available_formats.append(ext)
+                            except (IndexError, AttributeError):
+                                continue  # Skip malformed paths
+                    print_and_log(f"[convert-library]: No suitable source format found for book {book_id}. Available: {available_formats}, Hierarchy: {hierarchy_of_success_formats}")
 
         return to_convert
 

@@ -61,5 +61,11 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_metadata_update_identifiers SMALLINT DEFAULT 1 NOT NULL,
     auto_metadata_update_cover SMALLINT DEFAULT 1 NOT NULL,
     metadata_provider_hierarchy TEXT DEFAULT '["ibdb","google","dnb"]' NOT NULL,
-    auto_send_delay_minutes INTEGER DEFAULT 5 NOT NULL
+    auto_send_delay_minutes INTEGER DEFAULT 5 NOT NULL,
+    duplicate_detection_title SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_detection_author SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_detection_language SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_detection_series SMALLINT DEFAULT 0 NOT NULL,
+    duplicate_detection_publisher SMALLINT DEFAULT 0 NOT NULL,
+    duplicate_detection_format SMALLINT DEFAULT 0 NOT NULL
 );

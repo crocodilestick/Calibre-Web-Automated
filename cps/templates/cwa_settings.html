@@ -492,6 +492,58 @@
       </tbody></table>
     </div>
 
+    <div style="background-color: rgba(176, 179, 178, 0.175); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; margin-left: 2rem; margin-right: 2rem; margin-top: 2rem;">
+      <h4 class="settings-section-header">{{_('CWA Duplicate Detection Criteria')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure which metadata fields are used to determine if books are duplicates. Books must match ALL selected criteria to be considered duplicates.')}}
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="duplicate_detection_title" name="duplicate_detection_title" value="1" {% if cwa_settings['duplicate_detection_title'] %} checked {% endif %}>
+          <label for="duplicate_detection_title">{{_('Title')}}</label>
+          <small class="settings-explanation">{{_('Consider book titles when detecting duplicates')}}</small>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="duplicate_detection_author" name="duplicate_detection_author" value="1" {% if cwa_settings['duplicate_detection_author'] %} checked {% endif %}>
+          <label for="duplicate_detection_author">{{_('Author')}}</label>
+          <small class="settings-explanation">{{_('Consider book authors when detecting duplicates')}}</small>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="duplicate_detection_language" name="duplicate_detection_language" value="1" {% if cwa_settings['duplicate_detection_language'] %} checked {% endif %}>
+          <label for="duplicate_detection_language">{{_('Language')}}</label>
+          <small class="settings-explanation">{{_('Consider book language when detecting duplicates')}}</small>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="duplicate_detection_series" name="duplicate_detection_series" value="1" {% if cwa_settings['duplicate_detection_series'] %} checked {% endif %}>
+          <label for="duplicate_detection_series">{{_('Series')}}</label>
+          <small class="settings-explanation">{{_('Consider book series when detecting duplicates')}}</small>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="duplicate_detection_publisher" name="duplicate_detection_publisher" value="1" {% if cwa_settings['duplicate_detection_publisher'] %} checked {% endif %}>
+          <label for="duplicate_detection_publisher">{{_('Publisher')}}</label>
+          <small class="settings-explanation">{{_('Consider book publisher when detecting duplicates')}}</small>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="duplicate_detection_format" name="duplicate_detection_format" value="1" {% if cwa_settings['duplicate_detection_format'] %} checked {% endif %}>
+          <label for="duplicate_detection_format">{{_('Format')}}</label>
+          <small class="settings-explanation">{{_('Consider file format when detecting duplicates')}}</small>
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+        <small class="settings-explanation">
+          <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
+        </small>
+      </div>
+    </div>
+
     <br>
 
     <br>

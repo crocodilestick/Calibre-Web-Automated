@@ -265,7 +265,7 @@ msgstr "OAuth-Metadaten können nicht von der URL abgerufen werden."
 
 #: cps/admin.py:1231
 msgid "Unable to fetch OpenID configuration."
-msgstr "OpenID-Konfiguration abrufen ist nicht möglich."
+msgstr "Laden der OpenID-Metadaten nicht möglich."
 
 #: cps/admin.py:1293
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -580,7 +580,7 @@ msgstr "Verbindung fehlgeschlagen: Server lieferte den Status-Code %(code)s"
 
 #: cps/admin.py:2285 cps/admin.py:2328
 msgid "Connection failed: Could not connect to server."
-msgstr "Verbindung fehlgeschlagen: Konnte nicht mit dem Server verbinden."
+msgstr "Verbindung fehlgeschlagen: Verbindung zum Server nicht möglich."
 
 #: cps/admin.py:2287 cps/admin.py:2330
 msgid "Connection failed: Request timed out."
@@ -588,7 +588,7 @@ msgstr "Verbindung Fehlgeschlagen: Zeitüberschreitung der Anfrage."
 
 #: cps/admin.py:2289 cps/admin.py:2332
 msgid "Connection failed: Invalid JSON in response."
-msgstr "Verbindung fehlgeschlagen: Invalides JSON in der Antwort."
+msgstr "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort."
 
 #: cps/admin.py:2292 cps/admin.py:2335
 msgid "An unknown error occurred."
@@ -886,7 +886,7 @@ msgstr "Bücherduplikate"
 #: cps/editbooks.py:106
 #, fuzzy
 msgid "Missing or invalid book id for format upload"
-msgstr "Fehlende oder ungültige Bücher-ID für den Upload"
+msgstr "Fehlende oder ungültige Buch-ID für den Upload des Formats."
 
 #: cps/editbooks.py:131 cps/editbooks.py:151 cps/templates/book_edit.html:53
 #: cps/templates/layout.html:148
@@ -1283,8 +1283,7 @@ msgstr ""
 
 #: cps/oauth_bb.py:125
 msgid "Login failed: User profile from provider is incomplete."
-msgstr ""
-"Anmeldung fehlgeschlagen: Benutzerprofil vom Anbieter ist nicht komplett."
+msgstr "Anmeldung fehlgeschlagen: Benutzerprofil des Anbieters ist unvollständig."
 
 #: cps/oauth_bb.py:212 cps/remotelogin.py:149
 #, python-format
@@ -1632,7 +1631,7 @@ msgstr "Entschuldige, die Berechtigung das Bücherregal zu editieren fehlt"
 
 #: cps/shelf.py:217
 msgid "Edit a shelf"
-msgstr "Bücherregal editieren"
+msgstr "Bücherregal bearbeiten"
 
 #: cps/shelf.py:226
 msgid "Error deleting Shelf"

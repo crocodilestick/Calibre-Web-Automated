@@ -8597,7 +8597,9 @@ button.close {
     #books_rand > .cover > a:before, 
     .book.isotope-item > .cover > a:before, 
     #books .cover > a:before, 
-    #books_rand .cover > a:before {
+    #books_rand .cover > a:before,
+    .read-toggle-btn,
+    .send-ereader-btn {
         display: none !important;
     }
     
@@ -8615,4 +8617,148 @@ button.close {
     background: rgba(255, 255, 255, 0.9) !important;
     color: var(--color-secondary) !important;
     transform: scale(1.1) !important;
+}
+
+/* Read status toggle element - positioned bottom-left behind existing read badge */
+.read-toggle-btn {
+    font-family: Glyphicons Regular, serif;
+    background: rgba(128, 128, 128, 0.8);
+    border-radius: 50%;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 35px;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    opacity: 0;
+    z-index: 8;
+    color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Allow hover to pass through when not visible */
+}
+
+.read-toggle-btn:before {
+    content: "\e067";
+}
+
+/* Send to eReader element - positioned bottom-right */
+.send-ereader-btn {
+    font-family: Glyphicons Regular, serif;
+    background: rgba(52, 152, 219, 0.8);
+    border-radius: 50%;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 35px;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    opacity: 0;
+    z-index: 9;
+    color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Allow hover to pass through when not visible */
+}
+
+.send-ereader-btn:before {
+    content: "\e016";
+}
+
+/* Show additional elements on cover hover - buttons are now inside the link */
+#books > .cover > a:hover .read-toggle-btn,
+#books > .cover > a:hover .send-ereader-btn,
+#books_rand > .cover > a:hover .read-toggle-btn,
+#books_rand > .cover > a:hover .send-ereader-btn,
+.book.isotope-item > .cover > a:hover .read-toggle-btn,
+.book.isotope-item > .cover > a:hover .send-ereader-btn,
+#books .cover > a:hover .read-toggle-btn,
+#books .cover > a:hover .send-ereader-btn,
+.cover:hover .read-toggle-btn,
+.cover:hover .send-ereader-btn {
+    opacity: 1;
+    pointer-events: auto; /* Enable pointer events when visible */
+}
+
+/* Enhanced visual feedback for hovering over specific action areas */
+.read-toggle-btn.hovering {
+    background: rgba(128, 128, 128, 1) !important;
+    transform: scale(1.1) !important;
+}
+
+.send-ereader-btn.hovering {
+    background: rgba(52, 152, 219, 1) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Loading state for action buttons */
+.read-toggle-btn.loading,
+.send-ereader-btn.loading {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: rgba(255, 165, 0, 0.9) !important;
+    animation: pulse 1s infinite;
+}
+
+.read-toggle-btn.loading:before {
+    content: "\e031";
+    animation: spin 1s linear infinite;
+}
+
+.send-ereader-btn.loading:before {
+    content: "\e031";
+    animation: spin 1s linear infinite;
+}
+
+/* Success state for action buttons */
+.read-toggle-btn.success,
+.send-ereader-btn.success {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: rgba(0, 200, 0, 0.9) !important;
+    transform: scale(1.1);
+}
+
+.read-toggle-btn.success:before,
+.send-ereader-btn.success:before {
+    content: "\e013";
+    color: white;
+}
+
+/* Error state for action buttons */
+.read-toggle-btn.error,
+.send-ereader-btn.error {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: rgba(200, 0, 0, 0.9) !important;
+    transform: scale(1.1);
+}
+
+.read-toggle-btn.error:before,
+.send-ereader-btn.error:before {
+    content: "\e014";
+    color: white;
+}
+
+/* Animations for loading and feedback states */
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

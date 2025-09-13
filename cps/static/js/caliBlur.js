@@ -782,11 +782,26 @@ $(function () {
 // Direct Reading Functionality //
 /////////////////////////////////
 
+// Function to show page-level flash message (same as email_selection.js)
+function showPageFlashMessage(message, type) {
+    // Remove any existing flash messages
+    $(".row-fluid.text-center").remove();
+    $("#flash_danger").remove();
+    $("#flash_success").remove();
+    
+    // Use same logic as handleResponse function
+    var alertType = type === 'error' ? 'danger' : type;
+    $(".navbar").after('<div class="row-fluid text-center">' +
+        '<div id="flash_' + alertType + '" class="alert alert-' + alertType + '">' + message + '</div>' +
+        '</div>');
+}
+
 // Handle clicks on book cover :before pseudo-elements for direct reading
 $(function() {
     function initDirectReadingHandler() {
         // Remove any existing handlers first
         $('.book-cover-link').off('click.directReading mousemove.directReading mouseleave.directReading');
+        $('.read-toggle-btn, .send-ereader-btn').off('click.quickActions');
         
         // Check if device supports hover (not a touch device)
         var supportsHover = window.matchMedia('(hover: hover)').matches;
@@ -794,10 +809,42 @@ $(function() {
         
         // Only enable direct reading functionality on devices that support hover and are desktop sized
         if (supportsHover && isDesktop) {
+            // Add quick action buttons to each book cover
+            $('.book-cover-link').each(function() {
+                var $link = $(this);
+                
+                // Add read status toggle button (only if it doesn't exist)
+                if ($link.find('.read-toggle-btn').length === 0) {
+                    var $readToggle = $('<div class="read-toggle-btn" title="Toggle Read Status"></div>');
+                    $link.append($readToggle);
+                }
+                
+                // Add send to eReader button (only if it doesn't exist)
+                if ($link.find('.send-ereader-btn').length === 0) {
+                    var $sendBtn = $('<div class="send-ereader-btn" title="Send to eReader"></div>');
+                    $link.append($sendBtn);
+                }
+            });
+            
+            // Add direct click handlers for the action buttons
+            $('.read-toggle-btn').on('click.quickActions', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var $link = $(this).closest('.book-cover-link');
+                handleReadStatusToggle($link);
+            });
+            
+            $('.send-ereader-btn').on('click.quickActions', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var $link = $(this).closest('.book-cover-link');
+                handleSendToEReader($link);
+            });
+            
             $('.book-cover-link').on('mousemove.directReading', function(e) {
                 var $link = $(this);
                 
-                // Calculate if mouse is over the pseudo-element area
+                // Calculate if mouse is over any of the action areas
                 var linkOffset = $link.offset();
                 var mouseX = e.pageX - linkOffset.left;
                 var mouseY = e.pageY - linkOffset.top;
@@ -805,95 +852,311 @@ $(function() {
                 var linkWidth = $link.outerWidth();
                 var linkHeight = $link.outerHeight();
                 
-                // Define the :before pseudo-element area (50px circle on desktop, 40px on smaller screens)
-                var pseudoElementSize = ($(window).width() >= 768) ? 50 : 40;
+                // Define the action areas
+                var actionSize = 35;
+                var margin = 8;
+                
+                // Center read icon (50px circle on desktop, 40px on smaller screens)
+                var readIconSize = ($(window).width() >= 768) ? 50 : 40;
                 var centerX = linkWidth / 2;
                 var centerY = linkHeight / 2;
-                var radius = pseudoElementSize / 2;
+                var readIconRadius = readIconSize / 2;
                 
-                var distanceFromCenter = Math.sqrt(
+                // Read toggle area (bottom-left)
+                var readToggleX = margin + (actionSize / 2);
+                var readToggleY = linkHeight - margin - (actionSize / 2);
+                var readToggleRadius = actionSize / 2;
+                
+                // Send to eReader area (bottom-right)
+                var sendEReaderX = linkWidth - margin - (actionSize / 2);
+                var sendEReaderY = linkHeight - margin - (actionSize / 2);
+                var sendEReaderRadius = actionSize / 2;
+                
+                // Calculate distances
+                var distanceFromReadIcon = Math.sqrt(
                     Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2)
                 );
+                var distanceFromReadToggle = Math.sqrt(
+                    Math.pow(mouseX - readToggleX, 2) + Math.pow(mouseY - readToggleY, 2)
+                );
+                var distanceFromSendEReader = Math.sqrt(
+                    Math.pow(mouseX - sendEReaderX, 2) + Math.pow(mouseY - sendEReaderY, 2)
+                );
                 
-                // Apply visual feedback when hovering over the pseudo-element
-                if (distanceFromCenter <= radius) {
+                // Reset all hover states
+                $link.removeClass('hovering-read-icon');
+                $link.find('.read-toggle-btn').removeClass('hovering');
+                $link.find('.send-ereader-btn').removeClass('hovering');
+                
+                // Apply hover state based on position
+                if (distanceFromReadIcon <= readIconRadius) {
                     $link.addClass('hovering-read-icon');
-                } else {
-                    $link.removeClass('hovering-read-icon');
+                } else if (distanceFromReadToggle <= readToggleRadius) {
+                    $link.find('.read-toggle-btn').addClass('hovering');
+                } else if (distanceFromSendEReader <= sendEReaderRadius) {
+                    $link.find('.send-ereader-btn').addClass('hovering');
                 }
             });
             
             $('.book-cover-link').on('mouseleave.directReading', function() {
-                $(this).removeClass('hovering-read-icon');
+                var $link = $(this);
+                
+                // Remove all hover states
+                $link.removeClass('hovering-read-icon');
+                $link.find('.read-toggle-btn').removeClass('hovering');
+                $link.find('.send-ereader-btn').removeClass('hovering');
             });
             
             $('.book-cover-link').on('click.directReading', function(e) {
-                var $target = $(e.target);
                 var $link = $(this);
+                var $cover = $link.closest('.cover');
                 
-                // Check if the click was on the :before pseudo-element
-                // We detect this by checking the click position relative to the link element
+                // Check click position
                 var linkOffset = $link.offset();
                 var clickX = e.pageX - linkOffset.left;
                 var clickY = e.pageY - linkOffset.top;
                 
-                // The :before pseudo-element is positioned in the center with margin: auto
-                // Based on the CSS: 50px x 50px circle, centered in the link area
                 var linkWidth = $link.outerWidth();
                 var linkHeight = $link.outerHeight();
                 
-                // Define the :before pseudo-element area (50px circle on desktop, 40px on smaller screens)
-                var pseudoElementSize = ($(window).width() >= 768) ? 50 : 40;
+                // Define the action areas (same as mousemove)
+                var actionSize = 35;
+                var margin = 8;
+                
+                var readIconSize = ($(window).width() >= 768) ? 50 : 40;
                 var centerX = linkWidth / 2;
                 var centerY = linkHeight / 2;
-                var radius = pseudoElementSize / 2;
+                var readIconRadius = readIconSize / 2;
                 
-                var distanceFromCenter = Math.sqrt(
+                var readToggleX = margin + (actionSize / 2);
+                var readToggleY = linkHeight - margin - (actionSize / 2);
+                var readToggleRadius = actionSize / 2;
+                
+                var sendEReaderX = linkWidth - margin - (actionSize / 2);
+                var sendEReaderY = linkHeight - margin - (actionSize / 2);
+                var sendEReaderRadius = actionSize / 2;
+                
+                var distanceFromReadIcon = Math.sqrt(
                     Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2)
                 );
+                var distanceFromReadToggle = Math.sqrt(
+                    Math.pow(clickX - readToggleX, 2) + Math.pow(clickY - readToggleY, 2)
+                );
+                var distanceFromSendEReader = Math.sqrt(
+                    Math.pow(clickX - sendEReaderX, 2) + Math.pow(clickY - sendEReaderY, 2)
+                );
                 
-                // Only trigger direct reading if the click is within the circular area
-                if (distanceFromCenter <= radius) {
-                    // Click was on the :before pseudo-element - redirect to reader
+                // Handle different click areas
+                if (distanceFromReadIcon <= readIconRadius) {
+                    // Direct reading functionality
                     e.preventDefault();
-                    
-                    var bookId = $link.data('book-id');
-                    var formatsStr = $link.data('book-formats');
-                    
-                    if (bookId && formatsStr) {
-                        // Parse the formats string and find the best format for reading
-                        var formats = formatsStr.toLowerCase().split(',').map(function(f) { 
-                            return f.trim(); 
-                        });
-                        
-                        // Priority order for reading formats
-                        var formatPriority = ['epub', 'pdf', 'txt', 'html', 'mobi', 'azw3', 'fb2'];
-                        var selectedFormat = null;
-                        
-                        for (var i = 0; i < formatPriority.length; i++) {
-                            if (formats.indexOf(formatPriority[i]) !== -1) {
-                                selectedFormat = formatPriority[i];
-                                break;
-                            }
-                        }
-                        
-                        // If no preferred format found, use the first available format
-                        if (!selectedFormat && formats.length > 0) {
-                            selectedFormat = formats[0];
-                        }
-                        
-                        if (selectedFormat) {
-                            // Redirect to the reading route in a new tab
-                            window.open('/read/' + bookId + '/' + selectedFormat, '_blank');
-                        } else {
-                            // Fallback to original link behavior if no readable format
-                            window.location.href = $link.attr('href');
-                        }
-                    }
+                    handleDirectReading($link);
+                } else if (distanceFromReadToggle <= readToggleRadius) {
+                    // Toggle read status
+                    e.preventDefault();
+                    handleReadStatusToggle($link);
+                } else if (distanceFromSendEReader <= sendEReaderRadius) {
+                    // Send to eReader
+                    e.preventDefault();
+                    handleSendToEReader($link);
                 }
-                // If click was not on pseudo-element, let the normal link behavior proceed
+                // If click was not on any action area, let the normal link behavior proceed
             });
         }
+    }
+    
+    function handleDirectReading($link) {
+        var bookId = $link.data('book-id');
+        var formatsStr = $link.data('book-formats');
+        
+        if (bookId && formatsStr) {
+            var formats = formatsStr.toLowerCase().split(',').map(function(f) { 
+                return f.trim(); 
+            });
+            
+            var formatPriority = ['epub', 'pdf', 'txt', 'html', 'mobi', 'azw3', 'fb2'];
+            var selectedFormat = null;
+            
+            for (var i = 0; i < formatPriority.length; i++) {
+                if (formats.indexOf(formatPriority[i]) !== -1) {
+                    selectedFormat = formatPriority[i];
+                    break;
+                }
+            }
+            
+            if (!selectedFormat && formats.length > 0) {
+                selectedFormat = formats[0];
+            }
+            
+            if (selectedFormat) {
+                window.open('/read/' + bookId + '/' + selectedFormat, '_blank');
+            } else {
+                window.location.href = $link.attr('href');
+            }
+        }
+    }
+    
+    function handleReadStatusToggle($link) {
+        var bookId = $link.data('book-id');
+        if (!bookId) {
+            console.error('Book ID not found');
+            return;
+        }
+        
+        // Show loading state
+        var $readToggleBtn = $link.find('.read-toggle-btn');
+        $readToggleBtn.addClass('loading');
+        
+        // Find the existing read badge
+        var $readBadge = $link.find('.badge.read');
+        var isCurrentlyRead = $readBadge.length > 0;
+        
+        $.ajax({
+            url: '/ajax/toggleread/' + bookId,
+            type: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response, textStatus, xhr) {
+                console.log('Read status toggle successful');
+                // Handle successful response - empty response means success
+                if (xhr.status === 200) {
+                    // Update the visual read badge immediately
+                    if (isCurrentlyRead) {
+                        // Remove read badge
+                        $readBadge.remove();
+                    } else {
+                        // Add read badge
+                        var $newBadge = $('<span class="badge read glyphicon glyphicon-ok"></span>');
+                        $link.find('.img').append($newBadge);
+                    }
+                    
+                    // Show success state
+                    $readToggleBtn.addClass('success').removeClass('loading');
+                    setTimeout(function() {
+                        $readToggleBtn.removeClass('success');
+                    }, 1000);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error toggling read status:', xhr.responseText || errorThrown);
+                // Show error state
+                $readToggleBtn.addClass('error').removeClass('loading');
+                setTimeout(function() {
+                    $readToggleBtn.removeClass('error');
+                }, 2000);
+                
+                // Try to show error message if available
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.message) {
+                        alert('Error: ' + response.message);
+                    }
+                } catch (e) {
+                    // Not JSON, show generic error
+                    alert('Error toggling read status. Please try again.');
+                }
+            }
+        });
+    }
+    
+    function handleSendToEReader($link) {
+        var bookId = $link.data('book-id');
+        var formatsStr = $link.data('book-formats');
+        
+        if (!bookId) {
+            console.error('Book ID not found');
+            return;
+        }
+        
+        if (!formatsStr || formatsStr.length === 0) {
+            alert('No formats available for this book');
+            return;
+        }
+        
+        // Check if user has email configured
+        if (!window.cwaUserData || !window.cwaUserData.primaryEmail) {
+            alert('Please configure your eReader email address in your profile settings.');
+            return;
+        }
+        
+        // Show loading state
+        var $sendBtn = $link.find('.send-ereader-btn');
+        $sendBtn.addClass('loading');
+        
+        // Get the best format for sending (prefer epub, then pdf, then others)
+        var formats = formatsStr.toLowerCase().split(',').map(function(f) { 
+            return f.trim(); 
+        });
+        
+        var sendFormatPriority = ['epub', 'pdf', 'mobi', 'azw3', 'azw'];
+        var selectedFormat = null;
+        
+        for (var i = 0; i < sendFormatPriority.length; i++) {
+            if (formats.indexOf(sendFormatPriority[i]) !== -1) {
+                selectedFormat = sendFormatPriority[i];
+                break;
+            }
+        }
+        
+        if (!selectedFormat && formats.length > 0) {
+            selectedFormat = formats[0];
+        }
+        
+        if (!selectedFormat) {
+            alert('No compatible format found for sending to eReader');
+            $sendBtn.removeClass('loading');
+            return;
+        }
+        
+        // Use /send_selected endpoint but only send to primary email
+        $.ajax({
+            url: '/send_selected/' + bookId,
+            type: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            data: {
+                'csrf_token': $('input[name="csrf_token"]').val() || '',
+                'selected_emails': window.cwaUserData.primaryEmail,
+                'book_format': selectedFormat.toUpperCase(),
+                'convert': 0
+            },
+            success: function(response, textStatus, xhr) {
+                console.log('Send to eReader successful');
+                // Show success state
+                $sendBtn.addClass('success').removeClass('loading');
+                setTimeout(function() {
+                    $sendBtn.removeClass('success');
+                }, 1000);
+                
+                // Show success message if available
+                if (response && response.length > 0 && response[0].message) {
+                    // Use the proper flash notification system
+                    showPageFlashMessage(response[0].message, 'success');
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error sending to eReader:', xhr.responseText || errorThrown);
+                // Show error state
+                $sendBtn.addClass('error').removeClass('loading');
+                setTimeout(function() {
+                    $sendBtn.removeClass('error');
+                }, 2000);
+                
+                // Try to show more specific error message
+                var errorMessage = 'Error sending to eReader. Please check your configuration and ensure you have email addresses set up.';
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response && response.length > 0 && response[0].message) {
+                        errorMessage = response[0].message;
+                    }
+                } catch (e) {
+                    // Not JSON, use default message
+                }
+                alert(errorMessage);
+            }
+        });
     }
     
     // Initialize on page load

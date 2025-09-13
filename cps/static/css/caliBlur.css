@@ -1506,7 +1506,7 @@ button#btn-book-convert {
     height: 100%
 }
 
-#books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:before {
+#books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:before, #books .cover > a:before, #books_rand .cover > a:before {
     content: "\e352";
     font-family: Glyphicons Regular, serif;
     background: var(--color-secondary);
@@ -1533,14 +1533,14 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form
     zoom: .8
 }
 
-#books > .cover > a:hover:before, #books_rand > .cover > a:hover:before, .book.isotope-item > .cover > a:hover:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:before {
-    -o-transition: opacity .2s;
-    transition: opacity .2s;
-    -webkit-transition: opacity .2s;
-    opacity: 1
+#books > .cover > a:hover:before, #books_rand > .cover > a:hover:before, .book.isotope-item > .cover > a:hover:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:before, #books .cover > a:hover:before, #books_rand .cover > a:hover:before {
+    -o-transition: all .2s;
+    transition: all .2s;
+    -webkit-transition: all .2s;
+    opacity: 1;
 }
 
-#books > .cover > a:hover, #books_rand > .cover > a:hover, .book.isotope-item > .cover > a:hover, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover {
+#books > .cover > a:hover, #books_rand > .cover > a:hover, .book.isotope-item > .cover > a:hover, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover, #books .cover > a:hover, #books_rand .cover > a:hover {
     /* outline: solid var(--color-secondary); */
     font-size: 50px;
     -o-transition: outline 0s;
@@ -1548,7 +1548,7 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form
     -webkit-transition: outline 0s
 }
 
-#books > .cover > a:after, #books_rand > .cover > a:after, .book.isotope-item > .cover > a:after {
+#books > .cover > a:after, #books_rand > .cover > a:after, .book.isotope-item > .cover > a:after, #books .cover > a:after, #books_rand .cover > a:after {
     position: absolute;
     content: '';
     width: 100%;
@@ -1601,7 +1601,7 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form
     background: radial-gradient(farthest-corner at 50% 50%, rgba(50, 50, 50, .5) 50%, #323232 100%)
 }
 
-#books > .cover > a:hover:after, #books_rand > .cover > a:hover:after, .book.isotope-item > .cover > a:hover:after, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:after {
+#books > .cover > a:hover:after, #books_rand > .cover > a:hover:after, .book.isotope-item > .cover > a:hover:after, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:after, #books .cover > a:hover:after, #books_rand .cover > a:hover:after {
     opacity: 1;
     -o-transition: opacity .1s;
     transition: opacity .1s;
@@ -6640,7 +6640,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         width: 150px !important
     }
 
-    #books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before {
+    #books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before, #books .cover > a:before, #books_rand .cover > a:before {
         line-height: 40px;
         width: 40px;
         height: 40px;
@@ -8589,4 +8589,30 @@ code {
 
 button.close {
     margin-left: 1rem;
+}
+
+/* Disable direct reading functionality on mobile/touch devices */
+@media (max-width: 767px), (hover: none) {
+    #books > .cover > a:before, 
+    #books_rand > .cover > a:before, 
+    .book.isotope-item > .cover > a:before, 
+    #books .cover > a:before, 
+    #books_rand .cover > a:before {
+        display: none !important;
+    }
+    
+    #books > .cover > a:hover:before, 
+    #books_rand > .cover > a:hover:before, 
+    .book.isotope-item > .cover > a:hover:before, 
+    #books .cover > a:hover:before, 
+    #books_rand .cover > a:hover:before {
+        display: none !important;
+    }
+}
+
+/* Enhanced visual feedback for direct reading pseudo-element */
+.book-cover-link.hovering-read-icon:before {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--color-secondary) !important;
+    transform: scale(1.1) !important;
 }

@@ -778,6 +778,141 @@ $(function () {
     $.support.transition = false;
 })
 
+/////////////////////////////////
+// Direct Reading Functionality //
+/////////////////////////////////
+
+// Handle clicks on book cover :before pseudo-elements for direct reading
+$(function() {
+    function initDirectReadingHandler() {
+        // Remove any existing handlers first
+        $('.book-cover-link').off('click.directReading mousemove.directReading mouseleave.directReading');
+        
+        // Check if device supports hover (not a touch device)
+        var supportsHover = window.matchMedia('(hover: hover)').matches;
+        var isDesktop = $(window).width() >= 768;
+        
+        // Only enable direct reading functionality on devices that support hover and are desktop sized
+        if (supportsHover && isDesktop) {
+            $('.book-cover-link').on('mousemove.directReading', function(e) {
+                var $link = $(this);
+                
+                // Calculate if mouse is over the pseudo-element area
+                var linkOffset = $link.offset();
+                var mouseX = e.pageX - linkOffset.left;
+                var mouseY = e.pageY - linkOffset.top;
+                
+                var linkWidth = $link.outerWidth();
+                var linkHeight = $link.outerHeight();
+                
+                // Define the :before pseudo-element area (50px circle on desktop, 40px on smaller screens)
+                var pseudoElementSize = ($(window).width() >= 768) ? 50 : 40;
+                var centerX = linkWidth / 2;
+                var centerY = linkHeight / 2;
+                var radius = pseudoElementSize / 2;
+                
+                var distanceFromCenter = Math.sqrt(
+                    Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2)
+                );
+                
+                // Apply visual feedback when hovering over the pseudo-element
+                if (distanceFromCenter <= radius) {
+                    $link.addClass('hovering-read-icon');
+                } else {
+                    $link.removeClass('hovering-read-icon');
+                }
+            });
+            
+            $('.book-cover-link').on('mouseleave.directReading', function() {
+                $(this).removeClass('hovering-read-icon');
+            });
+            
+            $('.book-cover-link').on('click.directReading', function(e) {
+                var $target = $(e.target);
+                var $link = $(this);
+                
+                // Check if the click was on the :before pseudo-element
+                // We detect this by checking the click position relative to the link element
+                var linkOffset = $link.offset();
+                var clickX = e.pageX - linkOffset.left;
+                var clickY = e.pageY - linkOffset.top;
+                
+                // The :before pseudo-element is positioned in the center with margin: auto
+                // Based on the CSS: 50px x 50px circle, centered in the link area
+                var linkWidth = $link.outerWidth();
+                var linkHeight = $link.outerHeight();
+                
+                // Define the :before pseudo-element area (50px circle on desktop, 40px on smaller screens)
+                var pseudoElementSize = ($(window).width() >= 768) ? 50 : 40;
+                var centerX = linkWidth / 2;
+                var centerY = linkHeight / 2;
+                var radius = pseudoElementSize / 2;
+                
+                var distanceFromCenter = Math.sqrt(
+                    Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2)
+                );
+                
+                // Only trigger direct reading if the click is within the circular area
+                if (distanceFromCenter <= radius) {
+                    // Click was on the :before pseudo-element - redirect to reader
+                    e.preventDefault();
+                    
+                    var bookId = $link.data('book-id');
+                    var formatsStr = $link.data('book-formats');
+                    
+                    if (bookId && formatsStr) {
+                        // Parse the formats string and find the best format for reading
+                        var formats = formatsStr.toLowerCase().split(',').map(function(f) { 
+                            return f.trim(); 
+                        });
+                        
+                        // Priority order for reading formats
+                        var formatPriority = ['epub', 'pdf', 'txt', 'html', 'mobi', 'azw3', 'fb2'];
+                        var selectedFormat = null;
+                        
+                        for (var i = 0; i < formatPriority.length; i++) {
+                            if (formats.indexOf(formatPriority[i]) !== -1) {
+                                selectedFormat = formatPriority[i];
+                                break;
+                            }
+                        }
+                        
+                        // If no preferred format found, use the first available format
+                        if (!selectedFormat && formats.length > 0) {
+                            selectedFormat = formats[0];
+                        }
+                        
+                        if (selectedFormat) {
+                            // Redirect to the reading route in a new tab
+                            window.open('/read/' + bookId + '/' + selectedFormat, '_blank');
+                        } else {
+                            // Fallback to original link behavior if no readable format
+                            window.location.href = $link.attr('href');
+                        }
+                    }
+                }
+                // If click was not on pseudo-element, let the normal link behavior proceed
+            });
+        }
+    }
+    
+    // Initialize on page load
+    initDirectReadingHandler();
+    
+    // Re-initialize on window resize with debouncing
+    var resizeTimer;
+    $(window).on('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            initDirectReadingHandler();
+        }, 250);
+    });
+});
+
+/////////////////////////////////
+// End Direct Reading Functionality //
+/////////////////////////////////
+
 mobileSupport();
 
 // Only call function once resize is complete

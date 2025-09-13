@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block flash %}
 <div id="spinning_success" class="row-fluid text-center" style="display:none;">
-    <div class="alert alert-info"><img id="img-spinner" src="{{ url_for('static', filename='css/libs/image        <select name="config_login_type" id="config_login_type" class="form-control" data-controlall="login-settings">
+    <div class="alert alert-info"><img id="img-spinner" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/></div>
+        <select name="config_login_type" id="config_login_type" class="form-control" data-controlall="login-settings">
            <option value="0" {% if config.config_login_type == 0 %}selected{% endif %}>{{_('Use Standard Authentication')}}</option>
            {% if feature_support['ldap'] %}
            <option value="1" {% if config.config_login_type == 1 %}selected{% endif %}>{{_('Use LDAP Authentication')}}</option>
@@ -23,7 +24,7 @@
             <li>Notify affected users about the authentication change</li>
           </ul>
         </div>
-        {% endif %}-icon.gif') }}"/></div>
+        {% endif %}
 </div>
 {% endblock %}
 
@@ -567,7 +568,6 @@
                 <label for="config_password_special">{{_('Enforce special characters')}}</label>
               </div>
             </div>
-      </div>
     </div>
 
     <div style="margin-top: -2rem; max-width: 900px; justify-self: center; margin-bottom: 1rem; display: flex; flex-direction: row; flex-wrap: wrap; width: -webkit-fill-available; justify-content: space-between; margin-left: 2rem; margin-right: 2rem;">

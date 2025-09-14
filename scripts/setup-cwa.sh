@@ -10,11 +10,7 @@ make_dirs () {
 
 # Change ownership & permissions as required
 change_script_permissions () {
-    if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
-        echo "[setup-cwa] NETWORK_SHARE_MODE=true detected; skipping chown of /etc/s6-overlay"
-    else
-        chown -R abc:abc /etc/s6-overlay
-    fi
+    chown -R abc:abc /etc/s6-overlay
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-auto-library/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-auto-zipper/run
     chmod +x /etc/s6-overlay/s6-rc.d/cwa-ingest-service/run

@@ -342,6 +342,8 @@
         {% else %}
         window.cwaUserData.primaryEmail = null;
         {% endif %}
+        // Add user permissions
+        window.cwaUserData.canEditBooks = {{ 'true' if current_user.role_edit() else 'false' }};
       </script>
       <script src="{{ url_for('static', filename='js/caliBlur.js') }}"></script>
     {% endif %}

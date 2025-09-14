@@ -801,7 +801,7 @@ $(function() {
     function initDirectReadingHandler() {
         // Remove any existing handlers first
         $('.book-cover-link').off('click.directReading mousemove.directReading mouseleave.directReading');
-        $('.read-toggle-btn, .send-ereader-btn').off('click.quickActions');
+        $('.read-toggle-btn, .edit-metadata-btn, .send-ereader-btn').off('click.quickActions');
         
         // Check if device supports hover (not a touch device)
         var supportsHover = window.matchMedia('(hover: hover)').matches;
@@ -819,6 +819,12 @@ $(function() {
                     $link.append($readToggle);
                 }
                 
+                // Add edit metadata button (only if user has edit rights and button doesn't exist)
+                if (window.cwaUserData && window.cwaUserData.canEditBooks && $link.find('.edit-metadata-btn').length === 0) {
+                    var $editBtn = $('<div class="edit-metadata-btn" title="Edit Metadata"><span class="glyphicon glyphicon-pencil"></span></div>');
+                    $link.append($editBtn);
+                }
+                
                 // Add send to eReader button (only if it doesn't exist)
                 if ($link.find('.send-ereader-btn').length === 0) {
                     var $sendBtn = $('<div class="send-ereader-btn" title="Send to eReader"><span class="glyphicon glyphicon-send"></span></div>');
@@ -832,6 +838,13 @@ $(function() {
                 e.stopPropagation();
                 var $link = $(this).closest('.book-cover-link');
                 handleReadStatusToggle($link);
+            });
+            
+            $('.edit-metadata-btn').on('click.quickActions', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var $link = $(this).closest('.book-cover-link');
+                handleEditMetadata($link);
             });
             
             $('.send-ereader-btn').on('click.quickActions', function(e) {
@@ -872,12 +885,20 @@ $(function() {
                 var sendEReaderY = linkHeight - margin - (actionSize / 2);
                 var sendEReaderRadius = actionSize / 2;
                 
+                // Edit metadata button (center-bottom)
+                var editMetadataX = linkWidth / 2;
+                var editMetadataY = linkHeight - margin - (actionSize / 2);
+                var editMetadataRadius = actionSize / 2;
+                
                 // Calculate distances
                 var distanceFromReadIcon = Math.sqrt(
                     Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2)
                 );
                 var distanceFromReadToggle = Math.sqrt(
                     Math.pow(mouseX - readToggleX, 2) + Math.pow(mouseY - readToggleY, 2)
+                );
+                var distanceFromEditMetadata = Math.sqrt(
+                    Math.pow(mouseX - editMetadataX, 2) + Math.pow(mouseY - editMetadataY, 2)
                 );
                 var distanceFromSendEReader = Math.sqrt(
                     Math.pow(mouseX - sendEReaderX, 2) + Math.pow(mouseY - sendEReaderY, 2)
@@ -886,6 +907,7 @@ $(function() {
                 // Reset all hover states
                 $link.removeClass('hovering-read-icon');
                 $link.find('.read-toggle-btn').removeClass('hovering');
+                $link.find('.edit-metadata-btn').removeClass('hovering');
                 $link.find('.send-ereader-btn').removeClass('hovering');
                 
                 // Apply hover state based on position
@@ -893,6 +915,8 @@ $(function() {
                     $link.addClass('hovering-read-icon');
                 } else if (distanceFromReadToggle <= readToggleRadius) {
                     $link.find('.read-toggle-btn').addClass('hovering');
+                } else if (distanceFromEditMetadata <= editMetadataRadius) {
+                    $link.find('.edit-metadata-btn').addClass('hovering');
                 } else if (distanceFromSendEReader <= sendEReaderRadius) {
                     $link.find('.send-ereader-btn').addClass('hovering');
                 }
@@ -904,6 +928,7 @@ $(function() {
                 // Remove all hover states
                 $link.removeClass('hovering-read-icon');
                 $link.find('.read-toggle-btn').removeClass('hovering');
+                $link.find('.edit-metadata-btn').removeClass('hovering');
                 $link.find('.send-ereader-btn').removeClass('hovering');
             });
             
@@ -936,11 +961,19 @@ $(function() {
                 var sendEReaderY = linkHeight - margin - (actionSize / 2);
                 var sendEReaderRadius = actionSize / 2;
                 
+                // Edit metadata button (center-bottom)
+                var editMetadataX = linkWidth / 2;
+                var editMetadataY = linkHeight - margin - (actionSize / 2);
+                var editMetadataRadius = actionSize / 2;
+                
                 var distanceFromReadIcon = Math.sqrt(
                     Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2)
                 );
                 var distanceFromReadToggle = Math.sqrt(
                     Math.pow(clickX - readToggleX, 2) + Math.pow(clickY - readToggleY, 2)
+                );
+                var distanceFromEditMetadata = Math.sqrt(
+                    Math.pow(clickX - editMetadataX, 2) + Math.pow(clickY - editMetadataY, 2)
                 );
                 var distanceFromSendEReader = Math.sqrt(
                     Math.pow(clickX - sendEReaderX, 2) + Math.pow(clickY - sendEReaderY, 2)
@@ -955,6 +988,10 @@ $(function() {
                     // Toggle read status
                     e.preventDefault();
                     handleReadStatusToggle($link);
+                } else if (distanceFromEditMetadata <= editMetadataRadius) {
+                    // Edit metadata
+                    e.preventDefault();
+                    handleEditMetadata($link);
                 } else if (distanceFromSendEReader <= sendEReaderRadius) {
                     // Send to eReader
                     e.preventDefault();
@@ -1167,6 +1204,19 @@ $(function() {
                 alert(errorMessage);
             }
         });
+    }
+    
+    function handleEditMetadata($link) {
+        var bookId = $link.data('book-id');
+        
+        if (!bookId) {
+            console.error('No book ID found for edit metadata action');
+            return;
+        }
+        
+        // Navigate to the edit page in the same tab
+        var editUrl = '/admin/book/' + bookId;
+        window.location.href = editUrl;
     }
     
     // Initialize on page load

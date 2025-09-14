@@ -8599,6 +8599,7 @@ button.close {
     #books .cover > a:before, 
     #books_rand .cover > a:before,
     .read-toggle-btn,
+    .edit-metadata-btn,
     .send-ereader-btn {
         display: none !important;
     }
@@ -8621,7 +8622,7 @@ button.close {
 
 /* Read status toggle element - positioned bottom-left behind existing read badge */
 .read-toggle-btn {
-    background: rgba(128, 128, 128, 0.8);
+    background: rgb(19 28 36 / 71%);
     border-radius: 50%;
     font-size: 14px;
     line-height: 35px;
@@ -8648,9 +8649,37 @@ button.close {
     margin-bottom: -2px;
 }
 
+/* Edit metadata element - positioned center-bottom */
+.edit-metadata-btn {
+    background: rgb(19 28 36 / 71%);
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 35px;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    position: absolute;
+    bottom: 8px;
+    left: calc(50% - 17.5px);
+    opacity: 0;
+    z-index: 8;
+    color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Allow hover to pass through when not visible */
+}
+
+.edit-metadata-btn .glyphicon {
+    font-size: 14px;
+    color: #fff;
+}
+
 /* Send to eReader element - positioned bottom-right */
 .send-ereader-btn {
-    background: rgba(52, 152, 219, 0.8);
+    background: rgb(19 28 36 / 71%);
     border-radius: 50%;
     font-size: 14px;
     line-height: 35px;
@@ -8680,14 +8709,19 @@ button.close {
 
 /* Show additional elements on cover hover - buttons are now inside the link */
 #books > .cover > a:hover .read-toggle-btn,
+#books > .cover > a:hover .edit-metadata-btn,
 #books > .cover > a:hover .send-ereader-btn,
 #books_rand > .cover > a:hover .read-toggle-btn,
+#books_rand > .cover > a:hover .edit-metadata-btn,
 #books_rand > .cover > a:hover .send-ereader-btn,
 .book.isotope-item > .cover > a:hover .read-toggle-btn,
+.book.isotope-item > .cover > a:hover .edit-metadata-btn,
 .book.isotope-item > .cover > a:hover .send-ereader-btn,
 #books .cover > a:hover .read-toggle-btn,
+#books .cover > a:hover .edit-metadata-btn,
 #books .cover > a:hover .send-ereader-btn,
 .cover:hover .read-toggle-btn,
+.cover:hover .edit-metadata-btn,
 .cover:hover .send-ereader-btn {
     opacity: 1;
     pointer-events: auto; /* Enable pointer events when visible */
@@ -8695,17 +8729,23 @@ button.close {
 
 /* Enhanced visual feedback for hovering over specific action areas */
 .read-toggle-btn.hovering {
-    background: rgba(128, 128, 128, 1) !important;
+    background: rgba(200, 152, 94, 0.9) !important;
+    transform: scale(1.1) !important;
+}
+
+.edit-metadata-btn.hovering {
+    background: rgba(200, 152, 94, 0.9) !important;
     transform: scale(1.1) !important;
 }
 
 .send-ereader-btn.hovering {
-    background: rgba(52, 152, 219, 1) !important;
+    background: rgba(200, 152, 94, 0.9) !important;
     transform: scale(1.1) !important;
 }
 
 /* Loading state for action buttons */
 .read-toggle-btn.loading,
+.edit-metadata-btn.loading,
 .send-ereader-btn.loading {
     opacity: 1 !important;
     pointer-events: auto !important;
@@ -8714,12 +8754,14 @@ button.close {
 }
 
 .read-toggle-btn.loading .glyphicon,
+.edit-metadata-btn.loading .glyphicon,
 .send-ereader-btn.loading .glyphicon {
     animation: spin 1s linear infinite;
 }
 
 /* Success state for action buttons */
 .read-toggle-btn.success,
+.edit-metadata-btn.success,
 .send-ereader-btn.success {
     opacity: 1 !important;
     pointer-events: auto !important;
@@ -8729,6 +8771,7 @@ button.close {
 
 /* Error state for action buttons */
 .read-toggle-btn.error,
+.edit-metadata-btn.error,
 .send-ereader-btn.error {
     opacity: 1 !important;
     pointer-events: auto !important;

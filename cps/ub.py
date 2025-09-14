@@ -569,11 +569,41 @@ class RemoteAuthToken(Base):
 
 
 def filename(context):
-    file_format = context.get_current_parameters()['format']
+    """Generate deterministic filename for thumbnails.
+
+    Prefer the pattern:
+        cover thumbnails:  book_<entity_id>_r<resolution>.<ext>
+        series thumbnails: series_<entity_id>_r<resolution>.<ext>
+
+    Fallback to legacy uuid-based naming if required fields are missing.
+    This keeps previously generated files valid while making new ones easier
+    to reason about and purge selectively.
+    """
+    params = context.get_current_parameters()
+    file_format = params.get('format', 'jpeg')
+    entity_id = params.get('entity_id')
+    resolution = params.get('resolution')
+    thumb_type = params.get('type')  # cover or series
+    uuid_val = params.get('uuid')
+
+    # map format 'jpeg' -> extension jpg
     if file_format == 'jpeg':
-        return context.get_current_parameters()['uuid'] + '.jpg'
+        ext = 'jpg'
     else:
-        return context.get_current_parameters()['uuid'] + '.' + file_format
+        ext = file_format
+
+    try:
+        if entity_id is not None and resolution is not None and thumb_type is not None:
+            if thumb_type == constants.THUMBNAIL_TYPE_COVER:
+                return f"book_{entity_id}_r{resolution}.{ext}"
+            elif thumb_type == constants.THUMBNAIL_TYPE_SERIES:
+                return f"series_{entity_id}_r{resolution}.{ext}"
+    except Exception:
+        # fall back to uuid naming if anything unexpected occurs
+        pass
+
+    # legacy fallback
+    return f"{uuid_val}.{ext}" if uuid_val else f"legacy_unknown.{ext}"
 
 
 class Thumbnail(Base):

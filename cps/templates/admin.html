@@ -178,7 +178,7 @@
             <div class="col-xs-6 col-sm-3">{{schedule_duration}}</div>
           </div>
           <div class="row">
-            <div class="col-xs-6 col-sm-3">{{_('Generate Thumbnails')}}</div>
+            <div class="col-xs-6 col-sm-3">{{_('Scheduled Thumbnail Refresh')}}</div>
             <div class="col-xs-6 col-sm-3">{{ display_bool_setting(config.schedule_generate_book_covers) }}</div>
           </div>
           <!--div class="row">
@@ -196,9 +196,7 @@
 
         </div>
       <a class="btn btn-default scheduledtasks" id="admin_edit_scheduled_tasks" href="{{url_for('admin.edit_scheduledtasks')}}">{{_('Edit Scheduled Tasks Settings')}}</a>
-      {% if config.schedule_generate_book_covers %}
-        <a class="btn btn-default" id="admin_refresh_cover_cache">{{_('Refresh Thumbnail Cache')}}</a>
-      {%  endif %}
+      <a class="btn btn-default" id="admin_refresh_cover_cache">{{_('Refresh Thumbnail Cache')}}</a>
     </div>
   </div>
 {%  endif %}

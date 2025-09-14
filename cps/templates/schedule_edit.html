@@ -26,7 +26,8 @@
     </div>
     <div class="form-group">
       <input type="checkbox" id="schedule_generate_book_covers" name="schedule_generate_book_covers" {% if config.schedule_generate_book_covers %}checked{% endif %}>
-      <label for="schedule_generate_book_covers">{{_('Generate Thumbnails')}}</label>
+      <label for="schedule_generate_book_covers">{{_('Scheduled Thumbnail Refresh')}}</label>
+      <small class="form-text text-muted">{{_('Automatically refresh all thumbnails during scheduled maintenance. Thumbnails are always generated on-demand regardless of this setting.')}}</small>
     </div>
     <!--div class="form-group">
       <input type="checkbox" id="schedule_generate_series_covers" name="schedule_generate_series_covers" {% if config.schedule_generate_series_covers %}checked{% endif %}>

@@ -768,6 +768,11 @@ def get_book_cover_with_uuid(book_uuid, resolution=None):
 
 
 def get_book_cover_internal(book, resolution=None):
+    """Serve book cover with improved thumbnail generation fallback.
+    
+    When a thumbnail is requested but missing, generate it synchronously
+    instead of falling back to the original cover.jpg.
+    """
     if book and book.has_cover:
 
         # Send the book cover thumbnail if it exists in cache
@@ -778,6 +783,30 @@ def get_book_cover_internal(book, resolution=None):
                 if cache.get_cache_file_exists(thumbnail.filename, CACHE_TYPE_THUMBNAILS):
                     return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
                                                thumbnail.filename)
+            
+            # Try to generate missing thumbnail on-demand
+            try:
+                from .tasks.thumbnail import TaskGenerateCoverThumbnails
+                from . import use_IM
+                
+                # Only generate if ImageMagick is available
+                if use_IM:
+                    # Create thumbnail generation task for this specific book
+                    thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
+                    # Generate the specific resolution needed
+                    generated = thumbnail_task.create_book_cover_thumbnails(book)
+                    
+                    if generated > 0:
+                        # Try to serve the newly generated thumbnail
+                        thumbnail = get_book_cover_thumbnail(book, resolution)
+                        if thumbnail:
+                            cache = fs.FileSystem()
+                            if cache.get_cache_file_exists(thumbnail.filename, CACHE_TYPE_THUMBNAILS):
+                                return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
+                                                           thumbnail.filename)
+            except Exception as ex:
+                # Log the error but don't fail completely
+                log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
 
         # Send the book cover from Google Drive if configured
         if config.config_use_google_drive:
@@ -952,6 +981,32 @@ def save_cover(img, book_path):
             return False, message
     else:
         return save_cover_from_filestorage(os.path.join(config.get_book_path(), book_path), "cover.jpg", img)
+
+
+def trigger_thumbnail_generation_for_book(book_id):
+    """Trigger thumbnail generation for a book after cover changes."""
+    try:
+        from .tasks.thumbnail import TaskGenerateCoverThumbnails
+        from . import use_IM, WorkerThread
+        
+        if use_IM:
+            # Queue thumbnail generation task
+            thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
+            WorkerThread.add(current_user.name, thumbnail_task, hidden=True)
+            log.debug(f'Queued thumbnail generation for book {book_id}')
+    except Exception as ex:
+        log.debug(f'Failed to queue thumbnail generation for book {book_id}: {ex}')
+
+
+def save_cover_with_thumbnail_update(img, book_path, book_id=None):
+    """Save cover and trigger thumbnail generation."""
+    result, message = save_cover(img, book_path)
+    
+    # If cover save was successful and we have a book_id, generate thumbnails
+    if result and book_id:
+        trigger_thumbnail_generation_for_book(book_id)
+    
+    return result, message
 
 
 def do_download_file(book, book_format, client, data, headers):
@@ -1141,14 +1196,14 @@ def get_download_link(book_id, book_format, client):
 
 
 def clear_cover_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
+    # Always allow clearing thumbnail cache
+    WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
 
 
 def replace_cover_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
-        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Always allow replacing thumbnail cache
+    WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
+    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
 def delete_thumbnail_cache():
@@ -1156,13 +1211,16 @@ def delete_thumbnail_cache():
 
 
 def add_book_to_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Always generate thumbnails for new books
+    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
 def update_thumbnail_cache():
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskGenerateCoverThumbnails())
+    # Always allow manual thumbnail cache updates
+    task = TaskGenerateCoverThumbnails()
+    WorkerThread.add(None, task)
+    # Return task ID for tracking
+    return task.id
 
 
 def set_all_metadata_dirty():

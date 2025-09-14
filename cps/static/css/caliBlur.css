@@ -1216,7 +1216,9 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.c
 body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a {
     height: 60px;
     padding: 20px 10px;
-    color: hsla(0, 0%, 100%, .7)
+    color: hsla(0, 0%, 100%, .7);
+    display: flex;
+    align-items: center;
 }
 
 body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > #top_admin > .glyphicon-dashboard::before {
@@ -2391,7 +2393,10 @@ body > div.row-fluid {
     animation: none
 }
 
-.alert-info.refresh-cwa {
+.alert-info.refresh-cwa,
+.alert-success.refresh-cwa,
+.alert-warning.refresh-cwa,
+.alert-danger.refresh-cwa {
     position: fixed;
     top: auto;
     bottom: 20px;

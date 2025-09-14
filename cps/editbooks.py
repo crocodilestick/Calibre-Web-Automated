@@ -693,7 +693,8 @@ def do_edit_book(book_id, upload_formats=None):
                 if result:
                     book.has_cover = 1
                     modify_date = True
-                    helper.replace_cover_thumbnail_cache(book.id)
+                    # Trigger thumbnail generation after successful cover fetch
+                    helper.trigger_thumbnail_generation_for_book(book.id)
                 else:
                     edit_error = True
                     flash(error, category="error")
@@ -1551,7 +1552,7 @@ def upload_cover(cover_request, book):
             if not current_user.role_upload():
                 flash(_("User has no rights to upload cover"), category="error")
                 return False
-            ret, message = helper.save_cover(requested_file, book.path)
+            ret, message = helper.save_cover_with_thumbnail_update(requested_file, book.path, book.id)
             if ret is True:
                 helper.replace_cover_thumbnail_cache(book.id)
                 return True

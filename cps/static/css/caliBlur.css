@@ -249,8 +249,17 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.c
 }
 
 body.blur .row-fluid .col-sm-10 {
-    -webkit-animation: fadeIn 1s linear 1;
-    animation: fadeIn 1s linear 1
+    -webkit-animation: fadeIn 0.5s linear 1;
+    animation: fadeIn 0.5s linear 1
+}
+
+/* Fix layout shift during discover page load by stabilizing isotope container positioning */
+body.blur .discover .isotope,
+body.blur .discover .row {
+    transform: translateZ(0) !important;
+    will-change: auto !important;
+    margin: 0 auto !important;
+    justify-content: center !important;
 }
 
 .col-sm-10 .book-meta > div.btn-toolbar:after {
@@ -673,10 +682,11 @@ div[aria-label="Edit/Delete book"] > .btn > span:hover {
     -webkit-animation: spin .5s linear infinite;
     animation: spin .5s linear infinite;
     display: block;
-    margin: 20px auto;
     position: fixed;
-    top: calc(50% - 12px);
-    left: calc(50% - 12px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
     z-index: 999999
 }
 
@@ -1796,12 +1806,13 @@ body > div.container-fluid > div > div.col-sm-10 > div.discover > div.isotope {
     display: grid !important;
     overflow: hidden !important;
     height: auto !important;
-    width: 100%;
-    margin: 0;
-    -webkit-box-pack: start;
-    -ms-flex-pack: start;
-    justify-content: start;
+    width: 100% !important;
+    margin: 0 auto !important;
+    -webkit-box-pack: center !important;
+    -ms-flex-pack: center !important;
+    justify-content: center !important;
     grid-gap: 10px 0;
+    position: relative !important;
     grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)) !important
 }
 
@@ -3766,9 +3777,9 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a
     bottom: 0;
     left: 0;
     background-color: #3f4245;
-    -o-transition: background-color 1s ease-in;
-    transition: background-color 1s ease-in;
-    -webkit-transition: background-color 1s ease-in;
+    -o-transition: background-color 0.3s ease-in;
+    transition: background-color 0.3s ease-in;
+    -webkit-transition: background-color 0.3s ease-in;
     z-index: -9
 }
 
@@ -4044,9 +4055,9 @@ body.shelfcreate, body.shelfedit {
     -webkit-background-size: auto, cover !important;
     -moz-background-size: auto, cover !important;
     -o-background-size: auto, cover !important;
-    -webkit-transition: background-image 2s ease-in;
-    -o-transition: background-image 2s ease-in;
-    transition: background-image 2s ease-in
+    -webkit-transition: background-image 0.3s ease-in;
+    -o-transition: background-image 0.3s ease-in;
+    transition: background-image 0.3s ease-in
 }
 
 body.author .undefined-img {

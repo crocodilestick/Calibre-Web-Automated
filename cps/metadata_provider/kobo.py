@@ -1133,7 +1133,8 @@ class Kobo(Metadata):
         m = re.search(r"/ebook/([^/?#]+)", url)
         return m.group(1) if m else url
 
-    def _normalize_cover_url(self, url: str, height: int = 800, width: int = 600, quality: int = 90) -> str:
+    #TO-DO: lookup user preference for height and with -use default if not set
+    def _normalize_cover_url(self, url: str, height: int = 1200, width: int = 1200, quality: int = 90) -> str:
         if not url:
             return ""
         # Replace dynamic sizing segments: /H/W/Q/(True|False)

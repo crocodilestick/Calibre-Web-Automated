@@ -834,7 +834,7 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.home-btn > a:hove
 }
 
 body:not(.read-frame) {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
     background-repeat: repeat, no-repeat !important;
     background-attachment: fixed, fixed !important;
     background-position: center center, center center !important;
@@ -843,7 +843,7 @@ body:not(.read-frame) {
     -moz-background-size: auto, cover !important;
     -o-background-size: auto, cover !important;
     line-height: 1.71428571;
-    background: url(images/caliblur/blur-noise.png), var(--color-background);
+    background: url(images/caliblur/blur-noise.webp), var(--color-background);
     color: whitesmoke;
     font-family: Open Sans Semibold, Helvetica Neue, Helvetica, Arial, sans-serif;
     font-weight: 400;
@@ -2990,7 +2990,7 @@ a:focus {
     position: fixed;
     top: 60px;
     left: 240px;
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png);
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp);
     background-repeat: repeat, no-repeat;
     background-attachment: fixed, fixed;
     background-position: center center, center center;
@@ -3762,7 +3762,7 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a
     position: fixed;
     top: 0;
     left: 0;
-    background-image: url(images/caliblur/blur-noise.png) !important;
+    background-image: url(images/caliblur/blur-noise.webp) !important;
     background-repeat: repeat !important;
     background-attachment: fixed !important;
     background-position: center center !important;
@@ -3953,7 +3953,7 @@ body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-coll
 }
 
 body.login:not(.read-frame), body.shelfcreate, body.shelfedit {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-dark.png) !important
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-dark.webp) !important
 }
 
 body.author .undefined-img, body.shelfcreate, body.shelfedit {
@@ -4061,7 +4061,7 @@ body.shelfcreate, body.shelfedit {
 }
 
 body.author .undefined-img {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
     background-size: auto, cover !important;
     -webkit-background-size: auto, cover !important;
     -moz-background-size: auto, cover !important;
@@ -4818,7 +4818,7 @@ body.config.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.di
 }
 
 body.admin {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-dark.png) !important
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-dark.webp) !important
 }
 
 body.admin td {
@@ -4891,10 +4891,10 @@ body:not(.blur) #scnd-nav > li > a > .glyphicon-book, body:not(.blur) #scnd-nav 
 }
 
 body:not(.blur):not(.login):not(.me):not(.author):not(.editbook):not(.upload):not(.shelfedit):not(.langlist):not(.authorlist):not(.serieslist):not(.catlist):not(.shelforder):not(.admin):not(.modal-open) > div.container-fluid > div.row-fluid > div.col-sm-10:after {
-    background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, .15)), to(rgba(0, 0, 0, .15))), url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
-    background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
-    background: -o-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
-    background: linear-gradient(0deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
+    background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, .15)), to(rgba(0, 0, 0, .15))), url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
+    background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
+    background: -o-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
+    background: linear-gradient(0deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
     background-repeat: no-reapeat, repeat, no-repeat !important;
     background-attachment: fixed, fixed, fixed !important;
     background-position: center center, center center, center center !important;
@@ -4913,7 +4913,7 @@ body:not(.blur):not(.login):not(.me):not(.author):not(.editbook):not(.upload):no
 }
 
 body.advsearch:not(.blur) > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-8:before, body.book:not(.blur) > div.container-fluid > div.row-fluid > div.col-sm-10 > div.single:before, body.stat:not(.blur) > div.container-fluid > div.row-fluid > div.col-sm-10:before, body:not(.blur):not(.me):not(.author):not(.editbook):not(.upload):not(.shelfedit):not(.admin):not(.modal-open) > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover:first-of-type:before {
-    background: url(images/caliblur/blur-noise.png) center center fixed, url(images/caliblur/blur-light.png) center center no-repeat fixed !important;
+    background: url(images/caliblur/blur-noise.webp) center center fixed, url(images/caliblur/blur-light.webp) center center no-repeat fixed !important;
     background-size: auto, cover !important;
     -webkit-background-size: auto, cover !important;
     -moz-background-size: auto, cover !important;
@@ -5902,7 +5902,7 @@ body.authorlist .blur-wrapper:after {
 }
 
 #loader {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-dark.png) !important;
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-dark.webp) !important;
     background-repeat: repeat, no-repeat !important;
     background-attachment: fixed, fixed !important;
     background-position: center center, center center !important;
@@ -6931,10 +6931,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body:not(.blur):not(.login):not(.me):not(.author):not(.editbook):not(.upload):not(.shelfedit):not(.langlist):not(.authorlist):not(.serieslist):not(.catlist):not(.shelforder):not(.admin):not(.modal-open) > div.container-fluid > div.row-fluid > div.col-sm-10:after {
-        background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, .15)), to(rgba(0, 0, 0, .15))), url(images/caliblur/blur-noise.png), var(--color-background-mobile) !important;
-        background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), var(--color-background-mobile) !important;
-        background: -o-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), var(--color-background-mobile) !important;
-        background: linear-gradient(0deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), var(--color-background-mobile) !important;
+        background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, .15)), to(rgba(0, 0, 0, .15))), url(images/caliblur/blur-noise.webp), var(--color-background-mobile) !important;
+        background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), var(--color-background-mobile) !important;
+        background: -o-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), var(--color-background-mobile) !important;
+        background: linear-gradient(0deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), var(--color-background-mobile) !important;
         width: 100%;
         height: 42px;
         display: block;
@@ -7839,7 +7839,7 @@ body.publisherlist > div.container-fluid > div > div.col-sm-10 > div.container >
 
 @media only screen and (min-width: 768px) {
     body.author:not(.authorlist) .undefined-img {
-        background-image: url(images/caliblur/blur-light.png) !important;
+        background-image: url(images/caliblur/blur-light.webp) !important;
         background-size: cover !important;
         -webkit-background-size: cover !important;
         -moz-background-size: cover !important;

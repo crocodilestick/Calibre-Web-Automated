@@ -8621,10 +8621,8 @@ button.close {
 
 /* Read status toggle element - positioned bottom-left behind existing read badge */
 .read-toggle-btn {
-    font-family: Glyphicons Regular, serif;
     background: rgba(128, 128, 128, 0.8);
     border-radius: 50%;
-    font-weight: 400;
     font-size: 14px;
     line-height: 35px;
     width: 35px;
@@ -8644,16 +8642,16 @@ button.close {
     pointer-events: none; /* Allow hover to pass through when not visible */
 }
 
-.read-toggle-btn:before {
-    content: "\e067";
+.read-toggle-btn .glyphicon {
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: -2px;
 }
 
 /* Send to eReader element - positioned bottom-right */
 .send-ereader-btn {
-    font-family: Glyphicons Regular, serif;
     background: rgba(52, 152, 219, 0.8);
     border-radius: 50%;
-    font-weight: 400;
     font-size: 14px;
     line-height: 35px;
     width: 35px;
@@ -8673,8 +8671,11 @@ button.close {
     pointer-events: none; /* Allow hover to pass through when not visible */
 }
 
-.send-ereader-btn:before {
-    content: "\e016";
+.send-ereader-btn .glyphicon {
+    font-size: 14px;
+    color: #fff;
+    margin-left: -4px;
+    margin-bottom: -2px;
 }
 
 /* Show additional elements on cover hover - buttons are now inside the link */
@@ -8712,13 +8713,8 @@ button.close {
     animation: pulse 1s infinite;
 }
 
-.read-toggle-btn.loading:before {
-    content: "\e031";
-    animation: spin 1s linear infinite;
-}
-
-.send-ereader-btn.loading:before {
-    content: "\e031";
+.read-toggle-btn.loading .glyphicon,
+.send-ereader-btn.loading .glyphicon {
     animation: spin 1s linear infinite;
 }
 
@@ -8731,12 +8727,6 @@ button.close {
     transform: scale(1.1);
 }
 
-.read-toggle-btn.success:before,
-.send-ereader-btn.success:before {
-    content: "\e013";
-    color: white;
-}
-
 /* Error state for action buttons */
 .read-toggle-btn.error,
 .send-ereader-btn.error {
@@ -8744,12 +8734,6 @@ button.close {
     pointer-events: auto !important;
     background: rgba(200, 0, 0, 0.9) !important;
     transform: scale(1.1);
-}
-
-.read-toggle-btn.error:before,
-.send-ereader-btn.error:before {
-    content: "\e014";
-    color: white;
 }
 
 /* Animations for loading and feedback states */

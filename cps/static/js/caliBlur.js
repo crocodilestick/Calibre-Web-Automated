@@ -815,13 +815,13 @@ $(function() {
                 
                 // Add read status toggle button (only if it doesn't exist)
                 if ($link.find('.read-toggle-btn').length === 0) {
-                    var $readToggle = $('<div class="read-toggle-btn" title="Toggle Read Status"></div>');
+                    var $readToggle = $('<div class="read-toggle-btn" title="Toggle Read Status"><span class="glyphicon glyphicon-eye-open"></span></div>');
                     $link.append($readToggle);
                 }
                 
                 // Add send to eReader button (only if it doesn't exist)
                 if ($link.find('.send-ereader-btn').length === 0) {
-                    var $sendBtn = $('<div class="send-ereader-btn" title="Send to eReader"></div>');
+                    var $sendBtn = $('<div class="send-ereader-btn" title="Send to eReader"><span class="glyphicon glyphicon-send"></span></div>');
                     $link.append($sendBtn);
                 }
             });
@@ -1006,6 +1006,7 @@ $(function() {
         // Show loading state
         var $readToggleBtn = $link.find('.read-toggle-btn');
         $readToggleBtn.addClass('loading');
+        $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-refresh');
         
         // Find the existing read badge
         var $readBadge = $link.find('.badge.read');
@@ -1033,8 +1034,10 @@ $(function() {
                     
                     // Show success state
                     $readToggleBtn.addClass('success').removeClass('loading');
+                    $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-ok');
                     setTimeout(function() {
                         $readToggleBtn.removeClass('success');
+                        $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-eye-open');
                     }, 1000);
                 }
             },
@@ -1042,8 +1045,10 @@ $(function() {
                 console.error('Error toggling read status:', xhr.responseText || errorThrown);
                 // Show error state
                 $readToggleBtn.addClass('error').removeClass('loading');
+                $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-remove');
                 setTimeout(function() {
                     $readToggleBtn.removeClass('error');
+                    $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-eye-open');
                 }, 2000);
                 
                 // Try to show error message if available
@@ -1083,6 +1088,7 @@ $(function() {
         // Show loading state
         var $sendBtn = $link.find('.send-ereader-btn');
         $sendBtn.addClass('loading');
+        $sendBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-refresh');
         
         // Get the best format for sending (prefer epub, then pdf, then others)
         var formats = formatsStr.toLowerCase().split(',').map(function(f) { 
@@ -1126,8 +1132,10 @@ $(function() {
                 console.log('Send to eReader successful');
                 // Show success state
                 $sendBtn.addClass('success').removeClass('loading');
+                $sendBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-ok');
                 setTimeout(function() {
                     $sendBtn.removeClass('success');
+                    $sendBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-send');
                 }, 1000);
                 
                 // Show success message if available
@@ -1140,8 +1148,10 @@ $(function() {
                 console.error('Error sending to eReader:', xhr.responseText || errorThrown);
                 // Show error state
                 $sendBtn.addClass('error').removeClass('loading');
+                $sendBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-remove');
                 setTimeout(function() {
                     $sendBtn.removeClass('error');
+                    $sendBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-send');
                 }, 2000);
                 
                 // Try to show more specific error message

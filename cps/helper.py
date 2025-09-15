@@ -787,7 +787,6 @@ def get_book_cover_internal(book, resolution=None):
             # Try to generate missing thumbnail on-demand
             try:
                 from .tasks.thumbnail import TaskGenerateCoverThumbnails
-                from . import use_IM
                 
                 # Only generate if ImageMagick is available
                 if use_IM:
@@ -987,7 +986,6 @@ def trigger_thumbnail_generation_for_book(book_id):
     """Trigger thumbnail generation for a book after cover changes."""
     try:
         from .tasks.thumbnail import TaskGenerateCoverThumbnails
-        from . import use_IM, WorkerThread
         
         if use_IM:
             # Queue thumbnail generation task

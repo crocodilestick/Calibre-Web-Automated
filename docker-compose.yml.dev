@@ -3,6 +3,14 @@ services:
   calibre-web-automated:
     image: crocodilestick/calibre-web-automated:latest
     container_name: calibre-web-automated
+    # Fix for lsof hanging: https://github.com/crocodilestick/Calibre-Web-Automated/issues/654
+    # The limit of 65535 should be sufficient without being excessive.
+    # Normally, you shouldn’t need to change this, but if you do,
+    # be careful not to set it to extremely high values (e.g., a billion).
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     environment:
       # Only change these if you know what you're doing
       - PUID=1000

@@ -17,6 +17,7 @@ replit.nix
 .vscode
 .history
 cwa-wiki/
+docs/
 
 # Test Scripts
 test*

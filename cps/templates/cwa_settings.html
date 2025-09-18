@@ -12,8 +12,7 @@
     align-items: center;
     padding: 8px 12px;
     margin: 5px 0;
-    background-color: #2a3441;
-    border: 1px solid #555;
+    background-color: rgba(21, 30, 38, 0.5);
     border-radius: 4px;
     cursor: move;
     user-select: none;
@@ -34,7 +33,7 @@
   
   .metadata-provider-drag-handle {
     margin-right: 10px;
-    color: #ffc200;
+    color: var(--user-accent-color);
     font-size: 16px;
     font-weight: 900;
 }
@@ -54,7 +53,6 @@
     position: relative;
     isolation: isolate;
     contain: layout style;
-    border: 1px solid #444;
     border-radius: 4px;
     padding-inline: 30px;
     background-color: #151e2680;
@@ -97,7 +95,6 @@
   }
 
   div#metadata_provider_enabled_list {
-    border: 1px solid #444;
     border-radius: 4px;
     padding: 10px;
     background-color: #151e2680;
@@ -113,6 +110,7 @@
     padding: 4px;
     margin-bottom: 0px;
     margin-left: 10px;
+    width: -webkit-fill-available;
   }
 
   .provider_enable_item {
@@ -123,6 +121,10 @@
       background-color: rgba(21, 30, 38, 0.5);
       border-radius: 4px;
       flex-basis: calc(50% - 6px);
+  }
+
+  .provider_enable_item:hover {
+      background-color: #3a4451;
   }
 
 </style>
@@ -169,7 +171,7 @@
         {{_("When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
         compatibility with Amazon's Send-to-Kindle Service. This feature is particularly useful for users who frequently send EPUB files to their Kindle devices and have experienced issues with 
         file rejections or formatting problems.")}}
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-tooltip">
         <small>{{_('This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.') | safe }}</small>
       </div>
 
@@ -194,9 +196,9 @@
       </p>
 
       <!-- Metadata Field Selection -->
-      <div id="metadata-field-selection" style="margin-top: 20px; padding: 2rem; border: 1px solid transparent; border-radius: 6px; background-color: #1d28328a;">
-        <h5 style="margin-bottom: 15px; color: var(--color-text);">📝 {{_('Metadata Fields to Update')}}</h5>
-        <p class="cwa-settings-tooltip" style="margin-bottom: 15px; margin-left: 0px !important;">
+      <div id="metadata-field-selection" style="margin-top: 20px; padding: 2rem; border: 1px solid transparent; border-radius: 6px; background-color: #151e2680;">
+        <h5 style="margin-bottom: 15px; color: var(--color-text); margin-top: 2px; margin-left: 0.8rem;">📝 {{_('Metadata Fields to Update')}}</h5>
+        <p class="cwa-settings-tooltip" style="margin-bottom: 6px; margin-left: 0px !important;">
           {{_('Select which metadata fields should be updated when auto-fetching. Unchecked fields will never be modified during automatic metadata fetching, preserving your existing data.')}}
         </p>
         
@@ -272,9 +274,9 @@
           {% endif %}
         </div>
         
-        <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+        <div class="cwa-tooltip" style="margin-left: 12px;">
           <small style="color: var(--color-info-text);">
-            💡 <strong>{{_('Tip')}}:</strong> {{_('These field selections apply to both Smart and Direct replacement modes. Smart mode will additionally apply quality criteria to selected fields, while Direct mode will replace all selected fields with provider data.')}}
+            💡 <span class="cwa-tooltip-highlight">{{_('Tip')}}:</span> {{_('These field selections apply to both Smart and Direct replacement modes. Smart mode will additionally apply quality criteria to selected fields, while Direct mode will replace all selected fields with provider data.')}}
           </small>
         </div>
       </div>
@@ -304,7 +306,7 @@
 
     <!-- Auto-Send Delay Setting -->
     <div class="form-group">
-      <h4 class="settings-section-header">{{_('Auto-Send Delay for New Books')}}</h4>
+      <h4 class="settings-section-header" style="margin-top: 3rem;">{{_('Auto-Send Delay for New Books')}}</h4>
       <p class="settings-description">
         {{_('Delay (in minutes) before automatically sending newly ingested books to eReaders. This allows time for metadata fetching and other processing to complete before sending. Only applies to users who have enabled auto-send in their profile.')}}
       </p>
@@ -325,22 +327,22 @@
 
     <!-- Metadata Provider Hierarchy Setting -->
     <div class="form-group">
-      <h4 class="settings-section-header">{{_('Auto Metadata Fetch Provider Hierarchy')}}</h4>
+      <h4 class="settings-section-header" style="margin-top: 3rem;">{{_('Auto Metadata Fetch Provider Hierarchy')}}</h4>
       <p class="settings-description">
         {{_('Configure the order in which metadata providers are searched when automatically fetching metadata for new books. Drag and drop to reorder providers. Only enabled providers will be used.')}}
       </p>
       <div id="metadata_provider_hierarchy_container" style="margin-top: 15px;">
         <div id="metadata_provider_list_outer">
-          <p style="text-align: center; margin-bottom: 20px;"><span style="font-weight: 900; color: #f8be03;">↥</span>&nbsp;&nbsp;Most Preferred</p>
+          <p style="text-align: center; margin-bottom: 20px;"><span style="font-weight: 900; color: var(--user-accent-color);">↥</span>&nbsp;&nbsp;Most Preferred</p>
           <div id="metadata_provider_list">
             <!-- Providers will be populated here by JavaScript -->
           </div>
-          <p style="text-align: center; margin-top: 20px;"><span style="font-weight: 900; color: #f8be03;">↥</span>&nbsp;&nbsp;Least Preferred</p>
+          <p style="text-align: center; margin-top: 20px;"><span style="font-weight: 900; color: var(--user-accent-color);">↥</span>&nbsp;&nbsp;Least Preferred</p>
         </div>
         <input type="hidden" name="metadata_provider_hierarchy" id="metadata_provider_hierarchy_hidden" value="">
       </div>
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
-        <small class="settings-explanation">💡 <strong>{{_('Tip')}}:</strong> {{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
+      <div class="cwa-tooltip" style="margin-top: 2rem; margin-left: 5px;">
+        <small class="settings-explanation">💡 <span class="cwa-tooltip-highlight">{{_('Tip')}}:</span> {{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
       </div>
     </div>
 
@@ -458,9 +460,9 @@
           {% endif %}
         {% endfor %}
       </select>
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-tooltip" style="margin-top: 2rem; margin-left: 0px;">
         <small class="settings-explanation">
-          {{_("NOTE: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
+          📝 <span class="cwa-tooltip-highlight">{{_("Note")}}:</span> {{_("CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
         </small>
       </div>
     </div>
@@ -470,7 +472,7 @@
       <p class="cwa-settings-explanation settings-explanation">
         {{_("The formats selected here will be ignored by CWA's Auto-Conversion feature when it's active, meaning they will be imported as is.")}}
       </p>
-      <div style="max-width: 90rem; padding-left: 30px;">
+      <div class="box-of-checkboxes">
         {% for format in ignorable_formats -%}
           <label for="ignore_convert_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
             {% if format in cwa_settings['auto_convert_ignored_formats'] %}
@@ -497,7 +499,7 @@
       <p class="cwa-settings-explanation settings-explanation">
         {{_('The formats selected here will always be added to the library, even after they have been converted to the target format. However, if the format is in the "CWA Auto-Ingest - Ignored Formats" list, it will not be imported. Note that the target format is always retained.')}}
       </p>
-      <div style="max-width: 90rem; padding-left: 30px;">
+      <div class="box-of-checkboxes">
         {% for format in ignorable_formats -%}
           <label for="convert_retained_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
             {% if format in cwa_settings.get('auto_convert_retained_formats', []) or format == cwa_settings['auto_convert_target_format'] %}
@@ -526,7 +528,7 @@
       <p class="cwa-settings-explanation settings-explanation">
         {{_("The formats selected here will be ignored by CWA's Auto-Ingest feature, meaning files in these formats won't be added to the library by CWA during the ingest process")}}
       </p>
-      <div style="max-width: 90rem; padding-left: 30px;">
+      <div class="box-of-checkboxes">
         {% for format in ignorable_formats -%}
           <label for="ignore_ingest_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
             {% if format in cwa_settings['auto_ingest_ignored_formats'] %}
@@ -566,7 +568,7 @@
         {% endfor %}
       </select>
 
-      <h4>Possible Values:</h4>
+      <h4 style="margin-top: 2rem;">Possible Values:</h4>
       <table style="width: -webkit-fill-available; margin-bottom: 2rem;">
         <tbody>
         <tr>
@@ -591,47 +593,41 @@
         {{_('Configure which metadata fields are used to determine if books are duplicates. Books must match ALL selected criteria to be considered duplicates.')}}
       </p>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem; padding: 3rem; background: #151e2680;">
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_title" name="duplicate_detection_title" value="1" {% if cwa_settings['duplicate_detection_title'] %} checked {% endif %}>
           <label for="duplicate_detection_title">{{_('Title')}}</label>
-          <small class="settings-explanation">{{_('Consider book titles when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_author" name="duplicate_detection_author" value="1" {% if cwa_settings['duplicate_detection_author'] %} checked {% endif %}>
           <label for="duplicate_detection_author">{{_('Author')}}</label>
-          <small class="settings-explanation">{{_('Consider book authors when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_language" name="duplicate_detection_language" value="1" {% if cwa_settings['duplicate_detection_language'] %} checked {% endif %}>
           <label for="duplicate_detection_language">{{_('Language')}}</label>
-          <small class="settings-explanation">{{_('Consider book language when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_series" name="duplicate_detection_series" value="1" {% if cwa_settings['duplicate_detection_series'] %} checked {% endif %}>
           <label for="duplicate_detection_series">{{_('Series')}}</label>
-          <small class="settings-explanation">{{_('Consider book series when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_publisher" name="duplicate_detection_publisher" value="1" {% if cwa_settings['duplicate_detection_publisher'] %} checked {% endif %}>
           <label for="duplicate_detection_publisher">{{_('Publisher')}}</label>
-          <small class="settings-explanation">{{_('Consider book publisher when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_format" name="duplicate_detection_format" value="1" {% if cwa_settings['duplicate_detection_format'] %} checked {% endif %}>
           <label for="duplicate_detection_format">{{_('Format')}}</label>
-          <small class="settings-explanation">{{_('Consider file format when detecting duplicates')}}</small>
         </div>
       </div>
 
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-tooltip" style="margin-top: 2rem; margin-left: 0px;">
         <small class="settings-explanation">
-          <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
+          📝 <span class="cwa-tooltip-highlight">{{_('Note')}}:</span> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
         </small>
       </div>
     </div>

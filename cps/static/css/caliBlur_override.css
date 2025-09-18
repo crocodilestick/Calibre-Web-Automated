@@ -3,14 +3,14 @@ body.serieslist.grid-view div.container-fluid > div > div.col-sm-10::before {
 }
 
 /* Make checkboxes orange */
-input[type=checkbox] {accent-color: #cc7b19;}
+input[type=checkbox] {accent-color: var(--user-accent-color);}
 
 .cover .badge {
   position: absolute !important;
   top: 0;
   left: 0;
   color: #fff;
-  background-color: #cc7b19;
+  background-color: var(--user-accent-color);
   border-radius: 100px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
   margin-left: 4px;
@@ -378,10 +378,12 @@ button.close > span {
 
 div#GeneralChangeModal > div > div.modal-content {
     top: 200px;
-    width: max-content;
-    max-width: 400px;
+    width: -webkit-fill-available;
+    max-width: 600px;
     padding: 2rem;
     justify-self: center;
+    border: solid 5px color-mix(in srgb, var(--user-accent-color) 70%, white);
+    border-radius: 10px;
 }
 
 .modal-content > .modal-header.bg-info.text-center {
@@ -390,4 +392,67 @@ div#GeneralChangeModal > div > div.modal-content {
 
 a#advanced_search > span.hidden-sm {
     margin-left: 4px;
+}
+
+div.modal-body > p {
+    margin-top: 3rem;
+}
+span#text-GeneralChangeModal {
+    color: whitesmoke;
+}
+
+.cwa-tooltip {
+    padding: 1rem;
+    background-color: color-mix(in srgb, var(--user-accent-color) 20%, transparent);
+    border-left: 4px solid var(--user-accent-color);
+    border-radius: 0.25rem;
+    margin: 1px 4px 16px 38px;
+    padding-left: 2rem;
+    line-height: normal;
+}
+span.cwa-tooltip-highlight {
+    color: color-mix(in srgb, var(--user-accent-color) 80%, white);
+}
+label.settings-section-header {
+    padding-right: 10px;
+    margin-bottom: 16px !important;
+    padding-bottom: 0px !important;
+    margin-left: 3rem;
+    font-weight: bolder;
+    color: color-mix(in srgb, var(--user-accent-color) 65%, lightgray) !important;
+}
+
+.box-of-checkboxes {
+    max-width: 90rem;
+    background-color: #151e2680;
+    padding: 2.5rem;
+    padding-left: 7%;
+    border-radius: 6px;
+    width: -webkit-fill-available;
+}
+
+span.input-group-addon {
+    background-color: #151e2680;
+    border-color: transparent;
+}
+
+p.help-block {
+    line-height: normal;
+}
+
+.box-of-checkboxes > .form-group {
+    width: 48%;
+    padding-right: 2%;
+}
+
+div#user_submit {
+    position: fixed;
+    top: 71px;
+    right: 30px;
+}
+
+@media (max-width: 768px) {
+    div#user_submit {
+    top: 55px;
+    }
 }

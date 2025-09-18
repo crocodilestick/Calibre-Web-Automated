@@ -13,7 +13,6 @@ import tempfile
 import time
 import shutil
 import sqlite3
-from datetime import datetime, timezone
 from pathlib import Path
 
 from cwa_db import CWA_DB
@@ -440,7 +439,7 @@ class NewBookProcessor:
 
             # CRITICAL FIX: Refresh Calibre-Web's database session to make new books visible
             # This solves the issue where multiple books don't appear until container restart
-            self.refresh_calibre_web_session()
+            self.refresh_cwa_session()
 
             # If we overwrote an existing book, Calibre does not bump books.timestamp, only last_modified.
             # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.
@@ -615,7 +614,7 @@ class NewBookProcessor:
             print(f"[ingest-processor] Error in auto-send trigger: {e}", flush=True)
 
 
-    def refresh_calibre_web_session(self) -> None:
+    def refresh_cwa_session(self) -> None:
         """Refresh Calibre-Web's database session to make newly added books visible
         
         This solves the issue where external calibredb adds aren't immediately visible

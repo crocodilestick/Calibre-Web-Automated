@@ -1,0 +1,116 @@
+/* Calibre-Web Automated – Accent Color Customization
+This file applies user-selected accent colors to ONLY the elements that originally had accent colors
+Based on the original #CC7B19 (primary) and #FFC200 (secondary) color usage */
+
+@import 'theme_colors.css';
+
+/* Primary buttons - originally used background-color: #cc7b19 on hover/active states */
+.btn-primary.active, 
+.btn-primary:active, 
+.btn-primary:focus, 
+.btn-primary:hover, 
+.open .dropdown-toggle.btn-primary {
+    background-color: var(--user-accent-color) !important;
+}
+
+.btn-primary.active.focus, 
+.btn-primary.active:focus, 
+.btn-primary.active:hover, 
+.btn-primary:active.focus, 
+.btn-primary:active:focus, 
+.btn-primary:active:hover, 
+.open > .dropdown-toggle.btn-primary.focus, 
+.open > .dropdown-toggle.btn-primary:focus, 
+.open > .dropdown-toggle.btn-primary:hover {
+    background-color: var(--user-accent-hover) !important;
+    border-color: transparent !important;
+}
+
+/* Pagination active states - originally used background-color and border: #cc7b19 */
+.pagination > .active > a {
+    color: white !important;
+    background-color: var(--user-accent-color) !important;
+    border: solid 1px var(--user-accent-color) !important;
+}
+
+.pagination > .active > a:hover {
+    background-color: var(--user-accent-hover) !important;
+    border: solid 1px var(--user-accent-hover) !important;
+}
+
+/* Checkbox accent color - originally used accent-color: #cc7b19 */
+.checkbox input[type=checkbox] {
+    accent-color: var(--user-accent-color) !important;
+}
+
+/* Settings section headers - originally used color: #ffc200 (secondary accent) */
+.settings-section-header {
+    color: var(--user-accent-color) !important;
+}
+
+/* CWA stats values - originally used color: #cc7b19 */
+.cwa_stats_value {
+    color: var(--user-accent-color) !important;
+}
+
+/* Code elements - originally used color: #CC7B19 */
+code {
+    color: var(--user-accent-color) !important;
+}
+
+/* Input focus states */
+body.blur .form-control:focus,
+body.blur .form-control.focus {
+    border-color: var(--user-accent-color) !important;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 0 2px color-mix(in srgb, var(--user-accent-color) 60%, black) !important;
+}
+
+/* Custom checkboxes and radio buttons */
+body.blur .checkbox input[type="checkbox"]:checked + label::before,
+body.blur .radio input[type="radio"]:checked + label::before {
+    background-color: var(--user-accent-color) !important;
+    border-color: var(--user-accent-color) !important;
+}
+
+/* Slider components */
+body.blur .slider .ui-slider-handle {
+    background-color: var(--user-accent-color) !important;
+}
+
+body.blur .slider .ui-slider-range {
+    background-color: var(--user-accent-color) !important;
+}
+
+/* Book rating stars */
+body.blur .rating .star.full {
+    color: var(--user-accent-color) !important;
+}
+
+/* Notification and alert accent colors */
+body.blur .alert-info {
+    border-left: 4px solid var(--user-accent-color) !important;
+    border-radius: 0px;
+}
+
+/* Dropdown hover states */
+body.blur .dropdown-menu > li > a:hover,
+body.blur .dropdown-menu > li > a:focus {
+    background-color: var(--user-accent-color-light) !important;
+    color: var(--user-accent-color) !important;
+}
+
+/* Table row highlighting */
+body.blur .table-hover > tbody > tr:hover {
+    background-color: var(--user-accent-color-light) !important;
+}
+
+/* Text selection color */
+body.blur ::selection {
+    background-color: var(--user-accent-color-light) !important;
+    color: var(--user-accent-color) !important;
+}
+
+body.blur ::-moz-selection {
+    background-color: var(--user-accent-color-light) !important;
+    color: var(--user-accent-color) !important;
+}

@@ -124,10 +124,13 @@ def before_request():
     # Use per-user theme if available; fallback to global config.config_theme for legacy/anonymous
     try:
         g.current_theme = getattr(current_user, 'theme', config.config_theme)
+        g.theme_settings = getattr(current_user, 'theme_settings', {"variant": "dark", "accent_color": "#CC7B19"})
         if current_user.is_anonymous and not hasattr(current_user, 'theme'):
             g.current_theme = config.config_theme
+            g.theme_settings = {"variant": "dark", "accent_color": "#CC7B19"}
     except Exception:
         g.current_theme = getattr(config, 'config_theme', 1)
+        g.theme_settings = {"variant": "dark", "accent_color": "#CC7B19"}
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',
@@ -2100,6 +2103,8 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
     try:
         # Use global default theme config (acts as default for new users)
         content.theme = getattr(config, 'config_theme', 1)
+        # Set default theme settings for new users
+        content.theme_settings = {"variant": "dark", "accent_color": "#CC7B19"}
     except Exception:
         pass
     try:
@@ -2191,6 +2196,35 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             if theme_val in (0,1):
                 content.theme = theme_val
         except Exception:
+            pass
+    
+    # Theme settings update
+    if 'theme_variant' in to_save or 'accent_color' in to_save:
+        try:
+            current_settings = content.theme_settings or {"variant": "dark", "accent_color": "#CC7B19"}
+            
+            # Update variant if provided
+            if 'theme_variant' in to_save:
+                variant = to_save.get('theme_variant')
+                if variant in ('dark', 'light'):
+                    current_settings['variant'] = variant
+            
+            # Update accent color if provided
+            if 'accent_color' in to_save:
+                accent_color = to_save.get('accent_color')
+                # Basic validation for hex color code
+                if accent_color and len(accent_color) == 7 and accent_color.startswith('#'):
+                    try:
+                        # Validate it's a proper hex color
+                        int(accent_color[1:], 16)
+                        current_settings['accent_color'] = accent_color
+                    except ValueError:
+                        pass  # Invalid hex color, ignore
+            
+            content.theme_settings = current_settings
+            flag_modified(content, "theme_settings")
+        except Exception as e:
+            log.error(f"Error updating theme settings: {e}")
             pass
     # Proceed with remaining updates (previously skipped when 'theme' in to_save)
     if not ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,

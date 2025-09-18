@@ -1,0 +1,68 @@
+/* Calibre-Web Automated – Centralized Color System
+This file contains all color variables for both light and dark themes
+Variables will be overridden by JavaScript based on user preferences */
+
+:root {
+    /* User customizable accent colors - will be overridden by JavaScript */
+    --user-accent-color: #CC7B19;
+    --user-accent-darker: #CC7B19;
+    --user-accent-hover: #E59029;
+    
+    /* Theme variant colors - DARK MODE (default) */
+    --bg-primary: #474747;
+    --bg-secondary: #1f1f1f;
+    --bg-card: #3c444a;
+    --bg-overlay: #161f27b3;
+    --bg-modal: #00000085;
+    --bg-gradient-start: rgba(50, 50, 50, 0.5);
+    --bg-gradient-end: #323232;
+    
+    --text-primary: #fff;
+    --text-secondary: #eee;
+    --text-muted: #555;
+    --text-inverse: #555;
+    --text-on-light: #555;
+    --text-link: #eee; /* Default link color - NOT accent color */
+    --text-link-hover: #fff; /* Link hover color - NOT accent color */
+    
+    /* Background images - DARK MODE (default) */
+    --bg-image-main: url(images/caliblur/blur-dark.webp);
+    --bg-image-noise: url(images/caliblur/blur-noise.webp);
+    
+    /* Legacy support - mapped to new variables */
+    --color-background: var(--bg-primary);
+    --color-primary: var(--user-accent-color);
+    --color-secondary: var(--user-accent-darker);
+    --color-secondary-hover: var(--user-accent-hover);
+    --color-background-mobile: var(--bg-secondary);
+}
+
+/* Light theme variant colors - applied when light mode is active */
+[data-theme="light"] {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-overlay: rgba(255, 255, 255, 0.9);
+    --bg-modal: rgba(0, 0, 0, 0.5);
+    --bg-gradient-start: rgba(255, 255, 255, 0.8);
+    --bg-gradient-end: #f0f0f0;
+    
+    --text-primary: #333;
+    --text-secondary: #555;
+    --text-muted: #777;
+    --text-inverse: #fff;
+    --text-on-light: #333;
+    --text-link: #555; /* Default link color in light mode */
+    --text-link-hover: #333; /* Link hover color in light mode */
+    
+    /* Background images - LIGHT MODE */
+    --bg-image-main: url(images/caliblur/light-mode-light.webp);
+    --bg-image-noise: url(images/caliblur/blur-noise.webp);
+}
+
+/* Accent color variations - automatically generated from base accent color */
+:root {
+    --user-accent-color-hover: color-mix(in srgb, var(--user-accent-color) 85%, black);
+    --user-accent-color-light: color-mix(in srgb, var(--user-accent-color) 10%, transparent);
+    --user-accent-color-border: color-mix(in srgb, var(--user-accent-color) 30%, transparent);
+}

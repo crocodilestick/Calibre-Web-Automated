@@ -784,25 +784,33 @@ def get_book_cover_internal(book, resolution=None):
                     return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
                                                thumbnail.filename)
             
-            # Try to generate missing thumbnail on-demand
+            # Try to generate missing thumbnail on-demand, but only for web interface
+            # Skip synchronous generation for Kobo requests to avoid delays
             try:
-                from .tasks.thumbnail import TaskGenerateCoverThumbnails
+                # Check if this is a Kobo request by looking at the request context
+                from flask import has_request_context, request
+                is_kobo_request = (has_request_context() and 
+                                 request.path and 
+                                 '/kobo/' in request.path)
                 
-                # Only generate if ImageMagick is available
-                if use_IM:
-                    # Create thumbnail generation task for this specific book
-                    thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
-                    # Generate the specific resolution needed
-                    generated = thumbnail_task.create_book_cover_thumbnails(book)
+                if not is_kobo_request:
+                    from .tasks.thumbnail import TaskGenerateCoverThumbnails
                     
-                    if generated > 0:
-                        # Try to serve the newly generated thumbnail
-                        thumbnail = get_book_cover_thumbnail(book, resolution)
-                        if thumbnail:
-                            cache = fs.FileSystem()
-                            if cache.get_cache_file_exists(thumbnail.filename, CACHE_TYPE_THUMBNAILS):
-                                return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
-                                                           thumbnail.filename)
+                    # Only generate if ImageMagick is available
+                    if use_IM:
+                        # Create thumbnail generation task for this specific book
+                        thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
+                        # Generate the specific resolution needed
+                        generated = thumbnail_task.create_book_cover_thumbnails(book)
+                        
+                        if generated > 0:
+                            # Try to serve the newly generated thumbnail
+                            thumbnail = get_book_cover_thumbnail(book, resolution)
+                            if thumbnail:
+                                cache = fs.FileSystem()
+                                if cache.get_cache_file_exists(thumbnail.filename, CACHE_TYPE_THUMBNAILS):
+                                    return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
+                                                               thumbnail.filename)
             except Exception as ex:
                 # Log the error but don't fail completely
                 log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')

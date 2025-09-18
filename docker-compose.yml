@@ -22,6 +22,9 @@ services:
       # Skip the automatic library detection/mount at startup. When enabled, the auto-library service will not run.
       # Accepts: true/yes/1 to disable auto-mount (default: false)
       # - DISABLE_LIBRARY_AUTOMOUNT=false
+      # Define custom language codes. Useful if you upload eBooks with unrecognized language codes.
+      # Format is "code:Language,code:Language". Can also override existing codes with other languages if desired.
+      # - CWA_CUSTOM_LANGUAGE_CODES="ger:German,fre:French"
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings etc.
       - /path/to/config/folder:/config 

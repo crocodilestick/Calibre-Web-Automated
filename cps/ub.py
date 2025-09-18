@@ -246,8 +246,11 @@ class User(UserBase, Base):
     view_settings = Column(JSON, default={})
     kobo_only_shelves_sync = Column(Integer, default=0)
     hardcover_token = Column(String, unique=True, default=None)
-    # New per-user theme (0=default/light, 1=caliBlur) replacing global-only behavior
+    # New per-user theme (0=legacy/standard, 1=caliBlur) replacing global-only behavior
     theme = Column(Integer, default=1)
+    # Theme settings for customization (JSON format)
+    # Example: {"variant": "dark", "accent_color": "#CC7B19"}
+    theme_settings = Column(JSON, default={"variant": "dark", "accent_color": "#CC7B19"})
     # Auto-send settings for new books
     auto_send_enabled = Column(Boolean, default=False)
 
@@ -296,6 +299,8 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.id = None
         self.role = None
         self.name = None
+        self.theme = 1  # Default to caliBlur for anonymous users
+        self.theme_settings = {"variant": "dark", "accent_color": "#CC7B19"}
         self.auto_send_enabled = False
         self.loadSettings()
 
@@ -673,6 +678,16 @@ def migrate_user_table(engine, _session):
         with engine.connect() as conn:
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
+            trans.commit()
+    
+    # Migration for theme_settings column
+    try:
+        _session.query(exists().where(User.theme_settings)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'theme_settings' JSON DEFAULT '{\"variant\": \"dark\", \"accent_color\": \"#CC7B19\"}'"))
             trans.commit()
     
     # Migration for auto-send feature columns

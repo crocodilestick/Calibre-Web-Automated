@@ -4,7 +4,7 @@
   <h1>{{title}}</h1>
   <form role="form" method="POST" autocomplete="off">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="col-md-10 col-lg-8">
+    <div style="width: -webkit-fill-available;">
     {% if new_user or ( current_user and content.name != "Guest" and current_user.role_admin() ) %}
     <div class="form-group required">
       <label for="name">{{_('Username')}}</label>
@@ -29,9 +29,9 @@
       <input type="email" class="form-control" name="kindle_mail" id="kindle_mail" value="{{ content.kindle_mail if content.kindle_mail != None }}">
     </div>
     {% if not content.role_anonymous() %}
-    <div class="form-group">
+    <div class="form-group" style="background: #151e2680; padding: 2rem; padding-left: 4rem;">
       <input type="checkbox" id="auto_send_enabled" name="auto_send_enabled" {% if content.auto_send_enabled %}checked{% endif %}>
-      <label for="auto_send_enabled">{{_('Automatically send new books to my eReader(s)')}}</label>
+      <label style="padding-left: 1rem;" for="auto_send_enabled">{{_('Automatically send new books to my eReader(s)')}}</label>
       <p class="help-block">{{_('When enabled, newly ingested books will be automatically sent to all configured eReader email addresses above.')}}</p>
     </div>
     {% endif %}
@@ -59,10 +59,76 @@
     <div class="form-group">
       <label for="theme">{{ _('Theme') }}</label>
       <select name="theme" id="theme" class="form-control">
-        <option value="0" {% if content.theme == 0 %}selected{% endif %}>Standard</option>
-        <option value="1" {% if content.theme == 1 %}selected{% endif %}>caliBlur (Dark)</option>
+        <option value="0" {% if content.theme == 0 %}selected{% endif %}>Standard (Legacy)</option>
+        <option value="1" {% if content.theme == 1 %}selected{% endif %}>caliBlur</option>
       </select>
     </div>
+    
+    <!-- Theme Customization for caliBlur -->
+    <div id="theme-customization" style="{% if content.theme != 1 %}display: none;{% endif %}">
+      <div class="form-group">
+        <label for="theme_variant">{{ _('Theme Variant') }}</label>
+        <select name="theme_variant" id="theme_variant" class="form-control">
+          <option value="dark" {% if content.theme_settings and content.theme_settings.get('variant') == 'dark' %}selected{% endif %}>Dark Mode</option>
+          <option value="light" {% if content.theme_settings and content.theme_settings.get('variant') == 'light' %}selected{% endif %}>Light Mode</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="accent_color">{{ _('Accent Color') }}</label>
+        <div class="input-group">
+          <input type="color" name="accent_color" id="accent_color" class="form-control" 
+                 value="{{ content.theme_settings.get('accent_color', '#CC7B19') if content.theme_settings else '#CC7B19' }}"
+                 style="height: 40px;">
+          <span class="input-group-addon">
+            <span class="color-preview" style="background-color: {{ content.theme_settings.get('accent_color', '#CC7B19') if content.theme_settings else '#CC7B19' }}; width: 20px; height: 20px; display: inline-block; border: 1px solid #ccc;"></span>
+          </span>
+        </div>
+        <small class="help-block">{{ _('Choose your preferred accent color for the caliBlur theme') }}</small>
+      </div>
+      
+      <!-- Preset Color Options -->
+      <div class="form-group">
+        <label>{{ _('Quick Color Presets') }}</label>
+        <div class="color-presets" style="margin-top: 10px;">
+          <button type="button" class="btn btn-sm color-preset" data-color="#CC7B19" style="background-color: #CC7B19; margin-right: 5px; width: 30px; height: 30px; border-radius: 50%;"></button>
+          <button type="button" class="btn btn-sm color-preset" data-color="#E67E22" style="background-color: #E67E22; margin-right: 5px; width: 30px; height: 30px; border-radius: 50%;"></button>
+          <button type="button" class="btn btn-sm color-preset" data-color="#3498DB" style="background-color: #3498DB; margin-right: 5px; width: 30px; height: 30px; border-radius: 50%;"></button>
+          <button type="button" class="btn btn-sm color-preset" data-color="#2ECC71" style="background-color: #2ECC71; margin-right: 5px; width: 30px; height: 30px; border-radius: 50%;"></button>
+          <button type="button" class="btn btn-sm color-preset" data-color="#E74C3C" style="background-color: #E74C3C; margin-right: 5px; width: 30px; height: 30px; border-radius: 50%;"></button>
+          <button type="button" class="btn btn-sm color-preset" data-color="#9B59B6" style="background-color: #9B59B6; margin-right: 5px; width: 30px; height: 30px; border-radius: 50%;"></button>
+          <button type="button" class="btn btn-sm color-preset" data-color="#1ABC9C" style="background-color: #1ABC9C; margin-right: 5px; width: 30px; height: 30px; border-radius: 50%;"></button>
+          <button type="button" class="btn btn-sm color-preset" data-color="#F39C12" style="background-color: #F39C12; margin-right: 5px; width: 30px; height: 30px; border-radius: 50%;"></button>
+        </div>
+        <small class="help-block">{{ _('Click on a color to use it as your accent color') }}</small>
+      </div>
+    </div>
+    
+    <script>
+      // Show/hide theme customization based on theme selection
+      document.getElementById('theme').addEventListener('change', function() {
+        const customization = document.getElementById('theme-customization');
+        if (this.value === '1') {
+          customization.style.display = 'block';
+        } else {
+          customization.style.display = 'none';
+        }
+      });
+      
+      // Update color picker when preset is clicked
+      document.querySelectorAll('.color-preset').forEach(function(button) {
+        button.addEventListener('click', function() {
+          const color = this.getAttribute('data-color');
+          document.getElementById('accent_color').value = color;
+          document.querySelector('.color-preview').style.backgroundColor = color;
+        });
+      });
+      
+      // Update color preview when color picker changes
+      document.getElementById('accent_color').addEventListener('change', function() {
+        document.querySelector('.color-preview').style.backgroundColor = this.value;
+      });
+    </script>
     {% endif %}
     {% if registered_oauth.keys()| length > 0 and not new_user and profile %}
       {% for id, name in registered_oauth.items() %}
@@ -90,9 +156,13 @@
     </div>
     <div class="form-group col">
       <div class="btn btn-default" id="kobo_full_sync" data-value="{% if current_user.role_admin() %}{{ content.id }}{% else %}0{% endif %}" {% if not content.remote_auth_token.first() %} style="display: none;" {% endif %}>{{_('Force full kobo sync')}}</div>
+      {% if ( current_user and current_user.role_admin() and not new_user ) and not simple %}
+      <a href="#" id="get_user_tags" class="btn btn-default" data-id="{{content.id}}" data-toggle="modal" data-target="#restrictModal">{{_('Add Allowed/Denied Tags')}}</a>
+      <a href="#" id="get_user_column_values" data-id="{{content.id}}" class="btn btn-default" data-toggle="modal" data-target="#restrictModal">{{_('Add allowed/Denied Custom Column Values')}}</a>
+      {% endif %}
     </div>
     {% endif %}
-    <div class="col-sm-6">
+    <div class="box-of-checkboxes" style="display: flex; flex-direction: row; flex-wrap: wrap; width: -webkit-fill-available; margin-bottom: 4rem;">
     {% for element in sidebar %}
       {% if element['config_show'] %}
         <div class="form-group">
@@ -105,12 +175,12 @@
           <input type="checkbox" name="Show_detail_random" id="Show_detail_random" {% if content.show_detail_random() %}checked{% endif %}>
           <label for="Show_detail_random">{{_('Show Random Books in Detail View')}}</label>
       </div>
-      {% if ( current_user and current_user.role_admin() and not new_user ) and not simple %}
-      <a href="#" id="get_user_tags" class="btn btn-default" data-id="{{content.id}}" data-toggle="modal" data-target="#restrictModal">{{_('Add Allowed/Denied Tags')}}</a>
-      <a href="#" id="get_user_column_values" data-id="{{content.id}}" class="btn btn-default" data-toggle="modal" data-target="#restrictModal">{{_('Add allowed/Denied Custom Column Values')}}</a>
+      {% if kobo_support and not content.role_anonymous() and not simple%}
+      <div class="form-group">
+        <input type="checkbox" name="kobo_only_shelves_sync" id="kobo_only_shelves_sync" {% if content.kobo_only_shelves_sync %}checked{% endif %}>
+        <label for="kobo_only_shelves_sync">{{_('Sync only books in selected shelves with Kobo')}}</label>
+      </div>
       {% endif %}
-    </div>
-      <div class="col-sm-6">
     {% if current_user and current_user.role_admin() and not profile %}
     {% if not content.role_anonymous() %}
     <div class="form-group">
@@ -153,13 +223,8 @@
       </div>
     {% endif %}
   {% endif %}
-    {% if kobo_support and not content.role_anonymous() and not simple%}
-    <div class="form-group">
-      <input type="checkbox" name="kobo_only_shelves_sync" id="kobo_only_shelves_sync" {% if content.kobo_only_shelves_sync %}checked{% endif %}>
-      <label for="kobo_only_shelves_sync">{{_('Sync only books in selected shelves with Kobo')}}</label>
     </div>
-    {% endif %}
-    </div>
+
     <div class="col-sm-12">
       <div id="user_submit" class="btn btn-default">{{_('Save')}}</div>
       {% if not profile %}

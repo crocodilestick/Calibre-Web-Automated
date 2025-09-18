@@ -1436,6 +1436,7 @@ def register_post():
         # Default to configured theme for new self-registered users (fallback to caliBlur=1)
         try:
             content.theme = getattr(config, 'config_theme', 1)
+            content.theme_settings = {"variant": "dark", "accent_color": "#CC7B19"}
         except Exception:
             pass
         try:
@@ -1633,6 +1634,35 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                 if new_theme in (0,1):
                     current_user.theme = new_theme
             except Exception:
+                pass
+        
+        # Theme settings update
+        if 'theme_variant' in to_save or 'accent_color' in to_save:
+            try:
+                current_settings = current_user.theme_settings or {"variant": "dark", "accent_color": "#CC7B19"}
+                
+                # Update variant if provided
+                if 'theme_variant' in to_save:
+                    variant = to_save.get('theme_variant')
+                    if variant in ('dark', 'light'):
+                        current_settings['variant'] = variant
+                
+                # Update accent color if provided
+                if 'accent_color' in to_save:
+                    accent_color = to_save.get('accent_color')
+                    # Basic validation for hex color code
+                    if accent_color and len(accent_color) == 7 and accent_color.startswith('#'):
+                        try:
+                            # Validate it's a proper hex color
+                            int(accent_color[1:], 16)
+                            current_settings['accent_color'] = accent_color
+                        except ValueError:
+                            pass  # Invalid hex color, ignore
+                
+                current_user.theme_settings = current_settings
+                flag_modified(current_user, "theme_settings")
+            except Exception as e:
+                log.error(f"Error updating theme settings: {e}")
                 pass
 
     except Exception as ex:

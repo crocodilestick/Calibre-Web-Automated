@@ -138,15 +138,31 @@ def validate_and_cleanup_provider_enabled_map(enabled_map, available_provider_id
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_switch_theme():
-    # Switch theme for current user only
+    # Enhanced theme switch for current user - now supports variant toggle
     try:
         # current_user.theme may not exist for old sessions before migration; default to 1 (caliBlur)
-        current = getattr(current_user, 'theme', 1)
-        new_theme = 0 if current == 1 else 1
+        current_theme = getattr(current_user, 'theme', 1)
+        current_settings = getattr(current_user, 'theme_settings', {"variant": "dark", "accent_color": "#CC7B19"})
+        
+        # If using legacy theme (0), switch to caliBlur dark mode
+        if current_theme == 0:
+            new_theme = 1
+            new_settings = {"variant": "dark", "accent_color": "#CC7B19"}
+        else:
+            # Toggle between light and dark variants of caliBlur
+            new_theme = 1
+            if current_settings.get("variant") == "dark":
+                new_settings = current_settings.copy()
+                new_settings["variant"] = "light"
+            else:
+                new_settings = current_settings.copy()
+                new_settings["variant"] = "dark"
+        
         from . import ub
         user = ub.session.query(ub.User).filter(ub.User.id == current_user.id).first()
         if user:
             user.theme = new_theme
+            user.theme_settings = new_settings
             ub.session_commit()
         else:
             log.error("Theme switch: user not found in DB")
@@ -163,6 +179,56 @@ def cwa_switch_theme():
     except Exception:
         target = url_for("web.index")
     return redirect(target, code=302)
+
+@switch_theme.route("/cwa-update-theme-settings", methods=["POST"])
+@login_required_if_no_ano
+def cwa_update_theme_settings():
+    """Update user theme settings via AJAX"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "No data provided"}), 400
+        
+        from . import ub
+        user = ub.session.query(ub.User).filter(ub.User.id == current_user.id).first()
+        if not user:
+            return jsonify({"success": False, "error": "User not found"}), 404
+        
+        current_settings = user.theme_settings or {"variant": "dark", "accent_color": "#CC7B19"}
+        updated = False
+        
+        # Update variant if provided
+        if 'variant' in data:
+            variant = data.get('variant')
+            if variant in ('dark', 'light'):
+                current_settings['variant'] = variant
+                updated = True
+        
+        # Update accent color if provided
+        if 'accent_color' in data:
+            accent_color = data.get('accent_color')
+            # Basic validation for hex color code
+            if accent_color and len(accent_color) == 7 and accent_color.startswith('#'):
+                try:
+                    # Validate it's a proper hex color
+                    int(accent_color[1:], 16)
+                    current_settings['accent_color'] = accent_color
+                    updated = True
+                except ValueError:
+                    return jsonify({"success": False, "error": "Invalid color format"}), 400
+        
+        if updated:
+            user.theme_settings = current_settings
+            from sqlalchemy.orm.attributes import flag_modified
+            flag_modified(user, "theme_settings")
+            ub.session_commit()
+            return jsonify({"success": True, "settings": current_settings})
+        else:
+            return jsonify({"success": False, "error": "No valid updates provided"}), 400
+            
+    except Exception as e:
+        log.error(f"Error updating theme settings: {e}")
+        return jsonify({"success": False, "error": "Internal server error"}), 500
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##

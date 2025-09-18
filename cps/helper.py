@@ -777,43 +777,55 @@ def get_book_cover_internal(book, resolution=None):
 
         # Send the book cover thumbnail if it exists in cache
         if resolution:
-            thumbnail = get_book_cover_thumbnail(book, resolution)
-            if thumbnail:
-                cache = fs.FileSystem()
-                if cache.get_cache_file_exists(thumbnail.filename, CACHE_TYPE_THUMBNAILS):
-                    return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
-                                               thumbnail.filename)
+            cache = fs.FileSystem()
+            # Check for both webp and jpg thumbnails, generate missing ones
+            webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
+            jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
             
-            # Try to generate missing thumbnail on-demand, but only for web interface
-            # Skip synchronous generation for Kobo requests to avoid delays
+            # Check if files actually exist on disk
+            webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
+            jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
+            
+            # Generate missing thumbnails on-demand (skip for Kobo requests to avoid delays)
+            if not webp_exists or not jpg_exists:
+                try:
+                    from flask import has_request_context, request
+                    is_kobo_request = (has_request_context() and 
+                                     request.path and 
+                                     '/kobo/' in request.path)
+                    
+                    if not is_kobo_request and use_IM:
+                        from .tasks.thumbnail import TaskGenerateCoverThumbnails
+                        # Create and run thumbnail generation for this book
+                        thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
+                        thumbnail_task.create_book_cover_thumbnails(book)
+                        
+                        # Refresh thumbnail references after generation
+                        webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
+                        jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
+                        webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
+                        jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
+                except Exception as ex:
+                    log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
+            
+            # Determine which thumbnail format to serve based on request context
             try:
-                # Check if this is a Kobo request by looking at the request context
                 from flask import has_request_context, request
                 is_kobo_request = (has_request_context() and 
                                  request.path and 
                                  '/kobo/' in request.path)
                 
-                if not is_kobo_request:
-                    from .tasks.thumbnail import TaskGenerateCoverThumbnails
-                    
-                    # Only generate if ImageMagick is available
-                    if use_IM:
-                        # Create thumbnail generation task for this specific book
-                        thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
-                        # Generate the specific resolution needed
-                        generated = thumbnail_task.create_book_cover_thumbnails(book)
-                        
-                        if generated > 0:
-                            # Try to serve the newly generated thumbnail
-                            thumbnail = get_book_cover_thumbnail(book, resolution)
-                            if thumbnail:
-                                cache = fs.FileSystem()
-                                if cache.get_cache_file_exists(thumbnail.filename, CACHE_TYPE_THUMBNAILS):
-                                    return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
-                                                               thumbnail.filename)
-            except Exception as ex:
-                # Log the error but don't fail completely
-                log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
+                # Prefer jpg for Kobo requests, webp for web requests
+                if is_kobo_request:
+                    thumbnail_to_serve = jpg_thumb if jpg_exists else (webp_thumb if webp_exists else None)
+                else:
+                    thumbnail_to_serve = webp_thumb if webp_exists else (jpg_thumb if jpg_exists else None)
+            except:
+                # Fallback if we can't determine request context
+                thumbnail_to_serve = webp_thumb if webp_exists else (jpg_thumb if jpg_exists else None)
+            if thumbnail_to_serve:
+                return send_from_directory(cache.get_cache_file_dir(thumbnail_to_serve.filename, CACHE_TYPE_THUMBNAILS),
+                                           thumbnail_to_serve.filename)
 
         # Send the book cover from Google Drive if configured
         if config.config_use_google_drive:
@@ -848,6 +860,19 @@ def get_book_cover_thumbnail(book, resolution):
                 .filter(ub.Thumbnail.type == THUMBNAIL_TYPE_COVER)
                 .filter(ub.Thumbnail.entity_id == book.id)
                 .filter(ub.Thumbnail.resolution == resolution)
+                .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.now(timezone.utc)))
+                .first())
+
+
+def get_book_cover_thumbnail_by_format(book, resolution, format):
+    """Get thumbnail for specific book, resolution, and format (webp/jpg)"""
+    if book and book.has_cover:
+        return (ub.session
+                .query(ub.Thumbnail)
+                .filter(ub.Thumbnail.type == THUMBNAIL_TYPE_COVER)
+                .filter(ub.Thumbnail.entity_id == book.id)
+                .filter(ub.Thumbnail.resolution == resolution)
+                .filter(ub.Thumbnail.format == format)
                 .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.now(timezone.utc)))
                 .first())
 

@@ -119,58 +119,59 @@ class TaskGenerateCoverThumbnails(CalibreTask):
         generated = 0
         book_cover_thumbnails = self.get_book_cover_thumbnails(book.id)
 
-        # Generate new thumbnails for missing covers
-        resolutions = list(map(lambda t: t.resolution, book_cover_thumbnails))
-        missing_resolutions = list(set(self.resolutions).difference(resolutions))
-        for resolution in missing_resolutions:
-            generated += 1
-            self.create_book_cover_single_thumbnail(book, resolution)
+        # Build a map: (resolution, format) -> thumbnail
+        thumb_map = {}
+        for t in book_cover_thumbnails:
+            thumb_map[(t.resolution, t.format.lower())] = t
 
-        # Replace outdated, legacy, format-mismatch, or missing thumbnails
+        # For each resolution and format, check if thumbnail exists and file is present
+        formats = ['webp', 'jpg']
+        for resolution in self.resolutions:
+            for fmt in formats:
+                thumb = thumb_map.get((resolution, fmt))
+                file_missing = True
+                if thumb:
+                    file_missing = not self.cache.get_cache_file_exists(thumb.filename, constants.CACHE_TYPE_THUMBNAILS)
+                if not thumb or file_missing:
+                    generated += 1
+                    self.create_book_cover_single_thumbnail_format(book, resolution, fmt)
+
+        # Replace outdated, legacy, or format-mismatch thumbnails
         for thumbnail in book_cover_thumbnails:
             try:
                 legacy_naming = not (thumbnail.filename.startswith('book_') or thumbnail.filename.startswith('series_'))
-                wrong_format = (thumbnail.format.lower() != 'webp')
-                file_missing = not self.cache.get_cache_file_exists(thumbnail.filename, constants.CACHE_TYPE_THUMBNAILS)
+                wrong_format = thumbnail.format.lower() not in formats
                 source_newer = book.last_modified.replace(tzinfo=None) > thumbnail.generated_at
 
                 # If any legacy condition matched, migrate: delete old file & regenerate with deterministic name
                 if legacy_naming or wrong_format:
-                    # update db fields to new format; filename is property default only on insert so we recreate row
-                    # Simplest safe path: delete & recreate row to ensure deterministic filename logic executes
                     old_id = thumbnail.id
                     old_filename = thumbnail.filename
                     self.app_db_session.delete(thumbnail)
                     self.app_db_session.commit()
-                    new_thumb = ub.Thumbnail()
-                    new_thumb.type = constants.THUMBNAIL_TYPE_COVER
-                    new_thumb.entity_id = book.id
-                    new_thumb.format = 'webp'
-                    new_thumb.resolution = thumbnail.resolution
-                    self.app_db_session.add(new_thumb)
-                    self.app_db_session.commit()
+                    # Regenerate both formats for this resolution
+                    for fmt in formats:
+                        self.create_book_cover_single_thumbnail_format(book, thumbnail.resolution, fmt)
                     # remove old file if still present
                     try:
                         self.cache.delete_cache_file(old_filename, constants.CACHE_TYPE_THUMBNAILS)
                     except Exception:
                         pass
-                    self.generate_book_thumbnail(book, new_thumb)
                     generated += 1
                     continue
 
-                if source_newer or file_missing:
+                if source_newer:
                     generated += 1
                     self.update_book_cover_thumbnail(book, thumbnail)
             except Exception as ex:
                 self.log.debug(f"Thumbnail migration/update issue for book {book.id}: {ex}")
         return generated
 
-    def create_book_cover_single_thumbnail(self, book, resolution):
+    def create_book_cover_single_thumbnail_format(self, book, resolution, fmt):
         thumbnail = ub.Thumbnail()
         thumbnail.type = constants.THUMBNAIL_TYPE_COVER
         thumbnail.entity_id = book.id
-        # Store thumbnails as WebP for better compression
-        thumbnail.format = 'webp'
+        thumbnail.format = fmt
         thumbnail.resolution = resolution
 
         self.app_db_session.add(thumbnail)
@@ -178,8 +179,41 @@ class TaskGenerateCoverThumbnails(CalibreTask):
             self.app_db_session.commit()
             self.generate_book_thumbnail(book, thumbnail)
         except Exception as ex:
-            self.log.debug('Error creating book thumbnail: ' + str(ex))
-            self._handleError('Error creating book thumbnail: ' + str(ex))
+            self.log.debug(f'Error creating {fmt.upper()} book thumbnail: ' + str(ex))
+            self._handleError(f'Error creating {fmt.upper()} book thumbnail: ' + str(ex))
+            self.app_db_session.rollback()
+
+    def create_book_cover_single_thumbnail(self, book, resolution):
+        # Generate WebP thumbnail (for web UI)
+        thumbnail_webp = ub.Thumbnail()
+        thumbnail_webp.type = constants.THUMBNAIL_TYPE_COVER
+        thumbnail_webp.entity_id = book.id
+        thumbnail_webp.format = 'webp'
+        thumbnail_webp.resolution = resolution
+
+        self.app_db_session.add(thumbnail_webp)
+        try:
+            self.app_db_session.commit()
+            self.generate_book_thumbnail(book, thumbnail_webp)
+        except Exception as ex:
+            self.log.debug('Error creating WebP book thumbnail: ' + str(ex))
+            self._handleError('Error creating WebP book thumbnail: ' + str(ex))
+            self.app_db_session.rollback()
+
+        # Generate JPEG thumbnail (for Kobo/devices)
+        thumbnail_jpg = ub.Thumbnail()
+        thumbnail_jpg.type = constants.THUMBNAIL_TYPE_COVER
+        thumbnail_jpg.entity_id = book.id
+        thumbnail_jpg.format = 'jpg'
+        thumbnail_jpg.resolution = resolution
+
+        self.app_db_session.add(thumbnail_jpg)
+        try:
+            self.app_db_session.commit()
+            self.generate_book_thumbnail(book, thumbnail_jpg)
+        except Exception as ex:
+            self.log.debug('Error creating JPEG book thumbnail: ' + str(ex))
+            self._handleError('Error creating JPEG book thumbnail: ' + str(ex))
             self.app_db_session.rollback()
 
     def update_book_cover_thumbnail(self, book, thumbnail):
@@ -212,24 +246,14 @@ class TaskGenerateCoverThumbnails(CalibreTask):
                         if img.height > height:
                             width = get_resize_width(thumbnail.resolution, img.width, img.height)
                             img.resize(width=width, height=height, filter='lanczos')
-                            img.format = thumbnail.format
-                            try:
-                                img.compression_quality = 82
-                            except Exception:
-                                pass
-                            img.save(filename=filename)
-                        else:
-                            # Even if no resizing needed, convert to WebP format
-                            img.format = thumbnail.format
-                            try:
-                                img.compression_quality = 82
-                            except Exception:
-                                pass
-                            img.save(filename=filename)
-
-
+                        # Set format for thumbnail
+                        img.format = thumbnail.format
+                        try:
+                            img.compression_quality = 82
+                        except Exception:
+                            pass
+                        img.save(filename=filename)
                 except Exception as ex:
-                    # Bubble exception to calling function
                     self.log.debug('Error generating thumbnail file: ' + str(ex))
                     raise ex
                 finally:
@@ -246,20 +270,13 @@ class TaskGenerateCoverThumbnails(CalibreTask):
                     if img.height > height:
                         width = get_resize_width(thumbnail.resolution, img.width, img.height)
                         img.resize(width=width, height=height, filter='lanczos')
-                        img.format = thumbnail.format
-                        try:
-                            img.compression_quality = 82
-                        except Exception:
-                            pass
-                        img.save(filename=filename)
-                    else:
-                        # Even if no resizing needed, convert to WebP format
-                        img.format = thumbnail.format
-                        try:
-                            img.compression_quality = 82
-                        except Exception:
-                            pass
-                        img.save(filename=filename)
+                    # Set format for thumbnail
+                    img.format = thumbnail.format
+                    try:
+                        img.compression_quality = 82
+                    except Exception:
+                        pass
+                    img.save(filename=filename)
 
     @property
     def name(self):

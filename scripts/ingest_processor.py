@@ -438,6 +438,10 @@ class NewBookProcessor:
             # Trigger auto-send for users who have it enabled
             self.trigger_auto_send_if_enabled(staged_path.stem, book_path)
 
+            # CRITICAL FIX: Refresh Calibre-Web's database session to make new books visible
+            # This solves the issue where multiple books don't appear until container restart
+            self.refresh_calibre_web_session()
+
             # If we overwrote an existing book, Calibre does not bump books.timestamp, only last_modified.
             # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.
             if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
@@ -609,6 +613,38 @@ class NewBookProcessor:
                     
         except Exception as e:
             print(f"[ingest-processor] Error in auto-send trigger: {e}", flush=True)
+
+
+    def refresh_calibre_web_session(self) -> None:
+        """Refresh Calibre-Web's database session to make newly added books visible
+        
+        This solves the issue where external calibredb adds aren't immediately visible
+        in Calibre-Web until container restart.
+        """
+        if not _CPS_AVAILABLE:
+            print("[ingest-processor] CPS modules not available, skipping session refresh", flush=True)
+            return
+            
+        try:
+            # Import here to avoid circular imports and ensure CPS is available
+            from cps.tasks.database import TaskReconnectDatabase
+            
+            # Create and run the reconnect task
+            task = TaskReconnectDatabase()
+            print("[ingest-processor] Refreshing Calibre-Web database session...", flush=True)
+            
+            # Run the task directly - this forces a database session refresh
+            # which makes newly imported books immediately visible in the UI
+            task.run(None)  # worker_thread not needed for direct execution
+            
+            print("[ingest-processor] Database session refreshed successfully", flush=True)
+            
+        except ImportError as e:
+            print(f"[ingest-processor] Could not import TaskReconnectDatabase: {e}", flush=True)
+        except Exception as e:
+            print(f"[ingest-processor] Error refreshing database session: {e}", flush=True)
+            # Don't fail the import if session refresh fails
+            print("[ingest-processor] Continuing despite session refresh failure - books may require manual refresh", flush=True)
 
 
     def set_library_permissions(self):

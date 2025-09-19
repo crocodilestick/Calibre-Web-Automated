@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2025-09-03 14:59+0200\n"
-"PO-Revision-Date: 2025-08-26 08:18+0000\n"
+"PO-Revision-Date: 2025-09-19 16:08+0200\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Loco-Source-Locale: en_IT\n"
 "Generated-By: Babel 2.13.1\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Loco https://localise.biz/\n"
+"X-Generator: Poedit 3.7\n"
 
 #: cps/about.py:77
 msgid "Statistics"
@@ -265,11 +265,11 @@ msgstr "client_secrets.json non è configurato per Web Application"
 
 #: cps/admin.py:1213
 msgid "Unable to fetch OAuth metadata from URL."
-msgstr ""
+msgstr "Impossibile recuperare i metadati OAuth dall'URL."
 
 #: cps/admin.py:1231
 msgid "Unable to fetch OpenID configuration."
-msgstr ""
+msgstr "Impossibile recuperare la configurazione di OpenID."
 
 #: cps/admin.py:1293
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -582,41 +582,40 @@ msgid "User '%(nick)s' updated"
 msgstr "L'utente '%(nick)s' è stato aggiornato"
 
 #: cps/admin.py:2281
-#, fuzzy
 msgid "Connection successful!"
-msgstr "Errore di connessione"
+msgstr "Connessione effettuata!"
 
 #: cps/admin.py:2283 cps/admin.py:2326
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr ""
+"Connessione fallita: Il server ha restituito il codice di stato %(code)s"
 
 #: cps/admin.py:2285 cps/admin.py:2328
 msgid "Connection failed: Could not connect to server."
-msgstr ""
+msgstr "Connessione fallita: Impossibile connettersi al server."
 
 #: cps/admin.py:2287 cps/admin.py:2330
 msgid "Connection failed: Request timed out."
-msgstr ""
+msgstr "Connessione fallita: La richiesta è scaduta."
 
 #: cps/admin.py:2289 cps/admin.py:2332
 msgid "Connection failed: Invalid JSON in response."
-msgstr ""
+msgstr "Connessione fallita: JSON non valido nella risposta."
 
 #: cps/admin.py:2292 cps/admin.py:2335
-#, fuzzy
 msgid "An unknown error occurred."
-msgstr "Si è verificato un errore sconosciuto, riprova più tardi."
+msgstr "Si è verificato un errore sconosciuto."
 
 #: cps/admin.py:2318
 #, python-format
 msgid "Metadata is missing required fields: %(fields)s"
-msgstr ""
+msgstr "I metadati mancano dei campi obbligatori: %(fields)s"
 
 #: cps/admin.py:2323
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s endpoints."
-msgstr ""
+msgstr "L'URL dei metadati è valido! Trovati %(count)s endpoint."
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -845,7 +844,7 @@ msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
 "🔴 Il servizio di Ingest è in esecuzione, ma il servizio di Metadata Change "
-"Detector non lo è."
+"Detector non lo è"
 
 #: cps/cwa_functions.py:429
 msgid ""
@@ -898,13 +897,12 @@ msgid "None"
 msgstr "Nessuna"
 
 #: cps/duplicates.py:38 cps/duplicates.py:47
-#, fuzzy
 msgid "Duplicate Books"
-msgstr "Elimina libro"
+msgstr "Libro duplicato"
 
 #: cps/editbooks.py:106
 msgid "Missing or invalid book id for format upload"
-msgstr ""
+msgstr "ID libro mancante o non valido per il caricamento del formato"
 
 #: cps/editbooks.py:131 cps/editbooks.py:151 cps/templates/book_edit.html:53
 #: cps/templates/layout.html:148
@@ -912,9 +910,8 @@ msgid "Upload done, processing, please wait..."
 msgstr "Caricamento terminato, elaborazione in corso..."
 
 #: cps/editbooks.py:136 cps/editbooks.py:155
-#, fuzzy
 msgid "Failed to queue upload for processing"
-msgstr "Impossibile creare il percorso per la copertina"
+msgstr "Impossibile mettere in coda il caricamento per l'elaborazione"
 
 #: cps/editbooks.py:171
 msgid "Source or destination format for conversion missing"
@@ -982,7 +979,7 @@ msgid ""
 "upload new: "
 msgstr ""
 "Probabilmente il libro caricato esiste già nella biblioteca, cambialo prima "
-"di caricarlo di nuovo:"
+"di caricarlo di nuovo: "
 
 #: cps/editbooks.py:985
 #, python-format
@@ -1294,14 +1291,18 @@ msgstr "Registra con %(provider)s"
 #: cps/oauth_bb.py:108
 msgid "Login failed: Could not connect to the user info endpoint."
 msgstr ""
+"Accesso non riuscito: impossibile connettersi all'endpoint delle "
+"informazioni utente."
 
 #: cps/oauth_bb.py:112
 msgid "Login failed: The OAuth provider returned an invalid user profile."
-msgstr ""
+msgstr "Accesso non riuscito: profilo utente non corretto."
 
 #: cps/oauth_bb.py:125
 msgid "Login failed: User profile from provider is incomplete."
 msgstr ""
+"Accesso non riuscito: impossibile connettersi all'endpoint delle "
+"informazioni utente."
 
 #: cps/oauth_bb.py:212 cps/remotelogin.py:149
 #, python-format
@@ -1350,9 +1351,8 @@ msgid "Failed to fetch user info from Google."
 msgstr "Impossibile recuperare le informazioni dell'utente da Google."
 
 #: cps/oauth_bb.py:431
-#, fuzzy
 msgid "Failed to log in with Generic OAuth."
-msgstr "Impossibile accedere con GitHub."
+msgstr "Errore nel collegamento con OAuth generico."
 
 #: cps/oauth_bb.py:477
 msgid "GitHub Oauth error, please retry later."
@@ -1373,9 +1373,9 @@ msgid "Google Oauth error: {}"
 msgstr "Errore OAuth di Google: {}"
 
 #: cps/oauth_bb.py:524 cps/oauth_bb.py:528
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "OAuth error: {}"
-msgstr "Errore GitHub Oauth: {}"
+msgstr "Errore Oauth: {}"
 
 #: cps/opds.py:284
 #, python-brace-format
@@ -1541,12 +1541,11 @@ msgstr "Mostra Elenco libri"
 
 #: cps/render_template.py:104
 msgid "Duplicates"
-msgstr ""
+msgstr "Duplicati"
 
 #: cps/render_template.py:106
-#, fuzzy
 msgid "Show Duplicate Books"
-msgstr "Mostra Libri più votati"
+msgstr "Mostra Libri duplicati"
 
 #: cps/search.py:40 cps/search.py:427 cps/templates/book_edit.html:256
 #: cps/templates/feed.xml:34 cps/templates/index.xml:12
@@ -2608,13 +2607,12 @@ msgid " Exchange author & title"
 msgstr "Inverti autore e titolo"
 
 #: cps/templates/book_table.html:72
-#, fuzzy
 msgid "Select all"
-msgstr "Seleziona uno scaffale"
+msgstr "Seleziona tutto"
 
 #: cps/templates/book_table.html:75
 msgid "Clear all"
-msgstr ""
+msgstr "Cancella tutto"
 
 #: cps/templates/book_table.html:84
 msgid "Update Title Sort automatically  "
@@ -2775,12 +2773,26 @@ msgid ""
 "        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
 "wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
+"CWA è configurato in modo tale che il database Calibre (file "
+"<code>metadata.db</code>) sia sempre presente in <code>/calibre-library</"
+"code>.\n"
+"All'avvio, CWA cerca automaticamente in qualsiasi directory associata a "
+"<code>/calibre-library</code> nel file docker-compose i file Calibre "
+"Libraries/metadata.db esistenti.\n"
+"Se trova una sola libreria esistente, la monta automaticamente; se ne trova "
+"più di una, per impostazione predefinita monta automaticamente quella più "
+"grande; se non ne trova nessuna, ne crea automaticamente una nuova e la "
+"monta.\n"
+"Per maggiori dettagli, <a href=\"https://github.com/crocodilestick/Calibre-"
+"Web-Automated/wiki/Configuration#database-configuration\">vedi qui</a>!"
 
 #: cps/templates/config_db.html:29
 msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
 "CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
 msgstr ""
+"Pertanto, quando configuri il tuo file docker-compose per CWA, <b>NON "
+"MODIFICARE I PERCORSI NELLA SEZIONE VOLUMI A DESTRA DEI DUE PUNTI!</b>"
 
 #: cps/templates/config_db.html:30
 msgid ""
@@ -2792,6 +2804,12 @@ msgid ""
 "        library, use the <b>Separate Book Files from Library Option below "
 "and there, enter the path to the rest of the library</b>"
 msgstr ""
+"Questi percorsi sono interni solo a CWA, puoi modificare ciò a cui sono "
+"associati a tuo piacimento sul lato sinistro, ma non c'è motivo\n"
+"di modificare i percorsi sul lato destro. <br><br>Se desideri che il tuo "
+"file <code>metadata.db</code> si trovi in una posizione diversa dal resto\n"
+"della tua libreria, utilizza l'opzione <b>Separa i file dei libri dalla "
+"libreria qui sotto e inserisci il percorso del resto della libreria</b>."
 
 #: cps/templates/config_db.html:34
 msgid ""
@@ -2803,6 +2821,12 @@ msgid ""
 "        once you've checked the <b>Separate Book Files from Library</b> "
 "option."
 msgstr ""
+"Ad esempio, purché il file <code>metadata.db</code> della tua libreria sia "
+"collegato da qualche parte all'interno di <code>/calibre-library</code>,\n"
+"potresti collegare la directory contenente i file dei libri corrispondenti "
+"ecc. a qualcosa come <code>/books</code> e inserire <code>/books</code> nel\n"
+"campo che appare sotto dopo aver selezionato l'opzione <b>Separa i file dei "
+"libri dalla libreria</b>."
 
 #: cps/templates/config_db.html:38
 msgid "Split Library Functionality"
@@ -3111,107 +3135,101 @@ msgstr "Filtro utente membro LDAP"
 
 #: cps/templates/config_edit.html:309
 msgid "Generic OAuth Provider"
-msgstr ""
+msgstr "Provider OAuth generico"
 
 #: cps/templates/config_edit.html:313
 msgid "OAuth Metadata URL (for auto-discovery)"
-msgstr ""
+msgstr "URL dei metadati OAuth (per il rilevamento automatico)"
 
 #: cps/templates/config_edit.html:317
-#, fuzzy
 msgid "Test Metadata"
-msgstr "Recupera i metadati"
+msgstr "Metadati di prova"
 
 #: cps/templates/config_edit.html:320
 msgid "Leave empty to use manual configuration below"
-msgstr ""
+msgstr "Lascia vuoti per usare la configurazione manuale sotto"
 
 #: cps/templates/config_edit.html:326
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
 msgstr ""
+"Utilizza gli URL degli endpoint manuali (sovrascrivi il rilevamento "
+"automatico)"
 
 #: cps/templates/config_edit.html:327
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
 msgstr ""
+"Selezionare questa opzione per configurare manualmente i singoli endpoint "
+"OAuth invece di utilizzare il rilevamento automatico."
 
 #: cps/templates/config_edit.html:332
-#, fuzzy
 msgid "Manual Endpoint Configuration"
-msgstr "Modifica la configurazione dell'interfaccia utente"
+msgstr "Modifica la configurazione dell'Endpoint"
 
 #: cps/templates/config_edit.html:335
 msgid "OAuth Base URL"
-msgstr ""
+msgstr "URL di base di OAuth"
 
 #: cps/templates/config_edit.html:340
 msgid "Authorization Endpoint"
-msgstr ""
+msgstr "Endpoint di autorizzazione"
 
 #: cps/templates/config_edit.html:345
-#, fuzzy
 msgid "Token Endpoint"
-msgstr "Token non trovato"
+msgstr "Token dell'Endpoint"
 
 #: cps/templates/config_edit.html:350
 msgid "UserInfo Endpoint"
-msgstr ""
+msgstr "Endpoint Userinfo"
 
 #: cps/templates/config_edit.html:358
-#, fuzzy
 msgid "Test Connection"
-msgstr "Errore di connessione"
+msgstr "Prova la connessione"
 
 #: cps/templates/config_edit.html:367
-#, fuzzy
 msgid "OAuth Scopes"
-msgstr "Impostazioni OAuth"
+msgstr "Ambito OAuth"
 
 #: cps/templates/config_edit.html:369
 msgid "Space-separated list of OAuth scopes"
-msgstr ""
+msgstr "Lista separata da spazi di ambiti OAuth"
 
 #: cps/templates/config_edit.html:373
-#, fuzzy
 msgid "OAuth Client Id"
-msgstr "%(provider)s ID client OAuth"
+msgstr "ID client di OAuth"
 
 #: cps/templates/config_edit.html:377
-#, fuzzy
 msgid "OAuth Client Secret"
-msgstr "%(provider)s Secret OAuth Client"
+msgstr "OAuth Client Secret"
 
 #: cps/templates/config_edit.html:382
-#, fuzzy
 msgid "Field Mapping Configuration"
-msgstr "Visualizza configurazione"
+msgstr "Mappatura dei campi di configurazione"
 
 #: cps/templates/config_edit.html:384
-#, fuzzy
 msgid "Username Field"
-msgstr "Nome utente"
+msgstr "Campo della Username"
 
 #: cps/templates/config_edit.html:386
 msgid "JWT field to extract username from"
-msgstr ""
+msgstr "Campo JWT per estrarre la Username"
 
 #: cps/templates/config_edit.html:389
-#, fuzzy
 msgid "Email Field"
-msgstr "Servizio e-mail"
+msgstr "Campo Email"
 
 #: cps/templates/config_edit.html:391
 msgid "JWT field to extract email from"
-msgstr ""
+msgstr "Campo JWT per estrarre la Email"
 
 #: cps/templates/config_edit.html:394
 msgid "OAuth group for Admin"
-msgstr ""
+msgstr "Gruppo OAuth per Admin"
 
 #: cps/templates/config_edit.html:398
 msgid "Login Button Text"
-msgstr ""
+msgstr "Testo del bottone login"
 
 #: cps/templates/config_edit.html:404
 #, python-format
@@ -3442,13 +3460,12 @@ msgid "Start"
 msgstr "Avvio"
 
 #: cps/templates/cwa_settings.html:17
-#, fuzzy
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "Calibre-Web log: "
+msgstr "Abilita/disabilita i servizi automatici di CWA"
 
 #: cps/templates/cwa_settings.html:24
 msgid "Enable CWA Auto-Convert"
-msgstr ""
+msgstr "Abilita auto-conversione di CWA"
 
 #: cps/templates/cwa_settings.html:26
 msgid ""
@@ -3473,9 +3490,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:48
-#, fuzzy
 msgid "Enable CWA Kindle EPUB Fixer"
-msgstr "Servizio CWA Send-to-Kindle EPUB Fixer"
+msgstr "Abilita CWA Kindle EPUB Fixer"
 
 #: cps/templates/cwa_settings.html:50
 msgid ""
@@ -3485,9 +3501,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:59
-#, fuzzy
 msgid "Web UI Settings"
-msgstr "Impostazioni CWA"
+msgstr "Impostazioni Interfaccia Utente"
 
 #: cps/templates/cwa_settings.html:66
 msgid "Enable CWA Update Notifications"
@@ -3521,9 +3536,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:93
-#, fuzzy
 msgid "Automatic Backup Settings"
-msgstr "Impostazioni OAuth"
+msgstr "Impostazioni Backup automatico"
 
 #: cps/templates/cwa_settings.html:100
 msgid "Enable CWA Import Auto-Backup"
@@ -3579,9 +3593,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:144
-#, fuzzy
 msgid "Choose a target format:"
-msgstr "Converti formato libro:"
+msgstr "Scegli il formato di attivo:"
 
 #: cps/templates/cwa_settings.html:155
 msgid ""
@@ -3759,9 +3772,8 @@ msgid "Select Duplicates"
 msgstr ""
 
 #: cps/templates/duplicates.html:291
-#, fuzzy
 msgid "Select None"
-msgstr "Seleziona"
+msgstr "Non selezionare nulla"
 
 #: cps/templates/duplicates.html:292
 #, fuzzy
@@ -3769,9 +3781,8 @@ msgid "Delete Selected"
 msgstr "Elimina i libri selezionati"
 
 #: cps/templates/duplicates.html:343
-#, fuzzy
 msgid "No Duplicate Books Found"
-msgstr "Nessun risultato trovato"
+msgstr "Nessun libro duplicato"
 
 #: cps/templates/duplicates.html:344
 msgid "Your library has no books with duplicate title and author combinations."
@@ -3784,25 +3795,24 @@ msgid ""
 msgstr ""
 
 #: cps/templates/duplicates.html:359
-#, fuzzy
 msgid "The following books will be permanently deleted:"
-msgstr "I libri seguenti verrano eliminati:"
+msgstr "I libri seguenti verrano eliminati in modo permanente:"
 
 #: cps/templates/duplicates.html:363
 msgid "This action cannot be undone!"
-msgstr ""
+msgstr "Questa funzione non può essere annullata!"
 
 #: cps/templates/duplicates.html:378
 msgid "Success"
-msgstr ""
+msgstr "Fatto"
 
 #: cps/templates/duplicates.html:385
 msgid "Selected duplicate books have been deleted successfully!"
-msgstr ""
+msgstr "I libri duplicati selezionati sono stati eliminati!"
 
 #: cps/templates/duplicates.html:407
 msgid "An error occurred while processing your request."
-msgstr ""
+msgstr "Si è verificato un errore."
 
 #: cps/templates/email_edit.html:13
 msgid "Email Account Type"
@@ -4085,9 +4095,8 @@ msgid "Log in with Magic Link"
 msgstr "Accedi con Magic Link"
 
 #: cps/templates/login.html:53
-#, fuzzy
 msgid "Log in with SSO"
-msgstr "Accedi con Magic Link"
+msgstr "Accedi con SSO"
 
 #: cps/templates/logviewer.html:6
 msgid "Show Calibre-Web Log: "

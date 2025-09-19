@@ -80,3 +80,4 @@ comicapi>=2.2.0,<3.3.0
 
 # Kobo integration
 jsonschema>=3.2.0,<4.24.0
+curl-cffi>=0.6.0,<0.7.0

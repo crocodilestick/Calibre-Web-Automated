@@ -70,7 +70,7 @@ $(function () {
       $("#cover_url").val(book.cover);
     }
     if (updateItems.pubDate) {
-      $("#pubdate").val(book.publishedDate);
+      $("#pubdate").val(book.publishedDate).trigger("change");
     }
     if (updateItems.publisher) {
       $("#publisher").val(book.publisher);

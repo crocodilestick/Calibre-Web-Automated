@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cwa-config
+  namespace: media # Make sure this matches your namespace
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn-retain # Change to your storage class
+  resources:
+    requests:
+      storage: 100Gi

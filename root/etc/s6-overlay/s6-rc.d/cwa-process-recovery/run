@@ -34,49 +34,6 @@ safe_kill_process() {
     fi
 }
 
-# Clean up stale lock files and associated processes
-cleanup_stale_locks() {
-    echo "[cwa-process-recovery] Checking for stale lock files and processes..."
-    
-    local lock_files=(
-        "/tmp/ingest_processor.lock"
-        "/tmp/convert_library.lock" 
-        "/tmp/cover_enforcer.lock"
-        "/tmp/kindle_epub_fixer.lock"
-    )
-    
-    local cleaned_count=0
-    
-    for lock_file in "${lock_files[@]}"; do
-        if [ -f "$lock_file" ]; then
-            local lock_name=$(basename "$lock_file" .lock)
-            echo "[cwa-process-recovery] Found stale lock file: $lock_file"
-            
-            # Try to read PID from lock file
-            local pid=""
-            if [ -r "$lock_file" ]; then
-                pid=$(cat "$lock_file" 2>/dev/null | head -1 | tr -d '\n' | grep -E '^[0-9]+$' || true)
-            fi
-            
-            if [ -n "$pid" ]; then
-                # Kill the process if it's still running
-                safe_kill_process "$pid" "$lock_name"
-            fi
-            
-            # Remove the lock file
-            rm -f "$lock_file"
-            echo "[cwa-process-recovery] Removed stale lock file: $lock_file"
-            ((cleaned_count++))
-        fi
-    done
-    
-    if [ $cleaned_count -eq 0 ]; then
-        echo "[cwa-process-recovery] No stale lock files found"
-    else
-        echo "[cwa-process-recovery] Cleaned up $cleaned_count stale lock file(s)"
-    fi
-}
-
 # Clean up stale temporary processing files
 cleanup_temp_files() {
     echo "[cwa-process-recovery] Cleaning up stale temporary files..."
@@ -178,7 +135,6 @@ cleanup_orphaned_processes() {
 # Main recovery sequence
 echo "[cwa-process-recovery] ========== Starting Recovery Sequence =========="
 
-cleanup_stale_locks
 cleanup_temp_files  
 reset_processing_status
 cleanup_orphaned_processes

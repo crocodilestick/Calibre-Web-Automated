@@ -94,8 +94,9 @@ process_retry_queue() {
                 while IFS= read -r queued_file; do
                         if [ -f "$queued_file" ]; then
                                 echo "[cwa-ingest-service] Retrying: $queued_file"
-                                local timeout=$(get_timeout_from_db)  # Get timeout from database
-                                timeout $timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
+                                local configured_timeout=$(get_timeout_from_db)  # Get configured timeout from database
+                                local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
+                                timeout $safety_timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
                                 local retry_exit=$?
                                 
                                 if [ $retry_exit -eq 2 ]; then
@@ -128,7 +129,8 @@ process_retry_queue() {
 
 handle_event() {
         local filepath="$1"
-        local timeout=$(get_timeout_from_db)  # Get timeout from database
+        local configured_timeout=$(get_timeout_from_db)  # Get configured timeout from database
+        local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
         local filename=$(basename "$filepath")
         
         # temp suffixes
@@ -141,19 +143,21 @@ handle_event() {
         fi
         
         echo "[cwa-ingest-service] New file detected - $filepath - Starting Ingest Processor..."
+        echo "[cwa-ingest-service] Configured timeout: ${configured_timeout}s, Safety timeout: ${safety_timeout}s"
         echo "processing:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
         
-        # Add timeout protection to prevent hanging processes
-        timeout $timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+        # Use safety timeout as last resort - processor should handle its own timeout internally
+        timeout $safety_timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
         local exit_code=$?
         
         if [ $exit_code -eq 124 ]; then
-                echo "[cwa-ingest-service] TIMEOUT: $filepath took longer than ${timeout} seconds"
-                echo "timeout:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                echo "[cwa-ingest-service] SAFETY TIMEOUT: $filepath took longer than safety timeout of ${safety_timeout} seconds"
+                echo "[cwa-ingest-service] This indicates a serious issue - processor should have timed out internally at ${configured_timeout} seconds"
+                echo "safety_timeout:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
                 # Move problematic file to failed backup with timestamp
                 if [ -d "/config/processed_books/failed" ]; then
                         local timestamp=$(date '+%Y%m%d_%H%M%S')
-                        local failed_filename="${timestamp}_timeout_${filename}"
+                        local failed_filename="${timestamp}_safety_timeout_${filename}"
                         echo "[cwa-ingest-service] Moving $filename to failed backup as $failed_filename"
                         cp "$filepath" "/config/processed_books/failed/$failed_filename" 2>/dev/null || true
                 fi

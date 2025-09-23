@@ -319,11 +319,13 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
         if not nsm:
             # Set ownership to abc:abc (uid=1000, gid=1000)
             os.chown(ingest_dir, 1000, 1000)
-    except OSError as e:
-        logger.log.warning('Failed to set ownership of ingest directory %s: %s', ingest_dir, e)
-    except Exception:
-        # Silently ignore any other permission-related errors
-        pass
+    except (OSError, PermissionError) as e:
+        # Log warning but don't crash the upload process
+        log.warning('Failed to set ownership of ingest directory %s: %s', ingest_dir, e)
+        log.warning("If you're using a network share, consider setting NETWORK_SHARE_MODE=true in your environment variables to skip this step.")
+    except Exception as e:
+        # Silently ignore any other permission-related errors but log for debugging
+        log.debug('Other permission error setting ingest directory ownership: %s', e)
     
     base_name = secure_filename(uploaded_file.filename)
     # CWA change: use timestamp for more predictable sorting vs uuid

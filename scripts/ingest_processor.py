@@ -13,6 +13,7 @@ import tempfile
 import time
 import shutil
 import sqlite3
+import fcntl
 from pathlib import Path
 
 from cwa_db import CWA_DB
@@ -28,6 +29,153 @@ fetch_and_apply_metadata = None
 TaskAutoSend = None
 WorkerThread = None
 _ub = None
+
+class ProcessLock:
+    """Robust process lock using both file locking and PID tracking"""
+    
+    def __init__(self, lock_name="ingest_processor"):
+        self.lock_name = lock_name
+        self.lock_path = os.path.join(tempfile.gettempdir(), f"{lock_name}.lock")
+        self.lock_file = None
+        self.acquired = False
+    
+    def acquire(self, timeout=5):
+        """Acquire the lock with timeout. Returns True if successful, False if another process has it."""
+        try:
+            # Try to open/create the lock file
+            self.lock_file = open(self.lock_path, 'w+')
+            
+            # Try to acquire an exclusive lock with timeout
+            start_time = time.time()
+            while time.time() - start_time < timeout:
+                try:
+                    fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    
+                    # Successfully acquired lock, write our PID
+                    self.lock_file.seek(0)
+                    self.lock_file.write(str(os.getpid()))
+                    self.lock_file.flush()
+                    self.lock_file.truncate()  # Truncate at current position to remove any leftover data
+                    
+                    self.acquired = True
+                    print(f"[ingest-processor] Lock acquired successfully (PID: {os.getpid()})")
+                    return True
+                    
+                except (IOError, OSError):
+                    # Lock is held by another process
+                    # Check if the holding process is still alive
+                    if self._check_stale_lock():
+                        continue  # Try again as we cleaned up a stale lock
+                    time.sleep(0.1)  # Brief wait before retry
+            
+            # Timeout reached
+            holding_pid = self._get_holding_pid()
+            print(f"[ingest-processor] CANCELLING... ingest-processor initiated but is already running (PID: {holding_pid})")
+            self.release()
+            return False
+            
+        except Exception as e:
+            print(f"[ingest-processor] Error acquiring lock: {e}")
+            self.release()
+            return False
+    
+    def _get_holding_pid(self):
+        """Get the PID of the process holding the lock"""
+        try:
+            if self.lock_file:
+                self.lock_file.seek(0)
+                pid_str = self.lock_file.read().strip()
+                return int(pid_str) if pid_str.isdigit() else "unknown"
+        except:
+            pass
+        return "unknown"
+    
+    def _check_stale_lock(self):
+        """Check if the lock is stale (holding process no longer exists) and clean it up"""
+        try:
+            if not self.lock_file:
+                return False
+            
+            self.lock_file.seek(0)
+            pid_str = self.lock_file.read().strip()
+            
+            if not pid_str.isdigit():
+                print("[ingest-processor] Lock file contains invalid PID, treating as stale")
+                return self._cleanup_stale_lock()
+            
+            holding_pid = int(pid_str)
+            
+            # Check if process is still running
+            try:
+                os.kill(holding_pid, 0)  # Signal 0 just checks if process exists
+                return False  # Process is still running
+            except ProcessLookupError:
+                # Process doesn't exist, lock is stale
+                print(f"[ingest-processor] Detected stale lock from non-existent process {holding_pid}, cleaning up")
+                return self._cleanup_stale_lock()
+            except PermissionError:
+                # Process exists but we can't signal it (different user), assume it's running
+                return False
+                
+        except Exception as e:
+            print(f"[ingest-processor] Error checking stale lock: {e}")
+            return False
+    
+    def _cleanup_stale_lock(self):
+        """Clean up a stale lock file"""
+        try:
+            if self.lock_file:
+                try:
+                    fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_UN)
+                except (OSError, IOError):
+                    # We might not have had the lock in the first place
+                    pass
+                self.lock_file.close()
+                self.lock_file = None
+            
+            # Remove the lock file
+            if os.path.exists(self.lock_path):
+                os.remove(self.lock_path)
+                print(f"[ingest-processor] Cleaned up stale lock file: {self.lock_path}")
+            
+            return True
+        except Exception as e:
+            print(f"[ingest-processor] Error cleaning up stale lock: {e}")
+            return False
+    
+    def release(self):
+        """Release the lock"""
+        if self.acquired and self.lock_file:
+            try:
+                fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_UN)
+                self.lock_file.close()
+                self.lock_file = None
+                
+                # Remove lock file
+                if os.path.exists(self.lock_path):
+                    os.remove(self.lock_path)
+                
+                self.acquired = False
+                print(f"[ingest-processor] Lock released (PID: {os.getpid()})")
+            except Exception as e:
+                print(f"[ingest-processor] Error releasing lock: {e}")
+        elif self.lock_file:
+            # Clean up even if we didn't successfully acquire
+            try:
+                self.lock_file.close()
+                self.lock_file = None
+            except:
+                pass
+
+# Global lock instance
+process_lock = ProcessLock()
+
+def cleanup_lock():
+    """Cleanup function for atexit"""
+    process_lock.release()
+
+# Register cleanup function
+atexit.register(cleanup_lock)
 
 try:
     # Ensure project root is on sys.path to import cps
@@ -79,22 +227,9 @@ def gdrive_sync_if_enabled():
         except Exception as e:
             print(f"[ingest-processor] WARN: GDrive sync failed: {e}", flush=True)
 
-# Creates a lock file unless one already exists meaning an instance of the script is
-# already running, then the script is closed, the user is notified and the program
-# exits with code 2
-try:
-    lock = open(tempfile.gettempdir() + '/ingest_processor.lock', 'x')
-    lock.close()
-except FileExistsError:
-    print("[ingest-processor] CANCELLING... ingest-processor initiated but is already running")
+# Acquire process lock to prevent concurrent execution
+if not process_lock.acquire(timeout=10):
     sys.exit(2)
-
-# Defining function to delete the lock on script exit
-def removeLock():
-    os.remove(tempfile.gettempdir() + '/ingest_processor.lock')
-
-# Will automatically run when the script exits
-atexit.register(removeLock)
 
 # Generates dictionary of available backup directories and their paths
 backup_destinations = {
@@ -172,21 +307,19 @@ class NewBookProcessor:
     
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db", timeout=30)
-        cur = con.cursor()
-        split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+        with sqlite3.connect("/config/app.db", timeout=30) as con:
+            cur = con.cursor()
+            split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
-        if split_library:
-            split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
-            db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
-            con.close()
-            return {
-                "split_path": split_path,
-                "db_path": db_path,
-            }
-        else:
-            con.close()
-            return None
+            if split_library:
+                split_path = cur.execute('SELECT config_calibre_split_dir FROM settings;').fetchone()[0]
+                db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
+                return {
+                    "split_path": split_path,
+                    "db_path": db_path,
+                }
+            else:
+                return None
 
 
     def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:
@@ -324,18 +457,29 @@ class NewBookProcessor:
         except Exception as e:
             print(f"[ingest-processor] WARN: Failed to delete processed file {self.filepath}: {e}", flush=True)
 
-    def is_file_in_use(self, timeout: float = 30.0) -> bool:
+    def is_file_in_use(self, timeout: float = None) -> bool:
         """Wait until the file is no longer in use (write handle is closed) or timeout is reached.
         Returns True if file is ready, False if timed out or file vanished."""
+        
+        # Use configured timeout from CWA settings (default 15 minutes if not configured)
+        if timeout is None:
+            timeout_minutes = self.cwa_settings.get('ingest_timeout_minutes', 15)
+            timeout = timeout_minutes * 60  # Convert to seconds
+        
         start = time.time()
         while time.time() - start < timeout:
             if not os.path.exists(self.filepath):
                 return False
             try:
                 # lsof '-F f' gets file access mode; we check for 'w' (write).
-                result = subprocess.run(['lsof', '-F', 'f', '--', self.filepath], capture_output=True, text=True)
+                # Add timeout to prevent hanging (issue #654)
+                result = subprocess.run(['lsof', '-F', 'f', '--', self.filepath], 
+                                      capture_output=True, text=True, timeout=10)
                 if 'w' not in result.stdout:
                     return True # Not in use for writing
+            except subprocess.TimeoutExpired:
+                print("[ingest-processor] WARN: lsof command timed out. Assuming file is not in use.", flush=True)
+                return True  # If lsof hangs, assume file is ready to avoid indefinite wait
             except FileNotFoundError:
                 print("[ingest-processor] WARN: 'lsof' command not found. Cannot reliably check if file is in use. Proceeding with caution.", flush=True)
                 return True # Fallback for systems without lsof
@@ -657,140 +801,166 @@ class NewBookProcessor:
             print(f"[ingest-processor] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}", flush=True)
 
 
-def main(filepath=sys.argv[1]):
+def main(filepath=None):
     """Checks if filepath is a directory. If it is, main will be ran on every file in the given directory
     Inotifywait won't detect files inside folders if the folder was moved rather than copied"""
-    ##############################################################################################
-    # Truncates the filename if it is too long
-    MAX_LENGTH = 150
-    filename = os.path.basename(filepath)
-    name, ext = os.path.splitext(filename)
-    allowed_len = MAX_LENGTH - len(ext)
+    
+    if filepath is None:
+        if len(sys.argv) < 2:
+            print("[ingest-processor] ERROR: No file path provided", flush=True)
+            print("[ingest-processor] Usage: python ingest_processor.py <filepath>", flush=True)
+            sys.exit(1)
+        filepath = sys.argv[1]
+    
+    nbp = None
+    try:
+        ##############################################################################################
+        # Truncates the filename if it is too long
+        MAX_LENGTH = 150
+        filename = os.path.basename(filepath)
+        name, ext = os.path.splitext(filename)
+        allowed_len = MAX_LENGTH - len(ext)
 
-    if len(name) > allowed_len:
-        new_name = name[:allowed_len] + ext
-        new_path = os.path.join(os.path.dirname(filepath), new_name)
-        os.rename(filepath, new_path)
-        filepath = new_path
-    ###############################################################################################
-    if os.path.isdir(filepath) and Path(filepath).exists():
-        # print(os.listdir(filepath))
-        for filename in os.listdir(filepath):
-            f = os.path.join(filepath, filename)
-            if Path(f).exists():
-                main(f)
-        return
-
-    nbp = NewBookProcessor(filepath)
-
-    # If this file is not an ignored temporary, wait briefly for stability to avoid importing a still-growing file
-    ext_tmp_check = Path(nbp.filename).suffix.replace('.', '')
-    if ext_tmp_check not in nbp.ingest_ignored_formats:
-        ready = nbp.is_file_in_use()
-        if not ready:
-            print(f"[ingest-processor] WARN: File did not become ready in time or vanished: {nbp.filename}", flush=True)
-            del nbp
+        if len(name) > allowed_len:
+            new_name = name[:allowed_len] + ext
+            new_path = os.path.join(os.path.dirname(filepath), new_name)
+            os.rename(filepath, new_path)
+            filepath = new_path
+        ###############################################################################################
+        if os.path.isdir(filepath) and Path(filepath).exists():
+            # print(os.listdir(filepath))
+            for filename in os.listdir(filepath):
+                f = os.path.join(filepath, filename)
+                if Path(f).exists():
+                    main(f)
             return
 
-    # Sidecar manifest handling for explicit actions (e.g., add_format)
-    manifest_path = filepath + ".cwa.json"
-    try:
-        if Path(manifest_path).exists():
-            with open(manifest_path, 'r', encoding='utf-8') as mf:
-                manifest = json.load(mf)
-            action = manifest.get("action")
-            if action == "add_format":
-                try:
-                    book_id = int(manifest.get("book_id", -1))
-                except Exception:
-                    book_id = -1
-                if book_id > -1:
-                    nbp.add_format_to_book(book_id, filepath)
-                else:
-                    print(f"[ingest-processor] Invalid book_id in manifest for {os.path.basename(filepath)}", flush=True)
-                # Cleanup file and manifest regardless of outcome
-                try:
-                    os.remove(manifest_path)
-                except Exception:
-                    ...
-                nbp.set_library_permissions()
-                nbp.delete_current_file()
-                shutil.rmtree(nbp.tmp_conversion_dir, ignore_errors=True)
-                del nbp
+        nbp = NewBookProcessor(filepath)
+
+        # If this file is not an ignored temporary, wait briefly for stability to avoid importing a still-growing file
+        ext_tmp_check = Path(nbp.filename).suffix.replace('.', '')
+        if ext_tmp_check not in nbp.ingest_ignored_formats:
+            timeout_minutes = nbp.cwa_settings.get('ingest_timeout_minutes', 15)
+            print(f"[ingest-processor] Checking if file is ready (timeout: {timeout_minutes} minutes): {nbp.filename}", flush=True)
+            ready = nbp.is_file_in_use()
+            if not ready:
+                print(f"[ingest-processor] WARN: File did not become ready in time or vanished (after {timeout_minutes} minutes): {nbp.filename}", flush=True)
                 return
-    except Exception as e:
-        print(f"[ingest-processor] Error handling manifest for {os.path.basename(filepath)}: {e}", flush=True)
 
-    # Check if the user has chosen to exclude files of this type from the ingest process
-    # Remove . (dot), check is against exclude whitout dot
-    ext = Path(nbp.filename).suffix.replace('.', '')
-    if ext in nbp.ingest_ignored_formats:
-        # Do NOT delete ignored temporary files; they may be renamed shortly (e.g. .uploading -> .epub)
-        print(f"[ingest-processor] Skipping ignored/temporary file (no action taken): {nbp.filename}", flush=True)
-        del nbp
-        return
-
-    if nbp.is_target_format: # File can just be imported
-        print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...", flush=True)
-        nbp.add_book_to_library(filepath)
-    elif nbp.is_supported_audiobook():
-        print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, is audiobook, importing now...", flush=True)
-        nbp.add_book_to_library(filepath, False, Path(nbp.filename).suffix)
-    else:
-        if nbp.auto_convert_on and nbp.can_convert: # File can be converted to target format and Auto-Converter is on
-
-            if nbp.input_format in nbp.convert_ignored_formats: # File could be converted & the converter is activated but the user has specified files of this format should not be converted
-                print(f"\n[ingest-processor]: {nbp.filename} not in target format but user has told CWA not to convert this format so importing the file anyway...", flush=True)
-                nbp.add_book_to_library(filepath)
-                convert_successful = False
-            elif nbp.target_format == "kepub": # File is not in the convert ignore list and target is kepub, so we start the kepub conversion process
-                convert_successful, converted_filepath = nbp.convert_to_kepub()
-            else: # File is not in the convert ignore list and target is not kepub, so we start the regular conversion process
-                convert_successful, converted_filepath = nbp.convert_book()
-                
-            if convert_successful: # If previous conversion process was successful, remove tmp files and import into library
-                nbp.add_book_to_library(converted_filepath) # type: ignore
-                
-                # If the original format should be retained, also add it as an additional format
-                if nbp.input_format in nbp.convert_retained_formats and nbp.input_format not in nbp.ingest_ignored_formats:
-                    print(f"[ingest-processor]: Retaining original format ({nbp.input_format}) for {nbp.filename}...", flush=True)
-                    # Find the book that was just added to get its ID
+        # Sidecar manifest handling for explicit actions (e.g., add_format)
+        manifest_path = filepath + ".cwa.json"
+        try:
+            if Path(manifest_path).exists():
+                with open(manifest_path, 'r', encoding='utf-8') as mf:
+                    manifest = json.load(mf)
+                action = manifest.get("action")
+                if action == "add_format":
                     try:
-                        calibre_db_path = os.path.join(nbp.library_dir, 'metadata.db')
-                        with sqlite3.connect(calibre_db_path, timeout=30) as con:
-                            cur = con.cursor()
-                            # Get the most recently added book - use title/author for more reliable matching
-                            # in case of concurrent ingests
-                            cur.execute("""
-                                SELECT id FROM books 
-                                WHERE path = (SELECT path FROM books ORDER BY timestamp DESC LIMIT 1)
-                                ORDER BY timestamp DESC LIMIT 1
-                            """)
-                            result = cur.fetchone()
-                            
-                        if result:
-                            book_id = result[0]
-                            # Verify the original file still exists before trying to add it
-                            if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-                                nbp.add_format_to_book(book_id, filepath)
-                            else:
-                                print(f"[ingest-processor] Original file no longer exists or is empty, cannot retain format: {filepath}", flush=True)
-                        else:
-                            print(f"[ingest-processor] Could not find book ID to add retained format for: {nbp.filename}", flush=True)
-                    except Exception as e:
-                        print(f"[ingest-processor] Error adding retained format: {e}", flush=True)
+                        book_id = int(manifest.get("book_id", -1))
+                    except Exception:
+                        book_id = -1
+                    if book_id > -1:
+                        nbp.add_format_to_book(book_id, filepath)
+                    else:
+                        print(f"[ingest-processor] Invalid book_id in manifest for {os.path.basename(filepath)}", flush=True)
+                    # Cleanup file and manifest regardless of outcome
+                    try:
+                        os.remove(manifest_path)
+                    except Exception:
+                        ...
+                    nbp.set_library_permissions()
+                    nbp.delete_current_file()
+                    return
+        # Check if the user has chosen to exclude files of this type from the ingest process
+        # Remove . (dot), check is against exclude whitout dot
+        ext = Path(nbp.filename).suffix.replace('.', '')
+        if ext in nbp.ingest_ignored_formats:
+            # Do NOT delete ignored temporary files; they may be renamed shortly (e.g. .uploading -> .epub)
+            print(f"[ingest-processor] Skipping ignored/temporary file (no action taken): {nbp.filename}", flush=True)
+            return
 
-        elif nbp.can_convert and not nbp.auto_convert_on: # Books not in target format but Auto-Converter is off so files are imported anyway
-            print(f"\n[ingest-processor]: {nbp.filename} not in target format but CWA Auto-Convert is deactivated so importing the file anyway...", flush=True)
+        if nbp.is_target_format: # File can just be imported
+            print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...", flush=True)
             nbp.add_book_to_library(filepath)
+        elif nbp.is_supported_audiobook():
+            print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, is audiobook, importing now...", flush=True)
+            nbp.add_book_to_library(filepath, False, Path(nbp.filename).suffix)
         else:
-            print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {nbp.input_format} is currently unsupported / is not a known ebook format.", flush=True)
+            if nbp.auto_convert_on and nbp.can_convert: # File can be converted to target format and Auto-Converter is on
 
-    nbp.set_library_permissions()
-    nbp.delete_current_file()
-    # Cleanup the temp conversion folder, which now contains the staging dir
-    shutil.rmtree(nbp.tmp_conversion_dir, ignore_errors=True)
-    del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
+                if nbp.input_format in nbp.convert_ignored_formats: # File could be converted & the converter is activated but the user has specified files of this format should not be converted
+                    print(f"\n[ingest-processor]: {nbp.filename} not in target format but user has told CWA not to convert this format so importing the file anyway...", flush=True)
+                    nbp.add_book_to_library(filepath)
+                    convert_successful = False
+                elif nbp.target_format == "kepub": # File is not in the convert ignore list and target is kepub, so we start the kepub conversion process
+                    convert_successful, converted_filepath = nbp.convert_to_kepub()
+                else: # File is not in the convert ignore list and target is not kepub, so we start the regular conversion process
+                    convert_successful, converted_filepath = nbp.convert_book()
+                    
+                if convert_successful: # If previous conversion process was successful, remove tmp files and import into library
+                    nbp.add_book_to_library(converted_filepath) # type: ignore
+                    
+                    # If the original format should be retained, also add it as an additional format
+                    if nbp.input_format in nbp.convert_retained_formats and nbp.input_format not in nbp.ingest_ignored_formats:
+                        print(f"[ingest-processor]: Retaining original format ({nbp.input_format}) for {nbp.filename}...", flush=True)
+                        # Find the book that was just added to get its ID
+                        try:
+                            calibre_db_path = os.path.join(nbp.library_dir, 'metadata.db')
+                            with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                                cur = con.cursor()
+                                # Get the most recently added book - use title/author for more reliable matching
+                                # in case of concurrent ingests
+                                cur.execute("""
+                                    SELECT id FROM books 
+                                    WHERE path = (SELECT path FROM books ORDER BY timestamp DESC LIMIT 1)
+                                    ORDER BY timestamp DESC LIMIT 1
+                                """)
+                                result = cur.fetchone()
+                                
+                            if result:
+                                book_id = result[0]
+                                # Verify the original file still exists before trying to add it
+                                if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+                                    nbp.add_format_to_book(book_id, filepath)
+                                else:
+                                    print(f"[ingest-processor] Original file no longer exists or is empty, cannot retain format: {filepath}", flush=True)
+                            else:
+                                print(f"[ingest-processor] Could not find book ID to add retained format for: {nbp.filename}", flush=True)
+                        except Exception as e:
+                            print(f"[ingest-processor] Error adding retained format: {e}", flush=True)
+
+            elif nbp.can_convert and not nbp.auto_convert_on: # Books not in target format but Auto-Converter is off so files are imported anyway
+                print(f"\n[ingest-processor]: {nbp.filename} not in target format but CWA Auto-Convert is deactivated so importing the file anyway...", flush=True)
+                nbp.add_book_to_library(filepath)
+            else:
+                print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {nbp.input_format} is currently unsupported / is not a known ebook format.", flush=True)
+
+    except Exception as e:
+        print(f"[ingest-processor] Unexpected error during processing: {e}", flush=True)
+        raise
+    finally:
+        # Ensure cleanup always happens, even if an exception occurred
+        if nbp:
+            try:
+                nbp.set_library_permissions()
+            except Exception as e:
+                print(f"[ingest-processor] Error setting library permissions during cleanup: {e}", flush=True)
+            
+            try:
+                nbp.delete_current_file()
+            except Exception as e:
+                print(f"[ingest-processor] Error deleting current file during cleanup: {e}", flush=True)
+            
+            try:
+                # Cleanup the temp conversion folder, which now contains the staging dir
+                shutil.rmtree(nbp.tmp_conversion_dir, ignore_errors=True)
+            except Exception as e:
+                print(f"[ingest-processor] Error cleaning up temp conversion directory: {e}", flush=True)
+            
+            try:
+                del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
+            except Exception:
+                pass  # Ignore errors in cleanup
 
 if __name__ == "__main__":
     main()

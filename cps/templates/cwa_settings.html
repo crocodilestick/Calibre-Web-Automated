@@ -34,9 +34,10 @@
   
   .metadata-provider-drag-handle {
     margin-right: 10px;
-    color: #888;
-    font-size: 14px;
-  }
+    color: #ffc200;
+    font-size: 16px;
+    font-weight: 900;
+}
   
   .metadata-provider-name {
     flex-grow: 1;
@@ -49,10 +50,17 @@
   }
   
   /* Prevent drag operations from affecting page styling */
-  #metadata_provider_list {
+  #metadata_provider_list_outer {
     position: relative;
     isolation: isolate;
     contain: layout style;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding-inline: 30px;
+    background-color: #151e2680;
+    width: -webkit-fill-available;
+    padding-top: 20px;
+    padding-bottom: 10px;
   }
   
   /* Prevent dragover effects from affecting the page */
@@ -87,6 +95,36 @@
   .metadata-provider-item * {
     pointer-events: none;
   }
+
+  div#metadata_provider_enabled_list {
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #151e2680;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 12px;
+  }
+
+  div#metadata_provider_enabled_list > div > input {
+    margin: 5px;
+  }
+  div#metadata_provider_enabled_list > div > label {
+    padding: 4px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+  }
+
+  .provider_enable_item {
+      display: flex;
+      align-items: center;
+      padding: 6px 10px;
+      margin: 4px 0px;
+      background-color: rgba(21, 30, 38, 0.5);
+      border-radius: 4px;
+      flex-basis: calc(50% - 6px);
+  }
+
 </style>
 {% endblock %}
 
@@ -129,11 +167,11 @@
       <label for="kindle_epub_fixer" style="padding-left: 10px;">{{_('Enable CWA Kindle EPUB Fixer')}}</label><br>
       <p class="cwa-settings-tooltip">
         {{_("When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
-        compatibility with Amazon's Send-to-Kindle Service.")}}<br><br>
-        {{("<i>(TLDR: if you've ever had EPUB files that Amazon just constantly rejects for seemingly no reason, this should prevent that 
-        from happening again). This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> 
-        tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.</i>") | safe }}
-      </p>
+        compatibility with Amazon's Send-to-Kindle Service. This feature is particularly useful for users who frequently send EPUB files to their Kindle devices and have experienced issues with 
+        file rejections or formatting problems.")}}
+      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+        <small>{{_('This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.') | safe }}</small>
+      </div>
 
       {% if cwa_settings['auto_metadata_fetch_enabled'] %}
       <input type="checkbox" id="auto_metadata_fetch_enabled" name="auto_metadata_fetch_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Automatically fetches metadata for newly ingested books">
@@ -234,7 +272,7 @@
           {% endif %}
         </div>
         
-        <div style="margin-top: 15px; padding: 10px; background-color: var(--color-info-bg); border-left: 4px solid var(--color-info); border-radius: 3px;">
+        <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
           <small style="color: var(--color-info-text);">
             💡 <strong>{{_('Tip')}}:</strong> {{_('These field selections apply to both Smart and Direct replacement modes. Smart mode will additionally apply quality criteria to selected fields, while Direct mode will replace all selected fields with provider data.')}}
           </small>
@@ -291,13 +329,19 @@
       <p class="settings-description">
         {{_('Configure the order in which metadata providers are searched when automatically fetching metadata for new books. Drag and drop to reorder providers. Only enabled providers will be used.')}}
       </p>
-      <div id="metadata_provider_hierarchy_container" style="margin-top: 15px; max-width: 400px;">
-        <div id="metadata_provider_list" style="border: 1px solid #444; border-radius: 4px; padding: 10px; background-color: #151e2680;">
-          <!-- Providers will be populated here by JavaScript -->
+      <div id="metadata_provider_hierarchy_container" style="margin-top: 15px;">
+        <div id="metadata_provider_list_outer">
+          <p style="text-align: center; margin-bottom: 20px;"><span style="font-weight: 900; color: #f8be03;">↥</span>&nbsp;&nbsp;Most Preferred</p>
+          <div id="metadata_provider_list">
+            <!-- Providers will be populated here by JavaScript -->
+          </div>
+          <p style="text-align: center; margin-top: 20px;"><span style="font-weight: 900; color: #f8be03;">↥</span>&nbsp;&nbsp;Least Preferred</p>
         </div>
         <input type="hidden" name="metadata_provider_hierarchy" id="metadata_provider_hierarchy_hidden" value="">
       </div>
-      <small style="color: #bbbbbb;">{{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
+      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+        <small class="settings-explanation">💡 <strong>{{_('Tip')}}:</strong> {{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
+      </div>
     </div>
 
     </div>
@@ -309,8 +353,8 @@
         <p class="settings-description">
           {{_('Unchecked providers are disabled globally.')}}
         </p>
-        <div id="metadata_provider_enabled_container" style="margin-top: 10px; max-width: 400px;">
-          <div id="metadata_provider_enabled_list" style="border: 1px solid #444; border-radius: 4px; padding: 10px; background-color: #151e2680;">
+        <div id="metadata_provider_enabled_container" style="margin-top: 10px;">
+          <div id="metadata_provider_enabled_list">
             <!-- Provider toggles will be populated here by JavaScript -->
           </div>
           <input type="hidden" name="metadata_providers_enabled" id="metadata_providers_enabled_hidden" value="{}">
@@ -414,9 +458,11 @@
           {% endif %}
         {% endfor %}
       </select>
-      <p class="cwa-settings-disclaimer settings-disclaimer" style="margin-bottom: 2rem !important;">
-        {{_("NOTE: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
-      </p>
+      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+        <small class="settings-explanation">
+          {{_("NOTE: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
+        </small>
+      </div>
     </div>
 
     <div class="settings-container">
@@ -538,7 +584,7 @@
       </tbody></table>
     </div>
 
-    <div style="background-color: rgba(176, 179, 178, 0.175); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; margin-left: 2rem; margin-right: 2rem; margin-top: 2rem;">
+    <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Duplicate Detection Criteria')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
@@ -715,12 +761,7 @@ document.addEventListener('DOMContentLoaded', function() {
     container.innerHTML = '';
     providers.forEach(p => {
       const wrapper = document.createElement('div');
-      wrapper.style.display = 'flex';
-      wrapper.style.alignItems = 'center';
-      wrapper.style.padding = '6px 10px';
-      wrapper.style.margin = '4px 0';
-      wrapper.style.backgroundColor = '#151e2680';
-      wrapper.style.borderRadius = '4px';
+      wrapper.classList.add('provider_enable_item');
 
       const id = `global-provider-${p.id}`;
       const checked = (enabledMap.hasOwnProperty(p.id) ? !!enabledMap[p.id] : true);

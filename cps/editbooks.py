@@ -319,11 +319,13 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
         if not nsm:
             # Set ownership to abc:abc (uid=1000, gid=1000)
             os.chown(ingest_dir, 1000, 1000)
-    except OSError as e:
-        logger.log.warning('Failed to set ownership of ingest directory %s: %s', ingest_dir, e)
-    except Exception:
-        # Silently ignore any other permission-related errors
-        pass
+    except (OSError, PermissionError) as e:
+        # Log warning but don't crash the upload process
+        log.warning('Failed to set ownership of ingest directory %s: %s', ingest_dir, e)
+        log.warning("If you're using a network share, consider setting NETWORK_SHARE_MODE=true in your environment variables to skip this step.")
+    except Exception as e:
+        # Silently ignore any other permission-related errors but log for debugging
+        log.debug('Other permission error setting ingest directory ownership: %s', e)
     
     base_name = secure_filename(uploaded_file.filename)
     # CWA change: use timestamp for more predictable sorting vs uuid
@@ -693,7 +695,8 @@ def do_edit_book(book_id, upload_formats=None):
                 if result:
                     book.has_cover = 1
                     modify_date = True
-                    helper.replace_cover_thumbnail_cache(book.id)
+                    # Trigger thumbnail generation after successful cover fetch
+                    helper.trigger_thumbnail_generation_for_book(book.id)
                 else:
                     edit_error = True
                     flash(error, category="error")
@@ -1551,7 +1554,7 @@ def upload_cover(cover_request, book):
             if not current_user.role_upload():
                 flash(_("User has no rights to upload cover"), category="error")
                 return False
-            ret, message = helper.save_cover(requested_file, book.path)
+            ret, message = helper.save_cover_with_thumbnail_update(requested_file, book.path, book.id)
             if ret is True:
                 helper.replace_cover_thumbnail_cache(book.id)
                 return True

@@ -6,7 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 from . import logger
-from .constants import CACHE_DIR
+from .constants import CACHE_DIR, CONFIG_DIR, CACHE_TYPE_THUMBNAILS
 from os import makedirs, remove
 from os.path import isdir, isfile, join
 from shutil import rmtree
@@ -23,24 +23,36 @@ class FileSystem:
         return cls._instance
 
     def get_cache_dir(self, cache_type=None):
-        if not isdir(self._cache_dir):
+        # Use /config/thumbnails for thumbnail cache to persist across container rebuilds
+        if cache_type == CACHE_TYPE_THUMBNAILS:
+            cache_dir = join(CONFIG_DIR, 'thumbnails')
+        else:
+            cache_dir = self._cache_dir
+            
+        if not isdir(cache_dir):
             try:
-                makedirs(self._cache_dir)
+                makedirs(cache_dir)
             except OSError:
-                self.log.info(f'Failed to create path {self._cache_dir} (Permission denied).')
+                self.log.info(f'Failed to create path {cache_dir} (Permission denied).')
                 raise
 
-        path = join(self._cache_dir, cache_type)
-        if cache_type and not isdir(path):
+        path = join(cache_dir, cache_type) if cache_type and cache_type != CACHE_TYPE_THUMBNAILS else cache_dir
+        if cache_type and cache_type != CACHE_TYPE_THUMBNAILS and not isdir(path):
             try:
                 makedirs(path)
             except OSError:
                 self.log.info(f'Failed to create path {path} (Permission denied).')
                 raise
 
-        return path if cache_type else self._cache_dir
+        return path if cache_type else cache_dir
 
     def get_cache_file_dir(self, filename, cache_type=None):
+        # For thumbnails with deterministic naming, store directly in cache dir
+        # instead of creating subdirectories based on first 2 characters
+        if cache_type == CACHE_TYPE_THUMBNAILS:
+            return self.get_cache_dir(cache_type)
+        
+        # For other cache types, maintain subdirectory structure
         path = join(self.get_cache_dir(cache_type), filename[:2])
         if not isdir(path):
             try:
@@ -66,7 +78,12 @@ class FileSystem:
                 self.log.info(f'Failed to delete path {self._cache_dir} (Permission denied).')
                 raise
 
-        path = join(self._cache_dir, cache_type)
+        # Handle special case for thumbnails stored in /config/thumbnails
+        if cache_type == CACHE_TYPE_THUMBNAILS:
+            path = join(CONFIG_DIR, 'thumbnails')
+        else:
+            path = join(self._cache_dir, cache_type)
+            
         if cache_type and isdir(path):
             try:
                 rmtree(path)
@@ -75,6 +92,9 @@ class FileSystem:
                 raise
 
     def delete_cache_file(self, filename, cache_type=None):
+        # Skip if no filename provided (defensive guard)
+        if not filename:
+            return
         path = self.get_cache_file_path(filename, cache_type)
         if isfile(path):
             try:

@@ -768,16 +768,64 @@ def get_book_cover_with_uuid(book_uuid, resolution=None):
 
 
 def get_book_cover_internal(book, resolution=None):
+    """Serve book cover with improved thumbnail generation fallback.
+    
+    When a thumbnail is requested but missing, generate it synchronously
+    instead of falling back to the original cover.jpg.
+    """
     if book and book.has_cover:
 
         # Send the book cover thumbnail if it exists in cache
         if resolution:
-            thumbnail = get_book_cover_thumbnail(book, resolution)
-            if thumbnail:
-                cache = fs.FileSystem()
-                if cache.get_cache_file_exists(thumbnail.filename, CACHE_TYPE_THUMBNAILS):
-                    return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
-                                               thumbnail.filename)
+            cache = fs.FileSystem()
+            # Check for both webp and jpg thumbnails, generate missing ones
+            webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
+            jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
+            
+            # Check if files actually exist on disk
+            webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
+            jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
+            
+            # Generate missing thumbnails on-demand (skip for Kobo requests to avoid delays)
+            if not webp_exists or not jpg_exists:
+                try:
+                    from flask import has_request_context, request
+                    is_kobo_request = (has_request_context() and 
+                                     request.path and 
+                                     '/kobo/' in request.path)
+                    
+                    if not is_kobo_request and use_IM:
+                        from .tasks.thumbnail import TaskGenerateCoverThumbnails
+                        # Create and run thumbnail generation for this book
+                        thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
+                        thumbnail_task.create_book_cover_thumbnails(book)
+                        
+                        # Refresh thumbnail references after generation
+                        webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
+                        jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
+                        webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
+                        jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
+                except Exception as ex:
+                    log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
+            
+            # Determine which thumbnail format to serve based on request context
+            try:
+                from flask import has_request_context, request
+                is_kobo_request = (has_request_context() and 
+                                 request.path and 
+                                 '/kobo/' in request.path)
+                
+                # Prefer jpg for Kobo requests, webp for web requests
+                if is_kobo_request:
+                    thumbnail_to_serve = jpg_thumb if jpg_exists else (webp_thumb if webp_exists else None)
+                else:
+                    thumbnail_to_serve = webp_thumb if webp_exists else (jpg_thumb if jpg_exists else None)
+            except:
+                # Fallback if we can't determine request context
+                thumbnail_to_serve = webp_thumb if webp_exists else (jpg_thumb if jpg_exists else None)
+            if thumbnail_to_serve:
+                return send_from_directory(cache.get_cache_file_dir(thumbnail_to_serve.filename, CACHE_TYPE_THUMBNAILS),
+                                           thumbnail_to_serve.filename)
 
         # Send the book cover from Google Drive if configured
         if config.config_use_google_drive:
@@ -812,6 +860,19 @@ def get_book_cover_thumbnail(book, resolution):
                 .filter(ub.Thumbnail.type == THUMBNAIL_TYPE_COVER)
                 .filter(ub.Thumbnail.entity_id == book.id)
                 .filter(ub.Thumbnail.resolution == resolution)
+                .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.now(timezone.utc)))
+                .first())
+
+
+def get_book_cover_thumbnail_by_format(book, resolution, format):
+    """Get thumbnail for specific book, resolution, and format (webp/jpg)"""
+    if book and book.has_cover:
+        return (ub.session
+                .query(ub.Thumbnail)
+                .filter(ub.Thumbnail.type == THUMBNAIL_TYPE_COVER)
+                .filter(ub.Thumbnail.entity_id == book.id)
+                .filter(ub.Thumbnail.resolution == resolution)
+                .filter(ub.Thumbnail.format == format)
                 .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.now(timezone.utc)))
                 .first())
 
@@ -952,6 +1013,31 @@ def save_cover(img, book_path):
             return False, message
     else:
         return save_cover_from_filestorage(os.path.join(config.get_book_path(), book_path), "cover.jpg", img)
+
+
+def trigger_thumbnail_generation_for_book(book_id):
+    """Trigger thumbnail generation for a book after cover changes."""
+    try:
+        from .tasks.thumbnail import TaskGenerateCoverThumbnails
+        
+        if use_IM:
+            # Queue thumbnail generation task
+            thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
+            WorkerThread.add(current_user.name, thumbnail_task, hidden=True)
+            log.debug(f'Queued thumbnail generation for book {book_id}')
+    except Exception as ex:
+        log.debug(f'Failed to queue thumbnail generation for book {book_id}: {ex}')
+
+
+def save_cover_with_thumbnail_update(img, book_path, book_id=None):
+    """Save cover and trigger thumbnail generation."""
+    result, message = save_cover(img, book_path)
+    
+    # If cover save was successful and we have a book_id, generate thumbnails
+    if result and book_id:
+        trigger_thumbnail_generation_for_book(book_id)
+    
+    return result, message
 
 
 def do_download_file(book, book_format, client, data, headers):
@@ -1141,14 +1227,14 @@ def get_download_link(book_id, book_format, client):
 
 
 def clear_cover_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
+    # Always allow clearing thumbnail cache
+    WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
 
 
 def replace_cover_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
-        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Always allow replacing thumbnail cache
+    WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
+    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
 def delete_thumbnail_cache():
@@ -1156,13 +1242,16 @@ def delete_thumbnail_cache():
 
 
 def add_book_to_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Always generate thumbnails for new books
+    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
 def update_thumbnail_cache():
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskGenerateCoverThumbnails())
+    # Always allow manual thumbnail cache updates
+    task = TaskGenerateCoverThumbnails()
+    WorkerThread.add(None, task)
+    # Return task ID for tracking
+    return task.id
 
 
 def set_all_metadata_dirty():

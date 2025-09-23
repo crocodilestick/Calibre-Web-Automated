@@ -50,7 +50,8 @@ RUN \
     libsasl2-dev \
     gettext \
     python3.13-dev \
-    python3.13-venv && \
+    python3.13-venv \
+    curl && \
   echo "**** install runtime packages ****" && \
   apt-get install -y --no-install-recommends \
     imagemagick \
@@ -65,8 +66,20 @@ RUN \
     python3.13 \
     nano \
     sqlite3 \
-    zip \
-    lsof && \
+    zip && \
+  # Install lsof 4.99.5 from source to fix hanging issue with 4.95 (issue #654)
+  echo "**** install lsof 4.99.5 from source ****" && \
+  LSOF_VERSION="4.99.5" && \
+  curl -L "https://github.com/lsof-org/lsof/archive/${LSOF_VERSION}.tar.gz" -o /tmp/lsof.tar.gz && \
+  cd /tmp && \
+  tar -xzf lsof.tar.gz && \
+  cd "lsof-${LSOF_VERSION}" && \
+  ./Configure -n linux && \
+  make && \
+  cp lsof /usr/bin/lsof && \
+  chmod 755 /usr/bin/lsof && \
+  cd / && \
+  rm -rf /tmp/lsof* && \
   # Create python3 symlink to point to python3.13
   ln -sf /usr/bin/python3.13 /usr/bin/python3 && \
   # Install pip for Python 3.13

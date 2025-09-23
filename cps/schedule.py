@@ -12,6 +12,7 @@ from .services.background_scheduler import BackgroundScheduler, CronTrigger, use
 from .tasks.database import TaskReconnectDatabase
 from .tasks.clean import TaskClean
 from .tasks.thumbnail import TaskGenerateCoverThumbnails, TaskGenerateSeriesThumbnails, TaskClearCoverThumbnailCache
+from .tasks.thumbnail_migration import check_and_migrate_thumbnails
 from .services.worker import WorkerThread
 from .tasks.metadata_backup import TaskBackupMetadata
 
@@ -77,6 +78,13 @@ def register_startup_tasks():
     if scheduler:
         start = config.schedule_start_time
         duration = config.schedule_duration
+
+        # Run thumbnail migration on startup (one-time operation)
+        try:
+            check_and_migrate_thumbnails()
+        except Exception as ex:
+            # Don't let migration failures stop the application
+            pass
 
         # Run scheduled tasks immediately for development and testing
         # Ignore tasks that should currently be running, as these will be added when registering scheduled tasks

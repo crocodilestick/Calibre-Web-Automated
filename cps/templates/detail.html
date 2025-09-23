@@ -13,6 +13,51 @@
             margin: 2rem;
             border-radius: 1rem;
         }
+        
+        {% if g.current_theme == 1 %}
+        /* Pre-apply actual caliBlur button styles to prevent FOUC on detail page */
+        .btn {
+            display: inline-block;
+            padding: 6px 16px;
+            font-family: Open Sans Bold, Helvetica Neue, Helvetica, Arial, sans-serif;
+            border: 0;
+            margin-bottom: 0;
+            line-height: 1.71428571;
+            text-align: center;
+            border-radius: 3px;
+            white-space: nowrap;
+            -o-user-select: none;
+            user-select: none;
+        }
+        
+        .btn-primary {
+            color: #fff;
+            background-color: #161f27b3;
+            border-color: hsla(0, 0%, 100%, .25);
+        }
+        
+        .book-meta .btn-info,
+        .book-meta .btn-success {
+            background-color: rgba(0, 0, 0, .15);
+            color: hsla(0, 0%, 100%, .7);
+            font-size: 13px;
+            display: inline-block;
+            border-radius: 4px;
+            vertical-align: middle;
+            font-family: Open Sans Bold, Helvetica Neue, Helvetica, Arial, sans-serif;
+            -webkit-transition: background-color .2s, color .2s;
+            -o-transition: background-color .2s, color .2s;
+            transition: background-color .2s, color .2s;
+            text-transform: none;
+            overflow: hidden;
+        }
+        
+        .book-meta .btn-info:hover,
+        .book-meta .btn-success:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        {% endif %}
     </style>
 {% endblock %}
 {% block body %}

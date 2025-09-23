@@ -18,7 +18,7 @@ from datetime import time as datetime_time
 from functools import wraps
 from urllib.parse import urlparse
 
-from flask import Blueprint, flash, redirect, url_for, abort, request, make_response, send_from_directory, g, Response
+from flask import Blueprint, flash, redirect, url_for, abort, request, make_response, send_from_directory, g, Response, jsonify
 from markupsafe import Markup
 from .cw_login import current_user
 from flask_babel import gettext as _
@@ -203,11 +203,34 @@ def reconnect():
 @user_login_required
 @admin_required
 def update_thumbnails():
-    content = config.get_scheduled_task_settings()
-    if content['schedule_generate_book_covers']:
-        log.info("Update of Cover cache requested")
-        helper.update_thumbnail_cache()
-    return ""
+    # Always allow manual thumbnail cache updates
+    log.info("Update of Cover cache requested")
+    
+    try:
+        from .tasks.thumbnail import TaskGenerateCoverThumbnails
+        task_id = helper.update_thumbnail_cache()
+        
+        # Check if there are any books to process
+        books_with_covers = TaskGenerateCoverThumbnails.get_books_with_covers()
+        book_count = len(books_with_covers)
+        
+        if book_count > 0:
+            message = _('Thumbnail cache refresh started for {} book(s). This may take a few minutes.').format(book_count)
+        else:
+            message = _('No books with covers found to process.')
+        
+        return jsonify({
+            'success': True, 
+            'message': message,
+            'book_count': book_count,
+            'task_id': str(task_id) if task_id else None
+        })
+    except Exception as e:
+        log.error(f"Error starting thumbnail refresh: {e}")
+        return jsonify({
+            'success': False, 
+            'message': _('Failed to start thumbnail refresh: {}').format(str(e))
+        })
 
 
 def cwa_get_package_versions() -> tuple[str, str, str, str]:

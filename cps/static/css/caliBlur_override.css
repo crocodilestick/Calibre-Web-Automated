@@ -375,3 +375,19 @@ button.close > span {
     max-width: none !important;
     width: 36rem !important;
 }
+
+div#GeneralChangeModal > div > div.modal-content {
+    top: 200px;
+    width: max-content;
+    max-width: 400px;
+    padding: 2rem;
+    justify-self: center;
+}
+
+.modal-content > .modal-header.bg-info.text-center {
+    display: none;
+}
+
+a#advanced_search > span.hidden-sm {
+    margin-left: 4px;
+}

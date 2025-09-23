@@ -6,9 +6,10 @@
 # See CONTRIBUTORS for full list of authors.
 
 import json
+import os
 from typing import Optional, List, Dict
 
-from cps import logger, calibre_db, db
+from cps import logger, calibre_db, db, constants
 from cps.search_metadata import cl as metadata_providers
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
@@ -297,75 +298,6 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
         return updated
         
     except Exception as e:
-        log.error(f"Error applying metadata to book: {e}")
-        return False
-        if metadata.publisher and metadata.publisher.strip():
-            publisher = calibre_db_instance.get_publisher_by_name(metadata.publisher.strip())
-            if not publisher:
-                publisher = db.Publishers(name=metadata.publisher.strip())
-                calibre_db_instance.session.add(publisher)
-            book.publishers.clear()
-            book.publishers.append(publisher)
-            updated = True
-            
-        # Update publication date if available
-        if metadata.publishedDate and metadata.publishedDate.strip():
-            try:
-                from datetime import datetime
-                pub_date = datetime.strptime(metadata.publishedDate.strip(), "%Y-%m-%d")
-                book.pubdate = pub_date
-                updated = True
-            except ValueError:
-                pass  # Invalid date format
-                
-        # Update series if available
-        if metadata.series and metadata.series.strip():
-            series = calibre_db_instance.get_series_by_name(metadata.series.strip())
-            if not series:
-                series = db.Series(name=metadata.series.strip())
-                calibre_db_instance.session.add(series)
-            book.series.clear()
-            book.series.append(series)
-            if metadata.series_index:
-                try:
-                    book.series_index = float(metadata.series_index)
-                except (ValueError, TypeError):
-                    book.series_index = 1.0
-            updated = True
-            
-        # Update tags if available
-        if metadata.tags and len(metadata.tags) > 0:
-            book.tags.clear()
-            for tag_name in metadata.tags:
-                if tag_name and tag_name.strip():
-                    tag = calibre_db_instance.get_tag_by_name(tag_name.strip())
-                    if not tag:
-                        tag = db.Tags(name=tag_name.strip())
-                        calibre_db_instance.session.add(tag)
-                    book.tags.append(tag)
-            updated = True
-            
-        # Update rating if available
-        if metadata.rating and float(metadata.rating) > 0:
-            rating = calibre_db_instance.get_rating_by_name(int(float(metadata.rating) * 2))  # Convert to 10-point scale
-            if rating:
-                book.ratings.clear()
-                book.ratings.append(rating)
-                updated = True
-                
-        # TODO: Handle cover image download and update
-        # This would require downloading the cover from metadata.cover URL
-        # and saving it to the book's directory
-        
-        if updated:
-            calibre_db_instance.session.commit()
-            log.info(f"Metadata successfully applied to book: {book.title}")
-            return True
-        else:
-            log.debug(f"No metadata improvements found for book: {book.title}")
-            return False
-            
-    except Exception as e:
-        log.error(f"Error applying metadata to book {book.id}: {e}")
+        log.error(f"Error applying metadata to book {getattr(book, 'id', 'unknown')}: {e}")
         calibre_db_instance.session.rollback()
         return False

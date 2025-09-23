@@ -11,9 +11,14 @@ import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 import os
+import time
 from http.cookies import SimpleCookie
 
-from curl_cffi import requests as creq  # type: ignore
+try:
+    from curl_cffi import requests as creq  # type: ignore
+except ImportError:
+    import requests as creq  # Fallback to regular requests if curl-cffi not available
+    
 from bs4 import BeautifulSoup as BS
 from bs4.element import Tag
 from cps import logger
@@ -92,11 +97,43 @@ class Kobo(Metadata):
         "sec-fetch-dest": "document",
         "sec-fetch-user": "?1",
     }
-    session = creq.Session(impersonate="chrome120")
-    session.headers.update(headers)
+    
+    def __init__(self):
+        super().__init__()
+        self.session = None
+        self._last_request_time = 0
+        self._min_request_interval = 0.5  # Minimum 500ms between requests
+        
+    def _get_session(self):
+        """Get or create a session with proper configuration."""
+        if self.session is None:
+            try:
+                # Try curl-cffi with impersonation first
+                self.session = creq.Session(impersonate="chrome120")
+            except (TypeError, AttributeError):
+                # Fallback to regular requests session
+                self.session = creq.Session()
+            self.session.headers.update(self.headers)
+        return self.session
+        
+    def _close_session(self):
+        """Properly close the session if it exists."""
+        if self.session:
+            try:
+                self.session.close()
+            except Exception:
+                pass
+            finally:
+                self.session = None
+                
+    def __del__(self):
+        """Cleanup when object is destroyed."""
+        self._close_session()
 
     SEARCH_MAX = 5
     DETAIL_TIMEOUT = 12
+    DEFAULT_TIMEOUT = 10
+    WARMUP_TIMEOUT = 8
 
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
@@ -109,7 +146,7 @@ class Kobo(Metadata):
 
         # Warm up session to pick up cookies that sometimes gate search
         try:
-            self._get(self.META_URL, headers=headers, timeout=8)
+            self._get(self.META_URL, headers=headers, timeout=self.WARMUP_TIMEOUT)
         except Exception:
             pass
 
@@ -121,15 +158,15 @@ class Kobo(Metadata):
         r = None
         for url in (primary_url, fallback_url):
             try:
-                r = self._get(url, headers=headers, timeout=10, allow_redirects=True)
+                r = self._get(url, headers=headers, timeout=self.DEFAULT_TIMEOUT, allow_redirects=True)
                 if r.status_code == 403:
                     continue
                 r.raise_for_status()
                 break
             except Exception as e:
-                # Treat as a hard failure on this URL and stop trying
                 log.warning("Kobo search failed for %s: %s", url, e)
-                return []
+                continue  # Try next URL instead of returning immediately
+                
         if not r or r.status_code >= 400:
             log.warning("Kobo search failed: no usable response (last status %s)", r.status_code if r else None)
             return []
@@ -196,9 +233,26 @@ class Kobo(Metadata):
             h["accept-language"] = "en-US,en;q=0.9"
         return h
 
-    def _get(self, url: str, headers: Optional[Dict[str, str]] = None, timeout: int = 10, allow_redirects: bool = True) -> Any:
-        resp = self.session.get(url, headers=headers, timeout=timeout, allow_redirects=allow_redirects)
-        return resp
+    def _get(self, url: str, headers: Optional[Dict[str, str]] = None, timeout: int = None, allow_redirects: bool = True) -> Any:
+        """Make HTTP request with rate limiting and proper error handling."""
+        if timeout is None:
+            timeout = self.DEFAULT_TIMEOUT
+            
+        # Rate limiting
+        current_time = time.time()
+        time_since_last = current_time - self._last_request_time
+        if time_since_last < self._min_request_interval:
+            sleep_time = self._min_request_interval - time_since_last
+            time.sleep(sleep_time)
+        
+        session = self._get_session()
+        try:
+            resp = session.get(url, headers=headers, timeout=timeout, allow_redirects=allow_redirects)
+            self._last_request_time = time.time()
+            return resp
+        except Exception as e:
+            self._last_request_time = time.time()
+            raise e
 
     def _extract_result_links(self, soup: BS) -> List[str]:
         # Prefer product links that contain '/ebook/' and avoid audiobooks
@@ -400,6 +454,7 @@ class Kobo(Metadata):
 
         # If there is no synopsis, treat as not-a-book and skip
         if not match.description:
+            log.debug("Skipping result with no description (likely not a book): %s", url)
             return None
 
         return match
@@ -459,6 +514,8 @@ class Kobo(Metadata):
                 published = self._normalize_date(date_published)
 
                 isbn = obj.get("isbn") or (obj.get("identifier") if isinstance(obj.get("identifier"), str) else None)
+                if isbn:
+                    isbn = self._validate_isbn(isbn)
 
                 # Series info
                 series_name = ""
@@ -716,15 +773,40 @@ class Kobo(Metadata):
         return ""
 
     def _clean_description(self, text: str) -> str:
+        """Clean and sanitize description text."""
         if not text:
             return ""
-        t = str(text)
-        # Normalize non-breaking spaces and collapse whitespace
-        t = t.replace("\u00a0", " ")
+        
+        t = str(text).strip()
+        if not t:
+            return ""
+            
+        # Remove any HTML tags that might remain
+        try:
+            # Use BeautifulSoup to properly strip HTML
+            clean_soup = BS(t, "lxml")
+            t = clean_soup.get_text(" ", strip=True)
+        except Exception:
+            # Fallback: simple HTML tag removal
+            t = re.sub(r"<[^>]+>", " ", t)
+        
+        # Normalize various types of whitespace
+        t = t.replace("\u00a0", " ")  # Non-breaking space
+        t = t.replace("\u2009", " ")  # Thin space
+        t = t.replace("\u200b", "")   # Zero-width space
         t = re.sub(r"\s+", " ", t).strip()
-        # Unescape stray backslashes before punctuation like '#'
+        
+        # Unescape common escaped characters
         t = re.sub(r"\\([#@%&*~`])", r"\1", t)
-    
+        
+        # Remove excessive newlines but preserve paragraph breaks
+        t = re.sub(r"\n\s*\n\s*\n+", "\n\n", t)
+        
+        # Limit length to prevent extremely long descriptions
+        max_length = 5000
+        if len(t) > max_length:
+            t = t[:max_length].rsplit(" ", 1)[0] + "..."
+            
         return t
 
     def _parse_description_from_dom(self, soup: BS) -> str:
@@ -1074,10 +1156,16 @@ class Kobo(Metadata):
         if isinstance(value, (int, float)):
             try:
                 f = float(value)
+                if f < 0:  # Series index should be positive
+                    return 0
                 return int(f) if f.is_integer() else f
-            except Exception:
+            except (ValueError, OverflowError):
                 return 0
-        s = str(value)
+        
+        s = str(value).strip()
+        if not s:
+            return 0
+            
         # Look for first number with optional decimal
         m = re.search(r"(\d+(?:[\.,]\d+)?)", s)
         if not m:
@@ -1085,8 +1173,10 @@ class Kobo(Metadata):
         num = m.group(1).replace(",", ".")
         try:
             f = float(num)
+            if f < 0:  # Series index should be positive
+                return 0
             return int(f) if f.is_integer() else f
-        except Exception:
+        except (ValueError, OverflowError):
             return 0
 
     def _normalize_date(self, s: str) -> str:
@@ -1129,43 +1219,107 @@ class Kobo(Metadata):
         return ""
 
     def _extract_kobo_id_from_url(self, url: str) -> str:
+        """Extract Kobo book ID from URL with validation."""
+        if not url or not isinstance(url, str):
+            return ""
         # Use slug after /ebook/ as an identifier surrogate
         m = re.search(r"/ebook/([^/?#]+)", url)
-        return m.group(1) if m else url
+        return m.group(1) if m else ""
 
-    #TO-DO: lookup user preference for height and with -use default if not set
     def _normalize_cover_url(self, url: str, height: int = 1200, width: int = 1200, quality: int = 90) -> str:
+        """Normalize Kobo cover URL with size parameters and validation."""
+        if not url or not isinstance(url, str):
+            return ""
+        
+        url = url.strip()
         if not url:
             return ""
-        # Replace dynamic sizing segments: /H/W/Q/(True|False)
+        
+        # Validate URL format
+        if not (url.startswith("http://") or url.startswith("https://")):
+            return ""
+        
+        # Validate parameters
+        height = max(100, min(height, 2000))  # Reasonable bounds
+        width = max(100, min(width, 2000))
+        quality = max(10, min(quality, 100))
+        
         try:
-            return re.sub(r"/\d+/\d+/\d+/(True|False)", f"/{height}/{width}/{quality}/False", url)
-        except Exception:
+            # Replace dynamic sizing segments: /H/W/Q/(True|False)
+            normalized = re.sub(r"/\d+/\d+/\d+/(True|False)", f"/{height}/{width}/{quality}/False", url)
+            # Ensure HTTPS for security
+            if normalized.startswith("http://"):
+                normalized = normalized.replace("http://", "https://", 1)
+            return normalized
+        except Exception as e:
+            log.debug("Failed to normalize cover URL %s: %s", url, e)
             return url
 
     def _load_cookie(self) -> Optional[str]:
+        """Load and validate Kobo cookies from environment variables."""
         cookie = os.environ.get("CWA_KOBO_COOKIE") or os.environ.get("KOBO_COOKIE")
-        return cookie.strip() if cookie else None
+        if not cookie:
+            return None
+        
+        cookie = cookie.strip()
+        if not cookie:
+            return None
+        
+        # Basic validation - should look like cookie format
+        if not re.match(r'^[\w\-=;,\s.]+$', cookie):
+            log.warning("Invalid cookie format detected, ignoring")
+            return None
+            
+        return cookie
 
     def _apply_cookies(self, headers: Dict[str, str]) -> Dict[str, str]:
+        """Apply cookies to headers and session with proper error handling."""
         cookie_str = self._load_cookie()
         if not cookie_str:
             return headers
+            
         new_headers = dict(headers)
         new_headers["Cookie"] = cookie_str
+        
+        # Try to parse and apply cookies to session
         try:
             sc = SimpleCookie()
             sc.load(cookie_str)
+            session = self._get_session()
+            
             for name, morsel in sc.items():
+                if not name or not morsel.value:
+                    continue
                 try:
-                    # Directly set into the session cookie jar for common Kobo domains
+                    # Apply to common Kobo domains
                     for dom in ("www.kobo.com", ".kobo.com"):
                         try:
-                            self.session.cookies.set(name, morsel.value, domain=dom, path="/")
-                        except Exception:
-                            continue
-                except Exception:
-                    continue
-        except Exception:
-            pass
+                            session.cookies.set(name, morsel.value, domain=dom, path="/")
+                        except Exception as e:
+                            log.debug("Failed to set cookie %s for domain %s: %s", name, dom, e)
+                except Exception as e:
+                    log.debug("Failed to process cookie %s: %s", name, e)
+        except Exception as e:
+            log.warning("Failed to parse cookies: %s", e)
+            
         return new_headers
+        
+    def _validate_isbn(self, isbn: str) -> Optional[str]:
+        """Validate and clean ISBN format."""
+        if not isbn or not isinstance(isbn, str):
+            return None
+            
+        # Clean ISBN: remove hyphens, spaces, and convert to uppercase
+        clean_isbn = re.sub(r'[-\s]', '', isbn.strip().upper())
+        
+        # Check if it's ISBN-10 or ISBN-13
+        if len(clean_isbn) == 10:
+            # ISBN-10 validation
+            if re.match(r'^\d{9}[\dX]$', clean_isbn):
+                return clean_isbn
+        elif len(clean_isbn) == 13:
+            # ISBN-13 validation (should start with 978 or 979)
+            if re.match(r'^(978|979)\d{10}$', clean_isbn):
+                return clean_isbn
+                
+        return None

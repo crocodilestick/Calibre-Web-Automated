@@ -28,6 +28,7 @@ from os import getenv
 
 log = logger.create()
 
+
 class Hardcover(Metadata):
     __name__ = "Hardcover"
     __id__ = "hardcover"
@@ -85,14 +86,20 @@ class Hardcover(Metadata):
                 
             }
             description
-            cached_tags(path: "Genre")
+            cached_tags
         }
     }
     """
     HEADERS = {
         "Content-Type": "application/json",
     }
-    FORMATS = ["","Physical Book","","","E-Book"] # Map reading_format_id to text equivelant.
+    FORMATS = [
+        "",
+        "Physical Book",
+        "",
+        "",
+        "E-Book",
+    ]  # Map reading_format_id to text equivelant.
 
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
@@ -100,17 +107,31 @@ class Hardcover(Metadata):
         val = list()
         if self.active:
             try:
-                token = current_user.hardcover_token or config.config_hardcover_token or getenv("HARDCOVER_TOKEN")
+                token = (
+                    current_user.hardcover_token
+                    or config.config_hardcover_token
+                    or getenv("HARDCOVER_TOKEN")
+                )
                 if not token:
                     self.set_status(False)
-                    raise Exception("Hardcover token not set for user, and no global token provided.")
+                    raise Exception(
+                        "Hardcover token not set for user, and no global token provided."
+                    )
                 edition_seach = query.split(":")[0] == "hardcover-id"
-                Hardcover.HEADERS["Authorization"] = "Bearer %s" % token.replace("Bearer ","")
+                Hardcover.HEADERS["Authorization"] = "Bearer %s" % token.replace(
+                    "Bearer ", ""
+                )
                 result = requests.post(
                     Hardcover.BASE_URL,
                     json={
-                        "query":Hardcover.SEARCH_QUERY if not edition_seach else Hardcover.EDITION_QUERY,
-                        "variables":{"query":query if not edition_seach else query.split(":")[1]}
+                        "query": (
+                            Hardcover.SEARCH_QUERY
+                            if not edition_seach
+                            else Hardcover.EDITION_QUERY
+                        ),
+                        "variables": {
+                            "query": query if not edition_seach else query.split(":")[1]
+                        },
                     },
                     headers=Hardcover.HEADERS,
                 )
@@ -120,7 +141,9 @@ class Hardcover(Metadata):
                 return None
             if edition_seach:
                 result = result.json()["data"]["books"][0]
-                val = self._parse_edition_results(result=result, generic_cover=generic_cover, locale=locale)
+                val = self._parse_edition_results(
+                    result=result, generic_cover=generic_cover, locale=locale
+                )
             else:
                 for result in result.json()["data"]["search"]["results"]["hits"]:
                     match = self._parse_title_result(
@@ -128,15 +151,15 @@ class Hardcover(Metadata):
                     )
                     val.append(match)
         return val
-    
+
     def _parse_title_result(
         self, result: Dict, generic_cover: str, locale: str
     ) -> MetaRecord:
-        series = result["document"].get("featured_series",{}).get("series_name", "")
-        series_index = result["document"].get("featured_series",{}).get("position", "")
+        series = result["document"].get("featured_series", {}).get("series_name", "")
+        series_index = result["document"].get("featured_series", {}).get("position", "")
         match = MetaRecord(
-            id=result["document"].get("id",""),
-            title=result["document"].get("title",""),
+            id=result["document"].get("id", ""),
+            title=result["document"].get("title", ""),
             authors=result["document"].get("author_names", []),
             url=self._parse_title_url(result, ""),
             source=MetaSourceInfo(
@@ -147,15 +170,14 @@ class Hardcover(Metadata):
             series=series,
         )
         match.cover = result["document"]["image"].get("url", generic_cover)
-        
-        match.description = result["document"].get("description","")
-        match.publishedDate = result["document"].get(
-            "release_date", "")
+
+        match.description = result["document"].get("description", "")
+        match.publishedDate = result["document"].get("release_date", "")
         match.series_index = series_index
-        match.tags = result["document"].get("genres",[])
+        match.tags = result["document"].get("genres", [])
         match.identifiers = {
             "hardcover-id": match.id,
-            "hardcover-slug": result["document"].get("slug", "")
+            "hardcover-slug": result["document"].get("slug", ""),
         }
         return match
 
@@ -163,40 +185,44 @@ class Hardcover(Metadata):
         self, result: Dict, generic_cover: str, locale: str
     ) -> MetaRecord:
         editions = list()
-        id = result.get("id","")
+        id = result.get("id", "")
         for edition in result["editions"]:
-            match = MetaRecord(    
+            match = MetaRecord(
                 id=id,
-                title=edition.get("title",""),       
-                authors=self._parse_edition_authors(edition,[]),
+                title=edition.get("title", ""),
+                authors=self._parse_edition_authors(edition, []),
                 url=self._parse_edition_url(result, edition, ""),
                 source=MetaSourceInfo(
                     id=self.__id__,
                     description=Hardcover.DESCRIPTION,
                     link=Hardcover.META_URL,
                 ),
-                series=(result.get("book_series") or [{}])[0].get("series",{}).get("name", ""),
+                series=(result.get("book_series") or [{}])[0]
+                .get("series", {})
+                .get("name", ""),
             )
             match.cover = (edition.get("image") or {}).get("url", generic_cover)
-            match.description = result.get("description","")
-            match.publisher = (edition.get("publisher") or {}).get("name","")
+            match.description = result.get("description", "")
+            match.publisher = (edition.get("publisher") or {}).get("name", "")
             match.publishedDate = edition.get("release_date", "")
-            match.series_index = (result.get("book_series") or [{}])[0].get("position", "")
-            match.tags = self._parse_tags(result,[])
-            match.languages = self._parse_languages(edition,locale)
+            match.series_index = (result.get("book_series") or [{}])[0].get(
+                "position", ""
+            )
+            match.tags = self._parse_tags(result, [])
+            match.languages = self._parse_languages(edition, locale)
             match.identifiers = {
                 "hardcover-id": id,
                 "hardcover-slug": result.get("slug", ""),
-                "hardcover-edition": edition.get("id",""),
-                "isbn": (edition.get("isbn_13",edition.get("isbn_10")) or "")
+                "hardcover-edition": edition.get("id", ""),
+                "isbn": (edition.get("isbn_13", edition.get("isbn_10")) or ""),
             }
-            isbn = edition.get("isbn_13",edition.get("isbn_10"))
+            isbn = edition.get("isbn_13", edition.get("isbn_10"))
             if isbn:
                 match.identifiers["isbn"] = isbn
-            match.format = Hardcover.FORMATS[edition.get("reading_format_id",0)]
+            match.format = Hardcover.FORMATS[edition.get("reading_format_id", 0)]
             editions.append(match)
         return editions
-    
+
     @staticmethod
     def _parse_title_url(result: Dict, url: str) -> str:
         hardcover_slug = result["document"].get("slug", "")
@@ -207,15 +233,19 @@ class Hardcover(Metadata):
     @staticmethod
     def _parse_edition_url(result: Dict, edition: Dict, url: str) -> str:
         edition = edition.get("id", "")
-        slug = result.get("slug","")
+        slug = result.get("slug", "")
         if edition:
             return f"https://hardcover.app/books/{slug}/editions/{edition}"
         return url
-    
+
     @staticmethod
     def _parse_edition_authors(edition: Dict, authors: List[str]) -> List[str]:
         try:
-            return [author["author"]["name"] for author in edition.get("contributions",[]) if "author" in author and "name" in author["author"]]
+            return [
+                author["author"]["name"]
+                for author in edition.get("contributions", [])
+                if "author" in author and "name" in author["author"]
+            ]
         except Exception as e:
             log.warning(e)
             return authors
@@ -223,17 +253,15 @@ class Hardcover(Metadata):
     @staticmethod
     def _parse_tags(result: Dict, tags: List[str]) -> List[str]:
         try:
-            return [item["tag"] for item in result["cached_tags"] if "tag" in item]
+            return [
+                item["tag"] for item in result["cached_tags"]["Genre"] if "tag" in item
+            ]
         except Exception as e:
             log.warning(e)
             return tags
-        
+
     @staticmethod
     def _parse_languages(edition: Dict, locale: str) -> List[str]:
-        language_iso = (edition.get("language") or {}).get("code3","")
-        languages = (
-            [get_language_name(locale, language_iso)]
-            if language_iso
-            else []
-        )
+        language_iso = (edition.get("language") or {}).get("code3", "")
+        languages = [get_language_name(locale, language_iso)] if language_iso else []
         return languages

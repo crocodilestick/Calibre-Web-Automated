@@ -249,11 +249,11 @@ msgstr "client_secrets.json 未为 Web 应用程序配置"
 
 #: cps/admin.py:1213
 msgid "Unable to fetch OAuth metadata from URL."
-msgstr ""
+msgstr "无法从 URL 获取 OAuth 元数据。"
 
 #: cps/admin.py:1231
 msgid "Unable to fetch OpenID configuration."
-msgstr ""
+msgstr "无法获取 OpenID 配置。"
 
 #: cps/admin.py:1293
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -475,7 +475,7 @@ msgstr "{} 用户被成功导入"
 
 #: cps/admin.py:1853
 msgid "Books path not valid"
-msgstr ""
+msgstr "书籍路径无效"
 
 #: cps/admin.py:1860
 msgid "DB Location is not Valid, Please Enter Correct Path"
@@ -556,19 +556,19 @@ msgstr "连接错误"
 #: cps/admin.py:2283 cps/admin.py:2326
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
-msgstr ""
+msgstr "连接失败：服务器返回状态码 %(code)s"
 
 #: cps/admin.py:2285 cps/admin.py:2328
 msgid "Connection failed: Could not connect to server."
-msgstr ""
+msgstr "连接失败：无法连接到服务器。"
 
 #: cps/admin.py:2287 cps/admin.py:2330
 msgid "Connection failed: Request timed out."
-msgstr ""
+msgstr "连接失败：请求超时。"
 
 #: cps/admin.py:2289 cps/admin.py:2332
 msgid "Connection failed: Invalid JSON in response."
-msgstr ""
+msgstr "连接失败：响应中的 JSON 无效。"
 
 #: cps/admin.py:2292 cps/admin.py:2335
 #, fuzzy
@@ -578,12 +578,12 @@ msgstr "发生一个未知错误，请稍后再试"
 #: cps/admin.py:2318
 #, python-format
 msgid "Metadata is missing required fields: %(fields)s"
-msgstr ""
+msgstr "元数据缺少必填字段：%(fields)s"
 
 #: cps/admin.py:2323
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s endpoints."
-msgstr ""
+msgstr "元数据 URL 有效！找到 %(count)s 个端点。"
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -707,7 +707,7 @@ msgstr "缺少执行权限"
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
-msgstr ""
+msgstr "图书库刷新 🔄 正在检查是否有可能被遗漏的书籍，请稍候..."
 
 #: cps/cwa_functions.py:297
 #, fuzzy
@@ -717,12 +717,12 @@ msgstr "Calibre 电子书转换器设置"
 #: cps/cwa_functions.py:319 cps/cwa_functions.py:321 cps/cwa_functions.py:325
 #: cps/cwa_functions.py:327 cps/cwa_functions.py:330 cps/cwa_functions.py:332
 msgid "Timestamp"
-msgstr ""
+msgstr "时间戳"
 
 #: cps/cwa_functions.py:319 cps/cwa_functions.py:321
 #, fuzzy
 msgid "Book ID"
-msgstr "书籍"
+msgstr "书籍 ID"
 
 #: cps/cwa_functions.py:319 cps/templates/book_edit.html:85
 #: cps/templates/search_form.html:8
@@ -736,38 +736,38 @@ msgstr "作者"
 
 #: cps/cwa_functions.py:319
 msgid "Trigger Type"
-msgstr ""
+msgstr "触发类型"
 
 #: cps/cwa_functions.py:321 cps/cwa_functions.py:327
 #, fuzzy
 msgid "Filepath"
-msgstr "文件格式"
+msgstr "文件路径"
 
 #: cps/cwa_functions.py:325 cps/cwa_functions.py:327 cps/cwa_functions.py:330
 #: cps/cwa_functions.py:332
 #, fuzzy
 msgid "Filename"
-msgstr "名称"
+msgstr "文件名"
 
 #: cps/cwa_functions.py:325
 msgid "Manual?"
-msgstr ""
+msgstr "手动？"
 
 #: cps/cwa_functions.py:325
 msgid "No. Fixes"
-msgstr ""
+msgstr "未修复"
 
 #: cps/cwa_functions.py:325 cps/cwa_functions.py:330 cps/cwa_functions.py:332
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "原始文件已备份？"
 
 #: cps/cwa_functions.py:327
 msgid "Fixes Applied"
-msgstr ""
+msgstr "已应用修复"
 
 #: cps/cwa_functions.py:332
 msgid "Original Format"
-msgstr ""
+msgstr "原始格式"
 
 #: cps/cwa_functions.py:332
 #, fuzzy
@@ -776,70 +776,70 @@ msgstr "上传格式"
 
 #: cps/cwa_functions.py:347
 msgid "Calibre-Web Automated Sever Stats & Archive"
-msgstr ""
+msgstr "Calibre-Web Automated Sever 统计与存档"
 
 #: cps/cwa_functions.py:362
 msgid "Calibre-Web Automated - Full Enforcement History"
-msgstr ""
+msgstr "Calibre-Web Automated - 完整的执行历史"
 
 #: cps/cwa_functions.py:371
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
-msgstr ""
+msgstr "Calibre-Web Automated - 完整的执行历史（带路径）"
 
 #: cps/cwa_functions.py:380
 msgid "Calibre-Web Automated - Full Import History"
-msgstr ""
+msgstr "Calibre-Web Automated - 完整的导入历史"
 
 #: cps/cwa_functions.py:389
 msgid "Calibre-Web Automated - Full Conversion History"
-msgstr ""
+msgstr "Calibre-Web Automated - 完整的转换历史"
 
 #: cps/cwa_functions.py:398
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
-msgstr ""
+msgstr "Calibre-Web Automated - 完整的 EPUB 修复历史（无路径和修复）"
 
 #: cps/cwa_functions.py:407
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
-msgstr ""
+msgstr "Calibre-Web Automated - 完整的 EPUB 修复历史（带路径和修复）"
 
 #: cps/cwa_functions.py:425
 msgid "✅ All Monitoring Services are running as intended! 👍"
-msgstr ""
+msgstr "✅ 所有监控服务均按预期运行！ 👍"
 
 #: cps/cwa_functions.py:427
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
-msgstr ""
+msgstr "🔴 导入服务正在运行，但元数据更改检测器未运行"
 
 #: cps/cwa_functions.py:429
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
-msgstr ""
+msgstr "🔴 元数据更改检测器正在运行，但导入服务未运行"
 
 #: cps/cwa_functions.py:431
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
-msgstr ""
+msgstr "⛔ 导入服务和元数据更改检测器均未运行"
 
 #: cps/cwa_functions.py:433
 msgid "An Error has occurred"
-msgstr ""
+msgstr "发生错误"
 
 #: cps/cwa_functions.py:604 cps/cwa_functions.py:611
 msgid "Calibre-Web Automated - Convert Library"
-msgstr ""
+msgstr "Calibre-Web Automated - 转换图书库"
 
 #: cps/cwa_functions.py:724 cps/cwa_functions.py:730
 msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+msgstr "Calibre-Web Automated - 发送到 Kindle EPUB 修复服务"
 
 #: cps/cwa_functions.py:815
 msgid "You must be an admin to access this page."
-msgstr ""
+msgstr "您必须是管理员才能访问此页面。"
 
 #: cps/cwa_functions.py:830
 msgid "Both username and image data are required."
-msgstr ""
+msgstr "用户名和图像数据均为必填项。"
 
 #: cps/cwa_functions.py:848
 #, fuzzy
@@ -848,7 +848,7 @@ msgstr "成功删除 {} 个用户"
 
 #: cps/cwa_functions.py:861
 msgid "CWA Profile Picture Management (WIP)"
-msgstr ""
+msgstr "CWA 头像管理（开发中）"
 
 #: cps/db.py:1075 cps/templates/config_edit.html:217
 #: cps/templates/config_view_edit.html:63 cps/templates/email_edit.html:41
@@ -865,7 +865,7 @@ msgstr "删除书籍"
 
 #: cps/editbooks.py:106
 msgid "Missing or invalid book id for format upload"
-msgstr ""
+msgstr "格式上传缺少或无效的书籍 ID"
 
 #: cps/editbooks.py:131 cps/editbooks.py:151 cps/templates/book_edit.html:53
 #: cps/templates/layout.html:148
@@ -1182,11 +1182,11 @@ msgstr "执行 UnRar 时出错"
 
 #: cps/helper.py:1049
 msgid "Could not find the specified directory"
-msgstr ""
+msgstr "找不到指定的目录"
 
 #: cps/helper.py:1052
 msgid "Please specify a directory, not a file"
-msgstr ""
+msgstr "请指定一个目录，而不是文件"
 
 #: cps/helper.py:1066
 #, fuzzy
@@ -1196,7 +1196,7 @@ msgstr "数据库不可写入"
 #: cps/helper.py:1075
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
-msgstr ""
+msgstr "缺少 Calibre 执行文件: %(missing)s"
 
 #: cps/helper.py:1077
 #, fuzzy, python-format
@@ -1226,7 +1226,7 @@ msgstr "Kobo 设置"
 
 #: cps/kosync.py:143
 msgid "KOReader Sync Plugin"
-msgstr ""
+msgstr "KOReader 同步插件"
 
 #: cps/oauth_bb.py:64
 #, python-format
@@ -1235,15 +1235,15 @@ msgstr "使用 %(provider)s 注册"
 
 #: cps/oauth_bb.py:108
 msgid "Login failed: Could not connect to the user info endpoint."
-msgstr ""
+msgstr "登录失败：无法连接到用户信息端点。"
 
 #: cps/oauth_bb.py:112
 msgid "Login failed: The OAuth provider returned an invalid user profile."
-msgstr ""
+msgstr "登录失败：OAuth 提供者返回了无效的用户资料。"
 
 #: cps/oauth_bb.py:125
 msgid "Login failed: User profile from provider is incomplete."
-msgstr ""
+msgstr "登录失败：提供者的用户资料不完整。"
 
 #: cps/oauth_bb.py:212 cps/remotelogin.py:149
 #, python-format
@@ -1482,7 +1482,7 @@ msgstr "显示书籍列表"
 
 #: cps/render_template.py:104
 msgid "Duplicates"
-msgstr ""
+msgstr "重复书籍"
 
 #: cps/render_template.py:106
 #, fuzzy
@@ -1543,7 +1543,7 @@ msgstr "此书籍已经是书架 %(shelfname)s 的一部分"
 #: cps/shelf.py:63
 #, python-format
 msgid "%(book_id)s is a invalid Book Id. Could not be added to Shelf"
-msgstr ""
+msgstr "%(book_id)s 是无效的书籍 ID，无法添加到书架"
 
 #: cps/shelf.py:83
 #, python-format
@@ -1786,7 +1786,7 @@ msgstr "请先配置您的 Kindle 邮箱"
 
 #: cps/web.py:1378
 msgid "No email addresses selected"
-msgstr ""
+msgstr "没有选择电子邮箱地址"
 
 #: cps/web.py:1386
 #, fuzzy
@@ -1892,7 +1892,7 @@ msgstr "找不到包含 OAuth 信息的有效 gmail.json 文件"
 
 #: cps/tasks/clean.py:18
 msgid "Delete temp folder contents"
-msgstr ""
+msgstr "删除临时文件夹内容"
 
 #: cps/tasks/convert.py:98
 #, python-format
@@ -1975,7 +1975,7 @@ msgstr "上传书籍"
 
 #: cps/templates/admin.html:9
 msgid "Users&nbsp;&nbsp;👤"
-msgstr ""
+msgstr "用户&nbsp;&nbsp;👤"
 
 #: cps/templates/admin.html:14 cps/templates/login.html:9
 #: cps/templates/login.html:10 cps/templates/register.html:9
@@ -2032,7 +2032,7 @@ msgstr "公共书架"
 
 #: cps/templates/admin.html:56
 msgid "Manage Profile Pictures"
-msgstr ""
+msgstr "管理用户头像"
 
 #: cps/templates/admin.html:58
 msgid "Import LDAP Users"
@@ -2074,7 +2074,7 @@ msgstr "使用 Oauth2 的 Gmail"
 
 #: cps/templates/admin.html:109
 msgid "Configuration&nbsp;&nbsp;⚙️"
-msgstr ""
+msgstr "配置&nbsp;&nbsp;⚙️"
 
 #: cps/templates/admin.html:112
 msgid "Calibre Database Directory"
@@ -2169,7 +2169,7 @@ msgstr "刷新封面缩略图缓存"
 
 #: cps/templates/admin.html:207
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
-msgstr ""
+msgstr "CWA 管理功能&nbsp;&nbsp;⚡"
 
 #: cps/templates/admin.html:208
 #, fuzzy
@@ -2193,15 +2193,15 @@ msgstr "epub 阅读器"
 
 #: cps/templates/admin.html:214
 msgid "CWA Library Conversion Service"
-msgstr ""
+msgstr "CWA 书库转换服务"
 
 #: cps/templates/admin.html:215
 msgid "CWA Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+msgstr "CWA 发送到 Kindle EPUB 修复服务"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
-msgstr ""
+msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
 #, fuzzy
@@ -2550,11 +2550,11 @@ msgstr "交换作者和标题"
 #: cps/templates/book_table.html:72
 #, fuzzy
 msgid "Select all"
-msgstr "创建书架"
+msgstr "全选"
 
 #: cps/templates/book_table.html:75
 msgid "Clear all"
-msgstr ""
+msgstr "清除所有"
 
 #: cps/templates/book_table.html:84
 #, fuzzy
@@ -2658,23 +2658,23 @@ msgstr "合并到这本书籍："
 
 #: cps/templates/book_table.html:186
 msgid "The following books will be deleted:"
-msgstr ""
+msgstr "以下书籍将被删除："
 
 #: cps/templates/book_table.html:206
 msgid "The following books will be archived:"
-msgstr ""
+msgstr "以下书籍将被归档："
 
 #: cps/templates/book_table.html:226
 msgid "The following books will be unarchived:"
-msgstr ""
+msgstr "以下书籍将被取消归档："
 
 #: cps/templates/book_table.html:246
 msgid "The following books will be marked read:"
-msgstr ""
+msgstr "以下书籍将被标为已读："
 
 #: cps/templates/book_table.html:266
 msgid "The following books will be marked unread:"
-msgstr ""
+msgstr "以下书籍将被标为未读："
 
 #: cps/templates/book_table.html:282 cps/templates/detail.html:410
 msgid "Edit Metadata"
@@ -2682,7 +2682,7 @@ msgstr "编辑元数据"
 
 #: cps/templates/book_table.html:285
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
-msgstr ""
+msgstr "编辑您想要更改的字段。空白字段将被忽略："
 
 #: cps/templates/book_table.html:340
 #, fuzzy
@@ -2691,11 +2691,11 @@ msgstr "创建书架"
 
 #: cps/templates/book_table.html:343
 msgid "Please select a shelf to add the selected books to:"
-msgstr ""
+msgstr "请选择一个书架以添加所选书籍："
 
 #: cps/templates/book_table.html:345
 msgid "-- Select a Shelf --"
-msgstr ""
+msgstr "-- 选择一个书架 --"
 
 #: cps/templates/book_table.html:363 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
@@ -2846,7 +2846,7 @@ msgstr "保存到磁盘时转换标题和作者中的非英文字符"
 msgid ""
 "Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/"
 "Kepubify binaries)"
-msgstr ""
+msgstr "在下载/转换/电子邮件时将元数据嵌入电子书文件（需要 Calibre/Kepubify 二进制文件）"
 
 #: cps/templates/config_edit.html:112
 msgid "Enable Uploads"
@@ -2890,7 +2890,7 @@ msgstr "服务器扩展端口 (用于转发的 API 调用的端口)"
 
 #: cps/templates/config_edit.html:154
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
-msgstr ""
+msgstr "将 Kobo 阅读进度同步到 Hardcover (每个用户需要 API 密钥)"
 
 #: cps/templates/config_edit.html:161
 msgid "Use Goodreads"
@@ -2907,7 +2907,7 @@ msgstr "启用 Kobo 同步"
 
 #: cps/templates/config_edit.html:176
 msgid "Hardcover API Key"
-msgstr ""
+msgstr "Hardcover API Key"
 
 #: cps/templates/config_edit.html:182
 msgid "Allow Reverse Proxy Authentication"
@@ -3033,11 +3033,11 @@ msgstr "LDAP 成员用户过滤器"
 
 #: cps/templates/config_edit.html:309
 msgid "Generic OAuth Provider"
-msgstr ""
+msgstr "通用 OAuth 提供商"
 
 #: cps/templates/config_edit.html:313
 msgid "OAuth Metadata URL (for auto-discovery)"
-msgstr ""
+msgstr "OAuth 元数据 URL (用于自动发现)"
 
 #: cps/templates/config_edit.html:317
 #, fuzzy
@@ -3046,39 +3046,39 @@ msgstr "获取元数据"
 
 #: cps/templates/config_edit.html:320
 msgid "Leave empty to use manual configuration below"
-msgstr ""
+msgstr "留空以使用下面的手动配置"
 
 #: cps/templates/config_edit.html:326
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
-msgstr ""
+msgstr "使用手动端点 URL（覆盖自动发现）"
 
 #: cps/templates/config_edit.html:327
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
-msgstr ""
+msgstr "选中此项以手动配置单个 OAuth 端点，而不是使用自动发现"
 
 #: cps/templates/config_edit.html:332
 #, fuzzy
 msgid "Manual Endpoint Configuration"
-msgstr "编辑界面配置"
+msgstr "手动端点配置"
 
 #: cps/templates/config_edit.html:335
 msgid "OAuth Base URL"
-msgstr ""
+msgstr "OAuth 基础 URL"
 
 #: cps/templates/config_edit.html:340
 msgid "Authorization Endpoint"
-msgstr ""
+msgstr "授权端点"
 
 #: cps/templates/config_edit.html:345
 #, fuzzy
 msgid "Token Endpoint"
-msgstr "找不到令牌"
+msgstr "令牌端点"
 
 #: cps/templates/config_edit.html:350
 msgid "UserInfo Endpoint"
-msgstr ""
+msgstr "用户信息端点"
 
 #: cps/templates/config_edit.html:358
 #, fuzzy
@@ -3092,7 +3092,7 @@ msgstr "OAuth 设置"
 
 #: cps/templates/config_edit.html:369
 msgid "Space-separated list of OAuth scopes"
-msgstr ""
+msgstr "以空格分隔的 OAuth 范围列表"
 
 #: cps/templates/config_edit.html:373
 #, fuzzy
@@ -3116,7 +3116,7 @@ msgstr "用户名"
 
 #: cps/templates/config_edit.html:386
 msgid "JWT field to extract username from"
-msgstr ""
+msgstr "JWT 字段以提取用户名"
 
 #: cps/templates/config_edit.html:389
 #, fuzzy
@@ -3125,15 +3125,15 @@ msgstr "电子邮件服务"
 
 #: cps/templates/config_edit.html:391
 msgid "JWT field to extract email from"
-msgstr ""
+msgstr "JWT 字段以提取电子邮件"
 
 #: cps/templates/config_edit.html:394
 msgid "OAuth group for Admin"
-msgstr ""
+msgstr "OAuth 管理组"
 
 #: cps/templates/config_edit.html:398
 msgid "Login Button Text"
-msgstr ""
+msgstr "登录按钮文本"
 
 #: cps/templates/config_edit.html:404
 #, python-format
@@ -3191,7 +3191,7 @@ msgstr ""
 
 #: cps/templates/config_edit.html:490
 msgid "Check if file extensions matches file content on upload"
-msgstr ""
+msgstr "检查上传时文件扩展名是否与文件内容匹配"
 
 #: cps/templates/config_edit.html:493
 #, fuzzy
@@ -3228,7 +3228,7 @@ msgstr "必须使用大写字符"
 
 #: cps/templates/config_edit.html:522
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
-msgstr ""
+msgstr "必须使用字符（适用于中文/日文/韩文字符）"
 
 #: cps/templates/config_edit.html:526
 msgid "Enforce special characters"
@@ -3250,7 +3250,7 @@ msgstr "主页中书籍作者的最大显示数量（0=不隐藏）"
 msgid ""
 "Default Theme (users can select their own preferred theme however new users "
 "will receive this theme by default)"
-msgstr ""
+msgstr "默认主题（用户可以选择自己喜欢的主题，但新用户默认将使用此主题）"
 
 #: cps/templates/config_view_edit.html:42
 msgid "Standard Theme"
@@ -3264,7 +3264,7 @@ msgstr "黑暗主题"
 msgid ""
 "Per-user theme switching enabled; this global default only affects new users "
 "& anonymous"
-msgstr ""
+msgstr "启用用户主题切换；此全局默认值仅影响新用户和匿名用户"
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
@@ -3367,7 +3367,7 @@ msgstr "Calibre-Web 日志: "
 
 #: cps/templates/cwa_settings.html:24
 msgid "Enable CWA Auto-Convert"
-msgstr ""
+msgstr "启用 CWA 自动转换"
 
 #: cps/templates/cwa_settings.html:26
 msgid ""
@@ -3409,7 +3409,7 @@ msgstr "设置"
 
 #: cps/templates/cwa_settings.html:66
 msgid "Enable CWA Update Notifications"
-msgstr ""
+msgstr "启用 CWA 更新通知"
 
 #: cps/templates/cwa_settings.html:68
 msgid ""
@@ -3419,24 +3419,24 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:76
 msgid "Enable Contribute Translations Notifications"
-msgstr ""
+msgstr "启用翻译贡献通知"
 
 #: cps/templates/cwa_settings.html:78
 msgid ""
 "When disabled, you will no longer receive notifications in the Web UI when "
 "using a language other than English if the translations for your chosen "
 "language are not complete."
-msgstr ""
+msgstr "当禁用时，如果您选择的语言的翻译不完整，您将不再收到 Web UI 中的通知。"
 
 #: cps/templates/cwa_settings.html:86
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
-msgstr ""
+msgstr "启用移动设备（&lt;768px）上的模糊背景"
 
 #: cps/templates/cwa_settings.html:88
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
-msgstr ""
+msgstr "启用后，模糊封面背景效果也会在小屏幕上呈现。如果您注意到滚动或动画延迟，请禁用该功能。"
 
 #: cps/templates/cwa_settings.html:93
 #, fuzzy
@@ -3445,37 +3445,37 @@ msgstr "OAuth 设置"
 
 #: cps/templates/cwa_settings.html:100
 msgid "Enable CWA Import Auto-Backup"
-msgstr ""
+msgstr "启用 CWA 导入自动备份"
 
 #: cps/templates/cwa_settings.html:102
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
-msgstr ""
+msgstr "启用后，所有导入的文件的副本将存储在 <i>/config/processed_books/imported</i>"
 
 #: cps/templates/cwa_settings.html:110
 msgid "Enable CWA Conversion Auto-Backup"
-msgstr ""
+msgstr "启用 CWA 转换自动备份"
 
 #: cps/templates/cwa_settings.html:112
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
-msgstr ""
+msgstr "启用后，进行转换的导入文件的原始文件将存储在 /config/processed_books/converted"
 
 #: cps/templates/cwa_settings.html:120
 msgid "Enable CWA EPUB Fixer Auto-Backup"
-msgstr ""
+msgstr "启用 CWA EPUB 修复自动备份"
 
 #: cps/templates/cwa_settings.html:122
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
-msgstr ""
+msgstr "启用后，CWA Kindle EPUB 修复服务处理的 EPUB 原始文件将存储在 /config/processed_books/fixed_originals"
 
 #: cps/templates/cwa_settings.html:132
 msgid "Enable CWA Auto-Zip Backups"
-msgstr ""
+msgstr "启用 CWA 自动压缩备份"
 
 #: cps/templates/cwa_settings.html:134
 msgid ""
@@ -3487,7 +3487,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:139
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
-msgstr ""
+msgstr "CWA 自动转换目标格式 - 默认 EPUB"
 
 #: cps/templates/cwa_settings.html:142
 msgid ""
@@ -3510,7 +3510,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:160
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr ""
+msgstr "CWA 自动转换 - 忽略格式"
 
 #: cps/templates/cwa_settings.html:162
 msgid ""
@@ -3520,7 +3520,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:187
 msgid "CWA Auto-Ingest - Ignored Formats"
-msgstr ""
+msgstr "CWA 自动导入 - 忽略格式"
 
 #: cps/templates/cwa_settings.html:189
 msgid ""
@@ -3531,58 +3531,58 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:214
 msgid "CWA Auto-Ingest Automerge"
-msgstr ""
+msgstr "CWA 自动导入自动合并"
 
 #: cps/templates/cwa_settings.html:217
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
-msgstr ""
+msgstr "Calibre 可以在导入时检测重复的书名，并根据"
 
 #: cps/templates/cwa_settings.html:217
 msgid "automerge"
-msgstr ""
+msgstr "自动合并"
 
 #: cps/templates/cwa_settings.html:218
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
-msgstr ""
+msgstr "设置删除重复书籍的任一实例或保留两者（默认）。"
 
 #: cps/templates/cwa_settings.html:236
 msgid "Discards duplicate import, keeps library copy"
-msgstr ""
+msgstr "丢弃重复导入，保留库中的副本"
 
 #: cps/templates/cwa_settings.html:240
 msgid "Overwrites library copy with newly imported file"
-msgstr ""
+msgstr "用新导入的文件覆盖库中的副本"
 
 #: cps/templates/cwa_settings.html:244
 msgid "Creates a duplicate record, keeping both copies"
-msgstr ""
+msgstr "创建重复记录，保留两个副本"
 
 #: cps/templates/cwa_settings.html:253
 msgid "Ingest Processing Timeout"
-msgstr ""
+msgstr "导入处理超时时间"
 
 #: cps/templates/cwa_settings.html:255
 msgid ""
 "Maximum time (in minutes) to allow for processing a single book before "
 "timing out. Files that timeout are moved to the failed backup folder for "
 "investigation."
-msgstr ""
+msgstr "处理单本书籍的最大时间（以分钟为单位），超时后将被移动到失败备份文件夹以供调查。"
 
 #: cps/templates/cwa_settings.html:257
 msgid "Timeout (minutes):"
-msgstr ""
+msgstr "超时时间（分钟）:"
 
 #: cps/templates/cwa_settings.html:265
 msgid "Range: 5-120 minutes (default: 15)"
-msgstr ""
+msgstr "范围: 5-120 分钟（默认: 15）"
 
 #: cps/templates/cwa_stats.html:43 cps/templates/cwa_stats.html:65
 #: cps/templates/cwa_stats.html:87 cps/templates/cwa_stats.html:106
 #: cps/templates/cwa_stats.html:130 cps/templates/cwa_stats.html:149
 msgid "Click to See More"
-msgstr ""
+msgstr "点击查看更多"
 
 #: cps/templates/detail.html:66
 #, fuzzy
@@ -3601,7 +3601,7 @@ msgstr "接收书籍的电子阅读器邮箱地址"
 
 #: cps/templates/detail.html:80
 msgid "Choose email addresses:"
-msgstr ""
+msgstr "选择邮箱地址:"
 
 #: cps/templates/detail.html:84
 #, fuzzy
@@ -3615,7 +3615,7 @@ msgstr "删除格式:"
 
 #: cps/templates/detail.html:113
 msgid "Send"
-msgstr ""
+msgstr "发送"
 
 #: cps/templates/detail.html:150 cps/templates/detail.html:151
 #: cps/templates/detail.html:164 cps/templates/detail.html:165
@@ -3669,17 +3669,17 @@ msgstr "(公共)"
 
 #: cps/templates/duplicates.html:283
 msgid "CWA Duplicates Manager"
-msgstr ""
+msgstr "CWA 重复书籍管理器"
 
 #: cps/templates/duplicates.html:285
 msgid ""
 "Books with matching titles and authors. Visual inspection recommended to "
 "identify true duplicates."
-msgstr ""
+msgstr "具有匹配标题和作者的书籍。建议通过可视化检查来识别真正的重复项。"
 
 #: cps/templates/duplicates.html:290
 msgid "Select Duplicates"
-msgstr ""
+msgstr "选择重复项"
 
 #: cps/templates/duplicates.html:291
 #, fuzzy
@@ -3698,13 +3698,13 @@ msgstr "无搜索结果"
 
 #: cps/templates/duplicates.html:344
 msgid "Your library has no books with duplicate title and author combinations."
-msgstr ""
+msgstr "您的书库中没有标题和作者组合重复的书籍。"
 
 #: cps/templates/duplicates.html:345
 msgid ""
 "This search looks for books with identical titles AND authors to avoid false "
 "positives."
-msgstr ""
+msgstr "此搜索查找标题和作者完全相同的书籍，以避免误报。"
 
 #: cps/templates/duplicates.html:359
 #, fuzzy
@@ -3713,19 +3713,19 @@ msgstr "此书籍将从数据库中永久删除"
 
 #: cps/templates/duplicates.html:363
 msgid "This action cannot be undone!"
-msgstr ""
+msgstr "此操作无法撤销！"
 
 #: cps/templates/duplicates.html:378
 msgid "Success"
-msgstr ""
+msgstr "成功"
 
 #: cps/templates/duplicates.html:385
 msgid "Selected duplicate books have been deleted successfully!"
-msgstr ""
+msgstr "选中的重复书籍已成功删除！"
 
 #: cps/templates/duplicates.html:407
 msgid "An error occurred while processing your request."
-msgstr ""
+msgstr "处理您的请求时发生错误。"
 
 #: cps/templates/email_edit.html:13
 msgid "Email Account Type"
@@ -3954,11 +3954,11 @@ msgstr "搜索书库"
 
 #: cps/templates/layout.html:205
 msgid "See Changelog"
-msgstr ""
+msgstr "查看更新日志"
 
 #: cps/templates/layout.html:215
 msgid "Contribute here!"
-msgstr ""
+msgstr "在这里贡献！"
 
 #: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
@@ -3982,7 +3982,7 @@ msgstr "书籍详情"
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
 msgid "Filter by initial"
-msgstr ""
+msgstr "按首字母过滤"
 
 #: cps/templates/list.html:43
 msgid "Grid"
@@ -4148,7 +4148,7 @@ msgstr "字体大小"
 
 #: cps/templates/read.html:105
 msgid "Font"
-msgstr ""
+msgstr "字体"
 
 #: cps/templates/read.html:106
 #, fuzzy
@@ -4157,21 +4157,21 @@ msgstr "删除数据"
 
 #: cps/templates/read.html:107
 msgid "Yahei"
-msgstr ""
+msgstr "雅黑"
 
 #: cps/templates/read.html:108
 msgid "SimSun"
-msgstr ""
+msgstr "宋体"
 
 #: cps/templates/read.html:109
 #, fuzzy
 msgid "KaiTi"
-msgstr "等待中"
+msgstr "楷体"
 
 #: cps/templates/read.html:110
 #, fuzzy
 msgid "Arial"
-msgstr "垂直"
+msgstr "Arial"
 
 #: cps/templates/read.html:113
 #, fuzzy
@@ -4181,12 +4181,12 @@ msgstr "已读"
 #: cps/templates/read.html:114
 #, fuzzy
 msgid "Two columns"
-msgstr "无效的阅读栏目"
+msgstr "双栏"
 
 #: cps/templates/read.html:115
 #, fuzzy
 msgid "One column"
-msgstr "无效的阅读栏目"
+msgstr "单栏"
 
 #: cps/templates/readcbr.html:8
 msgid "Comic Reader"
@@ -4397,11 +4397,11 @@ msgstr "阅读状态"
 
 #: cps/templates/search_form.html:44 cps/templates/search_form.html:165
 msgid "Any"
-msgstr ""
+msgstr "任何"
 
 #: cps/templates/search_form.html:45 cps/templates/search_form.html:166
 msgid "Empty"
-msgstr ""
+msgstr "空"
 
 #: cps/templates/search_form.html:60
 msgid "Exclude Tags"
@@ -4572,7 +4572,7 @@ msgstr "重置用户密码"
 msgid ""
 "Send to eReader Email Address. Use comma to separate emails for multiple "
 "eReaders"
-msgstr ""
+msgstr "发送到电子阅读器邮箱地址。使用逗号分隔多个电子阅读器的邮箱"
 
 #: cps/templates/user_edit.html:43
 msgid "Language of Books"
@@ -4592,7 +4592,7 @@ msgstr "取消链接"
 
 #: cps/templates/user_edit.html:74
 msgid "Hardcover API token"
-msgstr ""
+msgstr "Hardcover API token"
 
 #: cps/templates/user_edit.html:79
 msgid "Kobo Sync Token"

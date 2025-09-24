@@ -5,6 +5,32 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+"""
+OAuth Integration for Calibre-Web Automated
+
+This module handles OAuth/OIDC authentication for GitHub, Google, and generic OIDC providers.
+
+Issue #663 Fix: Invalid Redirect URI Error
+=========================================
+
+The "invalid redirect URI" error that occurs after some time away is caused by Flask-Dance
+generating redirect URIs dynamically based on the current request context. When users
+return after time away, their context (hostname, protocol, proxy headers) may have changed,
+causing a different redirect URI to be generated.
+
+Solution implemented:
+1. Added config_oauth_redirect_host setting to force consistent redirect URIs
+2. Enhanced error messages to guide users when redirect URI issues occur  
+3. Added validation for the OAuth redirect host configuration
+4. Integrated with Flask's FORCE_HOST_FOR_REDIRECTS for URL consistency
+
+Usage:
+- Set "OAuth Redirect Host" in Admin > Basic Configuration > OAuth
+- Use full URL with protocol: https://your-domain.com
+- Required when: accessing via multiple hostnames, behind reverse proxy, 
+  or experiencing "invalid redirect URI" errors
+"""
+
 import json
 import requests
 from functools import wraps
@@ -364,21 +390,49 @@ def generate_oauth_blueprints():
     oauthblueprints.append(ele3)
 
     for element in oauthblueprints:
+        redirect_uri = None
+        if hasattr(config, 'config_oauth_redirect_host') and config.config_oauth_redirect_host and config.config_oauth_redirect_host.strip():
+            # Build absolute redirect URI for consistent OAuth flows
+            host = config.config_oauth_redirect_host.strip()
+            if not host.startswith(('http://', 'https://')):
+                host = f"https://{host}"
+            provider_name = element['provider_name']
+            redirect_uri = f"{host.rstrip('/')}/login/{provider_name}/authorized"
+            
         if element['provider_name'] == 'github':
-            blueprint = make_github_blueprint(
-                client_id=element['oauth_client_id'],
-                client_secret=element['oauth_client_secret'],
-                redirect_to="oauth."+element['provider_name']+"_login",
-                scope=element['scope']
-            )
+            blueprint_params = {
+                'client_id': element['oauth_client_id'],
+                'client_secret': element['oauth_client_secret'],
+                'redirect_to': "oauth."+element['provider_name']+"_login",
+                'scope': element['scope']
+            }
+            # Only add redirect_url if we have a configured host and the blueprint supports it
+            if redirect_uri:
+                try:
+                    blueprint = make_github_blueprint(redirect_url=redirect_uri, **blueprint_params)
+                except TypeError:
+                    # Fallback if redirect_url parameter is not supported
+                    blueprint = make_github_blueprint(**blueprint_params)
+            else:
+                blueprint = make_github_blueprint(**blueprint_params)
         elif element['provider_name'] == 'google':
-            blueprint = make_google_blueprint(
-                client_id=element['oauth_client_id'],
-                client_secret=element['oauth_client_secret'],
-                redirect_to="oauth."+element['provider_name']+"_login",
-                scope=element['scope']
-            )
+            blueprint_params = {
+                'client_id': element['oauth_client_id'],
+                'client_secret': element['oauth_client_secret'],
+                'redirect_to': "oauth."+element['provider_name']+"_login",
+                'scope': element['scope']
+            }
+            # Only add redirect_url if we have a configured host and the blueprint supports it
+            if redirect_uri:
+                try:
+                    blueprint = make_google_blueprint(redirect_url=redirect_uri, **blueprint_params)
+                except TypeError:
+                    # Fallback if redirect_url parameter is not supported
+                    blueprint = make_google_blueprint(**blueprint_params)
+            else:
+                blueprint = make_google_blueprint(**blueprint_params)
         else:
+            # For generic OIDC, use the redirect_uri already calculated above
             blueprint = OAuth2ConsumerBlueprint(
                 "generic",
                 __name__,
@@ -388,6 +442,7 @@ def generate_oauth_blueprints():
                 authorization_url=element['oauth_authorize_url'],
                 token_url=element['oauth_token_url'],
                 token_url_params={'verify': constants.OAUTH_SSL_STRICT},
+                redirect_url=redirect_uri,  # Use the redirect_uri calculated above
                 redirect_to="oauth.generic_login",
                 scope=element['scope']
             )
@@ -453,29 +508,57 @@ if ub.oauth_support:
     # notify on OAuth provider error
     @oauth_error.connect_via(oauthblueprints[0]['blueprint'])
     def github_error(blueprint, error, error_description=None, error_uri=None):
-        msg = (
-            "OAuth error from {name}! "
-            "error={error} description={description} uri={uri}"
-        ).format(
-            name=blueprint.name,
-            error=error,
-            description=error_description,
-            uri=error_uri,
-        )  # ToDo: Translate
+        if error and 'redirect_uri' in str(error).lower():
+            msg = _("OAuth error: Invalid redirect URI. If you're experiencing this error repeatedly, "
+                   "please configure the 'OAuth Redirect Host' setting in Admin > Basic Configuration > OAuth.")
+        else:
+            msg = (
+                "OAuth error from {name}! "
+                "error={error} description={description} uri={uri}"
+            ).format(
+                name=blueprint.name,
+                error=error,
+                description=error_description,
+                uri=error_uri,
+            )  # ToDo: Translate
         flash(msg, category="error")
+        log.error("GitHub OAuth error: %s", msg)
 
     @oauth_error.connect_via(oauthblueprints[1]['blueprint'])
     def google_error(blueprint, error, error_description=None, error_uri=None):
-        msg = (
-            "OAuth error from {name}! "
-            "error={error} description={description} uri={uri}"
-        ).format(
-            name=blueprint.name,
-            error=error,
-            description=error_description,
-            uri=error_uri,
-        )  # ToDo: Translate
+        if error and 'redirect_uri' in str(error).lower():
+            msg = _("OAuth error: Invalid redirect URI. If you're experiencing this error repeatedly, "
+                   "please configure the 'OAuth Redirect Host' setting in Admin > Basic Configuration > OAuth.")
+        else:
+            msg = (
+                "OAuth error from {name}! "
+                "error={error} description={description} uri={uri}"
+            ).format(
+                name=blueprint.name,
+                error=error,
+                description=error_description,
+                uri=error_uri,
+            )  # ToDo: Translate
         flash(msg, category="error")
+        log.error("Google OAuth error: %s", msg)
+
+    @oauth_error.connect_via(oauthblueprints[2]['blueprint'])
+    def generic_error(blueprint, error, error_description=None, error_uri=None):
+        if error and 'redirect_uri' in str(error).lower():
+            msg = _("OAuth error: Invalid redirect URI. If you're experiencing this error repeatedly, "
+                   "please configure the 'OAuth Redirect Host' setting in Admin > Basic Configuration > OAuth.")
+        else:
+            msg = (
+                "OAuth error from {name}! "
+                "error={error} description={description} uri={uri}"
+            ).format(
+                name=blueprint.name,
+                error=error,
+                description=error_description,
+                uri=error_uri,
+            )  # ToDo: Translate
+        flash(msg, category="error")
+        log.error("Generic OAuth error: %s", msg)
 
 
 @oauth.route('/link/github')

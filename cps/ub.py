@@ -731,6 +731,19 @@ def migrate_oauth_provider_table(engine, _session):
             trans.commit()
 
 
+def migrate_config_table(engine, _session):
+    # Add OAuth redirect host configuration
+    try:
+        # Test if the new column exists
+        _session.execute(text("SELECT config_oauth_redirect_host FROM settings LIMIT 1"))
+        _session.commit()
+    except exc.OperationalError:  # Column doesn't exist
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE settings ADD column 'config_oauth_redirect_host' String DEFAULT ''"))
+            trans.commit()
+
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
@@ -741,6 +754,7 @@ def migrate_Database(_session):
     migrate_user_session_table(engine, _session)
     migrate_user_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
+    migrate_config_table(engine, _session)
 
 def clean_database(_session):
     # Remove expired remote login tokens

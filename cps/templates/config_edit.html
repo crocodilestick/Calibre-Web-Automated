@@ -431,6 +431,17 @@
             <small class="form-text text-muted">{{_('Space-separated list of OAuth scopes')}}</small>
           </div>
           
+          <!-- OAuth Redirect Host Configuration -->
+          <div class="form-group">
+            <label for="config_oauth_redirect_host">{{_('OAuth Redirect Host')}}</label>
+            <input type="text" class="form-control" id="config_oauth_redirect_host" name="config_oauth_redirect_host" value="{% if config.config_oauth_redirect_host != None %}{{ config.config_oauth_redirect_host }}{% endif %}" autocomplete="off" placeholder="https://your-domain.com">
+            <small class="form-text text-muted">
+              {{_('Set a consistent hostname for OAuth redirects to prevent "invalid redirect URI" errors. Include protocol (https://). Leave empty to use automatic detection.')}}
+              <br>
+              {{_('Required if: accessing via multiple hostnames, behind reverse proxy, or getting "invalid redirect URI" errors.')}}
+            </small>
+          </div>
+          
           <div class="form-group">
             <label for="config_generic_oauth_client_id">{{_('OAuth Client Id')}}</label>
             <input type="text" class="form-control" id="config_generic_oauth_client_id" name="config_generic_oauth_client_id" value="{% if generic['oauth_client_id'] != None %}{{ generic['oauth_client_id'] }}{% endif %}" autocomplete="off">

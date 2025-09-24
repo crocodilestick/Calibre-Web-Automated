@@ -144,6 +144,7 @@ class _Settings(_Base):
 
     config_reverse_proxy_login_header_name = Column(String)
     config_allow_reverse_proxy_header_login = Column(Boolean, default=False)
+    config_oauth_redirect_host = Column(String, default='')
 
     schedule_start_time = Column(Integer, default=4)
     schedule_duration = Column(Integer, default=10)

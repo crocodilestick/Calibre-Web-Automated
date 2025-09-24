@@ -118,6 +118,13 @@ def create_app():
 
     config_sql.load_configuration(ub.session, encrypt_key)
     config.init_config(ub.session, encrypt_key, cli_param)
+    
+    # Set OAuth redirect host consistency
+    if hasattr(config, 'config_oauth_redirect_host') and config.config_oauth_redirect_host:
+        from urllib.parse import urlparse
+        parsed = urlparse(config.config_oauth_redirect_host)
+        if parsed.netloc:
+            app.config['FORCE_HOST_FOR_REDIRECTS'] = parsed.netloc
 
     if error:
         log.error(error)

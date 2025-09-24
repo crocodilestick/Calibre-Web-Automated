@@ -1999,11 +1999,37 @@ def _configuration_update_helper():
         _config_string(to_save, "config_reverse_proxy_login_header_name")
 
         # OAuth configuration
+        oauth_redirect_host_changed = False
+        if "config_oauth_redirect_host" in to_save:
+            old_host = getattr(config, 'config_oauth_redirect_host', '')
+            new_host = to_save["config_oauth_redirect_host"].strip()
+            
+            # Validate OAuth redirect host format if provided
+            if new_host:
+                from urllib.parse import urlparse
+                try:
+                    # Add https:// if no scheme is provided
+                    if not new_host.startswith(('http://', 'https://')):
+                        new_host = f"https://{new_host}"
+                        to_save["config_oauth_redirect_host"] = new_host
+                    
+                    # Parse the URL to validate it
+                    parsed = urlparse(new_host)
+                    if not parsed.netloc:
+                        return _configuration_result(_('Invalid OAuth Redirect Host format. Please include the full URL with protocol (e.g., https://your-domain.com)'))
+                except Exception:
+                    return _configuration_result(_('Invalid OAuth Redirect Host format. Please include the full URL with protocol (e.g., https://your-domain.com)'))
+            
+            if old_host != new_host:
+                oauth_redirect_host_changed = True
+        
+        _config_string(to_save, "config_oauth_redirect_host")
+        
         if config.config_login_type == constants.LOGIN_OAUTH:
             reboot, message = _configuration_oauth_helper(to_save)
             if message:
                 return message
-            reboot_required |= reboot
+            reboot_required |= reboot or oauth_redirect_host_changed
 
         # logfile configuration
         reboot, message = _configuration_logfile_helper(to_save)

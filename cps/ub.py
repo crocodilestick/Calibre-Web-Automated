@@ -738,10 +738,15 @@ def migrate_config_table(engine, _session):
         _session.execute(text("SELECT config_oauth_redirect_host FROM settings LIMIT 1"))
         _session.commit()
     except exc.OperationalError:  # Column doesn't exist
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE settings ADD column 'config_oauth_redirect_host' String DEFAULT ''"))
-            trans.commit()
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE settings ADD column 'config_oauth_redirect_host' String DEFAULT ''"))
+                trans.commit()
+        except Exception as e:
+            logger.get_logger("cps.ub").error("Failed to add config_oauth_redirect_host column: %s", e)
+            # Don't raise - let CWA continue without this feature
+            pass
 
 
 # Migrate database to current version, has to be updated after every database change. Currently migration from

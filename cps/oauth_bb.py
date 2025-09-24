@@ -175,10 +175,38 @@ def register_user_from_generic_oauth():
         user = ub.User()
         user.name = provider_username
         user.email = userinfo.get(email_field, f"{provider_username}@localhost")
-        if 'groups' in userinfo and generic['oauth_admin_group'] in userinfo['groups']:
+        
+        # Apply default configuration settings for new OAuth users (Issue #660)
+        # Match the same pattern as normal user creation in admin.py
+        
+        # Set role: admin group overrides default role, otherwise use configured default
+        if ('groups' in userinfo and 
+            generic.get('oauth_admin_group') and 
+            generic['oauth_admin_group'] in userinfo['groups']):
             user.role = constants.ROLE_ADMIN
         else:
-            user.role = constants.ROLE_USER
+            user.role = config.config_default_role
+        
+        # Apply default user settings (same as normal user registration)
+        user.sidebar_view = getattr(config, 'config_default_show', 1)
+        user.locale = getattr(config, 'config_default_locale', 'en')
+        user.default_language = getattr(config, 'config_default_language', 'all')
+        
+        # Apply default restrictions and permissions (same as _handle_new_user)
+        user.allowed_tags = getattr(config, 'config_allowed_tags', '')
+        user.denied_tags = getattr(config, 'config_denied_tags', '')
+        user.allowed_column_value = getattr(config, 'config_allowed_column_value', '')
+        user.denied_column_value = getattr(config, 'config_denied_column_value', '')
+        
+        # Set default theme (use configured theme, fallback to caliBlur=1)
+        try:
+            user.theme = getattr(config, 'config_theme', 1)
+        except Exception:
+            user.theme = 1
+            
+        # Kobo sync setting defaults to 0 (disabled) for new users
+        user.kobo_only_shelves_sync = 0
+            
         ub.session.add(user)
         ub.session_commit()
 
@@ -432,19 +460,26 @@ def generate_oauth_blueprints():
             else:
                 blueprint = make_google_blueprint(**blueprint_params)
         else:
-            # For generic OIDC, use the redirect_uri already calculated above
+            # For generic OIDC, conditionally set redirect_uri
+            blueprint_params = {
+                'client_id': element['oauth_client_id'],
+                'client_secret': element['oauth_client_secret'],
+                'base_url': element['oauth_base_url'],
+                'authorization_url': element['oauth_authorize_url'],
+                'token_url': element['oauth_token_url'],
+                'token_url_params': {'verify': constants.OAUTH_SSL_STRICT},
+                'redirect_to': "oauth.generic_login",
+                'scope': element['scope']
+            }
+            
+            # Only add redirect_url if we have a configured host
+            if redirect_uri:
+                blueprint_params['redirect_url'] = redirect_uri
+                
             blueprint = OAuth2ConsumerBlueprint(
                 "generic",
                 __name__,
-                client_id=element['oauth_client_id'],
-                client_secret=element['oauth_client_secret'],
-                base_url=element['oauth_base_url'],
-                authorization_url=element['oauth_authorize_url'],
-                token_url=element['oauth_token_url'],
-                token_url_params={'verify': constants.OAUTH_SSL_STRICT},
-                redirect_url=redirect_uri,  # Use the redirect_uri calculated above
-                redirect_to="oauth.generic_login",
-                scope=element['scope']
+                **blueprint_params
             )
         element['blueprint'] = blueprint
         element['blueprint'].backend = OAuthBackend(ub.OAuth, ub.session, str(element['id']),

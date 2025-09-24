@@ -2006,7 +2006,6 @@ def _configuration_update_helper():
             
             # Validate OAuth redirect host format if provided
             if new_host:
-                from urllib.parse import urlparse
                 try:
                     # Add https:// if no scheme is provided
                     if not new_host.startswith(('http://', 'https://')):
@@ -2017,6 +2016,11 @@ def _configuration_update_helper():
                     parsed = urlparse(new_host)
                     if not parsed.netloc:
                         return _configuration_result(_('Invalid OAuth Redirect Host format. Please include the full URL with protocol (e.g., https://your-domain.com)'))
+                    
+                    # Warn if URL contains a path (could cause redirect URI issues)
+                    if parsed.path and parsed.path != '/':
+                        return _configuration_result(_('OAuth Redirect Host should not include a path. Use only the base URL (e.g., https://your-domain.com)'))
+                        
                 except Exception:
                     return _configuration_result(_('Invalid OAuth Redirect Host format. Please include the full URL with protocol (e.g., https://your-domain.com)'))
             

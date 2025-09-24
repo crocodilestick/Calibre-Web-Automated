@@ -871,6 +871,10 @@ def main(filepath=None):
                     nbp.set_library_permissions()
                     nbp.delete_current_file()
                     return
+        except Exception as e:
+            print(f"[ingest-processor] Error processing manifest file: {e}", flush=True)
+            # Continue with normal processing if manifest handling fails
+            
         # Check if the user has chosen to exclude files of this type from the ingest process
         # Remove . (dot), check is against exclude whitout dot
         ext = Path(nbp.filename).suffix.replace('.', '')

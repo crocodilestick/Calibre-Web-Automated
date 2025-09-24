@@ -264,7 +264,7 @@ class Litres(Metadata):
         ).strip()
 
         formats = ['pdf', 'epub']
-        pattern = r'\s*\([^)]*(' + '|'.join(formats) + ')[^)]*\)'
+        pattern = r'\s*\([^)]*(' + '|'.join(formats) + r')[^)]*\)'
 
         title =  re.sub(pattern, '', title, flags=re.IGNORECASE)
         return title

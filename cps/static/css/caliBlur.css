@@ -3397,8 +3397,8 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
 }
 
 .dropdown-menu.offscreen {
-    right: 0;
-    left: auto !important
+    /* right: 0; */
+    left: auto !important;
 }
 
 div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] .dropdown-menu.offscreen {

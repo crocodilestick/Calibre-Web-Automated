@@ -30,3 +30,18 @@ body.modal-open #remove-from-shelves + .tags {
 .provider-disabled .glyphicon-ok {
   display: none;
 }
+
+/* Target only specific selectpicker dropdowns (Tags and other form elements) */
+
+/* #include_serie + .btn-group .dropdown-menu,
+#exclude_serie + .btn-group .dropdown-menu,
+#include_shelf + .btn-group .dropdown-menu,
+#exclude_shelf + .btn-group .dropdown-menu,
+#include_language + .btn-group .dropdown-menu,
+#exclude_language + .btn-group .dropdown-menu,
+#include_extension + .btn-group .dropdown-menu,
+#exclude_extension + .btn-group .dropdown-menu, */
+#include_tag + .btn-group .dropdown-menu,
+#exclude_tag + .btn-group .dropdown-menu {
+    max-width: 40vw;
+}

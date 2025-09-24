@@ -191,7 +191,7 @@ done
 #  Qt6 / Kernel compatibility check (conditional ABI tag stripping)
 #------------------------------------------------------------------------------------------------------------------------
 
-MIN_KERNEL="5.4"
+MIN_KERNEL="6.0"
 HOST_KERNEL_RAW="$(uname -r)"
 HOST_KERNEL="${HOST_KERNEL_RAW%%-*}"
 

@@ -206,9 +206,15 @@ def register_user_from_generic_oauth():
             
         # Kobo sync setting defaults to 0 (disabled) for new users
         user.kobo_only_shelves_sync = 0
-            
-        ub.session.add(user)
-        ub.session_commit()
+        
+        try:    
+            ub.session.add(user)
+            ub.session_commit()
+            log.info("OAuth auto-created user: '%s' from provider: %s", provider_username, generic.get('provider_name', 'unknown'))
+        except Exception as ex:
+            log.error("Failed to create OAuth user '%s': %s", provider_username, ex)
+            ub.session.rollback()
+            return None
 
     oauth = ub.session.query(ub.OAuth).filter_by(
         provider=str(generic['id']),
@@ -265,6 +271,12 @@ def oauth_update_token(provider_id, token, provider_user_id):
 
 
 def bind_oauth_or_register(provider_id, provider_user_id, redirect_url, provider_name):
+    """Bind OAuth account to user or handle login"""
+    if not provider_user_id:
+        log.error("OAuth provider %s returned empty user ID", provider_name)
+        flash(_("OAuth error: Provider returned invalid user information. Please try again."), category="error")
+        return redirect(url_for('web.login'))
+    
     query = ub.session.query(ub.OAuth).filter_by(
         provider=provider_id,
         provider_user_id=provider_user_id,
@@ -272,13 +284,13 @@ def bind_oauth_or_register(provider_id, provider_user_id, redirect_url, provider
     try:
         oauth_entry = query.first()
         # already bind with user, just login
-        if oauth_entry.user:
+        if oauth_entry and oauth_entry.user:
             login_user(oauth_entry.user)
             log.debug("You are now logged in as: '%s'", oauth_entry.user.name)
             flash(_("Success! You are now logged in as: %(nickname)s", nickname=oauth_entry.user.name),
                   category="success")
             return redirect(url_for('web.index'))
-        else:
+        elif oauth_entry:
             # bind to current user
             if current_user and current_user.is_authenticated:
                 oauth_entry.user = current_user
@@ -291,20 +303,22 @@ def bind_oauth_or_register(provider_id, provider_user_id, redirect_url, provider
                 except Exception as ex:
                     log.error_or_exception(ex)
                     ub.session.rollback()
+                    flash(_("Failed to link OAuth account. Please try again."), category="error")
             else:
                 flash(_("Login failed: No user account is linked to your %(provider)s account. "
                        "Please contact your administrator to create an account or link your existing account.", 
                        provider=provider_name), category="error")
             log.info('Login failed, No User Linked With OAuth Account for provider %s', provider_name)
             return redirect(url_for('web.login'))
-            # return redirect(url_for('web.login'))
-            # if config.config_public_reg:
-            #   return redirect(url_for('web.register'))
-            # else:
-            #    flash(_("Public registration is not enabled"), category="error")
-            #    return redirect(url_for(redirect_url))
-    except (NoResultFound, AttributeError):
-        return redirect(url_for(redirect_url))
+        else:
+            # No OAuth entry found - this shouldn't happen if OAuth creation worked
+            log.error("OAuth entry not found for provider %s, user %s", provider_name, provider_user_id)
+            flash(_("OAuth authentication failed. Please try again or contact administrator."), category="error")
+            return redirect(url_for('web.login'))
+    except (NoResultFound, AttributeError) as e:
+        log.error("OAuth binding error for provider %s: %s", provider_name, e)
+        flash(_("OAuth system error. Please contact administrator."), category="error")
+        return redirect(url_for('web.login'))
 
 
 def get_oauth_status():
@@ -460,7 +474,7 @@ def generate_oauth_blueprints():
             else:
                 blueprint = make_google_blueprint(**blueprint_params)
         else:
-            # For generic OIDC, conditionally set redirect_uri
+            # For generic OIDC, build parameters dictionary properly
             blueprint_params = {
                 'client_id': element['oauth_client_id'],
                 'client_secret': element['oauth_client_secret'],
@@ -476,11 +490,21 @@ def generate_oauth_blueprints():
             if redirect_uri:
                 blueprint_params['redirect_url'] = redirect_uri
                 
-            blueprint = OAuth2ConsumerBlueprint(
-                "generic",
-                __name__,
-                **blueprint_params
-            )
+            try:
+                blueprint = OAuth2ConsumerBlueprint(
+                    "generic",
+                    __name__,
+                    **blueprint_params
+                )
+            except Exception as e:
+                log.error("Failed to create generic OAuth blueprint: %s", e)
+                # Fallback without redirect_url if it fails
+                blueprint_params.pop('redirect_url', None)
+                blueprint = OAuth2ConsumerBlueprint(
+                    "generic",
+                    __name__,
+                    **blueprint_params
+                )
         element['blueprint'] = blueprint
         element['blueprint'].backend = OAuthBackend(ub.OAuth, ub.session, str(element['id']),
                                                     user=current_user, user_required=True)

@@ -1474,10 +1474,23 @@ def handle_login_user(user, remember, message, category):
     login_user(user, remember=remember)
     flash(message, category=category)
     [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
+    
+    # Clear login redirect count on successful login
+    flask_session.pop('_login_redirect_count', None)
+    
     return redirect(get_redirect_location(request.form.get('next', None), "web.index"))
 
 
 def render_login(username="", password=""):
+    # Detect authentication redirect loops
+    redirect_count = session.get('_login_redirect_count', 0)
+    if redirect_count > 3:
+        session.pop('_login_redirect_count', None)
+        log.warning("Authentication redirect loop detected from IP: %s", request.remote_addr)
+        flash(_("Authentication loop detected. If you're experiencing login issues, please contact your administrator."), category="error")
+    else:
+        session['_login_redirect_count'] = redirect_count + 1
+    
     next_url = request.args.get('next', default=url_for("web.index"), type=str)
     if url_for("web.logout") == next_url:
         next_url = url_for("web.index")
@@ -1495,6 +1508,16 @@ def render_login(username="", password=""):
 def login():
     if current_user is not None and current_user.is_authenticated:
         return redirect(url_for('web.index'))
+    
+    # Handle OAuth-only authentication mode
+    if config.config_login_type == constants.LOGIN_OAUTH:
+        # In OAuth-only mode, show OAuth options but still render login template
+        # This prevents infinite redirects to OAuth providers
+        if not feature_support['oauth']:
+            log.error("OAuth authentication is enabled but OAuth support is not available")
+            flash(_("OAuth authentication is not properly configured. Please contact administrator."), category="error")
+        return render_login()
+    
     if config.config_login_type == constants.LOGIN_LDAP and not services.ldap:
         log.error(u"Cannot activate LDAP authentication")
         flash(_(u"Cannot activate LDAP authentication"), category="error")
@@ -1523,28 +1546,74 @@ def login_post():
         flash(_(u"Cannot activate LDAP authentication"), category="error")
     user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == username).first()
     remember_me = bool(form.get('remember_me'))
-    if config.config_login_type == constants.LOGIN_LDAP and services.ldap and user and form['password'] != "":
-        login_result, error = services.ldap.bind_user(username, form['password'])
-        if login_result:
-            log.debug(u"You are now logged in as: '{}'".format(user.name))
-            return handle_login_user(user,
-                                     remember_me,
-                                     _(u"you are now logged in as: '%(nickname)s'", nickname=user.name),
-                                     "success")
-        elif login_result is None and user and check_password_hash(str(user.password), form['password']) \
-                and user.name != "Guest":
-            log.info("Local Fallback Login as: '{}'".format(user.name))
-            return handle_login_user(user,
-                                     remember_me,
-                                     _(u"Fallback Login as: '%(nickname)s', "
-                                       u"LDAP Server not reachable, or user not known", nickname=user.name),
-                                     "warning")
-        elif login_result is None:
-            log.info(error)
-            flash(_(u"Could not login: %(message)s", message=error), category="error")
+    
+    if config.config_login_type == constants.LOGIN_LDAP and services.ldap and form.get('password', '') != "":
+        # Validate username before attempting LDAP authentication
+        if not username or not username.strip():
+            log.warning("LDAP authentication attempted with empty username")
+            flash(_(u"Username cannot be empty"), category="error")
         else:
-            ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
-            log.warning('LDAP Login failed for user "%s" IP-address: %s', username, ip_address)
+            # Try LDAP authentication first, regardless of whether user exists locally
+            login_result, error = services.ldap.bind_user(username, form['password'])
+            
+            if login_result:
+                # LDAP authentication successful
+                if user:
+                    # Existing user - login normally
+                    log.debug(u"You are now logged in as: '{}'".format(user.name))
+                    return handle_login_user(user,
+                                             remember_me,
+                                             _(u"you are now logged in as: '%(nickname)s'", nickname=user.name),
+                                             "success")
+                else:
+                    # New user - create if auto-creation is enabled
+                    if getattr(config, 'config_ldap_auto_create_users', True):
+                        try:
+                            # Get user details from LDAP
+                            ldap_user_details = services.ldap.get_object_details(username)
+                            if ldap_user_details:
+                                # Create user using existing LDAP import function
+                                from . import admin
+                                create_result, error_msg = admin.ldap_import_create_user(username, ldap_user_details)
+                                if create_result:
+                                    # Get the newly created user
+                                    user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == username.lower()).first()
+                                    if user:
+                                        log.info("LDAP auto-created user: '%s'", username)
+                                        return handle_login_user(user,
+                                                                 remember_me,
+                                                                 _(u"Welcome! Your account has been automatically created. You are now logged in as: '%(nickname)s'", nickname=user.name),
+                                                                 "success")
+                            
+                            # If we get here, user creation failed
+                            log.error("LDAP auto-creation failed for user '%s'", username)
+                            flash(_(u"Authentication successful, but account creation failed. Please contact your administrator."), category="error")
+                        except Exception as ex:
+                            log.error("LDAP auto-creation error for user '%s': %s", username, ex)
+                            flash(_(u"Authentication successful, but account creation failed. Please contact your administrator."), category="error")
+                    else:
+                        # Auto-creation disabled
+                        log.info("LDAP user '%s' authenticated but not found locally, auto-creation disabled", username)
+                        flash(_(u"Authentication successful, but no local account found. Please contact your administrator to create your account."), category="error")
+                        
+            elif login_result is None and user and check_password_hash(str(user.password), form['password']) \
+                    and user.name != "Guest":
+                # LDAP unavailable, try local fallback
+                log.info("Local Fallback Login as: '{}'".format(user.name))
+                return handle_login_user(user,
+                                         remember_me,
+                                         _(u"Fallback Login as: '%(nickname)s', "
+                                           u"LDAP Server not reachable, or user not known", nickname=user.name),
+                                         "warning")
+            elif login_result is None:
+                # LDAP unavailable and no local fallback
+                log.info(error)
+                flash(_(u"Could not login: %(message)s", message=error), category="error")
+            else:
+                # LDAP authentication failed
+                ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+                log.warning('LDAP Login failed for user "%s" IP-address: %s', username, ip_address)
+                flash(_(u"Wrong Username or Password"), category="error")
             flash(_(u"Wrong Username or Password"), category="error")
     else:
         ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)

@@ -732,6 +732,11 @@ def migrate_oauth_provider_table(engine, _session):
 
 
 def migrate_config_table(engine, _session):
+    """Migrate configuration table to add new authentication columns"""
+    if not engine or not _session:
+        logger.get_logger("cps.ub").error("Cannot migrate config table: missing engine or session")
+        return
+        
     # Add OAuth redirect host configuration
     try:
         # Test if the new column exists
@@ -745,6 +750,38 @@ def migrate_config_table(engine, _session):
                 trans.commit()
         except Exception as e:
             logger.get_logger("cps.ub").error("Failed to add config_oauth_redirect_host column: %s", e)
+            # Don't raise - let CWA continue without this feature
+            pass
+    
+    # Add reverse proxy auto-create users configuration
+    try:
+        # Test if the new column exists
+        _session.execute(text("SELECT config_reverse_proxy_auto_create_users FROM settings LIMIT 1"))
+        _session.commit()
+    except exc.OperationalError:  # Column doesn't exist
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE settings ADD column 'config_reverse_proxy_auto_create_users' Boolean DEFAULT 0"))
+                trans.commit()
+        except Exception as e:
+            logger.get_logger("cps.ub").error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
+            # Don't raise - let CWA continue without this feature
+            pass
+    
+    # Add LDAP auto-create users configuration
+    try:
+        # Test if the new column exists
+        _session.execute(text("SELECT config_ldap_auto_create_users FROM settings LIMIT 1"))
+        _session.commit()
+    except exc.OperationalError:  # Column doesn't exist
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE settings ADD column 'config_ldap_auto_create_users' Boolean DEFAULT 1"))
+                trans.commit()
+        except Exception as e:
+            logger.get_logger("cps.ub").error("Failed to add config_ldap_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
 

@@ -1346,6 +1346,7 @@ def _configuration_ldap_helper(to_save):
     reboot_required |= _config_string(to_save, "config_ldap_group_members_field")
     reboot_required |= _config_string(to_save, "config_ldap_member_user_object")
     reboot_required |= _config_checkbox(to_save, "config_ldap_openldap")
+    _config_checkbox(to_save, "config_ldap_auto_create_users")
     reboot_required |= _config_int(to_save, "config_ldap_encryption")
     reboot_required |= _config_string(to_save, "config_ldap_cacert_path")
     reboot_required |= _config_string(to_save, "config_ldap_cert_path")
@@ -1997,6 +1998,14 @@ def _configuration_update_helper():
         # Reverse proxy login configuration
         _config_checkbox(to_save, "config_allow_reverse_proxy_header_login")
         _config_string(to_save, "config_reverse_proxy_login_header_name")
+        _config_checkbox(to_save, "config_reverse_proxy_auto_create_users")
+        
+        # Validate reverse proxy configuration
+        if config.config_reverse_proxy_auto_create_users and not config.config_allow_reverse_proxy_header_login:
+            return _configuration_result(_('Auto-create users cannot be enabled without enabling reverse proxy authentication'))
+        
+        if config.config_reverse_proxy_auto_create_users and not config.config_reverse_proxy_login_header_name:
+            return _configuration_result(_('Auto-create users requires a valid reverse proxy header name'))
 
         # OAuth configuration
         oauth_redirect_host_changed = False

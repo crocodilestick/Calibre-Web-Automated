@@ -1483,13 +1483,13 @@ def handle_login_user(user, remember, message, category):
 
 def render_login(username="", password=""):
     # Detect authentication redirect loops
-    redirect_count = session.get('_login_redirect_count', 0)
+    redirect_count = flask_session.get('_login_redirect_count', 0)
     if redirect_count > 3:
-        session.pop('_login_redirect_count', None)
+        flask_session.pop('_login_redirect_count', None)
         log.warning("Authentication redirect loop detected from IP: %s", request.remote_addr)
         flash(_("Authentication loop detected. If you're experiencing login issues, please contact your administrator."), category="error")
     else:
-        session['_login_redirect_count'] = redirect_count + 1
+        flask_session['_login_redirect_count'] = redirect_count + 1
     
     next_url = request.args.get('next', default=url_for("web.index"), type=str)
     if url_for("web.logout") == next_url:
@@ -1651,6 +1651,10 @@ def logout():
             logout_oauth_user()
         ub.delete_user_session(current_user.id, flask_session.get('_id', ""))
         logout_user()
+    
+    # Clear login redirect count on logout to prevent false positives
+    flask_session.pop('_login_redirect_count', None)
+    
     log.debug("User logged out")
     if config.config_anonbrowse:
         location = get_redirect_location(request.args.get('next', None), "web.login")

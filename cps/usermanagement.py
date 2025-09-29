@@ -165,6 +165,17 @@ def requires_basic_auth_if_no_ano(f):
         return auth.ensure_sync(f)(*args, **kwargs)
     return decorated
 
+def user_settings_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if config.config_allow_reverse_proxy_header_login:
+            user = load_user_from_reverse_proxy_header(request)
+            if user:
+                g.flask_httpauth_user = user                
+            else: 
+                g.flask_httpauth_user = None
+        return func(*args, **kwargs)
+    return decorated_view
 
 def login_required_if_no_ano(func):
     @wraps(func)

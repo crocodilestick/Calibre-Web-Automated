@@ -37,7 +37,7 @@ from .embed_helper import get_calibre_binarypath
 from .gdriveutils import is_gdrive_ready, gdrive_support
 from .render_template import render_title_template, get_sidebar_config
 from .services.worker import WorkerThread
-from .usermanagement import user_login_required
+from .usermanagement import user_login_required, user_settings_required
 from .cw_babel import get_available_translations, get_available_locale, get_user_locale_language
 from . import debug_info
 from .string_helper import strip_whitespaces
@@ -90,6 +90,7 @@ def admin_required(f):
 
 
 @admi.before_app_request
+@user_settings_required
 def before_request():
     # Safety net: if not configured but metadata.db now exists at default location, auto-set without redirect loop
     if not config.db_configured:

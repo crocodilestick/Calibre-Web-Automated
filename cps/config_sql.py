@@ -202,16 +202,20 @@ class ConfigSQL(object):
                 self.config_calibre_dir = detected_dir
                 change = True
 
-        if self.config_binariesdir is None:
+        # Autodetect Calibre if not configured or empty string
+        if not self.config_binariesdir:
             change = True
             self.config_binariesdir = autodetect_calibre_binaries()
             self.config_converterpath = autodetect_converter_binary(self.config_binariesdir)
 
-        if self.config_kepubifypath is None:
+        # Autodetect Kepubify if not configured or empty string
+        if not self.config_kepubifypath:
             change = True
             self.config_kepubifypath = autodetect_kepubify_binary()
 
-        if self.config_rarfile_location is None:
+        # Autodetect UnRar if not configured or empty string
+        # (empty string can occur from failed previous autodetection or manual clearing)
+        if not self.config_rarfile_location:
             change = True
             self.config_rarfile_location = autodetect_unrar_binary()
         if change:
@@ -457,8 +461,10 @@ def _migrate_table(session, orm_class, secret_key=None):
                 session.query(column).first()
             except OperationalError as err:
                 log.debug("%s: %s", column_name, err.args[0])
+                # Handle default values for new columns
                 if column.default is None:
-                    column_default = ""
+                    # Use NULL for columns with None default (important for autodetection logic)
+                    column_default = "DEFAULT NULL"
                 else:
                     if isinstance(column.default.arg, bool):
                         column_default = "DEFAULT {}".format(int(column.default.arg))

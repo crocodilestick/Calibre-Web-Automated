@@ -2069,10 +2069,12 @@ def _configuration_update_helper():
 
         # Rarfile Content configuration
         _config_string(to_save, "config_rarfile_location")
+        unrar_warning = None
         if "config_rarfile_location" in to_save:
             unrar_status = helper.check_unrar(config.config_rarfile_location)
             if unrar_status:
-                return _configuration_result(unrar_status)
+                # Store warning but don't prevent saving other settings
+                unrar_warning = unrar_status
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
@@ -2082,10 +2084,10 @@ def _configuration_update_helper():
     if reboot_required:
         web_server.stop(True)
 
-    return _configuration_result(None, reboot_required)
+    return _configuration_result(None, reboot_required, unrar_warning)
 
 
-def _configuration_result(error_flash=None, reboot=False):
+def _configuration_result(error_flash=None, reboot=False, warning_flash=None):
     resp = {}
     if error_flash:
         log.error(error_flash)
@@ -2093,6 +2095,10 @@ def _configuration_result(error_flash=None, reboot=False):
         resp['result'] = [{'type': "danger", 'message': error_flash}]
     else:
         resp['result'] = [{'type': "success", 'message': _("Calibre-Web Automated configuration updated")}]
+        # Add warning message if present (configuration was saved, but with a warning)
+        if warning_flash:
+            log.warning(warning_flash)
+            resp['result'].append({'type': "warning", 'message': warning_flash})
     resp['reboot'] = reboot
     resp['config_upload'] = config.config_upload_formats
     return Response(json.dumps(resp), mimetype='application/json')

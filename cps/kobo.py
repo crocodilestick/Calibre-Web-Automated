@@ -997,6 +997,7 @@ def HandleBookDeletionRequest(book_uuid):
 # TODO: Implement the following routes
 @csrf.exempt
 @kobo.route("/v1/library/<dummy>", methods=["DELETE", "GET", "POST"])
+@kobo.route("/v1/library/<dummy>/preview", methods=["POST"])
 def HandleUnimplementedRequest(dummy=None):
     log.debug("Unimplemented Library Request received: %s (request is forwarded to kobo if configured)",
               request.base_url)
@@ -1217,6 +1218,7 @@ def NATIVE_KOBO_RESOURCES():
         "dictionary_host": "https://ereaderfiles.kobo.com",
         "discovery_host": "https://discovery.kobobooks.com",
         "ereaderdevices": "https://storeapi.kobo.com/v2/products/EReaderDeviceFeeds",
+        "dropbox_link_account_poll": "https://authorize.kobo.com/{region}/{language}/LinkDropbox",
         "dropbox_link_account_start": "https://authorize.kobo.com/LinkDropbox/start",
         "eula_page": "https://www.kobo.com/termsofuse?style=onestore",
         "exchange_auth": "https://storeapi.kobo.com/v1/auth/exchange",

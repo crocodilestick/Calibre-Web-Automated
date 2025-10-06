@@ -1264,7 +1264,7 @@ def NATIVE_KOBO_RESOURCES():
         "kobo_redeem_enabled": "True",
         "kobo_shelfie_enabled": "False",
         "kobo_subscriptions_enabled": "True",
-        "kobo_superpoints_enabled": "False",
+        "kobo_superpoints_enabled": "True",
         "kobo_wishlist_enabled": "True",
         "library_book": "https://storeapi.kobo.com/v1/user/library/books/{LibraryItemId}",
         "library_items": "https://storeapi.kobo.com/v1/user/library",

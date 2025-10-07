@@ -1,0 +1,58 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: calibre-web-automated-gateway
+  namespace: media # Make sure this matches your namespace
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  gatewayClassName: istio # Make sure this matches your GatewayClass
+  listeners:
+  - name: calibre-web-automated-http
+    port: 80
+    protocol: HTTP
+    hostname: books.<your.domain>
+    allowedRoutes:
+      namespaces:
+        from: All
+  - name: calibre-web-automated-https
+    hostname: books.<your.domain>
+    port: 443
+    protocol: HTTPS
+    allowedRoutes:
+      namespaces:
+        from: All
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: calibre-web-automated-tls
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: calibre-web-automated-http-route
+  namespace: media
+spec:
+  parentRefs:
+  - name: calibre-web-automated-gateway
+    sectionName: calibre-web-automated-http
+  rules:
+  - filters:
+    - type: RequestRedirect
+      requestRedirect:
+        scheme: https
+        statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: calibre-web-automated-https-route
+  namespace: media
+spec:
+  parentRefs:
+  - name: calibre-web-automated-gateway
+    sectionName: calibre-web-automated-https
+  rules:
+  - backendRefs:
+    - name: calibre-web-automated
+      port: 8083

@@ -98,10 +98,16 @@ def yesno(value, yes, no):
 def formatfloat(value, decimals=1):
     if not value:
         return value
-    formated_value = ('{0:.' + str(decimals) + 'f}').format(value)
-    if formated_value.endswith('.' + "0" * decimals):
-        formated_value = formated_value.rstrip('0').rstrip('.')
-    return formated_value
+    try:
+        # Convert to float if it's a string (series_index is stored as String in DB)
+        float_value = float(value) if isinstance(value, str) else value
+        formated_value = ('{0:.' + str(decimals) + 'f}').format(float_value)
+        if formated_value.endswith('.' + "0" * decimals):
+            formated_value = formated_value.rstrip('0').rstrip('.')
+        return formated_value
+    except (ValueError, TypeError):
+        # If conversion fails, return the original value
+        return value
 
 
 '''@jinjia.app_template_filter('formatseriesindex')

@@ -11,7 +11,9 @@
 
   .pp-content {
     background-color: #1f2c3554;
+    width: -webkit-fill-available;
     max-width: 80rem;
+    justify-self: anchor-center;
     padding: 30px;
     margin: 2rem auto 0;
   }
@@ -19,7 +21,9 @@
   .pp-buttons {
     display: flex;
     justify-content: space-between;
-    margin: 1.5rem 0;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    flex-wrap: wrap;
     flex-direction: column;
   }
 
@@ -31,12 +35,13 @@
     height: 200px;
     margin-top: 1rem;
   }
+
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="discover">
-  <h2>{{ title }}</h2>
+  <h2>{{title}}</h2>
 
   <div class="pp-content">
     <h2 class="lead-line">Profile Picture Upload</h2>

@@ -1,0 +1,301 @@
+# Calibre-Web Automated – fork of Calibre-Web
+# Copyright (C) 2018-2025 Calibre-Web contributors
+# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# See CONTRIBUTORS for full list of authors.
+
+"""
+Unit Tests for CWA Database Module
+
+These tests verify the CWA_DB class functions correctly in isolation.
+"""
+
+import pytest
+import sys
+
+# Add scripts directory to path
+sys.path.insert(0, '/app/calibre-web-automated/scripts/')
+
+from cwa_db import CWA_DB
+
+
+@pytest.mark.unit
+class TestCWADBInitialization:
+    """Test CWA database initialization and schema creation."""
+    
+    def test_database_creates_successfully(self, temp_cwa_db):
+        """Verify database is created and accessible."""
+        assert temp_cwa_db is not None
+        assert temp_cwa_db.con is not None
+        assert temp_cwa_db.cur is not None
+    
+    def test_all_required_tables_exist(self, temp_cwa_db):
+        """Verify all required tables are created."""
+        expected_tables = {
+            'cwa_enforcement',
+            'cwa_import', 
+            'cwa_conversions',
+            'epub_fixes',
+            'cwa_settings'
+        }
+        
+        actual_tables = set(temp_cwa_db.tables)
+        assert expected_tables.issubset(actual_tables), \
+            f"Missing tables: {expected_tables - actual_tables}"
+    
+    def test_schema_matches_expected(self, temp_cwa_db):
+        """Verify database schema structure is correct."""
+        # Check that schema was loaded
+        assert temp_cwa_db.schema is not None
+        assert len(temp_cwa_db.schema) > 0
+
+
+@pytest.mark.unit
+class TestCWADBSettings:
+    """Test CWA settings management."""
+    
+    def test_default_settings_initialized(self, temp_cwa_db):
+        """Verify default settings are created on initialization."""
+        settings = temp_cwa_db.get_cwa_settings()
+        assert settings is not None
+        assert isinstance(settings, dict)
+    
+    def test_settings_have_expected_keys(self, temp_cwa_db):
+        """Verify settings contain expected configuration keys."""
+        settings = temp_cwa_db.get_cwa_settings()
+        
+        # These are critical settings that should always exist
+        expected_keys = [
+            'auto_backup',
+            'auto_convert',
+            'target_format',
+            'auto_metadata',
+            'kindle_epub_fixer'
+        ]
+        
+        for key in expected_keys:
+            assert key in settings, f"Missing expected setting: {key}"
+    
+    def test_can_update_setting(self, temp_cwa_db):
+        """Verify settings can be updated."""
+        # Update a setting
+        temp_cwa_db.update_setting('auto_backup', False)
+        
+        # Retrieve and verify
+        settings = temp_cwa_db.get_cwa_settings()
+        assert settings['auto_backup'] == False
+    
+    def test_setting_persists_across_queries(self, temp_cwa_db):
+        """Verify setting changes persist in database."""
+        # Update setting
+        temp_cwa_db.update_setting('target_format', 'MOBI')
+        
+        # Query multiple times
+        settings1 = temp_cwa_db.get_cwa_settings()
+        settings2 = temp_cwa_db.get_cwa_settings()
+        
+        assert settings1['target_format'] == 'MOBI'
+        assert settings2['target_format'] == 'MOBI'
+
+
+@pytest.mark.unit  
+class TestCWADBEnforcementLogging:
+    """Test enforcement operation logging."""
+    
+    def test_can_insert_enforcement_log(self, temp_cwa_db):
+        """Verify enforcement logs can be inserted."""
+        temp_cwa_db.insert_enforcement_log(
+            book_id=1,
+            title="Test Book",
+            enforcement_type="cover"
+        )
+        
+        # Retrieve logs
+        logs = temp_cwa_db.query_enforcement_logs(limit=10)
+        assert len(logs) == 1
+        assert logs[0]['book_id'] == 1
+        assert logs[0]['title'] == "Test Book"
+        assert logs[0]['enforcement_type'] == "cover"
+    
+    def test_enforcement_log_has_timestamp(self, temp_cwa_db):
+        """Verify enforcement logs include timestamp."""
+        temp_cwa_db.insert_enforcement_log(
+            book_id=1,
+            title="Test Book",
+            enforcement_type="metadata"
+        )
+        
+        logs = temp_cwa_db.query_enforcement_logs(limit=1)
+        assert 'timestamp' in logs[0]
+        assert logs[0]['timestamp'] is not None
+    
+    def test_multiple_enforcement_logs(self, temp_cwa_db):
+        """Verify multiple enforcement operations are logged correctly."""
+        # Insert multiple logs
+        for i in range(5):
+            temp_cwa_db.insert_enforcement_log(
+                book_id=i,
+                title=f"Book {i}",
+                enforcement_type="cover" if i % 2 == 0 else "metadata"
+            )
+        
+        # Retrieve all
+        logs = temp_cwa_db.query_enforcement_logs(limit=10)
+        assert len(logs) == 5
+        
+        # Verify they're in correct order (most recent first)
+        book_ids = [log['book_id'] for log in logs]
+        assert book_ids == [4, 3, 2, 1, 0]
+
+
+@pytest.mark.unit
+class TestCWADBImportLogging:
+    """Test book import operation logging."""
+    
+    def test_can_insert_import_log(self, temp_cwa_db):
+        """Verify import operations can be logged."""
+        temp_cwa_db.insert_import_log(
+            book_id=1,
+            title="Imported Book",
+            format="EPUB",
+            file_path="/path/to/book.epub"
+        )
+        
+        logs = temp_cwa_db.query_import_logs(limit=1)
+        assert len(logs) == 1
+        assert logs[0]['title'] == "Imported Book"
+        assert logs[0]['format'] == "EPUB"
+    
+    def test_import_log_includes_metadata(self, temp_cwa_db):
+        """Verify import logs capture key metadata."""
+        temp_cwa_db.insert_import_log(
+            book_id=123,
+            title="Test Book",
+            format="MOBI",
+            file_path="/test/path.mobi"
+        )
+        
+        logs = temp_cwa_db.query_import_logs(limit=1)
+        log = logs[0]
+        
+        assert log['book_id'] == 123
+        assert log['format'] == "MOBI"
+        assert log['file_path'] == "/test/path.mobi"
+        assert 'timestamp' in log
+
+
+@pytest.mark.unit
+class TestCWADBConversionLogging:
+    """Test format conversion logging."""
+    
+    def test_can_insert_conversion_log(self, temp_cwa_db):
+        """Verify conversion operations can be logged."""
+        temp_cwa_db.insert_conversion_log(
+            book_id=1,
+            title="Test Book",
+            from_format="AZW3",
+            to_format="EPUB",
+            success=True
+        )
+        
+        logs = temp_cwa_db.query_conversion_logs(limit=1)
+        assert len(logs) == 1
+        assert logs[0]['from_format'] == "AZW3"
+        assert logs[0]['to_format'] == "EPUB"
+        assert logs[0]['success'] == True
+    
+    def test_conversion_failure_logged(self, temp_cwa_db):
+        """Verify failed conversions are logged."""
+        temp_cwa_db.insert_conversion_log(
+            book_id=1,
+            title="Test Book",
+            from_format="PDF",
+            to_format="EPUB",
+            success=False,
+            error_message="Conversion failed: unsupported PDF type"
+        )
+        
+        logs = temp_cwa_db.query_conversion_logs(limit=1)
+        assert logs[0]['success'] == False
+        assert 'error_message' in logs[0]
+        assert "unsupported PDF" in logs[0]['error_message']
+
+
+@pytest.mark.unit
+class TestCWADBStatistics:
+    """Test statistics aggregation functions."""
+    
+    def test_can_get_total_imports(self, temp_cwa_db):
+        """Verify total imports count is calculated correctly."""
+        # Insert some import logs
+        for i in range(10):
+            temp_cwa_db.insert_import_log(
+                book_id=i,
+                title=f"Book {i}",
+                format="EPUB",
+                file_path=f"/path/{i}.epub"
+            )
+        
+        total = temp_cwa_db.get_total_imports()
+        assert total == 10
+    
+    def test_can_get_total_conversions(self, temp_cwa_db):
+        """Verify total conversions count is calculated correctly."""
+        # Insert conversion logs
+        for i in range(5):
+            temp_cwa_db.insert_conversion_log(
+                book_id=i,
+                title=f"Book {i}",
+                from_format="MOBI",
+                to_format="EPUB",
+                success=True
+            )
+        
+        total = temp_cwa_db.get_total_conversions()
+        assert total == 5
+    
+    def test_statistics_reflect_all_operations(self, temp_cwa_db):
+        """Verify statistics aggregate across all operation types."""
+        # Mix of operations
+        temp_cwa_db.insert_import_log(1, "Book 1", "EPUB", "/path/1.epub")
+        temp_cwa_db.insert_conversion_log(1, "Book 1", "EPUB", "MOBI", True)
+        temp_cwa_db.insert_enforcement_log(1, "Book 1", "cover")
+        
+        # All counts should be 1
+        assert temp_cwa_db.get_total_imports() == 1
+        assert temp_cwa_db.get_total_conversions() == 1
+        assert temp_cwa_db.get_total_enforcements() == 1
+
+
+@pytest.mark.unit
+class TestCWADBErrorHandling:
+    """Test database error handling and edge cases."""
+    
+    def test_handles_missing_database_gracefully(self, tmp_path, monkeypatch):
+        """Verify graceful handling when database doesn't exist."""
+        # Point to non-existent path
+        monkeypatch.setenv('CWA_DB_PATH', str(tmp_path / "nonexistent"))
+        
+        # This should create the database, not crash
+        db = CWA_DB(verbose=False)
+        assert db.con is not None
+    
+    def test_handles_invalid_query_gracefully(self, temp_cwa_db):
+        """Verify invalid queries don't crash the application."""
+        # Attempt invalid query
+        try:
+            temp_cwa_db.cur.execute("SELECT * FROM nonexistent_table")
+            pytest.fail("Should have raised an exception")
+        except Exception as e:
+            # This is expected
+            assert "no such table" in str(e).lower()
+    
+    def test_connection_can_be_closed_safely(self, temp_cwa_db):
+        """Verify database connection can be closed without errors."""
+        temp_cwa_db.con.close()
+        # Should not raise exception
+
+
+if __name__ == '__main__':
+    # Allow running directly
+    pytest.main([__file__, '-v'])

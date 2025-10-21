@@ -6,8 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
-# Enviroment Guff
+# Test tracking (personal use, not for repo)
+TEST_IMPLEMENTATION_STATUS.md
+TEST_FIXTURES_IMPLEMENTATION.md
+TESTING_STRATEGY.md
 
+# Enviroment Guff
 .devcontainer
 poetry.lock
 replit.nix
@@ -20,12 +24,15 @@ cwa-wiki/
 docs/
 
 # Test Scripts
-test*
-TEST
 DEV
 */REFERENCE
 cwa.db
 *.epub
+# BUT allow test fixture ebooks
+!tests/fixtures/**/*.epub
+!tests/fixtures/**/*.mobi
+!tests/fixtures/**/*.txt
+!tests/fixtures/**/*.pdf
 
 # Dev files
 *.txz

@@ -451,8 +451,13 @@ def render_books_list(data, sort_param, book_id, page):
                                                                 db.Books.id == db.books_series_link.c.book,
                                                                 db.Series)
 
+        try:
+            title = _(f'Books ({pagination.total_count})')
+        except:
+            title = _(f'Books ({cwa_get_num_books_in_library()})')
+
         return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
-                                     title=_(f'Books ({pagination.total_count})'), page=website, order=order[1])
+                                     title=title, page=website, order=order[1])
 
 
 def render_rated_books(page, book_id, order):

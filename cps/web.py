@@ -1611,12 +1611,14 @@ def login_post():
                 flash(_(u"Could not login: %(message)s", message=error), category="error")
             else:
                 # LDAP authentication failed
-                ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+                # Use request.remote_addr (already corrected by ProxyFix) instead of raw header
+                ip_address = request.remote_addr
                 log.warning('LDAP Login failed for user "%s" IP-address: %s', username, ip_address)
                 flash(_(u"Wrong Username or Password"), category="error")
             flash(_(u"Wrong Username or Password"), category="error")
     else:
-        ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+        # Use request.remote_addr (already corrected by ProxyFix) instead of raw header
+        ip_address = request.remote_addr
         if form.get('forgot', "") == 'forgot':
             if user is not None and user.name != "Guest":
                 ret, __ = reset_password(user.id)

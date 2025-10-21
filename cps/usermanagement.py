@@ -135,7 +135,8 @@ def verify_password(username, password):
         except Exception as ex:
             log.error("LDAP auto-creation error for OPDS user '%s': %s", username, ex)
     
-    ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+    # Use request.remote_addr (already corrected by ProxyFix) instead of raw header
+    ip_address = request.remote_addr
     log.warning('OPDS Login failed for user "%s" IP-address: %s', username, ip_address)
     return None
 

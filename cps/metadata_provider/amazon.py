@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import concurrent.futures
+import re
 import requests
 from bs4 import BeautifulSoup as BS  # requirement
 from typing import List, Optional
@@ -84,12 +85,37 @@ class Amazon(Metadata):
                     match.authors = ""
                 try:
                     match.rating = int(
-                        soup2.find("span", class_="a-icon-alt").text.split(" ")[0].split(".")[
+                        soup2.find(attrs={"id": "acrPopover"})["title"].split(" ")[0].split(".")[
                             0])  # first number in string
                 except (AttributeError, ValueError):
                     match.rating = 0
                 try:
-                    match.cover = soup2.find("img", attrs={"class": "a-dynamic-image"})["src"]
+                    asin = soup2.find("input", attrs={"type": "hidden", "name": "asin"})["value"]
+                    match.identifiers = {"amazon": asin, "mobi-asin": asin}
+                except (AttributeError, TypeError):
+                    match.identifiers = {}
+                try:
+                    series_str = str(soup2.find(attrs={"data-feature-name": "seriesBulletWidget"}).find("a").text)
+                    # "Book X of Y: Series Title"
+                    (idx_str, series_title) = series_str.split(":", 1)
+                    match.series = series_title.strip()
+                    match.series_index = int(idx_str.strip().split(" ")[1])
+                except (AttributeError, ValueError, TypeError):
+                    match.series = None
+                    match.series_index = None
+                try:
+                    cover_src = ""
+                    # Look for the high-res cover image first
+                    high_res_re = re.compile(r'"hiRes":"([^"]+)","thumb"')
+                    for script in soup2.find_all("script"):
+                        m = high_res_re.search(script.text or "")
+                        if m:
+                            cover_src = m.group(1)
+                            break
+                    if not cover_src:
+                        # Fallback to the standard image
+                        cover_src = soup2.find("img", attrs={"class": "a-dynamic-image"})["src"]
+                    match.cover = cover_src
                 except (AttributeError, TypeError):
                     match.cover = ""
                 return match, index
@@ -124,8 +150,11 @@ class Amazon(Metadata):
             links_list = []
             for result in soup.find_all(attrs={"data-component-type": "s-search-results"}):
                 for a in result.find_all("a", href=lambda x: x and "digital-text" in x):
-                    if a["href"] not in links_list:
-                        links_list.append(a["href"])
+                    # Amazon often appends tracking parameters to URLs, strip them for
+                    # deduplication. The URL alone is sufficient.
+                    base_url = a["href"].split("?")[0]
+                    if base_url not in links_list:
+                        links_list.append(base_url)
             if len(links_list) == 0:
                 return []
             with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:

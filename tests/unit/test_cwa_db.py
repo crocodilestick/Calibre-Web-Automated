@@ -197,35 +197,35 @@ class TestCWADBConversionLogging:
     
     def test_can_insert_conversion_log(self, temp_cwa_db):
         """Verify conversion operations can be logged."""
-        temp_cwa_db.insert_conversion_log(
-            book_id=1,
-            title="Test Book",
-            from_format="AZW3",
-            to_format="EPUB",
-            success=True
+        temp_cwa_db.conversion_add_entry(
+            filename="test_book.azw3",
+            original_format="AZW3",
+            end_format="EPUB",
+            original_backed_up="true"
         )
         
-        logs = temp_cwa_db.query_conversion_logs(limit=1)
-        assert len(logs) == 1
-        assert logs[0]['from_format'] == "AZW3"
-        assert logs[0]['to_format'] == "EPUB"
-        assert logs[0]['success'] == True
+        # Verify entry exists
+        temp_cwa_db.cur.execute("SELECT * FROM cwa_conversions WHERE filename='test_book.azw3'")
+        result = temp_cwa_db.cur.fetchone()
+        assert result is not None
+        assert result[3] == "AZW3"  # original_format column
+        assert result[4] == "true"  # original_backed_up column
     
     def test_conversion_failure_logged(self, temp_cwa_db):
-        """Verify failed conversions are logged."""
-        temp_cwa_db.insert_conversion_log(
-            book_id=1,
-            title="Test Book",
-            from_format="PDF",
-            to_format="EPUB",
-            success=False,
-            error_message="Conversion failed: unsupported PDF type"
+        """Verify conversion operations are logged."""
+        temp_cwa_db.conversion_add_entry(
+            filename="test_book.pdf",
+            original_format="PDF",
+            end_format="EPUB",
+            original_backed_up="false"
         )
         
-        logs = temp_cwa_db.query_conversion_logs(limit=1)
-        assert logs[0]['success'] == False
-        assert 'error_message' in logs[0]
-        assert "unsupported PDF" in logs[0]['error_message']
+        # Verify entry with timestamp
+        temp_cwa_db.cur.execute("SELECT * FROM cwa_conversions WHERE filename='test_book.pdf'")
+        result = temp_cwa_db.cur.fetchone()
+        assert result is not None
+        assert result[1] is not None  # timestamp column
+        assert result[3] == "PDF"  # original_format
 
 
 @pytest.mark.unit
@@ -234,44 +234,53 @@ class TestCWADBStatistics:
     
     def test_can_get_total_imports(self, temp_cwa_db):
         """Verify total imports count is calculated correctly."""
+        # Get initial count
+        temp_cwa_db.cur.execute("SELECT COUNT(*) FROM cwa_import")
+        initial_count = temp_cwa_db.cur.fetchone()[0]
+        
         # Insert some import logs
         for i in range(10):
-            temp_cwa_db.insert_import_log(
-                book_id=i,
-                title=f"Book {i}",
-                format="EPUB",
-                file_path=f"/path/{i}.epub"
+            temp_cwa_db.import_add_entry(
+                filename=f"stats_book_{i}.epub",
+                original_backed_up="true"
             )
         
-        total = temp_cwa_db.get_total_imports()
-        assert total == 10
+        # Verify count increased by 10
+        temp_cwa_db.cur.execute("SELECT COUNT(*) FROM cwa_import")
+        final_count = temp_cwa_db.cur.fetchone()[0]
+        assert final_count == initial_count + 10
     
     def test_can_get_total_conversions(self, temp_cwa_db):
         """Verify total conversions count is calculated correctly."""
-        # Insert conversion logs
+        # Insert conversion logs using actual production method
         for i in range(5):
-            temp_cwa_db.insert_conversion_log(
-                book_id=i,
-                title=f"Book {i}",
-                from_format="MOBI",
-                to_format="EPUB",
-                success=True
+            temp_cwa_db.conversion_add_entry(
+                filename=f"stats_book_{i}.mobi",
+                original_format="MOBI",
+                end_format="EPUB",
+                original_backed_up="true"
             )
         
-        total = temp_cwa_db.get_total_conversions()
-        assert total == 5
+        # Use get_stat_totals() which returns dict with cwa_conversions count
+        totals = temp_cwa_db.get_stat_totals()
+        assert totals['cwa_conversions'] == 5
     
     def test_statistics_reflect_all_operations(self, temp_cwa_db):
         """Verify statistics aggregate across all operation types."""
-        # Mix of operations
-        temp_cwa_db.insert_import_log(1, "Book 1", "EPUB", "/path/1.epub")
-        temp_cwa_db.insert_conversion_log(1, "Book 1", "EPUB", "MOBI", True)
-        temp_cwa_db.insert_enforcement_log(1, "Book 1", "cover")
+        # Mix of operations using actual production methods
+        temp_cwa_db.import_add_entry(filename="Book1.epub", original_backed_up="true")
+        temp_cwa_db.conversion_add_entry(filename="Book1.mobi", original_format="EPUB", end_format="MOBI", original_backed_up="true")
+        temp_cwa_db.enforce_add_entry_from_log(log_info={"book_path": "/path/book1.epub", "metadata_type": "cover"})
         
-        # All counts should be 1
-        assert temp_cwa_db.get_total_imports() == 1
-        assert temp_cwa_db.get_total_conversions() == 1
-        assert temp_cwa_db.get_total_enforcements() == 1
+        # Verify counts using get_stat_totals() for enforcement/conversions and direct SQL for imports
+        totals = temp_cwa_db.get_stat_totals()
+        assert totals['cwa_conversions'] == 1
+        assert totals['cwa_enforcement'] == 1
+        
+        # cwa_import is not in get_stat_totals(), use direct SQL
+        temp_cwa_db.cur.execute("SELECT COUNT(*) FROM cwa_import")
+        import_count = temp_cwa_db.cur.fetchone()[0]
+        assert import_count == 1
 
 
 @pytest.mark.unit

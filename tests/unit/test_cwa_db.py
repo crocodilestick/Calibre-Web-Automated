@@ -252,6 +252,10 @@ class TestCWADBStatistics:
     
     def test_can_get_total_conversions(self, temp_cwa_db):
         """Verify total conversions count is calculated correctly."""
+        # Get initial count (may have data from other tests in same worker)
+        totals_initial = temp_cwa_db.get_stat_totals()
+        initial_count = totals_initial['cwa_conversions']
+        
         # Insert conversion logs using actual production method
         for i in range(5):
             temp_cwa_db.conversion_add_entry(
@@ -261,26 +265,41 @@ class TestCWADBStatistics:
                 original_backed_up="true"
             )
         
-        # Use get_stat_totals() which returns dict with cwa_conversions count
-        totals = temp_cwa_db.get_stat_totals()
-        assert totals['cwa_conversions'] == 5
+        # Verify count increased by exactly 5
+        totals_final = temp_cwa_db.get_stat_totals()
+        assert totals_final['cwa_conversions'] == initial_count + 5
     
     def test_statistics_reflect_all_operations(self, temp_cwa_db):
         """Verify statistics aggregate across all operation types."""
-        # Mix of operations using actual production methods
+        # Get initial counts
+        totals_initial = temp_cwa_db.get_stat_totals()
+        temp_cwa_db.cur.execute("SELECT COUNT(*) FROM cwa_import")
+        import_initial = temp_cwa_db.cur.fetchone()[0]
+        
+        # Mix of operations using actual production methods with correct dict structure
         temp_cwa_db.import_add_entry(filename="Book1.epub", original_backed_up="true")
         temp_cwa_db.conversion_add_entry(filename="Book1.mobi", original_format="EPUB", end_format="MOBI", original_backed_up="true")
-        temp_cwa_db.enforce_add_entry_from_log(log_info={"book_path": "/path/book1.epub", "metadata_type": "cover"})
         
-        # Verify counts using get_stat_totals() for enforcement/conversions and direct SQL for imports
-        totals = temp_cwa_db.get_stat_totals()
-        assert totals['cwa_conversions'] == 1
-        assert totals['cwa_enforcement'] == 1
+        # enforce_add_entry_from_log requires: timestamp, book_id, title, authors, file_path
+        from datetime import datetime
+        log_info = {
+            "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "book_id": "1",
+            "title": "Test Book",
+            "authors": "Test Author",
+            "file_path": "/path/book1.epub"
+        }
+        temp_cwa_db.enforce_add_entry_from_log(log_info=log_info)
+        
+        # Verify counts increased by 1 each
+        totals_final = temp_cwa_db.get_stat_totals()
+        assert totals_final['cwa_conversions'] == totals_initial['cwa_conversions'] + 1
+        assert totals_final['cwa_enforcement'] == totals_initial['cwa_enforcement'] + 1
         
         # cwa_import is not in get_stat_totals(), use direct SQL
         temp_cwa_db.cur.execute("SELECT COUNT(*) FROM cwa_import")
-        import_count = temp_cwa_db.cur.fetchone()[0]
-        assert import_count == 1
+        import_final = temp_cwa_db.cur.fetchone()[0]
+        assert import_final == import_initial + 1
 
 
 @pytest.mark.unit

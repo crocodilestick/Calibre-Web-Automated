@@ -42,24 +42,37 @@ from cps.helper import (
 class TestGetValidFilename:
     """Test filename sanitization logic"""
     
-    def test_basic_valid_filename(self):
+    @patch('cps.helper.config')
+    def test_basic_valid_filename(self, mock_config):
         """Test basic valid filename passes through"""
+        # Mock the config attribute used by get_valid_filename
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename("My Book Title")
         assert result == "My_Book_Title"  # Whitespace replaced
     
-    def test_replace_whitespace_enabled(self):
+    @patch('cps.helper.config')
+    def test_replace_whitespace_enabled(self, mock_config):
         """Test whitespace replacement when enabled"""
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename("Test   Book", replace_whitespace=True)
         assert "   " not in result
         assert result == "Test_Book"
     
-    def test_replace_whitespace_disabled(self):
+    @patch('cps.helper.config')
+    def test_replace_whitespace_disabled(self, mock_config):
         """Test whitespace preserved when disabled"""
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename("Test Book", replace_whitespace=False)
         assert " " in result or "_" in result  # May be normalized
     
-    def test_special_characters_sanitized(self):
+    @patch('cps.helper.config')
+    def test_special_characters_sanitized(self, mock_config):
         """Test special characters are replaced"""
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename('Test<>:"/\\|?*Book')
         # Dangerous characters should be replaced
         for char in '<>:"/\\|?*':
@@ -67,52 +80,74 @@ class TestGetValidFilename:
         assert "Test" in result
         assert "Book" in result
     
-    def test_trailing_dot_removed(self):
+    @patch('cps.helper.config')
+    def test_trailing_dot_removed(self, mock_config):
         """Test trailing dot is replaced with underscore"""
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename("Test.")
         assert not result.endswith(".")
         assert result.endswith("_")
     
-    def test_max_length_truncation(self):
+    @patch('cps.helper.config')
+    def test_max_length_truncation(self, mock_config):
         """Test filename truncation to max chars"""
+        mock_config.config_unicode_filename = False
+        
         long_name = "A" * 200
         result = get_valid_filename(long_name, chars=50)
         assert len(result.encode('utf-8')) <= 50
     
-    def test_unicode_handling(self):
+    @patch('cps.helper.config')
+    def test_unicode_handling(self, mock_config):
         """Test unicode characters in filename"""
-        with patch('cps.config.config_unicode_filename', True):
-            result = get_valid_filename("Test äöüß Book")
-            # Should be transliterated or preserved based on config
-            assert result  # Should not raise
-            assert len(result) > 0
+        mock_config.config_unicode_filename = True
+        
+        result = get_valid_filename("Test äöüß Book")
+        # Should be transliterated or preserved based on config
+        assert result  # Should not raise
+        assert len(result) > 0
     
-    def test_null_bytes_removed(self):
+    @patch('cps.helper.config')
+    def test_null_bytes_removed(self, mock_config):
         """Test null bytes are stripped"""
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename("Test\x00Book")
         assert "\x00" not in result
         assert "Test" in result
     
-    def test_slash_and_colon_replaced(self):
+    @patch('cps.helper.config')
+    def test_slash_and_colon_replaced(self, mock_config):
         """Test path separators are replaced"""
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename("Test/Book:Title")
         assert "/" not in result
         assert ":" not in result
         assert "_" in result
     
-    def test_empty_string_raises_error(self):
+    @patch('cps.helper.config')
+    def test_empty_string_raises_error(self, mock_config):
         """Test empty filename raises ValueError"""
+        mock_config.config_unicode_filename = False
+        
         with pytest.raises(ValueError, match="Filename cannot be empty"):
             get_valid_filename("")
     
-    def test_none_value_handled(self):
+    @patch('cps.helper.config')
+    def test_none_value_handled(self, mock_config):
         """Test None value is converted to string"""
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename(None)
         # Should handle gracefully or raise ValueError
         assert isinstance(result, str) or result is None
     
-    def test_integer_value_converted(self):
+    @patch('cps.helper.config')
+    def test_integer_value_converted(self, mock_config):
         """Test integer values are converted to string"""
+        mock_config.config_unicode_filename = False
         result = get_valid_filename(12345)
         assert "12345" in result
     

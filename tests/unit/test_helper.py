@@ -143,12 +143,12 @@ class TestGetValidFilename:
     
     @patch('cps.helper.config')
     def test_none_value_handled(self, mock_config):
-        """Test None value is converted to string"""
+        """Test None value converted to empty string and raises ValueError"""
         mock_config.config_unicode_filename = False
         
-        result = get_valid_filename(None)
-        # Should handle gracefully or raise ValueError
-        assert isinstance(result, str) or result is None
+        # Production code converts None to "" which then raises ValueError
+        with pytest.raises(ValueError, match="Filename cannot be empty"):
+            get_valid_filename(None)
     
     @patch('cps.helper.config')
     def test_integer_value_converted(self, mock_config):
@@ -157,11 +157,14 @@ class TestGetValidFilename:
         result = get_valid_filename(12345)
         assert "12345" in result
     
-    def test_pipe_replaced_with_comma(self):
+    @patch('cps.helper.config')
+    def test_pipe_replaced_with_comma(self, mock_config):
         """Test pipe character replaced with comma"""
+        mock_config.config_unicode_filename = False
+        
         result = get_valid_filename("Author1|Author2|Author3")
         assert "|" not in result
-        assert "," in result or "_" in result
+        assert "," in result  # Pipes become commas
 
 
 # ============================================================================
@@ -398,19 +401,19 @@ class TestValidEmail:
 class TestValidPassword:
     """Test password validation logic"""
     
-    @patch('cps.config.config_password_policy', False)
+    @patch('cps.helper.config.config_password_policy', False)
     def test_no_policy_allows_any_password(self):
         """Test any password allowed when policy disabled"""
         result = valid_password("abc")
         assert result == "abc"
     
-    @patch('cps.config.config_password_policy', True)
-    @patch('cps.config.config_password_min_length', 8)
-    @patch('cps.config.config_password_number', False)
-    @patch('cps.config.config_password_lower', False)
-    @patch('cps.config.config_password_upper', False)
-    @patch('cps.config.config_password_character', False)
-    @patch('cps.config.config_password_special', False)
+    @patch('cps.helper.config.config_password_policy', True)
+    @patch('cps.helper.config.config_password_min_length', 8)
+    @patch('cps.helper.config.config_password_number', False)
+    @patch('cps.helper.config.config_password_lower', False)
+    @patch('cps.helper.config.config_password_upper', False)
+    @patch('cps.helper.config.config_password_character', False)
+    @patch('cps.helper.config.config_password_special', False)
     def test_min_length_enforced(self):
         """Test minimum length requirement"""
         # Valid: meets 8 char minimum
@@ -420,13 +423,13 @@ class TestValidPassword:
         with pytest.raises(Exception, match="Password doesn't comply"):
             valid_password("abc")
     
-    @patch('cps.config.config_password_policy', True)
-    @patch('cps.config.config_password_min_length', 0)
-    @patch('cps.config.config_password_number', True)
-    @patch('cps.config.config_password_lower', False)
-    @patch('cps.config.config_password_upper', False)
-    @patch('cps.config.config_password_character', False)
-    @patch('cps.config.config_password_special', False)
+    @patch('cps.helper.config.config_password_policy', True)
+    @patch('cps.helper.config.config_password_min_length', 0)
+    @patch('cps.helper.config.config_password_number', True)
+    @patch('cps.helper.config.config_password_lower', False)
+    @patch('cps.helper.config.config_password_upper', False)
+    @patch('cps.helper.config.config_password_character', False)
+    @patch('cps.helper.config.config_password_special', False)
     def test_number_requirement(self):
         """Test digit requirement"""
         # Valid: contains digit
@@ -436,13 +439,13 @@ class TestValidPassword:
         with pytest.raises(Exception, match="Password doesn't comply"):
             valid_password("abcdef")
     
-    @patch('cps.config.config_password_policy', True)
-    @patch('cps.config.config_password_min_length', 0)
-    @patch('cps.config.config_password_number', False)
-    @patch('cps.config.config_password_lower', True)
-    @patch('cps.config.config_password_upper', False)
-    @patch('cps.config.config_password_character', False)
-    @patch('cps.config.config_password_special', False)
+    @patch('cps.helper.config.config_password_policy', True)
+    @patch('cps.helper.config.config_password_min_length', 0)
+    @patch('cps.helper.config.config_password_number', False)
+    @patch('cps.helper.config.config_password_lower', True)
+    @patch('cps.helper.config.config_password_upper', False)
+    @patch('cps.helper.config.config_password_character', False)
+    @patch('cps.helper.config.config_password_special', False)
     def test_lowercase_requirement(self):
         """Test lowercase letter requirement"""
         # Valid: contains lowercase
@@ -452,13 +455,13 @@ class TestValidPassword:
         with pytest.raises(Exception, match="Password doesn't comply"):
             valid_password("ABC123")
     
-    @patch('cps.config.config_password_policy', True)
-    @patch('cps.config.config_password_min_length', 0)
-    @patch('cps.config.config_password_number', False)
-    @patch('cps.config.config_password_lower', False)
-    @patch('cps.config.config_password_upper', True)
-    @patch('cps.config.config_password_character', False)
-    @patch('cps.config.config_password_special', False)
+    @patch('cps.helper.config.config_password_policy', True)
+    @patch('cps.helper.config.config_password_min_length', 0)
+    @patch('cps.helper.config.config_password_number', False)
+    @patch('cps.helper.config.config_password_lower', False)
+    @patch('cps.helper.config.config_password_upper', True)
+    @patch('cps.helper.config.config_password_character', False)
+    @patch('cps.helper.config.config_password_special', False)
     def test_uppercase_requirement(self):
         """Test uppercase letter requirement"""
         # Valid: contains uppercase
@@ -468,13 +471,13 @@ class TestValidPassword:
         with pytest.raises(Exception, match="Password doesn't comply"):
             valid_password("abc123")
     
-    @patch('cps.config.config_password_policy', True)
-    @patch('cps.config.config_password_min_length', 0)
-    @patch('cps.config.config_password_number', False)
-    @patch('cps.config.config_password_lower', False)
-    @patch('cps.config.config_password_upper', False)
-    @patch('cps.config.config_password_character', False)
-    @patch('cps.config.config_password_special', True)
+    @patch('cps.helper.config.config_password_policy', True)
+    @patch('cps.helper.config.config_password_min_length', 0)
+    @patch('cps.helper.config.config_password_number', False)
+    @patch('cps.helper.config.config_password_lower', False)
+    @patch('cps.helper.config.config_password_upper', False)
+    @patch('cps.helper.config.config_password_character', False)
+    @patch('cps.helper.config.config_password_special', True)
     def test_special_char_requirement(self):
         """Test special character requirement"""
         # Valid: contains special char

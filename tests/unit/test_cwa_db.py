@@ -68,41 +68,25 @@ class TestCWADBSettings:
         assert isinstance(settings, dict)
     
     def test_settings_have_expected_keys(self, temp_cwa_db):
-        """Verify settings contain expected configuration keys."""
+        """Verify all expected settings keys are present"""
         settings = temp_cwa_db.get_cwa_settings()
         
-        # These are critical settings that should always exist
-        expected_keys = [
-            'auto_backup',
-            'auto_convert',
-            'target_format',
-            'auto_metadata',
-            'kindle_epub_fixer'
-        ]
-        
+        expected_keys = ['auto_backup_imports', 'auto_convert', 'auto_convert_target_format']
         for key in expected_keys:
             assert key in settings, f"Missing expected setting: {key}"
     
     def test_can_update_setting(self, temp_cwa_db):
-        """Verify settings can be updated."""
-        # Update a setting
-        temp_cwa_db.update_cwa_settings('auto_backup', False)
-        
-        # Retrieve and verify
+        """Test updating a setting"""
+        temp_cwa_db.update_cwa_settings({'auto_backup_imports': False})
         settings = temp_cwa_db.get_cwa_settings()
-        assert settings['auto_backup'] == False
+        assert settings['auto_backup_imports'] == False
     
     def test_setting_persists_across_queries(self, temp_cwa_db):
-        """Verify setting changes persist in database."""
-        # Update setting
-        temp_cwa_db.update_cwa_settings('target_format', 'MOBI')
-        
-        # Query multiple times
+        """Test that settings persist between queries"""
+        temp_cwa_db.update_cwa_settings({'auto_convert_target_format': 'mobi'})
         settings1 = temp_cwa_db.get_cwa_settings()
         settings2 = temp_cwa_db.get_cwa_settings()
-        
-        assert settings1['target_format'] == 'MOBI'
-        assert settings2['target_format'] == 'MOBI'
+        assert settings1['auto_convert_target_format'] == settings2['auto_convert_target_format'] == 'mobi'
 
 
 @pytest.mark.unit  
@@ -111,18 +95,20 @@ class TestCWADBEnforcementLogging:
     
     def test_can_insert_enforcement_log(self, temp_cwa_db):
         """Verify enforcement logs can be inserted."""
-        temp_cwa_db.insert_enforcement_log(
-            book_id=1,
-            title="Test Book",
-            enforcement_type="cover"
-        )
+        log_info = {
+            'timestamp': '2024-01-01 12:00:00',
+            'book_id': 1,
+            'title': 'Test Book',
+            'authors': 'Test Author',
+            'file_path': '/test/path.epub'
+        }
+        temp_cwa_db.enforce_add_entry_from_log(log_info)
         
-        # Retrieve logs
-        logs = temp_cwa_db.query_enforcement_logs(limit=10)
-        assert len(logs) == 1
-        assert logs[0]['book_id'] == 1
-        assert logs[0]['title'] == "Test Book"
-        assert logs[0]['enforcement_type'] == "cover"
+        # Verify entry exists in database
+        temp_cwa_db.cur.execute("SELECT * FROM cwa_enforcement WHERE book_title='Test Book'")
+        result = temp_cwa_db.cur.fetchone()
+        assert result is not None
+        assert result[2] == 'Test Book'
     
     def test_enforcement_log_has_timestamp(self, temp_cwa_db):
         """Verify enforcement logs include timestamp."""

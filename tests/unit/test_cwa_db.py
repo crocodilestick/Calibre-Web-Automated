@@ -130,26 +130,30 @@ class TestCWADBEnforcementLogging:
     
     def test_multiple_enforcement_logs(self, temp_cwa_db):
         """Verify multiple enforcement operations are logged correctly."""
+        # Get current count first (may have entries from previous tests in this class)
+        temp_cwa_db.cur.execute("SELECT COUNT(*) FROM cwa_enforcement")
+        initial_count = temp_cwa_db.cur.fetchone()[0]
+        
         # Insert multiple logs using production API
         for i in range(5):
             log_info = {
                 'timestamp': f'2024-01-01 12:00:0{i}',
-                'book_id': i,
-                'title': f'Book {i}',
+                'book_id': 100 + i,  # Use unique IDs to avoid conflicts
+                'title': f'Multi-Book {i}',
                 'authors': f'Author {i}',
-                'file_path': f'/test/book{i}.epub'
+                'file_path': f'/test/multi-book{i}.epub'
             }
             temp_cwa_db.enforce_add_entry_from_log(log_info)
         
-        # Verify all entries exist
+        # Verify 5 new entries were added
         temp_cwa_db.cur.execute("SELECT COUNT(*) FROM cwa_enforcement")
-        count = temp_cwa_db.cur.fetchone()[0]
-        assert count == 5
+        final_count = temp_cwa_db.cur.fetchone()[0]
+        assert final_count == initial_count + 5
         
         # Verify specific entry
-        temp_cwa_db.cur.execute("SELECT book_title FROM cwa_enforcement WHERE book_id=3")
+        temp_cwa_db.cur.execute("SELECT book_title FROM cwa_enforcement WHERE book_id=103")
         result = temp_cwa_db.cur.fetchone()
-        assert result[0] == 'Book 3'
+        assert result[0] == 'Multi-Book 3'
 
 
 @pytest.mark.unit
@@ -158,34 +162,33 @@ class TestCWADBImportLogging:
     
     def test_can_insert_import_log(self, temp_cwa_db):
         """Verify import operations can be logged."""
-        temp_cwa_db.insert_import_log(
-            book_id=1,
-            title="Imported Book",
-            format="EPUB",
-            file_path="/path/to/book.epub"
+        temp_cwa_db.import_add_entry(
+            filename="book.epub",
+            original_backed_up="true"
         )
         
-        logs = temp_cwa_db.query_import_logs(limit=1)
-        assert len(logs) == 1
-        assert logs[0]['title'] == "Imported Book"
-        assert logs[0]['format'] == "EPUB"
+        # Verify entry exists
+        temp_cwa_db.cur.execute("SELECT * FROM cwa_import WHERE filename='book.epub'")
+        result = temp_cwa_db.cur.fetchone()
+        assert result is not None
+        assert result[2] == 'book.epub'  # filename column
+        assert result[3] == 'true'  # original_backed_up column
     
     def test_import_log_includes_metadata(self, temp_cwa_db):
         """Verify import logs capture key metadata."""
-        temp_cwa_db.insert_import_log(
-            book_id=123,
-            title="Test Book",
-            format="MOBI",
-            file_path="/test/path.mobi"
+        temp_cwa_db.import_add_entry(
+            filename="test_book.mobi",
+            original_backed_up="false"
         )
         
-        logs = temp_cwa_db.query_import_logs(limit=1)
-        log = logs[0]
+        # Verify entry with timestamp
+        temp_cwa_db.cur.execute("SELECT * FROM cwa_import WHERE filename='test_book.mobi'")
+        result = temp_cwa_db.cur.fetchone()
         
-        assert log['book_id'] == 123
-        assert log['format'] == "MOBI"
-        assert log['file_path'] == "/test/path.mobi"
-        assert 'timestamp' in log
+        assert result is not None
+        assert result[1] is not None  # timestamp column
+        assert result[2] == "test_book.mobi"  # filename
+        assert result[3] == "false"  # original_backed_up
 
 
 @pytest.mark.unit

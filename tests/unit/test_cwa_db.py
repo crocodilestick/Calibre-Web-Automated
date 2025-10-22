@@ -39,9 +39,16 @@ class TestCWADBInitialization:
             'cwa_settings'
         }
         
-        actual_tables = set(temp_cwa_db.tables)
-        assert expected_tables.issubset(actual_tables), \
-            f"Missing tables: {expected_tables - actual_tables}"
+        # Extract table names from CREATE TABLE statements
+        import re
+        actual_table_names = set()
+        for table_stmt in temp_cwa_db.tables:
+            match = re.search(r'CREATE TABLE IF NOT EXISTS (\w+)\(', table_stmt)
+            if match:
+                actual_table_names.add(match.group(1))
+        
+        assert expected_tables.issubset(actual_table_names), \
+            f"Missing tables: {expected_tables - actual_table_names}"
     
     def test_schema_matches_expected(self, temp_cwa_db):
         """Verify database schema structure is correct."""
@@ -79,7 +86,7 @@ class TestCWADBSettings:
     def test_can_update_setting(self, temp_cwa_db):
         """Verify settings can be updated."""
         # Update a setting
-        temp_cwa_db.update_setting('auto_backup', False)
+        temp_cwa_db.update_cwa_settings('auto_backup', False)
         
         # Retrieve and verify
         settings = temp_cwa_db.get_cwa_settings()
@@ -88,7 +95,7 @@ class TestCWADBSettings:
     def test_setting_persists_across_queries(self, temp_cwa_db):
         """Verify setting changes persist in database."""
         # Update setting
-        temp_cwa_db.update_setting('target_format', 'MOBI')
+        temp_cwa_db.update_cwa_settings('target_format', 'MOBI')
         
         # Query multiple times
         settings1 = temp_cwa_db.get_cwa_settings()

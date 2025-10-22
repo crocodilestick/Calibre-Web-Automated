@@ -57,7 +57,7 @@ jobs:
       
       - name: Create test environment structure
         run: |
-          sudo mkdir -p /config /books/import /books/ingest
+          sudo mkdir -p /config /books/import /books/ingest /config/processed_books
           sudo chmod -R 777 /config /books
           touch /config/epub-fixer.log
           touch /config/converter.log

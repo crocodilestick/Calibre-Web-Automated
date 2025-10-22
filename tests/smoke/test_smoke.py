@@ -122,9 +122,16 @@ class TestDatabaseAccess:
             'cwa_settings'
         ]
         
-        tables = temp_cwa_db.tables
+        # Extract table names from CREATE TABLE statements
+        import re
+        actual_table_names = []
+        for table_stmt in temp_cwa_db.tables:
+            match = re.search(r'CREATE TABLE IF NOT EXISTS (\w+)\(', table_stmt)
+            if match:
+                actual_table_names.append(match.group(1))
+        
         for table in expected_tables:
-            assert table in tables, f"Missing required table: {table}"
+            assert table in actual_table_names, f"Missing required table: {table}"
     
     def test_cwa_db_settings_accessible(self, temp_cwa_db):
         """Verify CWA settings can be read from database."""

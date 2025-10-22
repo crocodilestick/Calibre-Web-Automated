@@ -104,41 +104,52 @@ class TestCWADBEnforcementLogging:
         }
         temp_cwa_db.enforce_add_entry_from_log(log_info)
         
-        # Verify entry exists in database
+        # Verify entry exists in database (schema: id, timestamp, book_id, book_title, author, file_path, trigger_type)
         temp_cwa_db.cur.execute("SELECT * FROM cwa_enforcement WHERE book_title='Test Book'")
         result = temp_cwa_db.cur.fetchone()
         assert result is not None
-        assert result[2] == 'Test Book'
+        assert result[3] == 'Test Book'  # Column 3 is book_title
+        assert result[2] == 1  # Column 2 is book_id
     
     def test_enforcement_log_has_timestamp(self, temp_cwa_db):
         """Verify enforcement logs include timestamp."""
-        temp_cwa_db.insert_enforcement_log(
-            book_id=1,
-            title="Test Book",
-            enforcement_type="metadata"
-        )
+        log_info = {
+            'timestamp': '2024-01-01 12:00:00',
+            'book_id': 1,
+            'title': 'Test Book',
+            'authors': 'Test Author',
+            'file_path': '/test/path.epub'
+        }
+        temp_cwa_db.enforce_add_entry_from_log(log_info)
         
-        logs = temp_cwa_db.query_enforcement_logs(limit=1)
-        assert 'timestamp' in logs[0]
-        assert logs[0]['timestamp'] is not None
+        # Query database directly
+        temp_cwa_db.cur.execute("SELECT timestamp FROM cwa_enforcement WHERE book_id=1")
+        result = temp_cwa_db.cur.fetchone()
+        assert result is not None
+        assert result[0] == '2024-01-01 12:00:00'
     
     def test_multiple_enforcement_logs(self, temp_cwa_db):
         """Verify multiple enforcement operations are logged correctly."""
-        # Insert multiple logs
+        # Insert multiple logs using production API
         for i in range(5):
-            temp_cwa_db.insert_enforcement_log(
-                book_id=i,
-                title=f"Book {i}",
-                enforcement_type="cover" if i % 2 == 0 else "metadata"
-            )
+            log_info = {
+                'timestamp': f'2024-01-01 12:00:0{i}',
+                'book_id': i,
+                'title': f'Book {i}',
+                'authors': f'Author {i}',
+                'file_path': f'/test/book{i}.epub'
+            }
+            temp_cwa_db.enforce_add_entry_from_log(log_info)
         
-        # Retrieve all
-        logs = temp_cwa_db.query_enforcement_logs(limit=10)
-        assert len(logs) == 5
+        # Verify all entries exist
+        temp_cwa_db.cur.execute("SELECT COUNT(*) FROM cwa_enforcement")
+        count = temp_cwa_db.cur.fetchone()[0]
+        assert count == 5
         
-        # Verify they're in correct order (most recent first)
-        book_ids = [log['book_id'] for log in logs]
-        assert book_ids == [4, 3, 2, 1, 0]
+        # Verify specific entry
+        temp_cwa_db.cur.execute("SELECT book_title FROM cwa_enforcement WHERE book_id=3")
+        result = temp_cwa_db.cur.fetchone()
+        assert result[0] == 'Book 3'
 
 
 @pytest.mark.unit

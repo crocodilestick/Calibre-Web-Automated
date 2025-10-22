@@ -55,6 +55,14 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
       
+      - name: Create test environment structure
+        run: |
+          sudo mkdir -p /config /books/import /books/ingest
+          sudo chmod -R 777 /config /books
+          touch /config/epub-fixer.log
+          touch /config/converter.log
+          touch /config/cwa.db
+      
       - name: Run smoke and unit tests
         env:
           PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts

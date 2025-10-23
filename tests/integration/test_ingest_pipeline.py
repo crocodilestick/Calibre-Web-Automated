@@ -347,10 +347,12 @@ class TestFormatConversion:
             print(f"  📄 Files in {book_dir.name}: {[f.name for f in files_in_dir]}")
         
         # Look for any ebook files (MOBI, AZW3, EPUB, etc.)
-        mobi_files_imported = list(library_folder.glob("*/*.mobi"))
-        azw3_files = list(library_folder.glob("*/*.azw3"))
-        azw_files = list(library_folder.glob("*/*.azw"))
-        epub_files = list(library_folder.glob("*/*.epub"))
+        # Calibre stores books as: library/Author/Book Title (ID)/book.format
+        # So we need to search two levels deep: */*/*.format
+        mobi_files_imported = list(library_folder.glob("*/*/*.mobi"))
+        azw3_files = list(library_folder.glob("*/*/*.azw3"))
+        azw_files = list(library_folder.glob("*/*/*.azw"))
+        epub_files = list(library_folder.glob("*/*/*.epub"))
         
         # MOBI files often get converted to AZW3 by Calibre
         total_ebook_files = len(mobi_files_imported) + len(azw3_files) + len(azw_files) + len(epub_files)
@@ -359,7 +361,7 @@ class TestFormatConversion:
         
         # Book was imported (we confirmed via database), file format may vary
         assert total_ebook_files > 0, \
-            f"No ebook files found after import. All files: {[f.name for f in all_files]}"
+            f"No ebook files found after import. Searched pattern: */*/*.{{mobi,azw3,azw,epub}}"
         
         print(f"✅ MOBI successfully imported as {len(mobi_files_imported)} MOBI, {len(azw3_files)} AZW3, {len(epub_files)} EPUB")
     

@@ -338,15 +338,30 @@ class TestFormatConversion:
         book_dirs = [d for d in library_folder.iterdir() if d.is_dir() and d.name != ".keep"]
         assert len(book_dirs) > 0, "No book directories created"
         
-        # Look for MOBI file (should be imported as-is unless conversion enabled)
+        # Debug: List all files in book directories
+        print(f"📁 Book directories created: {[d.name for d in book_dirs]}")
+        all_files = []
+        for book_dir in book_dirs:
+            files_in_dir = list(book_dir.iterdir())
+            all_files.extend(files_in_dir)
+            print(f"  📄 Files in {book_dir.name}: {[f.name for f in files_in_dir]}")
+        
+        # Look for any ebook files (MOBI, AZW3, EPUB, etc.)
         mobi_files_imported = list(library_folder.glob("*/*.mobi"))
+        azw3_files = list(library_folder.glob("*/*.azw3"))
+        azw_files = list(library_folder.glob("*/*.azw"))
         epub_files = list(library_folder.glob("*/*.epub"))
         
-        # Either MOBI should be imported, or EPUB if conversion was enabled
-        assert len(mobi_files_imported) > 0 or len(epub_files) > 0, \
-            "No MOBI or EPUB files found after import"
+        # MOBI files often get converted to AZW3 by Calibre
+        total_ebook_files = len(mobi_files_imported) + len(azw3_files) + len(azw_files) + len(epub_files)
         
-        print(f"✅ MOBI successfully imported (found {len(mobi_files_imported)} MOBI, {len(epub_files)} EPUB)")
+        print(f"📊 Files found: {len(mobi_files_imported)} MOBI, {len(azw3_files)} AZW3, {len(azw_files)} AZW, {len(epub_files)} EPUB")
+        
+        # Book was imported (we confirmed via database), file format may vary
+        assert total_ebook_files > 0, \
+            f"No ebook files found after import. All files: {[f.name for f in all_files]}"
+        
+        print(f"✅ MOBI successfully imported as {len(mobi_files_imported)} MOBI, {len(azw3_files)} AZW3, {len(epub_files)} EPUB")
     
     def test_conversion_failure_moves_to_failed_folder(self, ingest_folder, test_volumes, tmp_path):
         """

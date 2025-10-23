@@ -9,14 +9,57 @@ Shared pytest fixtures and configuration for CWA tests.
 
 This module contains common fixtures that are automatically available
 to all tests without needing to import them explicitly.
+
+Environment Variables:
+    USE_DOCKER_VOLUMES: Set to 'true' to use Docker volumes instead of bind mounts.
+                       Required for Docker-in-Docker test environments.
+                       Example: USE_DOCKER_VOLUMES=true pytest tests/integration/
 """
 
+import os
 import pytest
 import tempfile
 import shutil
 import time
 from pathlib import Path
 from typing import Generator
+
+
+# Check if we should use Docker volumes (for DinD environments)
+USE_DOCKER_VOLUMES = os.getenv('USE_DOCKER_VOLUMES', 'false').lower() == 'true'
+
+# Import volume_copy helper if in volume mode (available to all tests)
+if USE_DOCKER_VOLUMES:
+    print("\n🔄 Docker Volume mode enabled (USE_DOCKER_VOLUMES=true)")
+    print("   Using Docker volumes instead of bind mounts for DinD compatibility\n")
+    from conftest_volumes import volume_copy, VolumePath
+else:
+    # In bind mount mode, volume_copy is just shutil.copy2
+    volume_copy = shutil.copy2
+    VolumePath = None
+
+
+def get_db_path(db_path, tmp_path=None):
+    """
+    Get a local filesystem path for database access.
+    
+    In bind mount mode: Returns the path directly
+    In volume mode: Extracts DB to temp location and returns local path
+    
+    Args:
+        db_path: Path or VolumePath to database file
+        tmp_path: Temporary directory (required in volume mode)
+    
+    Returns:
+        Path: Local filesystem path to database file
+    """
+    if USE_DOCKER_VOLUMES and isinstance(db_path, VolumePath):
+        if tmp_path is None:
+            raise ValueError("tmp_path required for database access in volume mode")
+        return db_path.read_to_local(tmp_path)
+    else:
+        return db_path
+    volume_copy = shutil.copy2
 
 
 # ============================================================================
@@ -462,4 +505,38 @@ def library_folder(test_volumes: dict) -> Path:
     Tests can check this folder for imported books.
     """
     return test_volumes["library"]
+
+
+# ============================================================================
+# Docker Volume Mode Support (for Docker-in-Docker environments)
+# ============================================================================
+
+if USE_DOCKER_VOLUMES:
+    # Import volume-based fixtures
+    from conftest_volumes import (
+        test_volumes_dind,
+        cwa_container_dind,
+        ingest_folder_dind,
+        library_folder_dind,
+        VolumeHelper
+    )
+    
+    # Override fixtures to use volume versions
+    @pytest.fixture(scope="session")
+    def cwa_container(cwa_container_dind):
+        """Redirect to Docker volume container implementation."""
+        yield cwa_container_dind
+    
+    @pytest.fixture(scope="session")
+    def ingest_folder(ingest_folder_dind):
+        """Redirect to VolumeHelper for ingest folder."""
+        return ingest_folder_dind
+    
+    @pytest.fixture(scope="session")
+    def library_folder(library_folder_dind):
+        """Redirect to VolumeHelper for library folder."""
+        return library_folder_dind
+    
+    print("✅ Docker Volume fixtures loaded successfully\n")
+
 

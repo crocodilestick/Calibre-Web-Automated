@@ -39,6 +39,9 @@ class Amazon(Metadata):
         self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
         def inner(link, index) -> [dict, int]:
+            if link.startswith("/sspa/"):
+                return []  # sspa links are not book pages
+
             try:
                 r = self.session.get(f"https://www.amazon.com{link}", timeout=10)
                 r.raise_for_status()
@@ -49,6 +52,9 @@ class Amazon(Metadata):
             soup2 = long_soup.find("div", attrs={"id": "dp-container"})
             if soup2 is None:
                 return []
+            if soup2.find("input", attrs={"name": "submit.preorder"}) is not None:
+                log.debug(f"Skipping pre-order page: https://www.amazon.com{link}")
+                return []  # pre-order page, ignore
             try:
                 match = MetaRecord(
                     title = "",
@@ -67,9 +73,12 @@ class Amazon(Metadata):
                 )
 
                 try:
-                    match.description = "\n".join(
-                        soup2.find("div", attrs={"data-feature-name": "bookDescription"}).stripped_strings)\
-                                            .replace("\xa0"," ")[:-9].strip().strip("\n")
+                    match.description = "<div>" + \
+                        "\n".join([
+                            str(node) for node in
+                            soup2.find("div", attrs={"data-feature-name": "bookDescription"}).div.div.children
+                        ]) + \
+                        "</div>"
                 except (AttributeError, TypeError):
                     return []  # if there is no description it is not a book and therefore should be ignored
                 try:
@@ -87,7 +96,7 @@ class Amazon(Metadata):
                     match.rating = int(
                         soup2.find(attrs={"id": "acrPopover"})["title"].split(" ")[0].split(".")[
                             0])  # first number in string
-                except (AttributeError, ValueError):
+                except (AttributeError, ValueError, TypeError):
                     match.rating = 0
                 try:
                     asin = soup2.find("input", attrs={"type": "hidden", "name": "asin"})["value"]

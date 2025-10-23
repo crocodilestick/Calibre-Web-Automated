@@ -432,17 +432,6 @@ class TestFormatConversion:
 class TestProcessLockInContainer:
     """Test ProcessLock mechanism prevents concurrent ingest processes."""
     
-    def test_lock_prevents_concurrent_processing(self, ingest_folder, cwa_api_client, sample_ebook_path):
-        """
-        Test that ProcessLock prevents multiple ingest processes from running.
-        
-        This is critical to prevent database corruption and race conditions
-        when multiple files are dropped at once.
-        """
-        # This is tested implicitly by test_ingest_multiple_files
-        # The lock ensures files are processed sequentially, not in parallel
-        pytest.skip("Lock mechanism tested implicitly by multiple file tests")
-    
     def test_lock_released_after_processing(self, ingest_folder, sample_ebook_path):
         """
         Verify that lock file is cleaned up after successful processing.
@@ -754,13 +743,14 @@ class TestMetadataAndDatabase:
         while dest_file.exists() and time.time() - start_time < max_wait:
             time.sleep(2)
         
-        time.sleep(5)
+        # Give container extra time to write to DB after file processing
+        time.sleep(10)
         
-        # Check cwa.db
+        # Check cwa.db - should exist after processing first file
         cwa_db = test_volumes["config"] / "cwa.db"
         
-        if not cwa_db.exists():
-            pytest.skip("cwa.db not created yet (may be first run)")
+        assert cwa_db.exists(), \
+            "cwa.db should have been created after processing first import"
         
         with sqlite3.connect(str(cwa_db), timeout=30) as con:
             cur = con.cursor()
@@ -768,8 +758,8 @@ class TestMetadataAndDatabase:
             # Check if cwa_import table exists
             tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='cwa_import'").fetchone()
             
-            if not tables:
-                pytest.skip("cwa_import table doesn't exist yet")
+            assert tables is not None, \
+                "cwa_import table should exist after first import"
             
             # Check for import records
             imports = cur.execute("SELECT COUNT(*) FROM cwa_import").fetchone()
@@ -783,7 +773,7 @@ class TestMetadataAndDatabase:
 class TestRealWorldScenarios:
     """Test real-world user scenarios end-to-end."""
     
-    def test_user_drops_book_and_it_appears_in_library(self, ingest_folder, library_folder):
+    def test_user_drops_book_and_it_appears_in_library(self, ingest_folder, library_folder, cwa_container):
         """
         Complete user workflow: drop book → wait → verify it's in library.
         
@@ -792,10 +782,23 @@ class TestRealWorldScenarios:
         """
         fixtures_dir = Path(__file__).parent.parent / "fixtures" / "sample_books"
         
+        print(f"📁 Looking for fixtures in: {fixtures_dir}")
+        print(f"📁 Fixtures dir exists: {fixtures_dir.exists()}")
+        
+        if fixtures_dir.exists():
+            all_epubs = list(fixtures_dir.glob("*.epub"))
+            print(f"📚 Found {len(all_epubs)} total EPUB files")
+            for epub in all_epubs:
+                size = epub.stat().st_size
+                starts_with_test = epub.name.startswith("test_")
+                print(f"  - {epub.name}: {size:,} bytes (test file: {starts_with_test})")
+        
         # Use a real book (not synthetic)
         real_books = [f for f in fixtures_dir.glob("*.epub") 
                      if not f.name.startswith("test_") 
                      and f.stat().st_size > 10000]  # Skip tiny test files
+        
+        print(f"📗 Filtered to {len(real_books)} real books (>10KB, not test_*)")
         
         if not real_books:
             pytest.skip("No real book files available")
@@ -843,7 +846,7 @@ class TestRealWorldScenarios:
         assert len(book_dirs) > 0, "No book directories created"
         print(f"✅ Book stored in: {book_dirs[0].name}/")
     
-    def test_mixed_format_batch_import(self, ingest_folder, library_folder):
+    def test_mixed_format_batch_import(self, ingest_folder, library_folder, cwa_container):
         """
         Test importing multiple files of different formats at once.
         
@@ -852,13 +855,20 @@ class TestRealWorldScenarios:
         """
         fixtures_dir = Path(__file__).parent.parent / "fixtures" / "sample_books"
         
+        print(f"📁 Looking for fixtures in: {fixtures_dir}")
+        print(f"📁 Fixtures dir exists: {fixtures_dir.exists()}")
+        
         # Find different format files
         epub_files = list(fixtures_dir.glob("alice*.epub"))[:1]
         mobi_files = list(fixtures_dir.glob("*.mobi"))[:1]
         txt_files = list(fixtures_dir.glob("*.txt"))[:1]
         
+        print(f"📚 Found {len(epub_files)} EPUB, {len(mobi_files)} MOBI, {len(txt_files)} TXT files")
+        
         files_to_import = epub_files + mobi_files + txt_files
         files_to_import = [f for f in files_to_import if f.stat().st_size > 10000]
+        
+        print(f"📗 After size filter (>10KB): {len(files_to_import)} files")
         
         if len(files_to_import) < 2:
             pytest.skip("Not enough different format files available")

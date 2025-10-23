@@ -427,7 +427,16 @@ def sample_ebook_path(tmp_path) -> Path:
     
     Creates a fresh minimal EPUB for each test function.
     """
-    from tests.fixtures.generate_synthetic import create_minimal_epub
+    # Import relative to tests directory
+    import sys
+    from pathlib import Path as PathLib
+    
+    # Add tests directory to path if not already there
+    tests_dir = PathLib(__file__).parent
+    if str(tests_dir) not in sys.path:
+        sys.path.insert(0, str(tests_dir))
+    
+    from fixtures.generate_synthetic import create_minimal_epub
     
     epub_path = tmp_path / "test_sample.epub"
     create_minimal_epub(epub_path)

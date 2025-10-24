@@ -59,7 +59,6 @@ def get_db_path(db_path, tmp_path=None):
         return db_path.read_to_local(tmp_path)
     else:
         return db_path
-    volume_copy = shutil.copy2
 
 
 # ============================================================================

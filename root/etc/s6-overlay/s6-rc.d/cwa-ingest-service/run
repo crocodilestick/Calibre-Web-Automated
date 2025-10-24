@@ -45,7 +45,7 @@ STABLE_CHECKS=${CWA_INGEST_STABLE_CHECKS:-6}
 STABLE_CONSEC_MATCH=${CWA_INGEST_STABLE_CONSEC_MATCH:-2}
 STABLE_INTERVAL=${CWA_INGEST_STABLE_INTERVAL:-0.5}
 MAX_QUEUE_SIZE=${CWA_INGEST_MAX_QUEUE_SIZE:-50}
-SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|acsm|cwa.json)$'
+SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|acsm|kfx|kfx-zip|cwa.json)$'
 TEMP_SUFFIXES='crdownload download part uploading'
 
 wait_for_stable_file() {
@@ -90,7 +90,7 @@ process_retry_queue() {
         if [ -s "$QUEUE_FILE" ]; then
                 echo "[cwa-ingest-service] Processing retry queue..."
                 local temp_queue=$(mktemp)
-                
+
                 while IFS= read -r queued_file; do
                         if [ -f "$queued_file" ]; then
                                 echo "[cwa-ingest-service] Retrying: $queued_file"
@@ -98,7 +98,7 @@ process_retry_queue() {
                                 local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
                                 timeout $safety_timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
                                 local retry_exit=$?
-                                
+
                                 if [ $retry_exit -eq 2 ]; then
                                         # Still busy, keep in queue
                                         echo "$queued_file" >> "$temp_queue"
@@ -118,9 +118,9 @@ process_retry_queue() {
                                 fi
                         fi
                 done < "$QUEUE_FILE"
-                
+
                 mv "$temp_queue" "$QUEUE_FILE"
-                
+
                 if [ -s "$QUEUE_FILE" ]; then
                         echo "[cwa-ingest-service] $(wc -l < "$QUEUE_FILE") files remain in retry queue"
                 fi
@@ -132,7 +132,7 @@ handle_event() {
         local configured_timeout=$(get_timeout_from_db)  # Get configured timeout from database
         local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
         local filename=$(basename "$filepath")
-        
+
         # temp suffixes
         for suf in $TEMP_SUFFIXES; do
                 [[ "$filepath" == *.$suf ]] && return 0
@@ -141,15 +141,15 @@ handle_event() {
         if ! [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]; then
                 return 0
         fi
-        
+
         echo "[cwa-ingest-service] New file detected - $filepath - Starting Ingest Processor..."
         echo "[cwa-ingest-service] Configured timeout: ${configured_timeout}s, Safety timeout: ${safety_timeout}s"
         echo "processing:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
-        
+
         # Use safety timeout as last resort - processor should handle its own timeout internally
         timeout $safety_timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
         local exit_code=$?
-        
+
         if [ $exit_code -eq 124 ]; then
                 echo "[cwa-ingest-service] SAFETY TIMEOUT: $filepath took longer than safety timeout of ${safety_timeout} seconds"
                 echo "[cwa-ingest-service] This indicates a serious issue - processor should have timed out internally at ${configured_timeout} seconds"
@@ -165,10 +165,10 @@ handle_event() {
         elif [ $exit_code -eq 2 ]; then
                 echo "[cwa-ingest-service] Processor busy, adding to retry queue: $filepath"
                 echo "queued:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
-                
+
                 # Add to queue with size management
                 echo "$filepath" >> "$QUEUE_FILE"
-                
+
                 # Check queue size and trim if necessary
                 local queue_size=$(wc -l < "$QUEUE_FILE" 2>/dev/null || echo 0)
                 if [ "$queue_size" -gt "$MAX_QUEUE_SIZE" ]; then
@@ -186,7 +186,7 @@ handle_event() {
                 # Try to process any queued files after successful completion
                 process_retry_queue
         fi
-        
+
         echo "idle" > "$STATUS_FILE"
 }
 

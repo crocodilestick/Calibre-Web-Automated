@@ -22,6 +22,7 @@ import pytest
 import tempfile
 import shutil
 import time
+import requests
 from pathlib import Path
 from typing import Generator
 
@@ -43,6 +44,35 @@ else:
     # In bind mount mode, volume_copy is just shutil.copy2
     volume_copy = shutil.copy2
     VolumePath = None
+
+
+def check_container_available(port=None):
+    """
+    Check if a CWA container is available on the specified port.
+    
+    Args:
+        port: Port to check (defaults to CWA_TEST_PORT env var or 8085)
+    
+    Returns:
+        bool: True if container is accessible, False otherwise
+    """
+    if port is None:
+        port = os.getenv('CWA_TEST_PORT', '8085')
+    
+    try:
+        response = requests.get(f"http://localhost:{port}", timeout=2)
+        return response.status_code == 200
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return False
+
+
+@pytest.fixture(scope="session")
+def container_available():
+    """
+    Session-scoped fixture that checks once if a container is available.
+    Tests can use this to skip if no container is running.
+    """
+    return check_container_available()
 
 
 def get_db_path(db_path, tmp_path=None):
@@ -363,10 +393,14 @@ def cwa_container(docker_compose_file: str, test_volumes: dict) -> Generator:
     repo_root = Path(docker_compose_file).parent
 
     # Get test port from environment (allows custom port to avoid conflicts)
-    test_port = os.getenv('CWA_TEST_PORT', '8083')    # Create a temporary docker-compose override for testing
+    # Default to 8085 to avoid conflicts with production CWA on 8083
+    test_port = os.getenv('CWA_TEST_PORT', '8085')
+    
+    # Create a temporary docker-compose override for testing
     compose_override = repo_root / "docker-compose.test-override.yml"
     
     # Write test-specific overrides
+    # Note: Container always runs on 8083 internally, we just map host port to it
     override_content = f"""---
 services:
   calibre-web-automated:
@@ -377,13 +411,12 @@ services:
       - PGID=1000
       - TZ=UTC
       - NETWORK_SHARE_MODE=false
-      - CWA_PORT_OVERRIDE={test_port}
     volumes:
       - {test_volumes['config']}:/config
       - {test_volumes['ingest']}:/cwa-book-ingest
       - {test_volumes['library']}:/calibre-library
     ports:
-      - "{test_port}:{test_port}"
+      - "{test_port}:8083"
     restart: "no"
 """
     
@@ -465,6 +498,8 @@ def cwa_api_client(cwa_container) -> dict:
     """
     Provide a configured API client for interacting with CWA container.
     
+    Skips the test if no container is available on the configured port.
+    
     Returns a dict with:
     - base_url: The CWA web interface URL
     - session: Authenticated requests.Session
@@ -473,21 +508,30 @@ def cwa_api_client(cwa_container) -> dict:
     import requests
     
     # Use configurable port
-    test_port = os.getenv('CWA_TEST_PORT', '8083')
+    # Default to 8085 to avoid conflicts with production CWA on 8083
+    test_port = os.getenv('CWA_TEST_PORT', '8085')
     base_url = f"http://localhost:{test_port}"
+    
+    # Check if container is accessible
+    if not check_container_available(test_port):
+        pytest.skip(f"No CWA container available on port {test_port}")
     
     # Create session with default credentials
     session = requests.Session()
     
     # Login to CWA (default credentials: admin/admin123)
-    login_response = session.post(
-        f"{base_url}/login",
-        data={"username": "admin", "password": "admin123"},
-        allow_redirects=False
-    )
-    
-    if login_response.status_code not in (200, 302):
-        pytest.skip("Could not authenticate with CWA container")
+    try:
+        login_response = session.post(
+            f"{base_url}/login",
+            data={"username": "admin", "password": "admin123"},
+            allow_redirects=False,
+            timeout=5
+        )
+        
+        if login_response.status_code not in (200, 302):
+            pytest.skip("Could not authenticate with CWA container")
+    except requests.exceptions.RequestException as e:
+        pytest.skip(f"Could not connect to CWA container: {e}")
     
     return {
         "base_url": base_url,

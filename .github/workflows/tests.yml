@@ -149,6 +149,8 @@ jobs:
             --tb=long \
             --durations=10 \
             --junitxml=integration-results.xml
+        env:
+          CWA_TEST_PORT: "8083"  # CI uses production default port
         timeout-minutes: 30  # Kill if stuck
       
       - name: Upload test results

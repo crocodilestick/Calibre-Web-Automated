@@ -45,16 +45,19 @@ class Google(Metadata):
                 log.warning(e)
                 return []
             for result in results.json().get("items", []):
-                val.append(
-                    self._parse_search_result(
-                        result=result, generic_cover=generic_cover, locale=locale
-                    )
+                mr =self._parse_search_result(
+                    result=result, generic_cover=generic_cover, locale=locale
                 )
+                if mr:
+                    val.append(mr)
         return val
 
     def _parse_search_result(
         self, result: Dict, generic_cover: str, locale: str
-    ) -> MetaRecord:
+    ) -> MetaRecord|None:
+        if "title" not in result["volumeInfo"]:
+            return None
+
         match = MetaRecord(
             id=result["id"],
             title=result["volumeInfo"]["title"],

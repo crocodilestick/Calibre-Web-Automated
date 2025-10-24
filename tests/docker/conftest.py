@@ -15,6 +15,23 @@ shared between docker/ and integration/ test directories.
 """
 
 import pytest
+import sys
+from pathlib import Path
+
+# Add parent tests directory to path
+_tests_dir = Path(__file__).parent.parent
+if str(_tests_dir) not in sys.path:
+    sys.path.insert(0, str(_tests_dir))
+
+# Import and re-export from parent conftest (avoids circular import)
+import importlib.util
+spec = importlib.util.spec_from_file_location("parent_conftest", _tests_dir / "conftest.py")
+parent_conftest = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(parent_conftest)
+
+# Re-export for imports
+volume_copy = parent_conftest.volume_copy
+get_db_path = parent_conftest.get_db_path
 
 # All fixtures are now in tests/conftest.py and automatically available
 # This file is kept for potential docker-specific test configuration

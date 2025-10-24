@@ -361,11 +361,9 @@ def cwa_container(docker_compose_file: str, test_volumes: dict) -> Generator:
     
     # Get repo root
     repo_root = Path(docker_compose_file).parent
-    
+
     # Get test port from environment (allows custom port to avoid conflicts)
-    test_port = os.getenv('CWA_TEST_PORT', '8085')
-    
-    # Create a temporary docker-compose override for testing
+    test_port = os.getenv('CWA_TEST_PORT', '8083')    # Create a temporary docker-compose override for testing
     compose_override = repo_root / "docker-compose.test-override.yml"
     
     # Write test-specific overrides
@@ -475,7 +473,7 @@ def cwa_api_client(cwa_container) -> dict:
     import requests
     
     # Use configurable port
-    test_port = os.getenv('CWA_TEST_PORT', '8085')
+    test_port = os.getenv('CWA_TEST_PORT', '8083')
     base_url = f"http://localhost:{test_port}"
     
     # Create session with default credentials

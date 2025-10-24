@@ -25,7 +25,7 @@ if [ -d ".venv" ]; then
 fi
 
 # Test configuration
-TEST_PORT="${CWA_TEST_PORT:-8085}"
+TEST_PORT="${CWA_TEST_PORT:-8083}"
 
 # Determine pytest command (python3 -m pytest works in more environments)
 if command -v pytest &> /dev/null; then

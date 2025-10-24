@@ -12,9 +12,11 @@ These tests verify the CWA_DB class functions correctly in isolation.
 
 import pytest
 import sys
+from pathlib import Path
 
-# Add scripts directory to path
-sys.path.insert(0, '/app/calibre-web-automated/scripts/')
+# Add scripts directory to path (works in both dev container and CI)
+scripts_dir = Path(__file__).parent.parent.parent / "scripts"
+sys.path.insert(0, str(scripts_dir))
 
 from cwa_db import CWA_DB
 

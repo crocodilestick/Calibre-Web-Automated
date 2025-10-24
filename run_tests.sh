@@ -19,15 +19,69 @@ BOLD='\033[1m'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# Activate venv if it exists
+if [ -d ".venv" ]; then
+    source .venv/bin/activate
+fi
+
+# Test configuration
+TEST_PORT="${CWA_TEST_PORT:-8085}"
+
+# Determine pytest command (python3 -m pytest works in more environments)
+if command -v pytest &> /dev/null; then
+    PYTEST="pytest"
+else
+    PYTEST="python3 -m pytest"
+fi
+
+# Check dependencies
+check_dependencies() {
+    local missing_deps=0
+    
+    # Check Docker
+    if ! command -v docker &> /dev/null; then
+        print_warning "Docker not found - integration tests will fail"
+        missing_deps=1
+    elif ! docker info &> /dev/null; then
+        print_warning "Docker daemon not running - integration tests will fail"
+        missing_deps=1
+    fi
+    
+    # Check Python venv
+    if [ ! -d ".venv" ]; then
+        print_warning "Virtual environment not found"
+        echo "  Run: python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
+        missing_deps=1
+    fi
+    
+    # Check pytest
+    if ! command -v pytest &> /dev/null && ! python3 -c "import pytest" &> /dev/null; then
+        print_warning "pytest not installed"
+        echo "  Run: pip install pytest pytest-timeout pytest-flask pytest-mock faker testcontainers"
+        missing_deps=1
+    fi
+    
+    if [ $missing_deps -eq 1 ]; then
+        echo ""
+        read -p "Continue anyway? [y/N]: " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    fi
+}
+
 # Print header
 print_header() {
     clear
     echo -e "${BOLD}${CYAN}"
     echo "╔════════════════════════════════════════════════════════════╗"
     echo "║                                                            ║"
-    echo "║        Calibre-Web Automated - Test Suite Runner          ║"
+    echo "║        Calibre-Web Automated - Test Suite Runner           ║"
     echo "║                                                            ║"
     echo "╚════════════════════════════════════════════════════════════╝"
+    echo "Setup Guide:"
+    echo "https://github.com/crocodilestick/Calibre-Web-Automated/wiki/Testing-Quick-Setup"
     echo -e "${NC}"
 }
 
@@ -73,33 +127,34 @@ check_environment() {
 show_menu() {
     print_header
     check_environment
+    check_dependencies
     
     echo ""
     echo -e "${BOLD}Select Test Mode:${NC}"
     echo ""
-    echo "  ${BOLD}1)${NC} Integration Tests (Bind Mount Mode)"
+    echo -e "  ${BOLD}1)${NC} Integration Tests (Bind Mount Mode)"
     echo "     └─ Standard mode - uses temporary directories"
     echo "     └─ Best for: Local development, CI/CD"
     echo ""
-    echo "  ${BOLD}2)${NC} Integration Tests (Docker Volume Mode)"
+    echo -e "  ${BOLD}2)${NC} Integration Tests (Docker Volume Mode)"
     echo "     └─ DinD compatible - uses Docker volumes"
     echo "     └─ Best for: Dev containers, Docker-in-Docker"
     echo ""
-    echo "  ${BOLD}3)${NC} Docker Startup Tests"
+    echo -e "  ${BOLD}3)${NC} Docker Startup Tests"
     echo "     └─ Tests container initialization and health"
     echo ""
-    echo "  ${BOLD}4)${NC} All Tests (Full Suite)"
+    echo -e "  ${BOLD}4)${NC} All Tests (Full Suite)"
     echo "     └─ Run everything available"
     echo ""
-    echo "  ${BOLD}5)${NC} Quick Test (Single Integration Test)"
+    echo -e "  ${BOLD}5)${NC} Quick Test (Single Integration Test)"
     echo "     └─ Fast verification - runs one test"
     echo ""
-    echo "  ${BOLD}6)${NC} Custom Test Selection"
+    echo -e "  ${BOLD}6)${NC} Custom Test Selection"
     echo "     └─ Choose specific test file or pattern"
     echo ""
-    echo "  ${BOLD}7)${NC} Show Test Info & Status"
+    echo -e "  ${BOLD}7)${NC} Show Test Info & Status"
     echo ""
-    echo "  ${BOLD}q)${NC} Quit"
+    echo -e "  ${BOLD}q)${NC} Quit"
     echo ""
     echo -ne "${BOLD}Enter your choice [1-7, q]:${NC} "
 }
@@ -225,10 +280,10 @@ run_all_tests() {
     # Determine mode based on environment
     if [ "$DEFAULT_MODE" = "dind" ]; then
         print_info "Using Docker Volume mode (DinD environment detected)"
-        USE_DOCKER_VOLUMES=true pytest tests/ -v --tb=short || true
+        USE_DOCKER_VOLUMES=true $PYTEST tests/ -v --tb=short || true
     else
         print_info "Using Bind Mount mode"
-        pytest tests/ -v --tb=short || true
+        $PYTEST tests/ -v --tb=short || true
     fi
     
     echo -e "${YELLOW}═══════════════════════════════════════════════════════════${NC}"
@@ -249,9 +304,9 @@ run_quick_test() {
     echo -e "${YELLOW}═══════════════════════════════════════════════════════════${NC}"
     
     if [ "$DEFAULT_MODE" = "dind" ]; then
-        USE_DOCKER_VOLUMES=true pytest tests/integration/test_ingest_pipeline.py::TestBookIngestInContainer::test_ingest_epub_already_target_format -v
+        USE_DOCKER_VOLUMES=true $PYTEST tests/integration/test_ingest_pipeline.py::TestBookIngestInContainer::test_ingest_epub_already_target_format -v
     else
-        pytest tests/integration/test_ingest_pipeline.py::TestBookIngestInContainer::test_ingest_epub_already_target_format -v
+        $PYTEST tests/integration/test_ingest_pipeline.py::TestBookIngestInContainer::test_ingest_epub_already_target_format -v
     fi
     
     echo -e "${YELLOW}═══════════════════════════════════════════════════════════${NC}"
@@ -292,9 +347,9 @@ run_custom_test() {
     echo -e "${YELLOW}═══════════════════════════════════════════════════════════${NC}"
     
     if [ "$DEFAULT_MODE" = "dind" ]; then
-        USE_DOCKER_VOLUMES=true pytest $TEST_PATH -v
+        USE_DOCKER_VOLUMES=true $PYTEST $TEST_PATH -v
     else
-        pytest $TEST_PATH -v
+        $PYTEST $TEST_PATH -v
     fi
     
     echo -e "${YELLOW}═══════════════════════════════════════════════════════════${NC}"
@@ -316,29 +371,24 @@ show_info() {
     echo ""
     
     # Count tests
-    if command -v pytest &> /dev/null; then
-        echo "📊 Integration Tests:"
-        pytest tests/integration/ --collect-only -q 2>/dev/null | tail -1 || echo "  (pytest needed to count)"
-        echo ""
-        
-        if [ -d tests/docker ]; then
-            echo "🐳 Docker Tests:"
-            pytest tests/docker/ --collect-only -q 2>/dev/null | tail -1 || echo "  (pytest needed to count)"
-            echo ""
-        fi
-    else
-        print_warning "Install pytest to see test counts"
+    echo "📊 Integration Tests:"
+    $PYTEST tests/integration/ --collect-only -q 2>/dev/null | tail -1 || echo "  (pytest needed to count)"
+    echo ""
+    
+    if [ -d tests/docker ]; then
+        echo "🐳 Docker Tests:"
+        $PYTEST tests/docker/ --collect-only -q 2>/dev/null | tail -1 || echo "  (pytest needed to count)"
         echo ""
     fi
     
     echo -e "${BOLD}Test Modes:${NC}"
     echo ""
-    echo "• ${BOLD}Bind Mount Mode${NC} (Default on host)"
+    echo -e "• ${BOLD}Bind Mount Mode${NC} (Default on host)"
     echo "  └─ Uses temporary directories"
     echo "  └─ 20/20 integration tests pass"
     echo "  └─ Faster cleanup"
     echo ""
-    echo "• ${BOLD}Docker Volume Mode${NC} (Default in dev containers)"
+    echo -e "• ${BOLD}Docker Volume Mode${NC} (Default in dev containers)"
     echo "  └─ Uses Docker volumes via docker cp"
     echo "  └─ 19/20 integration tests pass (1 skipped)"
     echo "  └─ Required for Docker-in-Docker"

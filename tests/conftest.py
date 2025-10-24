@@ -17,12 +17,18 @@ Environment Variables:
 """
 
 import os
+import sys
 import pytest
 import tempfile
 import shutil
 import time
 from pathlib import Path
 from typing import Generator
+
+# Add project root to Python path so 'cps' module can be imported
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 
 # Check if we should use Docker volumes (for DinD environments)
@@ -157,7 +163,12 @@ def temp_cwa_db(tmp_path, monkeypatch):
     so tests don't interfere with real data.
     """
     import sys
-    sys.path.insert(0, '/app/calibre-web-automated/scripts/')
+    from pathlib import Path
+    
+    # Add scripts directory to path (works in both dev container and CI)
+    scripts_dir = Path(__file__).parent.parent / "scripts"
+    if str(scripts_dir) not in sys.path:
+        sys.path.insert(0, str(scripts_dir))
     
     from cwa_db import CWA_DB
     
@@ -351,6 +362,9 @@ def cwa_container(docker_compose_file: str, test_volumes: dict) -> Generator:
     # Get repo root
     repo_root = Path(docker_compose_file).parent
     
+    # Get test port from environment (allows custom port to avoid conflicts)
+    test_port = os.getenv('CWA_TEST_PORT', '8085')
+    
     # Create a temporary docker-compose override for testing
     compose_override = repo_root / "docker-compose.test-override.yml"
     
@@ -365,13 +379,13 @@ services:
       - PGID=1000
       - TZ=UTC
       - NETWORK_SHARE_MODE=false
-      - CWA_PORT_OVERRIDE=8083
+      - CWA_PORT_OVERRIDE={test_port}
     volumes:
       - {test_volumes['config']}:/config
       - {test_volumes['ingest']}:/cwa-book-ingest
       - {test_volumes['library']}:/calibre-library
     ports:
-      - "8083:8083"
+      - "{test_port}:{test_port}"
     restart: "no"
 """
     
@@ -379,6 +393,7 @@ services:
     
     try:
         print("\n🐳 Starting CWA Docker container for testing...")
+        print(f"   Port: {test_port}")
         
         # Use testcontainers with docker-compose
         # Note: context is the directory path, compose_file_name is the list of compose files
@@ -399,7 +414,7 @@ services:
         while time.time() - start_time < max_wait:
             try:
                 # Try to connect to the web interface
-                response = requests.get("http://localhost:8083", timeout=5)
+                response = requests.get(f"http://localhost:{test_port}", timeout=5)
                 if response.status_code == 200:
                     print("✅ CWA container is ready!")
                     break
@@ -459,7 +474,9 @@ def cwa_api_client(cwa_container) -> dict:
     """
     import requests
     
-    base_url = "http://localhost:8083"
+    # Use configurable port
+    test_port = os.getenv('CWA_TEST_PORT', '8085')
+    base_url = f"http://localhost:{test_port}"
     
     # Create session with default credentials
     session = requests.Session()

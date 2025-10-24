@@ -14,6 +14,7 @@ and basic services are operational.
 import pytest
 import time
 import requests
+import os
 from pathlib import Path
 
 
@@ -80,8 +81,9 @@ class TestDockerEnvironmentVariables:
     
     def test_port_mapping(self, cwa_api_client):
         """Verify port mapping is working."""
-        # If we can access the web interface on 8083, port mapping works
-        response = requests.get("http://localhost:8083", timeout=5)
+        # If we can access the web interface, port mapping works
+        test_port = os.getenv('CWA_TEST_PORT', '8085')
+        response = requests.get(f"http://localhost:{test_port}", timeout=5)
         assert response.status_code == 200
 
 
@@ -95,7 +97,23 @@ class TestDockerHealthChecks:
         time.sleep(10)
         
         # Try to access the web interface - if container crashed, this will fail
-        response = requests.get("http://localhost:8083", timeout=5)
+        test_port = os.getenv('CWA_TEST_PORT', '8085')
+        response = requests.get(f"http://localhost:{test_port}", timeout=5)
+        assert response.status_code == 200
+
+
+@pytest.mark.docker_integration  
+class TestDockerHealthChecks:
+    """Test container health and readiness."""
+    
+    def test_container_stays_running(self):
+        """Verify container doesn't crash immediately after startup."""
+        # Wait 10 seconds and verify it's still running
+        time.sleep(10)
+        
+        # Try to access the web interface - if container crashed, this will fail
+        test_port = os.getenv('CWA_TEST_PORT', '8085')
+        response = requests.get(f"http://localhost:{test_port}", timeout=5)
         assert response.status_code == 200
     
     def test_logs_directory_created(self, test_volumes):

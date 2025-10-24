@@ -428,6 +428,25 @@ services:
             compose_override.unlink()
 
 
+@pytest.fixture(scope="session")
+def container_name(cwa_container) -> str:
+    """
+    Get the container name string for use in docker commands.
+    
+    Handles both CI mode (DockerCompose object) and Docker-in-Docker mode (string).
+    
+    Returns:
+        str: The container name that can be used with docker exec/logs commands
+    """
+    # In Docker-in-Docker mode, cwa_container is already a string (container name)
+    if isinstance(cwa_container, str):
+        return cwa_container
+    
+    # In CI mode, cwa_container is a DockerCompose object
+    # Container name is hardcoded in the docker-compose override
+    return "cwa-test-container"
+
+
 @pytest.fixture(scope="function")
 def cwa_api_client(cwa_container) -> dict:
     """

@@ -36,7 +36,7 @@ from conftest import volume_copy, get_db_path
 class TestBookIngestInContainer:
     """Test the complete ingest pipeline in a running Docker container."""
     
-    def test_ingest_epub_already_target_format(self, sample_ebook_path, ingest_folder, library_folder, cwa_container, tmp_path):
+    def test_ingest_epub_already_target_format(self, sample_ebook_path, ingest_folder, library_folder, cwa_container, container_name, tmp_path):
         """
         Test ingesting an EPUB when target format is EPUB (no conversion needed).
         
@@ -51,7 +51,7 @@ class TestBookIngestInContainer:
         # Debug: Check if container can see the file
         import subprocess
         result = subprocess.run(
-            ["docker", "exec", cwa_container, "ls", "-la", "/cwa-book-ingest"],
+            ["docker", "exec", container_name, "ls", "-la", "/cwa-book-ingest"],
             capture_output=True, text=True
         )
         print(f"📁 Files in container:\n{result.stdout}")
@@ -70,7 +70,7 @@ class TestBookIngestInContainer:
         if dest_file.exists():
             # Debug: Check container logs
             result = subprocess.run(
-                ["docker", "logs", "--tail", "50", cwa_container],
+                ["docker", "logs", "--tail", "50", container_name],
                 capture_output=True, text=True
             )
             print(f"🔍 Container logs:\n{result.stdout[-2000:]}\n{result.stderr[-2000:]}")
@@ -718,7 +718,7 @@ class TestIngestStability:
 class TestMetadataAndDatabase:
     """Test database interactions and metadata handling."""
     
-    def test_book_appears_in_metadata_db(self, ingest_folder, library_folder, sample_ebook_path, tmp_path, cwa_container):
+    def test_book_appears_in_metadata_db(self, ingest_folder, library_folder, sample_ebook_path, tmp_path, cwa_container, container_name):
         """
         Verify that imported books are correctly added to metadata.db.
         
@@ -731,7 +731,7 @@ class TestMetadataAndDatabase:
         # Debug: Check if container can see the file
         import subprocess
         result = subprocess.run(
-            ["docker", "exec", cwa_container, "ls", "-la", "/cwa-book-ingest"],
+            ["docker", "exec", container_name, "ls", "-la", "/cwa-book-ingest"],
             capture_output=True, text=True
         )
         print(f"📁 Files in container ingest folder:\n{result.stdout}")
@@ -751,7 +751,7 @@ class TestMetadataAndDatabase:
             print(f"⚠️  File still exists after {elapsed:.1f}s timeout!")
             # Debug: Check container logs
             result = subprocess.run(
-                ["docker", "logs", "--tail", "50", cwa_container],
+                ["docker", "logs", "--tail", "50", container_name],
                 capture_output=True, text=True
             )
             print(f"🔍 Container logs (last 50 lines):\n{result.stdout}\n{result.stderr}")

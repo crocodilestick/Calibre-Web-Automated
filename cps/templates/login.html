@@ -55,7 +55,7 @@
         </a>
       {% endif %}
       {% if 3 in oauth_check %}
-        <a href="{{url_for('oauth.generic_login')}}" class="btn btn-default pull-right generic">{{_('Log in with SSO')}}</a>
+        <a href="{{url_for('oauth.generic_login')}}" class="btn btn-default pull-right generic">{% if generic_login_button %}{{ generic_login_button }}{% else %}{{_('Log in with SSO')}}{% endif %}</a>
       {% endif %}
     {% endif %}
   </form>

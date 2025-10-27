@@ -1500,6 +1500,20 @@ def render_login(username="", password=""):
     next_url = request.args.get('next', default=url_for("web.index"), type=str)
     if url_for("web.logout") == next_url:
         next_url = url_for("web.index")
+    
+    # Get generic OAuth login button text for display
+    generic_login_button = None
+    if feature_support['oauth']:
+        try:
+            # oauth_bb is already imported at module level, access oauthblueprints from it
+            from . import oauth_bb
+            # oauthblueprints[2] is the generic OIDC provider (index 0=github, 1=google, 2=generic)
+            if hasattr(oauth_bb, 'oauthblueprints') and len(oauth_bb.oauthblueprints) > 2:
+                generic_login_button = oauth_bb.oauthblueprints[2].get('login_button') or 'OpenID Connect'
+        except (AttributeError, IndexError):
+            # Silently fall back to default if oauthblueprints not available
+            pass
+    
     return render_title_template('login.html',
                                  title=_("Login"),
                                  next_url=next_url,
@@ -1507,6 +1521,7 @@ def render_login(username="", password=""):
                                  username=username,
                                  password=password,
                                  oauth_check=oauth_check,
+                                 generic_login_button=generic_login_button,
                                  mail=config.get_mail_server_configured(), page="login")
 
 

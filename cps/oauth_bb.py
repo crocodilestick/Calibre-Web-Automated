@@ -171,6 +171,20 @@ def register_user_from_generic_oauth():
         .filter(ub.User.name == provider_username)
     ).first()
 
+    # Check if user should have admin role based on group membership
+    # Handle various group formats: list, string, or None
+    user_groups = userinfo.get('groups', [])
+    if isinstance(user_groups, str):
+        # Handle comma-separated or space-separated string
+        user_groups = [g.strip() for g in user_groups.replace(',', ' ').split() if g.strip()]
+    elif not isinstance(user_groups, list):
+        user_groups = []
+    
+    admin_group = generic.get('oauth_admin_group', 'admin')
+    # Case-insensitive group comparison to handle "admin" vs "Admin" etc.
+    should_be_admin = (admin_group and 
+                       any(g.lower() == admin_group.lower() for g in user_groups))
+
     if not user:
         user = ub.User()
         user.name = provider_username
@@ -180,10 +194,9 @@ def register_user_from_generic_oauth():
         # Match the same pattern as normal user creation in admin.py
         
         # Set role: admin group overrides default role, otherwise use configured default
-        if ('groups' in userinfo and 
-            generic.get('oauth_admin_group') and 
-            generic['oauth_admin_group'] in userinfo['groups']):
+        if should_be_admin:
             user.role = constants.ROLE_ADMIN
+            log.info("New OAuth user '%s' granted admin role via group '%s'", provider_username, admin_group)
         else:
             user.role = config.config_default_role
         
@@ -215,6 +228,20 @@ def register_user_from_generic_oauth():
             log.error("Failed to create OAuth user '%s': %s", provider_username, ex)
             ub.session.rollback()
             return None
+    else:
+        # Existing user: update admin role based on current group membership (Issue #715)
+        # This ensures that users who are added to or removed from admin groups get proper access
+        current_is_admin = user.role_admin()
+        
+        if should_be_admin and not current_is_admin:
+            # User was added to admin group - grant admin role
+            user.role |= constants.ROLE_ADMIN
+            log.info("OAuth user '%s' will be granted admin role via group '%s'", provider_username, admin_group)
+        elif not should_be_admin and current_is_admin:
+            # User was removed from admin group - revoke admin role (but keep other roles)
+            user.role &= ~constants.ROLE_ADMIN
+            log.info("OAuth user '%s' admin role will be revoked (not in group '%s')", provider_username, admin_group)
+        # Note: Changes are not committed yet - will be committed with OAuth entry below
 
     oauth = ub.session.query(ub.OAuth).filter_by(
         provider=str(generic['id']),
@@ -230,7 +257,17 @@ def register_user_from_generic_oauth():
         ub.session.add(oauth)
 
     oauth.user = user
-    ub.session_commit()
+    
+    # Commit all changes together: OAuth entry + any role updates
+    try:
+        ub.session_commit()
+        # Log role changes after successful commit
+        if user.role_admin() and should_be_admin:
+            log.info("OAuth user '%s' has admin role via group '%s'", provider_username, admin_group)
+    except Exception as ex:
+        log.error("Failed to save OAuth session for user '%s': %s", provider_username, ex)
+        ub.session.rollback()
+        return None
 
     return provider_user_id
 
@@ -414,10 +451,19 @@ def generate_oauth_blueprints():
             ub.session_commit("Updated generic OAuth provider from metadata URL")
             log.info("Updated OAuth endpoints from metadata URL: %s", generic.metadata_url)
     
+    # Parse scope: convert string to list if needed (Flask-Dance expects list)
+    scope_value = generic.scope or 'openid profile email'
+    if isinstance(scope_value, str):
+        # Split space-separated scope string into list, filtering out empty strings
+        scope_value = [s for s in scope_value.split() if s]
+        # Ensure we have at least the default scopes if result is empty
+        if not scope_value:
+            scope_value = ['openid', 'profile', 'email']
+    
     ele3 = dict(provider_name='generic',
                 id=generic.id,
                 active=generic.active,
-                scope=generic.scope or 'openid profile email',
+                scope=scope_value,
                 oauth_client_id=generic.oauth_client_id,
                 oauth_client_secret=generic.oauth_client_secret,
                 oauth_base_url=generic.oauth_base_url,
@@ -427,7 +473,7 @@ def generate_oauth_blueprints():
                 metadata_url=generic.metadata_url,
                 username_mapper=generic.username_mapper,
                 email_mapper=generic.email_mapper,
-                login_button=generic.login_button,
+                login_button=generic.login_button or 'OpenID Connect',
                 oauth_admin_group=generic.oauth_admin_group or 'admin')
     oauthblueprints.append(ele3)
 

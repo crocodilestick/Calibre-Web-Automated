@@ -119,7 +119,7 @@
     </div>
     <div class="form-group">
       <label for="rating">{{_('Rating')}}</label>
-      <input type="number"  name="rating" id="rating" class="rating input-lg" data-clearable="" value="{% if book.ratings %}{{(book.ratings[0].rating / 2)|int}}{% endif %}">
+      <input type="number"  name="rating" id="rating" class="rating input-lg" data-clearable="" value="{% if book.ratings %}{{(book.ratings[0].rating / 2)|int}}{% endif %}"/>
     </div>
       <div class="form-group">
       <label for="comments">{{_('Description')}}</label>
@@ -311,6 +311,10 @@
         <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="seriesIndex" checked>Series Index:</dt>
         <dd class="meta_publishedDate"><%= book.series_index %></dd>
       <% } %>
+			<% if (book.rating) { %>
+				<dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="rating" checked>Rating:</dt>
+				<dd class="meta_rating"><%= book.rating %> / 5</dd>
+			<% } %>
       <% if (book.description) { %>
         <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="description" checked>Description:</dt>
         <dd class="meta_description"><%= book.description %></dd>

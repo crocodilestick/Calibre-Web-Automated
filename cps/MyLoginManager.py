@@ -6,7 +6,10 @@
 # See CONTRIBUTORS for full list of authors.
 
 from .cw_login import LoginManager
-from flask import session
+from flask import session, request
+from . import logger
+
+log = logger.create()
 
 
 class MyLoginManager(LoginManager):
@@ -15,6 +18,17 @@ class MyLoginManager(LoginManager):
         ident = self._session_identifier_generator()
         if(sess and not (len(sess) == 1
                          and sess.get('csrf_token', None))) and ident != sess.get('_id', None):
+            # Log session identifier mismatch for debugging (issue #141)
+            stored_id = sess.get('_id', 'None')
+            user_id = sess.get('_user_id', 'unknown')
+            log.debug(
+                "Session protection triggered for user %s: identifier mismatch "
+                "(stored: %s..., current: %s..., IP: %s)",
+                user_id,
+                stored_id[:16] if stored_id != 'None' else 'None',
+                ident[:16] if ident else 'None',
+                request.remote_addr
+            )
             return super(). _session_protection_failed()
         return False
 

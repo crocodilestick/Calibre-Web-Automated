@@ -53,19 +53,27 @@ logger.addHandler(file_handler)
 USER_NAME = "abc"
 GROUP_NAME = "abc"
 
-# Get UID and GID
-uid = pwd.getpwnam(USER_NAME).pw_uid
-gid = grp.getgrnam(GROUP_NAME).gr_gid
-
-# Set permissions for log file (skip on network shares)
+# Get UID and GID (skip if user doesn't exist, e.g., in CI environments)
+uid = None
+gid = None
 try:
-    nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
-    if not nsm:
-        subprocess.run(["chown", f"{uid}:{gid}", epub_fixer_log_file], check=True)
-    else:
-        print(f"[cwa-kindle-epub-fixer] NETWORK_SHARE_MODE=true detected; skipping chown of {epub_fixer_log_file}", flush=True)
-except subprocess.CalledProcessError as e:
-    print(f"[cwa-kindle-epub-fixer] An error occurred while attempting to set ownership of {epub_fixer_log_file} to abc:abc. See the following error:\n{e}", flush=True)
+    uid = pwd.getpwnam(USER_NAME).pw_uid
+    gid = grp.getgrnam(GROUP_NAME).gr_gid
+except KeyError:
+    # User/group doesn't exist (e.g., in CI/test environments)
+    # This is okay - just skip ownership operations
+    pass
+
+# Set permissions for log file (skip on network shares or if uid/gid not available)
+if uid is not None and gid is not None:
+    try:
+        nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+        if not nsm:
+            subprocess.run(["chown", f"{uid}:{gid}", epub_fixer_log_file], check=True)
+        else:
+            print(f"[cwa-kindle-epub-fixer] NETWORK_SHARE_MODE=true detected; skipping chown of {epub_fixer_log_file}", flush=True)
+    except subprocess.CalledProcessError as e:
+        print(f"[cwa-kindle-epub-fixer] An error occurred while attempting to set ownership of {epub_fixer_log_file} to abc:abc. See the following error:\n{e}", flush=True)
 
 
 def print_and_log(string, log=True) -> None:

@@ -396,11 +396,12 @@ def _cookie_digest(payload, key=None):
 
 
 def _get_remote_addr():
-    address = request.headers.get("X-Forwarded-For", request.remote_addr)
+    # Use request.remote_addr which has already been corrected by ProxyFix middleware
+    # ProxyFix properly handles X-Forwarded-For headers with trust-level validation
+    # This ensures consistent IP detection behind reverse proxies (fixes issue #141)
+    address = request.remote_addr
     if address is not None:
-        # An 'X-Forwarded-For' header includes a comma separated list of the
-        # addresses, the first address being the actual remote address.
-        address = address.encode("utf-8").split(b",")[0].strip()
+        address = address.encode("utf-8")
     return address
 
 

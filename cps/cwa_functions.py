@@ -274,7 +274,8 @@ def set_cwa_settings():
                         'fbz', 'html', 'htmlz', 'kepub', 'lit',
                         'lrf', 'mobi', 'odt', 'pdf',
                         'prc', 'pdb', 'pml', 'rb',
-                        'rtf', 'snb', 'tcr', 'txt', 'txtz']
+                        'rtf', 'snb', 'tcr', 'txt', 'txtz',
+                        'kfx', 'kfx-zip']
     target_formats = ['epub', 'azw3', 'kepub', 'mobi', 'pdf']
     automerge_options = ['ignore', 'overwrite', 'new_record']
     autoingest_options = ['ignore', 'overwrite', 'new_record']

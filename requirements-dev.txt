@@ -1,0 +1,28 @@
+# requirements-dev.txt
+# Development and testing dependencies for Calibre-Web Automated
+
+# Testing framework
+pytest>=7.4.0
+pytest-flask>=1.3.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+pytest-timeout>=2.2.0
+pytest-xdist>=3.5.0
+
+# Integration testing
+testcontainers>=3.7.0
+requests>=2.31.0
+requests-mock>=1.11.0
+freezegun>=1.4.0
+
+# Database testing
+factory-boy>=3.3.0
+faker>=22.0.0
+
+# Code quality
+ruff>=0.1.0                  # Fast Python linter
+black>=23.0.0                # Code formatter
+isort>=5.12.0                # Import sorting
+
+# Optional: E2E testing (Phase 3)
+# playwright>=1.40.0         # Uncomment for browser automation tests

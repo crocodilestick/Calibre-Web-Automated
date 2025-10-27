@@ -23,6 +23,7 @@ replit.nix
 cwa-wiki/
 docs/
 .venv-activate.sh
+test_venv
 
 # Test Scripts
 DEV

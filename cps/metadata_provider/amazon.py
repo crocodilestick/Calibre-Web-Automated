@@ -42,13 +42,23 @@ class Amazon(Metadata):
             if link.startswith("/sspa/"):
                 return []  # sspa links are not book pages
 
+            # Ensure link starts with / for proper URL construction
+            if not link.startswith('/'):
+                link = f"/{link}"
+
             try:
                 r = self.session.get(f"https://www.amazon.com{link}", timeout=10)
                 r.raise_for_status()
             except Exception as ex:
                 log.warning(ex)
                 return []
-            long_soup = BS(r.text, "html.parser")  #~4sec :/
+            
+            # Try lxml first (faster), fallback to html.parser if needed
+            try:
+                long_soup = BS(r.text, "lxml")
+            except Exception:
+                long_soup = BS(r.text, "html.parser")
+            
             soup2 = long_soup.find("div", attrs={"id": "dp-container"})
             if soup2 is None:
                 return []
@@ -73,12 +83,15 @@ class Amazon(Metadata):
                 )
 
                 try:
-                    match.description = "<div>" + \
-                        "\n".join([
-                            str(node) for node in
-                            soup2.find("div", attrs={"data-feature-name": "bookDescription"}).div.div.children
-                        ]) + \
-                        "</div>"
+                    desc_div = soup2.find("div", attrs={"data-feature-name": "bookDescription"})
+                    if desc_div and desc_div.div and desc_div.div.div:
+                        match.description = "<div>" + \
+                            "\n".join([
+                                str(node) for node in desc_div.div.div.children
+                            ]) + \
+                            "</div>"
+                    else:
+                        return []  # if there is no description it is not a book and therefore should be ignored
                 except (AttributeError, TypeError):
                     return []  # if there is no description it is not a book and therefore should be ignored
                 try:
@@ -104,11 +117,25 @@ class Amazon(Metadata):
                 except (AttributeError, TypeError):
                     match.identifiers = {}
                 try:
-                    series_str = str(soup2.find(attrs={"data-feature-name": "seriesBulletWidget"}).find("a").text)
-                    # "Book X of Y: Series Title"
-                    (idx_str, series_title) = series_str.split(":", 1)
-                    match.series = series_title.strip()
-                    match.series_index = int(idx_str.strip().split(" ")[1])
+                    series_link = soup2.find(attrs={"data-feature-name": "seriesBulletWidget"})
+                    if series_link:
+                        series_text = series_link.find("a")
+                        if series_text:
+                            series_str = str(series_text.text).strip()
+                            # Match patterns like "Book X of Y: Series Title" or "Book X: Series Title"
+                            series_match = re.search(r'Book\s+(\d+)(?:\s+of\s+\d+)?:\s*(.+)', series_str, re.IGNORECASE)
+                            if series_match:
+                                match.series_index = int(series_match.group(1))
+                                match.series = series_match.group(2).strip()
+                            else:
+                                match.series = None
+                                match.series_index = None
+                        else:
+                            match.series = None
+                            match.series_index = None
+                    else:
+                        match.series = None
+                        match.series_index = None
                 except (AttributeError, ValueError, TypeError):
                     match.series = None
                     match.series_index = None
@@ -165,6 +192,7 @@ class Amazon(Metadata):
                     if base_url not in links_list:
                         links_list.append(base_url)
             if len(links_list) == 0:
+                log.info(f"No Amazon search results found for query: {query}")
                 return []
             with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
                 fut = {executor.submit(inner, link, index) for index, link in enumerate(links_list[:3])}

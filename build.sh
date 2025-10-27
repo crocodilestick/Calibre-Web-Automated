@@ -104,7 +104,7 @@ fi
 
 # ---- REPO_DIR selection ----
 if [ ${LOCAL_BUILD} -eq 1 ]; then
-  REPO_DIR="$(dirname "${0}")"
+  REPO_DIR="$(cd "$(dirname "${0}")" && pwd)"
   printf 'Doing local build from repo directory: %s\n' "${REPO_DIR}"
 else
   if [ -n "${REPO_DIR}" ]; then
@@ -233,7 +233,7 @@ case "${confirm}" in
   else
     printf 'Proceeding with local build from: %s\n' "${REPO_DIR}"
   fi
-  cd "${REPO_DIR}"
+  cd "${REPO_DIR}" || die "Failed to change to directory: ${REPO_DIR}"
 
   echo
   echo "Running build command:"

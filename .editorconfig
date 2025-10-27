@@ -12,7 +12,7 @@ trim_trailing_whitespace = true
 
 [*.py]
 indent_size = 4
-max_line_length = 88
+max_line_length = 120
 
 [*.{yaml,yml}]
 max_line_length = 120

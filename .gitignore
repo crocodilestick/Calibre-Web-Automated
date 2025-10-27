@@ -18,6 +18,7 @@ replit.nix
 .history
 cwa-wiki/
 docs/
+.venv-activate.sh
 
 # Test Scripts
 test*

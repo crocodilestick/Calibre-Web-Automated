@@ -49,51 +49,226 @@
 
     <p style="padding:2rem;">
       Type in the username for the profile picture you would like to change and select an image to upload.
+      Images will be automatically resized to 200×200 pixels. For best results, use a square image.
     </p>
 
-    <form method="POST" action="{{ url_for('profile_pictures.set_profile_picture') }}">
+    <form method="POST" action="{{ url_for('profile_pictures.set_profile_picture') }}" id="profile-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       <div class="form-group">
         <label for="username">Username:</label>
-        <input type="text" class="form-control" id="username" name="username" required>
+        <input type="text" class="form-control" id="username" name="username" required aria-describedby="usernameHelp">
+        <small id="usernameHelp" class="form-text text-muted">Enter the exact username for the profile picture assignment.</small>
       </div>
 
       <div class="form-group mt-3">
         <label for="image_file">Profile Image:</label>
-        <input type="file" id="image_file" accept="image/png, image/jpeg" required>
-        <small class="form-text text-muted">Upload a small square PNG or JPG image.</small>
+        <input type="file" id="image_file" accept="image/png, image/jpeg, image/jpg" required aria-describedby="imageHelp">
+        <small id="imageHelp" class="form-text text-muted">Upload a PNG or JPG image. Large images will be automatically resized to 200×200 pixels.</small>
+      </div>
+
+      <div id="processing-message" style="display: none; color: #5bc0de; margin-top: 1rem;">
+        <span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Processing image...
+      </div>
+
+      <div id="resize-message" style="display: none; color: #f0ad4e; margin-top: 1rem;">
+        <span class="glyphicon glyphicon-info-sign"></span> <span id="resize-text"></span>
       </div>
 
       <input type="hidden" id="image_data" name="image_data">
 
-      <img id="preview" src="#" alt="Preview" />
+      <img id="preview" src="#" alt="Circular preview of your profile picture" role="img" aria-label="Profile picture preview" />
 
       <div class="pp-buttons mt-4">
         <a class="btn btn-default" href="{{ url_for('admin.admin') }}">Back to Admin Page</a>
-        <button type="submit" class="btn btn-primary mt-4">Submit</button>
+        <button type="submit" class="btn btn-primary mt-4" id="submit-btn" disabled>Submit</button>
       </div>
     </form>
   </div>
 </div>
 
 <script>
-  document.getElementById('image_file').addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (!file) return;
+  (function() {
+    const MAX_DIMENSION = 200; // Maximum width/height for profile pictures
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB max input file size
+    const JPEG_QUALITY = 0.9; // Quality for JPEG compression
 
+    const imageInput = document.getElementById('image_file');
     const preview = document.getElementById('preview');
-    const reader = new FileReader();
+    const imageDataInput = document.getElementById('image_data');
+    const submitBtn = document.getElementById('submit-btn');
+    const processingMsg = document.getElementById('processing-message');
+    const resizeMsg = document.getElementById('resize-message');
+    const resizeText = document.getElementById('resize-text');
+    const form = document.getElementById('profile-form');
 
-    reader.onload = function (e) {
-      const base64Data = e.target.result;
+    // Enable submit button when username is filled and image is processed
+    function updateSubmitButton() {
+      const username = document.getElementById('username').value.trim();
+      const hasImage = imageDataInput.value.length > 0;
+      submitBtn.disabled = !(username && hasImage);
+    }
+
+    document.getElementById('username').addEventListener('input', updateSubmitButton);
+
+    // Validate form before submission
+    form.addEventListener('submit', function(event) {
+      if (!imageDataInput.value) {
+        event.preventDefault();
+        alert('Please select an image before submitting.');
+        return false;
+      }
+      if (!document.getElementById('username').value.trim()) {
+        event.preventDefault();
+        alert('Please enter a username.');
+        return false;
+      }
+    });
+
+    imageInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        resetForm();
+        return;
+      }
+
+      // Reset previous state
+      imageDataInput.value = '';
+      preview.style.display = 'none';
+      resizeMsg.style.display = 'none';
+      processingMsg.style.display = 'block';
+      submitBtn.disabled = true;
+
+      // Validate file type
+      if (!file.type.match(/^image\/(png|jpeg|jpg)$/i)) {
+        showError('Please select a PNG or JPEG image file.');
+        resetForm();
+        return;
+      }
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        showError('Image file is too large. Please select an image smaller than 5MB.');
+        resetForm();
+        return;
+      }
+
+      // Process the image
+      processImage(file);
+    });
+
+    function processImage(file) {
+      const reader = new FileReader();
+
+      reader.onerror = function() {
+        showError('Failed to read the image file. Please try again.');
+        resetForm();
+      };
+
+      reader.onload = function(e) {
+        const img = new Image();
+
+        img.onerror = function() {
+          showError('Failed to load the image. The file may be corrupted.');
+          resetForm();
+        };
+
+        img.onload = function() {
+          try {
+            resizeAndConvertImage(img, file.type);
+          } catch (error) {
+            console.error('Error processing image:', error);
+            showError('An error occurred while processing the image. Please try a different image.');
+            resetForm();
+          }
+        };
+
+        img.src = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function resizeAndConvertImage(img, fileType) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      // Calculate new dimensions maintaining aspect ratio
+      let width = img.width;
+      let height = img.height;
+      const originalDimensions = `${width}×${height}`;
+      let wasResized = false;
+
+      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+        wasResized = true;
+        if (width > height) {
+          height = Math.round((height * MAX_DIMENSION) / width);
+          width = MAX_DIMENSION;
+        } else {
+          width = Math.round((width * MAX_DIMENSION) / height);
+          height = MAX_DIMENSION;
+        }
+      }
+
+      // Set canvas dimensions
+      canvas.width = width;
+      canvas.height = height;
+
+      // Draw image on canvas with high quality
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Convert to Base64
+      // Use JPEG quality setting for JPEGs, PNG for PNGs
+      const mimeType = fileType.toLowerCase() === 'image/png' ? 'image/png' : 'image/jpeg';
+      const quality = mimeType === 'image/jpeg' ? JPEG_QUALITY : undefined;
+      
+      let base64Data;
+      try {
+        base64Data = canvas.toDataURL(mimeType, quality);
+      } catch (error) {
+        showError('Failed to convert image. Please try a different image.');
+        resetForm();
+        return;
+      }
+
+      // Check final size (Base64 adds ~33% overhead)
+      const base64Size = Math.round((base64Data.length * 3) / 4);
+      const base64SizeKB = Math.round(base64Size / 1024);
+
+      // Update preview
       preview.src = base64Data;
       preview.style.display = 'block';
-      document.getElementById('image_data').value = base64Data;
-    };
+      imageDataInput.value = base64Data;
 
-    reader.readAsDataURL(file);
-  });
+      // Show resize message if applicable
+      if (wasResized) {
+        resizeText.textContent = `Image resized from ${originalDimensions}px to ${width}×${height}px (${base64SizeKB}KB)`;
+        resizeMsg.style.display = 'block';
+      }
+
+      // Hide processing message
+      processingMsg.style.display = 'none';
+
+      // Enable submit button
+      updateSubmitButton();
+    }
+
+    function showError(message) {
+      alert(message);
+      processingMsg.style.display = 'none';
+    }
+
+    function resetForm() {
+      imageInput.value = '';
+      imageDataInput.value = '';
+      preview.style.display = 'none';
+      processingMsg.style.display = 'none';
+      resizeMsg.style.display = 'none';
+      updateSubmitButton();
+    }
+  })();
 </script>
 {% endblock %}
 <!--

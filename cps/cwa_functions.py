@@ -26,6 +26,7 @@ import tempfile
 from datetime import datetime
 import re
 import shutil
+import base64
 from werkzeug.utils import secure_filename
 
 from .web import cwa_get_num_books_in_library
@@ -972,7 +973,48 @@ def set_profile_picture():
         if not username or not image_data:
             flash(_("Both username and image data are required."), category="error")
             log.warning("Form submission missing username or image_data.")
-            return redirect(url_for('profile_pictures.setprofile_picture'))
+            return redirect(url_for('profile_pictures.set_profile_picture'))
+
+        # Validate Base64 image data format
+        try:
+            # Check if image_data starts with a valid data URI scheme
+            if not image_data.startswith('data:image/'):
+                flash(_("Invalid image data format. Must be a valid image."), category="error")
+                log.warning(f"Invalid image data format from user: {username}")
+                return redirect(url_for('profile_pictures.set_profile_picture'))
+            
+            # Verify it's a supported image type (PNG or JPEG)
+            if not (image_data.startswith('data:image/png;base64,') or 
+                    image_data.startswith('data:image/jpeg;base64,') or
+                    image_data.startswith('data:image/jpg;base64,')):
+                flash(_("Unsupported image type. Only PNG and JPEG are allowed."), category="error")
+                log.warning(f"Unsupported image type from user: {username}")
+                return redirect(url_for('profile_pictures.set_profile_picture'))
+            
+            # Extract and validate the Base64 portion
+            if ';base64,' in image_data:
+                base64_part = image_data.split(';base64,')[1]
+                # Try to decode to verify it's valid Base64
+                try:
+                    decoded = base64.b64decode(base64_part, validate=True)
+                    # Check size (limit to 500KB decoded)
+                    if len(decoded) > 512000:
+                        flash(_("Image is too large. Please use an image smaller than 500KB."), category="error")
+                        log.warning(f"Image too large from user: {username}, size: {len(decoded)} bytes")
+                        return redirect(url_for('profile_pictures.set_profile_picture'))
+                except Exception as decode_error:
+                    flash(_("Invalid Base64 image data."), category="error")
+                    log.warning(f"Invalid Base64 data from user: {username}, error: {str(decode_error)}")
+                    return redirect(url_for('profile_pictures.set_profile_picture'))
+            else:
+                flash(_("Invalid image data format."), category="error")
+                log.warning(f"Invalid image data format (no base64 marker) from user: {username}")
+                return redirect(url_for('profile_pictures.set_profile_picture'))
+                
+        except Exception as validation_error:
+            flash(_("Error validating image data."), category="error")
+            log.error(f"Image validation error: {str(validation_error)}")
+            return redirect(url_for('profile_pictures.set_profile_picture'))
 
         try:
             # Path to the JSON file

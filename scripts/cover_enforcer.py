@@ -324,10 +324,24 @@ class Enforcer:
         raw_author = raw_author_full.split(', ')[0] if ', ' in raw_author_full else raw_author_full
 
         # Build both transliterated and non-transliterated variants using shared sanitizer
-        title_ascii = get_valid_filename_shared(raw_title, chars=96, unicode_filename=True)
-        author_ascii = get_valid_filename_shared(raw_author, chars=96, unicode_filename=True)
-        title_raw = get_valid_filename_shared(raw_title, chars=96, unicode_filename=False)
-        author_raw = get_valid_filename_shared(raw_author, chars=96, unicode_filename=False)
+        # Guard against empty/invalid values to avoid crashing on fresh/partial metadata
+        try:
+            title_ascii = get_valid_filename_shared(raw_title, chars=96, unicode_filename=True)
+        except Exception:
+            # Fallback: minimal safe title using book id
+            title_ascii = f"book_{book_id}"
+        try:
+            author_ascii = get_valid_filename_shared(raw_author, chars=96, unicode_filename=True)
+        except Exception:
+            author_ascii = "Unknown Author"
+        try:
+            title_raw = get_valid_filename_shared(raw_title, chars=96, unicode_filename=False)
+        except Exception:
+            title_raw = f"book_{book_id}"
+        try:
+            author_raw = get_valid_filename_shared(raw_author, chars=96, unicode_filename=False)
+        except Exception:
+            author_raw = "Unknown Author"
 
         reconstructed_ascii = os.path.join(self.calibre_library, author_ascii, f"{title_ascii} ({book_id})")
         reconstructed_raw = os.path.join(self.calibre_library, author_raw, f"{title_raw} ({book_id})")

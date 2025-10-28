@@ -47,6 +47,7 @@
       </form>
   </div>
 {% endif %}
+{# Show format upload button only when uploads are enabled globally and user has upload role #}
 {% if current_user.role_upload() and g.allow_upload %}
       <form id="form-upload-format" action="{{ url_for('edit-book.upload') }}" data-title="{{_('Uploading...')}}" data-footer="{{_('Close')}}" data-failed="{{_('Error')}}" data-message="{{_('Upload done, processing, please wait...')}}" method="post" enctype="multipart/form-data">
         <div class="text-center">
@@ -139,7 +140,8 @@
       </table>
       <a id="add-identifier-line" class="btn btn-default">{{_('Add Identifier')}}</a>
     </div>
-    {% if current_user.role_upload() and g.allow_upload %}
+    {# Decouple cover changes from global uploads: allow users with edit rights to change covers #}
+    {% if current_user.role_edit() %}
     <div class="form-group">
       <label for="cover_url">{{_('Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)')}}</label>
       <input type="text" class="form-control" name="cover_url" id="cover_url" value="">

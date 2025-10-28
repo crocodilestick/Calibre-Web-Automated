@@ -1551,7 +1551,8 @@ def upload_cover(cover_request, book):
     if requested_file:
         # check for empty request
         if requested_file.filename != '':
-            if not current_user.role_upload():
+            # Decouple cover updates from general uploads; require edit permission instead
+            if not current_user.role_edit():
                 flash(_("User has no rights to upload cover"), category="error")
                 return False
             ret, message = helper.save_cover_with_thumbnail_update(requested_file, book.path, book.id)

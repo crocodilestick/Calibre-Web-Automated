@@ -1205,25 +1205,35 @@ def check_valid_domain(domain_text):
 
 def get_download_link(book_id, book_format, client):
     book_format = book_format.split(".")[0]
+    # Try filtered view first to respect user restrictions
     book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
-    if book:
-        data1 = calibre_db.get_book_format(book.id, book_format.upper())
-        if data1:
-            # collect downloaded books only for registered user and not for anonymous user
-            if current_user.is_authenticated:
-                ub.update_download(book_id, int(current_user.id))
-            file_name = book.title
-            if len(book.authors) > 0:
-                file_name = file_name + ' - ' + book.authors[0].name
-            file_name = get_valid_filename(file_name, replace_whitespace=False)
-            headers = Headers()
-            headers["Content-Type"] = mimetypes.types_map.get('.' + book_format, "application/octet-stream")
-            headers["Content-Disposition"] = "attachment; filename=%s.%s; filename*=UTF-8''%s.%s" % (
-                quote(file_name), book_format, quote(file_name), book_format)
-            return do_download_file(book, book_format, client, data1, headers)
-    else:
+
+    # If not found but user is admin, fall back to unfiltered direct lookup
+    if not book and getattr(current_user, 'role_admin', lambda: False)():
+        log.debug(f"Admin fallback: get_book used for download of id={book_id}")
+        book = calibre_db.get_book(book_id)
+
+    if not book:
         log.error("Book id {} not found for downloading".format(book_id))
-    abort(404)
+        abort(404)
+
+    data1 = calibre_db.get_book_format(book.id, book_format.upper())
+    if not data1:
+        log.error("Requested format %s for book id %s not found in database", book_format.upper(), book_id)
+        abort(404)
+
+    # collect downloaded books only for registered user and not for anonymous user
+    if current_user.is_authenticated:
+        ub.update_download(book_id, int(current_user.id))
+    file_name = book.title
+    if len(book.authors) > 0:
+        file_name = file_name + ' - ' + book.authors[0].name
+    file_name = get_valid_filename(file_name, replace_whitespace=False)
+    headers = Headers()
+    headers["Content-Type"] = mimetypes.types_map.get('.' + book_format, "application/octet-stream")
+    headers["Content-Disposition"] = "attachment; filename=%s.%s; filename*=UTF-8''%s.%s" % (
+        quote(file_name), book_format, quote(file_name), book_format)
+    return do_download_file(book, book_format, client, data1, headers)
 
 
 def clear_cover_thumbnail_cache(book_id):

@@ -391,3 +391,7 @@ div#GeneralChangeModal > div > div.modal-content {
 a#advanced_search > span.hidden-sm {
     margin-left: 4px;
 }
+
+.btn-primary[disabled] {
+    background-color: var(--color-secondary);
+}

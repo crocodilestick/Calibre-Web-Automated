@@ -53,6 +53,66 @@ try:
 except NameError:
     pass
 
+# Custom OAuth2Session for generic OIDC to handle SSL and scope validation (Issue #715)
+from requests_oauthlib import OAuth2Session as BaseOAuth2Session
+
+class GenericOIDCSession(BaseOAuth2Session):
+    """
+    Custom OAuth2Session for generic OIDC providers like Authentik.
+    
+    Handles:
+    1. SSL verification based on OAUTH_SSL_STRICT setting
+    2. Lenient scope validation (order-independent comparison)
+    3. Normalizes scope in token response to prevent mismatch warnings
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Configure SSL verification for all requests
+        self.verify = constants.OAUTH_SSL_STRICT
+        
+        # Register compliance hook to normalize scope in token response (Issue #715)
+        # This prevents "scope_changed" warnings when Authentik returns scopes in different order
+        self.register_compliance_hook('access_token_response', self._normalize_token_scope)
+    
+    def _normalize_token_scope(self, response):
+        """
+        Normalize scope in token response to match request format.
+        
+        Handles:
+        - Scope as array → convert to space-separated string
+        - Different scope order → sort alphabetically for consistent comparison
+        - Extra whitespace → normalize
+        """
+        try:
+            if response.status_code == 200:
+                token = response.json()
+                if 'scope' in token:
+                    scope = token['scope']
+                    
+                    # Convert array to string
+                    if isinstance(scope, list):
+                        scope = ' '.join(scope)
+                    
+                    # Normalize: split, sort, rejoin to handle order differences
+                    if isinstance(scope, str):
+                        scopes = [s.strip() for s in scope.split() if s.strip()]
+                        scopes.sort()  # Sort for consistent comparison
+                        token['scope'] = ' '.join(scopes)
+                        
+                        # Update response content with normalized token
+                        response._content = json.dumps(token).encode('utf-8')
+        except (ValueError, KeyError, AttributeError) as e:
+            # If we can't parse/normalize, let Flask-Dance handle it
+            log.debug("Could not normalize token response scope: %s", e)
+        
+        return response
+    
+    def request(self, method, url, *args, **kwargs):
+        """Override request to ensure SSL verification is applied"""
+        if 'verify' not in kwargs:
+            kwargs['verify'] = self.verify
+        return super().request(method, url, *args, **kwargs)
+
 
 oauth_check = {}
 oauthblueprints = []
@@ -129,6 +189,16 @@ def register_user_from_generic_oauth():
         resp = blueprint.session.get(generic['oauth_userinfo_url'], verify=constants.OAUTH_SSL_STRICT)
         resp.raise_for_status()
         userinfo = resp.json()
+    except InvalidGrantError as e:
+        # Scope mismatch or token validation error (Issue #715)
+        log.error("OAuth token validation failed (scope mismatch?): %s", e)
+        flash(_("Login failed: OAuth token validation error. This may be due to scope configuration mismatch. "
+               "Please check your OAuth scopes configuration or contact your administrator."), category="error")
+        return None
+    except TokenExpiredError as e:
+        log.error("OAuth token expired during user info fetch: %s", e)
+        flash(_("Login failed: OAuth token expired. Please try logging in again."), category="error")
+        return None
     except requests.exceptions.RequestException as e:
         log.error("Failed to fetch user info from generic OIDC provider: %s", e)
         flash(_("Login failed: Could not connect to the OAuth provider's user info endpoint. "
@@ -451,14 +521,23 @@ def generate_oauth_blueprints():
             ub.session_commit("Updated generic OAuth provider from metadata URL")
             log.info("Updated OAuth endpoints from metadata URL: %s", generic.metadata_url)
     
-    # Parse scope: convert string to list if needed (Flask-Dance expects list)
+    # Normalize scope: OAuth2Session expects space-separated string, not list
+    # Clean up extra whitespace and sort alphabetically to prevent scope mismatch warnings (Issue #715)
     scope_value = generic.scope or 'openid profile email'
     if isinstance(scope_value, str):
-        # Split space-separated scope string into list, filtering out empty strings
-        scope_value = [s for s in scope_value.split() if s]
-        # Ensure we have at least the default scopes if result is empty
-        if not scope_value:
-            scope_value = ['openid', 'profile', 'email']
+        # Clean, sort, and normalize: split then rejoin to remove extra whitespace
+        scopes = [s.strip() for s in scope_value.split() if s.strip()]
+        scopes.sort()  # Sort alphabetically for consistent comparison with token response
+        scope_value = ' '.join(scopes)
+    elif isinstance(scope_value, list):
+        # Convert list to sorted space-separated string
+        scopes = [s.strip() for s in scope_value if s.strip()]
+        scopes.sort()
+        scope_value = ' '.join(scopes)
+    
+    # Ensure we have at least default scopes if result is empty
+    if not scope_value or not scope_value.strip():
+        scope_value = 'email openid profile'  # Sorted alphabetically
     
     ele3 = dict(provider_name='generic',
                 id=generic.id,
@@ -527,10 +606,11 @@ def generate_oauth_blueprints():
                 'base_url': element['oauth_base_url'],
                 'authorization_url': element['oauth_authorize_url'],
                 'token_url': element['oauth_token_url'],
-                'token_url_params': {'verify': constants.OAUTH_SSL_STRICT},
                 'redirect_to': "oauth.generic_login",
-                'scope': element['scope']
+                'scope': element['scope'],
+                'session_class': GenericOIDCSession  # Use custom session for SSL and scope handling
             }
+            # Note: SSL verification is now handled by GenericOIDCSession, not token_url_params
             
             # Only add redirect_url if we have a configured host
             if redirect_uri:
@@ -603,11 +683,24 @@ if ub.oauth_support:
     def generic_logged_in(blueprint, token):
         if not token:
             flash(_("Failed to log in with Generic OAuth."), category="error")
-            log.error("Failed to log in with Generic OAuth")
+            log.error("Failed to log in with Generic OAuth - no token received")
             return False
 
-        provider_user_id = register_user_from_generic_oauth()
-        return oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
+        try:
+            provider_user_id = register_user_from_generic_oauth()
+            if provider_user_id:
+                return oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
+            else:
+                # register_user_from_generic_oauth already logged error and flashed message
+                return False
+        except (InvalidGrantError, TokenExpiredError) as e:
+            log.error("OAuth token error in generic_logged_in: %s", e)
+            flash(_("OAuth authentication failed: Token validation error. Please try again."), category="error")
+            return False
+        except Exception as e:
+            log.error("Unexpected error in generic OAuth login: %s", e)
+            flash(_("OAuth authentication failed due to an unexpected error. Please contact administrator."), category="error")
+            return False
 
 
     # notify on OAuth provider error

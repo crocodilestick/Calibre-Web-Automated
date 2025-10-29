@@ -21,6 +21,15 @@
     {% endif %}
 {% endif %}
 
+{% if kobo_sync_enabled %}
+    <div class="text-center more-stuff">
+      <h4>{{_('Kobo Sync')}}</h4>
+      <button type="button" class="btn btn-warning" id="delete_kobo_sync" data-book-id="{{ book.id }}">
+        <span class="glyphicon glyphicon-trash"></span> {{_('Delete from Kobo Synced DB')}}
+      </button>
+    </div>
+{% endif %}
+
 {%  if source_formats|length > 0 and conversion_formats|length > 0 %}
   <div class="text-center more-stuff"><h4>{{_('Convert book format:')}}</h4>
       <form class="padded-bottom" action="{{ url_for('edit-book.convert_bookformat', book_id=book.id) }}" method="post" id="book_convert_frm">
@@ -378,6 +387,58 @@
       document.getElementById("keyword").value = `hardcover-id:${e.target.dataset.hardcoverId}`
       document.getElementById("do-search").click()
     })
+
+  {% if kobo_sync_enabled %}
+  // Handler for Delete from Kobo Sync button
+  $(document).ready(function() {
+      $('#delete_kobo_sync').on('click', function(e) {
+          e.preventDefault();
+          var bookId = $(this).data('book-id');
+          var $btn = $(this);
+          var originalHtml = $btn.html();
+          
+          // Show loading state
+          $btn.prop('disabled', true);
+          $btn.html('<span class="glyphicon glyphicon-refresh"></span> {{ _("Processing...") }}');
+          
+          $.ajax({
+              url: '/ajax/deletekobosynced/' + bookId,
+              type: 'POST',
+              headers: {
+                  'X-Requested-With': 'XMLHttpRequest'
+              },
+              success: function(response, textStatus, xhr) {
+                  // Show success state
+                  if (xhr.status === 200) {
+                      $btn.removeClass('btn-warning').addClass('btn-success');
+                      $btn.html('<span class="glyphicon glyphicon-ok"></span> ' + response);
+                      setTimeout(function() {
+                          $btn.removeClass('btn-success').addClass('btn-warning');
+                          $btn.html(originalHtml);
+                          $btn.prop('disabled', false);
+                      }, 2000);
+                  }
+              },
+              error: function(xhr, textStatus, errorThrown) {
+                  var message = xhr.responseText || '{{ _("Error deleting from Kobo sync") }}';
+                  // Show error or not found state
+                  if (xhr.status === 404) {
+                      $btn.removeClass('btn-warning').addClass('btn-info');
+                      $btn.html('<span class="glyphicon glyphicon-info-sign"></span> ' + message);
+                  } else {
+                      $btn.removeClass('btn-warning').addClass('btn-danger');
+                      $btn.html('<span class="glyphicon glyphicon-remove"></span> ' + message);
+                  }
+                  setTimeout(function() {
+                      $btn.removeClass('btn-info btn-danger').addClass('btn-warning');
+                      $btn.html(originalHtml);
+                      $btn.prop('disabled', false);
+                  }, 3000);
+              }
+          });
+      });
+  });
+  {% endif %}
 </script>
 <script src="{{ url_for('static', filename='js/libs/typeahead.bundle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-rating-input.min.js') }}"></script>

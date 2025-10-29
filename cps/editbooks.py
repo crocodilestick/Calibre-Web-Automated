@@ -91,6 +91,23 @@ def edit_book(book_id):
     return do_edit_book(book_id)
 
 
+@editbook.route("/ajax/deletekobosynced/<int:book_id>", methods=['POST'])
+@user_login_required
+def delete_kobo_synced(book_id):
+    # Check if book exists in kobo_synced_books for current user
+    synced_book = ub.session.query(ub.KoboSyncedBooks).filter(
+        ub.KoboSyncedBooks.book_id == book_id,
+        ub.KoboSyncedBooks.user_id == current_user.id
+    ).first()
+    
+    if synced_book:
+        ub.session.delete(synced_book)
+        ub.session_commit()
+        return _("Book removed from Kobo sync"), 200
+    else:
+        return _("Book not found in Kobo sync"), 404
+
+
 @editbook.route("/upload", methods=["POST"])
 @login_required_if_no_ano
 @upload_required
@@ -1230,6 +1247,7 @@ def render_edit_book(book_id):
                                  title=_("edit metadata"), page="editbook",
                                  conversion_formats=allowed_conversion_formats,
                                  config=config,
+                                 kobo_sync_enabled=config.config_kobo_sync,
                                  source_formats=valid_source_formats)
 
 

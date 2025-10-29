@@ -1155,7 +1155,9 @@ def HandleInitRequest():
                                                                width="{width}",
                                                                height="{height}",
                                                                isGreyscale='false'))
-        kobo_resources["reading_services_host"] = calibre_web_url
+        # Only redirect reading services if annotation sync is enabled
+        if config.config_kobo_annotation_sync:
+            kobo_resources["reading_services_host"] = calibre_web_url
     else:
         kobo_resources["image_host"] = url_for("web.index", _external=True).strip("/")
         kobo_resources["image_url_quality_template"] = unquote(url_for("kobo.HandleCoverImageRequest",
@@ -1173,7 +1175,9 @@ def HandleInitRequest():
                                                                height="{height}",
                                                                isGreyscale='false',
                                                                _external=True))
-        kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
+        # Only redirect reading services if annotation sync is enabled
+        if config.config_kobo_annotation_sync:
+            kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="

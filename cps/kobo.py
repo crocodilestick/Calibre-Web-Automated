@@ -463,6 +463,24 @@ def get_language(book):
     return isoLanguages.get(part3=book.languages[0].lang_code).part1
 
 
+def get_external_ids(book):
+    """
+    Build external IDs list from Calibre identifiers.
+    Returns list in format ["isbn:9781234412", "calibre:123", ...]
+    """
+    external_ids = []
+    
+    # Add all Calibre identifiers (ISBN, ASIN, etc.)
+    if book.identifiers:
+        for identifier in book.identifiers:
+            external_ids.append(f"{identifier.type.lower()}:{identifier.val}")
+    
+    # Add Calibre book ID
+    external_ids.append(f"calibre:{book.id}")
+    
+    return external_ids
+
+
 def get_metadata(book):
     download_urls = []
     kepub = [data for data in book.data if data.format == 'KEPUB']
@@ -499,7 +517,7 @@ def get_metadata(book):
         "Description": get_description(book),
         "DownloadUrls": download_urls,
         "EntitlementId": book_uuid,
-        "ExternalIds": [],
+        "ExternalIds": get_external_ids(book),
         "Genre": "00000000-0000-0000-0000-000000000001",
         "IsEligibleForKoboLove": False,
         "IsInternetArchive": False,
@@ -1137,6 +1155,7 @@ def HandleInitRequest():
                                                                width="{width}",
                                                                height="{height}",
                                                                isGreyscale='false'))
+        kobo_resources["reading_services_host"] = calibre_web_url
     else:
         kobo_resources["image_host"] = url_for("web.index", _external=True).strip("/")
         kobo_resources["image_url_quality_template"] = unquote(url_for("kobo.HandleCoverImageRequest",
@@ -1154,6 +1173,7 @@ def HandleInitRequest():
                                                                height="{height}",
                                                                isGreyscale='false',
                                                                _external=True))
+        kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="

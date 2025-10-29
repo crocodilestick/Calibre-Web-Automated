@@ -198,7 +198,7 @@ class HardcoverClient:
         journal_text = ""
         if highlighted_text:
             if note_text:
-                journal_text = f'> {highlighted_text}' + '\n\n --' + note_text
+                journal_text = f'> {highlighted_text}' + '\n\n -- ' + note_text
             else:
                 journal_text = f'> {highlighted_text}'
         elif note_text:

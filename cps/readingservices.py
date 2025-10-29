@@ -35,11 +35,21 @@ KOBO_READING_SERVICES_URL = "https://readingservices.kobo.com"
 def requires_reading_services_auth(f):
     """
     Auth decorator for reading services endpoints.
-    Checks if user is already logged in (via cookie from previous Kobo auth).
-    If not, proxies the request to Kobo without processing.
+    Checks if annotation sync is enabled and user is authenticated.
+    If not enabled or not authenticated, proxies the request to Kobo without processing.
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Check if annotation sync is enabled
+        if not config.config_kobo_annotation_sync:
+            log.debug("Kobo annotation sync disabled, proxying to Kobo")
+            return proxy_to_kobo_reading_services()
+        
+        # Check if Kobo sync is enabled (annotation sync depends on it)
+        if not config.config_kobo_sync:
+            log.debug("Kobo sync disabled, proxying to Kobo")
+            return proxy_to_kobo_reading_services()
+        
         # Check if user is authenticated (cookie from Kobo sync)
         if current_user.is_authenticated:
             return f(*args, **kwargs)

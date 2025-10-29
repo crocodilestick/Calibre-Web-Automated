@@ -2975,6 +2975,12 @@ msgstr ""
 "Kobo-Lesefortschritt mit Hardcover synchronisieren (erfordert einen API-"
 "Schlüssel pro Benutzer)"
 
+#: cps/templates/config_edit.html:158
+msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
+msgstr ""
+"Kobo-Anmerkungen mit Hardcover synchronisieren (erfordert einen API-"
+"Schlüssel pro Benutzer)"
+
 #: cps/templates/config_edit.html:161
 msgid "Use Goodreads"
 msgstr "Benutze Goodreads"

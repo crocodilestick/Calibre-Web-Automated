@@ -87,6 +87,7 @@ class _Settings(_Base):
     config_remote_login = Column(Boolean, default=False)
     config_kobo_sync = Column(Boolean, default=False)
     config_hardcover_sync = Column(Boolean, default=False)
+    config_kobo_annotation_sync = Column(Boolean, default=False)
 
     config_default_role = Column(SmallInteger, default=0)
     config_default_show = Column(SmallInteger, default=constants.ADMIN_USER_SIDEBAR)

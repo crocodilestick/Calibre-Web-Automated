@@ -494,6 +494,23 @@ class KoboStatistics(Base):
     spent_reading_minutes = Column(Integer)
 
 
+class KoboAnnotationSync(Base):
+    """Track which Kobo annotations have been synced to external services (e.g., Hardcover)."""
+    __tablename__ = 'kobo_annotation_sync'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    annotation_id = Column(String, nullable=False)  # Kobo annotation UUID
+    book_id = Column(Integer, nullable=False)  # Calibre book ID
+    synced_to_hardcover = Column(Boolean, default=False)
+    hardcover_journal_id = Column(Integer)  # Hardcover journal entry ID
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_synced = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
+
+
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, 'before_flush')
 def receive_before_flush(session, flush_context, instances):

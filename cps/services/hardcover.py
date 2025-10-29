@@ -101,6 +101,7 @@ class HardcoverClient:
             # Book doesn't exist, add it in Reading status
             if not book:
                 book = self.add_book(ids, status=2)
+            log.warning("Hardcover: Book: %s with identifiers: %s and ids: %s", book, identifiers, ids)
             # Book is either WTR or Read, and we aren't finished reading
             if book.get("status_id") != 2 and progress_percent != 100:
                 book = self.change_book_status(book, 2)
@@ -163,6 +164,112 @@ class HardcoverClient:
         variables = {"id": book.get("id"), "status_id": status}
         response = self.execute(query=mutation, variables=variables)
         return response.get("update_user_book", {}).get("user_book", {})
+    
+    def add_journal_entry(self, identifiers, note_text, progress_percent=None, highlighted_text=None):
+        """
+        Add a journal entry (reading note) to Hardcover.
+        
+        Args:
+            identifiers: Book identifiers (hardcover-id, hardcover-edition, isbn)
+            note_text: The note text to add
+            progress_percent: Optional reading progress (0-100)
+            highlighted_text: Optional highlighted quote
+        
+        Returns:
+            Response from Hardcover API or None if failed
+        """
+        ids = self.parse_identifiers(identifiers)
+        if len(ids) == 0:
+            log.warning("No valid Hardcover identifiers found")
+            return None
+        
+        book = self.get_user_book(ids)
+        if not book:
+            log.warning("Book not found on Hardcover, cannot add journal entry")
+            return None
+        
+        user_book_id = book.get("book_id")
+        if not user_book_id:
+            log.warning("No user_book_id found")
+            return None
+        
+        # Combine highlighted text and note
+        # Use actual line breaks instead of \n escape sequences
+        journal_text = ""
+        if highlighted_text:
+            if note_text:
+                journal_text = f'> {highlighted_text}' + '\n\n --' + note_text
+            else:
+                journal_text = f'> {highlighted_text}'
+        elif note_text:
+            journal_text = note_text
+        else:
+            log.warning("No text provided for journal entry")
+            return None
+        
+        # Calculate page number and prepare metadata if progress is provided
+        page_number = None
+        metadata = {}
+        if progress_percent is not None:
+            pages = book.get("edition", {}).get("pages", 0)
+            if pages:
+                page_number = round(pages * (progress_percent / 100))
+                # Match Hardcover's web UI metadata structure
+                metadata["position"] = {
+                    "type": "pages",
+                    "value": page_number,
+                    "percent": round(progress_percent),
+                    "possible": pages
+                }
+                log.info(f"Calculated page {page_number} from {progress_percent:.1f}% of {pages} pages")
+        
+        mutation = """
+            mutation ($bookId: Int!, $entry: String!, $event: String!, $privacySettingId: Int!, $editionId: Int, $actionAt: date, $tags: [BasicTag]!, $metadata: jsonb) {
+                insert_reading_journal(object: {
+                    book_id: $bookId,
+                    entry: $entry,
+                    event: $event,
+                    privacy_setting_id: $privacySettingId,
+                    edition_id: $editionId,
+                    action_at: $actionAt,
+                    tags: $tags,
+                    metadata: $metadata
+                }) {
+                    errors
+                    id
+                    reading_journal {
+                        id
+                        entry
+                    }
+                }
+            }"""
+        variables = {
+            "bookId": int(book.get("book_id")),
+            "entry": journal_text,
+            # quote or note in Hardcover, 
+            "event": "note" if note_text else "quote",
+            "privacySettingId": self.privacy,
+            "editionId": int(book.get("edition", {}).get("id")) if book.get("edition") else None,
+            "tags": [
+                {"tag": "CWA", "category": "general", "spoiler": False},
+                {"tag": "Kobo", "category": "general", "spoiler": False}
+            ],
+            "metadata": metadata if metadata else None
+        }
+        
+        try:
+            log.debug(f"Hardcover journal mutation: {mutation}")
+            log.debug(f"Hardcover journal variables: {variables}")
+            response = self.execute(query=mutation, variables=variables)
+            log.debug(f"Hardcover journal response: {response}")
+            if response.get("insert_reading_journal", {}).get("errors"):
+                log.error(f"Hardcover journal entry errors: {response['insert_reading_journal']['errors']}")
+                return None
+            log.info(f"Successfully added journal entry to Hardcover for book {book.get('id')}")
+            return response.get("insert_reading_journal", {}).get("reading_journal")
+        except Exception as e:
+            log.error(f"Failed to add journal entry to Hardcover: {e}")
+            return None
 
     def add_book(self, identifiers, status=1):
         ids = self.parse_identifiers(identifiers)

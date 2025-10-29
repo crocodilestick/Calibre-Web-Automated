@@ -223,20 +223,6 @@ def process_annotation_for_sync(annotation, book, identifiers, progress_percent=
         if existing_sync and existing_sync.synced_to_hardcover:
             log.info(f"Annotation {annotation_id} already synced to Hardcover, skipping")
             return False
-        
-        # Check for duplicate content (same highlight+note combination)
-        # Create a unique key from the content
-        content_key = f"{highlighted_text or ''}:{note_text or ''}"
-        duplicate_sync = ub.session.query(ub.KoboAnnotationSync).filter(
-            ub.KoboAnnotationSync.user_id == current_user.id,
-            ub.KoboAnnotationSync.book_id == book.id,
-            ub.KoboAnnotationSync.synced_to_hardcover == True
-        ).all()
-        
-        for sync_record in duplicate_sync:
-            # We don't store the content in the sync table, so we can't check for exact duplicates
-            # This is a limitation - we'll rely on annotation_id being unique
-            pass
     
     # Get progress if not provided
     if progress_percent is None:

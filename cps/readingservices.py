@@ -239,21 +239,16 @@ def process_annotation_for_sync(annotation, book, identifiers, progress_percent=
             ub.KoboReadingState.user_id == current_user.id
         ).first()
         
-        if kobo_reading_state and kobo_reading_state.current_bookmark:
-            if kobo_reading_state.current_bookmark.progress_percent:
-                progress_percent = kobo_reading_state.current_bookmark.progress_percent
-                log.info(f"Overall Book Progress: {progress_percent:.1f}%")
-            else:
-                # Fallback to chapter progress if no overall progress available
-                if location and 'span' in location:
-                    progress_percent = chapter_progress * 100
+        if kobo_reading_state and kobo_reading_state.current_bookmark and kobo_reading_state.current_bookmark.progress_percent:
+            progress_percent = kobo_reading_state.current_bookmark.progress_percent
+            log.info(f"Overall Book Progress: {progress_percent:.1f}%")
         else:
-            # Fallback to chapter progress if no reading state found
+            # Fallback to chapter progress
             if location and 'span' in location:
                 progress_percent = chapter_progress * 100
     
     # Sync to Hardcover if enabled and user has token
-    if config.config_hardcover_sync and current_user.hardcover_token and bool(hardcover):
+    if config.config_hardcover_sync and config.config_kobo_annotation_sync and current_user.hardcover_token and bool(hardcover):
         if identifiers:
             log.info(f"Syncing annotation to Hardcover with identifiers: {identifiers}")
             try:

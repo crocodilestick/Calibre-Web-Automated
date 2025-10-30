@@ -23,6 +23,7 @@ import tempfile
 import shutil
 import time
 import requests
+import subprocess
 from pathlib import Path
 from typing import Generator
 
@@ -34,6 +35,7 @@ if str(project_root) not in sys.path:
 
 # Check if we should use Docker volumes (for DinD environments)
 USE_DOCKER_VOLUMES = os.getenv('USE_DOCKER_VOLUMES', 'false').lower() == 'true'
+AUTO_DOCKER_VOLUMES = False  # Auto-fallback when bind mounts are not visible to the container
 
 # Import volume_copy helper if in volume mode (available to all tests)
 if USE_DOCKER_VOLUMES:
@@ -41,9 +43,107 @@ if USE_DOCKER_VOLUMES:
     print("   Using Docker volumes instead of bind mounts for DinD compatibility\n")
     from conftest_volumes import volume_copy, VolumePath
 else:
-    # In bind mount mode, volume_copy is just shutil.copy2
-    volume_copy = shutil.copy2
-    VolumePath = None
+    # Bind mode by default, but support auto-fallback copying via docker cp
+    class DockerPath:
+        """Represents a path inside a running docker container for auto-fallback mode."""
+        def __init__(self, container: str, container_path: str):
+            self.container = container
+            self.container_path = container_path
+
+        def __truediv__(self, name: str):
+            return DockerPath(self.container, f"{self.container_path.rstrip('/')}/{name}")
+
+        def exists(self) -> bool:
+            try:
+                res = subprocess.run(
+                    ["docker", "exec", self.container, "test", "-e", self.container_path],
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                return res.returncode == 0
+            except Exception:
+                return False
+
+        def is_dir(self) -> bool:
+            try:
+                res = subprocess.run(
+                    ["docker", "exec", self.container, "test", "-d", self.container_path],
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                return res.returncode == 0
+            except Exception:
+                return False
+
+        @property
+        def name(self) -> str:
+            return os.path.basename(self.container_path.rstrip('/'))
+
+        def __str__(self) -> str:
+            return self.container_path
+
+        @property
+        def _parent(self) -> str:
+            return os.path.dirname(self.container_path.rstrip('/')) or '/'
+
+        def iterdir(self):
+            """Iterate immediate children of this directory inside the container."""
+            try:
+                res = subprocess.run(
+                    [
+                        "docker", "exec", self.container, "sh", "-lc",
+                        f"ls -1A {self.container_path} 2>/dev/null"
+                    ],
+                    check=False, capture_output=True, text=True
+                )
+                if res.returncode != 0:
+                    return iter(())
+                entries = [e for e in res.stdout.splitlines() if e.strip()]
+                for name in entries:
+                    yield DockerPath(self.container, f"{self.container_path.rstrip('/')}/{name}")
+            except Exception:
+                return iter(())
+
+        def glob(self, pattern: str):
+            """Yield paths matching the glob pattern under this directory."""
+            # Use busybox/ash globbing via sh -lc to expand matches
+            try:
+                res = subprocess.run(
+                    [
+                        "docker", "exec", self.container, "sh", "-lc",
+                        f"set -o noglob; for f in {self.container_path.rstrip('/')}/{pattern}; do echo \"$f\"; done"
+                    ],
+                    check=False, capture_output=True, text=True
+                )
+                if res.returncode != 0:
+                    return iter(())
+                for line in res.stdout.splitlines():
+                    p = line.strip()
+                    if p:
+                        yield DockerPath(self.container, p)
+            except Exception:
+                return iter(())
+
+    VolumePath = DockerPath  # For isinstance checks in get_db_path auto mode
+
+    def volume_copy(src, dest):
+        """Copy file into ingest folder.
+
+        - In normal bind mode: shutil.copy2 to host path
+        - In auto-fallback mode and dest is DockerPath: docker cp to container
+        """
+        if AUTO_DOCKER_VOLUMES and isinstance(dest, DockerPath):
+            # Ensure parent exists inside container (best-effort)
+            parent = os.path.dirname(dest.container_path)
+            subprocess.run(["docker", "exec", dest.container, "mkdir", "-p", parent], check=False)
+            # docker cp requires <src> <container>:<path>
+            target = f"{dest.container}:{dest.container_path}"
+            # docker cp copies into existing directory; ensure parent exists and target filename honored
+            return subprocess.run(["docker", "cp", str(src), target], check=True)
+        else:
+            return shutil.copy2(src, dest)
 
 
 def check_container_available(port=None):
@@ -89,12 +189,33 @@ def get_db_path(db_path, tmp_path=None):
     Returns:
         Path: Local filesystem path to database file
     """
-    if USE_DOCKER_VOLUMES and isinstance(db_path, VolumePath):
+    # Auto-fallback mode: copy out from container path
+    if AUTO_DOCKER_VOLUMES and isinstance(db_path, VolumePath):
+        if tmp_path is None:
+            raise ValueError("tmp_path required for database access in auto volume mode")
+        local_path = tmp_path / os.path.basename(str(db_path))
+        base_container_path = db_path.container_path
+        container = db_path.container
+        # Copy sqlite db and possible WAL/SHM sidecars to ensure consistent read
+        for suffix in ("", "-wal", "-shm"):
+            src = f"{container}:{base_container_path}{suffix}"
+            dest = str(local_path) + suffix
+            try:
+                subprocess.run(["docker", "cp", src, dest], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                # Sidecar may not exist; ignore errors for -wal/-shm
+                if suffix == "":
+                    raise RuntimeError(f"Failed to copy DB from container: {src}")
+        return local_path
+
+    # Explicit volume mode (DinD): delegate to conftest_volumes VolumePath
+    if USE_DOCKER_VOLUMES and VolumePath and isinstance(db_path, VolumePath):
         if tmp_path is None:
             raise ValueError("tmp_path required for database access in volume mode")
         return db_path.read_to_local(tmp_path)
-    else:
-        return db_path
+
+    # Bind mode: use path directly
+    return db_path
 
 
 # ============================================================================
@@ -377,34 +498,35 @@ def test_volumes(tmp_path_factory) -> dict:
 @pytest.fixture(scope="session")
 def cwa_container(docker_compose_file: str, test_volumes: dict) -> Generator:
     """
-    Spin up CWA Docker container using docker-compose.yml.
-    
-    This is a session-scoped fixture that starts the container once
-    and reuses it for all tests that need it. Container is automatically
-    cleaned up after all tests complete.
-    
-    Yields:
-        DockerCompose: The running container instance
+    Start the CWA Docker container and wait until it's reachable, measuring real startup time.
+    By default, no arbitrary timeout is imposed unless configured via env vars.
+
+    Env controls:
+      - CWA_TEST_NO_TIMEOUT=true  -> wait indefinitely
+      - CWA_TEST_START_TIMEOUT=N  -> cap wait to N seconds (ignored if NO_TIMEOUT=true)
+      - CWA_TEST_PORT=PORT        -> host port to bind (default 8085)
+      - CWA_TEST_IMAGE=IMAGE      -> image ref to run (default latest)
     """
     import requests
+    import subprocess
     from testcontainers.compose import DockerCompose
-    
+
     # Get repo root
     repo_root = Path(docker_compose_file).parent
 
-    # Get test port from environment (allows custom port to avoid conflicts)
-    # Default to 8085 to avoid conflicts with production CWA on 8083
+    # Runtime configuration
     test_port = os.getenv('CWA_TEST_PORT', '8085')
-    
+    test_image = os.getenv('CWA_TEST_IMAGE', 'crocodilestick/calibre-web-automated:dev')
+
     # Create a temporary docker-compose override for testing
     compose_override = repo_root / "docker-compose.test-override.yml"
-    
+
     # Write test-specific overrides
     # Note: Container always runs on 8083 internally, we just map host port to it
     override_content = f"""---
 services:
   calibre-web-automated:
-    image: crocodilestick/calibre-web-automated:latest
+    image: {test_image}
     container_name: cwa-test-container
     environment:
       - PUID=1000
@@ -419,48 +541,131 @@ services:
       - "{test_port}:8083"
     restart: "no"
 """
-    
+
     compose_override.write_text(override_content)
-    
+
     try:
         print("\n🐳 Starting CWA Docker container for testing...")
         print(f"   Port: {test_port}")
-        
+
         # Use testcontainers with docker-compose
-        # Note: context is the directory path, compose_file_name is the list of compose files
         compose = DockerCompose(
             context=str(repo_root),
-            compose_file_name=["docker-compose.yml", "docker-compose.test-override.yml"],
-            pull=False,  # Don't pull on every test run (use local image)
+            compose_file_name=["docker-compose.test-override.yml"],
+            pull=False,
         )
-        
+
         # Start the container
         compose.start()
-        
+
         # Wait for CWA to be ready (health check)
         print("⏳ Waiting for CWA to be ready...")
-        max_wait = 120  # 2 minutes max
+        no_timeout = os.getenv('CWA_TEST_NO_TIMEOUT', 'false').lower() == 'true'
+        max_wait_env = os.getenv('CWA_TEST_START_TIMEOUT', '').strip()
+        max_wait = None if no_timeout or max_wait_env in ('0', '-1') else int(max_wait_env or '600')
         start_time = time.time()
-        
-        while time.time() - start_time < max_wait:
-            try:
-                # Try to connect to the web interface
-                response = requests.get(f"http://localhost:{test_port}", timeout=5)
-                if response.status_code == 200:
-                    print("✅ CWA container is ready!")
-                    break
-            except requests.exceptions.RequestException:
-                # Not ready yet, wait
-                time.sleep(2)
-        else:
-            # Timeout reached
+        last_progress = 0
+
+        while True:
+            # Enforce optional timeout cap
+            if max_wait is not None and (time.time() - start_time) >= max_wait:
+                break
+
+            # Try to connect to the web interface (root and login)
+            ready = False
+            for path in ("/", "/login"):
+                try:
+                    resp = requests.get(
+                        f"http://localhost:{test_port}{path}", timeout=5, allow_redirects=False
+                    )
+                    if 200 <= resp.status_code < 400:
+                        ready = True
+                        break
+                except requests.exceptions.RequestException:
+                    pass
+
+            # Fallback readiness via logs: consider ready when ingest services are watching
+            if not ready:
+                try:
+                    logs = subprocess.run(
+                        ['docker', 'compose', '-f', str(compose_override), 'logs', '--no-color', '--tail', '200'],
+                        cwd=str(repo_root),
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                    )
+                    log_text = logs.stdout or ""
+                    if (
+                        "Watching folder: /cwa-book-ingest" in log_text
+                        and "metadata-change-detector" in log_text
+                    ) or "Connection to localhost" in log_text:
+                        ready = True
+                except Exception:
+                    pass
+
+            if ready:
+                duration = int(time.time() - start_time)
+                print(f"✅ CWA container is ready! (startup: {duration}s)")
+                break
+
+            # Progress output every 5s
+            now = time.time()
+            if now - last_progress >= 5:
+                print(f"… still starting (waited {int(now - start_time)}s)")
+                last_progress = now
+            time.sleep(2)
+
+        if max_wait is not None and (time.time() - start_time) >= max_wait:
             print("❌ CWA container failed to become ready in time")
+            # Attempt to fetch container status/logs for debugging before stopping
+            try:
+                print("\n--- docker compose ps ---")
+                subprocess.run(
+                    ['docker', 'compose', '-f', str(compose_override), 'ps'],
+                    cwd=str(repo_root),
+                    check=False,
+                )
+                print("\n--- docker compose logs (tail 200) ---")
+                subprocess.run(
+                    ['docker', 'compose', '-f', str(compose_override), 'logs', '--tail', '200'],
+                    cwd=str(repo_root),
+                    check=False,
+                )
+                print("--- end logs ---\n")
+            except Exception as e:
+                print(f"Warning: Unable to retrieve docker logs: {e}")
             compose.stop()
-            raise TimeoutError("CWA container did not start within 120 seconds")
-        
+            raise TimeoutError("CWA container did not start within the allotted time")
+
+        # Container is ready; detect bind-mount visibility and auto-fallback if needed
+        try:
+            sentinel = test_volumes["ingest"] / f".cwa_bind_check_{int(time.time())}"
+            sentinel.write_text("bind-check")
+            # Check visibility inside container
+            res = subprocess.run(
+                ["docker", "exec", "cwa-test-container", "test", "-f", f"/cwa-book-ingest/{sentinel.name}"],
+                check=False,
+            )
+            if res.returncode != 0:
+                print("⚠️  Bind mounts not visible in container. Enabling auto volume fallback (docker cp mode).")
+                global AUTO_DOCKER_VOLUMES
+                AUTO_DOCKER_VOLUMES = True
+                # Ensure tests that branch on USE_DOCKER_VOLUMES adapt to auto-fallback
+                os.environ['USE_DOCKER_VOLUMES'] = 'true'
+            else:
+                print("✅ Bind mounts are visible to container.")
+        except Exception as e:
+            print(f"Warning: bind mount visibility check failed: {e}")
+        finally:
+            try:
+                if 'sentinel' in locals() and sentinel.exists():
+                    sentinel.unlink()
+            except Exception:
+                pass
+
         # Container is ready, yield it to tests
         yield compose
-        
+
     finally:
         # Cleanup
         print("\n🧹 Stopping CWA Docker container...")
@@ -468,10 +673,13 @@ services:
             compose.stop()
         except Exception as e:
             print(f"Warning: Error stopping container: {e}")
-        
+
         # Remove override file
         if compose_override.exists():
-            compose_override.unlink()
+            try:
+                compose_override.unlink()
+            except Exception as e:
+                print(f"Warning: Could not remove override file: {e}")
 
 
 @pytest.fixture(scope="session")
@@ -565,22 +773,26 @@ def sample_ebook_path(tmp_path) -> Path:
 
 
 @pytest.fixture(scope="function")
-def ingest_folder(test_volumes: dict) -> Path:
+def ingest_folder(test_volumes: dict, container_name: str) -> Path:
     """
     Provide the path to the ingest folder mounted in the container.
     
     Tests can drop files here to trigger ingest processing.
     """
+    if AUTO_DOCKER_VOLUMES:
+        return VolumePath(container_name, "/cwa-book-ingest")
     return test_volumes["ingest"]
 
 
 @pytest.fixture(scope="function")
-def library_folder(test_volumes: dict) -> Path:
+def library_folder(test_volumes: dict, container_name: str) -> Path:
     """
     Provide the path to the Calibre library folder mounted in the container.
     
     Tests can check this folder for imported books.
     """
+    if AUTO_DOCKER_VOLUMES:
+        return VolumePath(container_name, "/calibre-library")
     return test_volumes["library"]
 
 

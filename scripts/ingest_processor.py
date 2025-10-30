@@ -231,6 +231,15 @@ def gdrive_sync_if_enabled():
 if not process_lock.acquire(timeout=10):
     sys.exit(2)
 
+# Ensure processed backups directory structure exists so backups never crash on missing folders
+try:
+    _processed_root = "/config/processed_books"
+    os.makedirs(_processed_root, exist_ok=True)
+    for _name in ("converted", "imported", "fixed_originals", "failed"):
+        os.makedirs(os.path.join(_processed_root, _name), exist_ok=True)
+except Exception as e:
+    print(f"[ingest-processor] WARN: Could not ensure processed_books directories: {e}", flush=True)
+
 # Generates dictionary of available backup directories and their paths
 backup_destinations = {
         entry.name: entry.path
@@ -291,8 +300,9 @@ class NewBookProcessor:
         # Current file
         self.filepath = filepath
         self.filename = os.path.basename(filepath)
-        self.is_target_format = bool(self.filepath.endswith(self.target_format))
         self.can_convert, self.input_format = self.can_convert_check()
+        # Determine if the file is already in the desired target format using normalized extensions
+        self.is_target_format = (self.input_format.lower() == str(self.target_format).lower())
 
         # Calibre environment
         self.calibre_env = os.environ.copy()
@@ -338,27 +348,30 @@ class NewBookProcessor:
         """When the current filepath isn't of the target format, this function will check if the file is able to be converted to the target format,
         returning a can_convert bool with the answer"""
         can_convert = False
-        input_format = Path(self.filepath).suffix[1:]
+        input_format = Path(self.filepath).suffix[1:].lower()
         if input_format in self.supported_book_formats:
             can_convert = True
         return can_convert, input_format
 
     def is_supported_audiobook(self) -> bool:
-        input_format = Path(self.filepath).suffix[1:]
+        input_format = Path(self.filepath).suffix[1:].lower()
         if input_format in self.supported_audiobook_formats:
             return True
         else:
             return False
 
     def backup(self, input_file, backup_type):
+        output_path = None
         try:
-            output_path = backup_destinations[backup_type]
-        except Exception as e:
-            print(f"[ingest-processor] The following error occurred when trying to fetch the available backup dirs in /config/processed_books:\n{e}")
-        try:
+            output_path = backup_destinations.get(backup_type)
+            if not output_path:
+                raise KeyError(f"No backup destination for type '{backup_type}'")
+            # Ensure destination directory exists
+            os.makedirs(output_path, exist_ok=True)
             shutil.copy2(input_file, output_path)
         except Exception as e:
-            print(f"[ingest-processor]: ERROR - The following error occurred when trying to copy {input_file} to {output_path}:\n{e}")
+            # Never let backups crash ingest; just log the problem
+            print(f"[ingest-processor]: ERROR - Failed to backup '{input_file}' to '{output_path}': {e}")
 
 
     def convert_book(self, end_format=None) -> tuple[bool, str]:
@@ -540,28 +553,46 @@ class NewBookProcessor:
         try:
             if text:
                 subprocess.run(["calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
-            else: #if audiobook
+            else:  # audiobook path
                 meta = audiobook.get_audio_file_info(str(staged_path), format, os.path.basename(str(staged_path)), False)
-                identifiers = ""
-                if len(meta[12]) != 0:
-                    for i in meta[12]:
-                        identifiers = identifiers + " " + i
+
+                # Coalesce metadata to safe strings
+                _title = str(meta[2]) if meta[2] else Path(staged_path).stem
+                _authors = str(meta[3]) if meta[3] else ""
+                _tags = str(meta[6]) if meta[6] else ""
+                _series = str(meta[7]) if meta[7] else ""
+                _series_index = str(meta[8]) if meta[8] is not None and meta[8] != "" else None
+                _languages = str(meta[9]) if meta[9] else ""
+                _cover = meta[4] if meta[4] and isinstance(meta[4], str) else None
 
                 add_command = [
                     "calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'],
-                    "--title", meta[2],
-                    "--authors", meta[3],
-                    "--tags", meta[6],
-                    "--series", meta[7],
-                    "--series-index", meta[8],
-                    "--languages", meta[9],
-                    "identifiers", identifiers,
                     f"--library-path={self.library_dir}",
                 ]
-                # Only add --cover if a valid cover path is found
-                if meta[4] and os.path.exists(meta[4]):
-                    add_command.extend(["--cover", meta[4]])
-                
+                if _title:
+                    add_command.extend(["--title", _title])
+                if _authors:
+                    add_command.extend(["--authors", _authors])
+                if _tags:
+                    add_command.extend(["--tags", _tags])
+                if _series:
+                    add_command.extend(["--series", _series])
+                if _series_index:
+                    add_command.extend(["--series-index", str(_series_index)])
+                if _languages:
+                    add_command.extend(["--languages", _languages])
+                if _cover and os.path.exists(_cover):
+                    add_command.extend(["--cover", _cover])
+
+                # Add identifiers if present; expect entries like "isbn:12345"
+                try:
+                    identifiers_list = meta[12] if isinstance(meta[12], (list, tuple)) else []
+                except Exception:
+                    identifiers_list = []
+                for ident in identifiers_list:
+                    if isinstance(ident, str) and ":" in ident and ident.strip():
+                        add_command.extend(["--identifier", ident.strip()])
+
                 subprocess.run(add_command, env=self.calibre_env, check=True)
             
             print(f"[ingest-processor] Added {staged_path.stem} to Calibre database", flush=True)

@@ -4,10 +4,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """
-Unit tests for cps/web.py
+Unit tests for web.py user profile change logic.
 
-Tests cover:
-- User preference handling for Kobo sync settings in change_profile
+NOTE: These tests currently validate the logic patterns used in web.py rather than
+directly testing the production code. This is because web.py functions require:
+- Flask application context and request handling
+- Database sessions (ub.session)
+- Complex dependency injection (current_user, config, oauth_check, etc.)
+
+TODO: Refactor these into integration tests with proper Flask test client and database
+fixtures, or extract the logic into testable helper functions.
 """
 
 import pytest

@@ -327,12 +327,10 @@ def temp_cwa_db(tmp_path, monkeypatch):
     tmp_path.mkdir(parents=True, exist_ok=True)
     
     # Monkey-patch the CWA_DB class to use our temp path
-    original_init = CWA_DB.__init__
-    
     def patched_init(self, verbose=False):
         self.verbose = verbose
         self.db_file = "cwa.db"
-        self.db_path = str(tmp_path) + "/"  # Use temp path instead of /config/
+        self.db_path = f"{tmp_path}/"  # Use temp path instead of /config/
         self.con, self.cur = self.connect_to_db()
         
         # Support both Docker and CI environments for schema path

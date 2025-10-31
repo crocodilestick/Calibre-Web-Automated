@@ -308,8 +308,8 @@ class TestCWADBStatistics:
 class TestCWADBErrorHandling:
     """Test database error handling and edge cases."""
     
-    def test_handles_missing_database_gracefully(self, tmp_path, monkeypatch):
-        """Verify graceful handling when database doesn't exist."""
+    def test_handles_missing_directory_gracefully(self, tmp_path, monkeypatch):
+        """Verify graceful handling when database directory doesn't exist."""
         # Point to non-existent directory path (without trailing slash to trigger error)
         nonexistent_path = str(tmp_path / "nonexistent" / "nested")
         monkeypatch.setenv('CWA_DB_PATH', nonexistent_path + "/")

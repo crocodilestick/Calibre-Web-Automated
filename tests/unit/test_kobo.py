@@ -4,21 +4,20 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """
-Unit tests for cps/kobo.py
+Unit tests for kobo.py external ID retrieval and reading progress sync logic.
 
-Tests cover:
-- get_external_ids function
-- Reading progress sync with user preferences and blacklist
+NOTE: These tests currently validate the logic patterns used in kobo.py rather than
+directly testing the production code. This is because kobo.py functions require:
+- Flask application context
+- Database sessions (ub.session, calibre_db)
+- Complex dependency injection (config, current_user, kobo_reading_state, etc.)
 
-Note: These tests avoid importing kobo.py directly due to heavy dependencies.
-Instead, they test the logic patterns that were added.
+TODO: Refactor these into integration tests with proper Flask test client and database
+fixtures, or extract the logic into testable helper functions.
 """
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-
-# Mock ub module to avoid database dependencies
-ub = Mock()
 
 
 @pytest.mark.unit

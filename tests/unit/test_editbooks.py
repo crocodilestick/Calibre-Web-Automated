@@ -4,14 +4,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """
-Unit tests for cps/editbooks.py
+Unit tests for editbooks.py Kobo sync and Hardcover blacklist logic.
 
-Tests cover:
-- delete_kobo_synced route functionality
-- edit_hardcover_blacklist function
+NOTE: These tests currently validate the logic patterns used in editbooks.py rather than
+directly testing the production code. This is because editbooks.py functions require:
+- Flask application context and request handling
+- Database sessions (ub.session)
+- Complex dependency injection (current_user, calibre_db, etc.)
 
-Note: These tests avoid importing editbooks.py directly due to heavy dependencies.
-Instead, they test the logic patterns that were added.
+TODO: Refactor these into integration tests with proper Flask test client and database
+fixtures, or extract the logic into testable helper functions.
 """
 
 import pytest
@@ -109,6 +111,8 @@ class TestEditHardcoverBlacklist:
         assert changed is True
         assert blacklist.blacklist_annotations is True
         assert blacklist.blacklist_reading_progress is False
+        # Verify that session.add was called with the blacklist object
+        mock_session.add.assert_called_once_with(blacklist)
     
     def test_create_blacklist_with_progress(self):
         """Test creating a blacklist record for reading progress"""
@@ -230,4 +234,7 @@ class TestEditHardcoverBlacklist:
             changed = True
         
         assert changed is False
+        # Verify that no database operations were performed
+        mock_session.add.assert_not_called()
+        mock_session.delete.assert_not_called()
 

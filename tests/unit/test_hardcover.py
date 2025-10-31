@@ -24,7 +24,26 @@ class TestEscapeMarkdown:
         result = hardcover.escape_markdown(text)
         
         # Each special character should be prefixed with backslash
-        assert result == '\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\+\\-\\.\\!\\|'
+        expected = '\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\+\\-\\.\\!\\|'
+        assert result == expected
+        
+        # Individual character assertions for better failure diagnostics
+        assert '\\\\' in result  # backslash
+        assert '\\`' in result   # backtick
+        assert '\\*' in result   # asterisk
+        assert '\\_' in result   # underscore
+        assert '\\{' in result   # left brace
+        assert '\\}' in result   # right brace
+        assert '\\[' in result   # left bracket
+        assert '\\]' in result   # right bracket
+        assert '\\(' in result   # left paren
+        assert '\\)' in result   # right paren
+        assert '\\#' in result   # hash
+        assert '\\+' in result   # plus
+        assert '\\-' in result   # minus
+        assert '\\.' in result   # dot
+        assert '\\!' in result   # exclamation
+        assert '\\|' in result   # pipe
     
     def test_escape_text_with_special_chars(self):
         """Test escaping text containing special characters"""

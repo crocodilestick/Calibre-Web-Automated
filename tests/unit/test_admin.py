@@ -4,15 +4,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """
-Unit tests for cps/admin.py
+Unit tests for admin.py configuration and user preference logic.
 
-Tests cover:
-- Configuration validation for Kobo annotation sync
-- User preference handling for Kobo sync settings
+NOTE: These tests currently validate the logic patterns used in admin.py rather than
+directly testing the production code. This is because admin.py functions require:
+- Flask application context
+- Database sessions (ub.session)
+- Complex dependency injection (config, current_user, etc.)
 
-Note: These tests avoid importing admin.py directly due to heavy dependencies
-(cwa_db, database sessions, Flask app context, etc.). Instead, they test
-the logic patterns that were added in the diff.
+TODO: Refactor these into integration tests with proper Flask test client and database
+fixtures, or extract the validation logic into testable helper functions.
 """
 
 import pytest
@@ -71,65 +72,47 @@ class TestAdminConfigurationValidation:
 class TestAdminUserPreferences:
     """Test user preference handling in admin.py"""
     
-    def test_kobo_sync_annotations_set_when_on(self):
-        """Test that kobo_sync_annotations is set to True when 'on' is provided"""
-        to_save = {"kobo_sync_annotations": "on"}
+    @pytest.mark.parametrize("kobo_support,input_value,expected", [
+        (True, "on", True),
+        (True, "off", False),
+        (True, None, False),
+        (False, "on", False),  # Should not change when kobo_support is False
+        (False, "off", False),
+    ])
+    def test_kobo_sync_annotations_setting(self, kobo_support, input_value, expected):
+        """Test that kobo_sync_annotations is set correctly based on kobo_support and input"""
+        to_save = {}
+        if input_value is not None:
+            to_save["kobo_sync_annotations"] = input_value
+            
         content = Mock()
         content.kobo_sync_annotations = False
         
-        # Simulate the preference setting logic
-        if True:  # kobo_support check
-            content.kobo_sync_annotations = to_save.get("kobo_sync_annotations") == "on"
-        
-        assert content.kobo_sync_annotations is True
-    
-    def test_kobo_sync_annotations_set_when_off(self):
-        """Test that kobo_sync_annotations is set to False when 'off' or missing"""
-        to_save = {"kobo_sync_annotations": "off"}
-        content = Mock()
-        content.kobo_sync_annotations = True
-        
-        if True:  # kobo_support check
-            content.kobo_sync_annotations = to_save.get("kobo_sync_annotations") == "on"
-        
-        assert content.kobo_sync_annotations is False
-    
-    def test_kobo_sync_progress_set_when_on(self):
-        """Test that kobo_sync_progress is set to True when 'on' is provided"""
-        to_save = {"kobo_sync_progress": "on"}
-        content = Mock()
-        content.kobo_sync_progress = False
-        
-        if True:  # kobo_support check
-            content.kobo_sync_progress = to_save.get("kobo_sync_progress") == "on"
-        
-        assert content.kobo_sync_progress is True
-    
-    def test_kobo_sync_progress_set_when_off(self):
-        """Test that kobo_sync_progress is set to False when 'off' or missing"""
-        to_save = {"kobo_sync_progress": "off"}
-        content = Mock()
-        content.kobo_sync_progress = True
-        
-        if True:  # kobo_support check
-            content.kobo_sync_progress = to_save.get("kobo_sync_progress") == "on"
-        
-        assert content.kobo_sync_progress is False
-    
-    def test_kobo_preferences_only_set_when_kobo_support_enabled(self):
-        """Test that preferences are only set when kobo_support is True"""
-        to_save = {"kobo_sync_annotations": "on", "kobo_sync_progress": "on"}
-        content = Mock()
-        content.kobo_sync_annotations = False
-        content.kobo_sync_progress = False
-        
-        kobo_support = False
-        
+        # Simulate the preference setting logic from admin.py
         if kobo_support:
             content.kobo_sync_annotations = to_save.get("kobo_sync_annotations") == "on"
+        
+        assert content.kobo_sync_annotations is expected
+    
+    @pytest.mark.parametrize("kobo_support,input_value,expected", [
+        (True, "on", True),
+        (True, "off", False),
+        (True, None, False),
+        (False, "on", False),  # Should not change when kobo_support is False
+        (False, "off", False),
+    ])
+    def test_kobo_sync_progress_setting(self, kobo_support, input_value, expected):
+        """Test that kobo_sync_progress is set correctly based on kobo_support and input"""
+        to_save = {}
+        if input_value is not None:
+            to_save["kobo_sync_progress"] = input_value
+            
+        content = Mock()
+        content.kobo_sync_progress = False
+        
+        # Simulate the preference setting logic from admin.py
+        if kobo_support:
             content.kobo_sync_progress = to_save.get("kobo_sync_progress") == "on"
         
-        # Values should remain unchanged when kobo_support is False
-        assert content.kobo_sync_annotations is False
-        assert content.kobo_sync_progress is False
+        assert content.kobo_sync_progress is expected
 

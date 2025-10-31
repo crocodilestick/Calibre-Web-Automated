@@ -247,8 +247,17 @@ def process_annotation_for_sync(annotation, book, identifiers, progress_percent=
             if location and 'span' in location:
                 progress_percent = chapter_progress * 100
     
-    # Sync to Hardcover if enabled and user has token
-    if config.config_hardcover_sync and config.config_kobo_annotation_sync and current_user.hardcover_token and bool(hardcover):
+    # Check if book is blacklisted from annotation syncing
+    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+        ub.HardcoverBookBlacklist.book_id == book.id
+    ).first()
+
+    if book_blacklist and book_blacklist.blacklist_annotations:
+        log.info(f"Skipping annotation sync for book {book.id} - blacklisted for annotations")
+        return False
+
+    # Sync to Hardcover if enabled and user has token and user has opted in
+    if config.config_hardcover_sync and config.config_kobo_annotation_sync and current_user.hardcover_token and current_user.kobo_sync_annotations and bool(hardcover):
         if identifiers:
             log.info(f"Syncing annotation to Hardcover with identifiers: {identifiers}")
             try:

@@ -230,6 +230,22 @@
         {% endfor %}
       {% endif %}
 
+      {% if kobo_sync_enabled and hardcover_sync_enabled %}
+    <div class="form-group">
+      <label>{{_('Hardcover Sync Blacklist')}}</label>
+      <div class="checkbox">
+        <label>
+          <input name="blacklist_annotations" type="checkbox" {% if hardcover_blacklist and hardcover_blacklist.blacklist_annotations %}checked{% endif %}> {{_('Blacklist annotations from syncing to Hardcover')}}
+        </label>
+      </div>
+      <div class="checkbox">
+        <label>
+          <input name="blacklist_reading_progress" type="checkbox" {% if hardcover_blacklist and hardcover_blacklist.blacklist_reading_progress %}checked{% endif %}> {{_('Blacklist reading progress from syncing to Hardcover')}}
+        </label>
+      </div>
+    </div>
+      {% endif %}
+
     <div class="checkbox">
       <label>
         <input name="detail_view" type="checkbox" checked> {{_('View Book on Save')}}

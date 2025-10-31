@@ -743,6 +743,10 @@ def do_edit_book(book_id, upload_formats=None):
             
         modify_date |= edit_all_cc_data(book_id, book, to_save)
 
+        # Handle hardcover sync blacklist settings
+        if config.config_kobo_sync and config.config_hardcover_sync:
+            modify_date |= edit_hardcover_blacklist(book_id, to_save)
+
         if to_save.get("pubdate"):
             try:
                 book.pubdate = datetime.strptime(to_save["pubdate"], "%Y-%m-%d")
@@ -1243,11 +1247,18 @@ def render_edit_book(book_id):
                 allowed_conversion_formats.remove(file.format.lower())
     if kepub_possible:
         allowed_conversion_formats.append('kepub')
+    # Check for existing hardcover blacklist settings
+    hardcover_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+        ub.HardcoverBookBlacklist.book_id == book.id
+    ).first()
+
     return render_title_template('book_edit.html', book=book, authors=author_names, cc=cc,
                                  title=_("edit metadata"), page="editbook",
                                  conversion_formats=allowed_conversion_formats,
                                  config=config,
                                  kobo_sync_enabled=config.config_kobo_sync,
+                                 hardcover_sync_enabled=config.config_hardcover_sync,
+                                 hardcover_blacklist=hardcover_blacklist,
                                  source_formats=valid_source_formats)
 
 
@@ -1474,6 +1485,35 @@ def edit_cc_data(book_id, book, to_save, cc):
                                                   calibre_db.session,
                                                   'custom')
     # CWA: Export of changed metadata moved to do_edit_book after commit to avoid race conditions
+    return changed
+
+
+def edit_hardcover_blacklist(book_id, to_save):
+    """Handle hardcover sync blacklist settings for a book."""
+    changed = False
+
+    # Get or create blacklist record
+    blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+        ub.HardcoverBookBlacklist.book_id == book_id
+    ).first()
+
+    if blacklist is None:
+        blacklist = ub.HardcoverBookBlacklist(book_id=book_id)
+        ub.session.add(blacklist)
+        changed = True
+
+    # Update annotation blacklist setting
+    new_blacklist_annotations = 'blacklist_annotations' in to_save
+    if blacklist.blacklist_annotations != new_blacklist_annotations:
+        blacklist.blacklist_annotations = new_blacklist_annotations
+        changed = True
+
+    # Update reading progress blacklist setting
+    new_blacklist_progress = 'blacklist_reading_progress' in to_save
+    if blacklist.blacklist_reading_progress != new_blacklist_progress:
+        blacklist.blacklist_reading_progress = new_blacklist_progress
+        changed = True
+
     return changed
 
 

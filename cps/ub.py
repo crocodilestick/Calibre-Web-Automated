@@ -250,6 +250,9 @@ class User(UserBase, Base):
     theme = Column(Integer, default=1)
     # Auto-send settings for new books
     auto_send_enabled = Column(Boolean, default=False)
+    # Kobo sync preferences (only apply when Kobo sync is enabled globally)
+    kobo_sync_annotations = Column(Boolean, default=False)
+    kobo_sync_progress = Column(Boolean, default=False)
 
 
 if oauth_support:
@@ -511,6 +514,19 @@ class KoboAnnotationSync(Base):
         return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
 
 
+class HardcoverBookBlacklist(Base):
+    """Track book-level blacklisting for hardcover sync features."""
+    __tablename__ = 'hardcover_book_blacklist'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, nullable=False, unique=True)  # Calibre book ID
+    blacklist_annotations = Column(Boolean, default=False)  # Block annotation syncing
+    blacklist_reading_progress = Column(Boolean, default=False)  # Block reading progress syncing
+
+    def __repr__(self):
+        return f'<HardcoverBookBlacklist book_id={self.book_id} annotations={self.blacklist_annotations} progress={self.blacklist_reading_progress}>'
+
+
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, 'before_flush')
 def receive_before_flush(session, flush_context, instances):
@@ -702,6 +718,25 @@ def migrate_user_table(engine, _session):
             conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
             trans.commit()
     
+    # Migration for Kobo sync preferences
+    try:
+        _session.query(exists().where(User.kobo_sync_annotations)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_annotations' Boolean DEFAULT 0"))
+            trans.commit()
+    
+    try:
+        _session.query(exists().where(User.kobo_sync_progress)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_progress' Boolean DEFAULT 0"))
+            trans.commit()
+    
     # Migration to enable duplicates sidebar for existing admin users
     try:
         from . import constants
@@ -803,6 +838,25 @@ def migrate_config_table(engine, _session):
             pass
 
 
+def migrate_hardcover_blacklist_table(engine, _session):
+    """Create hardcover_book_blacklist table if it doesn't exist."""
+    try:
+        _session.query(exists().where(HardcoverBookBlacklist.book_id)).scalar()
+        _session.commit()
+    except exc.OperationalError:  # Table doesn't exist
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("""
+                CREATE TABLE hardcover_book_blacklist (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    book_id INTEGER NOT NULL UNIQUE,
+                    blacklist_annotations BOOLEAN DEFAULT 0,
+                    blacklist_reading_progress BOOLEAN DEFAULT 0
+                )
+            """))
+            trans.commit()
+
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
@@ -814,6 +868,7 @@ def migrate_Database(_session):
     migrate_user_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
+    migrate_hardcover_blacklist_table(engine, _session)
 
 def clean_database(_session):
     # Remove expired remote login tokens

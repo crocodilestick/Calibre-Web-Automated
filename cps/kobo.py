@@ -97,6 +97,15 @@ def make_request_to_kobo_store(sync_token=None):
 
 def redirect_or_proxy_request():
     if config.config_kobo_proxy:
+        log.debug("Redirecting or proxying request to Kobo store")
+        log.debug("Request method: " + request.method)
+        log.debug("Request URL: " + request.url)
+        log.debug("Request headers: " + str(request.headers))
+        log.debug("Request data: " + str(request.get_data()))
+        log.debug("Request query string: " + str(request.query_string))
+        log.debug("Request path: " + request.path)
+        log.debug("Request full path: " + request.full_path)
+        log.debug("Request base url: " + request.base_url)
         if request.method == "GET":
             return redirect(get_store_url_for_current_request(), 307)
         else:
@@ -854,9 +863,17 @@ def HandleStateRequest(book_uuid):
             ub.session.rollback()
             abort(400, description="Malformed request data is missing 'ReadingStates' key")
 
-        if config.config_hardcover_sync and bool(hardcover):
+        if config.config_hardcover_sync and current_user.kobo_sync_progress and bool(hardcover):
+            # Check if book is blacklisted from reading progress syncing
+            book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+                ub.HardcoverBookBlacklist.book_id == book.id
+            ).first()
+
+            if not (book_blacklist and book_blacklist.blacklist_reading_progress):
                 hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
                 hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
+            else:
+                log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
 
         ub.session.merge(kobo_reading_state)
         ub.session_commit()

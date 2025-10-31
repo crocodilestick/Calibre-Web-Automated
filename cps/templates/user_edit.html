@@ -158,6 +158,14 @@
       <input type="checkbox" name="kobo_only_shelves_sync" id="kobo_only_shelves_sync" {% if content.kobo_only_shelves_sync %}checked{% endif %}>
       <label for="kobo_only_shelves_sync">{{_('Sync only books in selected shelves with Kobo')}}</label>
     </div>
+    <div class="form-group">
+      <input type="checkbox" name="kobo_sync_progress" id="kobo_sync_progress" {% if content.kobo_sync_progress %}checked{% endif %}>
+      <label for="kobo_sync_progress">{{_('Sync Kobo read progress to Hardcover')}}</label>
+    </div>
+    <div class="form-group">
+      <input type="checkbox" name="kobo_sync_annotations" id="kobo_sync_annotations" {% if content.kobo_sync_annotations %}checked{% endif %}>
+      <label for="kobo_sync_annotations">{{_('Sync Kobo annotations to Hardcover')}}</label>
+    </div>
     {% endif %}
     </div>
     <div class="col-sm-12">

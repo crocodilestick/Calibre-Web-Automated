@@ -1722,6 +1722,10 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         # Auto-send and metadata fetch settings
         current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
         current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+        # Kobo sync preferences
+        if kobo_support:
+            current_user.kobo_sync_annotations = to_save.get("kobo_sync_annotations") == "on"
+            current_user.kobo_sync_progress = to_save.get("kobo_sync_progress") == "on"
         # Theme change
         if 'theme' in to_save:
             try:

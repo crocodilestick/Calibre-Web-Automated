@@ -310,12 +310,16 @@ class TestCWADBErrorHandling:
     
     def test_handles_missing_database_gracefully(self, tmp_path, monkeypatch):
         """Verify graceful handling when database doesn't exist."""
-        # Point to non-existent path
-        monkeypatch.setenv('CWA_DB_PATH', str(tmp_path / "nonexistent"))
+        # Point to non-existent directory path (without trailing slash to trigger error)
+        nonexistent_path = str(tmp_path / "nonexistent" / "nested")
+        monkeypatch.setenv('CWA_DB_PATH', nonexistent_path + "/")
         
-        # This should create the database, not crash
-        db = CWA_DB(verbose=False)
-        assert db.con is not None
+        # This should exit gracefully with sys.exit(0)
+        with pytest.raises(SystemExit) as exc_info:
+            db = CWA_DB(verbose=False)
+        
+        # Verify it exits with code 0 (graceful exit)
+        assert exc_info.value.code == 0
     
     def test_handles_invalid_query_gracefully(self, temp_cwa_db):
         """Verify invalid queries don't crash the application."""

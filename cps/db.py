@@ -1144,8 +1144,22 @@ class CalibreDB:
                     Base.metadata.remove(table)
 
     def reconnect_db(self, config, app_db_path):
-        self.dispose()
-        self.engine.dispose()
+        # Be resilient if database wasn't initialized yet
+        try:
+            self.dispose()
+        except Exception:
+            # Ignore dispose errors during reconnect
+            pass
+
+        # engine is a class-level attribute that may be None before first setup
+        try:
+            if getattr(self, 'engine', None) is not None:
+                self.engine.dispose()
+        except Exception:
+            # Ignore engine dispose errors; we'll rebuild below
+            pass
+
+        # Rebuild engine/session factory and update config
         self.setup_db(config.config_calibre_dir, app_db_path)
         self.update_config(config)
 

@@ -1952,6 +1952,11 @@ def _configuration_update_helper():
         _config_int(to_save, "config_external_port")
         _config_checkbox_int(to_save, "config_kobo_proxy")
         _config_checkbox_int(to_save, "config_hardcover_sync")
+        
+        # Validate that annotation sync can only be enabled if Kobo sync is enabled
+        if to_save.get("config_kobo_annotation_sync") == "on" and not config.config_kobo_sync:
+            return _configuration_result(_('Kobo Annotation Sync requires Kobo Sync to be enabled'))
+        _config_checkbox(to_save, "config_kobo_annotation_sync")
 
         if "config_upload_formats" in to_save:
             to_save["config_upload_formats"] = ','.join(
@@ -2265,6 +2270,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     # which don't have to be synced have to be removed (added to Shelf archive)
     if old_state == 0 and content.kobo_only_shelves_sync == 1:
         kobo_sync_status.update_on_sync_shelfs(content.id)
+    # Kobo sync preferences
+    if kobo_support:
+        content.kobo_sync_annotations = to_save.get("kobo_sync_annotations") == "on"
+        content.kobo_sync_progress = to_save.get("kobo_sync_progress") == "on"
     # Auto-send and metadata fetch settings
     content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
     content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"

@@ -3039,6 +3039,10 @@ msgstr "Puerto externo del servidor (para peticiones API)"
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr ""
 
+#: cps/templates/config_edit.html:158
+msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
+msgstr ""
+
 #: cps/templates/config_edit.html:161
 msgid "Use Goodreads"
 msgstr "Usar Goodreads"

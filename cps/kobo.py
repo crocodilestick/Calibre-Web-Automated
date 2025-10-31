@@ -97,6 +97,7 @@ def make_request_to_kobo_store(sync_token=None):
 
 def redirect_or_proxy_request():
     if config.config_kobo_proxy:
+        log.debug(f"Proxying {request.method} request to Kobo store: {request.full_path}")
         if request.method == "GET":
             return redirect(get_store_url_for_current_request(), 307)
         else:
@@ -463,6 +464,24 @@ def get_language(book):
     return isoLanguages.get(part3=book.languages[0].lang_code).part1
 
 
+def get_external_ids(book):
+    """
+    Build external IDs list from Calibre identifiers.
+    Returns list in format ["isbn:9781234412", "calibre:123", ...]
+    """
+    external_ids = []
+    
+    # Add all Calibre identifiers (ISBN, ASIN, etc.)
+    if book.identifiers:
+        for identifier in book.identifiers:
+            external_ids.append(f"{identifier.type.lower()}:{identifier.val}")
+    
+    # Add Calibre book ID
+    external_ids.append(f"calibre:{book.id}")
+    
+    return external_ids
+
+
 def get_metadata(book):
     download_urls = []
     kepub = [data for data in book.data if data.format == 'KEPUB']
@@ -499,7 +518,7 @@ def get_metadata(book):
         "Description": get_description(book),
         "DownloadUrls": download_urls,
         "EntitlementId": book_uuid,
-        "ExternalIds": [],
+        "ExternalIds": get_external_ids(book),
         "Genre": "00000000-0000-0000-0000-000000000001",
         "IsEligibleForKoboLove": False,
         "IsInternetArchive": False,
@@ -836,7 +855,15 @@ def HandleStateRequest(book_uuid):
             ub.session.rollback()
             abort(400, description="Malformed request data is missing 'ReadingStates' key")
 
-        if config.config_hardcover_sync and bool(hardcover):
+        if config.config_hardcover_sync and current_user.kobo_sync_progress and bool(hardcover):
+            # Check if book is blacklisted from reading progress syncing
+            book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+                ub.HardcoverBookBlacklist.book_id == book.id
+            ).first()
+
+            if book_blacklist and book_blacklist.blacklist_reading_progress:
+                log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
+            else:
                 hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
                 hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
 
@@ -1137,6 +1164,9 @@ def HandleInitRequest():
                                                                width="{width}",
                                                                height="{height}",
                                                                isGreyscale='false'))
+        # Only redirect reading services if annotation sync is enabled and not proxying
+        if config.config_kobo_annotation_sync and not config.config_kobo_proxy:
+            kobo_resources["reading_services_host"] = calibre_web_url
     else:
         kobo_resources["image_host"] = url_for("web.index", _external=True).strip("/")
         kobo_resources["image_url_quality_template"] = unquote(url_for("kobo.HandleCoverImageRequest",
@@ -1154,6 +1184,9 @@ def HandleInitRequest():
                                                                height="{height}",
                                                                isGreyscale='false',
                                                                _external=True))
+        # Only redirect reading services if annotation sync is enabled and not proxying
+        if config.config_kobo_annotation_sync and not config.config_kobo_proxy:
+            kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="

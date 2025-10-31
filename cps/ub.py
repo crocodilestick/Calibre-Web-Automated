@@ -28,7 +28,7 @@ except ImportError as e:
     except ImportError as e:
         OAuthConsumerMixin = BaseException
         oauth_support = False
-from sqlalchemy import create_engine, exc, exists, event, text
+from sqlalchemy import create_engine, exc, exists, event, text, Index
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
 from sqlalchemy.orm.attributes import flag_modified
@@ -250,6 +250,9 @@ class User(UserBase, Base):
     theme = Column(Integer, default=1)
     # Auto-send settings for new books
     auto_send_enabled = Column(Boolean, default=False)
+    # Kobo sync preferences (only apply when Kobo sync is enabled globally)
+    kobo_sync_annotations = Column(Boolean, default=False)
+    kobo_sync_progress = Column(Boolean, default=False)
 
 
 if oauth_support:
@@ -494,6 +497,40 @@ class KoboStatistics(Base):
     spent_reading_minutes = Column(Integer)
 
 
+class KoboAnnotationSync(Base):
+    """Track which Kobo annotations have been synced to external services (e.g., Hardcover)."""
+    __tablename__ = 'kobo_annotation_sync'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    annotation_id = Column(String, nullable=False)  # Kobo annotation UUID
+    book_id = Column(Integer, nullable=False)  # Calibre book ID
+    synced_to_hardcover = Column(Boolean, default=False)
+    hardcover_journal_id = Column(Integer)  # Hardcover journal entry ID
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_synced = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    __table_args__ = (
+        Index('ix_kobo_annotation_sync_user_annotation', 'user_id', 'annotation_id'),
+    )
+
+    def __repr__(self):
+        return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
+
+
+class HardcoverBookBlacklist(Base):
+    """Track book-level blacklisting for hardcover sync features."""
+    __tablename__ = 'hardcover_book_blacklist'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, nullable=False, unique=True)  # Calibre book ID
+    blacklist_annotations = Column(Boolean, default=False)  # Block annotation syncing
+    blacklist_reading_progress = Column(Boolean, default=False)  # Block reading progress syncing
+
+    def __repr__(self):
+        return f'<HardcoverBookBlacklist book_id={self.book_id} annotations={self.blacklist_annotations} progress={self.blacklist_reading_progress}>'
+
+
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, 'before_flush')
 def receive_before_flush(session, flush_context, instances):
@@ -685,6 +722,45 @@ def migrate_user_table(engine, _session):
             conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
             trans.commit()
     
+    # Migration for Kobo sync preferences
+    try:
+        _session.query(exists().where(User.kobo_sync_annotations)).scalar()
+        _session.commit()
+        log.info("User.kobo_sync_annotations column already exists")
+    except exc.OperationalError as e:
+        log.info(f"Adding kobo_sync_annotations column: {e}")
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_annotations' Boolean DEFAULT 0"))
+                trans.commit()
+            log.info("Successfully added kobo_sync_annotations column")
+        except (exc.OperationalError, exc.DatabaseError, exc.ProgrammingError) as e:
+            log.error(f"Failed to add kobo_sync_annotations column: {e}")
+            raise
+    except (exc.DatabaseError, exc.InvalidRequestError) as e:
+        log.error(f"Database error checking kobo_sync_annotations column: {e}")
+        raise
+    
+    try:
+        _session.query(exists().where(User.kobo_sync_progress)).scalar()
+        _session.commit()
+        log.info("User.kobo_sync_progress column already exists")
+    except exc.OperationalError as e:
+        log.info(f"Adding kobo_sync_progress column: {e}")
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_progress' Boolean DEFAULT 0"))
+                trans.commit()
+            log.info("Successfully added kobo_sync_progress column")
+        except (exc.OperationalError, exc.DatabaseError, exc.ProgrammingError) as e:
+            log.error(f"Failed to add kobo_sync_progress column: {e}")
+            raise
+    except (exc.DatabaseError, exc.InvalidRequestError) as e:
+        log.error(f"Database error checking kobo_sync_progress column: {e}")
+        raise
+    
     # Migration to enable duplicates sidebar for existing admin users
     try:
         from . import constants
@@ -786,6 +862,25 @@ def migrate_config_table(engine, _session):
             pass
 
 
+def migrate_hardcover_blacklist_table(engine, _session):
+    """Create hardcover_book_blacklist table if it doesn't exist."""
+    try:
+        _session.query(exists().where(HardcoverBookBlacklist.book_id)).scalar()
+        _session.commit()
+    except exc.OperationalError:  # Table doesn't exist
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("""
+                CREATE TABLE hardcover_book_blacklist (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    book_id INTEGER NOT NULL UNIQUE,
+                    blacklist_annotations BOOLEAN DEFAULT 0,
+                    blacklist_reading_progress BOOLEAN DEFAULT 0
+                )
+            """))
+            trans.commit()
+
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
@@ -797,6 +892,7 @@ def migrate_Database(_session):
     migrate_user_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
+    migrate_hardcover_blacklist_table(engine, _session)
 
 def clean_database(_session):
     # Remove expired remote login tokens

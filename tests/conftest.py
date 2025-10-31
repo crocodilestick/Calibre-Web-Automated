@@ -323,9 +323,29 @@ def temp_cwa_db(tmp_path, monkeypatch):
     
     from cwa_db import CWA_DB
     
-    # Override the database path
-    db_path = tmp_path / "cwa.db"
-    monkeypatch.setenv('CWA_DB_PATH', str(tmp_path))
+    # Ensure the temp directory exists and is writable
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    
+    # Monkey-patch the CWA_DB class to use our temp path
+    def patched_init(self, verbose=False):
+        self.verbose = verbose
+        self.db_file = "cwa.db"
+        self.db_path = f"{tmp_path}/"  # Use temp path instead of /config/
+        self.con, self.cur = self.connect_to_db()
+        
+        # Support both Docker and CI environments for schema path
+        # Use scripts_dir that was already calculated above
+        self.schema_path = str(scripts_dir / "cwa_schema.sql")
+        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes"]
+        self.tables, self.schema = self.make_tables()
+        
+        self.cwa_default_settings = self.get_cwa_default_settings()
+        self.ensure_settings_schema_match()
+        self.match_stat_table_columns_with_schema()
+        self.set_default_settings()
+        self.cwa_settings = self.get_cwa_settings()
+    
+    monkeypatch.setattr(CWA_DB, '__init__', patched_init)
     
     # Create the database
     db = CWA_DB(verbose=False)

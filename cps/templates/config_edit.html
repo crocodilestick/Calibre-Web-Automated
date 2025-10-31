@@ -215,6 +215,10 @@
         <input type="checkbox" id="config_hardcover_sync" name="config_hardcover_sync"  {% if config.config_hardcover_sync %}checked{% endif %}>
         <label for="config_hardcover_sync">{{_('Sync Kobo read progress to Hardcover (Requires API key per user)')}}</label>
       </div>
+      <div class="form-group" style="margin-left:10px;">
+        <input type="checkbox" id="config_kobo_annotation_sync" name="config_kobo_annotation_sync"  {% if config.config_kobo_annotation_sync %}checked{% endif %}>
+        <label for="config_kobo_annotation_sync">{{_('Sync Kobo annotations to Hardcover (Requires API key per user)')}}</label>
+      </div>
     </div>
     {% endif %}
     {% if feature_support['goodreads'] %}
@@ -617,6 +621,19 @@ $(document).ready(function() {
       warningDiv.hide();
     }
   });
+  
+  // Disable annotation sync checkbox when Kobo sync is disabled
+  $('#config_kobo_sync').on('change', function() {
+    $('#config_kobo_annotation_sync').prop('disabled', !this.checked);
+    if (!this.checked) {
+      $('#config_kobo_annotation_sync').prop('checked', false);
+    }
+  });
+  
+  // Initialize state on page load
+  if (!$('#config_kobo_sync').is(':checked')) {
+    $('#config_kobo_annotation_sync').prop('disabled', true);
+  }
 
   $('#test_oidc_connection').on('click', function() {
     var serverUrl = $('#config_generic_oauth_server_url_test').val() || $('#config_generic_oauth_server_url').val();

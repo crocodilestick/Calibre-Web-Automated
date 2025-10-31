@@ -7,10 +7,21 @@
 
 from datetime import datetime
 import requests
+import traceback
 
 from .. import logger
 
 log = logger.create()
+
+
+def escape_markdown(text):
+    """Escape markdown special characters to prevent injection."""
+    if not text:
+        return text
+    special_chars = ['\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '#', '+', '-', '.', '!', '|']
+    for char in special_chars:
+        text = text.replace(char, '\\' + char)
+    return text
 
 GRAPHQL_ENDPOINT = "https://api.hardcover.app/v1/graphql"
 
@@ -101,7 +112,7 @@ class HardcoverClient:
             # Book doesn't exist, add it in Reading status
             if not book:
                 book = self.add_book(ids, status=2)
-            log.warning("Hardcover: Book: %s with identifiers: %s and ids: %s", book, identifiers, ids)
+            log.debug("Hardcover: Book: %s with identifiers: %s and ids: %s", book, identifiers, ids)
             # Book is either WTR or Read, and we aren't finished reading
             if book.get("status_id") != 2 and progress_percent != 100:
                 book = self.change_book_status(book, 2)
@@ -195,14 +206,17 @@ class HardcoverClient:
         
         # Combine highlighted text and note
         # Use actual line breaks instead of \n escape sequences
+        # Escape markdown special characters to prevent injection
         journal_text = ""
         if highlighted_text:
+            escaped_highlight = escape_markdown(highlighted_text)
             if note_text:
-                journal_text = f'> {highlighted_text}' + '\n\n -- ' + note_text
+                escaped_note = escape_markdown(note_text)
+                journal_text = f'> {escaped_highlight}' + '\n\n -- ' + escaped_note
             else:
-                journal_text = f'> {highlighted_text}'
+                journal_text = f'> {escaped_highlight}'
         elif note_text:
-            journal_text = note_text
+            journal_text = escape_markdown(note_text)
         else:
             log.warning("No text provided for journal entry")
             return None
@@ -218,7 +232,7 @@ class HardcoverClient:
                 metadata["position"] = {
                     "type": "pages",
                     "value": page_number,
-                    "percent": round(progress_percent),
+                    "percent": round(progress_percent, 2),
                     "possible": pages
                 }
                 log.info(f"Calculated page {page_number} from {progress_percent:.1f}% of {pages} pages")
@@ -262,13 +276,35 @@ class HardcoverClient:
             log.debug(f"Hardcover journal variables: {variables}")
             response = self.execute(query=mutation, variables=variables)
             log.debug(f"Hardcover journal response: {response}")
-            if response.get("insert_reading_journal", {}).get("errors"):
-                log.error(f"Hardcover journal entry errors: {response['insert_reading_journal']['errors']}")
+            
+            if not response:
+                log.error("Empty response from Hardcover API")
                 return None
+            
+            errors = response.get("insert_reading_journal", {}).get("errors")
+            if errors:
+                log.error(f"Hardcover journal entry errors: {errors}")
+                return None
+            
+            journal_entry = response.get("insert_reading_journal", {}).get("reading_journal")
+            if not journal_entry:
+                log.error("No journal entry returned in response")
+                return None
+            
             log.info(f"Successfully added journal entry to Hardcover for book {book.get('id')}")
-            return response.get("insert_reading_journal", {}).get("reading_journal")
+            return journal_entry
+        except requests.exceptions.Timeout as e:
+            log.error(f"Timeout syncing to Hardcover: {e}")
+            return None
+        except requests.exceptions.RequestException as e:
+            log.error(f"Network error syncing to Hardcover: {e}")
+            return None
+        except (KeyError, AttributeError) as e:
+            log.error(f"Malformed Hardcover API response: {e}")
+            return None
         except Exception as e:
-            log.error(f"Failed to add journal entry to Hardcover: {e}")
+            log.error(f"Unexpected error adding journal entry: {e}")
+            log.error(traceback.format_exc())
             return None
 
     def add_book(self, identifiers, status=1):

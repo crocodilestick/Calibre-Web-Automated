@@ -97,15 +97,7 @@ def make_request_to_kobo_store(sync_token=None):
 
 def redirect_or_proxy_request():
     if config.config_kobo_proxy:
-        log.debug("Redirecting or proxying request to Kobo store")
-        log.debug("Request method: " + request.method)
-        log.debug("Request URL: " + request.url)
-        log.debug("Request headers: " + str(request.headers))
-        log.debug("Request data: " + str(request.get_data()))
-        log.debug("Request query string: " + str(request.query_string))
-        log.debug("Request path: " + request.path)
-        log.debug("Request full path: " + request.full_path)
-        log.debug("Request base url: " + request.base_url)
+        log.debug(f"Proxying {request.method} request to Kobo store: {request.full_path}")
         if request.method == "GET":
             return redirect(get_store_url_for_current_request(), 307)
         else:
@@ -869,11 +861,11 @@ def HandleStateRequest(book_uuid):
                 ub.HardcoverBookBlacklist.book_id == book.id
             ).first()
 
-            if not (book_blacklist and book_blacklist.blacklist_reading_progress):
+            if book_blacklist and book_blacklist.blacklist_reading_progress:
+                log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
+            else:
                 hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
                 hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
-            else:
-                log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
 
         ub.session.merge(kobo_reading_state)
         ub.session_commit()
@@ -1172,8 +1164,8 @@ def HandleInitRequest():
                                                                width="{width}",
                                                                height="{height}",
                                                                isGreyscale='false'))
-        # Only redirect reading services if annotation sync is enabled
-        if config.config_kobo_annotation_sync:
+        # Only redirect reading services if annotation sync is enabled and not proxying
+        if config.config_kobo_annotation_sync and not config.config_kobo_proxy:
             kobo_resources["reading_services_host"] = calibre_web_url
     else:
         kobo_resources["image_host"] = url_for("web.index", _external=True).strip("/")
@@ -1192,8 +1184,8 @@ def HandleInitRequest():
                                                                height="{height}",
                                                                isGreyscale='false',
                                                                _external=True))
-        # Only redirect reading services if annotation sync is enabled
-        if config.config_kobo_annotation_sync:
+        # Only redirect reading services if annotation sync is enabled and not proxying
+        if config.config_kobo_annotation_sync and not config.config_kobo_proxy:
             kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
     response = make_response(jsonify({"Resources": kobo_resources}))

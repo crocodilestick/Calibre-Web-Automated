@@ -286,3 +286,7 @@ EXPOSE 8083
 VOLUME /config
 VOLUME /cwa-book-ingest
 VOLUME /calibre-library
+
+# Health check for container orchestration
+HEALTHCHECK --interval=30s --timeout=3s --start-period=120s --retries=3 \
+  CMD curl -f http://localhost:8083/ || exit 1

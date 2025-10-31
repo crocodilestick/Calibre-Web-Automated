@@ -1491,29 +1491,39 @@ def edit_cc_data(book_id, book, to_save, cc):
 def edit_hardcover_blacklist(book_id, to_save):
     """Handle hardcover sync blacklist settings for a book."""
     changed = False
-
+    new_blacklist_annotations = 'blacklist_annotations' in to_save
+    new_blacklist_progress = 'blacklist_reading_progress' in to_save
+    
+    # Only create/update record if at least one blacklist is active
+    if not new_blacklist_annotations and not new_blacklist_progress:
+        # Check if record exists and delete it
+        blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+            ub.HardcoverBookBlacklist.book_id == book_id
+        ).first()
+        if blacklist:
+            ub.session.delete(blacklist)
+            changed = True
+        return changed
+    
     # Get or create blacklist record
     blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
         ub.HardcoverBookBlacklist.book_id == book_id
     ).first()
-
+    
     if blacklist is None:
         blacklist = ub.HardcoverBookBlacklist(book_id=book_id)
         ub.session.add(blacklist)
         changed = True
-
-    # Update annotation blacklist setting
-    new_blacklist_annotations = 'blacklist_annotations' in to_save
+    
+    # Update settings
     if blacklist.blacklist_annotations != new_blacklist_annotations:
         blacklist.blacklist_annotations = new_blacklist_annotations
         changed = True
-
-    # Update reading progress blacklist setting
-    new_blacklist_progress = 'blacklist_reading_progress' in to_save
+    
     if blacklist.blacklist_reading_progress != new_blacklist_progress:
         blacklist.blacklist_reading_progress = new_blacklist_progress
         changed = True
-
+    
     return changed
 
 

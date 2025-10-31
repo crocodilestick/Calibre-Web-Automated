@@ -438,7 +438,13 @@
                   }
               },
               error: function(xhr, textStatus, errorThrown) {
-                  var message = xhr.responseText || '{{ _("Error deleting from Kobo sync") }}';
+                  var message;
+                  try {
+                      var response = JSON.parse(xhr.responseText);
+                      message = response.message || response.error || '{{ _("Error deleting from Kobo sync") }}';
+                  } catch(e) {
+                      message = xhr.responseText || '{{ _("Error deleting from Kobo sync") }}';
+                  }
                   // Show error or not found state
                   if (xhr.status === 404) {
                       $btn.removeClass('btn-warning').addClass('btn-info');

@@ -28,7 +28,7 @@ except ImportError as e:
     except ImportError as e:
         OAuthConsumerMixin = BaseException
         oauth_support = False
-from sqlalchemy import create_engine, exc, exists, event, text
+from sqlalchemy import create_engine, exc, exists, event, text, Index
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
 from sqlalchemy.orm.attributes import flag_modified
@@ -509,6 +509,10 @@ class KoboAnnotationSync(Base):
     hardcover_journal_id = Column(Integer)  # Hardcover journal entry ID
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_synced = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    
+    __table_args__ = (
+        Index('ix_kobo_annotation_sync_user_annotation', 'user_id', 'annotation_id'),
+    )
 
     def __repr__(self):
         return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
@@ -722,20 +726,40 @@ def migrate_user_table(engine, _session):
     try:
         _session.query(exists().where(User.kobo_sync_annotations)).scalar()
         _session.commit()
-    except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_annotations' Boolean DEFAULT 0"))
-            trans.commit()
+        log.info("User.kobo_sync_annotations column already exists")
+    except exc.OperationalError as e:
+        log.info(f"Adding kobo_sync_annotations column: {e}")
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_annotations' Boolean DEFAULT 0"))
+                trans.commit()
+            log.info("Successfully added kobo_sync_annotations column")
+        except Exception as e:
+            log.error(f"Failed to add kobo_sync_annotations column: {e}")
+            raise
+    except Exception as e:
+        log.error(f"Unexpected error checking kobo_sync_annotations column: {e}")
+        raise
     
     try:
         _session.query(exists().where(User.kobo_sync_progress)).scalar()
         _session.commit()
-    except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_progress' Boolean DEFAULT 0"))
-            trans.commit()
+        log.info("User.kobo_sync_progress column already exists")
+    except exc.OperationalError as e:
+        log.info(f"Adding kobo_sync_progress column: {e}")
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_progress' Boolean DEFAULT 0"))
+                trans.commit()
+            log.info("Successfully added kobo_sync_progress column")
+        except Exception as e:
+            log.error(f"Failed to add kobo_sync_progress column: {e}")
+            raise
+    except Exception as e:
+        log.error(f"Unexpected error checking kobo_sync_progress column: {e}")
+        raise
     
     # Migration to enable duplicates sidebar for existing admin users
     try:

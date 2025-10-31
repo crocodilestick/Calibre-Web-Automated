@@ -621,6 +621,19 @@ $(document).ready(function() {
       warningDiv.hide();
     }
   });
+  
+  // Disable annotation sync checkbox when Kobo sync is disabled
+  $('#config_kobo_sync').on('change', function() {
+    $('#config_kobo_annotation_sync').prop('disabled', !this.checked);
+    if (!this.checked) {
+      $('#config_kobo_annotation_sync').prop('checked', false);
+    }
+  });
+  
+  // Initialize state on page load
+  if (!$('#config_kobo_sync').is(':checked')) {
+    $('#config_kobo_annotation_sync').prop('disabled', true);
+  }
 
   $('#test_oidc_connection').on('click', function() {
     var serverUrl = $('#config_generic_oauth_server_url_test').val() || $('#config_generic_oauth_server_url').val();

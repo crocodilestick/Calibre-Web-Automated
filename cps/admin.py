@@ -1952,6 +1952,10 @@ def _configuration_update_helper():
         _config_int(to_save, "config_external_port")
         _config_checkbox_int(to_save, "config_kobo_proxy")
         _config_checkbox_int(to_save, "config_hardcover_sync")
+        
+        # Validate that annotation sync can only be enabled if Kobo sync is enabled
+        if to_save.get("config_kobo_annotation_sync") == "on" and not config.config_kobo_sync:
+            return _configuration_result(_('Kobo Annotation Sync requires Kobo Sync to be enabled'))
         _config_checkbox(to_save, "config_kobo_annotation_sync")
 
         if "config_upload_formats" in to_save:

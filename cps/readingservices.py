@@ -322,10 +322,14 @@ def process_annotation_for_sync(annotation, book, identifiers, progress_percent=
                                 ub.session.add(sync_record)
                             ub.session_commit()
                             log.info(f"Successfully synced annotation {annotation_id} to Hardcover")
-                        return True
+                            return True
+                        else:
+                            log.warning("No annotation_id provided, skipping sync record")
+                            return True
                     except Exception as e:
                         log.error(f"Failed to save sync record: {e}")
                         ub.session.rollback()
+                        # Note: Hardcover sync succeeded but DB record failed - annotation may be re-synced
                         return False
                 else:
                     log.warning(f"Failed to sync annotation {annotation_id} to Hardcover")
@@ -527,4 +531,3 @@ def handle_unknown_reading_service_request(subpath):
     
     # Proxy to Kobo
     return proxy_to_kobo_reading_services()
-

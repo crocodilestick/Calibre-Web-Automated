@@ -735,11 +735,11 @@ def migrate_user_table(engine, _session):
                 conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_annotations' Boolean DEFAULT 0"))
                 trans.commit()
             log.info("Successfully added kobo_sync_annotations column")
-        except Exception as e:
+        except (exc.OperationalError, exc.DatabaseError, exc.ProgrammingError) as e:
             log.error(f"Failed to add kobo_sync_annotations column: {e}")
             raise
-    except Exception as e:
-        log.error(f"Unexpected error checking kobo_sync_annotations column: {e}")
+    except (exc.DatabaseError, exc.InvalidRequestError) as e:
+        log.error(f"Database error checking kobo_sync_annotations column: {e}")
         raise
     
     try:
@@ -754,11 +754,11 @@ def migrate_user_table(engine, _session):
                 conn.execute(text("ALTER TABLE user ADD column 'kobo_sync_progress' Boolean DEFAULT 0"))
                 trans.commit()
             log.info("Successfully added kobo_sync_progress column")
-        except Exception as e:
+        except (exc.OperationalError, exc.DatabaseError, exc.ProgrammingError) as e:
             log.error(f"Failed to add kobo_sync_progress column: {e}")
             raise
-    except Exception as e:
-        log.error(f"Unexpected error checking kobo_sync_progress column: {e}")
+    except (exc.DatabaseError, exc.InvalidRequestError) as e:
+        log.error(f"Database error checking kobo_sync_progress column: {e}")
         raise
     
     # Migration to enable duplicates sidebar for existing admin users

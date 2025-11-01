@@ -27,18 +27,18 @@ change_script_permissions () {
 
 # Add aliases to .bashrc
 add_aliases () {
-    echo "" | cat >> ~/.bashrc
-    echo "# Calibre-Web Automated Aliases" | cat >> ~/.bashrc
-    echo "alias cwa-check='bash /app/calibre-web-automated/scripts/check-cwa-services.sh'" | cat >> ~/.bashrc
-    echo "alias cwa-change-dirs='nano /app/calibre-web-automated/dirs.json'" | cat >> ~/.bashrc
-    
-    echo "cover-enforcer () {" | cat >> ~/.bashrc
-    echo '    python3 /app/calibre-web-automated/scripts/cover_enforcer.py "$@"' | cat >> ~/.bashrc
-    echo "}" | cat >> ~/.bashrc
-    
-    echo "convert-library () {" | cat >> ~/.bashrc
-    echo '    python3 /app/calibre-web-automated/scripts/convert_library.py "$@"' | cat >> ~/.bashrc
-    echo "}" | cat >> ~/.bashrc
+    cat << 'EOF' >> ~/.bashrc
+
+# Calibre-Web Automated Aliases
+alias cwa-check='bash /app/calibre-web-automated/scripts/check-cwa-services.sh'
+alias cwa-change-dirs='nano /app/calibre-web-automated/dirs.json'
+cover-enforcer () {
+    python3 /app/calibre-web-automated/scripts/cover_enforcer.py "$@"
+}
+convert-library () {
+    python3 /app/calibre-web-automated/scripts/convert_library.py "$@"
+}
+EOF
     
     source ~/.bashrc
 }

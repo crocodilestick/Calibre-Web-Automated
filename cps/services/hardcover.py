@@ -224,18 +224,17 @@ class HardcoverClient:
         metadata = {}
         if progress_percent is not None or progress_page is not None:
             pages = book.get("edition", {}).get("pages", 0)
-            if pages or progress_page is not None:
-                page_number = progress_page if progress_page else round(pages * (progress_percent / 100))
-                page_percent = round ((page_number / pages) * 100, 2) if pages else None
-                percent = round(progress_percent, 2) if progress_percent is not None else page_percent
-                # Match Hardcover's web UI metadata structure
-                metadata["position"] = {
-                    "type": "pages",
-                    "value": page_number,
-                    "percent": percent,
-                    "possible": pages
-                }
-                log.info(f"Calculated page {page_number} from {progress_percent:.1f}% of {pages} pages")
+            page_number = progress_page if progress_page else round(pages * (progress_percent / 100))
+            page_percent = round ((page_number / pages) * 100, 2) if pages else None
+            percent = round(progress_percent, 2) if progress_percent is not None else page_percent
+            # Match Hardcover's web UI metadata structure
+            metadata["position"] = {
+                "type": "pages",
+                "value": page_number,
+                "percent": percent,
+                "possible": pages
+            }
+            log.info(f"Calculated page {page_number} from {progress_percent:.1f}% of {pages} pages")
         
         mutation = """
             mutation ($bookId: Int!, $entry: String!, $event: String!, $privacySettingId: Int!, $editionId: Int, $actionAt: date, $tags: [BasicTag]!, $metadata: jsonb) {

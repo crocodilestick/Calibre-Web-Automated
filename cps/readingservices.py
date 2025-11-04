@@ -19,6 +19,7 @@ import zipfile
 import re
 from datetime import datetime, timezone
 from functools import wraps
+from typing import TypedDict, NotRequired
 from flask import Blueprint, request, make_response, jsonify, abort
 from werkzeug.datastructures import Headers
 import requests
@@ -194,20 +195,55 @@ def log_annotation_data(entitlement_id, method, data=None):
     log.info("=" * 80)
 
 
-# TODO: use this and test that it matches the progress percentage from the Kobo app
-def calculate_progress_from_epub(book, book_data, chapter_filename, chapter_progress):
+def calculate_progress_from_epub(book: db.Books, chapter_filename: str, chapter_progress: float):
     """
     Calculate exact progress percentage by parsing the epub file structure.
     
     Args:
         book: Calibre book object
-        book_data: Book data object with format information
         chapter_filename: The filename of the chapter (e.g., "OEBPS/xhtml/prologue.xhtml")
         chapter_progress: Progress within the chapter (0.0 to 1.0)
     
     Returns:
         Progress percentage (0-100) or None if calculation fails
     """
+    if not book or not chapter_filename or not chapter_progress:
+        log.warning("Missing required parameters for progress calculation")
+        return None
+    
+    if not book.path:
+        log.warning("Book path is not set, skipping progress calculation")
+        return None
+    
+    if not book.data or len(book.data) == 0:
+        log.warning("No book data found, skipping progress calculation")
+        return None
+
+    book_data = None
+    kepub_datas = [data for data in book.data if data.format.lower() == 'kepub']
+    if len(kepub_datas) == 1:
+       book_data = kepub_datas[0]
+    elif len(kepub_datas) > 1:
+        log.warning("Multiple KEPUB data found for book, using first")
+        book_data = kepub_datas[0]
+    else:
+        log.warning("No KEPUB data found for book, using EPUB data")
+        epub_datas = [data for data in book.data if data.format.lower() == 'epub']
+        if len(epub_datas) == 1:
+            book_data = epub_datas[0]
+        elif len(epub_datas) > 1:
+            log.warning("Multiple EPUB data found for book, using first")
+            book_data = epub_datas[0]
+        else:
+            log.warning("No EPUB data found for book, skipping progress calculation")
+            return None
+
+    if not book_data:
+        log.warning("No KEPUB/EPUB data found for book, skipping progress calculation")
+        return None
+    
+    log.debug(f"Using book data: {book_data.name} ({book_data})")
+
     try:
         # Get the file path to the epub/kepub
         file_path = os.path.normpath(os.path.join(
@@ -331,7 +367,34 @@ def calculate_progress_from_epub(book, book_data, chapter_filename, chapter_prog
         return None
 
 
-def process_annotation_for_sync(annotation, book, identifiers, progress_percent=None, existing_syncs=None):
+class AnnotationSpan(TypedDict):
+    """Kobo annotation span location data."""
+    chapterFilename: str
+    chapterProgress: float
+    chapterTitle: str
+    endChar: int
+    endPath: str
+    startChar: int
+    startPath: str
+
+
+class AnnotationLocation(TypedDict):
+    """Kobo annotation location data."""
+    span: AnnotationSpan
+
+
+class KoboAnnotation(TypedDict):
+    """Kobo annotation structure from Reading Services API."""
+    clientLastModifiedUtc: str
+    highlightColor: str
+    highlightedText: NotRequired[str]
+    id: str
+    location: AnnotationLocation
+    noteText: NotRequired[str]
+    type: str  # "note" or "highlight"
+
+
+def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, identifiers, progress_percent=None, existing_syncs=None):
     """
     Process a single annotation and sync to Hardcover if needed.
     
@@ -375,14 +438,16 @@ def process_annotation_for_sync(annotation, book, identifiers, progress_percent=
         log.info(f"Annotation {annotation_id} already synced to Hardcover, skipping")
         return False
         
-    # TODO: work out progress percentage if not provided
-
     progress_page = None
+    chapter_filename = annotation.get('location', {}).get('span', {}).get('chapterFilename')
+    chapter_progress = annotation.get('location', {}).get('span', {}).get('chapterProgress')
+    progress_percent = progress_percent if progress_percent is not None else calculate_progress_from_epub(book, chapter_filename, chapter_progress)
 
     # TODO: implement book annotation blacklist logic
 
     if existing_sync and existing_sync.synced_to_hardcover:
         # TODO: update existing journal entry with new annotation data
+        # will need to check that the note_text and highlighted_text are different to the existing ones
         return False
 
     if not current_user.hardcover_token:
@@ -506,18 +571,18 @@ def handle_annotations(entitlement_id):
                     annotations = data['updatedAnnotations']
                     log.info(f"Processing {len(annotations)} updated annotations")
                 
-                # Batch load existing sync records to avoid N+1 queries
-                existing_syncs = {}
-                annotation_ids = [a.get('id') for a in annotations if a.get('id')]
-                if annotation_ids:
-                    syncs = ub.session.query(ub.KoboAnnotationSync).filter(
-                        ub.KoboAnnotationSync.annotation_id.in_(annotation_ids),
-                        ub.KoboAnnotationSync.user_id == current_user.id
-                    ).all()
-                    existing_syncs = {s.annotation_id: s for s in syncs}
-                
-                for annotation in annotations:
-                    process_annotation_for_sync(annotation, book, identifiers, existing_syncs=existing_syncs)
+                    # Batch load existing sync records to avoid N+1 queries
+                    existing_syncs = {}
+                    annotation_ids = [a.get('id') for a in annotations if a.get('id')]
+                    if annotation_ids:
+                        syncs = ub.session.query(ub.KoboAnnotationSync).filter(
+                            ub.KoboAnnotationSync.annotation_id.in_(annotation_ids),
+                            ub.KoboAnnotationSync.user_id == current_user.id
+                        ).all()
+                        existing_syncs = {s.annotation_id: s for s in syncs}
+                    
+                    for annotation in annotations:
+                        process_annotation_for_sync(annotation, book, identifiers, existing_syncs=existing_syncs)
 
         except Exception as e:
             log.error(f"Error processing PATCH annotations: {e}")

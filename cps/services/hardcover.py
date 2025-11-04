@@ -308,6 +308,18 @@ class HardcoverClient:
             return None
 
 
+    def update_journal_entry(self, journal_id: int, note_text: str | None = None, highlighted_text: str | None = None, highlight_color: str | None = None):
+        """
+        Update a journal entry (reading note) in Hardcover.
+        
+        Args:
+            journal_id: The ID of the journal entry to update
+            note_text: The note text to update
+            highlighted_text: The highlighted text to update
+            highlight_color: The highlight color to update
+        """
+        raise NotImplementedError("Updating is not implemented yet")
+
     def add_book(self, identifiers, status=1):
         ids = self.parse_identifiers(identifiers)
         mutation = (

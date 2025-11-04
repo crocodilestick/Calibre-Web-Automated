@@ -434,9 +434,14 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
             ub.KoboAnnotationSync.user_id == current_user.id
         ).first()
     
-    if existing_sync and existing_sync.synced_to_hardcover and existing_sync.highlighted_text == highlighted_text and existing_sync.note_text == note_text:
+    if existing_sync and existing_sync.synced_to_hardcover and existing_sync.highlighted_text == highlighted_text and existing_sync.note_text == note_text and existing_sync.highlight_color == highlight_color:
         log.info(f"Annotation {annotation_id} already synced to Hardcover, skipping")
         return False
+    
+    if not current_user.hardcover_token:
+        log.warning("User has no Hardcover token, skipping sync")
+        return False
+
 
     # Check if book is blacklisted from annotation syncing
     book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
@@ -452,17 +457,6 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
     chapter_progress = annotation.get('location', {}).get('span', {}).get('chapterProgress')
     progress_percent = progress_percent if progress_percent is not None else calculate_progress_from_epub(book, chapter_filename, chapter_progress)
 
-    # TODO: implement book annotation blacklist logic
-
-    if existing_sync and existing_sync.synced_to_hardcover:
-        # TODO: update existing journal entry with new annotation data
-        # will need to check that the note_text and highlighted_text are different to the existing ones
-        return False
-
-    if not current_user.hardcover_token:
-        log.warning("User has no Hardcover token, skipping sync")
-        return False
-
     # Sync to Hardcover if enabled and user has valid token
     if (config.config_kobo_sync and
         config.config_hardcover_annotations_sync and
@@ -471,13 +465,24 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
             log.info(f"Syncing annotation to Hardcover with identifiers: {identifiers}")
             try:
                 hardcover_client = hardcover.HardcoverClient(current_user.hardcover_token)
-                result = hardcover_client.add_journal_entry(
-                    identifiers=identifiers,
-                    note_text=note_text,
-                    progress_percent=progress_percent,
-                    progress_page=progress_page,
-                    highlighted_text=highlighted_text
-                )
+                result = None
+                if existing_sync and existing_sync.synced_to_hardcover:
+                    # existing but not the same as the previous entry so update it
+                    log.info(f"Updating existing journal entry {existing_sync.id} with new annotation data")
+                    result = hardcover_client.update_journal_entry(
+                        journal_id=existing_sync.hardcover_journal_id,
+                        note_text=note_text,
+                        highlighted_text=highlighted_text,
+                        highlight_color=highlight_color
+                    )
+                else:
+                    result = hardcover_client.add_journal_entry(
+                        identifiers=identifiers,
+                        note_text=note_text,
+                        progress_percent=progress_percent,
+                        progress_page=progress_page,
+                        highlighted_text=highlighted_text
+                    )
                 
                 if result:
                     # Track sync in database only after successful Hardcover sync
@@ -486,6 +491,9 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
                             existing_sync.synced_to_hardcover = True
                             existing_sync.hardcover_journal_id = result.get('id')
                             existing_sync.last_synced = datetime.now(timezone.utc)
+                            existing_sync.highlighted_text = highlighted_text
+                            existing_sync.note_text = note_text
+                            existing_sync.highlight_color = highlight_color
                         else:
                             sync_record = ub.KoboAnnotationSync(
                                 user_id=current_user.id,

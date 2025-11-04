@@ -46,7 +46,7 @@ from .string_helper import strip_whitespaces
 
 log = logger.create()
 
-session = None
+session: Session | None = None
 app_DB_path = None
 Base = declarative_base()
 searched_ids = {}

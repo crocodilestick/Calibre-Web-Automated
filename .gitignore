@@ -158,7 +158,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+*.env
 .venv
 env/
 venv/
@@ -196,3 +196,6 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Dev instance files for testing in the same folder
+instance/

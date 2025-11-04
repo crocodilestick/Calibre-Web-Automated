@@ -29,7 +29,7 @@ except ImportError as e:
         OAuthConsumerMixin = BaseException
         oauth_support = False
 from sqlalchemy import create_engine, exc, exists, event, text
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Index
 from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import func
@@ -492,6 +492,30 @@ class KoboStatistics(Base):
     last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     remaining_time_minutes = Column(Integer)
     spent_reading_minutes = Column(Integer)
+
+
+class KoboAnnotationSync(Base):
+    """Track which Kobo annotations have been synced to external services (e.g., Hardcover)."""
+    __tablename__ = 'kobo_annotation_sync'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    annotation_id = Column(String, nullable=False)  # Kobo annotation UUID
+    book_id = Column(Integer, nullable=False)  # Calibre book ID
+    synced_to_hardcover = Column(Boolean, default=False)
+    hardcover_journal_id = Column(Integer)  # Hardcover journal entry ID
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_synced = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    highlighted_text = Column(String, nullable=True)
+    highlight_color = Column(String, nullable=True)
+    note_text = Column(String, nullable=True)
+    
+    __table_args__ = (
+        Index('ix_kobo_annotation_sync_user_annotation', 'user_id', 'annotation_id'),
+    )
+
+    def __repr__(self):
+        return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
 
 
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.

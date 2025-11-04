@@ -163,9 +163,10 @@ class Amazon(Metadata):
         if self.active:
             q = {
                 'unfiltered': '1',
-                's': 'relevanceexprank',
+                'sort': 'relevanceexprank',
+                'search-alias': 'stripbooks',
                 'i': 'digital-text',
-                'k': query,
+                'field-keywords': query,
             }
 
             try:

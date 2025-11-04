@@ -836,7 +836,7 @@ def HandleStateRequest(book_uuid):
             ub.session.rollback()
             abort(400, description="Malformed request data is missing 'ReadingStates' key")
 
-        if config.config_hardcover_sync and bool(hardcover):
+        if config.config_hardcover_sync and bool(hardcover): # TODO: check if the book is blacklisted from syncing progress
                 hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
                 hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
 
@@ -1137,6 +1137,8 @@ def HandleInitRequest():
                                                                width="{width}",
                                                                height="{height}",
                                                                isGreyscale='false'))
+        if config.config_hardcover_annotations_sync and bool(hardcover):
+            kobo_resources["reading_services_host"] = calibre_web_url
     else:
         kobo_resources["image_host"] = url_for("web.index", _external=True).strip("/")
         kobo_resources["image_url_quality_template"] = unquote(url_for("kobo.HandleCoverImageRequest",
@@ -1154,6 +1156,8 @@ def HandleInitRequest():
                                                                height="{height}",
                                                                isGreyscale='false',
                                                                _external=True))
+        if config.config_hardcover_annotations_sync and bool(hardcover):
+            kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="
@@ -1243,7 +1247,7 @@ def NATIVE_KOBO_RESOURCES():
         "googledrive_link_account_start": "https://authorize.kobo.com/{region}/{language}/linkcloudstorage/provider/google_drive",
         "gpb_flow_enabled": "False",
         "help_page": "http://www.kobo.com/help",
-        "image_host": "//cdn.kobo.com/book-images/",
+        "image_host": "https://cdn.kobo.com/book-images/",
         "image_url_quality_template": "https://cdn.kobo.com/book-images/{ImageId}/{Width}/{Height}/{Quality}/{IsGreyscale}/image.jpg",
         "image_url_template": "https://cdn.kobo.com/book-images/{ImageId}/{Width}/{Height}/false/image.jpg",
         "instapaper_enabled": "True",

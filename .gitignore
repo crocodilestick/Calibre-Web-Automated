@@ -19,6 +19,7 @@ replit.nix
 .breakpoints
 .venv
 .vscode
+.cursor
 .history
 cwa-wiki/
 docs/
@@ -80,6 +81,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+coverage.md
 *.cover
 *.py,cover
 .hypothesis/

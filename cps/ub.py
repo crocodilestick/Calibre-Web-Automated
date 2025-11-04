@@ -518,6 +518,19 @@ class KoboAnnotationSync(Base):
         return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
 
 
+class HardcoverBookBlacklist(Base):
+    """Track book-level blacklisting for hardcover sync features."""
+    __tablename__ = 'hardcover_book_blacklist'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, nullable=False, unique=True)  # Calibre book ID
+    blacklist_annotations = Column(Boolean, default=False)  # Block annotation syncing
+    blacklist_reading_progress = Column(Boolean, default=False)  # Block reading progress syncing
+
+    def __repr__(self):
+        return f'<HardcoverBookBlacklist book_id={self.book_id} annotations={self.blacklist_annotations} progress={self.blacklist_reading_progress}>'
+
+
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, 'before_flush')
 def receive_before_flush(session, flush_context, instances):

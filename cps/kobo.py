@@ -836,7 +836,15 @@ def HandleStateRequest(book_uuid):
             ub.session.rollback()
             abort(400, description="Malformed request data is missing 'ReadingStates' key")
 
-        if config.config_hardcover_sync and bool(hardcover): # TODO: check if the book is blacklisted from syncing progress
+        if config.config_hardcover_sync and bool(hardcover):
+            # Check if book is blacklisted from reading progress syncing
+            book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+                ub.HardcoverBookBlacklist.book_id == book.id
+            ).first()
+
+            if book_blacklist and book_blacklist.blacklist_reading_progress:
+                log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
+            else:
                 hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
                 hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
 

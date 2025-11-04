@@ -437,6 +437,15 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
     if existing_sync and existing_sync.synced_to_hardcover and existing_sync.highlighted_text == highlighted_text and existing_sync.note_text == note_text:
         log.info(f"Annotation {annotation_id} already synced to Hardcover, skipping")
         return False
+
+    # Check if book is blacklisted from annotation syncing
+    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+        ub.HardcoverBookBlacklist.book_id == book.id
+    ).first()
+
+    if book_blacklist and book_blacklist.blacklist_annotations:
+        log.info(f"Skipping annotation sync for book {book.id} - blacklisted for annotations")
+        return False
         
     progress_page = None
     chapter_filename = annotation.get('location', {}).get('span', {}).get('chapterFilename')

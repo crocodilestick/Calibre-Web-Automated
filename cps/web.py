@@ -493,7 +493,7 @@ def render_hot_books(page, order):
     if current_user.check_visibility(constants.SIDEBAR_HOT):
         if order[1] not in ['hotasc', 'hotdesc']:
             order = [func.count(ub.Downloads.book_id).desc()], 'hotdesc'
-        
+
         random = false()
         if current_user.show_detail_random():
             random_query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
@@ -502,7 +502,7 @@ def render_hot_books(page, order):
                      .limit(config.config_random_books).all())
 
         off = int(config.config_books_per_page) * (page - 1)
-        
+
         # Get total count for pagination
         total_hot_books = ub.session.query(func.count(ub.Downloads.book_id.distinct())).scalar()
 
@@ -512,7 +512,7 @@ def render_hot_books(page, order):
                               .order_by(*order[0])
                               .offset(off)
                               .limit(config.config_books_per_page))
-        
+
         hot_book_ids = [item[0] for item in hot_book_ids_query]
 
         entries = []
@@ -520,7 +520,7 @@ def render_hot_books(page, order):
             query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
             # Fetch all book details in one query
             book_details = query.filter(calibre_db.common_filters()).filter(db.Books.id.in_(hot_book_ids)).all()
-            
+
             # Create a dictionary for quick lookups
             book_map = {book.Books.id: book for book in book_details}
 
@@ -1064,7 +1064,7 @@ def publisher_list():
                          .filter(calibre_db.common_filters())
                          .group_by(db.Publishers.id)
                          .order_by(order))
-        
+
         entries = entries_query.all()
 
         no_publisher_count = (calibre_db.session.query(func.count(db.Books.id))
@@ -1152,7 +1152,7 @@ def ratings_list():
                    .filter(db.Ratings.rating > 0)
                    .group_by(db.Ratings.id)
                    .order_by(order))
-        
+
         entries = entries_query.all()
 
         no_rating_count = (calibre_db.session.query(func.count(db.Books.id))
@@ -1168,7 +1168,7 @@ def ratings_list():
                 entries.insert(0, none_rating_entry)
             else: # descending
                 entries.append(none_rating_entry)
-        
+
         return render_title_template('list.html', entries=entries, folder='web.books_list',
                                      title=_("Ratings"), page="ratingslist", data="ratings", order=order_no)
     else:
@@ -1302,7 +1302,7 @@ def serve_book(book_id, book_format, anyname):
         try:
             headers = Headers()
             headers["Content-Type"] = mimetypes.types_map.get('.' + book_format, "application/octet-stream")
-            if not range_header:                
+            if not range_header:
                 log.info('Serving book: %s', data.name)
                 headers['Accept-Ranges'] = 'bytes'
             df = getFileFromEbooksFolder(book.path, data.name + "." + book_format)
@@ -1354,17 +1354,19 @@ def send_to_ereader(book_id, book_format, convert):
     if not config.get_mail_server_configured():
         response = [{'type': "danger", 'message': _("Please configure the SMTP mail settings first...")}]
         return Response(json.dumps(response), mimetype='application/json')
-    elif current_user.kindle_mail:
-        result = send_mail(book_id, book_format, convert, current_user.kindle_mail, config.get_book_path(),
-                           current_user.name)
-        if result is None:
-            ub.update_download(book_id, int(current_user.id))
-            response = [{'type': "success", 'message': _("Success! Book queued for sending to %(eReadermail)s",
-                                                       eReadermail=current_user.kindle_mail)}]
-        else:
-            response = [{'type': "danger", 'message': _("Oops! There was an error sending book: %(res)s", res=result)}]
-    else:
+
+    if not current_user.kindle_mail:
         response = [{'type': "danger", 'message': _("Oops! Please update your profile with a valid eReader Email.")}]
+        return Response(json.dumps(response), mimetype='application/json')
+
+    result = send_mail(book_id, book_format, convert, current_user.kindle_mail, config.get_book_path(),
+                       current_user.name, current_user.kindle_mail_subject)
+    if result is None:
+        ub.update_download(book_id, int(current_user.id))
+        response = [{'type': "success", 'message': _("Success! Book queued for sending to %(eReadermail)s",
+                                                   eReadermail=current_user.kindle_mail)}]
+    else:
+        response = [{'type': "danger", 'message': _("Oops! There was an error sending book: %(res)s", res=result)}]
     return Response(json.dumps(response), mimetype='application/json')
 
 
@@ -1384,8 +1386,7 @@ def send_to_selected_ereaders(book_id):
         response = [{'type': "danger", 'message': _("No email addresses selected")}]
         return Response(json.dumps(response), mimetype='application/json')
 
-    result = send_mail(book_id, book_format, int(convert), selected_emails, config.get_book_path(),
-                       current_user.name)
+    result = send_mail(book_id, book_format, int(convert), selected_emails, config.get_book_path(), current_user.name, current_user.kindle_mail_subject)
 
     if result is None:
         ub.update_download(book_id, int(current_user.id))
@@ -1480,10 +1481,10 @@ def handle_login_user(user, remember, message, category):
     login_user(user, remember=remember)
     flash(message, category=category)
     [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
-    
+
     # Clear login redirect count on successful login
     flask_session.pop('_login_redirect_count', None)
-    
+
     return redirect(get_redirect_location(request.form.get('next', None), "web.index"))
 
 
@@ -1496,11 +1497,11 @@ def render_login(username="", password=""):
         flash(_("Authentication loop detected. If you're experiencing login issues, please contact your administrator."), category="error")
     else:
         flask_session['_login_redirect_count'] = redirect_count + 1
-    
+
     next_url = request.args.get('next', default=url_for("web.index"), type=str)
     if url_for("web.logout") == next_url:
         next_url = url_for("web.index")
-    
+
     # Get generic OAuth login button text for display
     generic_login_button = None
     if feature_support['oauth']:
@@ -1513,7 +1514,7 @@ def render_login(username="", password=""):
         except (AttributeError, IndexError):
             # Silently fall back to default if oauthblueprints not available
             pass
-    
+
     return render_title_template('login.html',
                                  title=_("Login"),
                                  next_url=next_url,
@@ -1529,7 +1530,7 @@ def render_login(username="", password=""):
 def login():
     if current_user is not None and current_user.is_authenticated:
         return redirect(url_for('web.index'))
-    
+
     # Handle OAuth-only authentication mode
     if config.config_login_type == constants.LOGIN_OAUTH:
         # In OAuth-only mode, show OAuth options but still render login template
@@ -1538,7 +1539,7 @@ def login():
             log.error("OAuth authentication is enabled but OAuth support is not available")
             flash(_("OAuth authentication is not properly configured. Please contact administrator."), category="error")
         return render_login()
-    
+
     if config.config_login_type == constants.LOGIN_LDAP and not services.ldap:
         log.error(u"Cannot activate LDAP authentication")
         flash(_(u"Cannot activate LDAP authentication"), category="error")
@@ -1567,7 +1568,7 @@ def login_post():
         flash(_(u"Cannot activate LDAP authentication"), category="error")
     user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == username).first()
     remember_me = bool(form.get('remember_me'))
-    
+
     if config.config_login_type == constants.LOGIN_LDAP and services.ldap and form.get('password', '') != "":
         # Validate username before attempting LDAP authentication
         if not username or not username.strip():
@@ -1576,7 +1577,7 @@ def login_post():
         else:
             # Try LDAP authentication first, regardless of whether user exists locally
             login_result, error = services.ldap.bind_user(username, form['password'])
-            
+
             if login_result:
                 # LDAP authentication successful
                 if user:
@@ -1605,7 +1606,7 @@ def login_post():
                                                                  remember_me,
                                                                  _(u"Welcome! Your account has been automatically created. You are now logged in as: '%(nickname)s'", nickname=user.name),
                                                                  "success")
-                            
+
                             # If we get here, user creation failed
                             log.error("LDAP auto-creation failed for user '%s'", username)
                             flash(_(u"Authentication successful, but account creation failed. Please contact your administrator."), category="error")
@@ -1616,7 +1617,7 @@ def login_post():
                         # Auto-creation disabled
                         log.info("LDAP user '%s' authenticated but not found locally, auto-creation disabled", username)
                         flash(_(u"Authentication successful, but no local account found. Please contact your administrator to create your account."), category="error")
-                        
+
             elif login_result is None and user and check_password_hash(str(user.password), form['password']) \
                     and user.name != "Guest":
                 # LDAP unavailable, try local fallback
@@ -1674,10 +1675,10 @@ def logout():
             logout_oauth_user()
         ub.delete_user_session(current_user.id, flask_session.get('_id', ""))
         logout_user()
-    
+
     # Clear login redirect count on logout to prevent false positives
     flask_session.pop('_login_redirect_count', None)
-    
+
     log.debug("User logged out")
     if config.config_anonbrowse:
         location = get_redirect_location(request.args.get('next', None), "web.login")
@@ -1699,6 +1700,8 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                 current_user.password = generate_password_hash(valid_password(to_save.get("password")))
         if to_save.get("kindle_mail", current_user.kindle_mail) != current_user.kindle_mail:
             current_user.kindle_mail = valid_email(to_save.get("kindle_mail"))
+        if to_save.get("kindle_mail_subject", current_user.kindle_mail_subject) != current_user.kindle_mail_subject:
+            current_user.kindle_mail_subject = strip_whitespaces(to_save.get("kindle_mail_subject", "")) or ""
         new_email = valid_email(to_save.get("email", current_user.email))
         if not new_email:
             raise Exception(_("Email can't be empty and has to be a valid Email"))

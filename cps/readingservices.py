@@ -624,7 +624,8 @@ def handle_check_for_changes():
     Handle check for changes request.
     Proxies to Kobo's reading services.
     """
-    pass
+    # Proxy to Kobo reading services
+    return proxy_to_kobo_reading_services()
 
 
 @csrf.exempt

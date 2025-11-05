@@ -445,8 +445,7 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
                     result = hardcover_client.update_journal_entry(
                         journal_id=existing_sync.hardcover_journal_id,
                         note_text=note_text,
-                        highlighted_text=highlighted_text,
-                        highlight_color=highlight_color
+                        highlighted_text=highlighted_text
                     )
                 else:
                     result = hardcover_client.add_journal_entry(

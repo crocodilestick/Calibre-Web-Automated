@@ -304,7 +304,7 @@ class HardcoverClient:
             return None
 
 
-    def update_journal_entry(self, journal_id: int, note_text: str | None = None, highlighted_text: str | None = None, highlight_color: str | None = None):
+    def update_journal_entry(self, journal_id: int, note_text: str | None = None, highlighted_text: str | None = None):
         """
         Update a journal entry (reading note) in Hardcover.
         
@@ -312,10 +312,71 @@ class HardcoverClient:
             journal_id: The ID of the journal entry to update
             note_text: The note text to update
             highlighted_text: The highlighted text to update
-            highlight_color: The highlight color to update
         """
-        # TODO: Implement update_journal_entry mutation
-        raise NotImplementedError("Updating is not implemented yet")
+        # Combine highlighted text and note
+        # Escape markdown special characters to prevent injection
+        journal_text = ""
+        if highlighted_text:
+            escaped_highlight = escape_markdown(highlighted_text)
+            if note_text:
+                escaped_note = escape_markdown(note_text)
+                journal_text = f'> {escaped_highlight}' + '\n\n -- ' + escaped_note
+            else:
+                journal_text = f'> {escaped_highlight}'
+        elif note_text:
+            # This shouldn't happen but just in case
+            journal_text = escape_markdown(note_text)
+        else:
+            log.warning("No text provided for journal entry")
+            return None
+        mutation = """
+            mutation ($journalId: Int!, $entry: String!, $event: String!) {
+                update_reading_journal(id: $journalId, object: {
+                    entry: $entry,
+                    event: $event,
+                }) {
+                    errors
+                    id
+                }
+            }"""
+        variables = {
+            "journalId": journal_id,
+            "entry": journal_text,
+            # quote or note in Hardcover, 
+            "event": "note" if note_text else "quote",
+        }
+        try:
+            response = self.execute(query=mutation, variables=variables)
+            
+            if not response:
+                log.error("Empty response from Hardcover API")
+                return None
+            
+            errors = response.get("update_reading_journal", {}).get("errors")
+            if errors:
+                log.error(f"Hardcover journal entry errors: {errors}")
+                return None
+            
+            journal_entry = response.get("update_reading_journal", {}).get("reading_journal")
+            if not journal_entry:
+                log.error("No journal entry returned in response")
+                return None
+
+            return journal_entry
+        except requests.exceptions.Timeout as e:
+            log.error(f"Timeout syncing to Hardcover: {e}")
+            return None
+        except requests.exceptions.RequestException as e:
+            log.error(f"Network error syncing to Hardcover: {e}")
+            return None
+        except (KeyError, AttributeError) as e:
+            log.error(f"Malformed Hardcover API response: {e}")
+            return None
+        except Exception as e:
+            log.error(f"Unexpected error adding journal entry: {e}")
+            import traceback
+            log.error(traceback.format_exc())
+            return None
 
     def delete_journal_entry(self, journal_id: int):
         mutation = """

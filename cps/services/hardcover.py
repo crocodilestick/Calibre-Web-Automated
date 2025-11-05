@@ -320,6 +320,17 @@ class HardcoverClient:
         """
         raise NotImplementedError("Updating is not implemented yet")
 
+    def delete_journal_entry(self, journal_id: int):
+        mutation = """
+            mutation ($journal_id: Int!) {
+                delete_reading_journal(id: $journal_id) {
+                    id
+                }
+            }"""
+        variables = {"journal_id": journal_id}
+        response = self.execute(query=mutation, variables=variables)
+        return response.get("delete_reading_journal", {}).get("id")
+
     def add_book(self, identifiers, status=1):
         ids = self.parse_identifiers(identifiers)
         mutation = (

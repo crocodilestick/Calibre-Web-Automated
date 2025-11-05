@@ -543,7 +543,7 @@ def handle_annotations(entitlement_id):
         try:
             response = proxy_to_kobo_reading_services()
 
-            # TODO: Process the response and update the database with the annotations
+            # TODO: Process the GET response and update the database with the annotations (if missing)
 
             response_headers = response.headers
             for header_key in CONNECTION_SPECIFIC_HEADERS:
@@ -577,11 +577,15 @@ def handle_annotations(entitlement_id):
                             ub.KoboAnnotationSync.annotation_id == annotation_id,
                             ub.KoboAnnotationSync.user_id == current_user.id
                         ).first()
-                        if sync_record and sync_record.synced_to_hardcover:
-                            # TODO: Add hardcover.delete_journal_entry() method to handle deletion of journal entries
-                            sync_record.synced_to_hardcover = False
-                            ub.session_commit()
-                            log.info(f"Marked annotation {annotation_id} as deleted (sync cleared)")
+                        if sync_record:
+                            hardcover_client = hardcover.HardcoverClient(current_user.hardcover_token)
+                            if hardcover_client.delete_journal_entry(journal_id=sync_record.hardcover_journal_id) == sync_record.hardcover_journal_id:
+                                ub.session.delete(sync_record)
+                                ub.session_commit()
+                            else:
+                                log.warning(f"Failed to delete journal entry {sync_record.hardcover_journal_id} from Hardcover")
+                        else:
+                            log.warning(f"Sync record not found for annotation {annotation_id}, skipping deletion")
             
                 # Extract updated annotations
                 if data and "updatedAnnotations" in data:
@@ -599,7 +603,12 @@ def handle_annotations(entitlement_id):
                         existing_syncs = {s.annotation_id: s for s in syncs}
                     
                     for annotation in annotations:
-                        process_annotation_for_sync(annotation, book, identifiers, existing_syncs=existing_syncs)
+                        process_annotation_for_sync(
+                            annotation=annotation, 
+                            book=book, 
+                            identifiers=identifiers, 
+                            existing_syncs=existing_syncs
+                        )
 
         except Exception as e:
             log.error(f"Error processing PATCH annotations: {e}")

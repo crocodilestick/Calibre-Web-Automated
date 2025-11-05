@@ -271,10 +271,7 @@ class HardcoverClient:
         }
         
         try:
-            log.debug(f"Hardcover journal mutation: {mutation}")
-            log.debug(f"Hardcover journal variables: {variables}")
             response = self.execute(query=mutation, variables=variables)
-            log.debug(f"Hardcover journal response: {response}")
             
             if not response:
                 log.error("Empty response from Hardcover API")
@@ -289,8 +286,7 @@ class HardcoverClient:
             if not journal_entry:
                 log.error("No journal entry returned in response")
                 return None
-            
-            log.info(f"Successfully added journal entry to Hardcover for book {book.get('id')}")
+
             return journal_entry
         except requests.exceptions.Timeout as e:
             log.error(f"Timeout syncing to Hardcover: {e}")

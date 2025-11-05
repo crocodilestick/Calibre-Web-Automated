@@ -45,6 +45,13 @@ CONNECTION_SPECIFIC_HEADERS = [
     "transfer-encoding",
 ]
 
+def redact_headers(headers):
+    """Redact sensitive headers from the headers dictionary."""
+    for sensitive_header in ['Authorization', 'x-kobo-userkey', 'Cookie', 'Set-Cookie']:
+        if sensitive_header in headers:
+            headers[sensitive_header] = '***REDACTED***'
+    return headers
+
 
 def proxy_to_kobo_reading_services():
     """Proxy the request to Kobo's reading services API."""
@@ -61,38 +68,19 @@ def proxy_to_kobo_reading_services():
         # Remove CWA session cookie - Kobo doesn't need it and it causes issues
         outgoing_headers.pop("Cookie", None)
         
-        # Redact sensitive headers before logging
-        safe_headers = dict(outgoing_headers)
-        for sensitive_header in ['Authorization', 'x-kobo-userkey', 'Cookie']:
-            if sensitive_header in safe_headers:
-                safe_headers[sensitive_header] = '***REDACTED***'
-        log.debug(f"Outgoing headers: {safe_headers}")
-        
-        request_data = request.get_data()
-        if request_data:
-            log.debug(f"Request body length: {len(request_data)}")
-            try:
-                log.debug(f"Request body (JSON): {json.loads(request_data)}")
-            except:
-                log.debug(f"Request body (raw): {request_data[:500]}")
-        
         readingservices_response = requests.request(
             method=request.method,
             url=kobo_url,
             headers=outgoing_headers,
-            data=request_data,
+            data=request.get_data(),
             allow_redirects=False,
             timeout=(2, 10)
         )
         
-        log.debug(f"Kobo Reading Services response status code: {readingservices_response.status_code}")
-        log.debug(f"Kobo Reading Services response headers: {dict(readingservices_response.headers)}")
-        log.debug(f"Kobo Reading Services response body: {readingservices_response.text[:5000]}")
-        
         if readingservices_response.status_code >= 400:
             log.warning(f"Kobo Reading Services error {readingservices_response.status_code}")
             log.warning(f"Response body: {readingservices_response.text[:5000]}")
-            log.warning(f"Response headers: {dict(readingservices_response.headers)}")
+            log.warning(f"Response headers: {redact_headers(dict(readingservices_response.headers))}")
         
         response_headers = readingservices_response.headers
         for header_key in CONNECTION_SPECIFIC_HEADERS:
@@ -168,31 +156,27 @@ def get_book_identifiers(book):
 
 def log_annotation_data(entitlement_id, method, data=None):
     """Log annotation data and link to book identifiers."""
-    log.info("=" * 80)
-    log.info(f"ANNOTATION {method}")
-    log.info("=" * 80)
-    log.info(f"Entitlement ID: {entitlement_id}")
-    log.info(f"User: {current_user.name}")
+    log.debug(f"ANNOTATION {method}")
+    log.debug(f"Entitlement ID: {entitlement_id}")
+    log.debug(f"User: {current_user.name}")
     
     # Try to link to book
     book = get_book_by_entitlement_id(entitlement_id)
     if book:
-        log.info(f"Book: {book.title}")
-        log.info(f"Book ID: {book.id}")
+        log.debug(f"Book: {book.title}")
+        log.debug(f"Book ID: {book.id}")
         
         # Log identifiers
         if book.identifiers:
-            log.info("Identifiers:")
+            log.debug("Identifiers:")
             for identifier in book.identifiers:
-                log.info(f"  {identifier.type}: {identifier.val}")
+                log.debug(f"  {identifier.type}: {identifier.val}")
     else:
         log.warning(f"Could not find book for entitlement ID: {entitlement_id}")
     
     if data:
-        log.info("Annotation Data:")
-        log.info(json.dumps(data, indent=2))
-    
-    log.info("=" * 80)
+        log.debug("Annotation Data:")
+        log.debug(json.dumps(data, indent=2))
 
 
 def calculate_progress_from_epub(book: db.Books, chapter_filename: str, chapter_progress: float):
@@ -241,8 +225,6 @@ def calculate_progress_from_epub(book: db.Books, chapter_filename: str, chapter_
     if not book_data:
         log.warning("No KEPUB/EPUB data found for book, skipping progress calculation")
         return None
-    
-    log.debug(f"Using book data: {book_data.name} ({book_data})")
 
     try:
         # Get the file path to the epub/kepub
@@ -297,9 +279,7 @@ def calculate_progress_from_epub(book: db.Books, chapter_filename: str, chapter_
             if not spine_items:
                 log.warning("No spine items found in epub")
                 return None
-            
-            log.debug(f"Found {len(spine_items)} spine items in epub")
-            
+
             # Normalize the chapter filename for comparison
             normalized_chapter = chapter_filename.replace('\\', '/')
             
@@ -351,13 +331,7 @@ def calculate_progress_from_epub(book: db.Books, chapter_filename: str, chapter_
             # Calculate percentage
             progress_percent = (chars_read / total_chars) * 100
             
-            log.info("Calculated exact progress from epub:")
-            log.info(f"  Total chapters: {len(spine_items)}")
-            log.info(f"  Target chapter index: {target_chapter_index}")
-            log.info(f"  Chapter length: {chars_in_chapter} chars")
-            log.info(f"  Total book length: {total_chars} chars")
-            log.info(f"  Progress: {progress_percent:.2f}%")
-            
+            log.debug(f"Calculated exact progress from epub: chapters({len(spine_items)}) target_chapter_index({target_chapter_index}) chapter_length({chars_in_chapter}) total_chars({total_chars}) progress_percent({progress_percent:.2f}%)")
             return progress_percent
             
     except Exception as e:
@@ -468,7 +442,6 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
                 result = None
                 if existing_sync and existing_sync.synced_to_hardcover:
                     # existing but not the same as the previous entry so update it
-                    log.info(f"Updating existing journal entry {existing_sync.id} with new annotation data")
                     result = hardcover_client.update_journal_entry(
                         journal_id=existing_sync.hardcover_journal_id,
                         note_text=note_text,
@@ -605,6 +578,7 @@ def handle_annotations(entitlement_id):
                             if hardcover_client.delete_journal_entry(journal_id=sync_record.hardcover_journal_id) == sync_record.hardcover_journal_id:
                                 ub.session.delete(sync_record)
                                 ub.session_commit()
+                                log.info(f"Successfully deleted journal entry {sync_record.hardcover_journal_id} from Hardcover")
                             else:
                                 log.warning(f"Failed to delete journal entry {sync_record.hardcover_journal_id} from Hardcover")
                         else:
@@ -661,8 +635,6 @@ def handle_user_storage(subpath):
     Handle UserStorage API requests (e.g., /api/UserStorage/Metadata).
     Proxies to Kobo's reading services.
     """
-    log.debug(f"UserStorage request: {request.method} /api/UserStorage/{subpath}")
-    log.debug(f"Full path: {request.full_path}")
     
     # Proxy to Kobo reading services
     return proxy_to_kobo_reading_services()

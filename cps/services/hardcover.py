@@ -67,6 +67,11 @@ class HardcoverClient:
         return (response.get("me")[0] or [{}]).get("account_privacy_setting_id", 1)
 
     def get_user_book(self, ids):
+        ids = self.parse_identifiers(ids)
+        # Return None if no hardcover identifiers present
+        if not ids or not any(key in ids for key in ["hardcover-edition", "hardcover-id", "hardcover-slug"]):
+            return None
+        
         query = ""
         variables = {}
         if "hardcover-edition" in ids:
@@ -91,7 +96,7 @@ class HardcoverClient:
             variables["query"] = ids["hardcover-id"]
         elif "hardcover-slug" in ids:
             query = """
-                query ($slug: String!) {
+                query ($query: String!) {
                     me {
                         user_books(where: {book: {slug: {_eq: $query}}}) {
                             ...userBookFragment
@@ -391,6 +396,10 @@ class HardcoverClient:
 
     def add_book(self, identifiers, status=1):
         ids = self.parse_identifiers(identifiers)
+        # Return None if no hardcover-id present (required for adding book)
+        if not ids or "hardcover-id" not in ids:
+            return None
+        
         mutation = (
             """     
             mutation ($object: UserBookCreateInput!) {

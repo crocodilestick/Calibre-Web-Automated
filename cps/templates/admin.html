@@ -14,6 +14,7 @@
               <th>{{_('Username')}}</th>
               <th>{{_('Email')}}</th>
               <th>{{_('Send to eReader Email')}}</th>
+              <th>{{_('Send to eReader Subject')}}</th>
               <th>{{_('Downloads')}}</th>
               <th class="hidden-xs ">{{_('Admin')}}</th>
               <th class="hidden-xs hidden-sm">{{_('Password')}}</th>
@@ -32,6 +33,7 @@
               <td><a class="session" href="{{url_for('admin.edit_user', user_id=user.id)}}">{{user.name}}</a></td>
               <td>{{user.email}}</td>
               <td>{{user.kindle_mail}}</td>
+              <td>{{user.kindle_mail_subject}}</td>
               <td>{{user.downloads.count()}}</td>
               <td class="hidden-xs">{{ display_bool_setting(user.role_admin()) }}</td>
               <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_passwd()) }}</td>

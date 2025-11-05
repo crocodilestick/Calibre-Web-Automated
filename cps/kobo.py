@@ -150,9 +150,9 @@ def HandleSyncRequest():
 
     new_archived_last_modified = datetime.min
     sync_results = []
-    
+
     calibre_db.reconnect_db(config, ub.app_DB_path)
-    
+
 
     # Two-Way-Sync Deletion Logic
     if current_user.kobo_only_shelves_sync:

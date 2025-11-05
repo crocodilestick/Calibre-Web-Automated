@@ -28,6 +28,10 @@
       <label for="kindle_mail">{{_('Send to eReader Email Address. Use comma to separate emails for multiple eReaders')}}</label>
       <input type="email" class="form-control" name="kindle_mail" id="kindle_mail" value="{{ content.kindle_mail if content.kindle_mail != None }}">
     </div>
+    <div class="form-group">
+      <label for="kindle_mail_subject">{{_('Send to eReader Subject')}}</label>
+      <input type="email" class="form-control" name="kindle_mail_subject" id="kindle_mail_subject" value="{{ content.kindle_mail_subject if content.kindle_mail_subject != None }}">
+    </div>
     {% if not content.role_anonymous() %}
     <div class="form-group">
       <input type="checkbox" id="auto_send_enabled" name="auto_send_enabled" {% if content.auto_send_enabled %}checked{% endif %}>

@@ -134,6 +134,7 @@
             {{ user_table_row('name', _('Enter Username'), _('Username'), true) }}
             {{ user_table_row('email', _('Enter Email'), _('Email'), true) }}
             {{ user_table_row('kindle_mail', _('Enter eReader Email'), _('eReader Email'), false) }}
+            {{ user_table_row('kindle_mail_subject', _('Enter eReader Email Subject'), _('eReader Email Subject'), false) }}
             {{ user_select_translations('locale', url_for('admin.table_get_locale'), _('Locale'), true) }}
             {{ user_select_languages('default_language', url_for('admin.table_get_default_lang'), _('Visible Book Languages'), true) }}
             {{ user_table_row('allowed_tags', _("Edit Allowed Tags"), _("Allowed Tags"), false, tags) }}

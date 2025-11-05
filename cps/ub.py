@@ -233,6 +233,7 @@ class User(UserBase, Base):
     role = Column(SmallInteger, default=constants.ROLE_USER)
     password = Column(String)
     kindle_mail = Column(String(120), default="")
+    kindle_mail_subject = Column(String(256), default="", doc="Subject line for eReader email sending, empty=default")
     shelf = relationship('Shelf', backref='user', lazy='dynamic', order_by='Shelf.name')
     downloads = relationship('Downloads', backref='user', lazy='dynamic')
     locale = Column(String(2), default="en")
@@ -290,6 +291,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.allowed_tags = None
         self.denied_tags = None
         self.kindle_mail = None
+        self.kindle_mail_subject = None
         self.locale = None
         self.default_language = None
         self.sidebar_view = None
@@ -309,6 +311,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.default_language = data.default_language
         self.locale = data.locale
         self.kindle_mail = data.kindle_mail
+        self.kindle_mail_subject = data.kindle_mail_subject
         self.denied_tags = data.denied_tags
         self.allowed_tags = data.allowed_tags
         self.denied_column_value = data.denied_column_value
@@ -674,7 +677,7 @@ def migrate_user_table(engine, _session):
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
             trans.commit()
-    
+
     # Migration for auto-send feature columns
     try:
         _session.query(exists().where(User.auto_send_enabled)).scalar()
@@ -684,19 +687,29 @@ def migrate_user_table(engine, _session):
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
             trans.commit()
-    
+
+    # Migration to add per-user email subject for Kindle sending
+    try:
+        _session.query(exists().where(User.kindle_mail_subject)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''"))
+            trans.commit()
+
     # Migration to enable duplicates sidebar for existing admin users
     try:
         from . import constants
         SIDEBAR_DUPLICATES = constants.SIDEBAR_DUPLICATES
-        
+
         # Check if any admin users don't have duplicates enabled
         admin_users = _session.query(User).filter(User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN).all()
         for user in admin_users:
             if not (user.sidebar_view & SIDEBAR_DUPLICATES):
                 user.sidebar_view |= SIDEBAR_DUPLICATES
                 print(f"[Migration] Enabled duplicates sidebar for admin user: {user.name}")
-        
+
         _session.commit()
     except Exception as e:
         print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
@@ -715,7 +728,7 @@ def migrate_oauth_provider_table(engine, _session):
             conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL"))
             conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL"))
             trans.commit()
-    
+
     # Add new OAuth enhancement fields
     try:
         _session.query(exists().where(OAuthProvider.metadata_url)).scalar()
@@ -736,7 +749,7 @@ def migrate_config_table(engine, _session):
     if not engine or not _session:
         logger.get_logger("cps.ub").error("Cannot migrate config table: missing engine or session")
         return
-        
+
     # Add OAuth redirect host configuration
     try:
         # Test if the new column exists
@@ -752,7 +765,7 @@ def migrate_config_table(engine, _session):
             logger.get_logger("cps.ub").error("Failed to add config_oauth_redirect_host column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
-    
+
     # Add reverse proxy auto-create users configuration
     try:
         # Test if the new column exists
@@ -768,7 +781,7 @@ def migrate_config_table(engine, _session):
             logger.get_logger("cps.ub").error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
-    
+
     # Add LDAP auto-create users configuration
     try:
         # Test if the new column exists

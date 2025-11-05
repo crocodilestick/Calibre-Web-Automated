@@ -318,6 +318,7 @@ class HardcoverClient:
             highlighted_text: The highlighted text to update
             highlight_color: The highlight color to update
         """
+        # TODO: Implement update_journal_entry mutation
         raise NotImplementedError("Updating is not implemented yet")
 
     def delete_journal_entry(self, journal_id: int):

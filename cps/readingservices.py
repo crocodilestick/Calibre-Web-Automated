@@ -538,17 +538,40 @@ def handle_annotations(entitlement_id):
     PATCH: Update/create annotations
     """
     if request.method == "GET":
-        log.info(f"GET annotations for entitlement: {entitlement_id}")
-        log_annotation_data(entitlement_id, "GET")
         try:
-            response = proxy_to_kobo_reading_services()
+            data = request.get_json()
+            log_annotation_data(entitlement_id, "GET")
 
-            # TODO: Process the GET response and update the database with the annotations (if missing)
+            # Get book from database
+            book = get_book_by_entitlement_id(entitlement_id)
+            if not book:
+                log.warning(f"Book not found for entitlement {entitlement_id}, skipping Hardcover sync")
 
-            response_headers = response.headers
-            for header_key in CONNECTION_SPECIFIC_HEADERS:
-                response_headers.remove(header_key)
-            return make_response(response.content, response.status_code, response_headers.items())
+            else:
+                identifiers = get_book_identifiers(book)
+
+                # Extract annotations
+                if data and "annotations" in data:
+                    annotations = data['annotations']
+                    log.info(f"Processing {len(annotations)} annotations")
+                
+                    # Batch load existing sync records to avoid N+1 queries
+                    existing_syncs = {}
+                    annotation_ids = [a.get('id') for a in annotations if a.get('id')]
+                    if annotation_ids:
+                        syncs = ub.session.query(ub.KoboAnnotationSync).filter(
+                            ub.KoboAnnotationSync.annotation_id.in_(annotation_ids),
+                            ub.KoboAnnotationSync.user_id == current_user.id
+                        ).all()
+                        existing_syncs = {s.annotation_id: s for s in syncs}
+                    
+                    for annotation in annotations:
+                        process_annotation_for_sync(
+                            annotation=annotation, 
+                            book=book, 
+                            identifiers=identifiers, 
+                            existing_syncs=existing_syncs
+                        )
         except requests.exceptions.RequestException as e:
             log.error(f"Failed to proxy GET annotations to Kobo Reading Services: {e}")
             return make_response(jsonify({"error": "Failed to proxy request"}), 502)

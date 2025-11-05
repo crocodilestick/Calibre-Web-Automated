@@ -87,8 +87,12 @@ def add_to_shelf(shelf_id, book_id):
             return redirect(url_for('web.index'))
     if shelf.kobo_sync and config.config_hardcover_sync and bool(hardcover):
         hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
-        # TODO: check if book is already in Hardcover and maintain the status if so.
-        hardcoverClient.add_book(book.identifiers)
+        # Will add the book to Hardcover if it doesn't exist,
+        # and leave it alone otherwise 
+        # (updating status is handled in update_reading_progress 
+        # and the book may be blacklisted from syncing)
+        if not hardcoverClient.get_user_book(book.identifiers):
+            hardcoverClient.add_book(book.identifiers)
     return "", 204
 
 

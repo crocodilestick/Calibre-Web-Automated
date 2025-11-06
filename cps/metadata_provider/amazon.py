@@ -112,7 +112,7 @@ class Amazon(Metadata):
                 except (AttributeError, ValueError, TypeError):
                     match.rating = 0
                 try:
-                    asin = soup2.find("input", attrs={"type": "hidden", "name": "asin"})["value"]
+                    asin = soup2.find("input", attrs={"type": "hidden", "name": lambda x: x and x.lower()=="asin"})["value"]
                     match.identifiers = {"amazon": asin, "mobi-asin": asin}
                 except (AttributeError, TypeError):
                     match.identifiers = {}
@@ -163,9 +163,10 @@ class Amazon(Metadata):
         if self.active:
             q = {
                 'unfiltered': '1',
-                's': 'relevanceexprank',
+                'sort': 'relevanceexprank',
+                'search-alias': 'stripbooks',
                 'i': 'digital-text',
-                'k': query,
+                'field-keywords': query,
             }
 
             try:

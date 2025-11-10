@@ -475,7 +475,7 @@ def get_progress(document: str):
         {
             "document": "abc123...",
             "progress": "location string",
-            "percentage": 45.67,
+            "percentage": 0.4567,  # Decimal fraction (0.4567 = 45.67%)
             "device": "KOReader",
             "device_id": "device123",
             "timestamp": 1699564800,
@@ -484,6 +484,10 @@ def get_progress(document: str):
             "calibre_book_format": "EPUB",  # Optional
             "calibre_checksum_version": "koreader"  # Optional
         }
+
+    Note:
+        Percentage is returned as decimal (0.4567 = 45.67%) as expected by KOReader.
+        Internally stored as percentage (0-100) in database.
     """
     try:
         user = authenticate_user()
@@ -503,10 +507,14 @@ def get_progress(document: str):
             log.debug(f"No progress found for user {user.id}, document {document}")
             return create_sync_response({})
 
+        # KOReader expects percentage as a decimal fraction (0.9411 = 94.11%)
+        # We store it as percentage (0-100), so convert back to decimal (0-1)
+        percentage_decimal = progress_record.percentage / 100.0
+
         response_data = {
             "document": document,
             "progress": progress_record.progress,
-            "percentage": progress_record.percentage,
+            "percentage": percentage_decimal,
             "device": progress_record.device,
             "device_id": progress_record.device_id,
             "timestamp": int(progress_record.timestamp.timestamp())

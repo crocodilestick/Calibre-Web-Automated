@@ -35,7 +35,7 @@ class TestUpdateBookReadStatusThresholds:
         payload = {
             'document': 'test-doc-99pct',
             'progress': '0.99',
-            'percentage': 99.0,
+            'percentage': 0.99,  # KOReader sends as decimal (0.99 = 99%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -56,7 +56,7 @@ class TestUpdateBookReadStatusThresholds:
         payload = {
             'document': 'test-doc-100pct',
             'progress': '1.0',
-            'percentage': 100.0,
+            'percentage': 1.0,  # KOReader sends as decimal (1.0 = 100%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -75,7 +75,7 @@ class TestUpdateBookReadStatusThresholds:
         payload = {
             'document': 'test-doc-50pct',
             'progress': '0.5',
-            'percentage': 50.0,
+            'percentage': 0.50,  # KOReader sends as decimal (0.50 = 50%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -94,7 +94,7 @@ class TestUpdateBookReadStatusThresholds:
         payload = {
             'document': 'test-doc-1pct',
             'progress': '0.01',
-            'percentage': 1.0,
+            'percentage': 0.01,  # KOReader sends as decimal (0.01 = 1%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -113,7 +113,7 @@ class TestUpdateBookReadStatusThresholds:
         payload = {
             'document': 'test-doc-98pct',
             'progress': '0.989',
-            'percentage': 98.9,
+            'percentage': 0.989,  # KOReader sends as decimal (0.989 = 98.9%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -158,7 +158,7 @@ class TestUpdateBookReadStatusRecordManagement:
         payload = {
             'document': unique_doc,
             'progress': '0.25',
-            'percentage': 25.0,
+            'percentage': 0.25,  # KOReader sends as decimal (0.25 = 25%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -169,12 +169,12 @@ class TestUpdateBookReadStatusRecordManagement:
 
         assert response.status_code == 200
 
-        # Verify we can retrieve it
+        # Verify we can retrieve it (should return as decimal)
         response = cwa_api_client.get(f'/kosync/syncs/progress/{unique_doc}',
                                        headers=headers)
         assert response.status_code == 200
         data = response.json()
-        assert float(data['percentage']) == 25.0
+        assert float(data['percentage']) == 0.25  # Returns as decimal
 
     def test_updates_existing_record(self, cwa_api_client):
         """Subsequent syncs update the existing record"""
@@ -187,7 +187,7 @@ class TestUpdateBookReadStatusRecordManagement:
         payload = {
             'document': doc_id,
             'progress': '0.3',
-            'percentage': 30.0,
+            'percentage': 0.30,  # KOReader sends as decimal (0.30 = 30%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -198,18 +198,18 @@ class TestUpdateBookReadStatusRecordManagement:
 
         # Second sync with updated progress
         payload['progress'] = '0.6'
-        payload['percentage'] = 60.0
+        payload['percentage'] = 0.60  # KOReader sends as decimal (0.60 = 60%)
         response = cwa_api_client.put('/kosync/syncs/progress',
                                        json=payload,
                                        headers=headers)
         assert response.status_code == 200
 
-        # Verify updated value
+        # Verify updated value (should return as decimal)
         response = cwa_api_client.get(f'/kosync/syncs/progress/{doc_id}',
                                        headers=headers)
         assert response.status_code == 200
         data = response.json()
-        assert float(data['percentage']) == 60.0
+        assert float(data['percentage']) == 0.60  # Returns as decimal
 
 
 @pytest.mark.docker_integration
@@ -225,7 +225,7 @@ class TestUpdateBookReadStatusEdgeCases:
         payload = {
             'document': 'test-doc-decimal',
             'progress': '0.4567',
-            'percentage': 45.67,
+            'percentage': 0.4567,  # KOReader sends as decimal (0.4567 = 45.67%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -244,7 +244,7 @@ class TestUpdateBookReadStatusEdgeCases:
         payload = {
             'document': 'test-doc-boundary-99',
             'progress': '0.99',
-            'percentage': 99.0,
+            'percentage': 0.99,  # KOReader sends as decimal (0.99 = 99%)
             'device': 'pytest',
             'device_id': 'test-device'
         }
@@ -263,7 +263,7 @@ class TestUpdateBookReadStatusEdgeCases:
         payload = {
             'document': 'test-doc-boundary-989',
             'progress': '0.989',
-            'percentage': 98.9,
+            'percentage': 0.989,  # KOReader sends as decimal (0.989 = 98.9%)
             'device': 'pytest',
             'device_id': 'test-device'
         }

@@ -37,6 +37,16 @@ USER_BOOK_FRAGMENT = """
     }"""
 
 
+def escape_markdown(text):
+    """Escape markdown special characters to prevent injection."""
+    if not text:
+        return text
+    special_chars = ['\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '#', '+', '-', '.', '!', '|']
+    for char in special_chars:
+        text = text.replace(char, '\\' + char)
+    return text
+
+
 class HardcoverClient:
     def __init__(self, token):
         self.endpoint = GRAPHQL_ENDPOINT
@@ -57,6 +67,11 @@ class HardcoverClient:
         return (response.get("me")[0] or [{}]).get("account_privacy_setting_id", 1)
 
     def get_user_book(self, ids):
+        ids = self.parse_identifiers(ids)
+        # Return None if no hardcover identifiers present
+        if not ids or not any(key in ids for key in ["hardcover-edition", "hardcover-id", "hardcover-slug"]):
+            return None
+        
         query = ""
         variables = {}
         if "hardcover-edition" in ids:
@@ -81,7 +96,7 @@ class HardcoverClient:
             variables["query"] = ids["hardcover-id"]
         elif "hardcover-slug" in ids:
             query = """
-                query ($slug: String!) {
+                query ($query: String!) {
                     me {
                         user_books(where: {book: {slug: {_eq: $query}}}) {
                             ...userBookFragment
@@ -164,8 +179,227 @@ class HardcoverClient:
         response = self.execute(query=mutation, variables=variables)
         return response.get("update_user_book", {}).get("user_book", {})
 
+
+    def add_journal_entry(self, identifiers, note_text, progress_percent=None, progress_page=None, highlighted_text=None):
+        """
+        Add a journal entry (reading note) to Hardcover.
+        
+        Args:
+            identifiers: Book identifiers (hardcover-id, hardcover-edition, isbn)
+            note_text: The note text to add
+            progress_percent: Optional reading progress (0-100)
+            highlighted_text: Optional highlighted quote
+        
+        Returns:
+            Response from Hardcover API or None if failed
+        """
+        ids = self.parse_identifiers(identifiers)
+        if len(ids) == 0:
+            log.warning("No valid Hardcover identifiers found")
+            return None
+        
+        book = self.get_user_book(ids)
+        if not book:
+            log.warning("Book not found on Hardcover, cannot add journal entry")
+            return None
+        
+        user_book_id = book.get("book_id")
+        if not user_book_id:
+            log.warning("No user_book_id found")
+            return None
+        
+        # Combine highlighted text and note
+        # Escape markdown special characters to prevent injection
+        journal_text = ""
+        if highlighted_text:
+            escaped_highlight = escape_markdown(highlighted_text)
+            if note_text:
+                escaped_note = escape_markdown(note_text)
+                journal_text = f'> {escaped_highlight}' + '\n\n -- ' + escaped_note
+            else:
+                journal_text = f'> {escaped_highlight}'
+        elif note_text:
+            # This shouldn't happen but just in case
+            journal_text = escape_markdown(note_text)
+        else:
+            log.warning("No text provided for journal entry")
+            return None
+        
+        # Calculate page number and prepare metadata if progress is provided
+        metadata = {}
+        if progress_percent is not None or progress_page is not None:
+            pages = book.get("edition", {}).get("pages", 0)
+            page_number = progress_page if progress_page else round(pages * (progress_percent / 100))
+            page_percent = round ((page_number / pages) * 100, 2) if pages else None
+            percent = round(progress_percent, 2) if progress_percent is not None else page_percent
+            # Match Hardcover's web UI metadata structure
+            metadata["position"] = {
+                "type": "pages",
+                "value": page_number,
+                "percent": percent,
+                "possible": pages
+            }
+            log.info(f"Calculated page {page_number} from {progress_percent:.1f}% of {pages} pages")
+        
+        mutation = """
+            mutation ($bookId: Int!, $entry: String!, $event: String!, $privacySettingId: Int!, $editionId: Int, $actionAt: date, $tags: [BasicTag]!, $metadata: jsonb) {
+                insert_reading_journal(object: {
+                    book_id: $bookId,
+                    entry: $entry,
+                    event: $event,
+                    privacy_setting_id: $privacySettingId,
+                    edition_id: $editionId,
+                    action_at: $actionAt,
+                    tags: $tags,
+                    metadata: $metadata
+                }) {
+                    errors
+                    id
+                    reading_journal {
+                        id
+                        entry
+                    }
+                }
+            }"""
+        variables = {
+            "bookId": int(book.get("book_id")),
+            "entry": journal_text,
+            # quote or note in Hardcover, 
+            "event": "note" if note_text else "quote",
+            "privacySettingId": self.privacy,
+            "editionId": int(book.get("edition", {}).get("id")) if book.get("edition") else None,
+            "tags": [
+                {"tag": "CWA", "category": "general", "spoiler": False},
+                {"tag": "Kobo", "category": "general", "spoiler": False}
+            ],
+            "metadata": metadata if metadata else None
+        }
+        
+        try:
+            response = self.execute(query=mutation, variables=variables)
+            
+            if not response:
+                log.error("Empty response from Hardcover API")
+                return None
+            
+            errors = response.get("insert_reading_journal", {}).get("errors")
+            if errors:
+                log.error(f"Hardcover journal entry errors: {errors}")
+                return None
+            
+            journal_entry = response.get("insert_reading_journal", {}).get("reading_journal")
+            if not journal_entry:
+                log.error("No journal entry returned in response")
+                return None
+
+            return journal_entry
+        except requests.exceptions.Timeout as e:
+            log.error(f"Timeout syncing to Hardcover: {e}")
+            return None
+        except requests.exceptions.RequestException as e:
+            log.error(f"Network error syncing to Hardcover: {e}")
+            return None
+        except (KeyError, AttributeError) as e:
+            log.error(f"Malformed Hardcover API response: {e}")
+            return None
+        except Exception as e:
+            log.error(f"Unexpected error adding journal entry: {e}")
+            import traceback
+            log.error(traceback.format_exc())
+            return None
+
+
+    def update_journal_entry(self, journal_id: int, note_text: str | None = None, highlighted_text: str | None = None):
+        """
+        Update a journal entry (reading note) in Hardcover.
+        
+        Args:
+            journal_id: The ID of the journal entry to update
+            note_text: The note text to update
+            highlighted_text: The highlighted text to update
+        """
+        # Combine highlighted text and note
+        # Escape markdown special characters to prevent injection
+        journal_text = ""
+        if highlighted_text:
+            escaped_highlight = escape_markdown(highlighted_text)
+            if note_text:
+                escaped_note = escape_markdown(note_text)
+                journal_text = f'> {escaped_highlight}' + '\n\n -- ' + escaped_note
+            else:
+                journal_text = f'> {escaped_highlight}'
+        elif note_text:
+            # This shouldn't happen but just in case
+            journal_text = escape_markdown(note_text)
+        else:
+            log.warning("No text provided for journal entry")
+            return None
+        mutation = """
+            mutation ($journalId: Int!, $entry: String!, $event: String!) {
+                update_reading_journal(id: $journalId, object: {
+                    entry: $entry,
+                    event: $event,
+                }) {
+                    errors
+                    id
+                }
+            }"""
+        variables = {
+            "journalId": journal_id,
+            "entry": journal_text,
+            # quote or note in Hardcover, 
+            "event": "note" if note_text else "quote",
+        }
+        try:
+            response = self.execute(query=mutation, variables=variables)
+            
+            if not response:
+                log.error("Empty response from Hardcover API")
+                return None
+            
+            errors = response.get("update_reading_journal", {}).get("errors")
+            if errors:
+                log.error(f"Hardcover journal entry errors: {errors}")
+                return None
+            
+            journal_entry = response.get("update_reading_journal", {}).get("reading_journal")
+            if not journal_entry:
+                log.error("No journal entry returned in response")
+                return None
+
+            return journal_entry
+        except requests.exceptions.Timeout as e:
+            log.error(f"Timeout syncing to Hardcover: {e}")
+            return None
+        except requests.exceptions.RequestException as e:
+            log.error(f"Network error syncing to Hardcover: {e}")
+            return None
+        except (KeyError, AttributeError) as e:
+            log.error(f"Malformed Hardcover API response: {e}")
+            return None
+        except Exception as e:
+            log.error(f"Unexpected error adding journal entry: {e}")
+            import traceback
+            log.error(traceback.format_exc())
+            return None
+
+    def delete_journal_entry(self, journal_id: int):
+        mutation = """
+            mutation ($journal_id: Int!) {
+                delete_reading_journal(id: $journal_id) {
+                    id
+                }
+            }"""
+        variables = {"journal_id": journal_id}
+        response = self.execute(query=mutation, variables=variables)
+        return response.get("delete_reading_journal", {}).get("id")
+
     def add_book(self, identifiers, status=1):
         ids = self.parse_identifiers(identifiers)
+        # Return None if no hardcover-id present (required for adding book)
+        if not ids or "hardcover-id" not in ids:
+            return None
+        
         mutation = (
             """     
             mutation ($object: UserBookCreateInput!) {

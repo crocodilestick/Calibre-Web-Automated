@@ -87,7 +87,11 @@ class _Settings(_Base):
     config_public_reg = Column(SmallInteger, default=0)
     config_remote_login = Column(Boolean, default=False)
     config_kobo_sync = Column(Boolean, default=False)
-    config_hardcover_sync = Column(Boolean, default=False)
+
+    # Sync read progress to Hardcover - should this be renamed?
+    config_hardcover_sync = Column(Boolean, default=False) 
+    # Sync annotations to Hardcover
+    config_hardcover_annotations_sync = Column(Boolean, default=False)
 
     config_default_role = Column(SmallInteger, default=0)
     config_default_show = Column(SmallInteger, default=constants.ADMIN_USER_SIDEBAR)

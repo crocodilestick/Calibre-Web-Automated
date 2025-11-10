@@ -194,13 +194,12 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - [Hardcover](https://hardcover.app/) is also currently in the process of being added to CWA as a Metadata Provider
 
 #### **KOReader Syncing (KOSync)** 📖⚡
-- CWA now includes built-in KOReader syncing functionality, providing a modern alternative to traditional KOReader sync servers
-- **Universal KOReader Syncer:** Works across all KOReader-compatible devices, storing sync data in a readable format for future CWA features
-- **Book Identification:** Automatically generates KOReader-compatible partial MD5 checksums for all books, enabling accurate progress synchronization
-- **Automatic Integration:** Checksums are generated on first startup and for all newly imported books, no manual configuration needed
-- **Modern Authentication:** Uses RFC 7617 compliant header-based authentication instead of legacy MD5 hashing for enhanced security
-- **CWA Integration:** Leverages your existing CWA user accounts and permissions - no additional server setup required
-- **Easy Installation:** Plugin and setup instructions are available directly from your CWA instance at `/kosync`
+Built-in KOReader progress sync with automatic book identification:
+- **Book Identification:** Auto-generates KOReader-compatible partial MD5 checksums for all books
+- **Unified Progress:** Syncs KOReader → CWA reading status → Kobo devices
+- **Zero Config:** Checksums generated on startup and import, no manual setup
+- **Modern Auth:** RFC 7617 HTTP Basic Auth with existing CWA accounts
+- **Plugin Available:** Download from `/kosync` endpoint on your CWA instance
 
 #### **Enhanced OAuth 2.0/OIDC Authentication** 🔐
 - **Auto-Discovery:** Automatic endpoint configuration via OIDC metadata URLs for seamless setup with providers like Keycloak, Authentik, Google, and Azure AD

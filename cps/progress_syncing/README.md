@@ -1,20 +1,21 @@
 # Progress Syncing Module
 
-Syncs reading progress across e-reader devices (KOReader, etc.) using file checksums to identify books.
+Syncs reading progress across e-readers using file checksums for book identification.
 
 ## Quick Start
 
 ```python
 from cps.progress_syncing import calculate_and_store_checksum, get_latest_checksum
 
-# Store checksum when book is added/modified
+# Generate and store checksum
 checksum = calculate_and_store_checksum(
     book_id=123,
     book_format='EPUB',
     file_path='/calibre-library/Author/Book/book.epub'
 )
+# Returns: '9e107d9d372bb6826bd81d3542a419d6'
 
-# Retrieve checksum for sync lookups
+# Retrieve for sync lookup
 checksum = get_latest_checksum(book_id=123, book_format='EPUB')
 ```
 
@@ -22,39 +23,30 @@ checksum = get_latest_checksum(book_id=123, book_format='EPUB')
 
 ```
 cps/progress_syncing/
-├── models.py                # Database schema (book_format_checksums table)
+├── models.py              # Database schema
 ├── checksums/
-│   ├── koreader.py         # KOReader partialMD5 algorithm
-│   └── manager.py          # Checksum storage and retrieval
+│   ├── koreader.py       # Partial MD5 algorithm
+│   └── manager.py        # Storage and retrieval
 └── protocols/
-    └── kosync.py           # KOSync API for KOReader
+    └── kosync.py         # KOSync protocol (KOReader)
 ```
 
-## How It Works
+## Checksum Algorithm
 
-### Checksum Algorithm
+KOReader partialMD5: Samples 1024 bytes at 11 positions (0, 4K, 16K, 64K, 256K, 1M, 4M, 16M, 64M, 256M, 1G) instead of hashing entire file. Returns 32-character MD5 hex.
 
-Uses KOReader's partialMD5: samples 1024 bytes at exponentially-spaced positions instead of hashing entire file.
-
-**Positions:** 0, 4K, 16K, 64K, 256K, 1M, 4M, 16M, 64M, 256M, 1G
-
-**Output:** 32-character hex MD5 hash
-
-### Checksum History
-
-All checksums are stored indefinitely. When a book file changes (metadata update, format conversion, EPUB fix), a new checksum is generated alongside the old one. This allows sync to work with any version of a file on user devices.
-
-**Checksums generated:**
-- Book import (`ingest_processor.py`)
-- Metadata enforcement (`cover_enforcer.py`)
-- EPUB fixing (`kindle_epub_fixer.py`)
+**Auto-generated on:**
+- Book import
+- Metadata enforcement
+- EPUB fixes
 - Format conversion
-- OPDS download with embedded metadata (`helper.py`)
-- Backfill for existing books (`generate_book_checksums.py` runs on boot)
+- OPDS download with embedded metadata
+- Container startup (backfills existing books)
 
-### Database Schema
+**History tracking:** All checksums stored indefinitely. New checksums added alongside old ones when files change, enabling sync with any file version on user devices.
 
-**book_format_checksums** (metadata.db)
+## Database Schema
+
 ```sql
 CREATE TABLE book_format_checksums (
     id INTEGER PRIMARY KEY,
@@ -62,11 +54,14 @@ CREATE TABLE book_format_checksums (
     format TEXT,           -- 'EPUB', 'PDF', etc.
     checksum TEXT(32),     -- MD5 hex
     version TEXT,          -- 'koreader'
-    created TIMESTAMP      -- When generated
+    created TIMESTAMP
 );
+CREATE INDEX idx_checksum_lookup ON book_format_checksums(checksum, format);
 ```
 
-## API Functions
+Stored in `metadata.db`. Query orders by `created DESC` to prefer latest checksums.
+
+## API
 
 ### Checksum Management
 
@@ -75,13 +70,12 @@ from cps.progress_syncing import (
     calculate_koreader_partial_md5,
     calculate_and_store_checksum,
     get_latest_checksum,
-    get_checksum_history,
-    CHECKSUM_VERSION
+    get_checksum_history
 )
 
-# Calculate only (no storage)
+# Calculate without storing
 checksum = calculate_koreader_partial_md5('/path/to/book.epub')
-# Returns: '9e107d9d372bb6826bd81d3542a419d6' or None
+# => '9e107d9d372bb6826bd81d3542a419d6' or None
 
 # Calculate and store
 checksum = calculate_and_store_checksum(
@@ -90,12 +84,12 @@ checksum = calculate_and_store_checksum(
     file_path='/path/to/book.epub'
 )
 
-# Get most recent checksum
+# Get latest
 checksum = get_latest_checksum(book_id=123, book_format='EPUB')
 
-# Get all historical checksums (newest first)
+# Get history (newest first)
 history = get_checksum_history(book_id=123, book_format='EPUB')
-# Returns: [('abc...', 'koreader', '2025-11-09T10:30:00'), ...]
+# => [('abc...', 'koreader', '2025-11-09T10:30:00'), ...]
 ```
 
 ### Book Lookup
@@ -106,40 +100,37 @@ from cps.progress_syncing.protocols.kosync import get_book_by_checksum
 result = get_book_by_checksum('9e107d9d372bb6826bd81d3542a419d6')
 if result:
     book_id, format, title, path, version = result
-    print(f"{title} (ID: {book_id}, {format})")
 ```
 
 ## KOSync Protocol
 
-KOReader devices sync to `/kosync` endpoints using HTTP Basic Auth.
+HTTP Basic Auth endpoints for KOReader devices:
 
-**Endpoints:**
-- `GET /kosync` - Plugin download page
-- `GET /kosync/users/auth` - Authentication check
-- `GET /kosync/syncs/progress/<checksum>` - Get reading progress
-- `PUT /kosync/syncs/progress` - Update reading progress
+- `GET /kosync` - Plugin download
+- `GET /kosync/users/auth` - Authentication
+- `GET /kosync/syncs/progress/<checksum>` - Get progress
+- `PUT /kosync/syncs/progress` - Update progress
 
-**Progress stored in:** `kosync_progress` table (app.db)
+Progress stored in `kosync_progress` table (app.db). Updates `ReadBook` and `KoboReadingState` tables for web UI and Kobo device sync.
 
 ## Testing
 
 ```bash
-# Unit tests
-pytest tests/unit/test_progress_syncing_checksums.py -v  # Algorithm
-pytest tests/unit/test_progress_syncing_manager.py -v    # Storage
-pytest tests/unit/test_progress_syncing_models.py -v     # Database
+# Unit tests - Algorithm, storage, database
+pytest tests/unit/test_progress_syncing_*.py -v
 
-# Integration
-pytest tests/integration/test_kosync_checksums.py -v     # End-to-end
+# Integration tests - Full sync workflow
+pytest tests/integration/test_progress_syncing_*.py -v
+pytest tests/integration/test_kosync_*.py -v
 ```
 
 ## Extending
 
-### Add New Sync Protocol
+### New Sync Protocol
 
-1. Create `protocols/new_protocol.py`:
 ```python
-from flask import Blueprint
+# protocols/new_protocol.py
+from flask import Blueprint, request
 from .kosync import get_book_by_checksum
 
 new_protocol = Blueprint('new_protocol', __name__)
@@ -147,43 +138,34 @@ new_protocol = Blueprint('new_protocol', __name__)
 @new_protocol.route('/new_protocol/sync', methods=['PUT'])
 def sync():
     checksum = request.json['document']
-    result = get_book_by_checksum(checksum)
-    # ... implement sync logic
+    book_id, format, title, path, version = get_book_by_checksum(checksum)
+    # Implement sync logic
 ```
 
-2. Register in `cps/main.py`:
+Register in `cps/main.py`:
 ```python
 from .progress_syncing.protocols.new_protocol import new_protocol
 app.register_blueprint(new_protocol)
 ```
 
-### Add New Checksum Algorithm
+### New Checksum Algorithm
 
-1. Implement in `checksums/new_algorithm.py`:
 ```python
-def calculate_new_algorithm(filepath: str) -> Optional[str]:
-    # ... implementation
+# checksums/new_algorithm.py
+def calculate_new_algorithm(filepath: str) -> str:
+    # Implementation
     return checksum
 
-NEW_VERSION = 'algorithm_v1'
-```
-
-2. Store alongside existing checksums:
-```python
+# Store alongside existing
 from .manager import store_checksum
-
-store_checksum(
-    book_id=123,
-    book_format='EPUB',
-    checksum=new_checksum,
-    version='algorithm_v1'
-)
+store_checksum(book_id=123, book_format='EPUB',
+               checksum=new_checksum, version='algorithm_v2')
 ```
 
-The database automatically handles multiple algorithm versions per book.
+Database supports multiple algorithm versions per book automatically.
 
 ## References
 
-- [KOReader partialMD5 source](https://github.com/koreader/koreader/blob/master/frontend/util.lua#L1107)
+- [KOReader partialMD5](https://github.com/koreader/koreader/blob/master/frontend/util.lua#L1107)
 - [KOSync protocol](https://github.com/koreader/koreader-sync-server)
-- CWA KOReader plugin: `koreader/plugins/cwasync.koplugin/`
+- CWA plugin: `koreader/plugins/cwasync.koplugin/`

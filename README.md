@@ -196,6 +196,8 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 #### **KOReader Syncing (KOSync)** 📖⚡
 - CWA now includes built-in KOReader syncing functionality, providing a modern alternative to traditional KOReader sync servers
 - **Universal KOReader Syncer:** Works across all KOReader-compatible devices, storing sync data in a readable format for future CWA features
+- **Book Identification:** Automatically generates KOReader-compatible partial MD5 checksums for all books, enabling accurate progress synchronization
+- **Automatic Integration:** Checksums are generated on first startup and for all newly imported books, no manual configuration needed
 - **Modern Authentication:** Uses RFC 7617 compliant header-based authentication instead of legacy MD5 hashing for enhanced security
 - **CWA Integration:** Leverages your existing CWA user accounts and permissions - no additional server setup required
 - **Easy Installation:** Plugin and setup instructions are available directly from your CWA instance at `/kosync`

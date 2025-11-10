@@ -32,7 +32,7 @@ def main():
     from .tasks_status import tasks
     from .error_handler import init_errorhandler
     from .remotelogin import remotelogin
-    from .kosync import kosync
+    from .progress_syncing.protocols.kosync import kosync
     from .duplicates import duplicates
     try:
         from .kobo import kobo, get_kobo_activated

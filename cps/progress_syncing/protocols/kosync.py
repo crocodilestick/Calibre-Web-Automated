@@ -294,7 +294,6 @@ def enrich_response_with_book_info(response_data: Dict[str, Any], document_check
         response_data["calibre_book_title"] = book_title
         response_data["calibre_book_format"] = book_format
         response_data["calibre_checksum_version"] = checksum_version
-        log.debug(f"Enriched response with book info: {book_title}")
 
     return response_data, book_id, book_format, book_title, checksum_version
 

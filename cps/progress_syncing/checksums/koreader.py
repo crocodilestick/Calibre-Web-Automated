@@ -102,9 +102,8 @@ def calculate_koreader_partial_md5(filepath: str) -> Optional[str]:
                         # Reached end of file
                         break
 
-                except (IOError, OSError) as e:
+                except (IOError, OSError):
                     # Seeking beyond file end - stop sampling
-                    log.debug(f"Reached EOF at position {position}")
                     break
 
         result = md5_hash.hexdigest()

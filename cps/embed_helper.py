@@ -34,15 +34,6 @@ def do_calibre_export(book_id, book_format):
         if err:
             log.error('Metadata embedder encountered an error: %s', err)
 
-        # Debug: List what was actually created
-        log.debug(f'calibredb export completed. Checking tmp_dir: {tmp_dir}')
-        tmp_contents = os.listdir(tmp_dir) if os.path.isdir(tmp_dir) else []
-        log.debug(f'Contents of {tmp_dir}: {tmp_contents}')
-
-        # List all epub files for debugging
-        epub_files = [f for f in tmp_contents if f.lower().endswith('.epub')]
-        log.debug(f'All EPUB files in tmp_dir: {epub_files}')
-
         # calibredb export with --template may create either:
         # 1. A subdirectory with the template name containing the file
         # 2. A file directly with a modified name
@@ -50,24 +41,19 @@ def do_calibre_export(book_id, book_format):
         # First check if a subdirectory was created
         export_dir = os.path.join(tmp_dir, temp_file_name)
         if os.path.isdir(export_dir):
-            log.debug(f'Found subdirectory: {export_dir}')
-            log.debug(f'Contents: {os.listdir(export_dir)}')
             # Look for the book file with the specified format
             for filename in os.listdir(export_dir):
                 if filename.lower().endswith('.' + book_format.lower()):
                     # Found the exported file - return the directory and the filename without extension
                     actual_filename = os.path.splitext(filename)[0]
-                    log.info(f'Found exported file in subdirectory: {export_dir}/{filename}')
                     return export_dir, actual_filename
 
             log.warning(f'No {book_format} file found in export directory: {export_dir}')
         else:
             # No subdirectory - look for files directly in tmp_dir
-            log.debug(f'No subdirectory at {export_dir}, checking tmp_dir directly')
             for filename in os.listdir(tmp_dir):
                 if filename.lower().endswith('.' + book_format.lower()):
                     actual_filename = os.path.splitext(filename)[0]
-                    log.info(f'Found exported file directly in tmp_dir: {tmp_dir}/{filename}')
                     return tmp_dir, actual_filename
 
             log.warning(f'No {book_format} file found in {tmp_dir}')

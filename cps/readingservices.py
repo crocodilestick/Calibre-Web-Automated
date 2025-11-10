@@ -648,5 +648,6 @@ def handle_unknown_reading_service_request(subpath):
     Catch-all handler for any reading services requests not explicitly handled.
     Logs the request and proxies to Kobo's reading services.
     """
-    pass
+    # Proxy to Kobo reading services
+    return proxy_to_kobo_reading_services()
 

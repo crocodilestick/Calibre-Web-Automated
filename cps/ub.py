@@ -519,24 +519,6 @@ class Downloads(Base):
         return '<Download %r' % self.book_id
 
 
-# Baseclass representing KOReader sync progress
-class KOSyncProgress(Base):
-    __tablename__ = 'kosync_progress'
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    document = Column(String, nullable=False)
-    progress = Column(String, nullable=False)
-    percentage = Column(Float, nullable=False)
-    device = Column(String, nullable=False)
-    device_id = Column(String)
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc),
-                       onupdate=lambda: datetime.now(timezone.utc))
-
-    def __repr__(self):
-        return '<KOSyncProgress %r - %r>' % (self.user_id, self.document)
-
-
 # Baseclass representing allowed domains for registration
 class Registration(Base):
     __tablename__ = 'registration'
@@ -626,8 +608,6 @@ def add_missing_tables(engine, _session):
         ArchivedBook.__table__.create(bind=engine)
     if not engine.dialect.has_table(engine.connect(), "thumbnail"):
         Thumbnail.__table__.create(bind=engine)
-    if not engine.dialect.has_table(engine.connect(), "kosync_progress"):
-        KOSyncProgress.__table__.create(bind=engine)
 
 
 # migrate all settings missing in registration table
@@ -674,7 +654,7 @@ def migrate_user_table(engine, _session):
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
             trans.commit()
-    
+
     # Migration for auto-send feature columns
     try:
         _session.query(exists().where(User.auto_send_enabled)).scalar()
@@ -684,19 +664,19 @@ def migrate_user_table(engine, _session):
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
             trans.commit()
-    
+
     # Migration to enable duplicates sidebar for existing admin users
     try:
         from . import constants
         SIDEBAR_DUPLICATES = constants.SIDEBAR_DUPLICATES
-        
+
         # Check if any admin users don't have duplicates enabled
         admin_users = _session.query(User).filter(User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN).all()
         for user in admin_users:
             if not (user.sidebar_view & SIDEBAR_DUPLICATES):
                 user.sidebar_view |= SIDEBAR_DUPLICATES
                 print(f"[Migration] Enabled duplicates sidebar for admin user: {user.name}")
-        
+
         _session.commit()
     except Exception as e:
         print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
@@ -715,7 +695,7 @@ def migrate_oauth_provider_table(engine, _session):
             conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL"))
             conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL"))
             trans.commit()
-    
+
     # Add new OAuth enhancement fields
     try:
         _session.query(exists().where(OAuthProvider.metadata_url)).scalar()
@@ -736,7 +716,7 @@ def migrate_config_table(engine, _session):
     if not engine or not _session:
         logger.get_logger("cps.ub").error("Cannot migrate config table: missing engine or session")
         return
-        
+
     # Add OAuth redirect host configuration
     try:
         # Test if the new column exists
@@ -752,7 +732,7 @@ def migrate_config_table(engine, _session):
             logger.get_logger("cps.ub").error("Failed to add config_oauth_redirect_host column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
-    
+
     # Add reverse proxy auto-create users configuration
     try:
         # Test if the new column exists
@@ -768,7 +748,7 @@ def migrate_config_table(engine, _session):
             logger.get_logger("cps.ub").error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
-    
+
     # Add LDAP auto-create users configuration
     try:
         # Test if the new column exists
@@ -797,6 +777,11 @@ def migrate_Database(_session):
     migrate_user_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
+
+    # Ensure progress syncing tables in app.db (user-related tables)
+    from .progress_syncing.models import ensure_app_db_tables
+    ensure_app_db_tables(engine.raw_connection())
+
 
 def clean_database(_session):
     # Remove expired remote login tokens

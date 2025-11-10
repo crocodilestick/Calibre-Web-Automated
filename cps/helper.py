@@ -769,7 +769,7 @@ def get_book_cover_with_uuid(book_uuid, resolution=None):
 
 def get_book_cover_internal(book, resolution=None):
     """Serve book cover with improved thumbnail generation fallback.
-    
+
     When a thumbnail is requested but missing, generate it synchronously
     instead of falling back to the original cover.jpg.
     """
@@ -781,25 +781,25 @@ def get_book_cover_internal(book, resolution=None):
             # Check for both webp and jpg thumbnails, generate missing ones
             webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
             jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
-            
+
             # Check if files actually exist on disk
             webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
             jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
-            
+
             # Generate missing thumbnails on-demand (skip for Kobo requests to avoid delays)
             if not webp_exists or not jpg_exists:
                 try:
                     from flask import has_request_context, request
-                    is_kobo_request = (has_request_context() and 
-                                     request.path and 
+                    is_kobo_request = (has_request_context() and
+                                     request.path and
                                      '/kobo/' in request.path)
-                    
+
                     if not is_kobo_request and use_IM:
                         from .tasks.thumbnail import TaskGenerateCoverThumbnails
                         # Create and run thumbnail generation for this book
                         thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
                         thumbnail_task.create_book_cover_thumbnails(book)
-                        
+
                         # Refresh thumbnail references after generation
                         webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
                         jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
@@ -807,14 +807,14 @@ def get_book_cover_internal(book, resolution=None):
                         jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
                 except Exception as ex:
                     log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
-            
+
             # Determine which thumbnail format to serve based on request context
             try:
                 from flask import has_request_context, request
-                is_kobo_request = (has_request_context() and 
-                                 request.path and 
+                is_kobo_request = (has_request_context() and
+                                 request.path and
                                  '/kobo/' in request.path)
-                
+
                 # Prefer jpg for Kobo requests, webp for web requests
                 if is_kobo_request:
                     thumbnail_to_serve = jpg_thumb if jpg_exists else (webp_thumb if webp_exists else None)
@@ -979,7 +979,7 @@ def save_cover(img, book_path):
         separator = ';' if ';' in content_type else ',' if ',' in content_type else None
         if separator:
             content_type = content_type.split(separator)[0].strip()
-        
+
     if use_IM:
         if content_type not in ('image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp'):
             log.error("Only jpg/jpeg/png/webp/bmp files are supported as coverfile")
@@ -1019,7 +1019,7 @@ def trigger_thumbnail_generation_for_book(book_id):
     """Trigger thumbnail generation for a book after cover changes."""
     try:
         from .tasks.thumbnail import TaskGenerateCoverThumbnails
-        
+
         if use_IM:
             # Queue thumbnail generation task
             thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
@@ -1032,17 +1032,19 @@ def trigger_thumbnail_generation_for_book(book_id):
 def save_cover_with_thumbnail_update(img, book_path, book_id=None):
     """Save cover and trigger thumbnail generation."""
     result, message = save_cover(img, book_path)
-    
+
     # If cover save was successful and we have a book_id, generate thumbnails
     if result and book_id:
         trigger_thumbnail_generation_for_book(book_id)
-    
+
     return result, message
 
 
 def do_download_file(book, book_format, client, data, headers):
     book_name = data.name
     download_name = filename = None
+    metadata_was_embedded = False  # Track if we embedded metadata
+
     if config.config_use_google_drive:
         # startTime = time.time()
         df = gd.getFileFromEbooksFolder(book.path, data.name + "." + book_format)
@@ -1058,8 +1060,10 @@ def do_download_file(book, book_format, client, data, headers):
                 gd.downloadFile(book.path, book_name + "." + book_format, output)
                 if book_format == "kepub" and config.config_kepubifypath:
                     filename, download_name = do_kepubify_metadata_replace(book, output)
+                    metadata_was_embedded = True
                 elif book_format != "kepub" and config.config_binariesdir:
                     filename, download_name = do_calibre_export(book.id, book_format)
+                    metadata_was_embedded = True
             else:
                 return gd.do_gdrive_download(df, headers)
         else:
@@ -1076,16 +1080,54 @@ def do_download_file(book, book_format, client, data, headers):
         if book_format == "kepub" and config.config_kepubifypath and config.config_embed_metadata:
             filename, download_name = do_kepubify_metadata_replace(book, os.path.join(filename,
                                                                                       book_name + "." + book_format))
+            metadata_was_embedded = True
         elif book_format != "kepub" and config.config_binariesdir and config.config_embed_metadata:
             filename, download_name = do_calibre_export(book.id, book_format)
+            metadata_was_embedded = True
+
+            # Rename the exported file to match the expected download name (from Content-Disposition)
+            # This ensures KOReader calculates the checksum on the same file we calculated it on
+            if filename and download_name:
+                uuid_file = os.path.join(filename, download_name + "." + book_format)
+                expected_file = os.path.join(filename, book_name + "." + book_format)
+
+                if os.path.exists(uuid_file) and uuid_file != expected_file:
+                    try:
+                        # Remove the target file if it already exists
+                        if os.path.exists(expected_file):
+                            os.remove(expected_file)
+                        # Rename UUID file to expected name
+                        os.rename(uuid_file, expected_file)
+                        download_name = book_name
+                        log.info(f'Renamed exported file to match expected name: {book_name}.{book_format}')
+                    except Exception as e:
+                        log.error(f'Failed to rename exported file: {e}')
         else:
             download_name = book_name
+
+    # Calculate and store checksum if metadata was embedded
+    if metadata_was_embedded and filename and download_name:
+        try:
+            from .progress_syncing import calculate_and_store_checksum
+
+            # Calculate checksum on the EXPORTED file (with embedded metadata)
+            # This is what KOReader actually downloads and calculates the checksum for
+            exported_file = os.path.join(filename, download_name + "." + book_format)
+
+            if os.path.exists(exported_file):
+                calculate_and_store_checksum(
+                    book_id=book.id,
+                    book_format=book_format,
+                    file_path=exported_file  # Use exported file with embedded metadata!
+                )
+        except Exception as e:
+            log.error(f"Failed to calculate/store checksum for book {book.id}: {e}")
+            # Don't fail the download if checksum calculation fails
 
     response = make_response(send_from_directory(filename, download_name + "." + book_format))
     # ToDo Check headers parameter
     for element in headers:
         response.headers[element[0]] = element[1]
-    log.info('Downloading file: {}'.format(os.path.join(filename, book_name + "." + book_format)))
     return response
 
 

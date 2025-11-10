@@ -200,39 +200,39 @@ version_ge() { [ "$(printf '%s\n' "$2" "$1" | sort -V | tail -n1)" = "$1" ]; }
 QT_SENTINEL="/app/calibre/.qt6_processed"
 if [ ! -f "$QT_SENTINEL" ]; then
   echo "[cwa-init][qt6] Starting Qt6 compatibility check..."
-  
+
   if version_ge "$HOST_KERNEL" "$MIN_KERNEL"; then
     echo "[cwa-init][qt6] Host kernel $HOST_KERNEL_RAW >= $MIN_KERNEL: leaving Qt6 libs intact for full functionality." \
          "(PDF/WebEngine features enabled)"
   else
     echo "[cwa-init][qt6] Host kernel $HOST_KERNEL_RAW < $MIN_KERNEL: attempting legacy compatibility by stripping .note.ABI-tag." \
          "(This does NOT guarantee full functionality.)"
-    
+
     # Add timeout protection and better error handling
     if command -v strip >/dev/null 2>&1; then
       echo "[cwa-init][qt6] Starting ABI tag removal process..."
       any_stripped=0
       processed_count=0
       error_count=0
-      
+
       # Set a reasonable timeout for the entire operation
       qt6_output=$(timeout 60 bash -c '
         any_stripped=0
         processed_count=0
         error_count=0
-        
+
         for f in /app/calibre/lib/libQt6*.so*; do
           [ -f "$f" ] || continue
           echo "[cwa-init][qt6] Processing: $(basename "$f")"
           processed_count=$((processed_count + 1))
-          
+
           # Check if file is readable and not corrupted
           if ! file "$f" >/dev/null 2>&1; then
             echo "[cwa-init][qt6] WARNING: File $f appears corrupted, skipping"
             error_count=$((error_count + 1))
             continue
           fi
-          
+
           # Use timeout for individual file operations
           if timeout 10 readelf -S "$f" 2>/dev/null | grep -q ".note.ABI-tag"; then
             echo "[cwa-init][qt6] Stripping ABI tag from $(basename "$f")"
@@ -247,14 +247,14 @@ if [ ! -f "$QT_SENTINEL" ]; then
             echo "[cwa-init][qt6] No ABI tag found in $(basename "$f")"
           fi
         done
-        
+
         echo "[cwa-init][qt6] Processing complete: $processed_count files processed, $error_count errors"
         [ $any_stripped -eq 1 ] && echo "STRIPPED" || echo "NO_STRIP"
       ' 2>&1) && qt6_result=$? || qt6_result=$?
-      
+
       # Output the processing logs
       echo "$qt6_output"
-      
+
       if [ $qt6_result -eq 124 ]; then
         echo "[cwa-init][qt6] WARNING: Qt6 processing timed out after 60 seconds. Continuing startup..."
       elif [ $qt6_result -ne 0 ]; then
@@ -273,7 +273,7 @@ if [ ! -f "$QT_SENTINEL" ]; then
       echo "[cwa-init][qt6] 'strip' tool not available; cannot attempt ABI tag removal."
     fi
   fi
-  
+
   # Always create sentinel file to prevent re-processing
   if touch "$QT_SENTINEL" 2>/dev/null; then
     echo "[cwa-init][qt6] Qt6 compatibility check completed."
@@ -334,3 +334,4 @@ else
 fi
 
 echo "[cwa-init] Versions resolved: INSTALLED=$CWA_INSTALLED_VERSION, STABLE=$CWA_STABLE_VERSION"
+

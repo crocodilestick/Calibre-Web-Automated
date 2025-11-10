@@ -100,6 +100,16 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - On Docker Desktop (Windows/macOS), the container runs on a LinuxKit/WSL2 VM and host-mounted paths may not propagate `inotify` events reliably. CWA auto-detects Docker Desktop at startup and prefers the same polling watcher for reliability.
 - Advanced: You can also force polling regardless of share mode by setting `CWA_WATCH_MODE=poll`.
 
+### Running behind multiple proxies (Cloudflare Tunnel, reverse proxy)
+
+- CWA uses Werkzeug's ProxyFix middleware to properly handle `X-Forwarded-For`, `X-Forwarded-Proto`, and other proxy headers.
+- By default, it trusts **1 proxy** in the chain. If you have multiple proxies (e.g., Cloudflare Tunnel → nginx → CWA), set:
+
+  - `TRUSTED_PROXY_COUNT=2` (or the total number of proxies in your chain)
+
+- **Why this matters**: Session protection validates requests based on the client's IP address. If ProxyFix doesn't trust enough proxies, it may see different IPs between requests, causing "Session protection triggered" warnings and forcing re-login.
+- **Troubleshooting**: If you see frequent session protection warnings in logs, check your proxy chain depth and adjust this variable accordingly.
+
 ## **_Features:_**
 
 ### CWA supports all Stock CW Features:
@@ -184,11 +194,12 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - [Hardcover](https://hardcover.app/) is also currently in the process of being added to CWA as a Metadata Provider
 
 #### **KOReader Syncing (KOSync)** 📖⚡
-- CWA now includes built-in KOReader syncing functionality, providing a modern alternative to traditional KOReader sync servers
-- **Universal KOReader Syncer:** Works across all KOReader-compatible devices, storing sync data in a readable format for future CWA features
-- **Modern Authentication:** Uses RFC 7617 compliant header-based authentication instead of legacy MD5 hashing for enhanced security
-- **CWA Integration:** Leverages your existing CWA user accounts and permissions - no additional server setup required
-- **Easy Installation:** Plugin and setup instructions are available directly from your CWA instance at `/kosync`
+Built-in KOReader progress sync with automatic book identification:
+- **Book Identification:** Auto-generates KOReader-compatible partial MD5 checksums for all books
+- **Unified Progress:** Syncs KOReader → CWA reading status → Kobo devices
+- **Zero Config:** Checksums generated on startup and import, no manual setup
+- **Modern Auth:** RFC 7617 HTTP Basic Auth with existing CWA accounts
+- **Plugin Available:** Download from `/kosync` endpoint on your CWA instance
 
 #### **Enhanced OAuth 2.0/OIDC Authentication** 🔐
 - **Auto-Discovery:** Automatic endpoint configuration via OIDC metadata URLs for seamless setup with providers like Keycloak, Authentik, Google, and Azure AD
@@ -304,7 +315,7 @@ services:
       - CWA_PORT_OVERRIDE=8083
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
-      - /path/to/config/folder:/config 
+      - /path/to/config/folder:/config
       # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
       # If you don't have an existing library, CWA will automatically create one at the bind provided here
@@ -395,23 +406,23 @@ CWA now includes built-in KOReader syncing functionality, allowing you to sync y
 
 ## Local Development Setup
 
-1. **Build the image**  
+1. **Build the image**
    Edit and run [`build.sh`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/build.sh) to build a local Docker image of Calibre-Web-Automated.  See the script itself for usage details.
 
-2. **Edit [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**  
-   Update at minimum:  
-   - `image:` → your image tag from step 1  
-   - `volumes mounts` → paths for config, ingest, library, plugins  
-  
+2. **Edit [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**
+   Update at minimum:
+   - `image:` → your image tag from step 1
+   - `volumes mounts` → paths for config, ingest, library, plugins
+
  To have the app refresh dynamically in response to code changes, see comments in the  [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)** for details and examples on "live-edit" mounts.
 
-3. **Start the service**  
+3. **Start the service**
 ```
 $ docker compose -f docker-compose.yml.dev up -d
 ```
 
-4. **Log in & configure**  
-   - Sign in with the [default admin login](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)  
+4. **Log in & configure**
+   - Sign in with the [default admin login](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)
    - Optionally follow [Post-Install Tasks](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#post-install-tasks)-
 
 ---

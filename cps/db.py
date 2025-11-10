@@ -376,6 +376,13 @@ class Metadata_Dirtied(Base):
         self.book = book
 
 
+# Import BookFormatChecksum from progress_syncing.models to keep model definition centralized
+# Import directly from models module to avoid triggering progress_syncing/__init__.py chain
+# which would cause circular import (models needs Base from db, but progress_syncing imports kosync)
+from .progress_syncing import models as _progress_models  # noqa: E402
+BookFormatChecksum = _progress_models.BookFormatChecksum
+
+
 class Books(Base):
     __tablename__ = 'books'
 
@@ -727,6 +734,10 @@ class CalibreDB:
                                                           bind=cls.engine, future=True))
         for inst in cls.instances:
             inst.init_session()
+
+        # Ensure progress syncing tables exist in metadata.db (book checksums)
+        from .progress_syncing.models import ensure_calibre_db_tables
+        ensure_calibre_db_tables(conn)
 
         cls._init = True
 

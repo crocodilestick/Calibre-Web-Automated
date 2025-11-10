@@ -22,8 +22,8 @@ end
 
 local CWASync = WidgetContainer:extend{
     name = "cwasync",
-    is_doc_only = true,
     title = _("Login to CWA Server"),
+    version = "1.0.1",  -- Plugin version
 
     push_timestamp = nil,
     pull_timestamp = nil,
@@ -179,7 +179,7 @@ function CWASync:onReaderReady()
 end
 
 function CWASync:addToMainMenu(menu_items)
-    menu_items.progress_sync = {
+    menu_items.cwa_progress_sync = {
         text = _("CWA Progress Sync"),
         sub_item_table = {
             {
@@ -362,6 +362,15 @@ If set to 0, updating progress based on page turns will be disabled.]]),
                     self:getProgress(true, true)
                 end,
                 separator = true,
+            },
+            {
+                text = T(_("Plugin version: %1"), self.version),
+                keep_menu_open = true,
+                callback = function()
+                    UIManager:show(InfoMessage:new{
+                        text = T(_("CWA Progress Sync Plugin\nVersion: %1\n\nThis plugin syncs your reading progress to Calibre-Web Automated."), self.version),
+                    })
+                end,
             },
         }
     }

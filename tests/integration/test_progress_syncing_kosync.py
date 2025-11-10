@@ -65,7 +65,7 @@ class TestKOSyncChecksumLookup:
         assert response.status_code in [200, 404]
         if response.status_code == 200:
             data = response.json()
-            # May return empty progress or null
+            # May return empty progress or empty dict
             assert 'document' in data or 'progress' in data or data == {}
 
     def test_put_progress_creates_sync_record(self, cwa_api_client):
@@ -99,7 +99,12 @@ class TestKOSyncChecksumLookup:
         assert data['document'] == test_checksum
 
     def test_get_progress_after_put(self, cwa_api_client):
-        """Test retrieving progress that was just set."""
+        """
+        Test retrieving progress that was just set.
+
+        Integration test verifying full sync cycle (PUT -> GET).
+        Multiple assertions are acceptable for end-to-end flow validation.
+        """
         credentials = base64.b64encode(b"admin:admin123").decode('ascii')
         headers = {
             'Authorization': f'Basic {credentials}',
@@ -121,7 +126,7 @@ class TestKOSyncChecksumLookup:
             headers=headers,
             json=progress_data
         )
-        assert put_response.status_code in [200, 201]
+        assert put_response.status_code in [200, 201], "Progress creation should succeed"
 
         # Retrieve progress
         get_response = cwa_api_client.get(
@@ -129,10 +134,11 @@ class TestKOSyncChecksumLookup:
             headers=headers
         )
 
-        assert get_response.status_code == 200
+        # Verify full response (integration test validates complete cycle)
+        assert get_response.status_code == 200, "Progress retrieval should succeed"
         data = get_response.json()
-        assert data['document'] == test_checksum
-        assert float(data['percentage']) == 0.75
+        assert data['document'] == test_checksum, "Document ID should match"
+        assert float(data['percentage']) == 0.75, "Percentage should be persisted correctly"
 
 
 @pytest.mark.docker_integration

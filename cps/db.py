@@ -735,9 +735,9 @@ class CalibreDB:
         for inst in cls.instances:
             inst.init_session()
 
-        # Ensure book_format_checksums table exists for KOReader sync
-        from .progress_syncing.models import ensure_checksum_table
-        ensure_checksum_table(conn)
+        # Ensure progress syncing tables exist in metadata.db (book checksums)
+        from .progress_syncing.models import ensure_calibre_db_tables
+        ensure_calibre_db_tables(conn)
 
         cls._init = True
 

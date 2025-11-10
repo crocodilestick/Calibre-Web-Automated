@@ -40,58 +40,71 @@ def test_file(tmp_path):
 class TestStoreChecksum:
     """Test store_checksum function."""
 
-    def test_stores_new_checksum(self, test_db):
-        result = store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
-        assert result is True
+    class TestWithNewChecksum:
+        """When storing a new checksum"""
 
-    def test_creates_database_record(self, test_db):
-        store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+        def test_returns_true(self, test_db):
+            result = store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            assert result is True
 
-        cursor = test_db.execute(
-            "SELECT book, format, checksum FROM book_format_checksums WHERE book = 1"
-        )
-        row = cursor.fetchone()
-        assert row == (1, 'EPUB', 'abc123')
+        def test_stores_book_id(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            cursor = test_db.execute("SELECT book FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == 1
 
-    def test_uses_default_version(self, test_db):
-        store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+        def test_stores_format(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            cursor = test_db.execute("SELECT format FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == 'EPUB'
 
-        cursor = test_db.execute("SELECT version FROM book_format_checksums WHERE book = 1")
-        assert cursor.fetchone()[0] == CHECKSUM_VERSION
+        def test_stores_checksum(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            cursor = test_db.execute("SELECT checksum FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == 'abc123'
 
-    def test_accepts_custom_version(self, test_db):
-        store_checksum(1, 'EPUB', 'abc123', version='custom', db_connection=test_db)
+        def test_uses_default_version(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            cursor = test_db.execute("SELECT version FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == CHECKSUM_VERSION
 
-        cursor = test_db.execute("SELECT version FROM book_format_checksums WHERE book = 1")
-        assert cursor.fetchone()[0] == 'custom'
+        def test_accepts_custom_version(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', version='custom', db_connection=test_db)
+            cursor = test_db.execute("SELECT version FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == 'custom'
 
-    def test_normalizes_format_to_uppercase(self, test_db):
-        store_checksum(1, 'epub', 'abc123', db_connection=test_db)
+        def test_normalizes_format_to_uppercase(self, test_db):
+            store_checksum(1, 'epub', 'abc123', db_connection=test_db)
+            cursor = test_db.execute("SELECT format FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == 'EPUB'
 
-        cursor = test_db.execute("SELECT format FROM book_format_checksums WHERE book = 1")
-        assert cursor.fetchone()[0] == 'EPUB'
+    class TestWithDuplicateChecksum:
+        """When storing the same checksum twice"""
 
-    def test_prevents_duplicate_checksums(self, test_db):
-        store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
-        result = store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+        def test_returns_true(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            result = store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            assert result is True
 
-        cursor = test_db.execute("SELECT COUNT(*) FROM book_format_checksums WHERE book = 1")
-        assert cursor.fetchone()[0] == 1
-        assert result is True
+        def test_does_not_create_duplicate(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            cursor = test_db.execute("SELECT COUNT(*) FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == 1
 
-    def test_allows_different_checksums_for_same_book(self, test_db):
-        store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
-        store_checksum(1, 'EPUB', 'def456', db_connection=test_db)
+    class TestWithMultipleChecksums:
+        """When storing multiple checksums"""
 
-        cursor = test_db.execute("SELECT COUNT(*) FROM book_format_checksums WHERE book = 1")
-        assert cursor.fetchone()[0] == 2
+        def test_allows_different_checksums_for_same_book(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            store_checksum(1, 'EPUB', 'def456', db_connection=test_db)
+            cursor = test_db.execute("SELECT COUNT(*) FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == 2
 
-    def test_allows_same_checksum_different_format(self, test_db):
-        store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
-        store_checksum(1, 'PDF', 'abc123', db_connection=test_db)
-
-        cursor = test_db.execute("SELECT COUNT(*) FROM book_format_checksums WHERE book = 1")
-        assert cursor.fetchone()[0] == 2
+        def test_allows_same_checksum_different_format(self, test_db):
+            store_checksum(1, 'EPUB', 'abc123', db_connection=test_db)
+            store_checksum(1, 'PDF', 'abc123', db_connection=test_db)
+            cursor = test_db.execute("SELECT COUNT(*) FROM book_format_checksums WHERE book = 1")
+            assert cursor.fetchone()[0] == 2
 
 
 @pytest.mark.unit
@@ -101,11 +114,13 @@ class TestCalculateAndStoreChecksum:
     def test_returns_checksum_string(self, test_file, test_db):
         checksum = calculate_and_store_checksum(1, 'EPUB', test_file, db_connection=test_db)
         assert isinstance(checksum, str)
+
+    def test_checksum_has_correct_length(self, test_file, test_db):
+        checksum = calculate_and_store_checksum(1, 'EPUB', test_file, db_connection=test_db)
         assert len(checksum) == 32
 
     def test_stores_in_database(self, test_file, test_db):
         checksum = calculate_and_store_checksum(1, 'EPUB', test_file, db_connection=test_db)
-
         cursor = test_db.execute(
             "SELECT checksum FROM book_format_checksums WHERE book = 1"
         )
@@ -117,6 +132,5 @@ class TestCalculateAndStoreChecksum:
 
     def test_does_not_store_if_calculation_fails(self, test_db):
         calculate_and_store_checksum(1, 'EPUB', '/nonexistent/file.epub', db_connection=test_db)
-
         cursor = test_db.execute("SELECT COUNT(*) FROM book_format_checksums")
         assert cursor.fetchone()[0] == 0

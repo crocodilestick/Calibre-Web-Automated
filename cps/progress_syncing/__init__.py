@@ -38,7 +38,13 @@ from .checksums.manager import (
     get_latest_checksum,
     get_checksum_history
 )
-from .models import ensure_checksum_table, BookFormatChecksum
+from .models import (
+    ensure_calibre_db_tables,
+    ensure_app_db_tables,
+    ensure_checksum_table,
+    BookFormatChecksum,
+    KOSyncProgress
+)
 
 __all__ = [
     # Checksum functions
@@ -48,8 +54,11 @@ __all__ = [
     'calculate_and_store_checksum',
     'get_latest_checksum',
     'get_checksum_history',
-
-    # Database models and setup
+    # Database models and migrations
+    'ensure_calibre_db_tables',
+    'ensure_app_db_tables',
     'ensure_checksum_table',
     'BookFormatChecksum',
+    'KOSyncProgress',
 ]
+

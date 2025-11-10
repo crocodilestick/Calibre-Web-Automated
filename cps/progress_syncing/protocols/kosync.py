@@ -48,6 +48,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from ... import logger, ub, csrf
 from ...render_template import render_title_template
+from ..models import KOSyncProgress
 
 log = logger.create()
 
@@ -494,9 +495,9 @@ def get_progress(document: str):
             raise KOSyncError(ERROR_DOCUMENT_FIELD_MISSING, "Invalid document field")
 
         # Query progress from database
-        progress_record = ub.session.query(ub.KOSyncProgress).filter(
-            ub.KOSyncProgress.user_id == user.id,
-            ub.KOSyncProgress.document == document
+        progress_record = ub.session.query(KOSyncProgress).filter(
+            KOSyncProgress.user_id == user.id,
+            KOSyncProgress.document == document
         ).first()
 
         if not progress_record:
@@ -616,9 +617,9 @@ def update_progress():
         timestamp = datetime.now(timezone.utc)
 
         # Check if progress record exists
-        progress_record = ub.session.query(ub.KOSyncProgress).filter(
-            ub.KOSyncProgress.user_id == user.id,
-            ub.KOSyncProgress.document == document
+        progress_record = ub.session.query(KOSyncProgress).filter(
+            KOSyncProgress.user_id == user.id,
+            KOSyncProgress.document == document
         ).first()
 
         if progress_record:
@@ -631,7 +632,7 @@ def update_progress():
             log.debug(f"Updated kosync progress for user {user.id}, document {document}")
         else:
             # Create new record
-            progress_record = ub.KOSyncProgress(
+            progress_record = KOSyncProgress(
                 user_id=user.id,
                 document=document,
                 progress=progress,

@@ -9,16 +9,55 @@
 """
 Database Models and Setup for Progress Syncing
 
-Handles the book_format_checksums table schema and initialization.
+Handles database tables for progress syncing functionality:
+- book_format_checksums: Stores checksums for book formats (KOReader sync)
+- kosync_progress: Stores reading progress from KOSync protocol
 """
 
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, text
+from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, Float, text
 
 from .. import logger
-from ..db import Base
+from ..db import Base as CalibreBase  # For metadata.db tables (books)
+from ..ub import Base as AppBase  # For app.db tables (users)
 
 log = logger.create()
+
+
+def ensure_calibre_db_tables(conn):
+    """
+    Ensure progress syncing tables for metadata.db (Calibre library) exist.
+
+    Creates or validates tables that reference books in the Calibre library:
+    - book_format_checksums: Stores checksums for book formats
+
+    Args:
+        conn: SQLAlchemy connection object or sqlite3 connection for metadata.db
+
+    Note:
+        This function is designed to be safe for production - it will log warnings
+        for schema mismatches rather than automatically modifying tables to prevent
+        data loss. Manual migration is required for schema changes.
+    """
+    ensure_checksum_table(conn)
+
+
+def ensure_app_db_tables(conn):
+    """
+    Ensure progress syncing tables for app.db (Flask/user database) exist.
+
+    Creates or validates tables that reference users:
+    - kosync_progress: Stores reading progress from KOSync protocol
+
+    Args:
+        conn: SQLAlchemy connection object or sqlite3 connection for app.db
+
+    Note:
+        This function is designed to be safe for production - it will log warnings
+        for schema mismatches rather than automatically modifying tables to prevent
+        data loss. Manual migration is required for schema changes.
+    """
+    ensure_kosync_progress_table(conn)
 
 
 def ensure_checksum_table(conn):
@@ -93,7 +132,79 @@ def ensure_checksum_table(conn):
         log.error(traceback.format_exc())
 
 
-class BookFormatChecksum(Base):
+def ensure_kosync_progress_table(conn):
+    """
+    Ensure the kosync_progress table exists with the correct schema.
+
+    This function is called during database initialization to create the KOSync
+    progress table if it doesn't exist. If the table exists with a different schema,
+    a warning is logged and the table is left as-is to allow for proper migration.
+
+    Args:
+        conn: SQLAlchemy connection object or sqlite3 connection
+    """
+    try:
+        # Detect connection type - SQLAlchemy uses text() wrapper, sqlite3 uses raw strings
+        is_sqlalchemy = hasattr(conn, 'execute') and hasattr(conn.execute.__self__, 'dialect')
+
+        def execute_sql(sql):
+            """Execute SQL with appropriate wrapper based on connection type."""
+            if is_sqlalchemy:
+                return conn.execute(text(sql))
+            else:
+                return conn.execute(sql)
+
+        # Check if table exists
+        result = execute_sql("SELECT name FROM sqlite_master WHERE type='table' AND name='kosync_progress'")
+        table_exists = result.fetchone() is not None
+
+        if table_exists:
+            # Check if table has the expected schema
+            pragma_result = execute_sql("PRAGMA table_info(kosync_progress)")
+            columns = [row[1] for row in pragma_result.fetchall()]
+
+            expected_columns = {'id', 'user_id', 'document', 'progress', 'percentage', 'device', 'device_id', 'timestamp'}
+            actual_columns = set(columns)
+
+            # If schema doesn't match, log warning and skip (requires migration)
+            if actual_columns != expected_columns:
+                missing = expected_columns - actual_columns
+                extra = actual_columns - expected_columns
+                log.warning(
+                    f"kosync_progress table schema mismatch. "
+                    f"Expected columns: {expected_columns}. "
+                    f"Missing: {missing}. Extra: {extra}. "
+                    f"Migration required."
+                )
+                return  # Skip creation, table exists but needs migration
+
+        if not table_exists:
+            # Create table for KOSync reading progress
+            execute_sql("""
+                CREATE TABLE kosync_progress (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    document TEXT NOT NULL,
+                    progress TEXT NOT NULL,
+                    percentage REAL NOT NULL,
+                    device TEXT NOT NULL,
+                    device_id TEXT,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES user(id)
+                )
+            """)
+            execute_sql("CREATE INDEX idx_kosync_user_document ON kosync_progress(user_id, document)")
+            execute_sql("CREATE INDEX idx_kosync_document ON kosync_progress(document)")
+            conn.commit()
+            log.info("Created kosync_progress table with indexes")
+
+    except Exception as e:
+        log.error(f"Could not create kosync_progress table: {e}")
+        import traceback
+        log.error(traceback.format_exc())
+
+
+class BookFormatChecksum(CalibreBase):
     """
     Stores partial MD5 checksums for book formats to support KOReader sync.
 
@@ -135,3 +246,36 @@ class BookFormatChecksum(Base):
 
     def __repr__(self):
         return f"<BookFormatChecksum(book={self.book}, format={self.format}, checksum={self.checksum}, version={self.version})>"
+
+
+class KOSyncProgress(AppBase):
+    """
+    Stores KOReader sync progress data for reading position synchronization.
+
+    This table maintains reading progress for documents synced via the KOSync protocol,
+    which is used by KOReader e-reader devices. Each record represents a user's
+    reading position for a specific document.
+
+    Fields:
+        user_id: Foreign key to the user who owns this progress record
+        document: Document identifier (typically a checksum or file path)
+        progress: Raw progress value (string representation, format varies)
+        percentage: Normalized percentage (0-100) of reading progress
+        device: Device name that last synced this progress
+        device_id: Unique identifier for the device
+        timestamp: Last update time for this progress record
+    """
+    __tablename__ = 'kosync_progress'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    document = Column(String, nullable=False)
+    progress = Column(String, nullable=False)
+    percentage = Column(Float, nullable=False)
+    device = Column(String, nullable=False)
+    device_id = Column(String)
+    timestamp = Column(TIMESTAMP, default=lambda: datetime.now(timezone.utc),
+                       onupdate=lambda: datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return f'<KOSyncProgress user={self.user_id} doc={self.document}>'

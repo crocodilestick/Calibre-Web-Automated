@@ -118,11 +118,9 @@ def authenticate_user() -> Optional[ub.User]:
             return user
         if error is not None:
             log.error(f"authenticate_user: LDAP error for user {user.name}: {error}")
-        # If LDAP authentication fails, don't fall back to local password for LDAP-configured systems
-        log.warning(f"authenticate_user: LDAP authentication failed for user: {user.name}")
-        return None
+        # Fall through to local password check for local users when LDAP is configured
     
-    # Standard password check for non-LDAP systems (convert password to string like Calibre-Web does)
+    # Standard password check (convert password to string like Calibre-Web does)
     if check_password_hash(str(user.password), password):
         log.info(f"authenticate_user: Successfully authenticated user: {user.name}")
         return user

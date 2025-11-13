@@ -109,7 +109,20 @@ def authenticate_user() -> Optional[ub.User]:
         log.warning(f"authenticate_user: User not found: {username}")
         return None
 
-    # Standard password check (convert password to string like Calibre-Web does)
+    # Check if LDAP authentication is enabled
+    if config.config_login_type == constants.LOGIN_LDAP and services.ldap:
+        # Try LDAP authentication
+        login_result, error = services.ldap.bind_user(user.name, password)
+        if login_result:
+            log.info(f"authenticate_user: Successfully authenticated user via LDAP: {user.name}")
+            return user
+        if error is not None:
+            log.error(f"authenticate_user: LDAP error for user {user.name}: {error}")
+        # If LDAP authentication fails, don't fall back to local password for LDAP-configured systems
+        log.warning(f"authenticate_user: LDAP authentication failed for user: {user.name}")
+        return None
+    
+    # Standard password check for non-LDAP systems (convert password to string like Calibre-Web does)
     if check_password_hash(str(user.password), password):
         log.info(f"authenticate_user: Successfully authenticated user: {user.name}")
         return user

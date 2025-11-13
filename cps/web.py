@@ -27,7 +27,7 @@ from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import constants, logger, isoLanguages, services
-from . import db, ub, config, app
+from . import db, ub, config, app, csrf
 from . import calibre_db, kobo_sync_status
 from .search import render_search_results, render_adv_search_results
 from .gdriveutils import getFileFromEbooksFolder, do_gdrive_download
@@ -1789,6 +1789,7 @@ def show_book(book_id):
 
 # ################################### API Endpoints ##################################################################
 
+@csrf.exempt
 @web.route("/api/progress/save", methods=["POST"])
 @user_login_required
 def api_save_progress():
@@ -1825,6 +1826,7 @@ def api_save_progress():
         ub.session.rollback()
         return jsonify({"error": str(e)}), 500
 
+@csrf.exempt
 @web.route("/api/progress/get", methods=["GET"])
 @user_login_required
 def api_get_progress():

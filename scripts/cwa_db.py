@@ -31,6 +31,7 @@ class CWA_DB:
         self.cwa_default_settings = self.get_cwa_default_settings()
         self.ensure_settings_schema_match()
         self.match_stat_table_columns_with_schema()
+        self.ensure_scheduled_jobs_schema()
         self.set_default_settings()
         self.cwa_settings = self.get_cwa_settings()
 
@@ -389,6 +390,167 @@ class CWA_DB:
                 print(f"[cwa-db] ERROR - The following error occurred when fetching stat totals:\n{e}")
 
         return totals
+
+    # ==============================
+    # Scheduled Jobs (Auto-Send)
+    # ==============================
+
+    def ensure_scheduled_jobs_schema(self) -> None:
+        """Add missing columns to cwa_scheduled_jobs if older table exists."""
+        try:
+            cols = [r[1] for r in self.cur.execute("PRAGMA table_info('cwa_scheduled_jobs')").fetchall()]
+            if cols:
+                if 'scheduler_job_id' not in cols:
+                    self.cur.execute("ALTER TABLE cwa_scheduled_jobs ADD COLUMN scheduler_job_id TEXT DEFAULT ''")
+                    self.con.commit()
+        except Exception:
+            # If table doesn't exist yet, it will be created from schema
+            pass
+
+    def scheduled_add_autosend(self, book_id: int, user_id: int, run_at_utc_iso: str, username: str, title: str) -> int | None:
+        """Insert a scheduled auto-send job and return its row id."""
+        try:
+            created_at = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            self.cur.execute(
+                """
+                INSERT INTO cwa_scheduled_jobs(job_type, book_id, user_id, username, title, run_at_utc, created_at_utc, state)
+                VALUES(?,?,?,?,?,?,?, 'scheduled')
+                """,
+                ('auto_send', int(book_id), int(user_id), username, title, run_at_utc_iso, created_at)
+            )
+            self.con.commit()
+            return self.cur.lastrowid
+        except Exception as e:
+            print(f"[cwa-db] ERROR adding scheduled auto-send: {e}")
+            return None
+
+    def scheduled_add_job(self, job_type: str, run_at_utc_iso: str, username: str = 'System', title: str = '') -> int | None:
+        """Insert a scheduled generic job (e.g., convert_library, epub_fixer) and return row id."""
+        try:
+            created_at = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            self.cur.execute(
+                """
+                INSERT INTO cwa_scheduled_jobs(job_type, book_id, user_id, username, title, run_at_utc, created_at_utc, state)
+                VALUES(?,?,?,?,?,?,?, 'scheduled')
+                """,
+                (str(job_type), None, None, username, title, run_at_utc_iso, created_at)
+            )
+            self.con.commit()
+            return self.cur.lastrowid
+        except Exception as e:
+            print(f"[cwa-db] ERROR adding scheduled job '{job_type}': {e}")
+            return None
+
+    def scheduled_mark_dispatched(self, row_id: int) -> bool:
+        try:
+            # Only transition scheduled -> dispatched; ignore if already cancelled/dispatched
+            self.cur.execute("UPDATE cwa_scheduled_jobs SET state='dispatched' WHERE id=? AND state='scheduled'", (int(row_id),))
+            self.con.commit()
+            return self.cur.rowcount > 0
+        except Exception as e:
+            print(f"[cwa-db] ERROR marking scheduled job dispatched: {e}")
+            return False
+
+    def scheduled_mark_cancelled(self, row_id: int) -> None:
+        try:
+            self.cur.execute("UPDATE cwa_scheduled_jobs SET state='cancelled' WHERE id=?", (int(row_id),))
+            self.con.commit()
+        except Exception as e:
+            print(f"[cwa-db] ERROR marking scheduled job cancelled: {e}")
+
+    def scheduled_update_job_id(self, row_id: int, scheduler_job_id: str) -> None:
+        try:
+            self.cur.execute("UPDATE cwa_scheduled_jobs SET scheduler_job_id=? WHERE id=?", (scheduler_job_id, int(row_id)))
+            self.con.commit()
+        except Exception as e:
+            print(f"[cwa-db] ERROR updating scheduler_job_id: {e}")
+
+    def scheduled_get_by_id(self, row_id: int):
+        try:
+            row = self.cur.execute("SELECT * FROM cwa_scheduled_jobs WHERE id=?", (int(row_id),)).fetchone()
+            if not row:
+                return None
+            cols = [d[0] for d in self.cur.description]
+            return dict(zip(cols, row))
+        except Exception as e:
+            print(f"[cwa-db] ERROR fetching scheduled job by id: {e}")
+            return None
+
+    def scheduled_get_upcoming_autosend(self, limit: int = 50):
+        try:
+            now_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            rows = self.cur.execute(
+                """
+                SELECT id, book_id, user_id, username, title, run_at_utc, state
+                FROM cwa_scheduled_jobs
+                WHERE job_type='auto_send' AND state='scheduled' AND run_at_utc >= ?
+                ORDER BY run_at_utc ASC
+                LIMIT ?
+                """,
+                (now_utc, int(limit))
+            ).fetchall()
+            cols = [d[0] for d in self.cur.description]
+            return [dict(zip(cols, r)) for r in rows]
+        except Exception as e:
+            print(f"[cwa-db] ERROR fetching upcoming scheduled auto-sends: {e}")
+            return []
+
+    def scheduled_get_upcoming_by_type(self, job_type: str, limit: int = 50):
+        try:
+            now_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            rows = self.cur.execute(
+                """
+                SELECT id, job_type, book_id, user_id, username, title, run_at_utc, state
+                FROM cwa_scheduled_jobs
+                WHERE job_type=? AND state='scheduled' AND run_at_utc >= ?
+                ORDER BY run_at_utc ASC
+                LIMIT ?
+                """,
+                (str(job_type), now_utc, int(limit))
+            ).fetchall()
+            cols = [d[0] for d in self.cur.description]
+            return [dict(zip(cols, r)) for r in rows]
+        except Exception as e:
+            print(f"[cwa-db] ERROR fetching upcoming scheduled jobs for {job_type}: {e}")
+            return []
+
+    def scheduled_get_pending_autosend(self):
+        """Return all not-yet-dispatched auto-sends due in the future (for rehydration)."""
+        try:
+            now_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            rows = self.cur.execute(
+                """
+                SELECT id, book_id, user_id, username, title, run_at_utc
+                FROM cwa_scheduled_jobs
+                WHERE job_type='auto_send' AND state='scheduled' AND run_at_utc >= ?
+                ORDER BY run_at_utc ASC
+                """,
+                (now_utc,)
+            ).fetchall()
+            cols = [d[0] for d in self.cur.description]
+            return [dict(zip(cols, r)) for r in rows]
+        except Exception as e:
+            print(f"[cwa-db] ERROR fetching pending scheduled auto-sends: {e}")
+            return []
+
+    def scheduled_get_pending_by_type(self, job_type: str):
+        """Return all not-yet-dispatched jobs of given type due in the future (for rehydration)."""
+        try:
+            now_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            rows = self.cur.execute(
+                """
+                SELECT id, job_type, book_id, user_id, username, title, run_at_utc
+                FROM cwa_scheduled_jobs
+                WHERE job_type=? AND state='scheduled' AND run_at_utc >= ?
+                ORDER BY run_at_utc ASC
+                """,
+                (str(job_type), now_utc)
+            ).fetchall()
+            cols = [d[0] for d in self.cur.description]
+            return [dict(zip(cols, r)) for r in rows]
+        except Exception as e:
+            print(f"[cwa-db] ERROR fetching pending scheduled jobs for {job_type}: {e}")
+            return []
 
 def main():
     db = CWA_DB()

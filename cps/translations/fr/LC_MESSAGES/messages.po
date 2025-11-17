@@ -26,7 +26,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2025-09-03 14:59+0200\n"
-"PO-Revision-Date: 2025-11-02 22:38+0100\n"
+"PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -495,10 +495,9 @@ msgid "General error"
 msgstr "Erreur générale"
 
 #: cps/admin.py:1667
-#, fuzzy
 msgid "Update file could not be saved in temp dir"
 msgstr ""
-"Le fichier de mise à jour n'a peut pas être sauvegardé dans le répertoire "
+"Le fichier de mise à jour n'a pas pu être sauvegardé dans le répertoire "
 "temporaire"
 
 #: cps/admin.py:1668
@@ -565,7 +564,7 @@ msgstr ""
 
 #: cps/admin.py:2044
 msgid "Database Settings updated"
-msgstr "La configuration de la base de données à été mise à jour"
+msgstr "La configuration de la base de données a été mise à jour"
 
 #: cps/admin.py:2052
 msgid "Database Configuration"
@@ -923,7 +922,7 @@ msgstr "Image de profil mise à jour."
 
 #: cps/cwa_functions.py:861
 msgid "CWA Profile Picture Management (WIP)"
-msgstr "Manageur de photo de profil cd CWA (WIP)"
+msgstr "Manageur de photo de profil (travail en cours)"
 
 #: cps/db.py:1075 cps/templates/config_edit.html:217
 #: cps/templates/config_view_edit.html:63 cps/templates/email_edit.html:41
@@ -969,7 +968,7 @@ msgstr "Une erreur est survenue au cours de la conversion du livre : %(res)s"
 
 #: cps/editbooks.py:298 cps/editbooks.py:967 cps/editbooks.py:1417
 msgid "File type isn't allowed to be uploaded to this server"
-msgstr "Ce type de fichier n’est pas autorisée à être déposée sur ce serveur"
+msgstr "Ce type de fichier n’est pas autorisé à être déposé sur ce serveur"
 
 #: cps/editbooks.py:303 cps/editbooks.py:973 cps/editbooks.py:1428
 #, python-format

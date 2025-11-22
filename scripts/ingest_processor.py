@@ -313,7 +313,7 @@ class NewBookProcessor:
         # Split library support
         self.split_library = self.get_split_library()
         if self.split_library:
-            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.library_dir, "metadata.db")
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = self.metadata_db
             self.library_dir = self.split_library["split_path"]
 
         # Track the last added Calibre book id(s) from calibredb output

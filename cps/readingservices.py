@@ -37,6 +37,10 @@ readingservices_userstorage = Blueprint("readingservices_userstorage", __name__,
 
 KOBO_READING_SERVICES_URL = "https://readingservices.kobo.com"
 
+# Constants for annotation processing
+MAX_PROGRESS_PERCENTAGE = 100  # Cap progress at 100%
+SYNC_CHECK_BATCH_SIZE = 50  # Batch size for checking existing syncs
+REQUEST_TIMEOUT = (2, 10)  # (connect, read) timeouts in seconds
 
 CONNECTION_SPECIFIC_HEADERS = [
     "connection",
@@ -46,11 +50,16 @@ CONNECTION_SPECIFIC_HEADERS = [
 ]
 
 def redact_headers(headers):
-    """Redact sensitive headers from the headers dictionary."""
+    """Redact sensitive headers from the headers dictionary.
+    
+    Returns a new dictionary with sensitive headers redacted to avoid
+    mutating the original headers object.
+    """
+    redacted = dict(headers)
     for sensitive_header in ['Authorization', 'x-kobo-userkey', 'Cookie', 'Set-Cookie']:
-        if sensitive_header in headers:
-            headers[sensitive_header] = '***REDACTED***'
-    return headers
+        if sensitive_header in redacted:
+            redacted[sensitive_header] = '***REDACTED***'
+    return redacted
 
 
 def proxy_to_kobo_reading_services():
@@ -183,10 +192,17 @@ def calculate_progress_from_epub(book: db.Books, chapter_filename: str, chapter_
     """
     Calculate exact progress percentage by parsing the epub file structure.
     
+    This function:
+    1. Opens the EPUB/KEPUB file as a ZIP archive
+    2. Parses the OPF (Open Packaging Format) file to get spine (reading order)
+    3. Calculates character counts for each chapter
+    4. Determines which chapter the reader is in
+    5. Calculates overall progress based on characters read vs total
+    
     Args:
-        book: Calibre book object
+        book: Calibre book object with path and format data
         chapter_filename: The filename of the chapter (e.g., "OEBPS/xhtml/prologue.xhtml")
-        chapter_progress: Progress within the chapter (0.0 to 1.0)
+        chapter_progress: Progress within the chapter as decimal (0.0 to 1.0)
     
     Returns:
         Progress percentage (0-100) or None if calculation fails
@@ -429,7 +445,15 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
     progress_page = None
     chapter_filename = annotation.get('location', {}).get('span', {}).get('chapterFilename')
     chapter_progress = annotation.get('location', {}).get('span', {}).get('chapterProgress')
-    progress_percent = progress_percent if progress_percent is not None else calculate_progress_from_epub(book, chapter_filename, chapter_progress)
+    
+    if progress_percent is None:
+        calculated_progress = calculate_progress_from_epub(book, chapter_filename, chapter_progress)
+        if calculated_progress is not None:
+            progress_percent = calculated_progress
+        else:
+            log.warning(f"Failed to calculate exact progress for annotation in book '{book.title}' (ID: {book.id}). Annotation will sync without progress data.")
+            # Note: This can happen if the EPUB structure is unusual or the book file is inaccessible
+            # The annotation will still sync, just without progress percentage
 
     # Sync to Hardcover if enabled and user has valid token
     if (config.config_kobo_sync and
@@ -479,12 +503,15 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
                             )
                             ub.session.add(sync_record)
                         ub.session_commit()
-                        log.info(f"Successfully synced annotation {annotation_id} to Hardcover")
+                        log.info(f"Successfully synced annotation {annotation_id} to Hardcover (journal ID: {result.get('id')})")
                         return True
                     except Exception as e:
-                        log.error(f"Failed to save sync record: {e}")
+                        log.error(f"Failed to save sync record for annotation {annotation_id}: {e}")
+                        log.error(f"Hardcover journal entry {result.get('id')} was created but DB tracking failed - may cause duplicate on retry")
                         ub.session.rollback()
-                        # Note: Hardcover sync succeeded but DB record failed - annotation may be retried
+                        # Note: Hardcover sync succeeded but DB record failed
+                        # On retry, this could create a duplicate journal entry on Hardcover
+                        # TODO: Add cleanup task to reconcile orphaned journal entries
                         return False
                 else:
                     log.warning(f"Failed to sync annotation {annotation_id} to Hardcover")
@@ -573,13 +600,23 @@ def handle_annotations(entitlement_id):
                             ub.KoboAnnotationSync.user_id == current_user.id
                         ).first()
                         if sync_record:
-                            hardcover_client = hardcover.HardcoverClient(current_user.hardcover_token)
-                            if hardcover_client.delete_journal_entry(journal_id=sync_record.hardcover_journal_id) == sync_record.hardcover_journal_id:
-                                ub.session.delete(sync_record)
-                                ub.session_commit()
-                                log.info(f"Successfully deleted journal entry {sync_record.hardcover_journal_id} from Hardcover")
-                            else:
-                                log.warning(f"Failed to delete journal entry {sync_record.hardcover_journal_id} from Hardcover")
+                            try:
+                                hardcover_client = hardcover.HardcoverClient(current_user.hardcover_token)
+                                deleted_id = hardcover_client.delete_journal_entry(journal_id=sync_record.hardcover_journal_id)
+                                if deleted_id == sync_record.hardcover_journal_id:
+                                    try:
+                                        ub.session.delete(sync_record)
+                                        ub.session_commit()
+                                        log.info(f"Successfully deleted journal entry {sync_record.hardcover_journal_id} from Hardcover and local DB")
+                                    except Exception as db_error:
+                                        log.error(f"Failed to delete local sync record after Hardcover deletion succeeded: {db_error}")
+                                        log.error(f"Annotation {annotation_id} deleted from Hardcover but DB record remains - manual cleanup may be needed")
+                                        ub.session.rollback()
+                                else:
+                                    log.warning(f"Failed to delete journal entry {sync_record.hardcover_journal_id} from Hardcover - keeping local record")
+                            except Exception as api_error:
+                                log.error(f"Error deleting annotation {annotation_id} from Hardcover: {api_error}")
+                                # Don't delete local record if Hardcover deletion failed
                         else:
                             log.warning(f"Sync record not found for annotation {annotation_id}, skipping deletion")
             

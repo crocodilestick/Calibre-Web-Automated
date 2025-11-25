@@ -288,5 +288,6 @@ VOLUME /cwa-book-ingest
 VOLUME /calibre-library
 
 # Health check for container orchestration
+# Uses shell form to support environment variable substitution for CWA_PORT_OVERRIDE
 HEALTHCHECK --interval=30s --timeout=3s --start-period=120s --retries=3 \
-  CMD curl -f http://localhost:8083/ || exit 1
+  CMD curl -f http://localhost:${CWA_PORT_OVERRIDE:-8083}/ || exit 1

@@ -512,6 +512,7 @@ class KoboAnnotationSync(Base):
     
     __table_args__ = (
         Index('ix_kobo_annotation_sync_user_annotation', 'user_id', 'annotation_id'),
+        Index('ix_kobo_annotation_sync_user_book', 'user_id', 'book_id'),
     )
 
     def __repr__(self):

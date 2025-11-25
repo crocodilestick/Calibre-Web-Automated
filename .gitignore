@@ -19,12 +19,12 @@ replit.nix
 .breakpoints
 .venv
 .vscode
-.cursor
 .history
 cwa-wiki/
 docs/
 .venv-activate.sh
 test_venv
+cwa.code-workspace
 
 
 # Test Scripts

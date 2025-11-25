@@ -223,7 +223,7 @@
         {% endfor %}
       {% endif %}
 
-      {% if config.config_kobo_sync %}
+      {% if config.config_kobo_sync and (config.config_hardcover_sync or config.config_hardcover_annotations_sync) %}
       <div class="form-group">
         <label>{{_('Hardcover Sync Blacklist')}}</label>
         {% if config.config_hardcover_annotations_sync %}
@@ -241,7 +241,7 @@
         </div>
         {% endif %}
       </div>
-        {% endif %}
+      {% endif %}
 
     <div class="checkbox">
       <label>

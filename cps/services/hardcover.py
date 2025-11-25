@@ -5,6 +5,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+"""
+Hardcover.app GraphQL API client for syncing reading progress and annotations.
+
+This module provides a client for interacting with Hardcover's GraphQL API to:
+- Track reading progress
+- Sync book annotations/highlights
+- Manage reading journal entries
+- Update book status (Want to Read, Reading, Read)
+"""
+
 from datetime import datetime
 import requests
 
@@ -12,7 +22,18 @@ from .. import logger
 
 log = logger.create()
 
+# API Configuration
 GRAPHQL_ENDPOINT = "https://api.hardcover.app/v1/graphql"
+REQUEST_TIMEOUT = 10  # seconds
+
+# Book Status Constants (Hardcover status IDs)
+STATUS_WANT_TO_READ = 1
+STATUS_READING = 2
+STATUS_READ = 3
+
+# Progress Calculation Constants
+MAX_PROGRESS_PERCENTAGE = 100
+DECIMAL_PLACES = 2  # For rounding percentages
 
 USER_BOOK_FRAGMENT = """
     fragment userBookFragment on user_books {
@@ -38,10 +59,17 @@ USER_BOOK_FRAGMENT = """
 
 
 def escape_markdown(text):
-    """Escape markdown special characters to prevent injection."""
+    """Escape markdown special characters to prevent injection.
+    
+    Escapes both markdown syntax and HTML to prevent injection attacks
+    when annotations are displayed on Hardcover.
+    """
     if not text:
         return text
-    special_chars = ['\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '#', '+', '-', '.', '!', '|']
+    # Order matters: backslash must be first to avoid double-escaping
+    # Remove '-' and '.' as they don't need escaping in most markdown flavors
+    # Add '<' and '>' to prevent HTML injection
+    special_chars = ['\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '#', '+', '!', '|', '<', '>']
     for char in special_chars:
         text = text.replace(char, '\\' + char)
     return text
@@ -70,6 +98,7 @@ class HardcoverClient:
         ids = self.parse_identifiers(ids)
         # Return None if no hardcover identifiers present
         if not ids or not any(key in ids for key in ["hardcover-edition", "hardcover-id", "hardcover-slug"]):
+            log.warning("No Hardcover identifiers (hardcover-id, hardcover-edition, or hardcover-slug) found for book. Skipping Hardcover sync.")
             return None
         
         query = ""
@@ -96,14 +125,14 @@ class HardcoverClient:
             variables["query"] = ids["hardcover-id"]
         elif "hardcover-slug" in ids:
             query = """
-                query ($query: String!) {
+                query ($slug: String!) {
                     me {
-                        user_books(where: {book: {slug: {_eq: $query}}}) {
+                        user_books(where: {book: {slug: {_eq: $slug}}}) {
                             ...userBookFragment
                         }
                     }
                 }"""
-            variables["query"] = ids["hardcover-slug"]
+            variables["slug"] = ids["hardcover-slug"]
         query += USER_BOOK_FRAGMENT
         response = self.execute(query, variables)
         return next(iter(response.get("me")[0].get("user_books")), None)
@@ -115,12 +144,12 @@ class HardcoverClient:
             book = self.get_user_book(ids)
             # Book doesn't exist, add it in Reading status
             if not book:
-                book = self.add_book(ids, status=2)
+                book = self.add_book(ids, status=STATUS_READING)
             # Book is either WTR or Read, and we aren't finished reading
-            if book.get("status_id") != 2 and progress_percent != 100:
-                book = self.change_book_status(book, 2)
+            if book.get("status_id") != STATUS_READING and progress_percent != MAX_PROGRESS_PERCENTAGE:
+                book = self.change_book_status(book, STATUS_READING)
             # Book is already marked as read, and we are also done
-            if book.get("status_id") == 3 and progress_percent == 100:
+            if book.get("status_id") == STATUS_READ and progress_percent == MAX_PROGRESS_PERCENTAGE:
                 return
             pages = book.get("edition", {}).get("pages", 0)
             if pages:
@@ -151,12 +180,12 @@ class HardcoverClient:
                         ),
                         "finishedAt": (
                             datetime.now().strftime("%Y-%m-%d")
-                            if progress_percent == 100
+                            if progress_percent == MAX_PROGRESS_PERCENTAGE
                             else None
                         ),
                     }
-                    if progress_percent == 100:
-                        self.change_book_status(book, 3)
+                    if progress_percent == MAX_PROGRESS_PERCENTAGE:
+                        self.change_book_status(book, STATUS_READ)
                     self.execute(query=mutation, variables=variables)
             return
         else:
@@ -229,15 +258,22 @@ class HardcoverClient:
         metadata = {}
         if progress_percent is not None or progress_page is not None:
             pages = book.get("edition", {}).get("pages", 0)
+            
+            # Calculate actual page number from percentage or use provided page
             page_number = progress_page if progress_page else round(pages * (progress_percent / 100))
-            page_percent = round ((page_number / pages) * 100, 2) if pages else None
-            percent = round(progress_percent, 2) if progress_percent is not None else page_percent
-            # Match Hardcover's web UI metadata structure
+            
+            # Calculate percentage from page number if only page was provided
+            page_percent = round((page_number / pages) * 100, DECIMAL_PLACES) if pages else None
+            
+            # Use provided percentage or calculated percentage
+            percent = round(progress_percent, DECIMAL_PLACES) if progress_percent is not None else page_percent
+            
+            # Match Hardcover's web UI metadata structure for progress tracking
             metadata["position"] = {
-                "type": "pages",
-                "value": page_number,
-                "percent": percent,
-                "possible": pages
+                "type": "pages",           # Progress type (pages vs. percentage)
+                "value": page_number,      # Current page number
+                "percent": percent,        # Overall progress percentage
+                "possible": pages          # Total pages in book
             }
             log.info(f"Calculated page {page_number} from {progress_percent:.1f}% of {pages} pages")
         
@@ -384,6 +420,15 @@ class HardcoverClient:
             return None
 
     def delete_journal_entry(self, journal_id: int):
+        """
+        Delete a journal entry from Hardcover.
+        
+        Args:
+            journal_id: The ID of the journal entry to delete
+        
+        Returns:
+            The deleted journal entry ID or None if failed
+        """
         mutation = """
             mutation ($journal_id: Int!) {
                 delete_reading_journal(id: $journal_id) {
@@ -398,6 +443,7 @@ class HardcoverClient:
         ids = self.parse_identifiers(identifiers)
         # Return None if no hardcover-id present (required for adding book)
         if not ids or "hardcover-id" not in ids:
+            log.warning("No hardcover-id identifier found for book. Cannot add book to Hardcover. Please fetch metadata to add Hardcover identifiers.")
             return None
         
         mutation = (

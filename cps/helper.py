@@ -1048,6 +1048,8 @@ def save_cover_with_thumbnail_update(img, book_path, book_id=None):
 def do_download_file(book, book_format, client, data, headers):
     book_name = data.name
     download_name = filename = None
+    metadata_was_embedded = False  # Track if we embedded metadata
+
     if config.config_use_google_drive:
         # startTime = time.time()
         df = gd.getFileFromEbooksFolder(book.path, data.name + "." + book_format)
@@ -1063,8 +1065,10 @@ def do_download_file(book, book_format, client, data, headers):
                 gd.downloadFile(book.path, book_name + "." + book_format, output)
                 if book_format == "kepub" and config.config_kepubifypath:
                     filename, download_name = do_kepubify_metadata_replace(book, output)
+                    metadata_was_embedded = True
                 elif book_format != "kepub" and config.config_binariesdir:
                     filename, download_name = do_calibre_export(book.id, book_format)
+                    metadata_was_embedded = True
             else:
                 return gd.do_gdrive_download(df, headers)
         else:
@@ -1081,16 +1085,54 @@ def do_download_file(book, book_format, client, data, headers):
         if book_format == "kepub" and config.config_kepubifypath and config.config_embed_metadata:
             filename, download_name = do_kepubify_metadata_replace(book, os.path.join(filename,
                                                                                       book_name + "." + book_format))
+            metadata_was_embedded = True
         elif book_format != "kepub" and config.config_binariesdir and config.config_embed_metadata:
             filename, download_name = do_calibre_export(book.id, book_format)
+            metadata_was_embedded = True
+
+            # Rename the exported file to match the expected download name (from Content-Disposition)
+            # This ensures KOReader calculates the checksum on the same file we calculated it on
+            if filename and download_name:
+                uuid_file = os.path.join(filename, download_name + "." + book_format)
+                expected_file = os.path.join(filename, book_name + "." + book_format)
+
+                if os.path.exists(uuid_file) and uuid_file != expected_file:
+                    try:
+                        # Remove the target file if it already exists
+                        if os.path.exists(expected_file):
+                            os.remove(expected_file)
+                        # Rename UUID file to expected name
+                        os.rename(uuid_file, expected_file)
+                        download_name = book_name
+                        log.info(f'Renamed exported file to match expected name: {book_name}.{book_format}')
+                    except Exception as e:
+                        log.error(f'Failed to rename exported file: {e}')
         else:
             download_name = book_name
+
+    # Calculate and store checksum if metadata was embedded
+    if metadata_was_embedded and filename and download_name:
+        try:
+            from .progress_syncing import calculate_and_store_checksum
+
+            # Calculate checksum on the EXPORTED file (with embedded metadata)
+            # This is what KOReader actually downloads and calculates the checksum for
+            exported_file = os.path.join(filename, download_name + "." + book_format)
+
+            if os.path.exists(exported_file):
+                calculate_and_store_checksum(
+                    book_id=book.id,
+                    book_format=book_format,
+                    file_path=exported_file  # Use exported file with embedded metadata!
+                )
+        except Exception as e:
+            log.error(f"Failed to calculate/store checksum for book {book.id}: {e}")
+            # Don't fail the download if checksum calculation fails
 
     response = make_response(send_from_directory(filename, download_name + "." + book_format))
     # ToDo Check headers parameter
     for element in headers:
         response.headers[element[0]] = element[1]
-    log.info('Downloading file: {}'.format(os.path.join(filename, book_name + "." + book_format)))
     return response
 
 

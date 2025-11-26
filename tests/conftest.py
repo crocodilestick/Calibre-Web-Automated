@@ -32,6 +32,11 @@ project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
+# Add scripts directory to Python path so 'cwa_db' module can be imported
+scripts_dir = project_root / "scripts"
+if str(scripts_dir) not in sys.path:
+    sys.path.insert(0, str(scripts_dir))
+
 
 # Check if we should use Docker volumes (for DinD environments)
 USE_DOCKER_VOLUMES = os.getenv('USE_DOCKER_VOLUMES', 'false').lower() == 'true'
@@ -149,16 +154,16 @@ else:
 def check_container_available(port=None):
     """
     Check if a CWA container is available on the specified port.
-    
+
     Args:
         port: Port to check (defaults to CWA_TEST_PORT env var or 8085)
-    
+
     Returns:
         bool: True if container is accessible, False otherwise
     """
     if port is None:
         port = os.getenv('CWA_TEST_PORT', '8085')
-    
+
     try:
         response = requests.get(f"http://localhost:{port}", timeout=2)
         return response.status_code == 200
@@ -178,14 +183,14 @@ def container_available():
 def get_db_path(db_path, tmp_path=None):
     """
     Get a local filesystem path for database access.
-    
+
     In bind mount mode: Returns the path directly
     In volume mode: Extracts DB to temp location and returns local path
-    
+
     Args:
         db_path: Path or VolumePath to database file
         tmp_path: Temporary directory (required in volume mode)
-    
+
     Returns:
         Path: Local filesystem path to database file
     """
@@ -234,7 +239,7 @@ def temp_config_dir(tmp_path):
     """Create a temporary /config directory structure for testing."""
     config_dir = tmp_path / "config"
     config_dir.mkdir()
-    
+
     # Create subdirectories
     (config_dir / "processed_books" / "converted").mkdir(parents=True)
     (config_dir / "processed_books" / "imported").mkdir(parents=True)
@@ -242,7 +247,7 @@ def temp_config_dir(tmp_path):
     (config_dir / "processed_books" / "fixed_originals").mkdir(parents=True)
     (config_dir / "log_archive").mkdir()
     (config_dir / ".cwa_conversion_tmp").mkdir()
-    
+
     yield config_dir
 
 
@@ -251,12 +256,12 @@ def temp_library_dir(tmp_path):
     """Create a temporary Calibre library directory for testing."""
     library = tmp_path / "calibre-library"
     library.mkdir()
-    
+
     # Create minimal metadata.db
     import sqlite3
     db_path = library / "metadata.db"
     con = sqlite3.connect(str(db_path))
-    
+
     # Minimal schema (just enough to not crash)
     con.execute("""
         CREATE TABLE books (
@@ -276,7 +281,7 @@ def temp_library_dir(tmp_path):
             last_modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
     """)
-    
+
     con.execute("""
         CREATE TABLE authors (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -285,7 +290,7 @@ def temp_library_dir(tmp_path):
             link TEXT NOT NULL DEFAULT ''
         )
     """)
-    
+
     con.execute("""
         CREATE TABLE books_authors_link (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -294,10 +299,10 @@ def temp_library_dir(tmp_path):
             UNIQUE(book, author)
         )
     """)
-    
+
     con.commit()
     con.close()
-    
+
     yield library
 
 
@@ -309,29 +314,29 @@ def temp_library_dir(tmp_path):
 def temp_cwa_db(tmp_path, monkeypatch):
     """
     Create a temporary CWA database for testing.
-    
+
     Uses monkeypatch to temporarily override the database path
     so tests don't interfere with real data.
     """
     import sys
     from pathlib import Path
-    
+
     # Add scripts directory to path (works in both dev container and CI)
     scripts_dir = Path(__file__).parent.parent / "scripts"
     if str(scripts_dir) not in sys.path:
         sys.path.insert(0, str(scripts_dir))
-    
+
     from cwa_db import CWA_DB
-    
+
     # Override the database path
     db_path = tmp_path / "cwa.db"
     monkeypatch.setenv('CWA_DB_PATH', str(tmp_path))
-    
+
     # Create the database
     db = CWA_DB(verbose=False)
-    
+
     yield db
-    
+
     # Cleanup
     if db.con:
         db.con.close()
@@ -375,7 +380,7 @@ def sample_user_data():
 def mock_calibre_tools(mocker):
     """
     Mock Calibre CLI tools (calibredb, ebook-convert, ebook-meta).
-    
+
     Returns a dictionary of mocked subprocess calls.
     """
     mocks = {
@@ -383,13 +388,13 @@ def mock_calibre_tools(mocker):
         'ebook_convert': mocker.patch('subprocess.run'),
         'ebook_meta': mocker.patch('subprocess.run')
     }
-    
+
     # Configure default successful returns
     for mock in mocks.values():
         mock.return_value.returncode = 0
         mock.return_value.stdout = b'Success'
         mock.return_value.stderr = b''
-    
+
     return mocks
 
 
@@ -410,7 +415,7 @@ def pytest_configure(config):
         "docker_integration: mark test as requiring Docker container (slow)"
     )
     config.addinivalue_line(
-        "markers", 
+        "markers",
         "docker_e2e: mark test as end-to-end test requiring full Docker environment (very slow)"
     )
 
@@ -418,22 +423,22 @@ def pytest_configure(config):
 def pytest_collection_modifyitems(config, items):
     """
     Automatically skip tests based on environment.
-    
+
     Skip Docker tests if not in Docker environment.
     Skip Calibre tests if Calibre tools not installed.
     Skip docker_integration tests if Docker not available.
     """
     import shutil
     import os
-    
+
     skip_docker = pytest.mark.skip(reason="Not running in Docker environment")
     skip_calibre = pytest.mark.skip(reason="Calibre tools not installed")
     skip_docker_integration = pytest.mark.skip(reason="Docker not available")
-    
+
     in_docker = os.path.exists('/.dockerenv') or os.environ.get('DOCKER_CONTAINER') == 'true'
     has_calibre = shutil.which('calibredb') is not None
     has_docker = shutil.which('docker') is not None
-    
+
     for item in items:
         if "requires_docker" in item.keywords and not in_docker:
             item.add_marker(skip_docker)
@@ -458,21 +463,21 @@ def docker_compose_file() -> str:
 def test_volumes(tmp_path_factory) -> dict:
     """
     Create temporary directories for Docker volume mounts.
-    
+
     Returns a dict with paths for config, ingest, and library volumes.
     """
     base_dir = tmp_path_factory.mktemp("cwa_test_volumes")
-    
+
     volumes = {
         "config": base_dir / "config",
         "ingest": base_dir / "cwa-book-ingest",
         "library": base_dir / "calibre-library",
     }
-    
+
     # Create directory structure
     for vol_dir in volumes.values():
         vol_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Create minimal config structure
     config_dir = volumes["config"]
     (config_dir / "processed_books" / "converted").mkdir(parents=True, exist_ok=True)
@@ -481,13 +486,13 @@ def test_volumes(tmp_path_factory) -> dict:
     (config_dir / "processed_books" / "fixed_originals").mkdir(parents=True, exist_ok=True)
     (config_dir / "log_archive").mkdir(exist_ok=True)
     (config_dir / ".cwa_conversion_tmp").mkdir(exist_ok=True)
-    
+
     # Create empty Calibre library (CWA will initialize it)
     library_dir = volumes["library"]
     (library_dir / ".keep").touch()
-    
+
     yield volumes
-    
+
     # Cleanup after session
     try:
         shutil.rmtree(base_dir)
@@ -686,16 +691,16 @@ services:
 def container_name(cwa_container) -> str:
     """
     Get the container name string for use in docker commands.
-    
+
     Handles both CI mode (DockerCompose object) and Docker-in-Docker mode (string).
-    
+
     Returns:
         str: The container name that can be used with docker exec/logs commands
     """
     # In Docker-in-Docker mode, cwa_container is already a string (container name)
     if isinstance(cwa_container, str):
         return cwa_container
-    
+
     # In CI mode, cwa_container is a DockerCompose object
     # Container name is hardcoded in the docker-compose override
     return "cwa-test-container"
@@ -705,28 +710,28 @@ def container_name(cwa_container) -> str:
 def cwa_api_client(cwa_container) -> dict:
     """
     Provide a configured API client for interacting with CWA container.
-    
+
     Skips the test if no container is available on the configured port.
-    
+
     Returns a dict with:
     - base_url: The CWA web interface URL
     - session: Authenticated requests.Session
     - container: The docker compose instance
     """
     import requests
-    
+
     # Use configurable port
     # Default to 8085 to avoid conflicts with production CWA on 8083
     test_port = os.getenv('CWA_TEST_PORT', '8085')
     base_url = f"http://localhost:{test_port}"
-    
+
     # Check if container is accessible
     if not check_container_available(test_port):
         pytest.skip(f"No CWA container available on port {test_port}")
-    
+
     # Create session with default credentials
     session = requests.Session()
-    
+
     # Login to CWA (default credentials: admin/admin123)
     try:
         login_response = session.post(
@@ -735,12 +740,12 @@ def cwa_api_client(cwa_container) -> dict:
             allow_redirects=False,
             timeout=5
         )
-        
+
         if login_response.status_code not in (200, 302):
             pytest.skip("Could not authenticate with CWA container")
     except requests.exceptions.RequestException as e:
         pytest.skip(f"Could not connect to CWA container: {e}")
-    
+
     return {
         "base_url": base_url,
         "session": session,
@@ -752,23 +757,23 @@ def cwa_api_client(cwa_container) -> dict:
 def sample_ebook_path(tmp_path) -> Path:
     """
     Provide path to a minimal test EPUB file.
-    
+
     Creates a fresh minimal EPUB for each test function.
     """
     # Import relative to tests directory
     import sys
     from pathlib import Path as PathLib
-    
+
     # Add tests directory to path if not already there
     tests_dir = PathLib(__file__).parent
     if str(tests_dir) not in sys.path:
         sys.path.insert(0, str(tests_dir))
-    
+
     from fixtures.generate_synthetic import create_minimal_epub
-    
+
     epub_path = tmp_path / "test_sample.epub"
     create_minimal_epub(epub_path)
-    
+
     return epub_path
 
 
@@ -776,7 +781,7 @@ def sample_ebook_path(tmp_path) -> Path:
 def ingest_folder(test_volumes: dict, container_name: str) -> Path:
     """
     Provide the path to the ingest folder mounted in the container.
-    
+
     Tests can drop files here to trigger ingest processing.
     """
     if AUTO_DOCKER_VOLUMES:
@@ -788,7 +793,7 @@ def ingest_folder(test_volumes: dict, container_name: str) -> Path:
 def library_folder(test_volumes: dict, container_name: str) -> Path:
     """
     Provide the path to the Calibre library folder mounted in the container.
-    
+
     Tests can check this folder for imported books.
     """
     if AUTO_DOCKER_VOLUMES:
@@ -809,23 +814,23 @@ if USE_DOCKER_VOLUMES:
         library_folder_dind,
         VolumeHelper
     )
-    
+
     # Override fixtures to use volume versions
     @pytest.fixture(scope="session")
     def cwa_container(cwa_container_dind):
         """Redirect to Docker volume container implementation."""
         yield cwa_container_dind
-    
+
     @pytest.fixture(scope="session")
     def ingest_folder(ingest_folder_dind):
         """Redirect to VolumeHelper for ingest folder."""
         return ingest_folder_dind
-    
+
     @pytest.fixture(scope="session")
     def library_folder(library_folder_dind):
         """Redirect to VolumeHelper for library folder."""
         return library_folder_dind
-    
+
     print("✅ Docker Volume fixtures loaded successfully\n")
 
 

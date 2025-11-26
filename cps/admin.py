@@ -1993,6 +1993,7 @@ def _configuration_update_helper():
 
         # Hardcover configuration
         _config_checkbox(to_save, "config_hardcover_sync")
+        _config_checkbox(to_save, "config_hardcover_annotations_sync")
         _config_string(to_save, "config_hardcover_token")
 
         _config_int(to_save, "config_updatechannel")

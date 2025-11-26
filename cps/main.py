@@ -19,7 +19,7 @@ def request_username():
 def main():
     app = create_app()
 
-    from .cwa_functions import switch_theme, library_refresh, convert_library, epub_fixer, cwa_stats, cwa_check_status, cwa_settings, cwa_logs, profile_pictures
+    from .cwa_functions import switch_theme, library_refresh, convert_library, epub_fixer, cwa_stats, cwa_check_status, cwa_settings, cwa_logs, profile_pictures, cwa_internal
     from .web import web
     from .opds import opds
     from .admin import admi
@@ -37,6 +37,7 @@ def main():
     try:
         from .kobo import kobo, get_kobo_activated
         from .kobo_auth import kobo_auth
+        from .readingservices import readingservices_api_v3, readingservices_userstorage
         from flask_limiter.util import get_remote_address
         kobo_available = get_kobo_activated()
     except (ImportError, AttributeError):  # Catch also error for not installed flask-WTF (missing csrf decorator)
@@ -63,6 +64,7 @@ def main():
     app.register_blueprint(cwa_settings)
     app.register_blueprint(cwa_logs)
     app.register_blueprint(profile_pictures)
+    app.register_blueprint(cwa_internal)
 
     # Stock CW
     app.register_blueprint(search)
@@ -84,6 +86,8 @@ def main():
         app.register_blueprint(kobo)
         app.register_blueprint(kobo_auth)
         limiter.limit("3/minute", key_func=get_remote_address)(kobo)
+        app.register_blueprint(readingservices_api_v3)
+        app.register_blueprint(readingservices_userstorage)
     if oauth_available:
         app.register_blueprint(oauth)
     success = web_server.start()

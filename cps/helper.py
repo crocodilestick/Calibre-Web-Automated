@@ -68,7 +68,7 @@ except (ImportError, RuntimeError) as e:
 
 
 # Convert existing book entry to new format
-def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id, ereader_mail=None):
+def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id, ereader_mail=None, subject=None):
     book = calibre_db.get_book(book_id)
     data = calibre_db.get_book_format(book.id, old_book_format)
     if not data:
@@ -89,7 +89,9 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
     # read settings and append converter task to queue
     if ereader_mail:
         settings = config.get_mail_settings()
-        settings['subject'] = _('Send to eReader')  # pretranslate Subject for Email
+        if not subject or not subject.strip():
+            subject = _('Send to eReader')
+        settings['subject'] = subject
         settings['body'] = _('This Email has been sent via Calibre-Web Automated.')
     else:
         settings = dict()
@@ -200,16 +202,19 @@ def check_read_formats(entry):
 # 1: If epub file is existing, it's directly send to eReader email,
 # 2: If mobi file is existing, it's converted and send to eReader email,
 # 3: If Pdf file is existing, it's directly send to eReader email
-def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id):
+def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id, subject=None):
     """Send email with attachments"""
     book = calibre_db.get_book(book_id)
 
     if convert == 1:
         # returns None if success, otherwise errormessage
-        return convert_book_format(book_id, calibrepath, 'mobi', book_format.lower(), user_id, ereader_mail)
+        return convert_book_format(book_id, calibrepath, 'mobi', book_format.lower(), user_id, ereader_mail, subject)
     if convert == 2:
         # returns None if success, otherwise errormessage
-        return convert_book_format(book_id, calibrepath, 'azw3', book_format.lower(), user_id, ereader_mail)
+        return convert_book_format(book_id, calibrepath, 'azw3', book_format.lower(), user_id, ereader_mail, subject)
+
+    if not subject or not subject.strip():
+        subject = _("Send to eReader")
 
     for entry in iter(book.data):
         if entry.format.upper() == book_format.upper():
@@ -218,10 +223,10 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id)
             email_text = N_("%(book)s send to eReader", book=link)
             for email in ereader_mail.split(','):
                 email = strip_whitespaces(email)
-                WorkerThread.add(user_id, TaskEmail(_("Send to eReader"), book.path, converted_file_name,
-                                 config.get_mail_settings(), email,
-                                 email_text, _('This Email has been sent via Calibre-Web Automated.'), book.id))
-            return
+                WorkerThread.add(user_id, TaskEmail(subject, book.path, converted_file_name,
+                                                    config.get_mail_settings(), email,
+                                                    email_text, _('This Email has been sent via Calibre-Web Automated.'), book.id))
+            return None
     return _("The requested file could not be read. Maybe wrong permissions?")
 
 

@@ -19,6 +19,7 @@ from pathlib import Path
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 import audiobook
+import requests
 
 # Optional: enable GDrive sync and auto-send by importing cps modules when available
 _GDRIVE_AVAILABLE = False
@@ -314,7 +315,26 @@ class NewBookProcessor:
             self.library_dir = self.split_library["split_path"]
             self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
 
+        # Track the last added Calibre book id(s) from calibredb output
+        self.last_added_book_id: int | None = None
+        self.last_added_book_ids: list[int] = []
 
+    @staticmethod
+    def _parse_added_book_ids(output: str) -> list[int]:
+        """Parse calibredb stdout for the 'Added book ids: X[, Y, ...]' line and return IDs.
+
+        Handles variations like 'Added book id: 4' or 'Added book ids: 4, 5'.
+        """
+        try:
+            import re
+            m = re.search(r"Added book id[s]?:\s*([0-9,\s]+)", output, flags=re.IGNORECASE)
+            if not m:
+                return []
+            nums = m.group(1)
+            ids = [int(x.strip()) for x in nums.split(',') if x.strip().isdigit()]
+            return ids
+        except Exception:
+            return []
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
         with sqlite3.connect("/config/app.db", timeout=30) as con:
@@ -552,7 +572,13 @@ class NewBookProcessor:
 
         try:
             if text:
-                subprocess.run(["calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
+                result = subprocess.run([
+                    "calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"
+                ], env=self.calibre_env, check=True, capture_output=True, text=True)
+                added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
+                if added_ids:
+                    self.last_added_book_ids = added_ids
+                    self.last_added_book_id = added_ids[-1]
             else:  # audiobook path
                 meta = audiobook.get_audio_file_info(str(staged_path), format, os.path.basename(str(staged_path)), False)
 
@@ -593,8 +619,11 @@ class NewBookProcessor:
                     if isinstance(ident, str) and ":" in ident and ident.strip():
                         add_command.extend(["--identifier", ident.strip()])
 
-                subprocess.run(add_command, env=self.calibre_env, check=True)
-
+                result = subprocess.run(add_command, env=self.calibre_env, check=True, capture_output=True, text=True)
+                added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
+                if added_ids:
+                    self.last_added_book_ids = added_ids
+                    self.last_added_book_id = added_ids[-1]
             print(f"[ingest-processor] Added {staged_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:
@@ -606,11 +635,17 @@ class NewBookProcessor:
             # Optional post-import GDrive sync
             gdrive_sync_if_enabled()
 
-            # Fetch metadata if enabled
-            self.fetch_metadata_if_enabled(staged_path.stem)
+            # Fetch metadata if enabled, prefer exact book id from calibredb
+            if self.last_added_book_id is not None:
+                self.fetch_metadata_if_enabled(book_id=self.last_added_book_id)
+            else:
+                self.fetch_metadata_if_enabled(staged_path.stem)
 
             # Trigger auto-send for users who have it enabled
-            self.trigger_auto_send_if_enabled(staged_path.stem, book_path)
+            if self.last_added_book_id is not None:
+                self.trigger_auto_send_if_enabled(book_id=self.last_added_book_id, book_path=book_path)
+            else:
+                self.trigger_auto_send_if_enabled(staged_path.stem, book_path)
 
             # CRITICAL FIX: Refresh Calibre-Web's database session to make new books visible
             # This solves the issue where multiple books don't appear until container restart
@@ -690,7 +725,7 @@ class NewBookProcessor:
             print(f"[ingest-processor] An error occurred while processing {os.path.basename(filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 
 
-    def fetch_metadata_if_enabled(self, book_title: str) -> None:
+    def fetch_metadata_if_enabled(self, book_title: str | None = None, book_id: int | None = None) -> None:
         """Fetch and apply metadata for newly ingested books if enabled"""
         if not _CPS_AVAILABLE:
             print("[ingest-processor] CPS modules not available, skipping metadata fetch", flush=True)
@@ -701,19 +736,21 @@ class NewBookProcessor:
             return
 
         try:
-            # Find the book that was just added to get its ID
             calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
             with sqlite3.connect(calibre_db_path, timeout=30) as con:
                 cur = con.cursor()
-                # Get the most recently added book with this title
-                cur.execute("SELECT id, title FROM books WHERE title LIKE ? ORDER BY timestamp DESC LIMIT 1", (f"%{book_title}%",))
+                if book_id is not None:
+                    cur.execute("SELECT id, title FROM books WHERE id = ?", (int(book_id),))
+                else:
+                    # Fallback: most recently added book
+                    cur.execute("SELECT id, title FROM books ORDER BY timestamp DESC LIMIT 1")
                 result = cur.fetchone()
 
             if not result:
                 print(f"[ingest-processor] Could not find book ID for metadata fetch: {book_title}", flush=True)
                 return
-
-            book_id = result[0]
+                
+            book_id = int(result[0])
             actual_title = result[1]
 
             print(f"[ingest-processor] Attempting to fetch metadata for: {actual_title}", flush=True)
@@ -728,7 +765,7 @@ class NewBookProcessor:
             print(f"[ingest-processor] Error fetching metadata: {e}", flush=True)
 
 
-    def trigger_auto_send_if_enabled(self, book_title: str, book_path: str) -> None:
+    def trigger_auto_send_if_enabled(self, book_title: str | None = None, book_path: str | None = None, book_id: int | None = None) -> None:
         """Trigger auto-send for users who have it enabled"""
         if not _CPS_AVAILABLE:
             print("[ingest-processor] CPS modules not available, skipping auto-send", flush=True)
@@ -739,19 +776,20 @@ class NewBookProcessor:
             return
 
         try:
-            # Find the book that was just added to get its ID
             calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
             with sqlite3.connect(calibre_db_path, timeout=30) as con:
                 cur = con.cursor()
-                # Get the most recently added book(s) with this title
-                cur.execute("SELECT id, title FROM books WHERE title LIKE ? ORDER BY timestamp DESC LIMIT 1", (f"%{book_title}%",))
+                if book_id is not None:
+                    cur.execute("SELECT id, title FROM books WHERE id = ?", (int(book_id),))
+                else:
+                    cur.execute("SELECT id, title FROM books ORDER BY timestamp DESC LIMIT 1")
                 result = cur.fetchone()
 
             if not result:
                 print(f"[ingest-processor] Could not find book ID for auto-send: {book_title}", flush=True)
                 return
-
-            book_id = result[0]
+                
+            book_id = int(result[0])
             actual_title = result[1]
 
             # Get users with auto-send enabled
@@ -770,21 +808,45 @@ class NewBookProcessor:
             if not auto_send_users:
                 print(f"[ingest-processor] No users with auto-send enabled found", flush=True)
                 return
-
-            # Queue auto-send tasks for each user
+                
+            # Queue or schedule auto-send tasks for each user
             for user_id, username, kindle_mail in auto_send_users:
                 try:
                     delay_minutes = self.cwa_settings.get('auto_send_delay_minutes', 5)
 
-                    # Create auto-send task
-                    task_message = f"Auto-sending '{actual_title}' to {username}'s eReader(s)"
-                    task = TaskAutoSend(task_message, book_id, user_id, delay_minutes)
+                    # Prefer to schedule in the long-lived web process so it shows in UI
+                    scheduled_via_api = False
+                    try:
+                        port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+                        if not port.isdigit():
+                            port = '8083'
+                        url = f"http://127.0.0.1:{port}/cwa-internal/schedule-auto-send"
+                        payload = {
+                            'book_id': int(book_id),
+                            'user_id': int(user_id),
+                            'delay_minutes': int(delay_minutes) if isinstance(delay_minutes, (int, float, str)) else 5,
+                            'username': username,
+                            'title': actual_title,
+                        }
+                        resp = requests.post(url, json=payload, timeout=5)
+                        if resp.status_code == 200:
+                            try:
+                                run_at = resp.json().get('run_at', 'soon')
+                            except Exception:
+                                run_at = 'soon'
+                            print(f"[ingest-processor] Scheduled auto-send at {run_at} for '{actual_title}' to user {username} ({kindle_mail}) via web process", flush=True)
+                            scheduled_via_api = True
+                        else:
+                            print(f"[ingest-processor] WARN: Web scheduling returned {resp.status_code}, falling back to immediate queue", flush=True)
+                    except Exception as api_err:
+                        print(f"[ingest-processor] WARN: Failed to schedule via web API: {api_err}. Falling back to immediate queue.", flush=True)
 
-                    # Add to worker queue
-                    WorkerThread.add(username, task)
-
-                    print(f"[ingest-processor] Queued auto-send for '{actual_title}' to user {username} ({kindle_mail})", flush=True)
-
+                    if not scheduled_via_api:
+                        # Fallback: queue immediately in this process (task does not sleep)
+                        task_message = f"Auto-sending '{actual_title}' to {username}'s eReader(s)"
+                        task = TaskAutoSend(task_message, book_id, user_id, delay_minutes)
+                        WorkerThread.add(username, task)
+                        print(f"[ingest-processor] Queued auto-send immediately for '{actual_title}' to user {username} ({kindle_mail})", flush=True)
                 except Exception as e:
                     print(f"[ingest-processor] Error queuing auto-send for user {username}: {e}", flush=True)
 
@@ -878,29 +940,20 @@ class NewBookProcessor:
         This solves the issue where external calibredb adds aren't immediately visible
         in Calibre-Web until container restart.
         """
-        if not _CPS_AVAILABLE:
-            print("[ingest-processor] CPS modules not available, skipping session refresh", flush=True)
-            return
-
+        # Route DB reconnect via the long-lived web process to avoid cross-process config/session issues
         try:
-            # Import here to avoid circular imports and ensure CPS is available
-            from cps.tasks.database import TaskReconnectDatabase
-
-            # Create and run the reconnect task
-            task = TaskReconnectDatabase()
+            port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+            if not port.isdigit():
+                port = '8083'
+            url = f"http://127.0.0.1:{port}/cwa-internal/reconnect-db"
             print("[ingest-processor] Refreshing Calibre-Web database session...", flush=True)
-
-            # Run the task directly - this forces a database session refresh
-            # which makes newly imported books immediately visible in the UI
-            task.run(None)  # worker_thread not needed for direct execution
-
-            print("[ingest-processor] Database session refreshed successfully", flush=True)
-
-        except ImportError as e:
-            print(f"[ingest-processor] Could not import TaskReconnectDatabase: {e}", flush=True)
+            resp = requests.post(url, timeout=5)
+            if resp.status_code == 200:
+                print("[ingest-processor] Database session refresh enqueued", flush=True)
+            else:
+                print(f"[ingest-processor] WARN: DB refresh endpoint returned {resp.status_code}", flush=True)
         except Exception as e:
-            print(f"[ingest-processor] Error refreshing database session: {e}", flush=True)
-            # Don't fail the import if session refresh fails
+            print(f"[ingest-processor] WARN: Failed to call DB refresh endpoint: {e}", flush=True)
             print("[ingest-processor] Continuing despite session refresh failure - books may require manual refresh", flush=True)
 
 
@@ -1023,23 +1076,20 @@ def main(filepath=None):
                         print(f"[ingest-processor]: Retaining original format ({nbp.input_format}) for {nbp.filename}...", flush=True)
                         # Find the book that was just added to get its ID
                         try:
-                            calibre_db_path = os.path.join(nbp.library_dir, 'metadata.db')
-                            with sqlite3.connect(calibre_db_path, timeout=30) as con:
-                                cur = con.cursor()
-                                # Get the most recently added book - use title/author for more reliable matching
-                                # in case of concurrent ingests
-                                cur.execute("""
-                                    SELECT id FROM books
-                                    WHERE path = (SELECT path FROM books ORDER BY timestamp DESC LIMIT 1)
-                                    ORDER BY timestamp DESC LIMIT 1
-                                """)
-                                result = cur.fetchone()
+                            # Prefer the exact id we just added if available
+                            if nbp.last_added_book_id is not None:
+                                target_book_id = nbp.last_added_book_id
+                            else:
+                                calibre_db_path = os.path.join(nbp.library_dir, 'metadata.db')
+                                with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                                    cur = con.cursor()
+                                    cur.execute("SELECT id FROM books ORDER BY timestamp DESC LIMIT 1")
+                                    res = cur.fetchone()
+                                    target_book_id = res[0] if res else None
 
-                            if result:
-                                book_id = result[0]
-                                # Verify the original file still exists before trying to add it
+                            if target_book_id is not None:
                                 if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-                                    nbp.add_format_to_book(book_id, filepath)
+                                    nbp.add_format_to_book(int(target_book_id), filepath)
                                 else:
                                     print(f"[ingest-processor] Original file no longer exists or is empty, cannot retain format: {filepath}", flush=True)
                             else:

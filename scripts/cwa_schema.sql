@@ -71,3 +71,18 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_detection_publisher SMALLINT DEFAULT 0 NOT NULL,
     duplicate_detection_format SMALLINT DEFAULT 0 NOT NULL
 );
+
+-- Persisted scheduled jobs (initial focus: auto-send). Rows remain until dispatched or manually cleared.
+CREATE TABLE IF NOT EXISTS cwa_scheduled_jobs(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    job_type TEXT NOT NULL,                     -- e.g., 'auto_send'
+    book_id INTEGER,
+    user_id INTEGER,
+    username TEXT,
+    title TEXT,
+    scheduler_job_id TEXT DEFAULT '',           -- APScheduler job id for cancellation
+    run_at_utc TEXT NOT NULL,                  -- ISO8601 UTC timestamp
+    created_at_utc TEXT NOT NULL,              -- ISO8601 UTC timestamp
+    state TEXT NOT NULL DEFAULT 'scheduled',   -- 'scheduled' | 'dispatched' | 'cancelled'
+    last_error TEXT DEFAULT ''
+);

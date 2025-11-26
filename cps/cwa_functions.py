@@ -23,7 +23,7 @@ from threading import Thread
 import queue
 import os
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import shutil
 import base64
@@ -34,6 +34,11 @@ from .web import cwa_get_num_books_in_library
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
+from .services.background_scheduler import BackgroundScheduler, DateTrigger
+from .services.worker import WorkerThread
+from .tasks.database import TaskReconnectDatabase
+from .tasks.auto_send import TaskAutoSend
+from .tasks.ops import TaskConvertLibraryRun, TaskEpubFixerRun
 
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
@@ -44,6 +49,7 @@ cwa_check_status = Blueprint('cwa_check_status', __name__)
 cwa_settings = Blueprint('cwa_settings', __name__)
 cwa_logs = Blueprint('cwa_logs', __name__)
 profile_pictures = Blueprint('profile_pictures', __name__)
+cwa_internal = Blueprint('cwa_internal', __name__)
 
 log = logger.create()
 
@@ -252,6 +258,269 @@ def get_library_refresh_messages():
     current_app.config["library_refresh_messages"] = []
 
     return jsonify({"messages": rendered})
+
+##————————————————————————————————————————————————————————————————————————————##
+##                                                                            ##
+##                           CWA INTERNAL ENDPOINTS                           ##
+##                                                                            ##
+##————————————————————————————————————————————————————————————————————————————##
+
+@csrf.exempt
+@cwa_internal.route('/cwa-internal/schedule-auto-send', methods=["POST"])
+def cwa_internal_schedule_auto_send():
+    """Schedule an Auto-Send task in the web process scheduler.
+
+    Security: Limited to localhost callers (within container/host).
+    Payload JSON: {book_id:int, user_id:int, delay_minutes:int, username:str, title:str}
+    """
+    try:
+        # Basic origin check: allow only localhost
+        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if remote not in (None, '127.0.0.1', '::1'):
+            abort(403)
+
+        data = request.get_json(force=True, silent=True) or {}
+        book_id = int(data.get('book_id'))
+        user_id = int(data.get('user_id'))
+        delay_minutes = int(data.get('delay_minutes', 5))
+        delay_minutes = max(0, min(60, delay_minutes))
+        username = data.get('username') or 'System'
+        title = data.get('title') or 'Book'
+
+        scheduler = BackgroundScheduler()
+        if not scheduler:
+            return jsonify({"error": "Scheduler unavailable"}), 503
+
+        # Compute run time in both local and UTC for persistence
+        run_at_local = datetime.now() + timedelta(minutes=delay_minutes)
+        try:
+            from datetime import timezone
+            run_at_utc_iso = run_at_local.astimezone(timezone.utc).replace(tzinfo=timezone.utc).isoformat().replace('+00:00', 'Z')
+        except Exception:
+            run_at_utc_iso = run_at_local.isoformat()
+
+        # Persist scheduled intent in cwa.db
+        try:
+            from cwa_db import CWA_DB
+            db = CWA_DB()
+            row_id = db.scheduled_add_autosend(book_id, user_id, run_at_utc_iso, username, title)
+        except Exception as e:
+            row_id = None
+            log.error(f"Failed to record scheduled auto-send in cwa.db: {e}")
+
+        task_message = f"Auto-sending '{title}' to user's eReader(s)"
+
+        # Closure that marks dispatched and enqueues the task when the time arrives
+        def _enqueue_autosend():
+            should_enqueue = True
+            try:
+                if row_id is not None:
+                    from cwa_db import CWA_DB
+                    changed = CWA_DB().scheduled_mark_dispatched(int(row_id))
+                    # Only enqueue if state actually moved to dispatched (i.e., was not cancelled)
+                    should_enqueue = bool(changed)
+            except Exception as e:
+                log.error(f"Failed to mark scheduled auto-send dispatched: {e}")
+            if should_enqueue:
+                WorkerThread.add(username, TaskAutoSend(task_message, book_id, user_id, delay_minutes), hidden=False)
+
+        # Defer task creation to scheduled time; shows in UI when enqueued
+        job = scheduler.schedule(
+            func=_enqueue_autosend,
+            trigger=DateTrigger(run_date=run_at_local),
+            name=f"Auto-send '{title}' to {username}"
+        )
+
+        # Persist scheduler job id for cancellation support
+        try:
+            if row_id is not None and job is not None:
+                from cwa_db import CWA_DB
+                CWA_DB().scheduled_update_job_id(int(row_id), str(job.id))
+        except Exception as e:
+            log.error(f"Failed to store scheduler job id for auto-send: {e}")
+
+        return jsonify({"status": "scheduled", "run_at": run_at_local.isoformat(), "schedule_id": row_id}), 200
+    except Exception as e:
+        log.error(f"Internal auto-send schedule failed: {e}")
+        return jsonify({"error": str(e)}), 400
+
+@csrf.exempt
+@cwa_internal.route('/cwa-internal/schedule-convert-library', methods=["POST"])
+def cwa_internal_schedule_convert_library():
+    """Schedule a Convert Library run in the web process scheduler.
+
+    Security: Limited to localhost callers (within container/host).
+    Payload JSON: {delay_minutes:int, username:str}
+    """
+    try:
+        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if remote not in (None, '127.0.0.1', '::1'):
+            abort(403)
+
+        data = request.get_json(force=True, silent=True) or {}
+        delay_minutes = int(data.get('delay_minutes', 5))
+        delay_minutes = max(0, min(60, delay_minutes))
+        username = data.get('username') or 'System'
+
+        scheduler = BackgroundScheduler()
+        if not scheduler:
+            return jsonify({"error": "Scheduler unavailable"}), 503
+
+        run_at_local = datetime.now() + timedelta(minutes=delay_minutes)
+        try:
+            from datetime import timezone
+            run_at_utc_iso = run_at_local.astimezone(timezone.utc).replace(tzinfo=timezone.utc).isoformat().replace('+00:00', 'Z')
+        except Exception:
+            run_at_utc_iso = run_at_local.isoformat()
+
+        # Persist scheduled intent
+        row_id = None
+        try:
+            db = CWA_DB()
+            row_id = db.scheduled_add_job('convert_library', run_at_utc_iso, username=username, title='Convert Library')
+        except Exception as e:
+            log.error(f"Failed to record scheduled convert library in cwa.db: {e}")
+
+        def _trigger_convert_library(sid=row_id, u=username):
+            should_run = True
+            try:
+                if sid is not None:
+                    should_run = bool(CWA_DB().scheduled_mark_dispatched(int(sid)))
+            except Exception:
+                pass
+            if not should_run:
+                return
+            # Enqueue wrapper task so it shows in Tasks UI and triggers run internally
+            WorkerThread.add(u, TaskConvertLibraryRun(), hidden=False)
+
+        job = scheduler.schedule(func=_trigger_convert_library, trigger=DateTrigger(run_date=run_at_local), name=f"Convert Library (scheduled)")
+        try:
+            if row_id is not None and job is not None:
+                CWA_DB().scheduled_update_job_id(int(row_id), str(job.id))
+        except Exception:
+            pass
+
+        return jsonify({"status": "scheduled", "run_at": run_at_local.isoformat(), "schedule_id": row_id}), 200
+    except Exception as e:
+        log.error(f"Internal schedule-convert-library failed: {e}")
+        return jsonify({"error": str(e)}), 400
+
+@csrf.exempt
+@cwa_internal.route('/cwa-internal/schedule-epub-fixer', methods=["POST"])
+def cwa_internal_schedule_epub_fixer():
+    """Schedule an EPUB Fixer run in the web process scheduler.
+
+    Security: Limited to localhost callers (within container/host).
+    Payload JSON: {delay_minutes:int, username:str}
+    """
+    try:
+        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if remote not in (None, '127.0.0.1', '::1'):
+            abort(403)
+
+        data = request.get_json(force=True, silent=True) or {}
+        delay_minutes = int(data.get('delay_minutes', 5))
+        delay_minutes = max(0, min(60, delay_minutes))
+        username = data.get('username') or 'System'
+
+        scheduler = BackgroundScheduler()
+        if not scheduler:
+            return jsonify({"error": "Scheduler unavailable"}), 503
+
+        run_at_local = datetime.now() + timedelta(minutes=delay_minutes)
+        try:
+            from datetime import timezone
+            run_at_utc_iso = run_at_local.astimezone(timezone.utc).replace(tzinfo=timezone.utc).isoformat().replace('+00:00', 'Z')
+        except Exception:
+            run_at_utc_iso = run_at_local.isoformat()
+
+        row_id = None
+        try:
+            db = CWA_DB()
+            row_id = db.scheduled_add_job('epub_fixer', run_at_utc_iso, username=username, title='EPUB Fixer')
+        except Exception as e:
+            log.error(f"Failed to record scheduled epub fixer in cwa.db: {e}")
+
+        def _trigger_epub_fixer(sid=row_id, u=username):
+            should_run = True
+            try:
+                if sid is not None:
+                    should_run = bool(CWA_DB().scheduled_mark_dispatched(int(sid)))
+            except Exception:
+                pass
+            if not should_run:
+                return
+            WorkerThread.add(u, TaskEpubFixerRun(), hidden=False)
+
+        job = scheduler.schedule(func=_trigger_epub_fixer, trigger=DateTrigger(run_date=run_at_local), name=f"EPUB Fixer (scheduled)")
+        try:
+            if row_id is not None and job is not None:
+                CWA_DB().scheduled_update_job_id(int(row_id), str(job.id))
+        except Exception:
+            pass
+
+        return jsonify({"status": "scheduled", "run_at": run_at_local.isoformat(), "schedule_id": row_id}), 200
+    except Exception as e:
+        log.error(f"Internal schedule-epub-fixer failed: {e}")
+        return jsonify({"error": str(e)}), 400
+
+@csrf.exempt
+@cwa_internal.route('/cwa-internal/reconnect-db', methods=["POST"])
+def cwa_internal_reconnect_db():
+    """Enqueue a database reconnect task in the web process.
+
+    Security: Only accepts localhost callers.
+    """
+    try:
+        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if remote not in (None, '127.0.0.1', '::1'):
+            abort(403)
+
+        task = TaskReconnectDatabase()
+        WorkerThread.add(None, task, hidden=True)
+        return jsonify({"status": "enqueued"}), 200
+    except Exception as e:
+        log.error(f"Internal reconnect-db failed: {e}")
+        return jsonify({"error": str(e)}), 400
+
+@csrf.exempt
+@cwa_stats.route('/cwa-scheduled/cancel', methods=["POST"])
+@login_required_if_no_ano
+@admin_required
+def cwa_scheduled_cancel():
+    """Cancel a pending scheduled auto-send by id.
+
+    Payload JSON: {id:int}
+    """
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        sid = int(data.get('id'))
+    except Exception:
+        return jsonify({"error": "Invalid id"}), 400
+
+    try:
+        from cwa_db import CWA_DB
+        db = CWA_DB()
+        row = db.scheduled_get_by_id(sid)
+        if not row:
+            return jsonify({"error": "Not found"}), 404
+
+        # Attempt to remove scheduled APScheduler job
+        job_id = (row.get('scheduler_job_id') or '').strip()
+        try:
+            scheduler = BackgroundScheduler()
+            if scheduler and job_id:
+                scheduler.remove_job(job_id)
+        except Exception:
+            # Ignore removal errors (job may have already run or been removed)
+            pass
+
+        # Mark as cancelled regardless of job removal result
+        db.scheduled_mark_cancelled(sid)
+        return jsonify({"status": "cancelled", "id": sid}), 200
+    except Exception as e:
+        log.error(f"Error cancelling scheduled auto-send: {e}")
+        return jsonify({"error": str(e)}), 500
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
@@ -496,6 +765,36 @@ def cwa_stats_show():
                                 data_conversions=data_conversions, headers_conversion=headers["conversions"],
                                 data_epub_fixer=data_epub_fixer, headers_epub_fixer=headers["epub_fixer"]["no_fixes"],
                                 data_epub_fixer_with_fixes=data_epub_fixer_with_fixes, headers_epub_fixer_with_fixes=headers["epub_fixer"]["with_fixes"])
+
+@cwa_stats.route('/cwa-scheduled/upcoming', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def cwa_scheduled_upcoming():
+    try:
+        from cwa_db import CWA_DB
+        db = CWA_DB()
+        rows = db.scheduled_get_upcoming_autosend(limit=100)
+        return jsonify({"items": rows}), 200
+    except Exception as e:
+        log.error(f"Error fetching upcoming scheduled sends: {e}")
+        return jsonify({"items": []}), 200
+
+@cwa_stats.route('/cwa-scheduled/upcoming-ops', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def cwa_scheduled_upcoming_ops():
+    """Return upcoming scheduled operations (non auto-send), e.g., convert_library, epub_fixer."""
+    try:
+        db = CWA_DB()
+        ops = []
+        for jt in ('convert_library', 'epub_fixer'):
+            ops.extend(db.scheduled_get_upcoming_by_type(jt, limit=100))
+        # sort by time ascending
+        ops.sort(key=lambda r: r.get('run_at_utc') or '')
+        return jsonify({"items": ops}), 200
+    except Exception as e:
+        log.error(f"Error fetching upcoming scheduled ops: {e}")
+        return jsonify({"items": []}), 200
                                     
 @cwa_stats.route("/cwa-stats-show/full-enforcement", methods=["GET", "POST"])
 @login_required_if_no_ano
@@ -748,6 +1047,28 @@ def show_convert_library_page():
     return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
                                 target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
 
+@convert_library.route('/cwa-convert-library/schedule/<int:delay>', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def schedule_convert_library(delay: int):
+    # Clamp delay to sane range
+    delay = max(0, min(60, int(delay)))
+    try:
+        import requests
+        username = getattr(current_user, 'name', 'System') or 'System'
+        port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+        if not port.isdigit():
+            port = '8083'
+        url = f"http://127.0.0.1:{port}/cwa-internal/schedule-convert-library"
+        resp = requests.post(url, json={"delay_minutes": delay, "username": username}, timeout=10)
+        if resp.ok:
+            flash(_(f"Convert Library scheduled in {delay} minute(s)."), category="success")
+        else:
+            flash(_(f"Failed to schedule Convert Library: {resp.text}"), category="error")
+    except Exception as e:
+        flash(_(f"Failed to schedule Convert Library: {e}"), category="error")
+    return redirect(url_for('convert_library.show_convert_library_page'))
+
 @convert_library.route('/cwa-convert-library/log-archive', methods=["GET"])
 def show_convert_library_logs():
     logs=get_logs_from_archive("convert-library")
@@ -866,6 +1187,27 @@ def kill_epub_fixer(queue):
 @epub_fixer.route('/cwa-epub-fixer-overview', methods=["GET"])
 def show_epub_fixer_page():
     return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer")
+
+@epub_fixer.route('/cwa-epub-fixer/schedule/<int:delay>', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def schedule_epub_fixer(delay: int):
+    delay = max(0, min(60, int(delay)))
+    try:
+        import requests
+        username = getattr(current_user, 'name', 'System') or 'System'
+        port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+        if not port.isdigit():
+            port = '8083'
+        url = f"http://127.0.0.1:{port}/cwa-internal/schedule-epub-fixer"
+        resp = requests.post(url, json={"delay_minutes": delay, "username": username}, timeout=10)
+        if resp.ok:
+            flash(_(f"EPUB Fixer scheduled in {delay} minute(s)."), category="success")
+        else:
+            flash(_(f"Failed to schedule EPUB Fixer: {resp.text}"), category="error")
+    except Exception as e:
+        flash(_(f"Failed to schedule EPUB Fixer: {e}"), category="error")
+    return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
 @epub_fixer.route('/cwa-epub-fixer/log-archive', methods=["GET"])
 def show_epub_fixer_logs():

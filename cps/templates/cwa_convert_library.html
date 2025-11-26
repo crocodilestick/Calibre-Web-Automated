@@ -22,6 +22,12 @@
         <div>
           <a class="btn btn-default" href="{{ url_for('convert_library.cancel_convert_library') }}" style="vertical-align: top; float: right; width: 100px; margin-left: 10px;">{{_('Cancel')}}</a>
           <a class="btn btn-default" href="{{ url_for('convert_library.start_conversion') }}" style="vertical-align: top; float: right; width: 100px;">{{_('Start')}}</a>
+          {% if current_user.role_admin() %}
+          <div class="btn-group" role="group" aria-label="schedule" style="float: right; margin-right: 10px;">
+            <button class="btn btn-default" onclick="scheduleConvertLibrary(5)">{{ _('Schedule 5m') }}</button>
+            <button class="btn btn-default" onclick="scheduleConvertLibrary(15)">{{ _('Schedule 15m') }}</button>
+          </div>
+          {% endif %}
         </div>
       </div>
       <div class="progress-container" style="margin: 20px 0;">
@@ -45,6 +51,58 @@
 {% block js %}
 <script>
   var timeout;
+  
+  // Notification helper - creates a dismissible Bootstrap alert
+  function showNotification(message, type) {
+    type = type || 'info'; // info, success, warning, danger
+    const alertDiv = $('<div>')
+      .addClass(`alert alert-${type} alert-dismissible fade in`)
+      .attr('role', 'alert')
+      .css({
+        'position': 'fixed',
+        'top': '70px',
+        'right': '20px',
+        'z-index': '9999',
+        'min-width': '300px',
+        'max-width': '500px',
+        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)'
+      })
+      .html(`
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        ${message}
+      `);
+    
+    $('body').append(alertDiv);
+    
+    // Auto-dismiss after 4 seconds
+    setTimeout(function() {
+      alertDiv.alert('close');
+    }, 4000);
+  }
+
+  function scheduleConvertLibrary(delayMinutes) {
+    fetch('/cwa-internal/schedule-convert-library', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ delay_minutes: delayMinutes, username: '{{ current_user.name }}' })
+    })
+    .then(r => {
+      if (!r.ok) {
+        return r.json().then(err => {
+          throw new Error(err.error || 'Failed to schedule');
+        });
+      }
+      return r.json();
+    })
+    .then(data => {
+      showNotification('{{ _("Convert Library scheduled successfully") }}', 'success');
+    })
+    .catch(err => {
+      showNotification('{{ _("Error scheduling Convert Library") }}: ' + err.message, 'danger');
+    });
+  }
   
   async function getStatus() {
   

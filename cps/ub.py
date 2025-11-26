@@ -18,7 +18,7 @@ from .cw_login import AnonymousUserMixin, current_user
 from .cw_login import user_logged_in
 
 try:
-    from flask_dance.consumer.backend.sqla import OAuthConsumerMixin
+    from flask_dance.consumer.backend.sqla import OAuthConsumerMixin  # pyright: ignore[reportMissingImports]
     oauth_support = True
 except ImportError as e:
     # fails on flask-dance >1.3, due to renaming
@@ -29,7 +29,7 @@ except ImportError as e:
         OAuthConsumerMixin = BaseException
         oauth_support = False
 from sqlalchemy import create_engine, exc, exists, event, text
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Index
 from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import func
@@ -46,7 +46,7 @@ from .string_helper import strip_whitespaces
 
 log = logger.create()
 
-session = None
+session: Session | None = None
 app_DB_path = None
 Base = declarative_base()
 searched_ids = {}
@@ -233,6 +233,7 @@ class User(UserBase, Base):
     role = Column(SmallInteger, default=constants.ROLE_USER)
     password = Column(String)
     kindle_mail = Column(String(120), default="")
+    kindle_mail_subject = Column(String(256), default="", doc="Subject line for eReader email sending, empty=default")
     shelf = relationship('Shelf', backref='user', lazy='dynamic', order_by='Shelf.name')
     downloads = relationship('Downloads', backref='user', lazy='dynamic')
     locale = Column(String(2), default="en")
@@ -290,6 +291,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.allowed_tags = None
         self.denied_tags = None
         self.kindle_mail = None
+        self.kindle_mail_subject = None
         self.locale = None
         self.default_language = None
         self.sidebar_view = None
@@ -309,6 +311,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.default_language = data.default_language
         self.locale = data.locale
         self.kindle_mail = data.kindle_mail
+        self.kindle_mail_subject = data.kindle_mail_subject
         self.denied_tags = data.denied_tags
         self.allowed_tags = data.allowed_tags
         self.denied_column_value = data.denied_column_value
@@ -494,6 +497,44 @@ class KoboStatistics(Base):
     spent_reading_minutes = Column(Integer)
 
 
+class KoboAnnotationSync(Base):
+    """Track which Kobo annotations have been synced to external services (e.g., Hardcover)."""
+    __tablename__ = 'kobo_annotation_sync'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    annotation_id = Column(String, nullable=False)  # Kobo annotation UUID
+    book_id = Column(Integer, nullable=False)  # Calibre book ID
+    synced_to_hardcover = Column(Boolean, default=False)
+    hardcover_journal_id = Column(Integer)  # Hardcover journal entry ID
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_synced = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    highlighted_text = Column(String, nullable=True)
+    highlight_color = Column(String, nullable=True)
+    note_text = Column(String, nullable=True)
+    
+    __table_args__ = (
+        Index('ix_kobo_annotation_sync_user_annotation', 'user_id', 'annotation_id'),
+        Index('ix_kobo_annotation_sync_user_book', 'user_id', 'book_id'),
+    )
+
+    def __repr__(self):
+        return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
+
+
+class HardcoverBookBlacklist(Base):
+    """Track book-level blacklisting for hardcover sync features."""
+    __tablename__ = 'hardcover_book_blacklist'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, nullable=False, unique=True)  # Calibre book ID
+    blacklist_annotations = Column(Boolean, default=False)  # Block annotation syncing
+    blacklist_reading_progress = Column(Boolean, default=False)  # Block reading progress syncing
+
+    def __repr__(self):
+        return f'<HardcoverBookBlacklist book_id={self.book_id} annotations={self.blacklist_annotations} progress={self.blacklist_reading_progress}>'
+
+
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, 'before_flush')
 def receive_before_flush(session, flush_context, instances):
@@ -663,6 +704,16 @@ def migrate_user_table(engine, _session):
         with engine.connect() as conn:
             trans = conn.begin()
             conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
+            trans.commit()
+
+    # Migration to add per-user email subject for Kindle sending
+    try:
+        _session.query(exists().where(User.kindle_mail_subject)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''"))
             trans.commit()
 
     # Migration to enable duplicates sidebar for existing admin users

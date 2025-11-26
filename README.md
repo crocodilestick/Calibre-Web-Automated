@@ -73,7 +73,7 @@ ___
     \
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
-- Or alternativly make your own companion project, come hang out and or come get help if you're facing issues :)
+- Or alternatively make your own companion project, come hang out and or come get help if you're facing issues :)
 
 ## 🚨 To users planning to deploy via Network Shares (particularly NFS) 🚨
 

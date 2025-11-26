@@ -188,173 +188,133 @@ def log_annotation_data(entitlement_id, method, data=None):
         log.debug(json.dumps(data, indent=2))
 
 
-def calculate_progress_from_epub(book: db.Books, chapter_filename: str, chapter_progress: float):
+class EpubProgressCalculator:
     """
-    Calculate exact progress percentage by parsing the epub file structure.
-    
-    This function:
-    1. Opens the EPUB/KEPUB file as a ZIP archive
-    2. Parses the OPF (Open Packaging Format) file to get spine (reading order)
-    3. Calculates character counts for each chapter
-    4. Determines which chapter the reader is in
-    5. Calculates overall progress based on characters read vs total
-    
-    Args:
-        book: Calibre book object with path and format data
-        chapter_filename: The filename of the chapter (e.g., "OEBPS/xhtml/prologue.xhtml")
-        chapter_progress: Progress within the chapter as decimal (0.0 to 1.0)
-    
-    Returns:
-        Progress percentage (0-100) or None if calculation fails
+    Helper class to calculate progress from EPUB/KEPUB files efficiently.
+    Parses the book structure once and reuses it for multiple calculations.
     """
-    if not book or not chapter_filename or not chapter_progress:
-        log.warning("Missing required parameters for progress calculation")
-        return None
-    
-    if not book.path:
-        log.warning("Book path is not set, skipping progress calculation")
-        return None
-    
-    if not book.data or len(book.data) == 0:
-        log.warning("No book data found, skipping progress calculation")
-        return None
+    def __init__(self, book: db.Books):
+        self.book = book
+        self.spine_items: list[str] = []
+        self.chapter_lengths: list[int] = []
+        self.total_chars = 0
+        self.initialized = False
+        self.error = False
 
-    book_data = None
-    kepub_datas = [data for data in book.data if data.format.lower() == 'kepub']
-    if len(kepub_datas) == 1:
-       book_data = kepub_datas[0]
-    elif len(kepub_datas) > 1:
-        log.warning("Multiple KEPUB data found for book, using first")
-        book_data = kepub_datas[0]
-    else:
-        log.warning("No KEPUB data found for book, using EPUB data")
-        epub_datas = [data for data in book.data if data.format.lower() == 'epub']
-        if len(epub_datas) == 1:
-            book_data = epub_datas[0]
-        elif len(epub_datas) > 1:
-            log.warning("Multiple EPUB data found for book, using first")
-            book_data = epub_datas[0]
+    def _initialize(self):
+        if self.initialized:
+            return
+
+        if not self.book or not self.book.path:
+            self.error = True
+            return
+
+        book_data = None
+        kepub_datas = [data for data in self.book.data if data.format.lower() == 'kepub']
+        if len(kepub_datas) >= 1:
+            book_data = kepub_datas[0]
         else:
-            log.warning("No EPUB data found for book, skipping progress calculation")
-            return None
-
-    if not book_data:
-        log.warning("No KEPUB/EPUB data found for book, skipping progress calculation")
-        return None
-
-    try:
-        # Get the file path to the epub/kepub
-        file_path = os.path.normpath(os.path.join(
-            config.get_book_path(),
-            book.path,
-            book_data.name + "." + book_data.format.lower()
-        ))
+            epub_datas = [data for data in self.book.data if data.format.lower() == 'epub']
+            if len(epub_datas) >= 1:
+                book_data = epub_datas[0]
         
-        if not os.path.exists(file_path):
-            log.warning(f"Book file not found: {file_path}")
-            return None
-        
-        # Open the epub/kepub as a zip file
-        with zipfile.ZipFile(file_path, 'r') as epub_zip:
-            # Find the OPF file (package document)
-            container_data = epub_zip.read('META-INF/container.xml')
-            container_tree = etree.fromstring(container_data)
-            
-            ns = {
-                'container': 'urn:oasis:names:tc:opendocument:xmlns:container',
-                'opf': 'http://www.idpf.org/2007/opf'
-            }
-            
-            opf_path = container_tree.xpath(
-                '//container:rootfile/@full-path',
-                namespaces={'container': ns['container']}
-            )[0]
-            
-            # Parse the OPF file
-            opf_data = epub_zip.read(opf_path)
-            opf_tree = etree.fromstring(opf_data)
-            opf_dir = os.path.dirname(opf_path)
-            
-            # Get manifest (maps IDs to file paths)
-            manifest = {}
-            for item in opf_tree.xpath('//opf:manifest/opf:item', namespaces={'opf': ns['opf']}):
-                item_id = item.get('id')
-                href = item.get('href')
-                if item_id and href:
-                    # Resolve relative path from OPF location
-                    full_href = os.path.normpath(os.path.join(opf_dir, href)).replace('\\', '/')
-                    manifest[item_id] = full_href
-            
-            # Get spine (reading order)
-            spine_items = []
-            for itemref in opf_tree.xpath('//opf:spine/opf:itemref', namespaces={'opf': ns['opf']}):
-                idref = itemref.get('idref')
-                if idref and idref in manifest:
-                    spine_items.append(manifest[idref])
-            
-            if not spine_items:
-                log.warning("No spine items found in epub")
-                return None
+        if not book_data:
+            self.error = True
+            return
 
-            # Normalize the chapter filename for comparison
-            normalized_chapter = chapter_filename.replace('\\', '/')
+        try:
+            file_path = os.path.normpath(os.path.join(
+                config.get_book_path(),
+                self.book.path,
+                book_data.name + "." + book_data.format.lower()
+            ))
             
-            # Calculate character counts for each spine item
-            chapter_lengths = []
-            target_chapter_index = None
+            if not os.path.exists(file_path):
+                self.error = True
+                return
             
-            for idx, spine_item in enumerate(spine_items):
-                try:
-                    # Try to read the content file
-                    content = epub_zip.read(spine_item).decode('utf-8', errors='ignore')
-                    
-                    # Parse HTML and extract text content
+            with zipfile.ZipFile(file_path, 'r') as epub_zip:
+                # Find OPF
+                container_data = epub_zip.read('META-INF/container.xml')
+                container_tree = etree.fromstring(container_data)
+                ns = {
+                    'container': 'urn:oasis:names:tc:opendocument:xmlns:container',
+                    'opf': 'http://www.idpf.org/2007/opf'
+                }
+                opf_path = container_tree.xpath(
+                    '//container:rootfile/@full-path',
+                    namespaces={'container': ns['container']}
+                )[0]
+                
+                # Parse OPF
+                opf_data = epub_zip.read(opf_path)
+                opf_tree = etree.fromstring(opf_data)
+                opf_dir = os.path.dirname(opf_path)
+                
+                # Get manifest
+                manifest = {}
+                for item in opf_tree.xpath('//opf:manifest/opf:item', namespaces={'opf': ns['opf']}):
+                    item_id = item.get('id')
+                    href = item.get('href')
+                    if item_id and href:
+                        full_href = os.path.normpath(os.path.join(opf_dir, href)).replace('\\', '/')
+                        manifest[item_id] = full_href
+                
+                # Get spine
+                for itemref in opf_tree.xpath('//opf:spine/opf:itemref', namespaces={'opf': ns['opf']}):
+                    idref = itemref.get('idref')
+                    if idref and idref in manifest:
+                        self.spine_items.append(manifest[idref])
+                
+                if not self.spine_items:
+                    self.error = True
+                    return
+
+                # Calculate lengths
+                for spine_item in self.spine_items:
                     try:
-                        html_tree = etree.fromstring(content.encode('utf-8'))
-                        text_content = ''.join(html_tree.itertext())
-                        char_count = len(text_content.strip())
-                    except etree.XMLSyntaxError:
-                        # Fallback: use raw HTML length minus tags (rough approximation)
-                        text_content = re.sub(r'<[^>]+>', '', content)
-                        char_count = len(text_content.strip())
-                    
-                    chapter_lengths.append(char_count)
-                    
-                    # Check if this is our target chapter
-                    if normalized_chapter in spine_item or spine_item.endswith(normalized_chapter):
-                        target_chapter_index = idx
-                        log.debug(f"Found target chapter at spine index {idx}: {spine_item}")
-                    
-                except Exception as e:
-                    log.debug(f"Could not read spine item {spine_item}: {e}")
-                    chapter_lengths.append(0)
-            
-            if target_chapter_index is None:
-                log.warning(f"Could not find chapter {normalized_chapter} in spine")
-                return None
-            
-            # Calculate total characters in book
-            total_chars = sum(chapter_lengths)
-            if total_chars == 0:
-                log.warning("Total book length is 0")
-                return None
-            
-            # Calculate characters read up to this point
-            chars_before = sum(chapter_lengths[:target_chapter_index])
-            chars_in_chapter = chapter_lengths[target_chapter_index]
-            chars_read = chars_before + (chars_in_chapter * chapter_progress)
-            
-            # Calculate percentage
-            progress_percent = (chars_read / total_chars) * 100
-            
-            log.debug(f"Calculated exact progress from epub: chapters({len(spine_items)}) target_chapter_index({target_chapter_index}) chapter_length({chars_in_chapter}) total_chars({total_chars}) progress_percent({progress_percent:.2f}%)")
-            return progress_percent
-            
-    except Exception as e:
-        log.error(f"Error calculating progress from epub: {e}")
-        import traceback
-        log.debug(traceback.format_exc())
-        return None
+                        content = epub_zip.read(spine_item).decode('utf-8', errors='ignore')
+                        try:
+                            html_tree = etree.fromstring(content.encode('utf-8'))
+                            text_content = ''.join(html_tree.itertext())
+                            char_count = len(text_content.strip())
+                        except etree.XMLSyntaxError:
+                            text_content = re.sub(r'<[^>]+>', '', content)
+                            char_count = len(text_content.strip())
+                        self.chapter_lengths.append(char_count)
+                    except Exception:
+                        self.chapter_lengths.append(0)
+                
+                self.total_chars = sum(self.chapter_lengths)
+                self.initialized = True
+
+        except Exception as e:
+            log.error(f"Error initializing EPUB calculator: {e}")
+            self.error = True
+
+    def calculate(self, chapter_filename: str, chapter_progress: float):
+        if not self.initialized:
+            self._initialize()
+        
+        if self.error or self.total_chars == 0:
+            return None
+
+        normalized_chapter = chapter_filename.replace('\\', '/')
+        target_chapter_index = None
+        
+        for idx, spine_item in enumerate(self.spine_items):
+            if normalized_chapter in spine_item or spine_item.endswith(normalized_chapter):
+                target_chapter_index = idx
+                break
+        
+        if target_chapter_index is None:
+            return None
+        
+        chars_before = sum(self.chapter_lengths[:target_chapter_index])
+        chars_in_chapter = self.chapter_lengths[target_chapter_index]
+        chars_read = chars_before + (chars_in_chapter * chapter_progress)
+        
+        return (chars_read / self.total_chars) * 100
 
 
 class AnnotationSpan(TypedDict):
@@ -384,7 +344,15 @@ class KoboAnnotation(TypedDict):
     type: str  # "note" or "highlight"
 
 
-def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, identifiers, progress_percent=None, existing_syncs=None):
+def process_annotation_for_sync(
+    annotation: KoboAnnotation, 
+    book: db.Books, 
+    identifiers, 
+    progress_percent=None, 
+    existing_syncs=None,
+    progress_calculator: 'EpubProgressCalculator | None' = None,
+    is_blacklisted: bool = False
+):
     """
     Process a single annotation and sync to Hardcover if needed.
     
@@ -432,13 +400,7 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
         log.warning("User has no Hardcover token, skipping sync")
         return False
 
-
-    # Check if book is blacklisted from annotation syncing
-    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
-        ub.HardcoverBookBlacklist.book_id == book.id
-    ).first()
-
-    if book_blacklist and book_blacklist.blacklist_annotations:
+    if is_blacklisted:
         log.info(f"Skipping annotation sync for book {book.id} - blacklisted for annotations")
         return False
         
@@ -446,14 +408,10 @@ def process_annotation_for_sync(annotation: KoboAnnotation, book: db.Books, iden
     chapter_filename = annotation.get('location', {}).get('span', {}).get('chapterFilename')
     chapter_progress = annotation.get('location', {}).get('span', {}).get('chapterProgress')
     
-    if progress_percent is None:
-        calculated_progress = calculate_progress_from_epub(book, chapter_filename, chapter_progress)
-        if calculated_progress is not None:
-            progress_percent = calculated_progress
-        else:
-            log.warning(f"Failed to calculate exact progress for annotation in book '{book.title}' (ID: {book.id}). Annotation will sync without progress data.")
-            # Note: This can happen if the EPUB structure is unusual or the book file is inaccessible
-            # The annotation will still sync, just without progress percentage
+    if progress_percent is None and progress_calculator and chapter_filename:
+        progress_percent = progress_calculator.calculate(chapter_filename, chapter_progress)
+        if progress_percent is None:
+             log.warning(f"Failed to calculate exact progress for annotation in book '{book.title}' (ID: {book.id}). Annotation will sync without progress data.")
 
     # Sync to Hardcover if enabled and user has valid token
     if (config.config_kobo_sync and
@@ -564,12 +522,23 @@ def handle_annotations(entitlement_id):
                         ).all()
                         existing_syncs = {s.annotation_id: s for s in syncs}
                     
+                    # Check blacklist once per book
+                    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+                        ub.HardcoverBookBlacklist.book_id == book.id
+                    ).first()
+                    is_blacklisted = book_blacklist and book_blacklist.blacklist_annotations
+
+                    # Initialize progress calculator once per book
+                    progress_calculator = EpubProgressCalculator(book)
+
                     for annotation in annotations:
                         process_annotation_for_sync(
                             annotation=annotation, 
                             book=book, 
                             identifiers=identifiers, 
-                            existing_syncs=existing_syncs
+                            existing_syncs=existing_syncs,
+                            progress_calculator=progress_calculator,
+                            is_blacklisted=is_blacklisted
                         )
         except requests.exceptions.RequestException as e:
             log.error(f"Failed to proxy GET annotations to Kobo Reading Services: {e}")
@@ -635,12 +604,23 @@ def handle_annotations(entitlement_id):
                         ).all()
                         existing_syncs = {s.annotation_id: s for s in syncs}
                     
+                    # Check blacklist once per book
+                    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+                        ub.HardcoverBookBlacklist.book_id == book.id
+                    ).first()
+                    is_blacklisted = book_blacklist and book_blacklist.blacklist_annotations
+
+                    # Initialize progress calculator once per book
+                    progress_calculator = EpubProgressCalculator(book)
+
                     for annotation in annotations:
                         process_annotation_for_sync(
                             annotation=annotation, 
                             book=book, 
                             identifiers=identifiers, 
-                            existing_syncs=existing_syncs
+                            existing_syncs=existing_syncs,
+                            progress_calculator=progress_calculator,
+                            is_blacklisted=is_blacklisted
                         )
 
         except Exception as e:

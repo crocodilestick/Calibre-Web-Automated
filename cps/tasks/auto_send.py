@@ -5,7 +5,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
-import time
 from datetime import datetime
 
 from flask_babel import lazy_gettext as N_
@@ -31,10 +30,8 @@ class TaskAutoSend(CalibreTask):
         self.worker_thread = worker_thread
         
         try:
-            # Wait for specified delay to allow metadata fetching to complete
-            if self.delay_minutes > 0:
-                self.message = N_("Waiting for metadata processing...")
-                time.sleep(self.delay_minutes * 60)
+            # Delay is now handled by the scheduler; begin processing immediately
+            self.message = N_("Preparing to send to eReader...")
             
             # Get fresh book data
             calibre_db_instance = db.CalibreDB(expire_on_commit=False, init=True)

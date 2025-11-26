@@ -113,7 +113,7 @@ def upload():
             try:
                 final_path = _get_ingest_path(requested_file, prefix_parts=["format", book_id])
                 tmp_path, final_path = _save_to_ingest_atomic_rename(requested_file, final_path)
-                
+
                 # Write sidecar manifest instructing ingest to add this file as a new format
                 manifest = {
                     "action": "add_format",
@@ -312,7 +312,7 @@ def _validate_uploaded_file(uploaded_file):
 def _get_ingest_path(uploaded_file, prefix_parts=None):
     ingest_dir = get_ingest_dir()
     os.makedirs(ingest_dir, exist_ok=True)
-    
+
     # Ensure proper ownership of ingest directory (fix for issue #603)
     try:
         nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
@@ -326,7 +326,7 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
     except Exception as e:
         # Silently ignore any other permission-related errors but log for debugging
         log.debug('Other permission error setting ingest directory ownership: %s', e)
-    
+
     base_name = secure_filename(uploaded_file.filename)
     # CWA change: use timestamp for more predictable sorting vs uuid
     unique = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
@@ -352,7 +352,7 @@ def _save_to_ingest_atomic_rename(uploaded_file, final_path):
 #
 # param: the property of the book to be changed
 # vals - JSON Object:
-#   { 
+#   {
 #       'pk': "the book id",
 #       'value': "changes value of param to what's passed here"
 #       'checkA': "Optional. Used to check if autosort author is enabled. Assumed as true if not passed"
@@ -703,17 +703,17 @@ def do_edit_book(book_id, upload_formats=None):
 
         modify_date |= edit_book_series_index(to_save.get("series_index"), book)
         modify_date |= edit_book_comments(Markup(to_save.get('comments')).unescape(), book)
-        
+
         input_identifiers = identifier_list(to_save, book)
         modification, warning = modify_identifiers(input_identifiers, book.identifiers, calibre_db.session)
         if warning:
             flash(_("Identifiers are not Case Sensitive, Overwriting Old Identifier"), category="warning")
         modify_date |= modification
-        
+
         modify_date |= edit_book_tags(to_save.get('tags'), book)
         modify_date |= edit_book_series(to_save.get("series"), book)
         modify_date |= edit_book_publisher(to_save.get('publisher'), book)
-        
+
         try:
             invalid = []
             modify_date |= edit_book_languages(to_save.get('languages'), book, upload_mode=upload_formats, invalid=invalid)
@@ -723,7 +723,7 @@ def do_edit_book(book_id, upload_formats=None):
         except ValueError as e:
             flash(str(e), category="error")
             edit_error = True
-            
+
         modify_date |= edit_all_cc_data(book_id, book, to_save)
 
         # Handle hardcover sync blacklist settings
@@ -763,34 +763,34 @@ def do_edit_book(book_id, upload_formats=None):
         try:
             # Define metadata fields that represent actual content changes
             metadata_fields = {
-                'title', 'authors', 'series', 'series_index', 'tags', 'comments', 
+                'title', 'authors', 'series', 'series_index', 'tags', 'comments',
                 'cover_url', 'pubdate', 'publisher', 'languages', 'rating'
             }
-            
+
             # Filter to meaningful metadata changes (including empty values for legitimate clearing)
             # but exclude pure form artifacts
             meaningful_changes = {}
             for key, value in to_save.items():
-                if (key in metadata_fields and 
-                    value is not None and 
+                if (key in metadata_fields and
+                    value is not None and
                     key not in ['csrf_token', 'book_format']):
                     meaningful_changes[key] = value
-            
+
             # Also include custom column changes (including empty values)
-            custom_column_changes = {k: v for k, v in to_save.items() 
+            custom_column_changes = {k: v for k, v in to_save.items()
                                    if k.startswith('custom_column_') and v is not None}
             meaningful_changes.update(custom_column_changes)
-            
-            # Create log if we have actual database changes (modify_date=True) 
+
+            # Create log if we have actual database changes (modify_date=True)
             # OR if this appears to be a metadata fetch with content (non-empty meaningful_changes)
-            should_create_log = (modify_date or 
+            should_create_log = (modify_date or
                                (meaningful_changes and any(v != '' for v in meaningful_changes.values())))
-            
+
             if should_create_log:
                 payload = dict(meaningful_changes)
                 payload.setdefault('title', book.title)
                 payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
-                
+
                 # Add source information for debugging
                 payload['_cwa_meta'] = {
                     'modify_date': modify_date,
@@ -798,7 +798,7 @@ def do_edit_book(book_id, upload_formats=None):
                     'has_content': any(v != '' for v in meaningful_changes.values()),
                     'timestamp': datetime.now().isoformat()
                 }
-                
+
                 now = datetime.now()
                 log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
                 with open(log_path, 'w', encoding='utf-8') as f:

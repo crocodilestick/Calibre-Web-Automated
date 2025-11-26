@@ -205,22 +205,22 @@ def reconnect():
 def update_thumbnails():
     # Always allow manual thumbnail cache updates
     log.info("Update of Cover cache requested")
-    
+
     try:
         from .tasks.thumbnail import TaskGenerateCoverThumbnails
         task_id = helper.update_thumbnail_cache()
-        
+
         # Check if there are any books to process
         books_with_covers = TaskGenerateCoverThumbnails.get_books_with_covers()
         book_count = len(books_with_covers)
-        
+
         if book_count > 0:
             message = _('Thumbnail cache refresh started for {} book(s). This may take a few minutes.').format(book_count)
         else:
             message = _('No books with covers found to process.')
-        
+
         return jsonify({
-            'success': True, 
+            'success': True,
             'message': message,
             'book_count': book_count,
             'task_id': str(task_id) if task_id else None
@@ -228,7 +228,7 @@ def update_thumbnails():
     except Exception as e:
         log.error(f"Error starting thumbnail refresh: {e}")
         return jsonify({
-            'success': False, 
+            'success': False,
             'message': _('Failed to start thumbnail refresh: {}').format(str(e))
         })
 
@@ -543,6 +543,8 @@ def edit_list_user(param):
                     user.kobo_only_shelves_sync = int(vals['value'] == 'true')
                 elif param == 'kindle_mail':
                     user.kindle_mail = valid_email(vals['value']) if vals['value'] else ""
+                elif param == 'kindle_mail_subject':
+                    user.kindle_mail_subject = vals['value']
                 elif param.endswith('role'):
                     value = int(vals['field_index'])
                     if user.name == "Guest" and value in \
@@ -1215,13 +1217,13 @@ def _configuration_oauth_helper(to_save):
             if to_save["config_generic_oauth_client_secret"] != element["oauth_client_secret"]:
                 reboot_required = True
                 update["oauth_client_secret"] = to_save["config_generic_oauth_client_secret"]
-            
+
             # Handle metadata URL (takes precedence over manual configuration)
             metadata_url = to_save.get("config_generic_oauth_metadata_url", "")
             if metadata_url != element.get("metadata_url", ""):
                 reboot_required = True
                 update["metadata_url"] = metadata_url
-                
+
                 # If metadata URL is provided, try to fetch endpoints
                 if metadata_url:
                     try:
@@ -1240,7 +1242,7 @@ def _configuration_oauth_helper(to_save):
                         log.warning(f"Failed to fetch OAuth metadata: {ex}")
                     except Exception as ex:
                         log.error(f"Unexpected error fetching OAuth metadata: {ex}")
-            
+
             # Handle manual server URL (fallback or override)
             elif to_save["config_generic_oauth_server_url"] != element["oauth_base_url"]:
                 reboot_required = True
@@ -1264,41 +1266,41 @@ def _configuration_oauth_helper(to_save):
                     log.warning(f"Failed to fetch OIDC configuration: {ex}")
                 except Exception as ex:
                     log.error(f"Unexpected error fetching OIDC configuration: {ex}")
-            
+
             # Handle manual endpoint URLs if metadata URL is not used
             if not metadata_url:
                 # Map form field names to database field names
                 endpoint_mappings = {
                     "config_generic_oauth_auth_url": "oauth_authorize_url",
-                    "config_generic_oauth_token_url": "oauth_token_url", 
+                    "config_generic_oauth_token_url": "oauth_token_url",
                     "config_generic_oauth_userinfo_url": "oauth_userinfo_url"
                 }
-                
+
                 for form_field, db_field in endpoint_mappings.items():
                     if form_field in to_save and to_save[form_field] != element.get(db_field, ""):
                         reboot_required = True
                         update[db_field] = to_save[form_field]
-            
+
             # Handle scope
             if to_save.get("config_generic_oauth_scope", "") != element.get("scope", ""):
                 reboot_required = True
                 update["scope"] = to_save.get("config_generic_oauth_scope", "")
-            
+
             # Handle username mapper
             if to_save.get("config_generic_oauth_username_mapper", "") != element.get("username_mapper", ""):
                 reboot_required = True
                 update["username_mapper"] = to_save.get("config_generic_oauth_username_mapper", "")
-            
+
             # Handle email mapper
             if to_save.get("config_generic_oauth_email_mapper", "") != element.get("email_mapper", ""):
                 reboot_required = True
                 update["email_mapper"] = to_save.get("config_generic_oauth_email_mapper", "")
-            
+
             # Handle login button text
             if to_save.get("config_generic_oauth_login_button", "") != element.get("login_button", ""):
                 reboot_required = True
                 update["login_button"] = to_save.get("config_generic_oauth_login_button", "")
-            
+
             if to_save["config_generic_oauth_admin_group"] != element["oauth_admin_group"]:
                 reboot_required = True
                 update["oauth_admin_group"] = to_save["config_generic_oauth_admin_group"]
@@ -1993,18 +1995,18 @@ def _configuration_update_helper():
         _config_checkbox(to_save, "config_hardcover_sync")
         _config_checkbox(to_save, "config_hardcover_annotations_sync")
         _config_string(to_save, "config_hardcover_token")
-            
+
         _config_int(to_save, "config_updatechannel")
 
         # Reverse proxy login configuration
         _config_checkbox(to_save, "config_allow_reverse_proxy_header_login")
         _config_string(to_save, "config_reverse_proxy_login_header_name")
         _config_checkbox(to_save, "config_reverse_proxy_auto_create_users")
-        
+
         # Validate reverse proxy configuration
         if config.config_reverse_proxy_auto_create_users and not config.config_allow_reverse_proxy_header_login:
             return _configuration_result(_('Auto-create users cannot be enabled without enabling reverse proxy authentication'))
-        
+
         if config.config_reverse_proxy_auto_create_users and not config.config_reverse_proxy_login_header_name:
             return _configuration_result(_('Auto-create users requires a valid reverse proxy header name'))
 
@@ -2013,7 +2015,7 @@ def _configuration_update_helper():
         if "config_oauth_redirect_host" in to_save:
             old_host = getattr(config, 'config_oauth_redirect_host', '')
             new_host = to_save["config_oauth_redirect_host"].strip()
-            
+
             # Validate OAuth redirect host format if provided
             if new_host:
                 try:
@@ -2021,24 +2023,24 @@ def _configuration_update_helper():
                     if not new_host.startswith(('http://', 'https://')):
                         new_host = f"https://{new_host}"
                         to_save["config_oauth_redirect_host"] = new_host
-                    
+
                     # Parse the URL to validate it
                     parsed = urlparse(new_host)
                     if not parsed.netloc:
                         return _configuration_result(_('Invalid OAuth Redirect Host format. Please include the full URL with protocol (e.g., https://your-domain.com)'))
-                    
+
                     # Warn if URL contains a path (could cause redirect URI issues)
                     if parsed.path and parsed.path != '/':
                         return _configuration_result(_('OAuth Redirect Host should not include a path. Use only the base URL (e.g., https://your-domain.com)'))
-                        
+
                 except Exception:
                     return _configuration_result(_('Invalid OAuth Redirect Host format. Please include the full URL with protocol (e.g., https://your-domain.com)'))
-            
+
             if old_host != new_host:
                 oauth_redirect_host_changed = True
-        
+
         _config_string(to_save, "config_oauth_redirect_host")
-        
+
         if config.config_login_type == constants.LOGIN_OAUTH:
             reboot, message = _configuration_oauth_helper(to_save)
             if message:
@@ -2295,6 +2297,9 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             content.name = check_username(to_save["name"])
         if to_save.get("kindle_mail") != content.kindle_mail:
             content.kindle_mail = valid_email(to_save["kindle_mail"]) if to_save["kindle_mail"] else ""
+        if to_save.get("kindle_mail_subject") is not None:
+            content.kindle_mail_subject = (to_save.get("kindle_mail_subject", "") or "").strip()
+
     except Exception as ex:
         log.error(ex)
         flash(str(ex), category="error")
@@ -2324,7 +2329,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
 
 
 def extract_user_data_from_field(user, field):
-    match = re.search(field + r"=(.*?)($|(?<!\\),)", user, re.IGNORECASE | re.UNICODE)    
+    match = re.search(field + r"=(.*?)($|(?<!\\),)", user, re.IGNORECASE | re.UNICODE)
     if match:
         return match.group(1)
     else:
@@ -2362,7 +2367,7 @@ def test_oidc():
         response.raise_for_status()
         # Try to parse the JSON and extract useful information
         oidc_config = response.json()
-        
+
         # Extract key endpoints for validation
         endpoints = []
         if 'authorization_endpoint' in oidc_config:
@@ -2371,12 +2376,12 @@ def test_oidc():
             endpoints.append('token')
         if 'userinfo_endpoint' in oidc_config:
             endpoints.append('userinfo')
-            
+
         endpoint_info = " Found endpoints: " + ', '.join(endpoints) + "." if endpoints else ""
-        
+
         return json.dumps({
-            'success': True, 
-            'message': _('Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s', 
+            'success': True,
+            'message': _('Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s',
                         endpoints=endpoint_info)
         })
     except requests.exceptions.HTTPError as e:
@@ -2410,31 +2415,31 @@ def test_metadata():
         response = requests.get(metadata_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
         response.raise_for_status()
         data = response.json()
-        
+
         # Validate that it contains required OIDC fields
         required_fields = ['issuer', 'authorization_endpoint', 'token_endpoint']
         missing_fields = [field for field in required_fields if not data.get(field)]
-        
+
         if missing_fields:
             return json.dumps({
-                'success': False, 
-                'message': _('Metadata is missing required OIDC fields: %(fields)s. This may not be a valid OIDC metadata endpoint.', 
+                'success': False,
+                'message': _('Metadata is missing required OIDC fields: %(fields)s. This may not be a valid OIDC metadata endpoint.',
                             fields=', '.join(missing_fields))
             }), 200
-        
+
         # Count available OAuth endpoints for user feedback
-        oauth_endpoints = ['authorization_endpoint', 'token_endpoint', 'userinfo_endpoint', 
+        oauth_endpoints = ['authorization_endpoint', 'token_endpoint', 'userinfo_endpoint',
                           'end_session_endpoint', 'introspection_endpoint', 'revocation_endpoint']
         found_endpoints = [ep for ep in oauth_endpoints if ep in data]
         endpoint_count = len(found_endpoints)
         has_userinfo = 'userinfo_endpoint' in data
-        
+
         message = _('Metadata URL is valid! Found %(count)s OAuth endpoints.', count=endpoint_count)
         if has_userinfo:
             message += _(' User info endpoint is available.')
         else:
             message += _(' Note: User info endpoint not found - this may cause authentication issues.')
-            
+
         return json.dumps({'success': True, 'message': message})
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:

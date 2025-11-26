@@ -68,7 +68,7 @@ except (ImportError, RuntimeError) as e:
 
 
 # Convert existing book entry to new format
-def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id, ereader_mail=None):
+def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id, ereader_mail=None, subject=None):
     book = calibre_db.get_book(book_id)
     data = calibre_db.get_book_format(book.id, old_book_format)
     if not data:
@@ -89,7 +89,9 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
     # read settings and append converter task to queue
     if ereader_mail:
         settings = config.get_mail_settings()
-        settings['subject'] = _('Send to eReader')  # pretranslate Subject for Email
+        if not subject or not subject.strip():
+            subject = _('Send to eReader')
+        settings['subject'] = subject
         settings['body'] = _('This Email has been sent via Calibre-Web Automated.')
     else:
         settings = dict()
@@ -200,16 +202,19 @@ def check_read_formats(entry):
 # 1: If epub file is existing, it's directly send to eReader email,
 # 2: If mobi file is existing, it's converted and send to eReader email,
 # 3: If Pdf file is existing, it's directly send to eReader email
-def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id):
+def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id, subject=None):
     """Send email with attachments"""
     book = calibre_db.get_book(book_id)
 
     if convert == 1:
         # returns None if success, otherwise errormessage
-        return convert_book_format(book_id, calibrepath, 'mobi', book_format.lower(), user_id, ereader_mail)
+        return convert_book_format(book_id, calibrepath, 'mobi', book_format.lower(), user_id, ereader_mail, subject)
     if convert == 2:
         # returns None if success, otherwise errormessage
-        return convert_book_format(book_id, calibrepath, 'azw3', book_format.lower(), user_id, ereader_mail)
+        return convert_book_format(book_id, calibrepath, 'azw3', book_format.lower(), user_id, ereader_mail, subject)
+
+    if not subject or not subject.strip():
+        subject = _("Send to eReader")
 
     for entry in iter(book.data):
         if entry.format.upper() == book_format.upper():
@@ -218,10 +223,10 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id)
             email_text = N_("%(book)s send to eReader", book=link)
             for email in ereader_mail.split(','):
                 email = strip_whitespaces(email)
-                WorkerThread.add(user_id, TaskEmail(_("Send to eReader"), book.path, converted_file_name,
-                                 config.get_mail_settings(), email,
-                                 email_text, _('This Email has been sent via Calibre-Web Automated.'), book.id))
-            return
+                WorkerThread.add(user_id, TaskEmail(subject, book.path, converted_file_name,
+                                                    config.get_mail_settings(), email,
+                                                    email_text, _('This Email has been sent via Calibre-Web Automated.'), book.id))
+            return None
     return _("The requested file could not be read. Maybe wrong permissions?")
 
 
@@ -769,7 +774,7 @@ def get_book_cover_with_uuid(book_uuid, resolution=None):
 
 def get_book_cover_internal(book, resolution=None):
     """Serve book cover with improved thumbnail generation fallback.
-    
+
     When a thumbnail is requested but missing, generate it synchronously
     instead of falling back to the original cover.jpg.
     """
@@ -781,25 +786,25 @@ def get_book_cover_internal(book, resolution=None):
             # Check for both webp and jpg thumbnails, generate missing ones
             webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
             jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
-            
+
             # Check if files actually exist on disk
             webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
             jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
-            
+
             # Generate missing thumbnails on-demand (skip for Kobo requests to avoid delays)
             if not webp_exists or not jpg_exists:
                 try:
                     from flask import has_request_context, request
-                    is_kobo_request = (has_request_context() and 
-                                     request.path and 
+                    is_kobo_request = (has_request_context() and
+                                     request.path and
                                      '/kobo/' in request.path)
-                    
+
                     if not is_kobo_request and use_IM:
                         from .tasks.thumbnail import TaskGenerateCoverThumbnails
                         # Create and run thumbnail generation for this book
                         thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
                         thumbnail_task.create_book_cover_thumbnails(book)
-                        
+
                         # Refresh thumbnail references after generation
                         webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
                         jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
@@ -807,14 +812,14 @@ def get_book_cover_internal(book, resolution=None):
                         jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
                 except Exception as ex:
                     log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
-            
+
             # Determine which thumbnail format to serve based on request context
             try:
                 from flask import has_request_context, request
-                is_kobo_request = (has_request_context() and 
-                                 request.path and 
+                is_kobo_request = (has_request_context() and
+                                 request.path and
                                  '/kobo/' in request.path)
-                
+
                 # Prefer jpg for Kobo requests, webp for web requests
                 if is_kobo_request:
                     thumbnail_to_serve = jpg_thumb if jpg_exists else (webp_thumb if webp_exists else None)
@@ -979,7 +984,7 @@ def save_cover(img, book_path):
         separator = ';' if ';' in content_type else ',' if ',' in content_type else None
         if separator:
             content_type = content_type.split(separator)[0].strip()
-        
+
     if use_IM:
         if content_type not in ('image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp'):
             log.error("Only jpg/jpeg/png/webp/bmp files are supported as coverfile")
@@ -1019,7 +1024,7 @@ def trigger_thumbnail_generation_for_book(book_id):
     """Trigger thumbnail generation for a book after cover changes."""
     try:
         from .tasks.thumbnail import TaskGenerateCoverThumbnails
-        
+
         if use_IM:
             # Queue thumbnail generation task
             thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
@@ -1032,11 +1037,11 @@ def trigger_thumbnail_generation_for_book(book_id):
 def save_cover_with_thumbnail_update(img, book_path, book_id=None):
     """Save cover and trigger thumbnail generation."""
     result, message = save_cover(img, book_path)
-    
+
     # If cover save was successful and we have a book_id, generate thumbnails
     if result and book_id:
         trigger_thumbnail_generation_for_book(book_id)
-    
+
     return result, message
 
 

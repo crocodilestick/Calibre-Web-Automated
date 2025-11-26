@@ -30,7 +30,7 @@
     </div>
     <div class="form-group">
       <label for="kindle_mail_subject">{{_('Send to eReader Subject')}}</label>
-      <input type="email" class="form-control" name="kindle_mail_subject" id="kindle_mail_subject" value="{{ content.kindle_mail_subject if content.kindle_mail_subject != None }}">
+      <input type="text" class="form-control" name="kindle_mail_subject" id="kindle_mail_subject" value="{{ content.kindle_mail_subject if content.kindle_mail_subject != None }}">
     </div>
     {% if not content.role_anonymous() %}
     <div class="form-group">

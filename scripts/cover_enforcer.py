@@ -422,7 +422,10 @@ class Enforcer:
             for file in supported_files:
                 book = Book(book_dir, file)
                 self.replace_old_metadata(book.old_metadata_path, book.new_metadata_path)
-                os.system(f'ebook-polish -c "{book.cover_path}" -o "{book.new_metadata_path}" -U "{file}" "{file}"')
+                if Path(book.cover_path).exists():
+                    os.system(f'ebook-polish -c "{book.cover_path}" -o "{book.new_metadata_path}" -U "{file}" "{file}"')
+                else:
+                    os.system(f'ebook-polish -o "{book.new_metadata_path}" -U "{file}" "{file}"')
                 self.empty_metadata_temp()
                 print(f"[cover-metadata-enforcer]: DONE: '{book.title_author}.{book.file_format}': Cover & Metadata updated", flush=True)
                 book_objects.append(book)

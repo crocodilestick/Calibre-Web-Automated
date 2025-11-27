@@ -82,13 +82,25 @@ def ensure_checksum_table(conn):
             else:
                 return conn.execute(sql)
 
+        # Check if 'calibre' database is attached (Calibre-Web architecture)
+        try:
+            db_list = execute_sql("PRAGMA database_list").fetchall()
+            # Row format: (seq, name, file)
+            is_calibre_attached = any(str(row[1]) == 'calibre' for row in db_list)
+        except Exception:
+            is_calibre_attached = False
+
+        table_prefix = "calibre." if is_calibre_attached else ""
+        table_name = f"{table_prefix}book_format_checksums"
+        master_table = f"{table_prefix}sqlite_master"
+
         # Check if table exists
-        result = execute_sql("SELECT name FROM sqlite_master WHERE type='table' AND name='book_format_checksums'")
+        result = execute_sql(f"SELECT name FROM {master_table} WHERE type='table' AND name='book_format_checksums'")
         table_exists = result.fetchone() is not None
 
         if table_exists:
             # Check if table has the expected schema
-            pragma_result = execute_sql("PRAGMA table_info(book_format_checksums)")
+            pragma_result = execute_sql(f"PRAGMA {table_prefix}table_info(book_format_checksums)")
             columns = [row[1] for row in pragma_result.fetchall()]
 
             expected_columns = {'id', 'book', 'format', 'checksum', 'version', 'created'}
@@ -108,8 +120,8 @@ def ensure_checksum_table(conn):
 
         if not table_exists:
             # Create table for book format checksums
-            execute_sql("""
-                CREATE TABLE book_format_checksums (
+            execute_sql(f"""
+                CREATE TABLE {table_name} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     book INTEGER NOT NULL,
                     format TEXT NOT NULL COLLATE NOCASE,
@@ -119,12 +131,12 @@ def ensure_checksum_table(conn):
                     FOREIGN KEY (book) REFERENCES books(id)
                 )
             """)
-            execute_sql("CREATE INDEX idx_checksum ON book_format_checksums(checksum)")
-            execute_sql("CREATE INDEX idx_checksum_version ON book_format_checksums(checksum, version)")
-            execute_sql("CREATE INDEX idx_book_format ON book_format_checksums(book, format)")
-            execute_sql("CREATE INDEX idx_created ON book_format_checksums(created)")
+            execute_sql(f"CREATE INDEX {table_prefix}idx_checksum ON book_format_checksums(checksum)")
+            execute_sql(f"CREATE INDEX {table_prefix}idx_checksum_version ON book_format_checksums(checksum, version)")
+            execute_sql(f"CREATE INDEX {table_prefix}idx_book_format ON book_format_checksums(book, format)")
+            execute_sql(f"CREATE INDEX {table_prefix}idx_created ON book_format_checksums(created)")
             conn.commit()
-            log.info("Created book_format_checksums table with indexes")
+            log.info(f"Created {table_name} table with indexes")
 
     except Exception as e:
         log.error(f"Could not create book_format_checksums table: {e}")

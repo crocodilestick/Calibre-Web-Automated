@@ -15,6 +15,7 @@ from weakref import WeakSet
 from uuid import uuid4
 
 from sqlite3 import OperationalError as sqliteOperationalError
+import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
@@ -736,8 +737,13 @@ class CalibreDB:
             inst.init_session()
 
         # Ensure progress syncing tables exist in metadata.db (book checksums)
+        # Use a direct connection to ensure the table is created in the file, not in-memory
         from .progress_syncing.models import ensure_calibre_db_tables
-        ensure_calibre_db_tables(conn)
+        try:
+            with sqlite3.connect(dbpath, timeout=30) as direct_conn:
+                ensure_calibre_db_tables(direct_conn)
+        except Exception as e:
+            log.error(f"Failed to ensure progress syncing tables: {e}")
 
         cls._init = True
 

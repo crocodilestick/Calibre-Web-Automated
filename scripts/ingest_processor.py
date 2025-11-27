@@ -242,11 +242,18 @@ except Exception as e:
     print(f"[ingest-processor] WARN: Could not ensure processed_books directories: {e}", flush=True)
 
 # Generates dictionary of available backup directories and their paths
-backup_destinations = {
-        entry.name: entry.path
-        for entry in os.scandir("/config/processed_books")
-        if entry.is_dir()
-    }
+try:
+    backup_destinations = {
+            entry.name: entry.path
+            for entry in os.scandir("/config/processed_books")
+            if entry.is_dir()
+        }
+except FileNotFoundError:
+    # Fallback for test environments where /config might not exist
+    backup_destinations = {}
+except Exception as e:
+    print(f"[ingest-processor] WARN: Could not scan processed_books: {e}", flush=True)
+    backup_destinations = {}
 
 class NewBookProcessor:
     def __init__(self, filepath: str):

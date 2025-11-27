@@ -4856,134 +4856,130 @@ msgid "Show Read/Unread Section"
 msgstr "Mostrar seção de lidos/não lidos"
 
 #, python-format
-#~ msgid "File %(file)s uploaded"
-#~ msgstr "Arquivo %(file)s enviado"
+~ msgid "File %(file)s uploaded"
+~ msgstr "Arquivo %(file)s enviado"
 
-#~ msgid "Ratings list"
-#~ msgstr "Lista de Avaliações"
+~ msgid "Ratings list"
+~ msgstr "Lista de Avaliações"
 
-#~ msgid "Merge selected books"
-#~ msgstr "Mesclar livros selecionados"
-
-#, fuzzy
-#~ msgid "Clear selections"
-#~ msgstr "Remover Seleções"
+~ msgid "Merge selected books"
+~ msgstr "Mesclar livros selecionados"
 
 #, fuzzy
-#~ msgid "Edit selected books"
-#~ msgstr "Mesclar livros selecionados"
+~ msgid "Clear selections"
+~ msgstr "Limpar Seleções"
 
 #, fuzzy
-#~ msgid "Archive selected books"
-#~ msgstr "Mesclar livros selecionados"
+~ msgid "Edit selected books"
+~ msgstr "Editar livros selecionados"
 
 #, fuzzy
-#~ msgid "Unarchive selected books"
-#~ msgstr "Mesclar livros selecionados"
+~ msgid "Archive selected books"
+~ msgstr "Arquivar livros selecionados"
 
 #, fuzzy
-#~ msgid "Mark selected books as read"
-#~ msgstr "Mesclar livros selecionados"
+~ msgid "Unarchive selected books"
+~ msgstr "Desarquivar livros selecionados"
 
 #, fuzzy
-#~ msgid "Mark selected books as unread"
-#~ msgstr "Mesclar livros selecionados"
+~ msgid "Mark selected books as read"
+~ msgstr "Marcar livros selecionados como lidos"
 
 #, fuzzy
-#~ msgid "Mark Book as Read or Unread"
-#~ msgstr "Marcar como Não Lido"
+~ msgid "Mark selected books as unread"
+~ msgstr "Marcar livros selecionados como não lidos"
+
+#, fuzzy
+~ msgid "Mark Book as Read or Unread"
+~ msgstr "Marcar como Lido ou Não Lido"
 
 #, fuzzy, python-format
-#~ msgid "%(seriesindex)s is not a valid number, skipping"
-#~ msgstr "%(seriesindex)s não é um número válido, ignorando"
+~ msgid "%(seriesindex)s is not a valid number, skipping"
+~ msgstr "%(seriesindex)s não é um número válido, ignorando"
 
-#~ msgid "Calibre-Web configuration updated"
-#~ msgstr "Configuração do Calibre-Web atualizada"
+~ msgid "Calibre-Web configuration updated"
+~ msgstr "Configuração do Calibre-Web atualizada"
 
-#~ msgid ""
-#~ "Are you sure you want delete Calibre-Web's sync database to force a full "
-#~ "sync with your Kobo Reader?"
-#~ msgstr ""
-#~ "Tem certeza de que deseja apagar o banco de dados de sincronização do "
-#~ "Calibre-Web para forçar uma sincronização completa com seu Kobo Reader?"
-
-#, fuzzy
-#~ msgid "Calibre-Web Test Email"
-#~ msgstr "E-mail de teste do Calibre-Web"
+~ msgid ""
+~ "Are you sure you want delete Calibre-Web's sync database to force a full "
+~ "sync with your Kobo Reader?"
+~ msgstr ""
+~ "Tem certeza de que deseja apagar o banco de dados de sincronização do "
+~ "Calibre-Web para forçar uma sincronização completa com seu Kobo Reader?"
 
 #, fuzzy
-#~ msgid "This Email has been sent via Calibre-Web."
-#~ msgstr "Este e-mail foi enviado via Calibre-Web."
-
-#~ msgid "Get Started with Calibre-Web"
-#~ msgstr "Comece a usar o calibre-web"
-
-#~ msgid ""
-#~ "Please access Calibre-Web from non localhost to get valid api_endpoint "
-#~ "for kobo device"
-#~ msgstr ""
-#~ "Por favor, acesse o calibre-web de um host não local para obter um "
-#~ "api_endpoint válido para o dispositivo kobo"
-
-#~ msgid ""
-#~ "Calibre-Web will search for updated Covers and update Cover Thumbnails, "
-#~ "this may take a while?"
-#~ msgstr ""
-#~ "O Calibre-Web buscará por Capas atualizadas e atualizará as Miniaturas de "
-#~ "Capas, isso pode demorar um pouco"
+~ msgid "Calibre-Web Test Email"
+~ msgstr "E-mail de teste do Calibre-Web"
 
 #, fuzzy
-#~ msgid "This Email has been sent via  Autmoated."
-#~ msgstr "Este e-mail foi enviado via Calibre-Web."
+~ msgid "This Email has been sent via Calibre-Web."
+~ msgstr "Este e-mail foi enviado via Calibre-Web."
+
+~ msgid "Get Started with Calibre-Web"
+~ msgstr "Comece a usar o calibre-web"
+
+~ msgid ""
+~ "Please access Calibre-Web from non localhost to get valid api_endpoint "
+~ "for kobo device"
+~ msgstr ""
+~ "Por favor, acesse o calibre-web de um host não local para obter um "
+~ "api_endpoint válido para o dispositivo kobo"
+
+~ msgid ""
+~ "Calibre-Web will search for updated Covers and update Cover Thumbnails, "
+~ "this may take a while?"
+~ msgstr ""
+~ "O Calibre-Web buscará por Capas atualizadas e atualizará as Miniaturas de "
+~ "Capas, isso pode demorar um pouco"
 
 #, fuzzy
-#~ msgid "This Email has been sent via  Automated."
-#~ msgstr "Este e-mail foi enviado via Calibre-Web."
+~ msgid "This Email has been sent via  Automated."
+~ msgstr "Este e-mail foi enviado via Calibre-Web Automated."
 
 #, fuzzy
-#~ msgid "Downloads per User"
-#~ msgstr "Downloads"
+~ msgid "Downloads per User"
+~ msgstr "Downloads por usuário"
 
 #, fuzzy
-#~ msgid "This Email has been sent via  Autoated."
-#~ msgstr "Este e-mail foi enviado via Calibre-Web."
+~ msgid "This Email has been sent via  Autoated."
+~ msgstr "Este e-mail foi enviado via Calibre-Web Automated."
 
 #, fuzzy
-#~ msgid "unknown error"
-#~ msgstr "Erro de conexão"
+~ msgid "unknown error"
+~ msgstr "Erro desconhecido"
 
 #, fuzzy
-#~ msgid "Could not open file {filename!r}: {message}"
-#~ msgstr "Não foi possível fazer o login: %(message)s"
+~ msgid "Could not open file {filename!r}: {message}"
+~ msgstr "Não foi possível abrir o arquivo {filename!r}: %(message)s"
 
 #, fuzzy
-#~ msgid "{value!r} is not a valid boolean."
-#~ msgstr "O e-mail não é de um domínio válido"
+~ msgid "{value!r} is not a valid boolean."
+~ msgstr "{value!r} não é um valor booleano válido."
 
 #, fuzzy
-#~ msgid "directory"
-#~ msgstr "Direção"
+~ msgid "directory"
+~ msgstr "Diretório"
 
 #, fuzzy
-#~ msgid "{name} {filename!r} is not writable."
-#~ msgstr "DB não é gravável"
+~ msgid "{name} {filename!r} is not writable."
+~ msgstr "{name} {filename!r} não é gravável"
 
 #, fuzzy
-#~ msgid "Repeat for confirmation"
-#~ msgstr "Configuração do Recursos"
+~ msgid "Repeat for confirmation"
+~ msgstr "Repita para confirmação"
 
 #, fuzzy
-#~ msgid "Value must be an iterable."
-#~ msgstr "Valor tem de ser Verdadeiro ou Falso"
+~ msgid "Value must be an iterable."
+~ msgstr "Valor tem de ser um iterativo"
 
-#~ msgid "Users"
-#~ msgstr "Usuários"
+~ msgid "Users"
+~ msgstr "Usuários"
 
-#~ msgid "Configuration"
-#~ msgstr "Configuração"
+~ msgid "Configuration"
+~ msgstr "Configuração"
 
-#~ msgid "Click the cover to load metadata to the form"
-#~ msgstr "Clique na capa para carregar os metadados para o formulário"
+~ msgid "Click the cover to load metadata to the form"
+~ msgstr "Clique na capa para carregar os metadados para o formulário"
 
-#~ msgid "Series Index"
-#~ msgstr "Índice da Série"
+~ msgid "Series Index"
+~ msgstr "Índice da Série"

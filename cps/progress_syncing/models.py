@@ -83,18 +83,15 @@ def ensure_checksum_table(conn):
                 return conn.execute(sql)
 
         # Check if 'calibre' database is attached (Calibre-Web architecture)
+        is_calibre_attached = False
         try:
             db_list = execute_sql("PRAGMA database_list").fetchall()
             # Row format: (seq, name, file)
             # Log the database list for debugging
-            log.info(f"Database list: {[str(row) for row in db_list]}")
+            log.debug(f"Database list: {[str(row) for row in db_list]}")
             is_calibre_attached = any(str(row[1]) == 'calibre' for row in db_list)
         except Exception as e:
             log.warning(f"Failed to check database list: {e}")
-            is_calibre_attached = False
-
-        if not is_calibre_attached:
-            log.warning("Calibre database not attached. Creating table in main schema (in-memory?). This may cause persistence issues.")
 
         table_prefix = "calibre." if is_calibre_attached else ""
         table_name = f"{table_prefix}book_format_checksums"

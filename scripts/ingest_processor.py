@@ -316,11 +316,12 @@ class NewBookProcessor:
         self.calibre_env = os.environ.copy()
         self.calibre_env["HOME"] = "/config"  # Enable plugins under /config
 
+        self.metadata_db = os.path.join(self.library_dir, "metadata.db")
         # Split library support
         self.split_library = self.get_split_library()
         if self.split_library:
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = self.metadata_db
             self.library_dir = self.split_library["split_path"]
-            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
 
         # Track the last added Calibre book id(s) from calibredb output
         self.last_added_book_id: int | None = None
@@ -554,8 +555,7 @@ class NewBookProcessor:
         pre_import_max_timestamp = None
         if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
             try:
-                calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-                with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                with sqlite3.connect(self.metadata_db, timeout=30) as con:
                     cur = con.cursor()
                     pre_import_max_timestamp = cur.execute('SELECT MAX(timestamp) FROM books').fetchone()[0]
             except Exception as e:
@@ -668,8 +668,7 @@ class NewBookProcessor:
             # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.
             if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
                 try:
-                    calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-                    with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                    with sqlite3.connect(self.metadata_db, timeout=30) as con:
                         cur = con.cursor()
                         # pre_import_max_timestamp may be None (empty library) -> update all rows where timestamp < last_modified
                         if pre_import_max_timestamp is None:
@@ -746,8 +745,7 @@ class NewBookProcessor:
             return
 
         try:
-            calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-            with sqlite3.connect(calibre_db_path, timeout=30) as con:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
                 cur = con.cursor()
                 if book_id is not None:
                     cur.execute("SELECT id, title FROM books WHERE id = ?", (int(book_id),))
@@ -786,8 +784,7 @@ class NewBookProcessor:
             return
 
         try:
-            calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-            with sqlite3.connect(calibre_db_path, timeout=30) as con:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
                 cur = con.cursor()
                 if book_id is not None:
                     cur.execute("SELECT id, title FROM books WHERE id = ?", (int(book_id),))
@@ -1100,8 +1097,7 @@ def main(filepath=None):
                             if nbp.last_added_book_id is not None:
                                 target_book_id = nbp.last_added_book_id
                             else:
-                                calibre_db_path = os.path.join(nbp.library_dir, 'metadata.db')
-                                with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                                with sqlite3.connect(nbp.metadata_db, timeout=30) as con:
                                     cur = con.cursor()
                                     cur.execute("SELECT id FROM books ORDER BY timestamp DESC LIMIT 1")
                                     res = cur.fetchone()

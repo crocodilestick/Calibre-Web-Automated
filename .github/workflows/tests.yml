@@ -138,7 +138,7 @@ jobs:
       
       - name: Pull/cache Docker images
         run: |
-          docker pull doubleuynn/calibre-web-automated:latest || true
+          docker pull crocodilestick/calibre-web-automated:latest || true
           docker pull python:3.13-slim || true
       
       - name: Run Docker integration tests

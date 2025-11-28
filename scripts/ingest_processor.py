@@ -659,7 +659,10 @@ class NewBookProcessor:
             self.refresh_cwa_session()
 
             # Generate KOReader sync checksums for the imported book
-            self.generate_book_checksums(staged_path.stem)
+            if self.last_added_book_id is not None:
+                self.generate_book_checksums(staged_path.stem, book_id=self.last_added_book_id)
+            else:
+                self.generate_book_checksums(staged_path.stem)
 
             # If we overwrote an existing book, Calibre does not bump books.timestamp, only last_modified.
             # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.
@@ -861,7 +864,7 @@ class NewBookProcessor:
             print(f"[ingest-processor] Error in auto-send trigger: {e}", flush=True)
 
 
-    def generate_book_checksums(self, book_title: str) -> None:
+    def generate_book_checksums(self, book_title: str, book_id: int | None = None) -> None:
         """Generate and store partial MD5 checksums for all formats of a newly imported book
 
         This creates KOReader-compatible checksums that allow reading progress to sync
@@ -869,6 +872,7 @@ class NewBookProcessor:
 
         Args:
             book_title: Title of the book (used to find the book in Calibre database)
+            book_id: Optional ID of the book (more reliable than title lookup)
         """
         try:
             import sqlite3
@@ -881,14 +885,23 @@ class NewBookProcessor:
             with sqlite3.connect(calibre_db_path, timeout=30) as con:
                 cur = con.cursor()
 
-                # Find the book ID by title (most recently added if multiple matches)
-                book_row = cur.execute(
-                    'SELECT id, path FROM books WHERE title = ? ORDER BY timestamp DESC LIMIT 1',
-                    (book_title,)
-                ).fetchone()
+                book_row = None
+                if book_id is not None:
+                    # Find by ID (preferred)
+                    book_row = cur.execute(
+                        'SELECT id, path FROM books WHERE id = ?',
+                        (book_id,)
+                    ).fetchone()
 
                 if not book_row:
-                    print(f"[ingest-processor] Could not find book '{book_title}' in database for checksum generation", flush=True)
+                    # Fallback: Find the book ID by title (most recently added if multiple matches)
+                    book_row = cur.execute(
+                        'SELECT id, path FROM books WHERE title = ? ORDER BY timestamp DESC LIMIT 1',
+                        (book_title,)
+                    ).fetchone()
+
+                if not book_row:
+                    print(f"[ingest-processor] Could not find book '{book_title}' (ID: {book_id}) in database for checksum generation", flush=True)
                     return
 
                 book_id, book_path = book_row

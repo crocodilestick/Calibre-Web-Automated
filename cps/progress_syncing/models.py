@@ -87,11 +87,9 @@ def ensure_checksum_table(conn):
         try:
             db_list = execute_sql("PRAGMA database_list").fetchall()
             # Row format: (seq, name, file)
-            # Log the database list for debugging
-            log.debug(f"Database list: {[str(row) for row in db_list]}")
             is_calibre_attached = any(str(row[1]) == 'calibre' for row in db_list)
-        except Exception as e:
-            log.warning(f"Failed to check database list: {e}")
+        except Exception:
+            is_calibre_attached = False
 
         table_prefix = "calibre." if is_calibre_attached else ""
         table_name = f"{table_prefix}book_format_checksums"

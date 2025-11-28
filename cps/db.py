@@ -738,11 +738,20 @@ class CalibreDB:
 
         # Ensure progress syncing tables exist in metadata.db (book checksums)
         # Use a direct connection to ensure the table is created in the file, not in-memory
-        from .progress_syncing.models import ensure_calibre_db_tables
         try:
-            with sqlite3.connect(dbpath, timeout=30) as direct_conn:
-                ensure_calibre_db_tables(direct_conn)
+            # Import inside try block to handle potential circular imports or missing modules gracefully
+            from .progress_syncing.models import ensure_calibre_db_tables
+            
+            # Verify dbpath exists
+            if os.path.exists(dbpath):
+                with sqlite3.connect(dbpath, timeout=30) as direct_conn:
+                    ensure_calibre_db_tables(direct_conn)
+            else:
+                log.error(f"Cannot ensure tables: metadata.db not found at {dbpath}")
         except Exception as e:
+            # Log to both app log and stderr to ensure visibility in Docker logs
+            import sys
+            sys.stderr.write(f"ERROR: Failed to ensure progress syncing tables: {e}\n")
             log.error(f"Failed to ensure progress syncing tables: {e}")
 
         cls._init = True

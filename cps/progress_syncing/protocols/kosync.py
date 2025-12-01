@@ -176,12 +176,15 @@ def authenticate_user() -> Optional[ub.User]:
         if login_result:
             log.info(f"authenticate_user: Successfully authenticated user via LDAP: {user.name}")
             return user
-        if error is not None:
-            log.error(f"authenticate_user: LDAP error for user {user.name}: {error}")
-        # Fall through to local password check for local users when LDAP is configured
+        
+        # Log LDAP failure but continue to local check (fallback)
+        # We use debug level here because failure is expected if the user is using a local password
+        if error:
+            log.debug(f"authenticate_user: LDAP authentication failed for {user.name} (attempting local fallback): {error}")
 
     # Verify password using constant-time comparison
-    if check_password_hash(str(user.password), password):
+    # Check if user has a local password set before attempting verification
+    if user.password and check_password_hash(str(user.password), password):
         log.info(f"User authenticated successfully: {username}")
         return user
 

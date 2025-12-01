@@ -1,0 +1,43 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+#------------------------------------------------------------------------------------------------------------------------
+#  Generate KOReader sync checksums for existing books (backfill missing checksums)
+#
+#  This runs as a oneshot service after svc-calibre-web-automated starts, ensuring the
+#  database schema has been properly initialized by the Flask app before we try to insert checksums.
+#------------------------------------------------------------------------------------------------------------------------
+
+echo "[cwa-checksum-backfill] Waiting for CWA service to be ready..."
+
+# Poll for database schema to be initialized (up to 30 seconds)
+max_attempts=30
+attempt=0
+db_ready=false
+
+while [ $attempt -lt $max_attempts ]; do
+  if sqlite3 /calibre-library/metadata.db "SELECT name FROM sqlite_master WHERE type='table' AND name='book_format_checksums';" 2>/dev/null | grep -q "book_format_checksums"; then
+    echo "[cwa-checksum-backfill] Database schema ready (attempt $((attempt + 1)))"
+    db_ready=true
+    break
+  fi
+
+  attempt=$((attempt + 1))
+  sleep 1
+done
+
+if [ "$db_ready" = false ]; then
+  echo "[cwa-checksum-backfill] WARNING: Database schema not ready after ${max_attempts}s, proceeding anyway..."
+fi
+
+echo "[cwa-checksum-backfill] Checking for missing KOReader sync checksums..."
+
+# Run the checksum generation script (fills in missing checksums)
+if s6-setuidgid abc python3 /app/calibre-web-automated/scripts/generate_book_checksums.py --library-path /calibre-library --batch-size 50; then
+  echo "[cwa-checksum-backfill] Checksum generation/backfill completed successfully"
+else
+  echo "[cwa-checksum-backfill] WARNING: Checksum generation encountered errors but continuing..."
+  echo "[cwa-checksum-backfill] You can manually run: python3 /app/calibre-web-automated/scripts/generate_book_checksums.py"
+fi
+
+echo "[cwa-checksum-backfill] Service complete"

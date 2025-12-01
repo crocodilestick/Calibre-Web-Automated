@@ -33,10 +33,18 @@ jobs:
   fast-tests:
     name: Fast Tests (Smoke + Unit)
     runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Remove Python bytecode and pycache
+        run: |
+          echo "Removing any leftover .pyc and pycache"
+          find . -name '__pycache__' -type d -print -exec rm -rf {} +
+          find . -name '*.pyc' -type f -print -delete
       
       - name: Set up Python 3.13
         uses: actions/setup-python@v5

@@ -19,6 +19,7 @@ from pathlib import Path
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 import audiobook
+import requests
 
 # Optional: enable GDrive sync and auto-send by importing cps modules when available
 _GDRIVE_AVAILABLE = False
@@ -32,53 +33,53 @@ _ub = None
 
 class ProcessLock:
     """Robust process lock using both file locking and PID tracking"""
-    
+
     def __init__(self, lock_name="ingest_processor"):
         self.lock_name = lock_name
         self.lock_path = os.path.join(tempfile.gettempdir(), f"{lock_name}.lock")
         self.lock_file = None
         self.acquired = False
-    
+
     def acquire(self, timeout=5):
         """Acquire the lock with timeout. Returns True if successful, False if another process has it."""
         try:
             # Try to open/create the lock file
             self.lock_file = open(self.lock_path, 'w+')
-            
+
             # Try to acquire an exclusive lock with timeout
             start_time = time.time()
             while time.time() - start_time < timeout:
                 try:
                     fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-                    
+
                     # Successfully acquired lock, write our PID
                     self.lock_file.seek(0)
                     self.lock_file.write(str(os.getpid()))
                     self.lock_file.flush()
                     self.lock_file.truncate()  # Truncate at current position to remove any leftover data
-                    
+
                     self.acquired = True
                     print(f"[ingest-processor] Lock acquired successfully (PID: {os.getpid()})")
                     return True
-                    
+
                 except (IOError, OSError):
                     # Lock is held by another process
                     # Check if the holding process is still alive
                     if self._check_stale_lock():
                         continue  # Try again as we cleaned up a stale lock
                     time.sleep(0.1)  # Brief wait before retry
-            
+
             # Timeout reached
             holding_pid = self._get_holding_pid()
             print(f"[ingest-processor] CANCELLING... ingest-processor initiated but is already running (PID: {holding_pid})")
             self.release()
             return False
-            
+
         except Exception as e:
             print(f"[ingest-processor] Error acquiring lock: {e}")
             self.release()
             return False
-    
+
     def _get_holding_pid(self):
         """Get the PID of the process holding the lock"""
         try:
@@ -89,22 +90,22 @@ class ProcessLock:
         except:
             pass
         return "unknown"
-    
+
     def _check_stale_lock(self):
         """Check if the lock is stale (holding process no longer exists) and clean it up"""
         try:
             if not self.lock_file:
                 return False
-            
+
             self.lock_file.seek(0)
             pid_str = self.lock_file.read().strip()
-            
+
             if not pid_str.isdigit():
                 print("[ingest-processor] Lock file contains invalid PID, treating as stale")
                 return self._cleanup_stale_lock()
-            
+
             holding_pid = int(pid_str)
-            
+
             # Check if process is still running
             try:
                 os.kill(holding_pid, 0)  # Signal 0 just checks if process exists
@@ -116,11 +117,11 @@ class ProcessLock:
             except PermissionError:
                 # Process exists but we can't signal it (different user), assume it's running
                 return False
-                
+
         except Exception as e:
             print(f"[ingest-processor] Error checking stale lock: {e}")
             return False
-    
+
     def _cleanup_stale_lock(self):
         """Clean up a stale lock file"""
         try:
@@ -132,17 +133,17 @@ class ProcessLock:
                     pass
                 self.lock_file.close()
                 self.lock_file = None
-            
+
             # Remove the lock file
             if os.path.exists(self.lock_path):
                 os.remove(self.lock_path)
                 print(f"[ingest-processor] Cleaned up stale lock file: {self.lock_path}")
-            
+
             return True
         except Exception as e:
             print(f"[ingest-processor] Error cleaning up stale lock: {e}")
             return False
-    
+
     def release(self):
         """Release the lock"""
         if self.acquired and self.lock_file:
@@ -150,11 +151,11 @@ class ProcessLock:
                 fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_UN)
                 self.lock_file.close()
                 self.lock_file = None
-                
+
                 # Remove lock file
                 if os.path.exists(self.lock_path):
                     os.remove(self.lock_path)
-                
+
                 self.acquired = False
                 print(f"[ingest-processor] Lock released (PID: {os.getpid()})")
             except Exception as e:
@@ -182,7 +183,7 @@ try:
     cps_path = os.path.dirname(os.path.dirname(__file__))
     if cps_path not in sys.path:
         sys.path.append(cps_path)
-    
+
     # Import GDrive functionality
     try:
         from cps import gdriveutils as _gdriveutils, config as _cps_config
@@ -241,11 +242,18 @@ except Exception as e:
     print(f"[ingest-processor] WARN: Could not ensure processed_books directories: {e}", flush=True)
 
 # Generates dictionary of available backup directories and their paths
-backup_destinations = {
-        entry.name: entry.path
-        for entry in os.scandir("/config/processed_books")
-        if entry.is_dir()
-    }
+try:
+    backup_destinations = {
+            entry.name: entry.path
+            for entry in os.scandir("/config/processed_books")
+            if entry.is_dir()
+        }
+except FileNotFoundError:
+    # Fallback for test environments where /config might not exist
+    backup_destinations = {}
+except Exception as e:
+    print(f"[ingest-processor] WARN: Could not scan processed_books: {e}", flush=True)
+    backup_destinations = {}
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
@@ -308,13 +316,33 @@ class NewBookProcessor:
         self.calibre_env = os.environ.copy()
         self.calibre_env["HOME"] = "/config"  # Enable plugins under /config
 
+        self.metadata_db = os.path.join(self.library_dir, "metadata.db")
         # Split library support
         self.split_library = self.get_split_library()
         if self.split_library:
+            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = self.metadata_db
             self.library_dir = self.split_library["split_path"]
-            self.calibre_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(self.split_library["db_path"], "metadata.db")
 
-    
+        # Track the last added Calibre book id(s) from calibredb output
+        self.last_added_book_id: int | None = None
+        self.last_added_book_ids: list[int] = []
+
+    @staticmethod
+    def _parse_added_book_ids(output: str) -> list[int]:
+        """Parse calibredb stdout for the 'Added book ids: X[, Y, ...]' line and return IDs.
+
+        Handles variations like 'Added book id: 4' or 'Added book ids: 4, 5'.
+        """
+        try:
+            import re
+            m = re.search(r"Added book id[s]?:\s*([0-9,\s]+)", output, flags=re.IGNORECASE)
+            if not m:
+                return []
+            nums = m.group(1)
+            ids = [int(x.strip()) for x in nums.split(',') if x.strip().isdigit()]
+            return ids
+        except Exception:
+            return []
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
         with sqlite3.connect("/config/app.db", timeout=30) as con:
@@ -422,7 +450,7 @@ class NewBookProcessor:
             "supported formats to epub using the Calibre's conversion tools & then use Kepubify to produce your desired kepubs. Obviously multi-step conversions aren't ideal"
             "so if you notice issues with your converted files, bare in mind starting with epubs will ensure the best possible results***\n", flush=True)
             convert_successful, converted_filepath = self.convert_book(end_format="epub") # type: ignore
-            
+
         if convert_successful:
             converted_filepath = Path(converted_filepath)
             target_filepath = f"{self.tmp_conversion_dir}{converted_filepath.stem}.kepub"
@@ -473,12 +501,12 @@ class NewBookProcessor:
     def is_file_in_use(self, timeout: float = None) -> bool:
         """Wait until the file is no longer in use (write handle is closed) or timeout is reached.
         Returns True if file is ready, False if timed out or file vanished."""
-        
+
         # Use configured timeout from CWA settings (default 15 minutes if not configured)
         if timeout is None:
             timeout_minutes = self.cwa_settings.get('ingest_timeout_minutes', 15)
             timeout = timeout_minutes * 60  # Convert to seconds
-        
+
         start = time.time()
         while time.time() - start < timeout:
             if not os.path.exists(self.filepath):
@@ -486,7 +514,7 @@ class NewBookProcessor:
             try:
                 # lsof '-F f' gets file access mode; we check for 'w' (write).
                 # Add timeout to prevent hanging (issue #654)
-                result = subprocess.run(['lsof', '-F', 'f', '--', self.filepath], 
+                result = subprocess.run(['lsof', '-F', 'f', '--', self.filepath],
                                       capture_output=True, text=True, timeout=10)
                 if 'w' not in result.stdout:
                     return True # Not in use for writing
@@ -527,8 +555,7 @@ class NewBookProcessor:
         pre_import_max_timestamp = None
         if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
             try:
-                calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-                with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                with sqlite3.connect(self.metadata_db, timeout=30) as con:
                     cur = con.cursor()
                     pre_import_max_timestamp = cur.execute('SELECT MAX(timestamp) FROM books').fetchone()[0]
             except Exception as e:
@@ -552,7 +579,13 @@ class NewBookProcessor:
 
         try:
             if text:
-                subprocess.run(["calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"], env=self.calibre_env, check=True)
+                result = subprocess.run([
+                    "calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"
+                ], env=self.calibre_env, check=True, capture_output=True, text=True)
+                added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
+                if added_ids:
+                    self.last_added_book_ids = added_ids
+                    self.last_added_book_id = added_ids[-1]
             else:  # audiobook path
                 meta = audiobook.get_audio_file_info(str(staged_path), format, os.path.basename(str(staged_path)), False)
 
@@ -593,8 +626,11 @@ class NewBookProcessor:
                     if isinstance(ident, str) and ":" in ident and ident.strip():
                         add_command.extend(["--identifier", ident.strip()])
 
-                subprocess.run(add_command, env=self.calibre_env, check=True)
-            
+                result = subprocess.run(add_command, env=self.calibre_env, check=True, capture_output=True, text=True)
+                added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
+                if added_ids:
+                    self.last_added_book_ids = added_ids
+                    self.last_added_book_id = added_ids[-1]
             print(f"[ingest-processor] Added {staged_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:
@@ -606,22 +642,33 @@ class NewBookProcessor:
             # Optional post-import GDrive sync
             gdrive_sync_if_enabled()
 
-            # Fetch metadata if enabled
-            self.fetch_metadata_if_enabled(staged_path.stem)
+            # Fetch metadata if enabled, prefer exact book id from calibredb
+            if self.last_added_book_id is not None:
+                self.fetch_metadata_if_enabled(book_id=self.last_added_book_id)
+            else:
+                self.fetch_metadata_if_enabled(staged_path.stem)
 
             # Trigger auto-send for users who have it enabled
-            self.trigger_auto_send_if_enabled(staged_path.stem, book_path)
+            if self.last_added_book_id is not None:
+                self.trigger_auto_send_if_enabled(book_id=self.last_added_book_id, book_path=book_path)
+            else:
+                self.trigger_auto_send_if_enabled(staged_path.stem, book_path)
 
             # CRITICAL FIX: Refresh Calibre-Web's database session to make new books visible
             # This solves the issue where multiple books don't appear until container restart
             self.refresh_cwa_session()
 
+            # Generate KOReader sync checksums for the imported book
+            if self.last_added_book_id is not None:
+                self.generate_book_checksums(staged_path.stem, book_id=self.last_added_book_id)
+            else:
+                self.generate_book_checksums(staged_path.stem)
+
             # If we overwrote an existing book, Calibre does not bump books.timestamp, only last_modified.
             # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.
             if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
                 try:
-                    calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-                    with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                    with sqlite3.connect(self.metadata_db, timeout=30) as con:
                         cur = con.cursor()
                         # pre_import_max_timestamp may be None (empty library) -> update all rows where timestamp < last_modified
                         if pre_import_max_timestamp is None:
@@ -687,137 +734,243 @@ class NewBookProcessor:
             print(f"[ingest-processor] An error occurred while processing {os.path.basename(filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 
 
-    def fetch_metadata_if_enabled(self, book_title: str) -> None:
+    def fetch_metadata_if_enabled(self, book_title: str | None = None, book_id: int | None = None) -> None:
         """Fetch and apply metadata for newly ingested books if enabled"""
         if not _CPS_AVAILABLE:
             print("[ingest-processor] CPS modules not available, skipping metadata fetch", flush=True)
             return
-            
+
         if fetch_and_apply_metadata is None:
             print("[ingest-processor] Metadata helper not available, skipping metadata fetch", flush=True)
             return
-            
+
         try:
-            # Find the book that was just added to get its ID
-            calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-            with sqlite3.connect(calibre_db_path, timeout=30) as con:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
                 cur = con.cursor()
-                # Get the most recently added book with this title
-                cur.execute("SELECT id, title FROM books WHERE title LIKE ? ORDER BY timestamp DESC LIMIT 1", (f"%{book_title}%",))
+                if book_id is not None:
+                    cur.execute("SELECT id, title FROM books WHERE id = ?", (int(book_id),))
+                else:
+                    # Fallback: most recently added book
+                    cur.execute("SELECT id, title FROM books ORDER BY timestamp DESC LIMIT 1")
                 result = cur.fetchone()
-                
+
             if not result:
                 print(f"[ingest-processor] Could not find book ID for metadata fetch: {book_title}", flush=True)
                 return
                 
-            book_id = result[0]
+            book_id = int(result[0])
             actual_title = result[1]
-            
+
             print(f"[ingest-processor] Attempting to fetch metadata for: {actual_title}", flush=True)
-            
+
             # Fetch and apply metadata (now admin-controlled only)
             if fetch_and_apply_metadata(book_id):
                 print(f"[ingest-processor] Successfully fetched and applied metadata for: {actual_title}", flush=True)
             else:
                 print(f"[ingest-processor] No metadata improvements found for: {actual_title}", flush=True)
-                
+
         except Exception as e:
             print(f"[ingest-processor] Error fetching metadata: {e}", flush=True)
 
 
-    def trigger_auto_send_if_enabled(self, book_title: str, book_path: str) -> None:
+    def trigger_auto_send_if_enabled(self, book_title: str | None = None, book_path: str | None = None, book_id: int | None = None) -> None:
         """Trigger auto-send for users who have it enabled"""
         if not _CPS_AVAILABLE:
             print("[ingest-processor] CPS modules not available, skipping auto-send", flush=True)
             return
-            
+
         if TaskAutoSend is None or WorkerThread is None:
             print("[ingest-processor] Auto-send functionality not available, skipping auto-send", flush=True)
             return
-            
+
         try:
-            # Find the book that was just added to get its ID
-            calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
-            with sqlite3.connect(calibre_db_path, timeout=30) as con:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
                 cur = con.cursor()
-                # Get the most recently added book(s) with this title
-                cur.execute("SELECT id, title FROM books WHERE title LIKE ? ORDER BY timestamp DESC LIMIT 1", (f"%{book_title}%",))
+                if book_id is not None:
+                    cur.execute("SELECT id, title FROM books WHERE id = ?", (int(book_id),))
+                else:
+                    cur.execute("SELECT id, title FROM books ORDER BY timestamp DESC LIMIT 1")
                 result = cur.fetchone()
-                
+
             if not result:
                 print(f"[ingest-processor] Could not find book ID for auto-send: {book_title}", flush=True)
                 return
                 
-            book_id = result[0]
+            book_id = int(result[0])
             actual_title = result[1]
-            
+
             # Get users with auto-send enabled
             app_db_path = "/config/app.db"
             with sqlite3.connect(app_db_path, timeout=30) as con:
                 cur = con.cursor()
                 cur.execute("""
-                    SELECT id, name, kindle_mail 
-                    FROM user 
-                    WHERE auto_send_enabled = 1 
-                    AND kindle_mail IS NOT NULL 
+                    SELECT id, name, kindle_mail
+                    FROM user
+                    WHERE auto_send_enabled = 1
+                    AND kindle_mail IS NOT NULL
                     AND kindle_mail != ''
                 """)
                 auto_send_users = cur.fetchall()
-                
+
             if not auto_send_users:
                 print(f"[ingest-processor] No users with auto-send enabled found", flush=True)
                 return
                 
-            # Queue auto-send tasks for each user
+            # Queue or schedule auto-send tasks for each user
             for user_id, username, kindle_mail in auto_send_users:
                 try:
                     delay_minutes = self.cwa_settings.get('auto_send_delay_minutes', 5)
-                    
-                    # Create auto-send task
-                    task_message = f"Auto-sending '{actual_title}' to {username}'s eReader(s)"
-                    task = TaskAutoSend(task_message, book_id, user_id, delay_minutes)
-                    
-                    # Add to worker queue
-                    WorkerThread.add(username, task)
-                    
-                    print(f"[ingest-processor] Queued auto-send for '{actual_title}' to user {username} ({kindle_mail})", flush=True)
-                    
+
+                    # Prefer to schedule in the long-lived web process so it shows in UI
+                    scheduled_via_api = False
+                    try:
+                        port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+                        if not port.isdigit():
+                            port = '8083'
+                        url = f"http://127.0.0.1:{port}/cwa-internal/schedule-auto-send"
+                        payload = {
+                            'book_id': int(book_id),
+                            'user_id': int(user_id),
+                            'delay_minutes': int(delay_minutes) if isinstance(delay_minutes, (int, float, str)) else 5,
+                            'username': username,
+                            'title': actual_title,
+                        }
+                        resp = requests.post(url, json=payload, timeout=5)
+                        if resp.status_code == 200:
+                            try:
+                                run_at = resp.json().get('run_at', 'soon')
+                            except Exception:
+                                run_at = 'soon'
+                            print(f"[ingest-processor] Scheduled auto-send at {run_at} for '{actual_title}' to user {username} ({kindle_mail}) via web process", flush=True)
+                            scheduled_via_api = True
+                        else:
+                            print(f"[ingest-processor] WARN: Web scheduling returned {resp.status_code}, falling back to immediate queue", flush=True)
+                    except Exception as api_err:
+                        print(f"[ingest-processor] WARN: Failed to schedule via web API: {api_err}. Falling back to immediate queue.", flush=True)
+
+                    if not scheduled_via_api:
+                        # Fallback: queue immediately in this process (task does not sleep)
+                        task_message = f"Auto-sending '{actual_title}' to {username}'s eReader(s)"
+                        task = TaskAutoSend(task_message, book_id, user_id, delay_minutes)
+                        WorkerThread.add(username, task)
+                        print(f"[ingest-processor] Queued auto-send immediately for '{actual_title}' to user {username} ({kindle_mail})", flush=True)
                 except Exception as e:
                     print(f"[ingest-processor] Error queuing auto-send for user {username}: {e}", flush=True)
-                    
+
         except Exception as e:
             print(f"[ingest-processor] Error in auto-send trigger: {e}", flush=True)
 
 
+    def generate_book_checksums(self, book_title: str, book_id: int | None = None) -> None:
+        """Generate and store partial MD5 checksums for all formats of a newly imported book
+
+        This creates KOReader-compatible checksums that allow reading progress to sync
+        between KOReader devices and Calibre-Web.
+
+        Args:
+            book_title: Title of the book (used to find the book in Calibre database)
+            book_id: Optional ID of the book (more reliable than title lookup)
+        """
+        try:
+            import sqlite3
+            # Import the centralized partial MD5 calculation function
+            sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+            from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
+
+            calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
+
+            with sqlite3.connect(calibre_db_path, timeout=30) as con:
+                cur = con.cursor()
+
+                book_row = None
+                if book_id is not None:
+                    # Find by ID (preferred)
+                    book_row = cur.execute(
+                        'SELECT id, path FROM books WHERE id = ?',
+                        (book_id,)
+                    ).fetchone()
+
+                if not book_row:
+                    # Fallback: Find the book ID by title (most recently added if multiple matches)
+                    book_row = cur.execute(
+                        'SELECT id, path FROM books WHERE title = ? ORDER BY timestamp DESC LIMIT 1',
+                        (book_title,)
+                    ).fetchone()
+
+                if not book_row:
+                    print(f"[ingest-processor] Could not find book '{book_title}' (ID: {book_id}) in database for checksum generation", flush=True)
+                    return
+
+                book_id, book_path = book_row
+
+                # Get all formats for this book
+                formats = cur.execute(
+                    'SELECT format, name FROM data WHERE book = ?',
+                    (book_id,)
+                ).fetchall()
+
+                if not formats:
+                    print(f"[ingest-processor] No formats found for book ID {book_id}", flush=True)
+                    return
+
+                print(f"[ingest-processor] Generating KOReader sync checksums v{CHECKSUM_VERSION} for book ID {book_id}...", flush=True)
+
+                for format_ext, format_name in formats:
+                    # Construct full file path
+                    file_path = os.path.join(self.library_dir, book_path, f"{format_name}.{format_ext.lower()}")
+
+                    if not os.path.exists(file_path):
+                        print(f"[ingest-processor] WARN: File not found: {file_path}", flush=True)
+                        continue
+
+                    # Generate partial MD5 checksum using centralized function
+                    checksum = calculate_koreader_partial_md5(file_path)
+
+                    if checksum:
+                        # Store using centralized manager function
+                        success = store_checksum(
+                            book_id=book_id,
+                            book_format=format_ext.upper(),
+                            checksum=checksum,
+                            version=CHECKSUM_VERSION,
+                            db_connection=con
+                        )
+
+                        if success:
+                            print(f"[ingest-processor] Generated checksum {checksum} (v{CHECKSUM_VERSION}) for {format_ext.upper()} format", flush=True)
+                        else:
+                            print(f"[ingest-processor] WARN: Failed to store checksum for {format_ext.upper()} format", flush=True)
+                    else:
+                        print(f"[ingest-processor] WARN: Failed to generate checksum for {file_path}", flush=True)
+
+                con.commit()
+                print(f"[ingest-processor] Checksum generation complete for book ID {book_id}", flush=True)
+
+        except Exception as e:
+            print(f"[ingest-processor] Error generating book checksums: {e}", flush=True)
+            # Don't fail the import if checksum generation fails
+
+
     def refresh_cwa_session(self) -> None:
         """Refresh Calibre-Web's database session to make newly added books visible
-        
+
         This solves the issue where external calibredb adds aren't immediately visible
         in Calibre-Web until container restart.
         """
-        if not _CPS_AVAILABLE:
-            print("[ingest-processor] CPS modules not available, skipping session refresh", flush=True)
-            return
-            
+        # Route DB reconnect via the long-lived web process to avoid cross-process config/session issues
         try:
-            # Import here to avoid circular imports and ensure CPS is available
-            from cps.tasks.database import TaskReconnectDatabase
-            
-            # Create and run the reconnect task
-            task = TaskReconnectDatabase()
+            port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+            if not port.isdigit():
+                port = '8083'
+            url = f"http://127.0.0.1:{port}/cwa-internal/reconnect-db"
             print("[ingest-processor] Refreshing Calibre-Web database session...", flush=True)
-            
-            # Run the task directly - this forces a database session refresh
-            # which makes newly imported books immediately visible in the UI
-            task.run(None)  # worker_thread not needed for direct execution
-            
-            print("[ingest-processor] Database session refreshed successfully", flush=True)
-            
-        except ImportError as e:
-            print(f"[ingest-processor] Could not import TaskReconnectDatabase: {e}", flush=True)
+            resp = requests.post(url, timeout=5)
+            if resp.status_code == 200:
+                print("[ingest-processor] Database session refresh enqueued", flush=True)
+            else:
+                print(f"[ingest-processor] WARN: DB refresh endpoint returned {resp.status_code}", flush=True)
         except Exception as e:
-            print(f"[ingest-processor] Error refreshing database session: {e}", flush=True)
-            # Don't fail the import if session refresh fails
+            print(f"[ingest-processor] WARN: Failed to call DB refresh endpoint: {e}", flush=True)
             print("[ingest-processor] Continuing despite session refresh failure - books may require manual refresh", flush=True)
 
 
@@ -835,14 +988,14 @@ class NewBookProcessor:
 def main(filepath=None):
     """Checks if filepath is a directory. If it is, main will be ran on every file in the given directory
     Inotifywait won't detect files inside folders if the folder was moved rather than copied"""
-    
+
     if filepath is None:
         if len(sys.argv) < 2:
             print("[ingest-processor] ERROR: No file path provided", flush=True)
             print("[ingest-processor] Usage: python ingest_processor.py <filepath>", flush=True)
             sys.exit(1)
         filepath = sys.argv[1]
-    
+
     nbp = None
     try:
         ##############################################################################################
@@ -905,7 +1058,7 @@ def main(filepath=None):
         except Exception as e:
             print(f"[ingest-processor] Error processing manifest file: {e}", flush=True)
             # Continue with normal processing if manifest handling fails
-            
+
         # Check if the user has chosen to exclude files of this type from the ingest process
         # Remove . (dot), check is against exclude whitout dot
         ext = Path(nbp.filename).suffix.replace('.', '')
@@ -931,32 +1084,28 @@ def main(filepath=None):
                     convert_successful, converted_filepath = nbp.convert_to_kepub()
                 else: # File is not in the convert ignore list and target is not kepub, so we start the regular conversion process
                     convert_successful, converted_filepath = nbp.convert_book()
-                    
+
                 if convert_successful: # If previous conversion process was successful, remove tmp files and import into library
                     nbp.add_book_to_library(converted_filepath) # type: ignore
-                    
+
                     # If the original format should be retained, also add it as an additional format
                     if nbp.input_format in nbp.convert_retained_formats and nbp.input_format not in nbp.ingest_ignored_formats:
                         print(f"[ingest-processor]: Retaining original format ({nbp.input_format}) for {nbp.filename}...", flush=True)
                         # Find the book that was just added to get its ID
                         try:
-                            calibre_db_path = os.path.join(nbp.library_dir, 'metadata.db')
-                            with sqlite3.connect(calibre_db_path, timeout=30) as con:
-                                cur = con.cursor()
-                                # Get the most recently added book - use title/author for more reliable matching
-                                # in case of concurrent ingests
-                                cur.execute("""
-                                    SELECT id FROM books 
-                                    WHERE path = (SELECT path FROM books ORDER BY timestamp DESC LIMIT 1)
-                                    ORDER BY timestamp DESC LIMIT 1
-                                """)
-                                result = cur.fetchone()
-                                
-                            if result:
-                                book_id = result[0]
-                                # Verify the original file still exists before trying to add it
+                            # Prefer the exact id we just added if available
+                            if nbp.last_added_book_id is not None:
+                                target_book_id = nbp.last_added_book_id
+                            else:
+                                with sqlite3.connect(nbp.metadata_db, timeout=30) as con:
+                                    cur = con.cursor()
+                                    cur.execute("SELECT id FROM books ORDER BY timestamp DESC LIMIT 1")
+                                    res = cur.fetchone()
+                                    target_book_id = res[0] if res else None
+
+                            if target_book_id is not None:
                                 if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-                                    nbp.add_format_to_book(book_id, filepath)
+                                    nbp.add_format_to_book(int(target_book_id), filepath)
                                 else:
                                     print(f"[ingest-processor] Original file no longer exists or is empty, cannot retain format: {filepath}", flush=True)
                             else:
@@ -980,18 +1129,18 @@ def main(filepath=None):
                 nbp.set_library_permissions()
             except Exception as e:
                 print(f"[ingest-processor] Error setting library permissions during cleanup: {e}", flush=True)
-            
+
             try:
                 nbp.delete_current_file()
             except Exception as e:
                 print(f"[ingest-processor] Error deleting current file during cleanup: {e}", flush=True)
-            
+
             try:
                 # Cleanup the temp conversion folder, which now contains the staging dir
                 shutil.rmtree(nbp.tmp_conversion_dir, ignore_errors=True)
             except Exception as e:
                 print(f"[ingest-processor] Error cleaning up temp conversion directory: {e}", flush=True)
-            
+
             try:
                 del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
             except Exception:

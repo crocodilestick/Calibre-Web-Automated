@@ -40,14 +40,22 @@ epub_fixer_log_file = "/config/epub-fixer.log"
 # Define the logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
-# Create a FileHandler
-file_handler = logging.FileHandler(epub_fixer_log_file, mode='w', encoding='utf-8')
-# Create a Formatter and set it for the handler
-LOG_FORMAT = '%(message)s'
-formatter = logging.Formatter(LOG_FORMAT)
-file_handler.setFormatter(formatter)
-# Add the handler to the logger
-logger.addHandler(file_handler)
+# Create a FileHandler if possible, otherwise use StreamHandler
+try:
+    file_handler = logging.FileHandler(epub_fixer_log_file, mode='w', encoding='utf-8')
+    # Create a Formatter and set it for the handler
+    LOG_FORMAT = '%(message)s'
+    formatter = logging.Formatter(LOG_FORMAT)
+    file_handler.setFormatter(formatter)
+    # Add the handler to the logger
+    logger.addHandler(file_handler)
+except FileNotFoundError:
+    # Fallback for test environments where /config might not exist
+    stream_handler = logging.StreamHandler()
+    LOG_FORMAT = '%(message)s'
+    formatter = logging.Formatter(LOG_FORMAT)
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
 
 # Define user and group
 USER_NAME = "abc"
@@ -117,6 +125,86 @@ class EPUBFixer:
         self.files = {}
         self.binary_files = {}
         self.entries = []
+
+    def _extract_book_info_from_path(self, file_path: str) -> tuple[int | None, str]:
+        """Extract book ID and format from file path.
+
+        Expected path format: /calibre-library/Author/Title (123)/book.epub
+        Returns: (book_id, format) or (None, 'EPUB')
+        """
+        try:
+            import re
+            path_parts = str(file_path).split(os.sep)
+            # Look for directory with format "Title (123)"
+            for part in path_parts:
+                match = re.search(r'\((\d+)\)$', part)
+                if match:
+                    book_id = int(match.group(1))
+                    format_ext = Path(file_path).suffix.lstrip('.').upper()
+                    return book_id, format_ext
+            return None, 'EPUB'
+        except Exception:
+            return None, 'EPUB'
+
+    def _get_metadata_db_path(self) -> str:
+        """Get the path to metadata.db considering split library configuration."""
+        try:
+            con = sqlite3.connect("/config/app.db", timeout=30)
+            cur = con.cursor()
+            split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
+
+            if split_library:
+                db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
+                con.close()
+                return os.path.join(db_path, "metadata.db")
+            else:
+                con.close()
+                library_location = get_library_location()
+                return os.path.join(library_location, "metadata.db")
+        except Exception:
+            # Fallback to default location
+            return "/calibre-library/metadata.db"
+
+    def _recalculate_checksum_after_modification(self, book_id: int, file_format: str, file_path: str) -> None:
+        """Calculate and store new checksum after modifying an EPUB file."""
+        try:
+            # Import the checksum calculation function
+            import sys
+            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            if project_root not in sys.path:
+                sys.path.insert(0, project_root)
+
+            from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
+
+            # Calculate new checksum
+            checksum = calculate_koreader_partial_md5(file_path)
+            if not checksum:
+                print_and_log(f"[cwa-kindle-epub-fixer] Warning: Failed to calculate checksum for {file_path}", log=self.manually_triggered)
+                return
+
+            # Store in database using centralized manager function
+            metadb_path = self._get_metadata_db_path()
+            con = sqlite3.connect(metadb_path, timeout=30)
+
+            try:
+                success = store_checksum(
+                    book_id=book_id,
+                    book_format=file_format,
+                    checksum=checksum,
+                    version=CHECKSUM_VERSION,
+                    db_connection=con
+                )
+
+                if success:
+                    print_and_log(f"[cwa-kindle-epub-fixer] Stored checksum {checksum[:8]}... for book {book_id} (v{CHECKSUM_VERSION})", log=self.manually_triggered)
+                else:
+                    print_and_log(f"[cwa-kindle-epub-fixer] Warning: Failed to store checksum for book {book_id}", log=self.manually_triggered)
+            finally:
+                con.close()
+        except Exception as e:
+            print_and_log(f"[cwa-kindle-epub-fixer] Warning: Failed to recalculate checksum: {e}", log=self.manually_triggered)
+            import traceback
+            print_and_log(traceback.format_exc(), log=self.manually_triggered)
 
 
     def backup_original_file(self, epub_path):
@@ -255,7 +343,7 @@ class EPUBFixer:
             if ext in ['html', 'xhtml']:
                 dom = minidom.parseString(self.files[filename])
                 stray_img = []
-                
+
                 for img in dom.getElementsByTagName('img'):
                     if not img.getAttribute('src'):
                         stray_img.append(img)
@@ -287,11 +375,11 @@ class EPUBFixer:
             line_suffix = f"[cwa-kindle-epub-fixer] {self.current_position} - "
         else:
             line_suffix = "[cwa-kindle-epub-fixer] "
-        
+
         if self.fixed_problems:
             print_and_log(line_suffix + f"{len(self.fixed_problems)} issues fixed with {epub_path}:", log=self.manually_triggered)
             for count, problem in enumerate(self.fixed_problems):
-                print_and_log(f"   {str(count + 1).zfill(2)} - {problem}", log=self.manually_triggered)            
+                print_and_log(f"   {str(count + 1).zfill(2)} - {problem}", log=self.manually_triggered)
         else:
             print_and_log(line_suffix + f"No issues found! - {epub_path}", log=self.manually_triggered)
 
@@ -316,6 +404,9 @@ class EPUBFixer:
         """Process a single EPUB file"""
         if not output_path:
             output_path = input_path
+
+        # Extract book_id and format from path for checksum management
+        book_id, book_format = self._extract_book_info_from_path(input_path)
 
         # Back Up Original File
         print_and_log("[cwa-kindle-epub-fixer] Backing up original file...", log=self.manually_triggered)
@@ -344,7 +435,12 @@ class EPUBFixer:
             output_path = output_path + os.path.basename(input_path)
         self.write_epub(output_path)
         print_and_log("[cwa-kindle-epub-fixer] EPUB successfully written.", log=self.manually_triggered)
-        
+
+        # Calculate and store new checksum after modification
+        if book_id and self.fixed_problems:
+            # Only recalculate if fixes were actually applied
+            self._recalculate_checksum_after_modification(book_id, book_format, output_path)
+
         # Add entry to cwa.db
         print_and_log("[cwa-kindle-epub-fixer] Adding run to cwa.db...", log=self.manually_triggered)
         self.add_entry_to_db(input_path, output_path)
@@ -388,7 +484,7 @@ def main():
     parser.add_argument('--language', '-l', required=False, default='en', help='Default language to use if not specified or invalid')
     parser.add_argument('--suffix', '-s',required=False,  default=False, action='store_true', help='Adds suffix "fixed" to output filename if given')
     parser.add_argument('--all', '-a', required=False, default=False, action='store_true', help='Will attempt to fix any issues in every EPUB in th user\'s library')
-    
+
     args = parser.parse_args()
     # logger.info(f"CWA Kindle EPUB Fixer Service - Run Started: {datetime.now()}\n")
 
@@ -460,7 +556,7 @@ def main():
             print_and_log("[cwa-kindle-epub-fixer] No EPUBs found to process. Exiting now...")
         logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
         sys.exit(0)
-    
+
 
 if __name__ == "__main__":
     main()

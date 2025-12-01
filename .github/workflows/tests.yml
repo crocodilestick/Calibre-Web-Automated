@@ -33,10 +33,18 @@ jobs:
   fast-tests:
     name: Fast Tests (Smoke + Unit)
     runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Remove Python bytecode and pycache
+        run: |
+          echo "Removing any leftover .pyc and pycache"
+          find . -name '__pycache__' -type d -print -exec rm -rf {} +
+          find . -name '*.pyc' -type f -print -delete
       
       - name: Set up Python 3.13
         uses: actions/setup-python@v5
@@ -136,10 +144,15 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
       
-      - name: Pull/cache Docker images
-        run: |
-          docker pull doubleuynn/calibre-web-automated:latest || true
-          docker pull python:3.13-slim || true
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: true
+          tags: crocodilestick/calibre-web-automated:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       
       - name: Run Docker integration tests
         run: |
@@ -151,6 +164,7 @@ jobs:
             --junitxml=integration-results.xml
         env:
           CWA_TEST_PORT: "8083"  # CI uses production default port
+          CWA_TEST_IMAGE: "crocodilestick/calibre-web-automated:latest"
         timeout-minutes: 30  # Kill if stuck
       
       - name: Upload test results

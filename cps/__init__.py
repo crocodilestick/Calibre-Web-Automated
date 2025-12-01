@@ -43,8 +43,8 @@ mimetypes.add_type('application/xhtml+xml', '.xhtml')
 mimetypes.add_type('application/epub+zip', '.epub')
 mimetypes.add_type('application/epub+zip', '.kepub')
 mimetypes.add_type('text/xml', '.fb2')
-mimetypes.add_type('application/octet-stream', '.mobi')
-mimetypes.add_type('application/octet-stream', '.prc')
+mimetypes.add_type('application/x-mobipocket-ebook', '.mobi')
+mimetypes.add_type('application/x-mobipocket-ebook', '.prc')
 mimetypes.add_type('application/vnd.amazon.ebook', '.azw')
 mimetypes.add_type('application/x-mobi8-ebook', '.azw3')
 mimetypes.add_type('application/x-cbr', '.cbr')
@@ -83,7 +83,11 @@ app.config.update(
 
 # Fix for running behind reverse proxy (e.g. nginx, apache, caddy, ...)
 # Without it, url_for will generate http:// urls even if https:// is used
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+# Set TRUSTED_PROXY_COUNT to the number of proxies in your chain (default: 1)
+# For CF Tunnel + reverse proxy, use TRUSTED_PROXY_COUNT=2
+num_proxies = int(os.environ.get('TRUSTED_PROXY_COUNT', '1'))
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=num_proxies, x_proto=num_proxies, x_host=num_proxies, x_prefix=num_proxies)
+log.info(f'ProxyFix configured to trust {num_proxies} proxy(ies) for X-Forwarded-* headers')
 
 lm = MyLoginManager()
 
@@ -120,7 +124,7 @@ def create_app():
 
     config_sql.load_configuration(ub.session, encrypt_key)
     config.init_config(ub.session, encrypt_key, cli_param)
-    
+
     # Set OAuth redirect host consistency
     if hasattr(config, 'config_oauth_redirect_host') and config.config_oauth_redirect_host:
         from urllib.parse import urlparse
@@ -220,7 +224,7 @@ def create_app():
         except Exception:
             # Failsafe: let route-level code handle specific DB errors
             pass
-    
+
     # Load user from reverse proxy header early in request lifecycle
     # This ensures current_user resolves correctly before any code accesses user settings
     @app.before_request
@@ -229,11 +233,11 @@ def create_app():
         Load user from reverse proxy authentication header if configured.
         Sets g.flask_httpauth_user early so that current_user proxy resolves correctly
         for user-specific settings like theme preferences.
-        
+
         This must run before any blueprint before_request handlers that access current_user.
         """
         from flask import g, request
-        
+
         if config.config_allow_reverse_proxy_header_login:
             from . import usermanagement
             user = usermanagement.load_user_from_reverse_proxy_header(request)
@@ -242,7 +246,7 @@ def create_app():
             else:
                 # Explicitly set to None to indicate we checked but found nothing
                 g.flask_httpauth_user = None
-    
+
     from .schedule import register_scheduled_tasks, register_startup_tasks
     register_scheduled_tasks(config.schedule_reconnect)
     register_startup_tasks()

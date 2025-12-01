@@ -41,6 +41,14 @@ class BackgroundScheduler:
         if use_APScheduler:
             return self.scheduler.add_job(func=func, trigger=trigger, name=name)
 
+    def remove_job(self, job_id: str):
+        if use_APScheduler and job_id:
+            try:
+                return self.scheduler.remove_job(job_id)
+            except Exception:
+                # Ignore if job not found
+                return None
+
     # Expects a lambda expression for the task
     def schedule_task(self, task, user=None, name=None, hidden=False, trigger=None):
         if use_APScheduler:

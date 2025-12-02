@@ -33,7 +33,12 @@ Usage:
 
 import json
 import requests
+import os
 from functools import wraps
+
+# Relax OAuthlib scope validation to prevent errors when providers return different scopes
+# This fixes Issue #715 where missing 'groups' scope causes 500 Internal Server Error
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 from flask import session, request, make_response, abort
 from flask import Blueprint, flash, redirect, url_for

@@ -28,7 +28,7 @@
 </div>
 
 {% if current_user.role_admin() %}
-<div class="discover" style="margin-top: 2rem;">
+<div class="discover" style="padding-inline: 2rem !important;">
   <h3>{{ _('Upcoming scheduled sends') }}</h3>
   <table class="table table-no-bordered" id="upcomingtable"
        data-url="{{ url_for('cwa_stats.cwa_scheduled_upcoming') }}"
@@ -50,7 +50,7 @@
     
 </div>
 
-<div class="discover" style="margin-top: 2rem;">
+<div class="discover" style="padding-inline: 2rem !important;">
   <h3>{{ _('Upcoming scheduled operations') }}</h3>
   <table class="table table-no-bordered" id="upcomingopstable"
        data-url="{{ url_for('cwa_stats.cwa_scheduled_upcoming_ops') }}"

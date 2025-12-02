@@ -295,7 +295,7 @@ msgstr "Az LDAP csoport objektumszűrőjében nincs megfelelő zárójel"
 #: cps/admin.py:1353
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
-msgstr "Az LDAP felhasználói objektumszűrőnek rendelkeznie kell egy \%s\ formátumazonosítóval"
+msgstr "Az LDAP felhasználói objektumszűrőnek rendelkeznie kell egy \"%s\" formátumazonosítóval"
 
 #: cps/admin.py:1355
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
@@ -304,7 +304,7 @@ msgstr "Az LDAP felhasználói objektumszűrőben nincs megfelelő zárójel"
 #: cps/admin.py:1362
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
-msgstr "Az LDAP-tag felhasználói szűrőnek egy \%s\ formátumú azonosítóval kell rendelkeznie"
+msgstr "Az LDAP-tag felhasználói szűrőnek egy \"%s\" formátumú azonosítóval kell rendelkeznie"
 
 #: cps/admin.py:1364
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"

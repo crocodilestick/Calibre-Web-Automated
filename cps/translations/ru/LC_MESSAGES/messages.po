@@ -3615,7 +3615,7 @@ msgstr "Включить автоматическое резервное коп�
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
-msgstr "Когда функция активна, оригиналы EPUB, обработанные сервисом CWA Kindle EPUB Fixer, будут сохраняться в /config/processed\_books/fixed\_originals"
+msgstr "Когда функция активна, оригиналы EPUB, обработанные сервисом CWA Kindle EPUB Fixer, будут сохраняться в /config/processed_books/fixed_originals"
 
 #: cps/templates/cwa_settings.html:132
 msgid "Enable CWA Auto-Zip Backups"
@@ -3627,7 +3627,7 @@ msgid ""
 "make zip archives of all the backed up converted, imported and failed files "
 "from that day. This is to help keep the subdirectories of /config/"
 "processed_books organised and to minimise disk space usage."
-msgstr "Когда функция активна, чуть до полуночи каждый день сервис cwa-auto-zipper создаёт zip-архивы всех сохранённых конвертированных, импортированных и неудавшихся файлов за этот день. Это помогает поддерживать порядок в подкаталогах /config/processed\_books и минимизировать использование дискового пространства."
+msgstr "Когда функция активна, чуть до полуночи каждый день сервис cwa-auto-zipper создаёт zip-архивы всех сохранённых конвертированных, импортированных и неудавшихся файлов за этот день. Это помогает поддерживать порядок в подкаталогах /config/processed_books и минимизировать использование дискового пространства."
 
 #: cps/templates/cwa_settings.html:139
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"

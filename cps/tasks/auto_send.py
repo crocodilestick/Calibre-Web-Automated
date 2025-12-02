@@ -28,47 +28,46 @@ class TaskAutoSend(CalibreTask):
     def run(self, worker_thread):
         """Auto-send newly ingested book to user's eReader addresses"""
         self.worker_thread = worker_thread
-        
+
         try:
             # Delay is now handled by the scheduler; begin processing immediately
             self.message = N_("Preparing to send to eReader...")
-            
             # Get fresh book data
             calibre_db_instance = db.CalibreDB(expire_on_commit=False, init=True)
             book = calibre_db_instance.get_book(self.book_id)
             if not book:
                 self._handleError(f"Book with ID {self.book_id} not found")
                 return
-                
+
             self.book_title = book.title
             self.progress = 0.3
-            
+
             # Get user data
             user = ub.session.query(ub.User).filter(ub.User.id == self.user_id).first()
             if not user or not user.auto_send_enabled:
                 self._handleError(f"User {self.user_id} not found or auto-send disabled")
                 return
-                
+
             if not user.kindle_mail:
                 self._handleError(f"User {user.name} has no eReader email addresses configured")
                 return
-                
+
             self.progress = 0.5
             self.message = N_("Checking available formats...")
-            
+
             # Check available formats for sending
             email_share_list = helper.check_send_to_ereader(book)
             if not email_share_list:
                 self._handleError(f"No suitable formats available for sending book '{book.title}'")
                 return
-                
+
             # Use the first available format (highest priority)
             book_format = email_share_list[0]['format']
             convert_flag = email_share_list[0]['convert']
-            
+
             self.progress = 0.7
             self.message = N_("Sending to eReader...")
-            
+
             # Send to all configured email addresses
             result = helper.send_mail(
                 book_id=self.book_id,
@@ -76,9 +75,10 @@ class TaskAutoSend(CalibreTask):
                 convert=convert_flag,
                 ereader_mail=user.kindle_mail,
                 calibrepath=config.get_book_path(),
-                user_id=user.name
+                user_id=user.name,
+                subject=user.kindle_mail_subject
             )
-            
+
             if result is None:
                 # Update download stats
                 ub.update_download(self.book_id, int(user.id))
@@ -88,7 +88,7 @@ class TaskAutoSend(CalibreTask):
                 log.info(f"Auto-sent book '{book.title}' to {user.kindle_mail}")
             else:
                 self._handleError(f"Failed to auto-send book '{book.title}': {result}")
-                
+
         except Exception as e:
             self._handleError(f"Auto-send task failed: {str(e)}")
         finally:

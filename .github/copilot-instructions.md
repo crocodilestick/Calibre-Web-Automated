@@ -186,6 +186,7 @@ Pluggable providers in `cps/metadata_provider/`:
 - `CWA_WATCH_MODE`: Force polling watcher (`poll`) or inotify (default)
 - `HARDCOVER_TOKEN`: API key for Hardcover metadata provider
 - `COOKIE_PREFIX`: Custom prefix for session cookies
+- `TRUSTED_PROXY_COUNT`: Number of proxies to trust for X-Forwarded-* headers (default: 1, use 2+ for CF Tunnel + reverse proxy)
 
 ## Common Pitfalls
 1. **Don't import SQLite on main thread**: Always use `init_db_thread()` in background tasks
@@ -195,6 +196,7 @@ Pluggable providers in `cps/metadata_provider/`:
 5. **WAL mode errors**: Usually means network share deployment without `NETWORK_SHARE_MODE=true`
 6. **Port binding**: Ports below 1024 need `cap_add: [NET_BIND_SERVICE]` in docker-compose
 7. **Calibre plugins**: Requires `customize.py.json` in `/config/.config/calibre/` to register
+8. **Session protection errors**: Behind multiple proxies? Set `TRUSTED_PROXY_COUNT` to match your proxy chain depth
 
 ## Version Management
 - **Installed version**: `/app/CWA_RELEASE` (baked at build time)

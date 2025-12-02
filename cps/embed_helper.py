@@ -33,6 +33,32 @@ def do_calibre_export(book_id, book_format):
         _, err = p.communicate()
         if err:
             log.error('Metadata embedder encountered an error: %s', err)
+
+        # calibredb export with --template may create either:
+        # 1. A subdirectory with the template name containing the file
+        # 2. A file directly with a modified name
+
+        # First check if a subdirectory was created
+        export_dir = os.path.join(tmp_dir, temp_file_name)
+        if os.path.isdir(export_dir):
+            # Look for the book file with the specified format
+            for filename in os.listdir(export_dir):
+                if filename.lower().endswith('.' + book_format.lower()):
+                    # Found the exported file - return the directory and the filename without extension
+                    actual_filename = os.path.splitext(filename)[0]
+                    return export_dir, actual_filename
+
+            log.warning(f'No {book_format} file found in export directory: {export_dir}')
+        else:
+            # No subdirectory - look for files directly in tmp_dir
+            for filename in os.listdir(tmp_dir):
+                if filename.lower().endswith('.' + book_format.lower()):
+                    actual_filename = os.path.splitext(filename)[0]
+                    return tmp_dir, actual_filename
+
+            log.warning(f'No {book_format} file found in {tmp_dir}')
+
+        # Fallback to original behavior
         return tmp_dir, temp_file_name
     except OSError as ex:
         # ToDo real error handling

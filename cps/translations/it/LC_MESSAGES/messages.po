@@ -2010,7 +2010,7 @@ msgstr "Converti"
 
 #: cps/tasks/database.py:15
 msgid "Reconnecting Calibre database"
-msgstr "Riconessione al database di Calibre"
+msgstr "Riconnessione al database di Calibre"
 
 #: cps/tasks/mail.py:268
 msgid "E-mail"
@@ -2711,7 +2711,7 @@ msgstr "Nel libro con il titolo:"
 
 #: cps/templates/book_table.html:186
 msgid "The following books will be deleted:"
-msgstr "I libri seguenti verrano eliminati:"
+msgstr "I libri seguenti verranno eliminati:"
 
 #: cps/templates/book_table.html:206
 msgid "The following books will be archived:"
@@ -2723,7 +2723,7 @@ msgstr "I seguenti libri saranno rimossi dall'archivio:"
 
 #: cps/templates/book_table.html:246
 msgid "The following books will be marked read:"
-msgstr "I libri seguenti verrano segnati come letti:"
+msgstr "I libri seguenti verranno segnati come letti:"
 
 #: cps/templates/book_table.html:266
 msgid "The following books will be marked unread:"
@@ -3592,7 +3592,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:120
 msgid "Enable CWA EPUB Fixer Auto-Backup"
-msgstr "Abulita il backup automatico per lo strumento CWA EPUB Fixer"
+msgstr "Abilita il backup automatico per lo strumento CWA EPUB Fixer"
 
 #: cps/templates/cwa_settings.html:122
 msgid ""
@@ -3616,7 +3616,7 @@ msgid ""
 msgstr ""
 "Se attivo, ogni giorno immediatamente prima di mezzanotte il servizio cwa-"
 "auto-zipper creerà degli archivi in formato zip contenenti tutti i backup "
-"dei file convertiti, importanti e con errori elaborati nel rispettivo "
+"dei file convertiti, importati e con errori elaborati nel rispettivo "
 "giorno. Ciò aiuta a mantenere le sottocartelle di /config/processed_books "
 "organizzate e a minimizzare l'utilizzo di spazio su disco."
 
@@ -3723,7 +3723,7 @@ msgid ""
 "investigation."
 msgstr ""
 "Tempo massimo (in minuti) consentito per l'elaborazione di un singolo libro "
-"prima del timeout. I file ceh raggiungono il tempo di timeout vengono "
+"prima del timeout. I file che raggiungono il tempo di timeout vengono "
 "spostati nella cartella di backup dei file con errori per consentirne "
 "l'analisi."
 
@@ -3863,7 +3863,7 @@ msgstr ""
 
 #: cps/templates/duplicates.html:359
 msgid "The following books will be permanently deleted:"
-msgstr "I libri seguenti verrano eliminati in modo permanente:"
+msgstr "I libri seguenti verranno eliminati in modo permanente:"
 
 #: cps/templates/duplicates.html:363
 msgid "This action cannot be undone!"
@@ -4191,7 +4191,7 @@ msgstr "Scarica il log di accesso"
 
 #: cps/templates/modal_dialogs.html:6
 msgid "Select Allowed/Denied Tags"
-msgstr "Seleziona le etchette consentite/negate"
+msgstr "Seleziona le etichette consentite/negate"
 
 #: cps/templates/modal_dialogs.html:7
 msgid "Select Allowed/Denied Custom Column Values"
@@ -4760,7 +4760,7 @@ msgstr "Aggiungi valori personali consentiti/negati nelle colonne"
 
 #: cps/templates/user_edit.html:152
 msgid "Sync only books in selected shelves with Kobo"
-msgstr "Sincronizza con Kobo unicamene i libri negli scaffali selezionati"
+msgstr "Sincronizza con Kobo unicamente i libri negli scaffali selezionati"
 
 #: cps/templates/user_edit.html:162 cps/templates/user_table.html:169
 msgid "Delete User"

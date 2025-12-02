@@ -54,7 +54,7 @@ except NameError:
     pass
 
 # Custom OAuth2Session for generic OIDC to handle SSL and scope validation (Issue #715)
-from requests_oauthlib import OAuth2Session as BaseOAuth2Session
+from flask_dance.consumer.requests import OAuth2Session as BaseOAuth2Session
 
 class GenericOIDCSession(BaseOAuth2Session):
     """

@@ -606,6 +606,7 @@
 {{ filechooser_modal() }}
 {% endblock %}
 
+{% block js %}
 <script>
 $(document).ready(function() {
   // Check for authentication switching warning
@@ -716,3 +717,4 @@ $(document).ready(function() {
   });
 });
 </script>
+{% endblock %}

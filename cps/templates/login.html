@@ -13,15 +13,17 @@
       <label for="password">{{_('Password')}}</label>
       <input type="password" class="form-control" id="password" name="password" placeholder="{{_('Password')}}" value="{{ password }}">
     </div>
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" onclick="password.type = this.checked ? 'text' : 'password'"> {{_('Show Password')}}
-      </label>
-    </div>
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" name="remember_me" checked> {{_('Remember Me')}}
-      </label>
+    <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: baseline;">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" onclick="password.type = this.checked ? 'text' : 'password'"> {{_('Show Password')}}
+        </label>
+      </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="remember_me" checked> {{_('Remember Me')}}
+        </label>
+      </div>
     </div>
     <button type="submit" name="submit" class="btn btn-default">{{_('Login')}}</button>
     {% if config.config_login_type == 0 and mail%}

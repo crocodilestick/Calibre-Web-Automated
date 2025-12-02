@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2025-09-03 14:59+0200\n"
-"PO-Revision-Date: 2025-09-19 16:08+0200\n"
+"PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Loco-Source-Locale: en_IT\n"
 "Generated-By: Babel 2.13.1\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Poedit 3.7\n"
+"X-Generator: Poedit 3.8\n"
 
 #: cps/about.py:77
 msgid "Statistics"
@@ -851,14 +851,14 @@ msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 "🔴 Il servizio di Metadata Change Detector è in esecuzione, ma il servizio "
-"di Ingest non lo è."
+"di Ingest non lo è"
 
 #: cps/cwa_functions.py:431
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 "⛔ Né il servizio di Ingest né il servizio di Metadata Change Detector sono "
-"in esecuzione."
+"in esecuzione"
 
 #: cps/cwa_functions.py:433
 msgid "An Error has occurred"
@@ -878,7 +878,7 @@ msgstr "Devi essere un amministratore per accedere a questa pagina."
 
 #: cps/cwa_functions.py:830
 msgid "Both username and image data are required."
-msgstr "I campi username ed image data sono obbligatori"
+msgstr "I campi username ed image data sono obbligatori."
 
 #: cps/cwa_functions.py:848
 msgid "Profile picture updated successfully."
@@ -1751,7 +1751,7 @@ msgid ""
 "version."
 msgstr ""
 "È disponibile un nuovo aggiornamento. Fai clic sul pulsante in basso per "
-"aggiornare all'ultima versione"
+"aggiornare all'ultima versione."
 
 #: cps/updater.py:473
 msgid "Could not fetch update information"
@@ -1882,7 +1882,7 @@ msgstr ""
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr ""
-"Il server e-mail non è configurato, per favore contatta l'amministratore"
+"Il server e-mail non è configurato, per favore contatta l'amministratore."
 
 #: cps/web.py:1452
 msgid "Oops! Your Email is not allowed."
@@ -1955,7 +1955,7 @@ msgstr "Esiste già un account per questa e-mail."
 
 #: cps/web.py:1770
 msgid "Invalid book ID."
-msgstr "Book ID non valido"
+msgstr "Book ID non valido."
 
 #: cps/services/gmail.py:48
 msgid "Found no valid gmail.json file with OAuth information"
@@ -2010,7 +2010,7 @@ msgstr "Converti"
 
 #: cps/tasks/database.py:15
 msgid "Reconnecting Calibre database"
-msgstr "Riconessione al database di Calibre"
+msgstr "Riconnessione al database di Calibre"
 
 #: cps/tasks/mail.py:268
 msgid "E-mail"
@@ -2203,7 +2203,6 @@ msgid "Edit UI Configuration"
 msgstr "Modifica la configurazione dell'interfaccia utente"
 
 #: cps/templates/admin.html:170
-#, fuzzy
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
 msgstr "Attività pianificate&nbsp;&nbsp;⌛"
 
@@ -2354,7 +2353,7 @@ msgstr "Sei sicuro di voler fermare Calibre-Web?"
 
 #: cps/templates/admin.html:320
 msgid "Updating, please do not reload this page"
-msgstr "Aggiornamento in corso, non ricaricare la pagina."
+msgstr "Aggiornamento in corso, non ricaricare la pagina"
 
 #: cps/templates/author.html:15
 msgid "via"
@@ -2712,7 +2711,7 @@ msgstr "Nel libro con il titolo:"
 
 #: cps/templates/book_table.html:186
 msgid "The following books will be deleted:"
-msgstr "I libri seguenti verrano eliminati:"
+msgstr "I libri seguenti verranno eliminati:"
 
 #: cps/templates/book_table.html:206
 msgid "The following books will be archived:"
@@ -2724,7 +2723,7 @@ msgstr "I seguenti libri saranno rimossi dall'archivio:"
 
 #: cps/templates/book_table.html:246
 msgid "The following books will be marked read:"
-msgstr "I libri seguenti verrano segnati come letti:"
+msgstr "I libri seguenti verranno segnati come letti:"
 
 #: cps/templates/book_table.html:266
 msgid "The following books will be marked unread:"
@@ -2809,7 +2808,7 @@ msgstr ""
 "di modificare i percorsi sul lato destro. <br><br>Se desideri che il tuo "
 "file <code>metadata.db</code> si trovi in una posizione diversa dal resto\n"
 "della tua libreria, utilizza l'opzione <b>Separa i file dei libri dalla "
-"libreria qui sotto e inserisci il percorso del resto della libreria</b>."
+"libreria qui sotto e inserisci il percorso del resto della libreria</b>"
 
 #: cps/templates/config_db.html:34
 msgid ""
@@ -2840,11 +2839,11 @@ msgid ""
 msgstr ""
 "<b>Separa i file degli Ebook dalla Libreria</b> - Il file <code>metadata.db</"
 "code> dovrebbe rimanere in <code>/calibre-library</code>, tuttavia, i file "
-"della libreria possono essere salvati dove preferisci."
+"della libreria possono essere salvati dove preferisci"
 
 #: cps/templates/config_db.html:54
 msgid "Use Google Drive?"
-msgstr "Usa Google Drive"
+msgstr "Utilizzare Google Drive?"
 
 #: cps/templates/config_db.html:59
 msgid "Authenticate Google Drive"
@@ -3161,7 +3160,7 @@ msgid ""
 "auto-discovery"
 msgstr ""
 "Selezionare questa opzione per configurare manualmente i singoli endpoint "
-"OAuth invece di utilizzare il rilevamento automatico."
+"OAuth invece di utilizzare il rilevamento automatico"
 
 #: cps/templates/config_edit.html:332
 msgid "Manual Endpoint Configuration"
@@ -3365,7 +3364,7 @@ msgid ""
 "& anonymous"
 msgstr ""
 "Attivazione del cambio di tema per utente; questa impostazione predefinita "
-"globale riguarda solo i nuovi utenti e gli utenti anonimi."
+"globale riguarda solo i nuovi utenti e gli utenti anonimi"
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
@@ -3461,11 +3460,11 @@ msgstr "Avvio"
 
 #: cps/templates/cwa_settings.html:17
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "Abilita/disabilita i servizi automatici di CWA"
+msgstr "Abilita/disabilita i servizi Calibre-Web Automated"
 
 #: cps/templates/cwa_settings.html:24
 msgid "Enable CWA Auto-Convert"
-msgstr "Abilita auto-conversione di CWA"
+msgstr "Abilita CWA Auto-Convert"
 
 #: cps/templates/cwa_settings.html:26
 msgid ""
@@ -3473,10 +3472,16 @@ msgid ""
 "converted to the target format specified below (epub by default) \n"
 "        <em>EXCEPT</em> those you have specifically told CWA to ignore below."
 msgstr ""
+"Attivo per impostazione predefinita. Se attivo tutti i libri aggiunti "
+"mediante il servizio di Ingest verranno automaticamente convertiti nel "
+"formato di destinazione specificato di seguito (epub per impostazione "
+"predefinita) \n"
+"        <em>AD ECCEZIONE</em> di quelli specificamente indicati di seguito a "
+"CWA come da ignorare."
 
 #: cps/templates/cwa_settings.html:35
 msgid "Enable CWA Automatic Cover & Metadata Enforcement Service"
-msgstr ""
+msgstr "Abilita servizio CWA Automatic Cover & Metadata Enforcement"
 
 #: cps/templates/cwa_settings.html:37
 msgid ""
@@ -3488,6 +3493,16 @@ msgid ""
 "themselves. This feature currently only supports files in EPUB \n"
 "        or AZW3 format."
 msgstr ""
+"Attivo per impostazione predefinita. Se attivo, a ogni modifica dei metadati "
+"e/o dell'immagine di copertina eseguita nell'Interfaccia Utente Web, il "
+"servizio CWA Metadata Enforcement \n"
+"        applicherà queste modifiche ai file dei rispettivi ebook. Nella "
+"versione originaria di Calibre Web oppure nel caso questa impostazione sia "
+"disabilitata, le modifiche effettuate \n"
+"        vengono applicate a quanto visualizzato nell'Interfaccia Utente Web, "
+"ma non ai file dei rispettivi ebook. Questa funzione supporta attualmente "
+"solo i file in formato EPUB \n"
+"        o AZW3."
 
 #: cps/templates/cwa_settings.html:48
 msgid "Enable CWA Kindle EPUB Fixer"
@@ -3499,24 +3514,30 @@ msgid ""
 "by CWA will be checked and fixed to ensure maximum \n"
 "        compatibility with Amazon's Send-to-Kindle Service."
 msgstr ""
+"Se attivo, oltre agli altri attributi di tutti i file EPUB elaborati da CWA, "
+"verrà controllato ed eventualmente riparato anche l'encoding, al fine di "
+"assicurare \n"
+"        la massima compatibilità con il servizio Send-to-Kindle di Amazon."
 
 #: cps/templates/cwa_settings.html:59
 msgid "Web UI Settings"
-msgstr "Impostazioni Interfaccia Utente"
+msgstr "Impostazioni Interfaccia Utente WEB"
 
 #: cps/templates/cwa_settings.html:66
 msgid "Enable CWA Update Notifications"
-msgstr ""
+msgstr "Abilita le notifiche di aggiornamento di CWA"
 
 #: cps/templates/cwa_settings.html:68
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
 msgstr ""
+"Se attivo, riceverai una notifica nell'Interfaccia Utente Web quando viene "
+"rilasciata una nuova versione di CWA"
 
 #: cps/templates/cwa_settings.html:76
 msgid "Enable Contribute Translations Notifications"
-msgstr ""
+msgstr "Abilita le notifiche di contributo alla traduzione"
 
 #: cps/templates/cwa_settings.html:78
 msgid ""
@@ -3524,54 +3545,67 @@ msgid ""
 "using a language other than English if the translations for your chosen "
 "language are not complete."
 msgstr ""
+"Se disabilitato, non riceverai più notifiche nell'Interfaccia Utente Web se "
+"utilizzi una lingua diversa dall'inglese qualora le traduzioni per la lingua "
+"selezionata non siano complete."
 
 #: cps/templates/cwa_settings.html:86
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
-msgstr ""
+msgstr "Abilita la sfocatura degli sfondi sui dispositivi mobile (&lt;768px)"
 
 #: cps/templates/cwa_settings.html:88
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
 msgstr ""
+"Se attivo, l'effetto di sfocatura dello sfondo delle copertine verrà "
+"applicato anche sugli schermi di piccole dimensioni. Disabilitare in caso si "
+"riscontrino rallentamenti nello scorrimento o nelle animazioni."
 
 #: cps/templates/cwa_settings.html:93
 msgid "Automatic Backup Settings"
-msgstr "Impostazioni Backup automatico"
+msgstr "Impostazioni backup automatico"
 
 #: cps/templates/cwa_settings.html:100
 msgid "Enable CWA Import Auto-Backup"
-msgstr ""
+msgstr "Abilita il backup automatico dei file importati in CWA"
 
 #: cps/templates/cwa_settings.html:102
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
 msgstr ""
+"Se attivo, una copia di tutti i file importati verrà salvata in <i>/config/"
+"processed_books/imported</i>"
 
 #: cps/templates/cwa_settings.html:110
 msgid "Enable CWA Conversion Auto-Backup"
-msgstr ""
+msgstr "Abilita il backup automatico dei file convertiti da CWA"
 
 #: cps/templates/cwa_settings.html:112
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
 msgstr ""
+"Se attivo, le versioni originali dei file aggiunti e convertiti mediante il "
+"servizio di Ingest verranno salvate in /config/processed_books/converted"
 
 #: cps/templates/cwa_settings.html:120
 msgid "Enable CWA EPUB Fixer Auto-Backup"
-msgstr ""
+msgstr "Abilita il backup automatico per lo strumento CWA EPUB Fixer"
 
 #: cps/templates/cwa_settings.html:122
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
 msgstr ""
+"Se attivo, le versioni originali dei file EPUB elaborati tramite il servizio "
+"CWA Kindle EPUB Fixer verranno salvate in /config/processed_books/"
+"fixed_originals"
 
 #: cps/templates/cwa_settings.html:132
 msgid "Enable CWA Auto-Zip Backups"
-msgstr ""
+msgstr "Abilita i backup CWA Auto-Zip"
 
 #: cps/templates/cwa_settings.html:134
 msgid ""
@@ -3580,10 +3614,17 @@ msgid ""
 "from that day. This is to help keep the subdirectories of /config/"
 "processed_books organised and to minimise disk space usage."
 msgstr ""
+"Se attivo, ogni giorno immediatamente prima di mezzanotte il servizio cwa-"
+"auto-zipper creerà degli archivi in formato zip contenenti tutti i backup "
+"dei file convertiti, importati e con errori elaborati nel rispettivo "
+"giorno. Ciò aiuta a mantenere le sottocartelle di /config/processed_books "
+"organizzate e a minimizzare l'utilizzo di spazio su disco."
 
 #: cps/templates/cwa_settings.html:139
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
 msgstr ""
+"Formato di destinazione per la conversione automatica CWA - EPUB per "
+"impostazione predefinita"
 
 #: cps/templates/cwa_settings.html:142
 msgid ""
@@ -3591,10 +3632,14 @@ msgid ""
 "automatically converted to the format chosen here (except those formats "
 "selected in the ignore list below)"
 msgstr ""
+"Se la funzione di conversione automatica è attiva, tutti i libri aggiunti "
+"mediante il servizio di Ingest verranno automaticamente convertiti nel "
+"formato qui selezionato (ad eccezione dei formati selezionati nell'elenco di "
+"esclusione di seguito)"
 
 #: cps/templates/cwa_settings.html:144
 msgid "Choose a target format:"
-msgstr "Scegli il formato di attivo:"
+msgstr "Scegli il formato di destinazione:"
 
 #: cps/templates/cwa_settings.html:155
 msgid ""
@@ -3602,20 +3647,26 @@ msgid ""
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
 "by the service"
 msgstr ""
+"NOTA: il servizio di Metadata Enforcement di CWA supporta attualmente solo i "
+"file nei formati EPUB e AZW3. I file in altri formati verranno semplicemente "
+"ignorati da questo servizio"
 
 #: cps/templates/cwa_settings.html:160
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr ""
+msgstr "CWA Auto-Convert - Formati ignorati"
 
 #: cps/templates/cwa_settings.html:162
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
 msgstr ""
+"I formati qui selezionati verranno ignorati dallo strumento di conversione "
+"automatica di CWA quando attivo, e verranno pertanto importati senza "
+"modifiche."
 
 #: cps/templates/cwa_settings.html:187
 msgid "CWA Auto-Ingest - Ignored Formats"
-msgstr ""
+msgstr "CWA Auto-Ingest - Formati ignorati"
 
 #: cps/templates/cwa_settings.html:189
 msgid ""
@@ -3623,40 +3674,47 @@ msgid ""
 "meaning files in these formats won't be added to the library by CWA during "
 "the ingest process"
 msgstr ""
+"I formati qui selezionati verranno ignorati dallo strumento di Ingest "
+"automatico di CWA, pertanto i file con questi formati non saranno aggiunti "
+"alla libreria da CWA durante il processo di Ingest"
 
 #: cps/templates/cwa_settings.html:214
 msgid "CWA Auto-Ingest Automerge"
-msgstr ""
+msgstr "CWA Auto-Ingest Automerge"
 
 #: cps/templates/cwa_settings.html:217
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
 msgstr ""
+"Calibre è in grado di individuare eventuali titoli di libri duplicati "
+"durante l'importazione e, agendo sulle"
 
 #: cps/templates/cwa_settings.html:217
 msgid "automerge"
-msgstr ""
+msgstr "impostazioni"
 
 #: cps/templates/cwa_settings.html:218
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
 msgstr ""
+"di merge automatico, può essere impostato per cancellare una delle due "
+"istanze o per conservarle entrambe (impostazione predefinita)."
 
 #: cps/templates/cwa_settings.html:236
 msgid "Discards duplicate import, keeps library copy"
-msgstr ""
+msgstr "Annulla l'importazione del duplicato, conserva la copia della libreria"
 
 #: cps/templates/cwa_settings.html:240
 msgid "Overwrites library copy with newly imported file"
-msgstr ""
+msgstr "Sovrascrive la copia della libreria con il file di nuova importazione"
 
 #: cps/templates/cwa_settings.html:244
 msgid "Creates a duplicate record, keeping both copies"
-msgstr ""
+msgstr "Crea una voce duplicata, mantenendo così entrambe le copie"
 
 #: cps/templates/cwa_settings.html:253
 msgid "Ingest Processing Timeout"
-msgstr ""
+msgstr "Timeout di elaborazione per il servizio di Ingest"
 
 #: cps/templates/cwa_settings.html:255
 msgid ""
@@ -3664,14 +3722,18 @@ msgid ""
 "timing out. Files that timeout are moved to the failed backup folder for "
 "investigation."
 msgstr ""
+"Tempo massimo (in minuti) consentito per l'elaborazione di un singolo libro "
+"prima del timeout. I file che raggiungono il tempo di timeout vengono "
+"spostati nella cartella di backup dei file con errori per consentirne "
+"l'analisi."
 
 #: cps/templates/cwa_settings.html:257
 msgid "Timeout (minutes):"
-msgstr ""
+msgstr "Timeout (minuti):"
 
 #: cps/templates/cwa_settings.html:265
 msgid "Range: 5-120 minutes (default: 15)"
-msgstr ""
+msgstr "Intervallo: 5-120 minuti (impostazione predefinita: 15)"
 
 #: cps/templates/cwa_stats.html:43 cps/templates/cwa_stats.html:65
 #: cps/templates/cwa_stats.html:87 cps/templates/cwa_stats.html:106
@@ -3759,44 +3821,49 @@ msgstr "(Pubblico)"
 
 #: cps/templates/duplicates.html:283
 msgid "CWA Duplicates Manager"
-msgstr ""
+msgstr "CWA Duplicates Manager"
 
 #: cps/templates/duplicates.html:285
 msgid ""
 "Books with matching titles and authors. Visual inspection recommended to "
 "identify true duplicates."
 msgstr ""
+"Libri con titolo e autore corrispondenti. Si raccomanda l'ispezione visiva "
+"per individuare gli effettivi duplicati."
 
 #: cps/templates/duplicates.html:290
 msgid "Select Duplicates"
-msgstr ""
+msgstr "Seleziona i duplicati"
 
 #: cps/templates/duplicates.html:291
 msgid "Select None"
 msgstr "Non selezionare nulla"
 
 #: cps/templates/duplicates.html:292
-#, fuzzy
 msgid "Delete Selected"
-msgstr "Elimina i libri selezionati"
+msgstr "Elimina selezionati"
 
 #: cps/templates/duplicates.html:343
 msgid "No Duplicate Books Found"
-msgstr "Nessun libro duplicato"
+msgstr "Nessun libro duplicato trovato"
 
 #: cps/templates/duplicates.html:344
 msgid "Your library has no books with duplicate title and author combinations."
 msgstr ""
+"La tua libreria non contiene libri con combinazione di titolo e autore "
+"duplicati."
 
 #: cps/templates/duplicates.html:345
 msgid ""
 "This search looks for books with identical titles AND authors to avoid false "
 "positives."
 msgstr ""
+"Questo strumento ricerca i libri con titolo E autore identici al fine di "
+"evitare falsi positivi."
 
 #: cps/templates/duplicates.html:359
 msgid "The following books will be permanently deleted:"
-msgstr "I libri seguenti verrano eliminati in modo permanente:"
+msgstr "I libri seguenti verranno eliminati in modo permanente:"
 
 #: cps/templates/duplicates.html:363
 msgid "This action cannot be undone!"
@@ -4068,7 +4135,7 @@ msgstr "Dettagli del libro"
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
 msgid "Filter by initial"
-msgstr ""
+msgstr "Filtra per iniziale"
 
 #: cps/templates/list.html:43
 msgid "Grid"
@@ -4124,7 +4191,7 @@ msgstr "Scarica il log di accesso"
 
 #: cps/templates/modal_dialogs.html:6
 msgid "Select Allowed/Denied Tags"
-msgstr "Seleziona le etchette consentite/negate"
+msgstr "Seleziona le etichette consentite/negate"
 
 #: cps/templates/modal_dialogs.html:7
 msgid "Select Allowed/Denied Custom Column Values"
@@ -4693,7 +4760,7 @@ msgstr "Aggiungi valori personali consentiti/negati nelle colonne"
 
 #: cps/templates/user_edit.html:152
 msgid "Sync only books in selected shelves with Kobo"
-msgstr "Sincronizza con Kobo unicamene i libri negli scaffali selezionati"
+msgstr "Sincronizza con Kobo unicamente i libri negli scaffali selezionati"
 
 #: cps/templates/user_edit.html:162 cps/templates/user_table.html:169
 msgid "Delete User"

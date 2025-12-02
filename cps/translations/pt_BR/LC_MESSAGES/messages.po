@@ -2,22 +2,18 @@
 # This file is distributed under the same license as the Calibre-Web
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
+"Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2025-09-03 14:59+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: br <LL@li.org>\n"
-"Language: br\n"
+"PO-Revision-Date: 2025-12-02 12:00+0000\n"
+"Last-Translator: Alex <298750+alexantao@users.noreply.github.com>\n"
+"Language-Team: pt_BR <LL@li.org>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=(n==1 ? 0 : n%10==1 && n%100!=11 && n%100!"
-"=71 && n%100!=91 ? 1 : n%10==2 && n%100!=12 && n%100!=72 && n%100!=92 ? 2 : "
-"(n%10==3 || n%10==4 || n%10==9) && n%100!=13 && n%100!=14 && n%100!=19 && "
-"n%100!=73 && n%100!=74 && n%100!=79 && n%100!=93 && n%100!=94 && n%100!=99 ? "
-"3 : n%1000000==0 ? 4 : 5);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Generated-By: Babel 2.13.1\n"
 
 #: cps/about.py:77
@@ -91,7 +87,7 @@ msgstr "Usuário não encontrado"
 #: cps/admin.py:453
 #, python-brace-format
 msgid "{} users deleted successfully"
-msgstr "{} usuário(s) deletedos com sucesso"
+msgstr "{} usuário(s) deletados com sucesso"
 
 #: cps/admin.py:476 cps/templates/config_view_edit.html:134
 #: cps/templates/user_edit.html:45 cps/templates/user_table.html:81
@@ -147,7 +143,7 @@ msgstr "Nenhum Idioma do Livro Válido Fornecido"
 
 #: cps/admin.py:579 cps/editbooks.py:441
 msgid "Parameter not found"
-msgstr "Parametro não encontrado"
+msgstr "Parâmetro não encontrado"
 
 #: cps/admin.py:616
 msgid "Invalid Read Column"
@@ -201,7 +197,7 @@ msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
 msgstr ""
-"Tem certeza que quer alterar as restriçõeo selecionada para o(s) usuário(s) "
+"Tem certeza que quer alterar as restrições selecionada para o(s) usuário(s) "
 "selecionado(s)?"
 
 #: cps/admin.py:670
@@ -2205,7 +2201,7 @@ msgstr "Uploads"
 
 #: cps/templates/admin.html:140
 msgid "Anonymous Browsing"
-msgstr "Navegação Anónima"
+msgstr "Navegação Anônima"
 
 #: cps/templates/admin.html:144
 msgid "Public Registration"
@@ -4867,31 +4863,31 @@ msgstr "Mostrar seção de lidos/não lidos"
 
 #, fuzzy
 #~ msgid "Clear selections"
-#~ msgstr "Remover Seleções"
+#~ msgstr "Limpar Seleções"
 
 #, fuzzy
 #~ msgid "Edit selected books"
-#~ msgstr "Mesclar livros selecionados"
+#~ msgstr "Editar livros selecionados"
 
 #, fuzzy
 #~ msgid "Archive selected books"
-#~ msgstr "Mesclar livros selecionados"
+#~ msgstr "Arquivar livros selecionados"
 
 #, fuzzy
 #~ msgid "Unarchive selected books"
-#~ msgstr "Mesclar livros selecionados"
+#~ msgstr "Desarquivar livros selecionados"
 
 #, fuzzy
 #~ msgid "Mark selected books as read"
-#~ msgstr "Mesclar livros selecionados"
+#~ msgstr "Marcar livros selecionados como lidos"
 
 #, fuzzy
 #~ msgid "Mark selected books as unread"
-#~ msgstr "Mesclar livros selecionados"
+#~ msgstr "Marcar livros selecionados como não lidos"
 
 #, fuzzy
 #~ msgid "Mark Book as Read or Unread"
-#~ msgstr "Marcar como Não Lido"
+#~ msgstr "Marcar como Lido ou Não Lido"
 
 #, fuzzy, python-format
 #~ msgid "%(seriesindex)s is not a valid number, skipping"
@@ -4933,48 +4929,44 @@ msgstr "Mostrar seção de lidos/não lidos"
 #~ "Capas, isso pode demorar um pouco"
 
 #, fuzzy
-#~ msgid "This Email has been sent via  Autmoated."
-#~ msgstr "Este e-mail foi enviado via Calibre-Web."
-
-#, fuzzy
 #~ msgid "This Email has been sent via  Automated."
-#~ msgstr "Este e-mail foi enviado via Calibre-Web."
+#~ msgstr "Este e-mail foi enviado via Calibre-Web Automated."
 
 #, fuzzy
 #~ msgid "Downloads per User"
-#~ msgstr "Downloads"
+#~ msgstr "Downloads por usuário"
 
 #, fuzzy
 #~ msgid "This Email has been sent via  Autoated."
-#~ msgstr "Este e-mail foi enviado via Calibre-Web."
+#~ msgstr "Este e-mail foi enviado via Calibre-Web Automated."
 
 #, fuzzy
 #~ msgid "unknown error"
-#~ msgstr "Erro de conexão"
+#~ msgstr "Erro desconhecido"
 
 #, fuzzy
 #~ msgid "Could not open file {filename!r}: {message}"
-#~ msgstr "Não foi possível fazer o login: %(message)s"
+#~ msgstr "Não foi possível abrir o arquivo {filename!r}: %(message)s"
 
 #, fuzzy
 #~ msgid "{value!r} is not a valid boolean."
-#~ msgstr "O e-mail não é de um domínio válido"
+#~ msgstr "{value!r} não é um valor booleano válido."
 
 #, fuzzy
 #~ msgid "directory"
-#~ msgstr "Direção"
+#~ msgstr "Diretório"
 
 #, fuzzy
 #~ msgid "{name} {filename!r} is not writable."
-#~ msgstr "DB não é gravável"
+#~ msgstr "{name} {filename!r} não é gravável"
 
 #, fuzzy
 #~ msgid "Repeat for confirmation"
-#~ msgstr "Configuração do Recursos"
+#~ msgstr "Repita para confirmação"
 
 #, fuzzy
 #~ msgid "Value must be an iterable."
-#~ msgstr "Valor tem de ser Verdadeiro ou Falso"
+#~ msgstr "Valor tem de ser um iterativo"
 
 #~ msgid "Users"
 #~ msgstr "Usuários"

@@ -2351,7 +2351,7 @@ body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
 .well > form > .btn {
     display: inline-block;
     overflow: hidden;
-    border-radius: 4px;
+    border-radius: 4rem;
     color: #fff;
     text-align: center;
     text-transform: uppercase;
@@ -8574,10 +8574,11 @@ select.cwa-settings-select {
 a#remote_login {
     width: -webkit-fill-available;
     text-align: center;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     padding: 6px 30px 5px;
     border: transparent solid 1px;
-    border-radius: 4px;
+    border-radius: 4rem;
+    font-size: 15px;
 }
 
 .login .well > form {

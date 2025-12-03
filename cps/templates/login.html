@@ -5,6 +5,7 @@
   <form method="POST" role="form">
     <input type="hidden" name="next" value="{{next_url}}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if not config.config_disable_standard_login %}
     <div class="form-group">
       <label for="username">{{_('Username')}}</label>
       <input type="text" class="form-control" id="username" name="username" autocapitalize="off" placeholder="{{_('Username')}}" value="{{ username }}">
@@ -28,6 +29,11 @@
     <button type="submit" name="submit" class="btn btn-default">{{_('Login')}}</button>
     {% if config.config_login_type == 0 and mail%}
     <button type="submit" name="forgot" value="forgot" class="btn btn-default">{{_('Forgot Password?')}}</button>
+    {% endif %}
+    {% else %}
+    <div class="alert alert-info">
+      {{_('Standard login is disabled. Please use one of the alternative login methods below.')}}
+    </div>
     {% endif %}
     {% if g.current_theme == 1 %}
       {% if g.allow_registration %}

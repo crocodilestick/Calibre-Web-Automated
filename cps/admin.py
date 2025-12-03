@@ -2054,6 +2054,7 @@ def _configuration_update_helper():
         reboot_required |= reboot
 
         # security configuration
+        _config_checkbox(to_save, "config_disable_standard_login")
         _config_checkbox(to_save, "config_check_extensions")
         _config_checkbox(to_save, "config_password_policy")
         _config_checkbox(to_save, "config_password_number")

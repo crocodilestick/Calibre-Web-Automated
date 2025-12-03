@@ -539,6 +539,11 @@
   <div class="settings-container">
     <h4 class="settings-section-header">{{_('Security Settings')}}</h4>
             <div class="form-group">
+                <input type="checkbox" id="config_disable_standard_login" name="config_disable_standard_login" {% if config.config_disable_standard_login %}checked{% endif %}>
+                <label for="config_disable_standard_login">{{_('Disable Standard Login (Username/Password)')}}</label>
+                <div class="help-block">{{_('Hides the standard login form. Users must log in via OAuth or LDAP. Ensure you have a working alternative login method before enabling.')}}</div>
+            </div>
+            <div class="form-group">
               <input type="checkbox" id="config_ratelimiter" name="config_ratelimiter" {% if config.config_ratelimiter %}checked{% endif %}>
               <label for="config_ratelimiter">{{_('Limit failed login attempts')}}</label>
             </div>

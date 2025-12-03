@@ -1550,6 +1550,10 @@ def login():
 @limiter.limit("40/day", key_func=lambda: strip_whitespaces(request.form.get('username', "")).lower())
 @limiter.limit("3/minute", key_func=lambda: strip_whitespaces(request.form.get('username', "")).lower())
 def login_post():
+    if config.config_disable_standard_login:
+        flash(_("Standard login is disabled."), category="error")
+        return render_login()
+
     form = request.form.to_dict()
     username = strip_whitespaces(form.get('username', "")).lower().replace("\n","").replace("\r","")
     try:

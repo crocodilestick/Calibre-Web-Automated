@@ -494,61 +494,9 @@ def handle_annotations(entitlement_id):
     GET: Retrieve all annotations for a book
     PATCH: Update/create annotations
     """
-    if request.method == "GET":
-        try:
-            data = request.get_json()
-            log_annotation_data(entitlement_id, "GET")
-
-            # Get book from database
-            book = get_book_by_entitlement_id(entitlement_id)
-            if not book:
-                log.warning(f"Book not found for entitlement {entitlement_id}, skipping Hardcover sync")
-
-            else:
-                identifiers = get_book_identifiers(book)
-
-                # Extract annotations
-                if data and "annotations" in data:
-                    annotations = data['annotations']
-                    log.info(f"Processing {len(annotations)} annotations")
-                
-                    # Batch load existing sync records to avoid N+1 queries
-                    existing_syncs = {}
-                    annotation_ids = [a.get('id') for a in annotations if a.get('id')]
-                    if annotation_ids:
-                        syncs = ub.session.query(ub.KoboAnnotationSync).filter(
-                            ub.KoboAnnotationSync.annotation_id.in_(annotation_ids),
-                            ub.KoboAnnotationSync.user_id == current_user.id
-                        ).all()
-                        existing_syncs = {s.annotation_id: s for s in syncs}
-                    
-                    # Check blacklist once per book
-                    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
-                        ub.HardcoverBookBlacklist.book_id == book.id
-                    ).first()
-                    is_blacklisted = book_blacklist and book_blacklist.blacklist_annotations
-
-                    # Initialize progress calculator once per book
-                    progress_calculator = EpubProgressCalculator(book)
-
-                    for annotation in annotations:
-                        process_annotation_for_sync(
-                            annotation=annotation, 
-                            book=book, 
-                            identifiers=identifiers, 
-                            existing_syncs=existing_syncs,
-                            progress_calculator=progress_calculator,
-                            is_blacklisted=is_blacklisted
-                        )
-        except requests.exceptions.RequestException as e:
-            log.error(f"Failed to proxy GET annotations to Kobo Reading Services: {e}")
-            return make_response(jsonify({"error": "Failed to proxy request"}), 502)
-        except Exception as e:
-            log.error(f"Unexpected error proxying GET annotations: {e}")
-            import traceback
-            log.error(traceback.format_exc())
-            return make_response(jsonify({"error": "Internal server error"}), 500)
-    elif request.method == "PATCH":
+    # GET requests are proxied directly to Kobo at the end of the function
+    # We only intercept PATCH requests to sync changes to Hardcover
+    if request.method == "PATCH":
         try:
             data = request.get_json()
             log_annotation_data(entitlement_id, "PATCH", data)

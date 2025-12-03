@@ -15,6 +15,10 @@ log = logger.create()
 class MyLoginManager(LoginManager):
     def _session_protection_failed(self):
         sess = session._get_current_object()
+        # If user is not logged in, skip session protection
+        if not sess.get('_user_id'):
+            return False
+
         ident = self._session_identifier_generator()
         if(sess and not (len(sess) == 1
                          and sess.get('csrf_token', None))) and ident != sess.get('_id', None):

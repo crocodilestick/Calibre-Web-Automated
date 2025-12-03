@@ -32,7 +32,7 @@ msgstr "Executando o desligamento do servidor, por favor feche a janela"
 
 #: cps/admin.py:172
 msgid "Success! Database Reconnected"
-msgstr ""
+msgstr "Sucesso ! Banco de Dados Reconectado"
 
 #: cps/admin.py:175
 msgid "Unknown command"
@@ -43,8 +43,8 @@ msgstr "Comando desconhecido"
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
-"E-mail de teste enfileirado para envio para %(email)s, verifique o resultado "
-"em Tarefas"
+"Sucesso ! Livros enfileirados para Backup de Metadados, por favor"
+"verifique os resultados em Tarefas"
 
 #: cps/admin.py:242 cps/editbooks.py:824 cps/editbooks.py:869
 #: cps/editbooks.py:1517 cps/updater.py:612 cps/uploader.py:97
@@ -87,7 +87,7 @@ msgstr "Usuário não encontrado"
 #: cps/admin.py:453
 #, python-brace-format
 msgid "{} users deleted successfully"
-msgstr "{} usuário(s) deletados com sucesso"
+msgstr "{} usuário(s) removidos com sucesso"
 
 #: cps/admin.py:476 cps/templates/config_view_edit.html:134
 #: cps/templates/user_edit.html:45 cps/templates/user_table.html:81
@@ -104,12 +104,12 @@ msgstr "Nome do Convidado não pode ser alterado"
 
 #: cps/admin.py:527
 msgid "Guest can't have this role"
-msgstr "Convidado não pode ter esta função"
+msgstr "Convidado não pode ter este perfil"
 
 #: cps/admin.py:539 cps/admin.py:2164
 msgid "No admin user remaining, can't remove admin role"
 msgstr ""
-"Nenhum usuário administrador restante, impossível remover a função de "
+"Nenhum usuário administrador restante, impossível remover perfil de "
 "administrador"
 
 #: cps/admin.py:543 cps/admin.py:557
@@ -118,7 +118,7 @@ msgstr "Valor tem de ser Verdadeiro ou Falso"
 
 #: cps/admin.py:545
 msgid "Invalid role"
-msgstr "Função Inválida"
+msgstr "Perfil Inválido"
 
 #: cps/admin.py:549
 msgid "Guest can't have this view"
@@ -189,7 +189,7 @@ msgstr ""
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
-"Tem certeza que quer alterar a função selecionada para o(s) usuário(s) "
+"Tem certeza que quer alterar o perfil selecionado para o(s) usuário(s) "
 "selecionado(s)?"
 
 #: cps/admin.py:668
@@ -268,11 +268,11 @@ msgstr "client_secrets.json Não Está Configurado para Aplicação Web"
 
 #: cps/admin.py:1213
 msgid "Unable to fetch OAuth metadata from URL."
-msgstr ""
+msgstr "Não foi possível recuperar metadados OAuth da URL."
 
 #: cps/admin.py:1231
 msgid "Unable to fetch OpenID configuration."
-msgstr ""
+msgstr "Não foi possível recuperar configuração OpenID"
 
 #: cps/admin.py:1293
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -306,7 +306,7 @@ msgstr ""
 
 #: cps/admin.py:1349
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
-msgstr "Filtro de objeto de grupo LDAP tem parênteses incomparáveis"
+msgstr "Filtro de objeto de grupo LDAP tem parênteses sem par"
 
 #: cps/admin.py:1353
 #, python-format
@@ -317,7 +317,7 @@ msgstr ""
 
 #: cps/admin.py:1355
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
-msgstr "Filtro de objeto de usuário LDAP tem parênteses incomparáveis"
+msgstr "Filtro de objeto de usuário LDAP tem parênteses sem par"
 
 #: cps/admin.py:1362
 #, python-format
@@ -328,7 +328,7 @@ msgstr ""
 
 #: cps/admin.py:1364
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
-msgstr "Filtro de usuário de membro LDAP tem parênteses incomparáveis"
+msgstr "Filtro de usuário de membro LDAP tem parênteses sem par"
 
 #: cps/admin.py:1371
 msgid ""
@@ -348,7 +348,7 @@ msgstr "Editar configurações do servidor de e-mail"
 
 #: cps/admin.py:1430
 msgid "Success! Gmail Account Verified."
-msgstr ""
+msgstr "Sucesso ! Conta Gmail Verificada."
 
 #: cps/admin.py:1450 cps/admin.py:1453 cps/admin.py:1841 cps/admin.py:2005
 #: cps/admin.py:2109 cps/admin.py:2238 cps/editbooks.py:771
@@ -357,7 +357,7 @@ msgstr ""
 #: cps/tasks/convert.py:145 cps/web.py:1669
 #, python-format
 msgid "Oops! Database Error: %(error)s."
-msgstr "Erro de banco de dados: %(error)s."
+msgstr "Ops ! Erro de banco de dados: %(error)s."
 
 #: cps/admin.py:1460
 #, python-format
@@ -398,7 +398,7 @@ msgstr "Configurações de tarefas agendadas atualizadas"
 
 #: cps/admin.py:1527 cps/admin.py:1576 cps/admin.py:2234 cps/web.py:1449
 msgid "Oops! An unknown error occurred. Please try again later."
-msgstr "Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde."
+msgstr "Ops ! Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde."
 
 #: cps/admin.py:1531
 msgid "Settings DB is not Writeable"
@@ -470,7 +470,7 @@ msgstr "Tempo limite durante o estabelecimento da conexão"
 
 #: cps/admin.py:1666 cps/updater.py:394 cps/updater.py:631
 msgid "General error"
-msgstr "Erro geral"
+msgstr "Erro genérico"
 
 #: cps/admin.py:1667
 msgid "Update file could not be saved in temp dir"
@@ -504,11 +504,11 @@ msgstr "No mínimo um usuário LDAP não encontrado no banco de dados"
 #: cps/admin.py:1792
 #, python-brace-format
 msgid "{} User Successfully Imported"
-msgstr "{} Usuário Importado com Sucesso"
+msgstr "{} Usuário(s) Importado(s) com Sucesso"
 
 #: cps/admin.py:1853
 msgid "Books path not valid"
-msgstr ""
+msgstr "Caminho dos livros inválido"
 
 #: cps/admin.py:1860
 msgid "DB Location is not Valid, Please Enter Correct Path"
@@ -528,7 +528,7 @@ msgstr "Localização do Certfile Inválida, Insira o Caminho Correto"
 
 #: cps/admin.py:1990
 msgid "Password length has to be between 1 and 40"
-msgstr ""
+msgstr "Tamanho da senha deve ser entre 1 e 40"
 
 #: cps/admin.py:2044
 msgid "Database Settings updated"
@@ -575,7 +575,7 @@ msgstr "Nenhum usuário administrador restante, não é possível apagar o usuá
 
 #: cps/admin.py:2204 cps/web.py:1608
 msgid "Email can't be empty and has to be a valid Email"
-msgstr ""
+msgstr "O Email não pode ser vazio e deve ter endereço válido"
 
 #: cps/admin.py:2230
 #, python-format
@@ -585,24 +585,24 @@ msgstr "Usuário '%(nick)s' atualizado"
 #: cps/admin.py:2281
 #, fuzzy
 msgid "Connection successful!"
-msgstr "Erro de conexão"
+msgstr "Conexão feita com sucesso!"
 
 #: cps/admin.py:2283 cps/admin.py:2326
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
-msgstr ""
+msgstr "Conexão falhou: Servidor retornou código %(code)s"
 
 #: cps/admin.py:2285 cps/admin.py:2328
 msgid "Connection failed: Could not connect to server."
-msgstr ""
+msgstr "Conexão falhou: Não foi possível conectar ao servidor."
 
 #: cps/admin.py:2287 cps/admin.py:2330
 msgid "Connection failed: Request timed out."
-msgstr ""
+msgstr "Conexão falhou: Tempo Limite do pedido alcançado."
 
 #: cps/admin.py:2289 cps/admin.py:2332
 msgid "Connection failed: Invalid JSON in response."
-msgstr ""
+msgstr "Conexão falhou: Resposta com JSON inválido."
 
 #: cps/admin.py:2292 cps/admin.py:2335
 #, fuzzy
@@ -612,28 +612,28 @@ msgstr "Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde."
 #: cps/admin.py:2318
 #, python-format
 msgid "Metadata is missing required fields: %(fields)s"
-msgstr ""
+msgstr "Os seguintes campos estão fantando no Metadata: %(fields)s"
 
 #: cps/admin.py:2323
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s endpoints."
-msgstr ""
+msgstr "A URL do Metadata é válida! Encontrados %(count)s endpoints."
 
 #: cps/constants.py:207
 msgid "Czech"
-msgstr ""
+msgstr "Tcheco"
 
 #: cps/constants.py:208
 msgid "German"
-msgstr ""
+msgstr "Alemão"
 
 #: cps/constants.py:209
 msgid "Greek"
-msgstr ""
+msgstr "Grego"
 
 #: cps/constants.py:210
 msgid "Spanish"
-msgstr ""
+msgstr "Espanhol"
 
 #: cps/constants.py:211
 #, fuzzy
@@ -642,39 +642,39 @@ msgstr "Concluído"
 
 #: cps/constants.py:212
 msgid "French"
-msgstr ""
+msgstr "Francês"
 
 #: cps/constants.py:213
 msgid "Galician"
-msgstr ""
+msgstr "Galego"
 
 #: cps/constants.py:214
 msgid "Hungarian"
-msgstr ""
+msgstr "Húngaro"
 
 #: cps/constants.py:215
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonésio"
 
 #: cps/constants.py:216
 msgid "Italian"
-msgstr ""
+msgstr "Italiano"
 
 #: cps/constants.py:217
 msgid "Japanese"
-msgstr ""
+msgstr "Japonês"
 
 #: cps/constants.py:218
 msgid "Khmer"
-msgstr ""
+msgstr "Cambojano"
 
 #: cps/constants.py:219
 msgid "Korean"
-msgstr ""
+msgstr "Coreano"
 
 #: cps/constants.py:220
 msgid "Dutch"
-msgstr ""
+msgstr "Holandês"
 
 #: cps/constants.py:221
 msgid "Norwegian"

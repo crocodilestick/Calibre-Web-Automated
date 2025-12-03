@@ -777,6 +777,14 @@ def github_login():
         flash(_("GitHub Oauth error, please retry later."), category="error")
         log.error("GitHub Oauth error, please retry later")
     except (InvalidGrantError, TokenExpiredError) as e:
+        try:
+            del github.token
+        except Exception:
+            pass
+        # Force clear session to prevent loops
+        if 'github_oauth_token' in session: session.pop('github_oauth_token', None)
+        if 'github_oauth_user_id' in session: session.pop('github_oauth_user_id', None)
+
         flash(_("GitHub Oauth error: {}").format(e), category="error")
         log.error(e)
     return redirect(url_for('web.login'))
@@ -801,6 +809,14 @@ def google_login():
         flash(_("Google Oauth error, please retry later."), category="error")
         log.error("Google Oauth error, please retry later")
     except (InvalidGrantError, TokenExpiredError) as e:
+        try:
+            del google.token
+        except Exception:
+            pass
+        # Force clear session to prevent loops
+        if 'google_oauth_token' in session: session.pop('google_oauth_token', None)
+        if 'google_oauth_user_id' in session: session.pop('google_oauth_user_id', None)
+
         flash(_("Google Oauth error: {}").format(e), category="error")
         log.error(e)
     return redirect(url_for('web.login'))
@@ -821,10 +837,26 @@ def generic_login():
         provider_user_id = register_user_from_generic_oauth()
         return bind_oauth_or_register(oauthblueprints[2]['id'], provider_user_id, 'generic.login', 'generic')
     except (TokenExpiredError) as e:
+        try:
+            del oauthblueprints[2]['blueprint'].token
+        except Exception:
+            pass
+        # Force clear session to prevent loops
+        if 'generic_oauth_token' in session: session.pop('generic_oauth_token', None)
+        if 'generic_oauth_user_id' in session: session.pop('generic_oauth_user_id', None)
+
         flash(_("OAuth error: {}").format(e), category="error")
         log.error(e)
         return redirect(url_for("generic.login"))
     except (InvalidGrantError) as e:
+        try:
+            del oauthblueprints[2]['blueprint'].token
+        except Exception:
+            pass
+        # Force clear session to prevent loops
+        if 'generic_oauth_token' in session: session.pop('generic_oauth_token', None)
+        if 'generic_oauth_user_id' in session: session.pop('generic_oauth_user_id', None)
+
         flash(_("OAuth error: {}").format(e), category="error")
         log.error(e)
     return redirect(url_for("web.login"))

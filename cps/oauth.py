@@ -116,6 +116,13 @@ class OAuthBackend(SQLAlchemyBackend):
         ))
 
     def delete(self, blueprint, user=None, user_id=None):
+        if self.provider_id + '_oauth_token' in session:
+            session.pop(self.provider_id + '_oauth_token')
+
+        provider_user_id = None
+        if self.provider_id + '_oauth_user_id' in session:
+            provider_user_id = session.pop(self.provider_id + '_oauth_user_id')
+
         query = (
             self.session.query(self.model)
             .filter_by(provider=self.provider_id)
@@ -124,16 +131,14 @@ class OAuthBackend(SQLAlchemyBackend):
         u = first(_get_real_user(ref, self.anon_user)
                   for ref in (user, self.user, blueprint.config.get("user")))
 
-        if self.user_required and not u and not uid:
-            raise ValueError("Cannot delete OAuth token without an associated user")
-
-        # check for user ID
-        if hasattr(self.model, "user_id") and uid:
+        if provider_user_id:
+            query = query.filter_by(provider_user_id=provider_user_id)
+        elif self.user_required and not u and not uid:
+            return
+        elif hasattr(self.model, "user_id") and uid:
             query = query.filter_by(user_id=uid)
-        # check for user (relationship property)
         elif hasattr(self.model, "user") and u:
             query = query.filter_by(user=u)
-        # if we have the property, but not value, filter by None
         elif hasattr(self.model, "user_id"):
             query = query.filter_by(user_id=None)
         # run query

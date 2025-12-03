@@ -348,7 +348,9 @@
       <script src="{{ url_for('static', filename='js/caliBlur.js') }}"></script>
     {% endif %}
     {% block js %}{% endblock %}
+    {% if current_user.is_authenticated %}
     <script src="{{ url_for('static', filename='user-profile-data/CWA-profile-updater.js') }}"></script>
+    {% endif %}
     <!-- Makes sure filter buttons are only on the title bar of the page when there is no pagination -->
     <script>
       function updateFilterHeaderFixed() {

@@ -125,7 +125,7 @@ $(".container-fluid").bind('drop', function (e) {
         $(this).css('background', '');
         const dt = new DataTransfer();
         jQuery.each(files, function (index, item) {
-            if (test.indexOf(item.name.substr(item.name.lastIndexOf('.'))) !== -1) {
+            if (test.toLowerCase().indexOf(item.name.substr(item.name.lastIndexOf('.')).toLowerCase()) !== -1) {
                 dt.items.add(item);
             }
         });

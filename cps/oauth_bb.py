@@ -484,19 +484,29 @@ def generate_oauth_blueprints():
             ub.session_commit("{} Blueprint Created".format(provider))
 
     oauth_ids = ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.provider_name.in_(['github', 'google'])).all()
+    
+    # Ensure deterministic assignment of providers regardless of DB query order
+    github_provider = next((p for p in oauth_ids if p.provider_name == 'github'), None)
+    google_provider = next((p for p in oauth_ids if p.provider_name == 'google'), None)
+    
+    # Fallback if providers are missing (shouldn't happen due to creation logic above)
+    if not github_provider or not google_provider:
+        log.error("OAuth providers missing after creation check")
+        return []
+
     ele1 = dict(provider_name='github',
-                id=oauth_ids[0].id,
-                active=oauth_ids[0].active,
-                oauth_client_id=oauth_ids[0].oauth_client_id,
+                id=github_provider.id,
+                active=github_provider.active,
+                oauth_client_id=github_provider.oauth_client_id,
                 scope=None,
-                oauth_client_secret=oauth_ids[0].oauth_client_secret,
+                oauth_client_secret=github_provider.oauth_client_secret,
                 obtain_link='https://github.com/settings/developers')
     ele2 = dict(provider_name='google',
-                id=oauth_ids[1].id,
-                active=oauth_ids[1].active,
+                id=google_provider.id,
+                active=google_provider.active,
                 scope=["https://www.googleapis.com/auth/userinfo.email"],
-                oauth_client_id=oauth_ids[1].oauth_client_id,
-                oauth_client_secret=oauth_ids[1].oauth_client_secret,
+                oauth_client_id=google_provider.oauth_client_id,
+                oauth_client_secret=google_provider.oauth_client_secret,
                 obtain_link='https://console.developers.google.com/apis/credentials')
     oauthblueprints.append(ele1)
     oauthblueprints.append(ele2)
@@ -781,12 +791,9 @@ def github_login():
             del github.token
         except Exception:
             pass
-        # Force clear session to prevent loops
-        if 'github_oauth_token' in session: session.pop('github_oauth_token', None)
-        if 'github_oauth_user_id' in session: session.pop('github_oauth_user_id', None)
-
         flash(_("GitHub Oauth error: {}").format(e), category="error")
         log.error(e)
+        return redirect(url_for('github.login'))
     return redirect(url_for('web.login'))
 
 
@@ -813,12 +820,9 @@ def google_login():
             del google.token
         except Exception:
             pass
-        # Force clear session to prevent loops
-        if 'google_oauth_token' in session: session.pop('google_oauth_token', None)
-        if 'google_oauth_user_id' in session: session.pop('google_oauth_user_id', None)
-
         flash(_("Google Oauth error: {}").format(e), category="error")
         log.error(e)
+        return redirect(url_for("google.login"))
     return redirect(url_for('web.login'))
 
 
@@ -841,10 +845,6 @@ def generic_login():
             del oauthblueprints[2]['blueprint'].token
         except Exception:
             pass
-        # Force clear session to prevent loops
-        if 'generic_oauth_token' in session: session.pop('generic_oauth_token', None)
-        if 'generic_oauth_user_id' in session: session.pop('generic_oauth_user_id', None)
-
         flash(_("OAuth error: {}").format(e), category="error")
         log.error(e)
         return redirect(url_for("generic.login"))
@@ -853,12 +853,9 @@ def generic_login():
             del oauthblueprints[2]['blueprint'].token
         except Exception:
             pass
-        # Force clear session to prevent loops
-        if 'generic_oauth_token' in session: session.pop('generic_oauth_token', None)
-        if 'generic_oauth_user_id' in session: session.pop('generic_oauth_user_id', None)
-
         flash(_("OAuth error: {}").format(e), category="error")
         log.error(e)
+        return redirect(url_for("generic.login"))
     return redirect(url_for("web.login"))
 
 

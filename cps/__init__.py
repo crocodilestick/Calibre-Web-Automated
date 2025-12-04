@@ -225,6 +225,11 @@ def create_app():
             # Failsafe: let route-level code handle specific DB errors
             pass
 
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        if calibre_db.session_factory:
+            calibre_db.session_factory.remove()
+
     # Load user from reverse proxy header early in request lifecycle
     # This ensures current_user resolves correctly before any code accesses user settings
     @app.before_request

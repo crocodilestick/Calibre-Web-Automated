@@ -80,7 +80,12 @@ class OAuthBackend(SQLAlchemyBackend):
         u = first(_get_real_user(ref, self.anon_user)
                   for ref in (user, self.user, blueprint.config.get("user")))
 
-        if self.user_required and not u and not uid:
+        # Check session for provider_user_id (Binding flow)
+        provider_user_id = None
+        if self.provider_id + '_oauth_user_id' in session:
+            provider_user_id = session[self.provider_id + '_oauth_user_id']
+
+        if self.user_required and not u and not uid and not provider_user_id:
             raise ValueError("Cannot set OAuth token without an associated user")
 
         # if there was an existing model, delete it
@@ -88,25 +93,40 @@ class OAuthBackend(SQLAlchemyBackend):
             self.session.query(self.model)
             .filter_by(provider=self.provider_id)
         )
-        # check for user ID
-        has_user_id = hasattr(self.model, "user_id")
-        if has_user_id and uid:
-            existing_query = existing_query.filter_by(user_id=uid)
-        # check for user (relationship property)
-        has_user = hasattr(self.model, "user")
-        if has_user and u:
-            existing_query = existing_query.filter_by(user=u)
+        
+        if provider_user_id:
+             existing_query = existing_query.filter_by(provider_user_id=provider_user_id)
+        else:
+            # check for user ID
+            has_user_id = hasattr(self.model, "user_id")
+            if has_user_id and uid:
+                existing_query = existing_query.filter_by(user_id=uid)
+            # check for user (relationship property)
+            has_user = hasattr(self.model, "user")
+            if has_user and u:
+                existing_query = existing_query.filter_by(user=u)
+        
         # queue up delete query -- won't be run until commit()
         existing_query.delete()
+        
         # create a new model for this token
         kwargs = {
             "provider": self.provider_id,
             "token": token,
         }
+        if provider_user_id:
+            kwargs["provider_user_id"] = provider_user_id
+        
+        # Only set user if we have a valid user (not anonymous/None)
+        # Re-check has_user/has_user_id since they were in else block before
+        has_user_id = hasattr(self.model, "user_id")
+        has_user = hasattr(self.model, "user")
+        
         if has_user_id and uid:
             kwargs["user_id"] = uid
         if has_user and u:
             kwargs["user"] = u
+            
         self.session.add(self.model(**kwargs))
         # commit to delete and add simultaneously
         self.session.commit()

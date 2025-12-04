@@ -387,7 +387,7 @@ class LoginManager:
         # if the sess is empty, it's an anonymous user or just logged out
         # so we can skip this
         if sess and ident != sess.get("_id", None):
-            if mode == "basic" or sess.permanent:
+            if mode == "basic" or sess.permanent or sess.get("_permanent"):
                 if sess.get("_fresh") is not False:
                     sess["_fresh"] = False
                 session_protected.send(app)

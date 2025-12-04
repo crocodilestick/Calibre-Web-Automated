@@ -195,6 +195,7 @@ def login_user(user, remember=False, duration=None, force=False, fresh=True):
 
     if remember:
         session["_remember"] = "set"
+        session["_permanent"] = True
         if duration is not None:
             try:
                 # equal to timedelta.total_seconds() but works with Python 2.6

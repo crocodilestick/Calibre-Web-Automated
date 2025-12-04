@@ -335,6 +335,8 @@
       <script src="{{ url_for('static', filename='js/libs/compromise.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/libs/readmore.min.js') }}"></script>
       <script>
+        // Make script root available for JS
+        window.scriptRoot = "{{ request.script_root }}";
         // Make user email data available for quick actions
         window.cwaUserData = {};
         {% if current_user.kindle_mail and current_user.kindle_mail.strip() %}

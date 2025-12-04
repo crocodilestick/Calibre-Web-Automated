@@ -1026,7 +1026,7 @@ $(function() {
             }
             
             if (selectedFormat) {
-                window.open('/read/' + bookId + '/' + selectedFormat, '_blank');
+                window.open(window.scriptRoot + '/read/' + bookId + '/' + selectedFormat, '_blank');
             } else {
                 window.location.href = $link.attr('href');
             }
@@ -1050,7 +1050,7 @@ $(function() {
         var isCurrentlyRead = $readBadge.length > 0;
         
         $.ajax({
-            url: '/ajax/toggleread/' + bookId,
+            url: window.scriptRoot + '/ajax/toggleread/' + bookId,
             type: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -1154,7 +1154,7 @@ $(function() {
         
         // Use /send_selected endpoint but only send to primary email
         $.ajax({
-            url: '/send_selected/' + bookId,
+            url: window.scriptRoot + '/send_selected/' + bookId,
             type: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -1215,7 +1215,7 @@ $(function() {
         }
         
         // Navigate to the edit page in the same tab
-        var editUrl = '/admin/book/' + bookId;
+        var editUrl = window.scriptRoot + '/admin/book/' + bookId;
         window.location.href = editUrl;
     }
     

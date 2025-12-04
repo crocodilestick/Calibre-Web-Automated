@@ -69,8 +69,10 @@ class GenericOIDCSession(BaseOAuth2Session):
     1. SSL verification based on OAUTH_SSL_STRICT setting
     2. Lenient scope validation (order-independent comparison)
     3. Normalizes scope in token response to prevent mismatch warnings
+    4. Explicit token usage without blueprint (Issue #715)
     """
     def __init__(self, *args, **kwargs):
+        self._explicit_token = kwargs.get('token')
         super().__init__(*args, **kwargs)
         # Configure SSL verification for all requests
         self.verify = constants.OAUTH_SSL_STRICT
@@ -78,6 +80,38 @@ class GenericOIDCSession(BaseOAuth2Session):
         # Register compliance hook to normalize scope in token response (Issue #715)
         # This prevents "scope_changed" warnings when Authentik returns scopes in different order
         self.register_compliance_hook('access_token_response', self._normalize_token_scope)
+
+    @property
+    def token(self):
+        """
+        Override token property to support explicit token usage without blueprint.
+        Flask-Dance's token property crashes if blueprint is None.
+        """
+        if self._explicit_token:
+            return self._explicit_token
+        return self.blueprint.token
+
+    @token.setter
+    def token(self, value):
+        """
+        Allow setting token (required for token refresh/update).
+        This mimics cached_property behavior by shadowing the blueprint token.
+        """
+        self._explicit_token = value
+
+    @token.deleter
+    def token(self):
+        """
+        Handle deletion of token.
+        Flask-Dance deletes the token in __init__ to ensure it uses the blueprint's token.
+        We want to preserve our explicit token if it was passed, so we do nothing here
+        if we are in explicit mode.
+        """
+        # If we are not in explicit mode, we might want to clear something?
+        # But since we store everything in _explicit_token or delegate to blueprint,
+        # and _explicit_token is what we want to keep, we can just ignore the delete
+        # if it's coming from Flask-Dance's init.
+        pass
     
     def _normalize_token_scope(self, response):
         """
@@ -116,6 +150,14 @@ class GenericOIDCSession(BaseOAuth2Session):
         """Override request to ensure SSL verification is applied"""
         if 'verify' not in kwargs:
             kwargs['verify'] = self.verify
+            
+        # If we have an explicit token and no blueprint, we need to handle request manually
+        # to avoid Flask-Dance's dependency on blueprint
+        if self._explicit_token and not self.blueprint:
+            # Bypass Flask-Dance's request method which requires blueprint
+            # Call requests_oauthlib.OAuth2Session.request directly
+            return super(BaseOAuth2Session, self).request(method, url, *args, **kwargs)
+            
         return super().request(method, url, *args, **kwargs)
 
 

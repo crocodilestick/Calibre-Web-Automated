@@ -70,7 +70,7 @@ class GenericOIDCSession(BaseOAuth2Session):
     2. Lenient scope validation (order-independent comparison)
     3. Normalizes scope in token response to prevent mismatch warnings
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, token=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Configure SSL verification for all requests
         self.verify = constants.OAUTH_SSL_STRICT
@@ -78,6 +78,8 @@ class GenericOIDCSession(BaseOAuth2Session):
         # Register compliance hook to normalize scope in token response (Issue #715)
         # This prevents "scope_changed" warnings when Authentik returns scopes in different order
         self.register_compliance_hook('access_token_response', self._normalize_token_scope)
+        if token:
+            self.token = token
     
     def _normalize_token_scope(self, response):
         """
@@ -196,7 +198,7 @@ def register_user_from_generic_oauth(token=None):
             # This ensures we use the fresh token even if it hasn't been committed to DB yet
             client_id = generic['oauth_client_id']
             # Use GenericOIDCSession to maintain SSL/Scope handling logic
-            oauth_session = GenericOIDCSession(client_id=client_id, token=token)
+            oauth_session = GenericOIDCSession(token=token, client_id=client_id, blueprint=blueprint)
         else:
             # Fallback to blueprint session (loads from DB)
             oauth_session = blueprint.session

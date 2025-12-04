@@ -51,12 +51,14 @@ def do_calibre_export(book_id, book_format):
             log.warning(f'No {book_format} file found in export directory: {export_dir}')
         else:
             # No subdirectory - look for files directly in tmp_dir
+            # STRICT CHECK: Only look for the file we requested
+            expected_filename = temp_file_name + '.' + book_format.lower()
             for filename in os.listdir(tmp_dir):
-                if filename.lower().endswith('.' + book_format.lower()):
+                if filename.lower() == expected_filename.lower():
                     actual_filename = os.path.splitext(filename)[0]
                     return tmp_dir, actual_filename
 
-            log.warning(f'No {book_format} file found in {tmp_dir}')
+            log.warning(f'No file named {expected_filename} found in {tmp_dir}')
 
         # Fallback to original behavior
         return tmp_dir, temp_file_name

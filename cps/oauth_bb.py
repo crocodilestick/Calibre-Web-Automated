@@ -186,12 +186,22 @@ def fetch_metadata_from_url(metadata_url):
         return None
 
 
-def register_user_from_generic_oauth():
+def register_user_from_generic_oauth(token=None):
     generic = oauthblueprints[2]
     blueprint = generic['blueprint']
 
     try:
-        resp = blueprint.session.get(generic['oauth_userinfo_url'], verify=constants.OAUTH_SSL_STRICT)
+        if token:
+            # Use the provided token directly to avoid race conditions with DB storage
+            # This ensures we use the fresh token even if it hasn't been committed to DB yet
+            client_id = generic['oauth_client_id']
+            # Use GenericOIDCSession to maintain SSL/Scope handling logic
+            oauth_session = GenericOIDCSession(client_id=client_id, token=token)
+        else:
+            # Fallback to blueprint session (loads from DB)
+            oauth_session = blueprint.session
+
+        resp = oauth_session.get(generic['oauth_userinfo_url'], verify=constants.OAUTH_SSL_STRICT)
         resp.raise_for_status()
         userinfo = resp.json()
     except InvalidGrantError as e:
@@ -702,7 +712,8 @@ if ub.oauth_support:
             return False
 
         try:
-            provider_user_id = register_user_from_generic_oauth()
+            # Pass token explicitly to avoid DB race condition
+            provider_user_id = register_user_from_generic_oauth(token)
             if provider_user_id:
                 return oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
             else:
@@ -838,6 +849,8 @@ def generic_login():
     if not oauthblueprints[2]['blueprint'].session.authorized:
         return redirect(url_for("generic.login"))
     try:
+        # Here we rely on the stored token since we don't have it in args
+        # If the previous step (generic_logged_in) succeeded, the token is in DB
         provider_user_id = register_user_from_generic_oauth()
         return bind_oauth_or_register(oauthblueprints[2]['id'], provider_user_id, 'generic.login', 'generic')
     except (TokenExpiredError) as e:

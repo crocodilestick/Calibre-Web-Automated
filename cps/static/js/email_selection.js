@@ -115,7 +115,7 @@ $(document).ready(function() {
 
         // Send AJAX request to endpoint
         $.ajax({
-            url: '/send_selected/' + currentBookId,
+            url: getPath() + '/send_selected/' + currentBookId,
             method: 'POST',
             data: {
                 'csrf_token': $('input[name="csrf_token"]').val(),

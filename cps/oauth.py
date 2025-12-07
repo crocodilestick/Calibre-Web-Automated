@@ -11,7 +11,7 @@ try:
     from flask_dance.consumer.storage.sqla import SQLAlchemyStorage as SQLAlchemyBackend
     from flask_dance.consumer.storage.sqla import first, _get_real_user
     from sqlalchemy.orm.exc import NoResultFound
-    backend_resultcode = True  # prevent storing values with this resultcode
+    backend_resultcode = False  # prevent storing values with this resultcode
 except ImportError:
     pass
 

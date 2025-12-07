@@ -17,6 +17,7 @@ from flask_principal import Principal
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from . import logger
+from . import constants
 from .cli import CliParameter
 from .reverseproxy import ReverseProxied
 from .server import WebServer
@@ -74,6 +75,7 @@ log = logger.create()
 app = Flask(__name__)
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true',
     SESSION_COOKIE_SAMESITE='Lax',
     REMEMBER_COOKIE_SAMESITE='Strict',
     WTF_CSRF_SSL_STRICT=False,
@@ -124,6 +126,18 @@ def create_app():
 
     config_sql.load_configuration(ub.session, encrypt_key)
     config.init_config(ub.session, encrypt_key, cli_param)
+
+    # Intelligent Security Configuration
+    # Force SESSION_COOKIE_SECURE if OAuth is enabled OR if "Use via HTTPS" is checked
+    # This ensures OAuth works (requires Secure cookies) while allowing HTTP for standard login if desired
+    if config.config_login_type == constants.LOGIN_OAUTH or getattr(config, 'config_use_https', False):
+        app.config['SESSION_COOKIE_SECURE'] = True
+        app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+        log.info("Enforcing SESSION_COOKIE_SECURE=True (OAuth enabled or HTTPS enforced)")
+    else:
+        # Fallback to environment variable or False
+        app.config['SESSION_COOKIE_SECURE'] = os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
+        log.info(f"SESSION_COOKIE_SECURE set to {app.config['SESSION_COOKIE_SECURE']} (Standard/LDAP login)")
 
     # Set OAuth redirect host consistency
     if hasattr(config, 'config_oauth_redirect_host') and config.config_oauth_redirect_host:

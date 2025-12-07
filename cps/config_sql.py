@@ -86,6 +86,7 @@ class _Settings(_Base):
     config_anonbrowse = Column(SmallInteger, default=0)
     config_public_reg = Column(SmallInteger, default=0)
     config_remote_login = Column(Boolean, default=False)
+    config_use_https = Column(Boolean, default=False)
     config_kobo_sync = Column(Boolean, default=False)
 
     # Sync read progress to Hardcover - should this be renamed?

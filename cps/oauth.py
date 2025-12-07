@@ -11,9 +11,19 @@ try:
     from flask_dance.consumer.storage.sqla import SQLAlchemyStorage as SQLAlchemyBackend
     from flask_dance.consumer.storage.sqla import first, _get_real_user
     from sqlalchemy.orm.exc import NoResultFound
-    backend_resultcode = False  # prevent storing values with this resultcode
+    backend_resultcode = True  # prevent storing values with this resultcode
 except ImportError:
     pass
+
+import logging
+def debug_log(msg):
+    try:
+        # Try writing to a location we know exists and is writable in the container
+        with open('/tmp/oauth_debug.log', 'a') as f:
+            f.write(msg + '\n')
+    except Exception as e:
+        print(f"Logging failed: {e}")
+
 
 
 class OAuthBackend(SQLAlchemyBackend):
@@ -30,8 +40,21 @@ class OAuthBackend(SQLAlchemyBackend):
         super(OAuthBackend, self).__init__(model, session, user, user_id, user_required, anon_user, cache)
 
     def get(self, blueprint, user=None, user_id=None):
-        if self.provider_id + '_oauth_token' in session and session[self.provider_id + '_oauth_token'] != '':
-            return session[self.provider_id + '_oauth_token']
+        debug_log(f"GET called. Provider: {self.provider_id}")
+        
+        # Debug session contents
+        try:
+            debug_log(f"Session keys: {list(session.keys())}")
+        except:
+            pass
+
+        if self.provider_id + '_oauth_token' in session:
+            debug_log(f"Found token in session for {self.provider_id}")
+            if session[self.provider_id + '_oauth_token'] != '':
+                return session[self.provider_id + '_oauth_token']
+        else:
+            debug_log(f"Token NOT in session for {self.provider_id}")
+
         # check cache
         cache_key = self.make_cache_key(blueprint=blueprint, user=user, user_id=user_id)
         token = self.cache.get(cache_key)
@@ -106,6 +129,14 @@ class OAuthBackend(SQLAlchemyBackend):
             if has_user and u:
                 existing_query = existing_query.filter_by(user=u)
         
+        # Check if token is already saved (e.g. by oauth_update_token) to avoid redundant delete/insert
+        try:
+            existing = existing_query.first()
+            if existing and existing.token == token:
+                return
+        except Exception:
+            pass
+
         # queue up delete query -- won't be run until commit()
         existing_query.delete()
         

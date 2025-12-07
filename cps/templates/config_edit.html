@@ -246,6 +246,12 @@
     <div class="form-group">
       <input type="checkbox" id="config_allow_reverse_proxy_header_login" name="config_allow_reverse_proxy_header_login" data-control="reverse-proxy-login-settings" {% if config.config_allow_reverse_proxy_header_login %}checked{% endif %}>
       <label for="config_allow_reverse_proxy_header_login">{{_('Allow Reverse Proxy Authentication')}}</label>
+      <div class="help-block">{{_('Trusts the "Remote-User" header from a reverse proxy for authentication. This is an authentication method, distinct from the HTTPS security setting below.')}}</div>
+    </div>
+    <div class="form-group">
+        <input type="checkbox" id="config_use_https" name="config_use_https" {% if config.config_use_https %}checked{% endif %}>
+        <label for="config_use_https">{{_('Use via HTTPS')}}</label>
+        <div class="help-block">{{_('Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if you are accessing the server via HTTPS, otherwise you will be locked out.')}}</div>
     </div>
     <div data-related="reverse-proxy-login-settings">
       <div class="form-group">
@@ -268,7 +274,7 @@
            <option value="1" {% if config.config_login_type == 1 %}selected{% endif %}>{{_('Use LDAP Authentication')}}</option>
            {% endif %}
            {% if feature_support['oauth'] %}
-           <option value="2" {% if config.config_login_type == 2 %}selected{% endif %}>{{_('Use OAuth')}}</option>
+           <option value="2" {% if config.config_login_type == 2 %}selected{% endif %}>{{_('Use OAuth (requires HTTPS)')}}</option>
            {% endif %}
         </select>
       </div>
@@ -381,6 +387,9 @@
       {% endif %}
       {% if feature_support['oauth'] %}
         <div data-related="login-settings-2">
+          <p class="text-danger" style="margin-top: 2rem; background: #ffe9ec; padding: 1rem; border-left: 4px solid #a94442; padding-inline: 2rem; margin-bottom: 2rem;">
+            <strong>{{_('Important:')}}</strong> {{_('OAuth authentication requires this server to be accessed via HTTPS. If you are using HTTP, login will fail.')}}
+          </p>
           {% set generic = provider | selectattr('provider_name', 'equalto', 'generic') | first %}
           <p>{{ _('Generic OAuth Provider') }}</p>
           
@@ -627,6 +636,9 @@ $(document).ready(function() {
       warningDiv.hide();
     }
   });
+
+  // Trigger change on load to set initial state
+  $('#config_login_type').trigger('change');
 
   $('#test_oidc_connection').on('click', function() {
     var serverUrl = $('#config_generic_oauth_server_url_test').val() || $('#config_generic_oauth_server_url').val();

@@ -408,8 +408,38 @@ def logout_oauth_user():
 
 
 def oauth_update_token(provider_id, token, provider_user_id):
+    try:
+        with open('/tmp/oauth_debug.log', 'a') as f:
+            f.write(f"oauth_update_token called for {provider_id}, user {provider_user_id}\n")
+            f.write(f"Session before update: {list(session.keys())}\n")
+    except:
+        pass
+
+    # Aggressively clean up potential duplicate tokens to prevent cookie overflow (4KB limit)
+    # We remove ALL token data from session and rely on DB storage
+    keys_to_remove = [
+        'google_oauth_token', 'github_oauth_token', 'generic_oauth_token',
+        provider_id + "_oauth_token"
+    ]
+    for key in keys_to_remove:
+        if key in session:
+            try:
+                session.pop(key)
+                with open('/tmp/oauth_debug.log', 'a') as f:
+                    f.write(f"Removed {key} from session to save space\n")
+            except:
+                pass
+
     session[provider_id + "_oauth_user_id"] = provider_user_id
-    session[provider_id + "_oauth_token"] = token
+    # Do NOT store token in session - it's too big and causes cookie drop
+    # session[provider_id + "_oauth_token"] = token 
+    session.modified = True
+
+    try:
+        with open('/tmp/oauth_debug.log', 'a') as f:
+            f.write(f"Session after update: {list(session.keys())}\n")
+    except:
+        pass
 
     # Find this OAuth token in the database, or create it
     query = ub.session.query(ub.OAuth).filter_by(
@@ -725,7 +755,16 @@ if ub.oauth_support:
 
         github_info = resp.json()
         github_user_id = str(github_info["id"])
-        return oauth_update_token(str(oauthblueprints[0]['id']), token, github_user_id)
+        
+        # Save token to DB
+        oauth_update_token(str(oauthblueprints[0]['id']), token, github_user_id)
+        
+        # DIRECT LOGIN: Hijack flow to prevent redirect loop
+        response = bind_oauth_or_register(oauthblueprints[0]['id'], github_user_id, 'github.login', 'github')
+        if response:
+            abort(response)
+            
+        return False
 
 
     @oauth_authorized.connect_via(oauthblueprints[1]['blueprint'])
@@ -735,6 +774,9 @@ if ub.oauth_support:
             log.error("Failed to log in with Google")
             return False
 
+        # We do NOT store token in session["google_oauth_token"] here to avoid duplication/bloat.
+        # It will be stored in session[provider_id + "_oauth_token"] by oauth_update_token.
+
         resp = blueprint.session.get("/oauth2/v2/userinfo")
         if not resp.ok:
             flash(_("Failed to fetch user info from Google."), category="error")
@@ -743,7 +785,20 @@ if ub.oauth_support:
 
         google_info = resp.json()
         google_user_id = str(google_info["id"])
-        return oauth_update_token(str(oauthblueprints[1]['id']), token, google_user_id)
+        
+        # Save token to DB
+        oauth_update_token(str(oauthblueprints[1]['id']), token, google_user_id)
+        
+        # DIRECT LOGIN: Hijack flow to prevent redirect loop
+        # We perform the binding/login logic right here
+        response = bind_oauth_or_register(oauthblueprints[1]['id'], google_user_id, 'google.login', 'google')
+        
+        # If we got a response (redirect), abort the current request and send it immediately
+        # This stops Flask-Dance from doing its own redirect to /link/google
+        if response:
+            abort(response)
+            
+        return False
 
 
     @oauth_authorized.connect_via(oauthblueprints[2]['blueprint'])
@@ -757,7 +812,14 @@ if ub.oauth_support:
             # Pass token explicitly to avoid DB race condition
             provider_user_id = register_user_from_generic_oauth(token)
             if provider_user_id:
-                return oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
+                # Save token to DB
+                oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
+                
+                # DIRECT LOGIN: Hijack flow to prevent redirect loop
+                response = bind_oauth_or_register(oauthblueprints[2]['id'], provider_user_id, 'generic.login', 'generic')
+                if response:
+                    abort(response)
+                return False
             else:
                 # register_user_from_generic_oauth already logged error and flashed message
                 return False
@@ -830,6 +892,8 @@ if ub.oauth_support:
 @oauth.route('/link/github')
 @oauth_required
 def github_login():
+    # This route is now only a fallback if the direct login hijack fails
+    # or if the user navigates here manually.
     if not github.authorized:
         return redirect(url_for('github.login'))
     try:
@@ -859,13 +923,40 @@ def github_login_unlink():
 @oauth.route('/link/google')
 @oauth_required
 def google_login():
+    # Try to find token in session using the provider ID key
+    provider_id = str(oauthblueprints[1]['id'])
+    user_id_key = provider_id + "_oauth_user_id"
+    
+    # 1. Try to get User ID from session (Small cookie!)
+    if user_id_key in session:
+        provider_user_id = session[user_id_key]
+        
+        # 2. Fetch the huge token from Database instead of session
+        oauth_entry = ub.session.query(ub.OAuth).filter_by(
+            provider=provider_id,
+            provider_user_id=provider_user_id
+        ).first()
+        
+        if oauth_entry and oauth_entry.token:
+            # 3. Manually inject token into blueprint
+            google.token = oauth_entry.token
+            
+            # 4. Proceed directly to login
+            return bind_oauth_or_register(oauthblueprints[1]['id'], provider_user_id, 'google.login', 'google')
+
     if not google.authorized:
         return redirect(url_for("google.login"))
+    
     try:
+        # If google.authorized is False but we have a token, google.get might fail
+        # We can try to use the token directly with requests if needed, but let's try google.get first
+        # If google.token was set, google.get should use it
+        
         resp = google.get("/oauth2/v2/userinfo")
         if resp.ok:
             account_info_json = resp.json()
             return bind_oauth_or_register(oauthblueprints[1]['id'], account_info_json['id'], 'google.login', 'google')
+        
         flash(_("Google Oauth error, please retry later."), category="error")
         log.error("Google Oauth error, please retry later")
     except (InvalidGrantError, TokenExpiredError) as e:
@@ -876,6 +967,9 @@ def google_login():
         flash(_("Google Oauth error: {}").format(e), category="error")
         log.error(e)
         return redirect(url_for("google.login"))
+    except Exception as e:
+        log.error(f"Unexpected error: {e}")
+        
     return redirect(url_for('web.login'))
 
 
@@ -888,6 +982,8 @@ def google_login_unlink():
 @oauth.route('/link/generic')
 @oauth_required
 def generic_login():
+    # This route is now only a fallback if the direct login hijack fails
+    # or if the user navigates here manually.
     if not oauthblueprints[2]['blueprint'].session.authorized:
         return redirect(url_for("generic.login"))
     try:

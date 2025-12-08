@@ -1,0 +1,182 @@
+{% extends "layout.html" %}
+{% from 'modal_dialogs.html' import filechooser_modal, change_confirm_modal %}
+
+{% block body %}
+<div class="discover">
+  <h1>{{_('Administration')}}</h1>
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#basic">{{_('Basic Configuration')}}</a></li>
+    <li><a data-toggle="tab" href="#ui">{{_('UI Configuration')}}</a></li>
+    <li><a data-toggle="tab" href="#db">{{_('Database Configuration')}}</a></li>
+    <li><a data-toggle="tab" href="#mail">{{_('SMTP Settings')}}</a></li>
+    <li><a data-toggle="tab" href="#users">{{_('User Management')}}</a></li>
+    <li><a data-toggle="tab" href="#schedule">{{_('Scheduled Tasks')}}</a></li>
+  </ul>
+
+  <div class="tab-content" style="margin-top: 20px;">
+    <div id="basic" class="tab-pane fade in active">
+      {% include 'partials/config_basic.html' %}
+    </div>
+    <div id="ui" class="tab-pane fade">
+      {% include 'partials/config_view_edit.html' %}
+    </div>
+    <div id="db" class="tab-pane fade">
+      {% include 'partials/config_db.html' %}
+    </div>
+    <div id="mail" class="tab-pane fade">
+      {% include 'partials/email_edit.html' %}
+    </div>
+    <div id="users" class="tab-pane fade">
+      {% include 'partials/user_new.html' %}
+      {% include 'partials/user_table.html' %}
+    </div>
+    <div id="schedule" class="tab-pane fade">
+      {% include 'partials/schedule_edit.html' %}
+    </div>
+  </div>
+</div>
+
+{{ filechooser_modal() }}
+{{ change_confirm_modal() }}
+
+<script>
+$(document).ready(function(){
+  // Tab handling
+  var hash = window.location.hash;
+  if (hash) {
+    $('.nav-tabs a[href="' + hash + '"]').tab('show');
+  }
+  
+  $('.nav-tabs a').on('shown.bs.tab', function (e) {
+    window.location.hash = e.target.hash;
+    window.scrollTo(0, 0);
+    
+    // Refresh bootstrap table if user tab is shown
+    if (e.target.hash === '#users') {
+      // Custom table does not need bootstrap-table reset
+    }
+  });
+
+  // Check for authentication switching warning
+  $('#config_login_type').on('change', function() {
+    var currentAuthType = $(this).val();
+    var warningDiv = $('#auth-switch-warning');
+    
+    // Show warning when switching TO Standard Authentication (0)
+    // This warns about OAuth users who might lose access
+    if (currentAuthType === '0') {
+      warningDiv.show();
+    } else {
+      warningDiv.hide();
+    }
+  });
+
+  // Trigger change on load to set initial state
+  $('#config_login_type').trigger('change');
+
+  $('#test_oidc_connection').on('click', function() {
+    var serverUrl = $('#config_generic_oauth_server_url_test').val() || $('#config_generic_oauth_server_url').val();
+    var resultSpan = $('#oidc_test_result');
+    
+    if (!serverUrl) {
+      resultSpan.text('Please enter a server URL to test.').addClass('text-danger');
+      return;
+    }
+    
+    resultSpan.text('Testing...').removeClass('text-success text-danger');
+
+    $.ajax({
+      url: '{{ url_for("admin.test_oidc") }}',
+      type: 'POST',
+      data: JSON.stringify({url: serverUrl}),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response) {
+        if (response.success) {
+          resultSpan.text(response.message).addClass('text-success');
+        } else {
+          resultSpan.text(response.message).addClass('text-danger');
+        }
+      },
+      error: function() {
+        resultSpan.text('An unknown error occurred.').addClass('text-danger');
+      }
+    });
+  });
+
+  // Handle checkbox toggles for showing/hiding related settings
+  $('input[data-control]').on('change', function() {
+    var controlId = $(this).data('control');
+    var isChecked = $(this).is(':checked');
+    var relatedElements = $('[data-related="' + controlId + '"]');
+    
+    if (isChecked) {
+      relatedElements.show();
+    } else {
+      relatedElements.hide();
+    }
+  });
+
+  // Initialize checkbox state on page load
+  $('input[data-control]').each(function() {
+    $(this).trigger('change');
+  });
+
+  // Update test URL field when base URL changes
+  $('#config_generic_oauth_server_url').on('input', function() {
+    var baseUrl = $(this).val();
+    var testField = $('#config_generic_oauth_server_url_test');
+    if (baseUrl) {
+      testField.val(baseUrl).attr('placeholder', 'Ready to test: ' + baseUrl);
+    } else {
+      testField.val('').attr('placeholder', 'Enter base URL above to test');
+    }
+  });
+
+  $('#test_metadata_url').on('click', function() {
+    var metadataUrl = $('#config_generic_oauth_metadata_url').val();
+    var button = $(this);
+    var originalText = button.text();
+    
+    if (!metadataUrl) {
+      alert('Please enter a metadata URL to test.');
+      return;
+    }
+    
+    button.text('Testing...').prop('disabled', true);
+
+    $.ajax({
+      url: '{{ url_for("admin.test_metadata") }}',
+      type: 'POST',
+      data: JSON.stringify({url: metadataUrl}),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response) {
+        if (response.success) {
+          alert('✅ ' + response.message);
+        } else {
+          alert('❌ ' + response.message);
+        }
+      },
+      error: function() {
+        alert('❌ An unknown error occurred while testing metadata URL.');
+      },
+      complete: function() {
+        button.text(originalText).prop('disabled', false);
+      }
+    });
+  });
+});
+</script>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-editable.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-editable.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/libs/pwstrength/i18next.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/libs/pwstrength/i18nextHttpBackend.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/libs/pwstrength/pwstrength-bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='js/password.js') }}"></script>
+<script src="{{ url_for('static', filename='js/table.js') }}"></script>
+{% endblock %}

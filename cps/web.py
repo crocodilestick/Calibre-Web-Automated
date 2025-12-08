@@ -907,7 +907,7 @@ def books_table():
     visibility = current_user.view_settings.get('table', {})
     cc = calibre_db.get_cc_columns(config, filter_config_custom_read=True)
     return render_title_template('book_table.html', title=_("Books List"), cc=cc, page="book_table",
-                                 visiblility=visibility)
+                                 visibility=visibility)
 
 
 @web.route("/ajax/listbooks")

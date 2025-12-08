@@ -1,0 +1,360 @@
+<style>
+  /* Scoped styles for the user table - Card View Everywhere */
+  .cwa-user-table-container {
+    margin-top: 20px;
+  }
+  
+  /* Controls */
+  .cwa-user-table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .cwa-search-box {
+    max-width: 300px;
+    width: 100%;
+  }
+  
+  /* Pagination */
+  .cwa-pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+  }
+  .cwa-pagination li {
+    margin: 0 2px;
+  }
+  .cwa-pagination button {
+    border: 1px solid #ddd;
+    background: #fff;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .cwa-pagination button.active {
+    background: #337ab7;
+    color: #fff;
+    border-color: #337ab7;
+  }
+  .cwa-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Card View Styles (Global) */
+  .cwa-user-table {
+    width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+  }
+
+  .cwa-user-table thead {
+    display: none;
+  }
+
+  .cwa-user-table, .cwa-user-table tbody, .cwa-user-table tr, .cwa-user-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .cwa-user-table tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .cwa-user-table td {
+    text-align: right;
+    padding: 10px 15px;
+    padding-left: 50%;
+    position: relative;
+    border-top: none;
+    border-bottom: 1px solid #eee;
+    min-height: 42px;
+  }
+
+  .cwa-user-table td:last-child {
+    border-bottom: none;
+  }
+
+  .cwa-user-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+    color: #555;
+  }
+
+  /* Mobile adjustments for controls only */
+  @media (max-width: 768px) {
+    .cwa-user-table-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .cwa-search-box {
+      max-width: 100%;
+    }
+  }
+</style>
+
+<div class="panel panel-default cwa-user-table-container">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{_('Existing Users')}}</h3>
+  </div>
+  <div class="panel-body">
+    <div class="cwa-user-table-controls">
+      <button id="cwa-delete-selected" class="btn btn-danger" disabled>
+        <i class="glyphicon glyphicon-remove"></i> {{_('Delete Selected')}}
+      </button>
+      <input type="text" id="cwa-user-search" class="form-control cwa-search-box" placeholder="{{_('Search users...')}}">
+    </div>
+
+    <table class="cwa-user-table" id="cwa-user-table-element">
+      <thead>
+        <tr>
+          <th style="width: 40px;"><input type="checkbox" id="cwa-select-all"></th>
+          <th>{{_('Username')}}</th>
+          <th>{{_('Email')}}</th>
+          <th>{{_('Kindle Email')}}</th>
+          <th>{{_('Type')}}</th>
+          <th>{{_('Actions')}}</th>
+        </tr>
+      </thead>
+      <tbody id="cwa-user-table-body">
+        {% for user in allUser %}
+        <tr data-user-id="{{ user.id }}">
+          <td data-label=""><input type="checkbox" class="cwa-user-select" value="{{ user.id }}"></td>
+          <td data-label="{{_('Username')}}">{{ user.name }}</td>
+          <td data-label="{{_('Email')}}">{{ user.email }}</td>
+          <td data-label="{{_('Kindle Email')}}">{{ user.kindle_mail }}</td>
+          <td data-label="{{_('Type')}}">
+            {% if user.role_admin() %}<span class="label label-danger">{{_("Admin")}}</span>{% endif %}
+            {% if user.role_upload() %}<span class="label label-success">{{_("Upload")}}</span>{% endif %}
+            {% if user.role_edit() %}<span class="label label-warning">{{_("Edit")}}</span>{% endif %}
+            {% if not user.role_admin() and not user.role_upload() and not user.role_edit() %}
+              <span class="label label-default">{{_("User")}}</span>
+            {% endif %}
+          </td>
+          <td data-label="{{_('Actions')}}">
+            <a class="btn btn-default btn-xs" href="{{ url_for('admin.edit_user', user_id=user.id) }}" title="{{_('Edit')}}">
+              <i class="glyphicon glyphicon-edit"></i>
+            </a>
+            <a class="btn btn-danger btn-xs cwa-delete-user-btn" href="javascript:void(0)" data-user-id="{{ user.id }}" title="{{_('Delete')}}">
+              <i class="glyphicon glyphicon-trash"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="text-center">
+        <ul class="cwa-pagination" id="cwa-pagination-controls">
+            <!-- Pagination buttons will be generated here -->
+        </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="cwa-delete-user-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-center">
+        <h4 class="modal-title">{{_('Are you really sure?')}}</h4>
+      </div>
+      <div class="modal-body text-center">
+        <p>{{_('This user will be permanently deleted.')}}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="cwa-confirm-delete-btn">{{_('Delete')}}</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const tableBody = document.getElementById('cwa-user-table-body');
+    const rows = Array.from(tableBody.querySelectorAll('tr'));
+    const searchInput = document.getElementById('cwa-user-search');
+    const paginationControls = document.getElementById('cwa-pagination-controls');
+    const selectAll = document.getElementById('cwa-select-all');
+    const deleteSelectedBtn = document.getElementById('cwa-delete-selected');
+    
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    let filteredRows = rows;
+    let userToDeleteId = null;
+
+    function renderTable() {
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      
+      rows.forEach(row => row.style.display = 'none');
+      
+      const pageRows = filteredRows.slice(start, end);
+      pageRows.forEach(row => row.style.display = '');
+      
+      renderPagination();
+      updateSelectAllState();
+    }
+
+    function renderPagination() {
+      paginationControls.innerHTML = '';
+      const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+      
+      if (pageCount <= 1) return;
+
+      const createButton = (text, page, isActive = false, isDisabled = false) => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        if (isActive) btn.classList.add('active');
+        if (isDisabled) btn.disabled = true;
+        btn.addEventListener('click', () => {
+          currentPage = page;
+          renderTable();
+        });
+        li.appendChild(btn);
+        return li;
+      };
+
+      // Previous
+      paginationControls.appendChild(createButton('«', currentPage - 1, false, currentPage === 1));
+
+      // Pages
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(pageCount, currentPage + 2);
+      
+      if (startPage > 1) {
+          paginationControls.appendChild(createButton('1', 1));
+          if (startPage > 2) {
+              const dots = document.createElement('li');
+              dots.innerHTML = '<span style="padding: 5px;">...</span>';
+              paginationControls.appendChild(dots);
+          }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        paginationControls.appendChild(createButton(i, i, i === currentPage));
+      }
+
+      if (endPage < pageCount) {
+          if (endPage < pageCount - 1) {
+              const dots = document.createElement('li');
+              dots.innerHTML = '<span style="padding: 5px;">...</span>';
+              paginationControls.appendChild(dots);
+          }
+          paginationControls.appendChild(createButton(pageCount, pageCount));
+      }
+
+      // Next
+      paginationControls.appendChild(createButton('»', currentPage + 1, false, currentPage === pageCount));
+    }
+
+    function filterTable() {
+      const query = searchInput.value.toLowerCase();
+      filteredRows = rows.filter(row => {
+        const text = row.textContent.toLowerCase();
+        return text.includes(query);
+      });
+      currentPage = 1;
+      renderTable();
+    }
+
+    searchInput.addEventListener('input', filterTable);
+
+    // Selection Logic
+    function updateDeleteButton() {
+      const checked = tableBody.querySelectorAll('.cwa-user-select:checked');
+      deleteSelectedBtn.disabled = checked.length === 0;
+    }
+
+    function updateSelectAllState() {
+        selectAll.checked = false;
+        updateDeleteButton();
+    }
+
+    selectAll.addEventListener('change', function() {
+      const isChecked = this.checked;
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const visibleRows = filteredRows.slice(start, end);
+      
+      visibleRows.forEach(row => {
+          const checkbox = row.querySelector('.cwa-user-select');
+          if (checkbox) checkbox.checked = isChecked;
+      });
+      updateDeleteButton();
+    });
+
+    tableBody.addEventListener('change', function(e) {
+      if (e.target.classList.contains('cwa-user-select')) {
+        updateDeleteButton();
+      }
+    });
+
+    // Delete Actions
+    deleteSelectedBtn.addEventListener('click', function() {
+      const checked = Array.from(tableBody.querySelectorAll('.cwa-user-select:checked'));
+      const ids = checked.map(cb => cb.value);
+      
+      if (confirm("{{_('Are you sure you want to delete the selected users?')}}")) {
+        $.ajax({
+            url: "{{ url_for('admin.delete_user') }}",
+            type: 'POST',
+            data: {userid: ids},
+            success: function(res) {
+                if (res.location) window.location.href = res.location;
+                else location.reload();
+            },
+            error: function(e) {
+                alert('Error deleting users');
+            }
+        });
+      }
+    });
+
+    // Individual Delete
+    tableBody.addEventListener('click', function(e) {
+        const btn = e.target.closest('.cwa-delete-user-btn');
+        if (btn) {
+            userToDeleteId = btn.dataset.userId;
+            .modal('show');
+        }
+    });
+
+    document.getElementById('cwa-confirm-delete-btn').addEventListener('click', function() {
+        if (userToDeleteId) {
+            $.ajax({
+                url: "{{ url_for('admin.delete_user') }}",
+                type: 'POST',
+                data: {userid: userToDeleteId},
+                success: function(res) {
+                    if (res.location) window.location.href = res.location;
+                    else location.reload();
+                },
+                error: function(e) {
+                    alert('Error deleting user');
+                }
+            });
+        }
+    });
+
+    // Initial Render
+    renderTable();
+  })();
+</script>

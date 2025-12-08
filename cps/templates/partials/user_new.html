@@ -1,0 +1,106 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{_('Add New User')}}</h3>
+  </div>
+  <div class="panel-body">
+      <form role="form" method="POST" action="{{ url_for('admin.new_user') }}" autocomplete="off">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="col-xs-12">
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+              <div class="form-group required">
+                <label for="new_user_name">{{_('Username')}}</label>
+                <input type="text" class="form-control" name="name" id="new_user_name" value="" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="new_user_email">{{_('Email')}}</label>
+                <input type="email" class="form-control" name="email" id="new_user_email" value="" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="new_user_password">{{_('Password')}}</label>
+                <input type="password" class="form-control" name="password" id="new_user_password" data-lang="{{ current_user.locale }}" data-verify="{{ config.config_password_policy }}" {% if config.config_password_policy %} data-min={{ config.config_password_min_length }} data-word={{ config.config_password_character }} data-special={{ config.config_password_special }} data-upper={{ config.config_password_upper }} data-lower={{ config.config_password_lower }} data-number={{ config.config_password_number }}{% endif %} value="" autocomplete="off">
+              </div>
+            </div>
+            <div class="col-xs-12 col-md-6">
+              <div class="form-group">
+                <label for="new_user_kindle_mail">{{_('Send to eReader Email Address')}}</label>
+                <input type="email" class="form-control" name="kindle_mail" id="new_user_kindle_mail" value="" placeholder="{{_('Use comma to separate emails')}}">
+              </div>
+              <div class="form-group">
+                <label for="new_user_locale">{{_('Language')}}</label>
+                <select name="locale" id="new_user_locale" class="form-control">
+                  {% for translation in translations %}
+                  <option value="{{translation}}">{{ translation.display_name|capitalize }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="new_user_default_language">{{_('Language of Books')}}</label>
+                <select name="default_language" id="new_user_default_language" class="form-control">
+                  <option value="all" selected>{{ _('Show All') }}</option>
+                  {% for language in languages %}
+                  <option value="{{ language.lang_code }}">{{ language.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <hr>
+          <h4>{{_('Permissions')}}</h4>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <div class="form-group">
+                <input type="checkbox" name="admin_role" id="new_user_admin_role">
+                <label for="new_user_admin_role">{{_('Admin User')}}</label>
+              </div>
+              <div class="form-group">
+                <input type="checkbox" name="download_role" id="new_user_download_role">
+                <label for="new_user_download_role">{{_('Allow Downloads')}}</label>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <div class="form-group">
+                <input type="checkbox" name="viewer_role" id="new_user_viewer_role">
+                <label for="new_user_viewer_role">{{_('Allow eBook Viewer')}}</label>
+              </div>
+              {% if config.config_uploading %}
+              <div class="form-group">
+                <input type="checkbox" name="upload_role" id="new_user_upload_role">
+                <label for="new_user_upload_role">{{_('Allow Uploads')}}</label>
+              </div>
+              {% endif %}
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <div class="form-group">
+                <input type="checkbox" name="edit_role" data-control="edit_settings" id="new_user_edit_role">
+                <label for="new_user_edit_role">{{_('Allow Edit')}}</label>
+              </div>
+              <div data-related="edit_settings">
+                <div class="form-group">
+                  <input type="checkbox" name="delete_role" id="new_user_delete_role">
+                  <label for="new_user_delete_role">{{_('Allow Delete Books')}}</label>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <div class="form-group">
+                <input type="checkbox" name="passwd_role" id="new_user_passwd_role" checked>
+                <label for="new_user_passwd_role">{{_('Allow Changing Password')}}</label>
+              </div>
+              <div class="form-group">
+                <input type="checkbox" name="edit_shelf_role" id="new_user_edit_shelf_role" checked>
+                <label for="new_user_edit_shelf_role">{{_('Allow Editing Public Shelves')}}</label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-xs-12">
+              <button type="submit" class="btn btn-primary">{{_('Create User')}}</button>
+            </div>
+          </div>
+        </div>
+      </form>
+  </div>
+</div>

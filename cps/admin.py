@@ -278,17 +278,86 @@ def admin():
         else:
             commit = version['version'].replace("b", " Beta")
 
+    # User Table Data
     all_user = ub.session.query(ub.User).all()
-    # email_settings = mail_config.get_mail_settings()
+    visibility = current_user.view_settings.get('useredit', {})
+    tags = calibre_db.session.query(db.Tags).order_by(db.Tags.name).all()
+    if config.config_restricted_column:
+        custom_values = calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.label == config.config_restricted_column).first()
+        if custom_values:
+             custom_values = calibre_db.session.query(db.cc_classes[custom_values.id]).all()
+        else:
+             custom_values = []
+    else:
+        custom_values = []
+    kobo_support = feature_support['kobo'] and config.config_kobo_sync
+
+    # Mail Settings
+    mail_settings = config.get_mail_settings()
+
+    # Schedule Settings
     schedule_time = format_time(datetime_time(hour=config.schedule_start_time), format="short")
     t = timedelta(hours=config.schedule_duration // 60, minutes=config.schedule_duration % 60)
     schedule_duration = format_timedelta(t, threshold=.99)
+    time_field = list()
+    duration_field = list()
+    for n in range(24):
+        t = datetime_time(hour=n, minute=0)
+        time_field.append(format_time(t, format="short"))
+    for n in range(5, 65, 5):
+        t = timedelta(hours=n // 60, minutes=n % 60)
+        duration_field.append(format_timedelta(t, threshold=.99))
 
-    return render_title_template("admin.html", allUser=all_user, config=config, commit=commit,
-                                 cwa_version=cwa_version, kepubify_version=kepubify_version,
-                                 calibre_version=calibre_version, feature_support=feature_support,
-                                 schedule_time=schedule_time, schedule_duration=schedule_duration,
-                                 title=_("Admin page"), page="admin")
+    # DB Configuration Data
+    gdrive_authenticate = not is_gdrive_ready()
+    gdrivefolders = []
+    gdrive_error = None
+    if not gdrive_error and config.config_use_google_drive:
+        gdrive_error = gdriveutils.get_error_text()
+    if gdrive_error and gdrive_support:
+        pass
+    else:
+        if not gdrive_authenticate and gdrive_support:
+            gdrivefolders = gdriveutils.listRootFolders()
+
+    # View Configuration Data
+    read_column = calibre_db.session.query(db.CustomColumns) \
+        .filter(and_(db.CustomColumns.datatype == 'bool', db.CustomColumns.mark_for_delete == 0)).all()
+    restrict_columns = calibre_db.session.query(db.CustomColumns) \
+        .filter(and_(db.CustomColumns.datatype == 'text', db.CustomColumns.mark_for_delete == 0)).all()
+    languages = calibre_db.speaking_language()
+    translations = get_available_locale()
+
+    return render_title_template("admin_view.html",
+                                 allUser=all_user,
+                                 config=config,
+                                 conf=config,
+                                 commit=commit,
+                                 cwa_version=cwa_version,
+                                 kepubify_version=kepubify_version,
+                                 calibre_version=calibre_version,
+                                 feature_support=feature_support,
+                                 schedule_time=schedule_time,
+                                 schedule_duration=schedule_duration,
+                                 mail_settings=mail_settings,
+                                 gdrivefolders=gdrivefolders,
+                                 gdrive_error=gdrive_error,
+                                 gdrive_authenticate=gdrive_authenticate,
+                                 read_column=read_column,
+                                 restrict_columns=restrict_columns,
+                                 languages=languages,
+                                 translations=translations,
+                                 visibility=visibility,
+                                 tags=tags,
+                                 custom_values=custom_values,
+                                 all_roles=constants.ALL_ROLES,
+                                 sidebar_settings=constants.sidebar_settings,
+                                 kobo_support=kobo_support,
+                                 time_field=time_field,
+                                 duration_field=duration_field,
+                                 provider=oauthblueprints,
+                                 title=_("Admin page"),
+                                 page="admin")
 
 
 @admi.route("/admin/dbconfig", methods=["GET", "POST"])
@@ -384,7 +453,7 @@ def edit_user_table():
                                  custom_values=custom_values,
                                  translations=translations,
                                  languages=languages,
-                                 visiblility=visibility,
+                                 visibility=visibility,
                                  all_roles=constants.ALL_ROLES,
                                  kobo_support=kobo_support,
                                  sidebar_settings=constants.sidebar_settings,
@@ -640,13 +709,13 @@ def update_view_configuration():
     if not check_valid_read_column(to_save.get("config_read_column", "0")):
         flash(_("Invalid Read Column"), category="error")
         log.debug("Invalid Read column")
-        return view_configuration()
+        return redirect(url_for('admin.admin') + '#ui')
     _config_int(to_save, "config_read_column")
 
     if not check_valid_restricted_column(to_save.get("config_restricted_column", "0")):
         flash(_("Invalid Restricted Column"), category="error")
         log.debug("Invalid Restricted Column")
-        return view_configuration()
+        return redirect(url_for('admin.admin') + '#ui')
     _config_int(to_save, "config_restricted_column")
 
     _config_int(to_save, "config_theme")
@@ -668,7 +737,7 @@ def update_view_configuration():
     log.debug("Calibre-Web Automated configuration updated")
     before_request()
 
-    return view_configuration()
+    return redirect(url_for('admin.admin') + '#ui')
 
 
 @admi.route("/ajax/loaddialogtexts/<element_id>", methods=['POST'])
@@ -1469,7 +1538,7 @@ def update_mailsettings():
         except Exception as ex:
             flash(str(ex), category="error")
             log.error(ex)
-            return edit_mailsettings()
+            return redirect(url_for('admin.admin') + '#mail')
 
     else:
         _config_int(to_save, "mail_port")
@@ -1486,10 +1555,10 @@ def update_mailsettings():
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
         flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
-        return edit_mailsettings()
+        return redirect(url_for('admin.admin') + '#mail')
     except Exception as e:
         flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
-        return edit_mailsettings()
+        return redirect(url_for('admin.admin') + '#mail')
 
     if to_save.get("test"):
         if current_user.email:
@@ -1504,7 +1573,7 @@ def update_mailsettings():
     else:
         flash(_("Email Server Settings updated"), category="success")
 
-    return edit_mailsettings()
+    return redirect(url_for('admin.admin') + '#mail')
 
 
 @admi.route("/admin/scheduledtasks")
@@ -1568,7 +1637,7 @@ def update_scheduledtasks():
             log.error("Settings DB is not Writeable")
             flash(_("Settings DB is not Writeable"), category="error")
 
-    return edit_scheduledtasks()
+    return redirect(url_for('admin.admin') + '#schedule')
 
 
 @admi.route("/admin/user/<int:user_id>", methods=["GET", "POST"])
@@ -1876,26 +1945,38 @@ def _db_configuration_update_helper():
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
-        _db_configuration_result(_("Oops! Database Error: %(error)s.", error=e.orig), gdrive_error)
+        flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
+        if gdrive_error:
+            flash(_(gdrive_error), category="error")
+        return redirect(url_for('admin.admin') + '#db')
     try:
         metadata_db = os.path.join(to_save['config_calibre_dir'], "metadata.db")
         if config.config_use_google_drive and is_gdrive_ready() and not os.path.exists(metadata_db):
             gdriveutils.downloadFile(None, "metadata.db", metadata_db)
             db_change = True
     except Exception as ex:
-        return _db_configuration_result('{}'.format(ex), gdrive_error)
+        flash('{}'.format(ex), category="error")
+        if gdrive_error:
+            flash(_(gdrive_error), category="error")
+        return redirect(url_for('admin.admin') + '#db')
     config.config_calibre_split = to_save.get('config_calibre_split', 0) == "on"
     if config.config_calibre_split:
         split_dir = to_save.get("config_calibre_split_dir")
         if not os.path.exists(split_dir):
-            return _db_configuration_result(_("Books path not valid"), gdrive_error)
+            flash(_("Books path not valid"), category="error")
+            if gdrive_error:
+                flash(_(gdrive_error), category="error")
+            return redirect(url_for('admin.admin') + '#db')
         else:
             _config_string(to_save, "config_calibre_split_dir")
 
     if db_change or not db_valid or not config.db_configured \
       or config.config_calibre_dir != to_save["config_calibre_dir"]:
         if not os.path.exists(metadata_db) or not to_save['config_calibre_dir']:
-            return _db_configuration_result(_('DB Location is not Valid, Please Enter Correct Path'), gdrive_error)
+            flash(_('DB Location is not Valid, Please Enter Correct Path'), category="error")
+            if gdrive_error:
+                flash(_(gdrive_error), category="error")
+            return redirect(url_for('admin.admin') + '#db')
         else:
             calibre_db.setup_db(to_save['config_calibre_dir'], ub.app_DB_path)
         config.store_calibre_uuid(calibre_db, db.Library_Id)
@@ -1926,7 +2007,11 @@ def _db_configuration_update_helper():
             flash(_("DB is not Writeable"), category="warning")
     calibre_db.update_config(config)
     config.save()
-    return _db_configuration_result(None, gdrive_error)
+    if gdrive_error:
+        flash(_(gdrive_error), category="error")
+    else:
+        flash(_("Database Settings updated"), category="success")
+    return redirect(url_for('admin.admin') + '#db')
 
 
 def _configuration_update_helper():

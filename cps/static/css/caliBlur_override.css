@@ -395,3 +395,37 @@ a#advanced_search > span.hidden-sm {
 .btn-primary[disabled] {
     background-color: var(--color-secondary);
 }
+
+.panel-body {
+  background-color: transparent !important;
+}
+
+.cwa-user-table td::before {
+    content: attr(data-label) !important;
+    position: absolute !important;
+    left: 15px !important;
+    width: 45% !important;
+    padding-right: 10px !important;
+    white-space: nowrap !important;
+    text-align: left !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
+}
+
+.cwa-user-table tr {
+    margin-bottom: 15px !important;
+    border: none !important;
+    border-radius: 4px !important;
+    background: rgba(0, 0, 0, .15) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+
+.cwa-user-table td {
+    text-align: right !important;
+    padding: 10px 15px !important;
+    padding-left: 50% !important;
+    position: relative !important;
+    border-top: none !important;
+    border-bottom: 1px solid #00000038 !important;
+    min-height: 42px !important;
+}

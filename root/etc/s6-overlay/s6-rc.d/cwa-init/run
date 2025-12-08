@@ -167,7 +167,8 @@ fi
 #  Set required permissions
 #------------------------------------------------------------------------------------------------------------------------
 
-declare -a requiredDirs=("/config" "/calibre-library" "/app/calibre-web-automated")
+# In addition to /config and /app/calibre-web-automated, parse required dirs from dirs.json
+declare -a requiredDirs=("/config" "/app/calibre-web-automated" `jq -r '.[]' < /app/calibre-web-automated/dirs.json`)
 
 dirs=$(printf ", %s" "${requiredDirs[@]}")
 dirs=${dirs:1}

@@ -168,7 +168,13 @@ fi
 #------------------------------------------------------------------------------------------------------------------------
 
 # In addition to /config and /app/calibre-web-automated, parse required dirs from dirs.json
-declare -a requiredDirs=("/config" "/app/calibre-web-automated" `jq -r '.[]' < /app/calibre-web-automated/dirs.json`)
+declare -a requiredDirs=("/config" "/app/calibre-web-automated")
+if command -v jq >/dev/null 2>&1; then
+  requiredDirs+=(`jq -r '.[]' < /app/calibre-web-automated/dirs.json`)
+else
+  # Fallback to sed parsing
+  requiredDirs+=(`sed -nE 's/.*".*"\s*:\s*"([^"]*).*/\1/p' < /app/calibre-web-automated/dirs.json`)
+fi
 
 dirs=$(printf ", %s" "${requiredDirs[@]}")
 dirs=${dirs:1}

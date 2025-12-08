@@ -11,6 +11,8 @@ the "Direct Login" flow (manual token injection) works correctly.
 """
 
 import sys
+import os
+import types
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -20,6 +22,9 @@ from unittest.mock import MagicMock, patch
 # We need to mock these BEFORE importing cps.oauth_bb because it imports them
 # at the top level, and we want to test in isolation without a full app context.
 
+# Define project root
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+
 # Create mocks for the dependencies
 mock_flask = MagicMock()
 mock_flask_dance = MagicMock()
@@ -27,7 +32,6 @@ mock_flask_dance_consumer = MagicMock()
 mock_flask_dance_requests = MagicMock()
 mock_flask_dance_contrib = MagicMock()
 mock_sqlalchemy = MagicMock()
-mock_cps = MagicMock()
 mock_cps_ub = MagicMock()
 mock_cps_constants = MagicMock()
 
@@ -51,7 +55,6 @@ mock_flask_dance_consumer = create_mock_module('flask_dance.consumer')
 mock_flask_dance_requests = create_mock_module('flask_dance.consumer.requests')
 mock_flask_dance_contrib = create_mock_module('flask_dance.contrib')
 mock_sqlalchemy = create_mock_module('sqlalchemy')
-mock_cps = create_mock_module('cps')
 mock_cps_ub = create_mock_module('cps.ub')
 mock_cps_constants = create_mock_module('cps.constants')
 
@@ -124,6 +127,17 @@ mock_signal.connect_via.side_effect = side_effect_connect_via
 mock_flask_dance_consumer.oauth_authorized = mock_signal
 mock_flask_dance_consumer.oauth_error = mock_signal # Also for error handler
 
+# Create a mock cps package that points to the real path
+# This allows us to import real modules from it (like oauth_bb)
+# while injecting mocked submodules (like ub)
+mock_cps_pkg = types.ModuleType('cps')
+mock_cps_pkg.__path__ = [os.path.join(project_root, 'cps')]
+mock_cps_pkg.ub = mock_cps_ub
+mock_cps_pkg.constants = mock_cps_constants
+mock_cps_pkg.logger = create_mock_module('cps.logger')
+mock_cps_pkg.config = MagicMock()
+mock_cps_pkg.app = MagicMock()
+
 # Apply mocks to sys.modules
 module_patches = {
     'flask': mock_flask,
@@ -139,11 +153,14 @@ module_patches = {
     'sqlalchemy': mock_sqlalchemy,
     'sqlalchemy.orm': create_mock_module('sqlalchemy.orm'),
     'sqlalchemy.orm.exc': create_mock_module('sqlalchemy.orm.exc'),
-    # We do NOT mock 'cps' top-level so we can import oauth_bb from it
-    # But we mock all its submodules that are imported in __init__.py or oauth_bb.py
+    
+    # Mock 'cps' top-level with our custom package object
+    'cps': mock_cps_pkg,
+    
+    # Mock submodules
     'cps.ub': mock_cps_ub,
     'cps.constants': mock_cps_constants,
-    'cps.logger': create_mock_module('cps.logger'),
+    'cps.logger': mock_cps_pkg.logger,
     'cps.cw_login': create_mock_module('cps.cw_login'),
     'cps.usermanagement': create_mock_module('cps.usermanagement'),
     'cps.helper': create_mock_module('cps.helper'),
@@ -161,10 +178,7 @@ module_patches = {
 
 # We use patch.dict to temporarily replace modules during import
 with patch.dict(sys.modules, module_patches):
-    # Import the module
-    # We need to ensure the project root is in sys.path
-    import os
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+    # Ensure project root is in sys.path
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
 

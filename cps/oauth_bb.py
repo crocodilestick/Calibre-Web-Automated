@@ -89,7 +89,9 @@ class GenericOIDCSession(BaseOAuth2Session):
         """
         if self._explicit_token:
             return self._explicit_token
-        return self.blueprint.token
+        if hasattr(self, 'blueprint') and self.blueprint:
+            return self.blueprint.token
+        return None
 
     @token.setter
     def token(self, value):
@@ -803,34 +805,18 @@ if ub.oauth_support:
 
     @oauth_authorized.connect_via(oauthblueprints[2]['blueprint'])
     def generic_logged_in(blueprint, token):
-        if not token:
-            flash(_("Failed to log in with Generic OAuth."), category="error")
-            log.error("Failed to log in with Generic OAuth - no token received")
-            return False
-
         try:
-            # Pass token explicitly to avoid DB race condition
-            provider_user_id = register_user_from_generic_oauth(token)
-            if provider_user_id:
-                # Save token to DB
-                oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
-                
-                # DIRECT LOGIN: Hijack flow to prevent redirect loop
-                response = bind_oauth_or_register(oauthblueprints[2]['id'], provider_user_id, 'generic.login', 'generic')
+            if blueprint.name == 'generic':
+                # Pass token explicitly to avoid race condition where DB commit hasn't happened yet
+                response = register_user_from_generic_oauth(token)
+                # If we got a response (redirect), abort immediately to bypass Flask-Dance's default behavior
+                # This prevents the "token not found" race condition by handling login in-process
                 if response:
                     abort(response)
-                return False
-            else:
-                # register_user_from_generic_oauth already logged error and flashed message
-                return False
-        except (InvalidGrantError, TokenExpiredError) as e:
-            log.error("OAuth token error in generic_logged_in: %s", e)
-            flash(_("OAuth authentication failed: Token validation error. Please try again."), category="error")
-            return False
         except Exception as e:
-            log.error("Unexpected error in generic OAuth login: %s", e)
-            flash(_("OAuth authentication failed due to an unexpected error. Please contact administrator."), category="error")
-            return False
+            log.error("Error in generic_logged_in: %s", e)
+
+        return False
 
 
     # notify on OAuth provider error

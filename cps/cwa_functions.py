@@ -7,7 +7,7 @@
 from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort, jsonify, current_app
 from flask_babel import gettext as _, lazy_gettext as _l
 
-from . import logger, config, constants, csrf
+from . import logger, config, constants, csrf, helper
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
@@ -1056,11 +1056,8 @@ def schedule_convert_library(delay: int):
     try:
         import requests
         username = getattr(current_user, 'name', 'System') or 'System'
-        port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
-        if not port.isdigit():
-            port = '8083'
-        url = f"http://127.0.0.1:{port}/cwa-internal/schedule-convert-library"
-        resp = requests.post(url, json={"delay_minutes": delay, "username": username}, timeout=10)
+        url = helper.get_internal_api_url("/cwa-internal/schedule-convert-library")
+        resp = requests.post(url, json={"delay_minutes": delay, "username": username}, timeout=10, verify=False)
         if resp.ok:
             flash(_(f"Convert Library scheduled in {delay} minute(s)."), category="success")
         else:
@@ -1196,11 +1193,8 @@ def schedule_epub_fixer(delay: int):
     try:
         import requests
         username = getattr(current_user, 'name', 'System') or 'System'
-        port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
-        if not port.isdigit():
-            port = '8083'
-        url = f"http://127.0.0.1:{port}/cwa-internal/schedule-epub-fixer"
-        resp = requests.post(url, json={"delay_minutes": delay, "username": username}, timeout=10)
+        url = helper.get_internal_api_url("/cwa-internal/schedule-epub-fixer")
+        resp = requests.post(url, json={"delay_minutes": delay, "username": username}, timeout=10, verify=False)
         if resp.ok:
             flash(_(f"EPUB Fixer scheduled in {delay} minute(s)."), category="success")
         else:

@@ -255,6 +255,24 @@ except Exception as e:
     print(f"[ingest-processor] WARN: Could not scan processed_books: {e}", flush=True)
     backup_destinations = {}
 
+def get_internal_api_url(path):
+    """Construct internal API URL, respecting SSL configuration"""
+    port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+    if not port.isdigit():
+        port = '8083'
+    
+    protocol = "http"
+    if _cps_config:
+        certfile = _cps_config.get_config_certfile()
+        keyfile = _cps_config.get_config_keyfile()
+        if certfile and keyfile and os.path.isfile(certfile) and os.path.isfile(keyfile):
+            protocol = "https"
+            
+    if not path.startswith("/"):
+        path = "/" + path
+        
+    return f"{protocol}://127.0.0.1:{port}{path}"
+
 class NewBookProcessor:
     def __init__(self, filepath: str):
         # Settings / DB
@@ -824,10 +842,7 @@ class NewBookProcessor:
                     # Prefer to schedule in the long-lived web process so it shows in UI
                     scheduled_via_api = False
                     try:
-                        port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
-                        if not port.isdigit():
-                            port = '8083'
-                        url = f"http://127.0.0.1:{port}/cwa-internal/schedule-auto-send"
+                        url = get_internal_api_url("/cwa-internal/schedule-auto-send")
                         payload = {
                             'book_id': int(book_id),
                             'user_id': int(user_id),
@@ -835,7 +850,7 @@ class NewBookProcessor:
                             'username': username,
                             'title': actual_title,
                         }
-                        resp = requests.post(url, json=payload, timeout=5)
+                        resp = requests.post(url, json=payload, timeout=5, verify=False)
                         if resp.status_code == 200:
                             try:
                                 run_at = resp.json().get('run_at', 'soon')
@@ -959,12 +974,9 @@ class NewBookProcessor:
         """
         # Route DB reconnect via the long-lived web process to avoid cross-process config/session issues
         try:
-            port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
-            if not port.isdigit():
-                port = '8083'
-            url = f"http://127.0.0.1:{port}/cwa-internal/reconnect-db"
+            url = get_internal_api_url("/cwa-internal/reconnect-db")
             print("[ingest-processor] Refreshing Calibre-Web database session...", flush=True)
-            resp = requests.post(url, timeout=5)
+            resp = requests.post(url, timeout=5, verify=False)
             if resp.status_code == 200:
                 print("[ingest-processor] Database session refresh enqueued", flush=True)
             else:

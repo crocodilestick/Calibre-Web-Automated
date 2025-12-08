@@ -1317,3 +1317,19 @@ def set_all_metadata_dirty():
                                               set_dirty=True,
                                               task_message=N_("Queue all books for metadata backup")),
                      hidden=False)
+
+def get_internal_api_url(path):
+    port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+    if not port.isdigit():
+        port = '8083'
+    
+    protocol = "http"
+    certfile = config.get_config_certfile()
+    keyfile = config.get_config_keyfile()
+    if certfile and keyfile and os.path.isfile(certfile) and os.path.isfile(keyfile):
+        protocol = "https"
+        
+    if not path.startswith("/"):
+        path = "/" + path
+        
+    return f"{protocol}://127.0.0.1:{port}{path}"

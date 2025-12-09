@@ -1007,8 +1007,9 @@ def HandleBookDeletionRequest(book_uuid):
 @kobo.route("/v1/library/<dummy>", methods=["DELETE", "GET", "POST"])
 @kobo.route("/v1/library/<dummy>/preview", methods=["POST"])
 def HandleUnimplementedRequest(dummy=None):
-    log.debug("Unimplemented Library Request received: %s (request is forwarded to kobo if configured)",
-              request.base_url)
+    log.debug(f"Unimplemented Library Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 
@@ -1021,7 +1022,9 @@ def HandleUnimplementedRequest(dummy=None):
 @kobo.route("/v1/analytics/<dummy>", methods=["GET", "POST"])
 @kobo.route("/v1/assets", methods=["GET"])
 def HandleUserRequest(dummy=None):
-    log.debug("Unimplemented User Request received: %s (request is forwarded to kobo if configured)", request.base_url)
+    log.debug("Unimplemented User Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 
@@ -1057,14 +1060,17 @@ def handle_getests():
 @kobo.route("/v1/products/books/<dummy>/", methods=["GET", "POST"])
 @kobo.route("/v1/products/dailydeal", methods=["GET", "POST"])
 @kobo.route("/v1/products/deals", methods=["GET", "POST"])
+@kobo.route("/v1/products/featuredforkoboplus/")
 @kobo.route("/v1/products", methods=["GET", "POST"])
 @kobo.route("/v1/affiliate", methods=["GET", "POST"])
 @kobo.route("/v1/deals", methods=["GET", "POST"])
 @kobo.route("/v1/categories/<dummy>", methods=["GET", "POST"])
 @kobo.route("/v1/categories/<dummy>/featured", methods=["GET", "POST"])
+@kobo.route("/v1/categories/<dummy>/products")
 def HandleProductsRequest(dummy=None):
-    log.debug("Unimplemented Products Request received: %s (request is forwarded to kobo if configured)",
-              request.base_url)
+    log.debug(f"Unimplemented Products Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 

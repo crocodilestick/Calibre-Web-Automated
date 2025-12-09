@@ -26,7 +26,7 @@ from sqlalchemy.sql.functions import coalesce
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import constants, logger, isoLanguages, services
+from . import constants, logger, isoLanguages, services, helper
 from . import db, ub, config, app
 from . import calibre_db, kobo_sync_status
 from .search import render_search_results, render_adv_search_results

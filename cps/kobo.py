@@ -23,7 +23,8 @@ from flask import (
     current_app,
     url_for,
     redirect,
-    abort
+    abort,
+    Response,
 )
 from .cw_login import current_user
 from werkzeug.datastructures import Headers
@@ -104,15 +105,17 @@ def redirect_or_proxy_request():
             # so we instead proxy to the Kobo store ourselves.
             store_response = make_request_to_kobo_store()
 
-            response_headers = store_response.headers
-            for header_key in CONNECTION_SPECIFIC_HEADERS:
-                response_headers.pop(header_key, default=None)
-
-            return make_response(
-                store_response.content, store_response.status_code, response_headers.items()
-            )
+            return make_proxy_response(store_response)
     else:
         return make_response(jsonify({}))
+
+
+def make_proxy_response(store_response: requests.Response) -> Response:
+    response_headers = store_response.headers
+    for header_key in CONNECTION_SPECIFIC_HEADERS:
+        response_headers.pop(header_key, default=None)
+
+    return make_response(store_response.content, store_response.status_code, response_headers.items())
 
 
 def convert_to_kobo_timestamp_string(timestamp):
@@ -1116,11 +1119,29 @@ def HandleInitRequest():
         try:
             store_response = make_request_to_kobo_store()
             store_response_json = store_response.json()
+
+            # It is relatively important to handle ExpiredToken errors here to trigger re-authentication.
+            # Kobo uses this endpoint to assure that the auth token is valid and recover from errors elsewhere.
+            # If this does not work properly users may get stuck with an expired token and no way to re-authenticate.
+            # The handling here has been kept minimal because some users may not wish to auth with Onestore,
+            # but Kobo requires auth for more endpoints than used to be the case, and it perhaps does not make sense
+            # for users to enable proxy requests to the Kobo Store without a working Kobo account.
+
+            if rs := store_response_json.get("ResponseStatus", {}):
+                if ec := rs.get("ErrorCode", ""):
+                    msg = rs.get("Message", "(No message provided)")
+                    if ec == "ExpiredToken":
+                        log.info(f"Kobo Store session expired: {msg}. Triggering re-authentication.")
+                        return make_proxy_response(store_response)
+                    log.warning(f"Kobo: Kobo Store initialization returned error code {ec}: {msg}")
             if "Resources" in store_response_json:
                 kobo_resources = store_response_json["Resources"]
-        except Exception:
-            log.error("Failed to receive or parse response from Kobo's init endpoint. Falling back to un-proxied mode.")
+            else:
+                log.error("Kobo: Kobo Store initialization response missing 'Resources' field.")
+        except Exception as e:
+            log.error_or_exception(f"Failed to receive or parse response from Kobo's init endpoint: {e}")
     if not kobo_resources:
+        log.debug("Using fallback Kobo resource definitions")
         kobo_resources = NATIVE_KOBO_RESOURCES()
 
     if not current_app.wsgi_app.is_proxied:

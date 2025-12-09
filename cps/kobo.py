@@ -839,17 +839,7 @@ def HandleStateRequest(book_uuid):
             ub.session.rollback()
             abort(400, description="Malformed request data is missing 'ReadingStates' key")
 
-        if config.config_hardcover_sync and bool(hardcover):
-            # Check if book is blacklisted from reading progress syncing
-            book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
-                ub.HardcoverBookBlacklist.book_id == book.id
-            ).first()
-
-            if book_blacklist and book_blacklist.blacklist_reading_progress:
-                log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
-            else:
-                hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
-                hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
+        push_reading_state_to_hardcover(book, request_bookmark)
 
         ub.session.merge(kobo_reading_state)
         ub.session_commit()
@@ -857,6 +847,44 @@ def HandleStateRequest(book_uuid):
             "RequestResult": "Success",
             "UpdateResults": [update_results_response],
         })
+
+
+def push_reading_state_to_hardcover(book: db.Books, request_bookmark: dict):
+    """
+    Sync reading progress to Hardcover if enabled for the user and book is not blacklisted.
+
+    Most exceptions are caught and logged so that issues with Hardcover do not prevent
+    the Kobo from clearing its reading state sync queue.
+
+    :param book: The book for which to sync reading progress.
+    :param request_bookmark: The bookmark data from the Kobo request.
+    :return: None
+    """
+
+    if not config.config_hardcover_sync or not bool(hardcover):
+        return
+
+    # Check if book is blacklisted from reading progress syncing
+    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+        ub.HardcoverBookBlacklist.book_id == book.id).first()
+
+    if book_blacklist and book_blacklist.blacklist_reading_progress:
+        log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
+        return
+
+    try:
+        hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
+    except hardcover.MissingHardcoverToken:
+        log.info(f"User {current_user.name} has no Hardcover token, not syncing reading progress to Hardcover")
+        return
+    except Exception as e:
+        log.error(f"Failed to create Hardcover client for user {current_user.name}: {e}")
+        return
+
+    try:
+        hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
+    except Exception as e:
+        log.error(f"Failed to update reading progress for book {book.id} in Hardcover: {e}")
 
 
 def get_read_status_for_kobo(ub_book_read):

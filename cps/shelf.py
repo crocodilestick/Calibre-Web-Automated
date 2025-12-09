@@ -86,13 +86,19 @@ def add_to_shelf(shelf_id, book_id):
         else:
             return redirect(url_for('web.index'))
     if shelf.kobo_sync and config.config_hardcover_sync and bool(hardcover):
-        hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
-        # Will add the book to Hardcover if it doesn't exist,
-        # and leave it alone otherwise 
-        # (updating status is handled in update_reading_progress 
-        # and the book may be blacklisted from syncing)
-        if not hardcoverClient.get_user_book(book.identifiers):
-            hardcoverClient.add_book(book.identifiers)
+        try:
+            hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
+            # Will add the book to Hardcover if it doesn't exist,
+            # and leave it alone otherwise
+            # (updating status is handled in update_reading_progress
+            # and the book may be blacklisted from syncing)
+            if not hardcoverClient.get_user_book(book.identifiers):
+                hardcoverClient.add_book(book.identifiers)
+        except hardcover.MissingHardcoverToken:
+            log.info(f"User {current_user.name} has no Hardcover token, cannot add to Hardcover")
+        except Exception as e:
+            log.debug(f"Failed to create Hardcover client for {current_user.name}: {e}")
+
     return "", 204
 
 
@@ -521,7 +527,7 @@ def add_selected_to_shelf():
         maxOrder = ub.session.query(func.max(ub.BookShelf.order)).filter(ub.BookShelf.shelf == shelf_id).scalar()
         if maxOrder is None:
             maxOrder = 0
-        
+
         new_entry = ub.BookShelf(shelf=shelf.id, book_id=book_id, order=maxOrder + 1)
         shelf.books.append(new_entry)
         success_count += 1

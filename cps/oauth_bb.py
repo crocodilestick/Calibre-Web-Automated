@@ -410,12 +410,7 @@ def logout_oauth_user():
 
 
 def oauth_update_token(provider_id, token, provider_user_id):
-    try:
-        with open('/tmp/oauth_debug.log', 'a') as f:
-            f.write(f"oauth_update_token called for {provider_id}, user {provider_user_id}\n")
-            f.write(f"Session before update: {list(session.keys())}\n")
-    except:
-        pass
+
 
     # Aggressively clean up potential duplicate tokens to prevent cookie overflow (4KB limit)
     # We remove ALL token data from session and rely on DB storage
@@ -427,8 +422,6 @@ def oauth_update_token(provider_id, token, provider_user_id):
         if key in session:
             try:
                 session.pop(key)
-                with open('/tmp/oauth_debug.log', 'a') as f:
-                    f.write(f"Removed {key} from session to save space\n")
             except:
                 pass
 
@@ -437,11 +430,7 @@ def oauth_update_token(provider_id, token, provider_user_id):
     # session[provider_id + "_oauth_token"] = token 
     session.modified = True
 
-    try:
-        with open('/tmp/oauth_debug.log', 'a') as f:
-            f.write(f"Session after update: {list(session.keys())}\n")
-    except:
-        pass
+
 
     # Find this OAuth token in the database, or create it
     query = ub.session.query(ub.OAuth).filter_by(
@@ -805,18 +794,27 @@ if ub.oauth_support:
 
     @oauth_authorized.connect_via(oauthblueprints[2]['blueprint'])
     def generic_logged_in(blueprint, token):
-        try:
-            if blueprint.name == 'generic':
-                # Pass token explicitly to avoid race condition where DB commit hasn't happened yet
-                response = register_user_from_generic_oauth(token)
-                # If we got a response (redirect), abort immediately to bypass Flask-Dance's default behavior
-                # This prevents the "token not found" race condition by handling login in-process
-                if response:
-                    abort(response)
-        except Exception as e:
-            log.error("Error in generic_logged_in: %s", e)
+        if not token:
+            flash(_("Failed to log in with Generic OAuth."), category="error")
+            log.error("Failed to log in with Generic OAuth - no token received")
+            return False
 
-        return False
+        try:
+            # Pass token explicitly to avoid DB race condition
+            provider_user_id = register_user_from_generic_oauth(token)
+            if provider_user_id:
+                return oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
+            else:
+                # register_user_from_generic_oauth already logged error and flashed message
+                return False
+        except (InvalidGrantError, TokenExpiredError) as e:
+            log.error("OAuth token error in generic_logged_in: %s", e)
+            flash(_("OAuth authentication failed: Token validation error. Please try again."), category="error")
+            return False
+        except Exception as e:
+            log.error("Unexpected error in generic OAuth login: %s", e)
+            flash(_("OAuth authentication failed due to an unexpected error. Please contact administrator."), category="error")
+            return False
 
 
     # notify on OAuth provider error

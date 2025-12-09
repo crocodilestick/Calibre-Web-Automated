@@ -888,6 +888,11 @@ def health_check():
 @web.route('/page/<int:page>')
 @login_required_if_no_ano
 def index(page):
+    if current_user.is_authenticated and current_user.role_admin():
+        arch_warning = helper.check_architecture()
+        if arch_warning:
+            flash(arch_warning, category="cwa_arch_warning")
+
     sort_param = (request.args.get('sort') or 'stored').lower()
     return render_books_list("newest", sort_param, 1, page)
 

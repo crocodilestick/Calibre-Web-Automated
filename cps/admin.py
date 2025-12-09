@@ -1963,9 +1963,13 @@ def _configuration_update_helper():
         _config_string(to_save, "config_calibre")
         _config_string(to_save, "config_binariesdir")
         _config_string(to_save, "config_kepubifypath")
+        arch_warning = None
         if "config_binariesdir" in to_save:
             calibre_status = helper.check_calibre(config.config_binariesdir)
+            arch_warning = helper.check_architecture()
             if calibre_status:
+                if arch_warning:
+                    calibre_status += " " + arch_warning
                 return _configuration_result(calibre_status)
             to_save["config_converterpath"] = get_calibre_binarypath("ebook-convert")
             _config_string(to_save, "config_converterpath")
@@ -2088,7 +2092,7 @@ def _configuration_update_helper():
     if reboot_required:
         web_server.stop(True)
 
-    return _configuration_result(None, reboot_required, unrar_warning)
+    return _configuration_result(None, reboot_required, " ".join(filter(None, [unrar_warning, arch_warning])))
 
 
 def _configuration_result(error_flash=None, reboot=False, warning_flash=None):

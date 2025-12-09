@@ -3,6 +3,13 @@
 
 echo "[cwa-init] Starting CWA initialization process..."
 
+# Check for unsupported architecture
+ARCH=$(uname -m)
+if [[ "$ARCH" != "x86_64" && "$ARCH" != "aarch64" ]]; then
+  echo "[cwa-init] WARNING: Unsupported architecture detected: $ARCH"
+  echo "[cwa-init] CWA is optimized for x86_64 and aarch64. You may experience issues."
+fi
+
 # Verify essential directories exist and are accessible
 echo "[cwa-init] Verifying essential directories..."
 for dir in "/app/calibre-web-automated" "/config" "/calibre-library" "/app/calibre"; do

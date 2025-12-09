@@ -13,6 +13,7 @@ import re
 import regex
 import shutil
 import socket
+import platform
 from datetime import datetime, timedelta, timezone
 import requests
 import unidecode
@@ -1172,6 +1173,13 @@ def check_unrar(unrar_location):
     except (OSError, UnicodeDecodeError) as err:
         log.error_or_exception(err)
         return _('Error executing UnRar')
+
+
+def check_architecture():
+    arch = platform.machine()
+    if arch not in ['x86_64', 'aarch64']:
+        return _("Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and aarch64.", arch=arch)
+    return None
 
 
 def check_calibre(calibre_location):

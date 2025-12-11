@@ -387,7 +387,11 @@ def register_user_from_generic_oauth(token=None):
 
     oauth.user = user
     
-    # Commit all changes together: OAuth entry + any role updates
+    # Atomic Token Update: If we have a fresh token, save it NOW in the same transaction
+    if token:
+        oauth.token = token
+
+    # Commit all changes together: OAuth entry + Token + User + Role updates
     try:
         ub.session_commit()
         # Log role changes after successful commit
@@ -398,7 +402,29 @@ def register_user_from_generic_oauth(token=None):
         ub.session.rollback()
         return None
 
-    return provider_user_id
+    # ATOMIC SESSION CLEANUP
+    # We must clean the session triggers to avoid "Cookie Too Large" errors (4KB limit).
+    # Since we just saved the token to the DB, it is safe to remove it from the session.
+    if token:
+        provider_id = str(generic['id'])
+        keys_to_remove = [
+            'google_oauth_token', 'github_oauth_token', 'generic_oauth_token',
+            provider_id + "_oauth_token"
+        ]
+        for key in keys_to_remove:
+            if key in session:
+                try:
+                    session.pop(key)
+                except:
+                    pass
+        # We assume the user is about to be logged in by bind_oauth_or_register, 
+        # but we set the user_id in session just in case, matching oauth_update_token behavior.
+        session[provider_id + "_oauth_user_id"] = provider_user_id
+        session.modified = True
+
+    # DIRECT LOGIN: Return the response from binding/login (redirect)
+    # This aligns with the "Atomic" strategy to prevent loops
+    return bind_oauth_or_register(str(generic['id']), provider_user_id, 'generic.login', 'generic')
 
 
 def logout_oauth_user():
@@ -801,12 +827,15 @@ if ub.oauth_support:
 
         try:
             # Pass token explicitly to avoid DB race condition
-            provider_user_id = register_user_from_generic_oauth(token)
-            if provider_user_id:
-                return oauth_update_token(str(oauthblueprints[2]['id']), token, provider_user_id)
-            else:
-                # register_user_from_generic_oauth already logged error and flashed message
-                return False
+            # FUNCTION NOW RETURNS A RESPONSE OBJECT (Redirect)
+            response = register_user_from_generic_oauth(token)
+            if response:
+                # DIRECT LOGIN: Abort immediately to proper redirect
+                abort(response)
+            
+            # If no response, something failed silently (already logged)
+            return False
+
         except (InvalidGrantError, TokenExpiredError) as e:
             log.error("OAuth token error in generic_logged_in: %s", e)
             flash(_("OAuth authentication failed: Token validation error. Please try again."), category="error")
@@ -973,8 +1002,8 @@ def generic_login():
     try:
         # Here we rely on the stored token since we don't have it in args
         # If the previous step (generic_logged_in) succeeded, the token is in DB
-        provider_user_id = register_user_from_generic_oauth()
-        return bind_oauth_or_register(oauthblueprints[2]['id'], provider_user_id, 'generic.login', 'generic')
+        # This function now returns a Response object (redirect)
+        return register_user_from_generic_oauth()
     except (TokenExpiredError) as e:
         try:
             del oauthblueprints[2]['blueprint'].token

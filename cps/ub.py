@@ -696,6 +696,16 @@ def migrate_user_table(engine, _session):
             conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
             trans.commit()
 
+    # Force migration: All users to caliBlur theme (theme=1) for v4.0.0 frontend development
+    try:
+        users_migrated = _session.query(User).filter(User.theme == 0).update({User.theme: 1})
+        if users_migrated > 0:
+            _session.commit()
+            print(f"[theme-migration] Migrated {users_migrated} user(s) from light theme (0) to caliBlur theme (1). The light/legacy theme has been temporarily disabled from v3.2.0 and won't be re-enabled until the release of a new CWA frontend in v4.0.0.", flush=True)
+    except Exception as e:
+        print(f"[theme-migration] Error migrating users to caliBlur theme: {e}", flush=True)
+        _session.rollback()
+
     # Migration for auto-send feature columns
     try:
         _session.query(exists().where(User.auto_send_enabled)).scalar()

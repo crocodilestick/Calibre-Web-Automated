@@ -145,21 +145,8 @@ def validate_and_cleanup_provider_enabled_map(enabled_map, available_provider_id
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_switch_theme():
-    # Switch theme for current user only
-    try:
-        # current_user.theme may not exist for old sessions before migration; default to 1 (caliBlur)
-        current = getattr(current_user, 'theme', 1)
-        new_theme = 0 if current == 1 else 1
-        from . import ub
-        user = ub.session.query(ub.User).filter(ub.User.id == current_user.id).first()
-        if user:
-            user.theme = new_theme
-            ub.session_commit()
-        else:
-            log.error("Theme switch: user not found in DB")
-    except Exception as e:
-        log.error(f"Error switching theme: {e}")
-    # Redirect back to the page user was on (fallback to index)
+    # Theme switching temporarily disabled for v4.0.0 frontend development
+    flash(_("Theme switching is temporarily disabled until v4.0.0"), category="warning")
     target = request.referrer or url_for("web.index")
     # Basic safety: only allow same-host redirects
     try:
@@ -170,6 +157,21 @@ def cwa_switch_theme():
     except Exception:
         target = url_for("web.index")
     return redirect(target, code=302)
+    
+    # Original theme switching logic (disabled)
+    # try:
+    #     # current_user.theme may not exist for old sessions before migration; default to 1 (caliBlur)
+    #     current = getattr(current_user, 'theme', 1)
+    #     new_theme = 0 if current == 1 else 1
+    #     from . import ub
+    #     user = ub.session.query(ub.User).filter(ub.User.id == current_user.id).first()
+    #     if user:
+    #         user.theme = new_theme
+    #         ub.session_commit()
+    #     else:
+    #         log.error("Theme switch: user not found in DB")
+    # except Exception as e:
+    #     log.error(f"Error switching theme: {e}")
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##

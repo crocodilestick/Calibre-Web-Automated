@@ -504,7 +504,7 @@ $(".plexBack > a").attr({
 
 $("#cwa-switch-theme").attr({
     "data-toggle": "tooltip",
-    "title": $("#cwa-switch-theme").text(),              // "Switch Theme"
+    "title": $("#cwa-switch-theme").attr("title") || $("#cwa-switch-theme").text(),  // Use existing title attribute or fallback to text
     "data-placement": "bottom",
     "data-viewport": "#main-nav"
 })
@@ -680,6 +680,14 @@ if ($("body.epub").length === 0) {
         $("[data-toggle='tooltip']").tooltip({container: "body", trigger: "hover"});
         $("[data-toggle-two='tooltip']").tooltip({container: "body", trigger: "hover"});
         $("#btn-upload").attr("title", " ");
+        
+        // Ensure disabled theme switcher button has properly styled Bootstrap tooltip
+        $("#cwa-switch-theme").tooltip('destroy').tooltip({
+            container: "body", 
+            trigger: "hover",
+            placement: "bottom",
+            template: '<div class="tooltip cwa-tooltip-wrap" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+        });
     });
 
 

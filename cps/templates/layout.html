@@ -138,7 +138,7 @@
               </li>
               {% endif %}
               <li class="cwa-switch-theme">
-                <a id="cwa-switch-theme" href="{{ url_for('switch_theme.cwa_switch_theme') }}" title="Switch Theme">
+                <a id="cwa-switch-theme" href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;" title="Temporarily disabled until v4.0.0" data-toggle="tooltip" data-placement="bottom" onclick="return false;">
                   <span class="glyphicon glyphicon-sunglasses"></span>
                   <span class="hidden-sm">{{_('Switch Theme')}}</span>
                 </a>
@@ -223,6 +223,16 @@
       <div class="row-fluid text-center">
         <div id="flash_info" class="alert alert-info alert-cwa">
           {{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/wiki/Contributing-Translations">{{ _('Contribute here!') }}</a>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      {%endif%}
+      {%if message[0] == "theme_migration" %}
+      <div class="row-fluid text-center">
+        <div id="flash_info" class="alert alert-info alert-cwa">
+          {{ message[1] }}
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

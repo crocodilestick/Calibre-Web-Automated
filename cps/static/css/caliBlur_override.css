@@ -395,3 +395,10 @@ a#advanced_search > span.hidden-sm {
 .btn-primary[disabled] {
     background-color: var(--color-secondary);
 }
+/* Fix for disabled theme switcher tooltip text overflow */
+.tooltip.cwa-tooltip-wrap .tooltip-inner {
+    white-space: normal !important;
+    max-width: 250px !important;
+    width: auto !important;
+    text-align: center;
+}

@@ -830,8 +830,7 @@ if ub.oauth_support:
             # FUNCTION NOW RETURNS A RESPONSE OBJECT (Redirect)
             response = register_user_from_generic_oauth(token)
             if response:
-                # DIRECT LOGIN: Abort immediately to proper redirect
-                abort(response)
+                return response
             
             # If no response, something failed silently (already logged)
             return False

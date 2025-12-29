@@ -751,7 +751,15 @@ headers = {
 @login_required_if_no_ano
 @admin_required
 def cwa_stats_show():
+    # Check which tab to show (default to user activity)
+    active_tab = request.args.get('tab', 'activity')
+    
     cwa_db = CWA_DB()
+    
+    # Get user activity dashboard stats
+    dashboard_stats = cwa_db.get_dashboard_stats(days=30)
+    
+    # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
     data_enforcement_with_paths = cwa_db.enforce_show(paths=True, verbose=False, web_ui=True)
     data_imports = cwa_db.get_import_history(verbose=False)
@@ -759,10 +767,13 @@ def cwa_stats_show():
     data_epub_fixer = cwa_db.get_epub_fixer_history(fixes=False, verbose=False)
     data_epub_fixer_with_fixes = cwa_db.get_epub_fixer_history(fixes=True, verbose=False)
 
-    return render_title_template("cwa_stats.html", title=_("Calibre-Web Automated Sever Stats & Archive"), page="cwa-stats",
+    return render_title_template("cwa_stats_tabs.html", title=_("Calibre-Web Automated Stats & Activity"),
+                                page="cwa-stats",
+                                active_tab=active_tab,
+                                dashboard_stats=dashboard_stats,
                                 cwa_stats=get_cwa_stats(),
                                 data_enforcement=data_enforcement, headers_enforcement=headers["enforcement"]["no_paths"], 
-                                data_enforcement_with_paths=data_enforcement_with_paths,headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 
+                                data_enforcement_with_paths=data_enforcement_with_paths, headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 
                                 data_imports=data_imports, headers_import=headers["imports"],
                                 data_conversions=data_conversions, headers_conversion=headers["conversions"],
                                 data_epub_fixer=data_epub_fixer, headers_epub_fixer=headers["epub_fixer"]["no_fixes"],

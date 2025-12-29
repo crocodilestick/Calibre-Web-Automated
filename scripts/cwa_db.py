@@ -25,7 +25,7 @@ class CWA_DB:
         # Support both Docker and CI environments for schema path
         script_dir = os.path.dirname(os.path.abspath(__file__))
         self.schema_path = os.path.join(script_dir, "cwa_schema.sql")
-        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes"]
+        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes", "cwa_user_activity"]
         self.tables, self.schema = self.make_tables()
 
         self.cwa_default_settings = self.get_cwa_default_settings()
@@ -145,9 +145,14 @@ class CWA_DB:
         # Produces a dict with all of the column names for each table, from the existing DB
         current_column_names = {}
         for table in self.stats_tables:
-            self.cur.execute(f"SELECT * FROM {table}")
-            setting_names = [header[0] for header in self.cur.description]
-            current_column_names |= {table:setting_names}
+            try:
+                self.cur.execute(f"SELECT * FROM {table}")
+                setting_names = [header[0] for header in self.cur.description]
+                current_column_names |= {table:setting_names}
+            except sqlite3.OperationalError:
+                # Table might not exist yet if it's new, skip it for now
+                # It will be created by make_tables() if it doesn't exist
+                current_column_names |= {table: []}
 
         # Produces a dict with all of the column names for each table, from the schema
         column_names_in_schema = {}
@@ -156,12 +161,17 @@ class CWA_DB:
             table = table.split('\n')
             for line in table:
                 if line[:27] == "CREATE TABLE IF NOT EXISTS ":
-                    table_name = line[27:].replace('(', '')
+                    table_name = line[27:].replace('(', '').strip()
                 elif line[:4] == "    ":
                     column_names.append(line.strip().split(' ')[0])
-            column_names_in_schema |= {table_name:column_names} # type: ignore
+            if 'table_name' in locals():
+                column_names_in_schema |= {table_name:column_names} # type: ignore
 
         for table in self.stats_tables:
+            # Skip if table wasn't found in current DB (it was just created empty)
+            if not current_column_names[table]:
+                continue
+                
             if len(current_column_names[table]) < len(column_names_in_schema[table]): # Adds new columns not yet in existing db
                 num_new_columns = len(column_names_in_schema[table]) - len(current_column_names[table])
                 for x in range(1, num_new_columns + 1):
@@ -551,6 +561,147 @@ class CWA_DB:
         except Exception as e:
             print(f"[cwa-db] ERROR fetching pending scheduled jobs for {job_type}: {e}")
             return []
+
+    def log_activity(self, user_id, user_name, event_type, item_id=None, item_title=None, extra_data=None):
+        """Logs a user activity event to the database."""
+        try:
+            self.cur.execute("""
+                INSERT INTO cwa_user_activity (user_id, user_name, event_type, item_id, item_title, extra_data)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (user_id, user_name, event_type, item_id, item_title, extra_data))
+            self.con.commit()
+        except Exception as e:
+            print(f"[cwa-db] Error logging activity: {e}")
+
+    def get_dashboard_stats(self, days=30):
+        """Returns comprehensive activity stats for the user dashboard."""
+        try:
+            cutoff_date = f"date('now', '-{days} days')"
+            
+            # 1. Activity timeline - Daily counts by event type
+            self.cur.execute(f"""
+                SELECT date(timestamp) as day, event_type, COUNT(*) as count
+                FROM cwa_user_activity 
+                WHERE timestamp >= {cutoff_date}
+                GROUP BY day, event_type
+                ORDER BY day ASC
+            """)
+            timeline_data = self.cur.fetchall()
+
+            # 2. Top active users in period
+            self.cur.execute(f"""
+                SELECT COALESCE(user_name, 'Unknown User') as user_name, COUNT(*) as activity_count
+                FROM cwa_user_activity 
+                WHERE timestamp >= {cutoff_date}
+                GROUP BY user_id, user_name
+                ORDER BY activity_count DESC 
+                LIMIT 10
+            """)
+            top_users = self.cur.fetchall()
+
+            # 3. Most popular books (reads + downloads + emails combined)
+            self.cur.execute(f"""
+                SELECT item_title, item_id, COUNT(*) as hits
+                FROM cwa_user_activity 
+                WHERE item_id IS NOT NULL 
+                  AND event_type IN ('DOWNLOAD', 'READ', 'EMAIL')
+                  AND timestamp >= {cutoff_date}
+                GROUP BY item_id, item_title
+                ORDER BY hits DESC 
+                LIMIT 10
+            """)
+            top_books = self.cur.fetchall()
+            
+            # 4. Recent search terms
+            self.cur.execute(f"""
+                SELECT extra_data as search_term, timestamp, user_name
+                FROM cwa_user_activity 
+                WHERE event_type = 'SEARCH' 
+                  AND extra_data IS NOT NULL
+                  AND timestamp >= {cutoff_date}
+                ORDER BY timestamp DESC 
+                LIMIT 15
+            """)
+            recent_searches = self.cur.fetchall()
+
+            # 5. Download format distribution
+            self.cur.execute(f"""
+                SELECT UPPER(extra_data) as format, COUNT(*) as count
+                FROM cwa_user_activity
+                WHERE event_type IN ('DOWNLOAD', 'EMAIL')
+                  AND extra_data IS NOT NULL
+                  AND timestamp >= {cutoff_date}
+                GROUP BY UPPER(extra_data)
+                ORDER BY count DESC
+            """)
+            format_distribution = self.cur.fetchall()
+
+            # 6. Event type breakdown (LOGIN, DOWNLOAD, READ, SEARCH, EMAIL)
+            self.cur.execute(f"""
+                SELECT event_type, COUNT(*) as count
+                FROM cwa_user_activity
+                WHERE timestamp >= {cutoff_date}
+                GROUP BY event_type
+                ORDER BY count DESC
+            """)
+            event_breakdown = self.cur.fetchall()
+
+            # 7. Total activity metrics
+            self.cur.execute(f"""
+                SELECT 
+                    COUNT(*) as total_events,
+                    COUNT(DISTINCT user_id) as active_users,
+                    COUNT(DISTINCT CASE WHEN event_type IN ('DOWNLOAD', 'EMAIL') THEN item_id END) as unique_downloads,
+                    COUNT(DISTINCT CASE WHEN event_type = 'READ' THEN item_id END) as unique_reads,
+                    COUNT(CASE WHEN event_type = 'LOGIN' THEN 1 END) as total_logins,
+                    COUNT(CASE WHEN event_type IN ('DOWNLOAD', 'EMAIL') THEN 1 END) as total_downloads,
+                    COUNT(CASE WHEN event_type = 'READ' THEN 1 END) as total_reads,
+                    COUNT(CASE WHEN event_type = 'SEARCH' THEN 1 END) as total_searches
+                FROM cwa_user_activity
+                WHERE timestamp >= {cutoff_date}
+            """)
+            totals = self.cur.fetchone()
+
+            return {
+                "timeline": timeline_data or [],
+                "top_users": top_users or [],
+                "top_books": top_books or [],
+                "recent_searches": recent_searches or [],
+                "format_distribution": format_distribution or [],
+                "event_breakdown": event_breakdown or [],
+                "totals": {
+                    "total_events": totals[0] if totals else 0,
+                    "active_users": totals[1] if totals else 0,
+                    "unique_downloads": totals[2] if totals else 0,
+                    "unique_reads": totals[3] if totals else 0,
+                    "total_logins": totals[4] if totals else 0,
+                    "total_downloads": totals[5] if totals else 0,
+                    "total_reads": totals[6] if totals else 0,
+                    "total_searches": totals[7] if totals else 0,
+                }
+            }
+        except Exception as e:
+            print(f"[cwa-db] Error getting dashboard stats: {e}")
+            import traceback
+            traceback.print_exc()
+            return {
+                "timeline": [],
+                "top_users": [],
+                "top_books": [],
+                "recent_searches": [],
+                "format_distribution": [],
+                "event_breakdown": [],
+                "totals": {
+                    "total_events": 0,
+                    "active_users": 0,
+                    "unique_downloads": 0,
+                    "unique_reads": 0,
+                    "total_logins": 0,
+                    "total_downloads": 0,
+                    "total_reads": 0,
+                    "total_searches": 0,
+                }
+            }
 
 def main():
     db = CWA_DB()

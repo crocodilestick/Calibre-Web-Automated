@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<script src="{{ url_for('static', filename='js/libs/echarts.min.js') }}"></script>
+
+<style>
+    .stats-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #3a4451;
+        padding-bottom: 0;
+    }
+    
+    .stats-tab {
+        background: none;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #aaa;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+        bottom: -2px;
+    }
+    
+    .stats-tab:hover {
+        color: #ff9800;
+        background: rgba(255, 152, 0, 0.05);
+    }
+    
+    .stats-tab.active {
+        color: #ff9800;
+        border-bottom-color: #ff9800;
+        background: rgba(255, 152, 0, 0.1);
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="discover" style="margin-top: 1rem !important;">
+    <h2>{{title}}</h2>
+    
+    <!-- Tab Navigation -->
+    <div class="stats-tabs">
+        <button class="stats-tab {{ 'active' if active_tab == 'activity' else '' }}" 
+                onclick="switchTab('activity')">
+            📊 User Activity
+        </button>
+        <button class="stats-tab {{ 'active' if active_tab == 'system' else '' }}" 
+                onclick="switchTab('system')">
+            ⚙️ System Logs
+        </button>
+    </div>
+    
+    <!-- User Activity Tab -->
+    <div id="activity-tab" class="tab-content {{ 'active' if active_tab == 'activity' else '' }}">
+        {% include 'cwa_user_activity.html' %}
+    </div>
+    
+    <!-- System Logs Tab -->
+    <div id="system-tab" class="tab-content {{ 'active' if active_tab == 'system' else '' }}">
+        {% include 'cwa_stats_system.html' %}
+    </div>
+</div>
+
+<script>
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.stats-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Update URL without page reload
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tabName);
+    window.history.pushState({}, '', url);
+}
+</script>
+
+{% endblock %}

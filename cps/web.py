@@ -1368,6 +1368,21 @@ def send_to_ereader(book_id, book_format, convert):
                        current_user.name, current_user.kindle_mail_subject)
     if result is None:
         ub.update_download(book_id, int(current_user.id))
+        # Track email/send activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            book = calibre_db.get_book(book_id)
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='EMAIL',
+                item_id=book_id,
+                item_title=book.title if book else 'Unknown',
+                extra_data=book_format.upper()
+            )
+        except Exception as e:
+            log.debug(f"Failed to log email activity: {e}")
         response = [{'type': "success", 'message': _("Success! Book queued for sending to %(eReadermail)s",
                                                    eReadermail=current_user.kindle_mail)}]
     else:
@@ -1395,6 +1410,21 @@ def send_to_selected_ereaders(book_id):
 
     if result is None:
         ub.update_download(book_id, int(current_user.id))
+        # Track email/send activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            book = calibre_db.get_book(book_id)
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='EMAIL',
+                item_id=book_id,
+                item_title=book.title if book else 'Unknown',
+                extra_data=book_format.upper()
+            )
+        except Exception as e:
+            log.debug(f"Failed to log email activity: {e}")
         response = [{'type': "success", 'message': _("Success! Book queued for sending to the selected address(es)!")}]
     else:
         response = [{'type': "danger", 'message': _("Oops! There was an error sending book: %(res)s", res=result)}]
@@ -1484,6 +1514,19 @@ def register():
 
 def handle_login_user(user, remember, message, category):
     login_user(user, remember=remember)
+    
+    # Track login activity
+    try:
+        from scripts.cwa_db import CWA_DB
+        cwa_db = CWA_DB()
+        cwa_db.log_activity(
+            user_id=int(user.id),
+            user_name=user.name,
+            event_type='LOGIN'
+        )
+    except Exception as e:
+        log.debug(f"Failed to log login activity: {e}")
+    
     flash(message, category=category)
     [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
 
@@ -1833,6 +1876,22 @@ def read_book(book_id, book_format):
         bookmark = ub.session.query(ub.Bookmark).filter(and_(ub.Bookmark.user_id == int(current_user.id),
                                                              ub.Bookmark.book_id == book_id,
                                                              ub.Bookmark.format == book_format.upper())).first()
+    # Track read activity
+    if current_user.is_authenticated:
+        try:
+            from scripts.cwa_db import CWA_DB
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='READ',
+                item_id=book_id,
+                item_title=book.title,
+                extra_data=book_format.upper()
+            )
+        except Exception as e:
+            log.debug(f"Failed to log read activity: {e}")
+    
     if book_format.lower() == "epub":
         log.debug("Start epub reader for %d", book_id)
         return render_title_template('read.html', bookid=book_id, title=book.title, bookmark=bookmark)

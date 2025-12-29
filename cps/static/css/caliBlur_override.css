@@ -402,3 +402,13 @@ a#advanced_search > span.hidden-sm {
     width: auto !important;
     text-align: center;
 }
+
+.cwa-settings-tip {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+    border-radius: 0.25rem;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}

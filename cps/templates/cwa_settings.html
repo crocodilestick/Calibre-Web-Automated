@@ -169,7 +169,7 @@
         {{_("When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
         compatibility with Amazon's Send-to-Kindle Service. This feature is particularly useful for users who frequently send EPUB files to their Kindle devices and have experienced issues with 
         file rejections or formatting problems.")}}
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-settings-tip">
         <small>{{_('This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.') | safe }}</small>
       </div>
 
@@ -272,7 +272,7 @@
           {% endif %}
         </div>
         
-        <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+        <div class="cwa-settings-tip">
           <small style="color: var(--color-info-text);">
             💡 <strong>{{_('Tip')}}:</strong> {{_('These field selections apply to both Smart and Direct replacement modes. Smart mode will additionally apply quality criteria to selected fields, while Direct mode will replace all selected fields with provider data.')}}
           </small>
@@ -339,7 +339,7 @@
         </div>
         <input type="hidden" name="metadata_provider_hierarchy" id="metadata_provider_hierarchy_hidden" value="">
       </div>
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-settings-tip">
         <small class="settings-explanation">💡 <strong>{{_('Tip')}}:</strong> {{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
       </div>
     </div>
@@ -458,7 +458,7 @@
           {% endif %}
         {% endfor %}
       </select>
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-settings-tip">
         <small class="settings-explanation">
           {{_("NOTE: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
         </small>
@@ -629,7 +629,7 @@
         </div>
       </div>
 
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-settings-tip">
         <small class="settings-explanation">
           <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
         </small>

@@ -62,7 +62,7 @@ def create_minimal_calibre_library(library_path: Path):
             format TEXT NOT NULL,
             uncompressed_size INTEGER DEFAULT 0,
             name TEXT NOT NULL,
-            FOREIGN KEY (book) REFERENCES books(id)
+            FOREIGN KEY (book) REFERENCES books(id) ON DELETE CASCADE
         )
     ''')
 
@@ -74,7 +74,7 @@ def create_minimal_calibre_library(library_path: Path):
             checksum TEXT NOT NULL,
             version TEXT NOT NULL DEFAULT 'koreader',
             created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (book) REFERENCES books(id)
+            FOREIGN KEY (book) REFERENCES books(id) ON DELETE CASCADE
         )
     ''')
 

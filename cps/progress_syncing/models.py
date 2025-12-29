@@ -129,7 +129,7 @@ def ensure_checksum_table(conn):
                     checksum TEXT NOT NULL,
                     version TEXT NOT NULL DEFAULT 'koreader',
                     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (book) REFERENCES books(id)
+                    FOREIGN KEY (book) REFERENCES books(id) ON DELETE CASCADE
                 )
             """)
             execute_sql(f"CREATE INDEX {table_prefix}idx_checksum ON book_format_checksums(checksum)")
@@ -203,7 +203,7 @@ def ensure_kosync_progress_table(conn):
                     device TEXT NOT NULL,
                     device_id TEXT,
                     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES user(id)
+                    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
                 )
             """)
             execute_sql("CREATE INDEX idx_kosync_user_document ON kosync_progress(user_id, document)")

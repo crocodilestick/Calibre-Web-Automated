@@ -1160,6 +1160,240 @@ class CWA_DB:
             traceback.print_exc()
             return []
 
+    def get_session_duration_stats(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns session duration statistics by calculating time between LOGIN events.
+        
+        Args:
+            days: Number of days back (optional)
+            start_date/end_date: Custom range 'YYYY-MM-DD' (takes precedence)
+            user_id: Filter by user (optional)
+        
+        Returns: Dict with average_minutes, median_minutes, session_distribution
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            # Get LOGIN events ordered by user and time
+            self.cur.execute(f"""
+                WITH ordered_logins AS (
+                    SELECT 
+                        user_id,
+                        user_name,
+                        timestamp,
+                        LEAD(timestamp) OVER (PARTITION BY user_id ORDER BY timestamp) as next_login,
+                        julianday(LEAD(timestamp) OVER (PARTITION BY user_id ORDER BY timestamp)) - 
+                        julianday(timestamp) as duration_days
+                    FROM cwa_user_activity
+                    WHERE event_type = 'LOGIN' AND {combined_filter}
+                )
+                SELECT 
+                    ROUND(AVG(duration_days * 24 * 60), 1) as avg_minutes,
+                    duration_days * 24 * 60 as session_minutes
+                FROM ordered_logins
+                WHERE next_login IS NOT NULL
+                    AND duration_days < 1  -- Ignore sessions > 24 hours
+            """)
+            
+            results = self.cur.fetchall()
+            if not results:
+                return {'average_minutes': 0, 'median_minutes': 0, 'distribution': []}
+            
+            # Calculate average
+            avg_result = self.cur.execute(f"""
+                WITH ordered_logins AS (
+                    SELECT 
+                        julianday(LEAD(timestamp) OVER (PARTITION BY user_id ORDER BY timestamp)) - 
+                        julianday(timestamp) as duration_days
+                    FROM cwa_user_activity
+                    WHERE event_type = 'LOGIN' AND {combined_filter}
+                )
+                SELECT ROUND(AVG(duration_days * 24 * 60), 1) as avg_minutes
+                FROM ordered_logins
+                WHERE duration_days IS NOT NULL AND duration_days < 1
+            """).fetchone()
+            
+            avg_minutes = avg_result[0] if avg_result and avg_result[0] else 0
+            
+            # Get distribution for histogram (5-minute buckets)
+            self.cur.execute(f"""
+                WITH ordered_logins AS (
+                    SELECT 
+                        julianday(LEAD(timestamp) OVER (PARTITION BY user_id ORDER BY timestamp)) - 
+                        julianday(timestamp) as duration_days
+                    FROM cwa_user_activity
+                    WHERE event_type = 'LOGIN' AND {combined_filter}
+                )
+                SELECT 
+                    CAST((duration_days * 24 * 60) / 5 AS INTEGER) * 5 as bucket_start,
+                    COUNT(*) as count
+                FROM ordered_logins
+                WHERE duration_days IS NOT NULL AND duration_days < 1
+                GROUP BY bucket_start
+                ORDER BY bucket_start
+            """)
+            
+            distribution = self.cur.fetchall()
+            
+            return {
+                'average_minutes': avg_minutes,
+                'distribution': distribution  # List of (bucket_start_minutes, count)
+            }
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting session duration stats: {e}")
+            import traceback
+            traceback.print_exc()
+            return {'average_minutes': 0, 'distribution': []}
+
+    def get_search_success_rate(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns search success rate (searches followed by DOWNLOAD/READ within 5 minutes).
+        
+        Args:
+            days: Number of days back (optional)
+            start_date/end_date: Custom range 'YYYY-MM-DD' (takes precedence)
+            user_id: Filter by user (optional)
+        
+        Returns: Dict with total_searches, successful_searches, success_rate, trend
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+                date_filter_prev = None
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+                date_filter_prev = f"timestamp >= date('now', '-{days * 2} days') AND timestamp < date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            # Count total searches in period
+            total_searches = self.cur.execute(f"""
+                SELECT COUNT(*)
+                FROM cwa_user_activity
+                WHERE event_type = 'SEARCH' AND {combined_filter}
+            """).fetchone()[0]
+            
+            # Count successful searches (followed by DOWNLOAD or READ within 5 minutes)
+            successful_searches = self.cur.execute(f"""
+                SELECT COUNT(DISTINCT s.id)
+                FROM cwa_user_activity s
+                WHERE s.event_type = 'SEARCH' 
+                    AND {combined_filter}
+                    AND EXISTS (
+                        SELECT 1 FROM cwa_user_activity a
+                        WHERE a.user_id = s.user_id
+                            AND a.event_type IN ('DOWNLOAD', 'READ')
+                            AND a.timestamp BETWEEN s.timestamp AND datetime(s.timestamp, '+5 minutes')
+                    )
+            """).fetchone()[0]
+            
+            success_rate = (successful_searches / total_searches * 100) if total_searches > 0 else 0
+            
+            # Calculate trend if we have previous period
+            trend = 0
+            if date_filter_prev:
+                combined_filter_prev = date_filter_prev + user_filter
+                total_prev = self.cur.execute(f"""
+                    SELECT COUNT(*)
+                    FROM cwa_user_activity
+                    WHERE event_type = 'SEARCH' AND {combined_filter_prev}
+                """).fetchone()[0]
+                
+                successful_prev = self.cur.execute(f"""
+                    SELECT COUNT(DISTINCT s.id)
+                    FROM cwa_user_activity s
+                    WHERE s.event_type = 'SEARCH' 
+                        AND {combined_filter_prev}
+                        AND EXISTS (
+                            SELECT 1 FROM cwa_user_activity a
+                            WHERE a.user_id = s.user_id
+                                AND a.event_type IN ('DOWNLOAD', 'READ')
+                                AND a.timestamp BETWEEN s.timestamp AND datetime(s.timestamp, '+5 minutes')
+                        )
+                """).fetchone()[0]
+                
+                success_rate_prev = (successful_prev / total_prev * 100) if total_prev > 0 else 0
+                trend = success_rate - success_rate_prev if success_rate_prev > 0 else 0
+            
+            return {
+                'total_searches': total_searches,
+                'successful_searches': successful_searches,
+                'success_rate': round(success_rate, 1),
+                'trend': round(trend, 1)
+            }
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting search success rate: {e}")
+            import traceback
+            traceback.print_exc()
+            return {
+                'total_searches': 0,
+                'successful_searches': 0,
+                'success_rate': 0,
+                'trend': 0
+            }
+
+    def get_shelf_activity_stats(self, days=None, start_date=None, end_date=None, user_id=None, limit=10):
+        """Returns most active shelves by number of additions.
+        
+        Args:
+            days: Number of days back (optional)
+            start_date/end_date: Custom range 'YYYY-MM-DD' (takes precedence)
+            user_id: Filter by user (optional)
+            limit: Number of shelves to return (default 10)
+        
+        Returns: List of tuples: (shelf_name, add_count, remove_count, net_change)
+        """
+        try:
+            import json
+            
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            # Get shelf activity (parse shelf_name from extra_data JSON)
+            self.cur.execute(f"""
+                SELECT 
+                    json_extract(extra_data, '$.shelf_name') as shelf_name,
+                    SUM(CASE WHEN event_type = 'SHELF_ADD' THEN 1 ELSE 0 END) as add_count,
+                    SUM(CASE WHEN event_type = 'SHELF_REMOVE' THEN 1 ELSE 0 END) as remove_count,
+                    SUM(CASE WHEN event_type = 'SHELF_ADD' THEN 1 ELSE -1 END) as net_change
+                FROM cwa_user_activity
+                WHERE event_type IN ('SHELF_ADD', 'SHELF_REMOVE')
+                    AND {combined_filter}
+                    AND json_extract(extra_data, '$.shelf_name') IS NOT NULL
+                GROUP BY shelf_name
+                ORDER BY add_count DESC, net_change DESC
+                LIMIT {limit}
+            """)
+            
+            return self.cur.fetchall()
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting shelf activity stats: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
     def get_hourly_activity_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
         """Returns activity count by hour of day and day of week for heatmap visualization.
         

@@ -70,6 +70,23 @@ def add_to_shelf(shelf_id, book_id):
     try:
         ub.session.merge(shelf)
         ub.session.commit()
+        
+        # Track shelf activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            import json
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='SHELF_ADD',
+                item_id=book_id,
+                item_title=book.title if book else None,
+                extra_data=json.dumps({'shelf_name': shelf.name})
+            )
+        except Exception as e:
+            log.debug(f"Failed to log shelf activity: {e}")
+            
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
@@ -187,6 +204,24 @@ def remove_from_shelf(shelf_id, book_id):
             ub.session.delete(book_shelf)
             shelf.last_modified = datetime.now(timezone.utc)
             ub.session.commit()
+            
+            # Track shelf activity
+            try:
+                from scripts.cwa_db import CWA_DB
+                import json
+                book = calibre_db.session.query(db.Books).filter(db.Books.id == book_id).one_or_none()
+                cwa_db = CWA_DB()
+                cwa_db.log_activity(
+                    user_id=int(current_user.id),
+                    user_name=current_user.name,
+                    event_type='SHELF_REMOVE',
+                    item_id=book_id,
+                    item_title=book.title if book else None,
+                    extra_data=json.dumps({'shelf_name': shelf.name})
+                )
+            except Exception as e:
+                log.debug(f"Failed to log shelf activity: {e}")
+                
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()
             log.error_or_exception("Settings Database error: {}".format(e))

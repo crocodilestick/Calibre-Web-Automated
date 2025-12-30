@@ -484,7 +484,7 @@
     </div>
     
     <!-- Fifth Row: Top Lists -->
-    <div class="row">
+    <div class="row cwa-stats-row">
         <div class="col-md-4">
             <div class="chart-container">
                 {% if selected_user_id %}
@@ -506,6 +506,41 @@
             <div class="chart-container">
                 <div class="chart-title">🔎 Recent Searches</div>
                 <div id="recent-searches-list"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sprint 5: Enhanced User Activity Metrics -->
+    <div class="row cwa-stats-row">
+        <div class="col-md-4">
+            <div class="chart-container" style="min-height: 520px;">
+                <div class="chart-title">⏱️ Average Session Duration</div>
+                <div class="metric-card" style="margin-bottom: 15px;">
+                    <div class="metric-icon">⏰</div>
+                    <div class="metric-label">Avg Session Length</div>
+                    <div class="metric-value" id="avg-session-duration">0 min</div>
+                </div>
+                <div id="session-duration-chart" style="width: 100%; height: 250px;"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="chart-container" style="min-height: 520px;">
+                <div class="chart-title">🎯 Search Success Rate</div>
+                <div class="metric-card" style="margin-bottom: 15px;">
+                    <div class="metric-icon">🔍</div>
+                    <div class="metric-label">Searches Leading to Actions</div>
+                    <div class="metric-value" id="search-success-rate">0%</div>
+                    <div style="font-size: 0.9em; color: #aaa; margin-top: 5px;">
+                        <span id="search-success-count">0</span> of <span id="total-searches">0</span> searches
+                    </div>
+                </div>
+                <div id="search-success-chart" style="width: 100%; height: 250px;"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="chart-container" style="min-height: 520px;">
+                <div class="chart-title">📚 Shelf Activity</div>
+                <div id="shelf-activity-list" style="max-height: 420px; overflow-y: auto;"></div>
             </div>
         </div>
     </div>
@@ -533,7 +568,10 @@ const realData = {
     formatPreferences: {{ format_preferences | tojson }},
     discoverySources: {{ discovery_sources | tojson }},
     deviceBreakdown: {{ device_breakdown | tojson }},
-    failedLogins: {{ failed_logins | tojson }}
+    failedLogins: {{ failed_logins | tojson }},
+    sessionDuration: {{ session_duration | tojson }},
+    searchSuccess: {{ search_success | tojson }},
+    shelfActivity: {{ shelf_activity | tojson }}
 };
 
 const isAdmin = {{ 'true' if is_admin else 'false' }};
@@ -738,7 +776,44 @@ function generateDemoData() {
         failedLogins: Math.random() > 0.7 ? [
             ['192.168.1.123', 'admin', new Date().toISOString(), Math.floor(Math.random() * 5) + 1],
             ['10.0.0.45', 'testuser', new Date().toISOString(), Math.floor(Math.random() * 3) + 1]
-        ] : []
+        ] : [],
+        // Generate session duration stats
+        sessionDuration: {
+            average_minutes: 15 + Math.floor(Math.random() * 30), // 15-45 minutes
+            distribution: (() => {
+                const dist = [];
+                for (let i = 0; i < 60; i += 5) {
+                    const count = Math.max(0, Math.floor(Math.random() * 20) - (i / 10));
+                    if (count > 0) dist.push([i, count]);
+                }
+                return dist;
+            })()
+        },
+        // Generate search success rate
+        searchSuccess: {
+            total_searches: 150 + Math.floor(Math.random() * 100),
+            successful_searches: 100 + Math.floor(Math.random() * 80),
+            success_rate: 55 + Math.floor(Math.random() * 30), // 55-85%
+            trend: Math.floor(Math.random() * 20) - 5 // -5 to +15
+        },
+        // Generate shelf activity (shelf_name, add_count, remove_count, net_change)
+        shelfActivity: [
+            ['To Read', 45, 12, 33],
+            ['Currently Reading', 28, 15, 13],
+            ['Favorites', 23, 3, 20],
+            ['Completed', 67, 5, 62],
+            ['Science Fiction', 19, 8, 11],
+            ['Fantasy', 15, 6, 9],
+            ['Non-Fiction', 12, 4, 8],
+            ['Mystery', 9, 2, 7],
+            ['Romance', 8, 3, 5],
+            ['Wishlist', 6, 1, 5]
+        ].map(([name, add, remove, net]) => [
+            name,
+            add + Math.floor(Math.random() * 10),
+            remove + Math.floor(Math.random() * 5),
+            net + Math.floor(Math.random() * 8)
+        ])
     };
 }
 
@@ -747,7 +822,7 @@ let currentData = realData;  // Always start with real data, even if empty
 let userProfiles = {};
 
 // Initialize charts
-let timelineChart, eventsChart, formatsChart, heatmapChart, velocityChart, formatPreferencesChart, discoveryChart, deviceChart;
+let timelineChart, eventsChart, formatsChart, heatmapChart, velocityChart, formatPreferencesChart, discoveryChart, deviceChart, sessionDurationChart, searchSuccessChart;
 
 function initCharts() {
     timelineChart = echarts.init(document.getElementById('timeline-chart'));
@@ -758,6 +833,8 @@ function initCharts() {
     formatPreferencesChart = echarts.init(document.getElementById('format-preferences-chart'));
     discoveryChart = echarts.init(document.getElementById('discovery-chart'));
     deviceChart = echarts.init(document.getElementById('device-chart'));
+    sessionDurationChart = echarts.init(document.getElementById('session-duration-chart'));
+    searchSuccessChart = echarts.init(document.getElementById('search-success-chart'));
     
     // Fetch user profiles first, then update visualizations
     fetch('/user_profiles.json')
@@ -781,6 +858,8 @@ function initCharts() {
         formatPreferencesChart.resize();
         discoveryChart.resize();
         deviceChart.resize();
+        sessionDurationChart.resize();
+        searchSuccessChart.resize();
     });
 }
 
@@ -796,6 +875,9 @@ function updateAllVisualizations() {
     updateDeviceChart();
     updateFailedLogins();
     updateTopLists();
+    updateSessionDuration();
+    updateSearchSuccess();
+    updateShelfActivity();
 }
 
 function updateMetrics() {
@@ -1600,6 +1682,193 @@ function updateTopLists() {
         `).join('')
         : '<p style="text-align: center; color: #999; padding: 20px;">No searches yet</p>';
     document.getElementById('recent-searches-list').innerHTML = searchesHtml;
+}
+
+function updateSessionDuration() {
+    const data = currentData.sessionDuration || { average_minutes: 0, distribution: [] };
+    
+    // Update metric card
+    const avgMin = data.average_minutes || 0;
+    document.getElementById('avg-session-duration').textContent = avgMin > 0 ? `${avgMin} min` : '0 min';
+    
+    // Update histogram chart
+    if (data.distribution && data.distribution.length > 0) {
+        const buckets = data.distribution.map(d => d[0]);
+        const counts = data.distribution.map(d => d[1]);
+        
+        sessionDurationChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                textStyle: { color: '#fff' },
+                formatter: (params) => {
+                    const p = params[0];
+                    return `${p.name}-${p.name + 5} min: ${p.value} sessions`;
+                }
+            },
+            grid: {
+                left: '10%',
+                right: '5%',
+                bottom: '15%',
+                top: '10%'
+            },
+            xAxis: {
+                type: 'category',
+                data: buckets,
+                name: 'Minutes',
+                nameLocation: 'middle',
+                nameGap: 30,
+                axisLabel: {
+                    color: '#fff',
+                    rotate: 45
+                },
+                axisLine: { lineStyle: { color: '#3a4451' } }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Sessions',
+                axisLabel: { color: '#fff' },
+                splitLine: { lineStyle: { color: '#3a4451' } }
+            },
+            series: [{
+                type: 'bar',
+                data: counts,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#ff9800' },
+                        { offset: 1, color: '#ff5722' }
+                    ])
+                }
+            }]
+        }, true);
+    } else {
+        sessionDurationChart.setOption({
+            title: {
+                text: 'No session data available',
+                left: 'center',
+                top: 'center',
+                textStyle: { color: '#999', fontSize: 14 }
+            }
+        }, true);
+    }
+}
+
+function updateSearchSuccess() {
+    const data = currentData.searchSuccess || { 
+        total_searches: 0, 
+        successful_searches: 0, 
+        success_rate: 0, 
+        trend: 0 
+    };
+    
+    // Update metric card
+    document.getElementById('search-success-rate').textContent = `${data.success_rate}%`;
+    document.getElementById('search-success-count').textContent = data.successful_searches;
+    document.getElementById('total-searches').textContent = data.total_searches;
+    
+    // Determine color based on success rate
+    let color = '#f44336'; // Red for low
+    if (data.success_rate >= 60) color = '#4caf50'; // Green for high
+    else if (data.success_rate >= 40) color = '#ff9800'; // Orange for medium
+    
+    // Update gauge chart
+    searchSuccessChart.setOption({
+        tooltip: {
+            formatter: '{b}: {c}%'
+        },
+        series: [{
+            type: 'gauge',
+            startAngle: 180,
+            endAngle: 0,
+            min: 0,
+            max: 100,
+            splitNumber: 10,
+            axisLine: {
+                lineStyle: {
+                    width: 15,
+                    color: [
+                        [0.4, '#f44336'],
+                        [0.6, '#ff9800'],
+                        [1, '#4caf50']
+                    ]
+                }
+            },
+            pointer: {
+                width: 5,
+                length: '60%'
+            },
+            axisTick: {
+                distance: -15,
+                length: 5,
+                lineStyle: { color: '#fff', width: 1 }
+            },
+            splitLine: {
+                distance: -15,
+                length: 10,
+                lineStyle: { color: '#fff', width: 2 }
+            },
+            axisLabel: {
+                color: '#fff',
+                distance: 20,
+                fontSize: 12
+            },
+            detail: {
+                valueAnimation: true,
+                formatter: '{value}%',
+                color: color,
+                fontSize: 24,
+                offsetCenter: [0, '80%']
+            },
+            data: [{ value: data.success_rate, name: 'Success Rate' }]
+        }]
+    }, true);
+}
+
+function updateShelfActivity() {
+    const data = currentData.shelfActivity || [];
+    
+    const html = data.length > 0
+        ? data.map(([shelfName, addCount, removeCount, netChange], index) => {
+            const netColor = netChange >= 0 ? '#4caf50' : '#f44336';
+            const netSymbol = netChange >= 0 ? '+' : '';
+            
+            return `
+                <div style="
+                    background: rgba(255,255,255,0.03);
+                    border-left: 3px solid ${netColor};
+                    padding: 12px 15px;
+                    margin-bottom: 10px;
+                    border-radius: 4px;
+                    transition: all 0.2s ease;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.05)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: 600; color: #fff; font-size: 0.95em;">📚 ${shelfName}</span>
+                        <span style="
+                            color: ${netColor};
+                            font-weight: 700;
+                            font-size: 1.1em;
+                            min-width: 45px;
+                            text-align: right;">${netSymbol}${netChange}</span>
+                    </div>
+                    <div style="
+                        display: flex;
+                        gap: 15px;
+                        font-size: 0.8em;
+                        padding-left: 22px;">
+                        <span style="color: #4caf50; display: flex; align-items: center; gap: 4px;">
+                            <span style="font-size: 1.1em;">▲</span> ${addCount}
+                        </span>
+                        <span style="color: #f44336; display: flex; align-items: center; gap: 4px;">
+                            <span style="font-size: 1.1em;">▼</span> ${removeCount}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }).join('')
+        : '<p style="text-align: center; color: #999; padding: 40px 20px;">No shelf activity yet</p>';
+    
+    document.getElementById('shelf-activity-list').innerHTML = html;
 }
 
 function toggleDemoMode() {

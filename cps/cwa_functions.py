@@ -848,6 +848,16 @@ def cwa_stats_show():
     publication_years = cwa_db.get_publication_year_distribution()
     most_fixed_books = cwa_db.get_most_fixed_books(limit=10)
     
+    # Get Sprint 5 user activity enhancements
+    if start_date and end_date:
+        session_duration = cwa_db.get_session_duration_stats(start_date=start_date, end_date=end_date, user_id=user_id)
+        search_success = cwa_db.get_search_success_rate(start_date=start_date, end_date=end_date, user_id=user_id)
+        shelf_activity = cwa_db.get_shelf_activity_stats(start_date=start_date, end_date=end_date, user_id=user_id, limit=10)
+    else:
+        session_duration = cwa_db.get_session_duration_stats(days=days, user_id=user_id)
+        search_success = cwa_db.get_search_success_rate(days=days, user_id=user_id)
+        shelf_activity = cwa_db.get_shelf_activity_stats(days=days, user_id=user_id, limit=10)
+    
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
     data_enforcement_with_paths = cwa_db.enforce_show(paths=True, verbose=False, web_ui=True)
@@ -866,6 +876,9 @@ def cwa_stats_show():
                                 discovery_sources=discovery_sources,
                                 device_breakdown=device_breakdown,
                                 failed_logins=failed_logins,
+                                session_duration=session_duration,
+                                search_success=search_success,
+                                shelf_activity=shelf_activity,
                                 library_growth=library_growth,
                                 library_formats=library_formats,
                                 conversion_stats=conversion_stats,

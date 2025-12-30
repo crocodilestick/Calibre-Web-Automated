@@ -1394,6 +1394,171 @@ class CWA_DB:
             traceback.print_exc()
             return []
 
+    def get_api_usage_breakdown(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns API usage breakdown by category (Web, Kobo, OPDS, Email).
+        
+        Args:
+            days: Number of days back (optional)
+            start_date/end_date: Custom range 'YYYY-MM-DD' (takes precedence)
+            user_id: Filter by user (optional)
+        
+        Returns: List of tuples: (category, count)
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            # Categorize events
+            self.cur.execute(f"""
+                SELECT 
+                    CASE 
+                        WHEN event_type = 'KOBO_SYNC' THEN 'Kobo Sync'
+                        WHEN event_type = 'OPDS_ACCESS' THEN 'OPDS Feed'
+                        WHEN event_type = 'EMAIL' THEN 'Email Delivery'
+                        WHEN event_type IN ('DOWNLOAD', 'READ', 'SEARCH', 'LOGIN') THEN 'Web UI'
+                        ELSE 'Other'
+                    END as category,
+                    COUNT(*) as count
+                FROM cwa_user_activity
+                WHERE {combined_filter}
+                GROUP BY category
+                ORDER BY count DESC
+            """)
+            
+            return self.cur.fetchall()
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting API usage breakdown: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    def get_endpoint_frequency_grouped(self, days=None, start_date=None, end_date=None, user_id=None, limit=20):
+        """Returns endpoint access frequency with grouping by category.
+        
+        Args:
+            days: Number of days back (optional)
+            start_date/end_date: Custom range 'YYYY-MM-DD' (takes precedence)
+            user_id: Filter by user (optional)
+            limit: Number of endpoints to return (default 20)
+        
+        Returns: List of tuples: (endpoint, category, count, last_accessed)
+        """
+        try:
+            import json
+            
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            # Debug: Check what event types actually exist
+            debug_query = f"SELECT DISTINCT event_type FROM cwa_user_activity WHERE {combined_filter}"
+            print(f"[cwa-db] Checking event types with filter: {debug_query}")
+            self.cur.execute(debug_query)
+            event_types = self.cur.fetchall()
+            print(f"[cwa-db] Found event types: {event_types}")
+            
+            # Debug: Check what events exist
+            query = f"""
+                SELECT 
+                    CASE
+                        WHEN extra_data IS NOT NULL AND extra_data != '' 
+                            AND json_valid(extra_data) = 1
+                            AND json_extract(extra_data, '$.endpoint') IS NOT NULL 
+                        THEN json_extract(extra_data, '$.endpoint')
+                        ELSE event_type
+                    END as endpoint,
+                    CASE 
+                        WHEN event_type = 'KOBO_SYNC' THEN 'Kobo'
+                        WHEN event_type = 'OPDS_ACCESS' THEN 'OPDS'
+                        WHEN event_type = 'EMAIL' THEN 'Email'
+                        WHEN event_type = 'DOWNLOAD' THEN 'Downloads'
+                        WHEN event_type = 'READ' THEN 'Reading'
+                        WHEN event_type = 'SEARCH' THEN 'Search'
+                        WHEN event_type = 'LOGIN' THEN 'Authentication'
+                        ELSE 'Other'
+                    END as category,
+                    COUNT(*) as access_count,
+                    MAX(timestamp) as last_accessed
+                FROM cwa_user_activity
+                WHERE {combined_filter}
+                GROUP BY endpoint, category
+                HAVING COUNT(*) > 0
+                ORDER BY access_count DESC, last_accessed DESC
+                LIMIT {limit}
+            """
+            
+            print(f"[cwa-db] Endpoint frequency query: {query}")
+            self.cur.execute(query)
+            
+            results = self.cur.fetchall()
+            print(f"[cwa-db] Endpoint frequency results: {results}")
+            return results
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting endpoint frequency: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    def get_api_timing_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns API activity timing for heatmap (hour × day of week).
+        
+        Args:
+            days: Number of days back (optional)
+            start_date/end_date: Custom range 'YYYY-MM-DD' (takes precedence)
+            user_id: Filter by user (optional)
+        
+        Returns: List of tuples: (day_of_week, hour, count)
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            # Get API activity by time (focus on API events)
+            self.cur.execute(f"""
+                SELECT 
+                    CAST(strftime('%w', timestamp) AS INTEGER) as day_of_week,
+                    CAST(strftime('%H', timestamp) AS INTEGER) as hour,
+                    COUNT(*) as api_count
+                FROM cwa_user_activity
+                WHERE event_type IN ('KOBO_SYNC', 'OPDS_ACCESS', 'EMAIL', 'DOWNLOAD')
+                    AND {combined_filter}
+                GROUP BY day_of_week, hour
+                ORDER BY day_of_week, hour
+            """)
+            
+            return self.cur.fetchall()
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting API timing heatmap: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
     def get_hourly_activity_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
         """Returns activity count by hour of day and day of week for heatmap visualization.
         

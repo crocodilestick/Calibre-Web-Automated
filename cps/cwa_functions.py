@@ -853,10 +853,16 @@ def cwa_stats_show():
         session_duration = cwa_db.get_session_duration_stats(start_date=start_date, end_date=end_date, user_id=user_id)
         search_success = cwa_db.get_search_success_rate(start_date=start_date, end_date=end_date, user_id=user_id)
         shelf_activity = cwa_db.get_shelf_activity_stats(start_date=start_date, end_date=end_date, user_id=user_id, limit=10)
+        api_usage_breakdown = cwa_db.get_api_usage_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+        endpoint_frequency = cwa_db.get_endpoint_frequency_grouped(start_date=start_date, end_date=end_date, user_id=user_id, limit=20)
+        api_timing = cwa_db.get_api_timing_heatmap(start_date=start_date, end_date=end_date, user_id=user_id)
     else:
         session_duration = cwa_db.get_session_duration_stats(days=days, user_id=user_id)
         search_success = cwa_db.get_search_success_rate(days=days, user_id=user_id)
         shelf_activity = cwa_db.get_shelf_activity_stats(days=days, user_id=user_id, limit=10)
+        api_usage_breakdown = cwa_db.get_api_usage_breakdown(days=days, user_id=user_id)
+        endpoint_frequency = cwa_db.get_endpoint_frequency_grouped(days=days, user_id=user_id, limit=20)
+        api_timing = cwa_db.get_api_timing_heatmap(days=days, user_id=user_id)
     
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
@@ -879,6 +885,9 @@ def cwa_stats_show():
                                 session_duration=session_duration,
                                 search_success=search_success,
                                 shelf_activity=shelf_activity,
+                                api_usage_breakdown=api_usage_breakdown,
+                                endpoint_frequency=endpoint_frequency,
+                                api_timing=api_timing,
                                 library_growth=library_growth,
                                 library_formats=library_formats,
                                 conversion_stats=conversion_stats,

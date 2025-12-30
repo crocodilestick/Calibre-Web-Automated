@@ -65,6 +65,10 @@
                 onclick="switchTab('library')">
             📚 Library Stats
         </button>
+        <button class="stats-tab {{ 'active' if active_tab == 'api' else '' }}" 
+                onclick="switchTab('api')">
+            📱 API Usage
+        </button>
         <button class="stats-tab {{ 'active' if active_tab == 'system' else '' }}" 
                 onclick="switchTab('system')">
             ⚙️ System Stats
@@ -79,6 +83,11 @@
     <!-- Library Stats Tab -->
     <div id="library-tab" class="tab-content {{ 'active' if active_tab == 'library' else '' }}">
         {% include 'cwa_library_stats.html' %}
+    </div>
+    
+    <!-- API Usage Tab -->
+    <div id="api-tab" class="tab-content {{ 'active' if active_tab == 'api' else '' }}">
+        {% include 'cwa_api_stats.html' %}
     </div>
     
     <!-- System Logs Tab -->
@@ -118,10 +127,18 @@ function switchTab(tabName) {
             if (typeof formatPreferencesChart !== 'undefined' && formatPreferencesChart) formatPreferencesChart.resize();
             if (typeof discoveryChart !== 'undefined' && discoveryChart) discoveryChart.resize();
             if (typeof deviceChart !== 'undefined' && deviceChart) deviceChart.resize();
+            if (typeof sessionDurationChart !== 'undefined' && sessionDurationChart) sessionDurationChart.resize();
+            if (typeof searchSuccessChart !== 'undefined' && searchSuccessChart) searchSuccessChart.resize();
         } else if (tabName === 'library') {
             // Resize Library Stats charts
             if (typeof growthChart !== 'undefined' && growthChart) growthChart.resize();
             if (typeof libraryFormatsChart !== 'undefined' && libraryFormatsChart) libraryFormatsChart.resize();
+            if (typeof seriesChart !== 'undefined' && seriesChart) seriesChart.resize();
+            if (typeof publicationYearChart !== 'undefined' && publicationYearChart) publicationYearChart.resize();
+        } else if (tabName === 'api') {
+            // Resize API Usage charts
+            if (typeof apiUsageChart !== 'undefined' && apiUsageChart) apiUsageChart.resize();
+            if (typeof apiTimingChart !== 'undefined' && apiTimingChart) apiTimingChart.resize();
         }
     }, 50); // Small delay to ensure DOM has updated
 }

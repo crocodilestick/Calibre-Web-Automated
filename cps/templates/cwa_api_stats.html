@@ -1,0 +1,585 @@
+<!-- API Usage Stats Content -->
+
+<style>
+    .filter-row {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        background: #2a3441;
+        border: 1px solid #3a4451;
+        border-radius: 8px;
+        padding: 15px 20px;
+    }
+    
+    .time-period-select {
+        background: #1a2332;
+        color: #ddd;
+        border: 1px solid #3a4451;
+        border-radius: 6px;
+        padding: 8px 15px;
+        font-size: 0.95em;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+    
+    .time-period-select:focus {
+        outline: none;
+        border-color: #ff9800;
+    }
+    
+    #api-custom-date-range input[type="date"] {
+        background: #1a2332;
+        color: #ddd;
+        border: 1px solid #3a4451;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.95em;
+    }
+    
+    #api-custom-date-range input[type="date"]:focus {
+        outline: none;
+        border-color: #ff9800;
+    }
+    
+    #api-custom-date-range span {
+        color: #999;
+        font-size: 0.9em;
+    }
+    
+    .demo-toggle {
+        background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 6px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+    
+    .demo-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 152, 0, 0.5);
+        background: linear-gradient(135deg, #ffa726 0%, #ff8a00 100%);
+    }
+    
+    .demo-toggle.active {
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    }
+    
+    .demo-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        margin-left: 10px;
+        font-weight: 600;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    .endpoint-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    
+    .endpoint-table thead {
+        background: rgba(255, 152, 0, 0.1);
+        border-bottom: 2px solid #ff9800;
+    }
+    
+    .endpoint-table th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #ff9800;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .endpoint-table td {
+        padding: 12px;
+        border-bottom: 1px solid #3a4451;
+        color: #ddd;
+    }
+    
+    .endpoint-table tbody tr {
+        transition: background 0.2s ease;
+    }
+    
+    .endpoint-table tbody tr:hover {
+        background: rgba(255, 152, 0, 0.05);
+    }
+    
+    .category-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .category-kobo { background: #9c27b0; color: #fff; }
+    .category-opds { background: #2196f3; color: #fff; }
+    .category-email { background: #ff9800; color: #fff; }
+    .category-downloads { background: #4caf50; color: #fff; }
+    .category-reading { background: #00bcd4; color: #fff; }
+    .category-search { background: #ff5722; color: #fff; }
+    .category-authentication { background: #607d8b; color: #fff; }
+    .category-other { background: #9e9e9e; color: #fff; }
+</style>
+
+<div class="stats-hero">
+    <h1>📱 API Usage Analytics</h1>
+    <p>Track endpoint activity, integration usage, and API patterns</p>
+</div>
+
+<!-- Time Period Filter -->
+<div class="filter-row">
+    <select id="api-time-period" class="time-period-select" onchange="changeApiTimePeriod()">
+        <option value="7" {{ 'selected' if request.args.get('days') == '7' else '' }}>Last 7 Days</option>
+        <option value="30" {{ 'selected' if request.args.get('days') == '30' or not request.args.get('days') else '' }}>Last 30 Days</option>
+        <option value="90" {{ 'selected' if request.args.get('days') == '90' else '' }}>Last 90 Days</option>
+        <option value="180" {{ 'selected' if request.args.get('days') == '180' else '' }}>Last 6 Months</option>
+        <option value="365" {{ 'selected' if request.args.get('days') == '365' else '' }}>Last Year</option>
+        <option value="all" {{ 'selected' if request.args.get('days') == 'all' else '' }}>All Time</option>
+        <option value="custom" {{ 'selected' if request.args.get('start_date') else '' }}>Custom Range</option>
+    </select>
+    
+    <div id="api-custom-date-range" style="display: {{ 'flex' if request.args.get('start_date') else 'none' }}; gap: 10px; align-items: center;">
+        <input type="date" id="api-start-date" value="{{ request.args.get('start_date', '') }}" />
+        <span>to</span>
+        <input type="date" id="api-end-date" value="{{ request.args.get('end_date', '') }}" />
+        <button onclick="applyApiDateRange()" class="btn btn-primary btn-sm">Apply</button>
+    </div>
+
+    <button onclick="window.location.href='/cwa-stats-show?tab=api'" class="demo-toggle" style="margin-left: 10px;">
+        🔄 Reset
+    </button>
+    
+    <button onclick="toggleApiDemoMode()" class="demo-toggle" id="api-demo-button" style="margin-left: auto;">
+        🎨 Show Demo Data
+    </button>
+    <span class="demo-badge" id="api-demo-badge" style="display: none;">DEMO MODE</span>
+    
+</div>
+
+<!-- API Usage Cards -->
+<div class="metrics-container">
+    <div class="metric-card">
+        <div class="metric-icon">🔄</div>
+        <div class="metric-label">Kobo Syncs</div>
+        <div class="metric-value" id="kobo-sync-count">0</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-icon">📡</div>
+        <div class="metric-label">OPDS Accesses</div>
+        <div class="metric-value" id="opds-access-count">0</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-icon">📧</div>
+        <div class="metric-label">Email Deliveries</div>
+        <div class="metric-value" id="email-delivery-count">0</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-icon">🌐</div>
+        <div class="metric-label">Web UI Requests</div>
+        <div class="metric-value" id="web-ui-count">0</div>
+    </div>
+</div>
+
+<!-- First Row: Usage Breakdown & Timing Heatmap -->
+<div class="row cwa-stats-row">
+    <div class="col-md-6">
+        <div class="chart-container">
+            <div class="chart-title">📊 API Usage Breakdown</div>
+            <div id="api-usage-chart" style="width: 100%; height: 350px;"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container">
+            <div class="chart-title">🕐 API Activity Timing</div>
+            <div id="api-timing-chart" style="width: 100%; height: 350px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row: Endpoint Frequency Table -->
+<div class="row cwa-stats-row">
+    <div class="col-md-12">
+        <div class="chart-container">
+            <div class="chart-title">🎯 Endpoint Access Frequency</div>
+            <div style="overflow-x: auto;">
+                <table class="endpoint-table" id="endpoint-table">
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Category</th>
+                            <th style="text-align: right;">Access Count</th>
+                            <th>Last Accessed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="endpoint-table-body">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px; color: #999;">
+                                No endpoint data available
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Data from backend (with defaults to prevent undefined)
+const realApiData = {
+    usageBreakdown: {{ (api_usage_breakdown or []) | tojson }},
+    endpointFrequency: {{ (endpoint_frequency or []) | tojson }},
+    apiTiming: {{ (api_timing or []) | tojson }}
+};
+
+console.log('API Real Data:', realApiData);  // Debug logging
+
+// State management
+let apiDemoMode = false;
+let currentApiData = realApiData;
+
+// Initialize charts
+let apiUsageChart, apiTimingChart;
+
+function initApiCharts() {
+    apiUsageChart = echarts.init(document.getElementById('api-usage-chart'));
+    apiTimingChart = echarts.init(document.getElementById('api-timing-chart'));
+    
+    updateAllApiVisualizations();
+    
+    // Responsive resize
+    window.addEventListener('resize', () => {
+        apiUsageChart.resize();
+        apiTimingChart.resize();
+    });
+}
+
+function updateAllApiVisualizations() {
+    updateApiMetrics();
+    updateApiUsageChart();
+    updateApiTimingChart();
+    updateEndpointTable();
+}
+
+function updateApiMetrics() {
+    const breakdown = currentApiData.usageBreakdown || [];
+    
+    let koboCount = 0, opdsCount = 0, emailCount = 0, webCount = 0;
+    
+    breakdown.forEach(([category, count]) => {
+        if (category === 'Kobo Sync') koboCount = count;
+        else if (category === 'OPDS Feed') opdsCount = count;
+        else if (category === 'Email Delivery') emailCount = count;
+        else if (category === 'Web UI') webCount = count;
+    });
+    
+    document.getElementById('kobo-sync-count').textContent = koboCount;
+    document.getElementById('opds-access-count').textContent = opdsCount;
+    document.getElementById('email-delivery-count').textContent = emailCount;
+    document.getElementById('web-ui-count').textContent = webCount;
+}
+
+function updateApiUsageChart() {
+    const data = currentApiData.usageBreakdown || [];
+    
+    if (data.length === 0) {
+        apiUsageChart.setOption({
+            title: {
+                text: 'No API usage data available',
+                left: 'center',
+                top: 'center',
+                textStyle: { color: '#999', fontSize: 14 }
+            }
+        }, true);
+        return;
+    }
+    
+    const categories = data.map(d => d[0]);
+    const values = data.map(d => d[1]);
+    
+    const colors = {
+        'Kobo Sync': '#9c27b0',
+        'OPDS Feed': '#2196f3',
+        'Email Delivery': '#ff9800',
+        'Web UI': '#4caf50',
+        'Other': '#9e9e9e'
+    };
+    
+    apiUsageChart.setOption({
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            textStyle: { color: '#fff' },
+            formatter: '{b}: {c} ({d}%)'
+        },
+        legend: {
+            orient: 'horizontal',
+            bottom: '5%',
+            textStyle: { color: '#fff' }
+        },
+        series: [{
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['50%', '45%'],
+            data: data.map(([name, value]) => ({
+                name: name,
+                value: value,
+                itemStyle: {
+                    color: colors[name] || '#9e9e9e'
+                }
+            })),
+            label: {
+                color: '#fff',
+                formatter: '{b}\n{d}%'
+            },
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    }, true);
+}
+
+function updateApiTimingChart() {
+    const data = currentApiData.apiTiming || [];
+    
+    if (data.length === 0) {
+        apiTimingChart.setOption({
+            title: {
+                text: 'No timing data available',
+                left: 'center',
+                top: 'center',
+                textStyle: { color: '#999', fontSize: 14 }
+            }
+        }, true);
+        return;
+    }
+    
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const hours = Array.from({length: 24}, (_, i) => `${i}:00`);
+    
+    // Convert data to heatmap format
+    const heatmapData = data.map(([day, hour, count]) => [hour, day, count]);
+    
+    apiTimingChart.setOption({
+        tooltip: {
+            position: 'top',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            textStyle: { color: '#fff' },
+            formatter: (params) => {
+                const hour = params.value[0];
+                const day = days[params.value[1]];
+                const count = params.value[2];
+                return `${day} ${hour}:00<br/>API Calls: ${count}`;
+            }
+        },
+        grid: {
+            left: '10%',
+            right: '5%',
+            bottom: '15%',
+            top: '5%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: hours,
+            axisLabel: {
+                color: '#fff',
+                rotate: 45,
+                interval: 2
+            },
+            axisLine: { lineStyle: { color: '#3a4451' } },
+            splitLine: { show: false }
+        },
+        yAxis: {
+            type: 'category',
+            data: days,
+            axisLabel: { color: '#fff' },
+            axisLine: { lineStyle: { color: '#3a4451' } },
+            splitLine: { show: false }
+        },
+        visualMap: {
+            min: 0,
+            max: Math.max(...data.map(d => d[2]), 10),
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: '0%',
+            inRange: {
+                color: ['#2c3e50', '#ff9800', '#ff5722']
+            },
+            textStyle: { color: '#fff' }
+        },
+        series: [{
+            type: 'heatmap',
+            data: heatmapData,
+            label: {
+                show: false
+            },
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    }, true);
+}
+
+function updateEndpointTable() {
+    const data = currentApiData.endpointFrequency || [];
+    
+    const tbody = document.getElementById('endpoint-table-body');
+    
+    if (data.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 40px; color: #999;">
+                    No endpoint data available
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    const categoryMap = {
+        'Kobo': 'category-kobo',
+        'OPDS': 'category-opds',
+        'Email': 'category-email',
+        'Downloads': 'category-downloads',
+        'Reading': 'category-reading',
+        'Search': 'category-search',
+        'Authentication': 'category-authentication',
+        'Other': 'category-other'
+    };
+    
+    tbody.innerHTML = data.map(([endpoint, category, count, lastAccessed]) => {
+        const badgeClass = categoryMap[category] || 'category-other';
+        const formattedDate = new Date(lastAccessed).toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        return `
+            <tr>
+                <td style="font-family: monospace; font-size: 0.9em;">${endpoint}</td>
+                <td><span class="category-badge ${badgeClass}">${category}</span></td>
+                <td style="text-align: right; font-weight: 600; color: #ff9800;">${count.toLocaleString()}</td>
+                <td style="color: #aaa; font-size: 0.85em;">${formattedDate}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Demo data generator
+function generateApiDemoData() {
+    return {
+        usageBreakdown: [
+            ['Kobo Sync', 234 + Math.floor(Math.random() * 100)],
+            ['OPDS Feed', 567 + Math.floor(Math.random() * 200)],
+            ['Email Delivery', 123 + Math.floor(Math.random() * 50)],
+            ['Web UI', 1234 + Math.floor(Math.random() * 300)]
+        ],
+        apiTiming: (() => {
+            const timing = [];
+            for (let day = 0; day < 7; day++) {
+                for (let hour = 0; hour < 24; hour++) {
+                    const count = Math.floor(Math.random() * 30);
+                    if (count > 0) timing.push([day, hour, count]);
+                }
+            }
+            return timing;
+        })(),
+        endpointFrequency: [
+            ['/v1/library/sync', 'Kobo', 234, new Date().toISOString()],
+            ['/opds', 'OPDS', 189, new Date().toISOString()],
+            ['/opds/new', 'OPDS', 156, new Date().toISOString()],
+            ['/opds/search', 'OPDS', 134, new Date().toISOString()],
+            ['/download/123/epub', 'Downloads', 98, new Date().toISOString()],
+            ['/send/456', 'Email', 67, new Date().toISOString()],
+            ['/read/789', 'Reading', 56, new Date().toISOString()],
+            ['SEARCH', 'Search', 234, new Date().toISOString()],
+            ['LOGIN', 'Authentication', 89, new Date().toISOString()],
+            ['/opds/books', 'OPDS', 45, new Date().toISOString()]
+        ]
+    };
+}
+
+// Time period filter functions
+function changeApiTimePeriod() {
+    const select = document.getElementById('api-time-period');
+    const customRange = document.getElementById('api-custom-date-range');
+    
+    if (select.value === 'custom') {
+        customRange.style.display = 'flex';
+    } else {
+        customRange.style.display = 'none';
+        window.location.href = `/cwa-stats-show?tab=api&days=${select.value}`;
+    }
+}
+
+function applyApiDateRange() {
+    const startDate = document.getElementById('api-start-date').value;
+    const endDate = document.getElementById('api-end-date').value;
+    
+    if (!startDate || !endDate) {
+        alert('Please select both start and end dates');
+        return;
+    }
+    
+    window.location.href = `/cwa-stats-show?tab=api&start_date=${startDate}&end_date=${endDate}`;
+}
+
+function toggleApiDemoMode() {
+    apiDemoMode = !apiDemoMode;
+    const button = document.getElementById('api-demo-button');
+    const badge = document.getElementById('api-demo-badge');
+    
+    if (apiDemoMode) {
+        currentApiData = generateApiDemoData();
+        button.textContent = '📊 Show Real Data';
+        button.classList.add('active');
+        badge.style.display = 'inline-block';
+    } else {
+        currentApiData = realApiData;
+        button.textContent = '🎨 Show Demo Data';
+        button.classList.remove('active');
+        badge.style.display = 'none';
+    }
+    
+    updateAllApiVisualizations();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initApiCharts();
+});
+</script>

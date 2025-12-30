@@ -803,11 +803,17 @@ def cwa_stats_show():
         hourly_heatmap = cwa_db.get_hourly_activity_heatmap(start_date=start_date, end_date=end_date, user_id=user_id)
         reading_velocity = cwa_db.get_reading_velocity(start_date=start_date, end_date=end_date, user_id=user_id)
         format_preferences = cwa_db.get_format_preferences(start_date=start_date, end_date=end_date, user_id=user_id)
+        discovery_sources = cwa_db.get_discovery_sources(start_date=start_date, end_date=end_date, user_id=user_id)
+        device_breakdown = cwa_db.get_device_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+        failed_logins = cwa_db.get_failed_logins(start_date=start_date, end_date=end_date)
     else:
         dashboard_stats = cwa_db.get_dashboard_stats(days=days, user_id=user_id)
         hourly_heatmap = cwa_db.get_hourly_activity_heatmap(days=days, user_id=user_id)
         reading_velocity = cwa_db.get_reading_velocity(days=days, user_id=user_id)
         format_preferences = cwa_db.get_format_preferences(days=days, user_id=user_id)
+        discovery_sources = cwa_db.get_discovery_sources(days=days, user_id=user_id)
+        device_breakdown = cwa_db.get_device_breakdown(days=days, user_id=user_id)
+        failed_logins = cwa_db.get_failed_logins(days=days)
     
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
@@ -824,6 +830,9 @@ def cwa_stats_show():
                                 hourly_heatmap=hourly_heatmap,
                                 reading_velocity=reading_velocity,
                                 format_preferences=format_preferences,
+                                discovery_sources=discovery_sources,
+                                device_breakdown=device_breakdown,
+                                failed_logins=failed_logins,
                                 date_range_label=date_range_label,
                                 show_warning=show_warning,
                                 start_date=start_date,

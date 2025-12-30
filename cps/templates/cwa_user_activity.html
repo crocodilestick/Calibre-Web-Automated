@@ -456,7 +456,34 @@
         </div>
     </div>
     
-    <!-- Fourth Row: Top Lists -->
+    <!-- Fourth Row: Discovery Sources, Device Breakdown, Security -->
+    <div class="row cwa-stats-row">
+        <div class="col-md-4">
+            <div class="chart-container">
+                <div class="chart-title">📍 Discovery Sources</div>
+                <div id="discovery-chart" style="width: 100%; height: 350px;"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="chart-container">
+                <div class="chart-title">📱 Device Breakdown</div>
+                <div id="device-chart" style="width: 100%; height: 350px;"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="chart-container">
+                <div class="chart-title">🔒 Security</div>
+                <div class="metric-card" style="margin-bottom: 15px;">
+                    <div class="metric-icon">🛡️</div>
+                    <div class="metric-label">Failed Login Attempts</div>
+                    <div class="metric-value" id="failed-logins-count">0</div>
+                </div>
+                <div id="failed-logins-list" style="max-height: 200px; overflow-y: auto;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fifth Row: Top Lists -->
     <div class="row">
         <div class="col-md-4">
             <div class="chart-container">
@@ -503,7 +530,10 @@ const realData = {
     totals: {{ dashboard_stats.totals | tojson }},
     heatmap: {{ hourly_heatmap | tojson }},
     velocity: {{ reading_velocity | tojson }},
-    formatPreferences: {{ format_preferences | tojson }}
+    formatPreferences: {{ format_preferences | tojson }},
+    discoverySources: {{ discovery_sources | tojson }},
+    deviceBreakdown: {{ device_breakdown | tojson }},
+    failedLogins: {{ failed_logins | tojson }}
 };
 
 const isAdmin = {{ 'true' if is_admin else 'false' }};
@@ -687,7 +717,28 @@ function generateDemoData() {
                 });
             });
             return prefs;
-        })()
+        })(),
+        // Generate discovery sources (source, count)
+        discoverySources: [
+            ['search', 234 + Math.floor(Math.random() * 50)],
+            ['book_detail', 189 + Math.floor(Math.random() * 40)],
+            ['series', 156 + Math.floor(Math.random() * 30)],
+            ['author', 98 + Math.floor(Math.random() * 25)],
+            ['browse', 67 + Math.floor(Math.random() * 20)],
+            ['shelf', 45 + Math.floor(Math.random() * 15)],
+            ['direct', 23 + Math.floor(Math.random() * 10)]
+        ],
+        // Generate device breakdown (device_type, count)
+        deviceBreakdown: [
+            ['desktop', 456 + Math.floor(Math.random() * 100)],
+            ['mobile', 289 + Math.floor(Math.random() * 80)],
+            ['tablet', 134 + Math.floor(Math.random() * 40)]
+        ],
+        // Generate failed logins (ip, username, timestamp, count)
+        failedLogins: Math.random() > 0.7 ? [
+            ['192.168.1.123', 'admin', new Date().toISOString(), Math.floor(Math.random() * 5) + 1],
+            ['10.0.0.45', 'testuser', new Date().toISOString(), Math.floor(Math.random() * 3) + 1]
+        ] : []
     };
 }
 
@@ -696,7 +747,7 @@ let currentData = realData;  // Always start with real data, even if empty
 let userProfiles = {};
 
 // Initialize charts
-let timelineChart, eventsChart, formatsChart, heatmapChart, velocityChart, formatPreferencesChart;
+let timelineChart, eventsChart, formatsChart, heatmapChart, velocityChart, formatPreferencesChart, discoveryChart, deviceChart;
 
 function initCharts() {
     timelineChart = echarts.init(document.getElementById('timeline-chart'));
@@ -705,6 +756,8 @@ function initCharts() {
     heatmapChart = echarts.init(document.getElementById('heatmap-chart'));
     velocityChart = echarts.init(document.getElementById('velocity-chart'));
     formatPreferencesChart = echarts.init(document.getElementById('format-preferences-chart'));
+    discoveryChart = echarts.init(document.getElementById('discovery-chart'));
+    deviceChart = echarts.init(document.getElementById('device-chart'));
     
     // Fetch user profiles first, then update visualizations
     fetch('/user_profiles.json')
@@ -726,6 +779,8 @@ function initCharts() {
         heatmapChart.resize();
         velocityChart.resize();
         formatPreferencesChart.resize();
+        discoveryChart.resize();
+        deviceChart.resize();
     });
 }
 
@@ -737,6 +792,9 @@ function updateAllVisualizations() {
     updateEventsChart();
     updateFormatPreferencesChart();
     updateFormatsChart();
+    updateDiscoveryChart();
+    updateDeviceChart();
+    updateFailedLogins();
     updateTopLists();
 }
 
@@ -1278,6 +1336,196 @@ function updateFormatPreferencesChart() {
     };
     
     formatPreferencesChart.setOption(option, true);
+}
+
+function updateDiscoveryChart() {
+    const data = currentData.discoverySources || [];
+    
+    if (data.length === 0) {
+        discoveryChart.setOption({
+            title: {
+                text: 'No discovery data yet',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    const sourceLabels = {
+        'search': 'Search',
+        'book_detail': 'Book Detail',
+        'series': 'Series Page',
+        'author': 'Author Page',
+        'browse': 'Browse',
+        'shelf': 'Shelf',
+        'category': 'Category',
+        'direct': 'Direct Link'
+    };
+    
+    const option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: '{b}: {c} ({d}%)'
+        },
+        legend: {
+            orient: 'vertical',
+            right: '5%',
+            top: 'center',
+            textStyle: {
+                color: '#fff'
+            }
+        },
+        series: [{
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['40%', '50%'],
+            data: data.map(([source, count]) => ({
+                name: sourceLabels[source] || source,
+                value: count
+            })),
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(255, 152, 0, 0.5)'
+                }
+            },
+            itemStyle: {
+                borderRadius: 8,
+                borderColor: '#1a2332',
+                borderWidth: 2
+            },
+            label: {
+                color: '#fff'
+            }
+        }]
+    };
+    
+    discoveryChart.setOption(option, true);
+}
+
+function updateDeviceChart() {
+    const data = currentData.deviceBreakdown || [];
+    
+    if (data.length === 0) {
+        deviceChart.setOption({
+            title: {
+                text: 'No device data yet',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    const deviceIcons = {
+        'desktop': '🖥️',
+        'mobile': '📱',
+        'tablet': '📱',
+        'unknown': '❓'
+    };
+    
+    const deviceColors = {
+        'desktop': '#2196f3',
+        'mobile': '#ff9800',
+        'tablet': '#4caf50',
+        'unknown': '#999'
+    };
+    
+    const option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: (params) => {
+                const icon = deviceIcons[params.name] || '❓';
+                return `${icon} ${params.name.charAt(0).toUpperCase() + params.name.slice(1)}: ${params.value} (${params.percent}%)`;
+            }
+        },
+        legend: {
+            orient: 'vertical',
+            right: '5%',
+            top: 'center',
+            textStyle: {
+                color: '#fff'
+            },
+            formatter: (name) => {
+                const icon = deviceIcons[name] || '❓';
+                return `${icon} ${name.charAt(0).toUpperCase() + name.slice(1)}`;
+            }
+        },
+        series: [{
+            type: 'pie',
+            radius: ['50%', '75%'],
+            center: ['40%', '50%'],
+            data: data.map(([device, count]) => ({
+                name: device,
+                value: count,
+                itemStyle: {
+                    color: deviceColors[device] || '#999'
+                }
+            })),
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            },
+            label: {
+                show: false
+            },
+            labelLine: {
+                show: false
+            }
+        }]
+    };
+    
+    deviceChart.setOption(option, true);
+}
+
+function updateFailedLogins() {
+    const data = currentData.failedLogins || [];
+    const count = data.length > 0 ? data.reduce((sum, d) => sum + d[3], 0) : 0;
+    
+    document.getElementById('failed-logins-count').textContent = count;
+    
+    if (data.length === 0) {
+        document.getElementById('failed-logins-list').innerHTML = '<p style="text-align: center; color: #4caf50; padding: 20px;">✓ No failed attempts</p>';
+        return;
+    }
+    
+    const listHtml = data.map(([ip, username, timestamp, attempts]) => {
+        const date = new Date(timestamp);
+        const formattedDate = date.toLocaleString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        const badgeColor = attempts > 5 ? '#f44336' : attempts > 2 ? '#ff9800' : '#999';
+        
+        return `
+            <div style="padding: 8px; border-bottom: 1px solid #3a4451; font-size: 0.85em;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #fff; font-weight: 500;">${ip}</span>
+                    <span style="background: ${badgeColor}; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;">${attempts}×</span>
+                </div>
+                <div style="color: #999; font-size: 0.9em; margin-top: 4px;">
+                    ${username} • ${formattedDate}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('failed-logins-list').innerHTML = listHtml;
 }
 
 function updateTopLists() {

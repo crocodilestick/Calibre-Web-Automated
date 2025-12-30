@@ -563,12 +563,47 @@ class CWA_DB:
             return []
 
     def log_activity(self, user_id, user_name, event_type, item_id=None, item_title=None, extra_data=None):
-        """Logs a user activity event to the database."""
+        """Logs a user activity event to the database with device detection."""
         try:
+            import json
+            
+            # Parse extra_data if it's a string
+            if isinstance(extra_data, str):
+                try:
+                    extra_data_dict = json.loads(extra_data)
+                except:
+                    # If not JSON, treat as simple string (legacy format compatibility)
+                    extra_data_dict = {'format': extra_data}
+            elif isinstance(extra_data, dict):
+                extra_data_dict = extra_data
+            else:
+                extra_data_dict = {}
+            
+            # Add device type detection using User-Agent
+            try:
+                from flask import request
+                user_agent = request.headers.get('User-Agent', '').lower()
+                
+                # Simple device type detection
+                if 'mobile' in user_agent or 'android' in user_agent or 'iphone' in user_agent:
+                    device_type = 'mobile'
+                elif 'tablet' in user_agent or 'ipad' in user_agent:
+                    device_type = 'tablet'
+                else:
+                    device_type = 'desktop'
+                
+                extra_data_dict['device_type'] = device_type
+            except:
+                # If flask context not available, skip device detection
+                pass
+            
+            # Convert back to JSON string
+            extra_data_json = json.dumps(extra_data_dict) if extra_data_dict else None
+            
             self.cur.execute("""
                 INSERT INTO cwa_user_activity (user_id, user_name, event_type, item_id, item_title, extra_data)
                 VALUES (?, ?, ?, ?, ?, ?)
-            """, (user_id, user_name, event_type, item_id, item_title, extra_data))
+            """, (user_id, user_name, event_type, item_id, item_title, extra_data_json))
             self.con.commit()
         except Exception as e:
             print(f"[cwa-db] Error logging activity: {e}")
@@ -687,6 +722,101 @@ class CWA_DB:
         except Exception as e:
             print(f"[cwa-db] Error getting format preferences: {e}")
             return []
+
+    def get_discovery_sources(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns count of book discoveries grouped by source.
+        
+        Returns list of tuples: (source, count)
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            self.cur.execute(f"""
+                SELECT 
+                    COALESCE(json_extract(extra_data, '$.source'), 'direct') as source,
+                    COUNT(*) as count
+                FROM cwa_user_activity
+                WHERE event_type IN ('READ', 'DOWNLOAD')
+                    AND {combined_filter}
+                GROUP BY source
+                ORDER BY count DESC
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting discovery sources: {e}")
+            return []
+
+    def get_device_breakdown(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns activity count grouped by device type.
+        
+        Returns list of tuples: (device_type, count)
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            self.cur.execute(f"""
+                SELECT 
+                    COALESCE(json_extract(extra_data, '$.device_type'), 'unknown') as device_type,
+                    COUNT(*) as count
+                FROM cwa_user_activity
+                WHERE {combined_filter}
+                GROUP BY device_type
+                ORDER BY count DESC
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting device breakdown: {e}")
+            return []
+
+    def get_failed_logins(self, days=None, start_date=None, end_date=None):
+        """Returns failed login attempts with details.
+        
+        Returns list of tuples: (ip, username_attempted, timestamp, count)
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            self.cur.execute(f"""
+                SELECT 
+                    json_extract(extra_data, '$.ip') as ip_address,
+                    json_extract(extra_data, '$.username_attempted') as username,
+                    MAX(timestamp) as last_attempt,
+                    COUNT(*) as attempt_count
+                FROM cwa_user_activity
+                WHERE event_type = 'LOGIN_FAILED'
+                    AND {date_filter}
+                GROUP BY ip_address, username
+                ORDER BY attempt_count DESC, last_attempt DESC
+                LIMIT 20
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting failed logins: {e}")
+            return []
+
     def get_hourly_activity_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
         """Returns activity count by hour of day and day of week for heatmap visualization.
         

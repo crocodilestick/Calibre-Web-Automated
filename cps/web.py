@@ -1688,6 +1688,23 @@ def login_post():
                 # Use request.remote_addr (already corrected by ProxyFix) instead of raw header
                 ip_address = request.remote_addr
                 log.warning('LDAP Login failed for user "%s" IP-address: %s', username, ip_address)
+                
+                # Track failed login attempt
+                try:
+                    from scripts.cwa_db import CWA_DB
+                    import json
+                    cwa_db = CWA_DB()
+                    cwa_db.log_activity(
+                        user_id=None,
+                        user_name='Anonymous',
+                        event_type='LOGIN_FAILED',
+                        item_id=None,
+                        item_title=None,
+                        extra_data=json.dumps({'username_attempted': username, 'ip': ip_address, 'method': 'LDAP'})
+                    )
+                except Exception as e:
+                    log.debug(f"Failed to log failed login attempt: {e}")
+                
                 flash(_(u"Wrong Username or Password"), category="error")
             flash(_(u"Wrong Username or Password"), category="error")
     else:
@@ -1715,6 +1732,23 @@ def login_post():
                                          "success")
             else:
                 log.warning('Login failed for user "{}" IP-address: {}'.format(username, ip_address))
+                
+                # Track failed login attempt
+                try:
+                    from scripts.cwa_db import CWA_DB
+                    import json
+                    cwa_db = CWA_DB()
+                    cwa_db.log_activity(
+                        user_id=None,
+                        user_name='Anonymous',
+                        event_type='LOGIN_FAILED',
+                        item_id=None,
+                        item_title=None,
+                        extra_data=json.dumps({'username_attempted': username, 'ip': ip_address, 'method': 'standard'})
+                    )
+                except Exception as e:
+                    log.debug(f"Failed to log failed login attempt: {e}")
+                
                 flash(_(u"Wrong Username or Password"), category="error")
     return render_login(username, form.get("password", ""))
 
@@ -1880,6 +1914,23 @@ def read_book(book_id, book_format):
     if current_user.is_authenticated:
         try:
             from scripts.cwa_db import CWA_DB
+            import json
+            
+            # Detect source of book discovery
+            source = request.args.get('from', 'direct')
+            referer = request.headers.get('Referer', '')
+            if not source or source == 'direct':
+                if '/search' in referer:
+                    source = 'search'
+                elif '/series' in referer:
+                    source = 'series'
+                elif '/author' in referer:
+                    source = 'author'
+                elif '/category' in referer:
+                    source = 'category'
+                elif '/shelf' in referer:
+                    source = 'shelf'
+            
             cwa_db = CWA_DB()
             cwa_db.log_activity(
                 user_id=int(current_user.id),
@@ -1887,7 +1938,7 @@ def read_book(book_id, book_format):
                 event_type='READ',
                 item_id=book_id,
                 item_title=book.title,
-                extra_data=book_format.upper()
+                extra_data=json.dumps({'format': book_format.upper(), 'source': source})
             )
         except Exception as e:
             log.debug(f"Failed to log read activity: {e}")

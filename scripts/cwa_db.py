@@ -601,7 +601,7 @@ class CWA_DB:
 
             # 2. Top active users in period
             self.cur.execute(f"""
-                SELECT COALESCE(user_name, 'Unknown User') as user_name, COUNT(*) as activity_count
+                SELECT user_id, COALESCE(user_name, 'Unknown User') as user_name, COUNT(*) as activity_count
                 FROM cwa_user_activity 
                 WHERE {date_filter}
                 GROUP BY user_id, user_name

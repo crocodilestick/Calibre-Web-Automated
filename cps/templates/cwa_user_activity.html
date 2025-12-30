@@ -461,6 +461,8 @@ const realData = {
     totals: {{ dashboard_stats.totals | tojson }}
 };
 
+const isAdmin = {{ 'true' if is_admin else 'false' }};
+
 // Check if we have real data
 const hasRealData = realData.totals.total_events > 0;
 
@@ -501,14 +503,14 @@ function generateDemoData() {
             ...dates.map(d => [d, 'LOGIN', Math.floor((Math.random() * 10 + 1) * scaleFactor)])
         ],
         topUsers: [
-            ['BookLover42', 156],
-            ['ReadingFanatic', 134],
-            ['LibraryMaster', 98],
-            ['PageTurner', 87],
-            ['BookwormPro', 76],
-            ['NightReader', 65],
-            ['StorySeeker', 54],
-            ['NovelAddict', 43]
+            [1, 'BookLover42', 156],
+            [2, 'ReadingFanatic', 134],
+            [3, 'LibraryMaster', 98],
+            [4, 'PageTurner', 87],
+            [5, 'BookwormPro', 76],
+            [6, 'NightReader', 65],
+            [7, 'StorySeeker', 54],
+            [8, 'NovelAddict', 43]
         ],
         topBooks: [
             ['The Midnight Library', 1234, 45],
@@ -815,14 +817,20 @@ function updateFormatsChart() {
 function updateTopLists() {
     // Top Users
     const usersHtml = currentData.topUsers.length > 0 
-        ? currentData.topUsers.map(([name, count]) => {
+        ? currentData.topUsers.map(([userId, name, count]) => {
             const profileImage = userProfiles[name];
             const avatar = profileImage 
                 ? `<img src="${profileImage}" class="user-avatar" alt="${name}">` 
                 : '👤';
+            
+            // Make username clickable for admins
+            const nameDisplay = isAdmin 
+                ? `<a href="/admin/user/${userId}">${name}</a>` 
+                : name;
+            
             return `
                 <div class="top-item">
-                    <span class="top-item-name">${avatar} ${name}</span>
+                    <span class="top-item-name">${avatar} ${nameDisplay}</span>
                     <span class="top-item-value">${count}</span>
                 </div>
             `;

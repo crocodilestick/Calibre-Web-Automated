@@ -817,6 +817,7 @@ def cwa_stats_show():
                                 end_date=end_date,
                                 days=days,
                                 today=today,
+                                is_admin=current_user.role_admin(),
                                 cwa_stats=get_cwa_stats(),
                                 data_enforcement=data_enforcement, headers_enforcement=headers["enforcement"]["no_paths"], 
                                 data_enforcement_with_paths=data_enforcement_with_paths, headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 

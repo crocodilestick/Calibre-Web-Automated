@@ -573,13 +573,28 @@ class CWA_DB:
         except Exception as e:
             print(f"[cwa-db] Error logging activity: {e}")
 
-    def get_dashboard_stats(self, days=None, start_date=None, end_date=None):
+    def get_active_users(self):
+        """Returns list of distinct users who have activity logged."""
+        try:
+            self.cur.execute("""
+                SELECT DISTINCT user_id, COALESCE(user_name, 'Unknown User') as user_name
+                FROM cwa_user_activity
+                WHERE user_id IS NOT NULL
+                ORDER BY user_name ASC
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error fetching active users: {e}")
+            return []
+
+    def get_dashboard_stats(self, days=None, start_date=None, end_date=None, user_id=None):
         """Returns comprehensive activity stats for the user dashboard.
         
         Args:
             days: Number of days back from now (legacy support)
             start_date: Start date string 'YYYY-MM-DD' (takes precedence over days)
             end_date: End date string 'YYYY-MM-DD' (takes precedence over days)
+            user_id: Filter stats for specific user ID (optional)
         """
         try:
             # Use date range if provided, otherwise fall back to days
@@ -589,26 +604,43 @@ class CWA_DB:
                 days = days or 30  # Default to 30 days
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
             # 1. Activity timeline - Daily counts by event type
             self.cur.execute(f"""
                 SELECT date(timestamp) as day, event_type, COUNT(*) as count
                 FROM cwa_user_activity 
-                WHERE {date_filter}
+                WHERE {combined_filter}
                 GROUP BY day, event_type
                 ORDER BY day ASC
             """)
             timeline_data = self.cur.fetchall()
 
-            # 2. Top active users in period
-            self.cur.execute(f"""
-                SELECT user_id, COALESCE(user_name, 'Unknown User') as user_name, COUNT(*) as activity_count
-                FROM cwa_user_activity 
-                WHERE {date_filter}
-                GROUP BY user_id, user_name
-                ORDER BY activity_count DESC 
-                LIMIT 10
-            """)
-            top_users = self.cur.fetchall()
+            # 2. Top active users or most active days (depending on user filter)
+            if user_id:
+                # Show most active days for specific user
+                self.cur.execute(f"""
+                    SELECT date(timestamp) as day, COUNT(*) as activity_count
+                    FROM cwa_user_activity 
+                    WHERE {combined_filter}
+                    GROUP BY day
+                    ORDER BY activity_count DESC 
+                    LIMIT 10
+                """)
+                top_users = self.cur.fetchall()
+            else:
+                # Show top active users across all users
+                self.cur.execute(f"""
+                    SELECT user_id, COALESCE(user_name, 'Unknown User') as user_name, COUNT(*) as activity_count
+                    FROM cwa_user_activity 
+                    WHERE {combined_filter}
+                    GROUP BY user_id, user_name
+                    ORDER BY activity_count DESC 
+                    LIMIT 10
+                """)
+                top_users = self.cur.fetchall()
 
             # 3. Most popular books (reads + downloads + emails combined)
             self.cur.execute(f"""
@@ -616,7 +648,7 @@ class CWA_DB:
                 FROM cwa_user_activity 
                 WHERE item_id IS NOT NULL 
                   AND event_type IN ('DOWNLOAD', 'READ', 'EMAIL')
-                  AND {date_filter}
+                  AND {combined_filter}
                 GROUP BY item_id, item_title
                 ORDER BY hits DESC 
                 LIMIT 10
@@ -629,7 +661,7 @@ class CWA_DB:
                 FROM cwa_user_activity 
                 WHERE event_type = 'SEARCH' 
                   AND extra_data IS NOT NULL
-                  AND {date_filter}
+                  AND {combined_filter}
                 ORDER BY timestamp DESC 
                 LIMIT 15
             """)
@@ -641,7 +673,7 @@ class CWA_DB:
                 FROM cwa_user_activity
                 WHERE event_type IN ('DOWNLOAD', 'EMAIL')
                   AND extra_data IS NOT NULL
-                  AND {date_filter}
+                  AND {combined_filter}
                 GROUP BY UPPER(extra_data)
                 ORDER BY count DESC
             """)
@@ -651,26 +683,43 @@ class CWA_DB:
             self.cur.execute(f"""
                 SELECT event_type, COUNT(*) as count
                 FROM cwa_user_activity
-                WHERE {date_filter}
+                WHERE {combined_filter}
                 GROUP BY event_type
                 ORDER BY count DESC
             """)
             event_breakdown = self.cur.fetchall()
 
             # 7. Total activity metrics
-            self.cur.execute(f"""
-                SELECT 
-                    COUNT(*) as total_events,
-                    COUNT(DISTINCT user_id) as active_users,
-                    COUNT(DISTINCT CASE WHEN event_type IN ('DOWNLOAD', 'EMAIL') THEN item_id END) as unique_downloads,
-                    COUNT(DISTINCT CASE WHEN event_type = 'READ' THEN item_id END) as unique_reads,
-                    COUNT(CASE WHEN event_type = 'LOGIN' THEN 1 END) as total_logins,
-                    COUNT(CASE WHEN event_type IN ('DOWNLOAD', 'EMAIL') THEN 1 END) as total_downloads,
-                    COUNT(CASE WHEN event_type = 'READ' THEN 1 END) as total_reads,
-                    COUNT(CASE WHEN event_type = 'SEARCH' THEN 1 END) as total_searches
-                FROM cwa_user_activity
-                WHERE {date_filter}
-            """)
+            if user_id:
+                # For single user, show total logins instead of active users
+                self.cur.execute(f"""
+                    SELECT 
+                        COUNT(*) as total_events,
+                        COUNT(CASE WHEN event_type = 'LOGIN' THEN 1 END) as total_logins,
+                        COUNT(DISTINCT CASE WHEN event_type IN ('DOWNLOAD', 'EMAIL') THEN item_id END) as unique_downloads,
+                        COUNT(DISTINCT CASE WHEN event_type = 'READ' THEN item_id END) as unique_reads,
+                        0 as active_users,
+                        COUNT(CASE WHEN event_type IN ('DOWNLOAD', 'EMAIL') THEN 1 END) as total_downloads,
+                        COUNT(CASE WHEN event_type = 'READ' THEN 1 END) as total_reads,
+                        COUNT(CASE WHEN event_type = 'SEARCH' THEN 1 END) as total_searches
+                    FROM cwa_user_activity
+                    WHERE {combined_filter}
+                """)
+            else:
+                # For all users, show active user count
+                self.cur.execute(f"""
+                    SELECT 
+                        COUNT(*) as total_events,
+                        COUNT(CASE WHEN event_type = 'LOGIN' THEN 1 END) as total_logins,
+                        COUNT(DISTINCT CASE WHEN event_type IN ('DOWNLOAD', 'EMAIL') THEN item_id END) as unique_downloads,
+                        COUNT(DISTINCT CASE WHEN event_type = 'READ' THEN item_id END) as unique_reads,
+                        COUNT(DISTINCT user_id) as active_users,
+                        COUNT(CASE WHEN event_type IN ('DOWNLOAD', 'EMAIL') THEN 1 END) as total_downloads,
+                        COUNT(CASE WHEN event_type = 'READ' THEN 1 END) as total_reads,
+                        COUNT(CASE WHEN event_type = 'SEARCH' THEN 1 END) as total_searches
+                    FROM cwa_user_activity
+                    WHERE {combined_filter}
+                """)
             totals = self.cur.fetchone()
 
             return {
@@ -682,10 +731,10 @@ class CWA_DB:
                 "event_breakdown": event_breakdown or [],
                 "totals": {
                     "total_events": totals[0] if totals else 0,
-                    "active_users": totals[1] if totals else 0,
+                    "total_logins": totals[1] if totals else 0,
                     "unique_downloads": totals[2] if totals else 0,
                     "unique_reads": totals[3] if totals else 0,
-                    "total_logins": totals[4] if totals else 0,
+                    "active_users": totals[4] if totals else 0,
                     "total_downloads": totals[5] if totals else 0,
                     "total_reads": totals[6] if totals else 0,
                     "total_searches": totals[7] if totals else 0,

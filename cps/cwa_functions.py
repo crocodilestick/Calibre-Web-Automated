@@ -760,6 +760,7 @@ def cwa_stats_show():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     days = request.args.get('days', type=int)
+    user_id = request.args.get('user_id', type=int)
     
     # Validate and process date parameters
     date_range_label = "Last 30 days"
@@ -793,11 +794,14 @@ def cwa_stats_show():
     
     cwa_db = CWA_DB()
     
-    # Get user activity dashboard stats with date range
+    # Get list of active users for dropdown
+    active_users = cwa_db.get_active_users()
+    
+    # Get user activity dashboard stats with date range and optional user filter
     if start_date and end_date:
-        dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date)
+        dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date, user_id=user_id)
     else:
-        dashboard_stats = cwa_db.get_dashboard_stats(days=days)
+        dashboard_stats = cwa_db.get_dashboard_stats(days=days, user_id=user_id)
     
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
@@ -818,6 +822,8 @@ def cwa_stats_show():
                                 days=days,
                                 today=today,
                                 is_admin=current_user.role_admin(),
+                                active_users=active_users,
+                                selected_user_id=user_id,
                                 cwa_stats=get_cwa_stats(),
                                 data_enforcement=data_enforcement, headers_enforcement=headers["enforcement"]["no_paths"], 
                                 data_enforcement_with_paths=data_enforcement_with_paths, headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 

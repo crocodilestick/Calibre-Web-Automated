@@ -341,6 +341,15 @@
     <!-- Date Range & Demo Controls -->
     <div class="date-range-controls">
         <div class="date-range-picker">
+            <label>🕵️ Filter by User:</label>
+            <select id="user-filter" onchange="handleUserChange()">
+                <option value="" {{ 'selected' if not selected_user_id else '' }}>All Users</option>
+                {% for user_id, user_name in active_users %}
+                <option value="{{ user_id }}" {{ 'selected' if selected_user_id == user_id else '' }}>{{ user_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="date-range-picker">
             <label>📅 Time Period:</label>
             <select id="date-preset" onchange="handlePresetChange()">
                 <option value="7" {{ 'selected' if days == 7 else '' }}>Last 7 Days</option>
@@ -372,9 +381,15 @@
     <!-- Top Metrics Cards -->
     <div class="metrics-container" id="metrics-row">
         <div class="metric-card">
+            {% if selected_user_id %}
+                <div class="metric-icon">🔑</div>
+                <div class="metric-label">No of Logins</div>
+                <div class="metric-value" id="metric-users">{{ dashboard_stats.totals.total_logins }}</div>
+            {% else %}
                 <div class="metric-icon">👥</div>
                 <div class="metric-label">Active Users</div>
                 <div class="metric-value" id="metric-users">{{ dashboard_stats.totals.active_users }}</div>
+            {% endif %}
                 <small style="color: #999;" class="date-range-label">{{ date_range_label }}</small>
         </div>
         <div class="metric-card">
@@ -423,8 +438,13 @@
     <div class="row">
         <div class="col-md-4">
             <div class="chart-container">
+                {% if selected_user_id %}
+                <div class="chart-title">📅 Most Active Days</div>
+                <div id="most-active-days-list"></div>
+                {% else %}
                 <div class="chart-title">🏆 Top Users</div>
                 <div id="top-users-list"></div>
+                {% endif %}
             </div>
         </div>
         <div class="col-md-4">
@@ -494,15 +514,28 @@ function generateDemoData() {
     // Scale demo data based on range
     const scaleFactor = Math.min(1, 30 / numDays);
     
-    return {
-        timeline: [
-            ...dates.map(d => [d, 'DOWNLOAD', Math.floor((Math.random() * 25 + 5) * scaleFactor)]),
-            ...dates.map(d => [d, 'EMAIL', Math.floor((Math.random() * 30 + 10) * scaleFactor)]),
-            ...dates.map(d => [d, 'READ', Math.floor((Math.random() * 20 + 3) * scaleFactor)]),
-            ...dates.map(d => [d, 'SEARCH', Math.floor((Math.random() * 15 + 2) * scaleFactor)]),
-            ...dates.map(d => [d, 'LOGIN', Math.floor((Math.random() * 10 + 1) * scaleFactor)])
-        ],
-        topUsers: [
+    // Check if we're in single user mode
+    const selectedUserId = urlParams.get('user_id');
+    
+    // Generate appropriate topUsers data based on mode
+    let topUsersData;
+    if (selectedUserId) {
+        // Generate Most Active Days data (date, count pairs)
+        // Sample some random days from the range with varying activity counts
+        const sampleSize = Math.min(8, numDays);
+        const sampledDates = [];
+        for (let i = 0; i < sampleSize; i++) {
+            const randomIdx = Math.floor(Math.random() * dates.length);
+            sampledDates.push(dates[randomIdx]);
+        }
+        
+        topUsersData = [...new Set(sampledDates)].slice(0, 8).map(date => [
+            date,
+            Math.floor(Math.random() * 40 + 10) // Random activity count 10-50
+        ]).sort((a, b) => b[1] - a[1]); // Sort by count descending
+    } else {
+        // Generate normal Top Users data (user_id, name, count)
+        topUsersData = [
             [1, 'BookLover42', 156],
             [2, 'ReadingFanatic', 134],
             [3, 'LibraryMaster', 98],
@@ -511,7 +544,18 @@ function generateDemoData() {
             [6, 'NightReader', 65],
             [7, 'StorySeeker', 54],
             [8, 'NovelAddict', 43]
+        ];
+    }
+    
+    return {
+        timeline: [
+            ...dates.map(d => [d, 'DOWNLOAD', Math.floor((Math.random() * 25 + 5) * scaleFactor)]),
+            ...dates.map(d => [d, 'EMAIL', Math.floor((Math.random() * 30 + 10) * scaleFactor)]),
+            ...dates.map(d => [d, 'READ', Math.floor((Math.random() * 20 + 3) * scaleFactor)]),
+            ...dates.map(d => [d, 'SEARCH', Math.floor((Math.random() * 15 + 2) * scaleFactor)]),
+            ...dates.map(d => [d, 'LOGIN', Math.floor((Math.random() * 10 + 1) * scaleFactor)])
         ],
+        topUsers: topUsersData,
         topBooks: [
             ['The Midnight Library', 1234, 45],
             ['Project Hail Mary', 1235, 38],
@@ -546,7 +590,16 @@ function generateDemoData() {
             ['SEARCH', 234],
             ['LOGIN', 156]
         ],
-        totals: {
+        totals: selectedUserId ? {
+            // Single user mode: show total_logins instead of active_users
+            active_users: 0,
+            total_logins: 47,
+            total_downloads: 1356,
+            total_reads: 432,
+            total_searches: 234,
+            total_events: 2178
+        } : {
+            // All users mode: show active_users
             active_users: 24,
             total_downloads: 1356,
             total_reads: 432,
@@ -597,7 +650,18 @@ function updateAllVisualizations() {
 }
 
 function updateMetrics() {
-    document.getElementById('metric-users').textContent = currentData.totals.active_users;
+    // Check if we're in single user mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedUserId = urlParams.get('user_id');
+    
+    if (selectedUserId) {
+        // Show total logins for single user
+        document.getElementById('metric-users').textContent = currentData.totals.total_logins || 0;
+    } else {
+        // Show active users for all users
+        document.getElementById('metric-users').textContent = currentData.totals.active_users || 0;
+    }
+    
     document.getElementById('metric-downloads').textContent = currentData.totals.total_downloads;
     document.getElementById('metric-reads').textContent = currentData.totals.total_reads;
     document.getElementById('metric-searches').textContent = currentData.totals.total_searches;
@@ -815,28 +879,55 @@ function updateFormatsChart() {
 }
 
 function updateTopLists() {
-    // Top Users
-    const usersHtml = currentData.topUsers.length > 0 
-        ? currentData.topUsers.map(([userId, name, count]) => {
-            const profileImage = userProfiles[name];
-            const avatar = profileImage 
-                ? `<img src="${profileImage}" class="user-avatar" alt="${name}">` 
-                : '👤';
-            
-            // Make username clickable for admins
-            const nameDisplay = isAdmin 
-                ? `<a href="/admin/user/${userId}">${name}</a>` 
-                : name;
-            
-            return `
-                <div class="top-item">
-                    <span class="top-item-name">${avatar} ${nameDisplay}</span>
-                    <span class="top-item-value">${count}</span>
-                </div>
-            `;
-        }).join('')
-        : '<p style="text-align: center; color: #999; padding: 20px;">No user activity yet</p>';
-    document.getElementById('top-users-list').innerHTML = usersHtml;
+    // Check if we're in single user mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedUserId = urlParams.get('user_id');
+    
+    if (selectedUserId) {
+        // Show Most Active Days instead of Top Users
+        const daysHtml = currentData.topUsers.length > 0 
+            ? currentData.topUsers.map(([date, count]) => {
+                // Format date nicely
+                const dateObj = new Date(date + 'T00:00:00');
+                const formattedDate = dateObj.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                
+                return `
+                    <div class="top-item">
+                        <span class="top-item-name">📆 ${formattedDate}</span>
+                        <span class="top-item-value">${count}</span>
+                    </div>
+                `;
+            }).join('')
+            : '<p style="text-align: center; color: #999; padding: 20px;">No activity data yet</p>';
+        document.getElementById('most-active-days-list').innerHTML = daysHtml;
+    } else {
+        // Show Top Users
+        const usersHtml = currentData.topUsers.length > 0 
+            ? currentData.topUsers.map(([userId, name, count]) => {
+                const profileImage = userProfiles[name];
+                const avatar = profileImage 
+                    ? `<img src="${profileImage}" class="user-avatar" alt="${name}">` 
+                    : '👤';
+                
+                // Make username clickable for admins
+                const nameDisplay = isAdmin 
+                    ? `<a href="/admin/user/${userId}">${name}</a>` 
+                    : name;
+                
+                return `
+                    <div class="top-item">
+                        <span class="top-item-name">${avatar} ${nameDisplay}</span>
+                        <span class="top-item-value">${count}</span>
+                    </div>
+                `;
+            }).join('')
+            : '<p style="text-align: center; color: #999; padding: 20px;">No user activity yet</p>';
+        document.getElementById('top-users-list').innerHTML = usersHtml;
+    }
     
     // Top Books
     const booksHtml = currentData.topBooks.length > 0
@@ -879,6 +970,20 @@ function toggleDemoMode() {
     }
     
     updateAllVisualizations();
+}
+
+// User filter handling
+function handleUserChange() {
+    const userId = document.getElementById('user-filter').value;
+    const url = new URL(window.location);
+    
+    if (userId) {
+        url.searchParams.set('user_id', userId);
+    } else {
+        url.searchParams.delete('user_id');
+    }
+    
+    window.location.href = url.toString();
 }
 
 // Date range handling functions
@@ -936,11 +1041,12 @@ function handleCustomDateChange() {
 }
 
 function resetDateRange() {
-    // Reset to default 30 days and remove all date parameters
+    // Reset to default 30 days and remove all date and user filter parameters
     const url = new URL(window.location);
     url.searchParams.delete('days');
     url.searchParams.delete('start_date');
     url.searchParams.delete('end_date');
+    url.searchParams.delete('user_id');
     window.location.href = url.toString();
 }
 

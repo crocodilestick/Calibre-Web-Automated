@@ -119,6 +119,31 @@
         margin-bottom: 30px;
     }
     
+    /* Loading Spinner */
+    .chart-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        border: 4px solid #3a4451;
+        border-top-color: #ff9800;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        z-index: 10;
+    }
+    
+    .chart-loading-overlay {
+        position: relative;
+        min-height: 300px;
+    }
+    
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
     .demo-toggle {
         background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
         color: white;
@@ -369,7 +394,10 @@
         <button class="demo-toggle" onclick="resetDateRange()" id="reset-button">
             🔄 Reset
         </button>
-        <button class="demo-toggle" onclick="toggleDemoMode()" id="demo-button">
+        <button class="demo-toggle" onclick="exportActivityCSV()" style="margin-left: 10px; background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);">
+            📥 Export CSV
+        </button>
+        <button class="demo-toggle" onclick="toggleDemoMode()" id="demo-button" style="margin-left: 10px;">
             🎨 Show Demo Data
         </button>
         <span class="demo-badge" id="demo-badge" style="display: none;">DEMO MODE</span>
@@ -1889,6 +1917,11 @@ function toggleDemoMode() {
     }
     
     updateAllVisualizations();
+}
+
+// CSV Export function
+function exportActivityCSV() {
+    window.location.href = '/cwa-stats-export-csv/activity' + window.location.search;
 }
 
 // User filter handling

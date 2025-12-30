@@ -924,6 +924,221 @@ def cwa_stats_show():
                                 data_epub_fixer=data_epub_fixer, headers_epub_fixer=headers["epub_fixer"]["no_fixes"],
                                 data_epub_fixer_with_fixes=data_epub_fixer_with_fixes, headers_epub_fixer_with_fixes=headers["epub_fixer"]["with_fixes"])
 
+
+@cwa_stats.route("/cwa-stats-export-csv/<tab_name>", methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def export_stats_csv(tab_name):
+    """Export stats data as CSV for the specified tab."""
+    import csv
+    from io import StringIO
+    from flask import make_response
+    from datetime import datetime
+    
+    # Parse same filter parameters as main stats route
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    days_param = request.args.get('days')
+    user_id = request.args.get('user_id', type=int)
+    
+    # Handle 'all' as special value
+    if days_param == 'all':
+        days = None
+    else:
+        days = int(days_param) if days_param else 30
+    
+    cwa_db = CWA_DB()
+    output = StringIO()
+    writer = csv.writer(output)
+    
+    try:
+        if tab_name == 'activity':
+            # User Activity Tab Export
+            writer.writerow(['=== USER ACTIVITY STATISTICS ==='])
+            writer.writerow([])
+            
+            # Dashboard stats
+            if start_date and end_date:
+                dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date, user_id=user_id)
+            else:
+                dashboard_stats = cwa_db.get_dashboard_stats(days=days, user_id=user_id)
+            
+            writer.writerow(['Metric', 'Value'])
+            for key, value in dashboard_stats.get('totals', {}).items():
+                writer.writerow([key, value])
+            writer.writerow([])
+            
+            # Top users or most active days
+            top_users = dashboard_stats.get('top_users', [])
+            if user_id:
+                writer.writerow(['=== MOST ACTIVE DAYS ==='])
+                writer.writerow(['Date', 'Activity Count'])
+                for day, count in top_users:
+                    writer.writerow([day, count])
+            else:
+                writer.writerow(['=== TOP USERS ==='])
+                writer.writerow(['User ID', 'Username', 'Event Count'])
+                for uid, username, count in top_users:
+                    writer.writerow([uid, username, count])
+            writer.writerow([])
+            
+            # Format distribution
+            writer.writerow(['=== FORMAT DISTRIBUTION ==='])
+            writer.writerow(['Format', 'Download Count'])
+            for format_name, count in dashboard_stats.get('format_distribution', []):
+                writer.writerow([format_name, count])
+            writer.writerow([])
+            
+            # Discovery sources
+            writer.writerow(['=== DISCOVERY SOURCES ==='])
+            writer.writerow(['Source', 'Access Count'])
+            if start_date and end_date:
+                discovery = cwa_db.get_discovery_sources(start_date=start_date, end_date=end_date, user_id=user_id)
+            else:
+                discovery = cwa_db.get_discovery_sources(days=days, user_id=user_id)
+            for source, count in discovery:
+                writer.writerow([source, count])
+            writer.writerow([])
+            
+            # Device breakdown
+            writer.writerow(['=== DEVICE BREAKDOWN ==='])
+            writer.writerow(['Device', 'Access Count'])
+            if start_date and end_date:
+                devices = cwa_db.get_device_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+            else:
+                devices = cwa_db.get_device_breakdown(days=days, user_id=user_id)
+            for device, count in devices:
+                writer.writerow([device, count])
+            
+        elif tab_name == 'library':
+            # Library Stats Tab Export
+            writer.writerow(['=== LIBRARY STATISTICS ==='])
+            writer.writerow([])
+            
+            # Summary stats
+            cwa_stats = get_cwa_stats()
+            writer.writerow(['Total Books', cwa_stats['total_books']])
+            if start_date and end_date:
+                books_added = cwa_db.get_books_added_count(start_date=start_date, end_date=end_date)
+                conversions = cwa_db.get_conversion_success_rate(start_date=start_date, end_date=end_date)
+            else:
+                books_added = cwa_db.get_books_added_count(days=days)
+                conversions = cwa_db.get_conversion_success_rate(days=days)
+            writer.writerow(['Books Added', books_added.get('total', 0)])
+            writer.writerow(['Conversions', conversions.get('total', 0)])
+            writer.writerow([])
+            
+            # Library growth
+            writer.writerow(['=== LIBRARY GROWTH ==='])
+            writer.writerow(['Date', 'Books Added'])
+            if start_date and end_date:
+                growth = cwa_db.get_library_growth(start_date=start_date, end_date=end_date)
+            else:
+                growth = cwa_db.get_library_growth(days=days)
+            for date, count in growth:
+                writer.writerow([date, count])
+            writer.writerow([])
+            
+            # Format distribution
+            writer.writerow(['=== FORMAT DISTRIBUTION ==='])
+            writer.writerow(['Format', 'Book Count'])
+            if start_date and end_date:
+                formats = cwa_db.get_library_formats(start_date=start_date, end_date=end_date)
+            else:
+                formats = cwa_db.get_library_formats(days=days)
+            for format_name, count in formats:
+                writer.writerow([format_name, count])
+            writer.writerow([])
+            
+            # Series completion
+            writer.writerow(['=== SERIES STATISTICS ==='])
+            writer.writerow(['Series Name', 'Book Count', 'Highest Index'])
+            series = cwa_db.get_series_completion_stats(limit=50)
+            for series_name, book_count, highest_index in series:
+                writer.writerow([series_name, book_count, highest_index])
+            writer.writerow([])
+            
+            # Rating statistics
+            writer.writerow(['=== RATING STATISTICS ==='])
+            if start_date and end_date:
+                ratings = cwa_db.get_rating_statistics(start_date=start_date, end_date=end_date)
+            else:
+                ratings = cwa_db.get_rating_statistics(days=days)
+            writer.writerow(['Average Rating', ratings.get('average_rating', 0)])
+            writer.writerow(['Unrated Percentage', ratings.get('unrated_percentage', 0)])
+            writer.writerow([])
+            writer.writerow(['Stars', 'Book Count'])
+            for stars, count in ratings.get('rating_distribution', []):
+                writer.writerow([stars, count])
+            writer.writerow([])
+            
+            # Top enforced books
+            writer.writerow(['=== TOP ENFORCED BOOKS ==='])
+            writer.writerow(['Book Title', 'Enforcement Count', 'Last Enforced'])
+            top_enforced = cwa_db.get_top_enforced_books(limit=20)
+            for book_id, title, count, last_enforced in top_enforced:
+                writer.writerow([title, count, last_enforced])
+            
+        elif tab_name == 'api':
+            # API Usage Tab Export
+            writer.writerow(['=== API USAGE STATISTICS ==='])
+            writer.writerow([])
+            
+            # API usage breakdown
+            writer.writerow(['=== USAGE BREAKDOWN ==='])
+            writer.writerow(['Category', 'Access Count'])
+            if start_date and end_date:
+                breakdown = cwa_db.get_api_usage_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+            else:
+                breakdown = cwa_db.get_api_usage_breakdown(days=days, user_id=user_id)
+            for category, count in breakdown:
+                writer.writerow([category, count])
+            writer.writerow([])
+            
+            # Endpoint frequency
+            writer.writerow(['=== ENDPOINT ACCESS FREQUENCY ==='])
+            writer.writerow(['Endpoint', 'Category', 'Access Count', 'Last Accessed'])
+            if start_date and end_date:
+                endpoints = cwa_db.get_endpoint_frequency_grouped(start_date=start_date, end_date=end_date, user_id=user_id, limit=50)
+            else:
+                endpoints = cwa_db.get_endpoint_frequency_grouped(days=days, user_id=user_id, limit=50)
+            for endpoint, category, count, last_accessed in endpoints:
+                writer.writerow([endpoint, category, count, last_accessed])
+        
+        else:
+            # Unknown tab
+            writer.writerow(['Error: Unknown tab name'])
+        
+        # Create response
+        output.seek(0)
+        csv_data = output.getvalue()
+        response = make_response(csv_data)
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        
+        # Generate filename with timestamp
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'cwa_stats_{tab_name}_{timestamp}.csv'
+        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        return response
+        
+    except Exception as e:
+        log.error(f"Error generating CSV export for tab {tab_name}: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # Return error CSV
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['Error generating export'])
+        writer.writerow([str(e)])
+        output.seek(0)
+        response = make_response(output.getvalue())
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        response.headers['Content-Disposition'] = 'attachment; filename="error.csv"'
+        return response
+
+
 @cwa_stats.route('/cwa-scheduled/upcoming', methods=["GET"])
 @login_required_if_no_ano
 @admin_required

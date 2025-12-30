@@ -573,16 +573,27 @@ class CWA_DB:
         except Exception as e:
             print(f"[cwa-db] Error logging activity: {e}")
 
-    def get_dashboard_stats(self, days=30):
-        """Returns comprehensive activity stats for the user dashboard."""
+    def get_dashboard_stats(self, days=None, start_date=None, end_date=None):
+        """Returns comprehensive activity stats for the user dashboard.
+        
+        Args:
+            days: Number of days back from now (legacy support)
+            start_date: Start date string 'YYYY-MM-DD' (takes precedence over days)
+            end_date: End date string 'YYYY-MM-DD' (takes precedence over days)
+        """
         try:
-            cutoff_date = f"date('now', '-{days} days')"
+            # Use date range if provided, otherwise fall back to days
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30  # Default to 30 days
+                date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # 1. Activity timeline - Daily counts by event type
             self.cur.execute(f"""
                 SELECT date(timestamp) as day, event_type, COUNT(*) as count
                 FROM cwa_user_activity 
-                WHERE timestamp >= {cutoff_date}
+                WHERE {date_filter}
                 GROUP BY day, event_type
                 ORDER BY day ASC
             """)
@@ -592,7 +603,7 @@ class CWA_DB:
             self.cur.execute(f"""
                 SELECT COALESCE(user_name, 'Unknown User') as user_name, COUNT(*) as activity_count
                 FROM cwa_user_activity 
-                WHERE timestamp >= {cutoff_date}
+                WHERE {date_filter}
                 GROUP BY user_id, user_name
                 ORDER BY activity_count DESC 
                 LIMIT 10
@@ -605,7 +616,7 @@ class CWA_DB:
                 FROM cwa_user_activity 
                 WHERE item_id IS NOT NULL 
                   AND event_type IN ('DOWNLOAD', 'READ', 'EMAIL')
-                  AND timestamp >= {cutoff_date}
+                  AND {date_filter}
                 GROUP BY item_id, item_title
                 ORDER BY hits DESC 
                 LIMIT 10
@@ -618,7 +629,7 @@ class CWA_DB:
                 FROM cwa_user_activity 
                 WHERE event_type = 'SEARCH' 
                   AND extra_data IS NOT NULL
-                  AND timestamp >= {cutoff_date}
+                  AND {date_filter}
                 ORDER BY timestamp DESC 
                 LIMIT 15
             """)
@@ -630,7 +641,7 @@ class CWA_DB:
                 FROM cwa_user_activity
                 WHERE event_type IN ('DOWNLOAD', 'EMAIL')
                   AND extra_data IS NOT NULL
-                  AND timestamp >= {cutoff_date}
+                  AND {date_filter}
                 GROUP BY UPPER(extra_data)
                 ORDER BY count DESC
             """)
@@ -640,7 +651,7 @@ class CWA_DB:
             self.cur.execute(f"""
                 SELECT event_type, COUNT(*) as count
                 FROM cwa_user_activity
-                WHERE timestamp >= {cutoff_date}
+                WHERE {date_filter}
                 GROUP BY event_type
                 ORDER BY count DESC
             """)
@@ -658,7 +669,7 @@ class CWA_DB:
                     COUNT(CASE WHEN event_type = 'READ' THEN 1 END) as total_reads,
                     COUNT(CASE WHEN event_type = 'SEARCH' THEN 1 END) as total_searches
                 FROM cwa_user_activity
-                WHERE timestamp >= {cutoff_date}
+                WHERE {date_filter}
             """)
             totals = self.cur.fetchone()
 

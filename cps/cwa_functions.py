@@ -751,13 +751,53 @@ headers = {
 @login_required_if_no_ano
 @admin_required
 def cwa_stats_show():
+    from datetime import datetime, timedelta
+    
     # Check which tab to show (default to user activity)
     active_tab = request.args.get('tab', 'activity')
     
+    # Parse date range parameters
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    days = request.args.get('days', type=int)
+    
+    # Validate and process date parameters
+    date_range_label = "Last 30 days"
+    show_warning = False
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    if start_date and end_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+            
+            # Calculate range in days
+            range_days = (end_dt - start_dt).days
+            
+            # Show warning if range > 1 year
+            if range_days > 365:
+                show_warning = True
+            
+            date_range_label = f"{start_date} to {end_date}"
+        except ValueError:
+            # Invalid date format, fall back to 30 days
+            start_date = None
+            end_date = None
+            days = 30
+    elif days:
+        date_range_label = f"Last {days} days"
+        if days > 365:
+            show_warning = True
+    else:
+        days = 30  # Default
+    
     cwa_db = CWA_DB()
     
-    # Get user activity dashboard stats
-    dashboard_stats = cwa_db.get_dashboard_stats(days=30)
+    # Get user activity dashboard stats with date range
+    if start_date and end_date:
+        dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date)
+    else:
+        dashboard_stats = cwa_db.get_dashboard_stats(days=days)
     
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
@@ -771,6 +811,12 @@ def cwa_stats_show():
                                 page="cwa-stats",
                                 active_tab=active_tab,
                                 dashboard_stats=dashboard_stats,
+                                date_range_label=date_range_label,
+                                show_warning=show_warning,
+                                start_date=start_date,
+                                end_date=end_date,
+                                days=days,
+                                today=today,
                                 cwa_stats=get_cwa_stats(),
                                 data_enforcement=data_enforcement, headers_enforcement=headers["enforcement"]["no_paths"], 
                                 data_enforcement_with_paths=data_enforcement_with_paths, headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 

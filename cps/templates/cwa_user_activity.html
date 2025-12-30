@@ -241,11 +241,68 @@
     }
 
     .col-md-6 {
-        padding-inline: 0px;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
     .col-md-4 {
-        padding-inline: 0px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .date-range-controls {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .date-range-picker {
+        background: #2a3441;
+        border: 1px solid #3a4451;
+        border-radius: 8px;
+        padding: 10px 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .date-range-picker select,
+    .date-range-picker input[type="date"] {
+        background: #1a2332;
+        color: #ddd;
+        border: 1px solid #3a4451;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 0.95em;
+    }
+
+    .date-range-picker select {
+        cursor: pointer;
+        min-width: 150px;
+    }
+
+    .date-range-picker input[type="date"] {
+        min-width: 140px;
+    }
+
+    .date-range-picker label {
+        color: #aaa;
+        font-size: 0.9em;
+        margin: 0;
+    }
+
+    .date-warning {
+        background: rgba(255, 152, 0, 0.1);
+        border: 1px solid #ff9800;
+        border-radius: 6px;
+        padding: 8px 15px;
+        color: #ffc107;
+        font-size: 0.9em;
+        display: none;
+        margin-bottom: 3rem;
     }
 
 </style>
@@ -256,12 +313,32 @@
     <p>Track library usage, downloads, and user engagement</p>
 </div>
     
-    <!-- Demo Mode Toggle -->
-    <div style="text-align: center; margin-bottom: 30px;" id="demo-toggle-container">
+    <!-- Date Range & Demo Controls -->
+    <div class="date-range-controls">
+        <div class="date-range-picker">
+            <label>📅 Time Period:</label>
+            <select id="date-preset" onchange="handlePresetChange()">
+                <option value="7" {{ 'selected' if days == 7 else '' }}>Last 7 Days</option>
+                <option value="30" {{ 'selected' if days == 30 or not days else '' }}>Last 30 Days</option>
+                <option value="90" {{ 'selected' if days == 90 else '' }}>Last 90 Days</option>
+                <option value="180" {{ 'selected' if days == 180 else '' }}>Last 6 Months</option>
+                <option value="365" {{ 'selected' if days == 365 else '' }}>Last Year</option>
+                <option value="custom" {{ 'selected' if start_date and end_date else '' }}>Custom Range</option>
+            </select>
+            <div id="custom-dates" style="display: {{ 'flex' if start_date and end_date else 'none' }}; gap: 10px; align-items: center;">
+                <label>From:</label>
+                <input type="date" id="start-date" value="{{ start_date or '' }}" onchange="handleCustomDateChange()">
+                <label>To:</label>
+                <input type="date" id="end-date" value="{{ end_date or '' }}" max="{{ today }}" onchange="handleCustomDateChange()">
+            </div>
+        </div>
         <button class="demo-toggle" onclick="toggleDemoMode()" id="demo-button">
             🎨 Show Demo Data
         </button>
         <span class="demo-badge" id="demo-badge" style="display: none;">DEMO MODE</span>
+    </div>
+    <div class="date-warning" id="date-warning">
+        ⚠️ Large date ranges may take longer to load
     </div>
     
     <!-- Top Metrics Cards -->
@@ -270,25 +347,25 @@
                 <div class="metric-icon">👥</div>
                 <div class="metric-label">Active Users</div>
                 <div class="metric-value" id="metric-users">{{ dashboard_stats.totals.active_users }}</div>
-                <small style="color: #999;">Last 30 days</small>
+                <small style="color: #999;" class="date-range-label">{{ date_range_label }}</small>
         </div>
         <div class="metric-card">
             <div class="metric-icon">📥</div>
             <div class="metric-label">Total Downloads</div>
             <div class="metric-value" id="metric-downloads">{{ dashboard_stats.totals.total_downloads }}</div>
-            <small style="color: #999;">Last 30 days</small>
+            <small style="color: #999;" class="date-range-label">{{ date_range_label }}</small>
         </div>
         <div class="metric-card">
             <div class="metric-icon">📖</div>
             <div class="metric-label">Books Read</div>
             <div class="metric-value" id="metric-reads">{{ dashboard_stats.totals.total_reads }}</div>
-            <small style="color: #999;">Last 30 days</small>
+            <small style="color: #999;" class="date-range-label">{{ date_range_label }}</small>
         </div>
         <div class="metric-card">
             <div class="metric-icon">🔍</div>
             <div class="metric-label">Searches</div>
             <div class="metric-value" id="metric-searches">{{ dashboard_stats.totals.total_searches }}</div>
-            <small style="color: #999;">Last 30 days</small>
+            <small style="color: #999;" class="date-range-label">{{ date_range_label }}</small>
         </div>
     </div>
     
@@ -361,21 +438,39 @@ const hasRealData = realData.totals.total_events > 0;
 
 // Demo data generator
 function generateDemoData() {
+    // Get date range from URL parameters or use 30 days default
+    const urlParams = new URLSearchParams(window.location.search);
+    const days = parseInt(urlParams.get('days')) || 30;
+    const startDate = urlParams.get('start_date');
+    const endDate = urlParams.get('end_date');
+    
+    let numDays = days;
+    let endDateObj = new Date();
+    
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        numDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        endDateObj = end;
+    }
+    
     const dates = [];
-    const today = new Date();
-    for (let i = 29; i >= 0; i--) {
-        const d = new Date(today);
+    for (let i = numDays - 1; i >= 0; i--) {
+        const d = new Date(endDateObj);
         d.setDate(d.getDate() - i);
         dates.push(d.toISOString().split('T')[0]);
     }
     
+    // Scale demo data based on range
+    const scaleFactor = Math.min(1, 30 / numDays);
+    
     return {
         timeline: [
-            ...dates.map(d => [d, 'DOWNLOAD', Math.floor(Math.random() * 25) + 5]),
-            ...dates.map(d => [d, 'EMAIL', Math.floor(Math.random() * 30) + 10]),
-            ...dates.map(d => [d, 'READ', Math.floor(Math.random() * 20) + 3]),
-            ...dates.map(d => [d, 'SEARCH', Math.floor(Math.random() * 15) + 2]),
-            ...dates.map(d => [d, 'LOGIN', Math.floor(Math.random() * 10) + 1])
+            ...dates.map(d => [d, 'DOWNLOAD', Math.floor((Math.random() * 25 + 5) * scaleFactor)]),
+            ...dates.map(d => [d, 'EMAIL', Math.floor((Math.random() * 30 + 10) * scaleFactor)]),
+            ...dates.map(d => [d, 'READ', Math.floor((Math.random() * 20 + 3) * scaleFactor)]),
+            ...dates.map(d => [d, 'SEARCH', Math.floor((Math.random() * 15 + 2) * scaleFactor)]),
+            ...dates.map(d => [d, 'LOGIN', Math.floor((Math.random() * 10 + 1) * scaleFactor)])
         ],
         topUsers: [
             ['BookLover42', 156],
@@ -432,7 +527,7 @@ function generateDemoData() {
 }
 
 let demoMode = false;
-let currentData = hasRealData ? realData : generateDemoData();
+let currentData = realData;  // Always start with real data, even if empty
 let userProfiles = {};
 
 // Initialize charts
@@ -750,18 +845,66 @@ function toggleDemoMode() {
     updateAllVisualizations();
 }
 
+// Date range handling functions
+function handlePresetChange() {
+    const preset = document.getElementById('date-preset').value;
+    const customDates = document.getElementById('custom-dates');
+    const warning = document.getElementById('date-warning');
+    
+    if (preset === 'custom') {
+        customDates.style.display = 'flex';
+    } else {
+        customDates.style.display = 'none';
+        
+        // Show warning for ranges > 1 year
+        if (parseInt(preset) > 365) {
+            warning.style.display = 'block';
+        } else {
+            warning.style.display = 'none';
+        }
+        
+        // Reload page with new days parameter
+        const url = new URL(window.location);
+        url.searchParams.delete('start_date');
+        url.searchParams.delete('end_date');
+        url.searchParams.set('days', preset);
+        window.location.href = url.toString();
+    }
+}
+
+function handleCustomDateChange() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    const warning = document.getElementById('date-warning');
+    
+    if (startDate && endDate) {
+        // Date inputs already provide YYYY-MM-DD format
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+        
+        // Show warning for ranges > 1 year
+        if (days > 365) {
+            warning.style.display = 'block';
+        } else {
+            warning.style.display = 'none';
+        }
+        
+        // Reload page with custom date range
+        const url = new URL(window.location);
+        url.searchParams.delete('days');
+        url.searchParams.set('start_date', startDate);
+        url.searchParams.set('end_date', endDate);
+        window.location.href = url.toString();
+    }
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Show demo toggle only if no real data
-    if (!hasRealData) {
-        demoMode = true;
-        document.getElementById('demo-badge').style.display = 'inline-block';
-        document.getElementById('demo-button').textContent = '📊 Show Real Data (when available)';
-        document.getElementById('demo-button').classList.add('active');
-        document.getElementById('demo-button').disabled = true;
-        document.getElementById('demo-button').style.opacity = '0.7';
-        document.getElementById('demo-button').style.cursor = 'not-allowed';
-    }
+    // Show warning if present
+    {% if show_warning %}
+    document.getElementById('date-warning').style.display = 'block';
+    {% endif %}
     
     initCharts();
 });

@@ -96,6 +96,20 @@
         margin-bottom: 30px;
     }
     
+    /* Force 2x2 grid for medium viewports */
+    @media (min-width: 768px) and (max-width: 1346px) {
+        .library-stats-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    /* 4 columns for large viewports */
+    @media (min-width: 1347px) {
+        .library-stats-container {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    
     .library-stat-card {
         background: linear-gradient(135deg, #2a3441 0%, #1a2332 100%);
         border-radius: 12px;
@@ -279,16 +293,6 @@
     <div id="growth-chart" style="width: 100%; height: 450px;"></div>
 </div>
 
-<!-- Second Row: Format Distribution -->
-<div class="row cwa-stats-row">
-    <div class="col-md-12">
-        <div class="chart-container">
-            <div class="chart-title">📊 Format Distribution</div>
-            <div id="library-formats-chart" style="width: 100%; height: 400px;"></div>
-        </div>
-    </div>
-</div>
-
 <!-- Third Row: Series Completion & Publication Years -->
 <div class="row cwa-stats-row">
     <div class="col-md-6">
@@ -301,6 +305,42 @@
         <div class="chart-container">
             <div class="chart-title">📅 Publication Year Distribution</div>
             <div id="publication-year-chart" style="width: 100%; height: 400px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Fifth Row: Sprint 6 - Rating & Enforcement -->
+<div class="row cwa-stats-row">
+    <div class="col-md-6">
+        <div class="chart-container" style="min-height: 520px;">
+            <div class="chart-title">⭐ Rating Statistics</div>
+            <div id="rating-stats-chart" style="width: 100%; height: 450px;"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container" style="min-height: 520px;">
+            <div class="chart-title">🛡️ Top Enforced Books</div>
+            <div id="top-enforced-chart" style="width: 100%; height: 450px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Sixth Row: Sprint 6 - Import Flows -->
+<div class="row cwa-stats-row">
+    <div class="col-md-12">
+        <div class="chart-container" style="min-height: 520px;">
+            <div class="chart-title">🔄 Import Source Flows</div>
+            <div id="import-sankey-chart" style="width: 100%; height: 450px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row: Format Distribution -->
+<div class="row cwa-stats-row">
+    <div class="col-md-12">
+        <div class="chart-container">
+            <div class="chart-title">📊 Format Distribution</div>
+            <div id="library-formats-chart" style="width: 100%; height: 400px;"></div>
         </div>
     </div>
 </div>
@@ -332,6 +372,7 @@
     </div>
 </div>
 
+
 <script>
 // Data from backend
 const realLibraryData = {
@@ -342,7 +383,10 @@ const realLibraryData = {
     totalBooks: {{ cwa_stats.total_books }},
     seriesCompletion: {{ series_completion | tojson }},
     publicationYears: {{ publication_years | tojson }},
-    mostFixedBooks: {{ most_fixed_books | tojson }}
+    mostFixedBooks: {{ most_fixed_books | tojson }},
+    ratingStats: {{ rating_statistics | tojson }},
+    topEnforced: {{ top_enforced_books | tojson }},
+    importFlows: {{ import_source_flows | tojson }}
 };
 
 // State management
@@ -351,12 +395,16 @@ let currentLibraryData = realLibraryData;
 
 // Initialize charts
 let growthChart, libraryFormatsChart, seriesChart, publicationYearChart;
+let ratingStatsChart, topEnforcedChart, importSankeyChart;
 
 function initLibraryCharts() {
     growthChart = echarts.init(document.getElementById('growth-chart'));
     libraryFormatsChart = echarts.init(document.getElementById('library-formats-chart'));
     seriesChart = echarts.init(document.getElementById('series-completion-chart'));
     publicationYearChart = echarts.init(document.getElementById('publication-year-chart'));
+    ratingStatsChart = echarts.init(document.getElementById('rating-stats-chart'));
+    topEnforcedChart = echarts.init(document.getElementById('top-enforced-chart'));
+    importSankeyChart = echarts.init(document.getElementById('import-sankey-chart'));
     
     updateAllLibraryCharts();
     
@@ -366,6 +414,9 @@ function initLibraryCharts() {
         libraryFormatsChart.resize();
         seriesChart.resize();
         publicationYearChart.resize();
+        ratingStatsChart.resize();
+        topEnforcedChart.resize();
+        importSankeyChart.resize();
     });
 }
 
@@ -375,6 +426,9 @@ function updateAllLibraryCharts() {
     updateLibraryFormatsChart();
     updateSeriesCompletionChart();
     updatePublicationYearChart();
+    updateRatingStatsChart();
+    updateTopEnforcedChart();
+    updateImportSankeyChart();
 }
 
 function updateLibraryStatCards() {
@@ -783,6 +837,257 @@ function updatePublicationYearChart() {
     publicationYearChart.setOption(option, true);
 }
 
+function updateRatingStatsChart() {
+    const data = currentLibraryData.ratingStats || {};
+    
+    if (!data.rating_distribution || data.rating_distribution.length === 0) {
+        ratingStatsChart.setOption({
+            title: {
+                text: 'No rating data available',
+                left: 'center',
+                top: 'center',
+                textStyle: { color: '#999', fontSize: 14 }
+            }
+        }, true);
+        return;
+    }
+    
+    const avgRating = data.average_rating || 0;
+    const trend = data.trend || 0;
+    const unratedPct = data.unrated_percentage || 0;
+    
+    // Create star display
+    const fullStars = Math.floor(avgRating);
+    const hasHalfStar = (avgRating % 1) >= 0.5;
+    let starDisplay = '★'.repeat(fullStars);
+    if (hasHalfStar) starDisplay += '⯨';
+    starDisplay += '☆'.repeat(5 - fullStars - (hasHalfStar ? 1 : 0));
+    
+    const trendColor = trend > 0 ? '#4caf50' : trend < 0 ? '#f44336' : '#ff9800';
+    const trendIcon = trend > 0 ? '↑' : trend < 0 ? '↓' : '→';
+    
+    const option = {
+        title: [{
+            text: `${starDisplay} ${avgRating.toFixed(1)}`,
+            left: 'center',
+            top: '5%',
+            textStyle: {
+                fontSize: 24,
+                color: '#ff9800',
+                fontWeight: 'bold'
+            }
+        }, {
+            text: `${trendIcon} ${Math.abs(trend)}% ${trend !== 0 ? 'vs prev period' : ''}`,
+            left: 'center',
+            top: '15%',
+            textStyle: {
+                fontSize: 14,
+                color: trendColor,
+                fontWeight: 'normal'
+            }
+        }, {
+            text: `${unratedPct}% Unrated`,
+            left: 'center',
+            top: '22%',
+            textStyle: {
+                fontSize: 12,
+                color: '#999'
+            }
+        }],
+        grid: {
+            left: '10%',
+            right: '10%',
+            bottom: '5%',
+            top: '30%',
+            containLabel: true
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            formatter: (params) => {
+                const stars = params[0].name;
+                const count = params[0].value;
+                return `${stars} Star${stars > 1 ? 's' : ''}: ${count} books`;
+            }
+        },
+        xAxis: {
+            type: 'value',
+            name: 'Books',
+            axisLabel: { color: '#fff' },
+            axisLine: { lineStyle: { color: '#3a4451' } },
+            splitLine: { lineStyle: { color: '#3a4451' } }
+        },
+        yAxis: {
+            type: 'category',
+            data: data.rating_distribution.map(d => `${d[0]} ★`),
+            axisLabel: { color: '#fff', fontSize: 14 },
+            axisLine: { lineStyle: { color: '#3a4451' } }
+        },
+        series: [{
+            type: 'bar',
+            data: data.rating_distribution.map(d => d[1]),
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                    { offset: 0, color: '#ff9800' },
+                    { offset: 1, color: '#ffc107' }
+                ]),
+                borderRadius: [0, 4, 4, 0]
+            },
+            label: {
+                show: true,
+                position: 'right',
+                formatter: '{c}',
+                color: '#fff'
+            }
+        }]
+    };
+    
+    ratingStatsChart.setOption(option, true);
+}
+
+function updateTopEnforcedChart() {
+    const data = currentLibraryData.topEnforced || [];
+    
+    if (data.length === 0) {
+        topEnforcedChart.setOption({
+            title: {
+                text: 'No enforcement data available',
+                left: 'center',
+                top: 'center',
+                textStyle: { color: '#999', fontSize: 14 }
+            }
+        }, true);
+        return;
+    }
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            formatter: (params) => {
+                const title = params[0].name;
+                const count = params[0].value;
+                const lastEnforced = data[params[0].dataIndex][3];
+                return `<strong>${title}</strong><br/>
+                        Enforcements: ${count}<br/>
+                        Last: ${lastEnforced}`;
+            }
+        },
+        grid: {
+            left: '5%',
+            right: '5%',
+            bottom: '5%',
+            top: '5%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            name: 'Enforcements',
+            axisLabel: { color: '#fff' },
+            axisLine: { lineStyle: { color: '#3a4451' } },
+            splitLine: { lineStyle: { color: '#3a4451' } }
+        },
+        yAxis: {
+            type: 'category',
+            data: data.map(d => d[1]),  // Book titles
+            axisLabel: {
+                color: '#fff',
+                overflow: 'truncate',
+                width: 120,
+                fontSize: 11
+            },
+            axisLine: { lineStyle: { color: '#3a4451' } }
+        },
+        series: [{
+            type: 'bar',
+            data: data.map(d => d[2]),  // Enforcement counts
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                    { offset: 0, color: '#9c27b0' },
+                    { offset: 1, color: '#ba68c8' }
+                ]),
+                borderRadius: [0, 4, 4, 0]
+            },
+            label: {
+                show: true,
+                position: 'right',
+                formatter: '{c}',
+                color: '#fff'
+            }
+        }]
+    };
+    
+    topEnforcedChart.setOption(option, true);
+}
+
+function updateImportSankeyChart() {
+    const data = currentLibraryData.importFlows || [];
+    
+    if (data.length === 0) {
+        importSankeyChart.setOption({
+            title: {
+                text: 'No conversion data available',
+                left: 'center',
+                top: 'center',
+                textStyle: { color: '#999', fontSize: 14 }
+            }
+        }, true);
+        return;
+    }
+    
+    // Extract unique nodes (formats)
+    const nodeSet = new Set();
+    data.forEach(([source, target, value]) => {
+        nodeSet.add(source);
+        nodeSet.add(target);
+    });
+    
+    const nodes = Array.from(nodeSet).map(name => ({ name }));
+    const links = data.map(([source, target, value]) => ({
+        source,
+        target,
+        value
+    }));
+    
+    const option = {
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove',
+            formatter: (params) => {
+                if (params.dataType === 'edge') {
+                    return `${params.data.source} → ${params.data.target}<br/>Conversions: ${params.data.value}`;
+                }
+                return params.name;
+            }
+        },
+        series: [{
+            type: 'sankey',
+            layout: 'none',
+            emphasis: {
+                focus: 'adjacency'
+            },
+            data: nodes,
+            links: links,
+            lineStyle: {
+                color: 'gradient',
+                curveness: 0.5
+            },
+            itemStyle: {
+                color: '#4caf50',
+                borderColor: '#1a2332',
+                borderWidth: 2
+            },
+            label: {
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 'bold'
+            }
+        }]
+    };
+    
+    importSankeyChart.setOption(option, true);
+}
+
 // Time period filter functions
 function changeLibraryTimePeriod() {
     const select = document.getElementById('library-time-period');
@@ -885,6 +1190,50 @@ function generateLibraryDemoData() {
         return [title, fixCount, `${fixCount}`, '2024-12-28 14:30:00', '/calibre-library/Author/Book'];
     });
     
+    // Generate demo rating statistics
+    const ratingDist = [
+        [5, Math.floor(Math.random() * 80) + 50],
+        [4, Math.floor(Math.random() * 150) + 100],
+        [3, Math.floor(Math.random() * 100) + 80],
+        [2, Math.floor(Math.random() * 40) + 20],
+        [1, Math.floor(Math.random() * 20) + 5]
+    ];
+    const totalRated = ratingDist.reduce((sum, [_, count]) => sum + count, 0);
+    const weightedSum = ratingDist.reduce((sum, [stars, count]) => sum + (stars * count), 0);
+    const avgRating = weightedSum / totalRated;
+    const demoRatingStats = {
+        average_rating: Math.round(avgRating * 100) / 100,
+        rating_distribution: ratingDist,
+        unrated_percentage: Math.round((Math.random() * 30 + 10) * 10) / 10,
+        trend: Math.round((Math.random() * 10 - 5) * 10) / 10,
+        total_books: cumulative,
+        rated_books: totalRated
+    };
+    
+    // Generate demo top enforced books
+    const enforcedBookTitles = [
+        'The Fellowship of the Ring', 'A Game of Thrones', 'The Name of the Wind',
+        'Neuromancer', 'Snow Crash', 'The Hitchhiker\'s Guide', 'Ender\'s Game',
+        'Do Androids Dream of Electric Sheep', 'Foundation', 'Dune'
+    ];
+    const demoTopEnforced = enforcedBookTitles.map((title, idx) => {
+        const count = Math.floor(Math.random() * 15) + (10 - idx); // Higher for top books
+        return [idx + 1, title, count, '2024-12-28 10:30:00'];
+    }).sort((a, b) => b[2] - a[2]).slice(0, 10);
+    
+    // Generate demo import flows
+    const sourceFormats = ['MOBI', 'AZW3', 'PDF', 'CBR', 'CBZ', 'FB2', 'LIT', 'RTF'];
+    const targetFormats = ['EPUB', 'PDF', 'MOBI'];
+    const demoImportFlows = [];
+    for (let i = 0; i < Math.min(15, sourceFormats.length * 2); i++) {
+        const source = sourceFormats[Math.floor(Math.random() * sourceFormats.length)];
+        const target = targetFormats[Math.floor(Math.random() * targetFormats.length)];
+        if (source !== target) {
+            const value = Math.floor(Math.random() * 100) + 10;
+            demoImportFlows.push([source, target, value]);
+        }
+    }
+    
     return {
         growth: demoGrowth,
         formats: demoFormats,
@@ -902,7 +1251,10 @@ function generateLibraryDemoData() {
         totalBooks: cumulative,
         seriesCompletion: demoSeries,
         publicationYears: demoYears,
-        mostFixedBooks: demoFixedBooks
+        mostFixedBooks: demoFixedBooks,
+        ratingStats: demoRatingStats,
+        topEnforced: demoTopEnforced,
+        importFlows: demoImportFlows
     };
 }
 

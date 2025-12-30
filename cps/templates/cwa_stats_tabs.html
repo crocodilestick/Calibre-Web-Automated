@@ -74,26 +74,29 @@
             ⚙️ System Stats
         </button>
     </div>
-    
-    <!-- User Activity Tab -->
-    <div id="activity-tab" class="tab-content {{ 'active' if active_tab == 'activity' else '' }}">
-        {% include 'cwa_user_activity.html' %}
+
+    <div style="max-width: 1200px; margin: auto;">
+        <!-- User Activity Tab -->
+        <div id="activity-tab" class="tab-content {{ 'active' if active_tab == 'activity' else '' }}">
+            {% include 'cwa_user_activity.html' %}
+        </div>
+        
+        <!-- Library Stats Tab -->
+        <div id="library-tab" class="tab-content {{ 'active' if active_tab == 'library' else '' }}">
+            {% include 'cwa_library_stats.html' %}
+        </div>
+        
+        <!-- API Usage Tab -->
+        <div id="api-tab" class="tab-content {{ 'active' if active_tab == 'api' else '' }}">
+            {% include 'cwa_api_stats.html' %}
+        </div>
+        
+        <!-- System Logs Tab -->
+        <div id="system-tab" class="tab-content {{ 'active' if active_tab == 'system' else '' }}">
+            {% include 'cwa_stats_system.html' %}
+        </div>
     </div>
     
-    <!-- Library Stats Tab -->
-    <div id="library-tab" class="tab-content {{ 'active' if active_tab == 'library' else '' }}">
-        {% include 'cwa_library_stats.html' %}
-    </div>
-    
-    <!-- API Usage Tab -->
-    <div id="api-tab" class="tab-content {{ 'active' if active_tab == 'api' else '' }}">
-        {% include 'cwa_api_stats.html' %}
-    </div>
-    
-    <!-- System Logs Tab -->
-    <div id="system-tab" class="tab-content {{ 'active' if active_tab == 'system' else '' }}">
-        {% include 'cwa_stats_system.html' %}
-    </div>
 </div>
 
 <script>

@@ -848,6 +848,15 @@ def cwa_stats_show():
     publication_years = cwa_db.get_publication_year_distribution()
     most_fixed_books = cwa_db.get_most_fixed_books(limit=10)
     
+    # Get Sprint 6 advanced library metrics
+    if start_date and end_date:
+        rating_statistics = cwa_db.get_rating_statistics(start_date=start_date, end_date=end_date)
+    else:
+        rating_statistics = cwa_db.get_rating_statistics(days=days)
+    
+    top_enforced_books = cwa_db.get_top_enforced_books(limit=10)
+    import_source_flows = cwa_db.get_import_source_flows(limit=15)
+    
     # Get Sprint 5 user activity enhancements
     if start_date and end_date:
         session_duration = cwa_db.get_session_duration_stats(start_date=start_date, end_date=end_date, user_id=user_id)
@@ -895,6 +904,9 @@ def cwa_stats_show():
                                 series_completion=series_completion,
                                 publication_years=publication_years,
                                 most_fixed_books=most_fixed_books,
+                                rating_statistics=rating_statistics,
+                                top_enforced_books=top_enforced_books,
+                                import_source_flows=import_source_flows,
                                 date_range_label=date_range_label,
                                 show_warning=show_warning,
                                 start_date=start_date,

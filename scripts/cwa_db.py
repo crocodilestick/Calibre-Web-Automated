@@ -1559,6 +1559,225 @@ class CWA_DB:
             traceback.print_exc()
             return []
 
+    def get_rating_statistics(self, days=None, start_date=None, end_date=None):
+        """Returns rating statistics from metadata.db.
+        
+        Args:
+            days: Number of days back (optional) - filters books added in period
+            start_date/end_date: Custom range 'YYYY-MM-DD' (takes precedence)
+        
+        Returns: Dict with:
+            - average_rating: float (0-5 scale)
+            - rating_distribution: [(stars, count), ...] sorted by stars descending
+            - unrated_percentage: float
+            - trend: float (percentage change from previous period)
+        """
+        try:
+            import sqlite3
+            
+            metadata_db_path = "/calibre-library/metadata.db"
+            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
+            metadata_cur = metadata_con.cursor()
+            
+            # Build date filter for books added in time period
+            if start_date and end_date:
+                date_filter = f"WHERE b.timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+                # Calculate previous period for trend
+                from datetime import datetime, timedelta
+                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+                end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+                period_days = (end_dt - start_dt).days
+                prev_start = (start_dt - timedelta(days=period_days)).strftime('%Y-%m-%d')
+                prev_end = start_date
+                prev_date_filter = f"WHERE b.timestamp BETWEEN date('{prev_start}') AND date('{prev_end}', '+1 day')"
+            elif days:
+                date_filter = f"WHERE b.timestamp >= date('now', '-{days} days')"
+                prev_date_filter = f"WHERE b.timestamp >= date('now', '-{days * 2} days') AND b.timestamp < date('now', '-{days} days')"
+            else:
+                date_filter = ""
+                prev_date_filter = ""
+            
+            # Get average rating (convert 0-10 scale to 0-5)
+            avg_query = f"""
+                SELECT AVG(r.rating) / 2.0 as avg_rating
+                FROM books b
+                JOIN books_ratings_link brl ON b.id = brl.book
+                JOIN ratings r ON brl.rating = r.id
+                {date_filter.replace('WHERE', 'WHERE' if date_filter else '') if date_filter else ''}
+                {'AND' if date_filter else 'WHERE'} r.rating > 0
+            """
+            metadata_cur.execute(avg_query)
+            avg_result = metadata_cur.fetchone()
+            average_rating = round(avg_result[0], 2) if avg_result and avg_result[0] else 0.0
+            
+            # Get previous period average for trend
+            if prev_date_filter:
+                prev_avg_query = f"""
+                    SELECT AVG(r.rating) / 2.0 as avg_rating
+                    FROM books b
+                    JOIN books_ratings_link brl ON b.id = brl.book
+                    JOIN ratings r ON brl.rating = r.id
+                    {prev_date_filter}
+                    AND r.rating > 0
+                """
+                metadata_cur.execute(prev_avg_query)
+                prev_avg_result = metadata_cur.fetchone()
+                prev_average = prev_avg_result[0] if prev_avg_result and prev_avg_result[0] else 0.0
+                
+                if prev_average > 0:
+                    trend = round(((average_rating - prev_average) / prev_average) * 100, 1)
+                else:
+                    trend = 0.0
+            else:
+                trend = 0.0
+            
+            # Get rating distribution (1-5 stars)
+            dist_query = f"""
+                SELECT 
+                    CAST(r.rating / 2 AS INTEGER) as stars,
+                    COUNT(*) as count
+                FROM books b
+                JOIN books_ratings_link brl ON b.id = brl.book
+                JOIN ratings r ON brl.rating = r.id
+                {date_filter}
+                {'AND' if date_filter else 'WHERE'} r.rating > 0
+                GROUP BY stars
+                ORDER BY stars DESC
+            """
+            metadata_cur.execute(dist_query)
+            rating_distribution = metadata_cur.fetchall()
+            
+            # Get total books and unrated count
+            total_query = f"SELECT COUNT(*) FROM books b {date_filter}"
+            metadata_cur.execute(total_query)
+            total_books = metadata_cur.fetchone()[0]
+            
+            unrated_query = f"""
+                SELECT COUNT(*) 
+                FROM books b
+                LEFT JOIN books_ratings_link brl ON b.id = brl.book
+                LEFT JOIN ratings r ON brl.rating = r.id
+                {date_filter}
+                {'AND' if date_filter else 'WHERE'} (brl.rating IS NULL OR r.rating = 0)
+            """
+            metadata_cur.execute(unrated_query)
+            unrated_books = metadata_cur.fetchone()[0]
+            
+            unrated_percentage = round((unrated_books / total_books * 100), 1) if total_books > 0 else 0.0
+            
+            metadata_con.close()
+            
+            return {
+                'average_rating': average_rating,
+                'rating_distribution': rating_distribution,
+                'unrated_percentage': unrated_percentage,
+                'trend': trend,
+                'total_books': total_books,
+                'rated_books': total_books - unrated_books
+            }
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting rating statistics: {e}")
+            import traceback
+            traceback.print_exc()
+            return {
+                'average_rating': 0.0,
+                'rating_distribution': [],
+                'unrated_percentage': 0.0,
+                'trend': 0.0,
+                'total_books': 0,
+                'rated_books': 0
+            }
+
+    def get_top_enforced_books(self, limit=10):
+        """Returns top books by enforcement count (cross-database query).
+        
+        Args:
+            limit: Number of top books to return (default 10, max 10000)
+        
+        Returns: List of tuples: (book_id, title, enforcement_count, last_enforced)
+        """
+        try:
+            import sqlite3
+            
+            # Limit to reasonable size
+            limit = min(limit, 10000)
+            
+            # Pass 1: Get enforcement counts from cwa.db
+            self.cur.execute(f"""
+                SELECT 
+                    book_id,
+                    COUNT(DISTINCT file_path) as enforcement_count,
+                    MAX(timestamp) as last_enforced
+                FROM cwa_enforcement
+                GROUP BY book_id
+                ORDER BY enforcement_count DESC
+                LIMIT {limit}
+            """)
+            enforcement_data = self.cur.fetchall()
+            
+            if not enforcement_data:
+                return []
+            
+            # Pass 2: Enrich with book titles from metadata.db
+            metadata_db_path = "/calibre-library/metadata.db"
+            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
+            metadata_cur = metadata_con.cursor()
+            
+            results = []
+            for book_id, enforcement_count, last_enforced in enforcement_data:
+                try:
+                    metadata_cur.execute("SELECT title FROM books WHERE id = ?", (book_id,))
+                    title_result = metadata_cur.fetchone()
+                    if title_result:
+                        results.append((book_id, title_result[0], enforcement_count, last_enforced))
+                except Exception as e:
+                    print(f"[cwa-db] Error getting title for book_id {book_id}: {e}")
+                    # Include with placeholder title
+                    results.append((book_id, f"Book #{book_id}", enforcement_count, last_enforced))
+            
+            metadata_con.close()
+            return results
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting top enforced books: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    def get_import_source_flows(self, limit=15):
+        """Returns format conversion flows for Sankey diagram.
+        
+        Args:
+            limit: Number of top flows to return (default 15)
+        
+        Returns: List of tuples: (source_format, target_format, count)
+        """
+        try:
+            # Get conversion flows from cwa_conversions table
+            self.cur.execute(f"""
+                SELECT 
+                    UPPER(original_format) as source,
+                    UPPER(end_format) as target,
+                    COUNT(*) as value
+                FROM cwa_conversions
+                WHERE original_format != '' 
+                    AND original_format IS NOT NULL
+                    AND end_format != '' 
+                    AND end_format IS NOT NULL
+                GROUP BY source, target
+                ORDER BY value DESC
+                LIMIT {limit}
+            """)
+            
+            return self.cur.fetchall()
+            
+        except Exception as e:
+            print(f"[cwa-db] Error getting import source flows: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
     def get_hourly_activity_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
         """Returns activity count by hour of day and day of week for heatmap visualization.
         

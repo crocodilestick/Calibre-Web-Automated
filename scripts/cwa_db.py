@@ -817,6 +817,243 @@ class CWA_DB:
             print(f"[cwa-db] Error getting failed logins: {e}")
             return []
 
+    def get_library_growth(self, days=None, start_date=None, end_date=None):
+        """Returns books added per day from Calibre metadata.db for library growth timeline.
+        
+        Returns list of tuples: (date, books_added_count)
+        """
+        try:
+            import sqlite3
+            
+            # Connect to Calibre's metadata.db
+            metadata_db_path = "/calibre-library/metadata.db"
+            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
+            metadata_cur = metadata_con.cursor()
+            
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 365  # Default to 1 year for growth chart
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            metadata_cur.execute(f"""
+                SELECT 
+                    date(timestamp) as add_date,
+                    COUNT(*) as books_added
+                FROM books
+                WHERE timestamp IS NOT NULL
+                    AND {date_filter}
+                GROUP BY add_date
+                ORDER BY add_date ASC
+            """)
+            result = metadata_cur.fetchall()
+            metadata_con.close()
+            return result
+        except Exception as e:
+            print(f"[cwa-db] Error getting library growth: {e}")
+            return []
+
+    def get_books_added_count(self, days=None, start_date=None, end_date=None):
+        """Returns total books added in time period with trend comparison.
+        
+        Returns dict with: total, trend
+        """
+        try:
+            import sqlite3
+            
+            # Connect to Calibre's metadata.db
+            metadata_db_path = "/calibre-library/metadata.db"
+            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
+            metadata_cur = metadata_con.cursor()
+            
+            # Build date filter for current period
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            elif days:
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            else:
+                date_filter = "1=1"  # All time - no filter
+            
+            # Get current period count
+            metadata_cur.execute(f"""
+                SELECT COUNT(*) as total
+                FROM books
+                WHERE timestamp IS NOT NULL
+                    AND {date_filter}
+            """)
+            current = metadata_cur.fetchone()
+            
+            # Get previous period for trend comparison
+            if start_date and end_date:
+                # Calculate previous period of same duration
+                from datetime import datetime, timedelta
+                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+                end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+                duration = (end_dt - start_dt).days
+                prev_start = (start_dt - timedelta(days=duration)).strftime('%Y-%m-%d')
+                prev_end = start_date
+                prev_filter = f"timestamp BETWEEN date('{prev_start}') AND date('{prev_end}')"
+            elif days:
+                prev_filter = f"timestamp >= date('now', '-{days * 2} days') AND timestamp < date('now', '-{days} days')"
+            else:
+                # All time - no previous period comparison
+                prev_filter = "1=0"  # Returns 0
+            
+            metadata_cur.execute(f"""
+                SELECT COUNT(*) as total
+                FROM books
+                WHERE timestamp IS NOT NULL
+                    AND {prev_filter}
+            """)
+            previous = metadata_cur.fetchone()
+            
+            total = current[0] or 0
+            prev_total = previous[0] or 0
+            
+            # Calculate trend based on volume change
+            if prev_total > 0:
+                trend = ((total - prev_total) / prev_total * 100)
+            else:
+                trend = 0
+            
+            metadata_con.close()
+            
+            return {
+                'total': total,
+                'trend': round(trend, 1)
+            }
+        except Exception as e:
+            print(f"[cwa-db] Error getting books added count: {e}")
+            import traceback
+            traceback.print_exc()
+            return {
+                'total': 0,
+                'trend': 0
+            }
+
+    def get_library_formats(self, days=None, start_date=None, end_date=None):
+        """Returns format distribution from Calibre metadata.db.
+        
+        Args:
+            days: Number of days back from now (optional)
+            start_date: Start date string 'YYYY-MM-DD' (optional)
+            end_date: End date string 'YYYY-MM-DD' (optional)
+        
+        Returns list of tuples: (format, count)
+        """
+        try:
+            import sqlite3
+            
+            # Connect to Calibre's metadata.db
+            metadata_db_path = "/calibre-library/metadata.db"
+            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
+            metadata_cur = metadata_con.cursor()
+            
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"WHERE books.timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            elif days:
+                date_filter = f"WHERE books.timestamp >= date('now', '-{days} days')"
+            else:
+                date_filter = ""  # No filter, show all time
+            
+            metadata_cur.execute(f"""
+                SELECT 
+                    UPPER(data.format) as format,
+                    COUNT(*) as count
+                FROM books
+                JOIN data ON books.id = data.book
+                {date_filter}
+                GROUP BY format
+                ORDER BY count DESC
+            """)
+            result = metadata_cur.fetchall()
+            metadata_con.close()
+            return result
+        except Exception as e:
+            print(f"[cwa-db] Error getting library formats: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    def get_conversion_success_rate(self, days=None, start_date=None, end_date=None):
+        """Returns conversion success statistics from cwa_conversions table.
+        Note: All entries in cwa_conversions are successful (failed conversions aren't logged)
+        
+        Returns dict with: total, successful, failed, success_rate, trend
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            elif days:
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            else:
+                date_filter = "1=1"  # All time - no filter
+            
+            # Get current period stats - all logged conversions are successful
+            self.cur.execute(f"""
+                SELECT COUNT(*) as total
+                FROM cwa_conversions
+                WHERE {date_filter}
+            """)
+            current = self.cur.fetchone()
+            
+            # Get previous period for trend comparison
+            if start_date and end_date:
+                # Calculate previous period of same duration
+                from datetime import datetime, timedelta
+                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+                end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+                duration = (end_dt - start_dt).days
+                prev_start = (start_dt - timedelta(days=duration)).strftime('%Y-%m-%d')
+                prev_end = start_date
+                prev_filter = f"timestamp BETWEEN date('{prev_start}') AND date('{prev_end}')"
+            elif days:
+                prev_filter = f"timestamp >= date('now', '-{days * 2} days') AND timestamp < date('now', '-{days} days')"
+            else:
+                # All time - no previous period comparison
+                prev_filter = "1=0"  # Returns 0
+            
+            self.cur.execute(f"""
+                SELECT COUNT(*) as total
+                FROM cwa_conversions
+                WHERE {prev_filter}
+            """)
+            previous = self.cur.fetchone()
+            
+            total = current[0] or 0
+            successful = total  # All logged conversions are successful
+            failed = 0  # Failed conversions are not logged in cwa_conversions
+            success_rate = 100.0 if total > 0 else 0  # 100% of logged conversions succeeded
+            
+            # Calculate trend based on volume change (not rate, since rate is always 100%)
+            prev_total = previous[0] or 0
+            if prev_total > 0:
+                trend = ((total - prev_total) / prev_total * 100)
+            else:
+                trend = 0
+            
+            return {
+                'total': total,
+                'successful': successful,
+                'failed': failed,
+                'success_rate': round(success_rate, 1),
+                'trend': round(trend, 1)  # Trend represents volume change
+            }
+        except Exception as e:
+            print(f"[cwa-db] Error getting conversion success rate: {e}")
+            import traceback
+            traceback.print_exc()
+            return {
+                'total': 0,
+                'successful': 0,
+                'failed': 0,
+                'success_rate': 0,
+                'trend': 0
+            }
+
     def get_hourly_activity_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
         """Returns activity count by hour of day and day of week for heatmap visualization.
         

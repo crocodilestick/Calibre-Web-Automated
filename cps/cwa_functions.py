@@ -759,13 +759,25 @@ def cwa_stats_show():
     # Parse date range parameters
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    days = request.args.get('days', type=int)
-    user_id = request.args.get('user_id', type=int)
+    days_param = request.args.get('days')
     
-    # Validate and process date parameters
-    date_range_label = "Last 30 days"
+    # Initialize defaults
+    date_range_label = None
     show_warning = False
     today = datetime.now().strftime('%Y-%m-%d')
+    
+    # Handle 'all' as a special string value, otherwise parse as int
+    if days_param == 'all':
+        days = None  # None means all time
+        date_range_label = "All Time"
+    else:
+        days = int(days_param) if days_param else None
+    
+    user_id = request.args.get('user_id', type=int)
+    
+    # Set default label if not set
+    if not date_range_label:
+        date_range_label = "Last 30 days"
     
     if start_date and end_date:
         try:
@@ -785,12 +797,16 @@ def cwa_stats_show():
             start_date = None
             end_date = None
             days = 30
+            date_range_label = "Last 30 days"
     elif days:
-        date_range_label = f"Last {days} days"
+        if date_range_label != "All Time":
+            date_range_label = f"Last {days} days"
         if days > 365:
             show_warning = True
-    else:
-        days = 30  # Default
+    elif days is None and date_range_label != "All Time":
+        # Default to 30 days if no parameters provided
+        days = 30
+        date_range_label = "Last 30 days"
     
     cwa_db = CWA_DB()
     
@@ -815,6 +831,18 @@ def cwa_stats_show():
         device_breakdown = cwa_db.get_device_breakdown(days=days, user_id=user_id)
         failed_logins = cwa_db.get_failed_logins(days=days)
     
+    # Get library stats (for Library tab)
+    if start_date and end_date:
+        library_growth = cwa_db.get_library_growth(start_date=start_date, end_date=end_date)
+        library_formats = cwa_db.get_library_formats(start_date=start_date, end_date=end_date)
+        conversion_stats = cwa_db.get_conversion_success_rate(start_date=start_date, end_date=end_date)
+        books_added_stats = cwa_db.get_books_added_count(start_date=start_date, end_date=end_date)
+    else:
+        library_growth = cwa_db.get_library_growth(days=days)
+        library_formats = cwa_db.get_library_formats(days=days)
+        conversion_stats = cwa_db.get_conversion_success_rate(days=days)
+        books_added_stats = cwa_db.get_books_added_count(days=days)
+    
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
     data_enforcement_with_paths = cwa_db.enforce_show(paths=True, verbose=False, web_ui=True)
@@ -833,6 +861,10 @@ def cwa_stats_show():
                                 discovery_sources=discovery_sources,
                                 device_breakdown=device_breakdown,
                                 failed_logins=failed_logins,
+                                library_growth=library_growth,
+                                library_formats=library_formats,
+                                conversion_stats=conversion_stats,
+                                books_added_stats=books_added_stats,
                                 date_range_label=date_range_label,
                                 show_warning=show_warning,
                                 start_date=start_date,

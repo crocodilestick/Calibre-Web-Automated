@@ -1,0 +1,634 @@
+<!-- Library Stats Content -->
+
+<style>
+    .filter-row {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        background: #2a3441;
+        border: 1px solid #3a4451;
+        border-radius: 8px;
+        padding: 15px 20px;
+    }
+    
+    .time-period-select {
+        background: #1a2332;
+        color: #ddd;
+        border: 1px solid #3a4451;
+        border-radius: 6px;
+        padding: 8px 15px;
+        font-size: 0.95em;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+    
+    .time-period-select:focus {
+        outline: none;
+        border-color: #ff9800;
+    }
+    
+    #library-custom-date-range input[type="date"] {
+        background: #1a2332;
+        color: #ddd;
+        border: 1px solid #3a4451;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.95em;
+    }
+    
+    #library-custom-date-range input[type="date"]:focus {
+        outline: none;
+        border-color: #ff9800;
+    }
+    
+    #library-custom-date-range span {
+        color: #999;
+        font-size: 0.9em;
+    }
+
+    .demo-toggle {
+        background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 6px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+    
+    .demo-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 152, 0, 0.5);
+        background: linear-gradient(135deg, #ffa726 0%, #ff8a00 100%);
+    }
+    
+    .demo-toggle.active {
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    }
+    
+    .demo-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        margin-left: 10px;
+        font-weight: 600;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    .library-stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .library-stat-card {
+        background: linear-gradient(135deg, #2a3441 0%, #1a2332 100%);
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid #3a4451;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .library-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2);
+    }
+    
+    .library-stat-icon {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+    }
+    
+    .library-stat-value {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #ff9800;
+        margin: 10px 0;
+    }
+    
+    .library-stat-label {
+        font-size: 1.1em;
+        color: #bbb;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .trend-indicator {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    
+    .trend-up {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+    }
+    
+    .trend-down {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+    
+    .trend-neutral {
+        background: rgba(255, 152, 0, 0.2);
+        color: #ff9800;
+    }
+</style>
+
+<div class="stats-hero">
+    <h1>📚 Library Statistics</h1>
+    <p>Comprehensive insights into your Calibre library collection</p>
+</div>
+
+<!-- Time Period Filter -->
+<div class="filter-row">
+    <select id="library-time-period" class="time-period-select" onchange="changeLibraryTimePeriod()">
+        <option value="7" {{ 'selected' if request.args.get('days') == '7' else '' }}>Last 7 Days</option>
+        <option value="30" {{ 'selected' if request.args.get('days') == '30' or not request.args.get('days') else '' }}>Last 30 Days</option>
+        <option value="90" {{ 'selected' if request.args.get('days') == '90' else '' }}>Last 90 Days</option>
+        <option value="180" {{ 'selected' if request.args.get('days') == '180' else '' }}>Last 6 Months</option>
+        <option value="365" {{ 'selected' if request.args.get('days') == '365' else '' }}>Last Year</option>
+        <option value="all" {{ 'selected' if request.args.get('days') == 'all' else '' }}>All Time</option>
+        <option value="custom" {{ 'selected' if request.args.get('start_date') else '' }}>Custom Range</option>
+    </select>
+    
+    <div id="library-custom-date-range" style="display: {{ 'flex' if request.args.get('start_date') else 'none' }}; gap: 10px; align-items: center;">
+        <input type="date" id="library-start-date" value="{{ request.args.get('start_date', '') }}" />
+        <span>to</span>
+        <input type="date" id="library-end-date" value="{{ request.args.get('end_date', '') }}" />
+        <button onclick="applyLibraryDateRange()" class="btn btn-primary btn-sm">Apply</button>
+    </div>
+    
+    <button onclick="toggleLibraryDemoMode()" class="demo-toggle" id="library-demo-button" style="margin-left: auto;">
+        🎨 Show Demo Data
+    </button>
+    <span class="demo-badge" id="library-demo-badge" style="display: none;">DEMO MODE</span>
+    
+    <button onclick="window.location.href='/cwa-stats-show?tab=library'" class="demo-toggle" style="margin-left: 10px;">
+        🔄 Reset
+    </button>
+</div>
+
+<!-- Library Stats Cards -->
+<div class="library-stats-container">
+    <div class="library-stat-card">
+        <div class="library-stat-icon">📖</div>
+        <div class="library-stat-label">Total Books</div>
+        <div class="library-stat-value" id="total-books">{{ cwa_stats.total_books }}</div>
+    </div>
+    <div class="library-stat-card">
+        <div class="library-stat-icon">➕</div>
+        <div class="library-stat-label">Added Books</div>
+        {% if books_added_stats.total == cwa_stats.total_books %}
+        <div class="library-stat-value" id="books-added">N/A</div>
+        <small style="color: #999; margin-top: 10px; display: block;">All time view</small>
+        {% else %}
+        <div class="library-stat-value" id="books-added">{{ books_added_stats.total }}</div>
+        <div class="trend-indicator {{ 'trend-up' if books_added_stats.trend > 0 else 'trend-down' if books_added_stats.trend < 0 else 'trend-neutral' }}" id="books-added-trend">
+            {{ '↑' if books_added_stats.trend > 0 else '↓' if books_added_stats.trend < 0 else '→' }} 
+            {{ books_added_stats.trend|abs }}%
+        </div>
+        {% endif %}
+    </div>
+    <div class="library-stat-card">
+        <div class="library-stat-icon">🔄</div>
+        <div class="library-stat-label">Conversions</div>
+        <div class="library-stat-value" id="conversion-count">{{ conversion_stats.total }}</div>
+        <div class="trend-indicator {{ 'trend-up' if conversion_stats.trend > 0 else 'trend-down' if conversion_stats.trend < 0 else 'trend-neutral' }}" id="conversion-trend">
+            {{ '↑' if conversion_stats.trend > 0 else '↓' if conversion_stats.trend < 0 else '→' }} 
+            {{ conversion_stats.trend|abs }}%
+        </div>
+    </div>
+    <div class="library-stat-card">
+        <div class="library-stat-icon">📦</div>
+        <div class="library-stat-label">Total Formats</div>
+        <div class="library-stat-value" id="format-count">{{ library_formats|length }}</div>
+    </div>
+</div>
+
+<!-- Library Growth Timeline (Hero Chart) -->
+<div class="chart-container">
+    <div class="chart-title">📈 Library Growth Over Time</div>
+    <div id="growth-chart" style="width: 100%; height: 450px;"></div>
+</div>
+
+<!-- Second Row: Format Distribution -->
+<div class="row cwa-stats-row">
+    <div class="col-md-12">
+        <div class="chart-container">
+            <div class="chart-title">📊 Format Distribution</div>
+            <div id="library-formats-chart" style="width: 100%; height: 400px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Data from backend
+const realLibraryData = {
+    growth: {{ library_growth | tojson }},
+    formats: {{ library_formats | tojson }},
+    conversionStats: {{ conversion_stats | tojson }},
+    booksAddedStats: {{ books_added_stats | tojson }},
+    totalBooks: {{ cwa_stats.total_books }}
+};
+
+// State management
+let libraryDemoMode = false;
+let currentLibraryData = realLibraryData;
+
+// Initialize charts
+let growthChart, libraryFormatsChart;
+
+function initLibraryCharts() {
+    growthChart = echarts.init(document.getElementById('growth-chart'));
+    libraryFormatsChart = echarts.init(document.getElementById('library-formats-chart'));
+    
+    updateAllLibraryCharts();
+    
+    // Responsive resize
+    window.addEventListener('resize', () => {
+        growthChart.resize();
+        libraryFormatsChart.resize();
+    });
+}
+
+function updateAllLibraryCharts() {
+    updateLibraryStatCards();
+    updateLibraryGrowthChart();
+    updateLibraryFormatsChart();
+}
+
+function updateLibraryStatCards() {
+    const totalBooks = currentLibraryData.totalBooks;
+    const booksAdded = currentLibraryData.booksAddedStats.total;
+    
+    document.getElementById('total-books').textContent = totalBooks;
+    document.getElementById('conversion-count').textContent = currentLibraryData.conversionStats.total;
+    document.getElementById('format-count').textContent = currentLibraryData.formats.length;
+    
+    // Check if books added equals total books (all time view)
+    const booksAddedEl = document.getElementById('books-added');
+    const booksAddedTrendEl = document.getElementById('books-added-trend');
+    
+    if (booksAdded === totalBooks) {
+        booksAddedEl.textContent = 'N/A';
+        if (booksAddedTrendEl) {
+            booksAddedTrendEl.style.display = 'none';
+        }
+    } else {
+        booksAddedEl.textContent = booksAdded;
+        if (booksAddedTrendEl) {
+            booksAddedTrendEl.style.display = 'inline-block';
+            const booksAddedTrend = currentLibraryData.booksAddedStats.trend;
+            booksAddedTrendEl.className = 'trend-indicator ' + (booksAddedTrend > 0 ? 'trend-up' : booksAddedTrend < 0 ? 'trend-down' : 'trend-neutral');
+            booksAddedTrendEl.innerHTML = (booksAddedTrend > 0 ? '↑' : booksAddedTrend < 0 ? '↓' : '→') + ' ' + Math.abs(booksAddedTrend) + '%';
+        }
+    }
+    
+    // Update conversion trend indicator
+    const conversionTrend = currentLibraryData.conversionStats.trend;
+    const conversionTrendEl = document.getElementById('conversion-trend');
+    conversionTrendEl.className = 'trend-indicator ' + (conversionTrend > 0 ? 'trend-up' : conversionTrend < 0 ? 'trend-down' : 'trend-neutral');
+    conversionTrendEl.innerHTML = (conversionTrend > 0 ? '↑' : conversionTrend < 0 ? '↓' : '→') + ' ' + Math.abs(conversionTrend) + '%';
+}
+
+function updateLibraryGrowthChart() {
+    const data = currentLibraryData.growth || [];
+    
+    if (data.length === 0) {
+        growthChart.setOption({
+            title: {
+                text: 'No growth data available',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    // Calculate cumulative totals
+    let cumulative = 0;
+    const cumulativeData = data.map(([date, count]) => {
+        cumulative += count;
+        return [date, cumulative];
+    });
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross'
+            },
+            formatter: (params) => {
+                const date = params[0].axisValue;
+                const added = params[0].value;
+                const total = params[1] ? params[1].value : cumulative;
+                return `${date}<br/>
+                        📥 Added: ${added}<br/>
+                        📚 Total: ${total}`;
+            }
+        },
+        legend: {
+            data: ['Books Added', 'Total Library Size'],
+            textStyle: {
+                color: '#fff'
+            },
+            top: '5%'
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '15%',
+            top: '15%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: true,
+            data: data.map(d => d[0]),
+            axisLabel: {
+                color: '#fff',
+                rotate: 45
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        yAxis: [
+            {
+                type: 'value',
+                name: 'Books Added',
+                nameTextStyle: {
+                    color: '#fff'
+                },
+                axisLabel: {
+                    color: '#fff'
+                },
+                axisLine: {
+                    lineStyle: { color: '#3a4451' }
+                },
+                splitLine: {
+                    lineStyle: { color: '#3a4451' }
+                }
+            },
+            {
+                type: 'value',
+                name: 'Total Books',
+                nameTextStyle: {
+                    color: '#fff'
+                },
+                axisLabel: {
+                    color: '#fff'
+                },
+                axisLine: {
+                    lineStyle: { color: '#3a4451' }
+                },
+                splitLine: {
+                    show: false
+                }
+            }
+        ],
+        series: [
+            {
+                name: 'Books Added',
+                type: 'bar',
+                data: data.map(d => d[1]),
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                        { offset: 0, color: '#ff6f00' },
+                        { offset: 1, color: '#ff9800' }
+                    ]),
+                    borderRadius: [6, 6, 0, 0]
+                }
+            },
+            {
+                name: 'Total Library Size',
+                type: 'line',
+                yAxisIndex: 1,
+                data: cumulativeData.map(d => d[1]),
+                smooth: true,
+                lineStyle: {
+                    color: '#2196f3',
+                    width: 3
+                },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(33, 150, 243, 0.3)' },
+                        { offset: 1, color: 'rgba(33, 150, 243, 0.05)' }
+                    ])
+                },
+                itemStyle: {
+                    color: '#2196f3'
+                }
+            }
+        ]
+    };
+    
+    growthChart.setOption(option, true);
+}
+
+function updateLibraryFormatsChart() {
+    const data = currentLibraryData.formats || [];
+    
+    if (data.length === 0) {
+        libraryFormatsChart.setOption({
+            title: {
+                text: 'No format data available',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    const option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: '{b}: {c} books ({d}%)'
+        },
+        legend: {
+            type: 'scroll',
+            orient: 'vertical',
+            right: '5%',
+            top: 'center',
+            textStyle: {
+                color: '#fff'
+            }
+        },
+        series: [{
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['40%', '50%'],
+            data: data.map(([format, count]) => ({
+                name: format,
+                value: count
+            })),
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(255, 152, 0, 0.5)'
+                }
+            },
+            itemStyle: {
+                borderRadius: 8,
+                borderColor: '#1a2332',
+                borderWidth: 2
+            },
+            label: {
+                color: '#fff',
+                formatter: '{b}: {d}%'
+            }
+        }]
+    };
+    
+    libraryFormatsChart.setOption(option, true);
+}
+
+// Time period filter functions
+function changeLibraryTimePeriod() {
+    const select = document.getElementById('library-time-period');
+    const customRange = document.getElementById('library-custom-date-range');
+    
+    if (select.value === 'custom') {
+        customRange.style.display = 'flex';
+    } else {
+        customRange.style.display = 'none';
+        window.location.href = `/cwa-stats-show?tab=library&days=${select.value}`;
+    }
+}
+
+function applyLibraryDateRange() {
+    const startDate = document.getElementById('library-start-date').value;
+    const endDate = document.getElementById('library-end-date').value;
+    
+    if (!startDate || !endDate) {
+        alert('Please select both start and end dates');
+        return;
+    }
+    
+    window.location.href = `/cwa-stats-show?tab=library&start_date=${startDate}&end_date=${endDate}`;
+}
+
+// Demo data generator
+function generateLibraryDemoData() {
+    // Read URL parameters for date range
+    const urlParams = new URLSearchParams(window.location.search);
+    const days = parseInt(urlParams.get('days')) || 30;
+    const startDate = urlParams.get('start_date');
+    const endDate = urlParams.get('end_date');
+    
+    let demoGrowth = [];
+    let totalDays = days;
+    
+    // Calculate number of days for demo data
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+    }
+    
+    // Generate demo growth data
+    const today = new Date();
+    let cumulative = Math.floor(Math.random() * 500) + 100; // Starting library size
+    
+    for (let i = totalDays; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        // Random books added per day (0-15, weighted towards lower numbers)
+        const booksAdded = Math.floor(Math.random() * Math.random() * 16);
+        cumulative += booksAdded;
+        demoGrowth.push([dateStr, booksAdded]);
+    }
+    
+    // Generate demo format distribution
+    const demoFormats = [
+        ['EPUB', Math.floor(Math.random() * 300) + 200],
+        ['PDF', Math.floor(Math.random() * 250) + 150],
+        ['MOBI', Math.floor(Math.random() * 150) + 80],
+        ['AZW3', Math.floor(Math.random() * 100) + 50],
+        ['CBR', Math.floor(Math.random() * 80) + 30],
+        ['CBZ', Math.floor(Math.random() * 60) + 20],
+        ['TXT', Math.floor(Math.random() * 40) + 10],
+        ['DJVU', Math.floor(Math.random() * 30) + 5]
+    ];
+    
+    // Generate demo conversion stats
+    const totalConversions = Math.floor(Math.random() * 150) + 50;
+    const conversionTrend = (Math.random() * 60) - 20; // -20% to +40%
+    
+    // Generate demo books added stats
+    const totalBooksAdded = demoGrowth.reduce((sum, [date, count]) => sum + count, 0);
+    const booksAddedTrend = (Math.random() * 50) - 15; // -15% to +35%
+    
+    return {
+        growth: demoGrowth,
+        formats: demoFormats,
+        conversionStats: {
+            total: totalConversions,
+            successful: totalConversions,
+            failed: 0,
+            success_rate: 100.0,
+            trend: Math.round(conversionTrend * 10) / 10
+        },
+        booksAddedStats: {
+            total: totalBooksAdded,
+            trend: Math.round(booksAddedTrend * 10) / 10
+        },
+        totalBooks: cumulative
+    };
+}
+
+function toggleLibraryDemoMode() {
+    libraryDemoMode = !libraryDemoMode;
+    const button = document.getElementById('library-demo-button');
+    const badge = document.getElementById('library-demo-badge');
+    
+    if (libraryDemoMode) {
+        currentLibraryData = generateLibraryDemoData();
+        button.textContent = '📊 Show Real Data';
+        button.classList.add('active');
+        badge.style.display = 'inline-block';
+    } else {
+        currentLibraryData = realLibraryData;
+        button.textContent = '🎨 Show Demo Data';
+        button.classList.remove('active');
+        badge.style.display = 'none';
+    }
+    
+    updateAllLibraryCharts();
+}
+
+// Initialize on page load
+if (document.getElementById('growth-chart')) {
+    initLibraryCharts();
+}
+</script>

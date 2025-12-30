@@ -61,6 +61,10 @@
                 onclick="switchTab('activity')">
             📊 User Activity
         </button>
+        <button class="stats-tab {{ 'active' if active_tab == 'library' else '' }}" 
+                onclick="switchTab('library')">
+            📚 Library Stats
+        </button>
         <button class="stats-tab {{ 'active' if active_tab == 'system' else '' }}" 
                 onclick="switchTab('system')">
             ⚙️ System Stats
@@ -70,6 +74,11 @@
     <!-- User Activity Tab -->
     <div id="activity-tab" class="tab-content {{ 'active' if active_tab == 'activity' else '' }}">
         {% include 'cwa_user_activity.html' %}
+    </div>
+    
+    <!-- Library Stats Tab -->
+    <div id="library-tab" class="tab-content {{ 'active' if active_tab == 'library' else '' }}">
+        {% include 'cwa_library_stats.html' %}
     </div>
     
     <!-- System Logs Tab -->
@@ -96,6 +105,25 @@ function switchTab(tabName) {
     const url = new URL(window.location);
     url.searchParams.set('tab', tabName);
     window.history.pushState({}, '', url);
+    
+    // Resize charts after tab switch to fix layout issues
+    setTimeout(() => {
+        if (tabName === 'activity') {
+            // Resize User Activity charts
+            if (typeof timelineChart !== 'undefined' && timelineChart) timelineChart.resize();
+            if (typeof eventsChart !== 'undefined' && eventsChart) eventsChart.resize();
+            if (typeof formatsChart !== 'undefined' && formatsChart) formatsChart.resize();
+            if (typeof heatmapChart !== 'undefined' && heatmapChart) heatmapChart.resize();
+            if (typeof velocityChart !== 'undefined' && velocityChart) velocityChart.resize();
+            if (typeof formatPreferencesChart !== 'undefined' && formatPreferencesChart) formatPreferencesChart.resize();
+            if (typeof discoveryChart !== 'undefined' && discoveryChart) discoveryChart.resize();
+            if (typeof deviceChart !== 'undefined' && deviceChart) deviceChart.resize();
+        } else if (tabName === 'library') {
+            // Resize Library Stats charts
+            if (typeof growthChart !== 'undefined' && growthChart) growthChart.resize();
+            if (typeof libraryFormatsChart !== 'undefined' && libraryFormatsChart) libraryFormatsChart.resize();
+        }
+    }, 50); // Small delay to ensure DOM has updated
 }
 </script>
 

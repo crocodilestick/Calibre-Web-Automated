@@ -277,6 +277,7 @@
         border-radius: 4px;
         padding: 8px 12px;
         font-size: 0.95em;
+        color-scheme: dark;
     }
 
     .date-range-picker select {
@@ -286,6 +287,30 @@
 
     .date-range-picker input[type="date"] {
         min-width: 140px;
+        cursor: pointer;
+    }
+
+    .date-range-picker input[type="date"]::-webkit-calendar-picker-indicator {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23ff9800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>') no-repeat center;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+
+    .date-range-picker input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        opacity: 1;
+    }
+
+    .date-range-picker input[type="date"]:focus {
+        outline: none;
+        border-color: #ff9800;
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+    }
+
+    .date-range-picker select:focus {
+        outline: none;
+        border-color: #ff9800;
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
     }
 
     .date-range-picker label {
@@ -332,6 +357,9 @@
                 <input type="date" id="end-date" value="{{ end_date or '' }}" max="{{ today }}" onchange="handleCustomDateChange()">
             </div>
         </div>
+        <button class="demo-toggle" onclick="resetDateRange()" id="reset-button">
+            🔄 Reset
+        </button>
         <button class="demo-toggle" onclick="toggleDemoMode()" id="demo-button">
             🎨 Show Demo Data
         </button>
@@ -897,6 +925,15 @@ function handleCustomDateChange() {
         url.searchParams.set('end_date', endDate);
         window.location.href = url.toString();
     }
+}
+
+function resetDateRange() {
+    // Reset to default 30 days and remove all date parameters
+    const url = new URL(window.location);
+    url.searchParams.delete('days');
+    url.searchParams.delete('start_date');
+    url.searchParams.delete('end_date');
+    window.location.href = url.toString();
 }
 
 // Initialize on page load

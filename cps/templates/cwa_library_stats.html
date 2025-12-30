@@ -152,6 +152,53 @@
         background: rgba(255, 152, 0, 0.2);
         color: #ff9800;
     }
+    
+    .fixed-book-item {
+        background: #1a2332;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 12px;
+        border-left: 3px solid #ff9800;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .fixed-book-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
+    }
+    
+    .fixed-book-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .fixed-book-name {
+        font-weight: 600;
+        color: #ddd;
+        font-size: 1.05em;
+    }
+    
+    .fixed-book-badge {
+        background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+    
+    .fixed-book-details {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .fixed-book-meta {
+        color: #999;
+        font-size: 0.9em;
+    }
 </style>
 
 <div class="stats-hero">
@@ -177,15 +224,16 @@
         <input type="date" id="library-end-date" value="{{ request.args.get('end_date', '') }}" />
         <button onclick="applyLibraryDateRange()" class="btn btn-primary btn-sm">Apply</button>
     </div>
+
+    <button onclick="window.location.href='/cwa-stats-show?tab=library'" class="demo-toggle" style="margin-left: 10px;">
+        🔄 Reset
+    </button>
     
     <button onclick="toggleLibraryDemoMode()" class="demo-toggle" id="library-demo-button" style="margin-left: auto;">
         🎨 Show Demo Data
     </button>
     <span class="demo-badge" id="library-demo-badge" style="display: none;">DEMO MODE</span>
     
-    <button onclick="window.location.href='/cwa-stats-show?tab=library'" class="demo-toggle" style="margin-left: 10px;">
-        🔄 Reset
-    </button>
 </div>
 
 <!-- Library Stats Cards -->
@@ -241,6 +289,49 @@
     </div>
 </div>
 
+<!-- Third Row: Series Completion & Publication Years -->
+<div class="row cwa-stats-row">
+    <div class="col-md-6">
+        <div class="chart-container">
+            <div class="chart-title">📚 Largest Series</div>
+            <div id="series-completion-chart" style="width: 100%; height: 400px;"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container">
+            <div class="chart-title">📅 Publication Year Distribution</div>
+            <div id="publication-year-chart" style="width: 100%; height: 400px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Fourth Row: Most Fixed Books -->
+<div class="row cwa-stats-row">
+    <div class="col-md-12">
+        <div class="chart-container">
+            <div class="chart-title">🔧 Most Fixed Books</div>
+            <div id="most-fixed-books-list" style="padding: 20px;">
+                {% if most_fixed_books %}
+                    {% for filename, fix_count, total_fixes, last_fixed, file_path in most_fixed_books %}
+                    <div class="fixed-book-item">
+                        <div class="fixed-book-header">
+                            <span class="fixed-book-name">📖 {{ filename }}</span>
+                            <span class="fixed-book-badge">{{ fix_count }} fix{{ 'es' if fix_count > 1 else '' }}</span>
+                        </div>
+                        <div class="fixed-book-details">
+                            <span class="fixed-book-meta">🕒 Last fixed: {{ last_fixed }}</span>
+                            <span class="fixed-book-meta">📁 {{ file_path }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: #999; padding: 20px;">No EPUB fixes recorded</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // Data from backend
 const realLibraryData = {
@@ -248,7 +339,10 @@ const realLibraryData = {
     formats: {{ library_formats | tojson }},
     conversionStats: {{ conversion_stats | tojson }},
     booksAddedStats: {{ books_added_stats | tojson }},
-    totalBooks: {{ cwa_stats.total_books }}
+    totalBooks: {{ cwa_stats.total_books }},
+    seriesCompletion: {{ series_completion | tojson }},
+    publicationYears: {{ publication_years | tojson }},
+    mostFixedBooks: {{ most_fixed_books | tojson }}
 };
 
 // State management
@@ -256,11 +350,13 @@ let libraryDemoMode = false;
 let currentLibraryData = realLibraryData;
 
 // Initialize charts
-let growthChart, libraryFormatsChart;
+let growthChart, libraryFormatsChart, seriesChart, publicationYearChart;
 
 function initLibraryCharts() {
     growthChart = echarts.init(document.getElementById('growth-chart'));
     libraryFormatsChart = echarts.init(document.getElementById('library-formats-chart'));
+    seriesChart = echarts.init(document.getElementById('series-completion-chart'));
+    publicationYearChart = echarts.init(document.getElementById('publication-year-chart'));
     
     updateAllLibraryCharts();
     
@@ -268,6 +364,8 @@ function initLibraryCharts() {
     window.addEventListener('resize', () => {
         growthChart.resize();
         libraryFormatsChart.resize();
+        seriesChart.resize();
+        publicationYearChart.resize();
     });
 }
 
@@ -275,6 +373,8 @@ function updateAllLibraryCharts() {
     updateLibraryStatCards();
     updateLibraryGrowthChart();
     updateLibraryFormatsChart();
+    updateSeriesCompletionChart();
+    updatePublicationYearChart();
 }
 
 function updateLibraryStatCards() {
@@ -512,6 +612,177 @@ function updateLibraryFormatsChart() {
     libraryFormatsChart.setOption(option, true);
 }
 
+function updateSeriesCompletionChart() {
+    const data = currentLibraryData.seriesCompletion || [];
+    
+    if (data.length === 0) {
+        seriesChart.setOption({
+            title: {
+                text: 'No series data available',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            },
+            formatter: (params) => {
+                const series = params[0].name;
+                const bookCount = params[0].value;
+                const highestIndex = data[params[0].dataIndex][2];
+                return `<strong>${series}</strong><br/>
+                        Books: ${bookCount}<br/>
+                        Highest Index: ${highestIndex}`;
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: '5%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            name: 'Number of Books',
+            nameLocation: 'middle',
+            nameGap: 30,
+            minInterval: 1,
+            axisLabel: {
+                color: '#fff'
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            },
+            splitLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: data.map(d => d[0]),
+            axisLabel: {
+                color: '#fff',
+                overflow: 'truncate',
+                width: 150
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        series: [
+            {
+                name: 'Books',
+                type: 'bar',
+                data: data.map(d => d[1]),
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#5470c6' },
+                        { offset: 1, color: '#91cc75' }
+                    ]),
+                    borderRadius: [0, 4, 4, 0]
+                },
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{c}',
+                    color: '#fff'
+                }
+            }
+        ]
+    };
+    
+    seriesChart.setOption(option, true);
+}
+
+function updatePublicationYearChart() {
+    const data = currentLibraryData.publicationYears || [];
+    
+    if (data.length === 0) {
+        publicationYearChart.setOption({
+            title: {
+                text: 'No publication year data available',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            },
+            formatter: (params) => {
+                return `${params[0].name}: ${params[0].value} books`;
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '15%',
+            top: '10%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: data.map(d => d[0]),
+            axisLabel: {
+                color: '#fff',
+                rotate: 45
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: 'Books',
+            nameTextStyle: {
+                color: '#fff'
+            },
+            axisLabel: {
+                color: '#fff'
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            },
+            splitLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        series: [{
+            type: 'bar',
+            data: data.map(d => d[1]),
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                    { offset: 0, color: '#2196f3' },
+                    { offset: 1, color: '#64b5f6' }
+                ]),
+                borderRadius: [6, 6, 0, 0]
+            }
+        }]
+    };
+    
+    publicationYearChart.setOption(option, true);
+}
+
 // Time period filter functions
 function changeLibraryTimePeriod() {
     const select = document.getElementById('library-time-period');
@@ -589,6 +860,31 @@ function generateLibraryDemoData() {
     const totalBooksAdded = demoGrowth.reduce((sum, [date, count]) => sum + count, 0);
     const booksAddedTrend = (Math.random() * 50) - 15; // -15% to +35%
     
+    // Generate demo series completion (now largest series)
+    const seriesNames = ['Harry Potter', 'The Expanse', 'Foundation', 'Discworld', 'Wheel of Time', 
+                        'A Song of Ice and Fire', 'The Witcher', 'Mistborn', 'The Stormlight Archive', 'Dune'];
+    const demoSeries = seriesNames.map(name => {
+        const bookCount = Math.floor(Math.random() * 15) + 3; // 3-17 books
+        const highestIndex = Math.floor(Math.random() * 3) + bookCount; // May have gaps
+        return [name, bookCount, highestIndex];
+    }).sort((a, b) => b[1] - a[1]); // Sort by book count descending
+    
+    // Generate demo publication years
+    const currentYear = new Date().getFullYear();
+    const demoYears = [];
+    for (let year = currentYear - 30; year <= currentYear; year++) {
+        const count = Math.floor(Math.random() * 50) + 5;
+        demoYears.push([year, count]);
+    }
+    
+    // Generate demo most fixed books
+    const bookTitles = ['The Great Gatsby.epub', 'Pride and Prejudice.epub', '1984.epub', 
+                       'To Kill a Mockingbird.epub', 'The Hobbit.epub'];
+    const demoFixedBooks = bookTitles.map(title => {
+        const fixCount = Math.floor(Math.random() * 5) + 1;
+        return [title, fixCount, `${fixCount}`, '2024-12-28 14:30:00', '/calibre-library/Author/Book'];
+    });
+    
     return {
         growth: demoGrowth,
         formats: demoFormats,
@@ -603,7 +899,10 @@ function generateLibraryDemoData() {
             total: totalBooksAdded,
             trend: Math.round(booksAddedTrend * 10) / 10
         },
-        totalBooks: cumulative
+        totalBooks: cumulative,
+        seriesCompletion: demoSeries,
+        publicationYears: demoYears,
+        mostFixedBooks: demoFixedBooks
     };
 }
 

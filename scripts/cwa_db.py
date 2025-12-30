@@ -1054,6 +1054,112 @@ class CWA_DB:
                 'trend': 0
             }
 
+    def get_series_completion_stats(self, limit=10):
+        """Returns largest series by book count from Calibre metadata.db.
+        
+        Args:
+            limit: Number of series to return (default 10)
+        
+        Returns: List of tuples: (series_name, book_count, highest_index)
+        """
+        try:
+            import sqlite3
+            
+            # Connect to Calibre's metadata.db
+            metadata_db_path = "/calibre-library/metadata.db"
+            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
+            metadata_cur = metadata_con.cursor()
+            
+            # Query series with book counts and highest index, ordered by count
+            metadata_cur.execute(f"""
+                SELECT 
+                    s.name as series_name,
+                    COUNT(DISTINCT bs.book) as book_count,
+                    CAST(MAX(b.series_index) AS INTEGER) as highest_index
+                FROM series s
+                JOIN books_series_link bs ON s.id = bs.series
+                JOIN books b ON bs.book = b.id
+                GROUP BY s.id, s.name
+                ORDER BY book_count DESC, series_name ASC
+                LIMIT {limit}
+            """)
+            
+            results = metadata_cur.fetchall()
+            metadata_con.close()
+            
+            return results
+        except Exception as e:
+            print(f"[cwa-db] Error getting series completion stats: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    def get_publication_year_distribution(self):
+        """Returns distribution of books by publication year from Calibre metadata.db.
+        
+        Returns: List of tuples: (year, count)
+        """
+        try:
+            import sqlite3
+            
+            # Connect to Calibre's metadata.db
+            metadata_db_path = "/calibre-library/metadata.db"
+            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
+            metadata_cur = metadata_con.cursor()
+            
+            # Extract year from pubdate and count books
+            metadata_cur.execute("""
+                SELECT 
+                    CAST(strftime('%Y', pubdate) as INTEGER) as year,
+                    COUNT(*) as count
+                FROM books
+                WHERE pubdate IS NOT NULL
+                    AND pubdate != '0101-01-01 00:00:00+00:00'
+                    AND pubdate != ''
+                GROUP BY year
+                HAVING year >= 1800 AND year <= 2030
+                ORDER BY year ASC
+            """)
+            
+            results = metadata_cur.fetchall()
+            metadata_con.close()
+            
+            return results
+        except Exception as e:
+            print(f"[cwa-db] Error getting publication year distribution: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    def get_most_fixed_books(self, limit=10):
+        """Returns books with most EPUB fixes applied from epub_fixes table.
+        
+        Args:
+            limit: Number of books to return (default 10)
+        
+        Returns: List of tuples: (filename, fix_count, fixes_applied, last_fixed, file_path)
+        """
+        try:
+            self.cur.execute(f"""
+                SELECT 
+                    filename,
+                    COUNT(*) as fix_count,
+                    GROUP_CONCAT(num_of_fixes_applied, ', ') as total_fixes,
+                    MAX(timestamp) as last_fixed,
+                    file_path
+                FROM epub_fixes
+                GROUP BY filename
+                ORDER BY fix_count DESC, last_fixed DESC
+                LIMIT {limit}
+            """)
+            
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting most fixed books: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
     def get_hourly_activity_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
         """Returns activity count by hour of day and day of week for heatmap visualization.
         

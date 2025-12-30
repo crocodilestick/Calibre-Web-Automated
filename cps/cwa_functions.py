@@ -843,6 +843,11 @@ def cwa_stats_show():
         conversion_stats = cwa_db.get_conversion_success_rate(days=days)
         books_added_stats = cwa_db.get_books_added_count(days=days)
     
+    # Get additional library stats (not time-dependent)
+    series_completion = cwa_db.get_series_completion_stats(limit=10)
+    publication_years = cwa_db.get_publication_year_distribution()
+    most_fixed_books = cwa_db.get_most_fixed_books(limit=10)
+    
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
     data_enforcement_with_paths = cwa_db.enforce_show(paths=True, verbose=False, web_ui=True)
@@ -865,6 +870,9 @@ def cwa_stats_show():
                                 library_formats=library_formats,
                                 conversion_stats=conversion_stats,
                                 books_added_stats=books_added_stats,
+                                series_completion=series_completion,
+                                publication_years=publication_years,
+                                most_fixed_books=most_fixed_books,
                                 date_range_label=date_range_label,
                                 show_warning=show_warning,
                                 start_date=start_date,

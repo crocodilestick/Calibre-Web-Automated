@@ -418,6 +418,18 @@
         <div id="timeline-chart" style="width: 100%; height: 400px;"></div>
     </div>
     
+    <!-- Peak Usage Hours Heatmap -->
+    <div class="chart-container">
+        <div class="chart-title">🔥 Peak Usage Hours</div>
+        <div id="heatmap-chart" style="width: 100%; height: 350px;"></div>
+    </div>
+    
+    <!-- Reading Velocity Trend -->
+    <div class="chart-container">
+        <div class="chart-title">📚 Reading Velocity (Books per Week)</div>
+        <div id="velocity-chart" style="width: 100%; height: 350px;"></div>
+    </div>
+    
     <!-- Second Row: Event Breakdown & Format Distribution -->
     <div class="row cwa-stats-row">
         <div class="col-md-6">
@@ -428,13 +440,23 @@
         </div>
         <div class="col-md-6">
             <div class="chart-container">
-                <div class="chart-title">📦 Download Formats</div>
+                <div class="chart-title">📊 Format Preferences by User</div>
+                <div id="format-preferences-chart" style="width: 100%; height: 350px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Third Row: Download Formats Pie Chart -->
+    <div class="row cwa-stats-row">
+        <div class="col-md-12">
+            <div class="chart-container">
+                <div class="chart-title">📦 Download Formats Distribution</div>
                 <div id="formats-chart" style="width: 100%; height: 350px;"></div>
             </div>
         </div>
     </div>
     
-    <!-- Third Row: Top Lists -->
+    <!-- Fourth Row: Top Lists -->
     <div class="row">
         <div class="col-md-4">
             <div class="chart-container">
@@ -478,7 +500,10 @@ const realData = {
     recentSearches: {{ dashboard_stats.recent_searches | tojson }},
     formatDistribution: {{ dashboard_stats.format_distribution | tojson }},
     eventBreakdown: {{ dashboard_stats.event_breakdown | tojson }},
-    totals: {{ dashboard_stats.totals | tojson }}
+    totals: {{ dashboard_stats.totals | tojson }},
+    heatmap: {{ hourly_heatmap | tojson }},
+    velocity: {{ reading_velocity | tojson }},
+    formatPreferences: {{ format_preferences | tojson }}
 };
 
 const isAdmin = {{ 'true' if is_admin else 'false' }};
@@ -605,7 +630,64 @@ function generateDemoData() {
             total_reads: 432,
             total_searches: 234,
             total_events: 2178
-        }
+        },
+        // Generate heatmap data (day of week, hour, count)
+        heatmap: (() => {
+            const heatmapData = [];
+            for (let day = 0; day < 7; day++) {
+                for (let hour = 0; hour < 24; hour++) {
+                    // Peak hours: 6-9am, 12-2pm, 6-11pm with variation by day
+                    let baseCount = 5;
+                    if ((hour >= 6 && hour <= 9) || (hour >= 12 && hour <= 14) || (hour >= 18 && hour <= 23)) {
+                        baseCount = 15 + Math.floor(Math.random() * 20);
+                    } else if (hour >= 1 && hour <= 5) {
+                        baseCount = Math.floor(Math.random() * 3);
+                    } else {
+                        baseCount = 5 + Math.floor(Math.random() * 10);
+                    }
+                    // Weekend boost
+                    if (day === 0 || day === 6) {
+                        baseCount = Math.floor(baseCount * 1.3);
+                    }
+                    heatmapData.push([day, hour, baseCount]);
+                }
+            }
+            return heatmapData;
+        })(),
+        // Generate velocity data (week start date, books read)
+        velocity: (() => {
+            const velocityData = [];
+            const weeksBack = Math.ceil(numDays / 7);
+            for (let i = weeksBack - 1; i >= 0; i--) {
+                const weekDate = new Date(endDateObj);
+                weekDate.setDate(weekDate.getDate() - (i * 7));
+                const weekStr = weekDate.toISOString().split('T')[0];
+                const booksRead = 3 + Math.floor(Math.random() * 12); // 3-15 books per week
+                velocityData.push([weekStr, booksRead]);
+            }
+            return velocityData;
+        })(),
+        // Generate format preferences (user, format, count)
+        formatPreferences: selectedUserId ? [] : (() => {
+            const users = ['BookLover42', 'ReadingFanatic', 'LibraryMaster', 'PageTurner', 'BookwormPro', 'NightReader', 'StorySeeker', 'NovelAddict'];
+            const formats = ['EPUB', 'PDF', 'MOBI', 'AZW3', 'KEPUB'];
+            const prefs = [];
+            users.slice(0, 8).forEach(user => {
+                // Each user has preference distribution
+                const userTotal = 50 + Math.floor(Math.random() * 100);
+                let remaining = userTotal;
+                formats.forEach((format, idx) => {
+                    if (idx === formats.length - 1) {
+                        if (remaining > 0) prefs.push([user, format, remaining]);
+                    } else {
+                        const count = Math.floor(Math.random() * (remaining * 0.5));
+                        if (count > 0) prefs.push([user, format, count]);
+                        remaining -= count;
+                    }
+                });
+            });
+            return prefs;
+        })()
     };
 }
 
@@ -614,12 +696,15 @@ let currentData = realData;  // Always start with real data, even if empty
 let userProfiles = {};
 
 // Initialize charts
-let timelineChart, eventsChart, formatsChart;
+let timelineChart, eventsChart, formatsChart, heatmapChart, velocityChart, formatPreferencesChart;
 
 function initCharts() {
     timelineChart = echarts.init(document.getElementById('timeline-chart'));
     eventsChart = echarts.init(document.getElementById('events-chart'));
     formatsChart = echarts.init(document.getElementById('formats-chart'));
+    heatmapChart = echarts.init(document.getElementById('heatmap-chart'));
+    velocityChart = echarts.init(document.getElementById('velocity-chart'));
+    formatPreferencesChart = echarts.init(document.getElementById('format-preferences-chart'));
     
     // Fetch user profiles first, then update visualizations
     fetch('/user_profiles.json')
@@ -638,13 +723,19 @@ function initCharts() {
         timelineChart.resize();
         eventsChart.resize();
         formatsChart.resize();
+        heatmapChart.resize();
+        velocityChart.resize();
+        formatPreferencesChart.resize();
     });
 }
 
 function updateAllVisualizations() {
     updateMetrics();
     updateTimelineChart();
+    updateHeatmapChart();
+    updateVelocityChart();
     updateEventsChart();
+    updateFormatPreferencesChart();
     updateFormatsChart();
     updateTopLists();
 }
@@ -876,6 +967,317 @@ function updateFormatsChart() {
     };
     
     formatsChart.setOption(option, true);
+}
+
+function updateHeatmapChart() {
+    const data = currentData.heatmap || [];
+    
+    if (data.length === 0) {
+        heatmapChart.setOption({
+            title: {
+                text: 'No activity data yet',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const hours = Array.from({length: 24}, (_, i) => i + ':00');
+    
+    // Transform data to [hour, day, value] format
+    const heatmapData = data.map(([day, hour, count]) => [hour, day, count]);
+    
+    const option = {
+        tooltip: {
+            position: 'top',
+            formatter: (params) => {
+                const hour = params.data[0];
+                const day = days[params.data[1]];
+                const count = params.data[2];
+                return `${day} ${hour}:00<br/>Activity: ${count}`;
+            }
+        },
+        grid: {
+            height: '70%',
+            top: '10%',
+            left: '10%',
+            right: '5%'
+        },
+        xAxis: {
+            type: 'category',
+            data: hours,
+            splitArea: {
+                show: true
+            },
+            axisLabel: {
+                color: '#fff',
+                interval: 2
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: days,
+            splitArea: {
+                show: true
+            },
+            axisLabel: {
+                color: '#fff'
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        visualMap: {
+            min: 0,
+            max: Math.max(...data.map(d => d[2])) || 1,
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: '5%',
+            inRange: {
+                color: ['#1a2332', '#2a3441', '#ff6f00', '#ff9800', '#ffa726']
+            },
+            textStyle: {
+                color: '#fff'
+            }
+        },
+        series: [{
+            name: 'Activity',
+            type: 'heatmap',
+            data: heatmapData,
+            label: {
+                show: false
+            },
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(255, 152, 0, 0.5)'
+                }
+            }
+        }]
+    };
+    
+    heatmapChart.setOption(option, true);
+}
+
+function updateVelocityChart() {
+    const data = currentData.velocity || [];
+    
+    if (data.length === 0) {
+        velocityChart.setOption({
+            title: {
+                text: 'No reading data yet',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    // Calculate 4-week moving average
+    const movingAvg = [];
+    const windowSize = 4;
+    for (let i = 0; i < data.length; i++) {
+        const start = Math.max(0, i - windowSize + 1);
+        const window = data.slice(start, i + 1);
+        const avg = window.reduce((sum, d) => sum + d[1], 0) / window.length;
+        movingAvg.push(avg.toFixed(1));
+    }
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        legend: {
+            data: ['Books Read', '4-Week Avg'],
+            textStyle: {
+                color: '#fff'
+            },
+            top: '5%'
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: '15%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: data.map(d => d[0]),
+            axisLabel: {
+                color: '#fff',
+                rotate: 45
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: 'Books',
+            nameTextStyle: {
+                color: '#fff'
+            },
+            axisLabel: {
+                color: '#fff'
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            },
+            splitLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        series: [
+            {
+                name: 'Books Read',
+                type: 'bar',
+                data: data.map(d => d[1]),
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                        { offset: 0, color: '#ff6f00' },
+                        { offset: 1, color: '#ff9800' }
+                    ]),
+                    borderRadius: [6, 6, 0, 0]
+                }
+            },
+            {
+                name: '4-Week Avg',
+                type: 'line',
+                data: movingAvg,
+                smooth: true,
+                lineStyle: {
+                    color: '#2196f3',
+                    width: 3
+                },
+                itemStyle: {
+                    color: '#2196f3'
+                }
+            }
+        ]
+    };
+    
+    velocityChart.setOption(option, true);
+}
+
+function updateFormatPreferencesChart() {
+    const data = currentData.formatPreferences || [];
+    
+    if (data.length === 0) {
+        formatPreferencesChart.setOption({
+            title: {
+                text: 'No format preference data yet',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    color: '#999',
+                    fontSize: 14
+                }
+            }
+        }, true);
+        return;
+    }
+    
+    // Group data by user
+    const userMap = {};
+    data.forEach(([user, format, count]) => {
+        if (!userMap[user]) userMap[user] = {};
+        userMap[user][format] = count;
+    });
+    
+    const users = Object.keys(userMap).slice(0, 10); // Top 10 users
+    const formats = [...new Set(data.map(d => d[1]))];
+    
+    // Define format colors
+    const formatColors = {
+        'EPUB': '#ff9800',
+        'PDF': '#2196f3',
+        'MOBI': '#4caf50',
+        'AZW3': '#9c27b0',
+        'KEPUB': '#f44336',
+        'TXT': '#795548',
+        'CBZ': '#00bcd4',
+        'CBR': '#ff5722',
+        'UNKNOWN': '#999'
+    };
+    
+    const series = formats.map(format => ({
+        name: format,
+        type: 'bar',
+        stack: 'total',
+        data: users.map(user => userMap[user][format] || 0),
+        itemStyle: {
+            color: formatColors[format] || '#999'
+        },
+        emphasis: {
+            focus: 'series'
+        }
+    }));
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: formats,
+            textStyle: {
+                color: '#fff'
+            },
+            top: '5%'
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: '15%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            axisLabel: {
+                color: '#fff'
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            },
+            splitLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: users,
+            axisLabel: {
+                color: '#fff'
+            },
+            axisLine: {
+                lineStyle: { color: '#3a4451' }
+            }
+        },
+        series: series
+    };
+    
+    formatPreferencesChart.setOption(option, true);
 }
 
 function updateTopLists() {

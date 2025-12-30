@@ -800,8 +800,14 @@ def cwa_stats_show():
     # Get user activity dashboard stats with date range and optional user filter
     if start_date and end_date:
         dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date, user_id=user_id)
+        hourly_heatmap = cwa_db.get_hourly_activity_heatmap(start_date=start_date, end_date=end_date, user_id=user_id)
+        reading_velocity = cwa_db.get_reading_velocity(start_date=start_date, end_date=end_date, user_id=user_id)
+        format_preferences = cwa_db.get_format_preferences(start_date=start_date, end_date=end_date, user_id=user_id)
     else:
         dashboard_stats = cwa_db.get_dashboard_stats(days=days, user_id=user_id)
+        hourly_heatmap = cwa_db.get_hourly_activity_heatmap(days=days, user_id=user_id)
+        reading_velocity = cwa_db.get_reading_velocity(days=days, user_id=user_id)
+        format_preferences = cwa_db.get_format_preferences(days=days, user_id=user_id)
     
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
@@ -815,6 +821,9 @@ def cwa_stats_show():
                                 page="cwa-stats",
                                 active_tab=active_tab,
                                 dashboard_stats=dashboard_stats,
+                                hourly_heatmap=hourly_heatmap,
+                                reading_velocity=reading_velocity,
+                                format_preferences=format_preferences,
                                 date_range_label=date_range_label,
                                 show_warning=show_warning,
                                 start_date=start_date,

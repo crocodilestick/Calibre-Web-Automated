@@ -586,6 +586,209 @@ class CWA_DB:
         except Exception as e:
             print(f"[cwa-db] Error fetching active users: {e}")
             return []
+    def get_hourly_activity_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns activity count by hour of day and day of week for heatmap visualization.
+        
+        Returns list of tuples: (day_of_week, hour, count)
+        day_of_week: 0=Sunday, 1=Monday, ..., 6=Saturday
+        hour: 0-23
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            self.cur.execute(f"""
+                SELECT 
+                    CAST(strftime('%w', timestamp) AS INTEGER) as day_of_week,
+                    CAST(strftime('%H', timestamp) AS INTEGER) as hour,
+                    COUNT(*) as activity_count
+                FROM cwa_user_activity
+                WHERE {combined_filter}
+                GROUP BY day_of_week, hour
+                ORDER BY day_of_week, hour
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting hourly activity heatmap: {e}")
+            return []
+
+    def get_reading_velocity(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns books read per week for velocity trend chart.
+        
+        Returns list of tuples: (week_start_date, books_read_count)
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 90  # Default to 90 days for velocity trends
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            self.cur.execute(f"""
+                SELECT 
+                    date(timestamp, 'weekday 0', '-6 days') as week_start,
+                    COUNT(DISTINCT item_id) as books_read
+                FROM cwa_user_activity
+                WHERE event_type = 'READ'
+                    AND {combined_filter}
+                GROUP BY week_start
+                ORDER BY week_start
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting reading velocity: {e}")
+            return []
+
+    def get_format_preferences(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns format preferences by user for stacked bar chart.
+        
+        Returns list of tuples: (user_name, format, count)
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            self.cur.execute(f"""
+                SELECT 
+                    COALESCE(user_name, 'Unknown User') as user_name,
+                    UPPER(COALESCE(
+                        json_extract(extra_data, '$.format'),
+                        'UNKNOWN'
+                    )) as format,
+                    COUNT(*) as count
+                FROM cwa_user_activity
+                WHERE event_type IN ('DOWNLOAD', 'READ', 'EMAIL')
+                    AND {combined_filter}
+                GROUP BY user_name, format
+                ORDER BY user_name, count DESC
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting format preferences: {e}")
+            return []
+    def get_hourly_activity_heatmap(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns activity count by hour of day and day of week for heatmap visualization.
+        
+        Returns list of tuples: (day_of_week, hour, count)
+        day_of_week: 0=Sunday, 1=Monday, ..., 6=Saturday
+        hour: 0-23
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            self.cur.execute(f"""
+                SELECT 
+                    CAST(strftime('%w', timestamp) AS INTEGER) as day_of_week,
+                    CAST(strftime('%H', timestamp) AS INTEGER) as hour,
+                    COUNT(*) as activity_count
+                FROM cwa_user_activity
+                WHERE {combined_filter}
+                GROUP BY day_of_week, hour
+                ORDER BY day_of_week, hour
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting hourly activity heatmap: {e}")
+            return []
+
+    def get_reading_velocity(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns books read per week with data for moving average calculation.
+        
+        Returns list of tuples: (week_label, books_read_count)
+        week_label format: 'YYYY-Www' (e.g., '2025-W01')
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            self.cur.execute(f"""
+                SELECT 
+                    strftime('%Y-W%W', timestamp) as week,
+                    COUNT(DISTINCT item_id) as books_read
+                FROM cwa_user_activity
+                WHERE event_type = 'READ'
+                    AND {combined_filter}
+                GROUP BY week
+                ORDER BY week
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting reading velocity: {e}")
+            return []
+
+    def get_format_preferences(self, days=None, start_date=None, end_date=None, user_id=None):
+        """Returns format usage by user for stacked bar chart.
+        
+        Returns list of tuples: (user_name, format, count)
+        """
+        try:
+            # Build date filter
+            if start_date and end_date:
+                date_filter = f"timestamp BETWEEN date('{start_date}') AND date('{end_date}', '+1 day')"
+            else:
+                days = days or 30
+                date_filter = f"timestamp >= date('now', '-{days} days')"
+            
+            # Add user filter if provided
+            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            combined_filter = date_filter + user_filter
+            
+            self.cur.execute(f"""
+                SELECT 
+                    COALESCE(user_name, 'Unknown User') as user_name,
+                    UPPER(COALESCE(
+                        json_extract(extra_data, '$.format'),
+                        'Unknown'
+                    )) as format,
+                    COUNT(*) as count
+                FROM cwa_user_activity
+                WHERE event_type IN ('DOWNLOAD', 'READ')
+                    AND {combined_filter}
+                GROUP BY user_name, format
+                ORDER BY user_name, count DESC
+            """)
+            return self.cur.fetchall()
+        except Exception as e:
+            print(f"[cwa-db] Error getting format preferences: {e}")
+            return []
 
     def get_dashboard_stats(self, days=None, start_date=None, end_date=None, user_id=None):
         """Returns comprehensive activity stats for the user dashboard.

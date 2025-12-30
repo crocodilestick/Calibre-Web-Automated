@@ -708,7 +708,10 @@ class CWA_DB:
                 SELECT 
                     COALESCE(user_name, 'Unknown User') as user_name,
                     UPPER(COALESCE(
-                        json_extract(extra_data, '$.format'),
+                        CASE WHEN json_valid(extra_data) 
+                            THEN json_extract(extra_data, '$.format')
+                            ELSE extra_data
+                        END,
                         'UNKNOWN'
                     )) as format,
                     COUNT(*) as count
@@ -742,7 +745,13 @@ class CWA_DB:
             
             self.cur.execute(f"""
                 SELECT 
-                    COALESCE(json_extract(extra_data, '$.source'), 'direct') as source,
+                    COALESCE(
+                        CASE WHEN json_valid(extra_data) 
+                            THEN json_extract(extra_data, '$.source')
+                            ELSE NULL
+                        END,
+                        'direct'
+                    ) as source,
                     COUNT(*) as count
                 FROM cwa_user_activity
                 WHERE event_type IN ('READ', 'DOWNLOAD')
@@ -774,7 +783,13 @@ class CWA_DB:
             
             self.cur.execute(f"""
                 SELECT 
-                    COALESCE(json_extract(extra_data, '$.device_type'), 'unknown') as device_type,
+                    COALESCE(
+                        CASE WHEN json_valid(extra_data) 
+                            THEN json_extract(extra_data, '$.device_type')
+                            ELSE NULL
+                        END,
+                        'unknown'
+                    ) as device_type,
                     COUNT(*) as count
                 FROM cwa_user_activity
                 WHERE {combined_filter}
@@ -1963,12 +1978,20 @@ class CWA_DB:
 
             # 5. Download format distribution
             self.cur.execute(f"""
-                SELECT UPPER(extra_data) as format, COUNT(*) as count
+                SELECT 
+                    UPPER(COALESCE(
+                        CASE WHEN json_valid(extra_data) 
+                            THEN json_extract(extra_data, '$.format')
+                            ELSE extra_data 
+                        END,
+                        'UNKNOWN'
+                    )) as format,
+                    COUNT(*) as count
                 FROM cwa_user_activity
                 WHERE event_type IN ('DOWNLOAD', 'EMAIL')
                   AND extra_data IS NOT NULL
                   AND {combined_filter}
-                GROUP BY UPPER(extra_data)
+                GROUP BY format
                 ORDER BY count DESC
             """)
             format_distribution = self.cur.fetchall()

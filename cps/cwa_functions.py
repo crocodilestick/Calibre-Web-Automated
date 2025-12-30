@@ -1139,6 +1139,96 @@ def export_stats_csv(tab_name):
         return response
 
 
+@cwa_stats.route("/cwa-stats-debug", methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def debug_stats_data():
+    """Debug endpoint to inspect raw activity data and diagnose parsing issues."""
+    try:
+        cwa_db = CWA_DB()
+        import json as json_module
+        
+        # Get sample of recent activity records WITHOUT json_extract to avoid errors
+        cwa_db.cur.execute("""
+            SELECT 
+                timestamp,
+                user_name,
+                event_type,
+                item_title,
+                extra_data
+            FROM cwa_user_activity
+            WHERE event_type IN ('DOWNLOAD', 'READ', 'EMAIL', 'LOGIN')
+            ORDER BY timestamp DESC
+            LIMIT 100
+        """)
+        
+        records = []
+        json_valid = 0
+        json_invalid = 0
+        
+        for row in cwa_db.cur.fetchall():
+            extra_data_raw = row[4]
+            is_valid_json = False
+            parsed_data = None
+            error_msg = None
+            
+            # Try to parse as JSON
+            if extra_data_raw:
+                try:
+                    parsed_data = json_module.loads(extra_data_raw)
+                    is_valid_json = True
+                    json_valid += 1
+                except Exception as e:
+                    is_valid_json = False
+                    json_invalid += 1
+                    error_msg = str(e)
+            
+            records.append({
+                'timestamp': row[0],
+                'user': row[1],
+                'event': row[2],
+                'item': row[3],
+                'raw_extra_data': extra_data_raw,
+                'is_valid_json': is_valid_json,
+                'parsed_data': parsed_data,
+                'parse_error': error_msg
+            })
+        
+        # Get basic counts
+        cwa_db.cur.execute("""
+            SELECT 
+                event_type,
+                COUNT(*) as count,
+                COUNT(extra_data) as with_extra_data
+            FROM cwa_user_activity
+            GROUP BY event_type
+            ORDER BY count DESC
+        """)
+        
+        event_counts = [{'event_type': row[0], 'total': row[1], 'with_extra_data': row[2]} 
+                       for row in cwa_db.cur.fetchall()]
+        
+        # Try to get valid JSON count (might fail, that's okay)
+        json_stats = {
+            'valid_in_sample': json_valid,
+            'invalid_in_sample': json_invalid,
+            'sample_size': len(records)
+        }
+        
+        return jsonify({
+            'event_counts': event_counts,
+            'json_stats': json_stats,
+            'sample_records': records[:20]  # Only return first 20 to keep response size manageable
+        })
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
+
+
 @cwa_stats.route('/cwa-scheduled/upcoming', methods=["GET"])
 @login_required_if_no_ano
 @admin_required

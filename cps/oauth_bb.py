@@ -415,8 +415,8 @@ def register_user_from_generic_oauth(token=None):
             if key in session:
                 try:
                     session.pop(key)
-                except:
-                    pass
+                except Exception as e:
+                    log.warning(f"Failed to clean session key '{key}': {e}")
         # We assume the user is about to be logged in by bind_oauth_or_register, 
         # but we set the user_id in session just in case, matching oauth_update_token behavior.
         session[provider_id + "_oauth_user_id"] = provider_user_id
@@ -448,8 +448,8 @@ def oauth_update_token(provider_id, token, provider_user_id):
         if key in session:
             try:
                 session.pop(key)
-            except:
-                pass
+            except Exception as e:
+                log.warning(f"Failed to clean session key '{key}': {e}")
 
     session[provider_id + "_oauth_user_id"] = provider_user_id
     # Do NOT store token in session - it's too big and causes cookie drop
@@ -830,8 +830,7 @@ if ub.oauth_support:
             # FUNCTION NOW RETURNS A RESPONSE OBJECT (Redirect)
             response = register_user_from_generic_oauth(token)
             if response:
-                # DIRECT LOGIN: Abort immediately to proper redirect
-                abort(response)
+                return response
             
             # If no response, something failed silently (already logged)
             return False
@@ -907,6 +906,7 @@ if ub.oauth_support:
 def github_login():
     # This route is now only a fallback if the direct login hijack fails
     # or if the user navigates here manually.
+    log.warning("Fallback OAuth route '/link/github' accessed - direct login may have failed")
     if not github.authorized:
         return redirect(url_for('github.login'))
     try:
@@ -936,6 +936,7 @@ def github_login_unlink():
 @oauth.route('/link/google')
 @oauth_required
 def google_login():
+    log.warning("Fallback OAuth route '/link/google' accessed - direct login may have failed")
     # Try to find token in session using the provider ID key
     provider_id = str(oauthblueprints[1]['id'])
     user_id_key = provider_id + "_oauth_user_id"
@@ -995,6 +996,7 @@ def google_login_unlink():
 @oauth.route('/link/generic')
 @oauth_required
 def generic_login():
+    log.warning("Fallback OAuth route '/link/generic' accessed - direct login may have failed")
     # This route is now only a fallback if the direct login hijack fails
     # or if the user navigates here manually.
     if not oauthblueprints[2]['blueprint'].session.authorized:

@@ -1117,6 +1117,58 @@ def edit_magic_shelf(shelf_id):
                                  allowed_icons=sorted(ALLOWED_ICONS))
 
 
+@web.route("/magicshelf/<int:shelf_id>/duplicate", methods=["POST"])
+@user_login_required
+def duplicate_magic_shelf(shelf_id):
+    """Duplicate an existing magic shelf (especially useful for system templates)."""
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found for duplication")
+        return jsonify({"success": False, "message": _("Shelf not found")}), 404
+    
+    # Users can duplicate their own shelves or any public shelf
+    if shelf.user_id != current_user.id and not shelf.is_public:
+        log.warning(f"User {current_user.id} attempted to duplicate private shelf {shelf_id} owned by {shelf.user_id}")
+        return jsonify({"success": False, "message": _("Permission denied")}), 403
+    
+    try:
+        # Create duplicate with " (Copy)" suffix
+        new_name = f"{shelf.name} (Copy)"
+        
+        # If name already exists, add number
+        counter = 1
+        while ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.user_id == current_user.id,
+            ub.MagicShelf.name == new_name
+        ).first():
+            counter += 1
+            new_name = f"{shelf.name} (Copy {counter})"
+        
+        duplicate_shelf = ub.MagicShelf(
+            user_id=current_user.id,
+            name=new_name,
+            icon=shelf.icon,
+            rules=shelf.rules.copy() if shelf.rules else {},
+            is_system=False,  # Duplicates are never system shelves
+            is_public=0  # Duplicates start as private
+        )
+        
+        ub.session.add(duplicate_shelf)
+        ub.session_commit()
+        
+        log.info(f"User {current_user.id} duplicated magic shelf {shelf_id} as '{new_name}' (ID: {duplicate_shelf.id})")
+        return jsonify({
+            "success": True, 
+            "shelf_id": duplicate_shelf.id,
+            "message": _("Shelf duplicated successfully")
+        })
+        
+    except Exception as e:
+        log.error(f"Error duplicating magic shelf {shelf_id}: {e}")
+        ub.session.rollback()
+        return jsonify({"success": False, "message": _("Error duplicating shelf")}), 500
+
+
 @web.route("/magicshelf/<int:shelf_id>/delete", methods=["POST"])
 @user_login_required
 def delete_magic_shelf(shelf_id):

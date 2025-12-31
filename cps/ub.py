@@ -891,6 +891,28 @@ def migrate_Database(_session):
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables
     ensure_app_db_tables(engine.raw_connection())
+    
+    # Backfill system magic shelves for existing users (one-time migration)
+    try:
+        from . import magic_shelf
+        users = _session.query(User).filter(User.role != constants.ROLE_ANONYMOUS).all()
+        backfilled = 0
+        for user in users:
+            # Check if user has any system shelves
+            has_system_shelves = _session.query(MagicShelf).filter(
+                MagicShelf.user_id == user.id,
+                MagicShelf.is_system == True
+            ).first()
+            
+            if not has_system_shelves:
+                created = magic_shelf.create_system_magic_shelves(user.id)
+                if created > 0:
+                    backfilled += 1
+        
+        if backfilled > 0:
+            logger.get_logger("cps.ub").info(f"Backfilled system magic shelves for {backfilled} existing users")
+    except Exception as e:
+        logger.get_logger("cps.ub").error(f"Error backfilling system magic shelves: {e}")
 
 
 def clean_database(_session):
@@ -937,6 +959,8 @@ def create_anonymous_user(_session):
     _session.add(user)
     try:
         _session.commit()
+        # Note: Anonymous users don't get system shelves
+        # They will be created if/when the user registers
     except Exception:
         _session.rollback()
 
@@ -954,8 +978,28 @@ def create_admin_user(_session):
     _session.add(user)
     try:
         _session.commit()
+        # Create system magic shelves for admin user
+        try:
+            from . import magic_shelf
+            magic_shelf.create_system_magic_shelves(user.id)
+        except Exception as e:
+            logger.get_logger("cps.ub").error(f"Failed to create system magic shelves for admin: {e}")
     except Exception:
         _session.rollback()
+
+
+def create_system_magic_shelves_for_user(user_id):
+    """
+    Create system magic shelves for a user if they don't already exist.
+    Should be called after user creation.
+    """
+    try:
+        from . import magic_shelf
+        return magic_shelf.create_system_magic_shelves(user_id)
+    except Exception as e:
+        logger.get_logger("cps.ub").error(f"Failed to create system magic shelves for user {user_id}: {e}")
+        return 0
+
 
 def init_db_thread():
     global app_DB_path

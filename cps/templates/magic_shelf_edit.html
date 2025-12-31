@@ -165,6 +165,17 @@
         <!-- Main Form -->
         <div class="panel panel-default">
             <div class="panel-body">
+                {% if shelf and shelf.is_system %}
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle"></i>
+                    <strong>{{_('System Template')}}</strong>: {{_('This is a pre-configured template shelf. You can edit it freely, or')|safe}} 
+                    <button type="button" class="btn btn-xs btn-primary" id="duplicate-shelf-btn">
+                        <i class="fa fa-copy"></i> {{_('Duplicate')}}
+                    </button> 
+                    {{_('to create a copy you can modify.')}}
+                </div>
+                {% endif %}
+                
                 <form id="magic-shelf-form">
                     <!-- Shelf Name -->
                     <div class="form-group">
@@ -529,6 +540,41 @@ $(function() {
                     var message = 'An unexpected error occurred.';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         message = xhr.responseJSON.message;
+                    }
+                    alert('Error: ' + message);
+                }
+            });
+        }
+    });
+    
+    // Duplicate Shelf
+    $('#duplicate-shelf-btn').on('click', function() {
+        var $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Duplicating...');
+        
+        $.ajax({
+            url: "{{ url_for('web.duplicate_magic_shelf', shelf_id=shelf.id) }}",
+            method: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    // Redirect to edit the new duplicated shelf
+                    window.location.href = "{{ url_for('web.edit_magic_shelf', shelf_id=0) }}".replace('/0', '/' + response.shelf_id);
+                } else {
+                    alert('Error duplicating shelf: ' + (response.message || 'Unknown error'));
+                    $btn.prop('disabled', false).html('<i class="fa fa-copy"></i> Duplicate');
+                }
+            },
+            error: function(xhr) {
+                var message = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert('Error: ' + message);
+                $btn.prop('disabled', false).html('<i class="fa fa-copy"></i> Duplicate');
+            }
+        });
+    });
+    {% endif %}
                     }
                     alert('Error: ' + message);
                 }

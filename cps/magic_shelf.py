@@ -9,8 +9,104 @@ from . import db, ub, logger
 from sqlalchemy import and_, or_, not_
 from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime, timedelta, timezone
 
 log = logger.create()
+
+# System Magic Shelf Templates
+# These are pre-built shelves that can be created for users as examples/templates
+SYSTEM_SHELF_TEMPLATES = {
+    'recently_added': {
+        'name': 'Recently Added',
+        'icon': 'fa-clock',
+        'description': 'Books added to your library in the last 30 days',
+        'rules': {
+            'condition': 'AND',
+            'rules': [
+                {
+                    'id': 'timestamp',
+                    'field': 'timestamp',
+                    'type': 'date',
+                    'input': 'text',
+                    'operator': 'greater',
+                    'value': (datetime.now(timezone.utc) - timedelta(days=30)).strftime('%Y-%m-%d')
+                }
+            ]
+        }
+    },
+    'highly_rated': {
+        'name': 'Highly Rated',
+        'icon': 'fa-star',
+        'description': 'Books with a rating of 8 or higher',
+        'rules': {
+            'condition': 'AND',
+            'rules': [
+                {
+                    'id': 'rating',
+                    'field': 'rating',
+                    'type': 'integer',
+                    'input': 'select',
+                    'operator': 'greater_or_equal',
+                    'value': 8
+                }
+            ]
+        }
+    },
+    'no_cover': {
+        'name': 'Books Without Covers',
+        'icon': 'fa-image',
+        'description': 'Books that are missing cover images',
+        'rules': {
+            'condition': 'AND',
+            'rules': [
+                {
+                    'id': 'has_cover',
+                    'field': 'has_cover',
+                    'type': 'boolean',
+                    'input': 'radio',
+                    'operator': 'equal',
+                    'value': 0
+                }
+            ]
+        }
+    },
+    'recent_publications': {
+        'name': 'Recent Publications',
+        'icon': 'fa-certificate',
+        'description': 'Books published in the last 2 years',
+        'rules': {
+            'condition': 'AND',
+            'rules': [
+                {
+                    'id': 'pubdate',
+                    'field': 'pubdate',
+                    'type': 'date',
+                    'input': 'text',
+                    'operator': 'greater',
+                    'value': (datetime.now(timezone.utc) - timedelta(days=730)).strftime('%Y-%m-%d')
+                }
+            ]
+        }
+    },
+    'series_incomplete': {
+        'name': 'Incomplete Series',
+        'icon': 'fa-list',
+        'description': 'Books that are part of a series',
+        'rules': {
+            'condition': 'AND',
+            'rules': [
+                {
+                    'id': 'series',
+                    'field': 'series',
+                    'type': 'string',
+                    'input': 'text',
+                    'operator': 'is_not_empty',
+                    'value': None
+                }
+            ]
+        }
+    }
+}
 
 # Mapping from UI field names to database models and columns
 FIELD_MAP = {
@@ -192,3 +288,92 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None)
     except Exception as e:
         log.error(f"Unexpected error retrieving books for magic shelf {shelf_id}: {e}")
         return [], 0
+
+
+def create_system_magic_shelves(user_id, template_keys=None):
+    """
+    Create system magic shelves for a user from templates.
+    
+    Args:
+        user_id: ID of the user to create shelves for
+        template_keys: List of template keys to create (None = create all)
+    
+    Returns:
+        int: Number of shelves created
+    """
+    if template_keys is None:
+        template_keys = SYSTEM_SHELF_TEMPLATES.keys()
+    
+    created_count = 0
+    
+    for key in template_keys:
+        if key not in SYSTEM_SHELF_TEMPLATES:
+            log.warning(f"Unknown system shelf template: {key}")
+            continue
+        
+        template = SYSTEM_SHELF_TEMPLATES[key]
+        
+        try:
+            # Check if user already has this system shelf
+            existing = ub.session.query(ub.MagicShelf).filter(
+                ub.MagicShelf.user_id == user_id,
+                ub.MagicShelf.name == template['name'],
+                ub.MagicShelf.is_system == True
+            ).first()
+            
+            if existing:
+                log.debug(f"User {user_id} already has system shelf '{template['name']}'")
+                continue
+            
+            # Create new system shelf
+            new_shelf = ub.MagicShelf(
+                user_id=user_id,
+                name=template['name'],
+                icon=template['icon'],
+                rules=template['rules'],
+                is_system=True,
+                is_public=0
+            )
+            
+            ub.session.add(new_shelf)
+            created_count += 1
+            log.info(f"Created system magic shelf '{template['name']}' for user {user_id}")
+            
+        except Exception as e:
+            log.error(f"Error creating system shelf '{template.get('name')}' for user {user_id}: {e}")
+            ub.session.rollback()
+            continue
+    
+    if created_count > 0:
+        try:
+            ub.session.commit()
+            log.info(f"Successfully created {created_count} system magic shelves for user {user_id}")
+        except Exception as e:
+            log.error(f"Error committing system shelves for user {user_id}: {e}")
+            ub.session.rollback()
+            return 0
+    
+    return created_count
+
+
+def get_system_shelf_template(template_key):
+    """
+    Get a system shelf template by key.
+    
+    Args:
+        template_key: Key of the template to retrieve
+    
+    Returns:
+        dict: Template data or None if not found
+    """
+    return SYSTEM_SHELF_TEMPLATES.get(template_key)
+
+
+def list_system_shelf_templates():
+    """
+    Get all available system shelf templates.
+    
+    Returns:
+        dict: All system shelf templates
+    """
+    return SYSTEM_SHELF_TEMPLATES

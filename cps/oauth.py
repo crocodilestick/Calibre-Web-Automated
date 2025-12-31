@@ -15,6 +15,16 @@ try:
 except ImportError:
     pass
 
+import logging
+def debug_log(msg):
+    try:
+        # Try writing to a location we know exists and is writable in the container
+        with open('/tmp/oauth_debug.log', 'a') as f:
+            f.write(msg + '\n')
+    except Exception as e:
+        print(f"Logging failed: {e}")
+
+
 
 class OAuthBackend(SQLAlchemyBackend):
     """
@@ -30,8 +40,21 @@ class OAuthBackend(SQLAlchemyBackend):
         super(OAuthBackend, self).__init__(model, session, user, user_id, user_required, anon_user, cache)
 
     def get(self, blueprint, user=None, user_id=None):
-        if self.provider_id + '_oauth_token' in session and session[self.provider_id + '_oauth_token'] != '':
-            return session[self.provider_id + '_oauth_token']
+        debug_log(f"GET called. Provider: {self.provider_id}")
+        
+        # Debug session contents
+        try:
+            debug_log(f"Session keys: {list(session.keys())}")
+        except:
+            pass
+
+        if self.provider_id + '_oauth_token' in session:
+            debug_log(f"Found token in session for {self.provider_id}")
+            if session[self.provider_id + '_oauth_token'] != '':
+                return session[self.provider_id + '_oauth_token']
+        else:
+            debug_log(f"Token NOT in session for {self.provider_id}")
+
         # check cache
         cache_key = self.make_cache_key(blueprint=blueprint, user=user, user_id=user_id)
         token = self.cache.get(cache_key)
@@ -80,7 +103,12 @@ class OAuthBackend(SQLAlchemyBackend):
         u = first(_get_real_user(ref, self.anon_user)
                   for ref in (user, self.user, blueprint.config.get("user")))
 
-        if self.user_required and not u and not uid:
+        # Check session for provider_user_id (Binding flow)
+        provider_user_id = None
+        if self.provider_id + '_oauth_user_id' in session:
+            provider_user_id = session[self.provider_id + '_oauth_user_id']
+
+        if self.user_required and not u and not uid and not provider_user_id:
             raise ValueError("Cannot set OAuth token without an associated user")
 
         # if there was an existing model, delete it
@@ -88,25 +116,48 @@ class OAuthBackend(SQLAlchemyBackend):
             self.session.query(self.model)
             .filter_by(provider=self.provider_id)
         )
-        # check for user ID
-        has_user_id = hasattr(self.model, "user_id")
-        if has_user_id and uid:
-            existing_query = existing_query.filter_by(user_id=uid)
-        # check for user (relationship property)
-        has_user = hasattr(self.model, "user")
-        if has_user and u:
-            existing_query = existing_query.filter_by(user=u)
+        
+        if provider_user_id:
+             existing_query = existing_query.filter_by(provider_user_id=provider_user_id)
+        else:
+            # check for user ID
+            has_user_id = hasattr(self.model, "user_id")
+            if has_user_id and uid:
+                existing_query = existing_query.filter_by(user_id=uid)
+            # check for user (relationship property)
+            has_user = hasattr(self.model, "user")
+            if has_user and u:
+                existing_query = existing_query.filter_by(user=u)
+        
+        # Check if token is already saved (e.g. by oauth_update_token) to avoid redundant delete/insert
+        try:
+            existing = existing_query.first()
+            if existing and existing.token == token:
+                return
+        except Exception:
+            pass
+
         # queue up delete query -- won't be run until commit()
         existing_query.delete()
+        
         # create a new model for this token
         kwargs = {
             "provider": self.provider_id,
             "token": token,
         }
+        if provider_user_id:
+            kwargs["provider_user_id"] = provider_user_id
+        
+        # Only set user if we have a valid user (not anonymous/None)
+        # Re-check has_user/has_user_id since they were in else block before
+        has_user_id = hasattr(self.model, "user_id")
+        has_user = hasattr(self.model, "user")
+        
         if has_user_id and uid:
             kwargs["user_id"] = uid
         if has_user and u:
             kwargs["user"] = u
+            
         self.session.add(self.model(**kwargs))
         # commit to delete and add simultaneously
         self.session.commit()
@@ -116,6 +167,13 @@ class OAuthBackend(SQLAlchemyBackend):
         ))
 
     def delete(self, blueprint, user=None, user_id=None):
+        if self.provider_id + '_oauth_token' in session:
+            session.pop(self.provider_id + '_oauth_token')
+
+        provider_user_id = None
+        if self.provider_id + '_oauth_user_id' in session:
+            provider_user_id = session.pop(self.provider_id + '_oauth_user_id')
+
         query = (
             self.session.query(self.model)
             .filter_by(provider=self.provider_id)
@@ -124,16 +182,14 @@ class OAuthBackend(SQLAlchemyBackend):
         u = first(_get_real_user(ref, self.anon_user)
                   for ref in (user, self.user, blueprint.config.get("user")))
 
-        if self.user_required and not u and not uid:
-            raise ValueError("Cannot delete OAuth token without an associated user")
-
-        # check for user ID
-        if hasattr(self.model, "user_id") and uid:
+        if provider_user_id:
+            query = query.filter_by(provider_user_id=provider_user_id)
+        elif self.user_required and not u and not uid:
+            return
+        elif hasattr(self.model, "user_id") and uid:
             query = query.filter_by(user_id=uid)
-        # check for user (relationship property)
         elif hasattr(self.model, "user") and u:
             query = query.filter_by(user=u)
-        # if we have the property, but not value, filter by None
         elif hasattr(self.model, "user_id"):
             query = query.filter_by(user_id=None)
         # run query

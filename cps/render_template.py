@@ -99,6 +99,11 @@ def get_sidebar_config(kwargs=None):
             {"glyph": "glyphicon-th-list", "text": _('Books List'), "link": 'web.books_table', "id": "list",
              "visibility": constants.SIDEBAR_LIST, 'public': (not current_user.is_anonymous), "page": "list",
              "show_text": _('Show Books List'), "config_show": content})
+    if current_user.role_admin():
+        sidebar.append(
+            {"glyph": "glyphicon-copy", "text": _('Duplicates'), "link": 'duplicates.show_duplicates', "id": "duplicates",
+             "visibility": constants.SIDEBAR_DUPLICATES, 'public': (not current_user.is_anonymous), "page": "duplicates",
+             "show_text": _('Show Duplicate Books'), "config_show": content})
     g.shelves_access = ub.session.query(ub.Shelf).filter(
         or_(ub.Shelf.is_public == 1, ub.Shelf.user_id == current_user.id)).order_by(ub.Shelf.name).all()
 
@@ -153,6 +158,32 @@ def cwa_update_notification() -> None:
     else:
         return
 
+# Notify users once about theme migration to caliBlur
+def theme_migration_notification() -> None:
+    notice_file = '/app/theme_migration_notice'
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    
+    # Check if notification already shown today
+    if os.path.isfile(notice_file):
+        try:
+            with open(notice_file, 'r') as f:
+                last_notification = f.read().strip()
+                if last_notification == current_date:
+                    return
+        except Exception:
+            pass
+    
+    # Show notification
+    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v4.0.0.")
+    flash(message, category="theme_migration")
+    
+    # Mark as shown today
+    try:
+        with open(notice_file, 'w') as f:
+            f.write(current_date)
+    except Exception as e:
+        print(f"[theme-migration-notification] Error writing notice file: {e}", flush=True)
+
 
 # Checks if translations are missing for the current language
 def translations_missing_notification() -> None:
@@ -198,6 +229,11 @@ def render_title_template(*args, **kwargs):
             cwa_update_notification()
         except Exception as e:
             print(f"[cwa-update-notification-service] The following error occurred when checking for available updates:\n{e}", flush=True)
+    # Notify users about theme migration (once per day)
+    try:
+        theme_migration_notification()
+    except Exception as e:
+        print(f"[theme-migration-notification] Error showing theme migration notification: {e}", flush=True)
     # Notify any user if translations are missing for their language
     try:
         translations_missing_notification()

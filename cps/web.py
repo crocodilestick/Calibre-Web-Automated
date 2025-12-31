@@ -26,7 +26,7 @@ from sqlalchemy.sql.functions import coalesce
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import constants, logger, isoLanguages, services
+from . import constants, logger, isoLanguages, services, helper
 from . import db, ub, config, app
 from . import calibre_db, kobo_sync_status
 from .search import render_search_results, render_adv_search_results
@@ -453,8 +453,14 @@ def render_books_list(data, sort_param, book_id, page):
                                                                 db.books_series_link,
                                                                 db.Books.id == db.books_series_link.c.book,
                                                                 db.Series)
+
+        try:
+            title = _(f'Books ({pagination.total_count})')
+        except:
+            title = _(f'Books ({cwa_get_num_books_in_library()})')
+
         return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
-                                     title=_(f'Books ({cwa_get_num_books_in_library()})'), page=website, order=order[1])
+                                     title=title, page=website, order=order[1])
 
 
 def render_rated_books(page, book_id, order):
@@ -490,7 +496,7 @@ def render_hot_books(page, order):
     if current_user.check_visibility(constants.SIDEBAR_HOT):
         if order[1] not in ['hotasc', 'hotdesc']:
             order = [func.count(ub.Downloads.book_id).desc()], 'hotdesc'
-        
+
         random = false()
         if current_user.show_detail_random():
             random_query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
@@ -499,7 +505,7 @@ def render_hot_books(page, order):
                      .limit(config.config_random_books).all())
 
         off = int(config.config_books_per_page) * (page - 1)
-        
+
         # Get total count for pagination
         total_hot_books = ub.session.query(func.count(ub.Downloads.book_id.distinct())).scalar()
 
@@ -509,7 +515,7 @@ def render_hot_books(page, order):
                               .order_by(*order[0])
                               .offset(off)
                               .limit(config.config_books_per_page))
-        
+
         hot_book_ids = [item[0] for item in hot_book_ids_query]
 
         entries = []
@@ -517,7 +523,7 @@ def render_hot_books(page, order):
             query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
             # Fetch all book details in one query
             book_details = query.filter(calibre_db.common_filters()).filter(db.Books.id.in_(hot_book_ids)).all()
-            
+
             # Create a dictionary for quick lookups
             book_map = {book.Books.id: book for book in book_details}
 
@@ -912,6 +918,11 @@ def health_check():
 @web.route('/page/<int:page>')
 @login_required_if_no_ano
 def index(page):
+    if current_user.is_authenticated and current_user.role_admin():
+        arch_warning = helper.check_architecture()
+        if arch_warning:
+            flash(arch_warning, category="cwa_arch_warning")
+
     sort_param = (request.args.get('sort') or 'stored').lower()
     return render_books_list("newest", sort_param, 1, page)
 
@@ -1020,6 +1031,8 @@ def list_books():
             else [db.Authors.name.desc(), db.Series.name.desc(), db.Books.series_index.desc()]
         join = db.books_authors_link, db.Books.id == db.books_authors_link.c.book, db.Authors, db.books_series_link, \
             db.Books.id == db.books_series_link.c.book, db.Series
+    elif sort_param == "author_sort":
+        order = [db.Books.author_sort.asc()] if order == "asc" else [db.Books.author_sort.desc()]
     elif sort_param == "languages":
         order = [db.Languages.lang_code.asc()] if order == "asc" else [db.Languages.lang_code.desc()]
         join = db.books_languages_link, db.Books.id == db.books_languages_link.c.book, db.Languages
@@ -1145,7 +1158,7 @@ def publisher_list():
                          .filter(calibre_db.common_filters())
                          .group_by(db.Publishers.id)
                          .order_by(order))
-        
+
         entries = entries_query.all()
 
         no_publisher_count = (calibre_db.session.query(func.count(db.Books.id))
@@ -1233,7 +1246,7 @@ def ratings_list():
                    .filter(db.Ratings.rating > 0)
                    .group_by(db.Ratings.id)
                    .order_by(order))
-        
+
         entries = entries_query.all()
 
         no_rating_count = (calibre_db.session.query(func.count(db.Books.id))
@@ -1249,7 +1262,7 @@ def ratings_list():
                 entries.insert(0, none_rating_entry)
             else: # descending
                 entries.append(none_rating_entry)
-        
+
         return render_title_template('list.html', entries=entries, folder='web.books_list',
                                      title=_("Ratings"), page="ratingslist", data="ratings", order=order_no)
     else:
@@ -1383,7 +1396,7 @@ def serve_book(book_id, book_format, anyname):
         try:
             headers = Headers()
             headers["Content-Type"] = mimetypes.types_map.get('.' + book_format, "application/octet-stream")
-            if not range_header:                
+            if not range_header:
                 log.info('Serving book: %s', data.name)
                 headers['Accept-Ranges'] = 'bytes'
             df = getFileFromEbooksFolder(book.path, data.name + "." + book_format)
@@ -1435,17 +1448,76 @@ def send_to_ereader(book_id, book_format, convert):
     if not config.get_mail_server_configured():
         response = [{'type': "danger", 'message': _("Please configure the SMTP mail settings first...")}]
         return Response(json.dumps(response), mimetype='application/json')
-    elif current_user.kindle_mail:
-        result = send_mail(book_id, book_format, convert, current_user.kindle_mail, config.get_book_path(),
-                           current_user.name)
-        if result is None:
-            ub.update_download(book_id, int(current_user.id))
-            response = [{'type': "success", 'message': _("Success! Book queued for sending to %(eReadermail)s",
-                                                       eReadermail=current_user.kindle_mail)}]
-        else:
-            response = [{'type': "danger", 'message': _("Oops! There was an error sending book: %(res)s", res=result)}]
-    else:
+
+    if not current_user.kindle_mail:
         response = [{'type': "danger", 'message': _("Oops! Please update your profile with a valid eReader Email.")}]
+        return Response(json.dumps(response), mimetype='application/json')
+
+    result = send_mail(book_id, book_format, convert, current_user.kindle_mail, config.get_book_path(),
+                       current_user.name, current_user.kindle_mail_subject)
+    if result is None:
+        ub.update_download(book_id, int(current_user.id))
+        # Track email/send activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            book = calibre_db.get_book(book_id)
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='EMAIL',
+                item_id=book_id,
+                item_title=book.title if book else 'Unknown',
+                extra_data=book_format.upper()
+            )
+        except Exception as e:
+            log.debug(f"Failed to log email activity: {e}")
+        response = [{'type': "success", 'message': _("Success! Book queued for sending to %(eReadermail)s",
+                                                   eReadermail=current_user.kindle_mail)}]
+    else:
+        response = [{'type': "danger", 'message': _("Oops! There was an error sending book: %(res)s", res=result)}]
+    return Response(json.dumps(response), mimetype='application/json')
+
+
+@web.route('/send_selected/<int:book_id>', methods=["POST"])
+@login_required_if_no_ano
+@download_required
+def send_to_selected_ereaders(book_id):
+    if not config.get_mail_server_configured():
+        response = [{'type': "danger", 'message': _("Please configure the SMTP mail settings first...")}]
+        return Response(json.dumps(response), mimetype='application/json')
+
+    selected_emails = request.form.get('selected_emails', '')
+    book_format = request.form.get('book_format', '')
+    convert = request.form.get('convert', '0')
+
+    if not selected_emails:
+        response = [{'type': "danger", 'message': _("No email addresses selected")}]
+        return Response(json.dumps(response), mimetype='application/json')
+
+    result = send_mail(book_id, book_format, int(convert), selected_emails, config.get_book_path(), current_user.name, current_user.kindle_mail_subject)
+
+    if result is None:
+        ub.update_download(book_id, int(current_user.id))
+        # Track email/send activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            book = calibre_db.get_book(book_id)
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='EMAIL',
+                item_id=book_id,
+                item_title=book.title if book else 'Unknown',
+                extra_data=book_format.upper()
+            )
+        except Exception as e:
+            log.debug(f"Failed to log email activity: {e}")
+        response = [{'type': "success", 'message': _("Success! Book queued for sending to the selected address(es)!")}]
+    else:
+        response = [{'type': "danger", 'message': _("Oops! There was an error sending book: %(res)s", res=result)}]
+
     return Response(json.dumps(response), mimetype='application/json')
 
 
@@ -1531,15 +1603,55 @@ def register():
 
 def handle_login_user(user, remember, message, category):
     login_user(user, remember=remember)
+    
+    # Track login activity
+    try:
+        from scripts.cwa_db import CWA_DB
+        cwa_db = CWA_DB()
+        cwa_db.log_activity(
+            user_id=int(user.id),
+            user_name=user.name,
+            event_type='LOGIN'
+        )
+    except Exception as e:
+        log.debug(f"Failed to log login activity: {e}")
+    
     flash(message, category=category)
     [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
+
+    # Clear login redirect count on successful login
+    flask_session.pop('_login_redirect_count', None)
+
     return redirect(get_redirect_location(request.form.get('next', None), "web.index"))
 
 
 def render_login(username="", password=""):
+    # Detect authentication redirect loops
+    redirect_count = flask_session.get('_login_redirect_count', 0)
+    if redirect_count > 3:
+        flask_session.pop('_login_redirect_count', None)
+        log.warning("Authentication redirect loop detected from IP: %s", request.remote_addr)
+        flash(_("Authentication loop detected. If you're experiencing login issues, please contact your administrator."), category="error")
+    else:
+        flask_session['_login_redirect_count'] = redirect_count + 1
+
     next_url = request.args.get('next', default=url_for("web.index"), type=str)
     if url_for("web.logout") == next_url:
         next_url = url_for("web.index")
+
+    # Get generic OAuth login button text for display
+    generic_login_button = None
+    if feature_support['oauth']:
+        try:
+            # oauth_bb is already imported at module level, access oauthblueprints from it
+            from . import oauth_bb
+            # oauthblueprints[2] is the generic OIDC provider (index 0=github, 1=google, 2=generic)
+            if hasattr(oauth_bb, 'oauthblueprints') and len(oauth_bb.oauthblueprints) > 2:
+                generic_login_button = oauth_bb.oauthblueprints[2].get('login_button') or 'OpenID Connect'
+        except (AttributeError, IndexError):
+            # Silently fall back to default if oauthblueprints not available
+            pass
+
     return render_title_template('login.html',
                                  title=_("Login"),
                                  next_url=next_url,
@@ -1547,6 +1659,7 @@ def render_login(username="", password=""):
                                  username=username,
                                  password=password,
                                  oauth_check=oauth_check,
+                                 generic_login_button=generic_login_button,
                                  mail=config.get_mail_server_configured(), page="login")
 
 
@@ -1554,6 +1667,16 @@ def render_login(username="", password=""):
 def login():
     if current_user is not None and current_user.is_authenticated:
         return redirect(url_for('web.index'))
+
+    # Handle OAuth-only authentication mode
+    if config.config_login_type == constants.LOGIN_OAUTH:
+        # In OAuth-only mode, show OAuth options but still render login template
+        # This prevents infinite redirects to OAuth providers
+        if not feature_support['oauth']:
+            log.error("OAuth authentication is enabled but OAuth support is not available")
+            flash(_("OAuth authentication is not properly configured. Please contact administrator."), category="error")
+        return render_login()
+
     if config.config_login_type == constants.LOGIN_LDAP and not services.ldap:
         log.error(u"Cannot activate LDAP authentication")
         flash(_(u"Cannot activate LDAP authentication"), category="error")
@@ -1564,6 +1687,10 @@ def login():
 @limiter.limit("40/day", key_func=lambda: strip_whitespaces(request.form.get('username', "")).lower())
 @limiter.limit("3/minute", key_func=lambda: strip_whitespaces(request.form.get('username', "")).lower())
 def login_post():
+    if config.config_disable_standard_login:
+        flash(_("Standard login is disabled."), category="error")
+        return render_login()
+
     form = request.form.to_dict()
     username = strip_whitespaces(form.get('username', "")).lower().replace("\n","").replace("\r","")
     try:
@@ -1582,31 +1709,96 @@ def login_post():
         flash(_(u"Cannot activate LDAP authentication"), category="error")
     user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == username).first()
     remember_me = bool(form.get('remember_me'))
-    if config.config_login_type == constants.LOGIN_LDAP and services.ldap and user and form['password'] != "":
-        login_result, error = services.ldap.bind_user(username, form['password'])
-        if login_result:
-            log.debug(u"You are now logged in as: '{}'".format(user.name))
-            return handle_login_user(user,
-                                     remember_me,
-                                     _(u"you are now logged in as: '%(nickname)s'", nickname=user.name),
-                                     "success")
-        elif login_result is None and user and check_password_hash(str(user.password), form['password']) \
-                and user.name != "Guest":
-            log.info("Local Fallback Login as: '{}'".format(user.name))
-            return handle_login_user(user,
-                                     remember_me,
-                                     _(u"Fallback Login as: '%(nickname)s', "
-                                       u"LDAP Server not reachable, or user not known", nickname=user.name),
-                                     "warning")
-        elif login_result is None:
-            log.info(error)
-            flash(_(u"Could not login: %(message)s", message=error), category="error")
+
+    if config.config_login_type == constants.LOGIN_LDAP and services.ldap and form.get('password', '') != "":
+        # Validate username before attempting LDAP authentication
+        if not username or not username.strip():
+            log.warning("LDAP authentication attempted with empty username")
+            flash(_(u"Username cannot be empty"), category="error")
         else:
-            ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
-            log.warning('LDAP Login failed for user "%s" IP-address: %s', username, ip_address)
+            # Try LDAP authentication first, regardless of whether user exists locally
+            login_result, error = services.ldap.bind_user(username, form['password'])
+
+            if login_result:
+                # LDAP authentication successful
+                if user:
+                    # Existing user - login normally
+                    log.debug(u"You are now logged in as: '{}'".format(user.name))
+                    return handle_login_user(user,
+                                             remember_me,
+                                             _(u"you are now logged in as: '%(nickname)s'", nickname=user.name),
+                                             "success")
+                else:
+                    # New user - create if auto-creation is enabled
+                    if getattr(config, 'config_ldap_auto_create_users', True):
+                        try:
+                            # Get user details from LDAP
+                            ldap_user_details = services.ldap.get_object_details(username)
+                            if ldap_user_details:
+                                # Create user using existing LDAP import function
+                                from . import admin
+                                create_result, error_msg = admin.ldap_import_create_user(username, ldap_user_details)
+                                if create_result:
+                                    # Get the newly created user
+                                    user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == username.lower()).first()
+                                    if user:
+                                        log.info("LDAP auto-created user: '%s'", username)
+                                        return handle_login_user(user,
+                                                                 remember_me,
+                                                                 _(u"Welcome! Your account has been automatically created. You are now logged in as: '%(nickname)s'", nickname=user.name),
+                                                                 "success")
+
+                            # If we get here, user creation failed
+                            log.error("LDAP auto-creation failed for user '%s'", username)
+                            flash(_(u"Authentication successful, but account creation failed. Please contact your administrator."), category="error")
+                        except Exception as ex:
+                            log.error("LDAP auto-creation error for user '%s': %s", username, ex)
+                            flash(_(u"Authentication successful, but account creation failed. Please contact your administrator."), category="error")
+                    else:
+                        # Auto-creation disabled
+                        log.info("LDAP user '%s' authenticated but not found locally, auto-creation disabled", username)
+                        flash(_(u"Authentication successful, but no local account found. Please contact your administrator to create your account."), category="error")
+
+            elif login_result is None and user and check_password_hash(str(user.password), form['password']) \
+                    and user.name != "Guest":
+                # LDAP unavailable, try local fallback
+                log.info("Local Fallback Login as: '{}'".format(user.name))
+                return handle_login_user(user,
+                                         remember_me,
+                                         _(u"Fallback Login as: '%(nickname)s', "
+                                           u"LDAP Server not reachable, or user not known", nickname=user.name),
+                                         "warning")
+            elif login_result is None:
+                # LDAP unavailable and no local fallback
+                log.info(error)
+                flash(_(u"Could not login: %(message)s", message=error), category="error")
+            else:
+                # LDAP authentication failed
+                # Use request.remote_addr (already corrected by ProxyFix) instead of raw header
+                ip_address = request.remote_addr
+                log.warning('LDAP Login failed for user "%s" IP-address: %s', username, ip_address)
+                
+                # Track failed login attempt
+                try:
+                    from scripts.cwa_db import CWA_DB
+                    import json
+                    cwa_db = CWA_DB()
+                    cwa_db.log_activity(
+                        user_id=None,
+                        user_name='Anonymous',
+                        event_type='LOGIN_FAILED',
+                        item_id=None,
+                        item_title=None,
+                        extra_data=json.dumps({'username_attempted': username, 'ip': ip_address, 'method': 'LDAP'})
+                    )
+                except Exception as e:
+                    log.debug(f"Failed to log failed login attempt: {e}")
+                
+                flash(_(u"Wrong Username or Password"), category="error")
             flash(_(u"Wrong Username or Password"), category="error")
     else:
-        ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+        # Use request.remote_addr (already corrected by ProxyFix) instead of raw header
+        ip_address = request.remote_addr
         if form.get('forgot', "") == 'forgot':
             if user is not None and user.name != "Guest":
                 ret, __ = reset_password(user.id)
@@ -1629,6 +1821,23 @@ def login_post():
                                          "success")
             else:
                 log.warning('Login failed for user "{}" IP-address: {}'.format(username, ip_address))
+                
+                # Track failed login attempt
+                try:
+                    from scripts.cwa_db import CWA_DB
+                    import json
+                    cwa_db = CWA_DB()
+                    cwa_db.log_activity(
+                        user_id=None,
+                        user_name='Anonymous',
+                        event_type='LOGIN_FAILED',
+                        item_id=None,
+                        item_title=None,
+                        extra_data=json.dumps({'username_attempted': username, 'ip': ip_address, 'method': 'standard'})
+                    )
+                except Exception as e:
+                    log.debug(f"Failed to log failed login attempt: {e}")
+                
                 flash(_(u"Wrong Username or Password"), category="error")
     return render_login(username, form.get("password", ""))
 
@@ -1637,10 +1846,14 @@ def login_post():
 @user_login_required
 def logout():
     if current_user is not None and current_user.is_authenticated:
-        ub.delete_user_session(current_user.id, flask_session.get('_id', ""))
-        logout_user()
         if feature_support['oauth'] and (config.config_login_type == 2 or config.config_login_type == 3):
             logout_oauth_user()
+        ub.delete_user_session(current_user.id, flask_session.get('_id', ""))
+        logout_user()
+
+    # Clear login redirect count on logout to prevent false positives
+    flask_session.pop('_login_redirect_count', None)
+
     log.debug("User logged out")
     if config.config_anonbrowse:
         location = get_redirect_location(request.args.get('next', None), "web.login")
@@ -1662,6 +1875,8 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                 current_user.password = generate_password_hash(valid_password(to_save.get("password")))
         if to_save.get("kindle_mail", current_user.kindle_mail) != current_user.kindle_mail:
             current_user.kindle_mail = valid_email(to_save.get("kindle_mail"))
+        if to_save.get("kindle_mail_subject", current_user.kindle_mail_subject) != current_user.kindle_mail_subject:
+            current_user.kindle_mail_subject = strip_whitespaces(to_save.get("kindle_mail_subject", "")) or ""
         new_email = valid_email(to_save.get("email", current_user.email))
         if not new_email:
             raise Exception(_("Email can't be empty and has to be a valid Email"))
@@ -1682,6 +1897,9 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         if old_state == 0 and current_user.kobo_only_shelves_sync == 1:
             kobo_sync_status.update_on_sync_shelfs(current_user.id)
         current_user.hardcover_token = to_save.get("hardcover_token","" ).replace("Bearer ","" ) or None
+        # Auto-send and metadata fetch settings
+        current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
+        current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
         # Theme change
         if 'theme' in to_save:
             try:
@@ -1781,6 +1999,39 @@ def read_book(book_id, book_format):
         bookmark = ub.session.query(ub.Bookmark).filter(and_(ub.Bookmark.user_id == int(current_user.id),
                                                              ub.Bookmark.book_id == book_id,
                                                              ub.Bookmark.format == book_format.upper())).first()
+    # Track read activity
+    if current_user.is_authenticated:
+        try:
+            from scripts.cwa_db import CWA_DB
+            import json
+            
+            # Detect source of book discovery
+            source = request.args.get('from', 'direct')
+            referer = request.headers.get('Referer', '')
+            if not source or source == 'direct':
+                if '/search' in referer:
+                    source = 'search'
+                elif '/series' in referer:
+                    source = 'series'
+                elif '/author' in referer:
+                    source = 'author'
+                elif '/category' in referer:
+                    source = 'category'
+                elif '/shelf' in referer:
+                    source = 'shelf'
+            
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='READ',
+                item_id=book_id,
+                item_title=book.title,
+                extra_data=json.dumps({'format': book_format.upper(), 'source': source})
+            )
+        except Exception as e:
+            log.debug(f"Failed to log read activity: {e}")
+    
     if book_format.lower() == "epub":
         log.debug("Start epub reader for %d", book_id)
         return render_title_template('read.html', bookid=book_id, title=book.title, bookmark=bookmark)

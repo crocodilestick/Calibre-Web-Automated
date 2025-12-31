@@ -138,7 +138,7 @@
               </li>
               {% endif %}
               <li class="cwa-switch-theme">
-                <a id="cwa-switch-theme" href="{{ url_for('switch_theme.cwa_switch_theme') }}" title="Switch Theme">
+                <a id="cwa-switch-theme" href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;" title="Temporarily disabled until v4.0.0" data-toggle="tooltip" data-placement="bottom" onclick="return false;">
                   <span class="glyphicon glyphicon-sunglasses"></span>
                   <span class="hidden-sm">{{_('Switch Theme')}}</span>
                 </a>
@@ -209,10 +209,30 @@
         </div>
       </div>
       {%endif%}
+      {%if message[0] == "cwa_arch_warning" %}
+      <div class="row-fluid text-center">
+        <div id="flash_danger" class="alert alert-danger alert-cwa">
+          {{ message[1] }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      {%endif%}
       {%if message[0] == "translation_missing" %}
       <div class="row-fluid text-center">
         <div id="flash_info" class="alert alert-info alert-cwa">
           {{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/wiki/Contributing-Translations">{{ _('Contribute here!') }}</a>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      {%endif%}
+      {%if message[0] == "theme_migration" %}
+      <div class="row-fluid text-center">
+        <div id="flash_info" class="alert alert-info alert-cwa">
+          {{ message[1] }}
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -345,10 +365,25 @@
       <script src="{{ url_for('static', filename='js/libs/jquery.visible.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/libs/compromise.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/libs/readmore.min.js') }}"></script>
+      <script>
+        // Make script root available for JS
+        window.scriptRoot = "{{ request.script_root }}";
+        // Make user email data available for quick actions
+        window.cwaUserData = {};
+        {% if current_user.kindle_mail and current_user.kindle_mail.strip() %}
+        window.cwaUserData.primaryEmail = "{{ current_user.kindle_mail.split(',')[0].strip() }}";
+        {% else %}
+        window.cwaUserData.primaryEmail = null;
+        {% endif %}
+        // Add user permissions
+        window.cwaUserData.canEditBooks = {{ 'true' if current_user.role_edit() else 'false' }};
+      </script>
       <script src="{{ url_for('static', filename='js/caliBlur.js') }}"></script>
     {% endif %}
     {% block js %}{% endblock %}
+    {% if current_user.is_authenticated %}
     <script src="{{ url_for('static', filename='user-profile-data/CWA-profile-updater.js') }}"></script>
+    {% endif %}
     <!-- Makes sure filter buttons are only on the title bar of the page when there is no pagination -->
     <script>
       function updateFilterHeaderFixed() {

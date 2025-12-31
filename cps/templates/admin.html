@@ -14,6 +14,7 @@
               <th>{{_('Username')}}</th>
               <th>{{_('Email')}}</th>
               <th>{{_('Send to eReader Email')}}</th>
+              <th>{{_('Send to eReader Subject')}}</th>
               <th>{{_('Downloads')}}</th>
               <th class="hidden-xs ">{{_('Admin')}}</th>
               <th class="hidden-xs hidden-sm">{{_('Password')}}</th>
@@ -32,6 +33,7 @@
               <td><a class="session" href="{{url_for('admin.edit_user', user_id=user.id)}}">{{user.name}}</a></td>
               <td>{{user.email}}</td>
               <td>{{user.kindle_mail}}</td>
+              <td>{{user.kindle_mail_subject}}</td>
               <td>{{user.downloads.count()}}</td>
               <td class="hidden-xs">{{ display_bool_setting(user.role_admin()) }}</td>
               <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_passwd()) }}</td>
@@ -178,7 +180,7 @@
             <div class="col-xs-6 col-sm-3">{{schedule_duration}}</div>
           </div>
           <div class="row">
-            <div class="col-xs-6 col-sm-3">{{_('Generate Thumbnails')}}</div>
+            <div class="col-xs-6 col-sm-3">{{_('Scheduled Thumbnail Refresh')}}</div>
             <div class="col-xs-6 col-sm-3">{{ display_bool_setting(config.schedule_generate_book_covers) }}</div>
           </div>
           <!--div class="row">
@@ -196,9 +198,7 @@
 
         </div>
       <a class="btn btn-default scheduledtasks" id="admin_edit_scheduled_tasks" href="{{url_for('admin.edit_scheduledtasks')}}">{{_('Edit Scheduled Tasks Settings')}}</a>
-      {% if config.schedule_generate_book_covers %}
-        <a class="btn btn-default" id="admin_refresh_cover_cache">{{_('Refresh Thumbnail Cache')}}</a>
-      {%  endif %}
+      <a class="btn btn-default" id="admin_refresh_cover_cache">{{_('Refresh Thumbnail Cache')}}</a>
     </div>
   </div>
 {%  endif %}

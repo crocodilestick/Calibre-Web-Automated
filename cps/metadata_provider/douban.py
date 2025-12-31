@@ -96,7 +96,8 @@ class Douban(Metadata):
                                  params={
                                      "cat": 1001,
                                      "q": query
-                                 })
+                                 },
+                                 timeout=15)
             r.raise_for_status()
 
         except Exception as e:
@@ -118,7 +119,8 @@ class Douban(Metadata):
                                  params={
                                      "cat": 1001,
                                      "q": query
-                                 })
+                                 },
+                                 timeout=15)
             r.raise_for_status()
 
         except Exception as e:
@@ -141,7 +143,7 @@ class Douban(Metadata):
         log.debug(f"start parsing {url}")
 
         try:
-            r = self.session.get(url)
+            r = self.session.get(url, timeout=15)
             r.raise_for_status()
         except Exception as e:
             log.warning(e)

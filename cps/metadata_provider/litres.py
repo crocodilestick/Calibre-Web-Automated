@@ -26,7 +26,7 @@ class Litres(Metadata):
     API_URL = "https://api.litres.ru/foundation/api/search"
     API_ARTS_URL = "https://api.litres.ru/foundation/api/arts/{}"
     DEFAULT_LIMIT = 7
-    TIMEOUT = 20
+    TIMEOUT = 15
     DEFAULT_TYPES = [
         "text_book",
         "audiobook",
@@ -264,7 +264,7 @@ class Litres(Metadata):
         ).strip()
 
         formats = ['pdf', 'epub']
-        pattern = r'\s*\([^)]*(' + '|'.join(formats) + ')[^)]*\)'
+        pattern = r'\s*\([^)]*(' + '|'.join(formats) + r')[^)]*\)'
 
         title =  re.sub(pattern, '', title, flags=re.IGNORECASE)
         return title

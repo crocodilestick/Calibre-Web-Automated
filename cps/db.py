@@ -15,6 +15,7 @@ from weakref import WeakSet
 from uuid import uuid4
 
 from sqlite3 import OperationalError as sqliteOperationalError
+import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
@@ -125,12 +126,18 @@ class Identifiers(Base):
             return "ISSN"
         elif format_type == "isfdb":
             return "ISFDB"
-        if format_type == "lubimyczytac":
+        elif format_type == "lubimyczytac":
             return "Lubimyczytac"
-        if format_type == "databazeknih":
+        elif format_type == "databazeknih":
             return "Databáze knih"
-        if format_type == "hardcover-slug":
+        elif format_type == "hardcover-slug":
             return "Hardcover"
+        elif format_type == "storygraph":
+            return "StoryGraph"
+        elif format_type == "smashwords":
+            return "Smashwords"
+        elif format_type == "ebooks":
+            return "Ebooks.com"
         else:
             return self.type
 
@@ -163,13 +170,19 @@ class Identifiers(Base):
         elif format_type == "issn":
             return "https://portal.issn.org/resource/ISSN/{0}".format(self.val)
         elif format_type == "isfdb":
-            return "http://www.isfdb.org/cgi-bin/pl.cgi?{0}".format(self.val)
+            return "https://www.isfdb.org/cgi-bin/pl.cgi?{0}".format(self.val)
         elif format_type == "databazeknih":
             return "https://www.databazeknih.cz/knihy/{0}".format(self.val)
         elif format_type == "hardcover-slug":
             return "https://hardcover.app/books/{0}".format(self.val)
         elif format_type == "ibdb":
             return "https://ibdb.dev/book/{0}".format(self.val)
+        elif format_type == "storygraph":
+            return "https://app.thestorygraph.com/books/{0}".format(self.val)
+        elif format_type == "smashwords":
+            return "https://www.smashwords.com/books/view/{0}".format(self.val)
+        elif format_type == "ebooks":
+            return "https://www.ebooks.com/en-{0}".format(self.val)
         elif self.val.lower().startswith("javascript:"):
             return quote(self.val)
         elif self.val.lower().startswith("data:"):
@@ -362,6 +375,13 @@ class Metadata_Dirtied(Base):
     def __init__(self, book):
         super().__init__()
         self.book = book
+
+
+# Import BookFormatChecksum from progress_syncing.models to keep model definition centralized
+# Import directly from models module to avoid triggering progress_syncing/__init__.py chain
+# which would cause circular import (models needs Base from db, but progress_syncing imports kosync)
+from .progress_syncing import models as _progress_models  # noqa: E402
+BookFormatChecksum = _progress_models.BookFormatChecksum
 
 
 class Books(Base):
@@ -715,6 +735,10 @@ class CalibreDB:
                                                           bind=cls.engine, future=True))
         for inst in cls.instances:
             inst.init_session()
+
+        # Ensure progress syncing tables exist in metadata.db (book checksums)
+        from .progress_syncing.models import ensure_calibre_db_tables
+        ensure_calibre_db_tables(conn)
 
         cls._init = True
 
@@ -1132,8 +1156,22 @@ class CalibreDB:
                     Base.metadata.remove(table)
 
     def reconnect_db(self, config, app_db_path):
-        self.dispose()
-        self.engine.dispose()
+        # Be resilient if database wasn't initialized yet
+        try:
+            self.dispose()
+        except Exception:
+            # Ignore dispose errors during reconnect
+            pass
+
+        # engine is a class-level attribute that may be None before first setup
+        try:
+            if getattr(self, 'engine', None) is not None:
+                self.engine.dispose()
+        except Exception:
+            # Ignore engine dispose errors; we'll rebuild below
+            pass
+
+        # Rebuild engine/session factory and update config
         self.setup_db(config.config_calibre_dir, app_db_path)
         self.update_config(config)
 

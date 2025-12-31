@@ -38,7 +38,7 @@ class IBDb(Metadata):
                 tokens = [quote(t.encode("utf-8")) for t in title_tokens]
                 query = "+".join(tokens)
             try:
-                results = requests.get(IBDb.SEARCH_URL + query)
+                results = requests.get(IBDb.SEARCH_URL + query, timeout=15)
                 results.raise_for_status()
             except Exception as e:
                 log.warning(e)

@@ -142,7 +142,7 @@ class DNB(Metadata):
 
         return filtered_queries
 
-    def _execute_query(self, query, timeout=30):
+    def _execute_query(self, query, timeout=15):
         """Query DNB SRU API"""
         headers = {  
             'User-Agent': constants.USER_AGENT,  
@@ -408,7 +408,7 @@ class DNB(Metadata):
             url = url_elem.text.strip()
             if url.startswith("http://deposit.dnb.de/") or url.startswith("https://deposit.dnb.de/"):
                 try:
-                    response = requests.get(url, timeout=30)
+                    response = requests.get(url, timeout=15)
                     response.raise_for_status()
 
                     comments_text = response.text

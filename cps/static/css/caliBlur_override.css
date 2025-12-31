@@ -2,8 +2,8 @@ body.serieslist.grid-view div.container-fluid > div > div.col-sm-10::before {
   display: none;
 }
 
-/* Make checkboxes white */
-input[type=checkbox] {accent-color: #ffffff;}
+/* Make checkboxes orange */
+input[type=checkbox] {accent-color: #cc7b19;}
 
 .cover .badge {
   position: absolute !important;
@@ -17,9 +17,9 @@ input[type=checkbox] {accent-color: #ffffff;}
   margin-top: 4px;
 }
 
-.cover {
+/* .cover {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
-}
+} */
 
 .cover .read {
   line-height: 15px;
@@ -358,8 +358,62 @@ form#archived_form > label.block-label::before {
 
 /* Fixes Create Magic Shelf spacing in sidebar */
 li#nav_createmagicshelf {
-    margin-left: 2rem;
-}
-li#nav_createmagicshelf {
     margin-left: 1rem !important;
+}
+
+/* Fixes close buttons colour */
+button.close > span {
+    color: whitesmoke;
+}
+
+/* Fixes ill-aligned sort element in first column of book list table */
+.bs-checkbox > .th-inner.sortable {
+    position: relative;
+    right: 8px;
+    bottom: 10px;
+}
+
+.editbook-cover-section {
+    padding: 4rem !important;
+    margin-left: 2rem !important;
+    padding-top: 4rem !important;
+    max-width: none !important;
+    width: 36rem !important;
+}
+
+div#GeneralChangeModal > div > div.modal-content {
+    top: 200px;
+    width: max-content;
+    max-width: 400px;
+    padding: 2rem;
+    justify-self: center;
+}
+
+.modal-content > .modal-header.bg-info.text-center {
+    display: none;
+}
+
+a#advanced_search > span.hidden-sm {
+    margin-left: 4px;
+}
+
+.btn-primary[disabled] {
+    background-color: var(--color-secondary);
+}
+/* Fix for disabled theme switcher tooltip text overflow */
+.tooltip.cwa-tooltip-wrap .tooltip-inner {
+    white-space: normal !important;
+    max-width: 250px !important;
+    width: auto !important;
+    text-align: center;
+}
+
+.cwa-settings-tip {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+    border-radius: 0.25rem;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
 }

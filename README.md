@@ -7,6 +7,7 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/crocodilestick/calibre-web-automated)
 ![GitHub Release](https://img.shields.io/github/v/release/crocodilestick/calibre-web-automated)
 ![GitHub commits since latest release](https://img.shields.io/github/commits-since/crocodilestick/calibre-web-automated/latest)
+![OAuth 2.0 + OIDC](https://img.shields.io/badge/OAuth-2.0%20%2B%20OIDC-blue?style=flat&logo=oauth)
 
 
 ## _Quick Access_
@@ -23,6 +24,7 @@
 - [Usage](#usage-) 🔧
   - [Adding Books to Your Library](#adding-books-to-your-library)
   - [KOReader Syncing (KOSync)](#koreader-syncing-kosync-) 📖⚡
+  - [OAuth Authentication Setup](#enhanced-oauth-20oidc-authentication-) 🔐
 - [For Developers](#for-developers---building-custom-docker-image) 🚀
 - [Further Development](#further-development-️) 🏗️
 - [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
@@ -71,7 +73,7 @@ ___
     \
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
-- Or alternativly make your own companion project, come hang out and or come get help if you're facing issues :)
+- Or alternatively make your own companion project, come hang out and or come get help if you're facing issues :)
 
 ## 🚨 To users planning to deploy via Network Shares (particularly NFS) 🚨
 
@@ -98,6 +100,16 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - On Docker Desktop (Windows/macOS), the container runs on a LinuxKit/WSL2 VM and host-mounted paths may not propagate `inotify` events reliably. CWA auto-detects Docker Desktop at startup and prefers the same polling watcher for reliability.
 - Advanced: You can also force polling regardless of share mode by setting `CWA_WATCH_MODE=poll`.
 
+### Running behind multiple proxies (Cloudflare Tunnel, reverse proxy)
+
+- CWA uses Werkzeug's ProxyFix middleware to properly handle `X-Forwarded-For`, `X-Forwarded-Proto`, and other proxy headers.
+- By default, it trusts **1 proxy** in the chain. If you have multiple proxies (e.g., Cloudflare Tunnel → nginx → CWA), set:
+
+  - `TRUSTED_PROXY_COUNT=2` (or the total number of proxies in your chain)
+
+- **Why this matters**: Session protection validates requests based on the client's IP address. If ProxyFix doesn't trust enough proxies, it may see different IPs between requests, causing "Session protection triggered" warnings and forcing re-login.
+- **Troubleshooting**: If you see frequent session protection warnings in logs, check your proxy chain depth and adjust this variable accordingly.
+
 ## **_Features:_**
 
 ### CWA supports all Stock CW Features:
@@ -107,7 +119,7 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 | eBook metadata editing and deletion support | Metadata download from various sources (extensible via plugins) | eBook download restriction to logged-in users |
 | Public user registration support | Send eBooks to E-Readers with a single click | Sync Kobo devices with your Calibre library |
 | In-browser eBook reading support for multiple formats | Content hiding based on categories and Custom Column content per user | "Magic Link" login for easy access on eReaders |
-| LDAP, Google/GitHub OAuth, and proxy authentication support | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
+| Enhanced OAuth 2.0/OIDC authentication with auto-discovery | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
 
 ## Plus these _**CWA Specific Features**_ on top:
 
@@ -120,7 +132,7 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 | [Automatic EPUB Fixer Service 🔨](#automatic-epub-fixer-service-) | [Multi-Format Conversion Service 🌌](#simple-to-use-multi-format-conversion-service-) | [Library Auto-Detect 📚🕵️](#library-auto-detect-️) |
 | [Server Stats Tracking Page 📍](#server-stats-tracking-page-) | [Server Stats Tracking 📊](#server-stats-tracking-page-) | [Easy Dark/ Light Mode Switching ☀️🌙](#easy-dark-light-mode-switching-️) |
 | [Internal Update Notification System 🛎️](#internal-update-notification-system-️) | [Auto-Compression of Backed Up Files 🤐](#auto-compression-of-backed-up-files-) | [Additional Metadata Providers 🗃️](#additional-metadata-providers-️) |
-| [KOReader Syncing (KOSync) 📖⚡](#koreader-syncing-kosync-) | | |
+| [KOReader Syncing (KOSync) 📖⚡](#koreader-syncing-kosync-) | [Enhanced OAuth 2.0/OIDC Authentication 🔐](#enhanced-oauth-20oidc-authentication-) | |
 
 #### **Automatic Ingest Service** ✨
 - CWA currently supports automatic ingest of 27 different popular ebook formats
@@ -182,11 +194,21 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - [Hardcover](https://hardcover.app/) is also currently in the process of being added to CWA as a Metadata Provider
 
 #### **KOReader Syncing (KOSync)** 📖⚡
-- CWA now includes built-in KOReader syncing functionality, providing a modern alternative to traditional KOReader sync servers
-- **Universal KOReader Syncer:** Works across all KOReader-compatible devices, storing sync data in a readable format for future CWA features
-- **Modern Authentication:** Uses RFC 7617 compliant header-based authentication instead of legacy MD5 hashing for enhanced security
-- **CWA Integration:** Leverages your existing CWA user accounts and permissions - no additional server setup required
-- **Easy Installation:** Plugin and setup instructions are available directly from your CWA instance at `/kosync`
+Built-in KOReader progress sync with automatic book identification:
+- **Book Identification:** Auto-generates KOReader-compatible partial MD5 checksums for all books
+- **Unified Progress:** Syncs KOReader → CWA reading status → Kobo devices
+- **Zero Config:** Checksums generated on startup and import, no manual setup
+- **Modern Auth:** RFC 7617 HTTP Basic Auth with existing CWA accounts
+- **Plugin Available:** Download from `/kosync` endpoint on your CWA instance
+
+#### **Enhanced OAuth 2.0/OIDC Authentication** 🔐
+- **Auto-Discovery:** Automatic endpoint configuration via OIDC metadata URLs for seamless setup with providers like Keycloak, Authentik, Google, and Azure AD
+- **Manual Override:** Full manual control over OAuth endpoints when auto-discovery isn't available
+- **Field Mapping:** Configurable JWT field extraction for usernames and emails to work with any provider's token structure
+- **Group-Based Roles:** Automatic admin role assignment based on OAuth provider groups
+- **Testing Tools:** Built-in connection testing and validation to ensure your configuration works before going live
+- **Enterprise Ready:** Support for custom scopes, multiple authentication methods, and comprehensive troubleshooting
+- **📖 [Full OAuth Configuration Guide](https://github.com/crocodilestick/Calibre-Web-Automated/wiki/OAuth-Configuration)** for detailed setup instructions
 
 #### **Server Stats Tracking Page** 📍📊
   - Ever wondered how many times CWA has been there for you in the background? Check out the CWA Stats page to see a fun list of statistics showing how many times CWA has been there to make your life just that little bit easier
@@ -293,13 +315,13 @@ services:
       - CWA_PORT_OVERRIDE=8083
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
-      - /path/to/config/folder:/config 
+      - /path/to/config/folder:/config
       # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
       # If you don't have an existing library, CWA will automatically create one at the bind provided here
       - /path/to/your/calibre/library:/calibre-library
       # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to its workflow (WIP)
-      # If you are starting with a fresh install, you also need to copy plugins\..\customize.py.json to the corresponding docker location (the config path above + .config/calibre/customize.py.json)
+      # If you are starting with a fresh install, you also need to copy customize.py.json to the Calibre config volume above, in /path/to/config/folder/.config/calibre/customize.py.json, see the note below for more info
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
@@ -311,18 +333,29 @@ services:
 ~~~
 
 ### Explanation of the Container Bindings:
-  - Make sure all 3 of the main bindings are separate directories, errors can occur when binds are made within other binds
-  - `/config` - This is used to store logs and other miscellaneous files that keep CWA running
-    -  **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
-    -  **Existing/ CW Users** - Those with existing Calibre-Web setups, map this to your existing `/config` directory containing `app.db` to ensure settings and users are pulled in
-  - `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
-  - `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` & book(s) files reside.
-    - **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
-    - **Existing/ CW Users** - If there are multiple libraries in the mounted directory, CWA will automatically find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
-  - `/config/.config/calibre/plugins` - This should be bound to a directory containing a copy of your existing Calibre plugins. Configuration will be retained. (There is currently no way to configure plugins via CWA.)
-    - You must also copy the customize.py.json file from the Calibre plugins' parent directory to the corresponding location (i.e. /path/to/config/folder/.config/calibre/customize.py.json)
-  <!-- - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient -->
-  - `/app/calibre-web-automated/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
+
+Please make sure all 3 of the main volume bindings are separate directories, errors can occur when binds are made within other binds.
+
+- `/config` - This is used to store logs and other miscellaneous files that keep CWA running
+  -  **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
+  -  **Existing/ CW Users** - Those with existing Calibre-Web setups, map this to your existing `/config` directory containing `app.db` to ensure settings and users are pulled in
+- `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
+- `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` & book(s) files reside.
+  - **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
+  - **Existing/ CW Users** - If there are multiple libraries in the mounted directory, CWA will automatically find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
+- `/config/.config/calibre/plugins` - This should be bound to a directory containing a copy of your existing Calibre plugins. Configuration will be retained. (There is currently no way to configure plugins via CWA.)
+  - In order for plugins to be registered and work, you must also copy the `customize.py.json` file from the Calibre plugins' parent directory to the correct config folder above, e.g. `/path/to/config/folder/.config/calibre/customize.py.json`. See the section below if you don't know where to find this file.
+<!-- - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient -->
+- `/app/calibre-web-automated/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
+
+### Where can I find `customize.py.json`:
+
+- On macOS, this file is typically found at `~/Library/Preferences/calibre/customize.py.json`.
+- On Linux, it is usually located at `~/.config/calibre/customize.py.json`.
+- On Windows, it is usually located at `%APPDATA%\calibre\customize.py.json` (typically `C:\Users\<YourUsername>\AppData\Roaming\calibre\customize.py.json`). Older installations might have it in `C:\Program Files\Calibre\customize.py.json` or `C:\Program Files\Calibre2\customize.py.json`.
+
+**Note:** If you can't find this file, it means you haven't configured any Calibre plugins yet. You can skip the plugins volume binding if you don't use Calibre plugins.
+
 
 And just like that, Calibre-Web Automated should be up and running! **HOWEVER** to avoid potential problems and ensure maximum functionality,we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
@@ -373,23 +406,23 @@ CWA now includes built-in KOReader syncing functionality, allowing you to sync y
 
 ## Local Development Setup
 
-1. **Build the image**  
+1. **Build the image**
    Edit and run [`build.sh`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/build.sh) to build a local Docker image of Calibre-Web-Automated.  See the script itself for usage details.
 
-2. **Edit [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**  
-   Update at minimum:  
-   - `image:` → your image tag from step 1  
-   - `volumes mounts` → paths for config, ingest, library, plugins  
-  
+2. **Edit [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**
+   Update at minimum:
+   - `image:` → your image tag from step 1
+   - `volumes mounts` → paths for config, ingest, library, plugins
+
  To have the app refresh dynamically in response to code changes, see comments in the  [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)** for details and examples on "live-edit" mounts.
 
-3. **Start the service**  
+3. **Start the service**
 ```
 $ docker compose -f docker-compose.yml.dev up -d
 ```
 
-4. **Log in & configure**  
-   - Sign in with the [default admin login](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)  
+4. **Log in & configure**
+   - Sign in with the [default admin login](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)
    - Optionally follow [Post-Install Tasks](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#post-install-tasks)-
 
 ---

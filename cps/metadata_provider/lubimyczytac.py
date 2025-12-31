@@ -109,7 +109,7 @@ class LubimyCzytac(Metadata):
     ) -> Optional[List[MetaRecord]]:
         if self.active:
             try:
-                result = requests.get(self._prepare_query(title=query))
+                result = requests.get(self._prepare_query(title=query), timeout=15)
                 result.raise_for_status()
             except Exception as e:
                 log.warning(e)
@@ -123,7 +123,10 @@ class LubimyCzytac(Metadata):
                         lc_parser.parse_single_book,
                         [(match, generic_cover, locale) for match in matches],
                     )
-                return final_matches
+                # Filter out None values from failed individual book parsing
+                final_matches = [match for match in final_matches if match is not None]
+                # If all detailed parsing failed, return original matches with basic info
+                return final_matches if final_matches else matches
             return matches
 
     def _prepare_query(self, title: str) -> str:
@@ -203,7 +206,7 @@ class LubimyCzytacParser:
         self, match: MetaRecord, generic_cover: str, locale: str
     ) -> MetaRecord:
         try:
-            response = requests.get(match.url)
+            response = requests.get(match.url, timeout=15)
             response.raise_for_status()
         except Exception as e:
             log.warning(e)

@@ -42,9 +42,61 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_convert_target_format TEXT DEFAULT "epub" NOT NULL,
     auto_convert_ignored_formats TEXT DEFAULT "" NOT NULL,
     auto_ingest_ignored_formats TEXT DEFAULT "" NOT NULL,
+    auto_convert_retained_formats TEXT DEFAULT "" NOT NULL,
     auto_ingest_automerge TEXT DEFAULT "new_record" NOT NULL,
+    ingest_timeout_minutes INTEGER DEFAULT 15 NOT NULL,
     auto_metadata_enforcement SMALLINT DEFAULT 1 NOT NULL,
     kindle_epub_fixer SMALLINT DEFAULT 1 NOT NULL,
     auto_backup_epub_fixes SMALLINT DEFAULT 1 NOT NULL,
-    enable_mobile_blur SMALLINT DEFAULT 1 NOT NULL
+    enable_mobile_blur SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_fetch_enabled SMALLINT DEFAULT 0 NOT NULL,
+    auto_metadata_smart_application SMALLINT DEFAULT 0 NOT NULL,
+    auto_metadata_update_title SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_authors SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_description SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_publisher SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_tags SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_series SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_rating SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_published_date SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_identifiers SMALLINT DEFAULT 1 NOT NULL,
+    auto_metadata_update_cover SMALLINT DEFAULT 1 NOT NULL,
+    metadata_provider_hierarchy TEXT DEFAULT '["ibdb","google","dnb"]' NOT NULL,
+    metadata_providers_enabled TEXT DEFAULT '{}' NOT NULL,
+    auto_send_delay_minutes INTEGER DEFAULT 5 NOT NULL,
+    duplicate_detection_title SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_detection_author SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_detection_language SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_detection_series SMALLINT DEFAULT 0 NOT NULL,
+    duplicate_detection_publisher SMALLINT DEFAULT 0 NOT NULL,
+    duplicate_detection_format SMALLINT DEFAULT 0 NOT NULL
 );
+
+-- Persisted scheduled jobs (initial focus: auto-send). Rows remain until dispatched or manually cleared.
+CREATE TABLE IF NOT EXISTS cwa_scheduled_jobs(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    job_type TEXT NOT NULL,                     -- e.g., 'auto_send'
+    book_id INTEGER,
+    user_id INTEGER,
+    username TEXT,
+    title TEXT,
+    scheduler_job_id TEXT DEFAULT '',           -- APScheduler job id for cancellation
+    run_at_utc TEXT NOT NULL,                  -- ISO8601 UTC timestamp
+    created_at_utc TEXT NOT NULL,              -- ISO8601 UTC timestamp
+    state TEXT NOT NULL DEFAULT 'scheduled',   -- 'scheduled' | 'dispatched' | 'cancelled'
+    last_error TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS cwa_user_activity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    user_name TEXT,
+    event_type TEXT,
+    item_id INTEGER,
+    item_title TEXT,
+    extra_data TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_activity_user ON cwa_user_activity(user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_event ON cwa_user_activity(event_type);
+CREATE INDEX IF NOT EXISTS idx_activity_time ON cwa_user_activity(timestamp);

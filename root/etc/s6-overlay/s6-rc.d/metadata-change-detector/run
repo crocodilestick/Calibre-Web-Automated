@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 
 echo "========== STARTING METADATA CHANGE DETECTOR ==========="
 

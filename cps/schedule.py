@@ -8,10 +8,11 @@
 import datetime
 
 from . import config, constants
-from .services.background_scheduler import BackgroundScheduler, CronTrigger, use_APScheduler
+from .services.background_scheduler import BackgroundScheduler, CronTrigger, use_APScheduler, DateTrigger
 from .tasks.database import TaskReconnectDatabase
 from .tasks.clean import TaskClean
 from .tasks.thumbnail import TaskGenerateCoverThumbnails, TaskGenerateSeriesThumbnails, TaskClearCoverThumbnailCache
+from .tasks.thumbnail_migration import check_and_migrate_thumbnails
 from .services.worker import WorkerThread
 from .tasks.metadata_backup import TaskBackupMetadata
 
@@ -77,6 +78,106 @@ def register_startup_tasks():
     if scheduler:
         start = config.schedule_start_time
         duration = config.schedule_duration
+
+        # Run thumbnail migration on startup (one-time operation)
+        try:
+            check_and_migrate_thumbnails()
+        except Exception as ex:
+            # Don't let migration failures stop the application
+            pass
+
+        # Rehydrate scheduled auto-send jobs from cwa.db (if any)
+        try:
+            import sys as _sys
+            if '/app/calibre-web-automated/scripts/' not in _sys.path:
+                _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+            from cwa_db import CWA_DB
+            from .tasks.auto_send import TaskAutoSend
+            from .services.worker import WorkerThread
+            from datetime import datetime, timezone
+
+            db = CWA_DB()
+            pending = db.scheduled_get_pending_autosend()
+            for row in pending:
+                try:
+                    # Parse UTC run time, convert to local naive for DateTrigger
+                    run_at_utc = datetime.fromisoformat(row['run_at_utc'].replace('Z', '+00:00'))
+                    run_at_local = run_at_utc.astimezone().replace(tzinfo=None)
+                    username = row.get('username') or 'System'
+                    title = row.get('title') or 'Book'
+                    book_id = int(row['book_id']) if row.get('book_id') is not None else None
+                    user_id = int(row['user_id']) if row.get('user_id') is not None else None
+                    schedule_id = int(row['id'])
+
+                    def _rehydrate_enqueue(uid=user_id, bid=book_id, u=username, t=title, sid=schedule_id):
+                        # Mark dispatched and enqueue the task only if state moved from scheduled
+                        should_enqueue = False
+                        try:
+                            should_enqueue = bool(CWA_DB().scheduled_mark_dispatched(int(sid)))
+                        except Exception:
+                            pass
+                        if should_enqueue and bid is not None and uid is not None:
+                            WorkerThread.add(u, TaskAutoSend(f"Auto-sending '{t}' to user's eReader(s)", bid, uid, config.auto_send_delay_minutes), hidden=False)
+
+                    job = scheduler.schedule(func=_rehydrate_enqueue, trigger=DateTrigger(run_date=run_at_local), name=f"rehydrated auto-send {schedule_id}")
+                    try:
+                        if job is not None:
+                            db.scheduled_update_job_id(schedule_id, str(job.id))
+                    except Exception:
+                        pass
+                except Exception:
+                    # Never break startup on rehydration issues
+                    pass
+        except Exception:
+            # If scripts not available or table missing, skip
+            pass
+
+        # Rehydrate other scheduled ops (convert_library, epub_fixer)
+        try:
+            import sys as _sys
+            if '/app/calibre-web-automated/scripts/' not in _sys.path:
+                _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+            from cwa_db import CWA_DB
+            from datetime import datetime
+            # wrappers will trigger internal routes themselves
+            from .tasks.ops import TaskConvertLibraryRun, TaskEpubFixerRun
+
+            db = CWA_DB()
+            for job_type in ('convert_library', 'epub_fixer'):
+                try:
+                    rows = db.scheduled_get_pending_by_type(job_type)
+                except Exception:
+                    rows = []
+                for row in rows:
+                    try:
+                        run_at_utc = datetime.fromisoformat(row['run_at_utc'].replace('Z', '+00:00'))
+                        run_at_local = run_at_utc.astimezone().replace(tzinfo=None)
+                        schedule_id = int(row['id'])
+                        username = row.get('username') or 'System'
+
+                        def _rehydrate_trigger(sid=schedule_id, jt=job_type, u=username):
+                            should_run = False
+                            try:
+                                should_run = bool(CWA_DB().scheduled_mark_dispatched(int(sid)))
+                            except Exception:
+                                pass
+                            if not should_run:
+                                return
+                            if jt == 'convert_library':
+                                WorkerThread.add(u, TaskConvertLibraryRun(), hidden=False)
+                            elif jt == 'epub_fixer':
+                                WorkerThread.add(u, TaskEpubFixerRun(), hidden=False)
+
+                        job = scheduler.schedule(func=_rehydrate_trigger, trigger=DateTrigger(run_date=run_at_local), name=f"rehydrated {job_type} {schedule_id}")
+                        try:
+                            if job is not None:
+                                db.scheduled_update_job_id(schedule_id, str(job.id))
+                        except Exception:
+                            pass
+                    except Exception:
+                        pass
+        except Exception:
+            pass
 
         # Run scheduled tasks immediately for development and testing
         # Ignore tasks that should currently be running, as these will be added when registering scheduled tasks

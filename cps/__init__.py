@@ -14,8 +14,10 @@ import mimetypes
 from flask import Flask, g
 from .MyLoginManager import MyLoginManager
 from flask_principal import Principal
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from . import logger
+from . import constants
 from .cli import CliParameter
 from .reverseproxy import ReverseProxied
 from .server import WebServer
@@ -42,8 +44,8 @@ mimetypes.add_type('application/xhtml+xml', '.xhtml')
 mimetypes.add_type('application/epub+zip', '.epub')
 mimetypes.add_type('application/epub+zip', '.kepub')
 mimetypes.add_type('text/xml', '.fb2')
-mimetypes.add_type('application/octet-stream', '.mobi')
-mimetypes.add_type('application/octet-stream', '.prc')
+mimetypes.add_type('application/x-mobipocket-ebook', '.mobi')
+mimetypes.add_type('application/x-mobipocket-ebook', '.prc')
 mimetypes.add_type('application/vnd.amazon.ebook', '.azw')
 mimetypes.add_type('application/x-mobi8-ebook', '.azw3')
 mimetypes.add_type('application/x-cbr', '.cbr')
@@ -65,18 +67,29 @@ mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/x-ms-reader', '.lit')
 mimetypes.add_type('text/javascript; charset=UTF-8', '.js')
 mimetypes.add_type('application/vnd.adobe.adept+xml', '.acsm')
+mimetypes.add_type('application/vnd.amazon.ebook', '.kfx')
+mimetypes.add_type('application/zip', '.kfx-zip')
 
 log = logger.create()
 
 app = Flask(__name__)
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true',
     SESSION_COOKIE_SAMESITE='Lax',
     REMEMBER_COOKIE_SAMESITE='Strict',
     WTF_CSRF_SSL_STRICT=False,
     SESSION_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "session",
     REMEMBER_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "remember_token"
 )
+
+# Fix for running behind reverse proxy (e.g. nginx, apache, caddy, ...)
+# Without it, url_for will generate http:// urls even if https:// is used
+# Set TRUSTED_PROXY_COUNT to the number of proxies in your chain (default: 1)
+# For CF Tunnel + reverse proxy, use TRUSTED_PROXY_COUNT=2
+num_proxies = int(os.environ.get('TRUSTED_PROXY_COUNT', '1'))
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=num_proxies, x_proto=num_proxies, x_host=num_proxies, x_prefix=num_proxies)
+log.info(f'ProxyFix configured to trust {num_proxies} proxy(ies) for X-Forwarded-* headers')
 
 lm = MyLoginManager()
 
@@ -113,6 +126,25 @@ def create_app():
 
     config_sql.load_configuration(ub.session, encrypt_key)
     config.init_config(ub.session, encrypt_key, cli_param)
+
+    # Intelligent Security Configuration
+    # Force SESSION_COOKIE_SECURE if OAuth is enabled OR if "Use via HTTPS" is checked
+    # This ensures OAuth works (requires Secure cookies) while allowing HTTP for standard login if desired
+    if config.config_login_type == constants.LOGIN_OAUTH or getattr(config, 'config_use_https', False):
+        app.config['SESSION_COOKIE_SECURE'] = True
+        app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+        log.info("Enforcing SESSION_COOKIE_SECURE=True (OAuth enabled or HTTPS enforced)")
+    else:
+        # Fallback to environment variable or False
+        app.config['SESSION_COOKIE_SECURE'] = os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
+        log.info(f"SESSION_COOKIE_SECURE set to {app.config['SESSION_COOKIE_SECURE']} (Standard/LDAP login)")
+
+    # Set OAuth redirect host consistency
+    if hasattr(config, 'config_oauth_redirect_host') and config.config_oauth_redirect_host:
+        from urllib.parse import urlparse
+        parsed = urlparse(config.config_oauth_redirect_host)
+        if parsed.netloc:
+            app.config['FORCE_HOST_FOR_REDIRECTS'] = parsed.netloc
 
     if error:
         log.error(error)
@@ -211,6 +243,34 @@ def create_app():
         except Exception:
             # Failsafe: let route-level code handle specific DB errors
             pass
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        if calibre_db.session_factory:
+            calibre_db.session_factory.remove()
+
+    # Load user from reverse proxy header early in request lifecycle
+    # This ensures current_user resolves correctly before any code accesses user settings
+    @app.before_request
+    def _load_reverse_proxy_user():
+        """
+        Load user from reverse proxy authentication header if configured.
+        Sets g.flask_httpauth_user early so that current_user proxy resolves correctly
+        for user-specific settings like theme preferences.
+
+        This must run before any blueprint before_request handlers that access current_user.
+        """
+        from flask import g, request
+
+        if config.config_allow_reverse_proxy_header_login:
+            from . import usermanagement
+            user = usermanagement.load_user_from_reverse_proxy_header(request)
+            if user:
+                g.flask_httpauth_user = user
+            else:
+                # Explicitly set to None to indicate we checked but found nothing
+                g.flask_httpauth_user = None
+
     from .schedule import register_scheduled_tasks, register_startup_tasks
     register_scheduled_tasks(config.schedule_reconnect)
     register_startup_tasks()

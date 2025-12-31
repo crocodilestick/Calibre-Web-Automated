@@ -32,6 +32,19 @@ log = logger.create()
 def simple_search():
     term = request.args.get("query")
     if term:
+        # Track search activity
+        if current_user.is_authenticated:
+            try:
+                from scripts.cwa_db import CWA_DB
+                cwa_db = CWA_DB()
+                cwa_db.log_activity(
+                    user_id=int(current_user.id),
+                    user_name=current_user.name,
+                    event_type='SEARCH',
+                    extra_data=term[:100]  # Limit search term length
+                )
+            except Exception as e:
+                log.debug(f"Failed to log search activity: {e}")
         return redirect(url_for('web.books_list', data="search", sort_param='stored', query=term.strip()))
     else:
         return render_title_template('search.html',
@@ -348,13 +361,13 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
 
     if offset is not None and limit is not None:
         offset = int(offset)
-        pagination = Pagination(page=(offset // limit + 1), per_page=limit, total=result_count)
+        pagination = Pagination(page=(offset // limit + 1), per_page=limit, total_count=result_count)
         # Fetch only the required page of results from the database
         results = q.offset(offset).limit(limit).all()
     else:
         offset = 0
         limit = result_count if result_count > 0 else 1
-        pagination = Pagination(page=1, per_page=limit, total=result_count)
+        pagination = Pagination(page=1, per_page=limit, total_count=result_count)
         results = q.all()
 
     # Note: store_combo_ids will now only contain the IDs of the currently visible page.

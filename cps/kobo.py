@@ -23,7 +23,8 @@ from flask import (
     current_app,
     url_for,
     redirect,
-    abort
+    abort,
+    Response,
 )
 from .cw_login import current_user
 from werkzeug.datastructures import Headers
@@ -104,15 +105,17 @@ def redirect_or_proxy_request():
             # so we instead proxy to the Kobo store ourselves.
             store_response = make_request_to_kobo_store()
 
-            response_headers = store_response.headers
-            for header_key in CONNECTION_SPECIFIC_HEADERS:
-                response_headers.pop(header_key, default=None)
-
-            return make_response(
-                store_response.content, store_response.status_code, response_headers.items()
-            )
+            return make_proxy_response(store_response)
     else:
         return make_response(jsonify({}))
+
+
+def make_proxy_response(store_response: requests.Response) -> Response:
+    response_headers = store_response.headers
+    for header_key in CONNECTION_SPECIFIC_HEADERS:
+        response_headers.pop(header_key, default=None)
+
+    return make_response(store_response.content, store_response.status_code, response_headers.items())
 
 
 def convert_to_kobo_timestamp_string(timestamp):
@@ -151,9 +154,50 @@ def HandleSyncRequest():
     new_archived_last_modified = datetime.min
     sync_results = []
 
-    # We reload the book database so that the user gets a fresh view of the library
-    # in case of external changes (e.g: adding a book through Calibre).
     calibre_db.reconnect_db(config, ub.app_DB_path)
+
+
+    # Two-Way-Sync Deletion Logic
+    if current_user.kobo_only_shelves_sync:
+        try:
+            # Check all books that are on Kobo according to the database
+            synced_books_query = ub.session.query(ub.KoboSyncedBooks.book_id).filter(ub.KoboSyncedBooks.user_id == current_user.id)
+            synced_book_ids = {item.book_id for item in synced_books_query}
+
+            # Check all books currently on a Kobo Sync shelf
+            allowed_books_query = (ub.session.query(ub.BookShelf.book_id)
+                                   .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id)
+                                   .filter(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True))
+            allowed_book_ids = {item.book_id for item in allowed_books_query}
+
+            # Spot the difference: books that need to be deleted
+            books_to_delete_ids = synced_book_ids - allowed_book_ids
+
+            if books_to_delete_ids:
+                log.info(f"Kobo Sync: Found {len(books_to_delete_ids)} books to remove from device for user {current_user.name}")
+
+                # Go through the “To be deleted” list
+                for book_id in books_to_delete_ids:
+                    book = calibre_db.get_book(book_id)
+                    if book:
+                        # Create a “Remove” command for the Kobo
+                        entitlement = {
+                            "BookEntitlement": create_book_entitlement(book, archived=True),
+                            "BookMetadata": get_metadata(book),
+                        }
+                        sync_results.append({"ChangedEntitlement": entitlement})
+
+                # Remove all books from the tracking table in one go
+                if books_to_delete_ids:
+                    ub.session.query(ub.KoboSyncedBooks).filter(
+                        ub.KoboSyncedBooks.user_id == current_user.id,
+                        ub.KoboSyncedBooks.book_id.in_(books_to_delete_ids)
+                    ).delete(synchronize_session=False)
+                    ub.session_commit()
+
+        except Exception as e:
+            log.error(f"Kobo Sync: Error during deletion logic: {e}")
+            ub.session.rollback()
 
     only_kobo_shelves = current_user.kobo_only_shelves_sync
 
@@ -311,6 +355,23 @@ def generate_sync_response(sync_token, sync_results, set_cont=False):
     if set_cont:
         extra_headers["x-kobo-sync"] = "continue"
     sync_token.to_headers(extra_headers)
+
+    # Track Kobo sync activity
+    try:
+        from scripts.cwa_db import CWA_DB
+        import json as json_lib
+        cwa_db = CWA_DB()
+        cwa_db.log_activity(
+            user_id=int(current_user.id),
+            user_name=current_user.name,
+            event_type='KOBO_SYNC',
+            extra_data=json_lib.dumps({
+                'books_synced': len(sync_results),
+                'endpoint': '/v1/library/sync'
+            })
+        )
+    except Exception as e:
+        log.debug(f"Failed to log Kobo sync activity: {e}")
 
     # log.debug("Kobo Sync Content: {}".format(sync_results))
     # jsonify decodes the unicode string different to what kobo expects
@@ -795,9 +856,7 @@ def HandleStateRequest(book_uuid):
             ub.session.rollback()
             abort(400, description="Malformed request data is missing 'ReadingStates' key")
 
-        if config.config_hardcover_sync and bool(hardcover):
-                hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
-                hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
+        push_reading_state_to_hardcover(book, request_bookmark)
 
         ub.session.merge(kobo_reading_state)
         ub.session_commit()
@@ -805,6 +864,44 @@ def HandleStateRequest(book_uuid):
             "RequestResult": "Success",
             "UpdateResults": [update_results_response],
         })
+
+
+def push_reading_state_to_hardcover(book: db.Books, request_bookmark: dict):
+    """
+    Sync reading progress to Hardcover if enabled for the user and book is not blacklisted.
+
+    Most exceptions are caught and logged so that issues with Hardcover do not prevent
+    the Kobo from clearing its reading state sync queue.
+
+    :param book: The book for which to sync reading progress.
+    :param request_bookmark: The bookmark data from the Kobo request.
+    :return: None
+    """
+
+    if not config.config_hardcover_sync or not bool(hardcover):
+        return
+
+    # Check if book is blacklisted from reading progress syncing
+    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+        ub.HardcoverBookBlacklist.book_id == book.id).first()
+
+    if book_blacklist and book_blacklist.blacklist_reading_progress:
+        log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
+        return
+
+    try:
+        hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
+    except hardcover.MissingHardcoverToken:
+        log.info(f"User {current_user.name} has no Hardcover token, not syncing reading progress to Hardcover")
+        return
+    except Exception as e:
+        log.error(f"Failed to create Hardcover client for user {current_user.name}: {e}")
+        return
+
+    try:
+        hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
+    except Exception as e:
+        log.error(f"Failed to update reading progress for book {book.id} in Hardcover: {e}")
 
 
 def get_read_status_for_kobo(ub_book_read):
@@ -934,25 +1031,33 @@ def TopLevelEndpoint():
 @kobo.route("/v1/library/<book_uuid>", methods=["DELETE"])
 @requires_kobo_auth
 def HandleBookDeletionRequest(book_uuid):
-    log.info("Kobo book delete request received for book %s" % book_uuid)
+    log.info("Kobo book delete request received for book %s", book_uuid)
     book = calibre_db.get_book_by_uuid(book_uuid)
     if not book:
         log.info("Book %s not found in database", book_uuid)
         return redirect_or_proxy_request()
 
     book_id = book.id
-    is_archived = kobo_sync_status.change_archived_books(book_id, True)
-    if is_archived:
-        kobo_sync_status.remove_synced_book(book_id)
+    # If the user has shelf sync enabled, do nothing.
+    # The book will be removed from the device on the next sync.
+    if current_user.kobo_only_shelves_sync:
+        pass
+    # Otherwise, archive the book if the user has permission to see archived books.
+    elif current_user.check_visibility(32768):
+        kobo_sync_status.change_archived_books(book_id, True)
+
+    kobo_sync_status.remove_synced_book(book_id)
     return "", 204
 
 
 # TODO: Implement the following routes
 @csrf.exempt
 @kobo.route("/v1/library/<dummy>", methods=["DELETE", "GET", "POST"])
+@kobo.route("/v1/library/<dummy>/preview", methods=["POST"])
 def HandleUnimplementedRequest(dummy=None):
-    log.debug("Unimplemented Library Request received: %s (request is forwarded to kobo if configured)",
-              request.base_url)
+    log.debug(f"Unimplemented Library Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 
@@ -965,7 +1070,9 @@ def HandleUnimplementedRequest(dummy=None):
 @kobo.route("/v1/analytics/<dummy>", methods=["GET", "POST"])
 @kobo.route("/v1/assets", methods=["GET"])
 def HandleUserRequest(dummy=None):
-    log.debug("Unimplemented User Request received: %s (request is forwarded to kobo if configured)", request.base_url)
+    log.debug("Unimplemented User Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 
@@ -1001,14 +1108,17 @@ def handle_getests():
 @kobo.route("/v1/products/books/<dummy>/", methods=["GET", "POST"])
 @kobo.route("/v1/products/dailydeal", methods=["GET", "POST"])
 @kobo.route("/v1/products/deals", methods=["GET", "POST"])
+@kobo.route("/v1/products/featuredforkoboplus/")
 @kobo.route("/v1/products", methods=["GET", "POST"])
 @kobo.route("/v1/affiliate", methods=["GET", "POST"])
 @kobo.route("/v1/deals", methods=["GET", "POST"])
 @kobo.route("/v1/categories/<dummy>", methods=["GET", "POST"])
 @kobo.route("/v1/categories/<dummy>/featured", methods=["GET", "POST"])
+@kobo.route("/v1/categories/<dummy>/products")
 def HandleProductsRequest(dummy=None):
-    log.debug("Unimplemented Products Request received: %s (request is forwarded to kobo if configured)",
-              request.base_url)
+    log.debug(f"Unimplemented Products Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 
@@ -1054,11 +1164,29 @@ def HandleInitRequest():
         try:
             store_response = make_request_to_kobo_store()
             store_response_json = store_response.json()
+
+            # It is relatively important to handle ExpiredToken errors here to trigger re-authentication.
+            # Kobo uses this endpoint to assure that the auth token is valid and recover from errors elsewhere.
+            # If this does not work properly users may get stuck with an expired token and no way to re-authenticate.
+            # The handling here has been kept minimal because some users may not wish to auth with Onestore,
+            # but Kobo requires auth for more endpoints than used to be the case, and it perhaps does not make sense
+            # for users to enable proxy requests to the Kobo Store without a working Kobo account.
+
+            if rs := store_response_json.get("ResponseStatus", {}):
+                if ec := rs.get("ErrorCode", ""):
+                    msg = rs.get("Message", "(No message provided)")
+                    if ec == "ExpiredToken":
+                        log.info(f"Kobo Store session expired: {msg}. Triggering re-authentication.")
+                        return make_proxy_response(store_response)
+                    log.warning(f"Kobo: Kobo Store initialization returned error code {ec}: {msg}")
             if "Resources" in store_response_json:
                 kobo_resources = store_response_json["Resources"]
-        except Exception:
-            log.error("Failed to receive or parse response from Kobo's init endpoint. Falling back to un-proxied mode.")
+            else:
+                log.error("Kobo: Kobo Store initialization response missing 'Resources' field.")
+        except Exception as e:
+            log.error_or_exception(f"Failed to receive or parse response from Kobo's init endpoint: {e}")
     if not kobo_resources:
+        log.debug("Using fallback Kobo resource definitions")
         kobo_resources = NATIVE_KOBO_RESOURCES()
 
     if not current_app.wsgi_app.is_proxied:
@@ -1089,6 +1217,8 @@ def HandleInitRequest():
                                                                width="{width}",
                                                                height="{height}",
                                                                isGreyscale='false'))
+        if config.config_hardcover_annotations_sync and bool(hardcover):
+            kobo_resources["reading_services_host"] = calibre_web_url
     else:
         kobo_resources["image_host"] = url_for("web.index", _external=True).strip("/")
         kobo_resources["image_url_quality_template"] = unquote(url_for("kobo.HandleCoverImageRequest",
@@ -1106,6 +1236,8 @@ def HandleInitRequest():
                                                                height="{height}",
                                                                isGreyscale='false',
                                                                _external=True))
+        if config.config_hardcover_annotations_sync and bool(hardcover):
+            kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="
@@ -1130,10 +1262,14 @@ def NATIVE_KOBO_RESOURCES():
         "assets": "https://storeapi.kobo.com/v1/assets",
         "audiobook": "https://storeapi.kobo.com/v1/products/audiobooks/{ProductId}",
         "audiobook_detail_page": "https://www.kobo.com/{region}/{language}/audiobook/{slug}",
+        "audiobook_get_credits": "https://www.kobo.com/{region}/{language}/audiobooks/plans",
         "audiobook_landing_page": "https://www.kobo.com/{region}/{language}/audiobooks",
         "audiobook_preview": "https://storeapi.kobo.com/v1/products/audiobooks/{Id}/preview",
         "audiobook_purchase_withcredit": "https://storeapi.kobo.com/v1/store/audiobook/{Id}",
+        "audiobook_subscription_management": "https://www.kobo.com/{region}/{language}/account/subscriptions",
         "audiobook_subscription_orange_deal_inclusion_url": "https://authorize.kobo.com/inclusion",
+        "audiobook_subscription_purchase": "https://www.kobo.com/{region}/{language}/checkoutoption/21C6D938-934B-4A91-B979-E14D70B2F280",
+        "audiobook_subscription_tiers": "https://www.kobo.com/{region}/{language}/checkoutoption/21C6D938-934B-4A91-B979-E14D70B2F280",
         "authorproduct_recommendations": "https://storeapi.kobo.com/v1/products/books/authors/recommendations",
         "autocomplete": "https://storeapi.kobo.com/v1/products/autocomplete",
         "blackstone_header": {
@@ -1142,7 +1278,7 @@ def NATIVE_KOBO_RESOURCES():
         },
         "book": "https://storeapi.kobo.com/v1/products/books/{ProductId}",
         "book_detail_page": "https://www.kobo.com/{region}/{language}/ebook/{slug}",
-        "book_detail_page_rakuten": "http://books.rakuten.co.jp/rk/{crossrevisionid}",
+        "book_detail_page_rakuten": "https://books.rakuten.co.jp/rk/{crossrevisionid}",
         "book_landing_page": "https://www.kobo.com/ebooks",
         "book_subscription": "https://storeapi.kobo.com/v1/products/books/subscriptions",
         "browse_history": "https://storeapi.kobo.com/v1/user/browsehistory",
@@ -1166,6 +1302,8 @@ def NATIVE_KOBO_RESOURCES():
         "dictionary_host": "https://ereaderfiles.kobo.com",
         "discovery_host": "https://discovery.kobobooks.com",
         "ereaderdevices": "https://storeapi.kobo.com/v2/products/EReaderDeviceFeeds",
+        "dropbox_link_account_poll": "https://authorize.kobo.com/{region}/{language}/LinkDropbox",
+        "dropbox_link_account_start": "https://authorize.kobo.com/LinkDropbox/start",
         "eula_page": "https://www.kobo.com/termsofuse?style=onestore",
         "exchange_auth": "https://storeapi.kobo.com/v1/auth/exchange",
         "external_book": "https://storeapi.kobo.com/v1/products/books/external/{Ids}",
@@ -1186,20 +1324,24 @@ def NATIVE_KOBO_RESOURCES():
         "get_tests_request": "https://storeapi.kobo.com/v1/analytics/gettests",
         "giftcard_epd_redeem_url": "https://www.kobo.com/{storefront}/{language}/redeem-ereader",
         "giftcard_redeem_url": "https://www.kobo.com/{storefront}/{language}/redeem",
+        "googledrive_link_account_start": "https://authorize.kobo.com/{region}/{language}/linkcloudstorage/provider/google_drive",
         "gpb_flow_enabled": "False",
-        "help_page": "http://www.kobo.com/help",
-        "image_host": "//cdn.kobo.com/book-images/",
+        "help_page": "https://www.kobo.com/help",
+        "image_host": "https://cdn.kobo.com/book-images/",
         "image_url_quality_template": "https://cdn.kobo.com/book-images/{ImageId}/{Width}/{Height}/{Quality}/{IsGreyscale}/image.jpg",
         "image_url_template": "https://cdn.kobo.com/book-images/{ImageId}/{Width}/{Height}/false/image.jpg",
-        "kobo_audiobooks_credit_redemption": "False",
+        "instapaper_enabled": "True",
+        "instapaper_env_url": "https://www.instapaper.com/api/kobo",
+        "instapaper_link_account_start": "https://authorize.kobo.com/{region}/{language}/linkinstapaper",
+        "kobo_audiobooks_credit_redemption": "True",
         "kobo_audiobooks_enabled": "True",
-        "kobo_audiobooks_orange_deal_enabled": "False",
-        "kobo_audiobooks_subscriptions_enabled": "False",
+        "kobo_audiobooks_orange_deal_enabled": "True",
+        "kobo_audiobooks_subscriptions_enabled": "True",
         "kobo_display_price": "True",
-        "kobo_dropbox_link_account_enabled": "False",
+        "kobo_dropbox_link_account_enabled": "True",
         "kobo_google_tax": "False",
-        "kobo_googledrive_link_account_enabled": "False",
-        "kobo_nativeborrow_enabled": "False",
+        "kobo_googledrive_link_account_enabled": "True",
+        "kobo_nativeborrow_enabled": "True",
         "kobo_onedrive_link_account_enabled": "False",
         "kobo_onestorelibrary_enabled": "False",
         "kobo_privacyCentre_url": "https://www.kobo.com/privacy",
@@ -1234,6 +1376,8 @@ def NATIVE_KOBO_RESOURCES():
         "products": "https://storeapi.kobo.com/v1/products",
         "productsv2": "https://storeapi.kobo.com/v2/products",
         "provider_external_sign_in_page": "https://authorize.kobo.com/ExternalSignIn/{providerName}?returnUrl=http://kobo.com/",
+        "purchase_buy": "https://www.kobo.com/checkoutoption/",
+        "purchase_buy_templated": "https://www.kobo.com/{region}/{language}/checkoutoption/{ProductId}",
         "quickbuy_checkout": "https://storeapi.kobo.com/v1/store/quickbuy/{PurchaseId}/checkout",
         "quickbuy_create": "https://storeapi.kobo.com/v1/store/quickbuy/purchase",
         "rakuten_token_exchange": "https://storeapi.kobo.com/v1/auth/rakuten_token_exchange",
@@ -1248,7 +1392,7 @@ def NATIVE_KOBO_RESOURCES():
         "review": "https://storeapi.kobo.com/v1/products/reviews/{ReviewId}",
         "review_sentiment": "https://storeapi.kobo.com/v1/products/reviews/{ReviewId}/sentiment/{Sentiment}",
         "shelfie_recommendations": "https://storeapi.kobo.com/v1/user/recommendations/shelfie",
-        "sign_in_page": "https://authorize.kobo.com/signin?returnUrl=http://kobo.com/",
+        "sign_in_page": "https://auth.kobobooks.com/ActivateOnWeb",
         "social_authorization_host": "https://social.kobobooks.com:8443",
         "social_host": "https://social.kobobooks.com",
         "store_home": "www.kobo.com/{region}/{language}",
@@ -1260,6 +1404,7 @@ def NATIVE_KOBO_RESOURCES():
         "subs_management_page": "https://www.kobo.com/{region}/{language}/account/subscriptions",
         "subs_plans_page": "https://www.kobo.com/{region}/{language}/plus/plans",
         "subs_purchase_buy_templated": "https://www.kobo.com/{region}/{language}/Checkoutoption/{ProductId}/{TierId}",
+        "subscription_publisher_price_page": "https://www.kobo.com/{region}/{language}/subscriptionpublisherprice",
         "tag_items": "https://storeapi.kobo.com/v1/library/tags/{TagId}/Items",
         "tags": "https://storeapi.kobo.com/v1/library/tags",
         "taste_profile": "https://storeapi.kobo.com/v1/products/tasteprofile",

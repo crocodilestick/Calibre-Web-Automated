@@ -62,15 +62,17 @@ $(function () {
       $("#title").val(book.title);
     }
     $("#languages").val(uniqueLanguages.join(", "));
-    // Removed as users can't fetch ratings from metadata providers
-    // $("#rating").data("rating").setValue(Math.round(book.rating)); 
+    if (updateItems.rating) {
+      $("#rating").data("rating").setValue(Math.round(book.rating)); 
+      $("#rating").val(Math.round(book.rating));
+    }
 
     if (updateItems.cover && book.cover && $("#cover_url").length) {
       $(".cover img").attr("src", book.cover);
       $("#cover_url").val(book.cover);
     }
     if (updateItems.pubDate) {
-      $("#pubdate").val(book.publishedDate);
+      $("#pubdate").val(book.publishedDate).trigger("change");
     }
     if (updateItems.publisher) {
       $("#publisher").val(book.publisher);
@@ -177,27 +179,33 @@ $(function () {
       type: "get",
       dataType: "json",
       success: function success(data) {
+        var anyDisabled = false;
+        var disabledNames = [];
         data.forEach(function (provider) {
-          var checked = "";
-          if (provider.active) {
-            checked = "checked";
+          // Hide globally disabled providers but collect their names for a note
+          if (provider.hasOwnProperty('globally_enabled') && !provider.globally_enabled) {
+            anyDisabled = true;
+            disabledNames.push(provider.name);
+            return; // Skip rendering this provider
           }
+
+          var checked = provider.active ? "checked" : "";
+          var inputId = 'show-' + provider.name;
           var $provider_button =
-            '<input type="checkbox" id="show-' +
-            provider.name +
-            '" class="pill" data-initial="' +
-            provider.initial +
-            '" data-control="' +
-            provider.id +
-            '" ' +
-            checked +
-            '><label for="show-' +
-            provider.name +
-            '">' +
-            provider.name +
-            ' <span class="glyphicon glyphicon-ok"></span></label>';
+            '<input type="checkbox" id="' + inputId + '" class="pill" data-initial="' +
+            provider.initial + '" data-control="' + provider.id + '" ' + checked + '>' +
+            '<label for="' + inputId + '">' +
+            provider.name + ' <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' +
+            '</label>';
           $("#metadata_provider").append($provider_button);
         });
+        if (anyDisabled) {
+          var disabledList = disabledNames.join(', ');
+          var note = $('<div class="text-muted" style="margin-bottom:8px;">' +
+                       '<span class="glyphicon glyphicon-lock" aria-hidden="true"></span> ' +
+                       'Some providers are disabled: ' + disabledList + '</div>');
+          $("#metadata_provider").prepend(note);
+        }
       },
     });
   }

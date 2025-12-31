@@ -39,22 +39,25 @@ class Google(Metadata):
                 tokens = [quote(t.encode("utf-8")) for t in title_tokens]
                 query = "+".join(tokens)
             try:
-                results = requests.get(Google.SEARCH_URL + query)
+                results = requests.get(Google.SEARCH_URL + query, timeout=15)
                 results.raise_for_status()
             except Exception as e:
                 log.warning(e)
                 return []
             for result in results.json().get("items", []):
-                val.append(
-                    self._parse_search_result(
-                        result=result, generic_cover=generic_cover, locale=locale
-                    )
+                mr =self._parse_search_result(
+                    result=result, generic_cover=generic_cover, locale=locale
                 )
+                if mr:
+                    val.append(mr)
         return val
 
     def _parse_search_result(
         self, result: Dict, generic_cover: str, locale: str
-    ) -> MetaRecord:
+    ) -> MetaRecord|None:
+        if "title" not in result["volumeInfo"]:
+            return None
+
         match = MetaRecord(
             id=result["id"],
             title=result["volumeInfo"]["title"],

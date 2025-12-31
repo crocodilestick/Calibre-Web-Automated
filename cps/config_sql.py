@@ -74,19 +74,25 @@ class _Settings(_Base):
     config_title_regex = Column(String,
                                 default=r'^(A|The|An|Der|Die|Das|Den|Ein|Eine'
                                         r'|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+')
-    config_theme = Column(Integer, default=0)
+    config_theme = Column(Integer, default=1)
 
     config_log_level = Column(SmallInteger, default=logger.DEFAULT_LOG_LEVEL)
     config_logfile = Column(String, default=logger.DEFAULT_LOG_FILE)
     config_access_log = Column(SmallInteger, default=0)
     config_access_logfile = Column(String, default=logger.DEFAULT_ACCESS_LOG)
 
-    config_uploading = Column(SmallInteger, default=0)
+    # Enable uploads by default on brand-new instances
+    config_uploading = Column(SmallInteger, default=1)
     config_anonbrowse = Column(SmallInteger, default=0)
     config_public_reg = Column(SmallInteger, default=0)
     config_remote_login = Column(Boolean, default=False)
+    config_use_https = Column(Boolean, default=False)
     config_kobo_sync = Column(Boolean, default=False)
-    config_hardcover_sync = Column(Boolean, default=False)
+
+    # Sync read progress to Hardcover - should this be renamed?
+    config_hardcover_sync = Column(Boolean, default=False) 
+    # Sync annotations to Hardcover
+    config_hardcover_annotations_sync = Column(Boolean, default=False)
 
     config_default_role = Column(SmallInteger, default=0)
     config_default_show = Column(SmallInteger, default=constants.ADMIN_USER_SIDEBAR)
@@ -144,10 +150,15 @@ class _Settings(_Base):
 
     config_reverse_proxy_login_header_name = Column(String)
     config_allow_reverse_proxy_header_login = Column(Boolean, default=False)
+    config_reverse_proxy_auto_create_users = Column(Boolean, default=False)
+    config_ldap_auto_create_users = Column(Boolean, default=True)
+    config_oauth_redirect_host = Column(String, default='')
+    config_disable_standard_login = Column(Boolean, default=False)
 
     schedule_start_time = Column(Integer, default=4)
     schedule_duration = Column(Integer, default=10)
-    schedule_generate_book_covers = Column(Boolean, default=False)
+    # Controls scheduled thumbnail refresh only - thumbnails are always generated on-demand regardless
+    schedule_generate_book_covers = Column(Boolean, default=True)
     schedule_generate_series_covers = Column(Boolean, default=False)
     schedule_reconnect = Column(Boolean, default=False)
     schedule_metadata_backup = Column(Boolean, default=False)
@@ -198,16 +209,20 @@ class ConfigSQL(object):
                 self.config_calibre_dir = detected_dir
                 change = True
 
-        if self.config_binariesdir is None:
+        # Autodetect Calibre if not configured or empty string
+        if not self.config_binariesdir:
             change = True
             self.config_binariesdir = autodetect_calibre_binaries()
             self.config_converterpath = autodetect_converter_binary(self.config_binariesdir)
 
-        if self.config_kepubifypath is None:
+        # Autodetect Kepubify if not configured or empty string
+        if not self.config_kepubifypath:
             change = True
             self.config_kepubifypath = autodetect_kepubify_binary()
 
-        if self.config_rarfile_location is None:
+        # Autodetect UnRar if not configured or empty string
+        # (empty string can occur from failed previous autodetection or manual clearing)
+        if not self.config_rarfile_location:
             change = True
             self.config_rarfile_location = autodetect_unrar_binary()
         if change:
@@ -453,8 +468,10 @@ def _migrate_table(session, orm_class, secret_key=None):
                 session.query(column).first()
             except OperationalError as err:
                 log.debug("%s: %s", column_name, err.args[0])
+                # Handle default values for new columns
                 if column.default is None:
-                    column_default = ""
+                    # Use NULL for columns with None default (important for autodetection logic)
+                    column_default = "DEFAULT NULL"
                 else:
                     if isinstance(column.default.arg, bool):
                         column_default = "DEFAULT {}".format(int(column.default.arg))

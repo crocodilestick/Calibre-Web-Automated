@@ -134,13 +134,16 @@ def is_gdrive_ready():
     return os.path.exists(SETTINGS_YAML) and os.path.exists(CREDENTIALS)
 
 
-engine = create_engine('sqlite:///{0}'.format(cli_param.gd_path), echo=False)
+engine = create_engine('sqlite:///{0}'.format(cli_param.gd_path), echo=False) if cli_param.gd_path and cli_param.gd_path.strip() else None
 Base = declarative_base()
 
 # Open session for database connection
 Session = sessionmaker(autoflush=False)
-Session.configure(bind=engine)
-session = scoped_session(Session)
+if engine:
+    Session.configure(bind=engine)
+    session = scoped_session(Session)
+else:
+    session = None
 
 
 class GdriveId(Base):
@@ -165,9 +168,10 @@ class PermissionAdded(Base):
         return str(self.gdrive_id)
 
 
-if not os.path.exists(cli_param.gd_path):
+if cli_param.gd_path and cli_param.gd_path.strip() and not os.path.exists(cli_param.gd_path):
     try:
-        Base.metadata.create_all(engine)
+        if engine:
+            Base.metadata.create_all(engine)
     except Exception as ex:
         log.error("Error connect to database: {} - {}".format(cli_param.gd_path, ex))
         raise
@@ -231,6 +235,9 @@ def getFolderInFolder(parentId, folderName, drive):
 
 # Search for id of root folder in gdrive database, if not found request from gdrive and store in internal database
 def getEbooksFolderId(drive=None):
+    if not session:
+        log.warning("GDrive database session not available")
+        return None
     storedPathName = session.query(GdriveId).filter(GdriveId.path == '/').first()
     if storedPathName:
         return storedPathName.gdrive_id
@@ -264,6 +271,9 @@ def getFile(pathId, fileName, drive, nocase):
 
 
 def getFolderId(path, drive):
+    if not session:
+        log.warning("GDrive database session not available")
+        return None
     currentFolderId = None
     try:
         currentFolderId = getEbooksFolderId(drive)
@@ -526,6 +536,9 @@ def getChangeById(drive, change_id):
 
 # Deletes the local hashes database to force search for new folder names
 def deleteDatabaseOnChange():
+    if not session:
+        log.warning("GDrive database session not available")
+        return
     try:
         session.query(GdriveId).delete()
         session.commit()
@@ -544,6 +557,9 @@ def updateGdriveCalibreFromLocal():
 
 # update gdrive.db on edit of books title
 def updateDatabaseOnEdit(ID, newPath):
+    if not session:
+        log.warning("GDrive database session not available")
+        return
     sqlCheckPath = newPath if newPath[-1] == '/' else newPath + '/'
     storedPathName = session.query(GdriveId).filter(GdriveId.gdrive_id == ID).first()
     if storedPathName:
@@ -557,6 +573,9 @@ def updateDatabaseOnEdit(ID, newPath):
 
 # Deletes the hashes in database of deleted book
 def deleteDatabaseEntry(ID):
+    if not session:
+        log.warning("GDrive database session not available")
+        return
     session.query(GdriveId).filter(GdriveId.gdrive_id == ID).delete()
     try:
         session.commit()
@@ -565,6 +584,9 @@ def deleteDatabaseEntry(ID):
         session.rollback()
 
 def deleteDatabasePath(Pathname):
+    if not session:
+        log.warning("GDrive database session not available")
+        return
     session.query(GdriveId).filter(GdriveId.path.contains(Pathname)).delete()
     try:
         session.commit()

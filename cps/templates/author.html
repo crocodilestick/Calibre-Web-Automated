@@ -34,7 +34,11 @@
     {% for entry in entries %}
     <div id="books" class="col-sm-3 col-lg-2 col-xs-6 book session">
       <div class="cover">
-        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
+        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
+           {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+           data-book-id="{{ entry.Books.id }}"
+           data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
+           class="book-cover-link">
             <span class="img" title="{{entry.Books.title}}">
               {{ image.book_cover(entry.Books, alt=author.name|safe) }}
               {% if entry[2] == True %}<span class="badge read glyphicon glyphicon-ok"></span>{% endif %}

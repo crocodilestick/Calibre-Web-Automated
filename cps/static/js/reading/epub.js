@@ -8,7 +8,7 @@ var reader;
     EPUBJS.filePath = calibre.filePath;
     EPUBJS.cssPath = calibre.cssPath;
 
-    reader = ePubReader(calibre.bookUrl, {
+    window.reader = reader = ePubReader(calibre.bookUrl, {
         restore: true,
         bookmarks: calibre.bookmark ? [calibre.bookmark] : []
     });
@@ -78,7 +78,78 @@ var reader;
         });
     }
     
-    // Default settings load
-    const theme = localStorage.getItem("calibre.reader.theme") ?? "lightTheme";
-    selectTheme(theme);
+    // Restore all settings after DOM and reader are ready
+    document.addEventListener("DOMContentLoaded", function() {
+        // Declare reflowBox once and reuse
+        var reflowBox = document.getElementById('sidebarReflow');
+        if (reflowBox && reader && reader.settings) {
+            reader.settings.sidebarReflow = reflowBox.checked;
+            // Try to trigger a layout update (simulate a resize or call a known method)
+            if (reader.rendition && typeof reader.rendition.resize === 'function') {
+                setTimeout(function() { reader.rendition.resize(); }, 0);
+            }
+        }
+        // Ensure reflow logic is always applied if the class is present
+        setTimeout(function() {
+            if (reflowBox && document.body.classList.contains('reflow-enabled')) {
+                // Trigger change event to re-apply reflow logic
+                reflowBox.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }, 0);
+        // Theme
+        const theme = localStorage.getItem("calibre.reader.theme") ?? "lightTheme";
+        if (typeof selectTheme === 'function') selectTheme(theme);
+
+        // Font size
+        let savedFontSize = localStorage.getItem("calibre.reader.fontSize");
+        let fontSizeFader = document.getElementById('fontSizeFader');
+        if (savedFontSize && fontSizeFader) {
+            fontSizeFader.value = savedFontSize;
+            reader.rendition.themes.fontSize(`${savedFontSize}%`);
+        }
+
+        // Font
+        let fontMap = {
+            'default': '',
+            'Yahei': '"Microsoft YaHei", sans-serif',
+            'SimSun': 'SimSun, serif',
+            'KaiTi': 'KaiTi, serif',
+            'Arial': 'Arial, Helvetica, sans-serif'
+        };
+        let savedFont = localStorage.getItem("calibre.reader.font");
+        if (savedFont && typeof selectFont === 'function') {
+            selectFont(savedFont);
+            let fontValue = fontMap[savedFont] || '';
+            if (savedFont !== 'default' && fontValue) {
+                reader.rendition.themes.font(fontValue);
+            }
+        }
+
+        // Spread
+        let savedSpread = localStorage.getItem("calibre.reader.spread");
+        if (savedSpread && typeof spread === 'function') {
+            spread(savedSpread);
+        }
+
+        // Reflow
+        // Use the reflowBox declared earlier in this handler
+        var savedReflow = localStorage.getItem("calibre.reader.reflow");
+        function applyReflow(enabled) {
+            if (reader && reader.rendition && typeof reader.rendition.reflow === 'function') {
+                reader.rendition.reflow(enabled);
+            } else {
+                document.body.classList.toggle('reflow-enabled', enabled);
+            }
+        }
+        if (reflowBox) {
+            if (savedReflow !== null) {
+                reflowBox.checked = savedReflow === 'true';
+                applyReflow(reflowBox.checked);
+            }
+            reflowBox.addEventListener("change", function() {
+                localStorage.setItem("calibre.reader.reflow", this.checked);
+                applyReflow(this.checked);
+            });
+        }
+    });
 })();

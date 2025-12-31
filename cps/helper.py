@@ -13,6 +13,7 @@ import re
 import regex
 import shutil
 import socket
+import platform
 from datetime import datetime, timedelta, timezone
 import requests
 import unidecode
@@ -47,6 +48,10 @@ from . import gdriveutils as gd
 from .constants import (STATIC_DIR as _STATIC_DIR, CACHE_TYPE_THUMBNAILS, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES,
                         SUPPORTED_CALIBRE_BINARIES)
 from .subproc_wrapper import process_wait
+
+import sys
+sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+from cwa_db import CWA_DB
 from .services.worker import WorkerThread
 from .tasks.mail import TaskEmail
 from .tasks.thumbnail import TaskClearCoverThumbnailCache, TaskGenerateCoverThumbnails
@@ -68,7 +73,7 @@ except (ImportError, RuntimeError) as e:
 
 
 # Convert existing book entry to new format
-def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id, ereader_mail=None):
+def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id, ereader_mail=None, subject=None):
     book = calibre_db.get_book(book_id)
     data = calibre_db.get_book_format(book.id, old_book_format)
     if not data:
@@ -89,7 +94,9 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
     # read settings and append converter task to queue
     if ereader_mail:
         settings = config.get_mail_settings()
-        settings['subject'] = _('Send to eReader')  # pretranslate Subject for Email
+        if not subject or not subject.strip():
+            subject = _('Send to eReader')
+        settings['subject'] = subject
         settings['body'] = _('This Email has been sent via Calibre-Web Automated.')
     else:
         settings = dict()
@@ -200,16 +207,19 @@ def check_read_formats(entry):
 # 1: If epub file is existing, it's directly send to eReader email,
 # 2: If mobi file is existing, it's converted and send to eReader email,
 # 3: If Pdf file is existing, it's directly send to eReader email
-def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id):
+def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id, subject=None):
     """Send email with attachments"""
     book = calibre_db.get_book(book_id)
 
     if convert == 1:
         # returns None if success, otherwise errormessage
-        return convert_book_format(book_id, calibrepath, 'mobi', book_format.lower(), user_id, ereader_mail)
+        return convert_book_format(book_id, calibrepath, 'mobi', book_format.lower(), user_id, ereader_mail, subject)
     if convert == 2:
         # returns None if success, otherwise errormessage
-        return convert_book_format(book_id, calibrepath, 'azw3', book_format.lower(), user_id, ereader_mail)
+        return convert_book_format(book_id, calibrepath, 'azw3', book_format.lower(), user_id, ereader_mail, subject)
+
+    if not subject or not subject.strip():
+        subject = _("Send to eReader")
 
     for entry in iter(book.data):
         if entry.format.upper() == book_format.upper():
@@ -218,10 +228,10 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id)
             email_text = N_("%(book)s send to eReader", book=link)
             for email in ereader_mail.split(','):
                 email = strip_whitespaces(email)
-                WorkerThread.add(user_id, TaskEmail(_("Send to eReader"), book.path, converted_file_name,
-                                 config.get_mail_settings(), email,
-                                 email_text, _('This Email has been sent via Automated.'), book.id))
-            return
+                WorkerThread.add(user_id, TaskEmail(subject, book.path, converted_file_name,
+                                                    config.get_mail_settings(), email,
+                                                    email_text, _('This Email has been sent via Calibre-Web Automated.'), book.id))
+            return None
     return _("The requested file could not be read. Maybe wrong permissions?")
 
 
@@ -768,16 +778,64 @@ def get_book_cover_with_uuid(book_uuid, resolution=None):
 
 
 def get_book_cover_internal(book, resolution=None):
+    """Serve book cover with improved thumbnail generation fallback.
+
+    When a thumbnail is requested but missing, generate it synchronously
+    instead of falling back to the original cover.jpg.
+    """
     if book and book.has_cover:
 
         # Send the book cover thumbnail if it exists in cache
         if resolution:
-            thumbnail = get_book_cover_thumbnail(book, resolution)
-            if thumbnail:
-                cache = fs.FileSystem()
-                if cache.get_cache_file_exists(thumbnail.filename, CACHE_TYPE_THUMBNAILS):
-                    return send_from_directory(cache.get_cache_file_dir(thumbnail.filename, CACHE_TYPE_THUMBNAILS),
-                                               thumbnail.filename)
+            cache = fs.FileSystem()
+            # Check for both webp and jpg thumbnails, generate missing ones
+            webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
+            jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
+
+            # Check if files actually exist on disk
+            webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
+            jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
+
+            # Generate missing thumbnails on-demand (skip for Kobo requests to avoid delays)
+            if not webp_exists or not jpg_exists:
+                try:
+                    from flask import has_request_context, request
+                    is_kobo_request = (has_request_context() and
+                                     request.path and
+                                     '/kobo/' in request.path)
+
+                    if not is_kobo_request and use_IM:
+                        from .tasks.thumbnail import TaskGenerateCoverThumbnails
+                        # Create and run thumbnail generation for this book
+                        thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
+                        thumbnail_task.create_book_cover_thumbnails(book)
+
+                        # Refresh thumbnail references after generation
+                        webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
+                        jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
+                        webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
+                        jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
+                except Exception as ex:
+                    log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
+
+            # Determine which thumbnail format to serve based on request context
+            try:
+                from flask import has_request_context, request
+                is_kobo_request = (has_request_context() and
+                                 request.path and
+                                 '/kobo/' in request.path)
+
+                # Prefer jpg for Kobo requests, webp for web requests
+                if is_kobo_request:
+                    thumbnail_to_serve = jpg_thumb if jpg_exists else (webp_thumb if webp_exists else None)
+                else:
+                    thumbnail_to_serve = webp_thumb if webp_exists else (jpg_thumb if jpg_exists else None)
+            except:
+                # Fallback if we can't determine request context
+                thumbnail_to_serve = webp_thumb if webp_exists else (jpg_thumb if jpg_exists else None)
+            if thumbnail_to_serve:
+                return send_from_directory(cache.get_cache_file_dir(thumbnail_to_serve.filename, CACHE_TYPE_THUMBNAILS),
+                                           thumbnail_to_serve.filename)
 
         # Send the book cover from Google Drive if configured
         if config.config_use_google_drive:
@@ -812,6 +870,19 @@ def get_book_cover_thumbnail(book, resolution):
                 .filter(ub.Thumbnail.type == THUMBNAIL_TYPE_COVER)
                 .filter(ub.Thumbnail.entity_id == book.id)
                 .filter(ub.Thumbnail.resolution == resolution)
+                .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.now(timezone.utc)))
+                .first())
+
+
+def get_book_cover_thumbnail_by_format(book, resolution, format):
+    """Get thumbnail for specific book, resolution, and format (webp/jpg)"""
+    if book and book.has_cover:
+        return (ub.session
+                .query(ub.Thumbnail)
+                .filter(ub.Thumbnail.type == THUMBNAIL_TYPE_COVER)
+                .filter(ub.Thumbnail.entity_id == book.id)
+                .filter(ub.Thumbnail.resolution == resolution)
+                .filter(ub.Thumbnail.format == format)
                 .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.now(timezone.utc)))
                 .first())
 
@@ -918,7 +989,7 @@ def save_cover(img, book_path):
         separator = ';' if ';' in content_type else ',' if ',' in content_type else None
         if separator:
             content_type = content_type.split(separator)[0].strip()
-        
+
     if use_IM:
         if content_type not in ('image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp'):
             log.error("Only jpg/jpeg/png/webp/bmp files are supported as coverfile")
@@ -954,9 +1025,36 @@ def save_cover(img, book_path):
         return save_cover_from_filestorage(os.path.join(config.get_book_path(), book_path), "cover.jpg", img)
 
 
+def trigger_thumbnail_generation_for_book(book_id):
+    """Trigger thumbnail generation for a book after cover changes."""
+    try:
+        from .tasks.thumbnail import TaskGenerateCoverThumbnails
+
+        if use_IM:
+            # Queue thumbnail generation task
+            thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
+            WorkerThread.add(current_user.name, thumbnail_task, hidden=True)
+            log.debug(f'Queued thumbnail generation for book {book_id}')
+    except Exception as ex:
+        log.debug(f'Failed to queue thumbnail generation for book {book_id}: {ex}')
+
+
+def save_cover_with_thumbnail_update(img, book_path, book_id=None):
+    """Save cover and trigger thumbnail generation."""
+    result, message = save_cover(img, book_path)
+
+    # If cover save was successful and we have a book_id, generate thumbnails
+    if result and book_id:
+        trigger_thumbnail_generation_for_book(book_id)
+
+    return result, message
+
+
 def do_download_file(book, book_format, client, data, headers):
     book_name = data.name
     download_name = filename = None
+    metadata_was_embedded = False  # Track if we embedded metadata
+
     if config.config_use_google_drive:
         # startTime = time.time()
         df = gd.getFileFromEbooksFolder(book.path, data.name + "." + book_format)
@@ -972,8 +1070,10 @@ def do_download_file(book, book_format, client, data, headers):
                 gd.downloadFile(book.path, book_name + "." + book_format, output)
                 if book_format == "kepub" and config.config_kepubifypath:
                     filename, download_name = do_kepubify_metadata_replace(book, output)
+                    metadata_was_embedded = True
                 elif book_format != "kepub" and config.config_binariesdir:
                     filename, download_name = do_calibre_export(book.id, book_format)
+                    metadata_was_embedded = True
             else:
                 return gd.do_gdrive_download(df, headers)
         else:
@@ -990,16 +1090,54 @@ def do_download_file(book, book_format, client, data, headers):
         if book_format == "kepub" and config.config_kepubifypath and config.config_embed_metadata:
             filename, download_name = do_kepubify_metadata_replace(book, os.path.join(filename,
                                                                                       book_name + "." + book_format))
+            metadata_was_embedded = True
         elif book_format != "kepub" and config.config_binariesdir and config.config_embed_metadata:
             filename, download_name = do_calibre_export(book.id, book_format)
+            metadata_was_embedded = True
+
+            # Rename the exported file to match the expected download name (from Content-Disposition)
+            # This ensures KOReader calculates the checksum on the same file we calculated it on
+            if filename and download_name:
+                uuid_file = os.path.join(filename, download_name + "." + book_format)
+                expected_file = os.path.join(filename, book_name + "." + book_format)
+
+                if os.path.exists(uuid_file) and uuid_file != expected_file:
+                    try:
+                        # Remove the target file if it already exists
+                        if os.path.exists(expected_file):
+                            os.remove(expected_file)
+                        # Rename UUID file to expected name
+                        os.rename(uuid_file, expected_file)
+                        download_name = book_name
+                        log.info(f'Renamed exported file to match expected name: {book_name}.{book_format}')
+                    except Exception as e:
+                        log.error(f'Failed to rename exported file: {e}')
         else:
             download_name = book_name
+
+    # Calculate and store checksum if metadata was embedded
+    if metadata_was_embedded and filename and download_name:
+        try:
+            from .progress_syncing import calculate_and_store_checksum
+
+            # Calculate checksum on the EXPORTED file (with embedded metadata)
+            # This is what KOReader actually downloads and calculates the checksum for
+            exported_file = os.path.join(filename, download_name + "." + book_format)
+
+            if os.path.exists(exported_file):
+                calculate_and_store_checksum(
+                    book_id=book.id,
+                    book_format=book_format,
+                    file_path=exported_file  # Use exported file with embedded metadata!
+                )
+        except Exception as e:
+            log.error(f"Failed to calculate/store checksum for book {book.id}: {e}")
+            # Don't fail the download if checksum calculation fails
 
     response = make_response(send_from_directory(filename, download_name + "." + book_format))
     # ToDo Check headers parameter
     for element in headers:
         response.headers[element[0]] = element[1]
-    log.info('Downloading file: {}'.format(os.path.join(filename, book_name + "." + book_format)))
     return response
 
 
@@ -1039,6 +1177,13 @@ def check_unrar(unrar_location):
     except (OSError, UnicodeDecodeError) as err:
         log.error_or_exception(err)
         return _('Error executing UnRar')
+
+
+def check_architecture():
+    arch = platform.machine()
+    if arch not in ['x86_64', 'aarch64']:
+        return _("Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and aarch64.", arch=arch)
+    return None
 
 
 def check_calibre(calibre_location):
@@ -1119,36 +1264,80 @@ def check_valid_domain(domain_text):
 
 def get_download_link(book_id, book_format, client):
     book_format = book_format.split(".")[0]
+    # Try filtered view first to respect user restrictions
     book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
-    if book:
-        data1 = calibre_db.get_book_format(book.id, book_format.upper())
-        if data1:
-            # collect downloaded books only for registered user and not for anonymous user
-            if current_user.is_authenticated:
-                ub.update_download(book_id, int(current_user.id))
-            file_name = book.title
-            if len(book.authors) > 0:
-                file_name = file_name + ' - ' + book.authors[0].name
-            file_name = get_valid_filename(file_name, replace_whitespace=False)
-            headers = Headers()
-            headers["Content-Type"] = mimetypes.types_map.get('.' + book_format, "application/octet-stream")
-            headers["Content-Disposition"] = "attachment; filename=%s.%s; filename*=UTF-8''%s.%s" % (
-                quote(file_name), book_format, quote(file_name), book_format)
-            return do_download_file(book, book_format, client, data1, headers)
-    else:
+
+    # If not found but user is admin, fall back to unfiltered direct lookup
+    if not book and getattr(current_user, 'role_admin', lambda: False)():
+        log.debug(f"Admin fallback: get_book used for download of id={book_id}")
+        book = calibre_db.get_book(book_id)
+
+    if not book:
         log.error("Book id {} not found for downloading".format(book_id))
-    abort(404)
+        abort(404)
+
+    data1 = calibre_db.get_book_format(book.id, book_format.upper())
+    if not data1:
+        log.error("Requested format %s for book id %s not found in database", book_format.upper(), book_id)
+        abort(404)
+
+    # collect downloaded books only for registered user and not for anonymous user
+    if current_user.is_authenticated:
+        ub.update_download(book_id, int(current_user.id))
+        # CWA Stats Logging
+        try:
+            import json
+            from flask import request
+            
+            # Detect source of download
+            source = request.args.get('from', 'direct')
+            referer = request.headers.get('Referer', '')
+            if not source or source == 'direct':
+                if '/search' in referer:
+                    source = 'search'
+                elif '/series' in referer:
+                    source = 'series'
+                elif '/author' in referer:
+                    source = 'author'
+                elif '/category' in referer:
+                    source = 'category'
+                elif '/book/' in referer:
+                    source = 'book_detail'
+                elif '/shelf' in referer:
+                    source = 'shelf'
+            
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=current_user.id,
+                user_name=current_user.name,
+                event_type="DOWNLOAD",
+                item_id=book_id,
+                item_title=book.title,
+                extra_data=json.dumps({'format': book_format, 'source': source})
+            )
+        except Exception as e:
+            log.error(f"Failed to log download stats: {e}")
+
+    file_name = book.title
+    if len(book.authors) > 0:
+        file_name = file_name + ' - ' + book.authors[0].name
+    file_name = get_valid_filename(file_name, replace_whitespace=False)
+    headers = Headers()
+    headers["Content-Type"] = mimetypes.types_map.get('.' + book_format, "application/octet-stream")
+    headers["Content-Disposition"] = "attachment; filename=%s.%s; filename*=UTF-8''%s.%s" % (
+        quote(file_name), book_format, quote(file_name), book_format)
+    return do_download_file(book, book_format, client, data1, headers)
 
 
 def clear_cover_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
+    # Always allow clearing thumbnail cache
+    WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
 
 
 def replace_cover_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
-        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Always allow replacing thumbnail cache
+    WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
+    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
 def delete_thumbnail_cache():
@@ -1156,13 +1345,16 @@ def delete_thumbnail_cache():
 
 
 def add_book_to_thumbnail_cache(book_id):
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Always generate thumbnails for new books
+    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
 def update_thumbnail_cache():
-    if config.schedule_generate_book_covers:
-        WorkerThread.add(None, TaskGenerateCoverThumbnails())
+    # Always allow manual thumbnail cache updates
+    task = TaskGenerateCoverThumbnails()
+    WorkerThread.add(None, task)
+    # Return task ID for tracking
+    return task.id
 
 
 def set_all_metadata_dirty():
@@ -1171,3 +1363,19 @@ def set_all_metadata_dirty():
                                               set_dirty=True,
                                               task_message=N_("Queue all books for metadata backup")),
                      hidden=False)
+
+def get_internal_api_url(path):
+    port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+    if not port.isdigit():
+        port = '8083'
+    
+    protocol = "http"
+    certfile = config.get_config_certfile()
+    keyfile = config.get_config_keyfile()
+    if certfile and keyfile and os.path.isfile(certfile) and os.path.isfile(keyfile):
+        protocol = "https"
+        
+    if not path.startswith("/"):
+        path = "/" + path
+        
+    return f"{protocol}://127.0.0.1:{port}{path}"

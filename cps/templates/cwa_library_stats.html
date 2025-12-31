@@ -654,21 +654,20 @@ function updateLibraryFormatsChart() {
     const option = {
         tooltip: {
             trigger: 'item',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            textStyle: { color: '#fff' },
             formatter: '{b}: {c} books ({d}%)'
         },
         legend: {
             type: 'scroll',
-            orient: 'vertical',
-            right: '5%',
-            top: 'center',
-            textStyle: {
-                color: '#fff'
-            }
+            orient: 'horizontal',
+            bottom: '5%',
+            textStyle: { color: '#fff' }
         },
         series: [{
             type: 'pie',
             radius: ['40%', '70%'],
-            center: ['40%', '50%'],
+            center: ['50%', '40%'],
             data: data.map(([format, count]) => ({
                 name: format,
                 value: count

@@ -1016,35 +1016,29 @@ function updateEventsChart() {
     const option = {
         tooltip: {
             trigger: 'item',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            textStyle: { color: '#fff' },
             formatter: '{b}: {c} ({d}%)'
         },
         legend: {
-            orient: 'vertical',
-            left: 'left',
-            textStyle: {
-                color: '#fff'
-            }
+            orient: 'horizontal',
+            bottom: '5%',
+            textStyle: { color: '#fff' }
         },
         series: [{
             type: 'pie',
             radius: ['40%', '70%'],
-            avoidLabelOverlap: false,
+            center: ['50%', '40%'],
             itemStyle: {
                 borderRadius: 10,
                 borderColor: '#2a3441',
                 borderWidth: 2
             },
             label: {
-                show: true,
-                formatter: '{b}: {d}%',
-                color: '#fff'
+                color: '#fff',
+                formatter: '{b}\n{d}%'
             },
             emphasis: {
-                label: {
-                    show: true,
-                    fontSize: 16,
-                    fontWeight: 'bold'
-                },
                 itemStyle: {
                     shadowBlur: 10,
                     shadowOffsetX: 0,
@@ -1210,13 +1204,11 @@ function updateHeatmapChart() {
             calculable: true,
             orient: 'horizontal',
             left: 'center',
-            bottom: '5%',
+            bottom: '0%',
             inRange: {
-                color: ['#1a2332', '#2a3441', '#ff6f00', '#ff9800', '#ffa726']
+                color: ['#2c3e50', '#ff9800', '#ff5722']
             },
-            textStyle: {
-                color: '#fff'
-            }
+            textStyle: { color: '#fff' }
         },
         series: [{
             name: 'Activity',
@@ -1480,20 +1472,19 @@ function updateDiscoveryChart() {
     const option = {
         tooltip: {
             trigger: 'item',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            textStyle: { color: '#fff' },
             formatter: '{b}: {c} ({d}%)'
         },
         legend: {
-            orient: 'vertical',
-            right: '5%',
-            top: 'center',
-            textStyle: {
-                color: '#fff'
-            }
+            orient: 'horizontal',
+            bottom: '5%',
+            textStyle: { color: '#fff' }
         },
         series: [{
             type: 'pie',
             radius: ['40%', '70%'],
-            center: ['40%', '50%'],
+            center: ['50%', '40%'],
             data: data.map(([source, count]) => ({
                 name: sourceLabels[source] || source,
                 value: count
@@ -1511,7 +1502,8 @@ function updateDiscoveryChart() {
                 borderWidth: 2
             },
             label: {
-                color: '#fff'
+                color: '#fff',
+                formatter: '{b}\n{d}%'
             }
         }]
     };
@@ -1554,18 +1546,17 @@ function updateDeviceChart() {
     const option = {
         tooltip: {
             trigger: 'item',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            textStyle: { color: '#fff' },
             formatter: (params) => {
                 const icon = deviceIcons[params.name] || '❓';
                 return `${icon} ${params.name.charAt(0).toUpperCase() + params.name.slice(1)}: ${params.value} (${params.percent}%)`;
             }
         },
         legend: {
-            orient: 'vertical',
-            right: '5%',
-            top: 'center',
-            textStyle: {
-                color: '#fff'
-            },
+            orient: 'horizontal',
+            bottom: '5%',
+            textStyle: { color: '#fff' },
             formatter: (name) => {
                 const icon = deviceIcons[name] || '❓';
                 return `${icon} ${name.charAt(0).toUpperCase() + name.slice(1)}`;
@@ -1573,8 +1564,8 @@ function updateDeviceChart() {
         },
         series: [{
             type: 'pie',
-            radius: ['50%', '75%'],
-            center: ['40%', '50%'],
+            radius: ['40%', '70%'],
+            center: ['50%', '40%'],
             data: data.map(([device, count]) => ({
                 name: device,
                 value: count,
@@ -1590,10 +1581,8 @@ function updateDeviceChart() {
                 }
             },
             label: {
-                show: false
-            },
-            labelLine: {
-                show: false
+                color: '#fff',
+                formatter: '{b}\n{d}%'
             }
         }]
     };

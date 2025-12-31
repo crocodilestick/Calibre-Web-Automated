@@ -138,6 +138,9 @@ function switchTab(tabName) {
             if (typeof libraryFormatsChart !== 'undefined' && libraryFormatsChart) libraryFormatsChart.resize();
             if (typeof seriesChart !== 'undefined' && seriesChart) seriesChart.resize();
             if (typeof publicationYearChart !== 'undefined' && publicationYearChart) publicationYearChart.resize();
+            if (typeof ratingStatsChart !== 'undefined' && ratingStatsChart) ratingStatsChart.resize();
+            if (typeof topEnforcedChart !== 'undefined' && topEnforcedChart) topEnforcedChart.resize();
+            if (typeof importSankeyChart !== 'undefined' && importSankeyChart) importSankeyChart.resize();
         } else if (tabName === 'api') {
             // Resize API Usage charts
             if (typeof apiUsageChart !== 'undefined' && apiUsageChart) apiUsageChart.resize();

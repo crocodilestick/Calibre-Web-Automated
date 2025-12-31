@@ -32,6 +32,19 @@ log = logger.create()
 def simple_search():
     term = request.args.get("query")
     if term:
+        # Track search activity
+        if current_user.is_authenticated:
+            try:
+                from scripts.cwa_db import CWA_DB
+                cwa_db = CWA_DB()
+                cwa_db.log_activity(
+                    user_id=int(current_user.id),
+                    user_name=current_user.name,
+                    event_type='SEARCH',
+                    extra_data=term[:100]  # Limit search term length
+                )
+            except Exception as e:
+                log.debug(f"Failed to log search activity: {e}")
         return redirect(url_for('web.books_list', data="search", sort_param='stored', query=term.strip()))
     else:
         return render_title_template('search.html',

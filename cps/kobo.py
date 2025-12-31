@@ -356,6 +356,23 @@ def generate_sync_response(sync_token, sync_results, set_cont=False):
         extra_headers["x-kobo-sync"] = "continue"
     sync_token.to_headers(extra_headers)
 
+    # Track Kobo sync activity
+    try:
+        from scripts.cwa_db import CWA_DB
+        import json as json_lib
+        cwa_db = CWA_DB()
+        cwa_db.log_activity(
+            user_id=int(current_user.id),
+            user_name=current_user.name,
+            event_type='KOBO_SYNC',
+            extra_data=json_lib.dumps({
+                'books_synced': len(sync_results),
+                'endpoint': '/v1/library/sync'
+            })
+        )
+    except Exception as e:
+        log.debug(f"Failed to log Kobo sync activity: {e}")
+
     # log.debug("Kobo Sync Content: {}".format(sync_results))
     # jsonify decodes the unicode string different to what kobo expects
     response = make_response(json.dumps(sync_results), extra_headers)

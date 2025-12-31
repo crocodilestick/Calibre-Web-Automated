@@ -48,6 +48,10 @@ from . import gdriveutils as gd
 from .constants import (STATIC_DIR as _STATIC_DIR, CACHE_TYPE_THUMBNAILS, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES,
                         SUPPORTED_CALIBRE_BINARIES)
 from .subproc_wrapper import process_wait
+
+import sys
+sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+from cwa_db import CWA_DB
 from .services.worker import WorkerThread
 from .tasks.mail import TaskEmail
 from .tasks.thumbnail import TaskClearCoverThumbnailCache, TaskGenerateCoverThumbnails
@@ -1280,6 +1284,40 @@ def get_download_link(book_id, book_format, client):
     # collect downloaded books only for registered user and not for anonymous user
     if current_user.is_authenticated:
         ub.update_download(book_id, int(current_user.id))
+        # CWA Stats Logging
+        try:
+            import json
+            from flask import request
+            
+            # Detect source of download
+            source = request.args.get('from', 'direct')
+            referer = request.headers.get('Referer', '')
+            if not source or source == 'direct':
+                if '/search' in referer:
+                    source = 'search'
+                elif '/series' in referer:
+                    source = 'series'
+                elif '/author' in referer:
+                    source = 'author'
+                elif '/category' in referer:
+                    source = 'category'
+                elif '/book/' in referer:
+                    source = 'book_detail'
+                elif '/shelf' in referer:
+                    source = 'shelf'
+            
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=current_user.id,
+                user_name=current_user.name,
+                event_type="DOWNLOAD",
+                item_id=book_id,
+                item_title=book.title,
+                extra_data=json.dumps({'format': book_format, 'source': source})
+            )
+        except Exception as e:
+            log.error(f"Failed to log download stats: {e}")
+
     file_name = book.title
     if len(book.authors) > 0:
         file_name = file_name + ' - ' + book.authors[0].name

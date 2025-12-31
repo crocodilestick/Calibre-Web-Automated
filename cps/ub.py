@@ -394,9 +394,11 @@ class MagicShelf(Base):
     uuid = Column(String, default=lambda: str(uuid.uuid4()))
     name = Column(String)
     is_public = Column(Integer, default=0)
+    is_system = Column(Boolean, default=False)  # System-created template shelves
     user_id = Column(Integer, ForeignKey('user.id'))
     icon = Column(String, default="fa-wand-magic-sparkles")
     rules = Column(JSON, default={})
+    kobo_sync = Column(Boolean, default=False)  # Sync to Kobo devices
     created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
@@ -850,6 +852,29 @@ def migrate_config_table(engine, _session):
             pass
 
 
+def migrate_magic_shelf_table(engine, _session):
+    \"\"\"Migrate magic_shelf table to add new columns.\"\"\"
+    # Check and add is_system column
+    try:
+        _session.query(exists().where(MagicShelf.is_system)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE magic_shelf ADD column 'is_system' Boolean DEFAULT 0"))
+            trans.commit()
+    
+    # Check and add kobo_sync column
+    try:
+        _session.query(exists().where(MagicShelf.kobo_sync)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0"))
+            trans.commit()
+
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
@@ -861,6 +886,7 @@ def migrate_Database(_session):
     migrate_user_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
+    migrate_magic_shelf_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables

@@ -856,28 +856,51 @@ def render_archived_books(page, sort_param):
 
 @web.route("/magicshelf/view/<int:shelf_id>")
 @user_login_required
-def render_magic_shelf(shelf_id):
-    # Use default order if not provided
-    order = get_sort_function('stored', 'magicshelf')
+def render_magic_shelf(shelf_id, order):
+    \"\"\"Render a magic shelf with proper pagination and sorting.\"\"\"
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
     if not shelf:
+        log.warning(f\"Magic shelf {shelf_id} not found\")
         abort(404)
     
-    # For now, we ignore the sort order and pagination, but this is where it would be handled
-    books = magic_shelf.get_books_for_magic_shelf(shelf_id)
+    # Check ownership - users can only view their own shelves (for now)
+    if shelf.user_id != current_user.id:
+        log.warning(f\"User {current_user.id} attempted to access magic shelf {shelf_id} owned by {shelf.user_id}\")\n        abort(403)
     
-    # Wrap each book in a simple object with a .Books attribute
-    class EntryWrapper:
-        def __init__(self, book):
-            self.Books = book
-    entries = [EntryWrapper(book) for book in books]
-    per_page = getattr(config, 'config_books_per_page', 20) or 20
-    # Avoid per_page=0
-    if per_page <= 0:
-        per_page = 20
-    pagination = Pagination(1, per_page, len(entries))
-    return render_title_template('index.html', entries=entries, pagination=pagination,
-                                 title=shelf.name, page="magicshelf", id=shelf_id, order=order[1])
+    # Get pagination settings\    page = int(request.args.get('page', 1))
+    per_page = config.config_books_per_page or 20
+    
+    # Build sort order from order tuple
+    sort_order = order[0] if order and len(order) > 0 else None
+    
+    # Get books with pagination
+    try:
+        books, total_count = magic_shelf.get_books_for_magic_shelf(
+            shelf_id, 
+            page=page, 
+            page_size=per_page,
+            sort_order=sort_order
+        )
+    except Exception as e:
+        log.error(f\"Error retrieving books for magic shelf {shelf_id}: {e}\")
+        flash(_(\"Error loading magic shelf\"), category=\"error\")
+        return redirect(url_for('web.index'))
+    
+    # Create proper pagination object
+    from .pagination import Pagination
+    pagination = Pagination(page, per_page, total_count)
+    
+    # No need for EntryWrapper - return books directly
+    # The index.html template expects entries with .Books attribute
+    entries = [type('obj', (object,), {'Books': book})() for book in books]
+    
+    return render_title_template('index.html', 
+                                 entries=entries, 
+                                 pagination=pagination,
+                                 title=_(\"Magic Shelf: %(name)s\", name=shelf.name), 
+                                 page=\"magicshelf\", 
+                                 id=shelf_id, 
+                                 order=order[1])
 
 
 # ################################### Health Check ##################################################################
@@ -939,60 +962,139 @@ def books_list(data, sort_param, book_id, page):
 @web.route("/magicshelf", methods=["GET", "POST"])
 @user_login_required
 def create_magic_shelf():
+    # Whitelist of allowed Font Awesome icon classes
+    ALLOWED_ICONS = {
+        'fa-wand-magic-sparkles', 'fa-star', 'fa-heart', 'fa-book', 'fa-bookmark',
+        'fa-clock', 'fa-fire', 'fa-bolt', 'fa-gem', 'fa-crown',
+        'fa-award', 'fa-trophy', 'fa-medal', 'fa-certificate', 'fa-ribbon',
+        'fa-tags', 'fa-tag', 'fa-folder', 'fa-inbox', 'fa-archive',
+        'fa-layer-group', 'fa-list', 'fa-bars', 'fa-th-list', 'fa-database',
+        'fa-sparkles', 'fa-magic', 'fa-glasses', 'fa-book-open', 'fa-feather'
+    }
+    
     if request.method == "POST":
         data = request.get_json()
-        name = data.get('name')
+        name = strip_whitespaces(data.get('name', ''))
         rules = data.get('rules')
         icon = data.get('icon', 'fa-wand-magic-sparkles')
-
+        
+        # Validate inputs
         if not name or not rules:
-            return jsonify({"success": False, "message": "Name and rules are required."}), 400
-
-        new_shelf = ub.MagicShelf(
-            name=name,
-            user_id=current_user.id,
-            rules=rules,
-            icon=icon
-        )
-        ub.session.add(new_shelf)
-        ub.session_commit()
-        return jsonify({"success": True, "shelf_id": new_shelf.id})
+            return jsonify({"success": False, "message": _("Name and rules are required")}), 400
+        
+        if len(name) > 100:
+            return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
+        
+        # Sanitize icon input - only allow whitelisted Font Awesome classes
+        if icon not in ALLOWED_ICONS:
+            log.warning(f\"Invalid icon '{icon}' submitted by user {current_user.id}, using default\")
+            icon = 'fa-wand-magic-sparkles'
+        
+        try:
+            new_shelf = ub.MagicShelf(
+                name=name,
+                user_id=current_user.id,
+                rules=rules,
+                icon=icon
+            )
+            ub.session.add(new_shelf)
+            ub.session_commit()
+            log.info(f\"User {current_user.id} created magic shelf '{name}' (ID: {new_shelf.id})\")
+            return jsonify({"success": True, "shelf_id": new_shelf.id})
+        except Exception as e:
+            log.error(f\"Error creating magic shelf: {e}\")
+            ub.session.rollback()
+            return jsonify({"success": False, "message": _("Error creating shelf")}), 500
     
-    # For GET request, we'll need a template to build the shelf
-    # This will be implemented in a future step
-    return render_title_template('magic_shelf_edit.html', title=_("Create Magic Shelf"), page="magic_shelf_create")
+    # For GET request, render the creation form
+    return render_title_template('magic_shelf_edit.html', 
+                                 title=_("Create Magic Shelf"), 
+                                 page="magic_shelf_create",
+                                 allowed_icons=sorted(ALLOWED_ICONS))
 
 
 @web.route("/magicshelf/<int:shelf_id>", methods=["GET", "POST"])
 @user_login_required
 def edit_magic_shelf(shelf_id):
+    ALLOWED_ICONS = {
+        'fa-wand-magic-sparkles', 'fa-star', 'fa-heart', 'fa-book', 'fa-bookmark',
+        'fa-clock', 'fa-fire', 'fa-bolt', 'fa-gem', 'fa-crown',
+        'fa-award', 'fa-trophy', 'fa-medal', 'fa-certificate', 'fa-ribbon',
+        'fa-tags', 'fa-tag', 'fa-folder', 'fa-inbox', 'fa-archive',
+        'fa-layer-group', 'fa-list', 'fa-bars', 'fa-th-list', 'fa-database',
+        'fa-sparkles', 'fa-magic', 'fa-glasses', 'fa-book-open', 'fa-feather'
+    }
+    
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
-    if not shelf or shelf.user_id != current_user.id:
+    if not shelf:
+        log.warning(f\"Magic shelf {shelf_id} not found\")
         abort(404)
+    
+    if shelf.user_id != current_user.id:
+        log.warning(f\"User {current_user.id} attempted to edit magic shelf {shelf_id} owned by {shelf.user_id}\")
+        abort(403)
 
     if request.method == "POST":
         data = request.get_json()
-        shelf.name = data.get('name', shelf.name)
-        shelf.rules = data.get('rules', shelf.rules)
-        shelf.icon = data.get('icon', shelf.icon)
-        flag_modified(shelf, "rules")
-        ub.session_commit()
-        return jsonify({"success": True})
+        name = strip_whitespaces(data.get('name', shelf.name))
+        rules = data.get('rules', shelf.rules)
+        icon = data.get('icon', shelf.icon)
+        
+        # Validate inputs
+        if not name:
+            return jsonify({"success": False, "message": _("Shelf name is required")}), 400
+        
+        if len(name) > 100:
+            return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
+        
+        # Sanitize icon
+        if icon not in ALLOWED_ICONS:
+            log.warning(f\"Invalid icon '{icon}' submitted by user {current_user.id}, keeping current: {shelf.icon}\")
+            icon = shelf.icon
+        
+        try:
+            shelf.name = name
+            shelf.rules = rules
+            shelf.icon = icon
+            flag_modified(shelf, "rules")
+            ub.session_commit()
+            log.info(f\"User {current_user.id} updated magic shelf {shelf_id} ('{name}')\")
+            return jsonify({"success": True})
+        except Exception as e:
+            log.error(f\"Error updating magic shelf {shelf_id}: {e}\")
+            ub.session.rollback()
+            return jsonify({"success": False, "message": _("Error updating shelf")}), 500
 
-    # For GET request
-    return render_title_template('magic_shelf_edit.html', shelf=shelf, title=_("Edit Magic Shelf"), page="magic_shelf_edit")
+    # For GET request, render the edit form
+    return render_title_template('magic_shelf_edit.html', 
+                                 shelf=shelf, 
+                                 title=_("Edit Magic Shelf"), 
+                                 page="magic_shelf_edit",
+                                 allowed_icons=sorted(ALLOWED_ICONS))
 
 
 @web.route("/magicshelf/<int:shelf_id>/delete", methods=["POST"])
 @user_login_required
 def delete_magic_shelf(shelf_id):
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
-    if not shelf or shelf.user_id != current_user.id:
+    if not shelf:
+        log.warning(f\"Magic shelf {shelf_id} not found for deletion\")
         abort(404)
     
-    ub.session.delete(shelf)
-    ub.session_commit()
-    return jsonify({"success": True})
+    if shelf.user_id != current_user.id:
+        log.warning(f\"User {current_user.id} attempted to delete magic shelf {shelf_id} owned by {shelf.user_id}\")
+        abort(403)
+    
+    try:
+        shelf_name = shelf.name
+        ub.session.delete(shelf)
+        ub.session_commit()
+        log.info(f\"User {current_user.id} deleted magic shelf {shelf_id} ('{shelf_name}')\")
+        return jsonify({"success": True})
+    except Exception as e:
+        log.error(f\"Error deleting magic shelf {shelf_id}: {e}\")
+        ub.session.rollback()
+        return jsonify({"success": False, "message": _("Error deleting shelf")}), 500
 
 
 @web.route("/table")

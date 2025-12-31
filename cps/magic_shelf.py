@@ -4,12 +4,15 @@
 # Copyright (C) 2024-2025 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
-from . import db, ub
+
+from . import db, ub, logger
 from sqlalchemy import and_, or_, not_
 from sqlalchemy.sql.expression import func
+from sqlalchemy.exc import SQLAlchemyError
+
+log = logger.create()
 
 # Mapping from UI field names to database models and columns
-# This will need to be expanded to cover all filterable fields
 FIELD_MAP = {
     'title': (db.Books, 'title'),
     'author': (db.Authors, 'name'),
@@ -22,10 +25,10 @@ FIELD_MAP = {
     'timestamp': (db.Books, 'timestamp'),
     'has_cover': (db.Books, 'has_cover'),
     'series_index': (db.Books, 'series_index'),
+    'comments': (db.Books, 'comments'),
 }
 
 # Mapping from UI operators to SQLAlchemy functions/operators
-# This will also need to be expanded
 OPERATOR_MAP = {
     # 'equals': lambda col, val: col == val,  # Not used by QueryBuilder
     'equal': lambda col, val: col == val,
@@ -123,28 +126,69 @@ def build_query_from_rules(rules_json):
     
     return None
 
-def get_books_for_magic_shelf(shelf_id):
+def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None):
     """
-    Takes a MagicShelf ID and returns a list of book objects that match its rules.
+    Takes a MagicShelf ID and returns a paginated list of book objects that match its rules.
+    
+    Args:
+        shelf_id: ID of the magic shelf
+        page: Page number (1-indexed)
+        page_size: Number of books per page (None = all books)
+        sort_order: SQLAlchemy order_by expression
+    
+    Returns:
+        tuple: (books, total_count)
     """
-    magic_shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
-    if not magic_shelf:
-        return []
+    try:
+        magic_shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+        if not magic_shelf:
+            log.warning(f"Magic shelf with ID {shelf_id} not found")
+            return [], 0
 
-    rules = magic_shelf.rules
-    print(f"[MagicShelf Debug] Shelf ID: {shelf_id} | Rules: {rules}", flush=True)
-    if not rules:
-        print(f"[MagicShelf Debug] No rules found for shelf {shelf_id}", flush=True)
-        return []
+        rules = magic_shelf.rules
+        log.debug(f"Loading magic shelf '{magic_shelf.name}' (ID: {shelf_id}) with {len(rules.get('rules', [])) if rules else 0} rules")
+        
+        if not rules or not rules.get('rules'):
+            log.debug(f"No rules defined for magic shelf {shelf_id}")
+            return [], 0
 
-    cdb = db.CalibreDB(init=True)
-    query_filter = build_query_from_rules(rules)
-    print(f"[MagicShelf Debug] Built query filter: {query_filter}", flush=True)
-    if query_filter is None:
-        print(f"[MagicShelf Debug] Query filter is None, returning empty list for shelf {shelf_id}", flush=True)
-        return []
-    query = cdb.session.query(db.Books)
-    query = query.filter(query_filter)
-    # Apply standard user permissions filters
-    query = query.filter(cdb.common_filters())
-    return query.all()
+        cdb = db.CalibreDB(init=True)
+        query_filter = build_query_from_rules(rules)
+        
+        if query_filter is None:
+            log.warning(f"Failed to build query filter for magic shelf {shelf_id}")
+            return [], 0
+        
+        # Build base query
+        query = cdb.session.query(db.Books)
+        query = query.filter(query_filter)
+        
+        # Apply standard user permissions filters
+        query = query.filter(cdb.common_filters())
+        
+        # Get total count before pagination
+        try:
+            total_count = query.count()
+        except SQLAlchemyError as e:
+            log.error(f"Error counting books for magic shelf {shelf_id}: {e}")
+            return [], 0
+        
+        # Apply sorting
+        if sort_order is not None:
+            query = query.order_by(sort_order)
+        
+        # Apply pagination if requested
+        if page_size is not None and page_size > 0:
+            offset = (page - 1) * page_size
+            query = query.limit(page_size).offset(offset)
+        
+        books = query.all()
+        log.debug(f"Magic shelf {shelf_id} matched {total_count} books, returning page {page}")
+        return books, total_count
+        
+    except SQLAlchemyError as e:
+        log.error(f"Database error retrieving books for magic shelf {shelf_id}: {e}")
+        return [], 0
+    except Exception as e:
+        log.error(f"Unexpected error retrieving books for magic shelf {shelf_id}: {e}")
+        return [], 0

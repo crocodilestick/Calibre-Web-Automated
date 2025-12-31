@@ -68,7 +68,29 @@
 </div>
 {% endif %}
 <div class="discover load-more">
-  <h2 class="{{title}}">{{title}}</h2>
+  <h2 class="{{title}}">
+    {{title}}
+    {% if page == 'magicshelf' %}
+    <a href="{{url_for('web.books_list', data=page, book_id=id, sort_param=order)}}?refresh=1" 
+       class="btn btn-sm btn-primary" 
+       data-toggle="tooltip" 
+       title="{{_('Refresh shelf to update with latest changes')}}">
+      <span class="glyphicon glyphicon-refresh"></span> {{_('Refresh')}}
+    </a>
+    <a href="{{url_for('web.edit_magic_shelf', shelf_id=id)}}" 
+       class="btn btn-sm btn-default" 
+       data-toggle="tooltip" 
+       title="{{_('Edit shelf rules')}}">
+      <span class="glyphicon glyphicon-edit"></span> {{_('Edit')}}
+    </a>
+    {% endif %}
+  </h2>
+  {% if page == 'magicshelf' %}
+  <div class="alert alert-warning visible-xs" style="margin-top: 10px;">
+    <i class="fa fa-exclamation-triangle"></i> 
+    <strong>{{_('Mobile Notice')}}</strong>: {{_('Magic shelf editing works best on desktop or tablet devices.')}}
+  </div>
+  {% endif %}
    {% if page != 'discover' %}
     <div class="filterheader hidden-xs">
     {% if page == 'hot' %}

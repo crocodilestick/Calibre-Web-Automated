@@ -959,6 +959,50 @@ def books_list(data, sort_param, book_id, page):
     return render_books_list(data, sort_param, book_id, page)
 
 
+@web.route("/magicshelf/preview", methods=["POST"])
+@user_login_required
+def preview_magic_shelf():
+    """Preview what books match the given rules without saving the shelf."""
+    try:
+        data = request.get_json()
+        rules = data.get('rules')
+        
+        if not rules or not rules.get('rules'):
+            return jsonify({"success": False, "message": _("No rules provided")}), 400
+        
+        # Temporarily create a query to count matching books
+        try:
+            query_filter = magic_shelf.build_query_from_rules(rules)
+            if query_filter is None:
+                return jsonify({"success": False, "message": _("Invalid rules format")}), 400
+            
+            cdb = db.CalibreDB(init=True)
+            query = cdb.session.query(db.Books)
+            query = query.filter(query_filter)
+            query = query.filter(cdb.common_filters())
+            
+            # Get total count
+            total_count = query.count()
+            
+            # Get sample books (first 5)
+            sample_books = query.limit(5).all()
+            sample_titles = [book.title for book in sample_books]
+            
+            return jsonify({
+                "success": True,
+                "count": total_count,
+                "sample_books": sample_titles
+            })
+            
+        except Exception as e:
+            log.error(f"Error previewing magic shelf rules: {e}")
+            return jsonify({"success": False, "message": _("Error processing rules")}), 500
+            
+    except Exception as e:
+        log.error(f"Error in preview_magic_shelf: {e}")
+        return jsonify({"success": False, "message": _("Invalid request")}), 400
+
+
 @web.route("/magicshelf", methods=["GET", "POST"])
 @user_login_required
 def create_magic_shelf():

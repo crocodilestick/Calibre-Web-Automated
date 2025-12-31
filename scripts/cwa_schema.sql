@@ -86,3 +86,17 @@ CREATE TABLE IF NOT EXISTS cwa_scheduled_jobs(
     state TEXT NOT NULL DEFAULT 'scheduled',   -- 'scheduled' | 'dispatched' | 'cancelled'
     last_error TEXT DEFAULT ''
 );
+
+CREATE TABLE IF NOT EXISTS cwa_user_activity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    user_name TEXT,
+    event_type TEXT,
+    item_id INTEGER,
+    item_title TEXT,
+    extra_data TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_activity_user ON cwa_user_activity(user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_event ON cwa_user_activity(event_type);
+CREATE INDEX IF NOT EXISTS idx_activity_time ON cwa_user_activity(timestamp);

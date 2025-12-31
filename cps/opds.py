@@ -29,6 +29,30 @@ opds = Blueprint('opds', __name__)
 log = logger.create()
 
 
+@opds.before_request
+def track_opds_access():
+    """Track OPDS feed access for analytics"""
+    try:
+        from scripts.cwa_db import CWA_DB
+        from .cw_login import current_user
+        import json as json_lib
+        
+        # Only track if user is authenticated
+        if current_user and hasattr(current_user, 'is_authenticated') and current_user.is_authenticated:
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='OPDS_ACCESS',
+                extra_data=json_lib.dumps({
+                    'endpoint': request.path,
+                    'method': request.method
+                })
+            )
+    except Exception as e:
+        log.debug(f"Failed to log OPDS access: {e}")
+
+
 @opds.route("/opds/")
 @opds.route("/opds")
 @requires_basic_auth_if_no_ano

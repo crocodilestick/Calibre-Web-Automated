@@ -18,7 +18,7 @@ log = logger.create()
 SYSTEM_SHELF_TEMPLATES = {
     'recently_added': {
         'name': 'Recently Added',
-        'icon': 'fa-clock',
+        'icon': 'glyphicon-time',
         'description': 'Books added to your library in the last 30 days',
         'rules': {
             'condition': 'AND',
@@ -36,7 +36,7 @@ SYSTEM_SHELF_TEMPLATES = {
     },
     'highly_rated': {
         'name': 'Highly Rated',
-        'icon': 'fa-star',
+        'icon': 'glyphicon-star',
         'description': 'Books with a rating of 8 or higher',
         'rules': {
             'condition': 'AND',
@@ -54,7 +54,7 @@ SYSTEM_SHELF_TEMPLATES = {
     },
     'no_cover': {
         'name': 'Books Without Covers',
-        'icon': 'fa-image',
+        'icon': 'glyphicon-picture',
         'description': 'Books that are missing cover images',
         'rules': {
             'condition': 'AND',
@@ -72,7 +72,7 @@ SYSTEM_SHELF_TEMPLATES = {
     },
     'recent_publications': {
         'name': 'Recent Publications',
-        'icon': 'fa-certificate',
+        'icon': 'glyphicon-certificate',
         'description': 'Books published in the last 2 years',
         'rules': {
             'condition': 'AND',
@@ -90,7 +90,7 @@ SYSTEM_SHELF_TEMPLATES = {
     },
     'series_incomplete': {
         'name': 'Incomplete Series',
-        'icon': 'fa-list',
+        'icon': 'glyphicon-list',
         'description': 'Books that are part of a series',
         'rules': {
             'condition': 'AND',
@@ -271,7 +271,11 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None)
         
         # Apply sorting
         if sort_order is not None:
-            query = query.order_by(sort_order)
+            if isinstance(sort_order, list):
+                for order_expr in sort_order:
+                    query = query.order_by(order_expr)
+            else:
+                query = query.order_by(sort_order)
         
         # Apply pagination if requested
         if page_size is not None and page_size > 0:

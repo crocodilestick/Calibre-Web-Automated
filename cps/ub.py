@@ -396,7 +396,7 @@ class MagicShelf(Base):
     is_public = Column(Integer, default=0)
     is_system = Column(Boolean, default=False)  # System-created template shelves
     user_id = Column(Integer, ForeignKey('user.id'))
-    icon = Column(String, default="fa-wand-magic-sparkles")
+    icon = Column(String, default="glyphicon-star")
     rules = Column(JSON, default={})
     kobo_sync = Column(Boolean, default=False)  # Sync to Kobo devices
     created = Column(DateTime, default=lambda: datetime.now(timezone.utc))

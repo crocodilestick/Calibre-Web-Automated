@@ -445,7 +445,7 @@ def render_books_list(data, sort_param, book_id, page):
         offset = int(int(config.config_books_per_page) * (page - 1))
         return render_adv_search_results(term, offset, order, config.config_books_per_page)
     elif data == "magicshelf":
-        return render_magic_shelf(book_id, order)
+        return render_magic_shelf(book_id, sort_param, page)
     else:
         website = data or "newest"
         entries, random, pagination = calibre_db.fill_indexpage(page, 0, db.Books, True, order[0],
@@ -854,9 +854,11 @@ def render_archived_books(page, sort_param):
                                  title=name, page=page_name, order=sort_param[1])
 
 
-@web.route("/magicshelf/view/<int:shelf_id>")
-@user_login_required
-def render_magic_shelf(shelf_id, order):
+@web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")
+@login_required_if_no_ano
+def render_magic_shelf(shelf_id, sort_param, page):
     """Render a magic shelf with proper pagination and sorting."""
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
     if not shelf:
@@ -868,11 +870,14 @@ def render_magic_shelf(shelf_id, order):
         log.warning(f"User {current_user.id} attempted to access magic shelf {shelf_id} owned by {shelf.user_id}")
         abort(403)
     
-    # Get pagination settings\    page = int(request.args.get('page', 1))
+    # Get sort order using the same function as other book lists
+    order = get_sort_function(sort_param, "magicshelf")
+    
+    # Get pagination settings\
     per_page = config.config_books_per_page or 20
     
-    # Build sort order from order tuple
-    sort_order = order[0] if order and len(order) > 0 else None
+    # Build sort order - order[0] is a list, we need to unpack it
+    sort_order = order[0] if order and len(order) > 0 else []
     
     # Get books with pagination
     try:
@@ -882,6 +887,7 @@ def render_magic_shelf(shelf_id, order):
             page_size=per_page,
             sort_order=sort_order
         )
+        log.debug(f"Magic shelf {shelf_id} returned {len(books)} books out of {total_count} total")
     except Exception as e:
         log.error(f"Error retrieving books for magic shelf {shelf_id}: {e}")
         flash(_("Error loading magic shelf"), category="error")
@@ -891,9 +897,12 @@ def render_magic_shelf(shelf_id, order):
     from .pagination import Pagination
     pagination = Pagination(page, per_page, total_count)
     
-    # No need for EntryWrapper - return books directly
-    # The index.html template expects entries with .Books attribute
-    entries = [type('obj', (object,), {'Books': book})() for book in books]
+    # Wrap books in entry objects with .Books attribute for template compatibility
+    class Entry:
+        def __init__(self, book):
+            self.Books = book
+    
+    entries = [Entry(book) for book in books]
     
     return render_title_template('index.html', 
                                  entries=entries, 
@@ -1009,19 +1018,21 @@ def preview_magic_shelf():
 def create_magic_shelf():
     # Whitelist of allowed Font Awesome icon classes
     ALLOWED_ICONS = {
-        'fa-wand-magic-sparkles', 'fa-star', 'fa-heart', 'fa-book', 'fa-bookmark',
-        'fa-clock', 'fa-fire', 'fa-bolt', 'fa-gem', 'fa-crown',
-        'fa-award', 'fa-trophy', 'fa-medal', 'fa-certificate', 'fa-ribbon',
-        'fa-tags', 'fa-tag', 'fa-folder', 'fa-inbox', 'fa-archive',
-        'fa-layer-group', 'fa-list', 'fa-bars', 'fa-th-list', 'fa-database',
-        'fa-sparkles', 'fa-magic', 'fa-glasses', 'fa-book-open', 'fa-feather'
+        'glyphicon-star', 'glyphicon-heart', 'glyphicon-book', 'glyphicon-bookmark',
+        'glyphicon-time', 'glyphicon-fire', 'glyphicon-flash', 'glyphicon-certificate',
+        'glyphicon-flag', 'glyphicon-tag', 'glyphicon-tags', 'glyphicon-folder-close',
+        'glyphicon-folder-open', 'glyphicon-inbox', 'glyphicon-compressed', 'glyphicon-list',
+        'glyphicon-list-alt', 'glyphicon-th-list', 'glyphicon-hdd', 'glyphicon-cloud',
+        'glyphicon-music', 'glyphicon-film', 'glyphicon-picture', 'glyphicon-globe',
+        'glyphicon-tower', 'glyphicon-sunglasses', 'glyphicon-lamp', 'glyphicon-gift',
+        'glyphicon-equalizer', 'glyphicon-hourglass'
     }
     
     if request.method == "POST":
         data = request.get_json()
         name = strip_whitespaces(data.get('name', ''))
         rules = data.get('rules')
-        icon = data.get('icon', 'fa-wand-magic-sparkles')
+        icon = data.get('icon', 'glyphicon-star')
         
         # Validate inputs
         if not name or not rules:
@@ -1030,10 +1041,10 @@ def create_magic_shelf():
         if len(name) > 100:
             return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
         
-        # Sanitize icon input - only allow whitelisted Font Awesome classes
+        # Sanitize icon input - only allow whitelisted glyphicon classes
         if icon not in ALLOWED_ICONS:
             log.warning(f"Invalid icon '{icon}' submitted by user {current_user.id}, using default")
-            icon = 'fa-wand-magic-sparkles'
+            icon = 'glyphicon-star'
         
         try:
             new_shelf = ub.MagicShelf(
@@ -1058,16 +1069,18 @@ def create_magic_shelf():
                                  allowed_icons=sorted(ALLOWED_ICONS))
 
 
-@web.route("/magicshelf/<int:shelf_id>", methods=["GET", "POST"])
+@web.route("/magicshelf/<int:shelf_id>/edit", methods=["GET", "POST"])
 @user_login_required
 def edit_magic_shelf(shelf_id):
     ALLOWED_ICONS = {
-        'fa-wand-magic-sparkles', 'fa-star', 'fa-heart', 'fa-book', 'fa-bookmark',
-        'fa-clock', 'fa-fire', 'fa-bolt', 'fa-gem', 'fa-crown',
-        'fa-award', 'fa-trophy', 'fa-medal', 'fa-certificate', 'fa-ribbon',
-        'fa-tags', 'fa-tag', 'fa-folder', 'fa-inbox', 'fa-archive',
-        'fa-layer-group', 'fa-list', 'fa-bars', 'fa-th-list', 'fa-database',
-        'fa-sparkles', 'fa-magic', 'fa-glasses', 'fa-book-open', 'fa-feather'
+        'glyphicon-star', 'glyphicon-heart', 'glyphicon-book', 'glyphicon-bookmark',
+        'glyphicon-time', 'glyphicon-fire', 'glyphicon-flash', 'glyphicon-certificate',
+        'glyphicon-flag', 'glyphicon-tag', 'glyphicon-tags', 'glyphicon-folder-close',
+        'glyphicon-folder-open', 'glyphicon-inbox', 'glyphicon-compressed', 'glyphicon-list',
+        'glyphicon-list-alt', 'glyphicon-th-list', 'glyphicon-hdd', 'glyphicon-cloud',
+        'glyphicon-music', 'glyphicon-film', 'glyphicon-picture', 'glyphicon-globe',
+        'glyphicon-tower', 'glyphicon-sunglasses', 'glyphicon-lamp', 'glyphicon-gift',
+        'glyphicon-equalizer', 'glyphicon-hourglass'
     }
     
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)

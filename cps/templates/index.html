@@ -71,7 +71,7 @@
   <h2 class="{{title}}">
     {{title}}
     {% if page == 'magicshelf' %}
-    <a href="{{url_for('web.books_list', data=page, book_id=id, sort_param=order)}}?refresh=1" 
+    <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1)}}" 
        class="btn btn-sm btn-primary" 
        data-toggle="tooltip" 
        title="{{_('Refresh shelf to update with latest changes')}}">

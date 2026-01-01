@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/query-builder.default.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/query_builder.css') }}">
 <style>
-/* Icon Picker Styles */
+/* Icon Picker Styles - Dark Theme Compatible */
 .icon-picker-container {
     margin-top: 10px;
 }
@@ -13,36 +13,36 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
     gap: 8px;
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #3e444c;
     border-radius: 4px;
-    background: #f9f9f9;
+    background: #292d32;
 }
 .icon-option {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 45px;
-    border: 2px solid transparent;
+    border: 2px solid #3e444c;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s;
-    background: white;
+    background: #21252b;
 }
 .icon-option:hover {
-    border-color: #337ab7;
-    background: #e7f3ff;
+    border-color: #428bca;
+    background: #2c3e50;
     transform: scale(1.05);
 }
 .icon-option.selected {
     border-color: #cc7b19;
-    background: #fff3e0;
+    background: #3d3020;
 }
-.icon-option i {
+.icon-option span.glyphicon {
     font-size: 24px;
-    color: #333;
+    color: #e8e8e8;
 }
 .icon-search {
     margin-bottom: 10px;
@@ -52,13 +52,17 @@
     align-items: center;
     gap: 10px;
     padding: 8px 12px;
-    background: #f5f5f5;
+    background: #292d32;
+    border: 1px solid #3e444c;
     border-radius: 4px;
     margin-top: 10px;
 }
-.selected-icon-preview i {
+.selected-icon-preview span.glyphicon  {
     font-size: 20px;
-    color: #cc7b19;
+    color: #ffffff;
+}
+.selected-icon-preview span {
+    color: #e8e8e8;
 }
 /* Preview Results Styles */
 .preview-results {
@@ -68,12 +72,14 @@
     display: none;
 }
 .preview-results.success {
-    background: #dff0d8;
-    border: 1px solid #d6e9c6;
+    background: #1e3a28;
+    border: 1px solid #2d5a3d;
+    color: #90ee90;
 }
 .preview-results.error {
-    background: #f2dede;
-    border: 1px solid #ebccd1;
+    background: #3a1e1e;
+    border: 1px solid #5a2d2d;
+    color: #ff9090;
 }
 .preview-book-list {
     list-style: none;
@@ -82,7 +88,8 @@
 }
 .preview-book-list li {
     padding: 5px 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #3e444c;
+    color: #e8e8e8;
 }
 .preview-book-list li:last-child {
     border-bottom: none;
@@ -100,38 +107,112 @@
         font-size: 20px;
     }
 }
-/* Help Panel Styles */
-.help-panel {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 20px;
+/* Help Panel Styles - Dark Theme */
+.help-panel .panel-body {
+    background: #292d32;
+    color: #e8e8e8;
 }
 .help-panel .panel-heading {
     cursor: pointer;
     user-select: none;
+    background: #21252b;
+    border-bottom: 1px solid #3e444c;
 }
 .help-panel .panel-heading:hover {
-    background: #f0f0f0;
+    background: #2c3137;
+}
+.help-panel .panel-title {
+    color: #e8e8e8;
 }
 .help-content {
     margin-top: 15px;
+    color: #e8e8e8;
+}
+.help-content p, .help-content ul, .help-content li {
+    color: #e8e8e8;
 }
 .help-example {
-    background: white;
+    background: #21252b;
     padding: 10px;
     border-left: 3px solid #cc7b19;
     margin: 10px 0;
+    color: #e8e8e8;
+}
+.help-example code {
+    background: #1a1d21;
+    color: #cc7b19;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+/* Override form control backgrounds for dark theme */
+#magic-shelf-form .form-control {
+    background-color: #292d32;
+    border-color: #3e444c;
+    color: #e8e8e8;
+}
+#magic-shelf-form .form-control:focus {
+    background-color: #21252b;
+    border-color: #428bca;
+    color: #e8e8e8;
+}
+#magic-shelf-form label {
+    color: #e8e8e8;
+}
+#magic-shelf-form .text-muted {
+    color: #8b949e !important;
+}
+/* Query Builder dark theme overrides */
+.query-builder {
+    background: #292d32 !important;
+}
+.query-builder .rules-group-container {
+    background: #21252b !important;
+    border-color: #3e444c !important;
+}
+.query-builder .rule-container {
+    background: #292d32 !important;
+    border-color: #3e444c !important;
+}
+.query-builder select,
+.query-builder input[type="text"],
+.query-builder input[type="number"],
+.query-builder input[type="date"] {
+    background: #21252b !important;
+    border-color: #3e444c !important;
+    color: #e8e8e8 !important;
+}
+/* Alert styles for dark theme */
+.alert-info {
+    background-color: #1e3a5f;
+    border-color: #2d5a8f;
+    color: #9ec9ff;
+}
+.alert-info .btn {
+    color: #fff;
+}
+
+.panel.panel-default {
+    background: #22272b9e;
+    border-color: #292d32;
+}
+
+div.help-panel > .panel-body {
+    padding: 0px;
+}
+
+.help-content {
+    padding: 4rem;
+    padding-top: 1rem;
 }
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="discover">
-    <div class="container-fluid">
         <h2>{{ title }}</h2>
-        
+
+    <div class="row">
+        <div class="col-md-12">
         <!-- Help Panel -->
         <div class="panel panel-default help-panel">
             <div class="panel-heading" onclick="$('#help-content').slideToggle();">
@@ -140,6 +221,7 @@
                     <small class="pull-right"><i class="fa fa-chevron-down"></i></small>
                 </h4>
             </div>
+            <div class="panel-body">
             <div id="help-content" class="help-content" style="display: none;">
                 <p><strong>Magic Shelves</strong> are dynamic shelves that automatically populate based on rules you define. No manual organization needed!</p>
                 
@@ -160,7 +242,8 @@
                     <li>Best experienced on desktop/tablet (mobile view is limited)</li>
                 </ul>
             </div>
-        </div>
+            </div><!-- /.panel-body -->
+        </div><!-- /.help-panel -->
 
         <!-- Main Form -->
         <div class="panel panel-default">
@@ -201,11 +284,11 @@
                             Shelf Icon
                             <i class="fa fa-question-circle" data-toggle="tooltip" title="Choose an icon that represents your shelf"></i>
                         </label>
-                        <input type="hidden" id="shelf-icon" value="{{ shelf.icon if shelf else 'fa-wand-magic-sparkles' }}">
+                        <input type="hidden" id="shelf-icon" value="{{ shelf.icon if shelf else 'glyphicon-star' }}">
                         
                         <div class="selected-icon-preview">
-                            <i class="fa {{ shelf.icon if shelf else 'fa-wand-magic-sparkles' }}" id="selected-icon-display"></i>
-                            <span id="selected-icon-name">{{ shelf.icon if shelf else 'fa-wand-magic-sparkles' }}</span>
+                            <span class="glyphicon {{ shelf.icon if shelf else 'glyphicon-star' }}" id="selected-icon-display"></span>
+                            <span id="selected-icon-name">{{ shelf.icon if shelf else 'glyphicon-star' }}</span>
                         </div>
                         
                         <div class="icon-picker-container">
@@ -216,7 +299,7 @@
                             <div class="icon-picker-grid" id="icon-picker-grid">
                                 {% for icon in allowed_icons %}
                                 <div class="icon-option" data-icon="{{ icon }}" title="{{ icon }}">
-                                    <i class="fa {{ icon }}"></i>
+                                    <span class="glyphicon {{ icon }}"></span>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -260,8 +343,9 @@
                 </form>
             </div>
         </div>
-    </div>
-</div>
+        </div><!-- /.col-md-12 -->
+    </div><!-- /.row -->
+</div><!-- /.discover -->
 {% endblock %}
 
 {% set rules_json = shelf.rules|tojson if shelf and shelf.rules else 'null' %}
@@ -295,7 +379,7 @@ $(function() {
         $iconOptions.removeClass('selected');
         $(this).addClass('selected');
         $iconInput.val(icon);
-        $iconDisplay.attr('class', 'fa ' + icon);
+        $iconDisplay.attr('class', 'glyphicon ' + icon);
         $iconName.text(icon);
     });
     
@@ -573,13 +657,6 @@ $(function() {
                 $btn.prop('disabled', false).html('<i class="fa fa-copy"></i> Duplicate');
             }
         });
-    });
-    {% endif %}
-                    }
-                    alert('Error: ' + message);
-                }
-            });
-        }
     });
     {% endif %}
 });

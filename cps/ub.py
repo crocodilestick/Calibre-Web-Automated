@@ -853,7 +853,7 @@ def migrate_config_table(engine, _session):
 
 
 def migrate_magic_shelf_table(engine, _session):
-    \"\"\"Migrate magic_shelf table to add new columns.\"\"\"
+    """Migrate magic_shelf table to add new columns."""
     # Check and add is_system column
     try:
         _session.query(exists().where(MagicShelf.is_system)).scalar()

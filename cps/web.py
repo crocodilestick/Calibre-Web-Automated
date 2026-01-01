@@ -857,15 +857,16 @@ def render_archived_books(page, sort_param):
 @web.route("/magicshelf/view/<int:shelf_id>")
 @user_login_required
 def render_magic_shelf(shelf_id, order):
-    \"\"\"Render a magic shelf with proper pagination and sorting.\"\"\"
+    """Render a magic shelf with proper pagination and sorting."""
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
     if not shelf:
-        log.warning(f\"Magic shelf {shelf_id} not found\")
+        log.warning(f"Magic shelf {shelf_id} not found")
         abort(404)
     
     # Check ownership - users can only view their own shelves (for now)
     if shelf.user_id != current_user.id:
-        log.warning(f\"User {current_user.id} attempted to access magic shelf {shelf_id} owned by {shelf.user_id}\")\n        abort(403)
+        log.warning(f"User {current_user.id} attempted to access magic shelf {shelf_id} owned by {shelf.user_id}")
+        abort(403)
     
     # Get pagination settings\    page = int(request.args.get('page', 1))
     per_page = config.config_books_per_page or 20
@@ -882,8 +883,8 @@ def render_magic_shelf(shelf_id, order):
             sort_order=sort_order
         )
     except Exception as e:
-        log.error(f\"Error retrieving books for magic shelf {shelf_id}: {e}\")
-        flash(_(\"Error loading magic shelf\"), category=\"error\")
+        log.error(f"Error retrieving books for magic shelf {shelf_id}: {e}")
+        flash(_("Error loading magic shelf"), category="error")
         return redirect(url_for('web.index'))
     
     # Create proper pagination object
@@ -897,8 +898,8 @@ def render_magic_shelf(shelf_id, order):
     return render_title_template('index.html', 
                                  entries=entries, 
                                  pagination=pagination,
-                                 title=_(\"Magic Shelf: %(name)s\", name=shelf.name), 
-                                 page=\"magicshelf\", 
+                                 title=_("Magic Shelf: %(name)s", name=shelf.name), 
+                                 page="magicshelf", 
                                  id=shelf_id, 
                                  order=order[1])
 
@@ -1031,7 +1032,7 @@ def create_magic_shelf():
         
         # Sanitize icon input - only allow whitelisted Font Awesome classes
         if icon not in ALLOWED_ICONS:
-            log.warning(f\"Invalid icon '{icon}' submitted by user {current_user.id}, using default\")
+            log.warning(f"Invalid icon '{icon}' submitted by user {current_user.id}, using default")
             icon = 'fa-wand-magic-sparkles'
         
         try:
@@ -1043,10 +1044,10 @@ def create_magic_shelf():
             )
             ub.session.add(new_shelf)
             ub.session_commit()
-            log.info(f\"User {current_user.id} created magic shelf '{name}' (ID: {new_shelf.id})\")
+            log.info(f"User {current_user.id} created magic shelf '{name}' (ID: {new_shelf.id})")
             return jsonify({"success": True, "shelf_id": new_shelf.id})
         except Exception as e:
-            log.error(f\"Error creating magic shelf: {e}\")
+            log.error(f"Error creating magic shelf: {e}")
             ub.session.rollback()
             return jsonify({"success": False, "message": _("Error creating shelf")}), 500
     
@@ -1071,11 +1072,11 @@ def edit_magic_shelf(shelf_id):
     
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
     if not shelf:
-        log.warning(f\"Magic shelf {shelf_id} not found\")
+        log.warning(f"Magic shelf {shelf_id} not found")
         abort(404)
     
     if shelf.user_id != current_user.id:
-        log.warning(f\"User {current_user.id} attempted to edit magic shelf {shelf_id} owned by {shelf.user_id}\")
+        log.warning(f"User {current_user.id} attempted to edit magic shelf {shelf_id} owned by {shelf.user_id}")
         abort(403)
 
     if request.method == "POST":
@@ -1093,7 +1094,7 @@ def edit_magic_shelf(shelf_id):
         
         # Sanitize icon
         if icon not in ALLOWED_ICONS:
-            log.warning(f\"Invalid icon '{icon}' submitted by user {current_user.id}, keeping current: {shelf.icon}\")
+            log.warning(f"Invalid icon '{icon}' submitted by user {current_user.id}, keeping current: {shelf.icon}")
             icon = shelf.icon
         
         try:
@@ -1102,10 +1103,10 @@ def edit_magic_shelf(shelf_id):
             shelf.icon = icon
             flag_modified(shelf, "rules")
             ub.session_commit()
-            log.info(f\"User {current_user.id} updated magic shelf {shelf_id} ('{name}')\")
+            log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}')")
             return jsonify({"success": True})
         except Exception as e:
-            log.error(f\"Error updating magic shelf {shelf_id}: {e}\")
+            log.error(f"Error updating magic shelf {shelf_id}: {e}")
             ub.session.rollback()
             return jsonify({"success": False, "message": _("Error updating shelf")}), 500
 
@@ -1174,21 +1175,21 @@ def duplicate_magic_shelf(shelf_id):
 def delete_magic_shelf(shelf_id):
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
     if not shelf:
-        log.warning(f\"Magic shelf {shelf_id} not found for deletion\")
+        log.warning(f"Magic shelf {shelf_id} not found for deletion")
         abort(404)
     
     if shelf.user_id != current_user.id:
-        log.warning(f\"User {current_user.id} attempted to delete magic shelf {shelf_id} owned by {shelf.user_id}\")
+        log.warning(f"User {current_user.id} attempted to delete magic shelf {shelf_id} owned by {shelf.user_id}")
         abort(403)
     
     try:
         shelf_name = shelf.name
         ub.session.delete(shelf)
         ub.session_commit()
-        log.info(f\"User {current_user.id} deleted magic shelf {shelf_id} ('{shelf_name}')\")
+        log.info(f"User {current_user.id} deleted magic shelf {shelf_id} ('{shelf_name}')")
         return jsonify({"success": True})
     except Exception as e:
-        log.error(f\"Error deleting magic shelf {shelf_id}: {e}\")
+        log.error(f"Error deleting magic shelf {shelf_id}: {e}")
         ub.session.rollback()
         return jsonify({"success": False, "message": _("Error deleting shelf")}), 500
 

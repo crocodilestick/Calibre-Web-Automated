@@ -128,9 +128,9 @@
 }
 /* Override form control backgrounds for dark theme */
 #magic-shelf-form .form-control {
-    background-color: #292d32;
-    border-color: #3e444c;
-    color: #e8e8e8;
+    background-color: #292d32 !important;
+    border: 1px solid #3e444c !important;
+    color: #e8e8e8 !important;
 }
 #magic-shelf-form .form-control:focus {
     background-color: #21252b;
@@ -201,6 +201,38 @@ div.help-panel > .panel-body {
 
 .space {
     padding: 5px;
+}
+
+.btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 1rem;
+    flex-direction: row;
+}
+
+.rule-value-container {
+    display: flex !important;
+    gap: 2rem;
+    flex-direction: row;
+    padding: 1rem;
+    padding-inline: 2rem !important;
+    background: #202429;
+    border-radius: 4px;
+    flex-wrap: wrap;
+}
+
+.rule-value-container > label {
+    display: flex !important;
+    gap: 0.75rem;
+    flex-direction: row;
+    align-items: flex-start;
+    width: fit-content;
+    background: #292d32;
+    padding: 0.5rem;
+    padding-inline: 1rem;
+    border-radius: 4px;
+    border: 1px solid #3e444c;
 }
 
 </style>
@@ -325,11 +357,11 @@ div.help-panel > .panel-body {
                     <hr>
 
                     <!-- Action Buttons -->
-                    <div class="form-group">
+                    <div class="btn-group">
                         <button type="button" class="btn btn-info" id="preview-btn">
                             <span class="glyphicon space glyphicon-eye-open"></span> Preview Rules
                         </button>
-                        <button type="submit" class="btn btn-primary" id="save-shelf-btn">
+                        <button type="submit" class="btn btn-default" id="save-shelf-btn">
                             <span class="glyphicon space glyphicon-floppy-disk"></span> Save Shelf
                         </button>
                         <a href="{{ url_for('web.index') }}" class="btn btn-default">
@@ -462,6 +494,14 @@ $(function() {
             input: 'radio', 
             values: {1: 'Yes', 0: 'No'},
             description: 'Whether book has cover image'
+        },
+        {
+            id: 'read_status',
+            label: 'Read Status',
+            type: 'integer',  // Changed from 'boolean' to 'integer'
+            input: 'radio',
+            values: {0: 'Unread', 1: 'Read'},  // Swapped order for clarity
+            description: 'Book read status'
         },
         {
             id: 'series_index', 

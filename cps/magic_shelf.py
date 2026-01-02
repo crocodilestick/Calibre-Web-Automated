@@ -70,6 +70,22 @@ SYSTEM_SHELF_TEMPLATES = {
     #         ]
     #     }
     # },
+    'yet_to_read': {
+        'name': 'Yet to Read',
+        'icon': '📖',
+        'description': 'Books you haven\'t read yet',
+        'rules': {
+            'condition': 'AND',
+            'rules': [{
+                'id': 'read_status',
+                'field': 'read_status',
+                'type': 'integer',
+                'input': 'radio',
+                'operator': 'equal',
+                'value': 0  # Just check for unread
+            }]
+        }
+    },
     'recent_publications': {
         'name': 'Recent Publications',
         'icon': '🌱',
@@ -123,6 +139,7 @@ FIELD_MAP = {
     'has_cover': (db.Books, 'has_cover'),
     'series_index': (db.Books, 'series_index'),
     'comments': (db.Books, 'comments'),
+    'read_status': ('custom_column', 'read_status'),  # Special handling - uses config.config_read_column
 }
 
 # Mapping from UI operators to SQLAlchemy functions/operators
@@ -150,6 +167,8 @@ OPERATOR_MAP = {
     'not_ends_with': lambda col, val: ~col.ilike(f'%{val}'),
     'is_empty': lambda col, val: col == None,
     'is_not_empty': lambda col, val: col != None,
+    'is_null': lambda col, val: col == None,
+    'is_not_null': lambda col, val: col != None,
     'in': lambda col, val: col.in_(val if isinstance(val, list) else [val]),
     'not_in': lambda col, val: ~col.in_(val if isinstance(val, list) else [val]),
 }
@@ -163,8 +182,10 @@ RELATIONSHIP_MAP = {
     'language': 'languages',
 }
 
-def build_filter_from_rule(rule):
+def build_filter_from_rule(rule, user_id=None):
     """Builds a SQLAlchemy filter condition from a single rule."""
+    from . import config
+
     field_name = rule.get('id')
     operator_name = rule.get('operator')
     value = rule.get('value')
@@ -172,11 +193,82 @@ def build_filter_from_rule(rule):
     if not all([field_name, operator_name]):
         return None
 
-    model, column_name = FIELD_MAP.get(field_name)
-    if not model:
+    field_info = FIELD_MAP.get(field_name)
+    if not field_info:
         return None
+    
+    model, column_name = field_info
+    
+    # Special handling for read_status custom column
+    if model == 'custom_column' and column_name == 'read_status':
+        use_custom_column = False
+        if config.config_read_column and config.config_read_column != 0:
+            if config.config_read_column in db.cc_classes:
+                use_custom_column = True
+            else:
+                log.warning(f"Read status column {config.config_read_column} not found in cc_classes")
 
-    column = getattr(model, column_name)
+        if not use_custom_column:
+            if user_id is not None:
+                # Fallback to built-in read status
+                # Get read books for user (STATUS_FINISHED = 1)
+                read_books = ub.session.query(ub.ReadBook).filter(
+                    ub.ReadBook.user_id == user_id, 
+                    ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED
+                ).all()
+                read_book_ids = [rb.book_id for rb in read_books]
+                
+                operator = OPERATOR_MAP.get(operator_name)
+                if not operator:
+                    return None
+                
+                # Value is 0 (Unread) or 1 (Read)
+                try:
+                    is_checking_read = (int(value) == 1)
+                except (ValueError, TypeError):
+                    is_checking_read = False
+                
+                if operator_name == 'equal':
+                    if is_checking_read:
+                        return db.Books.id.in_(read_book_ids)
+                    else:
+                        return ~db.Books.id.in_(read_book_ids)
+                elif operator_name == 'not_equal':
+                    if is_checking_read:
+                        return ~db.Books.id.in_(read_book_ids)
+                    else:
+                        return db.Books.id.in_(read_book_ids)
+                else:
+                    return None
+            else:
+                log.debug("Read status column not configured and no user_id provided, skipping read_status filter")
+                return None
+
+        read_col_class = db.cc_classes[config.config_read_column]
+        column = read_col_class.value
+        
+        # Get the operator
+        operator = OPERATOR_MAP.get(operator_name)
+        if not operator:
+            return None
+        
+        # Convert integer value (0/1) to boolean (False/True) for proper comparison
+        # QueryBuilder sends integers from radio buttons, but custom column expects boolean
+        if isinstance(value, int):
+            value = bool(value)
+
+        # Read status custom columns are joined via relationship - get the dynamic relationship name
+        cc_relationship = f'custom_column_{config.config_read_column}'
+        if hasattr(db.Books, cc_relationship):
+            return getattr(db.Books, cc_relationship).any(operator(column, value))
+        else:
+            log.error(f"Books model does not have relationship '{cc_relationship}'")
+            return None
+    else:
+        if not model:
+            return None
+        column = getattr(model, column_name)
+    
     operator = OPERATOR_MAP.get(operator_name)
 
     if not operator:
@@ -190,7 +282,7 @@ def build_filter_from_rule(rule):
         return operator(column, value)
 
 
-def build_query_from_rules(rules_json):
+def build_query_from_rules(rules_json, user_id=None):
     """
     Recursively builds a SQLAlchemy query filter from a JSON rule structure.
     """
@@ -204,12 +296,12 @@ def build_query_from_rules(rules_json):
     for rule in rules:
         # If 'condition' is present, it's a group, recurse
         if 'condition' in rule:
-            sub_filter = build_query_from_rules(rule)
+            sub_filter = build_query_from_rules(rule, user_id)
             if sub_filter is not None:
                 filters.append(sub_filter)
         # Otherwise, it's a rule
         else:
-            rule_filter = build_filter_from_rule(rule)
+            rule_filter = build_filter_from_rule(rule, user_id)
             if rule_filter is not None:
                 filters.append(rule_filter)
 
@@ -250,7 +342,7 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None)
             return [], 0
 
         cdb = db.CalibreDB(init=True)
-        query_filter = build_query_from_rules(rules)
+        query_filter = build_query_from_rules(rules, user_id=magic_shelf.user_id)
         
         if query_filter is None:
             log.warning(f"Failed to build query filter for magic shelf {shelf_id}")

@@ -982,7 +982,7 @@ def preview_magic_shelf():
         
         # Temporarily create a query to count matching books
         try:
-            query_filter = magic_shelf.build_query_from_rules(rules)
+            query_filter = magic_shelf.build_query_from_rules(rules, user_id=current_user.id)
             if query_filter is None:
                 return jsonify({"success": False, "message": _("Invalid rules format")}), 400
             

@@ -907,7 +907,7 @@ def render_magic_shelf(shelf_id, sort_param, page):
     return render_title_template('index.html', 
                                  entries=entries, 
                                  pagination=pagination,
-                                 title=_("Magic Shelf: %(name)s", name=shelf.name), 
+                                 title=_("Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s", icon=shelf.icon, name=shelf.name), 
                                  page="magicshelf", 
                                  id=shelf_id, 
                                  order=order[1])

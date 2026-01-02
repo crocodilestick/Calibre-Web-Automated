@@ -97,6 +97,7 @@ def register_startup_tasks():
             from datetime import datetime, timezone
 
             db = CWA_DB()
+            delay_minutes = int(db.cwa_settings.get('auto_send_delay_minutes', 0) or 0)
             pending = db.scheduled_get_pending_autosend()
             for row in pending:
                 try:
@@ -117,7 +118,7 @@ def register_startup_tasks():
                         except Exception:
                             pass
                         if should_enqueue and bid is not None and uid is not None:
-                            WorkerThread.add(u, TaskAutoSend(f"Auto-sending '{t}' to user's eReader(s)", bid, uid, config.auto_send_delay_minutes), hidden=False)
+                            WorkerThread.add(u, TaskAutoSend(f"Auto-sending '{t}' to user's eReader(s)", bid, uid, delay_minutes), hidden=False)
 
                     job = scheduler.schedule(func=_rehydrate_enqueue, trigger=DateTrigger(run_date=run_at_local), name=f"rehydrated auto-send {schedule_id}")
                     try:
@@ -197,4 +198,3 @@ def should_task_be_running(start, duration):
 def calclulate_end_time(start, duration):
     start_time = datetime.datetime.now().replace(hour=start, minute=0)
     return start_time + datetime.timedelta(hours=duration // 60, minutes=duration % 60)
-

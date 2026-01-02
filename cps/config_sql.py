@@ -185,6 +185,7 @@ class ConfigSQL(object):
     # pylint: disable=no-member
     def __init__(self):
         self.__dict__["dirty"] = list()
+        self.cli = None
 
     def init_config(self, session, secret_key, cli):
         self._session = session
@@ -235,21 +236,25 @@ class ConfigSQL(object):
         return self._settings
 
     def get_config_certfile(self):
-        if self.cli.certfilepath:
-            return self.cli.certfilepath
-        if self.cli.certfilepath == "":
-            return None
+        if self.cli:
+            if self.cli.certfilepath:
+                return self.cli.certfilepath
+            if self.cli.certfilepath == "":
+                return None
         return self.config_certfile
 
     def get_config_keyfile(self):
-        if self.cli.keyfilepath:
-            return self.cli.keyfilepath
-        if self.cli.certfilepath == "":
-            return None
+        if self.cli:
+            if self.cli.keyfilepath:
+                return self.cli.keyfilepath
+            if self.cli.certfilepath == "":
+                return None
         return self.config_keyfile
 
     def get_config_ipaddress(self):
-        return self.cli.ip_address or ""
+        if self.cli:
+            return self.cli.ip_address or ""
+        return ""
 
     def _has_role(self, role_flag):
         return constants.has_flag(self.config_default_role, role_flag)

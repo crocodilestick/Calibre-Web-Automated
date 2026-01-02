@@ -25,7 +25,7 @@ class IBDb(Metadata):
     DESCRIPTION = "Internet Book Database"
     META_URL = "https://ibdb.dev/"
     BOOK_URL = "https://ibdb.dev/book/"
-    SEARCH_URL = "https://ibdb.dev/search?q="
+    SEARCH_URL = "https://ibdb.dev/api/search?q="
 
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
@@ -40,6 +40,13 @@ class IBDb(Metadata):
             try:
                 results = requests.get(IBDb.SEARCH_URL + query, timeout=15)
                 results.raise_for_status()
+            except requests.HTTPError as e:
+                status_code = getattr(e.response, "status_code", None)
+                if status_code == 501:
+                    log.debug("IBDb search not implemented (501); skipping provider.")
+                    return []
+                log.warning(e)
+                return []
             except Exception as e:
                 log.warning(e)
                 return []

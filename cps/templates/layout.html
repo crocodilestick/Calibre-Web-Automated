@@ -291,11 +291,11 @@
               {% endif %}
               {% endif %}
               {% if current_user.is_authenticated %}
-                <li class="nav-head hidden-xs">{{_('Magic Shelves ✨')}}</li>
+                <li class="nav-head hidden-xs" style="margin-top: 1rem;">{{_('Magic Shelves ✨')}}</li>
                   {% for shelf in g.magic_shelves_access %}
-                    <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}"><span class="glyphicon glyphicon-list shelf"></span> {{shelf.name|shortentitle(40)}}</a></li>
+                    <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}</a></li>
                   {% endfor %}
-                <li id="nav_createmagicshelf" class="create-shelf"><a href="{{url_for('web.create_magic_shelf')}}">{{_('Create Magic Shelf')}}</a></li>
+                <li id="nav_createmagicshelf" class="create-shelf"><a href="{{url_for('web.create_magic_shelf')}}" style="display: flex; align-items: center;">{{_('Create Magic Shelf')}}</a></li>
               {% endif %}
               {% if not current_user.is_anonymous %}
                 <li id="nav_about" {% if page == 'stat' %}class="active"{% endif %}><a href="{{url_for('about.stats')}}"><span class="glyphicon glyphicon-info-sign"></span> {{_('About')}}</a></li>

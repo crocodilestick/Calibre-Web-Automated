@@ -18,7 +18,7 @@ log = logger.create()
 SYSTEM_SHELF_TEMPLATES = {
     'recently_added': {
         'name': 'Recently Added',
-        'icon': 'glyphicon-time',
+        'icon': '⏰',
         'description': 'Books added to your library in the last 30 days',
         'rules': {
             'condition': 'AND',
@@ -36,7 +36,7 @@ SYSTEM_SHELF_TEMPLATES = {
     },
     'highly_rated': {
         'name': 'Highly Rated',
-        'icon': 'glyphicon-star',
+        'icon': '⭐',
         'description': 'Books with a rating of 8 or higher',
         'rules': {
             'condition': 'AND',
@@ -52,27 +52,27 @@ SYSTEM_SHELF_TEMPLATES = {
             ]
         }
     },
-    'no_cover': {
-        'name': 'Books Without Covers',
-        'icon': 'glyphicon-picture',
-        'description': 'Books that are missing cover images',
-        'rules': {
-            'condition': 'AND',
-            'rules': [
-                {
-                    'id': 'has_cover',
-                    'field': 'has_cover',
-                    'type': 'boolean',
-                    'input': 'radio',
-                    'operator': 'equal',
-                    'value': 0
-                }
-            ]
-        }
-    },
+    # 'no_cover': {
+    #     'name': 'Books Without Covers',
+    #     'icon': '🗒️',
+    #     'description': 'Books that are missing cover images',
+    #     'rules': {
+    #         'condition': 'AND',
+    #         'rules': [
+    #             {
+    #                 'id': 'has_cover',
+    #                 'field': 'has_cover',
+    #                 'type': 'boolean',
+    #                 'input': 'radio',
+    #                 'operator': 'equal',
+    #                 'value': 0
+    #             }
+    #         ]
+    #     }
+    # },
     'recent_publications': {
         'name': 'Recent Publications',
-        'icon': 'glyphicon-certificate',
+        'icon': '🌱',
         'description': 'Books published in the last 2 years',
         'rules': {
             'condition': 'AND',
@@ -88,24 +88,25 @@ SYSTEM_SHELF_TEMPLATES = {
             ]
         }
     },
-    'series_incomplete': {
-        'name': 'Incomplete Series',
-        'icon': 'glyphicon-list',
-        'description': 'Books that are part of a series',
-        'rules': {
-            'condition': 'AND',
-            'rules': [
-                {
-                    'id': 'series',
-                    'field': 'series',
-                    'type': 'string',
-                    'input': 'text',
-                    'operator': 'is_not_empty',
-                    'value': None
-                }
-            ]
-        }
-    }
+    # 'series_incomplete': {
+    #     'name': 'Incomplete Series',
+    #     'icon': '📚',
+    #     'description': 'Books that are part of a series',
+    #     'rules': {
+    #         'condition': 'AND',
+    #         'rules': [
+    #             {
+    #                 'id': 'series',
+    #                 'field': 'series',
+    #                 'type': 'string',
+    #                 'input': 'text',
+    #                 'operator': 'is_not_empty',
+    #                 'value': None
+    #             }
+    #         ]
+    #     }
+    # }
+
 }
 
 # Mapping from UI field names to database models and columns

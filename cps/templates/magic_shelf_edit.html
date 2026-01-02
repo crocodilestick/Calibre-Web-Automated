@@ -30,6 +30,7 @@
     cursor: pointer;
     transition: all 0.2s;
     background: #21252b;
+    font-size: 28px;
 }
 .icon-option:hover {
     border-color: #428bca;
@@ -40,30 +41,11 @@
     border-color: #cc7b19;
     background: #3d3020;
 }
-.icon-option span.glyphicon {
-    font-size: 24px;
-    color: #e8e8e8;
-}
+
 .icon-search {
     margin-bottom: 10px;
 }
-.selected-icon-preview {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    background: #292d32;
-    border: 1px solid #3e444c;
-    border-radius: 4px;
-    margin-top: 10px;
-}
-.selected-icon-preview span.glyphicon  {
-    font-size: 20px;
-    color: #ffffff;
-}
-.selected-icon-preview span {
-    color: #e8e8e8;
-}
+
 /* Preview Results Styles */
 .preview-results {
     margin-top: 15px;
@@ -183,9 +165,9 @@
 }
 /* Alert styles for dark theme */
 .alert-info {
-    background-color: #1e3a5f;
-    border-color: #2d5a8f;
-    color: #9ec9ff;
+    background-color: #1e3a5f !important;
+    border-color: #2d5a8f !important;
+    color: #9ec9ff !important;
 }
 .alert-info .btn {
     color: #fff;
@@ -204,6 +186,23 @@ div.help-panel > .panel-body {
     padding: 4rem;
     padding-top: 1rem;
 }
+
+.system-template-notice {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #cc7b197a;
+    padding-left: 2rem;
+    border-left: 4px solid #cc7b19;
+}
+
+.query-builder .rules-group-container {
+    padding: 2rem;
+}
+
+.space {
+    padding: 5px;
+}
+
 </style>
 {% endblock %}
 
@@ -217,8 +216,8 @@ div.help-panel > .panel-body {
         <div class="panel panel-default help-panel">
             <div class="panel-heading" onclick="$('#help-content').slideToggle();">
                 <h4 class="panel-title">
-                    <i class="fa fa-question-circle"></i> What are Magic Shelves? 
-                    <small class="pull-right"><i class="fa fa-chevron-down"></i></small>
+                    <span class="glyphicon space glyphicon-question-sign"></span> What are Magic Shelves? 
+                    <small class="pull-right"><span class="glyphicon space glyphicon-chevron-down"></span></small>
                 </h4>
             </div>
             <div class="panel-body">
@@ -248,23 +247,19 @@ div.help-panel > .panel-body {
         <!-- Main Form -->
         <div class="panel panel-default">
             <div class="panel-body">
-                {% if shelf and shelf.is_system %}
-                <div class="alert alert-info">
-                    <i class="fa fa-info-circle"></i>
-                    <strong>{{_('System Template')}}</strong>: {{_('This is a pre-configured template shelf. You can edit it freely, or')|safe}} 
-                    <button type="button" class="btn btn-xs btn-primary" id="duplicate-shelf-btn">
-                        <i class="fa fa-copy"></i> {{_('Duplicate')}}
-                    </button> 
-                    {{_('to create a copy you can modify.')}}
-                </div>
-                {% endif %}
                 
                 <form id="magic-shelf-form">
                     <!-- Shelf Name -->
                     <div class="form-group">
+                        {% if shelf and shelf.is_system %}
+                        <div class="system-template-notice">
+                            <span class="glyphicon space glyphicon-info-sign"></span>
+                            <strong>{{_('System Template')}}</strong>: {{_('This is a pre-configured template shelf. You can edit it freely.')}}
+                        </div>
+                        {% endif %}
                         <label for="shelf-name">
                             Shelf Name <span class="text-danger">*</span>
-                            <i class="fa fa-question-circle" data-toggle="tooltip" title="Give your shelf a descriptive name (max 100 characters)"></i>
+                            <span class="glyphicon space glyphicon-question-sign" data-toggle="tooltip" title="Give your shelf a descriptive name (max 100 characters)"></span>
                         </label>
                         <input type="text" 
                                class="form-control" 
@@ -282,24 +277,30 @@ div.help-panel > .panel-body {
                     <div class="form-group">
                         <label for="shelf-icon">
                             Shelf Icon
-                            <i class="fa fa-question-circle" data-toggle="tooltip" title="Choose an icon that represents your shelf"></i>
+                            <span class="glyphicon space glyphicon-question-sign" data-toggle="tooltip" title="Select from the grid below or type/paste your own emoji"></span>
                         </label>
-                        <input type="hidden" id="shelf-icon" value="{{ shelf.icon if shelf else 'glyphicon-star' }}">
-                        
-                        <div class="selected-icon-preview">
-                            <span class="glyphicon {{ shelf.icon if shelf else 'glyphicon-star' }}" id="selected-icon-display"></span>
-                            <span id="selected-icon-name">{{ shelf.icon if shelf else 'glyphicon-star' }}</span>
-                        </div>
+
+                        <input type="text" 
+                               class="form-control" 
+                               id="shelf-icon" 
+                               value="{{ shelf.icon if shelf else '🪄' }}"
+                               placeholder="🪄"
+                               maxlength="10"
+                               style="font-size: 24px; width: 100px;">
+                        <small class="form-text text-muted">
+                            Type your own emoji or select from the quick-pick options below
+                        </small>
                         
                         <div class="icon-picker-container">
+                            <label class="control-label">Quick Pick Icons:</label>
                             <input type="text" 
                                    class="form-control icon-search" 
                                    id="icon-search" 
-                                   placeholder="Search icons...">
+                                   placeholder="Search quick-pick icons...">
                             <div class="icon-picker-grid" id="icon-picker-grid">
                                 {% for icon in allowed_icons %}
                                 <div class="icon-option" data-icon="{{ icon }}" title="{{ icon }}">
-                                    <span class="glyphicon {{ icon }}"></span>
+                                    {{ icon }}
                                 </div>
                                 {% endfor %}
                             </div>
@@ -311,13 +312,13 @@ div.help-panel > .panel-body {
                     <!-- Rules Builder -->
                     <h4>
                         Rules <span class="text-danger">*</span>
-                        <i class="fa fa-question-circle" data-toggle="tooltip" title="Define conditions that books must match to appear in this shelf"></i>
+                        <span class="glyphicon space glyphicon-question-sign" data-toggle="tooltip" title="Define conditions that books must match to appear in this shelf"></span>
                     </h4>
                     <div id="builder"></div>
                     
                     <!-- Preview Results -->
                     <div id="preview-results" class="preview-results">
-                        <h5><i class="fa fa-eye"></i> Preview Results</h5>
+                        <h5><span class="glyphicon space glyphicon-eye-open"></span> Preview Results</h5>
                         <div id="preview-content"></div>
                     </div>
 
@@ -326,17 +327,17 @@ div.help-panel > .panel-body {
                     <!-- Action Buttons -->
                     <div class="form-group">
                         <button type="button" class="btn btn-info" id="preview-btn">
-                            <i class="fa fa-eye"></i> Preview Rules
+                            <span class="glyphicon space glyphicon-eye-open"></span> Preview Rules
                         </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-save"></i> Save Shelf
+                        <button type="submit" class="btn btn-primary" id="save-shelf-btn">
+                            <span class="glyphicon space glyphicon-floppy-disk"></span> Save Shelf
                         </button>
                         <a href="{{ url_for('web.index') }}" class="btn btn-default">
-                            <i class="fa fa-times"></i> Cancel
+                            <span class="glyphicon space glyphicon-remove"></span> Cancel
                         </a>
                         {% if shelf %}
                         <button type="button" class="btn btn-danger pull-right" id="delete-shelf-btn">
-                            <i class="fa fa-trash"></i> Delete Shelf
+                            <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
                         </button>
                         {% endif %}
                     </div>
@@ -351,6 +352,7 @@ div.help-panel > .panel-body {
 {% set rules_json = shelf.rules|tojson if shelf and shelf.rules else 'null' %}
 {% block js %}
 {{ super() }}
+<script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/query-builder.standalone.min.js') }}"></script>
 <script>
 $(function() {
@@ -364,23 +366,26 @@ $(function() {
     
     // Icon Picker Logic
     var $iconInput = $('#shelf-icon');
-    var $iconDisplay = $('#selected-icon-display');
-    var $iconName = $('#selected-icon-name');
     var $iconOptions = $('.icon-option');
     var $iconSearch = $('#icon-search');
     
-    // Set initial selected icon
+    // Set initial selected icon in grid
     var currentIcon = $iconInput.val();
     $('.icon-option[data-icon="' + currentIcon + '"]').addClass('selected');
     
-    // Icon selection
+    // When user clicks a quick-pick icon, populate the input field
     $iconOptions.on('click', function() {
         var icon = $(this).data('icon');
         $iconOptions.removeClass('selected');
         $(this).addClass('selected');
         $iconInput.val(icon);
-        $iconDisplay.attr('class', 'glyphicon ' + icon);
-        $iconName.text(icon);
+    });
+
+    // When user types/pastes in the input, update grid selection if it matches
+    $iconInput.on('input change paste', function() {
+        var icon = $(this).val();
+        $iconOptions.removeClass('selected');
+        $('.icon-option[data-icon="' + icon + '"]').addClass('selected');
     });
     
     // Icon search filter
@@ -517,7 +522,7 @@ $(function() {
             return;
         }
         
-        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Loading...');
+        $btn.prop('disabled', true).html('<span class="glyphicon space glyphicon-refresh glyphicon-refresh-animate"></span> Loading...');
         
         $.ajax({
             url: "{{ url_for('web.preview_magic_shelf') }}",
@@ -527,7 +532,7 @@ $(function() {
             success: function(response) {
                 if (response.success) {
                     $results.removeClass('error').addClass('success').show();
-                    var html = '<p><strong><i class="fa fa-check-circle"></i> ' + response.count + ' book(s) match these rules</strong></p>';
+                    var html = '<p><strong><span class="glyphicon space glyphicon-ok-circle"></span> ' + response.count + ' book(s) match these rules</strong></p>';
                     if (response.sample_books && response.sample_books.length > 0) {
                         html += '<p><small>Sample results:</small></p><ul class="preview-book-list">';
                         response.sample_books.forEach(function(book) {
@@ -550,15 +555,18 @@ $(function() {
                 $content.html('<p><strong>Error:</strong> ' + message + '</p>');
             },
             complete: function() {
-                $btn.prop('disabled', false).html('<i class="fa fa-eye"></i> Preview Rules');
+                $btn.prop('disabled', false).html('<span class="glyphicon space glyphicon-eye-open"></span> Preview Rules');
             }
         });
     });
 
     // Form Submission
     $('#magic-shelf-form').on('submit', function(e) {
+        console.log('Form submit triggered');
         e.preventDefault();
         var rules = $('#builder').queryBuilder('getRules');
+        console.log('Rules:', rules);
+
 
         if (!rules) {
             alert('Please define at least one rule.');
@@ -576,6 +584,8 @@ $(function() {
             icon: $('#shelf-icon').val(),
             rules: rules
         };
+
+        console.log('Submitting shelf data:', shelfData);
 
         var url = "{{ url_for('web.create_magic_shelf') }}";
         var method = "POST";
@@ -597,6 +607,7 @@ $(function() {
                 }
             },
             error: function(xhr) {
+                console.error('AJAX error:', xhr);
                 var message = 'An unexpected error occurred.';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     message = xhr.responseJSON.message;
@@ -634,7 +645,7 @@ $(function() {
     // Duplicate Shelf
     $('#duplicate-shelf-btn').on('click', function() {
         var $btn = $(this);
-        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Duplicating...');
+        $btn.prop('disabled', true).html('<span class="glyphicon space glyphicon-refresh glyphicon-refresh-animate"></span> Duplicating...');
         
         $.ajax({
             url: "{{ url_for('web.duplicate_magic_shelf', shelf_id=shelf.id) }}",
@@ -645,7 +656,7 @@ $(function() {
                     window.location.href = "{{ url_for('web.edit_magic_shelf', shelf_id=0) }}".replace('/0', '/' + response.shelf_id);
                 } else {
                     alert('Error duplicating shelf: ' + (response.message || 'Unknown error'));
-                    $btn.prop('disabled', false).html('<i class="fa fa-copy"></i> Duplicate');
+                $btn.prop('disabled', false).html('<span class="glyphicon space glyphicon-duplicate"></span> Duplicate');
                 }
             },
             error: function(xhr) {
@@ -654,7 +665,7 @@ $(function() {
                     message = xhr.responseJSON.message;
                 }
                 alert('Error: ' + message);
-                $btn.prop('disabled', false).html('<i class="fa fa-copy"></i> Duplicate');
+                $btn.prop('disabled', false).html('<span class="glyphicon space glyphicon-duplicate"></span> Duplicate');
             }
         });
     });

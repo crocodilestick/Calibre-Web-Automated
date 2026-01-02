@@ -1016,23 +1016,35 @@ def preview_magic_shelf():
 @web.route("/magicshelf", methods=["GET", "POST"])
 @user_login_required
 def create_magic_shelf():
-    # Whitelist of allowed Font Awesome icon classes
-    ALLOWED_ICONS = {
-        'glyphicon-star', 'glyphicon-heart', 'glyphicon-book', 'glyphicon-bookmark',
-        'glyphicon-time', 'glyphicon-fire', 'glyphicon-flash', 'glyphicon-certificate',
-        'glyphicon-flag', 'glyphicon-tag', 'glyphicon-tags', 'glyphicon-folder-close',
-        'glyphicon-folder-open', 'glyphicon-inbox', 'glyphicon-compressed', 'glyphicon-list',
-        'glyphicon-list-alt', 'glyphicon-th-list', 'glyphicon-hdd', 'glyphicon-cloud',
-        'glyphicon-music', 'glyphicon-film', 'glyphicon-picture', 'glyphicon-globe',
-        'glyphicon-tower', 'glyphicon-sunglasses', 'glyphicon-lamp', 'glyphicon-gift',
-        'glyphicon-equalizer', 'glyphicon-hourglass'
-    }
+    # Curated emoji list for magic shelf icons - organized by category
+    ALLOWED_ICONS = [
+        # Books & Reading
+        '📚', '📖', '📕', '📗', '📘', '📙', '📔', '📓', '📒', '📰',
+        # Stars & Favorites
+        '⭐', '🌟', '✨', '💫', '🌠', '⚡', '🔥', '💥', '🎯', '🏆',
+        # Hearts
+        '❤️', '💙', '💚', '💛', '🧡', '💜', '🖤', '🤍', '💖', '💝',
+        # Entertainment
+        '🎭', '🎬', '🎪', '🎨', '🎮', '🎲', '🎰', '🎳', '🎱', '🎸',
+        # Travel & Space
+        '🚀', '🛸', '🌌', '🌍', '🌎', '🌏', '🗺️', '🧭', '⛰️', '🏔️',
+        # Fantasy & Magic
+        '🔮', '🎃', '👻', '🦄', '🐉', '🐲', '🧙', '🧚', '🧛', '🧜',
+        # Awards & Achievement
+        '🥇', '🥈', '🥉', '🏅', '🎖️', '👑', '💎', '💍', '🔱', '🎗️',
+        # Time & Organization
+        '⏰', '⏱️', '⌛', '⏳', '🕰️', '🔔', '📅', '📆', '📌', '📍',
+        # Learning & Science
+        '🎓', '🏫', '📝', '✏️', '📐', '📏', '🔬', '🔭', '🖌️', '🖍️',
+        # Nature & Weather
+        '🌈', '☀️', '🌙', '🌸', '🌺', '🌻', '🌹', '🌷', '🍀', '🌱'
+    ]
     
     if request.method == "POST":
         data = request.get_json()
         name = strip_whitespaces(data.get('name', ''))
         rules = data.get('rules')
-        icon = data.get('icon', 'glyphicon-star')
+        icon = data.get('icon', '🪄')
         
         # Validate inputs
         if not name or not rules:
@@ -1041,10 +1053,9 @@ def create_magic_shelf():
         if len(name) > 100:
             return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
         
-        # Sanitize icon input - only allow whitelisted glyphicon classes
-        if icon not in ALLOWED_ICONS:
-            log.warning(f"Invalid icon '{icon}' submitted by user {current_user.id}, using default")
-            icon = 'glyphicon-star'
+        # Use default icon if none provided, otherwise accept any emoji/symbol
+        if not icon:
+            icon = '🪄'
         
         try:
             new_shelf = ub.MagicShelf(
@@ -1066,22 +1077,35 @@ def create_magic_shelf():
     return render_title_template('magic_shelf_edit.html', 
                                  title=_("Create Magic Shelf"), 
                                  page="magic_shelf_create",
-                                 allowed_icons=sorted(ALLOWED_ICONS))
+                                 allowed_icons=ALLOWED_ICONS)
 
 
 @web.route("/magicshelf/<int:shelf_id>/edit", methods=["GET", "POST"])
 @user_login_required
 def edit_magic_shelf(shelf_id):
-    ALLOWED_ICONS = {
-        'glyphicon-star', 'glyphicon-heart', 'glyphicon-book', 'glyphicon-bookmark',
-        'glyphicon-time', 'glyphicon-fire', 'glyphicon-flash', 'glyphicon-certificate',
-        'glyphicon-flag', 'glyphicon-tag', 'glyphicon-tags', 'glyphicon-folder-close',
-        'glyphicon-folder-open', 'glyphicon-inbox', 'glyphicon-compressed', 'glyphicon-list',
-        'glyphicon-list-alt', 'glyphicon-th-list', 'glyphicon-hdd', 'glyphicon-cloud',
-        'glyphicon-music', 'glyphicon-film', 'glyphicon-picture', 'glyphicon-globe',
-        'glyphicon-tower', 'glyphicon-sunglasses', 'glyphicon-lamp', 'glyphicon-gift',
-        'glyphicon-equalizer', 'glyphicon-hourglass'
-    }
+    # Curated emoji list for magic shelf icons - organized by category
+    ALLOWED_ICONS = [
+        # Books & Reading
+        '📚', '📖', '📕', '📗', '📘', '📙', '📔', '📓', '📒', '📰',
+        # Stars & Favorites
+        '⭐', '🌟', '✨', '💫', '🌠', '⚡', '🔥', '💥', '🎯', '🏆',
+        # Hearts
+        '❤️', '💙', '💚', '💛', '🧡', '💜', '🖤', '🤍', '💖', '💝',
+        # Entertainment
+        '🎭', '🎬', '🎪', '🎨', '🎮', '🎲', '🎰', '🎳', '🎱', '🎸',
+        # Travel & Space
+        '🚀', '🛸', '🌌', '🌍', '🌎', '🌏', '🗺️', '🧭', '⛰️', '🏔️',
+        # Fantasy & Magic
+        '🔮', '🎃', '👻', '🦄', '🐉', '🐲', '🧙', '🧚', '🧛', '🧜',
+        # Awards & Achievement
+        '🥇', '🥈', '🥉', '🏅', '🎖️', '👑', '💎', '💍', '🔱', '🎗️',
+        # Time & Organization
+        '⏰', '⏱️', '⌛', '⏳', '🕰️', '🔔', '📅', '📆', '📌', '📍',
+        # Learning & Science
+        '🎓', '🏫', '📝', '✏️', '📐', '📏', '🔬', '🔭', '🖌️', '🖍️',
+        # Nature & Weather
+        '🌈', '☀️', '🌙', '🌸', '🌺', '🌻', '🌹', '🌷', '🍀', '🌱'
+    ]
     
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
     if not shelf:
@@ -1105,10 +1129,9 @@ def edit_magic_shelf(shelf_id):
         if len(name) > 100:
             return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
         
-        # Sanitize icon
-        if icon not in ALLOWED_ICONS:
-            log.warning(f"Invalid icon '{icon}' submitted by user {current_user.id}, keeping current: {shelf.icon}")
-            icon = shelf.icon
+        # Use default icon if none provided, otherwise accept any emoji/symbol
+        if not icon:
+            icon = '🪄'
         
         try:
             shelf.name = name
@@ -1116,7 +1139,7 @@ def edit_magic_shelf(shelf_id):
             shelf.icon = icon
             flag_modified(shelf, "rules")
             ub.session_commit()
-            log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}')")
+            log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}') with icon '{icon}'")
             return jsonify({"success": True})
         except Exception as e:
             log.error(f"Error updating magic shelf {shelf_id}: {e}")
@@ -1128,7 +1151,7 @@ def edit_magic_shelf(shelf_id):
                                  shelf=shelf, 
                                  title=_("Edit Magic Shelf"), 
                                  page="magic_shelf_edit",
-                                 allowed_icons=sorted(ALLOWED_ICONS))
+                                 allowed_icons=ALLOWED_ICONS)
 
 
 @web.route("/magicshelf/<int:shelf_id>/duplicate", methods=["POST"])

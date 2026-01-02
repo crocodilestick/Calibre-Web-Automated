@@ -1074,10 +1074,21 @@ def create_magic_shelf():
             return jsonify({"success": False, "message": _("Error creating shelf")}), 500
     
     # For GET request, render the creation form
+    # Fetch available languages for the dropdown
+    languages = calibre_db.session.query(db.Languages).all()
+    language_map = {}
+    for lang in languages:
+        try:
+            lang_name = isoLanguages.get_language_name(get_locale(), lang.lang_code)
+            language_map[lang.lang_code] = lang_name
+        except:
+            language_map[lang.lang_code] = lang.lang_code
+
     return render_title_template('magic_shelf_edit.html', 
                                  title=_("Create Magic Shelf"), 
                                  page="magic_shelf_create",
-                                 allowed_icons=ALLOWED_ICONS)
+                                 allowed_icons=ALLOWED_ICONS,
+                                 languages=language_map)
 
 
 @web.route("/magicshelf/<int:shelf_id>/edit", methods=["GET", "POST"])
@@ -1147,11 +1158,22 @@ def edit_magic_shelf(shelf_id):
             return jsonify({"success": False, "message": _("Error updating shelf")}), 500
 
     # For GET request, render the edit form
+    # Fetch available languages for the dropdown
+    languages = calibre_db.session.query(db.Languages).all()
+    language_map = {}
+    for lang in languages:
+        try:
+            lang_name = isoLanguages.get_language_name(get_locale(), lang.lang_code)
+            language_map[lang.lang_code] = lang_name
+        except:
+            language_map[lang.lang_code] = lang.lang_code
+
     return render_title_template('magic_shelf_edit.html', 
                                  shelf=shelf, 
                                  title=_("Edit Magic Shelf"), 
                                  page="magic_shelf_edit",
-                                 allowed_icons=ALLOWED_ICONS)
+                                 allowed_icons=ALLOWED_ICONS,
+                                 languages=language_map)
 
 
 @web.route("/magicshelf/<int:shelf_id>/duplicate", methods=["POST"])

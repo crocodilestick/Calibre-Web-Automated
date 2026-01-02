@@ -382,6 +382,7 @@ div.help-panel > .panel-body {
 {% endblock %}
 
 {% set rules_json = shelf.rules|tojson if shelf and shelf.rules else 'null' %}
+{% set languages_json = languages|tojson if languages else '{}' %}
 {% block js %}
 {{ super() }}
 <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
@@ -434,6 +435,7 @@ $(function() {
     });
     
     // Query Builder Configuration
+    var languages = {{ languages_json|safe }};
     var fields = [
         {
             id: 'title', 
@@ -464,6 +466,14 @@ $(function() {
             label: 'Publisher', 
             type: 'string',
             description: 'Publisher name'
+        },
+        {
+            id: 'language', 
+            label: 'Language', 
+            type: 'string',
+            input: 'select',
+            values: languages,
+            description: 'Book language'
         },
         {
             id: 'rating', 

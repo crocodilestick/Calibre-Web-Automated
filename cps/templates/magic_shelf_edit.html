@@ -339,6 +339,15 @@ div.help-panel > .panel-body {
                         </div>
                     </div>
 
+                    <!-- Kobo Sync Checkbox -->
+                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                        <label>
+                            <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-kobo-sync" {{ 'checked' if shelf and shelf.kobo_sync else '' }}>
+                            Enable Kobo sync (shelf appears on Kobo devices)
+                        </label>
+                        <small class="form-text text-muted">Only works if Kobo integration is enabled</small>
+                    </div>
+
                     <hr>
 
                     <!-- Rules Builder -->
@@ -632,7 +641,8 @@ $(function() {
         var shelfData = {
             name: shelfName,
             icon: $('#shelf-icon').val(),
-            rules: rules
+            rules: rules,
+            kobo_sync: $('#shelf-kobo-sync').is(':checked')
         };
 
         console.log('Submitting shelf data:', shelfData);

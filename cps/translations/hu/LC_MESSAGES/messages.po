@@ -336,13 +336,13 @@ msgstr "Siker! A Gmail-fiók hitelesítve."
 #: cps/tasks/convert.py:145 cps/web.py:1669
 #, python-format
 msgid "Oops! Database Error: %(error)s."
-msgstr "Hoppá! Adatbázis hiba: %(error)"
+msgstr "Hoppá! Adatbázis hiba: %(error)s"
 
 #: cps/admin.py:1460
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
-msgstr "A %(email) címre küldendő teszt e-mail sorba állítva. Kérjük, "
+msgstr "A %(email)s címre küldendő teszt e-mail sorba állítva. Kérjük, "
 "ellenőrizze a Feladatok menüpontban az eredményt"
 
 #: cps/admin.py:1463

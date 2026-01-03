@@ -356,6 +356,11 @@ form#archived_form > label.block-label::before {
     z-index: -1 !important;
 }
 
+/* Fixes Create Magic Shelf spacing in sidebar */
+li#nav_createmagicshelf {
+    margin-left: 1rem !important;
+}
+
 /* Fixes close buttons colour */
 button.close > span {
     color: whitesmoke;

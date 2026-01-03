@@ -40,6 +40,7 @@ from .redirect import get_redirect_location
 from .cw_babel import get_available_locale
 from .usermanagement import login_required_if_no_ano
 from .kobo_sync_status import remove_synced_book
+from . import magic_shelf
 from .render_template import render_title_template
 from .kobo_sync_status import change_archived_books
 from . import limiter
@@ -443,6 +444,8 @@ def render_books_list(data, sort_param, book_id, page):
         term = json.loads(flask_session.get('query', '{}'))
         offset = int(int(config.config_books_per_page) * (page - 1))
         return render_adv_search_results(term, offset, order, config.config_books_per_page)
+    elif data == "magicshelf":
+        return render_magic_shelf(book_id, sort_param, page)
     else:
         website = data or "newest"
         entries, random, pagination = calibre_db.fill_indexpage(page, 0, db.Books, True, order[0],
@@ -850,6 +853,87 @@ def render_archived_books(page, sort_param):
     return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
                                  title=name, page=page_name, order=sort_param[1])
 
+
+@web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")
+@login_required_if_no_ano
+def render_magic_shelf(shelf_id, sort_param, page):
+    """Render a magic shelf with proper pagination and sorting."""
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found")
+        abort(404)
+    
+    # Check ownership - users can only view their own shelves (for now)
+    if shelf.user_id != current_user.id:
+        log.warning(f"User {current_user.id} attempted to access magic shelf {shelf_id} owned by {shelf.user_id}")
+        abort(403)
+    
+    # Get sort order using the same function as other book lists
+    order = get_sort_function(sort_param, "magicshelf")
+    
+    # Get pagination settings\
+    per_page = config.config_books_per_page or 20
+    
+    # Build sort order - order[0] is a list, we need to unpack it
+    sort_order = order[0] if order and len(order) > 0 else []
+    
+    # Check for cache bypass
+    bypass_cache = request.args.get('refresh') == '1'
+
+    # Get books with pagination
+    try:
+        books, total_count = magic_shelf.get_books_for_magic_shelf(
+            shelf_id, 
+            page=page, 
+            page_size=per_page,
+            sort_order=sort_order,
+            sort_param=sort_param,
+            bypass_cache=bypass_cache
+        )
+        log.debug(f"Magic shelf {shelf_id} returned {len(books)} books out of {total_count} total")
+
+        # Log activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=current_user.id,
+                user_name=current_user.name,
+                event_type='MAGIC_SHELF_VIEW',
+                item_id=shelf_id,
+                item_title=shelf.name,
+                extra_data=json.dumps({'shelf_name': shelf.name, 'shelf_type': 'magic'})
+            )
+        except Exception as e:
+            log.error(f"Failed to log magic shelf activity: {e}")
+
+    except Exception as e:
+        log.error(f"Error retrieving books for magic shelf {shelf_id}: {e}")
+        flash(_("Error loading magic shelf"), category="error")
+        return redirect(url_for('web.index'))
+    
+    # Create proper pagination object
+    from .pagination import Pagination
+    pagination = Pagination(page, per_page, total_count)
+    
+    # Wrap books in entry objects with .Books attribute for template compatibility
+    class Entry:
+        def __init__(self, book):
+            self.Books = book
+    
+    entries = [Entry(book) for book in books]
+    
+    return render_title_template('index.html', 
+                                 entries=entries, 
+                                 pagination=pagination,
+                                 title=_("Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s", icon=shelf.icon, name=shelf.name), 
+                                 page="magicshelf", 
+                                 id=shelf_id, 
+                                 order=order[1])
+
+
 # ################################### Health Check ##################################################################
 
 @web.route("/health")
@@ -904,6 +988,305 @@ def index(page):
 @login_required_if_no_ano
 def books_list(data, sort_param, book_id, page):
     return render_books_list(data, sort_param, book_id, page)
+
+
+@web.route("/magicshelf/preview", methods=["POST"])
+@user_login_required
+def preview_magic_shelf():
+    """Preview what books match the given rules without saving the shelf."""
+    try:
+        data = request.get_json()
+        rules = data.get('rules')
+        
+        if not rules or not rules.get('rules'):
+            return jsonify({"success": False, "message": _("No rules provided")}), 400
+        
+        # Temporarily create a query to count matching books
+        try:
+            query_filter = magic_shelf.build_query_from_rules(rules, user_id=current_user.id)
+            if query_filter is None:
+                return jsonify({"success": False, "message": _("Invalid rules format")}), 400
+            
+            cdb = db.CalibreDB(init=True)
+            query = cdb.session.query(db.Books)
+            query = query.filter(query_filter)
+            query = query.filter(cdb.common_filters())
+            
+            # Get total count
+            total_count = query.count()
+            
+            # Get sample books (first 5)
+            sample_books = query.limit(5).all()
+            sample_titles = [book.title for book in sample_books]
+            
+            return jsonify({
+                "success": True,
+                "count": total_count,
+                "sample_books": sample_titles
+            })
+            
+        except Exception as e:
+            log.error(f"Error previewing magic shelf rules: {e}")
+            return jsonify({"success": False, "message": _("Error processing rules")}), 500
+            
+    except Exception as e:
+        log.error(f"Error in preview_magic_shelf: {e}")
+        return jsonify({"success": False, "message": _("Invalid request")}), 400
+
+
+@web.route("/magicshelf", methods=["GET", "POST"])
+@user_login_required
+def create_magic_shelf():
+    # Curated emoji list for magic shelf icons - organized by category
+    ALLOWED_ICONS = [
+        # Books & Reading
+        '📚', '📖', '📕', '📗', '📘', '📙', '📔', '📓', '📒', '📰',
+        # Stars & Favorites
+        '⭐', '🌟', '✨', '💫', '🌠', '⚡', '🔥', '💥', '🎯', '🏆',
+        # Hearts
+        '❤️', '💙', '💚', '💛', '🧡', '💜', '🖤', '🤍', '💖', '💝',
+        # Entertainment
+        '🎭', '🎬', '🎪', '🎨', '🎮', '🎲', '🎰', '🎳', '🎱', '🎸',
+        # Travel & Space
+        '🚀', '🛸', '🌌', '🌍', '🌎', '🌏', '🗺️', '🧭', '⛰️', '🏔️',
+        # Fantasy & Magic
+        '🔮', '🎃', '👻', '🦄', '🐉', '🐲', '🧙', '🧚', '🧛', '🧜',
+        # Awards & Achievement
+        '🥇', '🥈', '🥉', '🏅', '🎖️', '👑', '💎', '💍', '🔱', '🎗️',
+        # Time & Organization
+        '⏰', '⏱️', '⌛', '⏳', '🕰️', '🔔', '📅', '📆', '📌', '📍',
+        # Learning & Science
+        '🎓', '🏫', '📝', '✏️', '📐', '📏', '🔬', '🔭', '🖌️', '🖍️',
+        # Nature & Weather
+        '🌈', '☀️', '🌙', '🌸', '🌺', '🌻', '🌹', '🌷', '🍀', '🌱'
+    ]
+    
+    if request.method == "POST":
+        data = request.get_json()
+        name = strip_whitespaces(data.get('name', ''))
+        rules = data.get('rules')
+        icon = data.get('icon', '🪄')
+        kobo_sync = data.get('kobo_sync', False)
+        
+        # Validate inputs
+        if not name or not rules:
+            return jsonify({"success": False, "message": _("Name and rules are required")}), 400
+        
+        if len(name) > 100:
+            return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
+        
+        # Use default icon if none provided, otherwise accept any emoji/symbol
+        if not icon:
+            icon = '🪄'
+        
+        try:
+            new_shelf = ub.MagicShelf(
+                name=name,
+                user_id=current_user.id,
+                rules=rules,
+                icon=icon,
+                kobo_sync=kobo_sync
+            )
+            ub.session.add(new_shelf)
+            ub.session_commit()
+            log.info(f"User {current_user.id} created magic shelf '{name}' (ID: {new_shelf.id})")
+            return jsonify({"success": True, "shelf_id": new_shelf.id})
+        except Exception as e:
+            log.error(f"Error creating magic shelf: {e}")
+            ub.session.rollback()
+            return jsonify({"success": False, "message": _("Error creating shelf")}), 500
+    
+    # For GET request, render the creation form
+    # Fetch available languages for the dropdown
+    languages = calibre_db.session.query(db.Languages).all()
+    language_map = {}
+    for lang in languages:
+        try:
+            lang_name = isoLanguages.get_language_name(get_locale(), lang.lang_code)
+            language_map[lang.lang_code] = lang_name
+        except:
+            language_map[lang.lang_code] = lang.lang_code
+
+    return render_title_template('magic_shelf_edit.html', 
+                                 title=_("Create Magic Shelf"), 
+                                 page="magic_shelf_create",
+                                 allowed_icons=ALLOWED_ICONS,
+                                 languages=language_map)
+
+
+@web.route("/magicshelf/<int:shelf_id>/edit", methods=["GET", "POST"])
+@user_login_required
+def edit_magic_shelf(shelf_id):
+    # Curated emoji list for magic shelf icons - organized by category
+    ALLOWED_ICONS = [
+        # Books & Reading
+        '📚', '📖', '📕', '📗', '📘', '📙', '📔', '📓', '📒', '📰',
+        # Stars & Favorites
+        '⭐', '🌟', '✨', '💫', '🌠', '⚡', '🔥', '💥', '🎯', '🏆',
+        # Hearts
+        '❤️', '💙', '💚', '💛', '🧡', '💜', '🖤', '🤍', '💖', '💝',
+        # Entertainment
+        '🎭', '🎬', '🎪', '🎨', '🎮', '🎲', '🎰', '🎳', '🎱', '🎸',
+        # Travel & Space
+        '🚀', '🛸', '🌌', '🌍', '🌎', '🌏', '🗺️', '🧭', '⛰️', '🏔️',
+        # Fantasy & Magic
+        '🔮', '🎃', '👻', '🦄', '🐉', '🐲', '🧙', '🧚', '🧛', '🧜',
+        # Awards & Achievement
+        '🥇', '🥈', '🥉', '🏅', '🎖️', '👑', '💎', '💍', '🔱', '🎗️',
+        # Time & Organization
+        '⏰', '⏱️', '⌛', '⏳', '🕰️', '🔔', '📅', '📆', '📌', '📍',
+        # Learning & Science
+        '🎓', '🏫', '📝', '✏️', '📐', '📏', '🔬', '🔭', '🖌️', '🖍️',
+        # Nature & Weather
+        '🌈', '☀️', '🌙', '🌸', '🌺', '🌻', '🌹', '🌷', '🍀', '🌱'
+    ]
+    
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found")
+        abort(404)
+    
+    if shelf.user_id != current_user.id:
+        log.warning(f"User {current_user.id} attempted to edit magic shelf {shelf_id} owned by {shelf.user_id}")
+        abort(403)
+
+    if request.method == "POST":
+        data = request.get_json()
+        name = strip_whitespaces(data.get('name', shelf.name))
+        rules = data.get('rules', shelf.rules)
+        icon = data.get('icon', shelf.icon)
+        kobo_sync = data.get('kobo_sync', shelf.kobo_sync)
+        
+        # Validate inputs
+        if not name:
+            return jsonify({"success": False, "message": _("Shelf name is required")}), 400
+        
+        if len(name) > 100:
+            return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
+        
+        # Use default icon if none provided, otherwise accept any emoji/symbol
+        if not icon:
+            icon = '🪄'
+        
+        try:
+            shelf.name = name
+            shelf.rules = rules
+            shelf.icon = icon
+            shelf.kobo_sync = kobo_sync
+            flag_modified(shelf, "rules")
+            
+            # Invalidate Complex Query Cache
+            ub.session.query(ub.MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
+            
+            ub.session_commit()
+            
+            # Invalidate cache
+            if 'magic_shelf_counts' in flask_session:
+                counts = flask_session['magic_shelf_counts']
+                if str(shelf_id) in counts:
+                    del counts[str(shelf_id)]
+                    flask_session.modified = True
+            
+            log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}') with icon '{icon}'")
+            return jsonify({"success": True})
+        except Exception as e:
+            log.error(f"Error updating magic shelf {shelf_id}: {e}")
+            ub.session.rollback()
+            return jsonify({"success": False, "message": _("Error updating shelf")}), 500
+
+    # For GET request, render the edit form
+    # Fetch available languages for the dropdown
+    languages = calibre_db.session.query(db.Languages).all()
+    language_map = {}
+    for lang in languages:
+        try:
+            lang_name = isoLanguages.get_language_name(get_locale(), lang.lang_code)
+            language_map[lang.lang_code] = lang_name
+        except:
+            language_map[lang.lang_code] = lang.lang_code
+
+    return render_title_template('magic_shelf_edit.html', 
+                                 shelf=shelf, 
+                                 title=_("Edit Magic Shelf"), 
+                                 page="magic_shelf_edit",
+                                 allowed_icons=ALLOWED_ICONS,
+                                 languages=language_map)
+
+
+@web.route("/magicshelf/<int:shelf_id>/duplicate", methods=["POST"])
+@user_login_required
+def duplicate_magic_shelf(shelf_id):
+    """Duplicate an existing magic shelf (especially useful for system templates)."""
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found for duplication")
+        return jsonify({"success": False, "message": _("Shelf not found")}), 404
+    
+    # Users can duplicate their own shelves or any public shelf
+    if shelf.user_id != current_user.id and not shelf.is_public:
+        log.warning(f"User {current_user.id} attempted to duplicate private shelf {shelf_id} owned by {shelf.user_id}")
+        return jsonify({"success": False, "message": _("Permission denied")}), 403
+    
+    try:
+        # Create duplicate with " (Copy)" suffix
+        new_name = f"{shelf.name} (Copy)"
+        
+        # If name already exists, add number
+        counter = 1
+        while ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.user_id == current_user.id,
+            ub.MagicShelf.name == new_name
+        ).first():
+            counter += 1
+            new_name = f"{shelf.name} (Copy {counter})"
+        
+        duplicate_shelf = ub.MagicShelf(
+            user_id=current_user.id,
+            name=new_name,
+            icon=shelf.icon,
+            rules=shelf.rules.copy() if shelf.rules else {},
+            is_system=False,  # Duplicates are never system shelves
+            is_public=0  # Duplicates start as private
+        )
+        
+        ub.session.add(duplicate_shelf)
+        ub.session_commit()
+        
+        log.info(f"User {current_user.id} duplicated magic shelf {shelf_id} as '{new_name}' (ID: {duplicate_shelf.id})")
+        return jsonify({
+            "success": True, 
+            "shelf_id": duplicate_shelf.id,
+            "message": _("Shelf duplicated successfully")
+        })
+        
+    except Exception as e:
+        log.error(f"Error duplicating magic shelf {shelf_id}: {e}")
+        ub.session.rollback()
+        return jsonify({"success": False, "message": _("Error duplicating shelf")}), 500
+
+
+@web.route("/magicshelf/<int:shelf_id>/delete", methods=["POST"])
+@user_login_required
+def delete_magic_shelf(shelf_id):
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found for deletion")
+        abort(404)
+    
+    if shelf.user_id != current_user.id:
+        log.warning(f"User {current_user.id} attempted to delete magic shelf {shelf_id} owned by {shelf.user_id}")
+        abort(403)
+    
+    try:
+        shelf_name = shelf.name
+        ub.session.delete(shelf)
+        ub.session_commit()
+        log.info(f"User {current_user.id} deleted magic shelf {shelf_id} ('{shelf_name}')")
+        return jsonify({"success": True})
+    except Exception as e:
+        log.error(f"Error deleting magic shelf {shelf_id}: {e}")
+        ub.session.rollback()
+        return jsonify({"success": False, "message": _("Error deleting shelf")}), 500
 
 
 @web.route("/table")

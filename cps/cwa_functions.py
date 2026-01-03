@@ -697,6 +697,10 @@ def set_cwa_settings():
             #         else:
             #             f.write(f"{key} - {result[key]}\n")
 
+            # Save Kobo Sync Magic Shelves setting (stored in app.db, not cwa.db)
+            config.config_kobo_sync_magic_shelves = 'config_kobo_sync_magic_shelves' in request.form
+            config.save()
+
             cwa_db.update_cwa_settings(result)
             cwa_settings = cwa_db.get_cwa_settings()
 

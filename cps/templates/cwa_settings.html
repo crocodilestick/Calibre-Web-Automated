@@ -385,6 +385,16 @@
         {{_('When disabled, you will no longer receive notifications in the Web UI when using a language other than English if the translations for your chosen language are not complete.')}}
       </p>
 
+      {% if config.config_kobo_sync_magic_shelves %}
+      <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
+      {% else %}
+      <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
+      {% endif %}
+      <label for="config_kobo_sync_magic_shelves" style="padding-left: 10px;">{{_('Sync Magic Shelves to Kobo')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_('When active, your Magic Shelves will be synced to your Kobo device as collections. Note: You must also enable Kobo Sync in Basic Configuration.')}}
+      </p>
+
       {% if cwa_settings['enable_mobile_blur'] %}
       <input type="checkbox" id="enable_mobile_blur" name="enable_mobile_blur" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="May impact performance on low-end mobile devices">
       {% else %}

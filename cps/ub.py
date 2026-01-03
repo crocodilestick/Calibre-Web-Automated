@@ -406,6 +406,23 @@ class MagicShelf(Base):
         return '<MagicShelf %d:%r>' % (self.id, self.name)
 
 
+class MagicShelfCache(Base):
+    __tablename__ = 'magic_shelf_cache'
+
+    id = Column(Integer, primary_key=True)
+    shelf_id = Column(Integer, ForeignKey('magic_shelf.id'), index=True)
+    user_id = Column(Integer, ForeignKey('user.id'), index=True)
+    sort_param = Column(String, default='stored')
+    book_ids = Column(JSON)  # Stores [1, 45, 2, ...]
+    total_count = Column(Integer)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Composite index for fast lookups
+    __table_args__ = (
+        Index('ix_magic_shelf_cache_lookup', 'shelf_id', 'user_id', 'sort_param'),
+    )
+
+
 # Baseclass representing Relationship between books and Shelfs in Calibre-Web in app.db (N:M)
 class BookShelf(Base):
     __tablename__ = 'book_shelf_link'

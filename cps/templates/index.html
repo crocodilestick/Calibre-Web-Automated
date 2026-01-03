@@ -122,7 +122,7 @@
   {% if page != 'newest' %}<div class="shelf-actions">{% endif %}
     {% if page == 'magicshelf' %}
     <div class="magic-shelf-buttons">
-        <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1)}}" 
+        <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1, refresh=1)}}" 
            class="btn btn-default"
            style="display: flex;
                   align-items: center;

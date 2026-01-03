@@ -879,13 +879,18 @@ def render_magic_shelf(shelf_id, sort_param, page):
     # Build sort order - order[0] is a list, we need to unpack it
     sort_order = order[0] if order and len(order) > 0 else []
     
+    # Check for cache bypass
+    bypass_cache = request.args.get('refresh') == '1'
+
     # Get books with pagination
     try:
         books, total_count = magic_shelf.get_books_for_magic_shelf(
             shelf_id, 
             page=page, 
             page_size=per_page,
-            sort_order=sort_order
+            sort_order=sort_order,
+            sort_param=sort_param,
+            bypass_cache=bypass_cache
         )
         log.debug(f"Magic shelf {shelf_id} returned {len(books)} books out of {total_count} total")
     except Exception as e:
@@ -1153,6 +1158,10 @@ def edit_magic_shelf(shelf_id):
             shelf.icon = icon
             shelf.kobo_sync = kobo_sync
             flag_modified(shelf, "rules")
+            
+            # Invalidate Complex Query Cache
+            ub.session.query(ub.MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
+            
             ub.session_commit()
             
             # Invalidate cache

@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 from . import db, ub, logger
+from .cw_login import current_user
 from sqlalchemy import and_, or_, not_
 from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import SQLAlchemyError
@@ -315,7 +316,7 @@ def build_query_from_rules(rules_json, user_id=None):
     
     return None
 
-def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None):
+def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None, sort_param='stored', bypass_cache=False):
     """
     Takes a MagicShelf ID and returns a paginated list of book objects that match its rules.
     
@@ -324,6 +325,8 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None)
         page: Page number (1-indexed)
         page_size: Number of books per page (None = all books)
         sort_order: SQLAlchemy order_by expression
+        sort_param: String identifier for the sort order (used for cache key)
+        bypass_cache: If True, forces a database query and cache update
     
     Returns:
         tuple: (books, total_count)
@@ -333,6 +336,48 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None)
         if not magic_shelf:
             log.warning(f"Magic shelf with ID {shelf_id} not found")
             return [], 0
+
+        # 1. Check Cache
+        if not bypass_cache and current_user.is_authenticated:
+            cache = ub.session.query(ub.MagicShelfCache).filter_by(
+                shelf_id=shelf_id, 
+                user_id=current_user.id, 
+                sort_param=sort_param
+            ).first()
+            
+            # Check TTL (e.g. 30 minutes)
+            if cache:
+                # Handle potential naive/aware datetime issues
+                created_at = cache.created_at
+                if created_at.tzinfo is None:
+                    created_at = created_at.replace(tzinfo=timezone.utc)
+                
+                is_expired = (datetime.now(timezone.utc) - created_at) > timedelta(minutes=30)
+                
+                if not is_expired:
+                    all_ids = cache.book_ids
+                    total_count = cache.total_count
+                    
+                    # Slice for pagination
+                    if page_size is not None and page_size > 0:
+                        start = (page - 1) * page_size
+                        page_ids = all_ids[start : start + page_size]
+                    else:
+                        page_ids = all_ids
+
+                    if not page_ids:
+                        return [], total_count
+
+                    # Fetch objects (must preserve order!)
+                    cdb = db.CalibreDB(init=True)
+                    books = cdb.session.query(db.Books).filter(db.Books.id.in_(page_ids)).all()
+                    book_map = {b.id: b for b in books}
+                    ordered_books = [book_map[bid] for bid in page_ids if bid in book_map]
+                    
+                    log.debug(f"Magic shelf {shelf_id} served from cache ({len(ordered_books)} books)")
+                    return ordered_books, total_count
+                else:
+                    log.debug(f"Magic shelf {shelf_id} cache expired")
 
         rules = magic_shelf.rules
         log.debug(f"Loading magic shelf '{magic_shelf.name}' (ID: {shelf_id}) with {len(rules.get('rules', [])) if rules else 0} rules")
@@ -355,13 +400,6 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None)
         # Apply standard user permissions filters
         query = query.filter(cdb.common_filters())
         
-        # Get total count before pagination
-        try:
-            total_count = query.count()
-        except SQLAlchemyError as e:
-            log.error(f"Error counting books for magic shelf {shelf_id}: {e}")
-            return [], 0
-        
         # Apply sorting
         if sort_order is not None:
             if isinstance(sort_order, list):
@@ -370,14 +408,53 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None)
             else:
                 query = query.order_by(sort_order)
         
-        # Apply pagination if requested
-        if page_size is not None and page_size > 0:
-            offset = (page - 1) * page_size
-            query = query.limit(page_size).offset(offset)
+        # Execute Full Query for Cache
+        try:
+            # Fetch ALL IDs
+            all_ids_tuples = query.with_entities(db.Books.id).all()
+            all_ids = [x[0] for x in all_ids_tuples]
+            total_count = len(all_ids)
+            
+            # Update Cache
+            if current_user.is_authenticated:
+                # Delete old cache for this specific combo
+                ub.session.query(ub.MagicShelfCache).filter_by(
+                    shelf_id=shelf_id, 
+                    user_id=current_user.id, 
+                    sort_param=sort_param
+                ).delete()
+                
+                new_cache = ub.MagicShelfCache(
+                    shelf_id=shelf_id,
+                    user_id=current_user.id,
+                    sort_param=sort_param,
+                    book_ids=all_ids,
+                    total_count=total_count
+                )
+                ub.session.add(new_cache)
+                ub.session.commit()
+                log.debug(f"Magic shelf {shelf_id} cache updated ({total_count} items)")
+
+        except SQLAlchemyError as e:
+            log.error(f"Error executing query for magic shelf {shelf_id}: {e}")
+            return [], 0
         
-        books = query.all()
-        log.debug(f"Magic shelf {shelf_id} matched {total_count} books, returning page {page}")
-        return books, total_count
+        # Apply pagination to the list of IDs we just fetched
+        if page_size is not None and page_size > 0:
+            start = (page - 1) * page_size
+            page_ids = all_ids[start : start + page_size]
+        else:
+            page_ids = all_ids
+
+        if not page_ids:
+            return [], total_count
+
+        # Fetch objects for the current page
+        books = cdb.session.query(db.Books).filter(db.Books.id.in_(page_ids)).all()
+        book_map = {b.id: b for b in books}
+        ordered_books = [book_map[bid] for bid in page_ids if bid in book_map]
+        
+        return ordered_books, total_count
         
     except SQLAlchemyError as e:
         log.error(f"Database error retrieving books for magic shelf {shelf_id}: {e}")

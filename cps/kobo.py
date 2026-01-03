@@ -34,7 +34,7 @@ from sqlalchemy.exc import StatementError
 from sqlalchemy.sql import select
 import requests
 
-from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_lib, ub, csrf, kobo_sync_status
+from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_lib, ub, csrf, kobo_sync_status, magic_shelf
 from . import isoLanguages
 from .epub import get_epub_layout
 from .constants import COVER_THUMBNAIL_SMALL, COVER_THUMBNAIL_MEDIUM, COVER_THUMBNAIL_LARGE
@@ -325,6 +325,28 @@ def HandleSyncRequest():
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
 
     sync_shelves(sync_token, sync_results, only_kobo_shelves)
+
+    # Add magic shelves as collections
+    if config.config_kobo_sync_magic_shelves:
+        magic_shelves = ub.session.query(ub.MagicShelf)\
+            .filter_by(user_id=current_user.id, kobo_sync=True)\
+            .all()
+            
+        for shelf in magic_shelves:
+            books, _ = magic_shelf.get_books_for_magic_shelf(
+                shelf.id, current_user.id, page=1, page_size=1000
+            )
+            
+            collection = {
+                "Id": f"magic-shelf-{shelf.id}",
+                "Name": shelf.name,
+                "Type": "Collection",
+                "Items": [
+                    {"Type": "Book", "Id": str(book.uuid)}
+                    for book in books
+                ]
+            }
+            sync_results.append({"Collection": collection})
 
     # update last created timestamp to distinguish between new and changed entitlements
     if not cont_sync:

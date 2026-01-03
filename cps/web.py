@@ -1045,6 +1045,7 @@ def create_magic_shelf():
         name = strip_whitespaces(data.get('name', ''))
         rules = data.get('rules')
         icon = data.get('icon', '🪄')
+        kobo_sync = data.get('kobo_sync', False)
         
         # Validate inputs
         if not name or not rules:
@@ -1062,7 +1063,8 @@ def create_magic_shelf():
                 name=name,
                 user_id=current_user.id,
                 rules=rules,
-                icon=icon
+                icon=icon,
+                kobo_sync=kobo_sync
             )
             ub.session.add(new_shelf)
             ub.session_commit()
@@ -1132,6 +1134,7 @@ def edit_magic_shelf(shelf_id):
         name = strip_whitespaces(data.get('name', shelf.name))
         rules = data.get('rules', shelf.rules)
         icon = data.get('icon', shelf.icon)
+        kobo_sync = data.get('kobo_sync', shelf.kobo_sync)
         
         # Validate inputs
         if not name:
@@ -1148,6 +1151,7 @@ def edit_magic_shelf(shelf_id):
             shelf.name = name
             shelf.rules = rules
             shelf.icon = icon
+            shelf.kobo_sync = kobo_sync
             flag_modified(shelf, "rules")
             ub.session_commit()
             log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}') with icon '{icon}'")

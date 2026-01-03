@@ -720,7 +720,9 @@ msgstr "実行権限がありません"
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
-msgstr "ライブラリ更新 🔄 見落とされた可能性のある書籍を確認中です、お待ちください..."
+msgstr ""
+"ライブラリ更新 🔄 見落とされた可能性のある書籍を確認中です、"
+"お待ちください..."
 
 #: cps/cwa_functions.py:297
 #, fuzzy
@@ -822,17 +824,23 @@ msgstr "✅ すべての監視サービスが正常に稼働しています！�
 #: cps/cwa_functions.py:427
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
-msgstr "🔴 取り込みサービスは稼働中ですが、メタデータ変更検出は停止しています"
+msgstr ""
+"🔴 取り込みサービスは稼働中ですが、"
+"メタデータ変更検出は停止しています"
 
 #: cps/cwa_functions.py:429
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
-msgstr "🔴 メタデータ変更検出は稼働中ですが、取り込みサービスは停止しています"
+msgstr ""
+"🔴 メタデータ変更検出は稼働中ですが、"
+"取り込みサービスは停止しています"
 
 #: cps/cwa_functions.py:431
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
-msgstr "⛔ 取り込みサービスとメタデータ変更検出の両方が停止しています"
+msgstr ""
+"⛔ 取り込みサービスとメタデータ変更検出の"
+"両方が停止しています"
 
 #: cps/cwa_functions.py:433
 msgid "An Error has occurred"
@@ -2813,7 +2821,12 @@ msgid ""
 "your\n"
 "        library, use the <b>Separate Book Files from Library Option below "
 "and there, enter the path to the rest of the library</b>"
-msgstr "これらのパスはCWA内部専用です。左側のバインド先は自由に変更できますが、右側のパスを変更する必要はありません。<br><br><code>metadata.db</code>ファイルをライブラリの残りの部分と別の場所に置きたい場合は、下の<b>書籍ファイルをライブラリから分離オプションを使用し、残りのライブラリへのパスを入力してください</b>"
+msgstr ""
+"これらのパスはCWA内部専用です。左側のバインド先は自由に変更できますが、"
+"右側のパスを変更する必要はありません。\n"
+"        <br><br><code>metadata.db</code>ファイルをライブラリの残りの部分と"
+"別の場所に置きたい場合は、下の<b>書籍ファイルをライブラリから分離\n"
+"        オプションを使用し、残りのライブラリへのパスを入力してください</b>"
 
 #: cps/templates/config_db.html:34
 msgid ""
@@ -2824,7 +2837,12 @@ msgid ""
 "below\n"
 "        once you've checked the <b>Separate Book Files from Library</b> "
 "option."
-msgstr "これらのパスはCWA内部専用です。左側のバインド先は自由に変更できますが、右側のパスを変更する必要はありません。<br><br><code>metadata.db</code>ファイルをライブラリの残りの部分と別の場所に置きたい場合は、下の<b>書籍ファイルをライブラリから分離オプション</b>を使用し、残りのライブラリへのパスを入力してください"
+msgstr ""
+"例：ライブラリの<code>metadata.db</code>ファイルが"
+"<code>/calibre-library</code>内のどこかにバインドされている限り、\n"
+"        対応する書籍ファイルなどを含むディレクトリを<code>/books</code>などに"
+"バインドし、<b>書籍ファイルをライブラリから分離</b>オプションを\n"
+"        チェックした後に表示されるフィールドに<code>/books</code>と入力できます。"
 
 #: cps/templates/config_db.html:38
 msgid "Split Library Functionality"
@@ -3133,7 +3151,9 @@ msgstr "手動エンドポイントURLを使用（自動検出を上書き）"
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
-msgstr "自動検出を使用せずにOAuthエンドポイントを個別に手動設定するにはこれをチェックしてください"
+msgstr ""
+"自動検出を使用せずにOAuthエンドポイントを"
+"個別に手動設定するにはこれをチェックしてください"
 
 #: cps/templates/config_edit.html:332
 #, fuzzy
@@ -3329,7 +3349,9 @@ msgstr "非表示にする前に表示する著者数 (0=非表示にしない)"
 msgid ""
 "Default Theme (users can select their own preferred theme however new users "
 "will receive this theme by default)"
-msgstr "デフォルトテーマ（ユーザーは好みのテーマを選択できますが、新規ユーザーにはこのテーマがデフォルトで適用されます）"
+msgstr ""
+"デフォルトテーマ（ユーザーは好みのテーマを選択できますが、"
+"新規ユーザーにはこのテーマがデフォルトで適用されます）"
 
 #: cps/templates/config_view_edit.html:42
 msgid "Standard Theme"
@@ -3343,7 +3365,9 @@ msgstr "caliBlur! ダークテーマ"
 msgid ""
 "Per-user theme switching enabled; this global default only affects new users "
 "& anonymous"
-msgstr "ユーザーごとのテーマ切り替えが有効です。このグローバルデフォルトは新規ユーザーとゲストにのみ影響します"
+msgstr ""
+"ユーザーごとのテーマ切り替えが有効です。"
+"このグローバルデフォルトは新規ユーザーとゲストにのみ影響します"
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
@@ -3453,7 +3477,10 @@ msgid ""
 "On by default, when active all ingested books will automatically be "
 "converted to the target format specified below (epub by default) \n"
 "        <em>EXCEPT</em> those you have specifically told CWA to ignore below."
-msgstr "デフォルトでオン。有効時、すべての取り込まれた書籍は以下で指定したターゲット形式（デフォルトはepub）に自動的に変換されます。ただし、以下で無視するよう指定した形式は<em>除きます</em>。"
+msgstr ""
+"デフォルトでオン。有効時、すべての取り込まれた書籍は以下で指定した"
+"ターゲット形式（デフォルトはepub）に自動的に変換されます。\n"
+"        ただし、以下で無視するよう指定した形式は<em>除きます</em>。"
 
 #: cps/templates/cwa_settings.html:35
 msgid "Enable CWA Automatic Cover & Metadata Enforcement Service"
@@ -3468,7 +3495,12 @@ msgid ""
 "        are only applied to what you see in the Web UI, not the ebook files "
 "themselves. This feature currently only supports files in EPUB \n"
 "        or AZW3 format."
-msgstr "デフォルトでオン。有効時、Web UIでメタデータやカバー画像が編集されると、CWAメタデータ適用サービスがそれらの変更を電子書籍ファイル自体に適用します。通常のStock CWまたはこの設定が無効な場合、変更はWeb UIで表示される内容にのみ適用され、電子書籍ファイル自体には適用されません。この機能は現在、EPUBまたはAZW3形式のファイルのみをサポートしています。"
+msgstr ""
+"デフォルトでオン。有効時、Web UIでメタデータやカバー画像が編集されると、"
+"CWAメタデータ適用サービスがそれらの変更を電子書籍ファイル自体に適用します。\n"
+"        通常のStock CWまたはこの設定が無効な場合、変更はWeb UIで表示される"
+"内容にのみ適用され、電子書籍ファイル自体には適用されません。\n"
+"        この機能は現在、EPUBまたはAZW3形式のファイルのみをサポートしています。"
 
 #: cps/templates/cwa_settings.html:48
 msgid "Enable CWA Kindle EPUB Fixer"
@@ -3479,7 +3511,10 @@ msgid ""
 "When active, the encoding among other attributes of all EPUB files processed "
 "by CWA will be checked and fixed to ensure maximum \n"
 "        compatibility with Amazon's Send-to-Kindle Service."
-msgstr "有効時、CWAで処理されるすべてのEPUBファイルのエンコーディングやその他の属性がチェックされ、AmazonのSend-to-Kindleサービスとの最大限の互換性を確保するために修正されます。"
+msgstr ""
+"有効時、CWAで処理されるすべてのEPUBファイルのエンコーディングや"
+"その他の属性がチェックされ、AmazonのSend-to-Kindleサービスとの\n"
+"        最大限の互換性を確保するために修正されます。"
 
 #: cps/templates/cwa_settings.html:59
 #, fuzzy
@@ -3494,7 +3529,9 @@ msgstr "CWA更新通知を有効にする"
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
-msgstr "有効時、CWAの新バージョンがリリースされるとWeb UIで通知を受け取ります"
+msgstr ""
+"有効時、CWAの新バージョンがリリースされると"
+"Web UIで通知を受け取ります"
 
 #: cps/templates/cwa_settings.html:76
 msgid "Enable Contribute Translations Notifications"
@@ -3505,7 +3542,9 @@ msgid ""
 "When disabled, you will no longer receive notifications in the Web UI when "
 "using a language other than English if the translations for your chosen "
 "language are not complete."
-msgstr "無効時、英語以外の言語を使用していて翻訳が完了していない場合、Web UIで通知を受け取らなくなります。"
+msgstr ""
+"無効時、英語以外の言語を使用していて翻訳が完了していない場合、"
+"Web UIで通知を受け取らなくなります。"
 
 #: cps/templates/cwa_settings.html:86
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
@@ -3515,7 +3554,9 @@ msgstr "モバイルでぼかし背景を有効にする（&lt;768px）"
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
-msgstr "有効時、ぼかしカバー背景効果が小さな画面でも表示されます。スクロールやアニメーションの遅延が発生する場合は無効にしてください。"
+msgstr ""
+"有効時、ぼかしカバー背景効果が小さな画面でも表示されます。"
+"スクロールやアニメーションの遅延が発生する場合は無効にしてください。"
 
 #: cps/templates/cwa_settings.html:93
 #, fuzzy
@@ -3530,7 +3571,9 @@ msgstr "CWAインポート自動バックアップを有効にする"
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
-msgstr "有効時、インポートされたすべてのファイルのコピーが<i>/config/processed_books/imported</i>に保存されます"
+msgstr ""
+"有効時、インポートされたすべてのファイルのコピーが"
+"<i>/config/processed_books/imported</i>に保存されます"
 
 #: cps/templates/cwa_settings.html:110
 msgid "Enable CWA Conversion Auto-Backup"
@@ -3540,7 +3583,9 @@ msgstr "CWA変換自動バックアップを有効にする"
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
-msgstr "有効時、変換される取り込みファイルの元ファイルが/config/processed_books/convertedに保存されます"
+msgstr ""
+"有効時、変換される取り込みファイルの元ファイルが"
+"/config/processed_books/convertedに保存されます"
 
 #: cps/templates/cwa_settings.html:120
 msgid "Enable CWA EPUB Fixer Auto-Backup"
@@ -3550,7 +3595,9 @@ msgstr "CWA EPUB修正自動バックアップを有効にする"
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
-msgstr "有効時、CWA Kindle EPUB修正サービスで処理されるEPUBの元ファイルが/config/processed_books/fixed_originalsに保存されます"
+msgstr ""
+"有効時、CWA Kindle EPUB修正サービスで処理されるEPUBの元ファイルが"
+"/config/processed_books/fixed_originalsに保存されます"
 
 #: cps/templates/cwa_settings.html:132
 msgid "Enable CWA Auto-Zip Backups"
@@ -3562,7 +3609,11 @@ msgid ""
 "make zip archives of all the backed up converted, imported and failed files "
 "from that day. This is to help keep the subdirectories of /config/"
 "processed_books organised and to minimise disk space usage."
-msgstr "有効時、毎日深夜直前にcwa-auto-zipperサービスがその日のバックアップされた変換済み、インポート済み、失敗ファイルをすべてzipアーカイブにします。これは/config/processed_booksのサブディレクトリを整理し、ディスク容量の使用を最小限に抑えるためです。"
+msgstr ""
+"有効時、毎日深夜直前にcwa-auto-zipperサービスがその日のバックアップ"
+"された変換済み、インポート済み、失敗ファイルをすべてzipアーカイブにします。"
+"これは/config/processed_booksのサブディレクトリを整理し、"
+"ディスク容量の使用を最小限に抑えるためです。"
 
 #: cps/templates/cwa_settings.html:139
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
@@ -3573,7 +3624,9 @@ msgid ""
 "When the Auto-Convert feature is active, all ingested books will be "
 "automatically converted to the format chosen here (except those formats "
 "selected in the ignore list below)"
-msgstr "自動変換機能が有効な場合、すべての取り込まれた書籍がここで選択した形式に自動的に変換されます（以下の無視リストで選択した形式を除く）"
+msgstr ""
+"自動変換機能が有効な場合、すべての取り込まれた書籍がここで選択した"
+"形式に自動的に変換されます（以下の無視リストで選択した形式を除く）"
 
 #: cps/templates/cwa_settings.html:144
 #, fuzzy
@@ -3585,7 +3638,10 @@ msgid ""
 "NOTE: CWA's Metadata Enforcement service can currently only support file in "
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
 "by the service"
-msgstr "注意：CWAのメタデータ適用サービスは現在、EPUBとAZW3形式のファイルのみをサポートしています。その他の形式のファイルはサービスによって無視されます"
+msgstr ""
+"注意：CWAのメタデータ適用サービスは現在、EPUBとAZW3形式の"
+"ファイルのみをサポートしています。その他の形式のファイルは"
+"サービスによって無視されます"
 
 #: cps/templates/cwa_settings.html:160
 msgid "CWA Auto-Convert - Ignored Formats"
@@ -3595,7 +3651,9 @@ msgstr "CWA自動変換 - 無視する形式"
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
-msgstr "ここで選択した形式は、自動変換機能が有効な場合にCWAの自動変換機能によって無視され、そのままインポートされます。"
+msgstr ""
+"ここで選択した形式は、自動変換機能が有効な場合にCWAの"
+"自動変換機能によって無視され、そのままインポートされます。"
 
 #: cps/templates/cwa_settings.html:187
 msgid "CWA Auto-Ingest - Ignored Formats"
@@ -3606,7 +3664,10 @@ msgid ""
 "The formats selected here will be ignored by CWA's Auto-Ingest feature, "
 "meaning files in these formats won't be added to the library by CWA during "
 "the ingest process"
-msgstr "ここで選択した形式は、自動変換機能が有効な場合にCWAの自動変換機能によって無視され、そのままインポートされます。"
+msgstr ""
+"ここで選択した形式はCWAの自動取り込み機能によって無視され、"
+"取り込みプロセス中にこれらの形式のファイルはCWAによって"
+"ライブラリに追加されません"
 
 #: cps/templates/cwa_settings.html:214
 msgid "CWA Auto-Ingest Automerge"
@@ -3624,7 +3685,9 @@ msgstr "自動マージ"
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
-msgstr "設定により、重複した書籍のどちらかを削除するか、両方を保持（デフォルト）するかを設定できます。"
+msgstr ""
+"設定により、重複した書籍のどちらかを削除するか、"
+"両方を保持（デフォルト）するかを設定できます。"
 
 #: cps/templates/cwa_settings.html:236
 msgid "Discards duplicate import, keeps library copy"
@@ -3647,7 +3710,9 @@ msgid ""
 "Maximum time (in minutes) to allow for processing a single book before "
 "timing out. Files that timeout are moved to the failed backup folder for "
 "investigation."
-msgstr "1冊の書籍を処理する最大時間（分）。タイムアウトしたファイルは調査のために失敗バックアップフォルダに移動されます。"
+msgstr ""
+"1冊の書籍を処理する最大時間（分）。タイムアウトしたファイルは"
+"調査のために失敗バックアップフォルダに移動されます。"
 
 #: cps/templates/cwa_settings.html:257
 msgid "Timeout (minutes):"
@@ -3754,7 +3819,9 @@ msgstr "CWA重複管理"
 msgid ""
 "Books with matching titles and authors. Visual inspection recommended to "
 "identify true duplicates."
-msgstr "タイトルと著者が一致する書籍。真の重複を特定するために目視確認をお勧めします。"
+msgstr ""
+"タイトルと著者が一致する書籍。"
+"真の重複を特定するために目視確認をお勧めします。"
 
 #: cps/templates/duplicates.html:290
 msgid "Select Duplicates"
@@ -3783,7 +3850,9 @@ msgstr "ライブラリにタイトルと著者の組み合わせが重複する
 msgid ""
 "This search looks for books with identical titles AND authors to avoid false "
 "positives."
-msgstr "この検索は誤検出を避けるため、タイトルと著者が同一の書籍を探します。"
+msgstr ""
+"この検索は誤検出を避けるため、"
+"タイトルと著者が同一の書籍を探します。"
 
 #: cps/templates/duplicates.html:359
 #, fuzzy
@@ -4665,7 +4734,9 @@ msgstr "パスワードをリセット"
 msgid ""
 "Send to eReader Email Address. Use comma to separate emails for multiple "
 "eReaders"
-msgstr "電子書籍リーダーのメールアドレスに送信。複数のリーダーには、カンマで区切ってください"
+msgstr ""
+"電子書籍リーダーのメールアドレスに送信。"
+"複数のリーダーには、カンマで区切ってください"
 
 #: cps/templates/user_edit.html:43
 msgid "Language of Books"

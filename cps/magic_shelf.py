@@ -387,6 +387,45 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None)
         return [], 0
 
 
+def get_book_count_for_magic_shelf(shelf_id):
+    """
+    Efficiently gets the total count of books for a magic shelf.
+    
+    Args:
+        shelf_id: ID of the magic shelf
+    
+    Returns:
+        int: Total count of matching books
+    """
+    try:
+        magic_shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+        if not magic_shelf:
+            return 0
+
+        rules = magic_shelf.rules
+        if not rules or not rules.get('rules'):
+            return 0
+
+        cdb = db.CalibreDB(init=True)
+        query_filter = build_query_from_rules(rules, user_id=magic_shelf.user_id)
+        
+        if query_filter is None:
+            return 0
+        
+        # Build base query
+        query = cdb.session.query(db.Books)
+        query = query.filter(query_filter)
+        
+        # Apply standard user permissions filters
+        query = query.filter(cdb.common_filters())
+        
+        return query.count()
+        
+    except Exception as e:
+        log.error(f"Error counting books for magic shelf {shelf_id}: {e}")
+        return 0
+
+
 def create_system_magic_shelves(user_id, template_keys=None):
     """
     Create system magic shelves for a user from templates.

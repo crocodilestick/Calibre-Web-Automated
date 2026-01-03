@@ -1154,6 +1154,14 @@ def edit_magic_shelf(shelf_id):
             shelf.kobo_sync = kobo_sync
             flag_modified(shelf, "rules")
             ub.session_commit()
+            
+            # Invalidate cache
+            if 'magic_shelf_counts' in flask_session:
+                counts = flask_session['magic_shelf_counts']
+                if str(shelf_id) in counts:
+                    del counts[str(shelf_id)]
+                    flask_session.modified = True
+            
             log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}') with icon '{icon}'")
             return jsonify({"success": True})
         except Exception as e:

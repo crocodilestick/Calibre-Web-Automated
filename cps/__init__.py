@@ -11,7 +11,7 @@ import sys
 import os
 import mimetypes
 
-from flask import Flask, g
+from flask import Flask, g, session
 from .MyLoginManager import MyLoginManager
 from flask_principal import Principal
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -25,7 +25,7 @@ from .dep_check import dependency_check
 from .updater import Updater
 from . import config_sql
 from . import cache_buster
-from . import ub, db
+from . import ub, db, magic_shelf
 
 try:
     from flask_limiter import Limiter
@@ -234,8 +234,34 @@ def create_app():
     @app.before_request
     def _cwa_ensure_db_session():
         from .cw_login import current_user
+        import time
+
         if current_user.is_authenticated:
             g.magic_shelves_access = ub.session.query(ub.MagicShelf).filter(ub.MagicShelf.user_id == current_user.id).all()
+            
+            # Magic Shelf Count Caching
+            if 'magic_shelf_counts' not in session:
+                session['magic_shelf_counts'] = {}
+            
+            counts = session['magic_shelf_counts']
+            cache_updated = False
+            now = time.time()
+            CACHE_DURATION = 300  # 5 minutes
+            
+            for shelf in g.magic_shelves_access:
+                shelf_id_str = str(shelf.id)
+                cached_data = counts.get(shelf_id_str)
+                
+                if cached_data and (now - cached_data.get('timestamp', 0) < CACHE_DURATION):
+                    shelf.book_count = cached_data['count']
+                else:
+                    count = magic_shelf.get_book_count_for_magic_shelf(shelf.id)
+                    counts[shelf_id_str] = {'count': count, 'timestamp': now}
+                    shelf.book_count = count
+                    cache_updated = True
+            
+            if cache_updated:
+                session.modified = True
         else:
             g.magic_shelves_access = []
         try:

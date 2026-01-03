@@ -284,7 +284,8 @@
               {% if current_user.is_authenticated or g.allow_anonymous %}
                 <li class="nav-head hidden-xs public-shelves">{{_('Shelves')}}</li>
                 {% for shelf in g.shelves_access %}
-                  <li><a href="{{url_for('shelf.show_shelf', shelf_id=shelf.id)}}"><span class="glyphicon glyphicon-list shelf"></span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.books.all()|length}})</span></a></li>
+                  {% set book_count = shelf.books.count() %}
+                  <li><a href="{{url_for('shelf.show_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{book_count}})"><span class="glyphicon glyphicon-list shelf"></span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{book_count}})</span></a></li>
                 {% endfor %}
               {% if not current_user.is_anonymous %}
                 <li id="nav_createshelf" class="create-shelf"><a href="{{url_for('shelf.create_shelf')}}">{{_('Create Shelf')}}</a></li>
@@ -293,7 +294,7 @@
               {% if current_user.is_authenticated %}
                 <li class="nav-head hidden-xs" style="margin-top: 1rem;">{{_('Magic Shelves ✨')}}</li>
                   {% for shelf in g.magic_shelves_access %}
-                    <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}</a></li>
+                    <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>
                   {% endfor %}
                 <li id="nav_createmagicshelf" class="create-shelf"><a href="{{url_for('web.create_magic_shelf')}}" style="display: flex; align-items: center;">{{_('Create Magic Shelf')}}</a></li>
               {% endif %}

@@ -377,7 +377,7 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
 2. Log in with the default admin credentials (_below_)
 3. Configure your Calibre-Web Automated instance via the Admin Page
   - A guide to what all of the stock CW Settings do can be found [here](https://github.com/janeczku/calibre-web/wiki/Configuration#basic-configuration)
-  - Make sure `Enable Uploads` is enabled in `Settings -> Basic Configuration -> Feature Configuration`
+  - Make sure `Enable Uploads` is enabled in `Admin -> Configuration -> Edit Basic Configuration -> Feature Configuration`
 4. Configure CWA to behave as you would like it to in the CWA Settings panel
   - Here you can turn certain features on and off, set your Target Format, which file formats should be ignored and which should be auto-converted ect.
 6. Drop a book into your ingest folder to check everything is working and enjoy!

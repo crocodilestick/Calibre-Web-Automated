@@ -1391,13 +1391,19 @@ class CWA_DB:
                     json_extract(extra_data, '$.shelf_name') as shelf_name,
                     SUM(CASE WHEN event_type = 'SHELF_ADD' THEN 1 ELSE 0 END) as add_count,
                     SUM(CASE WHEN event_type = 'SHELF_REMOVE' THEN 1 ELSE 0 END) as remove_count,
-                    SUM(CASE WHEN event_type = 'SHELF_ADD' THEN 1 ELSE -1 END) as net_change
+                    SUM(CASE 
+                        WHEN event_type = 'SHELF_ADD' THEN 1 
+                        WHEN event_type = 'SHELF_REMOVE' THEN -1 
+                        ELSE 0 
+                    END) as net_change,
+                    SUM(CASE WHEN event_type = 'MAGIC_SHELF_VIEW' THEN 1 ELSE 0 END) as view_count,
+                    json_extract(extra_data, '$.shelf_type') as shelf_type
                 FROM cwa_user_activity
-                WHERE event_type IN ('SHELF_ADD', 'SHELF_REMOVE')
+                WHERE event_type IN ('SHELF_ADD', 'SHELF_REMOVE', 'MAGIC_SHELF_VIEW')
                     AND {combined_filter}
                     AND json_extract(extra_data, '$.shelf_name') IS NOT NULL
                 GROUP BY shelf_name
-                ORDER BY add_count DESC, net_change DESC
+                ORDER BY (add_count + view_count) DESC, net_change DESC
                 LIMIT {limit}
             """)
             

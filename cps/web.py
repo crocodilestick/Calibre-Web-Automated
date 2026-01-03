@@ -893,6 +893,22 @@ def render_magic_shelf(shelf_id, sort_param, page):
             bypass_cache=bypass_cache
         )
         log.debug(f"Magic shelf {shelf_id} returned {len(books)} books out of {total_count} total")
+
+        # Log activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=current_user.id,
+                user_name=current_user.name,
+                event_type='MAGIC_SHELF_VIEW',
+                item_id=shelf_id,
+                item_title=shelf.name,
+                extra_data=json.dumps({'shelf_name': shelf.name, 'shelf_type': 'magic'})
+            )
+        except Exception as e:
+            log.error(f"Failed to log magic shelf activity: {e}")
+
     except Exception as e:
         log.error(f"Error retrieving books for magic shelf {shelf_id}: {e}")
         flash(_("Error loading magic shelf"), category="error")

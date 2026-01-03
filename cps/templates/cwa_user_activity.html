@@ -1845,10 +1845,31 @@ function updateShelfActivity() {
     const data = currentData.shelfActivity || [];
     
     const html = data.length > 0
-        ? data.map(([shelfName, addCount, removeCount, netChange], index) => {
+        ? data.map(([shelfName, addCount, removeCount, netChange, viewCount, shelfType], index) => {
+            const isMagic = shelfType === 'magic';
+            const icon = isMagic ? '🪄' : '📚';
             const netColor = netChange >= 0 ? '#4caf50' : '#f44336';
             const netSymbol = netChange >= 0 ? '+' : '';
+            const views = viewCount || 0;
             
+            const statsHtml = isMagic 
+                ? `
+                    <span style="color: #2196f3; display: flex; align-items: center; gap: 4px;" title="Views">
+                        <span style="font-size: 1.1em;">👁️</span> ${views}
+                    </span>
+                  `
+                : `
+                    <span style="color: #4caf50; display: flex; align-items: center; gap: 4px;" title="Added">
+                        <span style="font-size: 1.1em;">▲</span> ${addCount}
+                    </span>
+                    <span style="color: #f44336; display: flex; align-items: center; gap: 4px;" title="Removed">
+                        <span style="font-size: 1.1em;">▼</span> ${removeCount}
+                    </span>
+                    <span style="color: #2196f3; display: flex; align-items: center; gap: 4px;" title="Views">
+                        <span style="font-size: 1.1em;">👁️</span> ${views}
+                    </span>
+                  `;
+
             return `
                 <div style="
                     background: rgba(255,255,255,0.03);
@@ -1860,7 +1881,7 @@ function updateShelfActivity() {
                     onmouseover="this.style.background='rgba(255,255,255,0.05)'"
                     onmouseout="this.style.background='rgba(255,255,255,0.03)'">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-weight: 600; color: #fff; font-size: 0.95em;">📚 ${shelfName}</span>
+                        <span style="font-weight: 600; color: #fff; font-size: 0.95em;">${icon} ${shelfName}</span>
                         <span style="
                             color: ${netColor};
                             font-weight: 700;
@@ -1873,12 +1894,7 @@ function updateShelfActivity() {
                         gap: 15px;
                         font-size: 0.8em;
                         padding-left: 22px;">
-                        <span style="color: #4caf50; display: flex; align-items: center; gap: 4px;">
-                            <span style="font-size: 1.1em;">▲</span> ${addCount}
-                        </span>
-                        <span style="color: #f44336; display: flex; align-items: center; gap: 4px;">
-                            <span style="font-size: 1.1em;">▼</span> ${removeCount}
-                        </span>
+                        ${statsHtml}
                     </div>
                 </div>
             `;

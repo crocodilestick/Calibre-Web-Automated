@@ -6,17 +6,14 @@
 # See CONTRIBUTORS for full list of authors.
 
 import json
-import os
-from typing import Optional, List, Dict
 
-from cps import logger, calibre_db, db, constants
+from cps import logger, db
 from cps.search_metadata import cl as metadata_providers
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
 
 log = logger.create()
-
 
 def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
     """
@@ -30,6 +27,10 @@ def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
         bool: True if metadata was successfully fetched and applied, False otherwise
     """
     try:
+        if not db.CalibreDB.session_factory:
+            log.error("CalibreDB not initialized; skipping metadata fetch")
+            return False
+
         # Check global settings (admin-controlled only)
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.get_cwa_settings()
@@ -60,8 +61,7 @@ def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
             provider_hierarchy = ["google", "douban", "dnb", "ibdb", "comicvine"]
 
         # Global provider enablement map
-        from cps.cwa_functions import parse_metadata_providers_enabled
-        enabled_map = parse_metadata_providers_enabled(
+        enabled_map = _parse_metadata_providers_enabled(
             cwa_settings.get('metadata_providers_enabled', '{}')
         )
             
@@ -108,7 +108,7 @@ def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
         return metadata_found
         
     except Exception as e:
-        log.error(f"Error in fetch_and_apply_metadata: {e}")
+        log.error(f"Error in fetch_and_apply_metadata: {e}", exc_info=True)
         return False
 
 
@@ -152,7 +152,7 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                 if author_name and author_name.strip():
                     author = calibre_db_instance.get_author_by_name(author_name.strip())
                     if not author:
-                        author = db.Authors(name=author_name.strip(), sort=author_name.strip())
+                        author = db.Authors(author_name.strip(), author_name.strip())
                         calibre_db_instance.session.add(author)
                     book.authors.append(author)
             updated = True
@@ -166,14 +166,14 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                     if book.comments:
                         book.comments[0].text = metadata.description.strip()
                     else:
-                        comment = db.Comments(text=metadata.description.strip(), book=book.id)
+                        comment = db.Comments(metadata.description.strip(), book.id)
                         calibre_db_instance.session.add(comment)
                     updated = True
             else:
                 if book.comments:
                     book.comments[0].text = metadata.description.strip()
                 else:
-                    comment = db.Comments(text=metadata.description.strip(), book=book.id)
+                    comment = db.Comments(metadata.description.strip(), book.id)
                     calibre_db_instance.session.add(comment)
                 updated = True
             
@@ -184,7 +184,7 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                 if not book.publishers or len(book.publishers) == 0:
                     publisher = calibre_db_instance.get_publisher_by_name(metadata.publisher.strip())
                     if not publisher:
-                        publisher = db.Publishers(name=metadata.publisher.strip())
+                        publisher = db.Publishers(metadata.publisher.strip(), metadata.publisher.strip())
                         calibre_db_instance.session.add(publisher)
                     book.publishers = [publisher]
                     updated = True
@@ -193,7 +193,7 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                 book.publishers.clear()
                 publisher = calibre_db_instance.get_publisher_by_name(metadata.publisher.strip())
                 if not publisher:
-                    publisher = db.Publishers(name=metadata.publisher.strip())
+                    publisher = db.Publishers(metadata.publisher.strip(), metadata.publisher.strip())
                     calibre_db_instance.session.add(publisher)
                 book.publishers = [publisher]
                 updated = True
@@ -216,7 +216,7 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
             hasattr(metadata, 'series') and metadata.series and metadata.series.strip()):
             series = calibre_db_instance.get_series_by_name(metadata.series.strip())
             if not series:
-                series = db.Series(name=metadata.series.strip(), sort=metadata.series.strip())
+                series = db.Series(metadata.series.strip(), metadata.series.strip())
                 calibre_db_instance.session.add(series)
             book.series.clear()
             book.series.append(series)
@@ -278,7 +278,7 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                             existing = True
                             break
                     if not existing:
-                        new_identifier = db.Identifiers(type=identifier_type, val=identifier_value, book=book.id)
+                        new_identifier = db.Identifiers(identifier_value, identifier_type, book.id)
                         calibre_db_instance.session.add(new_identifier)
                         book.identifiers.append(new_identifier)
                     updated = True
@@ -301,3 +301,27 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
         log.error(f"Error applying metadata to book {getattr(book, 'id', 'unknown')}: {e}")
         calibre_db_instance.session.rollback()
         return False
+
+
+def _parse_metadata_providers_enabled(raw_value):
+    """Lightweight parser for metadata_providers_enabled without importing cwa_functions."""
+    try:
+        if raw_value is None:
+            return {}
+        if isinstance(raw_value, bytes):
+            raw_value = raw_value.decode('utf-8', errors='ignore')
+        if isinstance(raw_value, str):
+            s = raw_value.strip()
+            if not s:
+                return {}
+            if s.startswith("'") and s.endswith("'"):
+                s = s[1:-1]
+            if not s:
+                return {}
+            data = json.loads(s)
+            return data if isinstance(data, dict) else {}
+        if isinstance(raw_value, dict):
+            return raw_value
+        return {}
+    except (json.JSONDecodeError, ValueError, TypeError, AttributeError):
+        return {}

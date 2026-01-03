@@ -201,6 +201,8 @@ try:
         from cps.tasks.auto_send import TaskAutoSend
         from cps.services.worker import WorkerThread
         from cps import ub as _ub
+        from cps.calibre_init import init_calibre_db_from_app_db
+        init_calibre_db_from_app_db()
         _CPS_AVAILABLE = True
         print("[ingest-processor] Auto-send and metadata functionality available", flush=True)
     except ImportError as e:
@@ -262,16 +264,35 @@ def get_internal_api_url(path):
         port = '8083'
     
     protocol = "http"
+    certfile = None
+    keyfile = None
     if _cps_config:
-        certfile = _cps_config.get_config_certfile()
-        keyfile = _cps_config.get_config_keyfile()
-        if certfile and keyfile and os.path.isfile(certfile) and os.path.isfile(keyfile):
-            protocol = "https"
+        certfile = getattr(_cps_config, "config_certfile", None)
+        keyfile = getattr(_cps_config, "config_keyfile", None)
+    if not certfile and not keyfile:
+        try:
+            with sqlite3.connect("/config/app.db", timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute(
+                    "SELECT config_certfile, config_keyfile FROM settings LIMIT 1"
+                ).fetchone()
+                if row:
+                    certfile, keyfile = row[0], row[1]
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Could not read TLS settings from app.db: {e}", flush=True)
+
+    if certfile and keyfile and os.path.isfile(certfile) and os.path.isfile(keyfile):
+        protocol = "https"
             
     if not path.startswith("/"):
         path = "/" + path
         
     return f"{protocol}://127.0.0.1:{port}{path}"
+
+
+def get_internal_api_headers():
+    """Provide headers that satisfy localhost-only internal endpoint checks."""
+    return {"X-Forwarded-For": "127.0.0.1"}
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
@@ -344,16 +365,34 @@ class NewBookProcessor:
         # Track the last added Calibre book id(s) from calibredb output
         self.last_added_book_id: int | None = None
         self.last_added_book_ids: list[int] = []
+        self._title_sort_regex = self._get_title_sort_regex()
+
+    @staticmethod
+    def _get_title_sort_regex() -> str:
+        default_regex = (
+            r'^(A|The|An|Der|Die|Das|Den|Ein|Eine|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+'
+        )
+        try:
+            with sqlite3.connect("/config/app.db", timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute(
+                    "SELECT config_title_regex FROM settings LIMIT 1"
+                ).fetchone()
+                if row and row[0]:
+                    return row[0]
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Could not read config_title_regex from app.db: {e}", flush=True)
+        return default_regex
 
     @staticmethod
     def _parse_added_book_ids(output: str) -> list[int]:
-        """Parse calibredb stdout for the 'Added book ids: X[, Y, ...]' line and return IDs.
+        """Parse calibredb stdout for the 'Added/Merged/Updated book ids: X[, Y, ...]' line and return IDs.
 
-        Handles variations like 'Added book id: 4' or 'Added book ids: 4, 5'.
+        Handles variations like 'Added book id: 4' or 'Merged book ids: 4, 5'.
         """
         try:
             import re
-            m = re.search(r"Added book id[s]?:\s*([0-9,\s]+)", output, flags=re.IGNORECASE)
+            m = re.search(r"(?:Added|Merged|Updated) book id[s]?:\s*([0-9,\s]+)", output, flags=re.IGNORECASE)
             if not m:
                 return []
             nums = m.group(1)
@@ -361,6 +400,47 @@ class NewBookProcessor:
             return ids
         except Exception:
             return []
+
+    def _fallback_last_added_book_id(self) -> None:
+        """Fallback to the most recently modified book when calibredb output lacks IDs."""
+        if self.last_added_book_id is not None:
+            return
+        try:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute(
+                    "SELECT id FROM books ORDER BY last_modified DESC LIMIT 1"
+                ).fetchone()
+                if row:
+                    self.last_added_book_id = int(row[0])
+                    self.last_added_book_ids = [self.last_added_book_id]
+                    print(
+                        "[ingest-processor] WARN: Could not parse calibredb output; using most recently modified book ID.",
+                        flush=True,
+                    )
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Failed to infer book ID after import: {e}", flush=True)
+
+    def _register_title_sort_function(self, connection: sqlite3.Connection) -> bool:
+        """Register title_sort SQL function on a raw SQLite connection."""
+        try:
+            import re
+            title_pat = re.compile(self._title_sort_regex, re.IGNORECASE)
+
+            def _title_sort(title):
+                if title is None:
+                    title = ""
+                match = title_pat.search(title)
+                if match:
+                    prep = match.group(1)
+                    title = title[len(prep):] + ', ' + prep
+                return " ".join(str(title).split())
+
+            connection.create_function("title_sort", 1, _title_sort)
+            return True
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Could not register title_sort function: {e}", flush=True)
+            return False
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
         with sqlite3.connect("/config/app.db", timeout=30) as con:
@@ -604,6 +684,8 @@ class NewBookProcessor:
                 if added_ids:
                     self.last_added_book_ids = added_ids
                     self.last_added_book_id = added_ids[-1]
+                else:
+                    self._fallback_last_added_book_id()
             else:  # audiobook path
                 meta = audiobook.get_audio_file_info(str(staged_path), format, os.path.basename(str(staged_path)), False)
 
@@ -649,6 +731,8 @@ class NewBookProcessor:
                 if added_ids:
                     self.last_added_book_ids = added_ids
                     self.last_added_book_id = added_ids[-1]
+                else:
+                    self._fallback_last_added_book_id()
             print(f"[ingest-processor] Added {staged_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:
@@ -688,6 +772,9 @@ class NewBookProcessor:
                 try:
                     with sqlite3.connect(self.metadata_db, timeout=30) as con:
                         cur = con.cursor()
+                        if not self._register_title_sort_function(con):
+                            print("[ingest-processor] INFO: Skipping timestamp adjust (title_sort SQL function unavailable).", flush=True)
+                            return
                         # pre_import_max_timestamp may be None (empty library) -> update all rows where timestamp < last_modified
                         if pre_import_max_timestamp is None:
                             cur.execute('UPDATE books SET timestamp = last_modified WHERE timestamp < last_modified')
@@ -850,7 +937,13 @@ class NewBookProcessor:
                             'username': username,
                             'title': actual_title,
                         }
-                        resp = requests.post(url, json=payload, timeout=5, verify=False)
+                        resp = requests.post(
+                            url,
+                            json=payload,
+                            headers=get_internal_api_headers(),
+                            timeout=5,
+                            verify=False,
+                        )
                         if resp.status_code == 200:
                             try:
                                 run_at = resp.json().get('run_at', 'soon')
@@ -976,7 +1069,12 @@ class NewBookProcessor:
         try:
             url = get_internal_api_url("/cwa-internal/reconnect-db")
             print("[ingest-processor] Refreshing Calibre-Web database session...", flush=True)
-            resp = requests.post(url, timeout=5, verify=False)
+            resp = requests.post(
+                url,
+                headers=get_internal_api_headers(),
+                timeout=5,
+                verify=False,
+            )
             if resp.status_code == 200:
                 print("[ingest-processor] Database session refresh enqueued", flush=True)
             else:

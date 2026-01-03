@@ -165,8 +165,8 @@ def create_app():
     lm.anonymous_user = ub.Anonymous
     lm.session_protection = 'strong' if config.config_session == 1 else "basic"
 
-    db.CalibreDB.update_config(config)
-    db.CalibreDB.setup_db(config.config_calibre_dir, cli_param.settings_path)
+    from .calibre_init import init_calibre_db_from_config
+    init_calibre_db_from_config(config, cli_param.settings_path)
     calibre_db.init_db()
 
     updater_thread.init_updater(config, web_server)
@@ -302,5 +302,4 @@ def create_app():
     register_startup_tasks()
 
     return app
-
 

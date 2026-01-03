@@ -224,7 +224,7 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id,
     for entry in iter(book.data):
         if entry.format.upper() == book_format.upper():
             converted_file_name = entry.name + '.' + book_format.lower()
-            link = '<a href="{}">{}</a>'.format(url_for('web.show_book', book_id=book_id), escape(book.title))
+            link = '<a href="/book/{}">{}</a>'.format(book_id, escape(book.title))
             email_text = N_("%(book)s send to eReader", book=link)
             for email in ereader_mail.split(','):
                 email = strip_whitespaces(email)

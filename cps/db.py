@@ -687,12 +687,14 @@ class CalibreDB:
         cls.dispose()
 
         if not config_calibre_dir:
-            cls.config.invalidate()
+            if cls.config:
+                cls.config.invalidate()
             return None
 
         dbpath = os.path.join(config_calibre_dir, "metadata.db")
         if not os.path.exists(dbpath):
-            cls.config.invalidate()
+            if cls.config:
+                cls.config.invalidate()
             return None
 
         try:
@@ -717,10 +719,12 @@ class CalibreDB:
             conn = cls.engine.connect()
             # conn.text_factory = lambda b: b.decode(errors = 'ignore') possible fix for #1302
         except Exception as ex:
-            cls.config.invalidate(ex)
+            if cls.config:
+                cls.config.invalidate(ex)
             return None
 
-        cls.config.db_configured = True
+        if cls.config:
+            cls.config.db_configured = True
 
         if not cc_classes:
             try:
@@ -779,6 +783,22 @@ class CalibreDB:
     def get_book_format(self, book_id, file_format):
         self.ensure_session()
         return self.session.query(Data).filter(Data.book == book_id).filter(Data.format == file_format).first()
+
+    def get_author_by_name(self, name):
+        self.ensure_session()
+        return self.session.query(Authors).filter(Authors.name == name).first()
+
+    def get_tag_by_name(self, name):
+        self.ensure_session()
+        return self.session.query(Tags).filter(Tags.name == name).first()
+
+    def get_series_by_name(self, name):
+        self.ensure_session()
+        return self.session.query(Series).filter(Series.name == name).first()
+
+    def get_publisher_by_name(self, name):
+        self.ensure_session()
+        return self.session.query(Publishers).filter(Publishers.name == name).first()
 
     def set_metadata_dirty(self, book_id):
         self.ensure_session()
@@ -1100,14 +1120,15 @@ class CalibreDB:
     def create_functions(self, config=None):
         self.ensure_session()
         # user defined sort function for calibre databases (Series, etc.)
-        def _title_sort(title):
-            # calibre sort stuff
-            title_pat = re.compile(config.config_title_regex, re.IGNORECASE)
-            match = title_pat.search(title)
-            if match:
-                prep = match.group(1)
-                title = title[len(prep):] + ', ' + prep
-            return strip_whitespaces(title)
+        if config:
+            def _title_sort(title):
+                # calibre sort stuff
+                title_pat = re.compile(config.config_title_regex, re.IGNORECASE)
+                match = title_pat.search(title)
+                if match:
+                    prep = match.group(1)
+                    title = title[len(prep):] + ', ' + prep
+                return strip_whitespaces(title)
 
         try:
             # sqlalchemy <1.4.24 and sqlalchemy 2.0

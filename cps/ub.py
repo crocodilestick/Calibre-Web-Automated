@@ -817,7 +817,7 @@ def migrate_oauth_provider_table(engine, _session):
 def migrate_config_table(engine, _session):
     """Migrate configuration table to add new authentication columns"""
     if not engine or not _session:
-        logger.get_logger("cps.ub").error("Cannot migrate config table: missing engine or session")
+        log.error("Cannot migrate config table: missing engine or session")
         return
 
     # Add OAuth redirect host configuration
@@ -832,7 +832,7 @@ def migrate_config_table(engine, _session):
                 conn.execute(text("ALTER TABLE settings ADD column 'config_oauth_redirect_host' String DEFAULT ''"))
                 trans.commit()
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_oauth_redirect_host column: %s", e)
+            log.error("Failed to add config_oauth_redirect_host column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
 
@@ -848,7 +848,7 @@ def migrate_config_table(engine, _session):
                 conn.execute(text("ALTER TABLE settings ADD column 'config_reverse_proxy_auto_create_users' Boolean DEFAULT 0"))
                 trans.commit()
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
+            log.error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
 
@@ -864,7 +864,7 @@ def migrate_config_table(engine, _session):
                 conn.execute(text("ALTER TABLE settings ADD column 'config_ldap_auto_create_users' Boolean DEFAULT 1"))
                 trans.commit()
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_ldap_auto_create_users column: %s", e)
+            log.error("Failed to add config_ldap_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
 
@@ -920,16 +920,16 @@ def migrate_Database(_session):
                 MagicShelf.user_id == user.id,
                 MagicShelf.is_system == True
             ).first()
-            
+
             if not has_system_shelves:
                 created = magic_shelf.create_system_magic_shelves(user.id)
                 if created > 0:
                     backfilled += 1
-        
+
         if backfilled > 0:
-            logger.get_logger("cps.ub").info(f"Backfilled system magic shelves for {backfilled} existing users")
+            log.info(f"Backfilled system magic shelves for {backfilled} existing users")
     except Exception as e:
-        logger.get_logger("cps.ub").error(f"Error backfilling system magic shelves: {e}")
+        log.error(f"Error backfilling system magic shelves: {e}")
 
 
 def clean_database(_session):
@@ -1000,7 +1000,7 @@ def create_admin_user(_session):
             from . import magic_shelf
             magic_shelf.create_system_magic_shelves(user.id)
         except Exception as e:
-            logger.get_logger("cps.ub").error(f"Failed to create system magic shelves for admin: {e}")
+            log.error(f"Failed to create system magic shelves for admin: {e}")
     except Exception:
         _session.rollback()
 
@@ -1014,7 +1014,7 @@ def create_system_magic_shelves_for_user(user_id):
         from . import magic_shelf
         return magic_shelf.create_system_magic_shelves(user_id)
     except Exception as e:
-        logger.get_logger("cps.ub").error(f"Failed to create system magic shelves for user {user_id}: {e}")
+        log.error(f"Failed to create system magic shelves for user {user_id}: {e}")
         return 0
 
 

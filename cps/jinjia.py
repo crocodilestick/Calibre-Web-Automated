@@ -177,6 +177,40 @@ def get_cover_srcset(series):
     return ', '.join(srcset)
 
 
+@jinjia.app_template_filter('filesizeformat_binary')
+def filesizeformat_binary(num_bytes):
+    """
+    Format bytes to human-readable binary (power-of-2) file size.
+    Uses KiB, MiB, GiB notation (1024-based) to match internal storage.
+    This ensures consistency with email size limits and file system reporting.
+    """
+    if num_bytes is None:
+        return '0 B'
+    
+    try:
+        num_bytes = float(num_bytes)
+    except (ValueError, TypeError):
+        return '0 B'
+    
+    # Binary (power-of-2) units
+    units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB']
+    unit_index = 0
+    size = float(num_bytes)
+    
+    while size >= 1024.0 and unit_index < len(units) - 1:
+        size /= 1024.0
+        unit_index += 1
+    
+    # Format with 1 decimal place, but remove if .0
+    if unit_index == 0:  # Bytes - no decimal
+        return f"{int(size)} {units[unit_index]}"
+    else:
+        formatted = f"{size:.1f}"
+        if formatted.endswith('.0'):
+            formatted = formatted[:-2]
+        return f"{formatted} {units[unit_index]}"
+
+
 @jinjia.app_template_filter('music')
 def contains_music(book_formats):
     result = False

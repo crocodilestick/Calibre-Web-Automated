@@ -694,15 +694,15 @@ def do_edit_book(book_id, upload_formats=None):
             if not current_user.role_edit():
                 edit_error = True
                 flash(_("User has no rights to upload cover"), category="error")
-            elif to_save["cover_url"].endswith('/static/generic_cover.jpg'):
+            elif to_save["cover_url"].endswith('/static/generic_cover.svg'):
                 book.has_cover = 0
             else:
                 result, error = helper.save_cover_from_url(to_save["cover_url"].strip(), book.path)
                 if result:
                     book.has_cover = 1
                     modify_date = True
-                    # Trigger thumbnail generation after successful cover fetch
-                    helper.trigger_thumbnail_generation_for_book(book.id)
+                    # Force thumbnail regeneration after successful cover fetch
+                    helper.replace_cover_thumbnail_cache(book.id)
                 else:
                     edit_error = True
                     flash(error, category="error")
@@ -1058,7 +1058,7 @@ def move_coverfile(meta, db_book):
     if meta.cover:
         cover_file = meta.cover
     else:
-        cover_file = os.path.join(constants.STATIC_DIR, 'generic_cover.jpg')
+        cover_file = os.path.join(constants.STATIC_DIR, 'generic_cover.svg')
     new_cover_path = os.path.join(config.get_book_path(), db_book.path)
     try:
         os.makedirs(new_cover_path, exist_ok=True)
@@ -1613,7 +1613,8 @@ def upload_cover(cover_request, book):
                 return False
             ret, message = helper.save_cover_with_thumbnail_update(requested_file, book.path, book.id)
             if ret is True:
-                helper.replace_cover_thumbnail_cache(book.id)
+                # Note: save_cover_with_thumbnail_update already triggers thumbnail generation
+                # No need to call replace_cover_thumbnail_cache here (would create duplicate tasks)
                 return True
             else:
                 flash(message, category="error")

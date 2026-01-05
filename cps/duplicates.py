@@ -191,7 +191,7 @@ def find_duplicate_books():
                 if hasattr(book, 'has_cover') and book.has_cover:
                     book.cover_url = f"/cover/{book.id}"
                 else:
-                    book.cover_url = "/static/generic_cover.jpg"
+                    book.cover_url = "/static/generic_cover.svg"
             
             # Get safe title and author for display
             display_title = books[0].title if books[0].title else 'Untitled'

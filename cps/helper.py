@@ -49,6 +49,9 @@ from .constants import (STATIC_DIR as _STATIC_DIR, CACHE_TYPE_THUMBNAILS, THUMBN
                         SUPPORTED_CALIBRE_BINARIES)
 from .subproc_wrapper import process_wait
 
+# Track books with pending thumbnail generation to prevent duplicate tasks
+_pending_thumbnail_books = set()
+
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
@@ -759,9 +762,9 @@ def delete_book(book, calibrepath, book_format):
 
 def get_cover_on_failure():
     try:
-        return send_from_directory(_STATIC_DIR, "generic_cover.jpg")
+        return send_from_directory(_STATIC_DIR, "generic_cover.svg")
     except PermissionError:
-        log.error("No permission to access generic_cover.jpg file.")
+        log.error("No permission to access generic_cover.svg file.")
         abort(403)
 
 
@@ -806,17 +809,24 @@ def get_book_cover_internal(book, resolution=None):
 
                     if not is_kobo_request and use_IM:
                         from .tasks.thumbnail import TaskGenerateCoverThumbnails
-                        # Create and run thumbnail generation for this book
-                        thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
-                        thumbnail_task.create_book_cover_thumbnails(book)
-
-                        # Refresh thumbnail references after generation
-                        webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
-                        jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
-                        webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
-                        jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
+                        from .services.worker import WorkerThread
+                        
+                        # Queue thumbnail generation task if not already pending (prevents duplicate tasks)
+                        if book.id not in _pending_thumbnail_books:
+                            thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
+                            try:
+                                WorkerThread.add(None, thumbnail_task, hidden=True)
+                                # CRITICAL: Only add to pending set AFTER successful queue
+                                _pending_thumbnail_books.add(book.id)
+                                log.debug(f'Queued background thumbnail generation for book {book.id}')
+                            except Exception as queue_ex:
+                                # If queueing fails, don't add to pending set
+                                log.error(f'Failed to queue thumbnail task for book {book.id}: {queue_ex}')
+                        
+                        # Note: Thumbnails will be generated in background
+                        # Current request will fall back to serving original cover.jpg
                 except Exception as ex:
-                    log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
+                    log.debug(f'Failed to prepare thumbnail generation for book {book.id}: {ex}')
 
             # Determine which thumbnail format to serve based on request context
             try:
@@ -1031,21 +1041,31 @@ def trigger_thumbnail_generation_for_book(book_id):
         from .tasks.thumbnail import TaskGenerateCoverThumbnails
 
         if use_IM:
-            # Queue thumbnail generation task
-            thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
-            WorkerThread.add(current_user.name, thumbnail_task, hidden=True)
-            log.debug(f'Queued thumbnail generation for book {book_id}')
+            # Skip if already pending (prevents duplicate tasks)
+            if book_id not in _pending_thumbnail_books:
+                # Queue thumbnail generation task
+                thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
+                try:
+                    WorkerThread.add(current_user.name, thumbnail_task, hidden=True)
+                    # CRITICAL: Only add to pending set AFTER successful queue
+                    # Task's finally block will discard when complete
+                    _pending_thumbnail_books.add(book_id)
+                    log.debug(f'Queued thumbnail generation for book {book_id}')
+                except Exception as queue_ex:
+                    log.error(f'Failed to queue thumbnail task for book {book_id}: {queue_ex}')
+                    # If queueing fails, don't add to pending set
     except Exception as ex:
-        log.debug(f'Failed to queue thumbnail generation for book {book_id}: {ex}')
+        log.error(f'Failed to prepare thumbnail generation for book {book_id}: {ex}')
 
 
 def save_cover_with_thumbnail_update(img, book_path, book_id=None):
-    """Save cover and trigger thumbnail generation."""
+    """Save cover and force thumbnail regeneration."""
     result, message = save_cover(img, book_path)
 
-    # If cover save was successful and we have a book_id, generate thumbnails
+    # If cover save was successful and we have a book_id, force thumbnail regeneration
+    # Use replace_cover_thumbnail_cache to ensure fresh thumbnails even if generation is pending
     if result and book_id:
-        trigger_thumbnail_generation_for_book(book_id)
+        replace_cover_thumbnail_cache(book_id)
 
     return result, message
 
@@ -1331,13 +1351,26 @@ def get_download_link(book_id, book_format, client):
 
 def clear_cover_thumbnail_cache(book_id):
     # Always allow clearing thumbnail cache
+    # Remove from pending set when clearing cache (e.g., during book deletion)
+    _pending_thumbnail_books.discard(book_id)
     WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
 
 
 def replace_cover_thumbnail_cache(book_id):
     # Always allow replacing thumbnail cache
-    WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
-    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Remove from pending set to allow regeneration
+    _pending_thumbnail_books.discard(book_id)
+    # Try to queue clear task (not critical if it fails)
+    try:
+        WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
+    except Exception as e:
+        log.error(f'Failed to queue thumbnail clear for book {book_id}: {e}')
+    # Queue generation task and add to pending set only if successful
+    try:
+        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+        _pending_thumbnail_books.add(book_id)
+    except Exception as e:
+        log.error(f'Failed to queue thumbnail generation for book {book_id}: {e}')
 
 
 def delete_thumbnail_cache():
@@ -1346,7 +1379,14 @@ def delete_thumbnail_cache():
 
 def add_book_to_thumbnail_cache(book_id):
     # Always generate thumbnails for new books
-    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Ensure not in pending set (shouldn't be for new books, but defensive)
+    _pending_thumbnail_books.discard(book_id)
+    # Queue generation task and add to pending set only if successful
+    try:
+        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+        _pending_thumbnail_books.add(book_id)
+    except Exception as e:
+        log.error(f'Failed to queue thumbnail generation for book {book_id}: {e}')
 
 
 def update_thumbnail_cache():

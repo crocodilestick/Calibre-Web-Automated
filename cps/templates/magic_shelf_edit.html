@@ -281,6 +281,7 @@ div.help-panel > .panel-body {
             <div class="panel-body">
                 
                 <form id="magic-shelf-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <!-- Shelf Name -->
                     <div class="form-group">
                         {% if shelf and shelf.is_system %}
@@ -509,7 +510,7 @@ $(function() {
         {
             id: 'has_cover', 
             label: 'Has Cover', 
-            type: 'boolean', 
+            type: 'integer', 
             input: 'radio', 
             values: {1: 'Yes', 0: 'No'},
             description: 'Whether book has cover image'
@@ -533,6 +534,14 @@ $(function() {
             label: 'Description', 
             type: 'string',
             description: 'Book description/comments'
+        },
+        {
+            id: 'hardcover_id',
+            label: 'Has Hardcover ID',
+            type: 'integer',
+            input: 'radio',
+            values: {1: 'Yes', 0: 'No'},
+            description: 'Whether book has Hardcover identifier'
         }
     ];
 

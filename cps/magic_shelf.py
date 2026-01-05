@@ -141,6 +141,7 @@ FIELD_MAP = {
     'series_index': (db.Books, 'series_index'),
     'comments': (db.Books, 'comments'),
     'read_status': ('custom_column', 'read_status'),  # Special handling - uses config.config_read_column
+    'hardcover_id': ('identifier', 'hardcover-id'),  # Special handling - checks Identifiers table
 }
 
 # Mapping from UI operators to SQLAlchemy functions/operators
@@ -199,6 +200,34 @@ def build_filter_from_rule(rule, user_id=None):
         return None
     
     model, column_name = field_info
+    
+    # Special handling for hardcover_id identifier
+    if model == 'identifier' and column_name == 'hardcover-id':
+        # Value is 1 (has hardcover ID) or 0 (doesn't have hardcover ID)
+        # Similar to has_cover boolean handling
+        try:
+            has_hardcover = bool(int(value)) if value is not None else True
+        except (ValueError, TypeError):
+            has_hardcover = True
+        
+        hardcover_condition = db.Books.identifiers.any(
+            or_(
+                db.Identifiers.type == 'hardcover-id',
+                db.Identifiers.type == 'hardcover-slug',
+                db.Identifiers.type == 'hardcover-edition'
+            )
+        )
+        
+        if operator_name == 'equal':
+            # Equal to 1 (Yes) = has hardcover ID
+            # Equal to 0 (No) = doesn't have hardcover ID
+            return hardcover_condition if has_hardcover else ~hardcover_condition
+        elif operator_name == 'not_equal':
+            # Opposite of equal
+            return ~hardcover_condition if has_hardcover else hardcover_condition
+        else:
+            # For any other operator (shouldn't happen with boolean type), default to equal
+            return hardcover_condition if has_hardcover else ~hardcover_condition
     
     # Special handling for read_status custom column
     if model == 'custom_column' and column_name == 'read_status':

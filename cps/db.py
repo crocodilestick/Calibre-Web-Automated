@@ -752,8 +752,20 @@ class CalibreDB:
 
     def get_filtered_book(self, book_id, allow_show_archived=False):
         self.ensure_session()
-        return self.session.query(Books).filter(Books.id == book_id). \
-            filter(self.common_filters(allow_show_archived)).first()
+        # Eagerly load all relationships to prevent detached instance errors during editing
+        return (self.session.query(Books)
+                .options(joinedload(Books.authors),
+                         joinedload(Books.tags),
+                         joinedload(Books.comments),
+                         joinedload(Books.data),
+                         joinedload(Books.series),
+                         joinedload(Books.ratings),
+                         joinedload(Books.languages),
+                         joinedload(Books.publishers),
+                         joinedload(Books.identifiers))
+                .filter(Books.id == book_id)
+                .filter(self.common_filters(allow_show_archived))
+                .first())
 
     def get_book_read_archived(self, book_id, read_column, allow_show_archived=False):
         self.ensure_session()
@@ -976,10 +988,13 @@ class CalibreDB:
             # error = False
             for auth in sort_authors:
                 auth = strip_whitespaces(auth)
+                # Skip empty author strings to prevent spurious errors
+                if not auth:
+                    continue
                 results = self.session.query(Authors).filter(Authors.sort == auth).all()
                 # ToDo: How to handle not found author name
                 if not len(results):
-                    log.error("Author {} not found to display name in right order".format(auth))
+                    log.error("Author '{}' not found to display name in right order".format(auth))
                     # error = True
                     break
                 for r in results:

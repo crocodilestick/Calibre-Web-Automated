@@ -1310,7 +1310,9 @@ def edit_book_comments(comments, book):
                 modify_date = True
         else:
             if comments:
-                book.comments.append(db.Comments(comment=comments, book=book.id))
+                # Add comment via session instead of appending to collection during flush
+                new_comment = db.Comments(comment=comments, book=book.id)
+                calibre_db.session.add(new_comment)
                 modify_date = True
         return modify_date
 
@@ -1720,15 +1722,18 @@ def add_objects(db_book_object, db_object, db_session, db_type, add_elements):
             else:  # db_type should be tag or language
                 new_element = db_object(add_element)
             db_session.add(new_element)
-            db_book_object.append(new_element)
+            # Append new element (should not exist in collection, but check for safety)
+            if new_element not in db_book_object:
+                db_book_object.append(new_element)
         else:
             if len(db_element) == 1:
                 db_element = create_objects_for_addition(db_element[0], add_element, db_type)
             else:
                 db_el = db_session.query(db_object).filter(db_filter == add_element).first()
                 db_element = db_element[0] if not db_el else db_el
-            # add element to book
-            db_book_object.append(db_element)
+            # add element to book only if not already present (prevents UNIQUE constraint errors)
+            if db_element not in db_book_object:
+                db_book_object.append(db_element)
 
     return changed
 

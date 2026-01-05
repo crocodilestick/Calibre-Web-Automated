@@ -106,6 +106,12 @@ def upload():
             flash(_("Missing or invalid book id for format upload"), category="error")
             return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
 
+        # Validate that the book exists before creating manifest
+        book = calibre_db.get_book(book_id)
+        if not book:
+            flash(_("Cannot upload format: Book no longer exists in library"), category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+
         for requested_file in request.files.getlist("btn-upload-format"):
             if not _validate_uploaded_file(requested_file):
                 return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')

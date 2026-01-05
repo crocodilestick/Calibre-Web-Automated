@@ -795,12 +795,29 @@ class NewBookProcessor:
             if staged_path.exists():
                 os.remove(staged_path)
 
+    def _validate_book_exists(self, book_id: int) -> bool:
+        """Check if a book with the given ID exists in the Calibre library"""
+        try:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute("SELECT id FROM books WHERE id = ?", (book_id,)).fetchone()
+                return row is not None
+        except Exception as e:
+            print(f"[ingest-processor] ERROR: Failed to validate book_id {book_id}: {e}", flush=True)
+            return False
+
     def add_format_to_book(self, book_id:int, book_path:str) -> None:
         """Attach a new format file to an existing Calibre book using calibredb add_format"""
         source_path = Path(book_path)
         if not source_path.exists() or source_path.stat().st_size == 0:
             print(f"[ingest-processor] ERROR: Source file for add_format is missing or empty, skipping: {book_path}", flush=True)
             self.backup(self.filepath, backup_type="failed") # Backup original file
+            return
+
+        # Validate that the book exists before attempting to add format
+        if not self._validate_book_exists(book_id):
+            print(f"[ingest-processor] ERROR: Book ID {book_id} not found in library, cannot add format: {os.path.basename(book_path)}", flush=True)
+            self.backup(self.filepath, backup_type="failed")
             return
 
         # Stage file for import
@@ -813,16 +830,17 @@ class NewBookProcessor:
             return
 
         try:
-            subprocess.run([
+            result = subprocess.run([
                 "calibredb", "add_format", str(book_id), str(staged_path), f"--library-path={self.library_dir}"
-            ], env=self.calibre_env, check=True)
+            ], env=self.calibre_env, check=True, capture_output=True, text=True)
             print(f"[ingest-processor] Added new format for book id {book_id}: {os.path.basename(str(staged_path))}", flush=True)
             if self.cwa_settings['auto_backup_imports']:
                 self.backup(str(staged_path), backup_type="imported")
             # Optional post-add-format GDrive sync
             gdrive_sync_if_enabled()
         except subprocess.CalledProcessError as e:
-            print(f"[ingest-processor] Failed to add format for book id {book_id}: {os.path.basename(str(staged_path))}\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
+            stderr_output = e.stderr if e.stderr else "No error details available"
+            print(f"[ingest-processor] Failed to add format for book id {book_id}: {os.path.basename(str(staged_path))}\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\nError details: {stderr_output}", flush=True)
             self.backup(str(staged_path), backup_type="failed")
         except Exception as e:
             print(f"[ingest-processor] Unexpected error while adding format for book id {book_id}: {e}", flush=True)
@@ -1149,19 +1167,35 @@ def main(filepath=None):
                     manifest = json.load(mf)
                 action = manifest.get("action")
                 if action == "add_format":
+                    success = False
                     try:
                         book_id = int(manifest.get("book_id", -1))
                     except Exception:
                         book_id = -1
+                    
                     if book_id > -1:
-                        nbp.add_format_to_book(book_id, filepath)
+                        # Validate book exists before attempting add_format
+                        if nbp._validate_book_exists(book_id):
+                            nbp.add_format_to_book(book_id, filepath)
+                            success = True
+                        else:
+                            print(f"[ingest-processor] ERROR: Book ID {book_id} not found in library for {os.path.basename(filepath)}", flush=True)
+                            nbp.backup(filepath, backup_type="failed")
                     else:
-                        print(f"[ingest-processor] Invalid book_id in manifest for {os.path.basename(filepath)}", flush=True)
-                    # Cleanup file and manifest regardless of outcome
+                        print(f"[ingest-processor] ERROR: Invalid book_id in manifest for {os.path.basename(filepath)}", flush=True)
+                        nbp.backup(filepath, backup_type="failed")
+                    
+                    # Cleanup manifest: delete on success, preserve on failure for debugging
                     try:
-                        os.remove(manifest_path)
-                    except Exception:
-                        ...
+                        if success:
+                            os.remove(manifest_path)
+                        else:
+                            failed_manifest_path = manifest_path.replace(".cwa.json", ".cwa.failed.json")
+                            os.rename(manifest_path, failed_manifest_path)
+                            print(f"[ingest-processor] Preserved failed manifest: {os.path.basename(failed_manifest_path)}", flush=True)
+                    except Exception as e:
+                        print(f"[ingest-processor] WARN: Failed to handle manifest cleanup: {e}", flush=True)
+                    
                     nbp.set_library_permissions()
                     nbp.delete_current_file()
                     return

@@ -63,14 +63,17 @@ except (ImportError, SyntaxError):
     feature_support['rar'] = False
 
 try:
-    from .oauth_bb import oauth_check, oauthblueprints
+    from . import oauth_bb
 
     feature_support['oauth'] = True
 except ImportError as err:
     log.debug('Cannot import Flask-Dance, login with Oauth will not work: %s', err)
     feature_support['oauth'] = False
-    oauthblueprints = []
-    oauth_check = {}
+    # Create a mock oauth_bb module with empty lists for when OAuth is not available
+    class MockOAuth:
+        oauthblueprints = []
+        oauth_check = {}
+    oauth_bb = MockOAuth()
 
 admi = Blueprint('admin', __name__)
 
@@ -306,7 +309,7 @@ def db_configuration():
 def configuration():
     return render_title_template("config_edit.html",
                                  config=config,
-                                 provider=oauthblueprints,
+                                 provider=oauth_bb.oauthblueprints,
                                  feature_support=feature_support,
                                  title=_("Basic Configuration"), page="config")
 
@@ -1208,7 +1211,7 @@ def _configuration_gdrive_helper(to_save):
 def _configuration_oauth_helper(to_save):
     reboot_required = False
 
-    for element in oauthblueprints:
+    for element in oauth_bb.oauthblueprints:
         update = {}
         if element["provider_name"] == "generic":
             if to_save["config_generic_oauth_client_id"] != element["oauth_client_id"]:
@@ -1438,7 +1441,7 @@ def new_user():
     return render_title_template("user_edit.html", new_user=1, content=content,
                                  config=config, translations=translations,
                                  languages=languages, title=_("Add New User"), page="newuser",
-                                 kobo_support=kobo_support, registered_oauth=oauth_check)
+                                 kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check)
 
 
 @admi.route("/admin/mailsettings", methods=["GET"])
@@ -1593,7 +1596,7 @@ def edit_user(user_id):
                                  new_user=0,
                                  content=content,
                                  config=config,
-                                 registered_oauth=oauth_check,
+                                 registered_oauth=oauth_bb.oauth_check,
                                  mail_configured=config.get_mail_server_configured(),
                                  kobo_support=kobo_support,
                                  title=_("Edit User %(nick)s", nick=content.name),
@@ -2174,7 +2177,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
                                      config=config,
                                      translations=translations,
                                      languages=languages, title=_("Add new user"), page="newuser",
-                                     kobo_support=kobo_support, registered_oauth=oauth_check)
+                                     kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check)
     try:
         content.allowed_tags = config.config_allowed_tags
         content.denied_tags = config.config_denied_tags
@@ -2316,7 +2319,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
                                      new_user=0,
                                      content=content,
                                      config=config,
-                                     registered_oauth=oauth_check,
+                                     registered_oauth=oauth_bb.oauth_check,
                                      title=_("Edit User %(nick)s", nick=content.name),
                                      page="edituser")
     try:

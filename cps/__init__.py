@@ -207,6 +207,17 @@ def create_app():
     else:
         babel.init_app(app, locale_selector=get_locale)
 
+    # Initialize OAuth blueprints AFTER babel to ensure translations are loaded
+    # Issue: OAuth blueprint generation was happening during module import (before babel init),
+    # causing babel.list_translations() to return empty list and hiding language options
+    if ub.oauth_support:
+        try:
+            from . import oauth_bb
+            oauth_bb.init_oauth_blueprints()
+            log.info("OAuth blueprints initialized successfully")
+        except Exception as e:
+            log.error("Failed to initialize OAuth blueprints: %s", e)
+
     from . import services
 
     if services.ldap:

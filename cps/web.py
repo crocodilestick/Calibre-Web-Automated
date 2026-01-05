@@ -66,13 +66,32 @@ feature_support = {
 }
 
 try:
-    from .oauth_bb import oauth_check, register_user_with_oauth, logout_oauth_user, get_oauth_status
+    from . import oauth_bb
+    # Import functions directly since they don't change
+    register_user_with_oauth = oauth_bb.register_user_with_oauth
+    logout_oauth_user = oauth_bb.logout_oauth_user
+    get_oauth_status = oauth_bb.get_oauth_status
 
     feature_support['oauth'] = True
 except ImportError:
     feature_support['oauth'] = False
-    oauth_check = {}
-    register_user_with_oauth = logout_oauth_user = get_oauth_status = None
+    # Create a mock oauth_bb module for when OAuth is not available
+    class MockOAuth:
+        oauth_check = {}
+        oauthblueprints = []
+        @staticmethod
+        def register_user_with_oauth(*args, **kwargs):
+            return None
+        @staticmethod  
+        def logout_oauth_user(*args, **kwargs):
+            return None
+        @staticmethod
+        def get_oauth_status(*args, **kwargs):
+            return None
+    oauth_bb = MockOAuth()
+    register_user_with_oauth = oauth_bb.register_user_with_oauth
+    logout_oauth_user = oauth_bb.logout_oauth_user
+    get_oauth_status = oauth_bb.get_oauth_status
 
 from functools import wraps
 
@@ -2249,7 +2268,7 @@ def profile():
     hardcover_support = feature_support['hardcover']
     if feature_support['oauth'] and config.config_login_type == 2:
         oauth_status = get_oauth_status()
-        local_oauth_check = oauth_check
+        local_oauth_check = oauth_bb.oauth_check
     else:
         oauth_status = None
         local_oauth_check = {}

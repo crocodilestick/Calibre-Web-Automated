@@ -754,7 +754,21 @@ def generate_oauth_blueprints():
     return oauthblueprints
 
 
-if ub.oauth_support:
+def init_oauth_blueprints():
+    """
+    Initialize OAuth blueprints and register signal handlers.
+    
+    This function MUST be called after babel.init_app() in __init__.py to ensure
+    translations are properly loaded. When OAuth blueprints are generated during
+    module import (before babel init), babel.list_translations() returns an empty
+    list, causing the language selection dropdown to only show English.
+    
+    Issue: https://discord.com/channels/.../... (BortS 01/01/2026)
+    """
+    if not ub.oauth_support:
+        return []
+    
+    global oauthblueprints
     oauthblueprints = generate_oauth_blueprints()
 
     @oauth_authorized.connect_via(oauthblueprints[0]['blueprint'])
@@ -899,6 +913,13 @@ if ub.oauth_support:
             )  # ToDo: Translate
         flash(msg, category="error")
         log.error("Generic OAuth error: %s", msg)
+
+    return oauthblueprints
+
+
+# Initialize empty oauthblueprints list at module level
+# This will be populated when init_oauth_blueprints() is called
+oauthblueprints = []
 
 
 @oauth.route('/link/github')

@@ -209,6 +209,7 @@ RUN \
   nano \
   sqlite3 \
   zip \
+  gettext \
   libasound2t64 \
   libxtst6 \
   libxrandr2 \

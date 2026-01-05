@@ -322,12 +322,16 @@ def register_user_from_generic_oauth(token=None):
         # Apply default configuration settings for new OAuth users (Issue #660)
         # Match the same pattern as normal user creation in admin.py
         
-        # Set role: admin group overrides default role, otherwise use configured default
-        if should_be_admin:
+        # Set role: admin group overrides default role (only if group management enabled), otherwise use configured default
+        if should_be_admin and config.config_enable_oauth_group_admin_management:
             user.role = constants.ROLE_ADMIN
-            log.info("New OAuth user '%s' granted admin role via group '%s'", provider_username, admin_group)
+            log.info("New OAuth user '%s' granted admin role via group '%s' (groups: %s)", 
+                    provider_username, admin_group, user_groups)
         else:
             user.role = config.config_default_role
+            if should_be_admin and not config.config_enable_oauth_group_admin_management:
+                log.debug("New OAuth user '%s' not granted admin role - group-based management disabled", 
+                         provider_username)
         
         # Apply default user settings (same as normal user registration)
         user.sidebar_view = getattr(config, 'config_default_show', 1)
@@ -360,16 +364,23 @@ def register_user_from_generic_oauth(token=None):
     else:
         # Existing user: update admin role based on current group membership (Issue #715)
         # This ensures that users who are added to or removed from admin groups get proper access
+        # Only enforce if group-based admin management is enabled (global setting)
         current_is_admin = user.role_admin()
         
-        if should_be_admin and not current_is_admin:
-            # User was added to admin group - grant admin role
-            user.role |= constants.ROLE_ADMIN
-            log.info("OAuth user '%s' will be granted admin role via group '%s'", provider_username, admin_group)
-        elif not should_be_admin and current_is_admin:
-            # User was removed from admin group - revoke admin role (but keep other roles)
-            user.role &= ~constants.ROLE_ADMIN
-            log.info("OAuth user '%s' admin role will be revoked (not in group '%s')", provider_username, admin_group)
+        if config.config_enable_oauth_group_admin_management:
+            if should_be_admin and not current_is_admin:
+                # User was added to admin group - grant admin role
+                user.role |= constants.ROLE_ADMIN
+                log.info("OAuth user '%s' granted admin role via group '%s' (groups: %s)", 
+                        provider_username, admin_group, user_groups)
+            elif not should_be_admin and current_is_admin:
+                # User was removed from admin group - revoke admin role (but keep other roles)
+                user.role &= ~constants.ROLE_ADMIN
+                log.warning("OAuth user '%s' admin role revoked - not in required group '%s' (user groups: %s)", 
+                           provider_username, admin_group, user_groups)
+        else:
+            log.debug("OAuth group-based admin management disabled - preserving manual role assignments for '%s'", 
+                     provider_username)
         # Note: Changes are not committed yet - will be committed with OAuth entry below
 
     oauth = ub.session.query(ub.OAuth).filter_by(
@@ -394,8 +405,8 @@ def register_user_from_generic_oauth(token=None):
     # Commit all changes together: OAuth entry + Token + User + Role updates
     try:
         ub.session_commit()
-        # Log role changes after successful commit
-        if user.role_admin() and should_be_admin:
+        # Log role changes after successful commit (only if group management is enabled)
+        if user.role_admin() and should_be_admin and config.config_enable_oauth_group_admin_management:
             log.info("OAuth user '%s' has admin role via group '%s'", provider_username, admin_group)
     except Exception as ex:
         log.error("Failed to save OAuth session for user '%s': %s", provider_username, ex)

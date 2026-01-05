@@ -155,6 +155,7 @@ class _Settings(_Base):
     config_ldap_auto_create_users = Column(Boolean, default=True)
     config_oauth_redirect_host = Column(String, default='')
     config_disable_standard_login = Column(Boolean, default=False)
+    config_enable_oauth_group_admin_management = Column(Boolean, default=True)
 
     schedule_start_time = Column(Integer, default=4)
     schedule_duration = Column(Integer, default=10)

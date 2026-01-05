@@ -1952,6 +1952,9 @@ def render_login(username="", password=""):
     if url_for("web.logout") == next_url:
         next_url = url_for("web.index")
 
+    # Get OAuth check status
+    oauth_check = oauth_bb.oauth_check if feature_support['oauth'] else {}
+
     # Get generic OAuth login button text for display
     generic_login_button = None
     if feature_support['oauth']:

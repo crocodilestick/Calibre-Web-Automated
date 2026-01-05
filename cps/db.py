@@ -19,7 +19,7 @@ import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
-from sqlalchemy.orm import relationship, sessionmaker, scoped_session
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session, joinedload
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.exc import OperationalError
@@ -771,6 +771,8 @@ class CalibreDB:
                 log.error("Custom Column No.{} does not exist in calibre database".format(read_column))
                 # Skip linking read column and return None instead of read status
                 bd = self.session.query(Books, None, ub.ArchivedBook.is_archived)
+        # Eagerly load the data relationship to prevent session errors
+        bd = bd.options(joinedload(Books.data))
         return (bd.filter(Books.id == book_id)
                 .join(ub.ArchivedBook, and_(Books.id == ub.ArchivedBook.book_id,
                                             int(current_user.id) == ub.ArchivedBook.user_id), isouter=True)
@@ -912,6 +914,9 @@ class CalibreDB:
         pagesize = pagesize or self.config.config_books_per_page
         if current_user.show_detail_random():
             random_query = self.generate_linked_query(config_read_column, database)
+            # Eagerly load the data relationship for random books to prevent session errors
+            if database == Books:
+                random_query = random_query.options(joinedload(Books.data))
             randm = (random_query.filter(self.common_filters(allow_show_archived))
                      .order_by(func.random())
                      .limit(self.config.config_random_books).all())
@@ -921,6 +926,11 @@ class CalibreDB:
             query = self.generate_linked_query(config_read_column, database)
         else:
             query = self.session.query(database)
+        
+        # Eagerly load the data relationship to prevent DetachedInstanceError in templates
+        if database == Books:
+            query = query.options(joinedload(Books.data))
+        
         off = int(int(pagesize) * (page - 1))
 
         indx = len(join)
@@ -1043,6 +1053,8 @@ class CalibreDB:
                     getattr(Books,
                             'custom_column_' + str(c.id)).any(
                         func.lower(cc_classes[c.id].value).ilike("%" + term + "%")))
+        # Eagerly load the data relationship to prevent session errors
+        query = query.options(joinedload(Books.data))
         return query.filter(self.common_filters(True)).filter(or_(*filter_expression))
 
     def get_cc_columns(self, config, filter_config_custom_read=False):

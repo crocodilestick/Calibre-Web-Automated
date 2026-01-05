@@ -1960,7 +1960,6 @@ def render_login(username="", password=""):
     if feature_support['oauth']:
         try:
             # oauth_bb is already imported at module level, access oauthblueprints from it
-            from . import oauth_bb
             # oauthblueprints[2] is the generic OIDC provider (index 0=github, 1=google, 2=generic)
             if hasattr(oauth_bb, 'oauthblueprints') and len(oauth_bb.oauthblueprints) > 2:
                 generic_login_button = oauth_bb.oauthblueprints[2].get('login_button') or 'OpenID Connect'

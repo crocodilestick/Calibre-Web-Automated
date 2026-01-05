@@ -190,6 +190,193 @@ def queue_metadata_backup():
     return json.dumps(show_text)
 
 
+@admi.route("/hardcover_auto_fetch", methods=["POST"])
+@user_login_required
+@admin_required
+def trigger_hardcover_auto_fetch():
+    """Manually trigger Hardcover auto-fetch task"""
+    show_text = {}
+    
+    try:
+        # Check if token is available
+        from os import getenv
+        token_available = bool(
+            getattr(config, "config_hardcover_token", None) or 
+            getenv("HARDCOVER_TOKEN")
+        )
+        
+        if not token_available:
+            show_text['text'] = _('Error: No Hardcover token available. Set HARDCOVER_TOKEN environment variable or configure in Basic Configuration.')
+            return json.dumps(show_text), 400
+        
+        # Get settings
+        import sys as _sys
+        if '/app/calibre-web-automated/scripts/' not in _sys.path:
+            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+        from cps.tasks.auto_hardcover_id import TaskAutoHardcoverID
+        from cps.services.worker import WorkerThread
+        
+        cwa_db = CWA_DB()
+        cwa_settings = cwa_db.get_cwa_settings()
+        
+        min_confidence = float(cwa_settings.get('hardcover_auto_fetch_min_confidence', 0.85))
+        batch_size = int(cwa_settings.get('hardcover_auto_fetch_batch_size', 50))
+        rate_limit = float(cwa_settings.get('hardcover_auto_fetch_rate_limit', 5.0))
+        
+        # Create and enqueue task
+        task = TaskAutoHardcoverID(
+            min_confidence=min_confidence,
+            batch_size=batch_size,
+            rate_limit_delay=rate_limit
+        )
+        
+        WorkerThread.add(current_user.name, task, hidden=False)
+        
+        log.info(f"Hardcover auto-fetch task manually triggered by {current_user.name}")
+        show_text['text'] = _('Success! Hardcover auto-fetch task started. Check Tasks panel for progress.')
+        return json.dumps(show_text)
+        
+    except Exception as e:
+        log.error(f"Error triggering Hardcover auto-fetch: {e}")
+        show_text['text'] = _('Error starting Hardcover auto-fetch task: %(error)s', error=str(e))
+        return json.dumps(show_text), 500
+
+
+@admi.route("/admin/hardcover/review-matches")
+@user_login_required
+@admin_required
+def hardcover_review_matches():
+    """Display queue of Hardcover matches needing manual review"""
+    try:
+        # Get pending matches from database
+        pending_matches = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 0
+        ).order_by(ub.HardcoverMatchQueue.created_at.desc()).all()
+        
+        # Parse JSON data for each match
+        matches_data = []
+        for match in pending_matches:
+            import json
+            try:
+                results = json.loads(match.hardcover_results)
+                scores = json.loads(match.confidence_scores)
+                
+                matches_data.append({
+                    'id': match.id,
+                    'book_id': match.book_id,
+                    'book_title': match.book_title,
+                    'book_authors': match.book_authors,
+                    'search_query': match.search_query,
+                    'results': results,
+                    'scores': scores,
+                    'created_at': match.created_at
+                })
+            except Exception as e:
+                log.error(f"Error parsing match queue entry {match.id}: {e}")
+                continue
+        
+        return render_title_template(
+            "hardcover_review_matches.html",
+            title=_("Review Hardcover Matches"),
+            page="hardcover-review",
+            matches=matches_data
+        )
+        
+    except Exception as e:
+        log.error(f"Error loading Hardcover review queue: {e}")
+        flash(_("Error loading review queue: %(error)s", error=str(e)), category="error")
+        return redirect(url_for('admin.admin'))
+
+
+@admi.route("/admin/hardcover/review-action", methods=["POST"])
+@user_login_required
+@admin_required
+def hardcover_review_action():
+    """Process review action (accept/reject/skip) for a queued match"""
+    try:
+        data = request.get_json()
+        queue_id = int(data.get('queue_id'))
+        action = data.get('action')  # 'accept', 'reject', 'skip'
+        selected_result_id = data.get('selected_result_id')
+        
+        # Get queue entry
+        match = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.id == queue_id
+        ).first()
+        
+        if not match:
+            return json.dumps({'success': False, 'error': 'Match not found'}), 404
+        
+        if action == 'accept' and selected_result_id:
+            # Apply the selected Hardcover ID to the book
+            import json
+            results = json.loads(match.hardcover_results)
+            selected_result = next((r for r in results if str(r['id']) == str(selected_result_id)), None)
+            
+            if not selected_result:
+                return json.dumps({'success': False, 'error': 'Selected result not found'}), 400
+            
+            # Get the book
+            book = calibre_db.session.query(db.Books).filter(
+                db.Books.id == match.book_id
+            ).first()
+            
+            if not book:
+                return json.dumps({'success': False, 'error': 'Book not found'}), 404
+            
+            # Add identifiers
+            try:
+                identifiers_to_add = selected_result.get('identifiers', {})
+                for id_type, id_value in identifiers_to_add.items():
+                    # Check if identifier already exists
+                    existing = calibre_db.session.query(db.Identifiers).filter(
+                        db.Identifiers.book == match.book_id,
+                        db.Identifiers.type == id_type
+                    ).first()
+                    
+                    if not existing:
+                        new_identifier = db.Identifiers(str(id_value), id_type, match.book_id)
+                        calibre_db.session.add(new_identifier)
+                
+                calibre_db.session.commit()
+                
+                # Mark as reviewed
+                match.reviewed = 1
+                match.selected_result_id = str(selected_result_id)
+                match.review_action = 'accept'
+                match.reviewed_at = datetime.datetime.utcnow().isoformat()
+                match.reviewed_by = current_user.name
+                ub.session.commit()
+                
+                log.info(f"User {current_user.name} accepted Hardcover match for book {match.book_id}")
+                return json.dumps({'success': True, 'message': _('Hardcover ID applied successfully')})
+                
+            except Exception as e:
+                calibre_db.session.rollback()
+                ub.session.rollback()
+                log.error(f"Error applying Hardcover ID: {e}")
+                return json.dumps({'success': False, 'error': str(e)}), 500
+        
+        elif action in ['reject', 'skip']:
+            # Mark as reviewed with appropriate action
+            match.reviewed = 1
+            match.review_action = action
+            match.reviewed_at = datetime.datetime.utcnow().isoformat()
+            match.reviewed_by = current_user.name
+            ub.session.commit()
+            
+            log.info(f"User {current_user.name} {action}ed Hardcover match for book {match.book_id}")
+            return json.dumps({'success': True, 'message': _('Match %(action)s', action=action)})
+        
+        else:
+            return json.dumps({'success': False, 'error': 'Invalid action'}), 400
+            
+    except Exception as e:
+        log.error(f"Error processing review action: {e}")
+        return json.dumps({'success': False, 'error': str(e)}), 500
+
+
 # method is available without login and not protected by CSRF to make it easy reachable, is per default switched off
 # needed for docker applications, as changes on metadata.db from host are not visible to application
 @admi.route("/reconnect", methods=['GET'])

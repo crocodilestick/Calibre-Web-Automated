@@ -218,6 +218,10 @@
     <a class="btn btn-default github" id="cwa_github_link" href="https://github.com/crocodilestick/Calibre-Web-Automated/">{{_('CWA GitHub')}}</a>
     <a class="btn btn-default discord" id="cwa_discord_link" href="https://discord.gg/EjgSeek94R">{{_('CWA Discord Server')}}</a>
   </div>
+  <div class="row form-group">
+    <div class="btn btn-primary" id="hardcover_auto_fetch" data-toggle="modal" data-target="#StatusDialog" style="background-color: var(--color-primary); border-color: var(--color-primary); margin-left: 8px;">🔖 {{_('Run Hardcover Auto-Fetch')}}</div>
+    <a href="{{url_for('admin.hardcover_review_matches')}}" class="btn btn-info" style="margin-left: 10px; background-color: #17a2b8; border-color: #17a2b8;">📋 {{_('Review Hardcover Matches')}}</a>
+  </div>
 
   <div class="row form-group">
     <h2>{{_('Administration&nbsp;&nbsp;🚀')}}</h2>

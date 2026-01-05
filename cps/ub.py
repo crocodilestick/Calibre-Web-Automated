@@ -573,6 +573,28 @@ class HardcoverBookBlacklist(Base):
         return f'<HardcoverBookBlacklist book_id={self.book_id} annotations={self.blacklist_annotations} progress={self.blacklist_reading_progress}>'
 
 
+class HardcoverMatchQueue(Base):
+    """Queue for ambiguous Hardcover metadata matches requiring manual review."""
+    __tablename__ = 'hardcover_match_queue'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, nullable=False)
+    book_title = Column(String, nullable=False)
+    book_authors = Column(String, nullable=False)
+    search_query = Column(String, nullable=False)
+    hardcover_results = Column(String, nullable=False)  # JSON array of MetaRecord candidates
+    confidence_scores = Column(String, nullable=False)  # JSON array of [score, reason] tuples
+    created_at = Column(String, nullable=False)
+    reviewed = Column(Integer, default=0, nullable=False)  # 0=pending, 1=reviewed
+    selected_result_id = Column(String, default=None)  # Hardcover ID if manually selected
+    review_action = Column(String, default=None)  # 'accept', 'reject', 'skip'
+    reviewed_at = Column(String, default=None)
+    reviewed_by = Column(String, default=None)
+
+    def __repr__(self):
+        return f'<HardcoverMatchQueue book_id={self.book_id} title="{self.book_title}" reviewed={bool(self.reviewed)}>'
+
+
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, 'before_flush')
 def receive_before_flush(session, flush_context, instances):

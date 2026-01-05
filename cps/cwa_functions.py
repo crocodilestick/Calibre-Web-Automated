@@ -554,11 +554,12 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
-    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']  # Special handling for integer settings
+    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour']  # Special handling for integer settings
+    float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']  # Special handling for float settings
     json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled']  # Special handling for JSON settings
     
     for setting in cwa_default_settings:
-        if setting in integer_settings or setting in json_settings:
+        if setting in integer_settings or setting in float_settings or setting in json_settings:
             continue  # Handle separately
         elif isinstance(cwa_default_settings[setting], int):
             boolean_settings.append(setting)
@@ -626,11 +627,15 @@ def set_cwa_settings():
                 if value is not None:
                     try:
                         int_value = int(value)
-                        # Validate timeout range
+                        # Validate range
                         if setting == 'ingest_timeout_minutes':
                             int_value = max(5, min(120, int_value))  # Clamp between 5 and 120 minutes
                         elif setting == 'auto_send_delay_minutes':
                             int_value = max(1, min(60, int_value))  # Clamp between 1 and 60 minutes
+                        elif setting == 'hardcover_auto_fetch_batch_size':
+                            int_value = max(10, min(200, int_value))  # Clamp between 10 and 200
+                        elif setting == 'hardcover_auto_fetch_schedule_hour':
+                            int_value = max(0, min(23, int_value))  # Clamp between 0 and 23 hours
                         result[setting] = int_value
                     except (ValueError, TypeError):
                         # Use current value if conversion fails
@@ -638,11 +643,43 @@ def set_cwa_settings():
                             result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
                         elif setting == 'auto_send_delay_minutes':
                             result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
+                        elif setting == 'hardcover_auto_fetch_batch_size':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 50)  # Default to 50
+                        elif setting == 'hardcover_auto_fetch_schedule_hour':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 2)  # Default to 2 AM
                 else:
                     if setting == 'ingest_timeout_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
                     elif setting == 'auto_send_delay_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
+                    elif setting == 'hardcover_auto_fetch_batch_size':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 50)  # Default to 50
+                    elif setting == 'hardcover_auto_fetch_schedule_hour':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 2)  # Default to 2 AM
+
+            # Handle float settings
+            for setting in float_settings:
+                value = request.form.get(setting)
+                if value is not None:
+                    try:
+                        float_value = float(value)
+                        # Validate range
+                        if setting == 'hardcover_auto_fetch_min_confidence':
+                            float_value = max(0.5, min(1.0, float_value))  # Clamp between 0.5 and 1.0
+                        elif setting == 'hardcover_auto_fetch_rate_limit':
+                            float_value = max(0.0, min(60.0, float_value))  # Clamp between 0 and 60 seconds
+                        result[setting] = float_value
+                    except (ValueError, TypeError):
+                        # Use current value if conversion fails
+                        if setting == 'hardcover_auto_fetch_min_confidence':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 0.85)  # Default to 0.85
+                        elif setting == 'hardcover_auto_fetch_rate_limit':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 5.0)  # Default to 5.0 seconds
+                else:
+                    if setting == 'hardcover_auto_fetch_min_confidence':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 0.85)  # Default to 0.85
+                    elif setting == 'hardcover_auto_fetch_rate_limit':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 5.0)  # Default to 5.0 seconds
 
             # Handle JSON settings
             for setting in json_settings:
@@ -713,9 +750,17 @@ def set_cwa_settings():
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.get_cwa_settings()
 
+    # Check if Hardcover token is available
+    from os import getenv
+    hardcover_token_available = bool(
+        getattr(config, "config_hardcover_token", None) or 
+        getenv("HARDCOVER_TOKEN")
+    )
+
     return render_title_template("cwa_settings.html", title=_("Calibre-Web Automated User Settings"), page="cwa-settings",
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats, target_formats=target_formats,
-                                    automerge_options=automerge_options, autoingest_options=autoingest_options)
+                                    automerge_options=automerge_options, autoingest_options=autoingest_options,
+                                    hardcover_token_available=hardcover_token_available)
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
@@ -885,6 +930,38 @@ def cwa_stats_show():
     data_epub_fixer = cwa_db.get_epub_fixer_history(fixes=False, verbose=False)
     data_epub_fixer_with_fixes = cwa_db.get_epub_fixer_history(fixes=True, verbose=False)
 
+    # Get Hardcover auto-fetch stats
+    hardcover_stats = None
+    try:
+        # Get total stats from hardcover_auto_fetch_stats table
+        total_processed = cwa_db.execute_read(
+            "SELECT SUM(books_processed) FROM hardcover_auto_fetch_stats"
+        )
+        total_auto_matched = cwa_db.execute_read(
+            "SELECT SUM(auto_matched) FROM hardcover_auto_fetch_stats"
+        )
+        
+        # Get pending review count
+        pending_review = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 0
+        ).count()
+        
+        # Get manually reviewed count
+        manually_reviewed = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 1,
+            ub.HardcoverMatchQueue.review_action == 'accept'
+        ).count()
+        
+        hardcover_stats = {
+            'total_processed': total_processed[0][0] if total_processed and total_processed[0][0] else 0,
+            'total_auto_matched': total_auto_matched[0][0] if total_auto_matched and total_auto_matched[0][0] else 0,
+            'pending_review': pending_review,
+            'manually_reviewed': manually_reviewed
+        }
+    except Exception as e:
+        log.debug(f"Error fetching Hardcover stats: {e}")
+        hardcover_stats = None
+
     return render_title_template("cwa_stats_tabs.html", title=_("Calibre-Web Automated Stats & Activity"),
                                 page="cwa-stats",
                                 active_tab=active_tab,
@@ -921,13 +998,13 @@ def cwa_stats_show():
                                 active_users=active_users,
                                 selected_user_id=user_id,
                                 cwa_stats=get_cwa_stats(),
+                                hardcover_stats=hardcover_stats,
                                 data_enforcement=data_enforcement, headers_enforcement=headers["enforcement"]["no_paths"], 
                                 data_enforcement_with_paths=data_enforcement_with_paths, headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 
                                 data_imports=data_imports, headers_import=headers["imports"],
                                 data_conversions=data_conversions, headers_conversion=headers["conversions"],
                                 data_epub_fixer=data_epub_fixer, headers_epub_fixer=headers["epub_fixer"]["no_fixes"],
                                 data_epub_fixer_with_fixes=data_epub_fixer_with_fixes, headers_epub_fixer_with_fixes=headers["epub_fixer"]["with_fixes"])
-
 
 @cwa_stats.route("/cwa-stats-export-csv/<tab_name>", methods=["GET"])
 @login_required_if_no_ano

@@ -362,6 +362,195 @@
       </div>
     </div>
 
+    <!-- Hardcover Auto-Fetch Settings -->
+    <div class="settings-container">
+      <h4 class="settings-section-header">🔖 {{_('Hardcover Auto-Fetch Settings')}}</h4>
+      <p class="settings-description">
+        {{_('Automatically fetch and assign Hardcover IDs to books in your library. Hardcover IDs enable reading progress sync and annotation sync with Hardcover.app when using compatible eReaders.')}}
+      </p>
+      
+      {% if not hardcover_token_available %}
+      <div class="alert alert-warning" style="margin: 15px 0; padding: 12px; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 4px;">
+        <strong>⚠️ {{_('Hardcover Token Required')}}</strong><br>
+        <span style="font-size: 0.9em;">{{_('To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in your docker-compose environment variables or configure a global token in Basic Configuration. Without a valid token, this feature will remain disabled.')}}</span>
+      </div>
+      {% endif %}
+      
+      <div style="margin-top: 20px;">
+        <!-- Enable Auto-Fetch -->
+        {% if cwa_settings['hardcover_auto_fetch_enabled'] and hardcover_token_available %}
+        <input type="checkbox" id="hardcover_auto_fetch_enabled" name="hardcover_auto_fetch_enabled" value="True" checked style="accent-color: var(--color-secondary);" {% if not hardcover_token_available %}disabled{% endif %}>
+        {% else %}
+        <input type="checkbox" id="hardcover_auto_fetch_enabled" name="hardcover_auto_fetch_enabled" value="True" style="accent-color: var(--color-secondary);" {% if not hardcover_token_available %}disabled{% endif %}>
+        {% endif %}
+        <label for="hardcover_auto_fetch_enabled" style="padding-left: 10px; {% if not hardcover_token_available %}color: #888; cursor: not-allowed;{% endif %}">{{_('Enable Hardcover Auto-Fetch')}}</label>
+        <p class="cwa-settings-tooltip">
+          {{_('Automatically search Hardcover for books without Hardcover IDs. High-confidence matches are applied automatically; low-confidence matches are queued for manual review.')}}
+        </p>
+
+        <!-- Schedule Interval -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_schedule" class="settings-section-header" style="padding-right: 10px;">{{_('Run Schedule:')}}</label>
+          <select name="hardcover_auto_fetch_schedule" 
+                  id="hardcover_auto_fetch_schedule" 
+                  style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680; min-width: 200px;"
+                  onchange="toggleScheduleOptions()"
+                  {% if not hardcover_token_available %}disabled{% endif %}>
+            <optgroup label="{{_('Frequent Intervals')}}">
+              <option value="15min" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '15min' %}selected{% endif %}>{{_('Every 15 Minutes')}}</option>
+              <option value="30min" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '30min' %}selected{% endif %}>{{_('Every 30 Minutes')}}</option>
+              <option value="1hour" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '1hour' %}selected{% endif %}>{{_('Every Hour')}}</option>
+              <option value="2hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '2hours' %}selected{% endif %}>{{_('Every 2 Hours')}}</option>
+              <option value="4hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '4hours' %}selected{% endif %}>{{_('Every 4 Hours')}}</option>
+              <option value="6hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '6hours' %}selected{% endif %}>{{_('Every 6 Hours')}}</option>
+              <option value="12hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '12hours' %}selected{% endif %}>{{_('Every 12 Hours')}}</option>
+            </optgroup>
+            <optgroup label="{{_('Daily/Weekly/Monthly')}}">
+              <option value="daily" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'daily' %}selected{% endif %}>{{_('Daily at Specific Time')}}</option>
+              <option value="weekly" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'weekly' %}selected{% endif %}>{{_('Weekly on Specific Day')}}</option>
+              <option value="monthly" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'monthly' %}selected{% endif %}>{{_('Monthly on Specific Day')}}</option>
+            </optgroup>
+          </select>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('How often to automatically run the Hardcover ID fetch task')}}</small>
+          
+          <!-- Day of Week Selector (for weekly) -->
+          <div id="schedule_day_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Week:')}}</label>
+            <select name="hardcover_auto_fetch_schedule_day" 
+                    id="hardcover_auto_fetch_schedule_day"
+                    style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                    {% if not hardcover_token_available %}disabled{% endif %}>
+              <option value="monday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'monday' %}selected{% endif %}>{{_('Monday')}}</option>
+              <option value="tuesday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'tuesday' %}selected{% endif %}>{{_('Tuesday')}}</option>
+              <option value="wednesday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'wednesday' %}selected{% endif %}>{{_('Wednesday')}}</option>
+              <option value="thursday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'thursday' %}selected{% endif %}>{{_('Thursday')}}</option>
+              <option value="friday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'friday' %}selected{% endif %}>{{_('Friday')}}</option>
+              <option value="saturday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'saturday' %}selected{% endif %}>{{_('Saturday')}}</option>
+              <option value="sunday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'sunday' %}selected{% endif %}>{{_('Sunday')}}</option>
+            </select>
+          </div>
+          
+          <!-- Day of Month Selector (for monthly) -->
+          <div id="schedule_monthday_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Month:')}}</label>
+            <input type="number" 
+                   name="hardcover_auto_fetch_schedule_day" 
+                   id="hardcover_auto_fetch_schedule_monthday"
+                   value="{{ cwa_settings.get('hardcover_auto_fetch_schedule_day', '1') if cwa_settings['hardcover_auto_fetch_schedule'] == 'monthly' else '1' }}" 
+                   min="1" 
+                   max="28"
+                   style="width: 80px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                   {% if not hardcover_token_available %}disabled{% endif %}>
+            <small style="color: #888; margin-left: 5px;">{{_('(1-28)')}}</small>
+          </div>
+          
+          <!-- Hour Selector (for daily/weekly/monthly) -->
+          <div id="schedule_hour_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Time of Day:')}}</label>
+            <select name="hardcover_auto_fetch_schedule_hour" 
+                    id="hardcover_auto_fetch_schedule_hour"
+                    style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                    {% if not hardcover_token_available %}disabled{% endif %}>
+              {% for hour in range(24) %}
+              <option value="{{hour}}" {% if cwa_settings.get('hardcover_auto_fetch_schedule_hour', 2) == hour %}selected{% endif %}>{{ "%02d:00"|format(hour) }}</option>
+              {% endfor %}
+            </select>
+            <small style="color: #888; margin-left: 5px;">{{_('(Server timezone: %(tz)s)', tz=config.config_timezone or 'UTC')}}</small>
+          </div>
+        </div>
+        
+        <script>
+        function toggleScheduleOptions() {
+          const scheduleType = document.getElementById('hardcover_auto_fetch_schedule').value;
+          const daySelector = document.getElementById('schedule_day_selector');
+          const monthdaySelector = document.getElementById('schedule_monthday_selector');
+          const hourSelector = document.getElementById('schedule_hour_selector');
+          
+          // Hide all by default
+          daySelector.style.display = 'none';
+          monthdaySelector.style.display = 'none';
+          hourSelector.style.display = 'none';
+          
+          // Show relevant selectors based on schedule type
+          if (scheduleType === 'weekly') {
+            daySelector.style.display = 'block';
+            hourSelector.style.display = 'block';
+          } else if (scheduleType === 'monthly') {
+            monthdaySelector.style.display = 'block';
+            hourSelector.style.display = 'block';
+          } else if (scheduleType === 'daily') {
+            hourSelector.style.display = 'block';
+          }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+          toggleScheduleOptions();
+        });
+        </script>
+
+        <!-- Minimum Confidence Threshold -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_min_confidence" class="settings-section-header" style="padding-right: 10px;">{{_('Minimum Confidence Threshold:')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_min_confidence" 
+                 id="hardcover_auto_fetch_min_confidence" 
+                 value="{{ cwa_settings['hardcover_auto_fetch_min_confidence'] }}" 
+                 min="0.5" 
+                 max="1.0" 
+                 step="0.05"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0.50-1.00 (default: 0.85)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Matches with confidence scores above this threshold are automatically applied. Lower scores are queued for manual review. Higher values = fewer auto-matches but higher accuracy.')}}
+          </p>
+        </div>
+
+        <!-- Batch Size -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_batch_size" class="settings-section-header" style="padding-right: 10px;">{{_('Batch Size:')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_batch_size" 
+                 id="hardcover_auto_fetch_batch_size" 
+                 value="{{ cwa_settings.get('hardcover_auto_fetch_batch_size', 50) }}" 
+                 min="10" 
+                 max="200" 
+                 step="10"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 10-200 books per run (default: 50)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Number of books to process in each scheduled run. Smaller batches reduce API load; larger batches process your library faster.')}}
+          </p>
+        </div>
+
+        <!-- Rate Limit Delay -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_rate_limit" class="settings-section-header" style="padding-right: 10px;">{{_('Rate Limit Delay (seconds):')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_rate_limit" 
+                 id="hardcover_auto_fetch_rate_limit" 
+                 value="{{ cwa_settings['hardcover_auto_fetch_rate_limit'] }}" 
+                 min="0" 
+                 max="60" 
+                 step="0.5"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0-60 seconds (default: 5.0)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Delay between API requests to Hardcover. Prevents rate limiting and protects your API key. Uses exponential backoff on errors.')}}
+          </p>
+        </div>
+
+        <div class="cwa-settings-tip" style="margin-top: 20px;">
+          <small style="color: var(--color-info-text);">
+            💡 <strong>{{_('Tip')}}:</strong> {{_('You can manually trigger the Hardcover auto-fetch task from the Admin panel at any time. Check the CWA Stats page to see progress and review queued matches that need manual approval.')}}
+          </small>
+        </div>
+      </div>
+    </div>
+
     <div class="settings-container">
         <h4 class="settings-section-header">{{_('Web UI Settings')}}</h4>
 

@@ -15,6 +15,25 @@ from typing import Dict, List, Optional, Union
 import requests
 from os import getenv
 
+# Import text similarity utilities
+try:
+    from cps.utils.text_similarity import (
+        normalized_levenshtein_similarity,
+        author_list_similarity,
+        normalize_string,
+        calculate_year_similarity
+    )
+except ImportError:
+    # Fallback for CLI usage
+    def normalized_levenshtein_similarity(s1: str, s2: str) -> float:
+        return 1.0 if s1.lower() == s2.lower() else 0.5
+    def author_list_similarity(a1: List[str], a2: List[str]) -> tuple[float, bool]:
+        return (0.5, False)
+    def normalize_string(s: str) -> str:
+        return s.lower()
+    def calculate_year_similarity(y1: str, y2: str) -> float:
+        return 1.0 if y1 == y2 else 0.0
+
 # Try importing from full app; if unavailable (CLI), use light fallbacks
 try:  # pragma: no cover - normal app path
     from cps import logger, config, constants  # type: ignore
@@ -375,6 +394,117 @@ class Hardcover(Metadata):
             return data
         except (TypeError, KeyError):
             return default
+
+    @staticmethod
+    def calculate_confidence_score(
+        result: MetaRecord,
+        query_title: str,
+        query_authors: Optional[List[str]] = None,
+        query_isbn: Optional[str] = None,
+        query_series: Optional[str] = None,
+        query_series_index: Optional[Union[int, float, str]] = None,
+        query_publisher: Optional[str] = None,
+        query_year: Optional[str] = None
+    ) -> tuple[float, str]:
+        """
+        Calculate confidence score for a metadata match.
+        
+        Args:
+            result: The MetaRecord from Hardcover search
+            query_title: Title to match against
+            query_authors: Authors to match against
+            query_isbn: ISBN to match against
+            query_series: Series name to match against
+            query_series_index: Series position to match against
+            query_publisher: Publisher to match against
+            query_year: Publication year to match against
+            
+        Returns:
+            tuple: (confidence_score, match_reason)
+                - confidence_score: 0.0 to 1.0
+                - match_reason: Human-readable explanation
+        """
+        score = 0.0
+        reasons = []
+        
+        # ISBN match (if available) - highest confidence
+        if query_isbn and result.identifiers.get('isbn'):
+            result_isbn = str(result.identifiers.get('isbn', '')).replace('-', '').replace(' ', '')
+            query_isbn_clean = query_isbn.replace('-', '').replace(' ', '')
+            if result_isbn == query_isbn_clean:
+                return (1.0, "ISBN exact match")
+        
+        # Title similarity (base score: 0.5-0.95)
+        if query_title and result.title:
+            title_similarity = normalized_levenshtein_similarity(query_title, result.title)
+            score += title_similarity * 0.5
+            if title_similarity >= 0.9:
+                reasons.append(f"title exact match ({title_similarity:.2f})")
+            elif title_similarity >= 0.7:
+                reasons.append(f"title close match ({title_similarity:.2f})")
+            else:
+                reasons.append(f"title partial match ({title_similarity:.2f})")
+        
+        # Author similarity (base score: 0.0-0.45)
+        if query_authors and result.authors:
+            author_similarity, is_and_match = author_list_similarity(query_authors, result.authors)
+            # Weight AND matches (all authors match) higher than OR matches (some match)
+            if is_and_match:
+                score += author_similarity * 0.45  # Higher weight for AND matches
+                reasons.append(f"all authors match ({author_similarity:.2f})")
+            else:
+                score += author_similarity * 0.35  # Lower weight for partial matches
+                reasons.append(f"some authors match ({author_similarity:.2f})")
+        
+        # Series matching (bonus: +0.0 to +0.15)
+        if query_series and result.series:
+            series_similarity = normalized_levenshtein_similarity(query_series, result.series)
+            if series_similarity >= 0.8:
+                bonus = 0.1 * series_similarity
+                score += bonus
+                reasons.append(f"series match ({series_similarity:.2f})")
+                
+                # Series index exact match (additional bonus: +0.05)
+                if query_series_index is not None and result.series_index:
+                    try:
+                        query_idx = float(query_series_index) if query_series_index else 0
+                        result_idx = float(result.series_index) if result.series_index else 0
+                        if query_idx > 0 and result_idx > 0 and abs(query_idx - result_idx) < 0.1:
+                            score += 0.05
+                            reasons.append(f"series position {query_idx} matches")
+                    except (ValueError, TypeError):
+                        pass
+        
+        # Publisher match (bonus: +0.1)
+        if query_publisher and result.publisher:
+            publisher_similarity = normalized_levenshtein_similarity(query_publisher, result.publisher)
+            if publisher_similarity >= 0.8:
+                score += 0.1
+                reasons.append("publisher match")
+        
+        # Publication year match (bonus: +0.05 for exact, +0.025 for ±1 year)
+        if query_year and result.publishedDate:
+            year_similarity = calculate_year_similarity(query_year, result.publishedDate)
+            score += year_similarity * 0.05
+            if year_similarity > 0:
+                reasons.append(f"year match ({year_similarity:.2f})")
+        
+        # Cap score at 1.0
+        score = min(score, 1.0)
+        
+        # Generate match reason string
+        if score >= 0.95:
+            reason = "Excellent match: " + ", ".join(reasons)
+        elif score >= 0.85:
+            reason = "High confidence: " + ", ".join(reasons)
+        elif score >= 0.7:
+            reason = "Good match: " + ", ".join(reasons)
+        elif score >= 0.5:
+            reason = "Possible match: " + ", ".join(reasons)
+        else:
+            reason = "Low confidence: " + ", ".join(reasons)
+        
+        return (score, reason)
 
 
 if __name__ == "__main__":

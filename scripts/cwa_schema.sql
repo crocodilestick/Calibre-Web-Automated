@@ -69,7 +69,14 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_detection_language SMALLINT DEFAULT 1 NOT NULL,
     duplicate_detection_series SMALLINT DEFAULT 0 NOT NULL,
     duplicate_detection_publisher SMALLINT DEFAULT 0 NOT NULL,
-    duplicate_detection_format SMALLINT DEFAULT 0 NOT NULL
+    duplicate_detection_format SMALLINT DEFAULT 0 NOT NULL,
+    hardcover_auto_fetch_enabled SMALLINT DEFAULT 0 NOT NULL,
+    hardcover_auto_fetch_schedule TEXT DEFAULT 'weekly' NOT NULL,
+    hardcover_auto_fetch_schedule_day TEXT DEFAULT 'sunday' NOT NULL,
+    hardcover_auto_fetch_schedule_hour INTEGER DEFAULT 2 NOT NULL,
+    hardcover_auto_fetch_min_confidence REAL DEFAULT 0.85 NOT NULL,
+    hardcover_auto_fetch_batch_size INTEGER DEFAULT 50 NOT NULL,
+    hardcover_auto_fetch_rate_limit REAL DEFAULT 5.0 NOT NULL
 );
 
 -- Persisted scheduled jobs (initial focus: auto-send). Rows remain until dispatched or manually cleared.
@@ -100,3 +107,34 @@ CREATE TABLE IF NOT EXISTS cwa_user_activity (
 CREATE INDEX IF NOT EXISTS idx_activity_user ON cwa_user_activity(user_id);
 CREATE INDEX IF NOT EXISTS idx_activity_event ON cwa_user_activity(event_type);
 CREATE INDEX IF NOT EXISTS idx_activity_time ON cwa_user_activity(timestamp);
+
+-- Hardcover auto-fetch match queue for manual review of ambiguous matches
+CREATE TABLE IF NOT EXISTS hardcover_match_queue(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    book_id INTEGER NOT NULL,
+    book_title TEXT NOT NULL,
+    book_authors TEXT NOT NULL,
+    search_query TEXT NOT NULL,
+    hardcover_results TEXT NOT NULL,              -- JSON array of MetaRecord candidates
+    confidence_scores TEXT NOT NULL,              -- JSON array of [score, reason] tuples
+    created_at TEXT NOT NULL,
+    reviewed INTEGER DEFAULT 0 NOT NULL,          -- 0=pending, 1=reviewed
+    selected_result_id TEXT DEFAULT NULL,         -- Hardcover ID if manually selected
+    review_action TEXT DEFAULT NULL,              -- 'accept', 'reject', 'skip'
+    reviewed_at TEXT DEFAULT NULL,
+    reviewed_by TEXT DEFAULT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_hardcover_queue_book ON hardcover_match_queue(book_id);
+CREATE INDEX IF NOT EXISTS idx_hardcover_queue_reviewed ON hardcover_match_queue(reviewed);
+
+-- Stats for hardcover auto-fetch operations
+CREATE TABLE IF NOT EXISTS hardcover_auto_fetch_stats(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    timestamp TEXT NOT NULL,
+    books_processed INTEGER DEFAULT 0 NOT NULL,
+    auto_matched INTEGER DEFAULT 0 NOT NULL,
+    queued_for_review INTEGER DEFAULT 0 NOT NULL,
+    skipped_no_results INTEGER DEFAULT 0 NOT NULL,
+    errors INTEGER DEFAULT 0 NOT NULL,
+    avg_confidence REAL DEFAULT 0.0 NOT NULL
+);

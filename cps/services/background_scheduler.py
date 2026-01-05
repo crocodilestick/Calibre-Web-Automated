@@ -14,6 +14,7 @@ try:
     from apscheduler.schedulers.background import BackgroundScheduler as BScheduler
     from apscheduler.triggers.cron import CronTrigger
     from apscheduler.triggers.date import DateTrigger
+    from apscheduler.triggers.interval import IntervalTrigger
     use_APScheduler = True
 except (ImportError, RuntimeError) as e:
     use_APScheduler = False

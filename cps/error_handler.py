@@ -22,7 +22,7 @@ log = logger.create()
 # custom error page
 
 def error_http(error):
-    headers = {'WWW-Authenticate': 'Basic realm="calibre-web"'} if error.code == 401 else {}
+    headers = {'WWW-Authenticate': f'Basic realm="{config.config_calibre_web_title or "calibre-web-automated"}"'} if error.code == 401 else {}
     return render_template('http_error.html',
                            error_code="Error {0}".format(error.code),
                            error_name=error.name,

@@ -262,9 +262,14 @@ class CWA_DB:
             if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats" or setting == "auto_convert_retained_formats":
                 result[setting] = ','.join(result[setting])
 
-            # Use parameterized queries to safely handle non-English characters and quotes
-            self.cur.execute(f"UPDATE cwa_settings SET {setting}=?;", (result[setting],))
-            self.con.commit()
+            try:
+                # Use parameterized queries to safely handle non-English characters and quotes
+                self.cur.execute(f"UPDATE cwa_settings SET {setting}=?;", (result[setting],))
+                self.con.commit()
+            except Exception as e:
+                print(f"[CWA_DB] Error updating setting '{setting}' with value '{result[setting]}': {e}")
+                # Continue to next setting instead of failing completely
+                continue
         self.set_default_settings()
 
 

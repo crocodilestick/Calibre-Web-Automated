@@ -648,6 +648,77 @@
 
     <br>
 
+<!--
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Notifications & Auto-Resolution')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure how you are notified about duplicate books and optionally enable automatic resolution.')}}
+      </p>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="1" {% if cwa_settings['duplicate_notifications_enabled'] %} checked {% endif %}>
+        <label for="duplicate_notifications_enabled">{{_('Enable Duplicate Notifications')}}</label>
+      </div>
+        <p class="cwa-settings-tip" style="font-size: small;">{{_('Show popup notifications when unresolved duplicates are detected. Admins and users with edit rights will see a badge on the Duplicates sidebar button and a notification popup when they login.')}}</small>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="duplicate_auto_resolve_enabled" name="duplicate_auto_resolve_enabled" value="1" {% if cwa_settings['duplicate_auto_resolve_enabled'] %} checked {% endif %}>
+        <label for="duplicate_auto_resolve_enabled">{{_('Enable Automatic Duplicate Resolution')}} ⚠️</label>
+      </div>
+      <p class="cwa-settings-tip" style="background: #e74c3c57; border-color: #e74c3c; font-size: small;">
+        <strong>{{_('Warning:')}}</strong> {{_('This will automatically delete books based on the strategy below. Original files will be backed up to')}} <code>/config/processed_books/</code>
+      </p>
+
+      <div class="form-group" style="padding: 2rem; background: #151e2680;">
+        <h4 for="duplicate_auto_resolve_strategy" class="settings-section-header">{{_('Auto-Resolution Strategy')}}</h4>
+        <select class="form-control" id="duplicate_auto_resolve_strategy" name="duplicate_auto_resolve_strategy">
+          <option value="newest" {% if cwa_settings.get('duplicate_auto_resolve_strategy', 'newest') == 'newest' %} selected {% endif %}>
+            {{_('Keep Newest')}} - {{_('Delete older copies, keep the most recently added book')}}
+          </option>
+          <option value="highest_quality_format" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'highest_quality_format' %} selected {% endif %}>
+            {{_('Keep Highest Quality Format')}} - {{_('Keep EPUB over MOBI, AZW3 over AZW, etc.')}}
+          </option>
+          <option value="most_metadata" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'most_metadata' %} selected {% endif %}>
+            {{_('Keep Most Complete Metadata')}} - {{_('Keep the book with most tags, series info, etc.')}}
+          </option>
+          <option value="largest_file_size" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'largest_file_size' %} selected {% endif %}>
+            {{_('Keep Largest File Size')}} - {{_('Keep the book with the largest file size')}}
+          </option>
+        </select>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 2rem !important;">{{_('Choose which book to keep when duplicates are automatically resolved.')}}</p>
+      </div>
+
+      <div class="cwa-settings-tip">
+        <small class="settings-explanation">
+          <strong>{{_('Note:')}}</strong> {{_('Auto-resolution runs when the duplicates page is manually triggered. Dismissed duplicate groups are never auto-resolved.')}}
+        </small>
+      </div>
+    </div>
+-->
+
+    <!-- Duplicate Notifications -->
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Notifications')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure how you are notified about duplicate books.')}}
+      </p>
+
+      <!-- Notifications Toggle -->
+      <div class="checkbox-wrapper">
+        {% if cwa_settings['duplicate_notifications_enabled'] %}
+        <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="True" checked style="accent-color: var(--color-secondary);">
+        {% else %}
+        <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="True" style="accent-color: var(--color-secondary);">
+        {% endif %}
+        <label for="duplicate_notifications_enabled">{{_('Enable Duplicate Notifications')}}</label>
+      </div>
+      <p class="cwa-settings-tip" style="font-size: small;">{{_('Show popup notifications when unresolved duplicates are detected. Admins and users with edit rights will see a badge on the Duplicates sidebar button and a notification popup when they login.')}}</p>
+    </div>
+
+    <br>
+
     <br>
     <div style="margin-top: -2rem; max-width: 900px; justify-self: center; margin-bottom: 1rem; display: flex; flex-direction: row; flex-wrap: wrap; width: -webkit-fill-available; justify-content: space-between; margin-left: 2rem; margin-right: 2rem;">
       <input type="submit" name="submit_button" value="Submit" class="btn btn-default">

@@ -199,6 +199,74 @@ $(document).ready(function() {
         window.location.reload();
     });
     
+    // Dismiss/Undismiss duplicate group handlers
+    $(document).on('click', '.dismiss-duplicate-btn', function(e) {
+        e.preventDefault();
+        var btn = $(this);
+        var groupHash = btn.data('group-hash');
+        var isDismissed = btn.data('dismissed');
+        var groupContainer = btn.closest('.duplicate-group');
+        
+        // Determine action
+        var action = isDismissed ? 'undismiss' : 'dismiss';
+        var endpoint = '/duplicates/' + action + '/' + groupHash;
+        
+        // Disable button during request
+        btn.prop('disabled', true);
+        
+        // Make AJAX request
+        $.ajax({
+            url: endpoint,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Update button state
+                    if (action === 'dismiss') {
+                        btn.data('dismissed', true);
+                        btn.html('<span class="glyphicon glyphicon-eye-open"></span> Show');
+                        btn.attr('title', 'Show this duplicate group');
+                        btn.css('background', 'rgba(46, 204, 113, 0.2)');
+                        btn.css('border-color', 'rgba(46, 204, 113, 0.4)');
+                        
+                        // Fade out the group
+                        groupContainer.fadeOut(300);
+                    } else {
+                        btn.data('dismissed', false);
+                        btn.html('<span class="glyphicon glyphicon-eye-close"></span> Dismiss');
+                        btn.attr('title', 'Dismiss this duplicate group');
+                        btn.css('background', 'rgba(255,255,255,0.15)');
+                        btn.css('border-color', 'rgba(255,255,255,0.3)');
+                    }
+                    
+                    // Update badge count in real-time
+                    if (window.CWADuplicates && window.CWADuplicates.updateBadge) {
+                        window.CWADuplicates.updateBadge(response.count);
+                    }
+                    
+                    // Show success message (optional)
+                    console.log('[CWA Duplicates] ' + response.message);
+                } else {
+                    // Show error
+                    alert('Error: ' + response.error);
+                }
+                
+                // Re-enable button
+                btn.prop('disabled', false);
+            },
+            error: function(xhr, status, error) {
+                console.error('[CWA Duplicates] Error ' + action + 'ing duplicate group:', error);
+                alert('Error: Failed to update duplicate group');
+                
+                // Re-enable button
+                btn.prop('disabled', false);
+            }
+        });
+    });
+    
     // Initialize
     updateSelectionCount();
     updateBookItemVisuals();

@@ -69,7 +69,11 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_detection_language SMALLINT DEFAULT 1 NOT NULL,
     duplicate_detection_series SMALLINT DEFAULT 0 NOT NULL,
     duplicate_detection_publisher SMALLINT DEFAULT 0 NOT NULL,
-    duplicate_detection_format SMALLINT DEFAULT 0 NOT NULL
+    duplicate_detection_format SMALLINT DEFAULT 0 NOT NULL,
+    -- Duplicate notification and auto-resolution settings
+    duplicate_notifications_enabled SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_auto_resolve_enabled SMALLINT DEFAULT 0 NOT NULL,
+    duplicate_auto_resolve_strategy TEXT DEFAULT 'newest' NOT NULL
 );
 
 -- Persisted scheduled jobs (initial focus: auto-send). Rows remain until dispatched or manually cleared.

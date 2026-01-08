@@ -450,6 +450,23 @@ class HiddenMagicShelfTemplate(Base):
             return '<HiddenMagicShelfTemplate %d: user=%d shelf_id=%d>' % (self.id, self.user_id, self.shelf_id)
 
 
+class DismissedDuplicateGroup(Base):
+    __tablename__ = 'dismissed_duplicate_groups'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    group_hash = Column(String(32), nullable=False)  # MD5 hash of title+author combo
+    dismissed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        # User can only dismiss the same duplicate group once
+        UniqueConstraint('user_id', 'group_hash', name='unique_user_duplicate_dismissed'),
+    )
+
+    def __repr__(self):
+        return '<DismissedDuplicateGroup %d: user=%d hash=%s>' % (self.id, self.user_id, self.group_hash)
+
+
 # Baseclass representing Relationship between books and Shelfs in Calibre-Web in app.db (N:M)
 class BookShelf(Base):
     __tablename__ = 'book_shelf_link'

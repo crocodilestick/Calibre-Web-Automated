@@ -24,6 +24,9 @@
       <link href="{{ url_for('static', filename='css/caliBlur_override.css') }}" rel="stylesheet" media="screen">
     {% endif %}
     <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
+    {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
+    <link href="{{ url_for('static', filename='css/duplicates-notifications.css') }}" rel="stylesheet" media="screen">
+    {% endif %}
     <script>
       let checkMessagesInterval = null; // Store interval ID
 
@@ -278,7 +281,14 @@
               <li class="nav-head hidden-xs">{{_('Browse')}}</li>
               {% for element in sidebar %}
                 {% if current_user.check_visibility(element['visibility']) and element['public'] %}
-                    <li id="nav_{{element['id']}}" {% if page == element['page'] %}class="active"{% endif %}><a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}"><span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}</a></li>
+                    <li id="nav_{{element['id']}}" {% if page == element['page'] %}class="active"{% endif %} style="{% if element['id'] == 'duplicates' %}position: relative;{% endif %}">
+                      <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}">
+                        <span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}
+                        {% if element['id'] == 'duplicates' %}
+                          <span id="duplicate-count-badge" class="duplicate-badge" style="display: none;">0</span>
+                        {% endif %}
+                      </a>
+                    </li>
                 {% endif %}
               {% endfor %}
               {% if current_user.is_authenticated or g.allow_anonymous %}
@@ -402,5 +412,34 @@
       window.addEventListener('DOMContentLoaded', updateFilterHeaderFixed);
       window.addEventListener('resize', updateFilterHeaderFixed);
       </script>
+    {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
+    <!-- Duplicate Notification Modal -->
+    <div id="duplicate-notification-backdrop" class="duplicate-notification-backdrop"></div>
+    <div id="duplicate-notification-modal" class="duplicate-notification-modal" tabindex="-1" role="dialog" aria-labelledby="duplicate-notification-title">
+      <div class="duplicate-notification-header">
+        <button id="duplicate-notification-close" class="duplicate-notification-close" aria-label="{{_('Close')}}">&times;</button>
+        <h2 id="duplicate-notification-title">{{_('Duplicate Books Detected')}}</h2>
+        <p>{{_('You have unresolved duplicate books in your library')}}</p>
+      </div>
+      <div class="duplicate-notification-body">
+        <div class="duplicate-count-section">
+          <div class="duplicate-count-badge" id="duplicate-notification-count">0</div>
+          <h3>{{_('Duplicate Groups Found')}}</h3>
+        </div>
+        <ul id="duplicate-notification-preview" class="duplicate-preview-list">
+          <!-- Preview items will be inserted here by JavaScript -->
+        </ul>
+      </div>
+      <div class="duplicate-notification-footer">
+        <button id="duplicate-notification-remind" class="duplicate-notification-btn duplicate-notification-btn-secondary">
+          {{_('Remind Me Later')}}
+        </button>
+        <a href="{{ url_for('duplicates.show_duplicates') }}" class="duplicate-notification-btn duplicate-notification-btn-primary">
+          {{_('View & Resolve Duplicates')}}
+        </a>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/duplicate-notifier.js') }}"></script>
+    {% endif %}
   </body>
 </html>

@@ -4,12 +4,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
-from flask import Blueprint
+from flask import Blueprint, jsonify, request, abort
 from flask_babel import gettext as _
 from sqlalchemy import func, and_
 from datetime import datetime
+from functools import wraps
+import hashlib
 
-from . import db, calibre_db, logger
+from . import db, calibre_db, logger, ub
 from .admin import admin_required  
 from .usermanagement import login_required_if_no_ano
 from .render_template import render_title_template
@@ -23,9 +25,63 @@ duplicates = Blueprint('duplicates', __name__)
 log = logger.create()
 
 
+def admin_or_edit_required(f):
+    """Decorator that allows access to admins or users with edit role"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            abort(401)
+        if not (current_user.role_admin() or current_user.role_edit()):
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def generate_group_hash(title, author):
+    """Generate MD5 hash for a duplicate group based on title and author
+    
+    Args:
+        title: Book title (will be normalized)
+        author: Primary author name (will be normalized)
+        
+    Returns:
+        32-character MD5 hash string
+    """
+    # Normalize inputs - lowercase, strip whitespace
+    normalized_title = (title or "untitled").lower().strip()
+    normalized_author = (author or "unknown").lower().strip()
+    
+    # Create composite key
+    composite = f"{normalized_title}|{normalized_author}"
+    
+    # Generate MD5 hash
+    return hashlib.md5(composite.encode('utf-8')).hexdigest()
+
+
+def get_unresolved_duplicate_count(user_id=None):
+    """Get count of unresolved duplicate groups for a user
+    
+    Args:
+        user_id: User ID (defaults to current_user.id)
+        
+    Returns:
+        Integer count of unresolved duplicate groups
+    """
+    if user_id is None:
+        user_id = current_user.id
+    
+    try:
+        # Get all duplicate groups
+        duplicate_groups = find_duplicate_books(include_dismissed=False, user_id=user_id)
+        return len(duplicate_groups)
+    except Exception as e:
+        log.error("[cwa-duplicates] Error counting unresolved duplicates: %s", str(e))
+        return 0
+
+
 @duplicates.route("/duplicates")
 @login_required_if_no_ano
-@admin_required
+@admin_or_edit_required
 def show_duplicates():
     """Display books with duplicate titles and authors"""
     print("[cwa-duplicates] Loading duplicates page...", flush=True)
@@ -53,8 +109,19 @@ def show_duplicates():
                                      page="duplicates")
 
 
-def find_duplicate_books():
-    """Find books with duplicate combinations based on configurable criteria"""
+def find_duplicate_books(include_dismissed=False, user_id=None):
+    """Find books with duplicate combinations based on configurable criteria
+    
+    Args:
+        include_dismissed: If False, filter out dismissed groups for the user
+        user_id: User ID for dismissed filtering (defaults to current_user.id)
+    
+    Returns:
+        List of duplicate group dictionaries
+    """
+    
+    if user_id is None and hasattr(current_user, 'id'):
+        user_id = current_user.id
     
     try:
         # Get CWA settings for duplicate detection
@@ -199,11 +266,15 @@ def find_duplicate_books():
             if hasattr(books[0], 'author_names') and books[0].author_names:
                 display_author = books[0].author_names.split(',')[0].strip()
             
+            # Generate group hash for dismiss tracking
+            group_hash = generate_group_hash(display_title, display_author)
+            
             duplicate_groups.append({
                 'title': display_title,
                 'author': display_author,
                 'count': len(books),
-                'books': books
+                'books': books,
+                'group_hash': group_hash
             })
             
             book_ids = [book.id for book in books]
@@ -211,9 +282,177 @@ def find_duplicate_books():
             log.info("[cwa-duplicates] Found duplicate group: '%s' by %s (%s copies) - IDs: %s", 
                     display_title, display_author, len(books), book_ids)
     
+    # Filter out dismissed groups if requested
+    if not include_dismissed and user_id:
+        try:
+            dismissed_hashes = set()
+            dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
+                .filter(ub.DismissedDuplicateGroup.user_id == user_id)\
+                .all()
+            dismissed_hashes = {row[0] for row in dismissed_groups}
+            
+            if dismissed_hashes:
+                original_count = len(duplicate_groups)
+                duplicate_groups = [group for group in duplicate_groups 
+                                  if group['group_hash'] not in dismissed_hashes]
+                filtered_count = original_count - len(duplicate_groups)
+                if filtered_count > 0:
+                    print(f"[cwa-duplicates] Filtered out {filtered_count} dismissed groups for user {user_id}", flush=True)
+                    log.info("[cwa-duplicates] Filtered out %s dismissed groups for user %s", 
+                            filtered_count, user_id)
+        except Exception as e:
+            log.error("[cwa-duplicates] Error filtering dismissed groups: %s", str(e))
+    
     # Sort by title, then author for consistent display
     duplicate_groups.sort(key=lambda x: (x['title'].lower(), x['author'].lower()))
     
     print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
     
     return duplicate_groups
+
+
+@duplicates.route("/duplicates/status")
+@login_required_if_no_ano
+@admin_or_edit_required
+def get_duplicate_status():
+    """API endpoint to get unresolved duplicate count and sample groups
+    
+    Returns JSON with:
+        - enabled: Whether notifications are enabled
+        - count: Number of unresolved duplicate groups
+        - preview: List of up to 3 sample duplicate groups
+    """
+    try:
+        # Check if notifications are enabled
+        cwa_db = CWA_DB()
+        notifications_enabled = cwa_db.cwa_settings.get('duplicate_notifications_enabled', 1)
+        
+        # Get unresolved duplicate groups
+        duplicate_groups = find_duplicate_books(include_dismissed=False)
+        count = len(duplicate_groups)
+        
+        # Get preview of first 3 groups
+        preview = []
+        for group in duplicate_groups[:3]:
+            preview.append({
+                'title': group['title'],
+                'author': group['author'],
+                'count': group['count'],
+                'hash': group['group_hash']
+            })
+        
+        return jsonify({
+            'success': True,
+            'enabled': bool(notifications_enabled),
+            'count': count,
+            'preview': preview
+        })
+    except Exception as e:
+        log.error("[cwa-duplicates] Error getting duplicate status: %s", str(e))
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'count': 0,
+            'preview': []
+        }), 500
+
+
+@duplicates.route("/duplicates/dismiss/<group_hash>", methods=['POST'])
+@login_required_if_no_ano
+@admin_or_edit_required
+def dismiss_duplicate_group(group_hash):
+    """API endpoint to dismiss a duplicate group
+    
+    Args:
+        group_hash: MD5 hash of the duplicate group
+        
+    Returns:
+        JSON response with success status and new count
+    """
+    try:
+        # Check if already dismissed
+        existing = ub.session.query(ub.DismissedDuplicateGroup)\
+            .filter(ub.DismissedDuplicateGroup.user_id == current_user.id)\
+            .filter(ub.DismissedDuplicateGroup.group_hash == group_hash)\
+            .first()
+        
+        if existing:
+            return jsonify({
+                'success': True,
+                'message': _('Duplicate group already dismissed'),
+                'count': get_unresolved_duplicate_count()
+            })
+        
+        # Create dismissal record
+        dismissal = ub.DismissedDuplicateGroup(
+            user_id=current_user.id,
+            group_hash=group_hash
+        )
+        ub.session.add(dismissal)
+        ub.session.commit()
+        
+        log.info("[cwa-duplicates] User %s dismissed duplicate group %s", 
+                current_user.name, group_hash)
+        
+        # Get new count
+        new_count = get_unresolved_duplicate_count()
+        
+        return jsonify({
+            'success': True,
+            'message': _('Duplicate group dismissed'),
+            'count': new_count
+        })
+        
+    except Exception as e:
+        ub.session.rollback()
+        log.error("[cwa-duplicates] Error dismissing duplicate group: %s", str(e))
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@duplicates.route("/duplicates/undismiss/<group_hash>", methods=['POST'])
+@login_required_if_no_ano
+@admin_or_edit_required
+def undismiss_duplicate_group(group_hash):
+    """API endpoint to un-dismiss a duplicate group
+    
+    Args:
+        group_hash: MD5 hash of the duplicate group
+        
+    Returns:
+        JSON response with success status and new count
+    """
+    try:
+        # Find and delete dismissal record
+        deleted = ub.session.query(ub.DismissedDuplicateGroup)\
+            .filter(ub.DismissedDuplicateGroup.user_id == current_user.id)\
+            .filter(ub.DismissedDuplicateGroup.group_hash == group_hash)\
+            .delete()
+        
+        ub.session.commit()
+        
+        if deleted:
+            log.info("[cwa-duplicates] User %s un-dismissed duplicate group %s", 
+                    current_user.name, group_hash)
+            message = _('Duplicate group restored')
+        else:
+            message = _('Duplicate group was not dismissed')
+        
+        # Get new count
+        new_count = get_unresolved_duplicate_count()
+        
+        return jsonify({
+            'success': True,
+            'message': message,
+            'count': new_count
+        })
+        
+    except Exception as e:
+        ub.session.rollback()
+        log.error("[cwa-duplicates] Error un-dismissing duplicate group: %s", str(e))
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500

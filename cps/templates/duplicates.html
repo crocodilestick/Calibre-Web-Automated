@@ -296,11 +296,20 @@
 
         <div class="duplicates-container">
           {% for group in duplicate_groups %}
-          <div class="duplicate-group">
-            <div class="duplicate-header">
-              <div class="duplicate-title">{{ group.title }}</div>
-              <div class="duplicate-author">by {{ group.author }}</div>
-              <div class="duplicate-count">{{ group.count }} duplicate{{ 's' if group.count > 1 else '' }} found</div>
+          <div class="duplicate-group" data-group-hash="{{ group.group_hash }}">
+            <div class="duplicate-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="flex: 1;">
+                <div class="duplicate-title">{{ group.title }}</div>
+                <div class="duplicate-author">by {{ group.author }}</div>
+                <div class="duplicate-count">{{ group.count }} duplicate{{ 's' if group.count > 1 else '' }} found</div>
+              </div>
+              <button class="dismiss-duplicate-btn" 
+                      data-group-hash="{{ group.group_hash }}" 
+                      data-dismissed="false"
+                      title="{{_('Dismiss this duplicate group')}}"
+                      style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; margin-left: 20px;">
+                <span class="glyphicon glyphicon-eye-close"></span> {{_('Dismiss')}}
+              </button>
             </div>
             
             <div class="books-grid">

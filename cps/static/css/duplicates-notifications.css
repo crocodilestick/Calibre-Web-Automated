@@ -1,0 +1,356 @@
+/* Calibre-Web Automated – Modern Duplicates Notification System
+ * Copyright (C) 2024-2025 Calibre-Web Automated contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/* Backdrop Overlay */
+.duplicate-notification-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.duplicate-notification-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal Container */
+.duplicate-notification-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 90%;
+    max-width: 550px;
+    background: #1c28328a;
+    border-radius: 16px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+}
+
+.duplicate-notification-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Dark theme adjustments */
+body.caliblur-theme .duplicate-notification-modal {
+    background: rgba(30, 30, 35, 0.98);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Modal Header */
+.duplicate-notification-header {
+    background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+    color: white;
+    padding: 28px 32px;
+    position: relative;
+}
+
+.duplicate-notification-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.duplicate-notification-header p {
+    margin: 0;
+    opacity: 0.95;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Close Button */
+.duplicate-notification-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.duplicate-notification-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+/* Modal Body */
+.duplicate-notification-body {
+    padding: 32px;
+}
+
+.duplicate-count-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.duplicate-count-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(255, 152, 0, 0.4);
+}
+
+.duplicate-notification-body h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    text-align: left;
+}
+
+body.caliblur-theme .duplicate-notification-body h3 {
+    color: #e2e8f0;
+}
+
+.duplicate-preview-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+}
+
+.duplicate-preview-item {
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: #34455185;
+    border-radius: 8px;
+    border-left: 3px solid #ff9800;
+    transition: all 0.2s ease;
+}
+
+body.caliblur-theme .duplicate-preview-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.duplicate-preview-item:hover {
+    background: #edf2f7;
+    transform: translateX(4px);
+}
+
+body.caliblur-theme .duplicate-preview-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.duplicate-preview-item strong {
+    display: block;
+    color: white;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+body.caliblur-theme .duplicate-preview-item strong {
+    color: #e2e8f0;
+}
+
+.duplicate-preview-item small {
+    color: #718096;
+    font-size: 13px;
+}
+
+body.caliblur-theme .duplicate-preview-item small {
+    color: #a0aec0;
+}
+
+/* Modal Footer */
+.duplicate-notification-footer {
+    padding: 0 32px 32px 32px;
+    display: flex;
+    gap: 12px;
+    justify-content: stretch;
+}
+
+.duplicate-notification-btn {
+    flex: 1;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.duplicate-notification-btn-primary {
+    background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.duplicate-notification-btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.duplicate-notification-btn-secondary {
+    background: #34455185;
+    color: white;
+}
+
+body.caliblur-theme .duplicate-notification-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e0;
+}
+
+.duplicate-notification-btn-secondary:hover {
+    background: #cbd5e0;
+    color: #2d3748;
+}
+
+body.caliblur-theme .duplicate-notification-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #e2e8f0;
+}
+
+/* Sidebar Badge */
+.duplicate-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 12px;
+    line-height: 1;
+    box-shadow: 2px 2px 2px rgb(0 0 0 / 18%);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.05);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .duplicate-notification-modal {
+        width: 95%;
+        max-width: none;
+    }
+    
+    .duplicate-notification-header {
+        padding: 24px 20px;
+    }
+    
+    .duplicate-notification-body {
+        padding: 24px 20px;
+    }
+    
+    .duplicate-notification-footer {
+        padding: 0 20px 24px 20px;
+        flex-direction: column;
+    }
+    
+    .duplicate-notification-header h2 {
+        font-size: 20px;
+    }
+    
+    .duplicate-count-badge {
+        width: 64px;
+        height: 64px;
+        font-size: 26px;
+    }
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Accessibility */
+.duplicate-notification-modal:focus {
+    outline: 2px solid #ff9800;
+    outline-offset: 2px;
+}
+
+.duplicate-notification-btn:focus {
+    outline: 2px solid #ff9800;
+    outline-offset: 2px;
+}
+
+/* Loading State */
+.duplicate-notification-loading {
+    text-align: center;
+    padding: 40px;
+    color: #718096;
+}
+
+.duplicate-notification-loading::after {
+    content: "...";
+    animation: ellipsis 1.5s infinite;
+}
+
+@keyframes ellipsis {
+    0%, 20% { content: "."; }
+    40% { content: ".."; }
+    60%, 100% { content: "..."; }
+}

@@ -2313,7 +2313,8 @@ body.advsearch > div.container-fluid > div > div.col-sm-10 > div.col-md-10.col-l
 }
 
 body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
-    content: "My Profile"
+    content: "My Profile";
+    padding-left: 0px;
 }
 
 .well {

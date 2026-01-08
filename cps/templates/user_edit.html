@@ -1,6 +1,29 @@
 {% extends "layout.html" %}
+{% block header %}
+<style>
+  body.edituser.admin > div.container-fluid > div > div.col-sm-10 > div.discover, body.me > div.container-fluid > div > div.col-sm-10 > div.discover, body.newuser.admin > div.container-fluid > div > div.col-sm-10 > div.discover {
+    margin: 120px 0 0 18% !important;
+    width: 80% !important;
+    padding: 0px !important;
+  }
+  /* Mobile responsive styles for user_edit template - triggers below 768px */
+  @media (max-width: 768px) {
+    body.edituser.admin > div.container-fluid > div > div.col-sm-10 > div.discover, body.me > div.container-fluid > div > div.col-sm-10 > div.discover, body.newuser.admin > div.container-fluid > div > div.col-sm-10 > div.discover {
+      margin-inline: 3rem !important;
+      width: 90% !important;
+      justify-self: center !important;
+      padding-top: 0px !important;
+    }
+    body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
+      top: 23px !important;
+      left: 80px !important;
+      font-size: 2.5rem !important;
+    }
+  }
+</style>
+{% endblock %}
 {% block body %}
-<div class="discover" style="margin: 120px 0 0 18% !important; width: 80%; padding: 0px !important;">
+<div class="discover" style="padding-top: 0px !important;">
   <h2>{{title}}</h2>
   <form role="form" method="POST" autocomplete="off" style="margin-top: 3rem;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

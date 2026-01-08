@@ -71,11 +71,11 @@
     {% if registered_oauth.keys()| length > 0 and not new_user and profile %}
       {% for id, name in registered_oauth.items() %}
     <div class="form-group">
-      <label>{{ name }} {{_('OAuth Settings')}}</label>
+      <label>{{ name|capitalize }} {{_('OAuth Settings')}}</label>
         {% if id not in oauth_status %}
-        <a href="{{ url_for('oauth.'+ name +'_login') }}" id="config_{{ id }}_oauth" class="btn btn-primary">{{_('Link')}}</a>
+        <a href="{{ url_for('oauth.'+ name +'_login') }}" id="config_{{ id }}_oauth" class="btn btn-primary">{{_('Link {{ name|capitalize }} Account')}}</a>
         {% else %}
-        <a href="{{ url_for('oauth.'+ name +'_login_unlink') }}" id="config_{{ id }}_oauth" class="btn btn-primary">{{_('Unlink')}}</a>
+        <a href="{{ url_for('oauth.'+ name +'_login_unlink') }}" id="config_{{ id }}_oauth" class="btn btn-primary">{{_('Unlink {{ name|capitalize }} Account')}}</a>
         {% endif %}
       {% endfor %}
     </div>
@@ -161,6 +161,55 @@
     <div class="form-group">
       <input type="checkbox" name="kobo_only_shelves_sync" id="kobo_only_shelves_sync" {% if content.kobo_only_shelves_sync %}checked{% endif %}>
       <label for="kobo_only_shelves_sync">{{_('Sync only books in selected shelves with Kobo')}}</label>
+    </div>
+    {% endif %}
+    {% if not content.role_anonymous() and not new_user %}
+    <div class="form-group" style="margin-top: 20px; padding: 15px; background: #202c35; border-radius: 4px;">
+      <label style="font-weight: bold; margin-bottom: 10px;">{{_('Magic Shelves Visibility')}}</label>
+      <p class="help-block" style="margin-bottom: 15px;">{{_('Uncheck shelves you want to hide from your sidebar. System shelves cannot be deleted, only hidden. Public shelves from other users can also be hidden.')}}</p>
+      
+      {% if system_shelf_templates|length > 0 %}
+      <div style="margin-bottom: 15px;">
+        <strong>{{_('Default System Shelves:')}}</strong>
+      </div>
+      {% for key, template in system_shelf_templates.items() %}
+      <div style="margin-bottom: 8px; margin-left: 10px;">
+        <input type="checkbox" 
+              name="show_magic_shelf_{{ key }}" 
+              id="show_magic_shelf_{{ key }}" 
+              {% if key not in hidden_shelf_templates %}checked{% endif %}>
+        <label for="show_magic_shelf_{{ key }}" style="font-weight: normal;">{{ template['icon'] }} {{ template['name'] }}</label>
+      </div>
+      {% endfor %}
+      {% endif %}
+      
+      {% set all_public_shelves = visible_public_shelves + hidden_custom_shelves %}
+      {% if all_public_shelves|length > 0 %}
+      <div style="margin-top: 20px; margin-bottom: 10px;">
+        <strong>{{_('Public Shelves:')}}</strong>
+      </div>
+      {% for shelf in all_public_shelves %}
+      <div style="margin-bottom: 8px; margin-left: 10px;">
+        <input type="checkbox" 
+               name="show_custom_shelf_{{ shelf.id }}" 
+               id="show_custom_shelf_{{ shelf.id }}"
+               {% if shelf.id not in hidden_custom_shelf_ids %}checked{% endif %}>
+        <label for="show_custom_shelf_{{ shelf.id }}" style="font-weight: normal;">{{ shelf.icon }} {{ shelf.name }} <small class="text-muted">(by {{ shelf.user.name }})</small></label>
+      </div>
+      {% endfor %}
+      {% endif %}
+      
+      {% if system_shelf_templates|length > 0 or all_public_shelves|length > 0 %}
+      <small class="text-muted" style="display: block; margin-top: 15px;">
+        {% if system_shelf_templates|length > 0 %}
+        {{_('%(visible)s of %(total)s default shelves visible', visible=(system_shelf_templates|length - hidden_shelf_templates|length), total=system_shelf_templates|length)}}
+        {% endif %}
+        {% if all_public_shelves|length > 0 %}
+        {% set visible_count = all_public_shelves|length - hidden_custom_shelf_ids|length %}
+        {% if system_shelf_templates|length > 0 %} • {% endif %}{{_('%(visible)s of %(total)s public shelves visible', visible=visible_count, total=all_public_shelves|length)}}
+        {% endif %}
+      </small>
+      {% endif %}
     </div>
     {% endif %}
     </div>

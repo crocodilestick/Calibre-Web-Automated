@@ -132,6 +132,7 @@
            title="{{_('Refresh shelf to update with latest changes')}}">
           <span style="padding: 5px;" class="glyphicon glyphicon-refresh"></span> {{_('Refresh')}}
         </a>
+        {% if shelf.user_id == current_user.id or current_user.role_admin() %}
         <a href="{{url_for('web.edit_magic_shelf', shelf_id=id)}}" 
            class="btn btn-default"
            style="display: flex;
@@ -142,6 +143,22 @@
            title="{{_('Edit shelf rules')}}">
           <span style="padding: 5px;" class="glyphicon glyphicon-edit"></span> {{_('Edit')}}
         </a>
+        {% endif %}
+        {% if shelf.user_id != current_user.id %}
+        <button id="toggle-hide-shelf" 
+                class="btn btn-{% if is_hidden_shelf %}success{% else %}warning{% endif %}"
+                data-shelf-id="{{ id }}"
+                data-is-hidden="{{ 'true' if is_hidden_shelf else 'false' }}"
+                style="display: flex;
+                       align-items: center;
+                       flex-direction: row;
+                       gap: 0.5rem;" 
+                data-toggle="tooltip" 
+                title="{{_('Hide this shelf from your sidebar') if not is_hidden_shelf else _('Show this shelf in your sidebar')}}">
+          <span style="padding: 5px;" class="glyphicon glyphicon-{% if is_hidden_shelf %}eye-open{% else %}eye-close{% endif %}"></span> 
+          <span class="hide-text">{% if is_hidden_shelf %}{{_('Show Shelf')}}{% else %}{{_('Hide Shelf')}}{% endif %}</span>
+        </button>
+        {% endif %}
     </div>
     {% endif %}
 
@@ -238,4 +255,44 @@
   {% endif %}
   </div>
 </div>
+{% endblock %}
+{% block js %}
+{{ super() }}
+{% if page == 'magicshelf' %}
+<script>
+$(document).ready(function() {
+    // Handle hide/unhide shelf button
+    $('#toggle-hide-shelf').on('click', function() {
+        var $btn = $(this);
+        var shelfId = $btn.data('shelf-id');
+        var isHidden = $btn.data('is-hidden') === 'true';
+        var action = isHidden ? 'unhide' : 'hide';
+        
+        $btn.prop('disabled', true);
+        
+        $.ajax({
+            url: '/magicshelf/' + shelfId + '/' + action,
+            method: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    // Reload page to update sidebar and button state
+                    location.reload();
+                } else {
+                    alert('Error: ' + (response.message || 'Unknown error'));
+                    $btn.prop('disabled', false);
+                }
+            },
+            error: function(xhr) {
+                var message = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert('Error: ' + message);
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+});
+</script>
+{% endif %}
 {% endblock %}

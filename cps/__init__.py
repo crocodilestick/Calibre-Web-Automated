@@ -245,10 +245,61 @@ def create_app():
     @app.before_request
     def _cwa_ensure_db_session():
         from .cw_login import current_user
+        from sqlalchemy import or_
         import time
 
         if current_user.is_authenticated:
-            g.magic_shelves_access = ub.session.query(ub.MagicShelf).filter(ub.MagicShelf.user_id == current_user.id).all()
+            # Get hidden items for this user (both system templates and custom shelves)
+            hidden_items = ub.session.query(
+                ub.HiddenMagicShelfTemplate.template_key,
+                ub.HiddenMagicShelfTemplate.shelf_id
+            ).filter(
+                ub.HiddenMagicShelfTemplate.user_id == current_user.id
+            ).all()
+            
+            hidden_template_keys = {item.template_key for item in hidden_items if item.template_key}
+            hidden_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+            
+            # Get user's own shelves + public shelves (will filter hidden ones below)
+            g.magic_shelves_access = ub.session.query(ub.MagicShelf).filter(
+                or_(
+                    ub.MagicShelf.is_public == 1,
+                    ub.MagicShelf.user_id == current_user.id
+                )
+            ).all()
+            
+            # Filter out hidden items
+            from . import magic_shelf
+            filtered_shelves = []
+            for shelf in g.magic_shelves_access:
+                # Skip hidden system templates
+                if shelf.is_system and shelf.user_id == current_user.id:
+                    # Find template key for this system shelf
+                    template_key = None
+                    for key, template in magic_shelf.SYSTEM_SHELF_TEMPLATES.items():
+                        if template['name'] == shelf.name:
+                            template_key = key
+                            break
+                    
+                    # If template_key not found, this is an orphaned/deprecated system shelf
+                    if template_key is None:
+                        log.warning(f"System shelf '{shelf.name}' (ID: {shelf.id}) doesn't match any current template - may need migration")
+                        # Show it anyway - migration should clean it up on next restart
+                        filtered_shelves.append(shelf)
+                        continue
+                    
+                    # Skip if hidden
+                    if template_key in hidden_template_keys:
+                        continue
+                
+                # Skip hidden custom public shelves (not owned by user)
+                if shelf.is_public == 1 and shelf.user_id != current_user.id:
+                    if shelf.id in hidden_shelf_ids:
+                        continue
+                
+                filtered_shelves.append(shelf)
+            
+            g.magic_shelves_access = filtered_shelves
             
             # Magic Shelf Count Caching
             if 'magic_shelf_counts' not in session:

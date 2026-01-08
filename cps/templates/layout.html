@@ -294,7 +294,7 @@
               {% if current_user.is_authenticated %}
                 <li class="nav-head hidden-xs" style="margin-top: 1rem;">{{_('Magic Shelves ✨')}}</li>
                   {% for shelf in g.magic_shelves_access %}
-                    <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>
+                    <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>
                   {% endfor %}
                 <li id="nav_createmagicshelf" class="create-shelf"><a href="{{url_for('web.create_magic_shelf')}}" style="display: flex; align-items: center;">{{_('Create Magic Shelf')}}</a></li>
               {% endif %}

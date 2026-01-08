@@ -349,6 +349,19 @@ div.help-panel > .panel-body {
                         <small class="form-text text-muted">Only works if Kobo integration is enabled</small>
                     </div>
 
+                    <!-- Public Shelf Checkbox (only for custom shelves with permission) -->
+                    {% if current_user.role_edit_shelfs() and not (shelf and shelf.is_system) %}
+                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                        <label>
+                            <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-is-public" {{ 'checked' if shelf and shelf.is_public == 1 else '' }}>
+                            {{_('Share with Everyone (Public)')}}
+                        </label>
+                        <small class="form-text text-muted">
+                            {{_('Other users can view this shelf. Users with "Edit Public Shelves" permission can edit/delete it.')}}
+                        </small>
+                    </div>
+                    {% endif %}
+
                     <hr>
 
                     <!-- Rules Builder -->
@@ -378,9 +391,20 @@ div.help-panel > .panel-body {
                             <span class="glyphicon space glyphicon-remove"></span> Cancel
                         </a>
                         {% if shelf %}
-                        <button type="button" class="btn btn-danger pull-right" id="delete-shelf-btn">
-                            <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
-                        </button>
+                            {% if shelf.is_system %}
+                            <button type="button" 
+                                    class="btn btn-danger pull-right" 
+                                    id="delete-shelf-btn" 
+                                    disabled
+                                    data-toggle="tooltip"
+                                    title="{{_('System shelves cannot be deleted. You can hide them in your user profile settings.')}}">
+                                <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
+                            </button>
+                            {% else %}
+                            <button type="button" class="btn btn-danger pull-right" id="delete-shelf-btn">
+                                <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
+                            </button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </form>
@@ -651,7 +675,8 @@ $(function() {
             name: shelfName,
             icon: $('#shelf-icon').val(),
             rules: rules,
-            kobo_sync: $('#shelf-kobo-sync').is(':checked')
+            kobo_sync: $('#shelf-kobo-sync').is(':checked'),
+            is_public: $('#shelf-is-public').is(':checked')
         };
 
         console.log('Submitting shelf data:', shelfData);

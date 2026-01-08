@@ -29,7 +29,7 @@ except ImportError as e:
         OAuthConsumerMixin = BaseException
         oauth_support = False
 from sqlalchemy import create_engine, exc, exists, event, text
-from sqlalchemy import Column, ForeignKey, Index
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint
 from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import func
@@ -402,6 +402,10 @@ class MagicShelf(Base):
     created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    __table_args__ = (
+        UniqueConstraint('user_id', 'name', 'is_system', name='unique_user_system_shelf_name'),
+    )
+
     def __repr__(self):
         return '<MagicShelf %d:%r>' % (self.id, self.name)
 
@@ -421,6 +425,29 @@ class MagicShelfCache(Base):
     __table_args__ = (
         Index('ix_magic_shelf_cache_lookup', 'shelf_id', 'user_id', 'sort_param'),
     )
+
+
+class HiddenMagicShelfTemplate(Base):
+    __tablename__ = 'hidden_magic_shelf_templates'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    template_key = Column(String, nullable=True)  # For system templates: 'recently_added', 'highly_rated', etc.
+    shelf_id = Column(Integer, ForeignKey('magic_shelf.id'), nullable=True)  # For custom public shelves
+    hidden_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        # Either template_key OR shelf_id must be set, but not both
+        # User can only hide the same template/shelf once
+        UniqueConstraint('user_id', 'template_key', name='unique_user_template_hidden'),
+        UniqueConstraint('user_id', 'shelf_id', name='unique_user_shelf_hidden'),
+    )
+
+    def __repr__(self):
+        if self.template_key:
+            return '<HiddenMagicShelfTemplate %d: user=%d template=%s>' % (self.id, self.user_id, self.template_key)
+        else:
+            return '<HiddenMagicShelfTemplate %d: user=%d shelf_id=%d>' % (self.id, self.user_id, self.shelf_id)
 
 
 # Baseclass representing Relationship between books and Shelfs in Calibre-Web in app.db (N:M)
@@ -909,27 +936,70 @@ def migrate_Database(_session):
     from .progress_syncing.models import ensure_app_db_tables
     ensure_app_db_tables(engine.raw_connection())
     
-    # Backfill system magic shelves for existing users (one-time migration)
+    # Migrate system magic shelves for existing users
     try:
         from . import magic_shelf
+        
+        # Get all valid current template names
+        current_template_names = {template['name'] for template in magic_shelf.SYSTEM_SHELF_TEMPLATES.values()}
+        
+        log.info("Migrating system magic shelves...")
         users = _session.query(User).filter(User.role != constants.ROLE_ANONYMOUS).all()
-        backfilled = 0
+        total_deleted = 0
+        total_created = 0
+        
         for user in users:
-            # Check if user has any system shelves
-            has_system_shelves = _session.query(MagicShelf).filter(
+            # Get all system shelves for this user
+            user_system_shelves = _session.query(MagicShelf).filter(
                 MagicShelf.user_id == user.id,
                 MagicShelf.is_system == True
-            ).first()
-
-            if not has_system_shelves:
-                created = magic_shelf.create_system_magic_shelves(user.id)
-                if created > 0:
-                    backfilled += 1
-
-        if backfilled > 0:
-            log.info(f"Backfilled system magic shelves for {backfilled} existing users")
+            ).all()
+            
+            # Delete system shelves that don't match current templates
+            for shelf in user_system_shelves:
+                if shelf.name not in current_template_names:
+                    # This is an old/deprecated system shelf - delete it
+                    _session.query(MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
+                    _session.query(HiddenMagicShelfTemplate).filter_by(shelf_id=shelf.id).delete()
+                    _session.delete(shelf)
+                    total_deleted += 1
+                    log.debug(f"Deleted deprecated system shelf '{shelf.name}' (ID: {shelf.id}) for user {user.id}")
+            
+            # Get user's template-based hide preferences (not shelf-specific)
+            hidden_templates = _session.query(HiddenMagicShelfTemplate.template_key).filter(
+                HiddenMagicShelfTemplate.user_id == user.id,
+                HiddenMagicShelfTemplate.template_key.isnot(None)
+            ).all()
+            hidden_keys = {ht.template_key for ht in hidden_templates}
+            
+            # Create missing current templates
+            templates_to_create = []
+            for template_key, template_data in magic_shelf.SYSTEM_SHELF_TEMPLATES.items():
+                # Skip if user has hidden this template type
+                if template_key in hidden_keys:
+                    continue
+                
+                # Check if user already has this current template
+                has_template = _session.query(MagicShelf).filter(
+                    MagicShelf.user_id == user.id,
+                    MagicShelf.name == template_data['name'],
+                    MagicShelf.is_system == True
+                ).first()
+                
+                if not has_template:
+                    templates_to_create.append(template_key)
+            
+            # Create missing templates
+            if templates_to_create:
+                created = magic_shelf.create_system_magic_shelves(user.id, templates_to_create)
+                total_created += created
+        
+        if total_deleted > 0 or total_created > 0:
+            _session.commit()
+            log.info(f"System shelf migration complete: {total_deleted} old shelves removed, {total_created} new shelves created")
     except Exception as e:
-        log.error(f"Error backfilling system magic shelves: {e}")
+        log.error(f"Error during system shelf migration: {e}")
+        _session.rollback()
 
 
 def clean_database(_session):

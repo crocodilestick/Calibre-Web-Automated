@@ -1,35 +1,134 @@
 {% extends "layout.html" %}
 {% block header %}
 <style>
-  body.edituser.admin > div.container-fluid > div > div.col-sm-10 > div.discover, body.me > div.container-fluid > div > div.col-sm-10 > div.discover, body.newuser.admin > div.container-fluid > div > div.col-sm-10 > div.discover {
-    margin: 120px 0 0 18% !important;
-    width: 80% !important;
-    padding: 0px !important;
+  /* Hide the original :before pseudo-elements for user_edit template */
+  body.me > div.container-fluid > div.row-fluid > div.col-sm-10:before {
+    display: none !important;
   }
+  
+  body.me > div.container-fluid > div > div.col-sm-10 > div.discover[name="profile-page"]:before {
+    display: none !important;
+  }
+  
+  /* Main container positioning */
+  body.me > div.container-fluid > div > div.col-sm-10 > div.discover[name="profile-page"] {
+      margin: 4rem !important;
+      width: 80% !important;
+      padding: 0px !important;
+      border: none;
+      justify-self: center;
+  }
+  
+  /* Profile header flexbox container */
+  .profile-header-container {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #1f2c3554;
+    border-radius: 8px;
+  }
+  
+  .profile-picture {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYwIiBoZWlnaHQ9IjU2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgPHBhdGggZD0iTTE0NC4yOTEgNDkyLjMyNUMxNjYuNjI0IDQ3Ni4yNjUgMTkzLjE5NCA0NjYuMTU2IDIyNCA0NjJjMTIuNDQ0IDkuMzMzIDMxLjExMSAxNCA1NiAxNHM0My41NTYtNC42NjcgNTYtMTRjMzAuODA2IDQuMTU2IDU3LjM3NiAxNC4yNjQgNzkuNzA5IDMwLjMyNUMzNzYuNTI3IDUxNy40MzUgMzI5Ljk1MSA1MzIgMjgwIDUzMmMtNDkuOTUxIDAtOTYuNTI3LTE0LjU2NS0xMzUuNzA5LTM5LjY3NXoiIGZpbGwtb3BhY2l0eT0iLjYiLz4KICAgICAgICA8cGF0aCBkPSJNMjI0IDQ2MmwxMi44OC00MC4yNTFDMTk2LjQyOSAzOTcuNDYyIDE2OCAzNDAuMDM1IDE2OCAyNzMuMDU5YzAtMzUuMTkzIDcuODQ5LTY3Ljc1IDIxLjE2OC05NC4yNDggMTYuMTczIDQuOTc3IDM1LjMxNSA3Ljg1NiA1NS44MzIgNy44NTYgNTEuMTA0IDAgOTMuNjgtMTcuODYgMTAzLjA3Mi00MS41MTZDMzc0Ljc3OSAxNzQuNTg4IDM5MiAyMjAuOTMxIDM5MiAyNzMuMDU5YzAgNjYuOTc2LTI4LjQyOSAxMjQuNDAzLTY4Ljg4IDE0OC42OUwzMzYgNDYyYy0xMi40NDQgOS4zMzMtMzEuMTExIDE0LTU2IDE0LTI0LjY5NCAwLTQzLjI2My00LjU5NC01NS43MDctMTMuNzgyTDIyNCA0NjJ6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgICAgIDxwYXRoIGQ9Ik0xODAuMDY0IDM0NS44NDlDMTU1LjI4MiAzMTguMDY3IDE0MCAyNzkuOTk3IDE0MCAyMzhjMC04NS4wNTIgNjIuNjgtMTU0IDE0MC0xNTRzMTQwIDY4Ljk0OCAxNDAgMTU0YzAgNDEuOTk3LTE1LjI4MiA4MC4wNjctNDAuMDY0IDEwNy44NDkgNy43MTYtMjEuODYyIDEyLjA2NC00Ni41OTYgMTIuMDY0LTcyLjc5IDAtNTIuMTI4LTE3LjIyMS05OC40NzEtNDMuOTI4LTEyNy45MDgtOS4zOTIgMjMuNjU2LTUxLjk2OCA0MS41MTYtMTAzLjA3MiA0MS41MTYtMjAuNTE3IDAtMzkuNjU5LTIuODc5LTU1LjgzMi03Ljg1NkMxNzUuODQ5IDIwNS4zMDkgMTY4IDIzNy44NjYgMTY4IDI3My4wNTljMCAyNi4xOTQgNC4zNDggNTAuOTI4IDEyLjA2NCA3Mi43OXoiIGZpbGwtb3BhY2l0eT0iLjQ1Ii8+CiAgICAgICAgPHBhdGggZD0iTTI4MCA1MzJjMTM5LjE3NiAwIDI1Mi0xMTIuODI0IDI1Mi0yNTJTNDE5LjE3NiAyOCAyODAgMjggMjggMTQwLjgyNCAyOCAyODBzMTEyLjgyNCAyNTIgMjUyIDI1MnptMCAyOEMxMjUuMzYgNTYwIDAgNDM0LjY0IDAgMjgwUzEyNS4zNiAwIDI4MCAwczI4MCAxMjUuMzYgMjgwIDI4MC0xMjUuMzYgMjgwLTI4MCAyODB6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgPC9nPgo8L3N2Zz4K);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .profile-picture .fallback-icon {
+    display: none;
+    font-size: 4rem;
+    line-height: 1;
+  }
+  
+  .profile-picture.no-custom-picture {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYwIiBoZWlnaHQ9IjU2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgPHBhdGggZD0iTTE0NC4yOTEgNDkyLjMyNUMxNjYuNjI0IDQ3Ni4yNjUgMTkzLjE5NCA0NjYuMTU2IDIyNCA0NjJjMTIuNDQ0IDkuMzMzIDMxLjExMSAxNCA1NiAxNHM0My41NTYtNC42NjcgNTYtMTRjMzAuODA2IDQuMTU2IDU3LjM3NiAxNC4yNjQgNzkuNzA5IDMwLjMyNUMzNzYuNTI3IDUxNy40MzUgMzI5Ljk1MSA1MzIgMjgwIDUzMmMtNDkuOTUxIDAtOTYuNTI3LTE0LjU2NS0xMzUuNzA5LTM5LjY3NXoiIGZpbGwtb3BhY2l0eT0iLjYiLz4KICAgICAgICA8cGF0aCBkPSJNMjI0IDQ2MmwxMi44OC00MC4yNTFDMTk2LjQyOSAzOTcuNDYyIDE2OCAzNDAuMDM1IDE2OCAyNzMuMDU5YzAtMzUuMTkzIDcuODQ5LTY3Ljc1IDIxLjE2OC05NC4yNDggMTYuMTczIDQuOTc3IDM1LjMxNSA3Ljg1NiA1NS44MzIgNy44NTYgNTEuMTA0IDAgOTMuNjgtMTcuODYgMTAzLjA3Mi00MS41MTZDMzc0Ljc3OSAxNzQuNTg4IDM5MiAyMjAuOTMxIDM5MiAyNzMuMDU5YzAgNjYuOTc2LTI4LjQyOSAxMjQuNDAzLTY4Ljg4IDE0OC42OUwzMzYgNDYyYy0xMi40NDQgOS4zMzMtMzEuMTExIDE0LTU2IDE0LTI0LjY5NCAwLTQzLjI2My00LjU5NC01NS43MDctMTMuNzgyTDIyNCA0NjJ6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgICAgIDxwYXRoIGQ9Ik0xODAuMDY0IDM0NS44NDlDMTU1LjI4MiAzMTguMDY3IDE0MCAyNzkuOTk3IDE0MCAyMzhjMC04NS4wNTIgNjIuNjgtMTU0IDE0MC0xNTRzMTQwIDY4Ljk0OCAxNDAgMTU0YzAgNDEuOTk3LTE1LjI4MiA4MC4wNjctNDAuMDY0IDEwNy44NDkgNy43MTYtMjEuODYyIDEyLjA2NC00Ni41OTYgMTIuMDY0LTcyLjc5IDAtNTIuMTI4LTE3LjIyMS05OC40NzEtNDMuOTI4LTEyNy45MDgtOS4zOTIgMjMuNjU2LTUxLjk2OCA0MS41MTYtMTAzLjA3MiA0MS41MTYtMjAuNTE3IDAtMzkuNjU5LTIuODc5LTU1LjgzMi03Ljg1NkMxNzUuODQ5IDIwNS4zMDkgMTY4IDIzNy44NjYgMTY4IDI3My4wNTljMCAyNi4xOTQgNC4zNDggNTAuOTI4IDEyLjA2NCA3Mi43OXoiIGZpbGwtb3BhY2l0eT0iLjQ1Ii8+CiAgICAgICAgPHBhdGggZD0iTTI4MCA1MzJjMTM5LjE3NiAwIDI1Mi0xMTIuODI0IDI1Mi0yNTJTNDE5LjE3NiAyOCAyODAgMjggMjggMTQwLjgyNCAyOCAyODBzMTEyLjgyNCAyNTIgMjUyIDI1MnptMCAyOEMxMjUuMzYgNTYwIDAgNDM0LjY0IDAgMjgwUzEyNS4zNiAwIDI4MCAwczI4MCAxMjUuMzYgMjgwIDI4MC0xMjUuMzYgMjgwLTI4MCAyODB6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgPC9nPgo8L3N2Zz4K);
+  }
+  
+  .profile-title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .profile-title-section h2 {
+    margin: 0;
+    color: #ffc200;
+  }
+  
+  .profile-subtitle {
+    font-size: 1.2rem;
+    color: #bbbbbb;
+    margin: 0;
+  }
+  
   /* Mobile responsive styles for user_edit template - triggers below 768px */
   @media (max-width: 768px) {
-    body.edituser.admin > div.container-fluid > div > div.col-sm-10 > div.discover, body.me > div.container-fluid > div > div.col-sm-10 > div.discover, body.newuser.admin > div.container-fluid > div > div.col-sm-10 > div.discover {
+    body.me > div.container-fluid > div > div.col-sm-10 > div.discover[name="profile-page"] {
       margin-inline: 3rem !important;
       width: 90% !important;
       justify-self: center !important;
       padding-top: 0px !important;
     }
-    body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
-      top: 23px !important;
-      left: 80px !important;
-      font-size: 2.5rem !important;
+    
+    .profile-header-container {
+      flex-direction: column;
+      text-align: center;
+      padding: 15px;
+      gap: 15px;
+    }
+    
+    .profile-picture {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .profile-picture .fallback-icon {
+      font-size: 3rem;
+    }
+    
+    .profile-title-section {
+      align-items: center;
+    }
+    
+    .profile-title-section h2 {
+      font-size: 1.5rem;
+    }
+    
+    .profile-subtitle {
+      font-size: 1rem;
     }
   }
 </style>
 {% endblock %}
 {% block body %}
-<div class="discover" style="padding-top: 0px !important;">
+<div name="profile-page" class="discover" style="padding-top: 0px !important;">
   <h2>{{title}}</h2>
+  <!-- Profile Header with Picture and Title -->
+  <div class="profile-header-container">
+    <div class="profile-picture" id="user-profile-picture">
+      <span class="fallback-icon">👤</span>
+    </div>
+    <div class="profile-title-section">
+      <h2>{{title}}</h2>
+      <p class="profile-subtitle">{% if profile %}{{_('Your Profile')}}{% else %}{{_('User Settings')}}{% endif %}</p>
+    </div>
+  </div>
   <form role="form" method="POST" autocomplete="off" style="margin-top: 3rem;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     
     <!-- User Account Information Card -->
-    <div class="settings-container" style="margin-inline: 0rem;">
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('Account Information')}}</h4>
       
       {% if new_user or ( current_user and content.name != "Guest" and current_user.role_admin() ) %}
@@ -60,7 +159,7 @@
     </div>
     
     <!-- eReader Configuration Card -->
-    <div class="settings-container" style="margin-inline: 0rem;">
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('eReader Configuration')}}</h4>
       
       <div class="form-group">
@@ -85,7 +184,7 @@
     
     <!-- Language & Theme Preferences Card -->
     {% if not content.role_anonymous() %}
-    <div class="settings-container" style="margin-inline: 0rem;">
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('Language & Theme Preferences')}}</h4>
       
       <div class="form-group">
@@ -117,7 +216,7 @@
       </div>
     </div>
     {% else %}
-    <div class="settings-container" style="margin-inline: 0rem;">
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('Book Language Filter')}}</h4>
       
       <div class="form-group">
@@ -135,7 +234,7 @@
     
     <!-- OAuth & API Integrations Card -->
     {% if (registered_oauth.keys()| length > 0 and not new_user and profile) or (hardcover_support and not new_user) or (kobo_support and not new_user) %}
-    <div class="settings-container" style="margin-inline: 0rem;">
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('OAuth & API Integrations')}}</h4>
       
       {% if registered_oauth.keys()| length > 0 and not new_user and profile %}
@@ -183,7 +282,7 @@
     {% endif %}
     
     <!-- Sidebar Display Settings Card -->
-    <div class="settings-container" style="margin-inline: 0rem;">
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('Sidebar Display Settings')}}</h4>
       <p class="settings-explanation">{{_('Choose which sections to display in your sidebar navigation.')}}</p>
       
@@ -217,7 +316,7 @@
     
     <!-- User Permissions Card (Admin Only) -->
     {% if current_user and current_user.role_admin() and not profile %}
-    <div class="settings-container" style="margin-inline: 0rem;">
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('User Permissions')}}</h4>
       <p class="settings-explanation">{{_('Configure what actions this user is allowed to perform.')}}</p>
       
@@ -273,7 +372,7 @@
     
     <!-- Magic Shelves Visibility Card -->
     {% if not content.role_anonymous() and not new_user %}
-    <div class="settings-container" style="margin-inline: 0rem;">
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('Magic Shelves Visibility')}}</h4>
       <p class="settings-explanation">{{_('Uncheck shelves you want to hide from your sidebar. System shelves cannot be deleted, only hidden. Public shelves from other users can also be hidden.')}}</p>
       
@@ -326,7 +425,7 @@
       {% endif %}
       
       {% if system_shelf_templates|length > 0 or all_public_shelves|length > 0 %}
-      <div class="settings-disclaimer" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #5c6b74;">
+      <div class="settings-disclaimer" style="margin-top: 25px !important; padding-top: 20px; border-top: 1px solid #5c6b74;">
         {% if system_shelf_templates|length > 0 %}
         {{_('%(visible)s of %(total)s default shelves visible', visible=(system_shelf_templates|length - hidden_shelf_templates|length), total=system_shelf_templates|length)}}
         {% endif %}
@@ -373,6 +472,41 @@
 {{ delete_confirm_modal() }}
 {% endblock %}
 {% block js %}
+<script>
+  // Load custom profile picture if available
+  (function() {
+    const username = "{{ content.name }}";
+    const profilePictureElement = document.getElementById('user-profile-picture');
+    
+    if (username && profilePictureElement) {
+      // Fetch user profiles from the JSON endpoint
+      fetch('{{ url_for("profile_pictures.user_profiles_json") }}')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to load profile pictures');
+          }
+          return response.json();
+        })
+        .then(userProfiles => {
+          console.log('User profiles loaded:', userProfiles);
+          console.log('Looking for username:', username);
+          if (userProfiles[username]) {
+            // User has a custom profile picture
+            console.log('Setting custom profile picture:', userProfiles[username]);
+            profilePictureElement.style.backgroundImage = `url(${userProfiles[username]})`;
+          } else {
+            // No custom profile picture - keep default SVG
+            console.log('No custom profile picture found, using default');
+            profilePictureElement.classList.add('no-custom-picture');
+          }
+        })
+        .catch(error => {
+          console.error('Could not load user profile picture:', error);
+          profilePictureElement.classList.add('no-custom-picture');
+        });
+    }
+  })();
+</script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-editable.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-editable.min.js') }}"></script>

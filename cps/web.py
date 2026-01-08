@@ -2398,7 +2398,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                                      translations=translations,
                                      profile=1,
                                      languages=languages,
-                                     title=_("%(name)s's Profile", name=current_user.name),
+                                     title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                      page="me",
                                      kobo_support=kobo_support,
                                      hardcover_support=hardcover_support,
@@ -2482,7 +2482,7 @@ def profile():
                                  hidden_custom_shelf_ids=hidden_custom_shelf_ids,
                                  hidden_custom_shelves=hidden_custom_shelves,
                                  visible_public_shelves=visible_public_shelves,
-                                 title=_("%(name)s's Profile", name=current_user.name),
+                                 title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                  page="me",
                                  registered_oauth=local_oauth_check,
                                  oauth_status=oauth_status)

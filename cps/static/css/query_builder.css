@@ -191,7 +191,7 @@ a.btn.btn-secondary:hover {
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(to bottom, #cc7b19, transparent);
+    background: #cc7b19;
 }
 
 /* Better Focus States */

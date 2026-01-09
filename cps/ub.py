@@ -728,13 +728,17 @@ class Thumbnail(Base):
 # Add missing tables during migration of database
 def add_missing_tables(engine, _session):
     if not engine.dialect.has_table(engine.connect(), "archived_book"):
-        ArchivedBook.__table__.create(bind=engine)
+        ArchivedBook.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "thumbnail"):
-        Thumbnail.__table__.create(bind=engine)
+        Thumbnail.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "kosync_progress"):
-        KOSyncProgress.__table__.create(bind=engine)
+        KOSyncProgress.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "magic_shelf"):
-        MagicShelf.__table__.create(bind=engine)
+        MagicShelf.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "magic_shelf_cache"):
+        MagicShelfCache.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "hidden_magic_shelf_templates"):
+        HiddenMagicShelfTemplate.__table__.create(bind=engine, checkfirst=True)
 
 
 # migrate all settings missing in registration table

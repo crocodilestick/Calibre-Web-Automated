@@ -2408,7 +2408,11 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
     val = 0
     for key, __ in to_save.items():
         if key.startswith('show') and not key.startswith('show_magic_shelf_') and not key.startswith('show_custom_shelf_'):
-            val += int(key[5:])
+            try:
+                val += int(key[5:])
+            except (ValueError, IndexError) as e:
+                log.warning(f"Skipping invalid sidebar checkbox key: {key}")
+                continue
     current_user.sidebar_view = val
     if to_save.get("Show_detail_random"):
         current_user.sidebar_view += constants.DETAIL_RANDOM

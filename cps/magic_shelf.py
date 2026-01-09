@@ -139,7 +139,7 @@ FIELD_MAP = {
     'timestamp': (db.Books, 'timestamp'),
     'has_cover': (db.Books, 'has_cover'),
     'series_index': (db.Books, 'series_index'),
-    'comments': (db.Books, 'comments'),
+    'comments': (db.Comments, 'text'),  # Fixed: Points to actual text column, not relationship
     'read_status': ('custom_column', 'read_status'),  # Special handling - uses config.config_read_column
     'hardcover_id': ('identifier', 'hardcover-id'),  # Special handling - checks Identifiers table
 }
@@ -182,6 +182,7 @@ RELATIONSHIP_MAP = {
     'publisher': 'publishers',
     'rating': 'ratings',
     'language': 'languages',
+    'comments': 'comments',  # For description field - requires join to Comments table
 }
 
 def build_filter_from_rule(rule, user_id=None):
@@ -308,10 +309,17 @@ def build_filter_from_rule(rule, user_id=None):
     relationship_name = RELATIONSHIP_MAP.get(field_name)
     try:
         if relationship_name:
-            filter_expr = operator(column, value)
-            if filter_expr is None:
-                return None
-            return getattr(db.Books, relationship_name).any(filter_expr)
+            # Special handling for is_empty/is_null on relationships:
+            # These check for absence of relationships, not null values in related records
+            if operator_name in ['is_empty', 'is_null']:
+                return ~getattr(db.Books, relationship_name).any()
+            elif operator_name in ['is_not_empty', 'is_not_null']:
+                return getattr(db.Books, relationship_name).any()
+            else:
+                filter_expr = operator(column, value)
+                if filter_expr is None:
+                    return None
+                return getattr(db.Books, relationship_name).any(filter_expr)
         else:
             filter_expr = operator(column, value)
             return filter_expr

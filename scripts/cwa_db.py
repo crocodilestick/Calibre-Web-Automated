@@ -79,8 +79,10 @@ class CWA_DB:
 
         settings_lines = []
         for line in settings_table.split('\n'):
-            if line[:4] == "    ":
-                settings_lines.append(line.strip())
+            stripped = line.strip()
+            # Skip comment lines and empty lines
+            if line[:4] == "    " and not stripped.startswith('--') and stripped:
+                settings_lines.append(stripped)
 
         default_settings = {}
         for line in settings_lines:
@@ -128,6 +130,9 @@ class CWA_DB:
             if match:
                 try:
                     command = line.replace('\n', '').strip()
+                    # Skip SQL comments
+                    if command.startswith('--') or not command:
+                        continue
                     command = command.replace(',', ';')
                     with open('/config/.cwa_db_debug', 'a') as f:
                         f.write(command)

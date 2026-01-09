@@ -15,10 +15,11 @@ on every boot (via cwa-checksum-backfill service) to backfill any missing checks
 for newly added books.
 
 Usage:
-    python generate_book_checksums.py [--library-path /path/to/calibre/library] [--force]
+    python generate_book_checksums.py [--library-path /path/to/calibre/library] [--books-path /path/to/books] [--force]
 
 Options:
     --library-path  Path to Calibre library directory (defaults to /calibre-library)
+    --books-path    Path to books directory (defaults to config_calibre_split_dir setting with --library-path fallback)
     --force         Regenerate checksums even if they already exist
     --batch-size    Number of books to process before committing (default: 100)
 """
@@ -32,11 +33,12 @@ from pathlib import Path
 # Import the centralized partial MD5 calculation function
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
-def generate_checksums(library_path: str, force: bool = False, batch_size: int = 100):
+def generate_checksums(library_path: str, books_path: str = None, force: bool = False, batch_size: int = 100):
     """Generate checksums for all books in the library
 
     Args:
         library_path: Path to Calibre library directory
+        books_path: Path to books directory
         force: If True, regenerate checksums even if they exist
         batch_size: Number of books to process before committing
     """
@@ -46,7 +48,11 @@ def generate_checksums(library_path: str, force: bool = False, batch_size: int =
         print(f"ERROR: Calibre database not found at {metadata_db}")
         sys.exit(1)
 
+    base_path_selection = lambda candidate, default: candidate if os.path.exists(candidate) else default
+    base_path = base_path_selection(books_path, library_path)
+
     print(f"Connecting to Calibre library at: {library_path}")
+    print(f"Base books path at: {base_path}")
     print(f"Force regenerate: {force}")
     print(f"Batch size: {batch_size}")
     print(f"Checksum version: {CHECKSUM_VERSION}")
@@ -98,7 +104,7 @@ def generate_checksums(library_path: str, force: bool = False, batch_size: int =
             processed += 1
 
             # Construct full file path
-            file_path = os.path.join(library_path, book_path, f"{format_name}.{format_ext.lower()}")
+            file_path = os.path.join(base_path, book_path, f"{format_name}.{format_ext.lower()}")
 
             if not os.path.exists(file_path):
                 print(f"[{processed}/{total}] SKIP: File not found - {title} ({format_ext})")
@@ -152,6 +158,24 @@ def generate_checksums(library_path: str, force: bool = False, batch_size: int =
         conn.close()
 
 
+def books_path():
+    try:
+        conn = sqlite3.connect("/config/app.db", timeout=30)
+        cur = conn.cursor()
+
+        split_path = cur.execute('SELECT config_calibre_split_dir FROM settings LIMIT 1;').fetchone()[0]
+        if os.path.exists(split_path):
+            return split_path
+        else:
+            return None
+
+    except sqlite3.Error as e:
+        print(f"ERROR: Database error: {e}")
+        sys.exit(1)
+    finally:
+        conn.close()
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Generate KOReader sync checksums for books in Calibre library',
@@ -162,6 +186,12 @@ def main():
         '--library-path',
         default='/calibre-library',
         help='Path to Calibre library directory (default: /calibre-library)'
+    )
+
+    parser.add_argument(
+        '--books-path',
+        default=books_path(),
+        help='Path to books directory (default: config_calibre_split_dir setting or --library-path)'
     )
 
     parser.add_argument(
@@ -185,7 +215,7 @@ def main():
         sys.exit(1)
 
     try:
-        generate_checksums(args.library_path, args.force, args.batch_size)
+        generate_checksums(args.library_path, args.books_path, args.force, args.batch_size)
     except KeyboardInterrupt:
         print("\n\nInterrupted by user. Exiting...")
         sys.exit(130)

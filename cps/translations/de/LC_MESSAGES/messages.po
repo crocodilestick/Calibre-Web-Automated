@@ -1623,7 +1623,7 @@ msgstr ""
 
 #: cps/shelf.py:207 cps/templates/layout.html:270
 msgid "Create a Shelf"
-msgstr "Bücherregal anlegen"
+msgstr "Anlage Bücherregal"
 
 #: cps/shelf.py:215
 msgid "Sorry you are not allowed to edit this shelf"

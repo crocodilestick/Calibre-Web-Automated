@@ -244,6 +244,7 @@ def create_app():
     # Ensure a valid calibre_db session exists before handling each request
     @app.before_request
     def _cwa_ensure_db_session():
+        from flask import g, request
         from .cw_login import current_user
         from sqlalchemy import or_
         import time
@@ -257,7 +258,6 @@ def create_app():
             This must run before any blueprint before_request handlers that access current_user.
             """
 
-            from flask import g, request
             from . import usermanagement
             user = usermanagement.load_user_from_reverse_proxy_header(request)
             if user:

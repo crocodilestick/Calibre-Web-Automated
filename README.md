@@ -142,7 +142,7 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
   - Using the information provided in the Calibre eBook-converter documentation on which formats convert best into epubs, CWA is able to determine from downloads containing multiple eBook formats, which format will convert most optimally, ignoring the other formats to ensure the **best possible quality** and no **duplicate imports** -->
 
 #### **Automatic Conversion Service** 🔃
-- On by default though can be toggled of in the CWA Settings page, with EPUB as the default target format
+- On by default though can be toggled off in the CWA Settings page, with EPUB as the default target format
   - _Available target formats include:_ **EPUB**, **MOBI**, **AZW3**, **KEPUB** & **PDF**
 - Upon detecting new files in the Ingest Directory, if any of the files are in formats the user has configured CWA to auto-convert to the current target format,
 - The following **28 file types are currently supported:**

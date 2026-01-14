@@ -760,6 +760,9 @@ class NewBookProcessor:
             # This solves the issue where multiple books don't appear until container restart
             self.refresh_cwa_session()
 
+            # Invalidate duplicate cache since a new book was added
+            self.invalidate_duplicate_cache()
+
             # Generate KOReader sync checksums for the imported book
             if self.last_added_book_id is not None:
                 self.generate_book_checksums(staged_path.stem, book_id=self.last_added_book_id)
@@ -1100,6 +1103,28 @@ class NewBookProcessor:
         except Exception as e:
             print(f"[ingest-processor] WARN: Failed to call DB refresh endpoint: {e}", flush=True)
             print("[ingest-processor] Continuing despite session refresh failure - books may require manual refresh", flush=True)
+
+
+    def invalidate_duplicate_cache(self) -> None:
+        """Invalidate the duplicate detection cache after adding a new book
+
+        This triggers a fresh duplicate scan on the next status check.
+        """
+        try:
+            url = get_internal_api_url("/duplicates/invalidate-cache")
+            resp = requests.post(
+                url,
+                headers=get_internal_api_headers(),
+                timeout=5,
+                verify=False,
+            )
+            if resp.status_code == 200:
+                print("[ingest-processor] Duplicate cache invalidated", flush=True)
+            else:
+                print(f"[ingest-processor] WARN: Duplicate cache invalidation returned {resp.status_code}", flush=True)
+        except Exception as e:
+            # Don't fail the import if cache invalidation fails
+            print(f"[ingest-processor] WARN: Failed to invalidate duplicate cache: {e}", flush=True)
 
 
     def set_library_permissions(self):

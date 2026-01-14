@@ -11,7 +11,7 @@ from datetime import datetime
 from functools import wraps
 import hashlib
 
-from . import db, calibre_db, logger, ub
+from . import db, calibre_db, logger, ub, csrf
 from .admin import admin_required  
 from .usermanagement import login_required_if_no_ano
 from .render_template import render_title_template
@@ -56,6 +56,129 @@ def generate_group_hash(title, author):
     
     # Generate MD5 hash
     return hashlib.md5(composite.encode('utf-8')).hexdigest()
+
+
+def validate_resolution_strategy(strategy):
+    """Validate that strategy is one of the allowed values"""
+    valid_strategies = ['newest', 'highest_quality_format', 'most_metadata', 'largest_file_size']
+    return strategy in valid_strategies
+
+
+def select_book_to_keep(books, strategy):
+    """
+    Select which book to keep from a duplicate group based on strategy.
+    
+    Args:
+        books: List of book objects from find_duplicate_books()
+        strategy: One of 'newest', 'highest_quality_format', 'most_metadata', 'largest_file_size'
+    
+    Returns:
+        The book object to keep
+    """
+    if not books:
+        return None
+    
+    if strategy == 'newest':
+        # Keep the most recently added book
+        return max(books, key=lambda b: b.timestamp if b.timestamp else datetime.min)
+    
+    elif strategy == 'highest_quality_format':
+        # Get format priority from settings
+        try:
+            import json
+            cwa_db = CWA_DB()
+            format_priority_json = cwa_db.cwa_settings.get('duplicate_format_priority', '{}')
+            format_priority = json.loads(format_priority_json)
+        except Exception as e:
+            log.warning("[cwa-duplicates] Error loading format priority from settings, using defaults: %s", str(e))
+            # Fallback to default priority
+            format_priority = {
+                'EPUB': 100,
+                'KEPUB': 95,
+                'AZW3': 90,
+                'MOBI': 80,
+                'AZW': 75,
+                'PDF': 60,
+                'TXT': 40,
+                'CBZ': 35,
+                'CBR': 35,
+                'FB2': 30,
+                'DJVU': 25,
+                'HTML': 20,
+                'RTF': 15,
+                'DOC': 10,
+                'DOCX': 10,
+            }
+        
+        def get_best_format_score(book):
+            """Calculate best format score for a book"""
+            if not book.data:
+                return 0
+            scores = [format_priority.get(data.format.upper(), 0) for data in book.data if data.format]
+            return max(scores) if scores else 0
+        
+        # Keep book with highest quality format, fallback to newest if tie
+        return max(books, key=lambda b: (get_best_format_score(b), b.timestamp if b.timestamp else datetime.min))
+    
+    elif strategy == 'most_metadata':
+        # Count metadata completeness
+        def metadata_score(book):
+            score = 0
+            
+            # Tags
+            if hasattr(book, 'tags') and book.tags:
+                score += len(book.tags) * 2
+            
+            # Series
+            if hasattr(book, 'series') and book.series:
+                score += 5
+            
+            # Rating
+            if hasattr(book, 'ratings') and book.ratings:
+                for rating in book.ratings:
+                    if rating.rating and rating.rating > 0:
+                        score += 3
+            
+            # Description/comments
+            if hasattr(book, 'comments') and book.comments:
+                for comment in book.comments:
+                    if comment.text and len(comment.text.strip()) > 50:
+                        score += 10
+            
+            # Publisher
+            if hasattr(book, 'publishers') and book.publishers:
+                score += 2
+            
+            # Published date
+            if hasattr(book, 'pubdate') and book.pubdate:
+                score += 2
+            
+            # Identifiers (ISBN, etc.)
+            if hasattr(book, 'identifiers') and book.identifiers:
+                score += len(book.identifiers) * 3
+            
+            # Number of formats
+            if hasattr(book, 'data') and book.data:
+                score += len(book.data)
+            
+            return score
+        
+        # Keep book with most complete metadata, fallback to newest if tie
+        return max(books, key=lambda b: (metadata_score(b), b.timestamp if b.timestamp else datetime.min))
+    
+    elif strategy == 'largest_file_size':
+        # Sum all format file sizes
+        def total_file_size(book):
+            if not book.data:
+                return 0
+            return sum(data.uncompressed_size for data in book.data if hasattr(data, 'uncompressed_size') and data.uncompressed_size)
+        
+        # Keep book with largest total file size, fallback to newest if tie
+        return max(books, key=lambda b: (total_file_size(b), b.timestamp if b.timestamp else datetime.min))
+    
+    else:
+        # Default fallback: keep newest
+        return max(books, key=lambda b: b.timestamp if b.timestamp else datetime.min)
 
 
 def get_unresolved_duplicate_count(user_id=None):
@@ -127,11 +250,19 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
         # Get CWA settings for duplicate detection
         cwa_db = CWA_DB()
         settings = cwa_db.cwa_settings
+        
+        # Check if duplicate detection is enabled
+        detection_enabled = settings.get('duplicate_detection_enabled', 1)
+        if not detection_enabled:
+            print("[cwa-duplicates] Duplicate detection is disabled in settings", flush=True)
+            return []
+            
     except Exception as e:
         print(f"[cwa-duplicates] Error loading CWA settings: {str(e)}, falling back to defaults", flush=True)
         log.error("[cwa-duplicates] Error loading CWA settings: %s, falling back to defaults", str(e))
         # Fallback to safe defaults
         settings = {
+            'duplicate_detection_enabled': 1,
             'duplicate_detection_title': 1,
             'duplicate_detection_author': 1,
             'duplicate_detection_language': 1,
@@ -323,13 +454,70 @@ def get_duplicate_status():
         - preview: List of up to 3 sample duplicate groups
     """
     try:
-        # Check if notifications are enabled
+        # Check if duplicate detection is enabled
         cwa_db = CWA_DB()
+        detection_enabled = cwa_db.cwa_settings.get('duplicate_detection_enabled', 1)
+        
+        if not detection_enabled:
+            return jsonify({
+                'success': True,
+                'enabled': False,
+                'count': 0,
+                'preview': []
+            })
+        
+        # Check if notifications are enabled
         notifications_enabled = cwa_db.cwa_settings.get('duplicate_notifications_enabled', 1)
         
-        # Get unresolved duplicate groups
+        # Try to get cached results first
+        cache_data = cwa_db.get_duplicate_cache()
+        
+        if cache_data and not cache_data['scan_pending']:
+            # Cache is valid, use it
+            duplicate_groups = cache_data['duplicate_groups']
+            
+            # Filter out dismissed groups for this user
+            if current_user and current_user.id:
+                try:
+                    dismissed_hashes = set()
+                    dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
+                        .filter(ub.DismissedDuplicateGroup.user_id == current_user.id)\
+                        .all()
+                    dismissed_hashes = {row[0] for row in dismissed_groups}
+                    
+                    if dismissed_hashes:
+                        duplicate_groups = [group for group in duplicate_groups 
+                                          if group['group_hash'] not in dismissed_hashes]
+                except Exception as e:
+                    log.error("[cwa-duplicates] Error filtering dismissed groups: %s", str(e))
+            
+            count = len(duplicate_groups)
+            
+            # Get preview of first 3 groups
+            preview = []
+            for group in duplicate_groups[:3]:
+                preview.append({
+                    'title': group['title'],
+                    'author': group['author'],
+                    'count': group['count'],
+                    'hash': group['group_hash']
+                })
+            
+            return jsonify({
+                'success': True,
+                'enabled': bool(notifications_enabled),
+                'count': count,
+                'preview': preview,
+                'cached': True
+            })
+        
+        # Cache is invalid or pending, run fresh scan
         duplicate_groups = find_duplicate_books(include_dismissed=False)
         count = len(duplicate_groups)
+        
+        # Update cache with full results (before filtering dismissed)
+        all_groups = find_duplicate_books(include_dismissed=True)
+        cwa_db.update_duplicate_cache(all_groups, len(all_groups))
         
         # Get preview of first 3 groups
         preview = []
@@ -345,7 +533,8 @@ def get_duplicate_status():
             'success': True,
             'enabled': bool(notifications_enabled),
             'count': count,
-            'preview': preview
+            'preview': preview,
+            'cached': False
         })
     except Exception as e:
         log.error("[cwa-duplicates] Error getting duplicate status: %s", str(e))
@@ -456,3 +645,282 @@ def undismiss_duplicate_group(group_hash):
             'success': False,
             'error': str(e)
         }), 500
+
+
+@duplicates.route("/duplicates/invalidate-cache", methods=['POST'])
+@csrf.exempt
+def invalidate_cache():
+    """Internal endpoint to invalidate duplicate cache (called after ingest)"""
+    try:
+        cwa_db = CWA_DB()
+        success = cwa_db.invalidate_duplicate_cache()
+        
+        if success:
+            log.info("[cwa-duplicates] Cache invalidated - will refresh on next status check")
+            return jsonify({'success': True, 'message': 'Cache invalidated'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to invalidate cache'}), 500
+            
+    except Exception as e:
+        log.error("[cwa-duplicates] Error invalidating cache: %s", str(e))
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@duplicates.route("/duplicates/trigger-scan", methods=['POST'])
+@csrf.exempt
+@login_required_if_no_ano
+@admin_or_edit_required
+def trigger_scan():
+    """Manually trigger a duplicate scan"""
+    try:
+        # Invalidate cache and run fresh scan
+        cwa_db = CWA_DB()
+        cwa_db.invalidate_duplicate_cache()
+        
+        # Run scan
+        duplicate_groups = find_duplicate_books(include_dismissed=False)
+        
+        # Update cache
+        all_groups = find_duplicate_books(include_dismissed=True)
+        cwa_db.update_duplicate_cache(all_groups, len(all_groups))
+        
+        log.info("[cwa-duplicates] Manual scan triggered by user %s, found %s groups", 
+                current_user.name, len(duplicate_groups))
+        
+        return jsonify({
+            'success': True,
+            'message': _('Duplicate scan completed'),
+            'count': len(duplicate_groups)
+        })
+        
+    except Exception as e:
+        log.error("[cwa-duplicates] Error triggering scan: %s", str(e))
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@duplicates.route("/duplicates/preview-resolution", methods=["POST"])
+@login_required_if_no_ano
+@admin_required
+def preview_resolution():
+    """Preview auto-resolution without executing"""
+    print("[cwa-duplicates] Preview resolution endpoint called", flush=True)
+    log.info("[cwa-duplicates] Preview resolution endpoint called")
+    try:
+        from flask import request
+        strategy = request.json.get('strategy', 'newest')
+        print(f"[cwa-duplicates] Preview strategy: {strategy}", flush=True)
+        log.info("[cwa-duplicates] Preview strategy: %s", strategy)
+        
+        if not validate_resolution_strategy(strategy):
+            error_msg = f'Invalid resolution strategy: {strategy}'
+            print(f"[cwa-duplicates] {error_msg}", flush=True)
+            log.error("[cwa-duplicates] %s", error_msg)
+            return jsonify({
+                'success': False,
+                'error': _(error_msg)
+            }), 400
+        
+        print("[cwa-duplicates] Calling auto_resolve_duplicates in dry_run mode...", flush=True)
+        result = auto_resolve_duplicates(
+            strategy=strategy,
+            dry_run=True,
+            user_id=current_user.id,
+            trigger_type='manual'
+        )
+        
+        print(f"[cwa-duplicates] Preview result: {result.get('success', False)}, resolved_count={result.get('resolved_count', 0)}", flush=True)
+        return jsonify(result)
+        
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"[cwa-duplicates] Error previewing resolution: {e}\n{error_trace}", flush=True)
+        log.error("[cwa-duplicates] Error previewing resolution: %s\n%s", str(e), error_trace)
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@duplicates.route("/duplicates/execute-resolution", methods=["POST"])
+@login_required_if_no_ano
+@admin_required
+def execute_resolution():
+    """Execute auto-resolution"""
+    try:
+        from flask import request
+        strategy = request.json.get('strategy', 'newest')
+        
+        if not validate_resolution_strategy(strategy):
+            return jsonify({
+                'success': False,
+                'error': _('Invalid resolution strategy')
+            }), 400
+        
+        result = auto_resolve_duplicates(
+            strategy=strategy,
+            dry_run=False,
+            user_id=current_user.id,
+            trigger_type='manual'
+        )
+        
+        # Invalidate cache after resolution
+        if result['success'] and result['deleted_count'] > 0:
+            cwa_db = CWA_DB()
+            cwa_db.invalidate_duplicate_cache()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        log.error("[cwa-duplicates] Error executing resolution: %s", str(e))
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trigger_type='manual'):
+    """
+    Automatically resolve duplicate books by keeping one and deleting others.
+    
+    Args:
+        strategy: Resolution strategy ('newest', 'highest_quality_format', 'most_metadata', 'largest_file_size')
+        dry_run: If True, return preview without actually deleting
+        user_id: User ID triggering the resolution (for audit)
+        trigger_type: 'manual', 'scheduled', or 'automatic'
+    
+    Returns:
+        dict with keys:
+            'success': bool
+            'resolved_count': int (number of groups resolved)
+            'deleted_count': int (total books deleted)
+            'kept_count': int (total books kept)
+            'errors': list of error messages
+            'preview': list of dicts (if dry_run=True) with 'group', 'kept_book', 'deleted_books'
+    """
+    from cps.editbooks import delete_book_from_table
+    from cps import config
+    import os
+    import shutil
+    
+    # Validate strategy
+    if not validate_resolution_strategy(strategy):
+        return {'success': False, 'errors': [f'Invalid strategy: {strategy}']}
+    
+    # Get duplicate groups (exclude dismissed)
+    duplicate_groups = find_duplicate_books(include_dismissed=False)
+    
+    if not duplicate_groups:
+        return {
+            'success': True,
+            'resolved_count': 0,
+            'deleted_count': 0,
+            'kept_count': 0,
+            'errors': [],
+            'message': 'No unresolved duplicates found'
+        }
+    
+    result = {
+        'success': True,
+        'resolved_count': 0,
+        'deleted_count': 0,
+        'kept_count': 0,
+        'errors': [],
+        'preview': [] if dry_run else None
+    }
+    
+    cwa_db = CWA_DB()
+    
+    for group in duplicate_groups:
+        try:
+            # Select book to keep
+            book_to_keep = select_book_to_keep(group['books'], strategy)
+            
+            if not book_to_keep:
+                result['errors'].append(f"Could not select book to keep for group: {group['title']}")
+                continue
+            
+            # Get books to delete
+            books_to_delete = [b for b in group['books'] if b.id != book_to_keep.id]
+            
+            if not books_to_delete:
+                continue  # Only one book in group, nothing to resolve
+            
+            if dry_run:
+                # Preview mode: just collect info
+                result['preview'].append({
+                    'group_hash': group['group_hash'],
+                    'title': group['title'],
+                    'author': group['author'],
+                    'kept_book_id': book_to_keep.id,
+                    'kept_book_timestamp': book_to_keep.timestamp.strftime('%Y-%m-%d %H:%M') if book_to_keep.timestamp else 'Unknown',
+                    'kept_book_formats': [d.format for d in book_to_keep.data] if book_to_keep.data else [],
+                    'deleted_book_ids': [b.id for b in books_to_delete],
+                    'deleted_books_info': [{
+                        'id': b.id,
+                        'timestamp': b.timestamp.strftime('%Y-%m-%d %H:%M') if b.timestamp else 'Unknown',
+                        'formats': [d.format for d in b.data] if b.data else []
+                    } for b in books_to_delete]
+                })
+                result['kept_count'] += 1
+                result['deleted_count'] += len(books_to_delete)
+                result['resolved_count'] += 1
+                continue
+            
+            # Actual resolution mode
+            deleted_ids = []
+            backup_dir = f"/config/processed_books/duplicate_resolutions/{datetime.now().strftime('%Y%m%d_%H%M%S')}_group_{group['group_hash'][:8]}"
+            os.makedirs(backup_dir, exist_ok=True)
+            
+            # Backup and delete each duplicate
+            for book in books_to_delete:
+                try:
+                    # Backup book files
+                    book_path = os.path.join(config.config_calibre_dir, book.path)
+                    if os.path.exists(book_path):
+                        backup_path = os.path.join(backup_dir, f"book_{book.id}")
+                        shutil.copytree(book_path, backup_path)
+                        log.info("[cwa-duplicates] Backed up book %s to %s", book.id, backup_path)
+                    
+                    # Delete from Calibre library
+                    delete_book_from_table(book.id, "", True)  # True = delete from disk
+                    deleted_ids.append(book.id)
+                    log.info("[cwa-duplicates] Deleted duplicate book %s: %s", book.id, book.title)
+                    
+                except Exception as e:
+                    log.error("[cwa-duplicates] Error deleting book %s: %s", book.id, e)
+                    result['errors'].append(f"Failed to delete book {book.id}: {str(e)}")
+            
+            if deleted_ids:
+                # Log to audit table
+                cwa_db.log_duplicate_resolution(
+                    group_hash=group['group_hash'],
+                    group_title=group['title'],
+                    group_author=group['author'],
+                    kept_book_id=book_to_keep.id,
+                    deleted_book_ids=deleted_ids,
+                    strategy=strategy,
+                    trigger_type=trigger_type,
+                    user_id=user_id,
+                    notes=f"Resolved {len(deleted_ids)} duplicate(s) using {strategy} strategy"
+                )
+                
+                result['resolved_count'] += 1
+                result['kept_count'] += 1
+                result['deleted_count'] += len(deleted_ids)
+                
+                log.info("[cwa-duplicates] Resolved duplicate group '%s' by %s: kept book %s, deleted %s duplicates", 
+                        group['title'], group['author'], book_to_keep.id, len(deleted_ids))
+        
+        except Exception as e:
+            log.error("[cwa-duplicates] Error resolving duplicate group '%s': %s", group.get('title', 'unknown'), e)
+            result['errors'].append(f"Group '{group.get('title', 'unknown')}': {str(e)}")
+    
+
+    if result['errors']:
+        result['success'] = False
+    
+    return result

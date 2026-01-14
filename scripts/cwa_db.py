@@ -250,7 +250,7 @@ class CWA_DB:
         integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']
         
         # Define which settings should remain as JSON strings (not split by comma)
-        json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled']
+        json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']
 
         for header in headers:
             if isinstance(cwa_settings[header], int) and header not in integer_settings:
@@ -2095,6 +2095,126 @@ class CWA_DB:
                     "total_searches": 0,
                 }
             }
+
+    def invalidate_duplicate_cache(self):
+        """Mark duplicate cache as needing refresh"""
+        try:
+            self.cur.execute("""
+                UPDATE cwa_duplicate_cache 
+                SET scan_pending = 1 
+                WHERE id = 1
+            """)
+            self.con.commit()
+            return True
+        except Exception as e:
+            print(f"[cwa-db] Error invalidating duplicate cache: {e}")
+            return False
+
+    def get_duplicate_cache(self):
+        """Get cached duplicate scan results"""
+        import json
+        try:
+            self.cur.execute("""
+                SELECT scan_timestamp, duplicate_groups_json, total_count, scan_pending
+                FROM cwa_duplicate_cache 
+                WHERE id = 1
+            """)
+            row = self.cur.fetchone()
+            if row and row[1]:  # Has cached data
+                return {
+                    'scan_timestamp': row[0],
+                    'duplicate_groups': json.loads(row[1]),
+                    'total_count': row[2],
+                    'scan_pending': bool(row[3])
+                }
+            return None
+        except Exception as e:
+            print(f"[cwa-db] Error getting duplicate cache: {e}")
+            return None
+
+    def update_duplicate_cache(self, duplicate_groups, total_count):
+        """Update duplicate cache with fresh scan results"""
+        import json
+        from datetime import datetime
+        try:
+            # Serialize duplicate groups to JSON (extract only serializable data)
+            serializable_groups = []
+            for group in duplicate_groups:
+                serializable_group = {
+                    'title': group.get('title', ''),
+                    'author': group.get('author', ''),
+                    'count': group.get('count', 0),
+                    'group_hash': group.get('group_hash', ''),
+                    'book_ids': [book.id for book in group.get('books', [])]
+                }
+                serializable_groups.append(serializable_group)
+            
+            groups_json = json.dumps(serializable_groups)
+            
+            self.cur.execute("""
+                UPDATE cwa_duplicate_cache 
+                SET scan_timestamp = ?, 
+                    duplicate_groups_json = ?, 
+                    total_count = ?, 
+                    scan_pending = 0
+                WHERE id = 1
+            """, (datetime.now().isoformat(), groups_json, total_count))
+            self.con.commit()
+            return True
+        except Exception as e:
+            print(f"[cwa-db] Error updating duplicate cache: {e}")
+            return False
+
+    def log_duplicate_resolution(self, group_hash, group_title, group_author, kept_book_id, 
+                                 deleted_book_ids, strategy, trigger_type, user_id=None, notes=None):
+        """Log a duplicate resolution to audit table"""
+        import json
+        try:
+            self.cur.execute("""
+                INSERT INTO cwa_duplicate_resolutions 
+                (group_hash, group_title, group_author, kept_book_id, deleted_book_ids, 
+                 strategy, trigger_type, user_id, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (group_hash, group_title, group_author, kept_book_id, 
+                  json.dumps(deleted_book_ids), strategy, trigger_type, user_id, notes))
+            self.con.commit()
+            return True
+        except Exception as e:
+            print(f"[cwa-db] Error logging duplicate resolution: {e}")
+            return False
+
+    def get_resolution_history(self, limit=100):
+        """Get recent resolution history"""
+        import json
+        try:
+            self.cur.execute("""
+                SELECT id, timestamp, group_hash, group_title, group_author, 
+                       kept_book_id, deleted_book_ids, strategy, trigger_type, user_id, notes
+                FROM cwa_duplicate_resolutions 
+                ORDER BY timestamp DESC 
+                LIMIT ?
+            """, (limit,))
+            
+            results = []
+            for row in self.cur.fetchall():
+                results.append({
+                    'id': row[0],
+                    'timestamp': row[1],
+                    'group_hash': row[2],
+                    'group_title': row[3],
+                    'group_author': row[4],
+                    'kept_book_id': row[5],
+                    'deleted_book_ids': json.loads(row[6]),
+                    'strategy': row[7],
+                    'trigger_type': row[8],
+                    'user_id': row[9],
+                    'notes': row[10]
+                })
+            return results
+        except Exception as e:
+            print(f"[cwa-db] Error getting resolution history: {e}")
+            return []
+
 
 def main():
     db = CWA_DB()

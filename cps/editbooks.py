@@ -1171,6 +1171,18 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()
+                
+                # Invalidate duplicate cache after book deletion
+                try:
+                    import sys
+                    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+                    from cwa_db import CWA_DB
+                    cwa_db = CWA_DB()
+                    cwa_db.invalidate_duplicate_cache()
+                    cwa_db.close()
+                except Exception as e:
+                    log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
+                
             except Exception as ex:
                 log.error_or_exception(ex)
                 calibre_db.session.rollback()

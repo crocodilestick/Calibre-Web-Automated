@@ -555,7 +555,7 @@ def set_cwa_settings():
     string_settings = []
     list_settings = []
     integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']  # Special handling for integer settings
-    json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled']  # Special handling for JSON settings
+    json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']  # Special handling for JSON settings
     
     for setting in cwa_default_settings:
         if setting in integer_settings or setting in json_settings:

@@ -309,7 +309,7 @@
     <h2>{{_('CWA Duplicates Manager')}}</h2>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <p style="color: whitesmoke; margin-bottom: 2rem;" class="text-muted">{{_('Books with matching titles, authors, and languages. Books in different languages are not considered duplicates.')}}</p>
-      
+
       {% if duplicate_groups %}
         <div class="bulk-actions">
           <div class="form-inline">
@@ -329,24 +329,31 @@
                 <div class="duplicate-author">by {{ group.author }}</div>
                 <div class="duplicate-count">{{ group.count }} duplicate{{ 's' if group.count > 1 else '' }} found</div>
               </div>
-              <button class="dismiss-duplicate-btn" 
-                      data-group-hash="{{ group.group_hash }}" 
-                      data-dismissed="false"
-                      title="{{_('Dismiss this duplicate group')}}"
-                      style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; margin-left: 20px;">
-                <span class="glyphicon glyphicon-eye-close"></span> {{_('Dismiss')}}
-              </button>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <button type="button"
+                        class="merge-selected-btn disabled"
+                        aria-disabled="true"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; margin-left: 10px;">
+                  <span class="glyphicon glyphicon-link"></span> {{_('Merge Selected')}}</button>
+                <button class="dismiss-duplicate-btn"
+                        data-group-hash="{{ group.group_hash }}"
+                        data-dismissed="false"
+                        title="{{_('Dismiss this duplicate group')}}"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; margin-left: 10px;">
+                  <span class="glyphicon glyphicon-eye-close"></span> {{_('Dismiss')}}
+                </button>
+              </div>
             </div>
-            
+
             <div class="books-grid">
               {% for book in group.books %}
               <div class="book-item" data-book-id="{{ book.id }}">
                 <input type="checkbox" class="book-checkbox" value="{{ book.id }}" data-title="{{ book.title }}" data-authors="{{ book.author_names }}">
-                
+
                 <div class="book-cover">
                   <img src="{{ book.cover_url }}" alt="Cover for {{ book.title }}" onerror="this.src='/static/generic_cover.svg'">
                 </div>
-                
+
                 <div class="book-details">
                   <div class="book-title">{{ book.title }}</div>
                   <div class="book-meta">
@@ -354,14 +361,14 @@
                     <div><strong>Added:</strong> {{ book.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
                     <div><strong>Book ID:</strong> {{ book.id }}</div>
                     {% if book.series %}
-                      <div><strong>Series:</strong> 
+                      <div><strong>Series:</strong>
                         {% for series in book.series %}
                           {{ series.name }}{% if book.series_index %} ({{ book.series_index }}){% endif %}{% if not loop.last %}, {% endif %}
                         {% endfor %}
                       </div>
                     {% endif %}
                     {% if book.data %}
-                      <div><strong>Formats:</strong> 
+                      <div><strong>Formats:</strong>
                         {% for data in book.data %}{{ data.format }}{% if not loop.last %}, {% endif %}{% endfor %}
                       </div>
                     {% endif %}
@@ -479,4 +486,4 @@
 
 {% block js %}
 <script src="{{ url_for('static', filename='js/duplicates.js') }}"></script>
-{% endblock %} 
+{% endblock %}

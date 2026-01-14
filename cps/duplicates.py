@@ -7,9 +7,11 @@
 from flask import Blueprint, jsonify, request, abort
 from flask_babel import gettext as _
 from sqlalchemy import func, and_
+from sqlalchemy.orm import joinedload
 from datetime import datetime
 from functools import wraps
 import hashlib
+import time
 
 from . import db, calibre_db, logger, ub, csrf
 from .admin import admin_required  
@@ -242,6 +244,8 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     Returns:
         List of duplicate group dictionaries
     """
+    import time
+    start_time = time.perf_counter()
     
     if user_id is None and hasattr(current_user, 'id'):
         user_id = current_user.id
@@ -268,7 +272,9 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
             'duplicate_detection_language': 1,
             'duplicate_detection_series': 0,
             'duplicate_detection_publisher': 0,
-            'duplicate_detection_format': 0
+            'duplicate_detection_format': 0,
+            'duplicate_detection_use_sql': 1,
+            'duplicate_scan_method': 'auto'
         }
     
     # Extract duplicate detection criteria
@@ -279,6 +285,10 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     use_publisher = settings.get('duplicate_detection_publisher', 0)
     use_format = settings.get('duplicate_detection_format', 0)
     
+    # Check SQL method preference
+    use_sql = settings.get('duplicate_detection_use_sql', 1)
+    scan_method = settings.get('duplicate_scan_method', 'auto')
+    
     # Ensure at least one criterion is selected (fallback to title+author if none selected)
     if not any([use_title, use_author, use_language, use_series, use_publisher, use_format]):
         print("[cwa-duplicates] Warning: No duplicate detection criteria selected, falling back to title+author", flush=True)
@@ -286,7 +296,273 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
         use_title = 1
         use_author = 1
     
+    # Determine which method to use
+    method_to_use = 'python'  # Default fallback
+    
+    if scan_method == 'python':
+        method_to_use = 'python'
+    elif scan_method == 'sql':
+        method_to_use = 'sql' if not use_format else 'hybrid'
+    else:  # 'auto'
+        if use_sql and not use_format:
+            method_to_use = 'sql'
+        elif use_sql and use_format:
+            method_to_use = 'hybrid'
+        else:
+            method_to_use = 'python'
+    
+    print(f"[cwa-duplicates] Using detection method: {method_to_use}", flush=True)
     print(f"[cwa-duplicates] Using duplicate detection criteria: title={use_title}, author={use_author}, language={use_language}, series={use_series}, publisher={use_publisher}, format={use_format}", flush=True)
+    
+    # Call appropriate method
+    if method_to_use == 'sql':
+        duplicate_groups = find_duplicate_books_sql(
+            use_title, use_author, use_language, use_series, use_publisher,
+            include_dismissed, user_id
+        )
+    elif method_to_use == 'hybrid':
+        # Use SQL for metadata grouping, then Python for format filtering
+        duplicate_groups = find_duplicate_books_sql(
+            use_title, use_author, use_language, use_series, use_publisher,
+            include_dismissed, user_id
+        )
+        # Additional format filtering would go here if needed
+        print("[cwa-duplicates] Note: Format-based detection requires Python method, using hybrid approach", flush=True)
+    else:
+        duplicate_groups = find_duplicate_books_python(
+            use_title, use_author, use_language, use_series, use_publisher, use_format,
+            include_dismissed, user_id
+        )
+    
+    duration = time.perf_counter() - start_time
+    print(f"[cwa-duplicates] Scan completed in {duration:.2f}s using {method_to_use} method", flush=True)
+    log.info("[cwa-duplicates] Scan completed in %.2fs using %s method", duration, method_to_use)
+    
+    # Get max book ID for incremental scanning (from calibre database, not cwa.db)
+    max_book_id = 0
+    try:
+        max_id_result = calibre_db.session.query(func.max(db.Books.id)).scalar()
+        max_book_id = max_id_result if max_id_result is not None else 0
+    except Exception as e:
+        log.warning("[cwa-duplicates] Could not get max book ID: %s", str(e))
+    
+    # Update cache with performance metrics
+    try:
+        cwa_db_update = CWA_DB()
+        cwa_db_update.cur.execute("""
+            UPDATE cwa_duplicate_cache 
+            SET scan_duration_seconds = ?, scan_method_used = ?, last_scanned_book_id = ?
+            WHERE id = 1
+        """, (duration, method_to_use, max_book_id))
+        cwa_db_update.con.commit()
+    except Exception as e:
+        log.warning("[cwa-duplicates] Failed to update performance metrics: %s", str(e))
+    
+    return duplicate_groups
+
+
+def find_duplicate_books_sql(use_title, use_author, use_language, use_series, use_publisher,
+                              include_dismissed=False, user_id=None):
+    """SQL-based duplicate detection using GROUP BY - experimental/WIP
+    
+    NOTE: This is experimental code, disabled by default. Needs refinement:
+    - Multi-author books create duplicate rows (handled by DISTINCT but not ideal)
+    - Relies on COALESCE for NULL handling which may not match Python behavior exactly
+    - Not thoroughly tested across all criteria combinations
+    
+    Use Python method (default) for production until this is properly tested.
+    
+    Args:
+        use_title, use_author, use_language, use_series, use_publisher: Boolean flags for criteria
+        include_dismissed: If False, filter out dismissed groups
+        user_id: User ID for dismissed filtering
+    
+    Returns:
+        List of duplicate group dictionaries
+    """
+    print("[cwa-duplicates] Using SQL-based duplicate detection", flush=True)
+    
+    # Build dynamic GROUP BY clause based on criteria
+    group_by_fields = []
+    select_fields = []
+    
+    if use_title:
+        group_by_fields.append(func.lower(db.Books.title))
+        select_fields.append(func.lower(db.Books.title).label('norm_title'))
+    
+    if use_author:
+        group_by_fields.append(func.lower(db.Authors.name))
+        select_fields.append(func.lower(db.Authors.name).label('norm_author'))
+    
+    if use_language:
+        # Use COALESCE to handle NULL languages (books without language)
+        group_by_fields.append(func.coalesce(func.lower(db.Languages.lang_code), 'unknown'))
+        select_fields.append(func.coalesce(func.lower(db.Languages.lang_code), 'unknown').label('norm_language'))
+    
+    if use_series:
+        # Use COALESCE to handle NULL series (books without series)
+        group_by_fields.append(func.coalesce(func.lower(db.Series.name), 'no_series'))
+        select_fields.append(func.coalesce(func.lower(db.Series.name), 'no_series').label('norm_series'))
+    
+    if use_publisher:
+        # Use COALESCE to handle NULL publishers (books without publisher)
+        group_by_fields.append(func.coalesce(func.lower(db.Publishers.name), 'unknown_publisher'))
+        select_fields.append(func.coalesce(func.lower(db.Publishers.name), 'unknown_publisher').label('norm_publisher'))
+    
+    # Add count and aggregated book IDs
+    # Use DISTINCT because LEFT JOINs can create duplicate rows for books with multiple languages/series/publishers
+    select_fields.extend([
+        func.count(func.distinct(db.Books.id)).label('book_count'),
+        func.group_concat(func.distinct(db.Books.id)).label('book_ids_str')
+    ])
+    
+    # Build query starting from Books table with explicit joins
+    query = calibre_db.session.query(*select_fields).select_from(db.Books)
+    
+    # Join required tables based on criteria
+    # Note: Books with multiple authors/languages/etc will create multiple rows - handled by DISTINCT in count
+    if use_author:
+        # Join to get author (books_authors_link has no ordering column, Python uses first from relationship)
+        query = query.join(db.books_authors_link, db.Books.id == db.books_authors_link.c.book)\
+                     .join(db.Authors, db.books_authors_link.c.author == db.Authors.id)
+    
+    if use_language:
+        # LEFT JOIN to include books without languages (handled by COALESCE)
+        query = query.outerjoin(db.books_languages_link, db.Books.id == db.books_languages_link.c.book)\
+                     .outerjoin(db.Languages, db.books_languages_link.c.lang_code == db.Languages.id)
+    
+    if use_series:
+        # LEFT JOIN to include books without series (handled by COALESCE)
+        query = query.outerjoin(db.books_series_link, db.Books.id == db.books_series_link.c.book)\
+                     .outerjoin(db.Series, db.books_series_link.c.series == db.Series.id)
+    
+    if use_publisher:
+        # LEFT JOIN to include books without publishers (handled by COALESCE)
+        query = query.outerjoin(db.books_publishers_link, db.Books.id == db.books_publishers_link.c.book)\
+                     .outerjoin(db.Publishers, db.books_publishers_link.c.publisher == db.Publishers.id)
+    
+    # Apply common filters for user permissions
+    query = query.filter(calibre_db.common_filters())
+    
+    # Group by selected criteria
+    query = query.group_by(*group_by_fields)
+    
+    # Only get groups with 2+ books (duplicates)
+    query = query.having(func.count(func.distinct(db.Books.id)) > 1)
+    
+    # Execute query
+    try:
+        results = query.all()
+        print(f"[cwa-duplicates] SQL query returned {len(results)} duplicate groups", flush=True)
+    except Exception as e:
+        log.error("[cwa-duplicates] SQL query failed: %s, falling back to Python method", str(e))
+        print(f"[cwa-duplicates] SQL query failed: {str(e)}, falling back to Python method", flush=True)
+        return find_duplicate_books_python(
+            use_title, use_author, use_language, use_series, use_publisher, False,
+            include_dismissed, user_id
+        )
+    
+    # Process results into duplicate groups
+    duplicate_groups = []
+    
+    for result in results:
+        # Parse book IDs from group_concat result
+        book_ids_str = result.book_ids_str
+        book_ids = [int(bid) for bid in book_ids_str.split(',')]
+        
+        # Load full book objects for these IDs with eager loading
+        books = (calibre_db.session.query(db.Books)
+                .options(joinedload(db.Books.data))
+                .options(joinedload(db.Books.authors))
+                .filter(db.Books.id.in_(book_ids))
+                .filter(calibre_db.common_filters())
+                .order_by(db.Books.timestamp.desc())
+                .all())
+        
+        if len(books) < 2:
+            continue  # Safety check
+        
+        # Prepare display data
+        for book in books:
+            # Ensure we have ordered authors
+            if not hasattr(book, 'ordered_authors') or not book.ordered_authors:
+                book.ordered_authors = calibre_db.order_authors([book])
+            
+            # Handle potential missing authors
+            if book.ordered_authors and len(book.ordered_authors) > 0:
+                book.author_names = ', '.join([author.name.replace('|', ',') for author in book.ordered_authors if author.name])
+            else:
+                book.author_names = 'Unknown'
+            
+            # Add cover URL
+            if hasattr(book, 'has_cover') and book.has_cover:
+                book.cover_url = f"/cover/{book.id}"
+            else:
+                book.cover_url = "/static/generic_cover.svg"
+        
+        # Get safe title and author for display
+        display_title = books[0].title if books[0].title else 'Untitled'
+        display_author = 'Unknown'
+        if hasattr(books[0], 'author_names') and books[0].author_names:
+            display_author = books[0].author_names.split(',')[0].strip()
+        
+        # Generate group hash for dismiss tracking
+        group_hash = generate_group_hash(display_title, display_author)
+        
+        duplicate_groups.append({
+            'title': display_title,
+            'author': display_author,
+            'count': len(books),
+            'books': books,
+            'group_hash': group_hash
+        })
+        
+        print(f"[cwa-duplicates] Found duplicate group: '{display_title}' by {display_author} ({len(books)} copies) - IDs: {book_ids}", flush=True)
+        log.info("[cwa-duplicates] Found duplicate group: '%s' by %s (%s copies) - IDs: %s", 
+                display_title, display_author, len(books), book_ids)
+    
+    # Filter out dismissed groups if requested
+    if not include_dismissed and user_id:
+        try:
+            dismissed_hashes = set()
+            dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
+                .filter(ub.DismissedDuplicateGroup.user_id == user_id)\
+                .all()
+            dismissed_hashes = {row[0] for row in dismissed_groups}
+            
+            if dismissed_hashes:
+                original_count = len(duplicate_groups)
+                duplicate_groups = [group for group in duplicate_groups 
+                                  if group['group_hash'] not in dismissed_hashes]
+                filtered_count = original_count - len(duplicate_groups)
+                if filtered_count > 0:
+                    print(f"[cwa-duplicates] Filtered out {filtered_count} dismissed groups for user {user_id}", flush=True)
+                    log.info("[cwa-duplicates] Filtered out %s dismissed groups for user %s", 
+                            filtered_count, user_id)
+        except Exception as e:
+            log.error("[cwa-duplicates] Error filtering dismissed groups: %s", str(e))
+    
+    # Sort by title, then author for consistent display
+    duplicate_groups.sort(key=lambda x: (x['title'].lower(), x['author'].lower()))
+    
+    print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
+    
+    return duplicate_groups
+
+
+def find_duplicate_books_python(use_title, use_author, use_language, use_series, use_publisher, use_format,
+                                 include_dismissed=False, user_id=None):
+    """Original Python-based duplicate detection - fallback for complex scenarios
+    
+    Args:
+        use_title, use_author, use_language, use_series, use_publisher, use_format: Boolean flags
+        include_dismissed: If False, filter out dismissed groups
+        user_id: User ID for dismissed filtering
+    
+    Returns:
+        List of duplicate group dictionaries
+    """
+    print("[cwa-duplicates] Using Python-based duplicate detection", flush=True)
     
     # Get all books with proper user filtering - this is much simpler and more reliable
     # than trying to do complex joins for duplicate detection
@@ -511,30 +787,21 @@ def get_duplicate_status():
                 'cached': True
             })
         
-        # Cache is invalid or pending, run fresh scan
-        duplicate_groups = find_duplicate_books(include_dismissed=False)
-        count = len(duplicate_groups)
-        
-        # Update cache with full results (before filtering dismissed)
-        all_groups = find_duplicate_books(include_dismissed=True)
-        cwa_db.update_duplicate_cache(all_groups, len(all_groups))
-        
-        # Get preview of first 3 groups
-        preview = []
-        for group in duplicate_groups[:3]:
-            preview.append({
-                'title': group['title'],
-                'author': group['author'],
-                'count': group['count'],
-                'hash': group['group_hash']
-            })
+        # Cache is invalid or pending - DO NOT trigger scan here!
+        # This endpoint is called on every page load via duplicate-notifier.js
+        # Scans should ONLY be triggered by:
+        # 1. Manual "Trigger Scan" button on /duplicates page (via /duplicates/trigger-scan)
+        # 2. After ingest operations (via cache invalidation + manual trigger)
+        # 3. Scheduled background scans (Phase 2 - not yet implemented)
+        log.debug("[cwa-duplicates] Cache invalid/pending in status check, returning empty (no auto-scan)")
         
         return jsonify({
             'success': True,
             'enabled': bool(notifications_enabled),
-            'count': count,
-            'preview': preview,
-            'cached': False
+            'count': 0,
+            'preview': [],
+            'cached': False,
+            'needs_scan': True  # Frontend can optionally show "scan needed" message
         })
     except Exception as e:
         log.error("[cwa-duplicates] Error getting duplicate status: %s", str(e))
@@ -680,9 +947,17 @@ def trigger_scan():
         # Run scan
         duplicate_groups = find_duplicate_books(include_dismissed=False)
         
+        # Get max book ID for incremental scanning
+        max_book_id = 0
+        try:
+            max_id_result = calibre_db.session.query(func.max(db.Books.id)).scalar()
+            max_book_id = max_id_result if max_id_result is not None else 0
+        except Exception as e:
+            log.warning("[cwa-duplicates] Could not get max book ID in trigger_scan: %s", str(e))
+        
         # Update cache
         all_groups = find_duplicate_books(include_dismissed=True)
-        cwa_db.update_duplicate_cache(all_groups, len(all_groups))
+        cwa_db.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
         
         log.info("[cwa-duplicates] Manual scan triggered by user %s, found %s groups", 
                 current_user.name, len(duplicate_groups))

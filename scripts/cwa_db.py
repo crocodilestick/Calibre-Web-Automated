@@ -25,7 +25,7 @@ class CWA_DB:
         # Support both Docker and CI environments for schema path
         script_dir = os.path.dirname(os.path.abspath(__file__))
         self.schema_path = os.path.join(script_dir, "cwa_schema.sql")
-        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes", "cwa_user_activity"]
+        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes", "cwa_user_activity", "cwa_duplicate_cache", "cwa_duplicate_resolutions"]
         self.tables, self.schema = self.make_tables()
 
         self.cwa_default_settings = self.get_cwa_default_settings()
@@ -106,11 +106,18 @@ class CWA_DB:
         # print(f"[cwa-db] DEBUG: Current available cwa_settings: {cwa_setting_names}")
 
         # Add any settings present in the schema file but not in the db
+        newly_added_settings = []
         for setting in self.cwa_default_settings.keys():
             if setting not in cwa_setting_names:
                 success = self.add_missing_setting(setting)
                 if success:
                     print(f"[cwa-db] Setting '{setting}' successfully added to cwa.db!")
+                    newly_added_settings.append(setting)
+        
+        # Sync newly added settings with schema defaults
+        # This handles cases where schema default was updated after column was added
+        if newly_added_settings:
+            self.sync_new_settings_with_defaults(newly_added_settings)
         
         # Delete any settings in the db but not in the schema file
         for setting in cwa_setting_names:
@@ -122,6 +129,38 @@ class CWA_DB:
                     print(f"[cwa-db] Deprecated setting '{setting}' successfully removed from cwa.db!")
                 except Exception as e:
                     print(f"[cwa-db] The following error occurred when trying to remove {setting} from cwa.db:\n{e}")
+    
+    
+    def sync_new_settings_with_defaults(self, newly_added_settings) -> None:
+        """Sync newly added settings to match schema defaults
+        
+        This ensures that if a column was added with one default value, then the schema 
+        was updated with a different default, existing databases get the new default.
+        """
+        try:
+            # Get current values
+            self.cur.execute("SELECT * FROM cwa_settings")
+            headers = [header[0] for header in self.cur.description]
+            current_values = dict(zip(headers, self.cur.fetchone()))
+            
+            # Update any newly added settings that don't match schema defaults
+            updates_made = []
+            for setting in newly_added_settings:
+                current_val = current_values.get(setting)
+                expected_val = self.cwa_default_settings.get(setting)
+                
+                # Compare with type handling (int vs string)
+                if str(current_val) != str(expected_val):
+                    self.cur.execute(f"UPDATE cwa_settings SET {setting}=?", (expected_val,))
+                    updates_made.append(f"{setting}: {current_val} -> {expected_val}")
+            
+            if updates_made:
+                self.con.commit()
+                print(f"[cwa-db] Synced {len(updates_made)} new setting(s) with schema defaults:")
+                for update in updates_made:
+                    print(f"[cwa-db]   - {update}")
+        except Exception as e:
+            print(f"[cwa-db] Warning: Failed to sync new settings with defaults: {e}")
 
 
     def add_missing_setting(self, setting) -> bool:
@@ -163,19 +202,27 @@ class CWA_DB:
         column_names_in_schema = {}
         for table in self.tables:
             column_names = []
+            table_name = None  # Reset for each table
             table = table.split('\n')
             for line in table:
                 if line[:27] == "CREATE TABLE IF NOT EXISTS ":
                     table_name = line[27:].replace('(', '').strip()
                 elif line[:4] == "    ":
                     column_names.append(line.strip().split(' ')[0])
-            if 'table_name' in locals():
-                column_names_in_schema |= {table_name:column_names} # type: ignore
+            if table_name is not None:  # Only add if table_name was actually found
+                column_names_in_schema[table_name] = column_names
 
         for table in self.stats_tables:
             # Skip if table wasn't found in current DB (it was just created empty)
             if not current_column_names[table]:
                 continue
+            
+            # Skip if table not found in schema (shouldn't happen but safety check)
+            if table not in column_names_in_schema:
+                print(f"[cwa-db] Warning: Table '{table}' in stats_tables but not found in schema")
+                continue
+            
+            columns_added = False  # Track if we added any columns this iteration
                 
             if len(current_column_names[table]) < len(column_names_in_schema[table]): # Adds new columns not yet in existing db
                 num_new_columns = len(column_names_in_schema[table]) - len(current_column_names[table])
@@ -184,11 +231,29 @@ class CWA_DB:
                         for line in self.schema:
                             matches = re.findall(column_names_in_schema[table][-x], line)
                             if matches:
-                                new_column = line.strip().replace(',', '')
-                                self.cur.execute(f"ALTER TABLE {table} ADD {new_column};")
+                                # Extract column definition, remove trailing comma and SQL comments
+                                new_column = line.strip()
+                                if '--' in new_column:
+                                    new_column = new_column[:new_column.index('--')].strip()
+                                new_column = new_column.rstrip(',')
+                                self.cur.execute(f"ALTER TABLE {table} ADD COLUMN {new_column}")
                                 self.con.commit()
                                 print(f'[cwa-db] Missing Column detected in cwa.db. Added new column "{column_names_in_schema[table][-x]}" to table "{table}" in cwa.db')
-            else: # Number of columns in table matches the schema, now checks whether the names are the same
+                                columns_added = True
+                                break  # Found and added the column, move to next missing column
+            
+            # Only check for column renames if we didn't just add columns
+            # (newly added columns are correct, don't try to rename them)
+            if not columns_added and len(current_column_names[table]) == len(column_names_in_schema[table]):
+                # Check if all columns exist but just in different order (SQLite ADD COLUMN always appends)
+                current_set = set(current_column_names[table])
+                schema_set = set(column_names_in_schema[table])
+                
+                if current_set == schema_set:
+                    # All columns exist, just in different order - this is fine, SQLite can't reorder
+                    continue
+                
+                # Columns differ, check for actual renames needed
                 for x in range(len(column_names_in_schema[table])):
                     if current_column_names[table][x] != column_names_in_schema[table][x]:
                         self.cur.execute(f"ALTER TABLE {table} RENAME COLUMN {current_column_names[table][x]} TO {column_names_in_schema[table][x]}")
@@ -2132,8 +2197,14 @@ class CWA_DB:
             print(f"[cwa-db] Error getting duplicate cache: {e}")
             return None
 
-    def update_duplicate_cache(self, duplicate_groups, total_count):
-        """Update duplicate cache with fresh scan results"""
+    def update_duplicate_cache(self, duplicate_groups, total_count, max_book_id=None):
+        """Update duplicate cache with fresh scan results
+        
+        Args:
+            duplicate_groups: List of duplicate group dictionaries
+            total_count: Total number of duplicate groups found
+            max_book_id: Maximum book ID in metadata.db (optional, for incremental scanning)
+        """
         import json
         from datetime import datetime
         try:
@@ -2151,14 +2222,26 @@ class CWA_DB:
             
             groups_json = json.dumps(serializable_groups)
             
-            self.cur.execute("""
-                UPDATE cwa_duplicate_cache 
-                SET scan_timestamp = ?, 
-                    duplicate_groups_json = ?, 
-                    total_count = ?, 
-                    scan_pending = 0
-                WHERE id = 1
-            """, (datetime.now().isoformat(), groups_json, total_count))
+            # Update cache with optional max_book_id for incremental scanning
+            if max_book_id is not None:
+                self.cur.execute("""
+                    UPDATE cwa_duplicate_cache 
+                    SET scan_timestamp = ?, 
+                        duplicate_groups_json = ?, 
+                        total_count = ?, 
+                        scan_pending = 0,
+                        last_scanned_book_id = ?
+                    WHERE id = 1
+                """, (datetime.now().isoformat(), groups_json, total_count, max_book_id))
+            else:
+                self.cur.execute("""
+                    UPDATE cwa_duplicate_cache 
+                    SET scan_timestamp = ?, 
+                        duplicate_groups_json = ?, 
+                        total_count = ?, 
+                        scan_pending = 0
+                    WHERE id = 1
+                """, (datetime.now().isoformat(), groups_json, total_count))
             self.con.commit()
             return True
         except Exception as e:

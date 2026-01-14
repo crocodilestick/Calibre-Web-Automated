@@ -1108,7 +1108,8 @@ class NewBookProcessor:
     def invalidate_duplicate_cache(self) -> None:
         """Invalidate the duplicate detection cache after adding a new book
 
-        This triggers a fresh duplicate scan on the next status check.
+        This marks the cache as stale (scan_pending=1) but does NOT trigger an automatic scan.
+        Users must manually trigger a scan from the /duplicates page, or wait for scheduled scans.
         """
         try:
             url = get_internal_api_url("/duplicates/invalidate-cache")

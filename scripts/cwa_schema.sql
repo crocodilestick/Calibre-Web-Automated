@@ -75,7 +75,14 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_notifications_enabled SMALLINT DEFAULT 1 NOT NULL,
     duplicate_auto_resolve_enabled SMALLINT DEFAULT 0 NOT NULL,
     duplicate_auto_resolve_strategy TEXT DEFAULT 'newest' NOT NULL,
-    duplicate_format_priority TEXT DEFAULT '{"EPUB":100,"KEPUB":95,"AZW3":90,"MOBI":80,"AZW":75,"PDF":60,"TXT":40,"CBZ":35,"CBR":35,"FB2":30,"DJVU":25,"HTML":20,"RTF":15,"DOC":10,"DOCX":10}' NOT NULL
+    duplicate_format_priority TEXT DEFAULT '{"EPUB":100,"KEPUB":95,"AZW3":90,"MOBI":80,"AZW":75,"PDF":60,"TXT":40,"CBZ":35,"CBR":35,"FB2":30,"DJVU":25,"HTML":20,"RTF":15,"DOC":10,"DOCX":10}' NOT NULL,
+    -- Duplicate scanning performance settings
+    duplicate_detection_use_sql SMALLINT DEFAULT 0 NOT NULL, -- Disabled by default, Python method is stable
+    duplicate_scan_method TEXT DEFAULT 'python' NOT NULL, -- Use python by default
+    duplicate_scan_enabled SMALLINT DEFAULT 0 NOT NULL,
+    duplicate_scan_frequency TEXT DEFAULT 'manual' NOT NULL,
+    duplicate_scan_hour INTEGER DEFAULT 3 NOT NULL,
+    duplicate_scan_chunk_size INTEGER DEFAULT 5000 NOT NULL
 );
 
 -- Persisted scheduled jobs (initial focus: auto-send). Rows remain until dispatched or manually cleared.
@@ -113,7 +120,10 @@ CREATE TABLE IF NOT EXISTS cwa_duplicate_cache (
     scan_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     duplicate_groups_json TEXT,  -- JSON serialized duplicate groups
     total_count INTEGER DEFAULT 0,
-    scan_pending INTEGER DEFAULT 1  -- 1=needs scan, 0=cache valid
+    scan_pending INTEGER DEFAULT 1,  -- 1=needs scan, 0=cache valid
+    last_scanned_book_id INTEGER DEFAULT 0,  -- Track last scanned book for incremental updates
+    scan_duration_seconds REAL DEFAULT 0,  -- Performance tracking
+    scan_method_used TEXT DEFAULT 'python'  -- Track which method was used: 'sql', 'python', 'hybrid'
 );
 
 -- Insert default row for cache table

@@ -309,18 +309,22 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <p style="color: whitesmoke; margin-bottom: 2rem;" class="text-muted">{{_('Books with matching titles, authors, and languages. Books in different languages are not considered duplicates.')}}</p>
       
-      {% if duplicate_groups %}
-        <div class="bulk-actions">
-          <div class="form-inline">
-            <button type="button" class="btn btn-sm btn-default" id="trigger_scan">
-              <span class="glyphicon glyphicon-refresh"></span> {{_('Scan for Duplicates Now')}}
-            </button>
+      <!-- Action bar - always show for manual scan trigger -->
+      <div class="bulk-actions" style="margin-bottom: 20px;">
+        <div class="form-inline">
+          <button type="button" class="btn btn-sm btn-default" id="trigger_scan">
+            <span class="glyphicon glyphicon-refresh"></span> {{_('Scan for Duplicates Now')}}
+          </button>
+          {% if duplicate_groups %}
             <button type="button" class="btn btn-sm btn-default" id="select_all">{{_('Select Duplicates')}}</button>
             <button type="button" class="btn btn-sm btn-default" id="select_none">{{_('Select None')}}</button>
             <button type="button" class="btn btn-sm btn-danger disabled" id="delete_selected" aria-disabled="true">{{_('Delete Selected')}}</button>
             <span id="selection_count" class="selection-info"></span>
-          </div>
+          {% endif %}
         </div>
+      </div>
+      
+      {% if duplicate_groups %}
 
         <!-- Auto-Resolution Section -->
         <div class="settings-container" style="margin-bottom: 30px; padding: 25px; background: #1c28328a; border-radius: 10px; margin-inline: 0rem; max-width: none;">

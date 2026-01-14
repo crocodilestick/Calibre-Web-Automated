@@ -258,6 +258,32 @@
       background-color: #6c757d;
       opacity: 0.65;
       cursor: not-allowed;
+  }  .btn-primary {
+      color: #fff;
+      background-color: #3498db;
+      border-color: #3498db;
+  }
+  .btn-primary:hover:not(.disabled) {
+      background-color: #2980b9;
+      border-color: #2471a3;
+  }
+  .btn-primary.disabled {
+      background-color: #6c757d;
+      opacity: 0.65;
+      cursor: not-allowed;
+  }  .btn-primary {
+      color: #fff;
+      background-color: #3498db;
+      border-color: #3498db;
+  }
+  .btn-primary:hover:not(.disabled) {
+      background-color: #2980b9;
+      border-color: #2471a3;
+  }
+  .btn-primary.disabled {
+      background-color: #6c757d;
+      opacity: 0.65;
+      cursor: not-allowed;
   }
   .selection-info {
       margin-left: 15px;
@@ -374,6 +400,33 @@
       <div class="modal-footer">
         <input id="delete_selected_confirm" type="button" class="btn btn-danger" value="{{_('Delete')}}" name="delete_selected_confirm" data-dismiss="modal">
         <button id="delete_selected_abort" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Merge Confirmation Modal -->
+<div class="modal fade" id="merge_selected_modal" role="dialog" aria-labelledby="mergeSelectedLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-center">
+        <span>{{_('Merge Books')}}</span>
+      </div>
+      <div class="modal-body">
+        <p></p>
+        <div class="text-left">{{_('The following book will be kept:')}}</div>
+        <p></p>
+        <div class="text-left" id="display-merge-target-book" style="font-weight: bold; color: #28a745;"></div>
+        <p></p>
+        <div class="text-left">{{_('The following books will be merged into it (and then deleted):')}}</div>
+        <p></p>
+        <div class="text-left" id="display-merge-source-books"></div>
+        <p></p>
+        <div class="text-left"><strong>{{_('Note: File formats from source books will be added to the target book.')}}</strong></div>
+      </div>
+      <div class="modal-footer">
+        <input id="merge_selected_confirm" type="button" class="btn btn-primary" value="{{_('Merge')}}" name="merge_selected_confirm" data-dismiss="modal">
+        <button id="merge_selected_abort" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
       </div>
     </div>
   </div>

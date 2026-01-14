@@ -28,9 +28,16 @@ $(document).ready(function() {
         if (count === 0) {
             $('#selection_count').text('');
             $('#delete_selected').addClass('disabled').attr('aria-disabled', true);
-        } else {
-            $('#selection_count').text(count + ' book' + (count > 1 ? 's' : '') + ' selected');
+            $('#merge_selected').addClass('disabled').attr('aria-disabled', true);
+        } else if (count === 1) {
+            $('#selection_count').text(count + ' book selected');
             $('#delete_selected').removeClass('disabled').attr('aria-disabled', false);
+            // Need at least 2 books to merge
+            $('#merge_selected').addClass('disabled').attr('aria-disabled', true);
+        } else {
+            $('#selection_count').text(count + ' books selected');
+            $('#delete_selected').removeClass('disabled').attr('aria-disabled', false);
+            $('#merge_selected').removeClass('disabled').attr('aria-disabled', false);
         }
     }
     
@@ -95,6 +102,63 @@ $(document).ready(function() {
         updateBookItemVisuals();
     });
     
+    // Merge Selected button
+    $('#merge_selected').click(function(event) {
+        if ($(this).hasClass('disabled')) {
+            event.stopPropagation();
+        } else {
+            // Check if at least 2 books are selected
+            if (selectedBooks.length < 2) {
+                $('#error_modal_message').text("Please select at least 2 books to merge.");
+                $('#error_modal').modal('show');
+                return;
+            }
+            
+            // Use absolute URL like working table.js
+            var relativeUrl = "/ajax/displayselectedbooks";
+            
+            $('#merge_selected_modal').modal('show');
+            
+            // Convert book IDs to integers (same as table.js)
+            var bookIds = selectedBooks.map(function(id) { return parseInt(id, 10); });
+            
+            // Show list of books to be merged (no CSRF - match table.js exactly)
+            var ajaxData = {"selections": bookIds};
+            
+            $.ajax({
+                method: "post",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: relativeUrl,
+                data: JSON.stringify(ajaxData),
+                beforeSend: function(xhr) {
+                    // Add CSRF token as header (like table.js)
+                    if (csrfToken) {
+                        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+                    }
+                },
+                success: function(response) {
+                    $('#display-merge-target-book').empty();
+                    $('#display-merge-source-books').empty();
+                    
+                    // First book is the target (kept)
+                    if (response.books && response.books.length > 0) {
+                        $("<span>✓ " + response.books[0] + "</span>").appendTo("#display-merge-target-book");
+                        
+                        // Rest are source books (merged and deleted)
+                        for (var i = 1; i < response.books.length; i++) {
+                            $("<span>- " + response.books[i] + "</span><p></p>").appendTo("#display-merge-source-books");
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#error_modal_message').text("Error loading book list for merge confirmation. Status: " + xhr.status + ". Check browser console for details.");
+                    $('#error_modal').modal('show');
+                }
+            });
+        }
+    });
+    
     // Delete Selected button
     $('#delete_selected').click(function(event) {
         if ($(this).hasClass('disabled')) {
@@ -142,6 +206,56 @@ $(document).ready(function() {
             }
             });
         }
+    });
+    
+    // Confirm merge
+    $('#merge_selected_confirm').click(function() {
+        var mergeUrl = "/ajax/mergebooks";
+        
+        // Convert book IDs to integers (same as table.js)
+        var bookIds = selectedBooks.map(function(id) { return parseInt(id, 10); });
+        
+        // First book in array is target, rest are merged into it
+        var mergeData = {"Merge_books": bookIds};
+        
+        $.ajax({
+            method: "post",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            url: mergeUrl,
+            data: JSON.stringify(mergeData),
+            beforeSend: function(xhr) {
+                // Add CSRF token as header (like table.js)
+                if (csrfToken) {
+                    xhr.setRequestHeader('X-CSRFToken', csrfToken);
+                }
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Close the merge confirmation modal
+                    $('#merge_selected_modal').modal('hide');
+                    
+                    // Show success modal
+                    $('#success_modal_message').text("Selected books have been merged successfully!");
+                    $('#success_modal').modal('show');
+                } else {
+                    // Close the merge confirmation modal
+                    $('#merge_selected_modal').modal('hide');
+                    
+                    // Show error modal
+                    $('#error_modal_message').text("Error: " + (response.error || "Unknown error occurred during merge"));
+                    $('#error_modal').modal('show');
+                }
+            },
+            error: function(xhr, status, error) {
+                // Close the merge confirmation modal
+                $('#merge_selected_modal').modal('hide');
+                
+                // Show error modal
+                $('#error_modal_message').text("An error occurred while merging books. Check browser console for details.");
+                $('#error_modal').modal('show');
+            }
+        });
     });
     
     // Confirm delete

@@ -267,6 +267,86 @@ $(document).ready(function() {
         });
     });
     
+    let activeScanTaskId = null;
+
+    function updateProgressUI(progress, message) {
+        const pct = Math.round((progress || 0) * 100);
+        $('#scan_progress_container').show();
+        $('#scan_progress_bar').css('width', pct + '%');
+        $('#scan_progress_label').text(pct + '%');
+        $('#scan_progress_message').text(message || '');
+        $('#cancel_scan').show();
+    }
+
+    function resetProgressUI() {
+        $('#scan_progress_container').hide();
+        $('#scan_progress_bar').css('width', '0%');
+        $('#scan_progress_label').text('0%');
+        $('#scan_progress_message').text('');
+        $('#cancel_scan').hide();
+        activeScanTaskId = null;
+    }
+
+    function pollScanProgress(taskId, btn) {
+        activeScanTaskId = taskId;
+        const pollInterval = 2000;
+        function pollOnce() {
+            $.ajax({
+                url: '/duplicates/scan-progress/' + taskId,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (!response.success) {
+                        clearInterval(poller);
+                        btn.prop('disabled', false);
+                        btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
+                        resetProgressUI();
+                        alert('Scan failed: ' + (response.error || 'Unknown error'));
+                        return;
+                    }
+
+                    updateProgressUI(response.progress, response.message);
+
+                    if (response.status === 'completed') {
+                        clearInterval(poller);
+                        btn.prop('disabled', false);
+                        btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
+                        const resultCount = (response.result_count !== null && response.result_count !== undefined)
+                            ? response.result_count
+                            : null;
+                        const doneMessage = resultCount !== null
+                            ? 'Scan completed. Found ' + resultCount + ' duplicate groups.'
+                            : 'Scan completed.';
+                        updateProgressUI(1, doneMessage + ' Refreshing...');
+                        alert(doneMessage);
+                        setTimeout(function() {
+                            resetProgressUI();
+                            location.reload();
+                        }, 800);
+                    } else if (response.status === 'failed') {
+                        clearInterval(poller);
+                        btn.prop('disabled', false);
+                        btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
+                        resetProgressUI();
+                        alert('Scan failed: ' + (response.message || 'Unknown error'));
+                    } else if (response.status === 'cancelled') {
+                        clearInterval(poller);
+                        btn.prop('disabled', false);
+                        btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
+                        resetProgressUI();
+                        alert('Scan cancelled');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('[CWA Duplicates] Error polling scan progress:', error);
+                }
+            });
+        }
+
+        const poller = setInterval(pollOnce, pollInterval);
+        pollOnce();
+    }
+
     // Manual scan trigger
     $('#trigger_scan').on('click', function() {
         var btn = $(this);
@@ -281,8 +361,20 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function(response) {
-                if (response.success) {
-                    alert('Scan complete! Found ' + response.count + ' duplicate groups.');
+                if (response.success && response.task_id) {
+                    updateProgressUI(0, 'Queued...');
+                    pollScanProgress(response.task_id, btn);
+                } else if (response.success) {
+                    if (response.queued === false && response.fallback_reason) {
+                        console.warn('[CWA Duplicates] Background queue failed, fallback used:', response.fallback_reason);
+                    }
+                    const count = (response.count !== undefined && response.count !== null)
+                        ? response.count
+                        : null;
+                    const message = count !== null
+                        ? 'Scan completed. Found ' + count + ' duplicate groups.'
+                        : 'Scan completed.';
+                    alert(message);
                     location.reload();
                 } else {
                     alert('Scan failed: ' + response.error);
@@ -293,8 +385,31 @@ $(document).ready(function() {
                 alert('Error: Failed to trigger duplicate scan');
             },
             complete: function() {
-                btn.prop('disabled', false);
-                btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
+                // Button state will be restored by poller
+            }
+        });
+    });
+
+    // Cancel scan
+    $('#cancel_scan').on('click', function() {
+        if (!activeScanTaskId) {
+            return;
+        }
+        $.ajax({
+            url: '/duplicates/cancel-scan/' + activeScanTaskId,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (!response.success) {
+                    alert('Cancel failed: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('[CWA Duplicates] Error cancelling scan:', error);
+                alert('Error: Failed to cancel duplicate scan');
             }
         });
     });

@@ -14,6 +14,7 @@ import time
 import shutil
 import sqlite3
 import fcntl
+import threading
 from pathlib import Path
 
 from cwa_db import CWA_DB
@@ -30,6 +31,10 @@ fetch_and_apply_metadata = None
 TaskAutoSend = None
 WorkerThread = None
 _ub = None
+
+# Debounced duplicate scan timer
+_duplicate_scan_timer = None
+_duplicate_scan_lock = threading.Lock()
 
 class ProcessLock:
     """Robust process lock using both file locking and PID tracking"""
@@ -763,6 +768,9 @@ class NewBookProcessor:
             # Invalidate duplicate cache since a new book was added
             self.invalidate_duplicate_cache()
 
+            # Debounced duplicate scan (after import)
+            self.schedule_debounced_duplicate_scan()
+
             # Generate KOReader sync checksums for the imported book
             if self.last_added_book_id is not None:
                 self.generate_book_checksums(staged_path.stem, book_id=self.last_added_book_id)
@@ -1126,6 +1134,44 @@ class NewBookProcessor:
         except Exception as e:
             # Don't fail the import if cache invalidation fails
             print(f"[ingest-processor] WARN: Failed to invalidate duplicate cache: {e}", flush=True)
+
+
+    def schedule_debounced_duplicate_scan(self) -> None:
+        """Schedule a debounced background duplicate scan if enabled.
+
+        Uses a 60-second timer that resets on each new import to avoid repeated scans
+        during batch ingest.
+        """
+        try:
+            enabled = bool(self.cwa_settings.get('duplicate_scan_enabled', 0))
+            frequency = self.cwa_settings.get('duplicate_scan_frequency', 'manual')
+
+            if not enabled or frequency != 'after_import':
+                return
+
+            global _duplicate_scan_timer
+            with _duplicate_scan_lock:
+                if _duplicate_scan_timer is not None:
+                    try:
+                        _duplicate_scan_timer.cancel()
+                    except Exception:
+                        pass
+
+                def _enqueue_scan():
+                    try:
+                        # Lazy import to avoid circular dependencies
+                        from cps.services.worker import WorkerThread
+                        from cps.tasks.duplicate_scan import TaskDuplicateScan
+                        WorkerThread.add('System', TaskDuplicateScan(full_scan=True, trigger_type='after_import'), hidden=False)
+                        print("[ingest-processor] Debounced duplicate scan queued", flush=True)
+                    except Exception as e:
+                        print(f"[ingest-processor] WARN: Failed to queue duplicate scan: {e}", flush=True)
+
+                _duplicate_scan_timer = threading.Timer(60.0, _enqueue_scan)
+                _duplicate_scan_timer.daemon = True
+                _duplicate_scan_timer.start()
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Failed to schedule debounced duplicate scan: {e}", flush=True)
 
 
     def set_library_permissions(self):

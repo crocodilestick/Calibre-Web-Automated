@@ -7,13 +7,15 @@
 from flask import Blueprint, jsonify, request, abort
 from flask_babel import gettext as _
 from sqlalchemy import func, and_, case
+from sqlalchemy.sql.expression import true, false
 from sqlalchemy.orm import joinedload
 from datetime import datetime
 from functools import wraps
 import hashlib
 import time
 
-from . import db, calibre_db, logger, ub, csrf
+from . import db, calibre_db, logger, ub, csrf, config
+from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED
 from .admin import admin_required  
 from .usermanagement import login_required_if_no_ano
 from .render_template import render_title_template
@@ -215,12 +217,17 @@ def show_duplicates():
     try:
         # Use SQL/Python detection to find duplicates with proper user filtering
         duplicate_groups = find_duplicate_books()
+
+        # Compute next scheduled scan run
+        cwa_db = CWA_DB()
+        next_scan_run = get_next_duplicate_scan_run(cwa_db.cwa_settings)
         
         print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
         log.info("[cwa-duplicates] Found %s duplicate groups total", len(duplicate_groups))
         
         return render_title_template('duplicates.html', 
                                      duplicate_groups=duplicate_groups,
+                                     next_scan_run=next_scan_run,
                                      title=_("Duplicate Books"), 
                                      page="duplicates")
                                      
@@ -230,8 +237,30 @@ def show_duplicates():
         # Return empty page on error
         return render_title_template('duplicates.html', 
                                      duplicate_groups=[],
+                                     next_scan_run=None,
                                      title=_("Duplicate Books"), 
                                      page="duplicates")
+
+
+def get_next_duplicate_scan_run(settings):
+    """Compute next scheduled duplicate scan run time based on settings."""
+    try:
+        enabled = bool(settings.get('duplicate_scan_enabled', 0))
+        cron_expr = (settings.get('duplicate_scan_cron') or '').strip()
+
+        if not enabled:
+            return None
+
+        if not cron_expr:
+            return None
+
+        from apscheduler.triggers.cron import CronTrigger
+        now = datetime.now().astimezone()
+        trigger = CronTrigger.from_crontab(cron_expr, timezone=now.tzinfo)
+        next_run = trigger.get_next_fire_time(None, now)
+        return next_run.isoformat() if next_run else None
+    except Exception:
+        return None
 
 
 def find_duplicate_books(include_dismissed=False, user_id=None):
@@ -247,8 +276,13 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     import time
     start_time = time.perf_counter()
     
-    if user_id is None and hasattr(current_user, 'id'):
-        user_id = current_user.id
+    if user_id is None:
+        try:
+            if hasattr(current_user, 'id'):
+                user_id = current_user.id
+        except Exception:
+            # current_user may be unavailable outside a request context
+            user_id = None
     
     try:
         # Get CWA settings for duplicate detection
@@ -324,7 +358,7 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
         )
     elif method_to_use == 'hybrid':
         # Use SQL as a prefilter to get candidate book IDs, then Python for robust grouping
-        candidate_ids = find_duplicate_candidate_ids_sql(use_title, use_author)
+        candidate_ids = find_duplicate_candidate_ids_sql(use_title, use_author, user_id=user_id)
         if candidate_ids is None:
             print("[cwa-duplicates] Hybrid prefilter unavailable, falling back to full Python scan", flush=True)
             duplicate_groups = find_duplicate_books_python(
@@ -372,7 +406,7 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     return duplicate_groups
 
 
-def find_duplicate_candidate_ids_sql(use_title, use_author):
+def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None):
     """SQL-based candidate prefilter for hybrid mode.
 
     Returns a set of book IDs that are likely part of duplicate groups.
@@ -411,7 +445,7 @@ def find_duplicate_candidate_ids_sql(use_title, use_author):
                 func.group_concat(func.distinct(db.Books.id)).label('book_ids_str')
             )
             .select_from(db.Books)
-            .filter(calibre_db.common_filters())
+            .filter(get_common_filters(user_id=user_id))
             .group_by(*group_by_fields)
             .having(func.count(func.distinct(db.Books.id)) > 1))
 
@@ -513,7 +547,7 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
                      .outerjoin(db.Publishers, db.books_publishers_link.c.publisher == db.Publishers.id)
     
     # Apply common filters for user permissions
-    query = query.filter(calibre_db.common_filters())
+    query = query.filter(get_common_filters(user_id=user_id))
     
     # Group by selected criteria
     query = query.group_by(*group_by_fields)
@@ -546,7 +580,7 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
                 .options(joinedload(db.Books.data))
                 .options(joinedload(db.Books.authors))
                 .filter(db.Books.id.in_(book_ids))
-                .filter(calibre_db.common_filters())
+                .filter(get_common_filters(user_id=user_id))
                 .order_by(db.Books.timestamp.desc())
                 .all())
         
@@ -638,7 +672,7 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
     # Get all books with proper user filtering - this is much simpler and more reliable
     # than trying to do complex joins for duplicate detection
     books_query = (calibre_db.session.query(db.Books)
-                   .filter(calibre_db.common_filters())  # Respect user permissions and library filtering
+                   .filter(get_common_filters(user_id=user_id))  # Respect user permissions and library filtering
                    .order_by(db.Books.title, db.Books.timestamp.desc()))
 
     if candidate_ids is not None:
@@ -793,6 +827,67 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
     print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
     
     return duplicate_groups
+
+
+def get_common_filters(user_id=None, allow_show_archived=False, return_all_languages=False):
+    """Build common filters using either current_user or a specific user_id.
+
+    Falls back to no-op filters if user context is unavailable.
+    """
+    try:
+        if user_id is None:
+            return calibre_db.common_filters(allow_show_archived=allow_show_archived,
+                                             return_all_languages=return_all_languages)
+    except Exception:
+        # No request context; fall back to permissive filter
+        return true()
+
+    try:
+        user = ub.session.query(ub.User).filter(ub.User.id == int(user_id)).first()
+        if not user:
+            return true()
+
+        if not allow_show_archived:
+            archived_books = (ub.session.query(ub.ArchivedBook)
+                              .filter(ub.ArchivedBook.user_id == int(user.id))
+                              .filter(ub.ArchivedBook.is_archived == True)
+                              .all())
+            archived_book_ids = [archived_book.book_id for archived_book in archived_books]
+            archived_filter = db.Books.id.notin_(archived_book_ids)
+        else:
+            archived_filter = true()
+
+        if user.filter_language() == "all" or return_all_languages:
+            lang_filter = true()
+        else:
+            lang_filter = db.Books.languages.any(db.Languages.lang_code == user.filter_language())
+
+        negtags_list = user.list_denied_tags()
+        postags_list = user.list_allowed_tags()
+        neg_content_tags_filter = false() if negtags_list == [''] else db.Books.tags.any(db.Tags.name.in_(negtags_list))
+        pos_content_tags_filter = true() if postags_list == [''] else db.Books.tags.any(db.Tags.name.in_(postags_list))
+
+        if config.config_restricted_column:
+            try:
+                pos_cc_list = (user.allowed_column_value or '').split(',')
+                pos_content_cc_filter = true() if pos_cc_list == [''] else \
+                    getattr(db.Books, 'custom_column_' + str(config.config_restricted_column)). \
+                    any(db.cc_classes[config.config_restricted_column].value.in_(pos_cc_list))
+                neg_cc_list = (user.denied_column_value or '').split(',')
+                neg_content_cc_filter = false() if neg_cc_list == [''] else \
+                    getattr(db.Books, 'custom_column_' + str(config.config_restricted_column)). \
+                    any(db.cc_classes[config.config_restricted_column].value.in_(neg_cc_list))
+            except Exception:
+                pos_content_cc_filter = false()
+                neg_content_cc_filter = true()
+        else:
+            pos_content_cc_filter = true()
+            neg_content_cc_filter = false()
+
+        return and_(lang_filter, pos_content_tags_filter, ~neg_content_tags_filter,
+                    pos_content_cc_filter, ~neg_content_cc_filter, archived_filter)
+    except Exception:
+        return true()
 
 
 @duplicates.route("/duplicates/status")
@@ -1020,30 +1115,45 @@ def trigger_scan():
         # Invalidate cache and run fresh scan
         cwa_db = CWA_DB()
         cwa_db.invalidate_duplicate_cache()
-        
-        # Run scan
-        duplicate_groups = find_duplicate_books(include_dismissed=False)
-        
-        # Get max book ID for incremental scanning
-        max_book_id = 0
+
+        # Queue background task
         try:
-            max_id_result = calibre_db.session.query(func.max(db.Books.id)).scalar()
-            max_book_id = max_id_result if max_id_result is not None else 0
+            from cps.tasks.duplicate_scan import TaskDuplicateScan
+            task = TaskDuplicateScan(full_scan=True, trigger_type='manual', user_id=current_user.id)
+            WorkerThread.add(current_user.name, task, hidden=False)
+
+            log.info("[cwa-duplicates] Manual scan queued by user %s (task_id=%s)", 
+                    current_user.name, task.id)
+
+            return jsonify({
+                'success': True,
+                'message': _('Duplicate scan queued'),
+                'task_id': str(task.id),
+                'queued': True
+            })
         except Exception as e:
-            log.warning("[cwa-duplicates] Could not get max book ID in trigger_scan: %s", str(e))
-        
-        # Update cache
-        all_groups = find_duplicate_books(include_dismissed=True)
-        cwa_db.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
-        
-        log.info("[cwa-duplicates] Manual scan triggered by user %s, found %s groups", 
-                current_user.name, len(duplicate_groups))
-        
-        return jsonify({
-            'success': True,
-            'message': _('Duplicate scan completed'),
-            'count': len(duplicate_groups)
-        })
+            log.error("[cwa-duplicates] Failed to queue scan task, falling back to sync scan: %s", str(e))
+
+            # Fallback to synchronous scan to avoid hard failures
+            duplicate_groups = find_duplicate_books(include_dismissed=False)
+            max_book_id = 0
+            try:
+                max_id_result = calibre_db.session.query(func.max(db.Books.id)).scalar()
+                max_book_id = max_id_result if max_id_result is not None else 0
+            except Exception as ex:
+                log.warning("[cwa-duplicates] Could not get max book ID in trigger_scan fallback: %s", str(ex))
+
+            all_groups = find_duplicate_books(include_dismissed=True)
+            cwa_db.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
+
+            return jsonify({
+                'success': True,
+                'message': _('Duplicate scan completed (fallback)'),
+                'count': len(duplicate_groups),
+                'fallback': True,
+                'queued': False,
+                'fallback_reason': str(e)
+            })
         
     except Exception as e:
         log.error("[cwa-duplicates] Error triggering scan: %s", str(e))
@@ -1051,6 +1161,62 @@ def trigger_scan():
             'success': False,
             'error': str(e)
         }), 500
+
+
+@duplicates.route("/duplicates/scan-progress/<task_id>", methods=['GET'])
+@login_required_if_no_ano
+@admin_or_edit_required
+def scan_progress(task_id):
+    """Get progress for a queued duplicate scan task"""
+    try:
+        worker = WorkerThread.get_instance()
+        task = None
+        for __, __, __, queued_task, __ in worker.tasks:
+            if str(queued_task.id) == str(task_id):
+                task = queued_task
+                break
+
+        if task is None:
+            return jsonify({'success': False, 'error': 'Task not found'}), 404
+
+        status = 'running'
+        if task.stat in (STAT_FINISH_SUCCESS,):
+            status = 'completed'
+        elif task.stat in (STAT_FAIL,):
+            status = 'failed'
+        elif task.stat in (STAT_CANCELLED, STAT_ENDED):
+            status = 'cancelled'
+
+        message = getattr(task, 'message', '')
+        if status == 'failed' and getattr(task, 'error', None):
+            message = task.error
+
+        return jsonify({
+            'success': True,
+            'task_id': str(task.id),
+            'progress': task.progress,
+            'status': status,
+            'message': message,
+            'result_count': getattr(task, 'result_count', None)
+        })
+    except Exception as e:
+        log.error("[cwa-duplicates] Error fetching scan progress: %s", str(e))
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@duplicates.route("/duplicates/cancel-scan/<task_id>", methods=['POST'])
+@csrf.exempt
+@login_required_if_no_ano
+@admin_or_edit_required
+def cancel_scan(task_id):
+    """Cancel a running or queued duplicate scan task."""
+    try:
+        worker = WorkerThread.get_instance()
+        worker.end_task(task_id)
+        return jsonify({'success': True, 'message': 'Scan cancelled'})
+    except Exception as e:
+        log.error("[cwa-duplicates] Error cancelling scan: %s", str(e))
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @duplicates.route("/duplicates/preview-resolution", methods=["POST"])

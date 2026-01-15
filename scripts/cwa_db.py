@@ -312,7 +312,7 @@ class CWA_DB:
         cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
 
         # Define which settings should remain as integers (not converted to boolean)
-        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']
+        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'duplicate_scan_hour', 'duplicate_scan_chunk_size']
         
         # Define which settings should remain as JSON strings (not split by comma)
         json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']
@@ -331,6 +331,10 @@ class CWA_DB:
         for setting in result.keys():
             if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats" or setting == "auto_convert_retained_formats":
                 result[setting] = ','.join(result[setting])
+
+            # Skip updates for unset values to avoid NOT NULL constraint failures
+            if result[setting] is None:
+                continue
 
             try:
                 # Use parameterized queries to safely handle non-English characters and quotes

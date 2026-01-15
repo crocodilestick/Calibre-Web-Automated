@@ -554,7 +554,7 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
-    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']  # Special handling for integer settings
+    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'duplicate_scan_hour', 'duplicate_scan_chunk_size']  # Special handling for integer settings
     json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']  # Special handling for JSON settings
     
     for setting in cwa_default_settings:
@@ -566,6 +566,10 @@ def set_cwa_settings():
             string_settings.append(setting)
         else:
             list_settings.append(setting)
+
+    # Ensure cron expression is treated as a string even if default is empty
+    if 'duplicate_scan_cron' not in string_settings:
+        string_settings.append('duplicate_scan_cron')
 
     for format in ignorable_formats:
         string_settings.append(f"ignore_ingest_{format}")
@@ -631,6 +635,10 @@ def set_cwa_settings():
                             int_value = max(5, min(120, int_value))  # Clamp between 5 and 120 minutes
                         elif setting == 'auto_send_delay_minutes':
                             int_value = max(1, min(60, int_value))  # Clamp between 1 and 60 minutes
+                        elif setting == 'duplicate_scan_hour':
+                            int_value = max(0, min(23, int_value))
+                        elif setting == 'duplicate_scan_chunk_size':
+                            int_value = max(500, min(50000, int_value))
                         result[setting] = int_value
                     except (ValueError, TypeError):
                         # Use current value if conversion fails
@@ -689,6 +697,17 @@ def set_cwa_settings():
                     else:
                         result[setting] = cwa_db.cwa_settings.get(setting, '[]')
 
+            # Validate cron expression if provided
+            cron_expr = result.get('duplicate_scan_cron', '')
+            if cron_expr:
+                try:
+                    from apscheduler.triggers.cron import CronTrigger
+                    CronTrigger.from_crontab(cron_expr)
+                except Exception:
+                    # Revert to previous value and notify user
+                    result['duplicate_scan_cron'] = cwa_db.cwa_settings.get('duplicate_scan_cron', '')
+                    flash(_("Invalid cron expression for duplicate scans. Changes were not saved."), category="error")
+
             # DEBUGGING
             # with open("/config/post_request" ,"w") as f:
             #     for key in result.keys():
@@ -713,9 +732,33 @@ def set_cwa_settings():
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.get_cwa_settings()
 
+    next_scan_run = get_next_duplicate_scan_run(cwa_settings)
+
     return render_title_template("cwa_settings.html", title=_("Calibre-Web Automated User Settings"), page="cwa-settings",
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats, target_formats=target_formats,
-                                    automerge_options=automerge_options, autoingest_options=autoingest_options)
+                                    automerge_options=automerge_options, autoingest_options=autoingest_options,
+                                    next_duplicate_scan_run=next_scan_run)
+
+
+def get_next_duplicate_scan_run(settings):
+    """Compute next scheduled duplicate scan run time based on settings."""
+    try:
+        enabled = bool(settings.get('duplicate_scan_enabled', 0))
+        cron_expr = (settings.get('duplicate_scan_cron') or '').strip()
+
+        if not enabled:
+            return None
+
+        if not cron_expr:
+            return None
+
+        from apscheduler.triggers.cron import CronTrigger
+        now = datetime.now().astimezone()
+        trigger = CronTrigger.from_crontab(cron_expr, timezone=now.tzinfo)
+        next_run = trigger.get_next_fire_time(None, now)
+        return next_run.isoformat() if next_run else None
+    except Exception:
+        return None
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##

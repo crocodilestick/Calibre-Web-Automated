@@ -315,6 +315,9 @@
           <button type="button" class="btn btn-sm btn-default" id="trigger_scan">
             <span class="glyphicon glyphicon-refresh"></span> {{_('Scan for Duplicates Now')}}
           </button>
+          <button type="button" class="btn btn-sm btn-danger" id="cancel_scan" style="display: none;">
+            <span class="glyphicon glyphicon-ban-circle"></span> {{_('Cancel Scan')}}
+          </button>
           {% if duplicate_groups %}
             <button type="button" class="btn btn-sm btn-default" id="select_all">{{_('Select Duplicates')}}</button>
             <button type="button" class="btn btn-sm btn-default" id="select_none">{{_('Select None')}}</button>
@@ -322,6 +325,22 @@
             <span id="selection_count" class="selection-info"></span>
           {% endif %}
         </div>
+
+        <div id="scan_progress_container" style="margin-top: 12px; display: none;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="flex: 1; background: #22303a; border-radius: 6px; overflow: hidden; height: 10px;">
+              <div id="scan_progress_bar" style="height: 10px; width: 0%; background: linear-gradient(90deg, #2ecc71, #3498db);"></div>
+            </div>
+            <span id="scan_progress_label" style="color: #ddd; font-size: 12px;">0%</span>
+          </div>
+          <div id="scan_progress_message" style="margin-top: 6px; color: #bbb; font-size: 12px;"></div>
+        </div>
+
+        {% if next_scan_run %}
+          <div style="margin-top: 10px; color: #bbb; font-size: 12px;">
+            {{_('Next scheduled scan:')}} <span id="next_scan_run">{{ next_scan_run }}</span>
+          </div>
+        {% endif %}
       </div>
       
       {% if duplicate_groups %}

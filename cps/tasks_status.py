@@ -44,7 +44,8 @@ def render_task_status(tasklist):
         if user == current_user.name or current_user.role_admin():
             ret = {}
             if task.start_time:
-                ret['starttime'] = format_datetime(task.start_time, format='short')
+                # Use ISO-like date format for consistency across locales
+                ret['starttime'] = format_datetime(task.start_time, format="yyyy-MM-dd HH:mm")
                 ret['runtime'] = format_runtime(task.runtime)
 
             # localize the task status

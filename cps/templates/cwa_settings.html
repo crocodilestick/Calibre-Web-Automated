@@ -632,6 +632,51 @@
     </div>
 
     <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Automatic Duplicate Scanning')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure background duplicate scans. These run automatically without blocking the UI.') }}
+      </p>
+
+      <div class="checkbox-wrapper" style="margin-bottom: 1rem;">
+        <input type="checkbox" id="duplicate_scan_enabled" name="duplicate_scan_enabled" value="1" {% if cwa_settings['duplicate_scan_enabled'] %} checked {% endif %}>
+        <label for="duplicate_scan_enabled">{{_('Enable automatic duplicate scans')}}</label>
+      </div>
+
+      <div class="form-group" style="max-width: 520px;">
+        <label for="duplicate_scan_frequency" class="settings-section-header">{{_('After import scans')}}</label>
+        <select class="cwa-settings-select" name="duplicate_scan_frequency" id="duplicate_scan_frequency" style="width: fit-content;">
+          <option value="after_import" {% if cwa_settings.get('duplicate_scan_frequency', 'after_import') == 'after_import' %}selected{% endif %}>
+            {{_('Run after each import (debounced)')}}
+          </option>
+          <option value="manual" {% if cwa_settings.get('duplicate_scan_frequency') == 'manual' %}selected{% endif %}>
+            {{_('Manual only')}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group" style="max-width: 520px; margin-top: 1rem;">
+        <label for="duplicate_scan_cron" class="settings-section-header">{{_('Scheduled scans (cron expression)')}}</label>
+        <input type="text" class="cwa-settings-input" name="duplicate_scan_cron" id="duplicate_scan_cron" placeholder="0 3 * * *"
+               value="{{ cwa_settings.get('duplicate_scan_cron', '') }}" style="width: 220px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 8px;">
+          {{_('Leave blank to disable scheduled scans. Example:')}} <code>0 3 * * *</code>
+        </p>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 6px;">
+          {{_('If enabled, after-import scans and cron scans can both run. Use “Manual only” to disable after-import scans while keeping cron schedules.')}}
+        </p>
+      </div>
+
+      {% if next_duplicate_scan_run %}
+        <div class="cwa-settings-tip" style="margin-top: 12px;">
+          <small class="settings-explanation">
+            <strong>{{_('Next scheduled scan:')}}</strong> {{ next_duplicate_scan_run }}
+          </small>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Duplicate Detection Criteria')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">

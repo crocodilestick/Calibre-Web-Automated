@@ -79,8 +79,9 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     -- Duplicate scanning performance settings
     duplicate_detection_use_sql SMALLINT DEFAULT 1 NOT NULL, -- Enable SQL prefilter for hybrid by default
     duplicate_scan_method TEXT DEFAULT 'hybrid' NOT NULL, -- Use hybrid prefilter by default
-    duplicate_scan_enabled SMALLINT DEFAULT 0 NOT NULL,
-    duplicate_scan_frequency TEXT DEFAULT 'manual' NOT NULL,
+    duplicate_scan_enabled SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_scan_frequency TEXT DEFAULT 'after_import' NOT NULL,
+    duplicate_scan_cron TEXT DEFAULT '' NOT NULL,
     duplicate_scan_hour INTEGER DEFAULT 3 NOT NULL,
     duplicate_scan_chunk_size INTEGER DEFAULT 5000 NOT NULL
 );

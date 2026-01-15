@@ -83,7 +83,8 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_scan_frequency TEXT DEFAULT 'after_import' NOT NULL,
     duplicate_scan_cron TEXT DEFAULT '' NOT NULL,
     duplicate_scan_hour INTEGER DEFAULT 3 NOT NULL,
-    duplicate_scan_chunk_size INTEGER DEFAULT 5000 NOT NULL
+    duplicate_scan_chunk_size INTEGER DEFAULT 5000 NOT NULL,
+    duplicate_scan_debounce_seconds INTEGER DEFAULT 30 NOT NULL
 );
 
 -- Persisted scheduled jobs (initial focus: auto-send). Rows remain until dispatched or manually cleared.

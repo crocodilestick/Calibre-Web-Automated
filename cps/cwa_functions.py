@@ -19,7 +19,7 @@ from pathlib import Path
 from time import sleep
 
 import json
-from threading import Thread
+from threading import Thread, Lock, Timer
 import queue
 import os
 import tempfile
@@ -58,6 +58,10 @@ log = logger.create()
 # Folder where the log files are stored
 LOG_ARCHIVE = "/config/log_archive"
 DIRS_JSON = "/app/calibre-web-automated/dirs.json"
+
+# Debounced duplicate scan timer (web process)
+_duplicate_scan_timer = None
+_duplicate_scan_lock = Lock()
 
 ##———————————————————————————END OF GLOBAL VARIABLES——————————————————————————##
 
@@ -346,6 +350,57 @@ def cwa_internal_schedule_auto_send():
         log.error(f"Internal auto-send schedule failed: {e}")
         return jsonify({"error": str(e)}), 400
 
+
+@csrf.exempt
+@cwa_internal.route('/cwa-internal/queue-duplicate-scan', methods=["POST"])
+def cwa_internal_queue_duplicate_scan():
+    """Debounce and queue an incremental duplicate scan in the web process.
+
+    Security: Limited to localhost callers (within container/host).
+    Payload JSON: {delay_seconds:int}
+    """
+    try:
+        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if remote not in (None, '127.0.0.1', '::1'):
+            abort(403)
+
+        db = CWA_DB()
+        enabled = bool(db.cwa_settings.get('duplicate_scan_enabled', 0))
+        frequency = db.cwa_settings.get('duplicate_scan_frequency', 'manual')
+
+        data = request.get_json(force=True, silent=True) or {}
+        default_delay = db.cwa_settings.get('duplicate_scan_debounce_seconds', 30)
+        delay_seconds = int(data.get('delay_seconds', default_delay))
+        delay_seconds = max(5, min(600, delay_seconds))
+
+        if not enabled or frequency != 'after_import':
+            return jsonify({"success": True, "skipped": True, "reason": "disabled_or_manual"}), 200
+
+        global _duplicate_scan_timer
+        with _duplicate_scan_lock:
+            if _duplicate_scan_timer is not None:
+                try:
+                    _duplicate_scan_timer.cancel()
+                except Exception:
+                    pass
+
+            def _enqueue_scan():
+                try:
+                    from .tasks.duplicate_scan import TaskDuplicateScan
+                    WorkerThread.add('System', TaskDuplicateScan(full_scan=False, trigger_type='after_import'), hidden=False)
+                    log.info("[cwa-duplicates] Debounced duplicate scan queued (after_import)")
+                except Exception as e:
+                    log.error("[cwa-duplicates] Failed to queue debounced duplicate scan: %s", str(e))
+
+            _duplicate_scan_timer = Timer(delay_seconds, _enqueue_scan)
+            _duplicate_scan_timer.daemon = True
+            _duplicate_scan_timer.start()
+
+        return jsonify({"success": True, "queued": True, "delay_seconds": delay_seconds}), 200
+    except Exception as e:
+        log.error("[cwa-duplicates] Failed to schedule debounced duplicate scan: %s", str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/schedule-convert-library', methods=["POST"])
 def cwa_internal_schedule_convert_library():
@@ -554,7 +609,7 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
-    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'duplicate_scan_hour', 'duplicate_scan_chunk_size']  # Special handling for integer settings
+    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds']  # Special handling for integer settings
     json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']  # Special handling for JSON settings
     
     for setting in cwa_default_settings:
@@ -639,6 +694,8 @@ def set_cwa_settings():
                             int_value = max(0, min(23, int_value))
                         elif setting == 'duplicate_scan_chunk_size':
                             int_value = max(500, min(50000, int_value))
+                        elif setting == 'duplicate_scan_debounce_seconds':
+                            int_value = max(5, min(600, int_value))
                         result[setting] = int_value
                     except (ValueError, TypeError):
                         # Use current value if conversion fails
@@ -646,11 +703,15 @@ def set_cwa_settings():
                             result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
                         elif setting == 'auto_send_delay_minutes':
                             result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
+                        elif setting == 'duplicate_scan_debounce_seconds':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 30)
                 else:
                     if setting == 'ingest_timeout_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
                     elif setting == 'auto_send_delay_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
+                    elif setting == 'duplicate_scan_debounce_seconds':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 30)
 
             # Handle JSON settings
             for setting in json_settings:

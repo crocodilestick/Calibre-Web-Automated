@@ -62,6 +62,21 @@ def generate_group_hash(title, author):
     return hashlib.md5(composite.encode('utf-8')).hexdigest()
 
 
+def normalize_title_for_duplicates(title, primary_author=None):
+    """Normalize title for duplicate detection.
+
+    If the title starts with the primary author (e.g., "Homer, the Iliad"),
+    strip the leading author prefix to avoid false negatives.
+    """
+    normalized = (title or "untitled").lower().strip()
+    if primary_author:
+        author_norm = str(primary_author).lower().strip()
+        author_prefix = f"{author_norm}, "
+        if normalized.startswith(author_prefix):
+            normalized = normalized[len(author_prefix):].strip()
+    return normalized
+
+
 def validate_resolution_strategy(strategy):
     """Validate that strategy is one of the allowed values"""
     valid_strategies = ['newest', 'highest_quality_format', 'most_metadata', 'largest_file_size']
@@ -406,7 +421,7 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     return duplicate_groups
 
 
-def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None):
+def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_book_id=None):
     """SQL-based candidate prefilter for hybrid mode.
 
     Returns a set of book IDs that are likely part of duplicate groups.
@@ -425,11 +440,12 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None):
 
     print("[cwa-duplicates] Using SQL hybrid prefilter (candidate IDs)", flush=True)
 
+    # Note: these GROUP BY fields are evaluated by SQLite at query time; they are not cached
+    # groupings in memory. We only use this query to prefilter candidate IDs.
     group_by_fields = []
 
-    if use_title:
-        norm_title = func.lower(func.trim(func.coalesce(db.Books.title, 'untitled')))
-        group_by_fields.append(norm_title)
+    norm_title = None
+    primary_author = None
 
     if use_author:
         norm_author_sort = func.lower(func.trim(func.coalesce(db.Books.author_sort, 'unknown')))
@@ -440,14 +456,31 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None):
         )
         group_by_fields.append(primary_author)
 
+    if use_title:
+        norm_title = func.lower(func.trim(func.coalesce(db.Books.title, 'untitled')))
+        if primary_author is not None:
+            author_prefix = primary_author + ', '
+            norm_title = case(
+                (norm_title.like(author_prefix + '%'),
+                 func.trim(func.substr(norm_title, func.length(primary_author) + 3))),
+                else_=norm_title
+            )
+        group_by_fields.append(norm_title)
+
+    max_id_field = func.max(db.Books.id).label('max_book_id')
+
     query = (calibre_db.session.query(
                 func.count(func.distinct(db.Books.id)).label('book_count'),
-                func.group_concat(func.distinct(db.Books.id)).label('book_ids_str')
+                func.group_concat(func.distinct(db.Books.id)).label('book_ids_str'),
+                max_id_field
             )
             .select_from(db.Books)
             .filter(get_common_filters(user_id=user_id))
             .group_by(*group_by_fields)
             .having(func.count(func.distinct(db.Books.id)) > 1))
+
+    if min_book_id is not None:
+        query = query.having(max_id_field > int(min_book_id))
 
     try:
         results = query.all()
@@ -695,21 +728,24 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
     for book in all_books:
         # Build key based on selected criteria
         key_parts = []
-        
-        if use_title:
-            # Handle potential None title
-            title = book.title if book.title else "untitled"
-            key_parts.append(title.lower().strip())
-        
+
+        primary_author = None
         if use_author:
             # Ensure authors are loaded and not empty
             if book.authors and len(book.authors) > 0:
                 # Get primary author (use Calibre-Web's standard approach)
                 book.ordered_authors = calibre_db.order_authors([book])
                 primary_author = book.ordered_authors[0].name if book.ordered_authors and len(book.ordered_authors) > 0 else "unknown"
-                key_parts.append(primary_author.lower().strip())
             else:
-                key_parts.append("unknown")
+                primary_author = "unknown"
+        
+        if use_title:
+            # Handle potential None title
+            title = book.title if book.title else "untitled"
+            key_parts.append(normalize_title_for_duplicates(title, primary_author))
+
+        if use_author:
+            key_parts.append(primary_author.lower().strip() if primary_author else "unknown")
         
         if use_language:
             # Get primary language code

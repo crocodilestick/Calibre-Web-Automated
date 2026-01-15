@@ -1148,28 +1148,33 @@ class NewBookProcessor:
 
             if not enabled or frequency != 'after_import':
                 return
-
-            global _duplicate_scan_timer
-            with _duplicate_scan_lock:
-                if _duplicate_scan_timer is not None:
+            # Schedule in the long-lived web process so the debounce survives
+            # the short-lived ingest process exiting.
+            try:
+                delay_seconds = int(self.cwa_settings.get('duplicate_scan_debounce_seconds', 30))
+                delay_seconds = max(5, min(600, delay_seconds))
+                url = get_internal_api_url("/cwa-internal/queue-duplicate-scan")
+                payload = {"delay_seconds": delay_seconds}
+                resp = requests.post(
+                    url,
+                    json=payload,
+                    headers=get_internal_api_headers(),
+                    timeout=5,
+                    verify=False,
+                )
+                if resp.status_code == 200:
                     try:
-                        _duplicate_scan_timer.cancel()
+                        body = resp.json()
+                        if body.get('queued'):
+                            print("[ingest-processor] Debounced duplicate scan scheduled via web process", flush=True)
+                        elif body.get('skipped'):
+                            print("[ingest-processor] Duplicate scan scheduling skipped (disabled/manual)", flush=True)
                     except Exception:
-                        pass
-
-                def _enqueue_scan():
-                    try:
-                        # Lazy import to avoid circular dependencies
-                        from cps.services.worker import WorkerThread
-                        from cps.tasks.duplicate_scan import TaskDuplicateScan
-                        WorkerThread.add('System', TaskDuplicateScan(full_scan=True, trigger_type='after_import'), hidden=False)
-                        print("[ingest-processor] Debounced duplicate scan queued", flush=True)
-                    except Exception as e:
-                        print(f"[ingest-processor] WARN: Failed to queue duplicate scan: {e}", flush=True)
-
-                _duplicate_scan_timer = threading.Timer(60.0, _enqueue_scan)
-                _duplicate_scan_timer.daemon = True
-                _duplicate_scan_timer.start()
+                        print("[ingest-processor] Debounced duplicate scan scheduled via web process", flush=True)
+                else:
+                    print(f"[ingest-processor] WARN: Duplicate scan scheduling returned {resp.status_code}", flush=True)
+            except Exception as e:
+                print(f"[ingest-processor] WARN: Failed to schedule duplicate scan via web API: {e}", flush=True)
         except Exception as e:
             print(f"[ingest-processor] WARN: Failed to schedule debounced duplicate scan: {e}", flush=True)
 

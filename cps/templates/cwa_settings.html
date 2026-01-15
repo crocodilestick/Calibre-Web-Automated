@@ -655,6 +655,17 @@
         </select>
       </div>
 
+      <div class="form-group" style="max-width: 520px; margin-top: 0.75rem;">
+        <label for="duplicate_scan_debounce_seconds" class="settings-section-header">{{_('After import debounce (seconds)')}}</label>
+        <input type="number" min="5" max="600" step="1" class="cwa-settings-input"
+               name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds"
+               value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 30) }}"
+               style="width: 120px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 8px;">
+          {{_('Wait this many seconds after the last import before starting a background scan.') }}
+        </p>
+      </div>
+
       <div class="form-group" style="max-width: 520px; margin-top: 1rem;">
         <label for="duplicate_scan_cron" class="settings-section-header">{{_('Scheduled scans (cron expression)')}}</label>
         <input type="text" class="cwa-settings-input" name="duplicate_scan_cron" id="duplicate_scan_cron" placeholder="0 3 * * *"

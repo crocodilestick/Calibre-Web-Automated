@@ -312,7 +312,7 @@ class CWA_DB:
         cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
 
         # Define which settings should remain as integers (not converted to boolean)
-        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'duplicate_scan_hour', 'duplicate_scan_chunk_size']
+        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds']
         
         # Define which settings should remain as JSON strings (not split by comma)
         json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']
@@ -2184,7 +2184,7 @@ class CWA_DB:
         import json
         try:
             self.cur.execute("""
-                SELECT scan_timestamp, duplicate_groups_json, total_count, scan_pending
+                SELECT scan_timestamp, duplicate_groups_json, total_count, scan_pending, last_scanned_book_id
                 FROM cwa_duplicate_cache 
                 WHERE id = 1
             """)
@@ -2194,7 +2194,8 @@ class CWA_DB:
                     'scan_timestamp': row[0],
                     'duplicate_groups': json.loads(row[1]),
                     'total_count': row[2],
-                    'scan_pending': bool(row[3])
+                    'scan_pending': bool(row[3]),
+                    'last_scanned_book_id': row[4]
                 }
             return None
         except Exception as e:

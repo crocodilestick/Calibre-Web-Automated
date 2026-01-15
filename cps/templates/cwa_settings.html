@@ -606,6 +606,29 @@
         <label for="duplicate_detection_enabled">{{_('Enable Duplicate Detection')}}</label>
         <small class="settings-explanation">{{_('When enabled, CWA will scan for duplicate books after each import')}}</small>
       </div>
+
+      <!-- Detection Method (Hybrid default) -->
+      {% set scan_method = cwa_settings.get('duplicate_scan_method')|default('hybrid', true) %}
+      <div class="form-group" style="max-width: 520px;">
+        <label for="duplicate_scan_method" class="settings-section-header" style="margin-top: 8px;">{{_('Duplicate Detection Method')}}</label>
+        <select class="cwa-settings-select" name="duplicate_scan_method" id="duplicate_scan_method" style="width: fit-content;">
+          <option value="hybrid" {% if scan_method == 'hybrid' %}selected{% endif %}>
+            {{_('Hybrid (SQL prefilter + Python validation)')}}
+          </option>
+          <option value="python" {% if scan_method == 'python' %}selected{% endif %}>
+            {{_('Python only (slowest, most robust)')}}
+          </option>
+          <option value="sql" {% if scan_method == 'sql' %}selected{% endif %}>
+            {{_('Legacy SQL only (experimental)')}}
+          </option>
+        </select>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 10px;">
+          {{_('Hybrid mode uses a fast SQL prefilter to narrow candidates, then applies the robust Python logic for final results.') }}
+        </p>
+      </div>
+
+      <!-- Keep SQL prefilter enabled by default for hybrid/auto modes -->
+      <input type="hidden" id="duplicate_detection_use_sql" name="duplicate_detection_use_sql" value="1">
     </div>
 
     <div class="settings-container">

@@ -6,7 +6,7 @@
 
 from flask import Blueprint, jsonify, request, abort
 from flask_babel import gettext as _
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, case
 from sqlalchemy.orm import joinedload
 from datetime import datetime
 from functools import wraps
@@ -213,7 +213,7 @@ def show_duplicates():
     log.info("[cwa-duplicates] Loading duplicates page for user: %s", current_user.name)
     
     try:
-        # Use SQL to efficiently find duplicates with proper user filtering
+        # Use SQL/Python detection to find duplicates with proper user filtering
         duplicate_groups = find_duplicate_books()
         
         print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
@@ -274,7 +274,7 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
             'duplicate_detection_publisher': 0,
             'duplicate_detection_format': 0,
             'duplicate_detection_use_sql': 1,
-            'duplicate_scan_method': 'auto'
+            'duplicate_scan_method': 'hybrid'
         }
     
     # Extract duplicate detection criteria
@@ -298,15 +298,17 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     
     # Determine which method to use
     method_to_use = 'python'  # Default fallback
-    
+
     if scan_method == 'python':
         method_to_use = 'python'
     elif scan_method == 'sql':
+        # SQL-only is available but still experimental
         method_to_use = 'sql' if not use_format else 'hybrid'
+    elif scan_method == 'hybrid':
+        method_to_use = 'hybrid'
     else:  # 'auto'
-        if use_sql and not use_format:
-            method_to_use = 'sql'
-        elif use_sql and use_format:
+        if use_sql:
+            # Prefer hybrid prefilter for safety unless SQL-only is explicitly chosen
             method_to_use = 'hybrid'
         else:
             method_to_use = 'python'
@@ -321,13 +323,22 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
             include_dismissed, user_id
         )
     elif method_to_use == 'hybrid':
-        # Use SQL for metadata grouping, then Python for format filtering
-        duplicate_groups = find_duplicate_books_sql(
-            use_title, use_author, use_language, use_series, use_publisher,
-            include_dismissed, user_id
-        )
-        # Additional format filtering would go here if needed
-        print("[cwa-duplicates] Note: Format-based detection requires Python method, using hybrid approach", flush=True)
+        # Use SQL as a prefilter to get candidate book IDs, then Python for robust grouping
+        candidate_ids = find_duplicate_candidate_ids_sql(use_title, use_author)
+        if candidate_ids is None:
+            print("[cwa-duplicates] Hybrid prefilter unavailable, falling back to full Python scan", flush=True)
+            duplicate_groups = find_duplicate_books_python(
+                use_title, use_author, use_language, use_series, use_publisher, use_format,
+                include_dismissed, user_id
+            )
+        elif not candidate_ids:
+            duplicate_groups = []
+        else:
+            duplicate_groups = find_duplicate_books_python(
+                use_title, use_author, use_language, use_series, use_publisher, use_format,
+                include_dismissed, user_id, candidate_ids=candidate_ids
+            )
+        print("[cwa-duplicates] Hybrid prefilter applied (SQL candidates + Python validation)", flush=True)
     else:
         duplicate_groups = find_duplicate_books_python(
             use_title, use_author, use_language, use_series, use_publisher, use_format,
@@ -359,6 +370,66 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
         log.warning("[cwa-duplicates] Failed to update performance metrics: %s", str(e))
     
     return duplicate_groups
+
+
+def find_duplicate_candidate_ids_sql(use_title, use_author):
+    """SQL-based candidate prefilter for hybrid mode.
+
+    Returns a set of book IDs that are likely part of duplicate groups.
+    Uses only title/author prefiltering to remain a safe superset.
+
+    Args:
+        use_title: Whether title criteria is enabled
+        use_author: Whether author criteria is enabled
+
+    Returns:
+        set of int book IDs, empty set if none, or None if prefilter should be skipped
+    """
+    # If neither title nor author is enabled, prefilter is too risky -> skip
+    if not use_title and not use_author:
+        return None
+
+    print("[cwa-duplicates] Using SQL hybrid prefilter (candidate IDs)", flush=True)
+
+    group_by_fields = []
+
+    if use_title:
+        norm_title = func.lower(func.trim(func.coalesce(db.Books.title, 'untitled')))
+        group_by_fields.append(norm_title)
+
+    if use_author:
+        norm_author_sort = func.lower(func.trim(func.coalesce(db.Books.author_sort, 'unknown')))
+        primary_author = case(
+            (func.instr(norm_author_sort, '&') > 0,
+             func.substr(norm_author_sort, 1, func.instr(norm_author_sort, '&') - 1)),
+            else_=norm_author_sort
+        )
+        group_by_fields.append(primary_author)
+
+    query = (calibre_db.session.query(
+                func.count(func.distinct(db.Books.id)).label('book_count'),
+                func.group_concat(func.distinct(db.Books.id)).label('book_ids_str')
+            )
+            .select_from(db.Books)
+            .filter(calibre_db.common_filters())
+            .group_by(*group_by_fields)
+            .having(func.count(func.distinct(db.Books.id)) > 1))
+
+    try:
+        results = query.all()
+    except Exception as e:
+        log.error("[cwa-duplicates] Hybrid prefilter SQL failed: %s", str(e))
+        print(f"[cwa-duplicates] Hybrid prefilter SQL failed: {str(e)}", flush=True)
+        return None
+
+    candidate_ids = set()
+    for row in results:
+        if not row.book_ids_str:
+            continue
+        candidate_ids.update(int(bid) for bid in row.book_ids_str.split(',') if bid)
+
+    print(f"[cwa-duplicates] Hybrid prefilter returned {len(candidate_ids)} candidate books", flush=True)
+    return candidate_ids
 
 
 def find_duplicate_books_sql(use_title, use_author, use_language, use_series, use_publisher,
@@ -551,7 +622,7 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
 
 
 def find_duplicate_books_python(use_title, use_author, use_language, use_series, use_publisher, use_format,
-                                 include_dismissed=False, user_id=None):
+                                 include_dismissed=False, user_id=None, candidate_ids=None):
     """Original Python-based duplicate detection - fallback for complex scenarios
     
     Args:
@@ -569,6 +640,12 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
     books_query = (calibre_db.session.query(db.Books)
                    .filter(calibre_db.common_filters())  # Respect user permissions and library filtering
                    .order_by(db.Books.title, db.Books.timestamp.desc()))
+
+    if candidate_ids is not None:
+        if not candidate_ids:
+            print("[cwa-duplicates] No candidate IDs provided, returning empty duplicate set", flush=True)
+            return []
+        books_query = books_query.filter(db.Books.id.in_(list(candidate_ids)))
     
     all_books = books_query.all()
     print(f"[cwa-duplicates] Retrieved {len(all_books)} books with user filtering applied", flush=True)

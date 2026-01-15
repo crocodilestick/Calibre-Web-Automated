@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_auto_resolve_strategy TEXT DEFAULT 'newest' NOT NULL,
     duplicate_format_priority TEXT DEFAULT '{"EPUB":100,"KEPUB":95,"AZW3":90,"MOBI":80,"AZW":75,"PDF":60,"TXT":40,"CBZ":35,"CBR":35,"FB2":30,"DJVU":25,"HTML":20,"RTF":15,"DOC":10,"DOCX":10}' NOT NULL,
     -- Duplicate scanning performance settings
-    duplicate_detection_use_sql SMALLINT DEFAULT 0 NOT NULL, -- Disabled by default, Python method is stable
-    duplicate_scan_method TEXT DEFAULT 'python' NOT NULL, -- Use python by default
+    duplicate_detection_use_sql SMALLINT DEFAULT 1 NOT NULL, -- Enable SQL prefilter for hybrid by default
+    duplicate_scan_method TEXT DEFAULT 'hybrid' NOT NULL, -- Use hybrid prefilter by default
     duplicate_scan_enabled SMALLINT DEFAULT 0 NOT NULL,
     duplicate_scan_frequency TEXT DEFAULT 'manual' NOT NULL,
     duplicate_scan_hour INTEGER DEFAULT 3 NOT NULL,

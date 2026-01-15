@@ -71,9 +71,20 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_detection_publisher SMALLINT DEFAULT 0 NOT NULL,
     duplicate_detection_format SMALLINT DEFAULT 0 NOT NULL,
     -- Duplicate notification and auto-resolution settings
+    duplicate_detection_enabled SMALLINT DEFAULT 1 NOT NULL,
     duplicate_notifications_enabled SMALLINT DEFAULT 1 NOT NULL,
     duplicate_auto_resolve_enabled SMALLINT DEFAULT 0 NOT NULL,
-    duplicate_auto_resolve_strategy TEXT DEFAULT 'newest' NOT NULL
+    duplicate_auto_resolve_strategy TEXT DEFAULT 'newest' NOT NULL,
+    duplicate_format_priority TEXT DEFAULT '{"EPUB":100,"KEPUB":95,"AZW3":90,"MOBI":80,"AZW":75,"PDF":60,"TXT":40,"CBZ":35,"CBR":35,"FB2":30,"DJVU":25,"HTML":20,"RTF":15,"DOC":10,"DOCX":10}' NOT NULL,
+    -- Duplicate scanning performance settings
+    duplicate_detection_use_sql SMALLINT DEFAULT 1 NOT NULL, -- Enable SQL prefilter for hybrid by default
+    duplicate_scan_method TEXT DEFAULT 'hybrid' NOT NULL, -- Use hybrid prefilter by default
+    duplicate_scan_enabled SMALLINT DEFAULT 1 NOT NULL,
+    duplicate_scan_frequency TEXT DEFAULT 'after_import' NOT NULL,
+    duplicate_scan_cron TEXT DEFAULT '' NOT NULL,
+    duplicate_scan_hour INTEGER DEFAULT 3 NOT NULL,
+    duplicate_scan_chunk_size INTEGER DEFAULT 5000 NOT NULL,
+    duplicate_scan_debounce_seconds INTEGER DEFAULT 30 NOT NULL
 );
 
 -- Persisted scheduled jobs (initial focus: auto-send). Rows remain until dispatched or manually cleared.
@@ -104,3 +115,37 @@ CREATE TABLE IF NOT EXISTS cwa_user_activity (
 CREATE INDEX IF NOT EXISTS idx_activity_user ON cwa_user_activity(user_id);
 CREATE INDEX IF NOT EXISTS idx_activity_event ON cwa_user_activity(event_type);
 CREATE INDEX IF NOT EXISTS idx_activity_time ON cwa_user_activity(timestamp);
+
+-- Duplicate detection cache table
+CREATE TABLE IF NOT EXISTS cwa_duplicate_cache (
+    id INTEGER PRIMARY KEY CHECK (id = 1),  -- Singleton table, only one row
+    scan_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    duplicate_groups_json TEXT,  -- JSON serialized duplicate groups
+    total_count INTEGER DEFAULT 0,
+    scan_pending INTEGER DEFAULT 1,  -- 1=needs scan, 0=cache valid
+    last_scanned_book_id INTEGER DEFAULT 0,  -- Track last scanned book for incremental updates
+    scan_duration_seconds REAL DEFAULT 0,  -- Performance tracking
+    scan_method_used TEXT DEFAULT 'python'  -- Track which method was used: 'sql', 'python', 'hybrid'
+);
+
+-- Insert default row for cache table
+INSERT OR IGNORE INTO cwa_duplicate_cache (id, scan_pending) VALUES (1, 1);
+
+-- Auto-resolution audit log
+CREATE TABLE IF NOT EXISTS cwa_duplicate_resolutions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    group_hash TEXT NOT NULL,
+    group_title TEXT,
+    group_author TEXT,
+    kept_book_id INTEGER NOT NULL,
+    deleted_book_ids TEXT NOT NULL,  -- JSON array of deleted IDs
+    strategy TEXT NOT NULL,  -- 'newest', 'highest_quality_format', 'most_metadata', 'largest_file_size'
+    trigger_type TEXT NOT NULL,  -- 'manual', 'scheduled', 'automatic'
+    backed_up INTEGER DEFAULT 1,  -- 1=yes, 0=no
+    user_id INTEGER,  -- NULL for automatic, admin user ID for manual
+    notes TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_duplicate_resolutions_timestamp ON cwa_duplicate_resolutions(timestamp);
+CREATE INDEX IF NOT EXISTS idx_duplicate_resolutions_group_hash ON cwa_duplicate_resolutions(group_hash);

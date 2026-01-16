@@ -46,7 +46,9 @@
      * Fetch duplicate status from API
      */
     function fetchDuplicateStatus() {
-        return fetch('/duplicates/status', {
+        const basePath = (typeof getPath === 'function') ? getPath() : '';
+        const statusUrl = basePath + '/duplicates/status';
+        return fetch(statusUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

@@ -113,8 +113,8 @@ $(document).ready(function() {
                 return;
             }
 
-            // Use absolute URL like working table.js
-            var relativeUrl = '/ajax/displayselectedbooks';
+            // Use relative URL like table.js to respect base paths
+            var relativeUrl = window.location.pathname + "/../ajax/displayselectedbooks";
 
             $('#merge_selected_modal').modal('show');
 
@@ -170,8 +170,8 @@ $(document).ready(function() {
                 return;
             }
             
-            // Use absolute URL like working table.js
-            var relativeUrl = "/ajax/displayselectedbooks";
+            // Use relative URL like table.js to respect base paths
+            var relativeUrl = window.location.pathname + "/../ajax/displayselectedbooks";
             
             $('#delete_selected_modal').modal('show');
             
@@ -209,7 +209,7 @@ $(document).ready(function() {
 
     // Confirm merge
     $('#merge_selected_confirm').click(function() {
-        var mergeUrl = '/ajax/mergebooks';
+        var mergeUrl = window.location.pathname + "/../ajax/mergebooks";
 
         // Convert book IDs to integers (same as table.js)
         var bookIds = selectedBooks.map(function(id) { return parseInt(id, 10); });
@@ -259,7 +259,7 @@ $(document).ready(function() {
     
     // Confirm delete
     $('#delete_selected_confirm').click(function() {
-        var deleteUrl = "/ajax/deleteselectedbooks";
+        var deleteUrl = window.location.pathname + "/../ajax/deleteselectedbooks";
         
         // Convert book IDs to integers (same as table.js)
         var bookIds = selectedBooks.map(function(id) { return parseInt(id, 10); });

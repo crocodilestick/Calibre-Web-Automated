@@ -12,9 +12,11 @@ from sqlalchemy.orm import joinedload
 from datetime import datetime
 from functools import wraps
 import hashlib
+import os
 import time
+from shutil import copyfile
 
-from . import db, calibre_db, logger, ub, csrf, config
+from . import db, calibre_db, logger, ub, csrf, config, helper
 from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED
 from .admin import admin_required  
 from .usermanagement import login_required_if_no_ano
@@ -79,7 +81,7 @@ def normalize_title_for_duplicates(title, primary_author=None):
 
 def validate_resolution_strategy(strategy):
     """Validate that strategy is one of the allowed values"""
-    valid_strategies = ['newest', 'highest_quality_format', 'most_metadata', 'largest_file_size']
+    valid_strategies = ['newest', 'oldest', 'merge', 'highest_quality_format', 'most_metadata', 'largest_file_size']
     return strategy in valid_strategies
 
 
@@ -99,6 +101,14 @@ def select_book_to_keep(books, strategy):
     
     if strategy == 'newest':
         # Keep the most recently added book
+        return max(books, key=lambda b: b.timestamp if b.timestamp else datetime.min)
+
+    elif strategy == 'oldest':
+        # Keep the earliest added book
+        return min(books, key=lambda b: b.timestamp if b.timestamp else datetime.max)
+
+    elif strategy == 'merge':
+        # Merge into the newest book by default
         return max(books, key=lambda b: b.timestamp if b.timestamp else datetime.min)
     
     elif strategy == 'highest_quality_format':
@@ -956,8 +966,8 @@ def get_duplicate_status():
         # Try to get cached results first
         cache_data = cwa_db.get_duplicate_cache()
         
-        if cache_data and not cache_data['scan_pending']:
-            # Cache is valid, use it
+        if cache_data and cache_data.get('duplicate_groups') is not None:
+            # Cache is available; use it even if scan is pending
             duplicate_groups = cache_data['duplicate_groups']
             
             # Filter out dismissed groups for this user
@@ -992,10 +1002,12 @@ def get_duplicate_status():
                 'enabled': bool(notifications_enabled),
                 'count': count,
                 'preview': preview,
-                'cached': True
+                'cached': True,
+                'stale': bool(cache_data.get('scan_pending')),
+                'needs_scan': bool(cache_data.get('scan_pending'))
             })
         
-        # Cache is invalid or pending - DO NOT trigger scan here!
+        # Cache is missing - DO NOT trigger scan here!
         # This endpoint is called on every page load via duplicate-notifier.js
         # Scans should ONLY be triggered by:
         # 1. Manual "Trigger Scan" button on /duplicates page (via /duplicates/trigger-scan)
@@ -1356,8 +1368,6 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
             'preview': list of dicts (if dry_run=True) with 'group', 'kept_book', 'deleted_books'
     """
     from cps.editbooks import delete_book_from_table
-    from cps import config
-    import os
     import shutil
     
     # Validate strategy
@@ -1404,6 +1414,17 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                 continue  # Only one book in group, nothing to resolve
             
             if dry_run:
+                kept_formats = []
+                if book_to_keep.data:
+                    for data in book_to_keep.data:
+                        if data.format and data.format not in kept_formats:
+                            kept_formats.append(data.format)
+                if strategy == 'merge':
+                    for book in books_to_delete:
+                        if book.data:
+                            for data in book.data:
+                                if data.format and data.format not in kept_formats:
+                                    kept_formats.append(data.format)
                 # Preview mode: just collect info
                 result['preview'].append({
                     'group_hash': group['group_hash'],
@@ -1411,7 +1432,7 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                     'author': group['author'],
                     'kept_book_id': book_to_keep.id,
                     'kept_book_timestamp': book_to_keep.timestamp.strftime('%Y-%m-%d %H:%M') if book_to_keep.timestamp else 'Unknown',
-                    'kept_book_formats': [d.format for d in book_to_keep.data] if book_to_keep.data else [],
+                    'kept_book_formats': kept_formats,
                     'deleted_book_ids': [b.id for b in books_to_delete],
                     'deleted_books_info': [{
                         'id': b.id,
@@ -1428,6 +1449,14 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
             deleted_ids = []
             backup_dir = f"/config/processed_books/duplicate_resolutions/{datetime.now().strftime('%Y%m%d_%H%M%S')}_group_{group['group_hash'][:8]}"
             os.makedirs(backup_dir, exist_ok=True)
+
+            if strategy == 'merge':
+                try:
+                    merge_duplicate_group(book_to_keep, books_to_delete)
+                except Exception as e:
+                    log.error("[cwa-duplicates] Error merging books for group '%s': %s", group.get('title', 'unknown'), e)
+                    result['errors'].append(f"Group '{group.get('title', 'unknown')}': merge failed: {str(e)}")
+                    continue
             
             # Backup and delete each duplicate
             for book in books_to_delete:
@@ -1478,3 +1507,39 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
         result['success'] = False
     
     return result
+
+
+def merge_duplicate_group(book_to_keep, books_to_merge):
+    """Merge formats from duplicate books into the target book."""
+    if not book_to_keep or not books_to_merge:
+        return
+
+    to_book = calibre_db.get_book(book_to_keep.id)
+    if not to_book:
+        raise ValueError("Target book not found for merge")
+
+    existing_formats = [file.format for file in to_book.data] if to_book.data else []
+    author_name = "unknown"
+    if to_book.authors:
+        author_name = to_book.authors[0].name
+    to_name = helper.get_valid_filename(to_book.title, chars=96) + ' - ' + helper.get_valid_filename(author_name, chars=96)
+
+    for source in books_to_merge:
+        from_book = calibre_db.get_book(source.id)
+        if not from_book:
+            continue
+        for element in from_book.data:
+            if element.format not in existing_formats:
+                filepath_new = os.path.normpath(os.path.join(config.get_book_path(),
+                                                             to_book.path,
+                                                             to_name + "." + element.format.lower()))
+                filepath_old = os.path.normpath(os.path.join(config.get_book_path(),
+                                                             from_book.path,
+                                                             element.name + "." + element.format.lower()))
+                copyfile(filepath_old, filepath_new)
+                to_book.data.append(db.Data(to_book.id,
+                                            element.format,
+                                            element.uncompressed_size,
+                                            to_name))
+                existing_formats.append(element.format)
+    calibre_db.session.commit()

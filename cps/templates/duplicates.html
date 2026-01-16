@@ -374,6 +374,8 @@
             <label for="resolution_strategy" style="color: white; font-weight: 600;">{{_('Strategy:')}}</label>
             <select id="resolution_strategy" class="form-control" style="background: #1c2832; color: white; border: 1px solid #444;">
               <option value="newest">{{_('Keep Newest - Delete older copies, keep the most recently added')}}</option>
+              <option value="oldest">{{_('Keep Oldest - Delete newer copies, keep the earliest added')}}</option>
+              <option value="merge">{{_('Merge Formats - Merge formats into the newest book, delete the rest')}}</option>
               <option value="highest_quality_format">{{_('Keep Highest Quality Format - Prefer EPUB > KEPUB > AZW3 > MOBI > PDF')}}</option>
               <option value="most_metadata">{{_('Keep Most Metadata - Keep book with most complete information')}}</option>
               <option value="largest_file_size">{{_('Keep Largest File Size - Keep book with largest total file size')}}</option>

@@ -45,6 +45,8 @@ else:
     if getattr(sys, 'frozen', False):
         CONFIG_DIR = os.path.abspath(os.path.join(CONFIG_DIR, os.pardir))
 
+# DEFAULT_LOCALE - If no locale is available some other way, fall back to this
+DEFAULT_LOCALE = 'en'
 
 DEFAULT_SETTINGS_FILE = "app.db"
 DEFAULT_GDRIVE_FILE = "gdrive.db"
@@ -181,6 +183,9 @@ INSTALLED_VERSION = os.environ.get("CWA_INSTALLED_VERSION") or _read_text("/app/
 STABLE_VERSION = os.environ.get("CWA_STABLE_VERSION") or _read_text("/app/CWA_STABLE_RELEASE", "v0.0.0")
 
 USER_AGENT = f"Calibre-Web-Automated/{INSTALLED_VERSION}"
+
+# Sometimes we want to mimic a real browser user agent
+BROWSER_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
 
 NIGHTLY_VERSION = dict()
 NIGHTLY_VERSION[0] = '0af52f205358b0147ee3430f9e6c8fe007c0ea77'

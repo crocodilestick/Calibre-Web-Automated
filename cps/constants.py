@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+import multiprocessing
 import sys
 import os
 from collections import namedtuple
@@ -232,6 +233,11 @@ LANGUAGE_NAMES = {
     "zh_Hans_CN": _("Chinese (Simplified, China)"),
     "zh_Hant_TW": _("Chinese (Traditional, Taiwan)"),
 }
+
+# If too many thread pools end up being created throughout the app we may want to consider setting this lower
+MAX_THREADS = max(
+    1, multiprocessing.cpu_count() - 1
+)
 
 # NOTE: Keep "com" as the first entry, whichever region is first is the default region until one is chosen by the admin
 # or the user. All other regions should be kept in alphabetical order.

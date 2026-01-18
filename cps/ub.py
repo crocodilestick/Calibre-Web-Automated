@@ -287,6 +287,7 @@ class User(UserBase, Base):
     auto_send_enabled = Column(Boolean, default=False)
     # Allow entering additional email addresses on send-to-eReader
     allow_additional_ereader_emails = Column(Boolean, default=True)
+    amazon_region = Column(String, default=None)
 
 
 if oauth_support:
@@ -925,6 +926,16 @@ def migrate_user_table(engine, _session):
     except Exception as e:
         print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
         _session.rollback()
+
+    # Migration to add Amazon region setting
+    try:
+        _session.query(exists().where(User.amazon_region)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'amazon_region' String DEFAULT ''"))
+            trans.commit()
 
 def migrate_oauth_provider_table(engine, _session):
     try:

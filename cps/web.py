@@ -2432,6 +2432,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
         current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
         current_user.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
+        current_user.amazon_region = to_save.get("amazon_region", "")
         
         # Handle hidden magic shelf templates and custom shelves
         from . import magic_shelf
@@ -2774,6 +2775,8 @@ def profile():
                                  title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                  page="me",
                                  registered_oauth=local_oauth_check,
+                                 amazon_regions=constants.AMAZON_REGIONS,
+                                 amazon_region=getattr(current_user, "amazon_region", ""),
                                  oauth_status=oauth_status)
 
 

@@ -735,6 +735,19 @@
     </div>
 
     <div class="settings-container">
+      <div class="form-group">
+        <h4 class="settings-section-header">{{_('Metadata Provider Settings')}}</h4>
+        <label for="amazon_region" style="padding-right: 10px; margin-bottom: 16px !important;">{{_('Choose an Amazon region')}}:</label>
+        <select class="cwa-settings-select" name="amazon_region" id="amazon_region">
+          <option value="">({{ _('Default') }})</option>
+          {% for region in amazon_regions -%}
+          <option value="{{ region }}"{% if cwa_settings['amazon_region'] == region %} selected{% endif %}>www.amazon.{{ region }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-container">
         <h4 class="settings-section-header">{{_('Web UI Settings')}}</h4>
 
       {% if cwa_settings['cwa_update_notifications'] %}

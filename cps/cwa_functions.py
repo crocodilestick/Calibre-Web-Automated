@@ -914,7 +914,8 @@ def set_cwa_settings():
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats, target_formats=target_formats,
                                     automerge_options=automerge_options, autoingest_options=autoingest_options,
                                     hardcover_token_available=hardcover_token_available,
-                                    next_duplicate_scan_run=next_scan_run, config=config)
+                                    next_duplicate_scan_run=next_scan_run, config=config,
+                                    amazon_regions=constants.AMAZON_REGIONS)
 
 
 def get_next_duplicate_scan_run(settings):

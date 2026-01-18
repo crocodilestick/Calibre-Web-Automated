@@ -287,6 +287,7 @@ class User(UserBase, Base):
     theme = Column(Integer, default=1)
     # Auto-send settings for new books
     auto_send_enabled = Column(Boolean, default=False)
+    amazon_region = Column(String, default=None)
 
 
 if oauth_support:
@@ -893,6 +894,16 @@ def migrate_user_table(engine, _session):
     except Exception as e:
         print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
         _session.rollback()
+
+    # Migration to add Amazon region setting
+    try:
+        _session.query(exists().where(User.amazon_region)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'amazon_region' String DEFAULT ''"))
+            trans.commit()
 
 def migrate_oauth_provider_table(engine, _session):
     try:

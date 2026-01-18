@@ -5,202 +5,344 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
-import concurrent.futures
 import re
-import requests
-from bs4 import BeautifulSoup as BS  # requirement
-from typing import List, Optional
+from typing import override
+
+from bs4 import BeautifulSoup as BS
+from bs4.element import NavigableString
 
 try:
-    import cchardet #optional for better speed
+    import cchardet  # noqa: F401 optional for better speed
 except ImportError:
     pass
 
-from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
+from cps import config, constants
 import cps.logger as logger
+from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
+from ..cw_login import current_user
 
-#from time import time
-from operator import itemgetter
 log = logger.create()
 
 
 class Amazon(Metadata):
-    __name__ = "Amazon"
-    __id__ = "amazon"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0',
-        'Accept': '*/*',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
-    }
-    session = requests.Session()
-    session.headers=headers
+    """Metadata provider for Amazon and its country-specific domains."""
 
+    @property
+    def __name__(self) -> str:
+        if self.amazon_region() == "com":
+            return "Amazon"
+        return f"Amazon{self.amazon_region().split('.')[-1].capitalize()}"
+
+    @property
+    def __id__(self) -> str:
+        if self.amazon_region() == "com":
+            return "amazon"
+        return f"amazon_{self.amazon_region().split('.')[-1]}"
+
+    @override
+    def base_url(self) -> str:
+        return f"https://www.amazon.{self.amazon_region()}"
+
+    def series_regex(self) -> str:
+        """Return the regex to parse series information.
+
+        Must have a named group 'index' for the series number and 'series' for the series name.
+        """
+        return {
+            "co.jp": r"全(?P<total>\d+)巻[の中]第(?P<index>\d+)巻:\s*(?P<series>.+)",
+        }.get(self.amazon_region(), r"Book\s+(?P<index>\d+)(?:\s+of\s+\d+)?:\s*(?P<series>.+)")
+
+    def amazon_region(self) -> str:
+        """Return the Amazon domain."""
+        return getattr(current_user, "amazon_region", None) or getattr(
+            config, "amazon_region", constants.AMAZON_REGIONS[0]
+        )
+
+    @override
+    def language_codes(self) -> list[str]:
+        return {
+            "com": ["en-US", "en"],
+            "co.uk": ["en-GB", "en"],
+            "ca": ["en-CA", "en", "fr-CA", "fr"],
+            "de": ["de-DE", "de"],
+            "fr": ["fr-FR", "fr"],
+            "it": ["it-IT", "it"],
+            "es": ["es-ES", "es"],
+            "co.jp": ["ja-JP", "ja"],
+            "com.au": ["en-AU", "en"],
+            "com.br": ["pt-BR", "pt"],
+            "com.mx": ["es-MX", "es"],
+        }.get(self.amazon_region(), ["en-US", "en"])
+
+    def _parse_title(self, container: BS) -> str | None:
+        try:
+            return container.find("span", attrs={"id": "productTitle"}).get_text(
+                strip=True
+            )
+        except (AttributeError, TypeError) as e:
+            log.warning(f"Could not parse title from {self.__name__} page: {e}")
+            return None
+
+    def _parse_authors(self, container: BS) -> list[str]:
+        try:
+            return [
+                next(
+                    filter(
+                        lambda i: i.strip() != "" and not i.startswith("{"),
+                        x.find_all(string=True),
+                    )
+                ).strip()
+                for x in container.find_all("span", attrs={"class": "author"})
+            ]
+        except (AttributeError, TypeError, StopIteration) as e:
+            log.warning(f"Could not parse authors from {self.__name__} page: {e}")
+            return []
+
+    def _parse_description(self, container: BS) -> str | None:
+        try:
+            return self.clean_description(
+                "<div>"
+                + "\n".join(
+                    [
+                        str(node)
+                        for node in container.find(
+                            "div", attrs={"data-feature-name": "bookDescription"}
+                        )
+                        .select_one("div.a-expander-content")
+                        .children
+                    ]
+                )
+                + "</div>"
+            )
+        except (AttributeError, TypeError) as e:
+            log.warning(f"Could not parse description from {self.__name__} page: {e}")
+            return None
+
+    def _parse_rating(self, container: BS) -> int:
+        try:
+            return int(
+                container.find(attrs={"id": "acrPopover"})["title"]
+                .split(" ")[0]
+                .split(".")[0]
+            )  # first number in string
+        except (AttributeError, ValueError, TypeError) as e:
+            log.warning(f"Could not parse rating from {self.__name__} page: {e}")
+            return 0
+
+    def _parse_asin(self, container: BS) -> str | None:
+        try:
+            return container.find(
+                "input",
+                attrs={
+                    "type": "hidden",
+                    "name": lambda x: x and x.lower() == "asin",
+                },
+            )["value"]
+        except (AttributeError, TypeError) as e:
+            log.warning(f"Could not parse ASIN from {self.__name__} page: {e}")
+            return None
+
+    def _parse_series_info(self, container: BS) -> tuple[str, int] | None:
+        try:
+            series_text = str(
+                container.find(attrs={"data-feature-name": "seriesBulletWidget"})
+                .find("a")
+                .get_text(strip=True)
+            )
+            if series_text:
+                # Match patterns like "Book X of Y: Series Title" or "Book X: Series Title"
+                series_match = re.search(self.series_regex(), series_text, re.IGNORECASE)
+                if series_match:
+                    return (
+                        series_match.group("series").strip(),
+                        int(series_match.group("index").strip()),
+                    )
+        except (AttributeError, ValueError, TypeError) as e:
+            log.warning(f"Could not parse series info from {self.__name__} page: {e}")
+
+        return None
+
+    def _parse_cover(self, container: BS) -> str | None:
+        try:
+            high_res_re = re.compile(r'"?hiRes"?:\s*"([^"]+)",', re.MULTILINE)
+            for script in container.find_all("script"):
+                m = high_res_re.search(script.text or "")
+                if m:
+                    return m.group(1)
+
+            # If we get here, no high-resolution image was found so take the thumbnail
+            return container.find(
+                "img", attrs={"id": "imgBlkFront", "class": "a-dynamic-image"}
+            )["src"]
+        except (AttributeError, TypeError) as e:
+            log.warning(f"Could not parse cover from {self.__name__} page: {e}")
+            return None
+
+    def _parse_publisher(self, container: BS) -> str | None:
+        try:
+            if self.amazon_region() == "co.jp":
+                return (
+                    container.find(
+                        "div",
+                        attrs={"data-rpi-attribute-name": "book_details-publisher"},
+                    )
+                    .find("div", attrs={"class": "rpi-attribute-value"})
+                    .span.get_text(strip=True)
+                )
+            else:
+                detail_items = container.find(
+                    attrs={"id": "detailBullets_feature_div"}
+                ).ul.children
+
+                for li in detail_items:
+                    if isinstance(li, NavigableString):
+                        continue
+
+                    label = li.find("span", attrs={"class": "a-text-bold"})
+                    if label and label.get_text(strip=True).startswith("Publisher"):
+                        publisher_text = label.find_next("span").get_text(strip=True)
+                        return publisher_text
+        except (AttributeError, TypeError) as e:
+            log.warning(f"Could not parse publisher from {self.__name__} page: {e}")
+
+        return None
+
+    def _parse_pubished_date(self, container: BS) -> str | None:
+        try:
+            pub_date_text = (
+                container.find(
+                    "div", attrs={"id": "rpi-attribute-book_details-publication_date"}
+                )
+                .select_one("div.rpi-attribute-value > span")
+                .get_text(strip=True)
+            )
+
+            return self._normalize_date(pub_date_text)
+        except (AttributeError, TypeError) as e:
+            log.warning(
+                f"Could not parse published date from {self.__name__} page: {e}"
+            )
+        except ValueError as e:
+            log.warning(
+                f"Could not normalize published date '{pub_date_text}' from {self.__name__} page: {e}"
+            )
+
+        return None
+
+    def parse_detail_page(
+        self, detail_uri: str, generic_cover: str | None, index: int
+    ) -> tuple[MetaRecord, int] | None:
+        # /sspa/ links are not book pages
+        if detail_uri.startswith("/sspa/"):
+            return None
+
+        # Ensure link starts with / for proper URL construction
+        if not detail_uri.startswith("http"):
+            if not detail_uri.startswith("/"):
+                detail_uri = f"/{detail_uri}"
+            detail_uri = f"{self.base_url()}{detail_uri}"
+        else:
+            detail_uri = detail_uri.replace("http://", "https://")
+
+        log.debug(f"Fetching {self.__name__} detail page: {detail_uri}")
+
+        detail_soup = self.get(detail_uri)
+        if detail_soup is None:
+            log.warning(f"Could not fetch {self.__name__} detail page: {detail_uri}")
+            return None
+
+        container = detail_soup.find("div", attrs={"id": "dp-container"})
+        if container is None:
+            log.warning(
+                f"No detail container found on {self.__name__} page: {detail_uri}"
+            )
+            return None
+
+        if container.find("input", attrs={"name": "submit.preorder"}) is not None:
+            log.debug(f"Skipping {self.__name__} pre-order page: {detail_uri}")
+            return None
+
+        title = self._parse_title(container)
+        if not title:
+            log.warning(f"No title found on {self.__name__} page: {detail_uri}")
+            return None
+
+        description = self._parse_description(container)
+        if not description:
+            log.debug(f"No description found on {self.__name__} page: {detail_uri}")
+            return None
+
+        match = MetaRecord(
+            title=title,
+            authors=self._parse_authors(container),
+            description=description,
+            rating=self._parse_rating(container),
+            source=MetaSourceInfo(
+                id=self.__id__, description=self.__name__, link=self.base_url()
+            ),
+            url=detail_uri,
+            publisher=self._parse_publisher(container),
+            publishedDate=self._parse_pubished_date(container),
+            # This requires the whole page since looking for the high-res cover depends on loading the various script
+            # elements on the page.
+            cover=self._parse_cover(detail_soup) or generic_cover,
+            id=None,
+            tags=[],
+        )
+
+        asin = self._parse_asin(container)
+        if asin:
+            match.id = asin
+            match.identifiers = {"mobi-asin": asin}
+            id_key = (
+                "amazon"
+                if self.amazon_region() == "com"
+                else f"amazon_{self.amazon_region().split('.')[-1]}"
+            )
+            match.identifiers[id_key] = asin
+
+        series_info = self._parse_series_info(container)
+        if series_info:
+            match.series, match.series_index = series_info
+
+        return (match, index)
+
+    def parse_search_results(self, search_results: BS) -> set[str]:
+        links: set[str] = set()
+
+        for result in search_results.find_all(
+            attrs={"data-component-type": "s-search-results"}
+        ):
+            for a in result.find_all("a", href=lambda x: x and "digital-text" in x):
+                # Amazon often appends tracking parameters to URLs, strip them for
+                # deduplication. The URL alone is sufficient.
+                # TODO: Can we also simplify the URL? Typically there's an ASIN embedded in the URL after '/gp/' or
+                # '/dp/'and the URL can be reduced to https://www.amazon.{domain}/dp/{ASIN}, but is that consistent
+                # across all Amazon local stores?
+                base_url = a["href"].split("?")[0]
+                links.add(base_url)
+
+        return links
+
+    @override
     def search(
-        self, query: str, generic_cover: str = "", locale: str = "en"
-    ) -> Optional[List[MetaRecord]]:
-        def inner(link, index) -> [dict, int]:
-            if link.startswith("/sspa/"):
-                return []  # sspa links are not book pages
+        self,
+        query: str,
+        generic_cover: str = "",
+        locale: str = constants.DEFAULT_LOCALE,
+    ) -> list[MetaRecord] | None:
+        if not self.active:
+            return None
 
-            # Ensure link starts with / for proper URL construction
-            if not link.startswith('/'):
-                link = f"/{link}"
+        q = {
+            "unfiltered": "1",
+            "sort": "relevanceexprank",
+            "search-alias": "stripbooks",
+            "i": "digital-text",
+            "field-keywords": query,
+        }
 
-            try:
-                r = self.session.get(f"https://www.amazon.com{link}", timeout=10)
-                r.raise_for_status()
-            except Exception as ex:
-                log.warning(ex)
-                return []
-            
-            # Try lxml first (faster), fallback to html.parser if needed
-            try:
-                long_soup = BS(r.text, "lxml")
-            except Exception:
-                long_soup = BS(r.text, "html.parser")
-            
-            soup2 = long_soup.find("div", attrs={"id": "dp-container"})
-            if soup2 is None:
-                return []
-            if soup2.find("input", attrs={"name": "submit.preorder"}) is not None:
-                log.debug(f"Skipping pre-order page: https://www.amazon.com{link}")
-                return []  # pre-order page, ignore
-            try:
-                match = MetaRecord(
-                    title = "",
-                    authors = "",
-                    source=MetaSourceInfo(
-                        id=self.__id__,
-                        description="Amazon Books",
-                        link="https://amazon.com/"
-                    ),
-                    url = f"https://www.amazon.com{link}",
-                    #the more searches the slower, these are too hard to find in reasonable time or might not even exist
-                    publisher= "",  # very unreliable
-                    publishedDate= "",  # very unreliable
-                    id = None,  # ?
-                    tags = []  # dont exist on amazon
-                )
+        search_results_page = self.get(f"{self.base_url()}/s", params=q)
+        links_list = self.parse_search_results(search_results_page)
 
-                try:
-                    desc_div = soup2.find("div", attrs={"data-feature-name": "bookDescription"})
-                    if desc_div and desc_div.div and desc_div.div.div:
-                        match.description = "<div>" + \
-                            "\n".join([
-                                str(node) for node in desc_div.div.div.children
-                            ]) + \
-                            "</div>"
-                    else:
-                        return []  # if there is no description it is not a book and therefore should be ignored
-                except (AttributeError, TypeError):
-                    return []  # if there is no description it is not a book and therefore should be ignored
-                try:
-                    match.title = soup2.find("span", attrs={"id": "productTitle"}).text
-                except (AttributeError, TypeError):
-                    match.title = ""
-                try:
-                    match.authors = [next(
-                        filter(lambda i: i != " " and i != "\n" and not i.startswith("{"),
-                                x.findAll(string=True))).strip()
-                                    for x in soup2.findAll("span", attrs={"class": "author"})]
-                except (AttributeError, TypeError, StopIteration):
-                    match.authors = ""
-                try:
-                    match.rating = int(
-                        soup2.find(attrs={"id": "acrPopover"})["title"].split(" ")[0].split(".")[
-                            0])  # first number in string
-                except (AttributeError, ValueError, TypeError):
-                    match.rating = 0
-                try:
-                    asin = soup2.find("input", attrs={"type": "hidden", "name": lambda x: x and x.lower()=="asin"})["value"]
-                    match.identifiers = {"amazon": asin, "mobi-asin": asin}
-                except (AttributeError, TypeError):
-                    match.identifiers = {}
-                try:
-                    series_link = soup2.find(attrs={"data-feature-name": "seriesBulletWidget"})
-                    if series_link:
-                        series_text = series_link.find("a")
-                        if series_text:
-                            series_str = str(series_text.text).strip()
-                            # Match patterns like "Book X of Y: Series Title" or "Book X: Series Title"
-                            series_match = re.search(r'Book\s+(\d+)(?:\s+of\s+\d+)?:\s*(.+)', series_str, re.IGNORECASE)
-                            if series_match:
-                                match.series_index = int(series_match.group(1))
-                                match.series = series_match.group(2).strip()
-                            else:
-                                match.series = None
-                                match.series_index = None
-                        else:
-                            match.series = None
-                            match.series_index = None
-                    else:
-                        match.series = None
-                        match.series_index = None
-                except (AttributeError, ValueError, TypeError):
-                    match.series = None
-                    match.series_index = None
-                try:
-                    cover_src = ""
-                    # Look for the high-res cover image first
-                    high_res_re = re.compile(r'"hiRes":"([^"]+)","thumb"')
-                    for script in soup2.find_all("script"):
-                        m = high_res_re.search(script.text or "")
-                        if m:
-                            cover_src = m.group(1)
-                            break
-                    if not cover_src:
-                        # Fallback to the standard image
-                        cover_src = soup2.find("img", attrs={"class": "a-dynamic-image"})["src"]
-                    match.cover = cover_src
-                except (AttributeError, TypeError):
-                    match.cover = ""
-                return match, index
-            except Exception as e:
-                log.error_or_exception(e)
-                return []
-
-        val = list()
-        if self.active:
-            q = {
-                'unfiltered': '1',
-                'sort': 'relevanceexprank',
-                'search-alias': 'stripbooks',
-                'i': 'digital-text',
-                'field-keywords': query,
-            }
-
-            try:
-                results = self.session.get(
-                    "https://www.amazon.com/s",
-                    params=q,
-                    # headers=self.headers,
-                    timeout=10,
-                )
-                results.raise_for_status()
-            except requests.exceptions.HTTPError as e:
-                log.error_or_exception(e)
-                return []
-            except Exception as e:
-                log.warning(e)
-                return []
-            soup = BS(results.text, 'html.parser')
-            links_list = []
-            for result in soup.find_all(attrs={"data-component-type": "s-search-results"}):
-                for a in result.find_all("a", href=lambda x: x and "digital-text" in x):
-                    # Amazon often appends tracking parameters to URLs, strip them for
-                    # deduplication. The URL alone is sufficient.
-                    base_url = a["href"].split("?")[0]
-                    if base_url not in links_list:
-                        links_list.append(base_url)
-            if len(links_list) == 0:
-                log.info(f"No Amazon search results found for query: {query}")
-                return []
-            with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-                fut = {executor.submit(inner, link, index) for index, link in enumerate(links_list[:3])}
-                try:
-                    val = list(map(lambda x : x.result(), concurrent.futures.as_completed(fut, timeout=15)))
-                except concurrent.futures.TimeoutError:
-                    log.warning("Amazon search timeout after 15 seconds")
-                    val = []
-        result = list(filter(lambda x: x, val))
-        return [x[0] for x in sorted(result, key=itemgetter(1))] #sort by amazons listing order for best relevance
+        return self.get_detail_records(links_list, generic_cover)

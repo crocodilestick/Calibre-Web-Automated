@@ -328,25 +328,47 @@ def HandleSyncRequest():
 
     # Add magic shelves as collections
     if config.config_kobo_sync_magic_shelves:
+
+        for shelf in ub.session.query(ub.MagicShelf)\
+            .filter_by(user_id=current_user.id, kobo_sync=False)\
+            .all():
+
+            sync_results.append({
+                "DeletedTag": {
+                    "Tag": {
+                        "Id": shelf.uuid,
+                        "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified)
+                    }
+                }
+            })
+
         magic_shelves = ub.session.query(ub.MagicShelf)\
             .filter_by(user_id=current_user.id, kobo_sync=True)\
             .all()
+
+        new_tags_last_modified = sync_token.tags_last_modified
             
         for shelf in magic_shelves:
             books, _ = magic_shelf.get_books_for_magic_shelf(
-                shelf.id, current_user.id, page=1, page_size=1000
+                shelf.id, page=1, page_size=1000
             )
-            
-            collection = {
-                "Id": f"magic-shelf-{shelf.id}",
-                "Name": shelf.name,
-                "Type": "Collection",
-                "Items": [
-                    {"Type": "Book", "Id": str(book.uuid)}
-                    for book in books
-                ]
-            }
-            sync_results.append({"Collection": collection})
+
+            new_tags_last_modified = max(shelf.last_modified, new_tags_last_modified)
+
+            tag = create_kobo_tag_magic(shelf, books)
+            if not tag:
+                continue
+
+            if shelf.created > sync_token.tags_last_modified:
+                sync_results.append({
+                    "NewTag": tag
+                })
+            else:
+                sync_results.append({
+                    "ChangedTag": tag
+                })
+
+            sync_token.tags_last_modified = new_tags_last_modified
 
     # update last created timestamp to distinguish between new and changed entitlements
     if not cont_sync:
@@ -815,6 +837,25 @@ def create_kobo_tag(shelf):
         if not book:
             log.info("Book (id: %s) in BookShelf (id: %s) not found in book database",  book_shelf.book_id, shelf.id)
             continue
+        tag["Items"].append(
+            {
+                "RevisionId": book.uuid,
+                "Type": "ProductRevisionTagItem"
+            }
+        )
+    return {"Tag": tag}
+
+# Creates a Kobo "Tag" object from a ub.MagicShelf object
+def create_kobo_tag_magic(shelf, books):
+    tag = {
+        "Created": convert_to_kobo_timestamp_string(shelf.created),
+        "Id": shelf.uuid,
+        "Items": [],
+        "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified),
+        "Name": shelf.name,
+        "Type": "UserTag"
+    }
+    for book in books:
         tag["Items"].append(
             {
                 "RevisionId": book.uuid,

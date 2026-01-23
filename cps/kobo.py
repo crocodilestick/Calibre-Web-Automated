@@ -360,15 +360,17 @@ def HandleSyncRequest():
                 continue
 
             if shelf.created > sync_token.tags_last_modified:
+                log.debug("Syncing new magic shelf %s to Kobo device", shelf.name)
                 sync_results.append({
                     "NewTag": tag
                 })
             else:
+                log.debug("Syncing changed magic shelf %s to Kobo device", shelf.name)
                 sync_results.append({
                     "ChangedTag": tag
                 })
 
-            sync_token.tags_last_modified = new_tags_last_modified
+        sync_token.tags_last_modified = new_tags_last_modified
 
     # update last created timestamp to distinguish between new and changed entitlements
     if not cont_sync:

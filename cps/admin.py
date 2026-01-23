@@ -1986,6 +1986,7 @@ def _configuration_update_helper():
         _config_int(to_save, "config_external_port")
         _config_checkbox_int(to_save, "config_kobo_proxy")
         _config_checkbox_int(to_save, "config_hardcover_sync")
+        _config_checkbox_int(to_save, "config_use_shelfmark")
 
         if "config_upload_formats" in to_save:
             to_save["config_upload_formats"] = ','.join(
@@ -2029,8 +2030,10 @@ def _configuration_update_helper():
 
         # Hardcover configuration
         _config_checkbox(to_save, "config_hardcover_sync")
+        _config_checkbox(to_save, "config_use_shelfmark")
         _config_checkbox(to_save, "config_hardcover_annotations_sync")
         _config_string(to_save, "config_hardcover_token")
+        _config_string(to_save, "config_shelfmark_url")
 
         _config_int(to_save, "config_updatechannel")
 

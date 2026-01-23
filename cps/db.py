@@ -8,6 +8,8 @@
 import os
 import re
 import json
+import time
+import threading
 from datetime import datetime, timezone
 from urllib.parse import quote
 import unidecode
@@ -531,6 +533,7 @@ class CalibreDB:
     # This is a WeakSet so that references here don't keep other CalibreDB
     # instances alive once they reach the end of their respective scopes
     instances = WeakSet()
+    _reconnect_lock = threading.RLock()  # Reentrant lock to prevent concurrent reconnect operations
 
     def __init__(self, expire_on_commit=True, init=False):
         """ Initialize a new CalibreDB session
@@ -546,6 +549,9 @@ class CalibreDB:
         self.instances.add(self)
 
     def init_session(self, expire_on_commit=True):
+        if self.session_factory is None:
+            log.error("Cannot init session: session_factory is None")
+            return
         self.session = self.session_factory()
         self.session.expire_on_commit = expire_on_commit
         self.create_functions(self.config)
@@ -553,23 +559,42 @@ class CalibreDB:
     def ensure_session(self, expire_on_commit=True):
         """Ensure a valid SQLAlchemy session exists.
         This protects against brief windows where dispose() nulled the session during a reconnect.
+        Holds lock during entire recreation to prevent race conditions.
         """
-        try:
-            if self.session is None:
-                # Recreate a session from the factory if available
-                if self.session_factory is not None:
+        if self.session is not None:
+            return  # Fast path - session already exists
+        
+        # Session is None - need to recreate it
+        # Acquire lock to ensure atomic recreation (no interruption by dispose)
+        with self._reconnect_lock:
+            # Double-check after acquiring lock (another thread may have recreated it)
+            if self.session is not None:
+                return
+            
+            # Try to recreate session from factory
+            if self.session_factory is not None:
+                try:
                     self.init_session(expire_on_commit)
-                else:
-                    # As a last resort, try to rebuild the setup if config is present
-                    if self.config and getattr(self.config, 'config_calibre_dir', None):
-                        try:
-                            self.setup_db(self.config.config_calibre_dir, ub.app_DB_path)
-                            self.init_session(expire_on_commit)
-                        except Exception as ex:
-                            log.error_or_exception(ex)
-        except Exception:
-            # Never let session recovery raise in callers; they will fail later with proper logging
-            pass
+                    return  # Success
+                except Exception as ex:
+                    log.error(f"Failed to init session from factory: {ex}")
+            
+            # Factory is None or init failed - try to rebuild entire database setup
+            if self.config and getattr(self.config, 'config_calibre_dir', None):
+                try:
+                    log.warning("Session factory unavailable, attempting to rebuild database setup")
+                    # Note: setup_db will call dispose() which is safe because we hold _reconnect_lock (RLock is reentrant)
+                    self.setup_db(self.config.config_calibre_dir, ub.app_DB_path)
+                    # After setup_db, session_factory should exist, try to init session
+                    if self.session is None and self.session_factory is not None:
+                        self.init_session(expire_on_commit)
+                except Exception as ex:
+                    log.error(f"Failed to rebuild database setup in ensure_session: {ex}")
+            
+            # If we still don't have a session, log warning
+            # Don't raise exception - let caller handle AttributeError if they try to use None session
+            if self.session is None:
+                log.error("ensure_session: Unable to create session - session factory and config unavailable")
 
     @classmethod
     def setup_db_cc_classes(cls, cc):
@@ -684,67 +709,75 @@ class CalibreDB:
 
     @classmethod
     def setup_db(cls, config_calibre_dir, app_db_path):
-        cls.dispose()
+        # Wrap entire method in lock to ensure atomic setup operation
+        # RLock is reentrant, so nested calls (e.g., from reconnect_db) are safe
+        with cls._reconnect_lock:
+            # Always call dispose to clean up old sessions/connections
+            cls.dispose()
 
-        if not config_calibre_dir:
-            if cls.config:
-                cls.config.invalidate()
-            return None
-
-        dbpath = os.path.join(config_calibre_dir, "metadata.db")
-        if not os.path.exists(dbpath):
-            if cls.config:
-                cls.config.invalidate()
-            return None
-
-        try:
-            cls.engine = create_engine('sqlite://',
-                                       echo=False,
-                                       isolation_level="SERIALIZABLE",
-                                       connect_args={'check_same_thread': False, 'timeout': 30},
-                                       poolclass=StaticPool)
-            with cls.engine.begin() as connection:
-                connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
-                connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
-                # Try enabling WAL to improve concurrency unless running on a network share
-                # Controlled by env var NETWORK_SHARE_MODE (default False)
-                try:
-                    nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
-                    if not nsm:
-                        connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
-                        connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
-                except Exception:
-                    pass
-
-            conn = cls.engine.connect()
-            # conn.text_factory = lambda b: b.decode(errors = 'ignore') possible fix for #1302
-        except Exception as ex:
-            if cls.config:
-                cls.config.invalidate(ex)
-            return None
-
-        if cls.config:
-            cls.config.db_configured = True
-
-        if not cc_classes:
-            try:
-                cc = conn.execute(text("SELECT id, datatype FROM custom_columns"))
-                cls.setup_db_cc_classes(cc)
-            except OperationalError as e:
-                log.error_or_exception(e)
+            if not config_calibre_dir:
+                log.error("setup_db failed: config_calibre_dir is None or empty")
+                if cls.config:
+                    cls.config.invalidate()
                 return None
 
-        cls.session_factory = scoped_session(sessionmaker(autocommit=False,
-                                                          autoflush=True,
-                                                          bind=cls.engine, future=True))
-        for inst in cls.instances:
-            inst.init_session()
+            dbpath = os.path.join(config_calibre_dir, "metadata.db")
+            if not os.path.exists(dbpath):
+                log.error(f"setup_db failed: metadata.db not found at {dbpath}")
+                if cls.config:
+                    cls.config.invalidate()
+                return None
 
-        # Ensure progress syncing tables exist in metadata.db (book checksums)
-        from .progress_syncing.models import ensure_calibre_db_tables
-        ensure_calibre_db_tables(conn)
+            try:
+                cls.engine = create_engine('sqlite://',
+                                           echo=False,
+                                           isolation_level="SERIALIZABLE",
+                                           connect_args={'check_same_thread': False, 'timeout': 30},
+                                           poolclass=StaticPool)
+                with cls.engine.begin() as connection:
+                    connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
+                    connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                    # Try enabling WAL to improve concurrency unless running on a network share
+                    # Controlled by env var NETWORK_SHARE_MODE (default False)
+                    try:
+                        nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+                        if not nsm:
+                            connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
+                            connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
+                    except Exception:
+                        pass
 
-        cls._init = True
+                conn = cls.engine.connect()
+                # conn.text_factory = lambda b: b.decode(errors = 'ignore') possible fix for #1302
+            except Exception as ex:
+                log.error(f"setup_db failed during engine creation: {ex}")
+                if cls.config:
+                    cls.config.invalidate(ex)
+                return None
+
+            if cls.config:
+                cls.config.db_configured = True
+
+            if not cc_classes:
+                try:
+                    cc = conn.execute(text("SELECT id, datatype FROM custom_columns"))
+                    cls.setup_db_cc_classes(cc)
+                except OperationalError as e:
+                    log.error_or_exception(e)
+                    return None
+
+            cls.session_factory = scoped_session(sessionmaker(autocommit=False,
+                                                              autoflush=True,
+                                                              bind=cls.engine, future=True))
+            for inst in cls.instances:
+                inst.init_session()
+
+            # Ensure progress syncing tables exist in metadata.db (book checksums)
+            from .progress_syncing.models import ensure_calibre_db_tables
+            ensure_calibre_db_tables(conn)
+
+            cls._init = True
+        # End of with cls._reconnect_lock
 
     def get_book(self, book_id):
         self.ensure_session()
@@ -1146,6 +1179,10 @@ class CalibreDB:
 
     def create_functions(self, config=None):
         self.ensure_session()
+        if self.session is None:
+            log.error("create_functions: Cannot create functions because session is None")
+            return
+        
         # user defined sort function for calibre databases (Series, etc.)
         if config:
             def _title_sort(title):
@@ -1174,28 +1211,29 @@ class CalibreDB:
     @classmethod
     def dispose(cls):
         # global session
-
-        for inst in cls.instances:
-            old_session = inst.session
-            inst.session = None
-            if old_session:
-                try:
-                    old_session.close()
-                except Exception:
-                    pass
-                if old_session.bind:
+        # Use lock to prevent concurrent dispose/reconnect operations
+        with cls._reconnect_lock:
+            for inst in cls.instances:
+                old_session = inst.session
+                inst.session = None
+                if old_session:
                     try:
-                        old_session.bind.dispose()
+                        old_session.close()
                     except Exception:
                         pass
+                    if old_session.bind:
+                        try:
+                            old_session.bind.dispose()
+                        except Exception:
+                            pass
 
-        for attr in list(Books.__dict__.keys()):
-            if attr.startswith("custom_column_"):
-                setattr(Books, attr, None)
+            for attr in list(Books.__dict__.keys()):
+                if attr.startswith("custom_column_"):
+                    setattr(Books, attr, None)
 
-        for db_class in cc_classes.values():
-            Base.metadata.remove(db_class.__table__)
-        cc_classes.clear()
+            for db_class in cc_classes.values():
+                Base.metadata.remove(db_class.__table__)
+            cc_classes.clear()
 
         for table in reversed(Base.metadata.sorted_tables):
             name = table.key
@@ -1204,24 +1242,26 @@ class CalibreDB:
                     Base.metadata.remove(table)
 
     def reconnect_db(self, config, app_db_path):
-        # Be resilient if database wasn't initialized yet
-        try:
-            self.dispose()
-        except Exception:
-            # Ignore dispose errors during reconnect
-            pass
+        # Use lock to ensure atomic reconnect operation
+        with self._reconnect_lock:
+            # Be resilient if database wasn't initialized yet
+            try:
+                self.dispose()
+            except Exception:
+                # Ignore dispose errors during reconnect
+                pass
 
-        # engine is a class-level attribute that may be None before first setup
-        try:
-            if getattr(self, 'engine', None) is not None:
-                self.engine.dispose()
-        except Exception:
-            # Ignore engine dispose errors; we'll rebuild below
-            pass
+            # engine is a class-level attribute that may be None before first setup
+            try:
+                if getattr(self, 'engine', None) is not None:
+                    self.engine.dispose()
+            except Exception:
+                # Ignore engine dispose errors; we'll rebuild below
+                pass
 
-        # Rebuild engine/session factory and update config
-        self.setup_db(config.config_calibre_dir, app_db_path)
-        self.update_config(config)
+            # Rebuild engine/session factory and update config
+            self.setup_db(config.config_calibre_dir, app_db_path)
+            self.update_config(config)
 
 
 def lcase(s):

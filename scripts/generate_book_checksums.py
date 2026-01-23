@@ -37,8 +37,8 @@ def generate_checksums(library_path: str, books_path: str = None, force: bool = 
     """Generate checksums for all books in the library
 
     Args:
-        library_path: Path to Calibre library directory
-        books_path: Path to books directory
+        library_path: Path to Calibre library directory (contains metadata.db)
+        books_path: Path to books directory (if different from library_path in split mode)
         force: If True, regenerate checksums even if they exist
         batch_size: Number of books to process before committing
     """
@@ -48,11 +48,14 @@ def generate_checksums(library_path: str, books_path: str = None, force: bool = 
         print(f"ERROR: Calibre database not found at {metadata_db}")
         sys.exit(1)
 
-    base_path_selection = lambda candidate, default: candidate if os.path.exists(candidate) else default
-    base_path = base_path_selection(books_path, library_path)
+    # Use books_path if provided and valid, otherwise fall back to library_path
+    base_path = books_path if (books_path and os.path.exists(books_path)) else library_path
 
     print(f"Connecting to Calibre library at: {library_path}")
-    print(f"Base books path at: {base_path}")
+    if base_path != library_path:
+        print(f"Books path (split library mode): {base_path}")
+    else:
+        print(f"Books path: {base_path}")
     print(f"Force regenerate: {force}")
     print(f"Batch size: {batch_size}")
     print(f"Checksum version: {CHECKSUM_VERSION}")
@@ -158,22 +161,40 @@ def generate_checksums(library_path: str, books_path: str = None, force: bool = 
         conn.close()
 
 
-def books_path():
+def get_books_path():
+    """
+    Get the split library books path from app.db if split mode is enabled.
+    
+    Returns:
+        The books path from config_calibre_split_dir if it exists and is valid,
+        otherwise None to indicate the library path should be used.
+    """
     try:
         conn = sqlite3.connect("/config/app.db", timeout=30)
         cur = conn.cursor()
 
-        split_path = cur.execute('SELECT config_calibre_split_dir FROM settings LIMIT 1;').fetchone()[0]
-        if os.path.exists(split_path):
-            return split_path
-        else:
+        # Check if split mode is enabled and get split path
+        result = cur.execute('SELECT config_calibre_split, config_calibre_split_dir FROM settings LIMIT 1;').fetchone()
+        
+        if not result:
             return None
+            
+        split_enabled, split_path = result
+        
+        # Only return split path if split mode is enabled, path is not NULL, and path exists
+        if split_enabled and split_path and os.path.exists(split_path):
+            return split_path
+            
+        return None
 
     except sqlite3.Error as e:
-        print(f"ERROR: Database error: {e}")
-        sys.exit(1)
+        # Log warning but don't crash - fall back to library path
+        print(f"WARNING: Could not read split library setting from app.db: {e}")
+        print(f"WARNING: Falling back to --library-path for books location")
+        return None
     finally:
-        conn.close()
+        if 'conn' in locals():
+            conn.close()
 
 
 def main():
@@ -190,7 +211,7 @@ def main():
 
     parser.add_argument(
         '--books-path',
-        default=books_path(),
+        default=get_books_path(),
         help='Path to books directory (default: config_calibre_split_dir setting or --library-path)'
     )
 

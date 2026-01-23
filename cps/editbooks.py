@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import os
+import sys
 from datetime import datetime, timezone
 import json
 from shutil import copyfile
@@ -544,6 +545,7 @@ def delete_selected_books():
     if vals:
         for book_id in vals:
             delete_book_from_table(book_id, "", True)
+        _queue_duplicate_scan_after_change()
         return json.dumps({'success': True})
     return ""
 
@@ -602,9 +604,34 @@ def merge_list_book():
                                                         element.format,
                                                         element.uncompressed_size,
                                                         to_name))
+                            to_file.append(element.format)
                     delete_book_from_table(from_book.id, "", True)
-                    return json.dumps({'success': True})
+            calibre_db.session.commit()
+            _queue_duplicate_scan_after_change()
+            return json.dumps({'success': True})
     return ""
+
+
+def _queue_duplicate_scan_after_change():
+    """Queue a debounced duplicate scan after manual changes."""
+    try:
+        import requests
+        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+
+        cwa_db = CWA_DB()
+        delay_seconds = int(cwa_db.cwa_settings.get('duplicate_scan_debounce_seconds', 30))
+        delay_seconds = max(5, min(600, delay_seconds))
+        url = helper.get_internal_api_url("/cwa-internal/queue-duplicate-scan")
+        requests.post(
+            url,
+            json={"delay_seconds": delay_seconds},
+            headers={"X-Forwarded-For": "127.0.0.1"},
+            timeout=5,
+            verify=False,
+        )
+    except Exception as e:
+        log.error("Failed to queue duplicate scan after change: %s", str(e))
 
 
 @editbook.route("/ajax/xchange", methods=['POST'])
@@ -1171,6 +1198,18 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()
+                
+                # Invalidate duplicate cache after book deletion
+                try:
+                    import sys
+                    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+                    from cwa_db import CWA_DB
+                    cwa_db = CWA_DB()
+                    cwa_db.invalidate_duplicate_cache()
+                    cwa_db.close()
+                except Exception as e:
+                    log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
+                
             except Exception as ex:
                 log.error_or_exception(ex)
                 calibre_db.session.rollback()

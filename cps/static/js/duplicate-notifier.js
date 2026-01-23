@@ -7,10 +7,9 @@
     'use strict';
     
     const STORAGE_KEY = 'cwa_duplicates_notification_shown';
-    const CHECK_INTERVAL = 60000; // Check every 60 seconds for real-time updates
+    // Removed automatic polling - badge updates only on cache invalidation events
     
     let currentDuplicateCount = 0;
-    let updateTimer = null;
     
     /**
      * Check if notification was already shown in this session
@@ -47,7 +46,9 @@
      * Fetch duplicate status from API
      */
     function fetchDuplicateStatus() {
-        return fetch('/duplicates/status', {
+        const basePath = (typeof getPath === 'function') ? getPath() : '';
+        const statusUrl = basePath + '/duplicates/status';
+        return fetch(statusUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -161,26 +162,6 @@
     }
     
     /**
-     * Start periodic updates for real-time badge count
-     */
-    function startPeriodicUpdates() {
-        // Clear existing timer if any
-        if (updateTimer) {
-            clearInterval(updateTimer);
-        }
-        
-        // Update every minute
-        updateTimer = setInterval(function() {
-            fetchDuplicateStatus().then(data => {
-                if (data.success) {
-                    // Always update badge regardless of notification setting
-                    updateBadge(data.count);
-                }
-            });
-        }, CHECK_INTERVAL);
-    }
-    
-    /**
      * Main initialization function
      */
     function init() {
@@ -193,7 +174,8 @@
         // Initialize event listeners
         initializeEventListeners();
         
-        // Fetch initial status
+        // Fetch initial status once on page load
+        // No periodic updates - badge refreshes after ingest operations only
         fetchDuplicateStatus().then(data => {
             if (data.success) {
                 // Update badge
@@ -203,9 +185,6 @@
                 if (data.count > 0 && data.enabled) {
                     showNotificationModal(data);
                 }
-                
-                // Start periodic updates
-                startPeriodicUpdates();
             }
         });
     }

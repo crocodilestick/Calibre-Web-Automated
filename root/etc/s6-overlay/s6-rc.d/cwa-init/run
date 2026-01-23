@@ -90,6 +90,7 @@ install -d -o abc -g abc /config/processed_books/converted
 install -d -o abc -g abc /config/processed_books/imported
 install -d -o abc -g abc /config/processed_books/failed
 install -d -o abc -g abc /config/processed_books/fixed_originals
+install -d -o abc -g abc /config/processed_books/duplicate_resolutions
 install -d -o abc -g abc /config/log_archive
 install -d -o abc -g abc /config/.cwa_conversion_tmp
 

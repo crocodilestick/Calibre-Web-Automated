@@ -244,9 +244,27 @@ def create_app():
     # Ensure a valid calibre_db session exists before handling each request
     @app.before_request
     def _cwa_ensure_db_session():
+        from flask import g, request
         from .cw_login import current_user
         from sqlalchemy import or_
         import time
+
+        if config.config_allow_reverse_proxy_header_login:
+            """
+            Load user from reverse proxy authentication header if configured.
+            Sets g.flask_httpauth_user early so that current_user proxy resolves correctly
+            for user-specific settings like theme preferences.
+
+            This must run before any blueprint before_request handlers that access current_user.
+            """
+
+            from . import usermanagement
+            user = usermanagement.load_user_from_reverse_proxy_header(request)
+            if user:
+                g.flask_httpauth_user = user
+            else:
+                # Explicitly set to None to indicate we checked but found nothing
+                g.flask_httpauth_user = None
 
         if current_user.is_authenticated:
             try:
@@ -357,28 +375,6 @@ def create_app():
     def shutdown_session(exception=None):
         if calibre_db.session_factory:
             calibre_db.session_factory.remove()
-
-    # Load user from reverse proxy header early in request lifecycle
-    # This ensures current_user resolves correctly before any code accesses user settings
-    @app.before_request
-    def _load_reverse_proxy_user():
-        """
-        Load user from reverse proxy authentication header if configured.
-        Sets g.flask_httpauth_user early so that current_user proxy resolves correctly
-        for user-specific settings like theme preferences.
-
-        This must run before any blueprint before_request handlers that access current_user.
-        """
-        from flask import g, request
-
-        if config.config_allow_reverse_proxy_header_login:
-            from . import usermanagement
-            user = usermanagement.load_user_from_reverse_proxy_header(request)
-            if user:
-                g.flask_httpauth_user = user
-            else:
-                # Explicitly set to None to indicate we checked but found nothing
-                g.flask_httpauth_user = None
 
     from .schedule import register_scheduled_tasks, register_startup_tasks
     register_scheduled_tasks(config.schedule_reconnect)

@@ -50,6 +50,9 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 
 - An intuitive web interface for searching and requesting book downloads, designed to work seamlessly with Calibre-Web-Automated. This project streamlines the process of downloading books and preparing them for integration into your Calibre library
 
+> [!IMPORTANT]  
+> CWA does not approve of or support piracy of copyrighted materials and is not responsible for user behaviour
+
 [<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png" alt="Get it on GitHub" height="80">](https://github.com/calibrain/shelfmark)
 
 ___

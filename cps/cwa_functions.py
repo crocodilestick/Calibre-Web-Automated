@@ -386,15 +386,25 @@ def cwa_internal_queue_duplicate_scan():
 
             def _enqueue_scan():
                 try:
+                    log.debug("[cwa-duplicates] Timer fired, attempting to import TaskDuplicateScan...")
                     from .tasks.duplicate_scan import TaskDuplicateScan
-                    WorkerThread.add('System', TaskDuplicateScan(full_scan=False, trigger_type='after_import'), hidden=False)
+                    log.debug("[cwa-duplicates] TaskDuplicateScan imported successfully, creating task...")
+                    task = TaskDuplicateScan(full_scan=False, trigger_type='after_import')
+                    log.debug("[cwa-duplicates] Task created, adding to WorkerThread...")
+                    WorkerThread.add('System', task, hidden=False)
                     log.info("[cwa-duplicates] Debounced duplicate scan queued (after_import)")
+                    print("[cwa-duplicates] Debounced duplicate scan queued (after_import)", flush=True)
                 except Exception as e:
                     log.error("[cwa-duplicates] Failed to queue debounced duplicate scan: %s", str(e))
+                    print(f"[cwa-duplicates] ERROR: Failed to queue debounced duplicate scan: {e}", flush=True)
+                    import traceback
+                    traceback.print_exc()
 
             _duplicate_scan_timer = Timer(delay_seconds, _enqueue_scan)
             _duplicate_scan_timer.daemon = True
             _duplicate_scan_timer.start()
+            log.info("[cwa-duplicates] Timer started with %d second delay", delay_seconds)
+            print(f"[cwa-duplicates] Timer started with {delay_seconds} second delay", flush=True)
 
         return jsonify({"success": True, "queued": True, "delay_seconds": delay_seconds}), 200
     except Exception as e:

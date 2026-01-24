@@ -692,6 +692,32 @@ $(function() {
             }
         });
     });
+    $("#hardcover_auto_fetch").click(function() {
+        $("#DialogHeader").addClass("hidden");
+        $("#DialogFinished").addClass("hidden");
+        $("#DialogContent").html("");
+        $("#spinner2").show();
+        $.ajax({
+            method: "post",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            url: getPath() + "/hardcover_auto_fetch",
+            success: function success(data) {
+                $("#spinner2").hide();
+                $("#DialogContent").html(data.text);
+                $("#DialogFinished").removeClass("hidden");
+            },
+            error: function error(xhr) {
+                $("#spinner2").hide();
+                var errorMessage = "Error starting Hardcover auto-fetch";
+                if (xhr.responseJSON && xhr.responseJSON.text) {
+                    errorMessage = xhr.responseJSON.text;
+                }
+                $("#DialogContent").html(errorMessage);
+                $("#DialogFinished").removeClass("hidden");
+            }
+        });
+    });
     $("#perform_update").click(function() {
         $("#DialogHeader").removeClass("hidden");
         $("#spinner2").show();

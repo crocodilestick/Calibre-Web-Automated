@@ -39,6 +39,8 @@ class MetaRecord:
     languages: Optional[List[str]] = dataclasses.field(default_factory=list)
     tags: Optional[List[str]] = dataclasses.field(default_factory=list)
     format: Optional[str] = None
+    confidence_score: Optional[float] = None
+    match_reason: Optional[str] = ""
 
 
 class Metadata:

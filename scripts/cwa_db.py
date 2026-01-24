@@ -311,14 +311,33 @@ class CWA_DB:
         headers = [header[0] for header in self.cur.description]
         cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
 
+        # Define default values for new columns (in case db doesn't have them yet)
+        schema_defaults = {
+            'hardcover_auto_fetch_enabled': 0,
+            'hardcover_auto_fetch_schedule': 'weekly',
+            'hardcover_auto_fetch_schedule_day': 'sunday',
+            'hardcover_auto_fetch_schedule_hour': 2,
+            'hardcover_auto_fetch_min_confidence': 0.85,
+            'hardcover_auto_fetch_batch_size': 50,
+            'hardcover_auto_fetch_rate_limit': 5.0
+        }
+        
+        # Apply defaults for missing keys
+        for key, default_value in schema_defaults.items():
+            if key not in cwa_settings:
+                cwa_settings[key] = default_value
+
         # Define which settings should remain as integers (not converted to boolean)
-        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds']
+        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds']
+        
+        # Define which settings should remain as floats (not converted to boolean)
+        float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']
         
         # Define which settings should remain as JSON strings (not split by comma)
         json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']
 
         for header in headers:
-            if isinstance(cwa_settings[header], int) and header not in integer_settings:
+            if isinstance(cwa_settings[header], int) and header not in integer_settings and header not in float_settings:
                 cwa_settings[header] = bool(cwa_settings[header])
             elif isinstance(cwa_settings[header], str) and ',' in cwa_settings[header] and header not in json_settings:
                 cwa_settings[header] = cwa_settings[header].split(',')

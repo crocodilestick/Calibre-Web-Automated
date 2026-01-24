@@ -27,6 +27,41 @@
     </div>
   </div>
 
+  <!-- Hardcover Auto-Fetch Stats -->
+  {% if hardcover_stats %}
+  <hr style="width: 85%;text-align: center;margin-bottom: 36px;border-width: medium;border-color: #96a2a9;border-radius: 8px;">
+  
+  <div>
+    <h3>🔖 Hardcover Auto-Fetch Statistics</h3>
+    <div class="cwa_stats_container">
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Total Processed</div>
+        <div class="cwa_stats_value">{{hardcover_stats.total_processed}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Auto-Matched</div>
+        <div class="cwa_stats_value" style="color: #5cb85c;">{{hardcover_stats.total_auto_matched}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Pending Review</div>
+        <div class="cwa_stats_value" style="color: #f0ad4e;">{{hardcover_stats.pending_review}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Manually Reviewed</div>
+        <div class="cwa_stats_value" style="color: #5bc0de;">{{hardcover_stats.manually_reviewed}}</div>
+      </div>
+    </div>
+    
+    {% if hardcover_stats.pending_review > 0 %}
+    <div style="margin-top: 15px; text-align: center;">
+      <a href="{{url_for('admin.hardcover_review_matches')}}" class="btn btn-warning" style="font-size: 1.1em; padding: 10px 20px;">
+        📋 {{_('Review %(count)s Pending Match(es)', count=hardcover_stats.pending_review)}}
+      </a>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
   <hr style="width: 85%;text-align: center;margin-bottom: 36px;border-width: medium;border-color: #96a2a9;border-radius: 8px;">
 
     <div>

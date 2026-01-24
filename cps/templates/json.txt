@@ -35,9 +35,9 @@
   "uuid": {{ entry.uuid | tojson }},
   "timestamp": {{ entry.timestamp | string | tojson }},
   "thumbnail": {{ url_for('opds.feed_get_cover', book_id=entry.id) | tojson }},
-  "main_format": {
+  "main_format": {% if entry.data.__len__() > 0 %}{
     {{ entry.data[0].format|lower | tojson }}: {{ url_for('opds.opds_download_link', book_id=entry.id, book_format=entry.data[0].format|lower) | tojson }}
-  },
+  }{% else %}{}{% endif %},
   "rating": {% if entry.ratings.__len__() > 0 %}{{ (entry.ratings[0].rating|string + ".0") | tojson }}{% else %}0.0{% endif %},
   "authors": [
   {% for author in entry.authors %}

@@ -133,6 +133,49 @@
         font-size: 15px;
         text-shadow: 0 1px 2px rgba(44, 62, 80, 0.1);
     }
+  .book-title-link {
+      color: white;
+      text-decoration: none;
+      transition: color 0.2s ease;
+  }
+  .book-title-link:hover {
+      color: #3498db;
+      text-decoration: none;
+  }
+  .book-cover a {
+      display: block;
+      text-decoration: none;
+  }
+  .book-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+  }
+  .book-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      background: rgba(52, 152, 219, 0.2);
+      border: 1px solid rgba(52, 152, 219, 0.4);
+      border-radius: 4px;
+      color: #3498db;
+      font-size: 12px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+  }
+  .book-action-btn:hover {
+      background: rgba(52, 152, 219, 0.3);
+      border-color: #3498db;
+      color: #5dade2;
+      text-decoration: none;
+      transform: translateY(-1px);
+  }
+  .book-action-btn .glyphicon {
+      font-size: 11px;
+  }
   .book-meta {
       color: white;
       font-size: 13px;
@@ -427,11 +470,15 @@
                 <input type="checkbox" class="book-checkbox" value="{{ book.id }}" data-title="{{ book.title }}" data-authors="{{ book.author_names }}">
                 
                 <div class="book-cover">
-                  <img src="{{ book.cover_url }}" alt="Cover for {{ book.title }}" onerror="this.src='/static/generic_cover.svg'">
+                  <a href="{{ url_for('web.show_book', book_id=book.id) }}" title="{{_('View book details')}}">
+                    <img src="{{ book.cover_url }}" alt="Cover for {{ book.title }}" onerror="this.src='/static/generic_cover.svg'">
+                  </a>
                 </div>
                 
                 <div class="book-details">
-                  <div class="book-title">{{ book.title }}</div>
+                  <div class="book-title">
+                    <a href="{{ url_for('web.show_book', book_id=book.id) }}" class="book-title-link">{{ book.title }}</a>
+                  </div>
                   <div class="book-meta">
                     <div><strong>Authors:</strong> {{ book.author_names }}</div>
                     <div><strong>Added:</strong> {{ book.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
@@ -448,6 +495,14 @@
                         {% for data in book.data %}{{ data.format }}{% if not loop.last %}, {% endif %}{% endfor %}
                       </div>
                     {% endif %}
+                  </div>
+                  <div class="book-actions">
+                    <a href="{{ url_for('edit-book.show_edit_book', book_id=book.id) }}" class="book-action-btn" title="{{_('Edit book metadata')}}">
+                      <span class="glyphicon glyphicon-edit"></span> {{_('Edit')}}
+                    </a>
+                    <a href="{{ url_for('web.show_book', book_id=book.id) }}" class="book-action-btn" title="{{_('Archive/delete book')}}">
+                      <span class="glyphicon glyphicon-trash"></span> {{_('Archive')}}
+                    </a>
                   </div>
                 </div>
               </div>

@@ -660,7 +660,6 @@ def set_cwa_settings():
                 elif setting == "auto_convert_target_format":
                     if value is None:
                         value = cwa_db.cwa_settings['auto_convert_target_format']
-                    value = cwa_db.cwa_settings['auto_convert_target_format']
 
                 result |= {setting:value}
             
@@ -798,7 +797,7 @@ def set_cwa_settings():
     return render_title_template("cwa_settings.html", title=_("Calibre-Web Automated User Settings"), page="cwa-settings",
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats, target_formats=target_formats,
                                     automerge_options=automerge_options, autoingest_options=autoingest_options,
-                                    next_duplicate_scan_run=next_scan_run)
+                                    next_duplicate_scan_run=next_scan_run, config=config)
 
 
 def get_next_duplicate_scan_run(settings):

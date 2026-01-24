@@ -385,7 +385,7 @@
         {{_('When disabled, you will no longer receive notifications in the Web UI when using a language other than English if the translations for your chosen language are not complete.')}}
       </p>
 
-      {% if config.config_kobo_sync_magic_shelves %}
+      {% if config['config_kobo_sync_magic_shelves'] %}
       <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
       {% else %}
       <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">

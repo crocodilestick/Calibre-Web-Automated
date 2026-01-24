@@ -62,7 +62,8 @@ def register_scheduled_tasks(reconnect=True):
         # Register scheduled tasks
         timezone_info = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
         scheduler.schedule_tasks(tasks=get_scheduled_tasks(reconnect), trigger=CronTrigger(hour=start,
-                                                                                           timezone=timezone_info))
+                                                   timezone=timezone_info))
+        _schedule_duplicate_scan(scheduler, timezone_info)
         end_time = calclulate_end_time(start, duration)
         scheduler.schedule(func=end_scheduled_tasks, trigger=CronTrigger(hour=end_time.hour, minute=end_time.minute,
                                                                          timezone=timezone_info),
@@ -311,3 +312,33 @@ def should_task_be_running(start, duration):
 def calclulate_end_time(start, duration):
     start_time = datetime.datetime.now().replace(hour=start, minute=0)
     return start_time + datetime.timedelta(hours=duration // 60, minutes=duration % 60)
+
+
+def _schedule_duplicate_scan(scheduler, timezone_info):
+    """Schedule background duplicate scan based on CWA settings."""
+    try:
+        import sys as _sys
+        if '/app/calibre-web-automated/scripts/' not in _sys.path:
+            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+        from .tasks.duplicate_scan import TaskDuplicateScan
+        from apscheduler.triggers.cron import CronTrigger
+
+        db = CWA_DB()
+        enabled = bool(db.cwa_settings.get('duplicate_scan_enabled', 0))
+        cron_expr = (db.cwa_settings.get('duplicate_scan_cron') or '').strip()
+
+        if not enabled:
+            return
+
+        if cron_expr:
+            trigger = CronTrigger.from_crontab(cron_expr, timezone=timezone_info)
+        else:
+            # manual/after_import handled elsewhere
+            return
+
+        scheduler.schedule_task(lambda: TaskDuplicateScan(full_scan=True, trigger_type='scheduled'),
+                                user='System', trigger=trigger, name='duplicate scan', hidden=False)
+    except Exception:
+        # Scheduling is best-effort; never block startup
+        pass

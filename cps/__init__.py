@@ -244,35 +244,125 @@ def create_app():
     # Ensure a valid calibre_db session exists before handling each request
     @app.before_request
     def _cwa_ensure_db_session():
+        from flask import g, request
         from .cw_login import current_user
+        from sqlalchemy import or_
         import time
 
+        if config.config_allow_reverse_proxy_header_login:
+            """
+            Load user from reverse proxy authentication header if configured.
+            Sets g.flask_httpauth_user early so that current_user proxy resolves correctly
+            for user-specific settings like theme preferences.
+
+            This must run before any blueprint before_request handlers that access current_user.
+            """
+
+            from . import usermanagement
+            user = usermanagement.load_user_from_reverse_proxy_header(request)
+            if user:
+                g.flask_httpauth_user = user
+            else:
+                # Explicitly set to None to indicate we checked but found nothing
+                g.flask_httpauth_user = None
+
         if current_user.is_authenticated:
-            g.magic_shelves_access = ub.session.query(ub.MagicShelf).filter(ub.MagicShelf.user_id == current_user.id).all()
-            
-            # Magic Shelf Count Caching
-            if 'magic_shelf_counts' not in session:
-                session['magic_shelf_counts'] = {}
-            
-            counts = session['magic_shelf_counts']
-            cache_updated = False
-            now = time.time()
-            CACHE_DURATION = 300  # 5 minutes
-            
-            for shelf in g.magic_shelves_access:
-                shelf_id_str = str(shelf.id)
-                cached_data = counts.get(shelf_id_str)
+            try:
+                # Verify required tables exist before querying
+                from sqlalchemy import inspect
+                inspector = inspect(ub.session.bind)
+                required_tables = ['magic_shelf', 'hidden_magic_shelf_templates']
+                existing_tables = inspector.get_table_names()
                 
-                if cached_data and (now - cached_data.get('timestamp', 0) < CACHE_DURATION):
-                    shelf.book_count = cached_data['count']
-                else:
-                    count = magic_shelf.get_book_count_for_magic_shelf(shelf.id)
-                    counts[shelf_id_str] = {'count': count, 'timestamp': now}
-                    shelf.book_count = count
-                    cache_updated = True
-            
-            if cache_updated:
-                session.modified = True
+                missing_tables = [t for t in required_tables if t not in existing_tables]
+                if missing_tables:
+                    log.error(f"Magic shelf tables missing from database: {missing_tables}. Run migration to create them.")
+                    g.magic_shelves_access = []
+                    return
+                
+                # Get hidden items for this user (both system templates and custom shelves)
+                hidden_items = ub.session.query(
+                    ub.HiddenMagicShelfTemplate.template_key,
+                    ub.HiddenMagicShelfTemplate.shelf_id
+                ).filter(
+                    ub.HiddenMagicShelfTemplate.user_id == current_user.id
+                ).all()
+                
+                hidden_template_keys = {item.template_key for item in hidden_items if item.template_key}
+                hidden_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+                
+                # Get user's own shelves + public shelves (will filter hidden ones below)
+                g.magic_shelves_access = ub.session.query(ub.MagicShelf).filter(
+                    or_(
+                        ub.MagicShelf.is_public == 1,
+                        ub.MagicShelf.user_id == current_user.id
+                    )
+                ).all()
+                
+                log.debug(f"Found {len(g.magic_shelves_access)} total magic shelves for user {current_user.id} before filtering")
+                
+                # Filter out hidden items
+                from . import magic_shelf
+                filtered_shelves = []
+                for shelf in g.magic_shelves_access:
+                    # Skip hidden system templates
+                    if shelf.is_system and shelf.user_id == current_user.id:
+                        # Find template key for this system shelf
+                        template_key = None
+                        for key, template in magic_shelf.SYSTEM_SHELF_TEMPLATES.items():
+                            if template['name'] == shelf.name:
+                                template_key = key
+                                break
+                        
+                        # If template_key not found, this is an orphaned/deprecated system shelf
+                        if template_key is None:
+                            log.warning(f"System shelf '{shelf.name}' (ID: {shelf.id}) doesn't match any current template - may need migration")
+                            # Show it anyway - migration should clean it up on next restart
+                            filtered_shelves.append(shelf)
+                            continue
+                        
+                        # Skip if hidden
+                        if template_key in hidden_template_keys:
+                            log.debug(f"Hiding system shelf template '{template_key}' for user {current_user.id}")
+                            continue
+                    
+                    # Skip hidden custom public shelves (not owned by user)
+                    if shelf.is_public == 1 and shelf.user_id != current_user.id:
+                        if shelf.id in hidden_shelf_ids:
+                            log.debug(f"Hiding public shelf '{shelf.name}' (ID: {shelf.id}) for user {current_user.id}")
+                            continue
+                    
+                    filtered_shelves.append(shelf)
+                
+                g.magic_shelves_access = filtered_shelves
+                log.debug(f"Filtered to {len(filtered_shelves)} visible magic shelves for user {current_user.id}")
+                
+                # Magic Shelf Count Caching
+                if 'magic_shelf_counts' not in session:
+                    session['magic_shelf_counts'] = {}
+                
+                counts = session['magic_shelf_counts']
+                cache_updated = False
+                now = time.time()
+                CACHE_DURATION = 300  # 5 minutes
+                
+                for shelf in g.magic_shelves_access:
+                    shelf_id_str = str(shelf.id)
+                    cached_data = counts.get(shelf_id_str)
+                    
+                    if cached_data and (now - cached_data.get('timestamp', 0) < CACHE_DURATION):
+                        shelf.book_count = cached_data['count']
+                    else:
+                        count = magic_shelf.get_book_count_for_magic_shelf(shelf.id)
+                        counts[shelf_id_str] = {'count': count, 'timestamp': now}
+                        shelf.book_count = count
+                        cache_updated = True
+                
+                if cache_updated:
+                    session.modified = True
+            except Exception as e:
+                log.error(f"Error populating magic shelves for user {current_user.id}: {str(e)}", exc_info=True)
+                g.magic_shelves_access = []
         else:
             g.magic_shelves_access = []
         try:
@@ -285,28 +375,6 @@ def create_app():
     def shutdown_session(exception=None):
         if calibre_db.session_factory:
             calibre_db.session_factory.remove()
-
-    # Load user from reverse proxy header early in request lifecycle
-    # This ensures current_user resolves correctly before any code accesses user settings
-    @app.before_request
-    def _load_reverse_proxy_user():
-        """
-        Load user from reverse proxy authentication header if configured.
-        Sets g.flask_httpauth_user early so that current_user proxy resolves correctly
-        for user-specific settings like theme preferences.
-
-        This must run before any blueprint before_request handlers that access current_user.
-        """
-        from flask import g, request
-
-        if config.config_allow_reverse_proxy_header_login:
-            from . import usermanagement
-            user = usermanagement.load_user_from_reverse_proxy_header(request)
-            if user:
-                g.flask_httpauth_user = user
-            else:
-                # Explicitly set to None to indicate we checked but found nothing
-                g.flask_httpauth_user = None
 
     from .schedule import register_scheduled_tasks, register_startup_tasks
     register_scheduled_tasks(config.schedule_reconnect)

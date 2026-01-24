@@ -316,6 +316,183 @@ class TestChecksumGenerationScript:
         assert result.returncode == 0
         assert "SKIP" in result.stdout or "not found" in result.stdout.lower()
 
+    def test_split_library_with_separate_paths(self, tmp_path):
+        """Test checksum generation with split library (separate metadata and books)."""
+        # Create separate directories for metadata and books
+        metadata_dir = tmp_path / "metadata"
+        books_dir = tmp_path / "books"
+        
+        metadata_dir.mkdir()
+        books_dir.mkdir()
+        
+        # Create metadata.db in metadata_dir
+        create_minimal_calibre_library(metadata_dir)
+        
+        # Add book to metadata.db
+        db_path = metadata_dir / "metadata.db"
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        
+        cur.execute("""
+            INSERT INTO books (title, sort, path, has_cover)
+            VALUES ('Split Library Book', 'Split Library Book', 'split_book', 0)
+        """)
+        book_id = cur.lastrowid
+        
+        cur.execute("""
+            INSERT INTO data (book, format, name)
+            VALUES (?, 'EPUB', 'split_book')
+        """, (book_id,))
+        
+        conn.commit()
+        conn.close()
+        
+        # Create actual book file in books_dir (NOT metadata_dir)
+        book_folder = books_dir / "split_book"
+        book_folder.mkdir()
+        (book_folder / "split_book.epub").write_bytes(b"Test EPUB content for split library testing")
+        
+        # Run script with separate books-path
+        script_path = scripts_dir / "generate_book_checksums.py"
+        result = subprocess.run(
+            [sys.executable, str(script_path),
+             "--library-path", str(metadata_dir),
+             "--books-path", str(books_dir)],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        assert result.returncode == 0
+        assert "Split Library Book" in result.stdout
+        assert "✓" in result.stdout
+        assert "split library mode" in result.stdout.lower()
+        
+        # Verify checksum was stored in metadata.db
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        checksum = cur.execute("""
+            SELECT checksum FROM book_format_checksums
+            WHERE book = ? AND format = 'EPUB'
+        """, (book_id,)).fetchone()
+        conn.close()
+        
+        assert checksum is not None
+        assert len(checksum[0]) == 32  # Valid MD5
+
+    def test_books_path_falls_back_to_library_path(self, tmp_path):
+        """Test that invalid books-path falls back to library-path."""
+        library_path = tmp_path / "library"
+        create_minimal_calibre_library(library_path)
+        add_book_to_library(library_path, "Fallback Test Book", ["EPUB"])
+        
+        # Pass nonexistent books-path
+        script_path = scripts_dir / "generate_book_checksums.py"
+        result = subprocess.run(
+            [sys.executable, str(script_path),
+             "--library-path", str(library_path),
+             "--books-path", "/nonexistent/path"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        # Should succeed by falling back to library_path
+        assert result.returncode == 0
+        assert "Fallback Test Book" in result.stdout
+        assert "✓" in result.stdout
+
+    def test_books_path_with_none_value(self, tmp_path):
+        """Test that None books-path uses library-path."""
+        library_path = tmp_path / "library"
+        create_minimal_calibre_library(library_path)
+        add_book_to_library(library_path, "Normal Mode Book", ["EPUB"])
+        
+        # Run without --books-path argument (default behavior)
+        script_path = scripts_dir / "generate_book_checksums.py"
+        result = subprocess.run(
+            [sys.executable, str(script_path),
+             "--library-path", str(library_path)],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        # Should succeed using library_path for books
+        assert result.returncode == 0
+        assert "Normal Mode Book" in result.stdout
+        assert "✓" in result.stdout
+        # Should NOT show split library mode message
+        assert "Books path: " in result.stdout
+
+    def test_split_library_with_multiple_formats(self, tmp_path):
+        """Test split library with book having multiple formats."""
+        metadata_dir = tmp_path / "metadata"
+        books_dir = tmp_path / "books"
+        
+        metadata_dir.mkdir()
+        books_dir.mkdir()
+        
+        create_minimal_calibre_library(metadata_dir)
+        
+        # Add book with multiple formats
+        db_path = metadata_dir / "metadata.db"
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        
+        cur.execute("""
+            INSERT INTO books (title, sort, path, has_cover)
+            VALUES ('Multi Format Book', 'Multi Format Book', 'multi_format', 0)
+        """)
+        book_id = cur.lastrowid
+        
+        # Add multiple formats
+        for fmt in ['EPUB', 'MOBI', 'PDF']:
+            cur.execute("""
+                INSERT INTO data (book, format, name)
+                VALUES (?, ?, 'multi_format')
+            """, (book_id, fmt))
+        
+        conn.commit()
+        conn.close()
+        
+        # Create actual book files in books_dir
+        book_folder = books_dir / "multi_format"
+        book_folder.mkdir()
+        (book_folder / "multi_format.epub").write_bytes(b"EPUB content")
+        (book_folder / "multi_format.mobi").write_bytes(b"MOBI content")
+        (book_folder / "multi_format.pdf").write_bytes(b"PDF content")
+        
+        # Run script
+        script_path = scripts_dir / "generate_book_checksums.py"
+        result = subprocess.run(
+            [sys.executable, str(script_path),
+             "--library-path", str(metadata_dir),
+             "--books-path", str(books_dir)],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        assert result.returncode == 0
+        
+        # Verify all three formats got checksums
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        checksums = cur.execute("""
+            SELECT format, checksum FROM book_format_checksums
+            WHERE book = ?
+            ORDER BY format
+        """, (book_id,)).fetchall()
+        conn.close()
+        
+        assert len(checksums) == 3
+        assert all(len(checksum[1]) == 32 for checksum in checksums)
+        formats = [c[0] for c in checksums]
+        assert 'EPUB' in formats
+        assert 'MOBI' in formats
+        assert 'PDF' in formats
+
     def test_batch_size_parameter(self, tmp_path):
         """Test that batch-size parameter is respected."""
         library_path = tmp_path / "test_library"

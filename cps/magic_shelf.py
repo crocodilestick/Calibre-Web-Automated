@@ -139,7 +139,7 @@ FIELD_MAP = {
     'timestamp': (db.Books, 'timestamp'),
     'has_cover': (db.Books, 'has_cover'),
     'series_index': (db.Books, 'series_index'),
-    'comments': (db.Books, 'comments'),
+    'comments': (db.Comments, 'text'),  # Fixed: Points to actual text column, not relationship
     'read_status': ('custom_column', 'read_status'),  # Special handling - uses config.config_read_column
     'hardcover_id': ('identifier', 'hardcover-id'),  # Special handling - checks Identifiers table
 }
@@ -160,13 +160,13 @@ OPERATOR_MAP = {
     # 'greater_than_equal_to': lambda col, val: col >= val,  # Not used by QueryBuilder
     'between': lambda col, val: col.between(*val) if isinstance(val, (list, tuple)) and len(val) == 2 else None,
     'not_between': lambda col, val: ~col.between(*val) if isinstance(val, (list, tuple)) and len(val) == 2 else None,
-    'contains': lambda col, val: col.ilike(f'%{val}%'),
-    'not_contains': lambda col, val: ~col.ilike(f'%{val}%'),
-    'begins_with': lambda col, val: col.ilike(f'{val}%'),
-    'not_begins_with': lambda col, val: ~col.ilike(f'{val}%'),
-    'starts_with': lambda col, val: col.ilike(f'{val}%'),  # QueryBuilder emits 'begins_with', but keep for legacy
-    'ends_with': lambda col, val: col.ilike(f'%{val}'),
-    'not_ends_with': lambda col, val: ~col.ilike(f'%{val}'),
+    'contains': lambda col, val: col.ilike(f'%{val}%') if val is not None else None,
+    'not_contains': lambda col, val: ~col.ilike(f'%{val}%') if val is not None else None,
+    'begins_with': lambda col, val: col.ilike(f'{val}%') if val is not None else None,
+    'not_begins_with': lambda col, val: ~col.ilike(f'{val}%') if val is not None else None,
+    'starts_with': lambda col, val: col.ilike(f'{val}%') if val is not None else None,  # QueryBuilder emits 'begins_with', but keep for legacy
+    'ends_with': lambda col, val: col.ilike(f'%{val}') if val is not None else None,
+    'not_ends_with': lambda col, val: ~col.ilike(f'%{val}') if val is not None else None,
     'is_empty': lambda col, val: col == None,
     'is_not_empty': lambda col, val: col != None,
     'is_null': lambda col, val: col == None,
@@ -182,6 +182,7 @@ RELATIONSHIP_MAP = {
     'publisher': 'publishers',
     'rating': 'ratings',
     'language': 'languages',
+    'comments': 'comments',  # For description field - requires join to Comments table
 }
 
 def build_filter_from_rule(rule, user_id=None):
@@ -306,10 +307,25 @@ def build_filter_from_rule(rule, user_id=None):
 
     # Handle relationships using .any()
     relationship_name = RELATIONSHIP_MAP.get(field_name)
-    if relationship_name:
-        return getattr(db.Books, relationship_name).any(operator(column, value))
-    else:
-        return operator(column, value)
+    try:
+        if relationship_name:
+            # Special handling for is_empty/is_null on relationships:
+            # These check for absence of relationships, not null values in related records
+            if operator_name in ['is_empty', 'is_null']:
+                return ~getattr(db.Books, relationship_name).any()
+            elif operator_name in ['is_not_empty', 'is_not_null']:
+                return getattr(db.Books, relationship_name).any()
+            else:
+                filter_expr = operator(column, value)
+                if filter_expr is None:
+                    return None
+                return getattr(db.Books, relationship_name).any(filter_expr)
+        else:
+            filter_expr = operator(column, value)
+            return filter_expr
+    except Exception as e:
+        log.error(f"Error building filter for field '{field_name}', operator '{operator_name}', value '{value}': {str(e)}", exc_info=True)
+        return None
 
 
 def build_query_from_rules(rules_json, user_id=None):

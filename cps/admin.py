@@ -849,7 +849,7 @@ def update_view_configuration():
     config.config_default_role = constants.selected_roles(to_save)
     config.config_default_role &= ~constants.ROLE_ANONYMOUS
 
-    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith('show_'))
+    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith('show_') and not k.startswith('show_magic_shelf_') and not k.startswith('show_custom_shelf_'))
     if "Show_detail_random" in to_save:
         config.config_default_show |= constants.DETAIL_RANDOM
 
@@ -1772,6 +1772,30 @@ def edit_user(user_id):
     languages = calibre_db.speaking_language(return_all_languages=True)
     translations = get_available_locale()
     kobo_support = feature_support['kobo'] and config.config_kobo_sync
+    
+    # Get system shelf templates and hidden templates for this user
+    from . import magic_shelf
+    system_shelf_templates = magic_shelf.SYSTEM_SHELF_TEMPLATES
+    hidden_items = ub.session.query(
+        ub.HiddenMagicShelfTemplate.template_key,
+        ub.HiddenMagicShelfTemplate.shelf_id
+    ).filter(
+        ub.HiddenMagicShelfTemplate.user_id == content.id
+    ).all()
+    hidden_shelf_templates = {item.template_key for item in hidden_items if item.template_key}
+    hidden_custom_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+    
+    # Get ALL public custom shelves that user doesn't own (both hidden and visible)
+    all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+        ub.MagicShelf.is_public == 1,
+        ub.MagicShelf.user_id != content.id,
+        ub.MagicShelf.is_system == False
+    ).all()
+    
+    # Separate into hidden and visible
+    hidden_custom_shelves = [s for s in all_public_shelves if s.id in hidden_custom_shelf_ids]
+    visible_public_shelves = [s for s in all_public_shelves if s.id not in hidden_custom_shelf_ids]
+    
     if request.method == "POST":
         to_save = request.form.to_dict()
         resp = _handle_edit_user(to_save, content, languages, translations, kobo_support)
@@ -1786,6 +1810,11 @@ def edit_user(user_id):
                                  registered_oauth=oauth_bb.oauth_check,
                                  mail_configured=config.get_mail_server_configured(),
                                  kobo_support=kobo_support,
+                                 system_shelf_templates=system_shelf_templates,
+                                 hidden_shelf_templates=hidden_shelf_templates,
+                                 hidden_custom_shelf_ids=hidden_custom_shelf_ids,
+                                 hidden_custom_shelves=hidden_custom_shelves,
+                                 visible_public_shelves=visible_public_shelves,
                                  title=_("Edit User %(nick)s", nick=content.name),
                                  page="edituser")
 
@@ -2443,7 +2472,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
         flash(_("No admin user remaining, can't remove admin role"), category="error")
         return redirect(url_for('admin.admin'))
 
-    val = [int(k[5:]) for k in to_save if k.startswith('show_')]
+    val = [int(k[5:]) for k in to_save if k.startswith('show_') and not k.startswith('show_magic_shelf_') and not k.startswith('show_custom_shelf_')]
     sidebar, __ = get_sidebar_config()
     for element in sidebar:
         value = element['visibility']
@@ -2467,6 +2496,65 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     # Auto-send and metadata fetch settings
     content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
     content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+    
+    # Handle hidden magic shelf templates and custom shelves
+    from . import magic_shelf
+    if not content.is_anonymous:
+        # Get all system template keys
+        all_template_keys = set(magic_shelf.SYSTEM_SHELF_TEMPLATES.keys())
+        # Get currently hidden items for this user
+        current_hidden = ub.session.query(ub.HiddenMagicShelfTemplate).filter(
+            ub.HiddenMagicShelfTemplate.user_id == content.id
+        ).all()
+        current_hidden_template_keys = {h.template_key for h in current_hidden if h.template_key}
+        current_hidden_shelf_ids = {h.shelf_id for h in current_hidden if h.shelf_id}
+        
+        # Handle system templates
+        visible_template_keys = {key for key in all_template_keys if to_save.get(f"show_magic_shelf_{key}") == "on"}
+        should_be_hidden_templates = all_template_keys - visible_template_keys
+        
+        # Add newly hidden templates
+        for key in should_be_hidden_templates:
+            if key not in current_hidden_template_keys:
+                new_hidden = ub.HiddenMagicShelfTemplate(
+                    user_id=content.id,
+                    template_key=key
+                )
+                ub.session.add(new_hidden)
+                log.info(f"User {content.id} hid system shelf template '{key}'")
+        
+        # Remove templates that should no longer be hidden
+        for hidden in current_hidden:
+            if hidden.template_key and hidden.template_key in visible_template_keys:
+                ub.session.delete(hidden)
+                log.info(f"User {content.id} unhid system shelf template '{hidden.template_key}'")
+        
+        # Handle custom public shelves - get all available ones
+        all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.is_public == 1,
+            ub.MagicShelf.user_id != content.id,
+            ub.MagicShelf.is_system == False
+        ).all()
+        
+        # Check which ones should be visible (checked)
+        visible_shelf_ids = {s.id for s in all_public_shelves if to_save.get(f"show_custom_shelf_{s.id}") == "on"}
+        
+        # Hide shelves that are unchecked but not currently hidden
+        for shelf in all_public_shelves:
+            if shelf.id not in visible_shelf_ids and shelf.id not in current_hidden_shelf_ids:
+                new_hidden = ub.HiddenMagicShelfTemplate(
+                    user_id=content.id,
+                    shelf_id=shelf.id
+                )
+                ub.session.add(new_hidden)
+                log.info(f"User {content.id} hid custom shelf {shelf.id}")
+        
+        # Unhide shelves that are checked but currently hidden
+        for hidden in current_hidden:
+            if hidden.shelf_id and hidden.shelf_id in visible_shelf_ids:
+                ub.session.delete(hidden)
+                log.info(f"User {content.id} unhid custom shelf {hidden.shelf_id}")
+    
     if to_save.get("default_language"):
         content.default_language = to_save["default_language"]
     if to_save.get("locale"):

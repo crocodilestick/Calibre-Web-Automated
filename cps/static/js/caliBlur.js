@@ -1060,6 +1060,9 @@ $(function() {
         $.ajax({
             url: window.scriptRoot + '/ajax/toggleread/' + bookId,
             type: 'POST',
+            data: {
+                csrf_token: $("input[name='csrf_token']").val()
+            },
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             },

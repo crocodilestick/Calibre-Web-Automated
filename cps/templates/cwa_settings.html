@@ -574,7 +574,7 @@
         {{_('When disabled, you will no longer receive notifications in the Web UI when using a language other than English if the translations for your chosen language are not complete.')}}
       </p>
 
-      {% if config.config_kobo_sync_magic_shelves %}
+      {% if config['config_kobo_sync_magic_shelves'] %}
       <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
       {% else %}
       <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
@@ -784,6 +784,99 @@
     </div>
 
     <div class="settings-container">
+      <h4 class="settings-section-header">{{_('CWA Duplicate Detection System')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Enable or disable the duplicate detection system. When disabled, duplicate scanning will not run and no notifications will be shown.')}}
+      </p>
+
+      <div class="checkbox-wrapper" style="margin-bottom: 1.5rem;">
+        <input type="checkbox" id="duplicate_detection_enabled" name="duplicate_detection_enabled" value="1" {% if cwa_settings['duplicate_detection_enabled'] %} checked {% endif %}>
+        <label for="duplicate_detection_enabled">{{_('Enable Duplicate Detection')}}</label>
+        <small class="settings-explanation">{{_('When enabled, CWA will scan for duplicate books after each import')}}</small>
+      </div>
+
+      <!-- Detection Method (Hybrid default) -->
+      {% set scan_method = cwa_settings.get('duplicate_scan_method')|default('hybrid', true) %}
+      <div class="form-group" style="max-width: 520px;">
+        <label for="duplicate_scan_method" class="settings-section-header" style="margin-top: 8px;">{{_('Duplicate Detection Method')}}</label>
+        <select class="cwa-settings-select" name="duplicate_scan_method" id="duplicate_scan_method" style="width: fit-content;">
+          <option value="hybrid" {% if scan_method == 'hybrid' %}selected{% endif %}>
+            {{_('Hybrid (SQL prefilter + Python validation)')}}
+          </option>
+          <option value="python" {% if scan_method == 'python' %}selected{% endif %}>
+            {{_('Python only (slowest, most robust)')}}
+          </option>
+          <option value="sql" {% if scan_method == 'sql' %}selected{% endif %}>
+            {{_('Legacy SQL only (experimental)')}}
+          </option>
+        </select>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 10px;">
+          {{_('Hybrid mode uses a fast SQL prefilter to narrow candidates, then applies the robust Python logic for final results.') }}
+        </p>
+      </div>
+
+      <!-- Keep SQL prefilter enabled by default for hybrid/auto modes -->
+      <input type="hidden" id="duplicate_detection_use_sql" name="duplicate_detection_use_sql" value="1">
+    </div>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Automatic Duplicate Scanning')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure background duplicate scans. These run automatically without blocking the UI.') }}
+      </p>
+
+      <div class="checkbox-wrapper" style="margin-bottom: 1rem;">
+        <input type="checkbox" id="duplicate_scan_enabled" name="duplicate_scan_enabled" value="1" {% if cwa_settings['duplicate_scan_enabled'] %} checked {% endif %}>
+        <label for="duplicate_scan_enabled">{{_('Enable automatic duplicate scans')}}</label>
+      </div>
+
+      <div class="form-group" style="max-width: 520px;">
+        <label for="duplicate_scan_frequency" class="settings-section-header">{{_('After import scans')}}</label>
+        <select class="cwa-settings-select" name="duplicate_scan_frequency" id="duplicate_scan_frequency" style="width: fit-content;">
+          <option value="after_import" {% if cwa_settings.get('duplicate_scan_frequency', 'after_import') == 'after_import' %}selected{% endif %}>
+            {{_('Run after each import (debounced)')}}
+          </option>
+          <option value="manual" {% if cwa_settings.get('duplicate_scan_frequency') == 'manual' %}selected{% endif %}>
+            {{_('Manual only')}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group" style="max-width: 520px; margin-top: 0.75rem;">
+        <label for="duplicate_scan_debounce_seconds" class="settings-section-header">{{_('After import debounce (seconds)')}}</label>
+        <input type="number" min="5" max="600" step="1" class="cwa-settings-input"
+               name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds"
+               value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 30) }}"
+               style="width: 120px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 8px;">
+          {{_('Wait this many seconds after the last import before starting a background scan.') }}
+        </p>
+      </div>
+
+      <div class="form-group" style="max-width: 520px; margin-top: 1rem;">
+        <label for="duplicate_scan_cron" class="settings-section-header">{{_('Scheduled scans (cron expression)')}}</label>
+        <input type="text" class="cwa-settings-input" name="duplicate_scan_cron" id="duplicate_scan_cron" placeholder="0 3 * * *"
+               value="{{ cwa_settings.get('duplicate_scan_cron', '') }}" style="width: 220px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 8px;">
+          {{_('Leave blank to disable scheduled scans. Example:')}} <code>0 3 * * *</code>
+        </p>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 6px;">
+          {{_('If enabled, after-import scans and cron scans can both run. Use “Manual only” to disable after-import scans while keeping cron schedules.')}}
+        </p>
+      </div>
+
+      {% if next_duplicate_scan_run %}
+        <div class="cwa-settings-tip" style="margin-top: 12px;">
+          <small class="settings-explanation">
+            <strong>{{_('Next scheduled scan:')}}</strong> {{ next_duplicate_scan_run }}
+          </small>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Duplicate Detection Criteria')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
@@ -833,6 +926,99 @@
           <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
         </small>
       </div>
+    </div>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Format Priority Ranking')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure which file formats are preferred when using the "Highest Quality Format" auto-resolution strategy. Drag and drop to reorder formats by priority (higher = better).')}}
+      </p>
+
+      <input type="hidden" id="duplicate_format_priority" name="duplicate_format_priority" value='{{ cwa_settings.get("duplicate_format_priority", "{\"EPUB\":100,\"KEPUB\":95,\"AZW3\":90,\"MOBI\":80,\"AZW\":75,\"PDF\":60,\"TXT\":40,\"CBZ\":35,\"CBR\":35,\"FB2\":30,\"DJVU\":25,\"HTML\":20,\"RTF\":15,\"DOC\":10,\"DOCX\":10}") }}'>
+      
+      <div id="format_priority_container" style="margin-top: 1rem;">
+        <ul id="format_priority_list" style="list-style: none; padding: 0; margin: 0;">
+          <!-- Will be populated by JavaScript -->
+        </ul>
+      </div>
+
+      <div class="cwa-settings-tip">
+        <small class="settings-explanation">
+          <strong>{{_('Tip:')}}</strong> {{_('When resolving duplicates with "Highest Quality Format" strategy, books with higher-ranked formats will be kept. Lower priority formats will be deleted.')}}
+        </small>
+      </div>
+    </div>
+
+    <br>
+
+<!--
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Notifications & Auto-Resolution')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure how you are notified about duplicate books and optionally enable automatic resolution.')}}
+      </p>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="1" {% if cwa_settings['duplicate_notifications_enabled'] %} checked {% endif %}>
+        <label for="duplicate_notifications_enabled">{{_('Enable Duplicate Notifications')}}</label>
+      </div>
+        <p class="cwa-settings-tip" style="font-size: small;">{{_('Show popup notifications when unresolved duplicates are detected. Admins and users with edit rights will see a badge on the Duplicates sidebar button and a notification popup when they login.')}}</small>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="duplicate_auto_resolve_enabled" name="duplicate_auto_resolve_enabled" value="1" {% if cwa_settings['duplicate_auto_resolve_enabled'] %} checked {% endif %}>
+        <label for="duplicate_auto_resolve_enabled">{{_('Enable Automatic Duplicate Resolution')}} ⚠️</label>
+      </div>
+      <p class="cwa-settings-tip" style="background: #e74c3c57; border-color: #e74c3c; font-size: small;">
+        <strong>{{_('Warning:')}}</strong> {{_('This will automatically delete books based on the strategy below. Original files will be backed up to')}} <code>/config/processed_books/</code>
+      </p>
+
+      <div class="form-group" style="padding: 2rem; background: #151e2680;">
+        <h4 for="duplicate_auto_resolve_strategy" class="settings-section-header">{{_('Auto-Resolution Strategy')}}</h4>
+        <select class="form-control" id="duplicate_auto_resolve_strategy" name="duplicate_auto_resolve_strategy">
+          <option value="newest" {% if cwa_settings.get('duplicate_auto_resolve_strategy', 'newest') == 'newest' %} selected {% endif %}>
+            {{_('Keep Newest')}} - {{_('Delete older copies, keep the most recently added book')}}
+          </option>
+          <option value="highest_quality_format" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'highest_quality_format' %} selected {% endif %}>
+            {{_('Keep Highest Quality Format')}} - {{_('Keep EPUB over MOBI, AZW3 over AZW, etc.')}}
+          </option>
+          <option value="most_metadata" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'most_metadata' %} selected {% endif %}>
+            {{_('Keep Most Complete Metadata')}} - {{_('Keep the book with most tags, series info, etc.')}}
+          </option>
+          <option value="largest_file_size" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'largest_file_size' %} selected {% endif %}>
+            {{_('Keep Largest File Size')}} - {{_('Keep the book with the largest file size')}}
+          </option>
+        </select>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 2rem !important;">{{_('Choose which book to keep when duplicates are automatically resolved.')}}</p>
+      </div>
+
+      <div class="cwa-settings-tip">
+        <small class="settings-explanation">
+          <strong>{{_('Note:')}}</strong> {{_('Auto-resolution runs when the duplicates page is manually triggered. Dismissed duplicate groups are never auto-resolved.')}}
+        </small>
+      </div>
+    </div>
+-->
+
+    <!-- Duplicate Notifications -->
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Notifications')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure how you are notified about duplicate books.')}}
+      </p>
+
+      <!-- Notifications Toggle -->
+      <div class="checkbox-wrapper">
+        {% if cwa_settings['duplicate_notifications_enabled'] %}
+        <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="True" checked style="accent-color: var(--color-secondary);">
+        {% else %}
+        <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="True" style="accent-color: var(--color-secondary);">
+        {% endif %}
+        <label for="duplicate_notifications_enabled">{{_('Enable Duplicate Notifications')}}</label>
+      </div>
+      <p class="cwa-settings-tip" style="font-size: small;">{{_('Show popup notifications when unresolved duplicates are detected. Admins and users with edit rights will see a badge on the Duplicates sidebar button and a notification popup when they login.')}}</p>
     </div>
 
     <br>
@@ -1064,6 +1250,147 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize the hidden input value
   updateHiddenInput();
+  
+  // Format Priority Ranking System
+  function initializeFormatPriorityList() {
+    const hiddenInput = document.getElementById('duplicate_format_priority');
+    const container = document.getElementById('format_priority_list');
+    
+    if (!hiddenInput || !container) return;
+    
+    try {
+      // Decode HTML entities if present
+      const rawValue = hiddenInput.value || '{}';
+      const decodedValue = rawValue.replace(/&quot;/g, '"').replace(/&#34;/g, '"');
+      const formatPriority = JSON.parse(decodedValue);
+      
+      // Convert to array and sort by priority (highest first)
+      const formatArray = Object.entries(formatPriority).map(([format, priority]) => ({
+        format: format,
+        priority: priority
+      }));
+      formatArray.sort((a, b) => b.priority - a.priority);
+      
+      // Check if we actually have formats to display
+      if (formatArray.length === 0) {
+        console.error('No format priority data found');
+        container.innerHTML = '<li style="color: #e74c3c; padding: 12px;">No format data available. Please save settings to initialize.</li>';
+        return;
+      }
+      
+      // Populate list
+      container.innerHTML = '';
+      formatArray.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = 'format-priority-item';
+        li.dataset.format = item.format;
+        li.dataset.priority = item.priority;
+        li.draggable = true;
+        li.innerHTML = `
+          <div style="display: flex; align-items: center; padding: 6px; margin-bottom: 8px; background: #2a3441; border: 1px solid #444; border-radius: 6px; cursor: move; transition: all 0.2s; padding-left: 2rem;">
+            <span style="color: #ffc200; margin-right: 15px; font-size: 18px;">☰</span>
+            <span style="flex: 1; color: white; font-weight: 500;">${item.format}</span>
+            <span style="color: #4CAF50; font-size: 13px; padding: 4px 8px; background: rgba(76, 160, 80, 0.1); border-radius: 4px;">Priority: ${item.priority}</span>
+          </div>
+        `;
+        container.appendChild(li);
+      });
+      
+      setupFormatPriorityDragDrop();
+    } catch (e) {
+      console.error('Error initializing format priority list:', e);
+      console.error('Hidden input value:', hiddenInput ? hiddenInput.value : 'not found');
+      container.innerHTML = '<li style="color: #e74c3c; padding: 12px;">Error loading format priority: ' + e.message + '</li>';
+    }
+  }
+  
+  function setupFormatPriorityDragDrop() {
+    let draggedFormatElement = null;
+    let isDraggingFormat = false;
+    
+    const items = document.querySelectorAll('.format-priority-item');
+    
+    items.forEach(item => {
+      item.addEventListener('mousedown', function(e) {
+        isDraggingFormat = true;
+        draggedFormatElement = this;
+        this.style.opacity = '0.5';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+      if (!isDraggingFormat || !draggedFormatElement) return;
+      
+      const container = document.getElementById('format_priority_list');
+      const afterElement = getFormatAfterElement(container, e.clientY);
+      
+      if (afterElement == null) {
+        container.appendChild(draggedFormatElement);
+      } else {
+        container.insertBefore(draggedFormatElement, afterElement);
+      }
+    });
+    
+    document.addEventListener('mouseup', function(e) {
+      if (!isDraggingFormat) return;
+      
+      isDraggingFormat = false;
+      if (draggedFormatElement) {
+        draggedFormatElement.style.opacity = '1';
+        draggedFormatElement = null;
+      }
+      document.body.style.userSelect = '';
+      updateFormatPriorityHiddenInput();
+    });
+  }
+  
+  function getFormatAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.format-priority-item')].filter(el => el.style.opacity !== '0.5');
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+  
+  function updateFormatPriorityHiddenInput() {
+    const container = document.getElementById('format_priority_list');
+    const hiddenInput = document.getElementById('duplicate_format_priority');
+    const items = container.querySelectorAll('.format-priority-item');
+    
+    // Recalculate priorities based on order (top = highest)
+    const formatPriority = {};
+    const totalItems = items.length;
+    
+    items.forEach((item, index) => {
+      const format = item.dataset.format;
+      // Higher priority for items at the top
+      const priority = 100 - (index * Math.floor(100 / totalItems));
+      formatPriority[format] = priority;
+    });
+    
+    hiddenInput.value = JSON.stringify(formatPriority);
+    
+    // Update priority badges
+    items.forEach((item, index) => {
+      const format = item.dataset.format;
+      const priorityBadge = item.querySelector('span:last-child');
+      if (priorityBadge) {
+        priorityBadge.textContent = `Priority: ${formatPriority[format]}`;
+      }
+    });
+  }
+  
+  // Initialize format priority list on page load
+  initializeFormatPriorityList();
 });
 </script>
 {% endblock %}

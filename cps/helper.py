@@ -430,8 +430,51 @@ def rename_all_files_on_change(one_book, new_path, old_path, all_new_name, gdriv
         if not gdrive:
             if not os.path.exists(new_path):
                 os.makedirs(new_path)
-            shutil.move(os.path.join(old_path, file_format.name + '.' + file_format.format.lower()),
-                    os.path.join(new_path, all_new_name + '.' + file_format.format.lower()))
+            
+            old_file = os.path.join(old_path, file_format.name + '.' + file_format.format.lower())
+            new_file = os.path.join(new_path, all_new_name + '.' + file_format.format.lower())
+            
+            # Skip if source and destination are the same
+            if old_file == new_file:
+                log.debug("Skipping file rename - source and destination are identical: %s", old_file)
+                continue
+            
+            # Check if source file exists
+            if not os.path.exists(old_file):
+                log.warning("Source file not found for rename: %s", old_file)
+                # Check if the file already has the new name (perhaps from a previous partial operation)
+                if os.path.exists(new_file):
+                    log.info("File already exists at destination: %s", new_file)
+                    file_format.name = all_new_name
+                    continue
+                else:
+                    log.error("Neither old nor new file exists - cannot rename %s to %s", old_file, new_file)
+                    continue
+            
+            # Check if destination already exists
+            if os.path.exists(new_file) and old_file != new_file:
+                log.warning("Destination file already exists, will overwrite: %s", new_file)
+                try:
+                    os.remove(new_file)
+                except OSError as ex:
+                    log.error("Could not remove existing destination file %s: %s", new_file, ex)
+            
+            # Attempt to rename the file
+            try:
+                shutil.move(old_file, new_file)
+                log.debug("Successfully renamed %s to %s", old_file, new_file)
+            except OSError as ex:
+                log.error("Failed to rename file from %s to %s: %s", old_file, new_file, ex)
+                # Try copy+delete as fallback for permission issues (e.g., network shares)
+                try:
+                    log.info("Attempting copy+delete fallback for %s", old_file)
+                    shutil.copy2(old_file, new_file)
+                    os.remove(old_file)
+                    log.info("Successfully copied and removed old file: %s", old_file)
+                except (OSError, IOError) as fallback_ex:
+                    log.error("Copy+delete fallback also failed for %s: %s", old_file, fallback_ex)
+                    # Don't update the database name if we failed to rename the file
+                    continue
         else:
             g_file = gd.getFileFromEbooksFolder(old_path,
                                                 file_format.name + '.' + file_format.format.lower())
@@ -561,28 +604,64 @@ def move_files_on_change(calibre_path, new_author_dir, new_titledir, localbook, 
                 os.makedirs(new_path)
             try:
                 shutil.move(original_filepath, os.path.join(new_path, db_filename))
-            except OSError:
-                log.error("Rename title from {} to {} failed with error, trying to "
-                          "move without metadata".format(path, new_path))
-                shutil.move(original_filepath, os.path.join(new_path, db_filename), copy_function=shutil.copy)
+            except OSError as ex:
+                log.error("Rename title from %s to %s failed with error: %s, trying copy+delete fallback",
+                         path, new_path, ex)
+                try:
+                    shutil.copy2(original_filepath, os.path.join(new_path, db_filename))
+                    os.remove(original_filepath)
+                except (OSError, IOError) as fallback_ex:
+                    log.error("Copy+delete fallback also failed: %s", fallback_ex)
+                    raise
             log.debug("Moving title: %s to %s", original_filepath, new_path)
         else:
             # Check new path is not valid path
             if not os.path.exists(new_path):
                 # move original path to new path
                 log.debug("Moving title: %s to %s", path, new_path)
-                shutil.move(path, new_path)
+                try:
+                    shutil.move(path, new_path)
+                except OSError as ex:
+                    log.error("Failed to move directory %s to %s: %s, trying copy tree approach", path, new_path, ex)
+                    # Fallback: try to copy tree and then remove original
+                    try:
+                        shutil.copytree(path, new_path, dirs_exist_ok=True)
+                        shutil.rmtree(path)
+                    except (OSError, IOError) as fallback_ex:
+                        log.error("Copy tree fallback also failed: %s", fallback_ex)
+                        raise
             else:  # path is valid copy only files to new location (merge)
                 log.info("Moving title: %s into existing: %s", path, new_path)
                 # Take all files and subfolder from old path (strange command)
                 for dir_name, __, file_list in os.walk(path):
                     for file in file_list:
-                        shutil.move(os.path.join(dir_name, file), os.path.join(new_path + dir_name[len(path):], file))
-            if not os.listdir(os.path.split(path)[0]):
+                        src_file = os.path.join(dir_name, file)
+                        dest_dir = new_path + dir_name[len(path):]
+                        dest_file = os.path.join(dest_dir, file)
+                        
+                        # Create destination directory if it doesn't exist
+                        if not os.path.exists(dest_dir):
+                            os.makedirs(dest_dir)
+                        
+                        try:
+                            shutil.move(src_file, dest_file)
+                        except OSError as ex:
+                            log.error("Failed to move file %s to %s: %s, trying copy+delete", src_file, dest_file, ex)
+                            try:
+                                shutil.copy2(src_file, dest_file)
+                                os.remove(src_file)
+                            except (OSError, IOError) as fallback_ex:
+                                log.error("Copy+delete fallback failed for %s: %s", src_file, fallback_ex)
+                                # Continue with other files even if one fails
+                                continue
+            
+            # Try to remove old author directory if empty
+            if os.path.exists(os.path.split(path)[0]) and not os.listdir(os.path.split(path)[0]):
                 try:
                     shutil.rmtree(os.path.split(path)[0])
                 except (IOError, OSError) as ex:
                     log.error("Deleting authorpath for book %s failed: %s", localbook.id, ex)
+        
         # change location in database to new author/title path
         localbook.path = os.path.join(new_author_dir, new_titledir).replace('\\', '/')
     except OSError as ex:

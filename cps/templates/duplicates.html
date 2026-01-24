@@ -4,10 +4,10 @@
 <style>
   .duplicate-group {
       margin-bottom: 35px;
-      border: 1px solid #e0e6ed;
+      border: none;
       border-radius: 12px;
       padding: 25px;
-      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      background: #1c28328a;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.08);
       transition: all 0.3s ease;
   }
@@ -19,33 +19,33 @@
       margin-bottom: 25px;
       padding-bottom: 15px;
       border-bottom: 3px solid #e74c3c;
-      background: linear-gradient(90deg, rgba(231, 76, 60, 0.05) 0%, rgba(231, 76, 60, 0.02) 100%);
+      background: linear-gradient(90deg, rgba(231, 76, 60, 0.2) 0%, rgba(231, 76, 60, 0.04) 100%);
       border-radius: 8px;
-      padding: 15px;
+      padding: 3rem;
       margin: -10px -10px 25px -10px;
   }
   .duplicate-title {
       font-size: 22px;
       font-weight: 600;
       margin-bottom: 8px;
-      color: #2c3e50;
+      color: white;
       text-shadow: 0 1px 3px rgba(44, 62, 80, 0.1);
   }
   .duplicate-author {
       font-size: 16px;
-      color: #34495e;
+      color: var(--color-primary);
       margin-bottom: 8px;
       font-weight: 500;
   }
   .duplicate-count {
-      color: #e74c3c;
+      color: white;
       font-weight: 700;
-      font-style: italic;
-      background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(231, 76, 60, 0.05) 100%);
+      background: linear-gradient(135deg, rgb(231 76 60 / 51%) 0%, rgb(231 76 60 / 42%) 100%);
       padding: 6px 12px;
       border-radius: 6px;
       display: inline-block;
       border: 1px solid rgba(231, 76, 60, 0.2);
+      text-transform: capitalize;
   }
   .books-grid {
       display: flex;
@@ -57,9 +57,9 @@
       display: flex;
       max-width: 450px;
       padding: 20px;
-      border: 1px solid #e1e8ed;
+      border: none;
       border-radius: 10px;
-      background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+      background: #34455185;
       box-shadow: 0 3px 6px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
@@ -86,7 +86,7 @@
   }
   .book-item.selected {
       border-color: #e74c3c;
-      background: linear-gradient(145deg, #fff5f5 0%, #fef2f2 100%);
+      background: #64859d78;
       box-shadow: 0 4px 8px rgba(231, 76, 60, 0.15), 0 2px 4px rgba(231, 76, 60, 0.1);
   }
   .book-item.selected::before {
@@ -125,28 +125,28 @@
       accent-color: #e74c3c;
       transform: scale(1.2);
   }
-  .book-title {
-      font-weight: 600;
-      margin-bottom: 12px;
-      line-height: 1.3;
-      color: #2c3e50;
-      font-size: 15px;
-      text-shadow: 0 1px 2px rgba(44, 62, 80, 0.1);
-  }
+    .book-title {
+        font-weight: 600;
+        margin-bottom: 12px;
+        line-height: 1.3;
+        color: white;
+        font-size: 15px;
+        text-shadow: 0 1px 2px rgba(44, 62, 80, 0.1);
+    }
   .book-meta {
-      color: #34495e;
+      color: white;
       font-size: 13px;
       line-height: 1.5;
       font-weight: 400;
   }
   .book-meta div {
       margin-bottom: 6px;
-      color: #7d7d7d !important;
+      color: white !important;
   }
-  .book-meta strong {
-      color: #2c3e50;
-      font-weight: 600;
-  }
+.book-meta strong {
+    color: var(--color-primary);
+    font-weight: 600;
+}
 .no-duplicates {
     text-align: center;
     padding: 60px 20px;
@@ -216,9 +216,9 @@
   .bulk-actions {
       margin-bottom: 30px;
       padding: 20px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      background: #1c2832;
       border-radius: 10px;
-      border: 1px solid #dee2e6;
+      border: none;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
   .btn {
@@ -259,11 +259,50 @@
       opacity: 0.65;
       cursor: not-allowed;
   }
+    .btn-primary {
+      color: #fff;
+      background-color: #3498db;
+      border-color: #3498db;
+    }
+    .btn-primary:hover:not(.disabled) {
+      background-color: #2980b9;
+      border-color: #2471a3;
+    }
+    .btn-primary.disabled {
+      background-color: #6c757d;
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
   .selection-info {
-      margin-left: 15px;
       font-weight: 600;
-      color: #28a745;
+      color: white;
       text-shadow: 0 1px 2px rgba(40, 167, 69, 0.1);
+      background: #cc7b1969;
+      padding: 1rem;
+      max-height: 37px;
+      border-radius: 4px;
+      text-transform: capitalize;
+      line-height: normal;
+      padding-inline: 1.5rem;
+  }
+  div.bulk-actions > div.form-inline {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 1rem;
+  }
+  .glyphicon.glyphicon-refresh {
+      font-size: smaller !important;
+      margin-right: 6px;
+  }
+  .container-fluid img {
+      display: block;
+      width: max(10vw,120px) !important;
+      height: auto;
+      max-width: 26rem;
+      margin: auto;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
   }
   @media (max-width: 768px) {
     .books-grid {
@@ -284,23 +323,102 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <p style="color: whitesmoke; margin-bottom: 2rem;" class="text-muted">{{_('Books with matching titles, authors, and languages. Books in different languages are not considered duplicates.')}}</p>
       
-      {% if duplicate_groups %}
-        <div class="bulk-actions">
-          <div class="form-inline">
+      <!-- Action bar - always show for manual scan trigger -->
+      <div class="bulk-actions" style="margin-bottom: 20px;">
+        <div class="form-inline">
+          <button type="button" class="btn btn-sm btn-default" id="trigger_scan">
+            <span class="glyphicon glyphicon-refresh"></span> {{_('Scan for Duplicates Now')}}
+          </button>
+          <button type="button" class="btn btn-sm btn-danger" id="cancel_scan" style="display: none;">
+            <span class="glyphicon glyphicon-ban-circle"></span> {{_('Cancel Scan')}}
+          </button>
+          {% if duplicate_groups %}
             <button type="button" class="btn btn-sm btn-default" id="select_all">{{_('Select Duplicates')}}</button>
             <button type="button" class="btn btn-sm btn-default" id="select_none">{{_('Select None')}}</button>
             <button type="button" class="btn btn-sm btn-danger disabled" id="delete_selected" aria-disabled="true">{{_('Delete Selected')}}</button>
             <span id="selection_count" class="selection-info"></span>
+          {% endif %}
+        </div>
+
+        <div id="scan_progress_container" style="margin-top: 12px; display: none;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="flex: 1; background: #22303a; border-radius: 6px; overflow: hidden; height: 10px;">
+              <div id="scan_progress_bar" style="height: 10px; width: 0%; background: linear-gradient(90deg, #2ecc71, #3498db);"></div>
+            </div>
+            <span id="scan_progress_label" style="color: #ddd; font-size: 12px;">0%</span>
+          </div>
+          <div id="scan_progress_message" style="margin-top: 6px; color: #bbb; font-size: 12px;"></div>
+        </div>
+
+        {% if next_scan_run %}
+          <div style="margin-top: 10px; color: #bbb; font-size: 12px;">
+            {{_('Next scheduled scan:')}} <span id="next_scan_run">{{ next_scan_run }}</span>
+          </div>
+        {% endif %}
+      </div>
+      
+      {% if duplicate_groups %}
+
+        <!-- Auto-Resolution Section -->
+        <div class="settings-container" style="margin-bottom: 30px; padding: 25px; background: #1c28328a; border-radius: 10px; margin-inline: 0rem; max-width: none;">
+          <h4 style="color: white; margin-bottom: 15px; display: flex; align-items: center;">
+            <span class="glyphicon glyphicon-cog" style="margin-right: 10px;"></span>
+            {{_('Auto-Resolve Duplicates')}}
+          </h4>
+          
+          <p style="color: #bbb; margin-bottom: 20px;">
+            {{_('Automatically resolve all duplicate groups by keeping one book and deleting others based on a strategy.')}}
+          </p>
+          
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label for="resolution_strategy" style="color: white; font-weight: 600;">{{_('Strategy:')}}</label>
+            <select id="resolution_strategy" class="form-control" style="background: #1c2832; color: white; border: 1px solid #444;">
+              <option value="newest">{{_('Keep Newest - Delete older copies, keep the most recently added')}}</option>
+              <option value="oldest">{{_('Keep Oldest - Delete newer copies, keep the earliest added')}}</option>
+              <option value="merge">{{_('Merge Formats - Merge formats into the newest book, delete the rest')}}</option>
+              <option value="highest_quality_format">{{_('Keep Highest Quality Format - Prefer EPUB > KEPUB > AZW3 > MOBI > PDF')}}</option>
+              <option value="most_metadata">{{_('Keep Most Metadata - Keep book with most complete information')}}</option>
+              <option value="largest_file_size">{{_('Keep Largest File Size - Keep book with largest total file size')}}</option>
+            </select>
+            
+            <button type="button" class="btn btn-default" id="preview_resolution">
+              <span class="glyphicon glyphicon-eye-open"></span> {{_('Preview')}}
+            </button>
+            
+            <button type="button" class="btn btn-danger disabled" id="execute_resolution" aria-disabled="true">
+              <span class="glyphicon glyphicon-flash"></span> {{_('Execute Resolution')}}
+            </button>
+          </div>
+          
+          <div class="cwa-settings-tip" style="margin-top: 15px; background: rgba(231, 76, 60, 0.15); border-left: 3px solid #e74c3c; padding: 12px; border-radius: 4px;">
+            <strong style="color: #e74c3c;">⚠️ {{_('Warning:')}}</strong>
+            <span style="color: #ddd;">{{_('This will permanently delete books. Original files will be backed up to')}} <code style="background: #2a3441; padding: 2px 6px; border-radius: 3px; color: #f39c12; line-break: anywhere;">/config/processed_books/duplicate_resolutions/</code></span>
           </div>
         </div>
 
         <div class="duplicates-container">
           {% for group in duplicate_groups %}
-          <div class="duplicate-group">
-            <div class="duplicate-header">
-              <div class="duplicate-title">{{ group.title }}</div>
-              <div class="duplicate-author">by {{ group.author }}</div>
-              <div class="duplicate-count">{{ group.count }} duplicate{{ 's' if group.count > 1 else '' }} found</div>
+          <div class="duplicate-group" data-group-hash="{{ group.group_hash }}">
+            <div class="duplicate-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="flex: 1;">
+                <div class="duplicate-title">{{ group.title }}</div>
+                <div class="duplicate-author">by {{ group.author }}</div>
+                <div class="duplicate-count">{{ group.count }} duplicate{{ 's' if group.count > 1 else '' }} found</div>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <button type="button"
+                        class="merge-selected-btn disabled"
+                        aria-disabled="true"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; margin-left: 10px;">
+                  <span class="glyphicon glyphicon-link"></span> {{_('Merge Selected')}}</button>
+                <button class="dismiss-duplicate-btn" 
+                        data-group-hash="{{ group.group_hash }}" 
+                        data-dismissed="false"
+                        title="{{_('Dismiss this duplicate group')}}"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; margin-left: 10px;">
+                  <span class="glyphicon glyphicon-eye-close"></span> {{_('Dismiss')}}
+                </button>
+              </div>
             </div>
             
             <div class="books-grid">
@@ -365,6 +483,53 @@
       <div class="modal-footer">
         <input id="delete_selected_confirm" type="button" class="btn btn-danger" value="{{_('Delete')}}" name="delete_selected_confirm" data-dismiss="modal">
         <button id="delete_selected_abort" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Merge Confirmation Modal -->
+<div class="modal fade" id="merge_selected_modal" role="dialog" aria-labelledby="mergeSelectedLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-center">
+        <span>{{_('Merge Books')}}</span>
+      </div>
+      <div class="modal-body">
+        <p></p>
+        <div class="text-left">{{_('The following book will be kept:')}}</div>
+        <p></p>
+        <div class="text-left" id="display-merge-target-book" style="font-weight: bold; color: #28a745;"></div>
+        <p></p>
+        <div class="text-left">{{_('The following books will be merged into it (and then deleted):')}}</div>
+        <p></p>
+        <div class="text-left" id="display-merge-source-books"></div>
+        <p></p>
+        <div class="text-left"><strong>{{_('Note: File formats from source books will be added to the target book.')}}</strong></div>
+      </div>
+      <div class="modal-footer">
+        <input id="merge_selected_confirm" type="button" class="btn btn-primary" value="{{_('Merge')}}" name="merge_selected_confirm" data-dismiss="modal">
+        <button id="merge_selected_abort" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Resolution Preview Modal -->
+<div class="modal fade" id="resolution_preview_modal" role="dialog">
+  <div class="modal-dialog modal-lg" style="width: 50%; max-width: 1200px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #e59029; color: white;">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">&times;</button>
+        <h4 class="modal-title">
+          <span class="glyphicon glyphicon-eye-open"></span> {{_('Resolution Preview')}}
+        </h4>
+      </div>
+      <div class="modal-body" id="resolution_preview_body" style="max-height: 600px; overflow-y: auto; padding: 3rem;">
+        <!-- Preview content will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{_('Close')}}</button>
       </div>
     </div>
   </div>

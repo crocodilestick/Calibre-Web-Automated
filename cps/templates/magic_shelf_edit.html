@@ -63,6 +63,23 @@
     border: 1px solid #5a2d2d;
     color: #ff9090;
 }
+
+/* Date Format Help Tooltips */
+.date-format-help {
+    margin-top: 5px;
+    padding: 8px 12px;
+    background: #21252b;
+    border: 1px solid #3e444c;
+    border-radius: 4px;
+    color: #90b8e0;
+    font-size: 12px;
+    display: none;
+}
+.date-format-help.warning {
+    background: #3a2e1e;
+    border-color: #5a4d2d;
+    color: #ffcc66;
+}
 .preview-book-list {
     list-style: none;
     padding-left: 0;
@@ -231,6 +248,31 @@ div.help-panel > .panel-body {
     background: #292d32;
     padding: 0.5rem;
     padding-inline: 1rem;
+}
+
+/* Date format hint styling - matches preview results box */
+.date-format-hint {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    background: #1a1d21;
+    border: 1px solid #3a3d41;
+    border-radius: 4px;
+    border-left: 4px solid #5bc0de;
+}
+
+.date-format-hint .hint-icon {
+    color: #5bc0de;
+    margin-right: 0.5rem;
+}
+
+.date-format-hint .hint-format {
+    color: #cc7b19;
+    font-weight: bold;
+}
+
+.date-format-hint.show {
+    display: block;
     border-radius: 4px;
     border: 1px solid #3e444c;
 }
@@ -349,6 +391,19 @@ div.help-panel > .panel-body {
                         <small class="form-text text-muted">Only works if Kobo integration is enabled</small>
                     </div>
 
+                    <!-- Public Shelf Checkbox (only for custom shelves with permission) -->
+                    {% if current_user.role_edit_shelfs() and not (shelf and shelf.is_system) %}
+                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                        <label>
+                            <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-is-public" {{ 'checked' if shelf and shelf.is_public == 1 else '' }}>
+                            {{_('Share with Everyone (Public)')}}
+                        </label>
+                        <small class="form-text text-muted">
+                            {{_('Other users can view this shelf. Users with "Edit Public Shelves" permission can edit/delete it.')}}
+                        </small>
+                    </div>
+                    {% endif %}
+
                     <hr>
 
                     <!-- Rules Builder -->
@@ -357,6 +412,12 @@ div.help-panel > .panel-body {
                         <span class="glyphicon space glyphicon-question-sign" data-toggle="tooltip" title="Define conditions that books must match to appear in this shelf"></span>
                     </h4>
                     <div id="builder"></div>
+                    
+                    <!-- Date Format Hint (shown when date fields are used) -->
+                    <div id="date-format-hint" class="date-format-hint">
+                        <span class="glyphicon glyphicon-info-sign hint-icon"></span>
+                        <strong>Date Format:</strong> Use <span class="hint-format">YYYY-MM-DD</span> format for date fields (e.g., 2024-01-15)
+                    </div>
                     
                     <!-- Preview Results -->
                     <div id="preview-results" class="preview-results">
@@ -378,9 +439,20 @@ div.help-panel > .panel-body {
                             <span class="glyphicon space glyphicon-remove"></span> Cancel
                         </a>
                         {% if shelf %}
-                        <button type="button" class="btn btn-danger pull-right" id="delete-shelf-btn">
-                            <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
-                        </button>
+                            {% if shelf.is_system %}
+                            <button type="button" 
+                                    class="btn btn-danger pull-right" 
+                                    id="delete-shelf-btn" 
+                                    disabled
+                                    data-toggle="tooltip"
+                                    title="{{_('System shelves cannot be deleted. You can hide them in your user profile settings.')}}">
+                                <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
+                            </button>
+                            {% else %}
+                            <button type="button" class="btn btn-danger pull-right" id="delete-shelf-btn">
+                                <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
+                            </button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </form>
@@ -570,12 +642,84 @@ $(function() {
 
     var rules = {{ rules_json|safe }};
 
+    // Date validation helper
+    function isValidDate(dateString) {
+        if (!dateString) return true; // Empty is valid (will be handled by is_empty operator)
+        var regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(dateString)) return false;
+        var date = new Date(dateString);
+        var timestamp = date.getTime();
+        if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) return false;
+        return date.toISOString().startsWith(dateString);
+    }
+
+    // Show/hide date format hint based on rules
+    function checkForDateFields() {
+        var hasDateField = false;
+        
+        // Check all filter dropdowns for date fields
+        $('#builder .rule-filter-container select').each(function() {
+            var filterId = $(this).val();
+            if (filterId === 'pubdate' || filterId === 'timestamp') {
+                hasDateField = true;
+                return false; // break out of each loop
+            }
+        });
+        
+        if (hasDateField) {
+            $('#date-format-hint').addClass('show');
+        } else {
+            $('#date-format-hint').removeClass('show');
+        }
+    }
+
     $('#builder').queryBuilder({
         plugins: ['bt-tooltip-errors'],
         filters: fields,
         operators: operators,
         rules: rules
     });
+    
+    // Check for date fields on initialization and after changes
+    $('#builder').on('afterCreateRuleInput.queryBuilder afterUpdateRuleFilter.queryBuilder afterUpdateRuleValue.queryBuilder afterDeleteRule.queryBuilder afterUpdateRuleOperator.queryBuilder', function(e) {
+        setTimeout(function() {
+            checkForDateFields();
+        }, 100);
+        
+        // Validate date inputs
+        $(this).find('input[type="text"]').each(function() {
+            var $input = $(this);
+            var $rule = $input.closest('.rule-container');
+            var filterId = $rule.find('.rule-filter-container select').val();
+            
+            if (filterId === 'pubdate' || filterId === 'timestamp') {
+                $input.off('blur.dateValidation').on('blur.dateValidation', function() {
+                    var value = $(this).val();
+                    if (value && !isValidDate(value)) {
+                        $(this).css('border-color', '#d9534f');
+                        if (!$(this).next('.date-error').length) {
+                            $(this).after('<div class="date-error" style="color: #d9534f; font-size: 12px; margin-top: 4px;">Invalid format. Use YYYY-MM-DD (e.g., 2024-01-15)</div>');
+                        }
+                    } else {
+                        $(this).css('border-color', '');
+                        $(this).next('.date-error').remove();
+                    }
+                });
+            }
+        });
+    });
+    
+    // Also listen for direct changes on filter dropdowns
+    $('#builder').on('change', '.rule-filter-container select', function() {
+        setTimeout(function() {
+            checkForDateFields();
+        }, 100);
+    });
+    
+    // Initial check
+    setTimeout(function() {
+        checkForDateFields();
+    }, 100);
 
     // Preview Rules Functionality
     $('#preview-btn').on('click', function() {
@@ -651,7 +795,8 @@ $(function() {
             name: shelfName,
             icon: $('#shelf-icon').val(),
             rules: rules,
-            kobo_sync: $('#shelf-kobo-sync').is(':checked')
+            kobo_sync: $('#shelf-kobo-sync').is(':checked'),
+            is_public: $('#shelf-is-public').is(':checked')
         };
 
         console.log('Submitting shelf data:', shelfData);

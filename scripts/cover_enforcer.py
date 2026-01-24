@@ -292,30 +292,69 @@ class Enforcer:
 
 
     def read_log(self, auto=True, log_path: str = "None") -> dict:
-        """Reads pertinent information from the given log file, adds the book_id from the log name and returns the info as a dict"""
+        """Reads pertinent information from the given log file, adds the book_id from the log name and returns the info as a dict.
+        Returns None if the file doesn't exist after retries (handles race conditions)."""
         if auto:
+            file_path = f'{change_logs_dir}/{self.args.log}'
             book_id = (self.args.log.split('-')[1]).split('.')[0]
             timestamp_raw = self.args.log.split('-')[0]
-            timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
-
-            log_info = {}
-            with open(f'{change_logs_dir}/{self.args.log}', 'r', encoding='utf-8') as f:
-                log_info = json.load(f)
-            log_info['book_id'] = book_id
-            log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
         else:
+            file_path = log_path
             log_name = os.path.basename(log_path)
             book_id = (log_name.split('-')[1]).split('.')[0]
             timestamp_raw = log_name.split('-')[0]
+        
+        try:
             timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
+        except ValueError as e:
+            print(f"[cover-metadata-enforcer] ERROR: Invalid timestamp format in log filename: {e}", flush=True)
+            return None
 
-            log_info = {}
-            with open(log_path, 'r', encoding='utf-8') as f:
-                log_info = json.load(f)
-            log_info['book_id'] = book_id
-            log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-
-        return log_info
+        # Retry logic to handle race conditions where file is detected but not yet fully written
+        max_retries = 3
+        retry_delay = 0.5  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                # Check if file exists first
+                if not os.path.exists(file_path):
+                    if attempt < max_retries - 1:
+                        time.sleep(retry_delay)
+                        continue
+                    else:
+                        print(f"[cover-metadata-enforcer] WARNING: Log file '{os.path.basename(file_path)}' not found after {max_retries} attempts. "
+                              f"This may be due to a race condition or the file was already processed and deleted.", flush=True)
+                        return None
+                
+                # Try to read the file
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    log_info = json.load(f)
+                
+                log_info['book_id'] = book_id
+                log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                return log_info
+                
+            except FileNotFoundError:
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    continue
+                else:
+                    print(f"[cover-metadata-enforcer] WARNING: Log file '{os.path.basename(file_path)}' not found after {max_retries} attempts. "
+                          f"This may be due to a race condition or the file was already processed and deleted.", flush=True)
+                    return None
+            except json.JSONDecodeError as e:
+                if attempt < max_retries - 1:
+                    # File might still be being written
+                    time.sleep(retry_delay)
+                    continue
+                else:
+                    print(f"[cover-metadata-enforcer] ERROR: Failed to parse log file '{os.path.basename(file_path)}': {e}", flush=True)
+                    return None
+            except Exception as e:
+                print(f"[cover-metadata-enforcer] ERROR: Unexpected error reading log file '{os.path.basename(file_path)}': {e}", flush=True)
+                return None
+        
+        return None
 
 
     def get_book_dir_from_log(self, log_info: dict) -> str:
@@ -554,6 +593,9 @@ class Enforcer:
             for log in log_files:
                 if log.endswith('.json'):
                     log_info = self.read_log(auto=False, log_path=log)
+                    # Skip if log_info is None (file was deleted or invalid)
+                    if log_info is None:
+                        continue
                     book_dir = self.get_book_dir_from_log(log_info)
                     book_objects = self.enforce_cover(book_dir)
                     if book_objects:
@@ -626,6 +668,12 @@ def main():
     elif args.log is not None and args.dir is None and args.all is False and args.list is False and args.history is False:
         ### log passed: (args.log), no dir
         log_info = enforcer.read_log()
+        
+        # Handle case where log file doesn't exist (race condition)
+        if log_info is None:
+            print(f"[cover-metadata-enforcer] Skipping processing due to missing or invalid log file. This is normal if the file was already processed.")
+            sys.exit(0)
+        
         book_dir = enforcer.get_book_dir_from_log(log_info)
         if enforcer.enforcer_on:
             book_objects = enforcer.enforce_cover(book_dir)

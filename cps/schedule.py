@@ -69,117 +69,7 @@ def register_scheduled_tasks(reconnect=True):
                                                                          timezone=timezone_info),
                            name="end scheduled task")
 
-        # Register Hardcover auto-fetch task if enabled
-        try:
-            import sys as _sys
-            if '/app/calibre-web-automated/scripts/' not in _sys.path:
-                _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-            from cwa_db import CWA_DB
-            from os import getenv
-            
-            cwa_db = CWA_DB()
-            cwa_settings = cwa_db.get_cwa_settings()
-            
-            # Check if enabled and token available
-            enabled = bool(cwa_settings.get('hardcover_auto_fetch_enabled', False))
-            token_available = bool(
-                getattr(config, "config_hardcover_token", None) or 
-                getenv("HARDCOVER_TOKEN")
-            )
-            
-            if enabled and token_available:
-                schedule_type = cwa_settings.get('hardcover_auto_fetch_schedule', 'weekly')
-                schedule_day = cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday')
-                schedule_hour = int(cwa_settings.get('hardcover_auto_fetch_schedule_hour', 2))
-                min_confidence = float(cwa_settings.get('hardcover_auto_fetch_min_confidence', 0.85))
-                batch_size = int(cwa_settings.get('hardcover_auto_fetch_batch_size', 50))
-                rate_limit = float(cwa_settings.get('hardcover_auto_fetch_rate_limit', 5.0))
-                
-                def run_hardcover_fetch():
-                    """Wrapper to enqueue Hardcover auto-fetch task"""
-                    task = TaskAutoHardcoverID(
-                        min_confidence=min_confidence,
-                        batch_size=batch_size,
-                        rate_limit_delay=rate_limit
-                    )
-                    WorkerThread.add('System', task, hidden=False)
-                
-                # Map day names to APScheduler format
-                day_map = {
-                    'monday': 'mon', 'tuesday': 'tue', 'wednesday': 'wed',
-                    'thursday': 'thu', 'friday': 'fri', 'saturday': 'sat', 'sunday': 'sun'
-                }
-                
-                if schedule_type == '15min':
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=IntervalTrigger(minutes=15, timezone=timezone_info),
-                        name="hardcover_auto_fetch_15min"
-                    )
-                elif schedule_type == '30min':
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=IntervalTrigger(minutes=30, timezone=timezone_info),
-                        name="hardcover_auto_fetch_30min"
-                    )
-                elif schedule_type == '1hour':
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=IntervalTrigger(hours=1, timezone=timezone_info),
-                        name="hardcover_auto_fetch_1hour"
-                    )
-                elif schedule_type == '2hours':
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=IntervalTrigger(hours=2, timezone=timezone_info),
-                        name="hardcover_auto_fetch_2hours"
-                    )
-                elif schedule_type == '4hours':
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=IntervalTrigger(hours=4, timezone=timezone_info),
-                        name="hardcover_auto_fetch_4hours"
-                    )
-                elif schedule_type == '6hours':
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=IntervalTrigger(hours=6, timezone=timezone_info),
-                        name="hardcover_auto_fetch_6hours"
-                    )
-                elif schedule_type == '12hours':
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=IntervalTrigger(hours=12, timezone=timezone_info),
-                        name="hardcover_auto_fetch_12hours"
-                    )
-                elif schedule_type == 'daily':
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=CronTrigger(hour=schedule_hour, minute=0, timezone=timezone_info),
-                        name="hardcover_auto_fetch_daily"
-                    )
-                elif schedule_type == 'weekly':
-                    day_abbr = day_map.get(schedule_day.lower(), 'sun')
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=CronTrigger(day_of_week=day_abbr, hour=schedule_hour, minute=0, timezone=timezone_info),
-                        name="hardcover_auto_fetch_weekly"
-                    )
-                elif schedule_type == 'monthly':
-                    # For monthly, schedule_day contains day of month (1-28)
-                    try:
-                        day_of_month = int(schedule_day) if str(schedule_day).isdigit() else 1
-                        day_of_month = max(1, min(28, day_of_month))  # Clamp to 1-28
-                    except (ValueError, TypeError):
-                        day_of_month = 1
-                    scheduler.schedule(
-                        func=run_hardcover_fetch,
-                        trigger=CronTrigger(day=day_of_month, hour=schedule_hour, minute=0, timezone=timezone_info),
-                        name="hardcover_auto_fetch_monthly"
-                    )
-        except Exception as ex:
-            # Don't break scheduling if Hardcover setup fails
-            pass
+        _schedule_hardcover_auto_fetch(scheduler, timezone_info)
 
         # Kick-off tasks, if they should currently be running
         if should_task_be_running(start, duration):
@@ -339,6 +229,88 @@ def _schedule_duplicate_scan(scheduler, timezone_info):
 
         scheduler.schedule_task(lambda: TaskDuplicateScan(full_scan=True, trigger_type='scheduled'),
                                 user='System', trigger=trigger, name='duplicate scan', hidden=False)
+    except Exception:
+        # Scheduling is best-effort; never block startup
+        pass
+
+
+def _schedule_hardcover_auto_fetch(scheduler, timezone_info):
+    """Schedule background Hardcover auto-fetch based on CWA settings."""
+    try:
+        import sys as _sys
+        if '/app/calibre-web-automated/scripts/' not in _sys.path:
+            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+        from .tasks.auto_hardcover_id import TaskAutoHardcoverID
+        from os import getenv
+
+        db = CWA_DB()
+        cwa_settings = db.get_cwa_settings()
+        
+        # Check if enabled and token available
+        enabled = bool(cwa_settings.get('hardcover_auto_fetch_enabled', False))
+        token_available = bool(
+            getattr(config, "config_hardcover_token", None) or 
+            getenv("HARDCOVER_TOKEN")
+        )
+        
+        if not enabled or not token_available:
+            return
+
+        schedule_type = cwa_settings.get('hardcover_auto_fetch_schedule', 'weekly')
+        schedule_day = cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday')
+        schedule_hour = int(cwa_settings.get('hardcover_auto_fetch_schedule_hour', 2))
+        min_confidence = float(cwa_settings.get('hardcover_auto_fetch_min_confidence', 0.85))
+        batch_size = int(cwa_settings.get('hardcover_auto_fetch_batch_size', 50))
+        rate_limit = float(cwa_settings.get('hardcover_auto_fetch_rate_limit', 5.0))
+        
+        # Create lambda that returns task instance with configured settings
+        task_lambda = lambda: TaskAutoHardcoverID(
+            min_confidence=min_confidence,
+            batch_size=batch_size,
+            rate_limit_delay=rate_limit
+        )
+        
+        # Map day names to APScheduler format
+        day_map = {
+            'monday': 'mon', 'tuesday': 'tue', 'wednesday': 'wed',
+            'thursday': 'thu', 'friday': 'fri', 'saturday': 'sat', 'sunday': 'sun'
+        }
+        
+        # Determine trigger based on schedule type
+        trigger = None
+        name = "hardcover auto-fetch"
+        
+        if schedule_type == '15min':
+            trigger = IntervalTrigger(minutes=15, timezone=timezone_info)
+        elif schedule_type == '30min':
+            trigger = IntervalTrigger(minutes=30, timezone=timezone_info)
+        elif schedule_type == '1hour':
+            trigger = IntervalTrigger(hours=1, timezone=timezone_info)
+        elif schedule_type == '2hours':
+            trigger = IntervalTrigger(hours=2, timezone=timezone_info)
+        elif schedule_type == '4hours':
+            trigger = IntervalTrigger(hours=4, timezone=timezone_info)
+        elif schedule_type == '6hours':
+            trigger = IntervalTrigger(hours=6, timezone=timezone_info)
+        elif schedule_type == '12hours':
+            trigger = IntervalTrigger(hours=12, timezone=timezone_info)
+        elif schedule_type == 'daily':
+            trigger = CronTrigger(hour=schedule_hour, minute=0, timezone=timezone_info)
+        elif schedule_type == 'weekly':
+            day_abbr = day_map.get(schedule_day.lower(), 'sun')
+            trigger = CronTrigger(day_of_week=day_abbr, hour=schedule_hour, minute=0, timezone=timezone_info)
+        elif schedule_type == 'monthly':
+            # For monthly, schedule_day contains day of month (1-28)
+            try:
+                day_of_month = int(schedule_day) if str(schedule_day).isdigit() else 1
+                day_of_month = max(1, min(28, day_of_month))  # Clamp to 1-28
+            except (ValueError, TypeError):
+                day_of_month = 1
+            trigger = CronTrigger(day=day_of_month, hour=schedule_hour, minute=0, timezone=timezone_info)
+        
+        if trigger:
+            scheduler.schedule_task(task_lambda, user='System', trigger=trigger, name=name, hidden=False)
     except Exception:
         # Scheduling is best-effort; never block startup
         pass

@@ -86,14 +86,37 @@ class CWA_DB:
 
         default_settings = {}
         for line in settings_lines:
-            components = line.split(' ')
-            setting_name = components[0]
-            setting_value = components[3]
-
-            try:
-                setting_value = int(setting_value)
-            except ValueError:
-                setting_value = setting_value.replace('"', '')
+            # Extract setting name and DEFAULT value more carefully
+            # Format: setting_name TYPE DEFAULT value [NOT NULL]
+            if ' DEFAULT ' not in line:
+                continue
+                
+            setting_name = line.split()[0]
+            
+            # Extract everything after DEFAULT
+            default_start = line.index(' DEFAULT ') + len(' DEFAULT ')
+            remainder = line[default_start:].strip()
+            
+            # Handle different value types
+            if remainder.startswith("'"):
+                # String value with single quotes - could be '', or 'value', or JSON
+                # Find the matching closing quote
+                end_quote = remainder.index("'", 1)
+                setting_value = remainder[1:end_quote]  # Extract content between quotes
+            elif ' ' in remainder:
+                # Value followed by other keywords (like NOT NULL)
+                setting_value = remainder.split()[0]
+                try:
+                    setting_value = int(setting_value)
+                except ValueError:
+                    pass
+            else:
+                # Simple value at end of line
+                setting_value = remainder
+                try:
+                    setting_value = int(setting_value)
+                except ValueError:
+                    pass
 
             default_settings |= {setting_name:setting_value}
 
@@ -118,6 +141,9 @@ class CWA_DB:
         # This handles cases where schema default was updated after column was added
         if newly_added_settings:
             self.sync_new_settings_with_defaults(newly_added_settings)
+        
+        # Fix for issue #903: Repair incorrectly parsed default values from older versions
+        self.fix_malformed_setting_values()
         
         # Delete any settings in the db but not in the schema file
         for setting in cwa_setting_names:
@@ -161,6 +187,49 @@ class CWA_DB:
                     print(f"[cwa-db]   - {update}")
         except Exception as e:
             print(f"[cwa-db] Warning: Failed to sync new settings with defaults: {e}")
+
+
+    def fix_malformed_setting_values(self) -> None:
+        """Fix settings that may have been incorrectly parsed in older versions.
+        
+        Issue #903: Old parser would save '' as literal two-quote string and truncate JSON.
+        This migration fixes existing databases with malformed values.
+        """
+        try:
+            self.cur.execute("SELECT duplicate_scan_cron, duplicate_format_priority FROM cwa_settings")
+            row = self.cur.fetchone()
+            if not row:
+                return
+            
+            cron_value, format_priority = row
+            fixes_made = []
+            
+            # Fix duplicate_scan_cron if it's the literal string "''"
+            if cron_value == "''":
+                self.cur.execute("UPDATE cwa_settings SET duplicate_scan_cron = ''")
+                fixes_made.append("duplicate_scan_cron: removed literal quotes")
+            
+            # Fix duplicate_format_priority if it's malformed (not valid JSON or missing formats)
+            if format_priority:
+                try:
+                    import json
+                    parsed = json.loads(format_priority)
+                    # Check if it has at least the basic formats
+                    if not isinstance(parsed, dict) or 'EPUB' not in parsed:
+                        raise ValueError("Missing expected format data")
+                except (json.JSONDecodeError, ValueError):
+                    # Reset to default if malformed
+                    default_json = self.cwa_default_settings.get('duplicate_format_priority', '{}')
+                    self.cur.execute("UPDATE cwa_settings SET duplicate_format_priority = ?", (default_json,))
+                    fixes_made.append("duplicate_format_priority: reset to default due to malformed JSON")
+            
+            if fixes_made:
+                self.con.commit()
+                print(f"[cwa-db] Fixed {len(fixes_made)} malformed setting value(s) from previous version:")
+                for fix in fixes_made:
+                    print(f"[cwa-db]   - {fix}")
+        except Exception as e:
+            print(f"[cwa-db] Warning: Failed to fix malformed setting values: {e}")
 
 
     def add_missing_setting(self, setting) -> bool:

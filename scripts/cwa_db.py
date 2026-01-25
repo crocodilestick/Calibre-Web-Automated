@@ -635,6 +635,29 @@ class CWA_DB:
         except Exception as e:
             print(f"[cwa-db] ERROR marking scheduled job cancelled: {e}")
 
+    def scheduled_cancel_for_book(self, book_id: int) -> int:
+        """Cancel all scheduled jobs (auto-send, etc.) for a specific book
+        
+        Args:
+            book_id: The book ID whose scheduled jobs should be cancelled
+            
+        Returns:
+            int: Number of jobs cancelled
+        """
+        try:
+            self.cur.execute(
+                "UPDATE cwa_scheduled_jobs SET state='cancelled' WHERE book_id=? AND state='scheduled'",
+                (int(book_id),)
+            )
+            self.con.commit()
+            cancelled_count = self.cur.rowcount
+            if cancelled_count > 0:
+                print(f"[cwa-db] Cancelled {cancelled_count} scheduled job(s) for book {book_id}", flush=True)
+            return cancelled_count
+        except Exception as e:
+            print(f"[cwa-db] ERROR cancelling scheduled jobs for book {book_id}: {e}", flush=True)
+            return 0
+
     def scheduled_update_job_id(self, row_id: int, scheduler_job_id: str) -> None:
         try:
             self.cur.execute("UPDATE cwa_scheduled_jobs SET scheduler_job_id=? WHERE id=?", (scheduler_job_id, int(row_id)))

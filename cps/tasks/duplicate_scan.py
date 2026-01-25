@@ -74,6 +74,9 @@ class TaskDuplicateScan(CalibreTask):
             if self.full_scan:
                 duplicate_groups = find_duplicate_books(include_dismissed=False, user_id=self.user_id)
                 self.result_count = len(duplicate_groups)
+                
+                # Store the duplicate groups for passing to auto-resolution
+                self.found_duplicate_groups = duplicate_groups
 
                 if self.stat in (STAT_CANCELLED, STAT_ENDED):
                     return
@@ -104,6 +107,11 @@ class TaskDuplicateScan(CalibreTask):
                 last_scanned_book_id = int(cache_data.get('last_scanned_book_id') or 0)
                 candidate_ids = find_duplicate_candidate_ids_sql(use_title, use_author, user_id=self.user_id,
                                                                 min_book_id=last_scanned_book_id)
+                
+                log.debug("[cwa-duplicates] Incremental scan: last_scanned_book_id=%s, candidate_ids=%s",
+                         last_scanned_book_id, len(candidate_ids) if candidate_ids else 0)
+                print(f"[cwa-duplicates] Incremental scan: last_scanned_book_id={last_scanned_book_id}, "
+                      f"candidates={len(candidate_ids) if candidate_ids else 0}", flush=True)
 
                 max_book_id = 0
                 try:
@@ -175,10 +183,19 @@ class TaskDuplicateScan(CalibreTask):
                         log.warning("[cwa-duplicates] Failed to update incremental cache: %s", str(ex))
 
                     # Result count is unresolved duplicates for this run (exclude dismissed)
-                    self.result_count = len(find_duplicate_books_python(
+                    unresolved_in_candidates = find_duplicate_books_python(
                         use_title, use_author, use_language, use_series, use_publisher, use_format,
                         include_dismissed=False, user_id=self.user_id, candidate_ids=candidate_ids
-                    ))
+                    )
+                    self.result_count = len(unresolved_in_candidates)
+                    
+                    # Store the duplicate groups for passing to auto-resolution
+                    self.found_duplicate_groups = unresolved_in_candidates
+                    
+                    log.debug("[cwa-duplicates] Incremental scan result: %s unresolved groups among candidates",
+                             self.result_count)
+                    print(f"[cwa-duplicates] Incremental scan result: {self.result_count} unresolved duplicate groups", 
+                          flush=True)
 
             self.progress = 1
             if self.full_scan:
@@ -186,6 +203,93 @@ class TaskDuplicateScan(CalibreTask):
             else:
                 self.message = N_('Duplicate scan completed: %(count)s new groups', count=self.result_count)
             self._handleSuccess()
+            
+            # Check if auto-resolution is enabled
+            log.debug("[cwa-duplicates] Scan complete. result_count=%s, trigger_type=%s", 
+                     self.result_count, self.trigger_type)
+            print(f"[cwa-duplicates] Scan complete: {self.result_count} groups found, trigger_type={self.trigger_type}", 
+                  flush=True)
+            
+            if self.result_count > 0:  # Only if duplicates were found
+                try:
+                    auto_resolve_enabled = cwa_db.cwa_settings.get('duplicate_auto_resolve_enabled', 0)
+                    auto_resolve_strategy = cwa_db.cwa_settings.get('duplicate_auto_resolve_strategy', 'newest')
+                    cooldown_minutes = int(cwa_db.cwa_settings.get('duplicate_auto_resolve_cooldown_minutes', 0))
+                    
+                    log.debug("[cwa-duplicates] Auto-resolution settings: enabled=%s, strategy=%s, cooldown=%s min",
+                             auto_resolve_enabled, auto_resolve_strategy, cooldown_minutes)
+                    print(f"[cwa-duplicates] Auto-resolution settings: enabled={auto_resolve_enabled}, "
+                          f"strategy={auto_resolve_strategy}, cooldown={cooldown_minutes} min", flush=True)
+                    
+                    if auto_resolve_enabled:
+                        # Check cooldown period
+                        if cooldown_minutes > 0:
+                            try:
+                                last_resolution = cwa_db.cur.execute("""
+                                    SELECT MAX(timestamp) FROM cwa_duplicate_resolutions 
+                                    WHERE trigger_type='automatic'
+                                """).fetchone()[0]
+                                
+                                if last_resolution:
+                                    from datetime import datetime, timedelta
+                                    last_time = datetime.fromisoformat(last_resolution)
+                                    now = datetime.now()
+                                    elapsed = (now - last_time).total_seconds() / 60
+                                    
+                                    if elapsed < cooldown_minutes:
+                                        remaining = cooldown_minutes - elapsed
+                                        log.info("[cwa-duplicates] Auto-resolution skipped due to cooldown: %.1f minutes remaining", 
+                                                remaining)
+                                        print(f"[cwa-duplicates] Auto-resolution on cooldown ({remaining:.1f} min remaining)", 
+                                              flush=True)
+                                        return
+                            except Exception as e:
+                                log.warning("[cwa-duplicates] Cooldown check failed: %s", str(e))
+                        
+                        log.info("[cwa-duplicates] Auto-resolution enabled, triggering resolution with strategy: %s", 
+                                auto_resolve_strategy)
+                        print(f"[cwa-duplicates] Auto-resolution enabled, triggering with strategy: {auto_resolve_strategy}", 
+                              flush=True)
+                        
+                        from cps.duplicates import auto_resolve_duplicates
+                        
+                        # Pass the pre-scanned duplicate groups to avoid re-scanning
+                        groups_to_pass = getattr(self, 'found_duplicate_groups', None)
+                        log.debug("[cwa-duplicates] Passing %s groups to auto_resolve (type: %s)", 
+                                 len(groups_to_pass) if groups_to_pass else 'None', type(groups_to_pass).__name__)
+                        print(f"[cwa-duplicates] Passing {len(groups_to_pass) if groups_to_pass else 'None'} pre-scanned groups to auto_resolve", 
+                              flush=True)
+                        
+                        result = auto_resolve_duplicates(
+                            strategy=auto_resolve_strategy,
+                            dry_run=False,
+                            user_id=None,
+                            trigger_type='automatic',
+                            duplicate_groups=groups_to_pass
+                        )
+                        
+                        if result['success']:
+                            log.info("[cwa-duplicates] Auto-resolution completed: resolved=%s, kept=%s, deleted=%s",
+                                    result['resolved_count'], result['kept_count'], result['deleted_count'])
+                            print(f"[cwa-duplicates] Auto-resolution completed: {result['resolved_count']} groups resolved, "
+                                  f"{result['deleted_count']} books deleted, {result['kept_count']} books kept", flush=True)
+                            
+                            self.message = N_('Duplicate scan completed: %(count)s groups auto-resolved', 
+                                            count=result['resolved_count'])
+                        else:
+                            log.warning("[cwa-duplicates] Auto-resolution completed with errors: %s", 
+                                       result.get('errors', []))
+                            print(f"[cwa-duplicates] Auto-resolution errors: {result.get('errors', [])}", flush=True)
+                    else:
+                        log.debug("[cwa-duplicates] Auto-resolution disabled in settings")
+                        print("[cwa-duplicates] Auto-resolution disabled in settings", flush=True)
+                except Exception as ex:
+                    log.error("[cwa-duplicates] Exception during auto-resolution check: %s", str(ex))
+                    print(f"[cwa-duplicates] Exception during auto-resolution check: {str(ex)}", flush=True)
+            else:
+                log.debug("[cwa-duplicates] No duplicates found, skipping auto-resolution")
+                print("[cwa-duplicates] No duplicates found, skipping auto-resolution", flush=True)
+                    
         except Exception as ex:
             log.error("[cwa-duplicates] Duplicate scan task failed: %s", str(ex))
             self._handleError(str(ex))

@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_notifications_enabled SMALLINT DEFAULT 1 NOT NULL,
     duplicate_auto_resolve_enabled SMALLINT DEFAULT 0 NOT NULL,
     duplicate_auto_resolve_strategy TEXT DEFAULT 'newest' NOT NULL,
+    duplicate_auto_resolve_cooldown_minutes INTEGER DEFAULT 0 NOT NULL,  -- 0 = disabled, >0 = minutes between auto-resolutions
     duplicate_format_priority TEXT DEFAULT '{"EPUB":100,"KEPUB":95,"AZW3":90,"MOBI":80,"AZW":75,"PDF":60,"TXT":40,"CBZ":35,"CBR":35,"FB2":30,"DJVU":25,"HTML":20,"RTF":15,"DOC":10,"DOCX":10}' NOT NULL,
     -- Duplicate scanning performance settings
     duplicate_detection_use_sql SMALLINT DEFAULT 1 NOT NULL, -- Enable SQL prefilter for hybrid by default

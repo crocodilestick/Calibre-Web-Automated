@@ -490,10 +490,20 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_bo
             .having(func.count(func.distinct(db.Books.id)) > 1))
 
     if min_book_id is not None:
-        query = query.having(max_id_field > int(min_book_id))
+        query = query.having(max_id_field >= int(min_book_id))
+
+    # Debug: print the actual SQL being executed
+    try:
+        from sqlalchemy.dialects import sqlite
+        compiled = query.statement.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True})
+        print(f"[cwa-duplicates] SQL prefilter query:\n{compiled}", flush=True)
+    except Exception as debug_ex:
+        print(f"[cwa-duplicates] Could not compile SQL for debug: {debug_ex}", flush=True)
 
     try:
+        print(f"[cwa-duplicates] Executing SQL prefilter query (min_book_id={min_book_id})...", flush=True)
         results = query.all()
+        print(f"[cwa-duplicates] SQL prefilter query completed, got {len(results)} result rows", flush=True)
     except Exception as e:
         log.error("[cwa-duplicates] Hybrid prefilter SQL failed: %s", str(e))
         print(f"[cwa-duplicates] Hybrid prefilter SQL failed: {str(e)}", flush=True)
@@ -1172,6 +1182,7 @@ def trigger_scan():
 
             log.info("[cwa-duplicates] Manual scan queued by user %s (task_id=%s)", 
                     current_user.name, task.id)
+            print(f"[cwa-duplicates] Manual scan queued for user {current_user.name}, task_id={task.id}", flush=True)
 
             return jsonify({
                 'success': True,
@@ -1181,6 +1192,7 @@ def trigger_scan():
             })
         except Exception as e:
             log.error("[cwa-duplicates] Failed to queue scan task, falling back to sync scan: %s", str(e))
+            print(f"[cwa-duplicates] Failed to queue task, using fallback: {str(e)}", flush=True)
 
             # Fallback to synchronous scan to avoid hard failures
             duplicate_groups = find_duplicate_books(include_dismissed=False)
@@ -1193,6 +1205,42 @@ def trigger_scan():
 
             all_groups = find_duplicate_books(include_dismissed=True)
             cwa_db.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
+
+            # Check if auto-resolution is enabled for fallback sync scan
+            if len(duplicate_groups) > 0:
+                try:
+                    auto_resolve_enabled = cwa_db.cwa_settings.get('duplicate_auto_resolve_enabled', 0)
+                    auto_resolve_strategy = cwa_db.cwa_settings.get('duplicate_auto_resolve_strategy', 'newest')
+                    
+                    if auto_resolve_enabled:
+                        log.info("[cwa-duplicates] Auto-resolution enabled in fallback, triggering with strategy: %s", 
+                                auto_resolve_strategy)
+                        print(f"[cwa-duplicates] Fallback scan complete, triggering auto-resolution (strategy: {auto_resolve_strategy})", 
+                              flush=True)
+                        
+                        # Pass the pre-scanned duplicate groups to avoid re-scanning
+                        result = auto_resolve_duplicates(
+                            strategy=auto_resolve_strategy,
+                            dry_run=False,
+                            user_id=current_user.id if current_user else None,
+                            trigger_type='manual',
+                            duplicate_groups=duplicate_groups
+                        )
+                        
+                        if result['success'] and result['resolved_count'] > 0:
+                            log.info("[cwa-duplicates] Fallback auto-resolution completed: resolved=%s, kept=%s, deleted=%s",
+                                    result['resolved_count'], result['kept_count'], result['deleted_count'])
+                            print(f"[cwa-duplicates] Fallback auto-resolution completed: {result['resolved_count']} groups resolved", 
+                                  flush=True)
+                            
+                            # Re-scan to get updated counts after resolution
+                            duplicate_groups = find_duplicate_books(include_dismissed=False)
+                            all_groups = find_duplicate_books(include_dismissed=True)
+                            cwa_db.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
+                            log.debug("[cwa-duplicates] Cache refreshed after fallback auto-resolution")
+                except Exception as ex:
+                    log.error("[cwa-duplicates] Error during fallback auto-resolution: %s", str(ex))
+                    print(f"[cwa-duplicates] Fallback auto-resolution error: {str(ex)}", flush=True)
 
             return jsonify({
                 'success': True,
@@ -1290,6 +1338,7 @@ def preview_resolution():
             }), 400
         
         print("[cwa-duplicates] Calling auto_resolve_duplicates in dry_run mode...", flush=True)
+        # Note: No duplicate_groups passed - will scan to get fresh data for preview
         result = auto_resolve_duplicates(
             strategy=strategy,
             dry_run=True,
@@ -1326,6 +1375,7 @@ def execute_resolution():
                 'error': _('Invalid resolution strategy')
             }), 400
         
+        # Note: No duplicate_groups passed - will scan to get fresh data for execution
         result = auto_resolve_duplicates(
             strategy=strategy,
             dry_run=False,
@@ -1348,15 +1398,16 @@ def execute_resolution():
         }), 500
 
 
-def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trigger_type='manual'):
+def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trigger_type='manual', duplicate_groups=None):
     """
     Automatically resolve duplicate books by keeping one and deleting others.
     
     Args:
         strategy: Resolution strategy ('newest', 'highest_quality_format', 'most_metadata', 'largest_file_size')
         dry_run: If True, return preview without actually deleting
-        user_id: User ID triggering the resolution (for audit)
+        user_id: User ID triggering the resolution (for audit), None for system-initiated
         trigger_type: 'manual', 'scheduled', or 'automatic'
+        duplicate_groups: Pre-scanned duplicate groups (avoids re-scanning). If None, will scan.
     
     Returns:
         dict with keys:
@@ -1367,146 +1418,270 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
             'errors': list of error messages
             'preview': list of dicts (if dry_run=True) with 'group', 'kept_book', 'deleted_books'
     """
-    from cps.editbooks import delete_book_from_table
-    import shutil
-    
-    # Validate strategy
-    if not validate_resolution_strategy(strategy):
-        return {'success': False, 'errors': [f'Invalid strategy: {strategy}']}
-    
-    # Get duplicate groups (exclude dismissed)
-    duplicate_groups = find_duplicate_books(include_dismissed=False)
-    
-    if not duplicate_groups:
-        return {
+    try:
+        import time
+        start_time = time.time()
+        
+        log.info("[cwa-duplicates] Starting auto-resolution (strategy=%s, dry_run=%s, trigger=%s, pre_scanned=%s)", 
+                 strategy, dry_run, trigger_type, duplicate_groups is not None)
+        print(f"[cwa-duplicates] Auto-resolve starting: strategy={strategy}, dry_run={dry_run}, trigger={trigger_type}, " 
+              f"pre_scanned={duplicate_groups is not None}", flush=True)
+        
+        # Initialize database sessions for thread safety
+        from cps.ub import init_db_thread
+        try:
+            init_db_thread()
+        except Exception:
+            pass
+        
+        calibre_db.ensure_session()
+        
+        # Disk space check (strategy-dependent thresholds)
+        try:
+            import shutil as shutil_disk
+            stat = shutil_disk.disk_usage('/config')
+            available_gb = stat.free / (1024**3)
+            
+            # Merge strategy needs more space (copies formats before deletion)
+            min_space_gb = 2.0 if strategy == 'merge' else 0.5
+            
+            if available_gb < min_space_gb:
+                log.warning("[cwa-duplicates] Low disk space (%.2f GB available, %.2f GB recommended for %s strategy)", 
+                           available_gb, min_space_gb, strategy)
+                print(f"[cwa-duplicates] WARNING: Low disk space ({available_gb:.2f} GB available, "
+                      f"{min_space_gb:.2f} GB recommended for {strategy} strategy)", flush=True)
+                
+                if trigger_type == 'automatic' and available_gb < min_space_gb * 0.5:
+                    # For automatic triggers, abort if critically low
+                    return {
+                        'success': False,
+                        'resolved_count': 0,
+                        'deleted_count': 0,
+                        'kept_count': 0,
+                        'errors': [f'Insufficient disk space: {available_gb:.2f} GB available, {min_space_gb} GB required']
+                    }
+        except Exception as e:
+            log.debug("[cwa-duplicates] Disk space check failed: %s", str(e))
+        
+        import shutil
+        
+        # Validate strategy
+        if not validate_resolution_strategy(strategy):
+            return {'success': False, 'errors': [f'Invalid strategy: {strategy}']}
+        
+        # Get duplicate groups (exclude dismissed)
+        # If groups were passed in, use them (avoids expensive re-scan)
+        if duplicate_groups is None:
+            log.debug("[cwa-duplicates] No groups provided, scanning for duplicates...")
+            print("[cwa-duplicates] auto_resolve received None groups - will scan", flush=True)
+            duplicate_groups = find_duplicate_books(include_dismissed=False)
+        else:
+            log.debug("[cwa-duplicates] Using %d pre-scanned duplicate groups", len(duplicate_groups))
+            print(f"[cwa-duplicates] auto_resolve using {len(duplicate_groups)} pre-scanned groups (type: {type(duplicate_groups).__name__})", 
+                  flush=True)
+        
+        if not duplicate_groups:
+            return {
+                'success': True,
+                'resolved_count': 0,
+                'deleted_count': 0,
+                'kept_count': 0,
+                'errors': [],
+                'message': 'No unresolved duplicates found'
+            }
+        
+        result = {
             'success': True,
             'resolved_count': 0,
             'deleted_count': 0,
             'kept_count': 0,
             'errors': [],
-            'message': 'No unresolved duplicates found'
+            'preview': [] if dry_run else None
         }
-    
-    result = {
-        'success': True,
-        'resolved_count': 0,
-        'deleted_count': 0,
-        'kept_count': 0,
-        'errors': [],
-        'preview': [] if dry_run else None
-    }
-    
-    cwa_db = CWA_DB()
-    
-    for group in duplicate_groups:
-        try:
-            # Select book to keep
-            book_to_keep = select_book_to_keep(group['books'], strategy)
-            
-            if not book_to_keep:
-                result['errors'].append(f"Could not select book to keep for group: {group['title']}")
-                continue
-            
-            # Get books to delete
-            books_to_delete = [b for b in group['books'] if b.id != book_to_keep.id]
-            
-            if not books_to_delete:
-                continue  # Only one book in group, nothing to resolve
-            
-            if dry_run:
-                kept_formats = []
-                if book_to_keep.data:
-                    for data in book_to_keep.data:
-                        if data.format and data.format not in kept_formats:
-                            kept_formats.append(data.format)
-                if strategy == 'merge':
-                    for book in books_to_delete:
-                        if book.data:
-                            for data in book.data:
-                                if data.format and data.format not in kept_formats:
-                                    kept_formats.append(data.format)
-                # Preview mode: just collect info
-                result['preview'].append({
-                    'group_hash': group['group_hash'],
-                    'title': group['title'],
-                    'author': group['author'],
-                    'kept_book_id': book_to_keep.id,
-                    'kept_book_timestamp': book_to_keep.timestamp.strftime('%Y-%m-%d %H:%M') if book_to_keep.timestamp else 'Unknown',
-                    'kept_book_formats': kept_formats,
-                    'deleted_book_ids': [b.id for b in books_to_delete],
-                    'deleted_books_info': [{
-                        'id': b.id,
-                        'timestamp': b.timestamp.strftime('%Y-%m-%d %H:%M') if b.timestamp else 'Unknown',
-                        'formats': [d.format for d in b.data] if b.data else []
-                    } for b in books_to_delete]
-                })
-                result['kept_count'] += 1
-                result['deleted_count'] += len(books_to_delete)
-                result['resolved_count'] += 1
-                continue
-            
-            # Actual resolution mode
-            deleted_ids = []
-            backup_dir = f"/config/processed_books/duplicate_resolutions/{datetime.now().strftime('%Y%m%d_%H%M%S')}_group_{group['group_hash'][:8]}"
-            os.makedirs(backup_dir, exist_ok=True)
-
-            if strategy == 'merge':
-                try:
-                    merge_duplicate_group(book_to_keep, books_to_delete)
-                except Exception as e:
-                    log.error("[cwa-duplicates] Error merging books for group '%s': %s", group.get('title', 'unknown'), e)
-                    result['errors'].append(f"Group '{group.get('title', 'unknown')}': merge failed: {str(e)}")
-                    continue
-            
-            # Backup and delete each duplicate
-            for book in books_to_delete:
-                try:
-                    # Backup book files
-                    book_path = os.path.join(config.config_calibre_dir, book.path)
-                    if os.path.exists(book_path):
-                        backup_path = os.path.join(backup_dir, f"book_{book.id}")
-                        shutil.copytree(book_path, backup_path)
-                        log.info("[cwa-duplicates] Backed up book %s to %s", book.id, backup_path)
-                    
-                    # Delete from Calibre library
-                    delete_book_from_table(book.id, "", True)  # True = delete from disk
-                    deleted_ids.append(book.id)
-                    log.info("[cwa-duplicates] Deleted duplicate book %s: %s", book.id, book.title)
-                    
-                except Exception as e:
-                    log.error("[cwa-duplicates] Error deleting book %s: %s", book.id, e)
-                    result['errors'].append(f"Failed to delete book {book.id}: {str(e)}")
-            
-            if deleted_ids:
-                # Log to audit table
-                cwa_db.log_duplicate_resolution(
-                    group_hash=group['group_hash'],
-                    group_title=group['title'],
-                    group_author=group['author'],
-                    kept_book_id=book_to_keep.id,
-                    deleted_book_ids=deleted_ids,
-                    strategy=strategy,
-                    trigger_type=trigger_type,
-                    user_id=user_id,
-                    notes=f"Resolved {len(deleted_ids)} duplicate(s) using {strategy} strategy"
-                )
-                
-                result['resolved_count'] += 1
-                result['kept_count'] += 1
-                result['deleted_count'] += len(deleted_ids)
-                
-                log.info("[cwa-duplicates] Resolved duplicate group '%s' by %s: kept book %s, deleted %s duplicates", 
-                        group['title'], group['author'], book_to_keep.id, len(deleted_ids))
         
-        except Exception as e:
-            log.error("[cwa-duplicates] Error resolving duplicate group '%s': %s", group.get('title', 'unknown'), e)
-            result['errors'].append(f"Group '{group.get('title', 'unknown')}': {str(e)}")
-    
+        cwa_db = CWA_DB()
+        
+        for group in duplicate_groups:
+            try:
+                # Select book to keep
+                book_to_keep = select_book_to_keep(group['books'], strategy)
+                
+                if not book_to_keep:
+                    result['errors'].append(f"Could not select book to keep for group: {group['title']}")
+                    continue
+                
+                # Get books to delete
+                books_to_delete = [b for b in group['books'] if b.id != book_to_keep.id]
+                
+                if not books_to_delete:
+                    continue  # Only one book in group, nothing to resolve
+                
+                if dry_run:
+                    kept_formats = []
+                    if book_to_keep.data:
+                        for data in book_to_keep.data:
+                            if data.format and data.format not in kept_formats:
+                                kept_formats.append(data.format)
+                    if strategy == 'merge':
+                        for book in books_to_delete:
+                            if book.data:
+                                for data in book.data:
+                                    if data.format and data.format not in kept_formats:
+                                        kept_formats.append(data.format)
+                    # Preview mode: just collect info
+                    result['preview'].append({
+                        'group_hash': group['group_hash'],
+                        'title': group['title'],
+                        'author': group['author'],
+                        'kept_book_id': book_to_keep.id,
+                        'kept_book_timestamp': book_to_keep.timestamp.strftime('%Y-%m-%d %H:%M') if book_to_keep.timestamp else 'Unknown',
+                        'kept_book_formats': kept_formats,
+                        'deleted_book_ids': [b.id for b in books_to_delete],
+                        'deleted_books_info': [{
+                            'id': b.id,
+                            'timestamp': b.timestamp.strftime('%Y-%m-%d %H:%M') if b.timestamp else 'Unknown',
+                            'formats': [d.format for d in b.data] if b.data else []
+                        } for b in books_to_delete]
+                    })
+                    result['kept_count'] += 1
+                    result['deleted_count'] += len(books_to_delete)
+                    result['resolved_count'] += 1
+                    continue
+                
+                # Actual resolution mode
+                deleted_ids = []
+                backup_dir = f"/config/processed_books/duplicate_resolutions/{datetime.now().strftime('%Y%m%d_%H%M%S')}_group_{group['group_hash'][:8]}"
+                os.makedirs(backup_dir, exist_ok=True)
 
-    if result['errors']:
-        result['success'] = False
-    
-    return result
+                if strategy == 'merge':
+                    try:
+                        merge_duplicate_group(book_to_keep, books_to_delete)
+                    except Exception as e:
+                        log.error("[cwa-duplicates] Error merging books for group '%s': %s", group.get('title', 'unknown'), e)
+                        result['errors'].append(f"Group '{group.get('title', 'unknown')}': merge failed: {str(e)}")
+                        continue
+                
+                # Backup and delete each duplicate
+                for book in books_to_delete:
+                    try:
+                        print(f"[cwa-duplicates-auto] Starting deletion of book {book.id}...", flush=True)
+                        
+                        # Backup book files
+                        book_path = os.path.join(config.config_calibre_dir, book.path)
+                        if os.path.exists(book_path):
+                            backup_path = os.path.join(backup_dir, f"book_{book.id}")
+                            print(f"[cwa-duplicates-auto] Backing up book {book.id} to {backup_path}...", flush=True)
+                            shutil.copytree(book_path, backup_path)
+                            log.info("[cwa-duplicates] Backed up book %s to %s", book.id, backup_path)
+                        
+                        print(f"[cwa-duplicates-auto] Deleting book {book.id} from library...", flush=True)
+                        # Delete from Calibre library (bypass user permission check for automatic resolution)
+                        from cps import helper
+                        delete_result, delete_error = helper.delete_book(book, config.get_book_path(), book_format="")
+                        
+                        if not delete_result:
+                            raise Exception(f"Delete failed: {delete_error}")
+                        
+                        print(f"[cwa-duplicates-auto] Cleaning up database for book {book.id}...", flush=True)
+                        # Clean up database references
+                        from cps.editbooks import delete_whole_book
+                        delete_whole_book(book.id, book)
+                        
+                        calibre_db.session.commit()
+                        deleted_ids.append(book.id)
+                        log.info("[cwa-duplicates] Deleted duplicate book %s: %s", book.id, book.title)
+                        
+                        print(f"[cwa-duplicates-auto] Cancelling tasks for book {book.id}...", flush=True)
+                        # Cancel any pending tasks for this book
+                        try:
+                            from cps.services.worker import WorkerThread
+                            worker = WorkerThread.get_instance()
+                            if worker:
+                                cancelled_count = worker.cancel_tasks_for_book(book.id)
+                                if cancelled_count > 0:
+                                    log.info("[cwa-duplicates] Cancelled %d pending task(s) for deleted book %s", 
+                                            cancelled_count, book.id)
+                                    print(f"[cwa-duplicates-auto] Cancelled {cancelled_count} pending task(s) for book {book.id}", 
+                                          flush=True)
+                        except Exception as cancel_ex:
+                            log.warning("[cwa-duplicates] Failed to cancel tasks for book %s: %s", book.id, cancel_ex)
+                        
+                        print(f"[cwa-duplicates-auto] Cancelling scheduled jobs for book {book.id}...", flush=True)
+                        # Cancel any scheduled jobs (auto-send, etc.) for this book
+                        try:
+                            cancelled_scheduled = cwa_db.scheduled_cancel_for_book(book.id)
+                            if cancelled_scheduled > 0:
+                                log.info("[cwa-duplicates] Cancelled %d scheduled job(s) for deleted book %s", 
+                                        cancelled_scheduled, book.id)
+                        except Exception as schedule_ex:
+                            log.warning("[cwa-duplicates] Failed to cancel scheduled jobs for book %s: %s", book.id, schedule_ex)
+                        
+                        print(f"[cwa-duplicates-auto] Book {book.id} deletion complete", flush=True)
+                        
+                    except Exception as e:
+                        log.error("[cwa-duplicates] Error deleting book %s: %s", book.id, e)
+                        result['errors'].append(f"Failed to delete book {book.id}: {str(e)}")
+                
+                if deleted_ids:
+                    # Log to audit table
+                    cwa_db.log_duplicate_resolution(
+                        group_hash=group['group_hash'],
+                        group_title=group['title'],
+                        group_author=group['author'],
+                        kept_book_id=book_to_keep.id,
+                        deleted_book_ids=deleted_ids,
+                        strategy=strategy,
+                        trigger_type=trigger_type,
+                        user_id=user_id,
+                        notes=f"Resolved {len(deleted_ids)} duplicate(s) using {strategy} strategy"
+                    )
+                    
+                    result['resolved_count'] += 1
+                    result['kept_count'] += 1
+                    result['deleted_count'] += len(deleted_ids)
+                    
+                    log.info("[cwa-duplicates] Resolved duplicate group '%s' by %s: kept book %s, deleted %s duplicates", 
+                            group['title'], group['author'], book_to_keep.id, len(deleted_ids))
+                    
+                    # Docker log for automatic triggers
+                    if trigger_type == 'automatic':
+                        print(f"[cwa-duplicates-auto] ✓ Resolved '{group['title']}' by {group['author']}: "
+                              f"kept book {book_to_keep.id}, deleted {len(deleted_ids)} duplicate(s) [{strategy} strategy]", 
+                              flush=True)
+            
+            except Exception as e:
+                log.error("[cwa-duplicates] Error resolving duplicate group '%s': %s", group.get('title', 'unknown'), e)
+                result['errors'].append(f"Group '{group.get('title', 'unknown')}': {str(e)}")
+        
+
+        if result['errors']:
+            result['success'] = False
+        
+        # Invalidate cache if any books were deleted
+        if result['deleted_count'] > 0:
+            try:
+                cwa_db.invalidate_duplicate_cache()
+                log.debug("[cwa-duplicates] Duplicate cache invalidated after auto-resolution")
+            except Exception as ex:
+                log.warning("[cwa-duplicates] Failed to invalidate cache after resolution: %s", str(ex))
+        
+        # Log timing information
+        elapsed_time = time.time() - start_time
+        log.info("[cwa-duplicates] Auto-resolution completed in %.2f seconds: resolved=%d, kept=%d, deleted=%d, errors=%d",
+                 elapsed_time, result['resolved_count'], result['kept_count'], result['deleted_count'], len(result['errors']))
+        print(f"[cwa-duplicates] Auto-resolution completed in {elapsed_time:.2f}s: "
+              f"resolved={result['resolved_count']}, kept={result['kept_count']}, deleted={result['deleted_count']}, "
+              f"errors={len(result['errors'])}", flush=True)
+        
+        return result
+        
+    finally:
+        # Always cleanup sessions
+        try:
+            if calibre_db.session is not None:
+                calibre_db.session.close()
+        except Exception:
+            pass
 
 
 def merge_duplicate_group(book_to_keep, books_to_merge):

@@ -119,7 +119,7 @@ class Book:
 
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect("/config/app.db", timeout=60)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -157,9 +157,44 @@ class Book:
 
     def get_new_metadata_path(self) -> str:
         """Uses the export function of the calibredb utility to export any new metadata for the given book to metadata_temp, and returns the path to the new metadata.opf"""
-        subprocess.run(["calibredb", "export", "--with-library", self.calibre_library, "--to-dir", metadata_temp_dir, self.book_id], env=self.calibre_env, check=True)
-        temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
-        return [f for f in temp_files if f.endswith('.opf')][0]
+        # Add retry logic with exponential backoff to handle database locks
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # Add small delay before first attempt to allow other operations to complete
+                if attempt > 0:
+                    delay = 2 ** attempt  # Exponential backoff: 2s, 4s
+                    print(f"[cover-metadata-enforcer] Retrying calibredb export (attempt {attempt + 1}/{max_retries}) after {delay}s delay...", flush=True)
+                    time.sleep(delay)
+                else:
+                    # Small initial delay to ensure database writes are flushed
+                    time.sleep(0.5)
+                
+                result = subprocess.run(
+                    ["calibredb", "export", "--with-library", self.calibre_library, "--to-dir", metadata_temp_dir, self.book_id],
+                    env=self.calibre_env, check=False, capture_output=True, text=True, timeout=60
+                )
+                
+                if result.returncode == 0:
+                    temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
+                    opf_files = [f for f in temp_files if f.endswith('.opf')]
+                    if opf_files:
+                        return opf_files[0]
+                    else:
+                        raise FileNotFoundError("No .opf file found after calibredb export")
+                else:
+                    if attempt < max_retries - 1 and "database is locked" in result.stderr.lower():
+                        continue  # Retry on database lock
+                    else:
+                        raise subprocess.CalledProcessError(result.returncode, result.args, result.stdout, result.stderr)
+            except subprocess.TimeoutExpired:
+                if attempt < max_retries - 1:
+                    continue
+                else:
+                    raise
+        
+        # If all retries failed
+        raise RuntimeError(f"Failed to export metadata for book {self.book_id} after {max_retries} attempts")
 
 
     def export_as_dict(self) -> dict[str,str | None]:
@@ -203,7 +238,7 @@ class Enforcer:
 
         # Read Calibre-Web setting: config_unicode_filename (True -> transliterate non-English in filenames)
         try:
-            with sqlite3.connect("/config/app.db", timeout=30) as con:
+            with sqlite3.connect("/config/app.db", timeout=60) as con:
                 cur = con.cursor()
                 self.unicode_filename = bool(cur.execute('SELECT config_unicode_filename FROM settings;').fetchone()[0])
         except Exception:
@@ -222,7 +257,7 @@ class Enforcer:
 
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect("/config/app.db", timeout=60)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -268,7 +303,7 @@ class Enforcer:
                 "metadata.db"
             )
 
-            con = sqlite3.connect(metadb_path, timeout=30)
+            con = sqlite3.connect(metadb_path, timeout=60)
 
             try:
                 success = store_checksum(
@@ -372,9 +407,12 @@ class Enforcer:
                 (self.split_library or {}).get("db_path", self.calibre_library),
                 "metadata.db",
             )
-            with sqlite3.connect(metadb_path, timeout=30) as con:
+            con = sqlite3.connect(metadb_path, timeout=60)
+            try:
                 cur = con.cursor()
                 row = cur.execute('SELECT path FROM books WHERE id = ?', (book_id,)).fetchone()
+            finally:
+                con.close()
             if row and row[0]:
                 resolved = os.path.join(self.calibre_library, row[0])
                 resolved = resolved if resolved.endswith(os.sep) else resolved + os.sep
@@ -507,10 +545,32 @@ class Enforcer:
             for file in supported_files:
                 book = Book(book_dir, file)
                 self.replace_old_metadata(book.old_metadata_path, book.new_metadata_path)
-                if Path(book.cover_path).exists():
-                    os.system(f'ebook-polish -c "{book.cover_path}" -o "{book.new_metadata_path}" -U "{file}" "{file}"')
-                else:
-                    os.system(f'ebook-polish -o "{book.new_metadata_path}" -U "{file}" "{file}"')
+                
+                # Use subprocess instead of os.system for better error handling
+                # Add small delay to ensure any file locks are released
+                time.sleep(0.5)
+                
+                try:
+                    if Path(book.cover_path).exists():
+                        result = subprocess.run(
+                            ['ebook-polish', '-c', book.cover_path, '-o', book.new_metadata_path, '-U', file, file],
+                            capture_output=True, text=True, timeout=120, check=False
+                        )
+                    else:
+                        result = subprocess.run(
+                            ['ebook-polish', '-o', book.new_metadata_path, '-U', file, file],
+                            capture_output=True, text=True, timeout=120, check=False
+                        )
+                    
+                    if result.returncode != 0:
+                        print(f"[cover-metadata-enforcer] Warning: ebook-polish returned {result.returncode} for {file}", flush=True)
+                        if result.stderr:
+                            print(f"[cover-metadata-enforcer] Error output: {result.stderr.strip()}", flush=True)
+                except subprocess.TimeoutExpired:
+                    print(f"[cover-metadata-enforcer] Error: ebook-polish timed out for {file}", flush=True)
+                except Exception as e:
+                    print(f"[cover-metadata-enforcer] Error running ebook-polish for {file}: {e}", flush=True)
+                
                 self.empty_metadata_temp()
                 print(f"[cover-metadata-enforcer]: DONE: '{book.title_author}.{book.file_format}': Cover & Metadata updated", flush=True)
 

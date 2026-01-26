@@ -596,6 +596,108 @@
     </div>
 
     <div class="settings-container">
+      <h4 class="settings-section-header">🔍 {{_('Full Text Search (FTS) Management')}}</h4>
+      
+      <p class="settings-explanation" style="margin-bottom: 20px;">
+        {{_('Full Text Search enables searching inside book content (not just titles/authors). Calibre indexes the text content of your books in the background.')}}
+      </p>
+      
+      <!-- Current Status Display -->
+      <div id="fts-status-container" style="margin: 15px 0; padding: 15px; background-color: rgba(42, 52, 65, 0.6); border-left: 4px solid #5bc0de; border-radius: 4px;">
+        <strong style="font-size: 1.1em;">{{_('Current Status')}}</strong>:
+        <span id="fts-status-badge" style="margin-left: 10px; padding: 4px 10px; border-radius: 4px; font-size: 0.95em; font-weight: 500;">
+          {{_('Loading...')}}
+        </span>
+        <br>
+        <span id="fts-progress" style="margin-top: 8px; display: inline-block; font-size: 0.95em; color: #ddd;">
+          {{_('Checking...')}}
+        </span>
+        <br>
+        <span id="fts-indexing-status" style="margin-top: 8px; display: inline-block; font-size: 0.9em; color: #bbb;">
+          <!-- Indexing status will be shown here -->
+        </span>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button id="btn-fts-enable" type="button" class="btn btn-primary" style="min-width: 120px;">
+          {{_('Enable FTS')}}
+        </button>
+        <button id="btn-fts-disable" type="button" class="btn btn-default" style="min-width: 120px;">
+          {{_('Disable FTS')}}
+        </button>
+        <button id="btn-fts-reindex" type="button" class="btn btn-default" style="min-width: 120px;">
+          {{_('Reindex All')}}
+        </button>
+        <button id="btn-fts-refresh" type="button" class="btn btn-info" style="min-width: 120px;">
+          {{_('Refresh Status')}}
+        </button>
+      </div>
+      
+      <!-- Network Share Warning - Static Info Box -->
+      <div style="margin: 15px 0; padding: 12px; background-color: rgba(255, 193, 7, 0.05); border-left: 4px solid #ffc107; border-radius: 4px;">
+        <strong style="color: #ffc107;">⚠️ {{_('Network Shares')}}</strong><br>
+        <span style="font-size: 0.9em; color: #ddd;">
+          {{_('If your library is on a network share (NFS/SMB), indexing may be slower due to network I/O latency.')}}
+        </span>
+      </div>
+      
+      <!-- Disable Behavior Warning -->
+      <div style="margin: 15px 0; padding: 12px; background-color: rgba(244, 67, 54, 0.05); border-left: 4px solid #f44336; border-radius: 4px;">
+        <strong style="color: #f44336;">⚠️ {{_('Important')}}</strong>: {{_('Disabling FTS requires complete re-indexing')}}<br>
+        <span style="font-size: 0.9em; color: #ddd;">
+          {{_('When you disable FTS, Calibre invalidates the index. Re-enabling will restart indexing from 0, even if books were previously indexed. This is Calibre\'s design to ensure index consistency.')}}
+        </span>
+      </div>
+      
+      <!-- Resource Information Collapsible -->
+      <details style="margin: 20px 0; padding: 12px; background-color: rgba(91, 192, 222, 0.05); border-left: 4px solid #5bc0de; border-radius: 4px; cursor: pointer;">
+        <summary style="font-weight: bold; font-size: 1em; color: #5bc0de; outline: none; cursor: pointer;">
+          ℹ️ {{_('Resource Usage & Performance Information')}}
+        </summary>
+        <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(91, 192, 222, 0.2); font-size: 0.9em; line-height: 1.6;">
+          <p><strong>{{_('What the indexing process does')}}</strong>:</p>
+          <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li>{{_('Reads each book file (EPUB, MOBI, PDF, etc.)')}}</li>
+            <li>{{_('Extracts text content using Calibre\'s format parsers')}}</li>
+            <li>{{_('Tokenizes text with the custom tokenizer')}}</li>
+            <li>{{_('Builds FTS5 index structures')}}</li>
+          </ul>
+          
+          <p><strong>{{_('Performance characteristics')}}</strong>:</p>
+          <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li><strong>{{_('CPU')}}</strong>: {{_('Moderate - text extraction and tokenization')}}</li>
+            <li><strong>{{_('Disk I/O')}}</strong>: {{_('Heavy - reads every book file sequentially')}}</li>
+            <li><strong>{{_('Memory')}}</strong>: {{_('Low - processes one book at a time')}}</li>
+            <li><strong>{{_('Network I/O')}}</strong>: {{_('Can be significant for large files on network shares')}}</li>
+          </ul>
+          
+          <p><strong>{{_('For large libraries (10,000+ books)')}}</strong>:</p>
+          <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li>{{_('Initial indexing could take hours to days depending on')}}:</li>
+            <ul style="margin-left: 20px;">
+              <li>{{_('Book file sizes (PDFs are slower than EPUBs)')}}</li>
+              <li>{{_('Disk/network speed')}}</li>
+              <li>{{_('CPU speed')}}</li>
+            </ul>
+          </ul>
+          
+          <p style="margin-top: 15px; padding: 10px; background-color: rgba(76, 175, 80, 0.1); border-left: 3px solid #4CAF50; border-radius: 3px;">
+            <strong>✅ {{_('Good news')}}</strong>: {{_('It\'s a background process that doesn\'t block CWA. Your library remains fully usable during indexing.')}}
+          </p>
+          
+          <p style="margin-top: 10px; padding: 10px; background-color: rgba(91, 192, 222, 0.1); border-left: 3px solid #5bc0de; border-radius: 3px;">
+            <strong>ℹ️ {{_('Note')}}</strong>: {{_('FTS searches only become active once 90%% of your library is indexed. Until then, standard search is used.')}}
+          </p>
+        </div>
+      </details>
+      
+      <div class="cwa-settings-tip" style="margin-top: 20px;">
+        <small>💡 <strong>{{_('Tip')}}</strong>: {{_('You can also manage FTS from the Basic Configuration page, but this interface provides more detailed status and control.')}}</small>
+      </div>
+    </div>
+
+    <div class="settings-container">
       <h4 class="settings-section-header">{{_('Automatic Backup Settings')}}</h4>
 
       {% if cwa_settings['auto_backup_imports'] %}
@@ -1003,7 +1105,7 @@
         <label for="duplicate_auto_resolve_cooldown_minutes">{{_('Cooldown Period (minutes)')}}</label>
         <input type="number" class="form-control" id="duplicate_auto_resolve_cooldown_minutes" 
                name="duplicate_auto_resolve_cooldown_minutes" min="0" max="1440"
-               value="{{ cwa_settings.get('duplicate_auto_resolve_cooldown_minutes', 0) }}">
+               value="{{ cwa_settings.get('duplicate_auto_resolve_cooldown_minutes', 0) if cwa_settings.get('duplicate_auto_resolve_cooldown_minutes') not in [False, None, ''] else 0 }}">
         <p class="cwa-settings-explanation settings-explanation" style="margin-top: 1rem;">
           {{_('Minimum time between automatic resolutions (0 to disable). Prevents rapid-fire deletions during batch imports.')}}
         </p>
@@ -1386,6 +1488,232 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize format priority list on page load
   initializeFormatPriorityList();
+  
+  // ========================================
+  // Full Text Search (FTS) Management
+  // ========================================
+  
+  let ftsPollingInterval = null;
+  let ftsActionInProgress = false;
+  
+  function updateFTSStatusUI(status) {
+    const statusBadge = document.getElementById('fts-status-badge');
+    const progressSpan = document.getElementById('fts-progress');
+    const indexingStatusSpan = document.getElementById('fts-indexing-status');
+    const enableBtn = document.getElementById('btn-fts-enable');
+    const disableBtn = document.getElementById('btn-fts-disable');
+    const reindexBtn = document.getElementById('btn-fts-reindex');
+    
+    if (status.error) {
+      statusBadge.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
+      statusBadge.style.color = '#e74c3c';
+      statusBadge.textContent = '❌ Error';
+      progressSpan.textContent = status.error;
+      indexingStatusSpan.textContent = '';
+      disableBtn.disabled = true;
+      reindexBtn.disabled = true;
+      return;
+    }
+    
+    if (!status.enabled) {
+      statusBadge.style.backgroundColor = 'rgba(149, 165, 166, 0.2)';
+      statusBadge.style.color = '#95a5a6';
+      statusBadge.textContent = '⚪ Disabled';
+      progressSpan.textContent = 'FTS indexing is not enabled';
+      indexingStatusSpan.textContent = '';
+      enableBtn.disabled = false;
+      disableBtn.disabled = true;
+      reindexBtn.disabled = true;
+      return;
+    }
+    
+    // FTS is enabled
+    const percentage = status.percentage.toFixed(1);
+    const progressText = `${status.indexed} of ${status.total} books indexed (${percentage}%)`;
+    
+    if (status.available) {
+      // 90%+ indexed - search is active
+      statusBadge.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+      statusBadge.style.color = '#4CAF50';
+      statusBadge.textContent = '✅ Active';
+      progressSpan.textContent = progressText;
+    } else {
+      // Less than 90% - not available yet
+      statusBadge.style.backgroundColor = 'rgba(255, 193, 7, 0.2)';
+      statusBadge.style.color = '#ffc107';
+      statusBadge.textContent = '❌ Not Available (< 90%)';
+      progressSpan.textContent = progressText + ' - Search will activate at 90%';
+    }
+    
+    // Show indexing status
+    if (status.active) {
+      indexingStatusSpan.innerHTML = '<span style="color: #ffc107;">⚙️ Currently Indexing: <strong>Yes</strong></span>';
+    } else if (status.indexed < status.total) {
+      indexingStatusSpan.innerHTML = '<span style="color: #95a5a6;">✓ Currently Indexing: <strong>No</strong> (paused or idle)</span>';
+    } else {
+      indexingStatusSpan.innerHTML = '<span style="color: #4CAF50;">✓ Indexing Complete</span>';
+    }
+    
+    // Button states
+    enableBtn.disabled = true; // Already enabled
+    disableBtn.disabled = false;
+    reindexBtn.disabled = false;
+  }
+  
+  function fetchFTSStatus() {
+    if (ftsActionInProgress) {
+      return; // Don't poll during actions
+    }
+    
+    fetch('{{ url_for("cwa_settings.get_fts_status") }}', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      updateFTSStatusUI(data);
+    })
+    .catch(error => {
+      console.error('Error fetching FTS status:', error);
+      const statusBadge = document.getElementById('fts-status-badge');
+      const progressSpan = document.getElementById('fts-progress');
+      statusBadge.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
+      statusBadge.style.color = '#e74c3c';
+      statusBadge.textContent = '❌ Error';
+      progressSpan.textContent = 'Failed to fetch status: ' + error.message;
+    });
+  }
+  
+  function performFTSAction(action, buttonId) {
+    if (ftsActionInProgress) {
+      return;
+    }
+    
+    ftsActionInProgress = true;
+    const button = document.getElementById(buttonId);
+    const originalText = button.textContent;
+    
+    // Disable all action buttons
+    document.getElementById('btn-fts-enable').disabled = true;
+    document.getElementById('btn-fts-disable').disabled = true;
+    document.getElementById('btn-fts-reindex').disabled = true;
+    document.getElementById('btn-fts-refresh').disabled = true;
+    
+    // Show spinner
+    button.innerHTML = '<span class="glyphicon glyphicon-refresh spinning"></span> ' + 
+      (action === 'enable' ? 'Enabling...' : 
+       action === 'disable' ? 'Disabling...' : 
+       action === 'reindex' ? 'Reindexing...' : 'Working...');
+    
+    const formData = new FormData();
+    formData.append('action', action);
+    
+    fetch('{{ url_for("cwa_settings.fts_action") }}', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      console.log('FTS action response status:', response.status);
+      if (!response.ok) {
+        throw new Error('HTTP error ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('FTS action response:', data);
+      if (data.success) {
+        // Show success message
+        const flashContainer = document.getElementById('flash_success');
+        if (flashContainer) {
+          flashContainer.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+          flashContainer.style.display = 'block';
+          setTimeout(() => { flashContainer.style.display = 'none'; }, 5000);
+        }
+        
+        // Refresh status after a brief delay to allow backend to update
+        setTimeout(() => {
+          fetchFTSStatus();
+        }, 1500);
+      } else {
+        // Show error message
+        const flashContainer = document.getElementById('flash_danger');
+        if (flashContainer) {
+          flashContainer.innerHTML = '<div class="alert alert-danger">' + (data.message || 'Unknown error') + '</div>';
+          flashContainer.style.display = 'block';
+        }
+        // Re-enable buttons on error
+        document.getElementById('btn-fts-enable').disabled = false;
+        document.getElementById('btn-fts-disable').disabled = false;
+        document.getElementById('btn-fts-reindex').disabled = false;
+      }
+    })
+    .catch(error => {
+      console.error('Error performing FTS action:', error);
+      const flashContainer = document.getElementById('flash_danger');
+      if (flashContainer) {
+        flashContainer.innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+        flashContainer.style.display = 'block';
+      }
+      // Re-enable buttons on error
+      document.getElementById('btn-fts-enable').disabled = false;
+      document.getElementById('btn-fts-disable').disabled = false;
+      document.getElementById('btn-fts-reindex').disabled = false;
+    })
+    .finally(() => {
+      button.textContent = originalText;
+      ftsActionInProgress = false;
+      document.getElementById('btn-fts-refresh').disabled = false;
+    });
+  }
+  
+  function startFTSPolling() {
+    // Initial fetch
+    fetchFTSStatus();
+    
+    // Poll every 10 seconds
+    if (ftsPollingInterval) {
+      clearInterval(ftsPollingInterval);
+    }
+    ftsPollingInterval = setInterval(fetchFTSStatus, 10000);
+  }
+  
+  // Attach button handlers
+  document.getElementById('btn-fts-enable').addEventListener('click', function() {
+    performFTSAction('enable', 'btn-fts-enable');
+  });
+  
+  document.getElementById('btn-fts-disable').addEventListener('click', function() {
+    if (confirm('Are you sure you want to disable FTS indexing? This will stop any ongoing indexing process.')) {
+      performFTSAction('disable', 'btn-fts-disable');
+    }
+  });
+  
+  document.getElementById('btn-fts-reindex').addEventListener('click', function() {
+    if (confirm('Are you sure you want to reindex all books? This will restart the indexing process from scratch.')) {
+      performFTSAction('reindex', 'btn-fts-reindex');
+    }
+  });
+  
+  document.getElementById('btn-fts-refresh').addEventListener('click', function() {
+    fetchFTSStatus();
+  });
+  
+  // Start polling when page loads
+  startFTSPolling();
+  
+  // Stop polling when page is hidden (save resources)
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      if (ftsPollingInterval) {
+        clearInterval(ftsPollingInterval);
+        ftsPollingInterval = null;
+      }
+    } else {
+      startFTSPolling();
+    }
+  });
 });
 </script>
 {% endblock %}

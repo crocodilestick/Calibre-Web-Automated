@@ -5,6 +5,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import json
+import os
 from datetime import datetime
 
 from flask import Blueprint, request, redirect, url_for, flash
@@ -12,6 +13,7 @@ from flask import session as flask_session
 from .cw_login import current_user
 from flask_babel import format_date
 from flask_babel import gettext as _
+from sqlalchemy import create_engine
 from sqlalchemy.sql.expression import func, not_, and_, or_, text, true
 from sqlalchemy.sql.functions import coalesce
 
@@ -419,12 +421,104 @@ def render_prepare_search_form(cc):
 def render_search_results(term, offset=None, order=None, limit=None):
     if term:
         join = db.books_series_link, db.Books.id == db.books_series_link.c.book, db.Series
-        entries, result_count, pagination = calibre_db.get_search_results(term,
-                                                                          config,
-                                                                          offset,
-                                                                          order,
-                                                                          limit,
-                                                                          *join)
+        entries = []
+        result_count = 0
+        pagination = None
+        order_by = order[0] if order else [db.Books.sort]
+
+        fts_ids = None
+        fts_term = strip_whitespaces(term)
+        fts_query = None
+        if fts_term:
+            tokens = [token for token in fts_term.split() if token]
+            if tokens:
+                fts_query = " AND ".join(
+                    f'"{token.replace("\"", "\"\"")}"' for token in tokens
+                )
+            else:
+                fts_query = fts_term
+        fts_db_path = None
+        if config.config_calibre_dir:
+            fts_db_path = os.path.join(config.config_calibre_dir, "full-text-search.db")
+
+        if config.config_fulltext_search and fts_query and fts_db_path and os.path.exists(fts_db_path):
+            try:
+                fts_engine = create_engine(
+                    f"sqlite:///{fts_db_path}",
+                    echo=False,
+                    connect_args={'check_same_thread': False}
+                )
+                try:
+                    with fts_engine.connect() as fts_conn:
+                        try:
+                            try:
+                                raw_conn = fts_conn.connection.driver_connection
+                            except AttributeError:
+                                raw_conn = fts_conn.connection
+
+                            # Enable extension loading, load Calibre tokenizer, then disable for security
+                            raw_conn.enable_load_extension(True)
+                            # Note: load_extension auto-appends .so on Linux, so omit it from path
+                            raw_conn.load_extension(
+                                "/app/calibre/lib/calibre-extensions/sqlite_extension"
+                            )
+                            raw_conn.enable_load_extension(False)
+                        except Exception as ex:
+                            log.debug("FTS extension load failed: %s", ex)
+
+                        fts_rows = fts_conn.execute(
+                            text("""
+                                SELECT
+                                    books_text.book,
+                                    bm25(books_fts) AS rank
+                                FROM books_fts
+                                JOIN books_text ON books_text.id = books_fts.rowid
+                                WHERE books_fts MATCH :term
+                                ORDER BY rank
+                            """),
+                            {"term": fts_query}
+                        ).fetchall()
+                        if fts_rows:
+                            fts_ids = list(dict.fromkeys(row[0] for row in fts_rows))
+                finally:
+                    fts_engine.dispose()
+            except Exception as ex:
+                log.debug("FTS search failed, falling back to default: %s", ex)
+
+        if fts_ids:
+            query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
+            query = (query.outerjoin(db.books_series_link, db.Books.id == db.books_series_link.c.book)
+                          .outerjoin(db.Series)
+                          .filter(calibre_db.common_filters(True))
+                          .filter(db.Books.id.in_(fts_ids))
+                          .order_by(*order_by))
+
+            if offset is not None and limit is not None:
+                offset = int(offset)
+                limit_int = int(limit)
+                result = query.limit(offset + limit_int + 1).all()
+
+                has_more = len(result) > (offset + limit_int)
+                if has_more:
+                    result_count = offset + limit_int + 1
+                else:
+                    result_count = len(result)
+
+                result = result[offset:offset + limit_int]
+                pagination = Pagination((offset / limit_int + 1), limit_int, result_count)
+            else:
+                result = query.all()
+                result_count = len(result)
+
+            ub.store_combo_ids(result)
+            entries = calibre_db.order_authors(result, list_return=True, combined=True)
+        else:
+            entries, result_count, pagination = calibre_db.get_search_results(term,
+                                                                              config,
+                                                                              offset,
+                                                                              order,
+                                                                              limit,
+                                                                              *join)
     else:
         entries = list()
         order = [None, None]

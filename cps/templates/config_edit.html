@@ -170,6 +170,13 @@
       <label for="config_embed_metadata">{{_('Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/Kepubify binaries)')}}</label>
     </div>
     <div class="form-group">
+      <input type="checkbox" id="config_fulltext_search" name="config_fulltext_search" {% if config.config_fulltext_search %}checked{% endif %} data-toggle="tooltip" data-placement="right" title="{{_('Manage FTS indexing in CWA Settings for advanced options and status monitoring')}}">
+      <label for="config_fulltext_search">{{_('Enable Full Text Search ')}} (<a href="https://manual.calibre-ebook.com/gui.html#searching-the-full-text-of-all-books" target="_blank" rel="noopener">{{_('Uses Calibre Full Text')}}</a>)</label>
+      <span style="margin-left: 10px; color: #5bc0de; font-size: 0.9em;">
+        ℹ️ <a href="{{ url_for('cwa_settings.set_cwa_settings') }}" style="color: #5bc0de; text-decoration: underline;">{{_('Advanced FTS management available in CWA Settings')}}</a>
+      </span>
+    </div>
+    <div class="form-group">
         <input type="checkbox" id="config_uploading" data-control="upload_settings" name="config_uploading" {% if config.config_uploading %}checked{% endif %}>
         <label for="config_uploading">{{_('Enable Uploads')}} {{_('(Please ensure that users also have upload permissions)')}}</label>
     </div>

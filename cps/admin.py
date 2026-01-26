@@ -2164,6 +2164,7 @@ def _configuration_update_helper():
         _config_checkbox_int(to_save, "config_uploading")
         _config_checkbox_int(to_save, "config_unicode_filename")
         _config_checkbox_int(to_save, "config_embed_metadata")
+        _config_checkbox(to_save, "config_fulltext_search")
         # Reboot on config_anonbrowse with enabled ldap, as decoraters are changed in this case
         reboot_required |= (_config_checkbox_int(to_save, "config_anonbrowse")
                             and config.config_login_type == constants.LOGIN_LDAP)
@@ -2309,10 +2310,19 @@ def _configuration_update_helper():
         _configuration_result(_("Oops! Database Error: %(error)s.", error=e.orig))
 
     config.save()
+    
+    # Note: FTS initialization is now primarily managed via CWA Settings page
+    # This just provides basic validation
+    fts_warning = None
+    if config.config_fulltext_search and not config.config_calibre_dir:
+        fts_warning = _('Full Text Search enabled but no library path configured.')
+    
     if reboot_required:
         web_server.stop(True)
 
-    return _configuration_result(None, reboot_required, " ".join(filter(None, [unrar_warning, arch_warning])))
+    # Combine all warnings
+    combined_warnings = " ".join(filter(None, [unrar_warning, arch_warning, fts_warning]))
+    return _configuration_result(None, reboot_required, combined_warnings if combined_warnings else None)
 
 
 def _configuration_result(error_flash=None, reboot=False, warning_flash=None):

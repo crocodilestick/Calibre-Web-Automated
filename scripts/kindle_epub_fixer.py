@@ -17,6 +17,7 @@ import subprocess
 import logging
 import tempfile
 import atexit
+import traceback
 from datetime import datetime
 import json
 import shutil
@@ -28,6 +29,9 @@ from cwa_db import CWA_DB
 
 ### Code adapted from https://github.com/innocenat/kindle-epub-fix
 ### Translated from Javascript to Python & modified by crocodilestick
+
+# Compile regex pattern once at module level for performance
+LANGUAGE_TAG_PATTERN = re.compile(r'^[a-z]{2,3}(-[a-z]{2,4})?$', re.IGNORECASE)
 
 ### Global Variables
 dirs_json = "/app/calibre-web-automated/dirs.json"
@@ -133,7 +137,6 @@ class EPUBFixer:
         Returns: (book_id, format) or (None, 'EPUB')
         """
         try:
-            import re
             path_parts = str(file_path).split(os.sep)
             # Look for directory with format "Title (123)"
             for part in path_parts:
@@ -169,7 +172,6 @@ class EPUBFixer:
         """Calculate and store new checksum after modifying an EPUB file."""
         try:
             # Import the checksum calculation function
-            import sys
             project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
             if project_root not in sys.path:
                 sys.path.insert(0, project_root)
@@ -203,7 +205,6 @@ class EPUBFixer:
                 con.close()
         except Exception as e:
             print_and_log(f"[cwa-kindle-epub-fixer] Warning: Failed to recalculate checksum: {e}", log=self.manually_triggered)
-            import traceback
             print_and_log(traceback.format_exc(), log=self.manually_triggered)
 
 
@@ -266,15 +267,18 @@ class EPUBFixer:
                     self.files[filename] = self.files[filename].replace(src, target)
                     self.fixed_problems.append(f"Replaced link target {src} with {target} in file {filename}.")
 
-    def fix_book_language(self, default_language='en'):
-        """Fix language field not defined or not available"""
+    def fix_book_language(self, default_language='en', epub_path=None):
+        """Fix language field - preserves valid tags, only fixes truly invalid ones"""
         # From https://kdp.amazon.com/en_US/help/topic/G200673300
+        # NOTE: Amazon's Send-to-Kindle only reads the FIRST 2 CHARACTERS of language tags.
+        # This means zh-TW and zh-CN both become 'zh' (we cannot distinguish them).
+        # We normalize region codes (de-DE → de) to match Amazon's behavior.
         allowed_languages = [
-            # ISO 639-1
+            # ISO 639-1 (2-character codes - what Amazon actually uses)
             'af', 'gsw', 'ar', 'eu', 'nb', 'br', 'ca', 'zh', 'kw', 'co', 'da', 'nl', 'stq', 'en', 'fi', 'fr', 'fy', 'gl',
-            'de', 'gu', 'hi', 'is', 'ga', 'it', 'ja', 'lb', 'mr', 'ml', 'gv', 'frr', 'nb', 'nn', 'pl', 'pt', 'oc', 'rm',
+            'de', 'gu', 'hi', 'is', 'ga', 'it', 'ja', 'lb', 'mr', 'ml', 'gv', 'frr', 'nn', 'pl', 'pt', 'oc', 'rm',
             'sco', 'gd', 'es', 'sv', 'ta', 'cy',
-            # ISO 639-2
+            # ISO 639-2 (3-character codes - also supported)
             'afr', 'ara', 'eus', 'baq', 'nob', 'bre', 'cat', 'zho', 'chi', 'cor', 'cos', 'dan', 'nld', 'dut', 'eng', 'fin',
             'fra', 'fre', 'fry', 'glg', 'deu', 'ger', 'guj', 'hin', 'isl', 'ice', 'gle', 'ita', 'jpn', 'ltz', 'mar', 'mal',
             'glv', 'nor', 'nno', 'por', 'oci', 'roh', 'gla', 'spa', 'swe', 'tam', 'cym', 'wel',
@@ -300,41 +304,115 @@ class EPUBFixer:
         try:
             opf = minidom.parseString(self.files[opf_filename])
             language_tags = opf.getElementsByTagName('dc:language')
-            language = default_language
-            original_language = 'undefined'
+            language = None
+            original_language = None
 
+            # Check if language tag exists and has content
             if not language_tags or not language_tags[0].firstChild:
-                # Use default language if no language tag exists or tag is empty
-                self.fixed_problems.append(f"No language tag found. Setting to default: {default_language}")
+                # No language tag - try to detect from Calibre metadata, else use default
+                language = self._detect_language_from_metadata(epub_path) or default_language
+                self.fixed_problems.append(f"No language tag found. Setting to: {language}")
             else:
-                language = language_tags[0].firstChild.nodeValue
-                original_language = language
+                # Language tag exists - extract and validate
+                original_language = language_tags[0].firstChild.nodeValue.strip()
+                
+                # First check if the language looks like a valid code format (case-insensitive)
+                # Valid: en, de, zh, en-US, en-us, de-DE, zh-TW, eng, deu, zho
+                # Invalid: Unknown, undefined, garbage, 12345
+                if LANGUAGE_TAG_PATTERN.match(original_language):
+                    # Looks like a proper language tag - extract and normalize base language code
+                    simplified_lang = original_language.split('-')[0].lower()
+                    
+                    if simplified_lang in allowed_languages:
+                        # Valid language code - use it
+                        language = simplified_lang
+                        
+                        # If original had region code or different case, note the normalization
+                        if original_language.lower() != language and '-' in original_language:
+                            self.fixed_problems.append(f"Normalized language from {original_language} to {language} (Amazon only reads base code)")
+                        elif original_language != language:
+                            self.fixed_problems.append(f"Normalized language from {original_language} to {language} (case standardization)")
+                    else:
+                        # Looks like a language tag but not in Amazon's allowed list
+                        detected = self._detect_language_from_metadata(epub_path)
+                        if detected:
+                            language = detected
+                            self.fixed_problems.append(f"Unsupported language '{original_language}'. Detected from metadata: {language}")
+                        else:
+                            language = default_language
+                            self.fixed_problems.append(f"Unsupported language '{original_language}'. Using default: {language}")
+                else:
+                    # Doesn't look like a language tag at all (e.g., "Unknown", "garbage")
+                    detected = self._detect_language_from_metadata(epub_path)
+                    if detected:
+                        language = detected
+                        self.fixed_problems.append(f"Invalid language tag '{original_language}'. Detected from metadata: {language}")
+                    else:
+                        language = default_language
+                        self.fixed_problems.append(f"Invalid language tag '{original_language}'. Using default: {language}")
 
-            simplified_lang = language.split('-')[0].lower()
-            if simplified_lang not in allowed_languages:
-                # If language is not supported, use default
-                language = default_language
-                self.fixed_problems.append(f"Unsupported language {original_language}. Changed to {default_language}")
-
+            # Update or create language tag
             if not language_tags:
+                # Create new tag
                 language_tag = opf.createElement('dc:language')
                 text_node = opf.createTextNode(language)
                 language_tag.appendChild(text_node)
                 metadata = opf.getElementsByTagName('metadata')[0]
                 metadata.appendChild(language_tag)
             else:
+                # Update existing tag
                 if language_tags[0].firstChild:
                     language_tags[0].firstChild.nodeValue = language
                 else:
                     text_node = opf.createTextNode(language)
                     language_tags[0].appendChild(text_node)
 
-            if language != original_language:
+            # Only write if we actually changed something
+            if original_language != language or not original_language:
                 self.files[opf_filename] = opf.toxml()
-                self.fixed_problems.append(f"Changed document language from {original_language} to {language}")
 
         except Exception as e:
             print(f'Error trying to parse OPF file as XML: {e}')
+
+    def _detect_language_from_metadata(self, epub_path=None):
+        """Attempt to detect language from Calibre's metadata.db"""
+        try:
+            # Extract book_id from the EPUB file path
+            if not epub_path:
+                return None
+                
+            book_id, _ = self._extract_book_info_from_path(epub_path)
+            if not book_id:
+                return None
+            
+            # Query metadata.db for language
+            metadb_path = self._get_metadata_db_path()
+            con = sqlite3.connect(metadb_path, timeout=30)
+            cur = con.cursor()
+            
+            # Get language from books table via languages link table
+            result = cur.execute(
+                '''SELECT languages.lang_code 
+                   FROM books 
+                   JOIN books_languages_link ON books.id = books_languages_link.book
+                   JOIN languages ON books_languages_link.lang_code = languages.id
+                   WHERE books.id = ?
+                   LIMIT 1''',
+                (book_id,)
+            ).fetchone()
+            
+            con.close()
+            
+            if result and result[0]:
+                lang = result[0].lower().split('-')[0]  # Normalize
+                print_and_log(f"[cwa-kindle-epub-fixer] Detected language '{lang}' from Calibre metadata", log=self.manually_triggered)
+                return lang
+                
+        except Exception as e:
+            # Silent fail - this is just a helpful fallback
+            pass
+        
+        return None
 
     def fix_stray_img(self):
         """Fix stray IMG tags"""
@@ -420,7 +498,7 @@ class EPUBFixer:
         print_and_log("[cwa-kindle-epub-fixer] Checking linking to body ID to prevent unresolved hyperlinks...", log=self.manually_triggered)
         self.fix_body_id_link()
         print_and_log("[cwa-kindle-epub-fixer] Checking language field tag is valid...", log=self.manually_triggered)
-        self.fix_book_language(default_language)
+        self.fix_book_language(default_language, input_path)
         print_and_log("[cwa-kindle-epub-fixer] Checking for stray images...", log=self.manually_triggered)
         self.fix_stray_img()
         print_and_log("[cwa-kindle-epub-fixer] Checking UTF-8 encoding declaration...", log=self.manually_triggered)

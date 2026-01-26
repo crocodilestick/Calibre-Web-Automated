@@ -229,19 +229,36 @@ class EPUBFixer:
                     self.binary_files[filename] = zip_ref.read(filename)
 
     def fix_encoding(self):
-        """Add UTF-8 encoding declaration if missing"""
+        """Add UTF-8 encoding declaration if missing and fix malformed XML declarations"""
         encoding = '<?xml version="1.0" encoding="utf-8"?>'
         regex = r'^<\?xml\s+version=["\'][\d.]+["\']\s+encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>'
+        # Pattern to detect malformed XML declarations (excessive whitespace)
+        malformed_xml_pattern = r'^<\?xml\s+version=["\'][\d.]+["\']\s{2,}encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>'
 
         for filename in list(self.files.keys()):
             ext = filename.split('.')[-1]
-            if ext in ['html', 'xhtml']:
-                html = self.files[filename]
-                html = html.lstrip()
-                if not re.match(regex, html, re.IGNORECASE):
-                    html = encoding + '\n' + html
-                    self.fixed_problems.append(f"Fixed encoding for file {filename}")
-                self.files[filename] = html
+            # Check HTML, XHTML, XML, OPF, and NCX files
+            if ext in ['html', 'xhtml', 'xml', 'opf', 'ncx']:
+                content = self.files[filename]
+                content = content.lstrip()
+                
+                # First, check for malformed XML declaration (double/triple spaces)
+                if re.match(malformed_xml_pattern, content, re.IGNORECASE):
+                    # Replace malformed declaration with clean one
+                    content = re.sub(
+                        r'^<\?xml\s+version=["\'][\d.]+["\']\s+encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>',
+                        encoding,
+                        content,
+                        count=1,
+                        flags=re.IGNORECASE
+                    )
+                    self.fixed_problems.append(f"Fixed malformed XML declaration in {filename}")
+                # Then check if encoding declaration is missing
+                elif not re.match(regex, content, re.IGNORECASE):
+                    content = encoding + '\n' + content
+                    self.fixed_problems.append(f"Added encoding declaration to {filename}")
+                
+                self.files[filename] = content
 
     def fix_body_id_link(self):
         """Fix linking to body ID showing up as unresolved hyperlink"""

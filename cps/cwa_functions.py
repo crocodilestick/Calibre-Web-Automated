@@ -19,7 +19,7 @@ from pathlib import Path
 from time import sleep
 
 import json
-from threading import Thread
+from threading import Thread, Lock, Timer
 import queue
 import os
 import tempfile
@@ -58,6 +58,10 @@ log = logger.create()
 # Folder where the log files are stored
 LOG_ARCHIVE = "/config/log_archive"
 DIRS_JSON = "/app/calibre-web-automated/dirs.json"
+
+# Debounced duplicate scan timer (web process)
+_duplicate_scan_timer = None
+_duplicate_scan_lock = Lock()
 
 ##———————————————————————————END OF GLOBAL VARIABLES——————————————————————————##
 
@@ -346,6 +350,67 @@ def cwa_internal_schedule_auto_send():
         log.error(f"Internal auto-send schedule failed: {e}")
         return jsonify({"error": str(e)}), 400
 
+
+@csrf.exempt
+@cwa_internal.route('/cwa-internal/queue-duplicate-scan', methods=["POST"])
+def cwa_internal_queue_duplicate_scan():
+    """Debounce and queue an incremental duplicate scan in the web process.
+
+    Security: Limited to localhost callers (within container/host).
+    Payload JSON: {delay_seconds:int}
+    """
+    try:
+        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if remote not in (None, '127.0.0.1', '::1'):
+            abort(403)
+
+        db = CWA_DB()
+        enabled = bool(db.cwa_settings.get('duplicate_scan_enabled', 0))
+        frequency = db.cwa_settings.get('duplicate_scan_frequency', 'manual')
+
+        data = request.get_json(force=True, silent=True) or {}
+        default_delay = db.cwa_settings.get('duplicate_scan_debounce_seconds', 30)
+        delay_seconds = int(data.get('delay_seconds', default_delay))
+        delay_seconds = max(5, min(600, delay_seconds))
+
+        if not enabled or frequency != 'after_import':
+            return jsonify({"success": True, "skipped": True, "reason": "disabled_or_manual"}), 200
+
+        global _duplicate_scan_timer
+        with _duplicate_scan_lock:
+            if _duplicate_scan_timer is not None:
+                try:
+                    _duplicate_scan_timer.cancel()
+                except Exception:
+                    pass
+
+            def _enqueue_scan():
+                try:
+                    log.debug("[cwa-duplicates] Timer fired, attempting to import TaskDuplicateScan...")
+                    from .tasks.duplicate_scan import TaskDuplicateScan
+                    log.debug("[cwa-duplicates] TaskDuplicateScan imported successfully, creating task...")
+                    task = TaskDuplicateScan(full_scan=False, trigger_type='after_import')
+                    log.debug("[cwa-duplicates] Task created, adding to WorkerThread...")
+                    WorkerThread.add('System', task, hidden=False)
+                    log.info("[cwa-duplicates] Debounced duplicate scan queued (after_import)")
+                    print("[cwa-duplicates] Debounced duplicate scan queued (after_import)", flush=True)
+                except Exception as e:
+                    log.error("[cwa-duplicates] Failed to queue debounced duplicate scan: %s", str(e))
+                    print(f"[cwa-duplicates] ERROR: Failed to queue debounced duplicate scan: {e}", flush=True)
+                    import traceback
+                    traceback.print_exc()
+
+            _duplicate_scan_timer = Timer(delay_seconds, _enqueue_scan)
+            _duplicate_scan_timer.daemon = True
+            _duplicate_scan_timer.start()
+            log.info("[cwa-duplicates] Timer started with %d second delay", delay_seconds)
+            print(f"[cwa-duplicates] Timer started with {delay_seconds} second delay", flush=True)
+
+        return jsonify({"success": True, "queued": True, "delay_seconds": delay_seconds}), 200
+    except Exception as e:
+        log.error("[cwa-duplicates] Failed to schedule debounced duplicate scan: %s", str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/schedule-convert-library', methods=["POST"])
 def cwa_internal_schedule_convert_library():
@@ -554,11 +619,13 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
-    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']  # Special handling for integer settings
-    json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled']  # Special handling for JSON settings
+    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'duplicate_auto_resolve_cooldown_minutes']  # Special handling for integer settings
+    float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']  # Special handling for float settings
+    json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']  # Special handling for JSON settings
+    skip_settings = ['auto_convert_ignored_formats', 'auto_ingest_ignored_formats', 'auto_convert_retained_formats']  # Handled through individual format checkboxes
     
     for setting in cwa_default_settings:
-        if setting in integer_settings or setting in json_settings:
+        if setting in integer_settings or setting in float_settings or setting in json_settings or setting in skip_settings:
             continue  # Handle separately
         elif isinstance(cwa_default_settings[setting], int):
             boolean_settings.append(setting)
@@ -566,6 +633,10 @@ def set_cwa_settings():
             string_settings.append(setting)
         else:
             list_settings.append(setting)
+
+    # Ensure cron expression is treated as a string even if default is empty
+    if 'duplicate_scan_cron' not in string_settings:
+        string_settings.append('duplicate_scan_cron')
 
     for format in ignorable_formats:
         string_settings.append(f"ignore_ingest_{format}")
@@ -601,7 +672,6 @@ def set_cwa_settings():
                 elif setting == "auto_convert_target_format":
                     if value is None:
                         value = cwa_db.cwa_settings['auto_convert_target_format']
-                    value = cwa_db.cwa_settings['auto_convert_target_format']
 
                 result |= {setting:value}
             
@@ -626,11 +696,23 @@ def set_cwa_settings():
                 if value is not None:
                     try:
                         int_value = int(value)
-                        # Validate timeout range
+                        # Validate range
                         if setting == 'ingest_timeout_minutes':
                             int_value = max(5, min(120, int_value))  # Clamp between 5 and 120 minutes
                         elif setting == 'auto_send_delay_minutes':
                             int_value = max(1, min(60, int_value))  # Clamp between 1 and 60 minutes
+                        elif setting == 'hardcover_auto_fetch_batch_size':
+                            int_value = max(10, min(200, int_value))  # Clamp between 10 and 200
+                        elif setting == 'hardcover_auto_fetch_schedule_hour':
+                            int_value = max(0, min(23, int_value))  # Clamp between 0 and 23 hours
+                        elif setting == 'duplicate_scan_hour':
+                            int_value = max(0, min(23, int_value))
+                        elif setting == 'duplicate_scan_chunk_size':
+                            int_value = max(500, min(50000, int_value))
+                        elif setting == 'duplicate_scan_debounce_seconds':
+                            int_value = max(5, min(600, int_value))
+                        elif setting == 'duplicate_auto_resolve_cooldown_minutes':
+                            int_value = max(0, min(1440, int_value))  # Clamp between 0 and 1440 minutes (24 hours)
                         result[setting] = int_value
                     except (ValueError, TypeError):
                         # Use current value if conversion fails
@@ -638,11 +720,52 @@ def set_cwa_settings():
                             result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
                         elif setting == 'auto_send_delay_minutes':
                             result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
+                        elif setting == 'hardcover_auto_fetch_batch_size':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 50)  # Default to 50
+                        elif setting == 'hardcover_auto_fetch_schedule_hour':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 2)  # Default to 2 AM
+                        elif setting == 'duplicate_scan_debounce_seconds':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 30)
+                        elif setting == 'duplicate_auto_resolve_cooldown_minutes':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 0)  # Default to 0 (disabled)
                 else:
                     if setting == 'ingest_timeout_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
                     elif setting == 'auto_send_delay_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
+                    elif setting == 'hardcover_auto_fetch_batch_size':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 50)  # Default to 50
+                    elif setting == 'hardcover_auto_fetch_schedule_hour':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 2)  # Default to 2 AM
+                    elif setting == 'duplicate_scan_debounce_seconds':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 30)
+                    elif setting == 'duplicate_auto_resolve_cooldown_minutes':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 0)  # Default to 0 (disabled)
+
+            # Handle float settings
+            for setting in float_settings:
+                value = request.form.get(setting)
+                if value is not None:
+                    try:
+                        float_value = float(value)
+                        # Validate range
+                        if setting == 'hardcover_auto_fetch_min_confidence':
+                            float_value = max(0.5, min(1.0, float_value))  # Clamp between 0.5 and 1.0
+                        elif setting == 'hardcover_auto_fetch_rate_limit':
+                            float_value = max(0.0, min(60.0, float_value))  # Clamp between 0 and 60 seconds
+                        result[setting] = float_value
+                    except (ValueError, TypeError):
+                        # Use current value if conversion fails
+                        if setting == 'hardcover_auto_fetch_min_confidence':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 0.85)  # Default to 0.85
+                        elif setting == 'hardcover_auto_fetch_rate_limit':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 5.0)  # Default to 5.0 seconds
+                else:
+                    if setting == 'hardcover_auto_fetch_min_confidence':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 0.85)  # Default to 0.85
+                    elif setting == 'hardcover_auto_fetch_rate_limit':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 5.0)  # Default to 5.0 seconds
+
 
             # Handle JSON settings
             for setting in json_settings:
@@ -689,6 +812,17 @@ def set_cwa_settings():
                     else:
                         result[setting] = cwa_db.cwa_settings.get(setting, '[]')
 
+            # Validate cron expression if provided
+            cron_expr = result.get('duplicate_scan_cron', '')
+            if cron_expr:
+                try:
+                    from apscheduler.triggers.cron import CronTrigger
+                    CronTrigger.from_crontab(cron_expr)
+                except Exception:
+                    # Revert to previous value and notify user
+                    result['duplicate_scan_cron'] = cwa_db.cwa_settings.get('duplicate_scan_cron', '')
+                    flash(_("Invalid cron expression for duplicate scans. Changes were not saved."), category="error")
+
             # DEBUGGING
             # with open("/config/post_request" ,"w") as f:
             #     for key in result.keys():
@@ -696,6 +830,10 @@ def set_cwa_settings():
             #             f.write(f"{key} - {', '.join(result[key])}\n")
             #         else:
             #             f.write(f"{key} - {result[key]}\n")
+
+            # Save Kobo Sync Magic Shelves setting (stored in app.db, not cwa.db)
+            config.config_kobo_sync_magic_shelves = 'config_kobo_sync_magic_shelves' in request.form
+            config.save()
 
             cwa_db.update_cwa_settings(result)
             cwa_settings = cwa_db.get_cwa_settings()
@@ -709,9 +847,42 @@ def set_cwa_settings():
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.get_cwa_settings()
 
+    # Check if Hardcover token is available
+    from os import getenv
+    hardcover_token_available = bool(
+        getattr(config, "config_hardcover_token", None) or 
+        getenv("HARDCOVER_TOKEN")
+    )
+
+    next_scan_run = get_next_duplicate_scan_run(cwa_settings)
+
     return render_title_template("cwa_settings.html", title=_("Calibre-Web Automated User Settings"), page="cwa-settings",
                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats, target_formats=target_formats,
-                                    automerge_options=automerge_options, autoingest_options=autoingest_options)
+                                    automerge_options=automerge_options, autoingest_options=autoingest_options,
+                                    hardcover_token_available=hardcover_token_available,
+                                    next_duplicate_scan_run=next_scan_run, config=config)
+
+
+def get_next_duplicate_scan_run(settings):
+    """Compute next scheduled duplicate scan run time based on settings."""
+    try:
+        enabled = bool(settings.get('duplicate_scan_enabled', 0))
+        cron_expr = (settings.get('duplicate_scan_cron') or '').strip()
+
+        if not enabled:
+            return None
+
+        if not cron_expr:
+            return None
+
+        from apscheduler.triggers.cron import CronTrigger
+        now = datetime.now().astimezone()
+        trigger = CronTrigger.from_crontab(cron_expr, timezone=now.tzinfo)
+        next_run = trigger.get_next_fire_time(None, now)
+        return next_run.isoformat() if next_run else None
+    except Exception:
+        return None
+
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
@@ -751,7 +922,129 @@ headers = {
 @login_required_if_no_ano
 @admin_required
 def cwa_stats_show():
+    from datetime import datetime, timedelta
+    
+    # Check which tab to show (default to user activity)
+    active_tab = request.args.get('tab', 'activity')
+    
+    # Parse date range parameters
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    days_param = request.args.get('days')
+    
+    # Initialize defaults
+    date_range_label = None
+    show_warning = False
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    # Handle 'all' as a special string value, otherwise parse as int
+    if days_param == 'all':
+        days = None  # None means all time
+        date_range_label = "All Time"
+    else:
+        days = int(days_param) if days_param else None
+    
+    user_id = request.args.get('user_id', type=int)
+    
+    # Set default label if not set
+    if not date_range_label:
+        date_range_label = "Last 30 days"
+    
+    if start_date and end_date:
+        try:
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+            
+            # Calculate range in days
+            range_days = (end_dt - start_dt).days
+            
+            # Show warning if range > 1 year
+            if range_days > 365:
+                show_warning = True
+            
+            date_range_label = f"{start_date} to {end_date}"
+        except ValueError:
+            # Invalid date format, fall back to 30 days
+            start_date = None
+            end_date = None
+            days = 30
+            date_range_label = "Last 30 days"
+    elif days:
+        if date_range_label != "All Time":
+            date_range_label = f"Last {days} days"
+        if days > 365:
+            show_warning = True
+    elif days is None and date_range_label != "All Time":
+        # Default to 30 days if no parameters provided
+        days = 30
+        date_range_label = "Last 30 days"
+    
     cwa_db = CWA_DB()
+    
+    # Get list of active users for dropdown
+    active_users = cwa_db.get_active_users()
+    
+    # Get user activity dashboard stats with date range and optional user filter
+    if start_date and end_date:
+        dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date, user_id=user_id)
+        hourly_heatmap = cwa_db.get_hourly_activity_heatmap(start_date=start_date, end_date=end_date, user_id=user_id)
+        reading_velocity = cwa_db.get_reading_velocity(start_date=start_date, end_date=end_date, user_id=user_id)
+        format_preferences = cwa_db.get_format_preferences(start_date=start_date, end_date=end_date, user_id=user_id)
+        discovery_sources = cwa_db.get_discovery_sources(start_date=start_date, end_date=end_date, user_id=user_id)
+        device_breakdown = cwa_db.get_device_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+        failed_logins = cwa_db.get_failed_logins(start_date=start_date, end_date=end_date)
+    else:
+        dashboard_stats = cwa_db.get_dashboard_stats(days=days, user_id=user_id)
+        hourly_heatmap = cwa_db.get_hourly_activity_heatmap(days=days, user_id=user_id)
+        reading_velocity = cwa_db.get_reading_velocity(days=days, user_id=user_id)
+        format_preferences = cwa_db.get_format_preferences(days=days, user_id=user_id)
+        discovery_sources = cwa_db.get_discovery_sources(days=days, user_id=user_id)
+        device_breakdown = cwa_db.get_device_breakdown(days=days, user_id=user_id)
+        failed_logins = cwa_db.get_failed_logins(days=days)
+    
+    # Get library stats (for Library tab)
+    if start_date and end_date:
+        library_growth = cwa_db.get_library_growth(start_date=start_date, end_date=end_date)
+        library_formats = cwa_db.get_library_formats(start_date=start_date, end_date=end_date)
+        conversion_stats = cwa_db.get_conversion_success_rate(start_date=start_date, end_date=end_date)
+        books_added_stats = cwa_db.get_books_added_count(start_date=start_date, end_date=end_date)
+    else:
+        library_growth = cwa_db.get_library_growth(days=days)
+        library_formats = cwa_db.get_library_formats(days=days)
+        conversion_stats = cwa_db.get_conversion_success_rate(days=days)
+        books_added_stats = cwa_db.get_books_added_count(days=days)
+    
+    # Get additional library stats (not time-dependent)
+    series_completion = cwa_db.get_series_completion_stats(limit=10)
+    publication_years = cwa_db.get_publication_year_distribution()
+    most_fixed_books = cwa_db.get_most_fixed_books(limit=10)
+    
+    # Get Sprint 6 advanced library metrics
+    if start_date and end_date:
+        rating_statistics = cwa_db.get_rating_statistics(start_date=start_date, end_date=end_date)
+    else:
+        rating_statistics = cwa_db.get_rating_statistics(days=days)
+    
+    top_enforced_books = cwa_db.get_top_enforced_books(limit=10)
+    import_source_flows = cwa_db.get_import_source_flows(limit=15)
+    
+    # Get Sprint 5 user activity enhancements
+    if start_date and end_date:
+        session_duration = cwa_db.get_session_duration_stats(start_date=start_date, end_date=end_date, user_id=user_id)
+        search_success = cwa_db.get_search_success_rate(start_date=start_date, end_date=end_date, user_id=user_id)
+        shelf_activity = cwa_db.get_shelf_activity_stats(start_date=start_date, end_date=end_date, user_id=user_id, limit=10)
+        api_usage_breakdown = cwa_db.get_api_usage_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+        endpoint_frequency = cwa_db.get_endpoint_frequency_grouped(start_date=start_date, end_date=end_date, user_id=user_id, limit=20)
+        api_timing = cwa_db.get_api_timing_heatmap(start_date=start_date, end_date=end_date, user_id=user_id)
+    else:
+        session_duration = cwa_db.get_session_duration_stats(days=days, user_id=user_id)
+        search_success = cwa_db.get_search_success_rate(days=days, user_id=user_id)
+        shelf_activity = cwa_db.get_shelf_activity_stats(days=days, user_id=user_id, limit=10)
+        api_usage_breakdown = cwa_db.get_api_usage_breakdown(days=days, user_id=user_id)
+        endpoint_frequency = cwa_db.get_endpoint_frequency_grouped(days=days, user_id=user_id, limit=20)
+        api_timing = cwa_db.get_api_timing_heatmap(days=days, user_id=user_id)
+    
+    # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)
     data_enforcement_with_paths = cwa_db.enforce_show(paths=True, verbose=False, web_ui=True)
     data_imports = cwa_db.get_import_history(verbose=False)
@@ -759,14 +1052,385 @@ def cwa_stats_show():
     data_epub_fixer = cwa_db.get_epub_fixer_history(fixes=False, verbose=False)
     data_epub_fixer_with_fixes = cwa_db.get_epub_fixer_history(fixes=True, verbose=False)
 
-    return render_title_template("cwa_stats.html", title=_("Calibre-Web Automated Sever Stats & Archive"), page="cwa-stats",
+    # Get Hardcover auto-fetch stats
+    hardcover_stats = None
+    try:
+        # Get total stats from hardcover_auto_fetch_stats table
+        total_processed = cwa_db.execute_read(
+            "SELECT SUM(books_processed) FROM hardcover_auto_fetch_stats"
+        )
+        total_auto_matched = cwa_db.execute_read(
+            "SELECT SUM(auto_matched) FROM hardcover_auto_fetch_stats"
+        )
+        
+        # Get pending review count
+        pending_review = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 0
+        ).count()
+        
+        # Get manually reviewed count
+        manually_reviewed = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 1,
+            ub.HardcoverMatchQueue.review_action == 'accept'
+        ).count()
+        
+        hardcover_stats = {
+            'total_processed': total_processed[0][0] if total_processed and total_processed[0][0] else 0,
+            'total_auto_matched': total_auto_matched[0][0] if total_auto_matched and total_auto_matched[0][0] else 0,
+            'pending_review': pending_review,
+            'manually_reviewed': manually_reviewed
+        }
+    except Exception as e:
+        log.debug(f"Error fetching Hardcover stats: {e}")
+        hardcover_stats = None
+
+    return render_title_template("cwa_stats_tabs.html", title=_("Calibre-Web Automated Stats & Activity"),
+                                page="cwa-stats",
+                                active_tab=active_tab,
+                                dashboard_stats=dashboard_stats,
+                                hourly_heatmap=hourly_heatmap,
+                                reading_velocity=reading_velocity,
+                                format_preferences=format_preferences,
+                                discovery_sources=discovery_sources,
+                                device_breakdown=device_breakdown,
+                                failed_logins=failed_logins,
+                                session_duration=session_duration,
+                                search_success=search_success,
+                                shelf_activity=shelf_activity,
+                                api_usage_breakdown=api_usage_breakdown,
+                                endpoint_frequency=endpoint_frequency,
+                                api_timing=api_timing,
+                                library_growth=library_growth,
+                                library_formats=library_formats,
+                                conversion_stats=conversion_stats,
+                                books_added_stats=books_added_stats,
+                                series_completion=series_completion,
+                                publication_years=publication_years,
+                                most_fixed_books=most_fixed_books,
+                                rating_statistics=rating_statistics,
+                                top_enforced_books=top_enforced_books,
+                                import_source_flows=import_source_flows,
+                                date_range_label=date_range_label,
+                                show_warning=show_warning,
+                                start_date=start_date,
+                                end_date=end_date,
+                                days=days,
+                                today=today,
+                                is_admin=current_user.role_admin(),
+                                active_users=active_users,
+                                selected_user_id=user_id,
                                 cwa_stats=get_cwa_stats(),
+                                hardcover_stats=hardcover_stats,
                                 data_enforcement=data_enforcement, headers_enforcement=headers["enforcement"]["no_paths"], 
-                                data_enforcement_with_paths=data_enforcement_with_paths,headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 
+                                data_enforcement_with_paths=data_enforcement_with_paths, headers_enforcement_with_paths=headers["enforcement"]["with_paths"], 
                                 data_imports=data_imports, headers_import=headers["imports"],
                                 data_conversions=data_conversions, headers_conversion=headers["conversions"],
                                 data_epub_fixer=data_epub_fixer, headers_epub_fixer=headers["epub_fixer"]["no_fixes"],
                                 data_epub_fixer_with_fixes=data_epub_fixer_with_fixes, headers_epub_fixer_with_fixes=headers["epub_fixer"]["with_fixes"])
+
+@cwa_stats.route("/cwa-stats-export-csv/<tab_name>", methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def export_stats_csv(tab_name):
+    """Export stats data as CSV for the specified tab."""
+    import csv
+    from io import StringIO
+    from flask import make_response
+    from datetime import datetime
+    
+    # Parse same filter parameters as main stats route
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    days_param = request.args.get('days')
+    user_id = request.args.get('user_id', type=int)
+    
+    # Handle 'all' as special value
+    if days_param == 'all':
+        days = None
+    else:
+        days = int(days_param) if days_param else 30
+    
+    cwa_db = CWA_DB()
+    output = StringIO()
+    writer = csv.writer(output)
+    
+    try:
+        if tab_name == 'activity':
+            # User Activity Tab Export
+            writer.writerow(['=== USER ACTIVITY STATISTICS ==='])
+            writer.writerow([])
+            
+            # Dashboard stats
+            if start_date and end_date:
+                dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date, user_id=user_id)
+            else:
+                dashboard_stats = cwa_db.get_dashboard_stats(days=days, user_id=user_id)
+            
+            writer.writerow(['Metric', 'Value'])
+            for key, value in dashboard_stats.get('totals', {}).items():
+                writer.writerow([key, value])
+            writer.writerow([])
+            
+            # Top users or most active days
+            top_users = dashboard_stats.get('top_users', [])
+            if user_id:
+                writer.writerow(['=== MOST ACTIVE DAYS ==='])
+                writer.writerow(['Date', 'Activity Count'])
+                for day, count in top_users:
+                    writer.writerow([day, count])
+            else:
+                writer.writerow(['=== TOP USERS ==='])
+                writer.writerow(['User ID', 'Username', 'Event Count'])
+                for uid, username, count in top_users:
+                    writer.writerow([uid, username, count])
+            writer.writerow([])
+            
+            # Format distribution
+            writer.writerow(['=== FORMAT DISTRIBUTION ==='])
+            writer.writerow(['Format', 'Download Count'])
+            for format_name, count in dashboard_stats.get('format_distribution', []):
+                writer.writerow([format_name, count])
+            writer.writerow([])
+            
+            # Discovery sources
+            writer.writerow(['=== DISCOVERY SOURCES ==='])
+            writer.writerow(['Source', 'Access Count'])
+            if start_date and end_date:
+                discovery = cwa_db.get_discovery_sources(start_date=start_date, end_date=end_date, user_id=user_id)
+            else:
+                discovery = cwa_db.get_discovery_sources(days=days, user_id=user_id)
+            for source, count in discovery:
+                writer.writerow([source, count])
+            writer.writerow([])
+            
+            # Device breakdown
+            writer.writerow(['=== DEVICE BREAKDOWN ==='])
+            writer.writerow(['Device', 'Access Count'])
+            if start_date and end_date:
+                devices = cwa_db.get_device_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+            else:
+                devices = cwa_db.get_device_breakdown(days=days, user_id=user_id)
+            for device, count in devices:
+                writer.writerow([device, count])
+            
+        elif tab_name == 'library':
+            # Library Stats Tab Export
+            writer.writerow(['=== LIBRARY STATISTICS ==='])
+            writer.writerow([])
+            
+            # Summary stats
+            cwa_stats = get_cwa_stats()
+            writer.writerow(['Total Books', cwa_stats['total_books']])
+            if start_date and end_date:
+                books_added = cwa_db.get_books_added_count(start_date=start_date, end_date=end_date)
+                conversions = cwa_db.get_conversion_success_rate(start_date=start_date, end_date=end_date)
+            else:
+                books_added = cwa_db.get_books_added_count(days=days)
+                conversions = cwa_db.get_conversion_success_rate(days=days)
+            writer.writerow(['Books Added', books_added.get('total', 0)])
+            writer.writerow(['Conversions', conversions.get('total', 0)])
+            writer.writerow([])
+            
+            # Library growth
+            writer.writerow(['=== LIBRARY GROWTH ==='])
+            writer.writerow(['Date', 'Books Added'])
+            if start_date and end_date:
+                growth = cwa_db.get_library_growth(start_date=start_date, end_date=end_date)
+            else:
+                growth = cwa_db.get_library_growth(days=days)
+            for date, count in growth:
+                writer.writerow([date, count])
+            writer.writerow([])
+            
+            # Format distribution
+            writer.writerow(['=== FORMAT DISTRIBUTION ==='])
+            writer.writerow(['Format', 'Book Count'])
+            if start_date and end_date:
+                formats = cwa_db.get_library_formats(start_date=start_date, end_date=end_date)
+            else:
+                formats = cwa_db.get_library_formats(days=days)
+            for format_name, count in formats:
+                writer.writerow([format_name, count])
+            writer.writerow([])
+            
+            # Series completion
+            writer.writerow(['=== SERIES STATISTICS ==='])
+            writer.writerow(['Series Name', 'Book Count', 'Highest Index'])
+            series = cwa_db.get_series_completion_stats(limit=50)
+            for series_name, book_count, highest_index in series:
+                writer.writerow([series_name, book_count, highest_index])
+            writer.writerow([])
+            
+            # Rating statistics
+            writer.writerow(['=== RATING STATISTICS ==='])
+            if start_date and end_date:
+                ratings = cwa_db.get_rating_statistics(start_date=start_date, end_date=end_date)
+            else:
+                ratings = cwa_db.get_rating_statistics(days=days)
+            writer.writerow(['Average Rating', ratings.get('average_rating', 0)])
+            writer.writerow(['Unrated Percentage', ratings.get('unrated_percentage', 0)])
+            writer.writerow([])
+            writer.writerow(['Stars', 'Book Count'])
+            for stars, count in ratings.get('rating_distribution', []):
+                writer.writerow([stars, count])
+            writer.writerow([])
+            
+            # Top enforced books
+            writer.writerow(['=== TOP ENFORCED BOOKS ==='])
+            writer.writerow(['Book Title', 'Enforcement Count', 'Last Enforced'])
+            top_enforced = cwa_db.get_top_enforced_books(limit=20)
+            for book_id, title, count, last_enforced in top_enforced:
+                writer.writerow([title, count, last_enforced])
+            
+        elif tab_name == 'api':
+            # API Usage Tab Export
+            writer.writerow(['=== API USAGE STATISTICS ==='])
+            writer.writerow([])
+            
+            # API usage breakdown
+            writer.writerow(['=== USAGE BREAKDOWN ==='])
+            writer.writerow(['Category', 'Access Count'])
+            if start_date and end_date:
+                breakdown = cwa_db.get_api_usage_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+            else:
+                breakdown = cwa_db.get_api_usage_breakdown(days=days, user_id=user_id)
+            for category, count in breakdown:
+                writer.writerow([category, count])
+            writer.writerow([])
+            
+            # Endpoint frequency
+            writer.writerow(['=== ENDPOINT ACCESS FREQUENCY ==='])
+            writer.writerow(['Endpoint', 'Category', 'Access Count', 'Last Accessed'])
+            if start_date and end_date:
+                endpoints = cwa_db.get_endpoint_frequency_grouped(start_date=start_date, end_date=end_date, user_id=user_id, limit=50)
+            else:
+                endpoints = cwa_db.get_endpoint_frequency_grouped(days=days, user_id=user_id, limit=50)
+            for endpoint, category, count, last_accessed in endpoints:
+                writer.writerow([endpoint, category, count, last_accessed])
+        
+        else:
+            # Unknown tab
+            writer.writerow(['Error: Unknown tab name'])
+        
+        # Create response
+        output.seek(0)
+        csv_data = output.getvalue()
+        response = make_response(csv_data)
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        
+        # Generate filename with timestamp
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'cwa_stats_{tab_name}_{timestamp}.csv'
+        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        return response
+        
+    except Exception as e:
+        log.error(f"Error generating CSV export for tab {tab_name}: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # Return error CSV
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['Error generating export'])
+        writer.writerow([str(e)])
+        output.seek(0)
+        response = make_response(output.getvalue())
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        response.headers['Content-Disposition'] = 'attachment; filename="error.csv"'
+        return response
+
+
+@cwa_stats.route("/cwa-stats-debug", methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def debug_stats_data():
+    """Debug endpoint to inspect raw activity data and diagnose parsing issues."""
+    try:
+        cwa_db = CWA_DB()
+        import json as json_module
+        
+        # Get sample of recent activity records WITHOUT json_extract to avoid errors
+        cwa_db.cur.execute("""
+            SELECT 
+                timestamp,
+                user_name,
+                event_type,
+                item_title,
+                extra_data
+            FROM cwa_user_activity
+            WHERE event_type IN ('DOWNLOAD', 'READ', 'EMAIL', 'LOGIN')
+            ORDER BY timestamp DESC
+            LIMIT 100
+        """)
+        
+        records = []
+        json_valid = 0
+        json_invalid = 0
+        
+        for row in cwa_db.cur.fetchall():
+            extra_data_raw = row[4]
+            is_valid_json = False
+            parsed_data = None
+            error_msg = None
+            
+            # Try to parse as JSON
+            if extra_data_raw:
+                try:
+                    parsed_data = json_module.loads(extra_data_raw)
+                    is_valid_json = True
+                    json_valid += 1
+                except Exception as e:
+                    is_valid_json = False
+                    json_invalid += 1
+                    error_msg = str(e)
+            
+            records.append({
+                'timestamp': row[0],
+                'user': row[1],
+                'event': row[2],
+                'item': row[3],
+                'raw_extra_data': extra_data_raw,
+                'is_valid_json': is_valid_json,
+                'parsed_data': parsed_data,
+                'parse_error': error_msg
+            })
+        
+        # Get basic counts
+        cwa_db.cur.execute("""
+            SELECT 
+                event_type,
+                COUNT(*) as count,
+                COUNT(extra_data) as with_extra_data
+            FROM cwa_user_activity
+            GROUP BY event_type
+            ORDER BY count DESC
+        """)
+        
+        event_counts = [{'event_type': row[0], 'total': row[1], 'with_extra_data': row[2]} 
+                       for row in cwa_db.cur.fetchall()]
+        
+        # Try to get valid JSON count (might fail, that's okay)
+        json_stats = {
+            'valid_in_sample': json_valid,
+            'invalid_in_sample': json_invalid,
+            'sample_size': len(records)
+        }
+        
+        return jsonify({
+            'event_counts': event_counts,
+            'json_stats': json_stats,
+            'sample_records': records[:20]  # Only return first 20 to keep response size manageable
+        })
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
+
 
 @cwa_stats.route('/cwa-scheduled/upcoming', methods=["GET"])
 @login_required_if_no_ano
@@ -1383,3 +2047,283 @@ def set_profile_picture():
     return render_title_template("profile_pictures.html", 
                                 title=_("CWA Profile Picture Management (WIP)"), 
                                 page="profile-picture")
+
+
+# ========================================
+# Full Text Search (FTS) Management
+# ========================================
+
+def _get_fts_status_from_calibredb():
+    """
+    Get FTS indexing status from calibredb.
+    Returns dict with: enabled, indexed, total, percentage, error
+    """
+    from .admin import get_calibre_binarypath
+    
+    result = {
+        'enabled': False,
+        'indexed': 0,
+        'total': 0,
+        'percentage': 0.0,
+        'error': None
+    }
+    
+    if not config.config_calibre_dir:
+        result['error'] = _('No library path configured')
+        return result
+    
+    calibredb_path = get_calibre_binarypath("calibredb")
+    if not calibredb_path or not os.path.isfile(calibredb_path):
+        result['error'] = _('calibredb not found')
+        return result
+    
+    try:
+        # Set up environment with LD_LIBRARY_PATH for Calibre libraries
+        env = os.environ.copy()
+        env['LD_LIBRARY_PATH'] = '/app/calibre/lib'
+        
+        # Run calibredb fts_index status
+        cmd = [calibredb_path, 'fts_index', 'status', '--library-path', config.config_calibre_dir]
+        proc_result = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=10,
+            env=env
+        )
+        
+        # Exit code 0 = enabled, exit code 2 = disabled (both are valid responses)
+        if proc_result.returncode in [0, 2]:
+            output = proc_result.stdout.strip()
+            
+            # Check if enabled or disabled
+            if 'disabled' in output.lower():
+                result['enabled'] = False
+                # When disabled, there are no books to count
+                result['indexed'] = 0
+                result['total'] = 0
+                result['percentage'] = 0.0
+                return result
+            elif 'enabled' in output.lower():
+                result['enabled'] = True
+            
+            # Parse "X of Y books" pattern
+            match = re.search(r'(\d+)\s+of\s+(\d+)\s+books', output)
+            if match:
+                result['indexed'] = int(match.group(1))
+                result['total'] = int(match.group(2))
+                if result['total'] > 0:
+                    result['percentage'] = (result['indexed'] / result['total']) * 100
+        else:
+            result['error'] = proc_result.stderr.strip() or _('Failed to get FTS status')
+            
+    except subprocess.TimeoutExpired:
+        result['error'] = _('Timeout while checking FTS status')
+    except Exception as ex:
+        result['error'] = str(ex)
+        log.error(f"Error getting FTS status: {ex}")
+    
+    return result
+
+
+def _initialize_fts_index():
+    """
+    Initialize or disable Full Text Search indexing based on config.
+    Returns a tuple of (success: bool, message: str or None)
+    """
+    from .admin import get_calibre_binarypath
+    
+    if not config.config_calibre_dir:
+        return False, _('No library path configured')
+    
+    fts_db_path = os.path.join(config.config_calibre_dir, "full-text-search.db")
+    
+    # If FTS disabled but database exists, disable indexing
+    if not config.config_fulltext_search and os.path.exists(fts_db_path):
+        try:
+            calibredb_path = get_calibre_binarypath("calibredb")
+            if not calibredb_path or not os.path.isfile(calibredb_path):
+                log.warning("calibredb not found, cannot disable FTS indexing")
+                return False, _('calibredb not available. Cannot stop FTS indexing.')
+            
+            env = os.environ.copy()
+            env['LD_LIBRARY_PATH'] = '/app/calibre/lib'
+            
+            cmd = [calibredb_path, 'fts_index', 'disable', '--library-path', config.config_calibre_dir]
+            log.info("Disabling FTS index: %s", ' '.join(cmd))
+            
+            result = subprocess.run(
+                cmd,
+                input='disable\n',  # Must type "disable" to confirm
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=30,
+                env=env
+            )
+            
+            if result.returncode == 0:
+                log.info("FTS indexing disabled successfully")
+                return True, _('Full Text Search indexing has been disabled and stopped.')
+            else:
+                log.error("Failed to disable FTS indexing: %s", result.stderr.strip())
+                return False, _('Failed to disable FTS indexing: %(error)s', error=result.stderr.strip())
+        except Exception as ex:
+            log.error("Failed to disable FTS indexing: %s", ex)
+            return False, _('Error disabling FTS indexing: %(error)s', error=str(ex))
+    
+    # If FTS not enabled, nothing to do
+    if not config.config_fulltext_search:
+        return True, None
+    
+    # Check if FTS database already exists AND is enabled
+    if os.path.exists(fts_db_path):
+        # Check current status to see if it's actually enabled
+        current_status = _get_fts_status_from_calibredb()
+        if current_status['enabled']:
+            log.debug("FTS database already exists and is enabled at %s", fts_db_path)
+            return True, None
+        # If disabled, fall through to enable it
+    
+    # Try to enable FTS indexing using calibredb
+    try:
+        calibredb_path = get_calibre_binarypath("calibredb")
+        if not calibredb_path or not os.path.isfile(calibredb_path):
+            log.warning("calibredb not found, cannot initialize FTS indexing")
+            return False, _('Full Text Search enabled but calibredb not available. FTS indexing cannot be initialized.')
+        
+        # Run calibredb fts_index enable
+        env = os.environ.copy()
+        env['LD_LIBRARY_PATH'] = '/app/calibre/lib'
+        
+        cmd = [calibredb_path, 'fts_index', 'enable', '--library-path', config.config_calibre_dir]
+        log.info("Initializing FTS index: %s", ' '.join(cmd))
+        
+        result = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=30,
+            env=env
+        )
+        
+        if result.returncode == 0:
+            log.info("FTS indexing enabled successfully: %s", result.stdout.strip())
+            return True, _('Full Text Search indexing enabled. Books are being indexed in the background.')
+        else:
+            log.error("Failed to enable FTS indexing: %s", result.stderr.strip())
+            return False, _('Failed to enable FTS indexing: %(error)s', error=result.stderr.strip())
+            
+    except Exception as ex:
+        log.error("Failed to initialize FTS indexing: %s", ex)
+        return False, _('Error initializing FTS indexing: %(error)s', error=str(ex))
+
+
+@cwa_settings.route('/fts-status', methods=['GET'])
+@login_required_if_no_ano
+@admin_required
+def get_fts_status():
+    """
+    Get current FTS indexing status.
+    Returns JSON with status information.
+    """
+    status = _get_fts_status_from_calibredb()
+    
+    # Determine if search is available (90% threshold)
+    status['available'] = status['enabled'] and status['percentage'] >= 90.0
+    
+    # Check if indexing is currently active by comparing two sequential checks
+    # If indexed count changes, indexing is active
+    if status['enabled'] and status['indexed'] < status['total']:
+        sleep(0.5)  # Brief pause
+        status2 = _get_fts_status_from_calibredb()
+        status['active'] = status2['indexed'] > status['indexed']
+    else:
+        status['active'] = False
+    
+    return jsonify(status)
+
+
+@cwa_settings.route('/fts-action', methods=['POST'])
+@csrf.exempt
+@login_required_if_no_ano
+@admin_required
+def fts_action():
+    """
+    Execute FTS actions: enable, disable, reindex.
+    Returns JSON with success status and message.
+    """
+    from .admin import get_calibre_binarypath
+    
+    action = request.form.get('action')
+    
+    if action not in ['enable', 'disable', 'reindex']:
+        return jsonify({'success': False, 'message': _('Invalid action')}), 400
+    
+    calibredb_path = get_calibre_binarypath("calibredb")
+    if not calibredb_path or not os.path.isfile(calibredb_path):
+        return jsonify({'success': False, 'message': _('calibredb not available')}), 500
+    
+    if not config.config_calibre_dir:
+        return jsonify({'success': False, 'message': _('No library path configured')}), 500
+    
+    try:
+        env = os.environ.copy()
+        env['LD_LIBRARY_PATH'] = '/app/calibre/lib'
+        
+        if action == 'enable':
+            # Update config
+            config.config_fulltext_search = True
+            config.save()
+            
+            # Initialize FTS
+            success, message = _initialize_fts_index()
+            if success:
+                return jsonify({'success': True, 'message': message or _('FTS indexing enabled successfully')})
+            else:
+                return jsonify({'success': False, 'message': message}), 500
+                
+        elif action == 'disable':
+            # Update config
+            try:
+                config.config_fulltext_search = False
+                config.save()
+                log.info("FTS config setting disabled and saved")
+            except Exception as save_ex:
+                log.error(f"Error saving config during FTS disable: {save_ex}")
+                return jsonify({'success': False, 'message': f'Failed to save config: {str(save_ex)}'}), 500
+            
+            # Disable FTS
+            success, message = _initialize_fts_index()
+            if success:
+                return jsonify({'success': True, 'message': message or _('FTS indexing disabled successfully')})
+            else:
+                return jsonify({'success': False, 'message': message}), 500
+                
+        elif action == 'reindex':
+            if not config.config_fulltext_search:
+                return jsonify({'success': False, 'message': _('FTS must be enabled before reindexing')}), 400
+            
+            cmd = [calibredb_path, 'fts_index', 'reindex', '--library-path', config.config_calibre_dir]
+            log.info("Reindexing FTS: %s", ' '.join(cmd))
+            
+            result = subprocess.run(
+                cmd,
+                input='reindex\n',  # Must type "reindex" to confirm
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=30,
+                env=env
+            )
+            
+            if result.returncode == 0:
+                return jsonify({'success': True, 'message': _('FTS reindexing started successfully')})
+            else:
+                return jsonify({'success': False, 'message': result.stderr.strip()}), 500
+                
+    except Exception as ex:
+        log.error(f"FTS action failed: {ex}")
+        return jsonify({'success': False, 'message': str(ex)}), 500

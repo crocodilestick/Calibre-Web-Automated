@@ -60,7 +60,7 @@ msgstr "Basiskonfiguration"
 
 #: cps/admin.py:326
 msgid "UI Configuration"
-msgstr "Benutzeroberflächenkonfiguration"
+msgstr "Ansichtsteinstellungen"
 
 #: cps/admin.py:350 cps/admin.py:1030 cps/db.py:820 cps/search.py:140
 #: cps/web.py:797
@@ -102,11 +102,11 @@ msgstr "Name 'Guest' kann nicht geändert werden"
 
 #: cps/admin.py:527
 msgid "Guest can't have this role"
-msgstr "Benutzer 'Guest' kann diese Rolle nicht haben"
+msgstr "Benutzer 'Guest' darf diese Rolle nicht besitzen"
 
 #: cps/admin.py:539 cps/admin.py:2164
 msgid "No admin user remaining, can't remove admin role"
-msgstr "Kein Admin-Benutzer verblieben, Admin-Rolle kann nicht entfernt werden"
+msgstr "Kein verbleibender Admin-Benutzer, Admin-Rolle kann nicht entfernt werden"
 
 #: cps/admin.py:543 cps/admin.py:557
 msgid "Value has to be true or false"
@@ -118,7 +118,7 @@ msgstr "Ungültige Rolle"
 
 #: cps/admin.py:549
 msgid "Guest can't have this view"
-msgstr "Benutzer 'Guest' kann diese Ansicht nicht haben"
+msgstr "Benutzer 'Guest' darf diese Ansicht nicht besitzen"
 
 #: cps/admin.py:559
 msgid "Invalid view"
@@ -328,7 +328,7 @@ msgstr "Neuen Benutzer hinzufügen"
 
 #: cps/admin.py:1411 cps/templates/admin.html:103
 msgid "Edit Email Server Settings"
-msgstr "SMTP-Einstellungen ändern"
+msgstr "Einstellungen für den E-Mail-Server"
 
 #: cps/admin.py:1430
 msgid "Success! Gmail Account Verified."
@@ -402,7 +402,7 @@ msgstr "Erfolg! Passwort für Benutzer %(user)s wurde zurückgesetzt"
 
 #: cps/admin.py:1579
 msgid "Oops! Please configure the SMTP mail settings."
-msgstr "Ups! Bitte die SMTP-Einstellungen konfigurieren."
+msgstr "Ups! Bitte die SMTP-Einstellungen des E-Mail-Server konfigurieren."
 
 #: cps/admin.py:1590
 msgid "Logfile viewer"
@@ -502,7 +502,7 @@ msgstr "DB Pfad ist nicht gültig, bitte einen gültigen Pfad angeben"
 
 #: cps/admin.py:1888
 msgid "DB is not Writeable"
-msgstr "Datenbank ist nicht schreibbar"
+msgstr "Datenbank ist nicht beschreibbar"
 
 #: cps/admin.py:1901
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
@@ -558,7 +558,7 @@ msgstr "Benutzer 'Guest' kann nicht gelöscht werden"
 
 #: cps/admin.py:2141
 msgid "No admin user remaining, can't delete user"
-msgstr "Kein Admin-Benutzer verblieben, Benutzer kann nicht gelöscht werden"
+msgstr "Kein verbleibender Admin-Benutzer, Benutzer kann nicht gelöscht werden"
 
 #: cps/admin.py:2204 cps/web.py:1608
 msgid "Email can't be empty and has to be a valid Email"
@@ -769,7 +769,7 @@ msgstr "Manuell?"
 
 #: cps/cwa_functions.py:325
 msgid "No. Fixes"
-msgstr "Anzahl Korrekturen"
+msgstr "Anzahl der Korrekturen"
 
 #: cps/cwa_functions.py:325 cps/cwa_functions.py:330 cps/cwa_functions.py:332
 msgid "Original Backed Up?"
@@ -849,7 +849,7 @@ msgstr "Ein Fehler ist aufgetreten"
 
 #: cps/cwa_functions.py:604 cps/cwa_functions.py:611
 msgid "Calibre-Web Automated - Convert Library"
-msgstr "Calibre-Web Automated - Bibliothek Konvertieren"
+msgstr "Calibre-Web Automated - Bibliothek konvertieren"
 
 #: cps/cwa_functions.py:724 cps/cwa_functions.py:730
 msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
@@ -1162,7 +1162,7 @@ msgstr "Ungültiges E-Mail Adressformat"
 
 #: cps/helper.py:720
 msgid "Password doesn't comply with password validation rules"
-msgstr "Passwort entspricht nicht mit den Passwortregeln"
+msgstr "Passwort entspricht nicht den Passwortvorgaben"
 
 #: cps/helper.py:866
 msgid ""
@@ -1228,7 +1228,7 @@ msgstr "Bitte keine Datei sondern einen Ordner angeben"
 
 #: cps/helper.py:1066
 msgid "Calibre binaries not viable"
-msgstr "Calibre Programm ist nicht nutzbar"
+msgstr "Die Calibre Programmdaten sind nicht verwendbar."
 
 #: cps/helper.py:1075
 #, python-format
@@ -1384,7 +1384,7 @@ msgstr "Bücher"
 
 #: cps/render_template.py:42
 msgid "Show recent books"
-msgstr "Zeige kürzlich hinzugefügte Bücher"
+msgstr "Zeige zuletzt hinzugefügte Bücher"
 
 #: cps/render_template.py:43 cps/templates/index.xml:27
 msgid "Hot Books"
@@ -1623,7 +1623,7 @@ msgstr ""
 
 #: cps/shelf.py:207 cps/templates/layout.html:270
 msgid "Create a Shelf"
-msgstr "Bücherregal erzeugen"
+msgstr "Neues Bücherregal"
 
 #: cps/shelf.py:215
 msgid "Sorry you are not allowed to edit this shelf"
@@ -1696,7 +1696,7 @@ msgstr "Aufgaben"
 
 #: cps/tasks_status.py:53
 msgid "Waiting"
-msgstr "Wartend"
+msgstr "Warte..."
 
 #: cps/tasks_status.py:55
 msgid "Failed"
@@ -1824,7 +1824,7 @@ msgstr "Liste der Dateiformate"
 
 #: cps/web.py:1349 cps/web.py:1370
 msgid "Please configure the SMTP mail settings first..."
-msgstr "Bitte zuerst die SMTP-Einstellung konfigurieren..."
+msgstr "Bitte zunächst die SMTP-Einstellungen des E-Mail-Server konfigurieren..."
 
 #: cps/web.py:1356
 #, python-format
@@ -1869,7 +1869,7 @@ msgstr "Verbindugnsfehler zu Limiter Backend, bitte Administrator kontaktieren"
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr ""
-"Ups! Der E-Mail Server ist nicht konfiguriert, bitte den Administrator "
+"Ups! Der E-Mail-Server ist nicht konfiguriert, bitte den Administrator "
 "kontaktieren."
 
 #: cps/web.py:1452
@@ -2102,7 +2102,7 @@ msgstr "LDAP Benutzer importieren"
 
 #: cps/templates/admin.html:65
 msgid "Email Server Settings&nbsp;&nbsp;📬"
-msgstr "Einstellungen des SMTP-Servers&nbsp;&nbsp;📬"
+msgstr "Einstellungen des E-Mail-Server&nbsp;&nbsp;📬"
 
 #: cps/templates/admin.html:70 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"
@@ -2183,7 +2183,7 @@ msgstr "Reverse Proxy Header Name"
 
 #: cps/templates/admin.html:162
 msgid "Edit Calibre Database Configuration"
-msgstr "Calibre Datenbank Konfiguration editieren"
+msgstr "Konfiguration der Calibre Datenbank editieren"
 
 #: cps/templates/admin.html:163
 msgid "Edit Basic Configuration"
@@ -2191,7 +2191,7 @@ msgstr "Basiskonfiguration"
 
 #: cps/templates/admin.html:164
 msgid "Edit UI Configuration"
-msgstr "Benutzeroberflächenkonfiguration"
+msgstr "Ansichtsteinstellungen"
 
 #: cps/templates/admin.html:170
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
@@ -2344,7 +2344,7 @@ msgstr "Calibre-Web wirklich anhalten?"
 
 #: cps/templates/admin.html:320
 msgid "Updating, please do not reload this page"
-msgstr "Aktualisierungsvorgang, bitte nicht die Seite neu laden"
+msgstr "Aktualisierungsvorgang, bitte diese Seite nicht neu laden"
 
 #: cps/templates/author.html:15
 msgid "via"
@@ -3402,7 +3402,7 @@ msgstr "Editieren öffentlicher Bücherregale erlauben"
 
 #: cps/templates/config_view_edit.html:124
 msgid "Default Language"
-msgstr "Default Sprache"
+msgstr "Standardsprache"
 
 #: cps/templates/config_view_edit.html:132
 msgid "Default Visible Language of Books"
@@ -4093,7 +4093,7 @@ msgstr "Hier mitmachen!"
 
 #: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
-msgstr "Bitte die Seite nicht neu laden"
+msgstr "Bitte diese Seite nicht neu laden"
 
 #: cps/templates/layout.html:258
 msgid "Browse"

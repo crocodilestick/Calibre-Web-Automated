@@ -2824,7 +2824,7 @@ msgid ""
 "any, it will automatically create and mount a new one. For more details,\n"
 "        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
 "wiki/Configuration#database-configuration\">see here</a>!"
-msgstr "CWA está configurado de forma que seu Banco de Dados Calibre (arquivo 
+msgstr "CWA está configurado de forma que seu Banco de Dados Calibre (arquivo "
 "<code>metadata.db</code> deve sempre estar em algum lugar de <code>/calibre-library</code>.\n"
 "        CWA procura automaticamente em qualquer diretório que você ligou ao <code>/"
 "calibre-library</code> em seu arquivo docker-compose no Calibre existente\n"

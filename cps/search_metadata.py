@@ -153,7 +153,7 @@ def metadata_search():
     locale = get_locale()
     global_enabled = _get_global_provider_enabled_map()
     if query:
-        static_cover = url_for("static", filename="generic_cover.jpg")
+        static_cover = url_for("static", filename="generic_cover.svg")
         # ret = cl[0].search(query, static_cover, locale)
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             meta = {

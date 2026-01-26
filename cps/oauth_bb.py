@@ -322,12 +322,16 @@ def register_user_from_generic_oauth(token=None):
         # Apply default configuration settings for new OAuth users (Issue #660)
         # Match the same pattern as normal user creation in admin.py
         
-        # Set role: admin group overrides default role, otherwise use configured default
-        if should_be_admin:
+        # Set role: admin group overrides default role (only if group management enabled), otherwise use configured default
+        if should_be_admin and config.config_enable_oauth_group_admin_management:
             user.role = constants.ROLE_ADMIN
-            log.info("New OAuth user '%s' granted admin role via group '%s'", provider_username, admin_group)
+            log.info("New OAuth user '%s' granted admin role via group '%s' (groups: %s)", 
+                    provider_username, admin_group, user_groups)
         else:
             user.role = config.config_default_role
+            if should_be_admin and not config.config_enable_oauth_group_admin_management:
+                log.debug("New OAuth user '%s' not granted admin role - group-based management disabled", 
+                         provider_username)
         
         # Apply default user settings (same as normal user registration)
         user.sidebar_view = getattr(config, 'config_default_show', 1)
@@ -360,16 +364,23 @@ def register_user_from_generic_oauth(token=None):
     else:
         # Existing user: update admin role based on current group membership (Issue #715)
         # This ensures that users who are added to or removed from admin groups get proper access
+        # Only enforce if group-based admin management is enabled (global setting)
         current_is_admin = user.role_admin()
         
-        if should_be_admin and not current_is_admin:
-            # User was added to admin group - grant admin role
-            user.role |= constants.ROLE_ADMIN
-            log.info("OAuth user '%s' will be granted admin role via group '%s'", provider_username, admin_group)
-        elif not should_be_admin and current_is_admin:
-            # User was removed from admin group - revoke admin role (but keep other roles)
-            user.role &= ~constants.ROLE_ADMIN
-            log.info("OAuth user '%s' admin role will be revoked (not in group '%s')", provider_username, admin_group)
+        if config.config_enable_oauth_group_admin_management:
+            if should_be_admin and not current_is_admin:
+                # User was added to admin group - grant admin role
+                user.role |= constants.ROLE_ADMIN
+                log.info("OAuth user '%s' granted admin role via group '%s' (groups: %s)", 
+                        provider_username, admin_group, user_groups)
+            elif not should_be_admin and current_is_admin:
+                # User was removed from admin group - revoke admin role (but keep other roles)
+                user.role &= ~constants.ROLE_ADMIN
+                log.warning("OAuth user '%s' admin role revoked - not in required group '%s' (user groups: %s)", 
+                           provider_username, admin_group, user_groups)
+        else:
+            log.debug("OAuth group-based admin management disabled - preserving manual role assignments for '%s'", 
+                     provider_username)
         # Note: Changes are not committed yet - will be committed with OAuth entry below
 
     oauth = ub.session.query(ub.OAuth).filter_by(
@@ -394,8 +405,8 @@ def register_user_from_generic_oauth(token=None):
     # Commit all changes together: OAuth entry + Token + User + Role updates
     try:
         ub.session_commit()
-        # Log role changes after successful commit
-        if user.role_admin() and should_be_admin:
+        # Log role changes after successful commit (only if group management is enabled)
+        if user.role_admin() and should_be_admin and config.config_enable_oauth_group_admin_management:
             log.info("OAuth user '%s' has admin role via group '%s'", provider_username, admin_group)
     except Exception as ex:
         log.error("Failed to save OAuth session for user '%s': %s", provider_username, ex)
@@ -415,8 +426,8 @@ def register_user_from_generic_oauth(token=None):
             if key in session:
                 try:
                     session.pop(key)
-                except:
-                    pass
+                except Exception as e:
+                    log.warning(f"Failed to clean session key '{key}': {e}")
         # We assume the user is about to be logged in by bind_oauth_or_register, 
         # but we set the user_id in session just in case, matching oauth_update_token behavior.
         session[provider_id + "_oauth_user_id"] = provider_user_id
@@ -448,8 +459,8 @@ def oauth_update_token(provider_id, token, provider_user_id):
         if key in session:
             try:
                 session.pop(key)
-            except:
-                pass
+            except Exception as e:
+                log.warning(f"Failed to clean session key '{key}': {e}")
 
     session[provider_id + "_oauth_user_id"] = provider_user_id
     # Do NOT store token in session - it's too big and causes cookie drop
@@ -754,7 +765,21 @@ def generate_oauth_blueprints():
     return oauthblueprints
 
 
-if ub.oauth_support:
+def init_oauth_blueprints():
+    """
+    Initialize OAuth blueprints and register signal handlers.
+    
+    This function MUST be called after babel.init_app() in __init__.py to ensure
+    translations are properly loaded. When OAuth blueprints are generated during
+    module import (before babel init), babel.list_translations() returns an empty
+    list, causing the language selection dropdown to only show English.
+    
+    Issue: https://discord.com/channels/.../... (BortS 01/01/2026)
+    """
+    if not ub.oauth_support:
+        return []
+    
+    global oauthblueprints
     oauthblueprints = generate_oauth_blueprints()
 
     @oauth_authorized.connect_via(oauthblueprints[0]['blueprint'])
@@ -830,8 +855,7 @@ if ub.oauth_support:
             # FUNCTION NOW RETURNS A RESPONSE OBJECT (Redirect)
             response = register_user_from_generic_oauth(token)
             if response:
-                # DIRECT LOGIN: Abort immediately to proper redirect
-                abort(response)
+                return response
             
             # If no response, something failed silently (already logged)
             return False
@@ -901,12 +925,20 @@ if ub.oauth_support:
         flash(msg, category="error")
         log.error("Generic OAuth error: %s", msg)
 
+    return oauthblueprints
+
+
+# Initialize empty oauthblueprints list at module level
+# This will be populated when init_oauth_blueprints() is called
+oauthblueprints = []
+
 
 @oauth.route('/link/github')
 @oauth_required
 def github_login():
     # This route is now only a fallback if the direct login hijack fails
     # or if the user navigates here manually.
+    log.warning("Fallback OAuth route '/link/github' accessed - direct login may have failed")
     if not github.authorized:
         return redirect(url_for('github.login'))
     try:
@@ -936,6 +968,7 @@ def github_login_unlink():
 @oauth.route('/link/google')
 @oauth_required
 def google_login():
+    log.warning("Fallback OAuth route '/link/google' accessed - direct login may have failed")
     # Try to find token in session using the provider ID key
     provider_id = str(oauthblueprints[1]['id'])
     user_id_key = provider_id + "_oauth_user_id"
@@ -995,6 +1028,7 @@ def google_login_unlink():
 @oauth.route('/link/generic')
 @oauth_required
 def generic_login():
+    log.warning("Fallback OAuth route '/link/generic' accessed - direct login may have failed")
     # This route is now only a fallback if the direct login hijack fails
     # or if the user navigates here manually.
     if not oauthblueprints[2]['blueprint'].session.authorized:

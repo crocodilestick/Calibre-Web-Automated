@@ -63,14 +63,17 @@ except (ImportError, SyntaxError):
     feature_support['rar'] = False
 
 try:
-    from .oauth_bb import oauth_check, oauthblueprints
+    from . import oauth_bb
 
     feature_support['oauth'] = True
 except ImportError as err:
     log.debug('Cannot import Flask-Dance, login with Oauth will not work: %s', err)
     feature_support['oauth'] = False
-    oauthblueprints = []
-    oauth_check = {}
+    # Create a mock oauth_bb module with empty lists for when OAuth is not available
+    class MockOAuth:
+        oauthblueprints = []
+        oauth_check = {}
+    oauth_bb = MockOAuth()
 
 admi = Blueprint('admin', __name__)
 
@@ -185,6 +188,193 @@ def queue_metadata_backup():
     helper.set_all_metadata_dirty()
     show_text['text'] = _('Success! Books queued for Metadata Backup, please check Tasks for result')
     return json.dumps(show_text)
+
+
+@admi.route("/hardcover_auto_fetch", methods=["POST"])
+@user_login_required
+@admin_required
+def trigger_hardcover_auto_fetch():
+    """Manually trigger Hardcover auto-fetch task"""
+    show_text = {}
+    
+    try:
+        # Check if token is available
+        from os import getenv
+        token_available = bool(
+            getattr(config, "config_hardcover_token", None) or 
+            getenv("HARDCOVER_TOKEN")
+        )
+        
+        if not token_available:
+            show_text['text'] = _('Error: No Hardcover token available. Set HARDCOVER_TOKEN environment variable or configure in Basic Configuration.')
+            return json.dumps(show_text), 400
+        
+        # Get settings
+        import sys as _sys
+        if '/app/calibre-web-automated/scripts/' not in _sys.path:
+            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+        from cps.tasks.auto_hardcover_id import TaskAutoHardcoverID
+        from cps.services.worker import WorkerThread
+        
+        cwa_db = CWA_DB()
+        cwa_settings = cwa_db.get_cwa_settings()
+        
+        min_confidence = float(cwa_settings.get('hardcover_auto_fetch_min_confidence', 0.85))
+        batch_size = int(cwa_settings.get('hardcover_auto_fetch_batch_size', 50))
+        rate_limit = float(cwa_settings.get('hardcover_auto_fetch_rate_limit', 5.0))
+        
+        # Create and enqueue task
+        task = TaskAutoHardcoverID(
+            min_confidence=min_confidence,
+            batch_size=batch_size,
+            rate_limit_delay=rate_limit
+        )
+        
+        WorkerThread.add(current_user.name, task, hidden=False)
+        
+        log.info(f"Hardcover auto-fetch task manually triggered by {current_user.name}")
+        show_text['text'] = _('Success! Hardcover auto-fetch task started. Check Tasks panel for progress.')
+        return json.dumps(show_text)
+        
+    except Exception as e:
+        log.error(f"Error triggering Hardcover auto-fetch: {e}")
+        show_text['text'] = _('Error starting Hardcover auto-fetch task: %(error)s', error=str(e))
+        return json.dumps(show_text), 500
+
+
+@admi.route("/admin/hardcover/review-matches")
+@user_login_required
+@admin_required
+def hardcover_review_matches():
+    """Display queue of Hardcover matches needing manual review"""
+    try:
+        # Get pending matches from database
+        pending_matches = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 0
+        ).order_by(ub.HardcoverMatchQueue.created_at.desc()).all()
+        
+        # Parse JSON data for each match
+        matches_data = []
+        for match in pending_matches:
+            import json
+            try:
+                results = json.loads(match.hardcover_results)
+                scores = json.loads(match.confidence_scores)
+                
+                matches_data.append({
+                    'id': match.id,
+                    'book_id': match.book_id,
+                    'book_title': match.book_title,
+                    'book_authors': match.book_authors,
+                    'search_query': match.search_query,
+                    'results': results,
+                    'scores': scores,
+                    'created_at': match.created_at
+                })
+            except Exception as e:
+                log.error(f"Error parsing match queue entry {match.id}: {e}")
+                continue
+        
+        return render_title_template(
+            "hardcover_review_matches.html",
+            title=_("Review Hardcover Matches"),
+            page="hardcover-review",
+            matches=matches_data
+        )
+        
+    except Exception as e:
+        log.error(f"Error loading Hardcover review queue: {e}")
+        flash(_("Error loading review queue: %(error)s", error=str(e)), category="error")
+        return redirect(url_for('admin.admin'))
+
+
+@admi.route("/admin/hardcover/review-action", methods=["POST"])
+@user_login_required
+@admin_required
+def hardcover_review_action():
+    """Process review action (accept/reject/skip) for a queued match"""
+    try:
+        data = request.get_json()
+        queue_id = int(data.get('queue_id'))
+        action = data.get('action')  # 'accept', 'reject', 'skip'
+        selected_result_id = data.get('selected_result_id')
+        
+        # Get queue entry
+        match = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.id == queue_id
+        ).first()
+        
+        if not match:
+            return json.dumps({'success': False, 'error': 'Match not found'}), 404
+        
+        if action == 'accept' and selected_result_id:
+            # Apply the selected Hardcover ID to the book
+            import json
+            results = json.loads(match.hardcover_results)
+            selected_result = next((r for r in results if str(r['id']) == str(selected_result_id)), None)
+            
+            if not selected_result:
+                return json.dumps({'success': False, 'error': 'Selected result not found'}), 400
+            
+            # Get the book
+            book = calibre_db.session.query(db.Books).filter(
+                db.Books.id == match.book_id
+            ).first()
+            
+            if not book:
+                return json.dumps({'success': False, 'error': 'Book not found'}), 404
+            
+            # Add identifiers
+            try:
+                identifiers_to_add = selected_result.get('identifiers', {})
+                for id_type, id_value in identifiers_to_add.items():
+                    # Check if identifier already exists
+                    existing = calibre_db.session.query(db.Identifiers).filter(
+                        db.Identifiers.book == match.book_id,
+                        db.Identifiers.type == id_type
+                    ).first()
+                    
+                    if not existing:
+                        new_identifier = db.Identifiers(str(id_value), id_type, match.book_id)
+                        calibre_db.session.add(new_identifier)
+                
+                calibre_db.session.commit()
+                
+                # Mark as reviewed
+                match.reviewed = 1
+                match.selected_result_id = str(selected_result_id)
+                match.review_action = 'accept'
+                match.reviewed_at = datetime.datetime.utcnow().isoformat()
+                match.reviewed_by = current_user.name
+                ub.session.commit()
+                
+                log.info(f"User {current_user.name} accepted Hardcover match for book {match.book_id}")
+                return json.dumps({'success': True, 'message': _('Hardcover ID applied successfully')})
+                
+            except Exception as e:
+                calibre_db.session.rollback()
+                ub.session.rollback()
+                log.error(f"Error applying Hardcover ID: {e}")
+                return json.dumps({'success': False, 'error': str(e)}), 500
+        
+        elif action in ['reject', 'skip']:
+            # Mark as reviewed with appropriate action
+            match.reviewed = 1
+            match.review_action = action
+            match.reviewed_at = datetime.datetime.utcnow().isoformat()
+            match.reviewed_by = current_user.name
+            ub.session.commit()
+            
+            log.info(f"User {current_user.name} {action}ed Hardcover match for book {match.book_id}")
+            return json.dumps({'success': True, 'message': _('Match %(action)s', action=action)})
+        
+        else:
+            return json.dumps({'success': False, 'error': 'Invalid action'}), 400
+            
+    except Exception as e:
+        log.error(f"Error processing review action: {e}")
+        return json.dumps({'success': False, 'error': str(e)}), 500
 
 
 # method is available without login and not protected by CSRF to make it easy reachable, is per default switched off
@@ -306,7 +496,7 @@ def db_configuration():
 def configuration():
     return render_title_template("config_edit.html",
                                  config=config,
-                                 provider=oauthblueprints,
+                                 provider=oauth_bb.oauthblueprints,
                                  feature_support=feature_support,
                                  title=_("Basic Configuration"), page="config")
 
@@ -659,7 +849,7 @@ def update_view_configuration():
     config.config_default_role = constants.selected_roles(to_save)
     config.config_default_role &= ~constants.ROLE_ANONYMOUS
 
-    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith('show_'))
+    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith('show_') and not k.startswith('show_magic_shelf_') and not k.startswith('show_custom_shelf_'))
     if "Show_detail_random" in to_save:
         config.config_default_show |= constants.DETAIL_RANDOM
 
@@ -1208,7 +1398,7 @@ def _configuration_gdrive_helper(to_save):
 def _configuration_oauth_helper(to_save):
     reboot_required = False
 
-    for element in oauthblueprints:
+    for element in oauth_bb.oauthblueprints:
         update = {}
         if element["provider_name"] == "generic":
             if to_save["config_generic_oauth_client_id"] != element["oauth_client_id"]:
@@ -1438,7 +1628,7 @@ def new_user():
     return render_title_template("user_edit.html", new_user=1, content=content,
                                  config=config, translations=translations,
                                  languages=languages, title=_("Add New User"), page="newuser",
-                                 kobo_support=kobo_support, registered_oauth=oauth_check)
+                                 kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check)
 
 
 @admi.route("/admin/mailsettings", methods=["GET"])
@@ -1582,6 +1772,30 @@ def edit_user(user_id):
     languages = calibre_db.speaking_language(return_all_languages=True)
     translations = get_available_locale()
     kobo_support = feature_support['kobo'] and config.config_kobo_sync
+    
+    # Get system shelf templates and hidden templates for this user
+    from . import magic_shelf
+    system_shelf_templates = magic_shelf.SYSTEM_SHELF_TEMPLATES
+    hidden_items = ub.session.query(
+        ub.HiddenMagicShelfTemplate.template_key,
+        ub.HiddenMagicShelfTemplate.shelf_id
+    ).filter(
+        ub.HiddenMagicShelfTemplate.user_id == content.id
+    ).all()
+    hidden_shelf_templates = {item.template_key for item in hidden_items if item.template_key}
+    hidden_custom_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+    
+    # Get ALL public custom shelves that user doesn't own (both hidden and visible)
+    all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+        ub.MagicShelf.is_public == 1,
+        ub.MagicShelf.user_id != content.id,
+        ub.MagicShelf.is_system == False
+    ).all()
+    
+    # Separate into hidden and visible
+    hidden_custom_shelves = [s for s in all_public_shelves if s.id in hidden_custom_shelf_ids]
+    visible_public_shelves = [s for s in all_public_shelves if s.id not in hidden_custom_shelf_ids]
+    
     if request.method == "POST":
         to_save = request.form.to_dict()
         resp = _handle_edit_user(to_save, content, languages, translations, kobo_support)
@@ -1593,9 +1807,14 @@ def edit_user(user_id):
                                  new_user=0,
                                  content=content,
                                  config=config,
-                                 registered_oauth=oauth_check,
+                                 registered_oauth=oauth_bb.oauth_check,
                                  mail_configured=config.get_mail_server_configured(),
                                  kobo_support=kobo_support,
+                                 system_shelf_templates=system_shelf_templates,
+                                 hidden_shelf_templates=hidden_shelf_templates,
+                                 hidden_custom_shelf_ids=hidden_custom_shelf_ids,
+                                 hidden_custom_shelves=hidden_custom_shelves,
+                                 visible_public_shelves=visible_public_shelves,
                                  title=_("Edit User %(nick)s", nick=content.name),
                                  page="edituser")
 
@@ -1945,6 +2164,7 @@ def _configuration_update_helper():
         _config_checkbox_int(to_save, "config_uploading")
         _config_checkbox_int(to_save, "config_unicode_filename")
         _config_checkbox_int(to_save, "config_embed_metadata")
+        _config_checkbox(to_save, "config_fulltext_search")
         # Reboot on config_anonbrowse with enabled ldap, as decoraters are changed in this case
         reboot_required |= (_config_checkbox_int(to_save, "config_anonbrowse")
                             and config.config_login_type == constants.LOGIN_LDAP)
@@ -2059,6 +2279,7 @@ def _configuration_update_helper():
 
         # security configuration
         _config_checkbox(to_save, "config_disable_standard_login")
+        _config_checkbox(to_save, "config_enable_oauth_group_admin_management")
         _config_checkbox(to_save, "config_check_extensions")
         _config_checkbox(to_save, "config_password_policy")
         _config_checkbox(to_save, "config_password_number")
@@ -2089,10 +2310,19 @@ def _configuration_update_helper():
         _configuration_result(_("Oops! Database Error: %(error)s.", error=e.orig))
 
     config.save()
+    
+    # Note: FTS initialization is now primarily managed via CWA Settings page
+    # This just provides basic validation
+    fts_warning = None
+    if config.config_fulltext_search and not config.config_calibre_dir:
+        fts_warning = _('Full Text Search enabled but no library path configured.')
+    
     if reboot_required:
         web_server.stop(True)
 
-    return _configuration_result(None, reboot_required, " ".join(filter(None, [unrar_warning, arch_warning])))
+    # Combine all warnings
+    combined_warnings = " ".join(filter(None, [unrar_warning, arch_warning, fts_warning]))
+    return _configuration_result(None, reboot_required, combined_warnings if combined_warnings else None)
 
 
 def _configuration_result(error_flash=None, reboot=False, warning_flash=None):
@@ -2174,7 +2404,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
                                      config=config,
                                      translations=translations,
                                      languages=languages, title=_("Add new user"), page="newuser",
-                                     kobo_support=kobo_support, registered_oauth=oauth_check)
+                                     kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check)
     try:
         content.allowed_tags = config.config_allowed_tags
         content.denied_tags = config.config_denied_tags
@@ -2252,7 +2482,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
         flash(_("No admin user remaining, can't remove admin role"), category="error")
         return redirect(url_for('admin.admin'))
 
-    val = [int(k[5:]) for k in to_save if k.startswith('show_')]
+    val = [int(k[5:]) for k in to_save if k.startswith('show_') and not k.startswith('show_magic_shelf_') and not k.startswith('show_custom_shelf_')]
     sidebar, __ = get_sidebar_config()
     for element in sidebar:
         value = element['visibility']
@@ -2276,6 +2506,65 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     # Auto-send and metadata fetch settings
     content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
     content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+    
+    # Handle hidden magic shelf templates and custom shelves
+    from . import magic_shelf
+    if not content.is_anonymous:
+        # Get all system template keys
+        all_template_keys = set(magic_shelf.SYSTEM_SHELF_TEMPLATES.keys())
+        # Get currently hidden items for this user
+        current_hidden = ub.session.query(ub.HiddenMagicShelfTemplate).filter(
+            ub.HiddenMagicShelfTemplate.user_id == content.id
+        ).all()
+        current_hidden_template_keys = {h.template_key for h in current_hidden if h.template_key}
+        current_hidden_shelf_ids = {h.shelf_id for h in current_hidden if h.shelf_id}
+        
+        # Handle system templates
+        visible_template_keys = {key for key in all_template_keys if to_save.get(f"show_magic_shelf_{key}") == "on"}
+        should_be_hidden_templates = all_template_keys - visible_template_keys
+        
+        # Add newly hidden templates
+        for key in should_be_hidden_templates:
+            if key not in current_hidden_template_keys:
+                new_hidden = ub.HiddenMagicShelfTemplate(
+                    user_id=content.id,
+                    template_key=key
+                )
+                ub.session.add(new_hidden)
+                log.info(f"User {content.id} hid system shelf template '{key}'")
+        
+        # Remove templates that should no longer be hidden
+        for hidden in current_hidden:
+            if hidden.template_key and hidden.template_key in visible_template_keys:
+                ub.session.delete(hidden)
+                log.info(f"User {content.id} unhid system shelf template '{hidden.template_key}'")
+        
+        # Handle custom public shelves - get all available ones
+        all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.is_public == 1,
+            ub.MagicShelf.user_id != content.id,
+            ub.MagicShelf.is_system == False
+        ).all()
+        
+        # Check which ones should be visible (checked)
+        visible_shelf_ids = {s.id for s in all_public_shelves if to_save.get(f"show_custom_shelf_{s.id}") == "on"}
+        
+        # Hide shelves that are unchecked but not currently hidden
+        for shelf in all_public_shelves:
+            if shelf.id not in visible_shelf_ids and shelf.id not in current_hidden_shelf_ids:
+                new_hidden = ub.HiddenMagicShelfTemplate(
+                    user_id=content.id,
+                    shelf_id=shelf.id
+                )
+                ub.session.add(new_hidden)
+                log.info(f"User {content.id} hid custom shelf {shelf.id}")
+        
+        # Unhide shelves that are checked but currently hidden
+        for hidden in current_hidden:
+            if hidden.shelf_id and hidden.shelf_id in visible_shelf_ids:
+                ub.session.delete(hidden)
+                log.info(f"User {content.id} unhid custom shelf {hidden.shelf_id}")
+    
     if to_save.get("default_language"):
         content.default_language = to_save["default_language"]
     if to_save.get("locale"):
@@ -2316,7 +2605,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
                                      new_user=0,
                                      content=content,
                                      config=config,
-                                     registered_oauth=oauth_check,
+                                     registered_oauth=oauth_bb.oauth_check,
                                      title=_("Edit User %(nick)s", nick=content.name),
                                      page="edituser")
     try:

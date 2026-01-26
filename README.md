@@ -46,11 +46,14 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 
 ## _Affiliated Projects_ 👬
 
-### Calibre-Web Automated Book Downloader
+### Shelfmark: Book Downloader
 
 - An intuitive web interface for searching and requesting book downloads, designed to work seamlessly with Calibre-Web-Automated. This project streamlines the process of downloading books and preparing them for integration into your Calibre library
 
-[<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png" alt="Get it on GitHub" height="80">](https://github.com/calibrain/calibre-web-automated-book-downloader)
+> [!IMPORTANT]  
+> CWA does not approve of or support piracy of copyrighted materials and is not responsible for user behaviour
+
+[<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png" alt="Get it on GitHub" height="80">](https://github.com/calibrain/shelfmark)
 
 ___
 
@@ -142,7 +145,7 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
   - Using the information provided in the Calibre eBook-converter documentation on which formats convert best into epubs, CWA is able to determine from downloads containing multiple eBook formats, which format will convert most optimally, ignoring the other formats to ensure the **best possible quality** and no **duplicate imports** -->
 
 #### **Automatic Conversion Service** 🔃
-- On by default though can be toggled of in the CWA Settings page, with EPUB as the default target format
+- On by default though can be toggled off in the CWA Settings page, with EPUB as the default target format
   - _Available target formats include:_ **EPUB**, **MOBI**, **AZW3**, **KEPUB** & **PDF**
 - Upon detecting new files in the Ingest Directory, if any of the files are in formats the user has configured CWA to auto-convert to the current target format,
 - The following **28 file types are currently supported:**

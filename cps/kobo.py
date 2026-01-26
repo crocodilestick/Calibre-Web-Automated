@@ -34,7 +34,7 @@ from sqlalchemy.exc import StatementError
 from sqlalchemy.sql import select
 import requests
 
-from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_lib, ub, csrf, kobo_sync_status
+from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_lib, ub, csrf, kobo_sync_status, magic_shelf
 from . import isoLanguages
 from .epub import get_epub_layout
 from .constants import COVER_THUMBNAIL_SMALL, COVER_THUMBNAIL_MEDIUM, COVER_THUMBNAIL_LARGE
@@ -326,6 +326,52 @@ def HandleSyncRequest():
 
     sync_shelves(sync_token, sync_results, only_kobo_shelves)
 
+    # Add magic shelves as collections
+    if config.config_kobo_sync_magic_shelves:
+
+        for shelf in ub.session.query(ub.MagicShelf)\
+            .filter_by(user_id=current_user.id, kobo_sync=False)\
+            .all():
+
+            sync_results.append({
+                "DeletedTag": {
+                    "Tag": {
+                        "Id": shelf.uuid,
+                        "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified)
+                    }
+                }
+            })
+
+        magic_shelves = ub.session.query(ub.MagicShelf)\
+            .filter_by(user_id=current_user.id, kobo_sync=True)\
+            .all()
+
+        new_tags_last_modified = sync_token.tags_last_modified
+            
+        for shelf in magic_shelves:
+            books, _ = magic_shelf.get_books_for_magic_shelf(
+                shelf.id, page=1, page_size=1000
+            )
+
+            new_tags_last_modified = max(shelf.last_modified, new_tags_last_modified)
+
+            tag = create_kobo_tag_magic(shelf, books)
+            if not tag:
+                continue
+
+            if shelf.created > sync_token.tags_last_modified:
+                log.debug("Syncing new magic shelf %s to Kobo device", shelf.name)
+                sync_results.append({
+                    "NewTag": tag
+                })
+            else:
+                log.debug("Syncing changed magic shelf %s to Kobo device", shelf.name)
+                sync_results.append({
+                    "ChangedTag": tag
+                })
+
+        sync_token.tags_last_modified = new_tags_last_modified
+
     # update last created timestamp to distinguish between new and changed entitlements
     if not cont_sync:
         sync_token.books_last_created = new_books_last_created
@@ -355,6 +401,23 @@ def generate_sync_response(sync_token, sync_results, set_cont=False):
     if set_cont:
         extra_headers["x-kobo-sync"] = "continue"
     sync_token.to_headers(extra_headers)
+
+    # Track Kobo sync activity
+    try:
+        from scripts.cwa_db import CWA_DB
+        import json as json_lib
+        cwa_db = CWA_DB()
+        cwa_db.log_activity(
+            user_id=int(current_user.id),
+            user_name=current_user.name,
+            event_type='KOBO_SYNC',
+            extra_data=json_lib.dumps({
+                'books_synced': len(sync_results),
+                'endpoint': '/v1/library/sync'
+            })
+        )
+    except Exception as e:
+        log.debug(f"Failed to log Kobo sync activity: {e}")
 
     # log.debug("Kobo Sync Content: {}".format(sync_results))
     # jsonify decodes the unicode string different to what kobo expects
@@ -776,6 +839,25 @@ def create_kobo_tag(shelf):
         if not book:
             log.info("Book (id: %s) in BookShelf (id: %s) not found in book database",  book_shelf.book_id, shelf.id)
             continue
+        tag["Items"].append(
+            {
+                "RevisionId": book.uuid,
+                "Type": "ProductRevisionTagItem"
+            }
+        )
+    return {"Tag": tag}
+
+# Creates a Kobo "Tag" object from a ub.MagicShelf object
+def create_kobo_tag_magic(shelf, books):
+    tag = {
+        "Created": convert_to_kobo_timestamp_string(shelf.created),
+        "Id": shelf.uuid,
+        "Items": [],
+        "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified),
+        "Name": shelf.name,
+        "Type": "UserTag"
+    }
+    for book in books:
         tag["Items"].append(
             {
                 "RevisionId": book.uuid,

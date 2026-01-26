@@ -169,7 +169,7 @@
         {{_("When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
         compatibility with Amazon's Send-to-Kindle Service. This feature is particularly useful for users who frequently send EPUB files to their Kindle devices and have experienced issues with 
         file rejections or formatting problems.")}}
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-settings-tip">
         <small>{{_('This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.') | safe }}</small>
       </div>
 
@@ -272,7 +272,7 @@
           {% endif %}
         </div>
         
-        <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+        <div class="cwa-settings-tip">
           <small style="color: var(--color-info-text);">
             💡 <strong>{{_('Tip')}}:</strong> {{_('These field selections apply to both Smart and Direct replacement modes. Smart mode will additionally apply quality criteria to selected fields, while Direct mode will replace all selected fields with provider data.')}}
           </small>
@@ -339,7 +339,7 @@
         </div>
         <input type="hidden" name="metadata_provider_hierarchy" id="metadata_provider_hierarchy_hidden" value="">
       </div>
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-settings-tip">
         <small class="settings-explanation">💡 <strong>{{_('Tip')}}:</strong> {{_('Providers are tried in order from top to bottom. Drag to reorder.')}}</small>
       </div>
     </div>
@@ -358,6 +358,195 @@
             <!-- Provider toggles will be populated here by JavaScript -->
           </div>
           <input type="hidden" name="metadata_providers_enabled" id="metadata_providers_enabled_hidden" value="{}">
+        </div>
+      </div>
+    </div>
+
+    <!-- Hardcover Auto-Fetch Settings -->
+    <div class="settings-container">
+      <h4 class="settings-section-header">🔖 {{_('Hardcover Auto-Fetch Settings')}}</h4>
+      <p class="settings-description">
+        {{_('Automatically fetch and assign Hardcover IDs to books in your library. Hardcover IDs enable reading progress sync and annotation sync with Hardcover.app when using compatible eReaders.')}}
+      </p>
+      
+      {% if not hardcover_token_available %}
+      <div class="alert alert-warning" style="margin: 15px 0; padding: 12px; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 4px;">
+        <strong>⚠️ {{_('Hardcover Token Required')}}</strong><br>
+        <span style="font-size: 0.9em;">{{_('To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in your docker-compose environment variables or configure a global token in Basic Configuration. Without a valid token, this feature will remain disabled.')}}</span>
+      </div>
+      {% endif %}
+      
+      <div style="margin-top: 20px;">
+        <!-- Enable Auto-Fetch -->
+        {% if cwa_settings['hardcover_auto_fetch_enabled'] and hardcover_token_available %}
+        <input type="checkbox" id="hardcover_auto_fetch_enabled" name="hardcover_auto_fetch_enabled" value="True" checked style="accent-color: var(--color-secondary);" {% if not hardcover_token_available %}disabled{% endif %}>
+        {% else %}
+        <input type="checkbox" id="hardcover_auto_fetch_enabled" name="hardcover_auto_fetch_enabled" value="True" style="accent-color: var(--color-secondary);" {% if not hardcover_token_available %}disabled{% endif %}>
+        {% endif %}
+        <label for="hardcover_auto_fetch_enabled" style="padding-left: 10px; {% if not hardcover_token_available %}color: #888; cursor: not-allowed;{% endif %}">{{_('Enable Hardcover Auto-Fetch')}}</label>
+        <p class="cwa-settings-tooltip">
+          {{_('Automatically search Hardcover for books without Hardcover IDs. High-confidence matches are applied automatically; low-confidence matches are queued for manual review.')}}
+        </p>
+
+        <!-- Schedule Interval -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_schedule" class="settings-section-header" style="padding-right: 10px;">{{_('Run Schedule:')}}</label>
+          <select name="hardcover_auto_fetch_schedule" 
+                  id="hardcover_auto_fetch_schedule" 
+                  style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680; min-width: 200px;"
+                  onchange="toggleScheduleOptions()"
+                  {% if not hardcover_token_available %}disabled{% endif %}>
+            <optgroup label="{{_('Frequent Intervals')}}">
+              <option value="15min" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '15min' %}selected{% endif %}>{{_('Every 15 Minutes')}}</option>
+              <option value="30min" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '30min' %}selected{% endif %}>{{_('Every 30 Minutes')}}</option>
+              <option value="1hour" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '1hour' %}selected{% endif %}>{{_('Every Hour')}}</option>
+              <option value="2hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '2hours' %}selected{% endif %}>{{_('Every 2 Hours')}}</option>
+              <option value="4hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '4hours' %}selected{% endif %}>{{_('Every 4 Hours')}}</option>
+              <option value="6hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '6hours' %}selected{% endif %}>{{_('Every 6 Hours')}}</option>
+              <option value="12hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '12hours' %}selected{% endif %}>{{_('Every 12 Hours')}}</option>
+            </optgroup>
+            <optgroup label="{{_('Daily/Weekly/Monthly')}}">
+              <option value="daily" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'daily' %}selected{% endif %}>{{_('Daily at Specific Time')}}</option>
+              <option value="weekly" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'weekly' %}selected{% endif %}>{{_('Weekly on Specific Day')}}</option>
+              <option value="monthly" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'monthly' %}selected{% endif %}>{{_('Monthly on Specific Day')}}</option>
+            </optgroup>
+          </select>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('How often to automatically run the Hardcover ID fetch task')}}</small>
+          
+          <!-- Day of Week Selector (for weekly) -->
+          <div id="schedule_day_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Week:')}}</label>
+            <select name="hardcover_auto_fetch_schedule_day" 
+                    id="hardcover_auto_fetch_schedule_day"
+                    style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                    {% if not hardcover_token_available %}disabled{% endif %}>
+              <option value="monday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'monday' %}selected{% endif %}>{{_('Monday')}}</option>
+              <option value="tuesday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'tuesday' %}selected{% endif %}>{{_('Tuesday')}}</option>
+              <option value="wednesday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'wednesday' %}selected{% endif %}>{{_('Wednesday')}}</option>
+              <option value="thursday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'thursday' %}selected{% endif %}>{{_('Thursday')}}</option>
+              <option value="friday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'friday' %}selected{% endif %}>{{_('Friday')}}</option>
+              <option value="saturday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'saturday' %}selected{% endif %}>{{_('Saturday')}}</option>
+              <option value="sunday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'sunday' %}selected{% endif %}>{{_('Sunday')}}</option>
+            </select>
+          </div>
+          
+          <!-- Day of Month Selector (for monthly) -->
+          <div id="schedule_monthday_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Month:')}}</label>
+            <input type="number" 
+                   name="hardcover_auto_fetch_schedule_day" 
+                   id="hardcover_auto_fetch_schedule_monthday"
+                   value="{{ cwa_settings.get('hardcover_auto_fetch_schedule_day', '1') if cwa_settings['hardcover_auto_fetch_schedule'] == 'monthly' else '1' }}" 
+                   min="1" 
+                   max="28"
+                   style="width: 80px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                   {% if not hardcover_token_available %}disabled{% endif %}>
+            <small style="color: #888; margin-left: 5px;">{{_('(1-28)')}}</small>
+          </div>
+          
+          <!-- Hour Selector (for daily/weekly/monthly) -->
+          <div id="schedule_hour_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Time of Day:')}}</label>
+            <select name="hardcover_auto_fetch_schedule_hour" 
+                    id="hardcover_auto_fetch_schedule_hour"
+                    style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                    {% if not hardcover_token_available %}disabled{% endif %}>
+              {% for hour in range(24) %}
+              <option value="{{hour}}" {% if cwa_settings.get('hardcover_auto_fetch_schedule_hour', 2) == hour %}selected{% endif %}>{{ "%02d:00"|format(hour) }}</option>
+              {% endfor %}
+            </select>
+            <small style="color: #888; margin-left: 5px;">{{_('(Server timezone: %(tz)s)', tz=config.config_timezone or 'UTC')}}</small>
+          </div>
+        </div>
+        
+        <script>
+        function toggleScheduleOptions() {
+          const scheduleType = document.getElementById('hardcover_auto_fetch_schedule').value;
+          const daySelector = document.getElementById('schedule_day_selector');
+          const monthdaySelector = document.getElementById('schedule_monthday_selector');
+          const hourSelector = document.getElementById('schedule_hour_selector');
+          
+          // Hide all by default
+          daySelector.style.display = 'none';
+          monthdaySelector.style.display = 'none';
+          hourSelector.style.display = 'none';
+          
+          // Show relevant selectors based on schedule type
+          if (scheduleType === 'weekly') {
+            daySelector.style.display = 'block';
+            hourSelector.style.display = 'block';
+          } else if (scheduleType === 'monthly') {
+            monthdaySelector.style.display = 'block';
+            hourSelector.style.display = 'block';
+          } else if (scheduleType === 'daily') {
+            hourSelector.style.display = 'block';
+          }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+          toggleScheduleOptions();
+        });
+        </script>
+
+        <!-- Minimum Confidence Threshold -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_min_confidence" class="settings-section-header" style="padding-right: 10px;">{{_('Minimum Confidence Threshold:')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_min_confidence" 
+                 id="hardcover_auto_fetch_min_confidence" 
+                 value="{{ cwa_settings['hardcover_auto_fetch_min_confidence'] }}" 
+                 min="0.5" 
+                 max="1.0" 
+                 step="0.05"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0.50-1.00 (default: 0.85)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Matches with confidence scores above this threshold are automatically applied. Lower scores are queued for manual review. Higher values = fewer auto-matches but higher accuracy.')}}
+          </p>
+        </div>
+
+        <!-- Batch Size -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_batch_size" class="settings-section-header" style="padding-right: 10px;">{{_('Batch Size:')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_batch_size" 
+                 id="hardcover_auto_fetch_batch_size" 
+                 value="{{ cwa_settings.get('hardcover_auto_fetch_batch_size', 50) }}" 
+                 min="10" 
+                 max="200" 
+                 step="10"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 10-200 books per run (default: 50)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Number of books to process in each scheduled run. Smaller batches reduce API load; larger batches process your library faster.')}}
+          </p>
+        </div>
+
+        <!-- Rate Limit Delay -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_rate_limit" class="settings-section-header" style="padding-right: 10px;">{{_('Rate Limit Delay (seconds):')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_rate_limit" 
+                 id="hardcover_auto_fetch_rate_limit" 
+                 value="{{ cwa_settings['hardcover_auto_fetch_rate_limit'] }}" 
+                 min="0" 
+                 max="60" 
+                 step="0.5"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0-60 seconds (default: 5.0)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Delay between API requests to Hardcover. Prevents rate limiting and protects your API key. Uses exponential backoff on errors.')}}
+          </p>
+        </div>
+
+        <div class="cwa-settings-tip" style="margin-top: 20px;">
+          <small style="color: var(--color-info-text);">
+            💡 <strong>{{_('Tip')}}:</strong> {{_('You can manually trigger the Hardcover auto-fetch task from the Admin panel at any time. Check the CWA Stats page to see progress and review queued matches that need manual approval.')}}
+          </small>
         </div>
       </div>
     </div>
@@ -385,6 +574,16 @@
         {{_('When disabled, you will no longer receive notifications in the Web UI when using a language other than English if the translations for your chosen language are not complete.')}}
       </p>
 
+      {% if config['config_kobo_sync_magic_shelves'] %}
+      <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
+      {% else %}
+      <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
+      {% endif %}
+      <label for="config_kobo_sync_magic_shelves" style="padding-left: 10px;">{{_('Sync Magic Shelves to Kobo')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_('When active, your Magic Shelves will be synced to your Kobo device as collections. Note: You must also enable Kobo Sync in Basic Configuration.')}}
+      </p>
+
       {% if cwa_settings['enable_mobile_blur'] %}
       <input type="checkbox" id="enable_mobile_blur" name="enable_mobile_blur" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="May impact performance on low-end mobile devices">
       {% else %}
@@ -394,6 +593,108 @@
       <p class="cwa-settings-tooltip">
         {{_('When active, the blurred cover background effect is also rendered on small screens. Disable if you notice scrolling or animation lag.')}}
       </p>
+    </div>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">🔍 {{_('Full Text Search (FTS) Management')}}</h4>
+      
+      <p class="settings-explanation" style="margin-bottom: 20px;">
+        {{_('Full Text Search enables searching inside book content (not just titles/authors). Calibre indexes the text content of your books in the background.')}}
+      </p>
+      
+      <!-- Current Status Display -->
+      <div id="fts-status-container" style="margin: 15px 0; padding: 15px; background-color: rgba(42, 52, 65, 0.6); border-left: 4px solid #5bc0de; border-radius: 4px;">
+        <strong style="font-size: 1.1em;">{{_('Current Status')}}</strong>:
+        <span id="fts-status-badge" style="margin-left: 10px; padding: 4px 10px; border-radius: 4px; font-size: 0.95em; font-weight: 500;">
+          {{_('Loading...')}}
+        </span>
+        <br>
+        <span id="fts-progress" style="margin-top: 8px; display: inline-block; font-size: 0.95em; color: #ddd;">
+          {{_('Checking...')}}
+        </span>
+        <br>
+        <span id="fts-indexing-status" style="margin-top: 8px; display: inline-block; font-size: 0.9em; color: #bbb;">
+          <!-- Indexing status will be shown here -->
+        </span>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button id="btn-fts-enable" type="button" class="btn btn-primary" style="min-width: 120px;">
+          {{_('Enable FTS')}}
+        </button>
+        <button id="btn-fts-disable" type="button" class="btn btn-default" style="min-width: 120px;">
+          {{_('Disable FTS')}}
+        </button>
+        <button id="btn-fts-reindex" type="button" class="btn btn-default" style="min-width: 120px;">
+          {{_('Reindex All')}}
+        </button>
+        <button id="btn-fts-refresh" type="button" class="btn btn-info" style="min-width: 120px;">
+          {{_('Refresh Status')}}
+        </button>
+      </div>
+      
+      <!-- Network Share Warning - Static Info Box -->
+      <div style="margin: 15px 0; padding: 12px; background-color: rgba(255, 193, 7, 0.05); border-left: 4px solid #ffc107; border-radius: 4px;">
+        <strong style="color: #ffc107;">⚠️ {{_('Network Shares')}}</strong><br>
+        <span style="font-size: 0.9em; color: #ddd;">
+          {{_('If your library is on a network share (NFS/SMB), indexing may be slower due to network I/O latency.')}}
+        </span>
+      </div>
+      
+      <!-- Disable Behavior Warning -->
+      <div style="margin: 15px 0; padding: 12px; background-color: rgba(244, 67, 54, 0.05); border-left: 4px solid #f44336; border-radius: 4px;">
+        <strong style="color: #f44336;">⚠️ {{_('Important')}}</strong>: {{_('Disabling FTS requires complete re-indexing')}}<br>
+        <span style="font-size: 0.9em; color: #ddd;">
+          {{_('When you disable FTS, Calibre invalidates the index. Re-enabling will restart indexing from 0, even if books were previously indexed. This is Calibre\'s design to ensure index consistency.')}}
+        </span>
+      </div>
+      
+      <!-- Resource Information Collapsible -->
+      <details style="margin: 20px 0; padding: 12px; background-color: rgba(91, 192, 222, 0.05); border-left: 4px solid #5bc0de; border-radius: 4px; cursor: pointer;">
+        <summary style="font-weight: bold; font-size: 1em; color: #5bc0de; outline: none; cursor: pointer;">
+          ℹ️ {{_('Resource Usage & Performance Information')}}
+        </summary>
+        <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(91, 192, 222, 0.2); font-size: 0.9em; line-height: 1.6;">
+          <p><strong>{{_('What the indexing process does')}}</strong>:</p>
+          <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li>{{_('Reads each book file (EPUB, MOBI, PDF, etc.)')}}</li>
+            <li>{{_('Extracts text content using Calibre\'s format parsers')}}</li>
+            <li>{{_('Tokenizes text with the custom tokenizer')}}</li>
+            <li>{{_('Builds FTS5 index structures')}}</li>
+          </ul>
+          
+          <p><strong>{{_('Performance characteristics')}}</strong>:</p>
+          <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li><strong>{{_('CPU')}}</strong>: {{_('Moderate - text extraction and tokenization')}}</li>
+            <li><strong>{{_('Disk I/O')}}</strong>: {{_('Heavy - reads every book file sequentially')}}</li>
+            <li><strong>{{_('Memory')}}</strong>: {{_('Low - processes one book at a time')}}</li>
+            <li><strong>{{_('Network I/O')}}</strong>: {{_('Can be significant for large files on network shares')}}</li>
+          </ul>
+          
+          <p><strong>{{_('For large libraries (10,000+ books)')}}</strong>:</p>
+          <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li>{{_('Initial indexing could take hours to days depending on')}}:</li>
+            <ul style="margin-left: 20px;">
+              <li>{{_('Book file sizes (PDFs are slower than EPUBs)')}}</li>
+              <li>{{_('Disk/network speed')}}</li>
+              <li>{{_('CPU speed')}}</li>
+            </ul>
+          </ul>
+          
+          <p style="margin-top: 15px; padding: 10px; background-color: rgba(76, 175, 80, 0.1); border-left: 3px solid #4CAF50; border-radius: 3px;">
+            <strong>✅ {{_('Good news')}}</strong>: {{_('It\'s a background process that doesn\'t block CWA. Your library remains fully usable during indexing.')}}
+          </p>
+          
+          <p style="margin-top: 10px; padding: 10px; background-color: rgba(91, 192, 222, 0.1); border-left: 3px solid #5bc0de; border-radius: 3px;">
+            <strong>ℹ️ {{_('Note')}}</strong>: {{_('FTS searches only become active once 90%% of your library is indexed. Until then, standard search is used.')}}
+          </p>
+        </div>
+      </details>
+      
+      <div class="cwa-settings-tip" style="margin-top: 20px;">
+        <small>💡 <strong>{{_('Tip')}}</strong>: {{_('You can also manage FTS from the Basic Configuration page, but this interface provides more detailed status and control.')}}</small>
+      </div>
     </div>
 
     <div class="settings-container">
@@ -458,7 +759,7 @@
           {% endif %}
         {% endfor %}
       </select>
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-settings-tip">
         <small class="settings-explanation">
           {{_("NOTE: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
         </small>
@@ -585,6 +886,99 @@
     </div>
 
     <div class="settings-container">
+      <h4 class="settings-section-header">{{_('CWA Duplicate Detection System')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Enable or disable the duplicate detection system. When disabled, duplicate scanning will not run and no notifications will be shown.')}}
+      </p>
+
+      <div class="checkbox-wrapper" style="margin-bottom: 1.5rem;">
+        <input type="checkbox" id="duplicate_detection_enabled" name="duplicate_detection_enabled" value="1" {% if cwa_settings['duplicate_detection_enabled'] %} checked {% endif %}>
+        <label for="duplicate_detection_enabled">{{_('Enable Duplicate Detection')}}</label>
+        <small class="settings-explanation">{{_('When enabled, CWA will scan for duplicate books after each import')}}</small>
+      </div>
+
+      <!-- Detection Method (Hybrid default) -->
+      {% set scan_method = cwa_settings.get('duplicate_scan_method')|default('hybrid', true) %}
+      <div class="form-group" style="max-width: 520px;">
+        <label for="duplicate_scan_method" class="settings-section-header" style="margin-top: 8px;">{{_('Duplicate Detection Method')}}</label>
+        <select class="cwa-settings-select" name="duplicate_scan_method" id="duplicate_scan_method" style="width: fit-content;">
+          <option value="hybrid" {% if scan_method == 'hybrid' %}selected{% endif %}>
+            {{_('Hybrid (SQL prefilter + Python validation)')}}
+          </option>
+          <option value="python" {% if scan_method == 'python' %}selected{% endif %}>
+            {{_('Python only (slowest, most robust)')}}
+          </option>
+          <option value="sql" {% if scan_method == 'sql' %}selected{% endif %}>
+            {{_('Legacy SQL only (experimental)')}}
+          </option>
+        </select>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 10px;">
+          {{_('Hybrid mode uses a fast SQL prefilter to narrow candidates, then applies the robust Python logic for final results.') }}
+        </p>
+      </div>
+
+      <!-- Keep SQL prefilter enabled by default for hybrid/auto modes -->
+      <input type="hidden" id="duplicate_detection_use_sql" name="duplicate_detection_use_sql" value="1">
+    </div>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Automatic Duplicate Scanning')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure background duplicate scans. These run automatically without blocking the UI.') }}
+      </p>
+
+      <div class="checkbox-wrapper" style="margin-bottom: 1rem;">
+        <input type="checkbox" id="duplicate_scan_enabled" name="duplicate_scan_enabled" value="1" {% if cwa_settings['duplicate_scan_enabled'] %} checked {% endif %}>
+        <label for="duplicate_scan_enabled">{{_('Enable automatic duplicate scans')}}</label>
+      </div>
+
+      <div class="form-group" style="max-width: 520px;">
+        <label for="duplicate_scan_frequency" class="settings-section-header">{{_('After import scans')}}</label>
+        <select class="cwa-settings-select" name="duplicate_scan_frequency" id="duplicate_scan_frequency" style="width: fit-content;">
+          <option value="after_import" {% if cwa_settings.get('duplicate_scan_frequency', 'after_import') == 'after_import' %}selected{% endif %}>
+            {{_('Run after each import (debounced)')}}
+          </option>
+          <option value="manual" {% if cwa_settings.get('duplicate_scan_frequency') == 'manual' %}selected{% endif %}>
+            {{_('Manual only')}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group" style="max-width: 520px; margin-top: 0.75rem;">
+        <label for="duplicate_scan_debounce_seconds" class="settings-section-header">{{_('After import debounce (seconds)')}}</label>
+        <input type="number" min="5" max="600" step="1" class="cwa-settings-input"
+               name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds"
+               value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 30) }}"
+               style="width: 120px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 8px;">
+          {{_('Wait this many seconds after the last import before starting a background scan.') }}
+        </p>
+      </div>
+
+      <div class="form-group" style="max-width: 520px; margin-top: 1rem;">
+        <label for="duplicate_scan_cron" class="settings-section-header">{{_('Scheduled scans (cron expression)')}}</label>
+        <input type="text" class="cwa-settings-input" name="duplicate_scan_cron" id="duplicate_scan_cron" placeholder="0 3 * * *"
+               value="{{ cwa_settings.get('duplicate_scan_cron', '') }}" style="width: 220px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 8px;">
+          {{_('Leave blank to disable scheduled scans. Example:')}} <code>0 3 * * *</code>
+        </p>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 6px;">
+          {{_('If enabled, after-import scans and cron scans can both run. Use “Manual only” to disable after-import scans while keeping cron schedules.')}}
+        </p>
+      </div>
+
+      {% if next_duplicate_scan_run %}
+        <div class="cwa-settings-tip" style="margin-top: 12px;">
+          <small class="settings-explanation">
+            <strong>{{_('Next scheduled scan:')}}</strong> {{ next_duplicate_scan_run }}
+          </small>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Duplicate Detection Criteria')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
@@ -629,9 +1023,97 @@
         </div>
       </div>
 
-      <div style="margin-top: 1rem; padding: 0.5rem; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 0.25rem;">
+      <div class="cwa-settings-tip">
         <small class="settings-explanation">
           <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
+        </small>
+      </div>
+    </div>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Format Priority Ranking')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure which file formats are preferred when using the "Highest Quality Format" auto-resolution strategy. Drag and drop to reorder formats by priority (higher = better).')}}
+      </p>
+
+      <input type="hidden" id="duplicate_format_priority" name="duplicate_format_priority" value='{{ cwa_settings.get("duplicate_format_priority", "{\"EPUB\":100,\"KEPUB\":95,\"AZW3\":90,\"MOBI\":80,\"AZW\":75,\"PDF\":60,\"TXT\":40,\"CBZ\":35,\"CBR\":35,\"FB2\":30,\"DJVU\":25,\"HTML\":20,\"RTF\":15,\"DOC\":10,\"DOCX\":10}") }}'>
+      
+      <div id="format_priority_container" style="margin-top: 1rem;">
+        <ul id="format_priority_list" style="list-style: none; padding: 0; margin: 0;">
+          <!-- Will be populated by JavaScript -->
+        </ul>
+      </div>
+
+      <div class="cwa-settings-tip">
+        <small class="settings-explanation">
+          <strong>{{_('Tip:')}}</strong> {{_('When resolving duplicates with "Highest Quality Format" strategy, books with higher-ranked formats will be kept. Lower priority formats will be deleted.')}}
+        </small>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Notifications & Auto-Resolution')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure how you are notified about duplicate books and optionally enable automatic resolution.')}}
+      </p>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="1" {% if cwa_settings['duplicate_notifications_enabled'] %} checked {% endif %}>
+        <label for="duplicate_notifications_enabled">{{_('Enable Duplicate Notifications')}}</label>
+      </div>
+        <p class="cwa-settings-tip" style="font-size: small;">{{_('Show popup notifications when unresolved duplicates are detected. Admins and users with edit rights will see a badge on the Duplicates sidebar button and a notification popup when they login.')}}</small>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="duplicate_auto_resolve_enabled" name="duplicate_auto_resolve_enabled" value="1" {% if cwa_settings['duplicate_auto_resolve_enabled'] %} checked {% endif %}>
+        <label for="duplicate_auto_resolve_enabled">{{_('Enable Automatic Duplicate Resolution')}} ⚠️</label>
+      </div>
+      <p class="cwa-settings-tip" style="background: #e74c3c57; border-color: #e74c3c; font-size: small;">
+        <strong>{{_('Warning:')}}</strong> {{_('This will automatically delete books based on the strategy below. Original files will be backed up to')}} <code>/config/processed_books/</code>
+      </p>
+
+      <div class="form-group" style="padding: 2rem; background: #151e2680;">
+        <h4 for="duplicate_auto_resolve_strategy" class="settings-section-header">{{_('Auto-Resolution Strategy')}}</h4>
+        <select class="form-control" id="duplicate_auto_resolve_strategy" name="duplicate_auto_resolve_strategy">
+          <option value="newest" {% if cwa_settings.get('duplicate_auto_resolve_strategy', 'newest') == 'newest' %} selected {% endif %}>
+            {{_('Keep Newest')}} - {{_('Delete older copies, keep the most recently added book')}}
+          </option>
+          <option value="oldest" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'oldest' %} selected {% endif %}>
+            {{_('Keep Oldest')}} - {{_('Delete newer copies, keep the earliest added')}}
+          </option>
+          <option value="merge" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'merge' %} selected {% endif %}>
+            {{_('Merge Formats')}} - {{_('Merge formats into the newest book, delete the rest')}}
+          </option>
+          <option value="highest_quality_format" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'highest_quality_format' %} selected {% endif %}>
+            {{_('Keep Highest Quality Format')}} - {{_('Prefer EPUB > KEPUB > AZW3 > MOBI > PDF')}}
+          </option>
+          <option value="most_metadata" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'most_metadata' %} selected {% endif %}>
+            {{_('Keep Most Metadata')}} - {{_('Keep book with most complete information')}}
+          </option>
+          <option value="largest_file_size" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'largest_file_size' %} selected {% endif %}>
+            {{_('Keep Largest File Size')}} - {{_('Keep book with largest total file size')}}
+          </option>
+        </select>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 2rem !important;">{{_('Choose which book to keep when duplicates are automatically resolved.')}}</p>
+      </div>
+
+      <div class="form-group" style="padding: 2rem; background: #151e2680;">
+        <h4 class="settings-section-header">{{_('Rate Limiting')}}</h4>
+        <label for="duplicate_auto_resolve_cooldown_minutes">{{_('Cooldown Period (minutes)')}}</label>
+        <input type="number" class="form-control" id="duplicate_auto_resolve_cooldown_minutes" 
+               name="duplicate_auto_resolve_cooldown_minutes" min="0" max="1440"
+               value="{{ cwa_settings.get('duplicate_auto_resolve_cooldown_minutes', 0) if cwa_settings.get('duplicate_auto_resolve_cooldown_minutes') not in [False, None, ''] else 0 }}">
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 1rem;">
+          {{_('Minimum time between automatic resolutions (0 to disable). Prevents rapid-fire deletions during batch imports.')}}
+        </p>
+      </div>
+
+      <div class="cwa-settings-tip">
+        <small class="settings-explanation">
+          <strong>{{_('Note:')}}</strong> {{_('Auto-resolution runs after duplicate scans detect new duplicates. Dismissed duplicate groups are never auto-resolved.')}}
         </small>
       </div>
     </div>
@@ -865,6 +1347,373 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize the hidden input value
   updateHiddenInput();
+  
+  // Format Priority Ranking System
+  function initializeFormatPriorityList() {
+    const hiddenInput = document.getElementById('duplicate_format_priority');
+    const container = document.getElementById('format_priority_list');
+    
+    if (!hiddenInput || !container) return;
+    
+    try {
+      // Decode HTML entities if present
+      const rawValue = hiddenInput.value || '{}';
+      const decodedValue = rawValue.replace(/&quot;/g, '"').replace(/&#34;/g, '"');
+      const formatPriority = JSON.parse(decodedValue);
+      
+      // Convert to array and sort by priority (highest first)
+      const formatArray = Object.entries(formatPriority).map(([format, priority]) => ({
+        format: format,
+        priority: priority
+      }));
+      formatArray.sort((a, b) => b.priority - a.priority);
+      
+      // Check if we actually have formats to display
+      if (formatArray.length === 0) {
+        console.error('No format priority data found');
+        container.innerHTML = '<li style="color: #e74c3c; padding: 12px;">No format data available. Please save settings to initialize.</li>';
+        return;
+      }
+      
+      // Populate list
+      container.innerHTML = '';
+      formatArray.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = 'format-priority-item';
+        li.dataset.format = item.format;
+        li.dataset.priority = item.priority;
+        li.draggable = true;
+        li.innerHTML = `
+          <div style="display: flex; align-items: center; padding: 6px; margin-bottom: 8px; background: #2a3441; border: 1px solid #444; border-radius: 6px; cursor: move; transition: all 0.2s; padding-left: 2rem;">
+            <span style="color: #ffc200; margin-right: 15px; font-size: 18px;">☰</span>
+            <span style="flex: 1; color: white; font-weight: 500;">${item.format}</span>
+            <span style="color: #4CAF50; font-size: 13px; padding: 4px 8px; background: rgba(76, 160, 80, 0.1); border-radius: 4px;">Priority: ${item.priority}</span>
+          </div>
+        `;
+        container.appendChild(li);
+      });
+      
+      setupFormatPriorityDragDrop();
+    } catch (e) {
+      console.error('Error initializing format priority list:', e);
+      console.error('Hidden input value:', hiddenInput ? hiddenInput.value : 'not found');
+      container.innerHTML = '<li style="color: #e74c3c; padding: 12px;">Error loading format priority: ' + e.message + '</li>';
+    }
+  }
+  
+  function setupFormatPriorityDragDrop() {
+    let draggedFormatElement = null;
+    let isDraggingFormat = false;
+    
+    const items = document.querySelectorAll('.format-priority-item');
+    
+    items.forEach(item => {
+      item.addEventListener('mousedown', function(e) {
+        isDraggingFormat = true;
+        draggedFormatElement = this;
+        this.style.opacity = '0.5';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+      if (!isDraggingFormat || !draggedFormatElement) return;
+      
+      const container = document.getElementById('format_priority_list');
+      const afterElement = getFormatAfterElement(container, e.clientY);
+      
+      if (afterElement == null) {
+        container.appendChild(draggedFormatElement);
+      } else {
+        container.insertBefore(draggedFormatElement, afterElement);
+      }
+    });
+    
+    document.addEventListener('mouseup', function(e) {
+      if (!isDraggingFormat) return;
+      
+      isDraggingFormat = false;
+      if (draggedFormatElement) {
+        draggedFormatElement.style.opacity = '1';
+        draggedFormatElement = null;
+      }
+      document.body.style.userSelect = '';
+      updateFormatPriorityHiddenInput();
+    });
+  }
+  
+  function getFormatAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.format-priority-item')].filter(el => el.style.opacity !== '0.5');
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+  
+  function updateFormatPriorityHiddenInput() {
+    const container = document.getElementById('format_priority_list');
+    const hiddenInput = document.getElementById('duplicate_format_priority');
+    const items = container.querySelectorAll('.format-priority-item');
+    
+    // Recalculate priorities based on order (top = highest)
+    const formatPriority = {};
+    const totalItems = items.length;
+    
+    items.forEach((item, index) => {
+      const format = item.dataset.format;
+      // Higher priority for items at the top
+      const priority = 100 - (index * Math.floor(100 / totalItems));
+      formatPriority[format] = priority;
+    });
+    
+    hiddenInput.value = JSON.stringify(formatPriority);
+    
+    // Update priority badges
+    items.forEach((item, index) => {
+      const format = item.dataset.format;
+      const priorityBadge = item.querySelector('span:last-child');
+      if (priorityBadge) {
+        priorityBadge.textContent = `Priority: ${formatPriority[format]}`;
+      }
+    });
+  }
+  
+  // Initialize format priority list on page load
+  initializeFormatPriorityList();
+  
+  // ========================================
+  // Full Text Search (FTS) Management
+  // ========================================
+  
+  let ftsPollingInterval = null;
+  let ftsActionInProgress = false;
+  
+  function updateFTSStatusUI(status) {
+    const statusBadge = document.getElementById('fts-status-badge');
+    const progressSpan = document.getElementById('fts-progress');
+    const indexingStatusSpan = document.getElementById('fts-indexing-status');
+    const enableBtn = document.getElementById('btn-fts-enable');
+    const disableBtn = document.getElementById('btn-fts-disable');
+    const reindexBtn = document.getElementById('btn-fts-reindex');
+    
+    if (status.error) {
+      statusBadge.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
+      statusBadge.style.color = '#e74c3c';
+      statusBadge.textContent = '❌ Error';
+      progressSpan.textContent = status.error;
+      indexingStatusSpan.textContent = '';
+      disableBtn.disabled = true;
+      reindexBtn.disabled = true;
+      return;
+    }
+    
+    if (!status.enabled) {
+      statusBadge.style.backgroundColor = 'rgba(149, 165, 166, 0.2)';
+      statusBadge.style.color = '#95a5a6';
+      statusBadge.textContent = '⚪ Disabled';
+      progressSpan.textContent = 'FTS indexing is not enabled';
+      indexingStatusSpan.textContent = '';
+      enableBtn.disabled = false;
+      disableBtn.disabled = true;
+      reindexBtn.disabled = true;
+      return;
+    }
+    
+    // FTS is enabled
+    const percentage = status.percentage.toFixed(1);
+    const progressText = `${status.indexed} of ${status.total} books indexed (${percentage}%)`;
+    
+    if (status.available) {
+      // 90%+ indexed - search is active
+      statusBadge.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+      statusBadge.style.color = '#4CAF50';
+      statusBadge.textContent = '✅ Active';
+      progressSpan.textContent = progressText;
+    } else {
+      // Less than 90% - not available yet
+      statusBadge.style.backgroundColor = 'rgba(255, 193, 7, 0.2)';
+      statusBadge.style.color = '#ffc107';
+      statusBadge.textContent = '❌ Not Available (< 90%)';
+      progressSpan.textContent = progressText + ' - Search will activate at 90%';
+    }
+    
+    // Show indexing status
+    if (status.active) {
+      indexingStatusSpan.innerHTML = '<span style="color: #ffc107;">⚙️ Currently Indexing: <strong>Yes</strong></span>';
+    } else if (status.indexed < status.total) {
+      indexingStatusSpan.innerHTML = '<span style="color: #95a5a6;">✓ Currently Indexing: <strong>No</strong> (paused or idle)</span>';
+    } else {
+      indexingStatusSpan.innerHTML = '<span style="color: #4CAF50;">✓ Indexing Complete</span>';
+    }
+    
+    // Button states
+    enableBtn.disabled = true; // Already enabled
+    disableBtn.disabled = false;
+    reindexBtn.disabled = false;
+  }
+  
+  function fetchFTSStatus() {
+    if (ftsActionInProgress) {
+      return; // Don't poll during actions
+    }
+    
+    fetch('{{ url_for("cwa_settings.get_fts_status") }}', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      updateFTSStatusUI(data);
+    })
+    .catch(error => {
+      console.error('Error fetching FTS status:', error);
+      const statusBadge = document.getElementById('fts-status-badge');
+      const progressSpan = document.getElementById('fts-progress');
+      statusBadge.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
+      statusBadge.style.color = '#e74c3c';
+      statusBadge.textContent = '❌ Error';
+      progressSpan.textContent = 'Failed to fetch status: ' + error.message;
+    });
+  }
+  
+  function performFTSAction(action, buttonId) {
+    if (ftsActionInProgress) {
+      return;
+    }
+    
+    ftsActionInProgress = true;
+    const button = document.getElementById(buttonId);
+    const originalText = button.textContent;
+    
+    // Disable all action buttons
+    document.getElementById('btn-fts-enable').disabled = true;
+    document.getElementById('btn-fts-disable').disabled = true;
+    document.getElementById('btn-fts-reindex').disabled = true;
+    document.getElementById('btn-fts-refresh').disabled = true;
+    
+    // Show spinner
+    button.innerHTML = '<span class="glyphicon glyphicon-refresh spinning"></span> ' + 
+      (action === 'enable' ? 'Enabling...' : 
+       action === 'disable' ? 'Disabling...' : 
+       action === 'reindex' ? 'Reindexing...' : 'Working...');
+    
+    const formData = new FormData();
+    formData.append('action', action);
+    
+    fetch('{{ url_for("cwa_settings.fts_action") }}', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      console.log('FTS action response status:', response.status);
+      if (!response.ok) {
+        throw new Error('HTTP error ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('FTS action response:', data);
+      if (data.success) {
+        // Show success message
+        const flashContainer = document.getElementById('flash_success');
+        if (flashContainer) {
+          flashContainer.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+          flashContainer.style.display = 'block';
+          setTimeout(() => { flashContainer.style.display = 'none'; }, 5000);
+        }
+        
+        // Refresh status after a brief delay to allow backend to update
+        setTimeout(() => {
+          fetchFTSStatus();
+        }, 1500);
+      } else {
+        // Show error message
+        const flashContainer = document.getElementById('flash_danger');
+        if (flashContainer) {
+          flashContainer.innerHTML = '<div class="alert alert-danger">' + (data.message || 'Unknown error') + '</div>';
+          flashContainer.style.display = 'block';
+        }
+        // Re-enable buttons on error
+        document.getElementById('btn-fts-enable').disabled = false;
+        document.getElementById('btn-fts-disable').disabled = false;
+        document.getElementById('btn-fts-reindex').disabled = false;
+      }
+    })
+    .catch(error => {
+      console.error('Error performing FTS action:', error);
+      const flashContainer = document.getElementById('flash_danger');
+      if (flashContainer) {
+        flashContainer.innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+        flashContainer.style.display = 'block';
+      }
+      // Re-enable buttons on error
+      document.getElementById('btn-fts-enable').disabled = false;
+      document.getElementById('btn-fts-disable').disabled = false;
+      document.getElementById('btn-fts-reindex').disabled = false;
+    })
+    .finally(() => {
+      button.textContent = originalText;
+      ftsActionInProgress = false;
+      document.getElementById('btn-fts-refresh').disabled = false;
+    });
+  }
+  
+  function startFTSPolling() {
+    // Initial fetch
+    fetchFTSStatus();
+    
+    // Poll every 10 seconds
+    if (ftsPollingInterval) {
+      clearInterval(ftsPollingInterval);
+    }
+    ftsPollingInterval = setInterval(fetchFTSStatus, 10000);
+  }
+  
+  // Attach button handlers
+  document.getElementById('btn-fts-enable').addEventListener('click', function() {
+    performFTSAction('enable', 'btn-fts-enable');
+  });
+  
+  document.getElementById('btn-fts-disable').addEventListener('click', function() {
+    if (confirm('Are you sure you want to disable FTS indexing? This will stop any ongoing indexing process.')) {
+      performFTSAction('disable', 'btn-fts-disable');
+    }
+  });
+  
+  document.getElementById('btn-fts-reindex').addEventListener('click', function() {
+    if (confirm('Are you sure you want to reindex all books? This will restart the indexing process from scratch.')) {
+      performFTSAction('reindex', 'btn-fts-reindex');
+    }
+  });
+  
+  document.getElementById('btn-fts-refresh').addEventListener('click', function() {
+    fetchFTSStatus();
+  });
+  
+  // Start polling when page loads
+  startFTSPolling();
+  
+  // Stop polling when page is hidden (save resources)
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      if (ftsPollingInterval) {
+        clearInterval(ftsPollingInterval);
+        ftsPollingInterval = null;
+      }
+    } else {
+      startFTSPolling();
+    }
+  });
 });
 </script>
 {% endblock %}

@@ -1,6 +1,637 @@
+# -*- coding: utf-8 -*-
 # Calibre-Web Automated – fork of Calibre-Web
 # Copyright (C) 2018-2025 Calibre-Web contributors
 # Copyright (C) 2024-2025 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+from . import db, ub, logger
+from .cw_login import current_user
+from sqlalchemy import and_, or_, not_
+from sqlalchemy.sql.expression import func
+from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime, timedelta, timezone
+
+log = logger.create()
+
+# System Magic Shelf Templates
+# These are pre-built shelves that can be created for users as examples/templates
+SYSTEM_SHELF_TEMPLATES = {
+    'recently_added': {
+        'name': 'Recently Added',
+        'icon': '⏰',
+        'description': 'Books added to your library in the last 30 days',
+        'rules': {
+            'condition': 'AND',
+            'rules': [
+                {
+                    'id': 'timestamp',
+                    'field': 'timestamp',
+                    'type': 'date',
+                    'input': 'text',
+                    'operator': 'greater',
+                    'value': (datetime.now(timezone.utc) - timedelta(days=30)).strftime('%Y-%m-%d')
+                }
+            ]
+        }
+    },
+    'highly_rated': {
+        'name': 'Highly Rated',
+        'icon': '⭐',
+        'description': 'Books with a rating of 8 or higher',
+        'rules': {
+            'condition': 'AND',
+            'rules': [
+                {
+                    'id': 'rating',
+                    'field': 'rating',
+                    'type': 'integer',
+                    'input': 'select',
+                    'operator': 'greater_or_equal',
+                    'value': 8
+                }
+            ]
+        }
+    },
+    # 'no_cover': {
+    #     'name': 'Books Without Covers',
+    #     'icon': '🗒️',
+    #     'description': 'Books that are missing cover images',
+    #     'rules': {
+    #         'condition': 'AND',
+    #         'rules': [
+    #             {
+    #                 'id': 'has_cover',
+    #                 'field': 'has_cover',
+    #                 'type': 'boolean',
+    #                 'input': 'radio',
+    #                 'operator': 'equal',
+    #                 'value': 0
+    #             }
+    #         ]
+    #     }
+    # },
+    'yet_to_read': {
+        'name': 'Yet to Read',
+        'icon': '📖',
+        'description': 'Books you haven\'t read yet',
+        'rules': {
+            'condition': 'AND',
+            'rules': [{
+                'id': 'read_status',
+                'field': 'read_status',
+                'type': 'integer',
+                'input': 'radio',
+                'operator': 'equal',
+                'value': 0  # Just check for unread
+            }]
+        }
+    },
+    'recent_publications': {
+        'name': 'Recent Publications',
+        'icon': '🌱',
+        'description': 'Books published in the last 2 years',
+        'rules': {
+            'condition': 'AND',
+            'rules': [
+                {
+                    'id': 'pubdate',
+                    'field': 'pubdate',
+                    'type': 'date',
+                    'input': 'text',
+                    'operator': 'greater',
+                    'value': (datetime.now(timezone.utc) - timedelta(days=730)).strftime('%Y-%m-%d')
+                }
+            ]
+        }
+    },
+    # 'series_incomplete': {
+    #     'name': 'Incomplete Series',
+    #     'icon': '📚',
+    #     'description': 'Books that are part of a series',
+    #     'rules': {
+    #         'condition': 'AND',
+    #         'rules': [
+    #             {
+    #                 'id': 'series',
+    #                 'field': 'series',
+    #                 'type': 'string',
+    #                 'input': 'text',
+    #                 'operator': 'is_not_empty',
+    #                 'value': None
+    #             }
+    #         ]
+    #     }
+    # }
+
+}
+
+# Mapping from UI field names to database models and columns
+FIELD_MAP = {
+    'title': (db.Books, 'title'),
+    'author': (db.Authors, 'name'),
+    'tag': (db.Tags, 'name'),
+    'series': (db.Series, 'name'),
+    'publisher': (db.Publishers, 'name'),
+    'rating': (db.Ratings, 'rating'),
+    'language': (db.Languages, 'lang_code'),
+    'pubdate': (db.Books, 'pubdate'),
+    'timestamp': (db.Books, 'timestamp'),
+    'has_cover': (db.Books, 'has_cover'),
+    'series_index': (db.Books, 'series_index'),
+    'comments': (db.Comments, 'text'),  # Fixed: Points to actual text column, not relationship
+    'read_status': ('custom_column', 'read_status'),  # Special handling - uses config.config_read_column
+    'hardcover_id': ('identifier', 'hardcover-id'),  # Special handling - checks Identifiers table
+}
+
+# Mapping from UI operators to SQLAlchemy functions/operators
+OPERATOR_MAP = {
+    # 'equals': lambda col, val: col == val,  # Not used by QueryBuilder
+    'equal': lambda col, val: col == val,
+    # 'not_equals': lambda col, val: col != val,  # Not used by QueryBuilder
+    'not_equal': lambda col, val: col != val,
+    'less': lambda col, val: col < val,
+    # 'less_than': lambda col, val: col < val,  # Not used by QueryBuilder
+    'less_or_equal': lambda col, val: col <= val,
+    # 'less_than_equal_to': lambda col, val: col <= val,  # Not used by QueryBuilder
+    'greater': lambda col, val: col > val,
+    # 'greater_than': lambda col, val: col > val,  # Not used by QueryBuilder
+    'greater_or_equal': lambda col, val: col >= val,
+    # 'greater_than_equal_to': lambda col, val: col >= val,  # Not used by QueryBuilder
+    'between': lambda col, val: col.between(*val) if isinstance(val, (list, tuple)) and len(val) == 2 else None,
+    'not_between': lambda col, val: ~col.between(*val) if isinstance(val, (list, tuple)) and len(val) == 2 else None,
+    'contains': lambda col, val: col.ilike(f'%{val}%') if val is not None else None,
+    'not_contains': lambda col, val: ~col.ilike(f'%{val}%') if val is not None else None,
+    'begins_with': lambda col, val: col.ilike(f'{val}%') if val is not None else None,
+    'not_begins_with': lambda col, val: ~col.ilike(f'{val}%') if val is not None else None,
+    'starts_with': lambda col, val: col.ilike(f'{val}%') if val is not None else None,  # QueryBuilder emits 'begins_with', but keep for legacy
+    'ends_with': lambda col, val: col.ilike(f'%{val}') if val is not None else None,
+    'not_ends_with': lambda col, val: ~col.ilike(f'%{val}') if val is not None else None,
+    'is_empty': lambda col, val: col == None,
+    'is_not_empty': lambda col, val: col != None,
+    'is_null': lambda col, val: col == None,
+    'is_not_null': lambda col, val: col != None,
+    'in': lambda col, val: col.in_(val if isinstance(val, list) else [val]),
+    'not_in': lambda col, val: ~col.in_(val if isinstance(val, list) else [val]),
+}
+
+RELATIONSHIP_MAP = {
+    'author': 'authors',
+    'tag': 'tags',
+    'series': 'series',
+    'publisher': 'publishers',
+    'rating': 'ratings',
+    'language': 'languages',
+    'comments': 'comments',  # For description field - requires join to Comments table
+}
+
+def build_filter_from_rule(rule, user_id=None):
+    """Builds a SQLAlchemy filter condition from a single rule."""
+    from . import config
+
+    field_name = rule.get('id')
+    operator_name = rule.get('operator')
+    value = rule.get('value')
+
+    if not all([field_name, operator_name]):
+        return None
+
+    field_info = FIELD_MAP.get(field_name)
+    if not field_info:
+        return None
+    
+    model, column_name = field_info
+    
+    # Special handling for hardcover_id identifier
+    if model == 'identifier' and column_name == 'hardcover-id':
+        # Value is 1 (has hardcover ID) or 0 (doesn't have hardcover ID)
+        # Similar to has_cover boolean handling
+        try:
+            has_hardcover = bool(int(value)) if value is not None else True
+        except (ValueError, TypeError):
+            has_hardcover = True
+        
+        hardcover_condition = db.Books.identifiers.any(
+            or_(
+                db.Identifiers.type == 'hardcover-id',
+                db.Identifiers.type == 'hardcover-slug',
+                db.Identifiers.type == 'hardcover-edition'
+            )
+        )
+        
+        if operator_name == 'equal':
+            # Equal to 1 (Yes) = has hardcover ID
+            # Equal to 0 (No) = doesn't have hardcover ID
+            return hardcover_condition if has_hardcover else ~hardcover_condition
+        elif operator_name == 'not_equal':
+            # Opposite of equal
+            return ~hardcover_condition if has_hardcover else hardcover_condition
+        else:
+            # For any other operator (shouldn't happen with boolean type), default to equal
+            return hardcover_condition if has_hardcover else ~hardcover_condition
+    
+    # Special handling for read_status custom column
+    if model == 'custom_column' and column_name == 'read_status':
+        use_custom_column = False
+        if config.config_read_column and config.config_read_column != 0:
+            if config.config_read_column in db.cc_classes:
+                use_custom_column = True
+            else:
+                log.warning(f"Read status column {config.config_read_column} not found in cc_classes")
+
+        if not use_custom_column:
+            if user_id is not None:
+                # Fallback to built-in read status
+                # Get read books for user (STATUS_FINISHED = 1)
+                read_books = ub.session.query(ub.ReadBook).filter(
+                    ub.ReadBook.user_id == user_id, 
+                    ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED
+                ).all()
+                read_book_ids = [rb.book_id for rb in read_books]
+                
+                operator = OPERATOR_MAP.get(operator_name)
+                if not operator:
+                    return None
+                
+                # Value is 0 (Unread) or 1 (Read)
+                try:
+                    is_checking_read = (int(value) == 1)
+                except (ValueError, TypeError):
+                    is_checking_read = False
+                
+                if operator_name == 'equal':
+                    if is_checking_read:
+                        return db.Books.id.in_(read_book_ids)
+                    else:
+                        return ~db.Books.id.in_(read_book_ids)
+                elif operator_name == 'not_equal':
+                    if is_checking_read:
+                        return ~db.Books.id.in_(read_book_ids)
+                    else:
+                        return db.Books.id.in_(read_book_ids)
+                else:
+                    return None
+            else:
+                log.debug("Read status column not configured and no user_id provided, skipping read_status filter")
+                return None
+
+        read_col_class = db.cc_classes[config.config_read_column]
+        column = read_col_class.value
+        
+        # Get the operator
+        operator = OPERATOR_MAP.get(operator_name)
+        if not operator:
+            return None
+        
+        # Convert integer value (0/1) to boolean (False/True) for proper comparison
+        # QueryBuilder sends integers from radio buttons, but custom column expects boolean
+        if isinstance(value, int):
+            value = bool(value)
+
+        # Read status custom columns are joined via relationship - get the dynamic relationship name
+        cc_relationship = f'custom_column_{config.config_read_column}'
+        if hasattr(db.Books, cc_relationship):
+            return getattr(db.Books, cc_relationship).any(operator(column, value))
+        else:
+            log.error(f"Books model does not have relationship '{cc_relationship}'")
+            return None
+    else:
+        if not model:
+            return None
+        column = getattr(model, column_name)
+    
+    operator = OPERATOR_MAP.get(operator_name)
+
+    if not operator:
+        return None
+
+    # Handle relationships using .any()
+    relationship_name = RELATIONSHIP_MAP.get(field_name)
+    try:
+        if relationship_name:
+            # Special handling for is_empty/is_null on relationships:
+            # These check for absence of relationships, not null values in related records
+            if operator_name in ['is_empty', 'is_null']:
+                return ~getattr(db.Books, relationship_name).any()
+            elif operator_name in ['is_not_empty', 'is_not_null']:
+                return getattr(db.Books, relationship_name).any()
+            else:
+                filter_expr = operator(column, value)
+                if filter_expr is None:
+                    return None
+                return getattr(db.Books, relationship_name).any(filter_expr)
+        else:
+            filter_expr = operator(column, value)
+            return filter_expr
+    except Exception as e:
+        log.error(f"Error building filter for field '{field_name}', operator '{operator_name}', value '{value}': {str(e)}", exc_info=True)
+        return None
+
+
+def build_query_from_rules(rules_json, user_id=None):
+    """
+    Recursively builds a SQLAlchemy query filter from a JSON rule structure.
+    """
+    if not rules_json or not rules_json.get('rules'):
+        return None
+
+    condition = rules_json.get('condition', 'AND').upper()
+    rules = rules_json.get('rules', [])
+    
+    filters = []
+    for rule in rules:
+        # If 'condition' is present, it's a group, recurse
+        if 'condition' in rule:
+            sub_filter = build_query_from_rules(rule, user_id)
+            if sub_filter is not None:
+                filters.append(sub_filter)
+        # Otherwise, it's a rule
+        else:
+            rule_filter = build_filter_from_rule(rule, user_id)
+            if rule_filter is not None:
+                filters.append(rule_filter)
+
+    if not filters:
+        return None
+
+    if condition == 'AND':
+        return and_(*filters)
+    elif condition == 'OR':
+        return or_(*filters)
+    
+    return None
+
+def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None, sort_param='stored', bypass_cache=False):
+    """
+    Takes a MagicShelf ID and returns a paginated list of book objects that match its rules.
+    
+    Args:
+        shelf_id: ID of the magic shelf
+        page: Page number (1-indexed)
+        page_size: Number of books per page (None = all books)
+        sort_order: SQLAlchemy order_by expression
+        sort_param: String identifier for the sort order (used for cache key)
+        bypass_cache: If True, forces a database query and cache update
+    
+    Returns:
+        tuple: (books, total_count)
+    """
+    try:
+        magic_shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+        if not magic_shelf:
+            log.warning(f"Magic shelf with ID {shelf_id} not found")
+            return [], 0
+
+        # 1. Check Cache
+        if not bypass_cache and current_user.is_authenticated:
+            cache = ub.session.query(ub.MagicShelfCache).filter_by(
+                shelf_id=shelf_id, 
+                user_id=current_user.id, 
+                sort_param=sort_param
+            ).first()
+            
+            # Check TTL (e.g. 30 minutes)
+            if cache:
+                # Handle potential naive/aware datetime issues
+                created_at = cache.created_at
+                if created_at.tzinfo is None:
+                    created_at = created_at.replace(tzinfo=timezone.utc)
+                
+                is_expired = (datetime.now(timezone.utc) - created_at) > timedelta(minutes=30)
+                
+                if not is_expired:
+                    all_ids = cache.book_ids
+                    total_count = cache.total_count
+                    
+                    # Slice for pagination
+                    if page_size is not None and page_size > 0:
+                        start = (page - 1) * page_size
+                        page_ids = all_ids[start : start + page_size]
+                    else:
+                        page_ids = all_ids
+
+                    if not page_ids:
+                        return [], total_count
+
+                    # Fetch objects (must preserve order!)
+                    cdb = db.CalibreDB(init=True)
+                    books = cdb.session.query(db.Books).filter(db.Books.id.in_(page_ids)).all()
+                    book_map = {b.id: b for b in books}
+                    ordered_books = [book_map[bid] for bid in page_ids if bid in book_map]
+                    
+                    log.debug(f"Magic shelf {shelf_id} served from cache ({len(ordered_books)} books)")
+                    return ordered_books, total_count
+                else:
+                    log.debug(f"Magic shelf {shelf_id} cache expired")
+
+        rules = magic_shelf.rules
+        log.debug(f"Loading magic shelf '{magic_shelf.name}' (ID: {shelf_id}) with {len(rules.get('rules', [])) if rules else 0} rules")
+        
+        if not rules or not rules.get('rules'):
+            log.debug(f"No rules defined for magic shelf {shelf_id}")
+            return [], 0
+
+        cdb = db.CalibreDB(init=True)
+        query_filter = build_query_from_rules(rules, user_id=magic_shelf.user_id)
+        
+        if query_filter is None:
+            log.warning(f"Failed to build query filter for magic shelf {shelf_id}")
+            return [], 0
+        
+        # Build base query
+        query = cdb.session.query(db.Books)
+        query = query.filter(query_filter)
+        
+        # Apply standard user permissions filters
+        query = query.filter(cdb.common_filters())
+        
+        # Apply sorting
+        if sort_order is not None:
+            if isinstance(sort_order, list):
+                for order_expr in sort_order:
+                    query = query.order_by(order_expr)
+            else:
+                query = query.order_by(sort_order)
+        
+        # Execute Full Query for Cache
+        try:
+            # Fetch ALL IDs
+            all_ids_tuples = query.with_entities(db.Books.id).all()
+            all_ids = [x[0] for x in all_ids_tuples]
+            total_count = len(all_ids)
+            
+            # Update Cache
+            if current_user.is_authenticated:
+                # Delete old cache for this specific combo
+                ub.session.query(ub.MagicShelfCache).filter_by(
+                    shelf_id=shelf_id, 
+                    user_id=current_user.id, 
+                    sort_param=sort_param
+                ).delete()
+                
+                new_cache = ub.MagicShelfCache(
+                    shelf_id=shelf_id,
+                    user_id=current_user.id,
+                    sort_param=sort_param,
+                    book_ids=all_ids,
+                    total_count=total_count
+                )
+                ub.session.add(new_cache)
+                ub.session.commit()
+                log.debug(f"Magic shelf {shelf_id} cache updated ({total_count} items)")
+
+        except SQLAlchemyError as e:
+            log.error(f"Error executing query for magic shelf {shelf_id}: {e}")
+            return [], 0
+        
+        # Apply pagination to the list of IDs we just fetched
+        if page_size is not None and page_size > 0:
+            start = (page - 1) * page_size
+            page_ids = all_ids[start : start + page_size]
+        else:
+            page_ids = all_ids
+
+        if not page_ids:
+            return [], total_count
+
+        # Fetch objects for the current page
+        books = cdb.session.query(db.Books).filter(db.Books.id.in_(page_ids)).all()
+        book_map = {b.id: b for b in books}
+        ordered_books = [book_map[bid] for bid in page_ids if bid in book_map]
+        
+        return ordered_books, total_count
+        
+    except SQLAlchemyError as e:
+        log.error(f"Database error retrieving books for magic shelf {shelf_id}: {e}")
+        return [], 0
+    except Exception as e:
+        log.error(f"Unexpected error retrieving books for magic shelf {shelf_id}: {e}")
+        return [], 0
+
+
+def get_book_count_for_magic_shelf(shelf_id):
+    """
+    Efficiently gets the total count of books for a magic shelf.
+    
+    Args:
+        shelf_id: ID of the magic shelf
+    
+    Returns:
+        int: Total count of matching books
+    """
+    try:
+        magic_shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+        if not magic_shelf:
+            return 0
+
+        rules = magic_shelf.rules
+        if not rules or not rules.get('rules'):
+            return 0
+
+        cdb = db.CalibreDB(init=True)
+        query_filter = build_query_from_rules(rules, user_id=magic_shelf.user_id)
+        
+        if query_filter is None:
+            return 0
+        
+        # Build base query
+        query = cdb.session.query(db.Books)
+        query = query.filter(query_filter)
+        
+        # Apply standard user permissions filters
+        query = query.filter(cdb.common_filters())
+        
+        return query.count()
+        
+    except Exception as e:
+        log.error(f"Error counting books for magic shelf {shelf_id}: {e}")
+        return 0
+
+
+def create_system_magic_shelves(user_id, template_keys=None):
+    """
+    Create system magic shelves for a user from templates.
+    
+    Args:
+        user_id: ID of the user to create shelves for
+        template_keys: List of template keys to create (None = create all)
+    
+    Returns:
+        int: Number of shelves created
+    """
+    if template_keys is None:
+        template_keys = SYSTEM_SHELF_TEMPLATES.keys()
+    
+    created_count = 0
+    
+    for key in template_keys:
+        if key not in SYSTEM_SHELF_TEMPLATES:
+            log.warning(f"Unknown system shelf template: {key}")
+            continue
+        
+        template = SYSTEM_SHELF_TEMPLATES[key]
+        
+        try:
+            # Check if user already has this system shelf
+            existing = ub.session.query(ub.MagicShelf).filter(
+                ub.MagicShelf.user_id == user_id,
+                ub.MagicShelf.name == template['name'],
+                ub.MagicShelf.is_system == True
+            ).first()
+            
+            if existing:
+                log.debug(f"User {user_id} already has system shelf '{template['name']}'")
+                continue
+            
+            # Create new system shelf
+            new_shelf = ub.MagicShelf(
+                user_id=user_id,
+                name=template['name'],
+                icon=template['icon'],
+                rules=template['rules'],
+                is_system=True,
+                is_public=0
+            )
+            
+            ub.session.add(new_shelf)
+            created_count += 1
+            log.info(f"Created system magic shelf '{template['name']}' for user {user_id}")
+            
+        except Exception as e:
+            log.error(f"Error creating system shelf '{template.get('name')}' for user {user_id}: {e}")
+            ub.session.rollback()
+            continue
+    
+    if created_count > 0:
+        try:
+            ub.session.commit()
+            log.info(f"Successfully created {created_count} system magic shelves for user {user_id}")
+        except Exception as e:
+            log.error(f"Error committing system shelves for user {user_id}: {e}")
+            ub.session.rollback()
+            return 0
+    
+    return created_count
+
+
+def get_system_shelf_template(template_key):
+    """
+    Get a system shelf template by key.
+    
+    Args:
+        template_key: Key of the template to retrieve
+    
+    Returns:
+        dict: Template data or None if not found
+    """
+    return SYSTEM_SHELF_TEMPLATES.get(template_key)
+
+
+def list_system_shelf_templates():
+    """
+    Get all available system shelf templates.
+    
+    Returns:
+        dict: All system shelf templates
+    """
+    return SYSTEM_SHELF_TEMPLATES

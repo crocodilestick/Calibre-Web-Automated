@@ -17,6 +17,7 @@ import subprocess
 import logging
 import tempfile
 import atexit
+import traceback
 from datetime import datetime
 import json
 import shutil
@@ -28,6 +29,9 @@ from cwa_db import CWA_DB
 
 ### Code adapted from https://github.com/innocenat/kindle-epub-fix
 ### Translated from Javascript to Python & modified by crocodilestick
+
+# Compile regex pattern once at module level for performance
+LANGUAGE_TAG_PATTERN = re.compile(r'^[a-z]{2,3}(-[a-z]{2,4})?$', re.IGNORECASE)
 
 ### Global Variables
 dirs_json = "/app/calibre-web-automated/dirs.json"
@@ -133,7 +137,6 @@ class EPUBFixer:
         Returns: (book_id, format) or (None, 'EPUB')
         """
         try:
-            import re
             path_parts = str(file_path).split(os.sep)
             # Look for directory with format "Title (123)"
             for part in path_parts:
@@ -169,7 +172,6 @@ class EPUBFixer:
         """Calculate and store new checksum after modifying an EPUB file."""
         try:
             # Import the checksum calculation function
-            import sys
             project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
             if project_root not in sys.path:
                 sys.path.insert(0, project_root)
@@ -203,7 +205,6 @@ class EPUBFixer:
                 con.close()
         except Exception as e:
             print_and_log(f"[cwa-kindle-epub-fixer] Warning: Failed to recalculate checksum: {e}", log=self.manually_triggered)
-            import traceback
             print_and_log(traceback.format_exc(), log=self.manually_triggered)
 
 
@@ -228,19 +229,36 @@ class EPUBFixer:
                     self.binary_files[filename] = zip_ref.read(filename)
 
     def fix_encoding(self):
-        """Add UTF-8 encoding declaration if missing"""
+        """Add UTF-8 encoding declaration if missing and fix malformed XML declarations"""
         encoding = '<?xml version="1.0" encoding="utf-8"?>'
         regex = r'^<\?xml\s+version=["\'][\d.]+["\']\s+encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>'
+        # Pattern to detect malformed XML declarations (excessive whitespace)
+        malformed_xml_pattern = r'^<\?xml\s+version=["\'][\d.]+["\']\s{2,}encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>'
 
         for filename in list(self.files.keys()):
             ext = filename.split('.')[-1]
-            if ext in ['html', 'xhtml']:
-                html = self.files[filename]
-                html = html.lstrip()
-                if not re.match(regex, html, re.IGNORECASE):
-                    html = encoding + '\n' + html
-                    self.fixed_problems.append(f"Fixed encoding for file {filename}")
-                self.files[filename] = html
+            # Check HTML, XHTML, XML, OPF, and NCX files
+            if ext in ['html', 'xhtml', 'xml', 'opf', 'ncx']:
+                content = self.files[filename]
+                content = content.lstrip()
+                
+                # First, check for malformed XML declaration (double/triple spaces)
+                if re.match(malformed_xml_pattern, content, re.IGNORECASE):
+                    # Replace malformed declaration with clean one
+                    content = re.sub(
+                        r'^<\?xml\s+version=["\'][\d.]+["\']\s+encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>',
+                        encoding,
+                        content,
+                        count=1,
+                        flags=re.IGNORECASE
+                    )
+                    self.fixed_problems.append(f"Fixed malformed XML declaration in {filename}")
+                # Then check if encoding declaration is missing
+                elif not re.match(regex, content, re.IGNORECASE):
+                    content = encoding + '\n' + content
+                    self.fixed_problems.append(f"Added encoding declaration to {filename}")
+                
+                self.files[filename] = content
 
     def fix_body_id_link(self):
         """Fix linking to body ID showing up as unresolved hyperlink"""
@@ -266,75 +284,172 @@ class EPUBFixer:
                     self.files[filename] = self.files[filename].replace(src, target)
                     self.fixed_problems.append(f"Replaced link target {src} with {target} in file {filename}.")
 
-    def fix_book_language(self, default_language='en'):
-        """Fix language field not defined or not available"""
+    def fix_book_language(self, default_language='en', epub_path=None):
+        """Fix language field - preserves valid tags, only fixes truly invalid ones"""
         # From https://kdp.amazon.com/en_US/help/topic/G200673300
+        # NOTE: Amazon's Send-to-Kindle only reads the FIRST 2 CHARACTERS of language tags.
+        # This means zh-TW and zh-CN both become 'zh' (we cannot distinguish them).
+        # We normalize region codes (de-DE → de) to match Amazon's behavior.
         allowed_languages = [
-            # ISO 639-1
+            # ISO 639-1 (2-character codes - what Amazon actually uses)
             'af', 'gsw', 'ar', 'eu', 'nb', 'br', 'ca', 'zh', 'kw', 'co', 'da', 'nl', 'stq', 'en', 'fi', 'fr', 'fy', 'gl',
-            'de', 'gu', 'hi', 'is', 'ga', 'it', 'ja', 'lb', 'mr', 'ml', 'gv', 'frr', 'nb', 'nn', 'pl', 'pt', 'oc', 'rm',
+            'de', 'gu', 'hi', 'is', 'ga', 'it', 'ja', 'lb', 'mr', 'ml', 'gv', 'frr', 'nn', 'pl', 'pt', 'oc', 'rm',
             'sco', 'gd', 'es', 'sv', 'ta', 'cy',
-            # ISO 639-2
+            # ISO 639-2 (3-character codes - also supported)
             'afr', 'ara', 'eus', 'baq', 'nob', 'bre', 'cat', 'zho', 'chi', 'cor', 'cos', 'dan', 'nld', 'dut', 'eng', 'fin',
             'fra', 'fre', 'fry', 'glg', 'deu', 'ger', 'guj', 'hin', 'isl', 'ice', 'gle', 'ita', 'jpn', 'ltz', 'mar', 'mal',
             'glv', 'nor', 'nno', 'por', 'oci', 'roh', 'gla', 'spa', 'swe', 'tam', 'cym', 'wel',
         ]
 
-        # Find OPF file
-        if 'META-INF/container.xml' not in self.files:
-            print('Cannot find META-INF/container.xml')
-            return
-
-        container_xml = minidom.parseString(self.files['META-INF/container.xml'])
-        opf_filename = None
-        for rootfile in container_xml.getElementsByTagName('rootfile'):
-            if rootfile.getAttribute('media-type') == 'application/oebps-package+xml':
-                opf_filename = rootfile.getAttribute('full-path')
-                break
-
-        # Read OPF file
-        if not opf_filename or opf_filename not in self.files:
-            print('Cannot find OPF file!')
-            return
-
         try:
+            # Find OPF file
+            if 'META-INF/container.xml' not in self.files:
+                print('Cannot find META-INF/container.xml')
+                return
+
+            container_xml = minidom.parseString(self.files['META-INF/container.xml'])
+            opf_filename = None
+            for rootfile in container_xml.getElementsByTagName('rootfile'):
+                if rootfile.getAttribute('media-type') == 'application/oebps-package+xml':
+                    opf_filename = rootfile.getAttribute('full-path')
+                    break
+
+            # Read OPF file
+            if not opf_filename or opf_filename not in self.files:
+                print('Cannot find OPF file!')
+                return
+
             opf = minidom.parseString(self.files[opf_filename])
             language_tags = opf.getElementsByTagName('dc:language')
-            language = default_language
-            original_language = 'undefined'
+            language = None
+            original_language = None
 
+            # Check if language tag exists and has content
             if not language_tags or not language_tags[0].firstChild:
-                # Use default language if no language tag exists or tag is empty
-                self.fixed_problems.append(f"No language tag found. Setting to default: {default_language}")
+                # No language tag - try to detect from Calibre metadata, else use default
+                language = self._detect_language_from_metadata(epub_path) or default_language
+                self.fixed_problems.append(f"No language tag found. Setting to: {language}")
             else:
-                language = language_tags[0].firstChild.nodeValue
-                original_language = language
+                # Language tag exists - extract and validate
+                original_language = language_tags[0].firstChild.nodeValue.strip()
+                
+                # First check if the language looks like a valid code format (case-insensitive)
+                # Valid: en, de, zh, en-US, en-us, de-DE, zh-TW, eng, deu, zho
+                # Invalid: Unknown, undefined, garbage, 12345
+                if LANGUAGE_TAG_PATTERN.match(original_language):
+                    # Looks like a proper language tag - extract and normalize base language code
+                    simplified_lang = original_language.split('-')[0].lower()
+                    
+                    if simplified_lang in allowed_languages:
+                        # Valid language code - use it
+                        language = simplified_lang
+                        
+                        # If original had region code or different case, note the normalization
+                        if original_language.lower() != language and '-' in original_language:
+                            self.fixed_problems.append(f"Normalized language from {original_language} to {language} (Amazon only reads base code)")
+                        elif original_language != language:
+                            self.fixed_problems.append(f"Normalized language from {original_language} to {language} (case standardization)")
+                    else:
+                        # Looks like a language tag but not in Amazon's allowed list
+                        detected = self._detect_language_from_metadata(epub_path)
+                        if detected:
+                            language = detected
+                            self.fixed_problems.append(f"Unsupported language '{original_language}'. Detected from metadata: {language}")
+                        else:
+                            language = default_language
+                            self.fixed_problems.append(f"Unsupported language '{original_language}'. Using default: {language}")
+                else:
+                    # Doesn't look like a language tag at all (e.g., "Unknown", "garbage")
+                    detected = self._detect_language_from_metadata(epub_path)
+                    if detected:
+                        language = detected
+                        self.fixed_problems.append(f"Invalid language tag '{original_language}'. Detected from metadata: {language}")
+                    else:
+                        language = default_language
+                        self.fixed_problems.append(f"Invalid language tag '{original_language}'. Using default: {language}")
 
-            simplified_lang = language.split('-')[0].lower()
-            if simplified_lang not in allowed_languages:
-                # If language is not supported, use default
-                language = default_language
-                self.fixed_problems.append(f"Unsupported language {original_language}. Changed to {default_language}")
-
+            # Update or create language tag
             if not language_tags:
+                # Create new tag
                 language_tag = opf.createElement('dc:language')
                 text_node = opf.createTextNode(language)
                 language_tag.appendChild(text_node)
                 metadata = opf.getElementsByTagName('metadata')[0]
                 metadata.appendChild(language_tag)
             else:
+                # Update existing tag
                 if language_tags[0].firstChild:
                     language_tags[0].firstChild.nodeValue = language
                 else:
                     text_node = opf.createTextNode(language)
                     language_tags[0].appendChild(text_node)
 
-            if language != original_language:
-                self.files[opf_filename] = opf.toxml()
-                self.fixed_problems.append(f"Changed document language from {original_language} to {language}")
+            # Only write if we actually changed something
+            if original_language != language or not original_language:
+                # Use regex replacement to preserve XML formatting instead of minidom.toxml()
+                # This prevents attribute reordering which can break Amazon's parser
+                opf_content = self.files[opf_filename]
+                
+                if not language_tags:
+                    # Need to add language tag - insert before </metadata>
+                    opf_content = opf_content.replace(
+                        '</metadata>',
+                        f'    <dc:language>{language}</dc:language>\n  </metadata>'
+                    )
+                else:
+                    # Replace existing language tag content
+                    opf_content = re.sub(
+                        r'<dc:language>.*?</dc:language>',
+                        f'<dc:language>{language}</dc:language>',
+                        opf_content,
+                        count=1,
+                        flags=re.DOTALL
+                    )
+                
+                self.files[opf_filename] = opf_content
 
         except Exception as e:
-            print(f'Error trying to parse OPF file as XML: {e}')
+            print_and_log(f'[cwa-kindle-epub-fixer] Skipping language validation - EPUB has non-standard structure: {e}', log=self.manually_triggered)
+
+    def _detect_language_from_metadata(self, epub_path=None):
+        """Attempt to detect language from Calibre's metadata.db"""
+        try:
+            # Extract book_id from the EPUB file path
+            if not epub_path:
+                return None
+                
+            book_id, _ = self._extract_book_info_from_path(epub_path)
+            if not book_id:
+                return None
+            
+            # Query metadata.db for language
+            metadb_path = self._get_metadata_db_path()
+            con = sqlite3.connect(metadb_path, timeout=30)
+            cur = con.cursor()
+            
+            # Get language from books table via languages link table
+            result = cur.execute(
+                '''SELECT languages.lang_code 
+                   FROM books 
+                   JOIN books_languages_link ON books.id = books_languages_link.book
+                   JOIN languages ON books_languages_link.lang_code = languages.id
+                   WHERE books.id = ?
+                   LIMIT 1''',
+                (book_id,)
+            ).fetchone()
+            
+            con.close()
+            
+            if result and result[0]:
+                lang = result[0].lower().split('-')[0]  # Normalize
+                print_and_log(f"[cwa-kindle-epub-fixer] Detected language '{lang}' from Calibre metadata", log=self.manually_triggered)
+                return lang
+                
+        except Exception as e:
+            # Silent fail - this is just a helpful fallback
+            pass
+        
+        return None
 
     def fix_stray_img(self):
         """Fix stray IMG tags"""
@@ -353,6 +468,238 @@ class EPUBFixer:
                         img.parentNode.removeChild(img)
                     self.fixed_problems.append(f"Remove stray image tag(s) in {filename}")
                     self.files[filename] = dom.toxml()
+
+    def strip_embedded_fonts(self):
+        """Remove embedded font files and @font-face CSS declarations for Kindle compatibility"""
+        # Remove font files from binary files
+        font_extensions = ('.ttf', '.otf', '.woff', '.woff2', '.eot')
+        fonts_removed = []
+        
+        for filename in list(self.binary_files.keys()):
+            if filename.lower().endswith(font_extensions):
+                del self.binary_files[filename]
+                fonts_removed.append(filename)
+        
+        if fonts_removed:
+            self.fixed_problems.append(f"Removed {len(fonts_removed)} embedded font file(s) for Kindle compatibility")
+            
+            # Also remove font references from OPF manifest
+            opf_path = 'content.opf'
+            if opf_path in self.files:
+                opf_content = self.files[opf_path]
+                for font_file in fonts_removed:
+                    # Remove manifest item for this font
+                    # Match: <item href="fonts/00001.ttf" id="..." media-type="..."/>
+                    pattern = re.compile(
+                        r'<item[^>]*href=["\']' + re.escape(font_file) + r'["\'][^>]*/?>',
+                        re.IGNORECASE
+                    )
+                    opf_content = pattern.sub('', opf_content)
+                
+                self.files[opf_path] = opf_content
+        
+        # Remove @font-face declarations from CSS files
+        font_face_pattern = re.compile(r'@font-face\s*\{[^}]*\}', re.IGNORECASE | re.DOTALL)
+        
+        for filename in list(self.files.keys()):
+            if filename.endswith('.css'):
+                original_css = self.files[filename]
+                cleaned_css = font_face_pattern.sub('', original_css)
+                
+                if cleaned_css != original_css:
+                    self.files[filename] = cleaned_css
+                    self.fixed_problems.append(f"Removed @font-face declarations from {filename}")
+    
+    def remove_javascript(self):
+        """Remove JavaScript code for Kindle compatibility (not supported)"""
+        script_pattern = re.compile(r'<script[^>]*>.*?</script>', re.IGNORECASE | re.DOTALL)
+        
+        for filename in list(self.files.keys()):
+            ext = filename.split('.')[-1]
+            if ext in ['html', 'xhtml', 'htm']:
+                original_content = self.files[filename]
+                cleaned_content = script_pattern.sub('', original_content)
+                
+                if cleaned_content != original_content:
+                    self.files[filename] = cleaned_content
+                    self.fixed_problems.append(f"Removed JavaScript from {filename}")
+    
+    def validate_images(self):
+        """Validate images for Kindle compatibility and report issues"""
+        issues = []
+        total_size = 0
+        
+        # Supported formats by Kindle
+        supported_formats = {
+            b'\xff\xd8\xff': 'JPEG',
+            b'\x89PNG': 'PNG',
+            b'GIF87a': 'GIF',
+            b'GIF89a': 'GIF'
+        }
+        
+        for filename in list(self.binary_files.keys()):
+            ext = filename.split('.')[-1].lower()
+            if ext in ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp']:
+                file_data = self.binary_files[filename]
+                file_size = len(file_data)
+                total_size += file_size
+                
+                # Check for unsupported formats
+                if ext in ['svg', 'webp']:
+                    issues.append(f"{filename}: {ext.upper()} format has limited Kindle support")
+                
+                # Check individual file size (warn if > 2MB)
+                if file_size > 2 * 1024 * 1024:
+                    size_mb = file_size / (1024 * 1024)
+                    issues.append(f"{filename}: Large image ({size_mb:.1f}MB) may cause issues")
+                
+                # Verify actual format matches extension
+                format_detected = None
+                for magic_bytes, format_name in supported_formats.items():
+                    if file_data.startswith(magic_bytes):
+                        format_detected = format_name
+                        break
+                
+                if format_detected and ext in ['jpg', 'jpeg'] and format_detected != 'JPEG':
+                    issues.append(f"{filename}: File type mismatch (ext: {ext}, actual: {format_detected})")
+                elif format_detected and ext == 'png' and format_detected != 'PNG':
+                    issues.append(f"{filename}: File type mismatch (ext: {ext}, actual: {format_detected})")
+        
+        if issues:
+            for issue in issues:
+                self.fixed_problems.append(f"Image validation warning: {issue}")
+        
+        # Check total EPUB size (warn if approaching 50MB uncompressed)
+        total_size_mb = total_size / (1024 * 1024)
+        if total_size_mb > 40:
+            self.fixed_problems.append(f"Warning: Total image size is {total_size_mb:.1f}MB (Kindle works best with <50MB total)")
+    
+    def validate_css(self):
+        """Validate CSS and only fix actual syntax errors, warn about potential Kindle issues"""
+        for filename in list(self.files.keys()):
+            if filename.endswith('.css'):
+                original_css = self.files[filename]
+                issues_found = []
+                
+                # Check for syntax errors that would break rendering
+                # 1. Unclosed braces
+                open_braces = original_css.count('{')
+                close_braces = original_css.count('}')
+                if open_braces != close_braces:
+                    issues_found.append(f"CSS syntax error: mismatched braces ({open_braces} open, {close_braces} close)")
+                
+                # 2. Invalid @import statements (must be at top)
+                lines = original_css.split('\n')
+                import_after_rules = False
+                seen_rule = False
+                for line in lines:
+                    stripped = line.strip()
+                    if stripped and not stripped.startswith('/*') and not stripped.startswith('*/'):
+                        if '@import' in stripped:
+                            if seen_rule:
+                                import_after_rules = True
+                        elif stripped.startswith('@') or '{' in stripped:
+                            seen_rule = True
+                
+                if import_after_rules:
+                    issues_found.append("CSS syntax error: @import must appear before other rules")
+                
+                # 3. Check for common Kindle-problematic features (warning only, don't remove)
+                kindle_warnings = []
+                if re.search(r'position\s*:\s*(absolute|fixed)', original_css, re.IGNORECASE):
+                    kindle_warnings.append("absolute/fixed positioning")
+                if re.search(r'@media', original_css, re.IGNORECASE):
+                    kindle_warnings.append("media queries")
+                if re.search(r'javascript:', original_css, re.IGNORECASE):
+                    kindle_warnings.append("javascript URLs")
+                
+                # Only report if there are actual syntax errors
+                if issues_found:
+                    for issue in issues_found:
+                        self.fixed_problems.append(f"CSS validation: {issue} in {filename}")
+                
+                # Add informational note about Kindle compatibility (not counted as a fix needing action)
+                if kindle_warnings:
+                    warning_str = ', '.join(kindle_warnings)
+                    print_and_log(f"[cwa-kindle-epub-fixer] Note: {filename} uses {warning_str} (may render differently on Kindle)", log=self.manually_triggered)
+
+    def strip_amazon_identifiers(self):
+        """Remove ASIN/Amazon identifiers and Calibre metadata from OPF file.
+        
+        Amazon may reject books that already have an ASIN in their system.
+        Also removes Calibre-specific metadata that's not needed for Kindle.
+        """
+        opf_path = 'content.opf'
+        if opf_path not in self.files:
+            return
+        
+        opf_content = self.files[opf_path]
+        
+        try:
+            dom = minidom.parseString(opf_content)
+            package = dom.getElementsByTagName('package')[0]
+            metadata = dom.getElementsByTagName('metadata')[0]
+            
+            changes_made = False
+            
+            # Remove Calibre namespace from package tag
+            if package.hasAttribute('xmlns:calibre'):
+                package.removeAttribute('xmlns:calibre')
+                changes_made = True
+                print_and_log("[cwa-kindle-epub-fixer] Removing Calibre namespace from package tag", log=self.manually_triggered)
+            
+            # Remove Calibre namespace from metadata tag
+            if metadata.hasAttribute('xmlns:calibre'):
+                metadata.removeAttribute('xmlns:calibre')
+                changes_made = True
+            
+            # Remove Amazon/MOBI-ASIN identifiers using regex (preserve structure)
+            identifiers_removed = []
+            
+            # Match AMAZON and MOBI-ASIN identifiers
+            asin_pattern = re.compile(
+                r'<dc:identifier[^>]*opf:scheme=["\'](?:AMAZON|MOBI-ASIN|mobi-asin|calibre)["\'][^>]*>.*?</dc:identifier>',
+                re.IGNORECASE | re.DOTALL
+            )
+            
+            matches = asin_pattern.findall(opf_content)
+            if matches:
+                for match in matches:
+                    # Extract scheme and value for logging
+                    scheme_match = re.search(r'opf:scheme=["\']([^"\']+)["\']', match)
+                    if scheme_match:
+                        identifiers_removed.append(scheme_match.group(1))
+                
+                opf_content = asin_pattern.sub('', opf_content)
+                changes_made = True
+            
+            if identifiers_removed:
+                print_and_log(f"[cwa-kindle-epub-fixer] Removing Amazon/Calibre identifiers: {', '.join(identifiers_removed)}", log=self.manually_triggered)
+                self.fixed_problems.append(f"Removed {len(identifiers_removed)} Amazon/Calibre identifier(s)")
+            
+            # Remove Calibre-specific meta tags using regex (preserve structure)
+            calibre_meta_pattern = re.compile(
+                r'<meta[^>]*name=["\']calibre:[^"\']+["\'][^>]*/>',
+                re.IGNORECASE
+            )
+            
+            calibre_matches = calibre_meta_pattern.findall(opf_content)
+            if calibre_matches:
+                opf_content = calibre_meta_pattern.sub('', opf_content)
+                changes_made = True
+                print_and_log(f"[cwa-kindle-epub-fixer] Removing {len(calibre_matches)} Calibre meta tag(s)", log=self.manually_triggered)
+                self.fixed_problems.append(f"Removed {len(calibre_matches)} Calibre meta tag(s)")
+            
+            # Remove xmlns:calibre from metadata tag if present
+            if 'xmlns:calibre=' in opf_content:
+                opf_content = re.sub(r'\s*xmlns:calibre="[^"]*"', '', opf_content)
+                changes_made = True
+            
+            if changes_made:
+                self.files[opf_path] = opf_content
+            
+        except Exception as e:
+            print_and_log(f"[cwa-kindle-epub-fixer] Warning: Could not strip Amazon identifiers: {e}", log=self.manually_triggered)
 
     def write_epub(self, output_path):
         """Write EPUB file"""
@@ -419,12 +766,23 @@ class EPUBFixer:
         # Run fixing procedures
         print_and_log("[cwa-kindle-epub-fixer] Checking linking to body ID to prevent unresolved hyperlinks...", log=self.manually_triggered)
         self.fix_body_id_link()
-        print_and_log("[cwa-kindle-epub-fixer] Checking language field tag is valid...", log=self.manually_triggered)
-        self.fix_book_language(default_language)
-        print_and_log("[cwa-kindle-epub-fixer] Checking for stray images...", log=self.manually_triggered)
-        self.fix_stray_img()
         print_and_log("[cwa-kindle-epub-fixer] Checking UTF-8 encoding declaration...", log=self.manually_triggered)
         self.fix_encoding()
+        print_and_log("[cwa-kindle-epub-fixer] Checking language field tag is valid...", log=self.manually_triggered)
+        self.fix_book_language(default_language, input_path)
+        print_and_log("[cwa-kindle-epub-fixer] Checking for stray images...", log=self.manually_triggered)
+        self.fix_stray_img()
+        
+        # New Kindle-specific fixes
+        print_and_log("[cwa-kindle-epub-fixer] Stripping embedded fonts for Kindle compatibility...", log=self.manually_triggered)
+        self.strip_embedded_fonts()
+        print_and_log("[cwa-kindle-epub-fixer] Removing JavaScript (not supported on Kindle)...", log=self.manually_triggered)
+        self.remove_javascript()
+        print_and_log("[cwa-kindle-epub-fixer] Validating images for Kindle compatibility...", log=self.manually_triggered)
+        self.validate_images()
+        print_and_log("[cwa-kindle-epub-fixer] Validating CSS syntax...", log=self.manually_triggered)
+        self.validate_css()
+        # NOTE: Skipping strip_amazon_identifiers() - users want complete metadata preserved
 
         # Notify user and/or write to log
         self.export_issue_summary(input_path)

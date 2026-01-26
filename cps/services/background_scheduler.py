@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import atexit
+import threading
 
 from .. import logger
 from .worker import WorkerThread
@@ -14,6 +15,7 @@ try:
     from apscheduler.schedulers.background import BackgroundScheduler as BScheduler
     from apscheduler.triggers.cron import CronTrigger
     from apscheduler.triggers.date import DateTrigger
+    from apscheduler.triggers.interval import IntervalTrigger
     use_APScheduler = True
 except (ImportError, RuntimeError) as e:
     use_APScheduler = False
@@ -34,6 +36,7 @@ class BackgroundScheduler:
             logger.logging.getLogger('tzlocal').setLevel(logger.logging.WARNING)
             cls.scheduler = BScheduler()
             cls.scheduler.start()
+            cls._schedule_lock = threading.Lock()  # Prevent concurrent task scheduling
 
         return cls._instance
 
@@ -74,8 +77,10 @@ class BackgroundScheduler:
     # Expects a list of lambda expressions for the tasks
     def schedule_tasks_immediately(self, tasks, user=None):
         if use_APScheduler:
-            for task in tasks:
-                self.schedule_task_immediately(task[0], user, name="immediately " + task[1], hidden=task[2])
+            # Use lock to prevent "Set changed size during iteration" when tasks are scheduled simultaneously
+            with self._schedule_lock:
+                for task in tasks:
+                    self.schedule_task_immediately(task[0], user, name="immediately " + task[1], hidden=task[2])
 
     # Remove all jobs
     def remove_all_jobs(self):

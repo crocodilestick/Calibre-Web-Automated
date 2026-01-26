@@ -21,6 +21,10 @@ from flask import session
 from flask import url_for
 from werkzeug.local import LocalProxy
 
+import sys
+sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+from cwa_db import CWA_DB
+
 from .config import COOKIE_NAME
 from .config import EXEMPT_METHODS
 from .signals import user_logged_in
@@ -207,6 +211,17 @@ def login_user(user, remember=False, duration=None, force=False, fresh=True):
                 raise Exception(
                     f"duration must be a datetime.timedelta, instead got: {duration}"
                 ) from e
+
+    # CWA Stats Logging
+    try:
+        cwa_db = CWA_DB()
+        cwa_db.log_activity(
+            user_id=user_id,
+            user_name=getattr(user, 'nickname', 'Unknown'),
+            event_type="LOGIN"
+        )
+    except Exception as e:
+        print(f"Failed to log login stats: {e}")
 
     current_app.login_manager._update_request_context_with_user(user)
     user_logged_in.send(current_app._get_current_object(), user=_get_user())

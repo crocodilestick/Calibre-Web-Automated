@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <h2>{{title}}</h2>
 
 {% if author is not none %}

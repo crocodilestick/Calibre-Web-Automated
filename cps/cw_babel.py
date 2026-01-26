@@ -30,6 +30,9 @@ def get_locale():
     preferred = list()
     if has_request_context() and request.accept_languages:
         for x in request.accept_languages.values():
+            # Skip wildcard '*' from Accept-Language headers (common in internal API requests)
+            if x == '*':
+                continue
             try:
                 preferred.append(str(Locale.parse(x.replace('-', '_'))))
             except (UnknownLocaleError, ValueError) as e:

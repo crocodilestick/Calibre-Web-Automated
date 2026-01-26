@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import os
+import sys
 from datetime import datetime, timezone
 import json
 from shutil import copyfile
@@ -104,6 +105,12 @@ def upload():
             book_id = -1
         if book_id == -1:
             flash(_("Missing or invalid book id for format upload"), category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+
+        # Validate that the book exists before creating manifest
+        book = calibre_db.get_book(book_id)
+        if not book:
+            flash(_("Cannot upload format: Book no longer exists in library"), category="error")
             return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
 
         for requested_file in request.files.getlist("btn-upload-format"):
@@ -538,6 +545,7 @@ def delete_selected_books():
     if vals:
         for book_id in vals:
             delete_book_from_table(book_id, "", True)
+        _queue_duplicate_scan_after_change()
         return json.dumps({'success': True})
     return ""
 
@@ -596,9 +604,34 @@ def merge_list_book():
                                                         element.format,
                                                         element.uncompressed_size,
                                                         to_name))
+                            to_file.append(element.format)
                     delete_book_from_table(from_book.id, "", True)
-                    return json.dumps({'success': True})
+            calibre_db.session.commit()
+            _queue_duplicate_scan_after_change()
+            return json.dumps({'success': True})
     return ""
+
+
+def _queue_duplicate_scan_after_change():
+    """Queue a debounced duplicate scan after manual changes."""
+    try:
+        import requests
+        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+
+        cwa_db = CWA_DB()
+        delay_seconds = int(cwa_db.cwa_settings.get('duplicate_scan_debounce_seconds', 30))
+        delay_seconds = max(5, min(600, delay_seconds))
+        url = helper.get_internal_api_url("/cwa-internal/queue-duplicate-scan")
+        requests.post(
+            url,
+            json={"delay_seconds": delay_seconds},
+            headers={"X-Forwarded-For": "127.0.0.1"},
+            timeout=5,
+            verify=False,
+        )
+    except Exception as e:
+        log.error("Failed to queue duplicate scan after change: %s", str(e))
 
 
 @editbook.route("/ajax/xchange", methods=['POST'])
@@ -688,15 +721,15 @@ def do_edit_book(book_id, upload_formats=None):
             if not current_user.role_edit():
                 edit_error = True
                 flash(_("User has no rights to upload cover"), category="error")
-            elif to_save["cover_url"].endswith('/static/generic_cover.jpg'):
+            elif to_save["cover_url"].endswith('/static/generic_cover.svg'):
                 book.has_cover = 0
             else:
                 result, error = helper.save_cover_from_url(to_save["cover_url"].strip(), book.path)
                 if result:
                     book.has_cover = 1
                     modify_date = True
-                    # Trigger thumbnail generation after successful cover fetch
-                    helper.trigger_thumbnail_generation_for_book(book.id)
+                    # Force thumbnail regeneration after successful cover fetch
+                    helper.replace_cover_thumbnail_cache(book.id)
                 else:
                     edit_error = True
                     flash(error, category="error")
@@ -1052,7 +1085,7 @@ def move_coverfile(meta, db_book):
     if meta.cover:
         cover_file = meta.cover
     else:
-        cover_file = os.path.join(constants.STATIC_DIR, 'generic_cover.jpg')
+        cover_file = os.path.join(constants.STATIC_DIR, 'generic_cover.svg')
     new_cover_path = os.path.join(config.get_book_path(), db_book.path)
     try:
         os.makedirs(new_cover_path, exist_ok=True)
@@ -1165,6 +1198,18 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()
+                
+                # Invalidate duplicate cache after book deletion
+                try:
+                    import sys
+                    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+                    from cwa_db import CWA_DB
+                    cwa_db = CWA_DB()
+                    cwa_db.invalidate_duplicate_cache()
+                    cwa_db.close()
+                except Exception as e:
+                    log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
+                
             except Exception as ex:
                 log.error_or_exception(ex)
                 calibre_db.session.rollback()
@@ -1310,7 +1355,9 @@ def edit_book_comments(comments, book):
                 modify_date = True
         else:
             if comments:
-                book.comments.append(db.Comments(comment=comments, book=book.id))
+                # Add comment via session instead of appending to collection during flush
+                new_comment = db.Comments(comment=comments, book=book.id)
+                calibre_db.session.add(new_comment)
                 modify_date = True
         return modify_date
 
@@ -1605,7 +1652,8 @@ def upload_cover(cover_request, book):
                 return False
             ret, message = helper.save_cover_with_thumbnail_update(requested_file, book.path, book.id)
             if ret is True:
-                helper.replace_cover_thumbnail_cache(book.id)
+                # Note: save_cover_with_thumbnail_update already triggers thumbnail generation
+                # No need to call replace_cover_thumbnail_cache here (would create duplicate tasks)
                 return True
             else:
                 flash(message, category="error")
@@ -1720,15 +1768,18 @@ def add_objects(db_book_object, db_object, db_session, db_type, add_elements):
             else:  # db_type should be tag or language
                 new_element = db_object(add_element)
             db_session.add(new_element)
-            db_book_object.append(new_element)
+            # Append new element (should not exist in collection, but check for safety)
+            if new_element not in db_book_object:
+                db_book_object.append(new_element)
         else:
             if len(db_element) == 1:
                 db_element = create_objects_for_addition(db_element[0], add_element, db_type)
             else:
                 db_el = db_session.query(db_object).filter(db_filter == add_element).first()
                 db_element = db_element[0] if not db_el else db_el
-            # add element to book
-            db_book_object.append(db_element)
+            # add element to book only if not already present (prevents UNIQUE constraint errors)
+            if db_element not in db_book_object:
+                db_book_object.append(db_element)
 
     return changed
 

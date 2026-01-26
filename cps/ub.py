@@ -29,7 +29,7 @@ except ImportError as e:
         OAuthConsumerMixin = BaseException
         oauth_support = False
 from sqlalchemy import create_engine, exc, exists, event, text
-from sqlalchemy import Column, ForeignKey, Index
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint
 from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import func
@@ -235,6 +235,7 @@ class User(UserBase, Base):
     kindle_mail = Column(String(120), default="")
     kindle_mail_subject = Column(String(256), default="", doc="Subject line for eReader email sending, empty=default")
     shelf = relationship('Shelf', backref='user', lazy='dynamic', order_by='Shelf.name')
+    magic_shelf = relationship('MagicShelf', backref='user', lazy='dynamic', order_by='MagicShelf.name')
     downloads = relationship('Downloads', backref='user', lazy='dynamic')
     locale = Column(String(2), default="en")
     sidebar_view = Column(Integer, default=1)
@@ -383,6 +384,87 @@ class Shelf(Base):
 
     def __repr__(self):
         return '<Shelf %d:%r>' % (self.id, self.name)
+
+
+# Baseclass representing Magic Shelfs in calibre-web in app.db
+class MagicShelf(Base):
+    __tablename__ = 'magic_shelf'
+
+    id = Column(Integer, primary_key=True)
+    uuid = Column(String, default=lambda: str(uuid.uuid4()))
+    name = Column(String)
+    is_public = Column(Integer, default=0)
+    is_system = Column(Boolean, default=False)  # System-created template shelves
+    user_id = Column(Integer, ForeignKey('user.id'))
+    icon = Column(String, default="glyphicon-star")
+    rules = Column(JSON, default={})
+    kobo_sync = Column(Boolean, default=False)  # Sync to Kobo devices
+    created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'name', 'is_system', name='unique_user_system_shelf_name'),
+    )
+
+    def __repr__(self):
+        return '<MagicShelf %d:%r>' % (self.id, self.name)
+
+
+class MagicShelfCache(Base):
+    __tablename__ = 'magic_shelf_cache'
+
+    id = Column(Integer, primary_key=True)
+    shelf_id = Column(Integer, ForeignKey('magic_shelf.id'), index=True)
+    user_id = Column(Integer, ForeignKey('user.id'), index=True)
+    sort_param = Column(String, default='stored')
+    book_ids = Column(JSON)  # Stores [1, 45, 2, ...]
+    total_count = Column(Integer)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Composite index for fast lookups
+    __table_args__ = (
+        Index('ix_magic_shelf_cache_lookup', 'shelf_id', 'user_id', 'sort_param'),
+    )
+
+
+class HiddenMagicShelfTemplate(Base):
+    __tablename__ = 'hidden_magic_shelf_templates'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    template_key = Column(String, nullable=True)  # For system templates: 'recently_added', 'highly_rated', etc.
+    shelf_id = Column(Integer, ForeignKey('magic_shelf.id'), nullable=True)  # For custom public shelves
+    hidden_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        # Either template_key OR shelf_id must be set, but not both
+        # User can only hide the same template/shelf once
+        UniqueConstraint('user_id', 'template_key', name='unique_user_template_hidden'),
+        UniqueConstraint('user_id', 'shelf_id', name='unique_user_shelf_hidden'),
+    )
+
+    def __repr__(self):
+        if self.template_key:
+            return '<HiddenMagicShelfTemplate %d: user=%d template=%s>' % (self.id, self.user_id, self.template_key)
+        else:
+            return '<HiddenMagicShelfTemplate %d: user=%d shelf_id=%d>' % (self.id, self.user_id, self.shelf_id)
+
+
+class DismissedDuplicateGroup(Base):
+    __tablename__ = 'dismissed_duplicate_groups'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    group_hash = Column(String(32), nullable=False)  # MD5 hash of title+author combo
+    dismissed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        # User can only dismiss the same duplicate group once
+        UniqueConstraint('user_id', 'group_hash', name='unique_user_duplicate_dismissed'),
+    )
+
+    def __repr__(self):
+        return '<DismissedDuplicateGroup %d: user=%d hash=%s>' % (self.id, self.user_id, self.group_hash)
 
 
 # Baseclass representing Relationship between books and Shelfs in Calibre-Web in app.db (N:M)
@@ -535,6 +617,28 @@ class HardcoverBookBlacklist(Base):
         return f'<HardcoverBookBlacklist book_id={self.book_id} annotations={self.blacklist_annotations} progress={self.blacklist_reading_progress}>'
 
 
+class HardcoverMatchQueue(Base):
+    """Queue for ambiguous Hardcover metadata matches requiring manual review."""
+    __tablename__ = 'hardcover_match_queue'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, nullable=False)
+    book_title = Column(String, nullable=False)
+    book_authors = Column(String, nullable=False)
+    search_query = Column(String, nullable=False)
+    hardcover_results = Column(String, nullable=False)  # JSON array of MetaRecord candidates
+    confidence_scores = Column(String, nullable=False)  # JSON array of [score, reason] tuples
+    created_at = Column(String, nullable=False)
+    reviewed = Column(Integer, default=0, nullable=False)  # 0=pending, 1=reviewed
+    selected_result_id = Column(String, default=None)  # Hardcover ID if manually selected
+    review_action = Column(String, default=None)  # 'accept', 'reject', 'skip'
+    reviewed_at = Column(String, default=None)
+    reviewed_by = Column(String, default=None)
+
+    def __repr__(self):
+        return f'<HardcoverMatchQueue book_id={self.book_id} title="{self.book_title}" reviewed={bool(self.reviewed)}>'
+
+
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, 'before_flush')
 def receive_before_flush(session, flush_context, instances):
@@ -646,9 +750,17 @@ class Thumbnail(Base):
 # Add missing tables during migration of database
 def add_missing_tables(engine, _session):
     if not engine.dialect.has_table(engine.connect(), "archived_book"):
-        ArchivedBook.__table__.create(bind=engine)
+        ArchivedBook.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "thumbnail"):
-        Thumbnail.__table__.create(bind=engine)
+        Thumbnail.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "kosync_progress"):
+        KOSyncProgress.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "magic_shelf"):
+        MagicShelf.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "magic_shelf_cache"):
+        MagicShelfCache.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "hidden_magic_shelf_templates"):
+        HiddenMagicShelfTemplate.__table__.create(bind=engine, checkfirst=True)
 
 
 # migrate all settings missing in registration table
@@ -775,7 +887,7 @@ def migrate_oauth_provider_table(engine, _session):
 def migrate_config_table(engine, _session):
     """Migrate configuration table to add new authentication columns"""
     if not engine or not _session:
-        logger.get_logger("cps.ub").error("Cannot migrate config table: missing engine or session")
+        log.error("Cannot migrate config table: missing engine or session")
         return
 
     # Add OAuth redirect host configuration
@@ -790,7 +902,7 @@ def migrate_config_table(engine, _session):
                 conn.execute(text("ALTER TABLE settings ADD column 'config_oauth_redirect_host' String DEFAULT ''"))
                 trans.commit()
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_oauth_redirect_host column: %s", e)
+            log.error("Failed to add config_oauth_redirect_host column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
 
@@ -806,7 +918,7 @@ def migrate_config_table(engine, _session):
                 conn.execute(text("ALTER TABLE settings ADD column 'config_reverse_proxy_auto_create_users' Boolean DEFAULT 0"))
                 trans.commit()
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
+            log.error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
 
@@ -822,9 +934,32 @@ def migrate_config_table(engine, _session):
                 conn.execute(text("ALTER TABLE settings ADD column 'config_ldap_auto_create_users' Boolean DEFAULT 1"))
                 trans.commit()
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_ldap_auto_create_users column: %s", e)
+            log.error("Failed to add config_ldap_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
+
+
+def migrate_magic_shelf_table(engine, _session):
+    """Migrate magic_shelf table to add new columns."""
+    # Check and add is_system column
+    try:
+        _session.query(exists().where(MagicShelf.is_system)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE magic_shelf ADD column 'is_system' Boolean DEFAULT 0"))
+            trans.commit()
+    
+    # Check and add kobo_sync column
+    try:
+        _session.query(exists().where(MagicShelf.kobo_sync)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0"))
+            trans.commit()
 
 
 # Migrate database to current version, has to be updated after every database change. Currently migration from
@@ -838,10 +973,76 @@ def migrate_Database(_session):
     migrate_user_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
+    migrate_magic_shelf_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables
     ensure_app_db_tables(engine.raw_connection())
+    
+    # Migrate system magic shelves for existing users
+    try:
+        from . import magic_shelf
+        
+        # Get all valid current template names
+        current_template_names = {template['name'] for template in magic_shelf.SYSTEM_SHELF_TEMPLATES.values()}
+        
+        log.info("Migrating system magic shelves...")
+        users = _session.query(User).filter(User.role != constants.ROLE_ANONYMOUS).all()
+        total_deleted = 0
+        total_created = 0
+        
+        for user in users:
+            # Get all system shelves for this user
+            user_system_shelves = _session.query(MagicShelf).filter(
+                MagicShelf.user_id == user.id,
+                MagicShelf.is_system == True
+            ).all()
+            
+            # Delete system shelves that don't match current templates
+            for shelf in user_system_shelves:
+                if shelf.name not in current_template_names:
+                    # This is an old/deprecated system shelf - delete it
+                    _session.query(MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
+                    _session.query(HiddenMagicShelfTemplate).filter_by(shelf_id=shelf.id).delete()
+                    _session.delete(shelf)
+                    total_deleted += 1
+                    log.debug(f"Deleted deprecated system shelf '{shelf.name}' (ID: {shelf.id}) for user {user.id}")
+            
+            # Get user's template-based hide preferences (not shelf-specific)
+            hidden_templates = _session.query(HiddenMagicShelfTemplate.template_key).filter(
+                HiddenMagicShelfTemplate.user_id == user.id,
+                HiddenMagicShelfTemplate.template_key.isnot(None)
+            ).all()
+            hidden_keys = {ht.template_key for ht in hidden_templates}
+            
+            # Create missing current templates
+            templates_to_create = []
+            for template_key, template_data in magic_shelf.SYSTEM_SHELF_TEMPLATES.items():
+                # Skip if user has hidden this template type
+                if template_key in hidden_keys:
+                    continue
+                
+                # Check if user already has this current template
+                has_template = _session.query(MagicShelf).filter(
+                    MagicShelf.user_id == user.id,
+                    MagicShelf.name == template_data['name'],
+                    MagicShelf.is_system == True
+                ).first()
+                
+                if not has_template:
+                    templates_to_create.append(template_key)
+            
+            # Create missing templates
+            if templates_to_create:
+                created = magic_shelf.create_system_magic_shelves(user.id, templates_to_create)
+                total_created += created
+        
+        if total_deleted > 0 or total_created > 0:
+            _session.commit()
+            log.info(f"System shelf migration complete: {total_deleted} old shelves removed, {total_created} new shelves created")
+    except Exception as e:
+        log.error(f"Error during system shelf migration: {e}")
+        _session.rollback()
 
 
 def clean_database(_session):
@@ -888,6 +1089,8 @@ def create_anonymous_user(_session):
     _session.add(user)
     try:
         _session.commit()
+        # Note: Anonymous users don't get system shelves
+        # They will be created if/when the user registers
     except Exception:
         _session.rollback()
 
@@ -905,8 +1108,28 @@ def create_admin_user(_session):
     _session.add(user)
     try:
         _session.commit()
+        # Create system magic shelves for admin user
+        try:
+            from . import magic_shelf
+            magic_shelf.create_system_magic_shelves(user.id)
+        except Exception as e:
+            log.error(f"Failed to create system magic shelves for admin: {e}")
     except Exception:
         _session.rollback()
+
+
+def create_system_magic_shelves_for_user(user_id):
+    """
+    Create system magic shelves for a user if they don't already exist.
+    Should be called after user creation.
+    """
+    try:
+        from . import magic_shelf
+        return magic_shelf.create_system_magic_shelves(user_id)
+    except Exception as e:
+        log.error(f"Failed to create system magic shelves for user {user_id}: {e}")
+        return 0
+
 
 def init_db_thread():
     global app_DB_path

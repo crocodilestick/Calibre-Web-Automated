@@ -14,7 +14,7 @@
       <div style="display: flex;
                   justify-content: space-between;
                   gap: 20px;">
-        <p style="font-size: xx-small;max-width: 70%;">
+        <p style="font-size: 11px; max-width: 70%;">
           Upon loading this page, if you have previously started a run of the CWA Send-to_kindle EPUB Fixer service either here in the Web UI or through the CLI, you will see the output of the most recent previous run below. 
           Once you start a run, you are free to leave the page and return whenever you want to check on the run's progress. If you wish to cancel a run that is still in progress, simply press the Cancel button above 
           and the run will terminate ASAP. This tool is based on the <a href="https://kindle-epub-fix.netlify.app/">Amazon Kindle EPUB Fix</a> tool by <a href="https://github.com/innocenat/kindle-epub-fix">innocenat</a>
@@ -23,7 +23,7 @@
           <a class="btn btn-default" href="{{ url_for('epub_fixer.cancel_epub_fixer') }}" style="vertical-align: top; float: right; width: 100px; margin-left: 10px;">{{_('Cancel')}}</a>
           <a class="btn btn-default" href="{{ url_for('epub_fixer.start_epub_fixer') }}" style="vertical-align: top; float: right; width: 100px;">{{_('Start')}}</a>
           {% if current_user.role_admin() %}
-          <div class="btn-group" role="group" aria-label="schedule" style="float: right; margin-right: 10px;">
+          <div class="btn-group" role="group" aria-label="schedule" style="float: right; margin-top: 4px;">
             <button class="btn btn-default" onclick="scheduleEpubFixer(5)">{{ _('Schedule 5m') }}</button>
             <button class="btn btn-default" onclick="scheduleEpubFixer(15)">{{ _('Schedule 15m') }}</button>
           </div>

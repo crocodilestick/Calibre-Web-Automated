@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
-from flask import render_template, g, abort, request, flash
+from flask import render_template, g, abort, request, flash, current_app
 from flask_babel import gettext as _
 from flask_babel import get_locale
 import polib
@@ -224,6 +224,13 @@ def translations_missing_notification() -> None:
 # Returns the template for rendering and includes the instance name
 def render_title_template(*args, **kwargs):
     sidebar, simple = get_sidebar_config(kwargs)
+    try:
+        magic_shelf_routes = {
+            "render": 'web.render_magic_shelf' in current_app.view_functions,
+            "create": 'web.create_magic_shelf' in current_app.view_functions,
+        }
+    except Exception:
+        magic_shelf_routes = {"render": False, "create": False}
     if current_user.role_admin():
         try:
             cwa_update_notification()
@@ -241,8 +248,9 @@ def render_title_template(*args, **kwargs):
         print(f"[translation-notification-service] The following error occurred when checking for missing translations:\n{e}", flush=True)
     try:
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
-                               accept=config.config_upload_formats.split(','),
-                               *args, **kwargs)
+                       accept=config.config_upload_formats.split(','),
+                       magic_shelf_routes=magic_shelf_routes,
+                       *args, **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))
         abort(403)

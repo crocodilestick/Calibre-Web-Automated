@@ -96,18 +96,21 @@ def yesno(value, yes, no):
 
 @jinjia.app_template_filter('formatfloat')
 def formatfloat(value, decimals=1):
-    if not value:
-        return value
+    # Handle None and empty string cases
+    if value is None or (isinstance(value, str) and value.strip() == ''):
+        return ''
+    
     try:
         # Convert to float if it's a string (series_index is stored as String in DB)
         float_value = float(value) if isinstance(value, str) else value
         formated_value = ('{0:.' + str(decimals) + 'f}').format(float_value)
-        if formated_value.endswith('.' + "0" * decimals):
-            formated_value = formated_value.rstrip('0').rstrip('.')
+        # Remove trailing zeros and unnecessary decimal point
+        formated_value = formated_value.rstrip('0').rstrip('.')
         return formated_value
-    except (ValueError, TypeError):
-        # If conversion fails, return the original value
-        return value
+    except (ValueError, TypeError) as e:
+        # If conversion fails, log the error and return empty string for safety
+        log.debug(f'formatfloat filter error: Cannot convert value "{value}" to float: {e}')
+        return ''
 
 
 '''@jinjia.app_template_filter('formatseriesindex')

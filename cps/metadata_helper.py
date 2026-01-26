@@ -224,9 +224,11 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
             # Set series index if available
             if hasattr(metadata, 'series_index') and metadata.series_index:
                 try:
-                    book.series_index = float(metadata.series_index)
+                    # Convert to float first to validate, then store as string (DB column is String)
+                    float_value = float(metadata.series_index)
+                    book.series_index = str(float_value)
                 except (ValueError, TypeError):
-                    book.series_index = 1.0
+                    book.series_index = '1.0'
             updated = True
             
         # Update published date if available and enabled in settings

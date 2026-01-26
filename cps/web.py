@@ -760,6 +760,7 @@ def render_category_books(page, book_id, order):
     else:
         tagsname = calibre_db.session.query(db.Tags).filter(db.Tags.id == book_id).first()
         if tagsname:
+            # Issue #906: Pass viewing_tag_id to allow this tag even if not in allowed tags
             entries, random, pagination = calibre_db.fill_indexpage(page, 0,
                                                                     db.Books,
                                                                     db.Books.tags.any(db.Tags.id == book_id),
@@ -768,7 +769,8 @@ def render_category_books(page, book_id, order):
                                                                     True, config.config_read_column,
                                                                     db.books_series_link,
                                                                     db.Books.id == db.books_series_link.c.book,
-                                                                    db.Series)
+                                                                    db.Series,
+                                                                    viewing_tag_id=book_id)
             tagsname = tagsname.name
         else:
             abort(404)
@@ -2612,6 +2614,19 @@ def show_book(book_id):
             book_in_shelves.append(sh.shelf)
 
         entry.tags = sort(entry.tags, key=lambda tag: tag.name)
+        
+        # Filter tags based on user's allowed/denied tags (Issue #906)
+        if current_user.is_authenticated:
+            allowed_tags = current_user.list_allowed_tags()
+            denied_tags = current_user.list_denied_tags()
+            
+            # If allowed tags are configured (not empty), filter to only show allowed tags
+            if allowed_tags and allowed_tags != ['']:
+                entry.tags = [tag for tag in entry.tags if tag.name in allowed_tags]
+            
+            # Remove denied tags
+            if denied_tags and denied_tags != ['']:
+                entry.tags = [tag for tag in entry.tags if tag.name not in denied_tags]
 
         entry.ordered_authors = calibre_db.order_authors([entry])
 

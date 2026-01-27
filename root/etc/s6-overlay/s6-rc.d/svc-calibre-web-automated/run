@@ -2,7 +2,6 @@
 # shellcheck shell=bash
 
 export CALIBRE_DBPATH=/config
-export LD_LIBRARY_PATH=/app/calibre/lib
 
 exec \
     s6-notifyoncheck -d -n 300 -w 1000 -c "nc -z localhost ${CWA_PORT_OVERRIDE:-8083}" \

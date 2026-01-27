@@ -286,7 +286,6 @@ COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
 
 # Set calibre environment variables
 ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
-ENV LD_LIBRARY_PATH=/app/calibre/lib
 
 # Ports and volumes
 WORKDIR /config

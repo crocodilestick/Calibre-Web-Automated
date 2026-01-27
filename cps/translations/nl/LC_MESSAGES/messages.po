@@ -2,8 +2,9 @@
 # Copyright (C) 2017 Calibre-Web
 # This file is distributed under the same license as the Calibre-Web
 # project.
-# translation by Ed Driesen
+# translation by Ed Driesen and Jordi Brouwer.
 # FIRST AUTHOR <ed.driesen@telenet.be>, 2017.
+# SECOND AUTHOR <jordi.brouwer@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
@@ -279,11 +280,11 @@ msgstr "client_secrets.json is niet geconfigureerd voor webapplicatie"
 
 #: cps/admin.py:1213
 msgid "Unable to fetch OAuth metadata from URL."
-msgstr ""
+msgstr "Kan OAuth metadata niet ophalen van URL."
 
 #: cps/admin.py:1231
 msgid "Unable to fetch OpenID configuration."
-msgstr ""
+msgstr "Kan OpenID configuratie niet ophalen."
 
 #: cps/admin.py:1293
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -513,7 +514,7 @@ msgstr "{} Gebruiker succesvol geïmporteerd"
 
 #: cps/admin.py:1853
 msgid "Books path not valid"
-msgstr ""
+msgstr "Boekenpad is niet geldig"
 
 #: cps/admin.py:1860
 msgid "DB Location is not Valid, Please Enter Correct Path"
@@ -625,23 +626,23 @@ msgstr "Metadata mist vereiste velden: %(fields)s"
 #: cps/admin.py:2323
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s endpoints."
-msgstr ""
+msgstr "Metadata URL is geldig! %(count)s endpoints gevonden."
 
 #: cps/constants.py:207
 msgid "Czech"
-msgstr ""
+msgstr "Tsjechisch"
 
 #: cps/constants.py:208
 msgid "German"
-msgstr ""
+msgstr "Duits"
 
 #: cps/constants.py:209
 msgid "Greek"
-msgstr ""
+msgstr "Grieks"
 
 #: cps/constants.py:210
 msgid "Spanish"
-msgstr ""
+msgstr "Spaans"
 
 #: cps/constants.py:211
 #, fuzzy
@@ -650,43 +651,43 @@ msgstr "Voltooid"
 
 #: cps/constants.py:212
 msgid "French"
-msgstr ""
+msgstr "Frans"
 
 #: cps/constants.py:213
 msgid "Galician"
-msgstr ""
+msgstr "Galicisch"
 
 #: cps/constants.py:214
 msgid "Hungarian"
-msgstr ""
+msgstr "Hongaars"
 
 #: cps/constants.py:215
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesisch"
 
 #: cps/constants.py:216
 msgid "Italian"
-msgstr ""
+msgstr "Italiaans"
 
 #: cps/constants.py:217
 msgid "Japanese"
-msgstr ""
+msgstr "Japans"
 
 #: cps/constants.py:218
 msgid "Khmer"
-msgstr ""
+msgstr "Khmer"
 
 #: cps/constants.py:219
 msgid "Korean"
-msgstr ""
+msgstr "Koreaans"
 
 #: cps/constants.py:220
 msgid "Dutch"
-msgstr ""
+msgstr "Nederlands"
 
 #: cps/constants.py:221
 msgid "Norwegian"
-msgstr ""
+msgstr "Noors"
 
 #: cps/constants.py:222
 #, fuzzy
@@ -695,47 +696,47 @@ msgstr "Uitgever"
 
 #: cps/constants.py:223
 msgid "Portuguese"
-msgstr ""
+msgstr "Portugees"
 
 #: cps/constants.py:224
 msgid "Portuguese (Brazil)"
-msgstr ""
+msgstr "Portugees (Brazilië)"
 
 #: cps/constants.py:225
 msgid "Russian"
-msgstr ""
+msgstr "Russisch"
 
 #: cps/constants.py:226
 msgid "Slovak"
-msgstr ""
+msgstr "Slowaaks"
 
 #: cps/constants.py:227
 msgid "Slovenian"
-msgstr ""
+msgstr "Sloveens"
 
 #: cps/constants.py:228
 msgid "Swedish"
-msgstr ""
+msgstr "Zweeds"
 
 #: cps/constants.py:229
 msgid "Turkish"
-msgstr ""
+msgstr "Turks"
 
 #: cps/constants.py:230
 msgid "Ukrainian"
-msgstr ""
+msgstr "Oekraïens"
 
 #: cps/constants.py:231
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnamees"
 
 #: cps/constants.py:232
 msgid "Chinese (Simplified, China)"
-msgstr ""
+msgstr "Chinees (Vereenvoudigd, China)"
 
 #: cps/constants.py:233
 msgid "Chinese (Traditional, Taiwan)"
-msgstr ""
+msgstr "Chinees (Traditioneel, Taiwan)"
 
 #: cps/converter.py:20
 msgid "not installed"
@@ -749,7 +750,7 @@ msgstr "Kan programma niet uitvoeren"
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
-msgstr ""
+msgstr "Bibliotheek Vernieuwen 🔄 Controleren op gemiste boeken, even geduld..."
 
 #: cps/cwa_functions.py:297
 #, fuzzy
@@ -759,7 +760,7 @@ msgstr "Calibre E-Book omzet instellingen"
 #: cps/cwa_functions.py:319 cps/cwa_functions.py:321 cps/cwa_functions.py:325
 #: cps/cwa_functions.py:327 cps/cwa_functions.py:330 cps/cwa_functions.py:332
 msgid "Timestamp"
-msgstr ""
+msgstr "Tijdstempel"
 
 #: cps/cwa_functions.py:319 cps/cwa_functions.py:321
 #, fuzzy
@@ -778,7 +779,7 @@ msgstr "Auteur"
 
 #: cps/cwa_functions.py:319
 msgid "Trigger Type"
-msgstr ""
+msgstr "Trigger Type"
 
 #: cps/cwa_functions.py:321 cps/cwa_functions.py:327
 #, fuzzy
@@ -793,23 +794,23 @@ msgstr "naam"
 
 #: cps/cwa_functions.py:325
 msgid "Manual?"
-msgstr ""
+msgstr "Handmatig?"
 
 #: cps/cwa_functions.py:325
 msgid "No. Fixes"
-msgstr ""
+msgstr "Aantal Fixes"
 
 #: cps/cwa_functions.py:325 cps/cwa_functions.py:330 cps/cwa_functions.py:332
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "Origineel geback-upt?"
 
 #: cps/cwa_functions.py:327
 msgid "Fixes Applied"
-msgstr ""
+msgstr "Toegepaste Fixes"
 
 #: cps/cwa_functions.py:332
 msgid "Original Format"
-msgstr ""
+msgstr "Origineel Formaat"
 
 #: cps/cwa_functions.py:332
 #, fuzzy
@@ -818,70 +819,70 @@ msgstr "Uploadformaat"
 
 #: cps/cwa_functions.py:347
 msgid "Calibre-Web Automated Sever Stats & Archive"
-msgstr ""
+msgstr "Calibre-Web Automated Server Statistieken & Archief"
 
 #: cps/cwa_functions.py:362
 msgid "Calibre-Web Automated - Full Enforcement History"
-msgstr ""
+msgstr "Calibre-Web Automated - Volledige Afdwingingsgeschiedenis"
 
 #: cps/cwa_functions.py:371
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
-msgstr ""
+msgstr "Calibre-Web Automated - Volledige Afdwingingsgeschiedenis (met Paden)"
 
 #: cps/cwa_functions.py:380
 msgid "Calibre-Web Automated - Full Import History"
-msgstr ""
+msgstr "Calibre-Web Automated - Volledige Importgeschiedenis"
 
 #: cps/cwa_functions.py:389
 msgid "Calibre-Web Automated - Full Conversion History"
-msgstr ""
+msgstr "Calibre-Web Automated - Volledige Conversiegeschiedenis"
 
 #: cps/cwa_functions.py:398
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
-msgstr ""
+msgstr "Calibre-Web Automated - Volledige EPUB Fixer Geschiedenis (zonder Paden & Fixes)"
 
 #: cps/cwa_functions.py:407
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
-msgstr ""
+msgstr "Calibre-Web Automated - Volledige EPUB Fixer Geschiedenis (met Paden & Fixes)"
 
 #: cps/cwa_functions.py:425
 msgid "✅ All Monitoring Services are running as intended! 👍"
-msgstr ""
+msgstr "✅ Alle controle services draaien zoals bedoeld! 👍"
 
 #: cps/cwa_functions.py:427
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
-msgstr ""
+msgstr "🔴 De Ingest Service draait maar de Metadata Change Detector niet"
 
 #: cps/cwa_functions.py:429
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
-msgstr ""
+msgstr "🔴 De Metadata Change Detector draait maar de Ingest Service niet"
 
 #: cps/cwa_functions.py:431
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
-msgstr ""
+msgstr "⛔ Noch de Ingest Service noch de Metadata Change Detector draait"
 
 #: cps/cwa_functions.py:433
 msgid "An Error has occurred"
-msgstr ""
+msgstr "Er is een fout opgetreden"
 
 #: cps/cwa_functions.py:604 cps/cwa_functions.py:611
 msgid "Calibre-Web Automated - Convert Library"
-msgstr ""
+msgstr "Calibre-Web Automated - Bibliotheek Converteren"
 
 #: cps/cwa_functions.py:724 cps/cwa_functions.py:730
 msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+msgstr "Calibre-Web Automated - Verstuur-naar-Kindle EPUB Reparatie Service"
 
 #: cps/cwa_functions.py:815
 msgid "You must be an admin to access this page."
-msgstr ""
+msgstr "Je moet een beheerder zijn om deze pagina te bekijken."
 
 #: cps/cwa_functions.py:830
 msgid "Both username and image data are required."
-msgstr ""
+msgstr "Zowel gebruikersnaam als afbeeldingsgegevens zijn vereist."
 
 #: cps/cwa_functions.py:848
 #, fuzzy
@@ -890,7 +891,7 @@ msgstr "{} gebruikers succesvol verwijderd"
 
 #: cps/cwa_functions.py:861
 msgid "CWA Profile Picture Management (WIP)"
-msgstr ""
+msgstr "CWA Profielafbeelding Beheer (in ontwikkeling)"
 
 #: cps/db.py:1075 cps/templates/config_edit.html:217
 #: cps/templates/config_view_edit.html:63 cps/templates/email_edit.html:41
@@ -907,7 +908,7 @@ msgstr "Boek verwijderen"
 
 #: cps/editbooks.py:106
 msgid "Missing or invalid book id for format upload"
-msgstr ""
+msgstr "Ontbrekend of ongeldig boek-ID voor formaat upload"
 
 #: cps/editbooks.py:131 cps/editbooks.py:151 cps/templates/book_edit.html:53
 #: cps/templates/layout.html:148
@@ -1246,11 +1247,11 @@ msgstr "Fout bij het uitvoeren van UnRar"
 
 #: cps/helper.py:1049
 msgid "Could not find the specified directory"
-msgstr ""
+msgstr "Kon de opgegeven map niet vinden"
 
 #: cps/helper.py:1052
 msgid "Please specify a directory, not a file"
-msgstr ""
+msgstr "Geef een map op, geen bestand"
 
 #: cps/helper.py:1066
 #, fuzzy
@@ -1260,7 +1261,7 @@ msgstr "Kan niet schrijven naar database"
 #: cps/helper.py:1075
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
-msgstr ""
+msgstr "Ontbrekende calibre programmabestanden: %(missing)s"
 
 #: cps/helper.py:1077
 #, fuzzy, python-format
@@ -1293,7 +1294,7 @@ msgstr "Kobo Instellen"
 
 #: cps/kosync.py:143
 msgid "KOReader Sync Plugin"
-msgstr ""
+msgstr "KOReader Synchronisatie Plugin"
 
 #: cps/oauth_bb.py:64
 #, python-format
@@ -1302,15 +1303,15 @@ msgstr "Aanmelden bij %(provider)s"
 
 #: cps/oauth_bb.py:108
 msgid "Login failed: Could not connect to the user info endpoint."
-msgstr ""
+msgstr "Inloggen mislukt: Kon geen verbinding maken met het gebruikersinfo eindpunt."
 
 #: cps/oauth_bb.py:112
 msgid "Login failed: The OAuth provider returned an invalid user profile."
-msgstr ""
+msgstr "Inloggen mislukt: De OAuth provider gaf een ongeldig gebruikersprofiel terug."
 
 #: cps/oauth_bb.py:125
 msgid "Login failed: User profile from provider is incomplete."
-msgstr ""
+msgstr "Inloggen mislukt: Gebruikersprofiel van provider is onvolledig."
 
 #: cps/oauth_bb.py:212 cps/remotelogin.py:149
 #, python-format
@@ -1558,7 +1559,7 @@ msgstr "Boekenlijst tonen"
 
 #: cps/render_template.py:104
 msgid "Duplicates"
-msgstr ""
+msgstr "Duplicaten"
 
 #: cps/render_template.py:106
 #, fuzzy
@@ -1621,7 +1622,7 @@ msgstr "Dit boek maakt al deel uit van boekenplank: %(shelfname)s"
 #: cps/shelf.py:63
 #, python-format
 msgid "%(book_id)s is a invalid Book Id. Could not be added to Shelf"
-msgstr ""
+msgstr "%(book_id)s is een ongeldig Boek ID. Kon niet worden toegevoegd aan de boekenplank"
 
 #: cps/shelf.py:83
 #, python-format
@@ -1879,7 +1880,7 @@ msgstr "Stel je kindle-e-mailadres in..."
 
 #: cps/web.py:1378
 msgid "No email addresses selected"
-msgstr ""
+msgstr "Geen e-mailadressen geselecteerd"
 
 #: cps/web.py:1386
 #, fuzzy
@@ -1997,7 +1998,7 @@ msgstr "Geen geldig gmail.json bestand gevonden met OAuth informatie"
 
 #: cps/tasks/clean.py:18
 msgid "Delete temp folder contents"
-msgstr ""
+msgstr "Verwijder inhoud van tijdelijke map"
 
 #: cps/tasks/convert.py:98
 #, fuzzy, python-format
@@ -2082,7 +2083,7 @@ msgstr "Uploaden"
 
 #: cps/templates/admin.html:9
 msgid "Users&nbsp;&nbsp;👤"
-msgstr ""
+msgstr "Gebruikers&nbsp;&nbsp;👤"
 
 #: cps/templates/admin.html:14 cps/templates/login.html:9
 #: cps/templates/login.html:10 cps/templates/register.html:9
@@ -2098,7 +2099,7 @@ msgstr "E-mailadres"
 #: cps/templates/admin.html:16
 #, fuzzy
 msgid "Send to eReader Email"
-msgstr "Kindle-e-mailadres"
+msgstr "Verstuur naar eReader E-mail"
 
 #: cps/templates/admin.html:18 cps/templates/layout.html:162
 #: cps/templates/user_table.html:143
@@ -2140,7 +2141,7 @@ msgstr "Openbare boekenplank"
 
 #: cps/templates/admin.html:56
 msgid "Manage Profile Pictures"
-msgstr ""
+msgstr "Beheer Profielafbeeldingen"
 
 #: cps/templates/admin.html:58
 msgid "Import LDAP Users"
@@ -2149,7 +2150,7 @@ msgstr "LDAP gebruikers importeren"
 #: cps/templates/admin.html:65
 #, fuzzy
 msgid "Email Server Settings&nbsp;&nbsp;📬"
-msgstr "SMTP-serverinstellingen"
+msgstr "E-mail Server Instellingen&nbsp;&nbsp;📬"
 
 #: cps/templates/admin.html:70 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"
@@ -2177,7 +2178,7 @@ msgstr "Van e-mail"
 #: cps/templates/admin.html:93
 #, fuzzy
 msgid "Email Service"
-msgstr "EMail Service"
+msgstr "E-mail Service"
 
 #: cps/templates/admin.html:94
 msgid "Gmail via Oauth2"
@@ -2185,7 +2186,7 @@ msgstr "Gmail via OAuth2"
 
 #: cps/templates/admin.html:109
 msgid "Configuration&nbsp;&nbsp;⚙️"
-msgstr ""
+msgstr "Configuratie&nbsp;&nbsp;⚙️"
 
 #: cps/templates/admin.html:112
 msgid "Calibre Database Directory"
@@ -2281,7 +2282,7 @@ msgstr "Ververs cache met omslagminiaturen"
 
 #: cps/templates/admin.html:207
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
-msgstr ""
+msgstr "CWA Beheerfuncties&nbsp;&nbsp;⚡"
 
 #: cps/templates/admin.html:208
 #, fuzzy
@@ -2305,15 +2306,15 @@ msgstr "PDF lezer"
 
 #: cps/templates/admin.html:214
 msgid "CWA Library Conversion Service"
-msgstr ""
+msgstr "CWA Bibliotheek Conversie Service"
 
 #: cps/templates/admin.html:215
 msgid "CWA Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+msgstr "CWA Verstuur-naar-Kindle EPUB Reparatie Service"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
-msgstr ""
+msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
 #, fuzzy
@@ -2360,7 +2361,7 @@ msgstr "Huidige versie"
 
 #: cps/templates/admin.html:264 cps/templates/admin.html:269
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: cps/templates/admin.html:276
 msgid "Check for Update"
@@ -2603,7 +2604,7 @@ msgstr "Trefwoord"
 #: cps/templates/book_edit.html:254
 #, fuzzy
 msgid "Search keyword"
-msgstr " Trefwoord zoeken "
+msgstr "Trefwoord zoeken"
 
 #: cps/templates/book_edit.html:266 cps/templates/book_edit.html:342
 msgid "Loading..."
@@ -2634,17 +2635,17 @@ msgstr "Samenvoegen"
 #: cps/templates/book_table.html:50 cps/templates/book_table.html:210
 #, fuzzy
 msgid "Archive"
-msgstr "Gearchiveerd"
+msgstr "Archiveren"
 
 #: cps/templates/book_table.html:53 cps/templates/book_table.html:230
 #, fuzzy
 msgid "Unarchive"
-msgstr "Gearchiveerd"
+msgstr "Dearchiveren"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
 #, fuzzy
 msgid "Mark as read"
-msgstr "Markeren als ongelezen"
+msgstr "Markeren als gelezen"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
 #, fuzzy
@@ -2664,11 +2665,11 @@ msgstr "Auteur en titel omwisselen"
 #: cps/templates/book_table.html:72
 #, fuzzy
 msgid "Select all"
-msgstr "Boekenplank maken"
+msgstr "Alles selecteren"
 
 #: cps/templates/book_table.html:75
 msgid "Clear all"
-msgstr ""
+msgstr "Alles wissen"
 
 #: cps/templates/book_table.html:84
 #, fuzzy
@@ -2774,23 +2775,23 @@ msgstr "In boek met titel:"
 
 #: cps/templates/book_table.html:186
 msgid "The following books will be deleted:"
-msgstr ""
+msgstr "De volgende boeken zullen worden verwijderd:"
 
 #: cps/templates/book_table.html:206
 msgid "The following books will be archived:"
-msgstr ""
+msgstr "De volgende boeken zullen worden gearchiveerd:"
 
 #: cps/templates/book_table.html:226
 msgid "The following books will be unarchived:"
-msgstr ""
+msgstr "De volgende boeken zullen worden gedearchiveerd:"
 
 #: cps/templates/book_table.html:246
 msgid "The following books will be marked read:"
-msgstr ""
+msgstr "De volgende boeken zullen als gelezen worden gemarkeerd:"
 
 #: cps/templates/book_table.html:266
 msgid "The following books will be marked unread:"
-msgstr ""
+msgstr "De volgende boeken zullen als ongelezen worden gemarkeerd:"
 
 #: cps/templates/book_table.html:282 cps/templates/detail.html:410
 msgid "Edit Metadata"
@@ -2798,7 +2799,7 @@ msgstr "Metagegevens bewerken"
 
 #: cps/templates/book_table.html:285
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
-msgstr ""
+msgstr "Bewerk de velden die je wilt wijzigen. Lege velden worden genegeerd:"
 
 #: cps/templates/book_table.html:340
 #, fuzzy
@@ -2807,11 +2808,11 @@ msgstr "Boekenplank maken"
 
 #: cps/templates/book_table.html:343
 msgid "Please select a shelf to add the selected books to:"
-msgstr ""
+msgstr "Selecteer een boekenplank om de geselecteerde boeken aan toe te voegen:"
 
 #: cps/templates/book_table.html:345
 msgid "-- Select a Shelf --"
-msgstr ""
+msgstr "-- Selecteer een Boekenplank --"
 
 #: cps/templates/book_table.html:363 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
@@ -2842,7 +2843,7 @@ msgstr ""
 msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
 "CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
-msgstr ""
+msgstr "Daarom, bij het configureren van je docker-compose bestand voor CWA, <b>VERANDER DE PADEN IN DE VOLUMES SECTIE AAN DE RECHTERKANT VAN DE DUBBELE PUNTEN NIET!</b>"
 
 #: cps/templates/config_db.html:30
 msgid ""
@@ -2853,7 +2854,7 @@ msgid ""
 "your\n"
 "        library, use the <b>Separate Book Files from Library Option below "
 "and there, enter the path to the rest of the library</b>"
-msgstr ""
+msgstr "Deze paden zijn alleen intern voor CWA, je kunt aan de linkerkant naar hartenlust wijzigen waar ze aan gekoppeld zijn, maar er is geen reden om de paden aan de rechterkant te wijzigen.<br><br>Als je je <code>metadata.db</code> bestand op een andere locatie wilt dan de rest van je bibliotheek, gebruik dan de <b>Scheid Boekbestanden van Bibliotheek Optie hieronder en voer daar het pad naar de rest van de bibliotheek in</b>"
 
 #: cps/templates/config_db.html:34
 msgid ""
@@ -2864,18 +2865,18 @@ msgid ""
 "below\n"
 "        once you've checked the <b>Separate Book Files from Library</b> "
 "option."
-msgstr ""
+msgstr "Bijv. Zolang je bibliotheek's <code>metadata.db</code> bestand ergens binnen <code>/calibre-library</code> is gekoppeld, zou je de map met de bijbehorende boekbestanden enz. kunnen koppelen aan bijvoorbeeld <code>/books</code> en <code>/books</code> invoeren in het veld dat verschijnt zodra je de <b>Scheid Boekbestanden van Bibliotheek</b> optie hebt aangevinkt."
 
 #: cps/templates/config_db.html:38
 msgid "Split Library Functionality"
-msgstr ""
+msgstr "Gesplitste Bibliotheek Functionaliteit"
 
 #: cps/templates/config_db.html:41
 msgid ""
 "<b>Separate Book Files from Library</b> - <code>metadata.db</code> file "
 "should remain in <code>/calibre-library</code>, however your library files "
 "can be wherever you desire"
-msgstr ""
+msgstr "<b>Scheid Boekbestanden van Bibliotheek</b> - <code>metadata.db</code> bestand moet in <code>/calibre-library</code> blijven, maar je bibliotheekbestanden kunnen zijn waar je maar wilt"
 
 #: cps/templates/config_db.html:54
 msgid "Use Google Drive?"
@@ -3154,11 +3155,11 @@ msgstr "LDAP Lid Gebruiker Filter"
 
 #: cps/templates/config_edit.html:309
 msgid "Generic OAuth Provider"
-msgstr ""
+msgstr "Generieke OAuth Provider"
 
 #: cps/templates/config_edit.html:313
 msgid "OAuth Metadata URL (for auto-discovery)"
-msgstr ""
+msgstr "OAuth Metadata URL (voor automatische detectie)"
 
 #: cps/templates/config_edit.html:317
 #, fuzzy
@@ -3167,17 +3168,17 @@ msgstr "Metagegevens ophalen"
 
 #: cps/templates/config_edit.html:320
 msgid "Leave empty to use manual configuration below"
-msgstr ""
+msgstr "Laat leeg om handmatige configuratie hieronder te gebruiken"
 
 #: cps/templates/config_edit.html:326
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
-msgstr ""
+msgstr "Gebruik Handmatige Endpoint URL's (negeer automatische detectie)"
 
 #: cps/templates/config_edit.html:327
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
-msgstr ""
+msgstr "Vink dit aan om individuele OAuth endpoints handmatig te configureren in plaats van automatische detectie te gebruiken"
 
 #: cps/templates/config_edit.html:332
 #, fuzzy
@@ -3186,11 +3187,11 @@ msgstr "Bewerk gebruikersinterface configuratie"
 
 #: cps/templates/config_edit.html:335
 msgid "OAuth Base URL"
-msgstr ""
+msgstr "OAuth Basis URL"
 
 #: cps/templates/config_edit.html:340
 msgid "Authorization Endpoint"
-msgstr ""
+msgstr "Autorisatie Endpoint"
 
 #: cps/templates/config_edit.html:345
 #, fuzzy
@@ -3199,7 +3200,7 @@ msgstr "Toegangssleutel niet gevonden"
 
 #: cps/templates/config_edit.html:350
 msgid "UserInfo Endpoint"
-msgstr ""
+msgstr "GebruikersInfo Endpoint"
 
 #: cps/templates/config_edit.html:358
 #, fuzzy
@@ -3213,7 +3214,7 @@ msgstr "OAuth Instellingen"
 
 #: cps/templates/config_edit.html:369
 msgid "Space-separated list of OAuth scopes"
-msgstr ""
+msgstr "Spatie-gescheiden lijst van OAuth scopes"
 
 #: cps/templates/config_edit.html:373
 #, fuzzy
@@ -3237,7 +3238,7 @@ msgstr "Gebruikersnaam"
 
 #: cps/templates/config_edit.html:386
 msgid "JWT field to extract username from"
-msgstr ""
+msgstr "JWT veld om gebruikersnaam uit te halen"
 
 #: cps/templates/config_edit.html:389
 #, fuzzy
@@ -3246,15 +3247,15 @@ msgstr "EMail Service"
 
 #: cps/templates/config_edit.html:391
 msgid "JWT field to extract email from"
-msgstr ""
+msgstr "JWT veld om e-mail uit te halen"
 
 #: cps/templates/config_edit.html:394
 msgid "OAuth group for Admin"
-msgstr ""
+msgstr "OAuth groep voor Admin"
 
 #: cps/templates/config_edit.html:398
 msgid "Login Button Text"
-msgstr ""
+msgstr "Login Knop Tekst"
 
 #: cps/templates/config_edit.html:404
 #, python-format
@@ -3305,15 +3306,15 @@ msgstr "Beperk aantal mislukte inlogpogingen"
 
 #: cps/templates/config_edit.html:480
 msgid "Configure Backend for Limiter"
-msgstr ""
+msgstr "Configureer Backend voor Limiter"
 
 #: cps/templates/config_edit.html:484
 msgid "Options for Limiter Backend"
-msgstr ""
+msgstr "Opties voor Limiter Backend"
 
 #: cps/templates/config_edit.html:490
 msgid "Check if file extensions matches file content on upload"
-msgstr ""
+msgstr "Controleer of bestandsextensies overeenkomen met bestandsinhoud bij upload"
 
 #: cps/templates/config_edit.html:493
 #, fuzzy
@@ -3351,7 +3352,7 @@ msgstr "Forceer hoofdletter"
 
 #: cps/templates/config_edit.html:522
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
-msgstr ""
+msgstr "Forceer karakters (nodig voor Chinese/Japanse/Koreaanse karakters)"
 
 #: cps/templates/config_edit.html:526
 msgid "Enforce special characters"
@@ -3373,7 +3374,7 @@ msgstr "Aantal te tonen auteurs alvorens te verbergen (0=nooit verbergen)"
 msgid ""
 "Default Theme (users can select their own preferred theme however new users "
 "will receive this theme by default)"
-msgstr ""
+msgstr "Standaard Thema (gebruikers kunnen hun eigen voorkeursthema selecteren, echter nieuwe gebruikers ontvangen standaard dit thema)"
 
 #: cps/templates/config_view_edit.html:42
 msgid "Standard Theme"
@@ -3387,7 +3388,7 @@ msgstr "caliBlur! donker thema"
 msgid ""
 "Per-user theme switching enabled; this global default only affects new users "
 "& anonymous"
-msgstr ""
+msgstr "Per-gebruiker thema wisselen ingeschakeld; deze globale standaard is alleen van invloed op nieuwe gebruikers & anonieme gebruikers"
 
 #: cps/templates/config_view_edit.html:48
 msgid "Regular Expression for Ignoring Columns"
@@ -3492,18 +3493,18 @@ msgstr "Calibre-Web Logbestand: "
 
 #: cps/templates/cwa_settings.html:24
 msgid "Enable CWA Auto-Convert"
-msgstr ""
+msgstr "Schakel CWA Auto-Conversie in"
 
 #: cps/templates/cwa_settings.html:26
 msgid ""
 "On by default, when active all ingested books will automatically be "
 "converted to the target format specified below (epub by default) \n"
 "        <em>EXCEPT</em> those you have specifically told CWA to ignore below."
-msgstr ""
+msgstr "Standaard ingeschakeld, wanneer actief zullen alle opgenomen boeken automatisch geconverteerd worden naar het onderstaande doelformaat (standaard epub) <em>BEHALVE</em> de formaten die je hieronder hebt aangegeven om te negeren."
 
 #: cps/templates/cwa_settings.html:35
 msgid "Enable CWA Automatic Cover & Metadata Enforcement Service"
-msgstr ""
+msgstr "Schakel CWA Automatische Omslag & Metadata Afdwingingsservice in"
 
 #: cps/templates/cwa_settings.html:37
 msgid ""
@@ -3514,18 +3515,18 @@ msgid ""
 "        are only applied to what you see in the Web UI, not the ebook files "
 "themselves. This feature currently only supports files in EPUB \n"
 "        or AZW3 format."
-msgstr ""
+msgstr "Standaard ingeschakeld, wanneer actief zal de CWA Metadata Afdwingingsservice de wijzigingen in metadata en/of omslag uit de Web UI toepassen op de e-boekbestanden zelf. Normaal gesproken in standaard CW of wanneer deze instelling is uitgeschakeld, worden wijzigingen alleen toegepast op wat je ziet in de Web UI, niet op de e-boekbestanden zelf. Deze functie ondersteunt momenteel alleen bestanden in EPUB of AZW3 formaat."
 
 #: cps/templates/cwa_settings.html:48
 msgid "Enable CWA Kindle EPUB Fixer"
-msgstr ""
+msgstr "Schakel CWA Kindle EPUB Reparatie in"
 
 #: cps/templates/cwa_settings.html:50
 msgid ""
 "When active, the encoding among other attributes of all EPUB files processed "
 "by CWA will be checked and fixed to ensure maximum \n"
 "        compatibility with Amazon's Send-to-Kindle Service."
-msgstr ""
+msgstr "Wanneer actief, zal de codering en andere kenmerken van alle door CWA verwerkte EPUB-bestanden gecontroleerd en gerepareerd worden om maximale compatibiliteit met Amazon's Verstuur-naar-Kindle Service te garanderen."
 
 #: cps/templates/cwa_settings.html:59
 #, fuzzy
@@ -3534,17 +3535,17 @@ msgstr "Instellingen"
 
 #: cps/templates/cwa_settings.html:66
 msgid "Enable CWA Update Notifications"
-msgstr ""
+msgstr "Schakel CWA Update Meldingen in"
 
 #: cps/templates/cwa_settings.html:68
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
-msgstr ""
+msgstr "Wanneer actief, ontvang je meldingen in de Web UI wanneer een nieuwe versie van CWA is uitgebracht"
 
 #: cps/templates/cwa_settings.html:76
 msgid "Enable Contribute Translations Notifications"
-msgstr ""
+msgstr "Schakel Bijdragen Vertalingen Meldingen in"
 
 #: cps/templates/cwa_settings.html:78
 msgid ""
@@ -3555,13 +3556,13 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:86
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
-msgstr ""
+msgstr "Schakel Onscherpe Achtergronden in op Mobiel (&lt;768px)"
 
 #: cps/templates/cwa_settings.html:88
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
-msgstr ""
+msgstr "Wanneer actief, wordt het onscherpe omslagachtergrond effect ook weergegeven op kleine schermen. Schakel uit als je scroll- of animatie vertraging opmerkt."
 
 #: cps/templates/cwa_settings.html:93
 #, fuzzy
@@ -3570,37 +3571,37 @@ msgstr "OAuth Instellingen"
 
 #: cps/templates/cwa_settings.html:100
 msgid "Enable CWA Import Auto-Backup"
-msgstr ""
+msgstr "Schakel CWA Import Auto-Backup in"
 
 #: cps/templates/cwa_settings.html:102
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
-msgstr ""
+msgstr "Wanneer actief, wordt een kopie van alle geïmporteerde bestanden opgeslagen in <i>/config/processed_books/imported</i>"
 
 #: cps/templates/cwa_settings.html:110
 msgid "Enable CWA Conversion Auto-Backup"
-msgstr ""
+msgstr "Schakel CWA Conversie Auto-Backup in"
 
 #: cps/templates/cwa_settings.html:112
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
-msgstr ""
+msgstr "Wanneer actief, worden de originelen van opgenomen bestanden die conversie ondergaan opgeslagen in /config/processed_books/converted"
 
 #: cps/templates/cwa_settings.html:120
 msgid "Enable CWA EPUB Fixer Auto-Backup"
-msgstr ""
+msgstr "Schakel CWA EPUB Reparatie Auto-Backup in"
 
 #: cps/templates/cwa_settings.html:122
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
-msgstr ""
+msgstr "Wanneer actief, worden de originelen van EPUBs die door de CWA Kindle EPUB Reparatie service worden verwerkt opgeslagen in /config/processed_books/fixed_originals"
 
 #: cps/templates/cwa_settings.html:132
 msgid "Enable CWA Auto-Zip Backups"
-msgstr ""
+msgstr "Schakel CWA Auto-Zip Backups in"
 
 #: cps/templates/cwa_settings.html:134
 msgid ""
@@ -3608,18 +3609,18 @@ msgid ""
 "make zip archives of all the backed up converted, imported and failed files "
 "from that day. This is to help keep the subdirectories of /config/"
 "processed_books organised and to minimise disk space usage."
-msgstr ""
+msgstr "Wanneer actief, zal de cwa-auto-zipper service vlak voor middernacht elke dag zip archieven maken van alle die dag geback-upte geconverteerde, geïmporteerde en mislukte bestanden. Dit helpt om de submappen van /config/processed_books georganiseerd te houden en om schijfruimtegebruik te minimaliseren."
 
 #: cps/templates/cwa_settings.html:139
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
-msgstr ""
+msgstr "CWA Auto-Conversie Doelformaat - Standaard EPUB"
 
 #: cps/templates/cwa_settings.html:142
 msgid ""
 "When the Auto-Convert feature is active, all ingested books will be "
 "automatically converted to the format chosen here (except those formats "
 "selected in the ignore list below)"
-msgstr ""
+msgstr "Wanneer de Auto-Conversie functie actief is, zullen alle opgenomen boeken automatisch geconverteerd worden naar het hier gekozen formaat (behalve de formaten geselecteerd in de negeerlijst hieronder)"
 
 #: cps/templates/cwa_settings.html:144
 #, fuzzy
@@ -3631,83 +3632,83 @@ msgid ""
 "NOTE: CWA's Metadata Enforcement service can currently only support file in "
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
 "by the service"
-msgstr ""
+msgstr "OPMERKING: CWA's Metadata Afdwingingsservice ondersteunt momenteel alleen bestanden in EPUB en AZW3 formaat. Bestanden in andere formaten worden simpelweg door de service genegeerd"
 
 #: cps/templates/cwa_settings.html:160
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr ""
+msgstr "CWA Auto-Conversie - Genegeerde Formaten"
 
 #: cps/templates/cwa_settings.html:162
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
-msgstr ""
+msgstr "De hier geselecteerde formaten worden genegeerd door CWA's Auto-Conversie functie wanneer deze actief is, wat betekent dat ze worden geïmporteerd zoals ze zijn."
 
 #: cps/templates/cwa_settings.html:187
 msgid "CWA Auto-Ingest - Ignored Formats"
-msgstr ""
+msgstr "CWA Auto-Opname - Genegeerde Formaten"
 
 #: cps/templates/cwa_settings.html:189
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Ingest feature, "
 "meaning files in these formats won't be added to the library by CWA during "
 "the ingest process"
-msgstr ""
+msgstr "De hier geselecteerde formaten worden genegeerd door CWA's Auto-Opname functie, wat betekent dat bestanden in deze formaten niet aan de bibliotheek worden toegevoegd door CWA tijdens het opnameproces"
 
 #: cps/templates/cwa_settings.html:214
 msgid "CWA Auto-Ingest Automerge"
-msgstr ""
+msgstr "CWA Auto-Opname Autosamenvoegen"
 
 #: cps/templates/cwa_settings.html:217
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
-msgstr ""
+msgstr "Calibre kan Dubbele Boektitels detecteren bij Import en afhankelijk van de"
 
 #: cps/templates/cwa_settings.html:217
 msgid "automerge"
-msgstr ""
+msgstr "autosamenvoegen"
 
 #: cps/templates/cwa_settings.html:218
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
-msgstr ""
+msgstr "instelling. Deze kan ingesteld worden om een van de instanties van een gedupliceerd boek te verwijderen of beide te behouden (standaard)."
 
 #: cps/templates/cwa_settings.html:236
 msgid "Discards duplicate import, keeps library copy"
-msgstr ""
+msgstr "Verwijdert dubbele import, behoudt bibliotheekexemplaar"
 
 #: cps/templates/cwa_settings.html:240
 msgid "Overwrites library copy with newly imported file"
-msgstr ""
+msgstr "Overschrijft bibliotheekexemplaar met nieuw geïmporteerd bestand"
 
 #: cps/templates/cwa_settings.html:244
 msgid "Creates a duplicate record, keeping both copies"
-msgstr ""
+msgstr "Creëert een dubbel record, behoudt beide exemplaren"
 
 #: cps/templates/cwa_settings.html:253
 msgid "Ingest Processing Timeout"
-msgstr ""
+msgstr "Opname Verwerkings Timeout"
 
 #: cps/templates/cwa_settings.html:255
 msgid ""
 "Maximum time (in minutes) to allow for processing a single book before "
 "timing out. Files that timeout are moved to the failed backup folder for "
 "investigation."
-msgstr ""
+msgstr "Maximale tijd (in minuten) om het verwerken van één boek toe te staan voordat er een timeout optreedt. Bestanden die een timeout krijgen worden verplaatst naar de mislukte backup map voor onderzoek."
 
 #: cps/templates/cwa_settings.html:257
 msgid "Timeout (minutes):"
-msgstr ""
+msgstr "Timeout (minuten):"
 
 #: cps/templates/cwa_settings.html:265
 msgid "Range: 5-120 minutes (default: 15)"
-msgstr ""
+msgstr "Bereik: 5-120 minuten (standaard: 15)"
 
 #: cps/templates/cwa_stats.html:43 cps/templates/cwa_stats.html:65
 #: cps/templates/cwa_stats.html:87 cps/templates/cwa_stats.html:106
 #: cps/templates/cwa_stats.html:130 cps/templates/cwa_stats.html:149
 msgid "Click to See More"
-msgstr ""
+msgstr "Klik om meer te zien"
 
 #: cps/templates/detail.html:66
 #, fuzzy
@@ -3726,7 +3727,7 @@ msgstr "Kindle-e-mailadres"
 
 #: cps/templates/detail.html:80
 msgid "Choose email addresses:"
-msgstr ""
+msgstr "Kies e-mailadressen:"
 
 #: cps/templates/detail.html:84
 #, fuzzy
@@ -3740,7 +3741,7 @@ msgstr "Formaten verwijderen:"
 
 #: cps/templates/detail.html:113
 msgid "Send"
-msgstr ""
+msgstr "Verzenden"
 
 #: cps/templates/detail.html:150 cps/templates/detail.html:151
 #: cps/templates/detail.html:164 cps/templates/detail.html:165
@@ -3794,17 +3795,17 @@ msgstr "(Openbaar)"
 
 #: cps/templates/duplicates.html:283
 msgid "CWA Duplicates Manager"
-msgstr ""
+msgstr "CWA Duplicaten Beheerder"
 
 #: cps/templates/duplicates.html:285
 msgid ""
 "Books with matching titles and authors. Visual inspection recommended to "
 "identify true duplicates."
-msgstr ""
+msgstr "Boeken met overeenkomende titels en auteurs. Visuele inspectie wordt aanbevolen om echte duplicaten te identificeren."
 
 #: cps/templates/duplicates.html:290
 msgid "Select Duplicates"
-msgstr ""
+msgstr "Selecteer Duplicaten"
 
 #: cps/templates/duplicates.html:291
 #, fuzzy
@@ -3823,13 +3824,13 @@ msgstr "Geen resultaten gevonden"
 
 #: cps/templates/duplicates.html:344
 msgid "Your library has no books with duplicate title and author combinations."
-msgstr ""
+msgstr "Je bibliotheek heeft geen boeken met dezelfde titel en auteur combinaties."
 
 #: cps/templates/duplicates.html:345
 msgid ""
 "This search looks for books with identical titles AND authors to avoid false "
 "positives."
-msgstr ""
+msgstr "Deze zoekopdracht zoekt naar boeken met identieke titels EN auteurs om foutpositieven te voorkomen."
 
 #: cps/templates/duplicates.html:359
 #, fuzzy
@@ -3838,19 +3839,19 @@ msgstr "Het boek wordt verwijderd uit de Calibre-database"
 
 #: cps/templates/duplicates.html:363
 msgid "This action cannot be undone!"
-msgstr ""
+msgstr "Deze actie kan niet ongedaan worden gemaakt!"
 
 #: cps/templates/duplicates.html:378
 msgid "Success"
-msgstr ""
+msgstr "Succes"
 
 #: cps/templates/duplicates.html:385
 msgid "Selected duplicate books have been deleted successfully!"
-msgstr ""
+msgstr "Geselecteerde dubbele boeken zijn succesvol verwijderd!"
 
 #: cps/templates/duplicates.html:407
 msgid "An error occurred while processing your request."
-msgstr ""
+msgstr "Er is een fout opgetreden tijdens het verwerken van je verzoek."
 
 #: cps/templates/email_edit.html:13
 msgid "Email Account Type"
@@ -4085,11 +4086,11 @@ msgstr "Zoek in bibliotheek"
 
 #: cps/templates/layout.html:205
 msgid "See Changelog"
-msgstr ""
+msgstr "Zie Changelog"
 
 #: cps/templates/layout.html:215
 msgid "Contribute here!"
-msgstr ""
+msgstr "Draag hier bij!"
 
 #: cps/templates/layout.html:248
 msgid "Please do not refresh the page"
@@ -4113,7 +4114,7 @@ msgstr "Boekgegevens"
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
 msgid "Filter by initial"
-msgstr ""
+msgstr "Filter op eerste letter"
 
 #: cps/templates/list.html:43
 msgid "Grid"
@@ -4287,7 +4288,7 @@ msgstr "Lettertypegrootte"
 
 #: cps/templates/read.html:105
 msgid "Font"
-msgstr ""
+msgstr "Lettertype"
 
 #: cps/templates/read.html:106
 #, fuzzy
@@ -4296,11 +4297,11 @@ msgstr "Verwijderen"
 
 #: cps/templates/read.html:107
 msgid "Yahei"
-msgstr ""
+msgstr "Yahei"
 
 #: cps/templates/read.html:108
 msgid "SimSun"
-msgstr ""
+msgstr "SimSun"
 
 #: cps/templates/read.html:109
 #, fuzzy
@@ -4350,7 +4351,7 @@ msgstr "Weergave van één pagina"
 
 #: cps/templates/readcbr.html:81
 msgid "Long Strip Display"
-msgstr ""
+msgstr "Lange Strip Weergave"
 
 #: cps/templates/readcbr.html:82
 msgid "Scale to Best"
@@ -4395,7 +4396,7 @@ msgstr "Systeembeheer"
 
 #: cps/templates/readcbr.html:114
 msgid "Long Strip"
-msgstr ""
+msgstr "Lange Strip"
 
 #: cps/templates/readcbr.html:119
 msgid "Scale"
@@ -4539,11 +4540,11 @@ msgstr "Lees Status"
 
 #: cps/templates/search_form.html:44 cps/templates/search_form.html:165
 msgid "Any"
-msgstr ""
+msgstr "Willekeurig"
 
 #: cps/templates/search_form.html:45 cps/templates/search_form.html:166
 msgid "Empty"
-msgstr ""
+msgstr "Leeg"
 
 #: cps/templates/search_form.html:60
 msgid "Exclude Tags"
@@ -4719,7 +4720,7 @@ msgstr "Gebruikerswachtwoord herstellen"
 msgid ""
 "Send to eReader Email Address. Use comma to separate emails for multiple "
 "eReaders"
-msgstr ""
+msgstr "Verstuur naar e-Reader E-mailadres. Gebruik een komma om e-mails voor meerdere e-Readers te scheiden"
 
 #: cps/templates/user_edit.html:43
 msgid "Language of Books"
@@ -4739,7 +4740,7 @@ msgstr "Ontkoppelen"
 
 #: cps/templates/user_edit.html:74
 msgid "Hardcover API token"
-msgstr ""
+msgstr "Hardcover API token"
 
 #: cps/templates/user_edit.html:79
 msgid "Kobo Sync Token"

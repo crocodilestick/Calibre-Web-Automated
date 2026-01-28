@@ -30,7 +30,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      # --- 1. Calculate Variables (Needed for Build Args) ---
+      # --- 1. Calculate Variables ---
       - name: Set repo name to lowercase
         run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
@@ -71,7 +71,9 @@ jobs:
           file: ./Dockerfile
           # We build only AMD64 here
           platforms: linux/amd64
-          # Push the layers to both registries, but NOT the tag (push-by-digest)
+          # CACHE STRATEGY: Use GitHub Actions Cache (Ephemeral Runner)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           outputs: |
             type=image,name=${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated,push-by-digest=true,name-canonical=true,push=true
             type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
@@ -95,7 +97,7 @@ jobs:
           retention-days: 1
 
   # --------------------------------------------------------------------------------
-  # JOB 2: Build ARM (arm64 & arm/v7) on Oracle Runner
+  # JOB 2: Build ARM (arm64 Only) on Oracle Runner
   # --------------------------------------------------------------------------------
   build-arm:
     # Use your self-hosted runner labels here
@@ -107,7 +109,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      # --- 1. Calculate Variables (Needed for Build Args) ---
+      # --- 1. Calculate Variables ---
       - name: Set repo name to lowercase
         run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
@@ -136,7 +138,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # --- 3. Build & Push (Digest Only) ---
-      # Ensure Docker is ready (sometimes needed on self-hosted)
       - uses: docker/setup-buildx-action@v3
 
       - name: Build and push by digest
@@ -148,7 +149,10 @@ jobs:
           file: ./Dockerfile
           # We build ARM64 here natively
           platforms: linux/arm64
-          # Push the layers to both registries, but NOT the tag
+          # CACHE STRATEGY: Use Local Disk Cache (Persistent Runner)
+          # Saves bandwidth and time by storing cache directly on the Oracle VM
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           outputs: |
             type=image,name=${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated,push-by-digest=true,name-canonical=true,push=true
             type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
@@ -156,7 +160,13 @@ jobs:
             BUILD_DATE=${{ github.event.repository.updated_at }}
             VERSION=${{ vars.CURRENT_DEV_VERSION }}-DEV_BUILD-${{ env.IMAGE_TAG }}-${{ vars.CURRENT_DEV_BUILD_NUM }}
 
-      # --- 4. Export Digest for Merge Job ---
+      # --- 4. Rotate Cache (Prevent Infinite Growth) ---
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      # --- 5. Export Digest for Merge Job ---
       - name: Export digest
         run: |
           mkdir -p /tmp/digests
@@ -171,6 +181,15 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      # --- 6. Janitor: Clean up Docker Garbage ---
+      - name: Prune Docker Garbage
+        if: always() # Run even if build fails
+        run: |
+          echo "Pruning dangling images..."
+          docker image prune -f
+          echo "Pruning old build cache (older than 1 week)..."
+          docker builder prune -f --filter "until=168h"
+
   # --------------------------------------------------------------------------------
   # JOB 3: Merge & Tag (Runs on GitHub)
   # --------------------------------------------------------------------------------
@@ -179,7 +198,7 @@ jobs:
     needs: [build-amd64, build-arm]
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
-      # --- 1. Calculate Variables (Needed for Final Tagging) ---
+      # --- 1. Calculate Variables ---
       - name: Checkout correct branch
         uses: actions/checkout@v4
         with:

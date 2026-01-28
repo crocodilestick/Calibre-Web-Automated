@@ -21,6 +21,16 @@ jobs:
       - name: Set repo name to lowercase
         run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
+      - name: Determine Version
+        run: |
+          # If triggered by a release, use the tag (e.g., v1.0.0)
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "VERSION_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            # If triggered manually, fallback to avoid build failure
+            echo "VERSION_TAG=manual-build" >> $GITHUB_ENV
+          fi
+
       # --- 2. Logins ---
       - name: DockerHub Login
         uses: docker/login-action@v3
@@ -54,7 +64,7 @@ jobs:
             type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
             BUILD_DATE=${{ github.event.repository.updated_at }}
-            VERSION=${{ github.event.release.tag_name }}
+            VERSION=${{ env.VERSION_TAG }}
 
       # --- 4. Export Digest ---
       - name: Export digest
@@ -85,6 +95,14 @@ jobs:
       - name: Set repo name to lowercase
         run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
+      - name: Determine Version
+        run: |
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "VERSION_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION_TAG=manual-build" >> $GITHUB_ENV
+          fi
+
       # --- 2. Logins ---
       - name: DockerHub Login
         uses: docker/login-action@v3
@@ -110,6 +128,7 @@ jobs:
           context: .
           platforms: linux/arm64
           # CACHE STRATEGY: Use Local Disk Cache (Persistent Oracle Runner)
+          # Reuses the same cache folder as your DEV builds for speed
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           outputs: |
@@ -117,7 +136,7 @@ jobs:
             type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
             BUILD_DATE=${{ github.event.repository.updated_at }}
-            VERSION=${{ github.event.release.tag_name }}
+            VERSION=${{ env.VERSION_TAG }}
 
       # --- 4. Rotate Cache (Prevent Infinite Growth) ---
       - name: Move cache
@@ -167,10 +186,9 @@ jobs:
         id: tag
         run: |
           # Use the Release Tag (e.g., v3.0.0)
-          echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-          
-          # Fallback if workflow_dispatch was used (manual trigger)
-          if [ -z "${{ github.event.release.tag_name }}" ]; then
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
             echo "RELEASE_TAG=manual-build" >> $GITHUB_ENV
           fi
 

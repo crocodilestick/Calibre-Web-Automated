@@ -174,7 +174,7 @@ def theme_migration_notification() -> None:
             pass
     
     # Show notification
-    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v4.0.0.")
+    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v5.0.0.")
     flash(message, category="theme_migration")
     
     # Mark as shown today

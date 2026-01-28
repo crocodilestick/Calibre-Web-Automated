@@ -149,8 +149,8 @@ def validate_and_cleanup_provider_enabled_map(enabled_map, available_provider_id
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_switch_theme():
-    # Theme switching temporarily disabled for v4.0.0 frontend development
-    flash(_("Theme switching is temporarily disabled until v4.0.0"), category="warning")
+    # Theme switching temporarily disabled for v5.0.0 frontend development
+    flash(_("Theme switching is temporarily disabled until v5.0.0"), category="warning")
     target = request.referrer or url_for("web.index")
     # Basic safety: only allow same-host redirects
     try:

@@ -1,4 +1,4 @@
-name: Build & Push - Split Strategy
+name: Build & Push - Dev - Split Strategy
 # Automatically builds and pushes a multi-platform dev image based on commits involving key files in any branch
 
 on:
@@ -146,8 +146,8 @@ jobs:
           provenance: false
           context: .
           file: ./Dockerfile
-          # We build BOTH ARM architectures here natively
-          platforms: linux/arm64,linux/arm/v7
+          # We build ARM64 here natively
+          platforms: linux/arm64
           # Push the layers to both registries, but NOT the tag
           outputs: |
             type=image,name=${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated,push-by-digest=true,name-canonical=true,push=true

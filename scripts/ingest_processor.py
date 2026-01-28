@@ -183,6 +183,33 @@ def cleanup_lock():
 # Register cleanup function
 atexit.register(cleanup_lock)
 
+
+def _load_cps_settings_from_app_db() -> None:
+    """Load minimal CPS settings needed for GDrive + internal HTTPS handling."""
+    if not _cps_config:
+        return
+    try:
+        with sqlite3.connect("/config/app.db", timeout=30) as con:
+            cur = con.cursor()
+            row = cur.execute(
+                "SELECT config_use_google_drive, config_google_drive_folder, "
+                "config_calibre_dir, config_certfile, config_keyfile "
+                "FROM settings LIMIT 1"
+            ).fetchone()
+            if not row:
+                return
+
+            _cps_config.config_use_google_drive = bool(row[0]) if row[0] is not None else False
+            _cps_config.config_google_drive_folder = row[1]
+            if row[2]:
+                _cps_config.config_calibre_dir = row[2]
+            if row[3]:
+                _cps_config.config_certfile = row[3]
+            if row[4]:
+                _cps_config.config_keyfile = row[4]
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Could not read CPS settings from app.db: {e}", flush=True)
+
 try:
     # Ensure project root is on sys.path to import cps
     cps_path = os.path.dirname(os.path.dirname(__file__))
@@ -194,6 +221,7 @@ try:
         from cps import gdriveutils as _gdriveutils, config as _cps_config
         _GDRIVE_AVAILABLE = True
         print("[ingest-processor] GDrive functionality available", flush=True)
+        _load_cps_settings_from_app_db()
     except (ImportError, TypeError, AttributeError) as e:
         print(f"[ingest-processor] GDrive functionality not available: {e}", flush=True)
         _gdriveutils = None

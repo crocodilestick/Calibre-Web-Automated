@@ -772,17 +772,6 @@ class EPUBFixer:
         self.fix_book_language(default_language, input_path)
         print_and_log("[cwa-kindle-epub-fixer] Checking for stray images...", log=self.manually_triggered)
         self.fix_stray_img()
-        
-        # New Kindle-specific fixes
-        print_and_log("[cwa-kindle-epub-fixer] Stripping embedded fonts for Kindle compatibility...", log=self.manually_triggered)
-        self.strip_embedded_fonts()
-        print_and_log("[cwa-kindle-epub-fixer] Removing JavaScript (not supported on Kindle)...", log=self.manually_triggered)
-        self.remove_javascript()
-        print_and_log("[cwa-kindle-epub-fixer] Validating images for Kindle compatibility...", log=self.manually_triggered)
-        self.validate_images()
-        print_and_log("[cwa-kindle-epub-fixer] Validating CSS syntax...", log=self.manually_triggered)
-        self.validate_css()
-        # NOTE: Skipping strip_amazon_identifiers() - users want complete metadata preserved
 
         # Notify user and/or write to log
         self.export_issue_summary(input_path)

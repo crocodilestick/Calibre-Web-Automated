@@ -69,7 +69,7 @@ jobs:
           provenance: false
           context: .
           file: ./Dockerfile
-          # We build only AMD64 here
+          # We build AMD64 here natively
           platforms: linux/amd64
           # CACHE STRATEGY: Use GitHub Actions Cache (Ephemeral Runner)
           cache-from: type=gha
@@ -183,7 +183,7 @@ jobs:
 
       # --- 6. Janitor: Clean up Docker Garbage ---
       - name: Prune Docker Garbage
-        if: always() # Run even if build fails
+        if: always() # Run even if build fails to keep disk clean
         run: |
           echo "Pruning dangling images..."
           docker image prune -f
@@ -207,15 +207,21 @@ jobs:
       - name: Set repo name to lowercase
         run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      - name: Determine Docker Image Tag
+      - name: Determine Docker Image Tags
         id: tag
         run: |
+          # 1. Determine the "Floating" Tag (e.g., 'dev' or 'dev-featurebranch')
           if [[ "${{ github.ref_name }}" == "main" ]]; then
-            echo "IMAGE_TAG=dev" >> $GITHUB_ENV
+            echo "FLOAT_TAG=dev" >> $GITHUB_ENV
           else
             sanitized_branch=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
-            echo "IMAGE_TAG=dev-${sanitized_branch}" >> $GITHUB_ENV
+            echo "FLOAT_TAG=dev-${sanitized_branch}" >> $GITHUB_ENV
           fi
+          
+          # 2. Determine the "Unique" Tag (e.g., 'dev-371')
+          # We use the build number that was passed to the build jobs
+          # Note: We append the build number to the 'dev' prefix to keep them grouped
+          echo "UNIQUE_TAG=dev-${{ vars.CURRENT_DEV_BUILD_NUM }}" >> $GITHUB_ENV
 
       # --- 2. Logins ---
       - name: DockerHub Login
@@ -245,12 +251,16 @@ jobs:
       - name: Create manifest list and push
         working-directory: /tmp/digests
         run: |
-          # 1. Create/Push Manifest for DockerHub
-          docker buildx imagetools create -t ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:${{ env.IMAGE_TAG }} \
+          # 1. Push to DockerHub (Both Tags)
+          docker buildx imagetools create \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:${{ env.FLOAT_TAG }} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:${{ env.UNIQUE_TAG }} \
             $(printf '${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated@sha256:%s ' *)
           
-          # 2. Create/Push Manifest for GHCR
-          docker buildx imagetools create -t ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:${{ env.IMAGE_TAG }} \
+          # 2. Push to GHCR (Both Tags)
+          docker buildx imagetools create \
+            -t ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:${{ env.FLOAT_TAG }} \
+            -t ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:${{ env.UNIQUE_TAG }} \
             $(printf 'ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}@sha256:%s ' *)
 
       # --- 4. Increment Build Number (Last Step) ---

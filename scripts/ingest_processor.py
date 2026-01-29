@@ -527,7 +527,8 @@ class NewBookProcessor:
                 raise KeyError(f"No backup destination for type '{backup_type}'")
             # Ensure destination directory exists
             os.makedirs(output_path, exist_ok=True)
-            shutil.copy2(input_file, output_path)
+            destination = shutil.copy(input_file, output_path)
+            os.utime(destination, None)
         except Exception as e:
             # Never let backups crash ingest; just log the problem
             print(f"[ingest-processor]: ERROR - Failed to backup '{input_file}' to '{output_path}': {e}")

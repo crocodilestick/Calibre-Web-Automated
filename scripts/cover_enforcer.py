@@ -634,11 +634,29 @@ class Enforcer:
 
     def delete_log(self, auto=True, log_path="None"):
         """Deletes the log file"""
-        if auto:
-            log = os.path.join(change_logs_dir, self.args.log)
-            os.remove(log)
-        else:
-            os.remove(log_path)
+        try:
+            if auto:
+                log = os.path.join(change_logs_dir, self.args.log)
+                os.remove(log)
+            else:
+                os.remove(log_path)
+        except FileNotFoundError:
+            # Log may already be removed by another process or cleanup path
+            return
+
+
+    def record_failed_enforcement(self, log_info: dict, error: Exception | str) -> None:
+        """Record a failed enforcement attempt so admins can see it in stats."""
+        try:
+            # Ensure file_path exists for DB insert
+            if not log_info.get('file_path'):
+                log_info['file_path'] = "unknown"
+            self.db.enforce_add_entry_from_log(log_info, trigger_type="auto -log (failed)")
+        except Exception as e:
+            print(f"[cover-metadata-enforcer] WARNING: Unable to record failed enforcement: {e}", flush=True)
+
+        # Always surface the failure to logs
+        print(f"[cover-metadata-enforcer] ERROR: Failed to enforce metadata for '{log_info.get('title', 'Unknown')}' (book_id={log_info.get('book_id', 'unknown')}): {error}", flush=True)
 
 
     def empty_metadata_temp(self):
@@ -657,13 +675,19 @@ class Enforcer:
                     if log_info is None:
                         continue
                     book_dir = self.get_book_dir_from_log(log_info)
-                    book_objects = self.enforce_cover(book_dir)
-                    if book_objects:
-                        for book in book_objects:
-                            book.log_info = log_info
-                            book.log_info['file_path'] = book.file_path
-                            self.db.enforce_add_entry_from_log(book.log_info)
-                    self.delete_log(auto=False, log_path=log)
+                    try:
+                        book_objects = self.enforce_cover(book_dir)
+                        if book_objects:
+                            for book in book_objects:
+                                book.log_info = log_info
+                                book.log_info['file_path'] = book.file_path
+                                self.db.enforce_add_entry_from_log(book.log_info)
+                        else:
+                            self.record_failed_enforcement(log_info, "No supported files or enforcement failed")
+                    except Exception as e:
+                        self.record_failed_enforcement(log_info, e)
+                    finally:
+                        self.delete_log(auto=False, log_path=log)
 
 
 def main():
@@ -736,16 +760,23 @@ def main():
         
         book_dir = enforcer.get_book_dir_from_log(log_info)
         if enforcer.enforcer_on:
-            book_objects = enforcer.enforce_cover(book_dir)
-            if not book_objects:
-                print(f"[cover-metadata-enforcer] Metadata for '{log_info['title']}' not successfully enforced")
+            try:
+                book_objects = enforcer.enforce_cover(book_dir)
+                if not book_objects:
+                    print(f"[cover-metadata-enforcer] Metadata for '{log_info['title']}' not successfully enforced")
+                    enforcer.record_failed_enforcement(log_info, "No supported files or enforcement failed")
+                    enforcer.delete_log()
+                    sys.exit(1)
+                for book in book_objects:
+                    book.log_info = log_info
+                    book.log_info['file_path'] = book.file_path
+                    enforcer.db.enforce_add_entry_from_log(book.log_info)
+                enforcer.delete_log()
+                enforcer.check_for_other_logs()
+            except Exception as e:
+                enforcer.record_failed_enforcement(log_info, e)
+                enforcer.delete_log()
                 sys.exit(1)
-            for book in book_objects:
-                book.log_info = log_info
-                book.log_info['file_path'] = book.file_path
-                enforcer.db.enforce_add_entry_from_log(book.log_info)
-            enforcer.delete_log()
-            enforcer.check_for_other_logs()
         else: # Enforcer has been disabled in the CWA Settings
             print(f"[cover-metadata-enforcer] The CWA Automatic Metadata enforcement service is currently disabled in the settings. Therefore the metadata changes for {log_info['title'].replace(':', '_')} won't be enforced.\n\nThis means that the changes made will appear in the Web UI, but not be stored in the ebook files themselves.")
             enforcer.delete_log()

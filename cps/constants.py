@@ -176,8 +176,8 @@ def _read_text(path: str, default: str = "") -> str:
 
 # Versions are resolved at container startup by cwa-init and provided via env and persisted files.
 # Avoid any network or slow I/O during module import.
-INSTALLED_VERSION = os.environ.get("CWA_INSTALLED_VERSION") or _read_text("/app/CWA_RELEASE", "V0.0.0")
-STABLE_VERSION = os.environ.get("CWA_STABLE_VERSION") or _read_text("/app/CWA_STABLE_RELEASE", "V0.0.0")
+INSTALLED_VERSION = os.environ.get("CWA_INSTALLED_VERSION") or _read_text("/app/CWA_RELEASE", "v0.0.0")
+STABLE_VERSION = os.environ.get("CWA_STABLE_VERSION") or _read_text("/app/CWA_STABLE_RELEASE", "v0.0.0")
 
 USER_AGENT = f"Calibre-Web-Automated/{INSTALLED_VERSION}"
 

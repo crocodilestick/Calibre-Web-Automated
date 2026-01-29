@@ -299,7 +299,7 @@ fi
 echo "[cwa-init] Resolving CWA versions (installed + latest stable) ..."
 
 # Installed version baked at build time
-export CWA_INSTALLED_VERSION="$(cat /app/CWA_RELEASE 2>/dev/null || echo 'V0.0.0')"
+export CWA_INSTALLED_VERSION="$(cat /app/CWA_RELEASE 2>/dev/null || echo 'v0.0.0')"
 echo "[cwa-init] Installed version: $CWA_INSTALLED_VERSION"
 
 # Latest stable release from GitHub (best-effort, fast timeout)
@@ -325,11 +325,11 @@ else
 fi
 
 # Validate the fetched version or use fallback
-if [[ -n "$CWA_STABLE_VERSION" && "$CWA_STABLE_VERSION" =~ ^V[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+if [[ -n "$CWA_STABLE_VERSION" && "$CWA_STABLE_VERSION" =~ ^[Vv]?[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]; then
   echo "[cwa-init] Valid stable version retrieved: $CWA_STABLE_VERSION"
 else
   echo "[cwa-init] Invalid or missing stable version, using fallback"
-  CWA_STABLE_VERSION="V0.0.0"
+  CWA_STABLE_VERSION="v0.0.0"
 fi
 
 export CWA_STABLE_VERSION

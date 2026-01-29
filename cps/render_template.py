@@ -115,10 +115,16 @@ def cwa_update_available() -> tuple[bool, str, str]:
         current_version = constants.INSTALLED_VERSION
         tag_name = constants.STABLE_VERSION
 
-        if current_version == "V0.0.0" or tag_name == "V0.0.0":
+        def _normalize_version(value: str) -> str:
+            return (value or "").lstrip("vV")
+
+        current_normalized = _normalize_version(current_version)
+        tag_normalized = _normalize_version(tag_name)
+
+        if current_normalized in ("", "0.0.0") or tag_normalized in ("", "0.0.0"):
             return False, "0.0.0", "0.0.0"
 
-        return (tag_name != current_version), current_version, tag_name
+        return (tag_normalized != current_normalized), current_version, tag_name
     except Exception as e:
         print(f"[cwa-update-notification-service] Error checking for CWA updates: {e}", flush=True)
         return False, "0.0.0", "0.0.0"

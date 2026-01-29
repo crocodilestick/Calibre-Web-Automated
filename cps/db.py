@@ -1022,7 +1022,11 @@ class CalibreDB:
         entries = list()
         pagination = list()
         try:
-            pagination = Pagination(page, pagesize, query.count())
+            if database == Books:
+                total_count = query.with_entities(Books.id).distinct().count()
+            else:
+                total_count = query.count()
+            pagination = Pagination(page, pagesize, total_count)
             entries = query.order_by(*order).offset(off).limit(pagesize).all()
         except Exception as ex:
             log.error_or_exception(ex)

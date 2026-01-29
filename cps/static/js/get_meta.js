@@ -47,7 +47,11 @@ $(function () {
       )
     );
     if (updateItems.description) {
-      tinymce.get("comments").setContent(book.description);
+      if (typeof tinymce !== "undefined" && tinymce.get("comments")) {
+        tinymce.get("comments").setContent(book.description);
+      } else {
+        $("#comments").val(book.description);
+      }
     }
     if (updateItems.tags) {
       var uniqueTags = getUniqueValues("tags", book);
@@ -63,8 +67,12 @@ $(function () {
     }
     $("#languages").val(uniqueLanguages.join(", "));
     if (updateItems.rating) {
-      $("#rating").data("rating").setValue(Math.round(book.rating)); 
-      $("#rating").val(Math.round(book.rating));
+      var roundedRating = Math.round(book.rating);
+      var ratingWidget = $("#rating").data("rating");
+      if (ratingWidget && typeof ratingWidget.setValue === "function") {
+        ratingWidget.setValue(roundedRating);
+      }
+      $("#rating").val(roundedRating);
     }
 
     if (updateItems.cover && book.cover && $("#cover_url").length) {

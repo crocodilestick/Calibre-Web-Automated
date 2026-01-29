@@ -61,6 +61,9 @@ def mimetype_filter(val):
 @jinjia.app_template_filter('formatdate')
 def formatdate_filter(val):
     try:
+        if isinstance(val, datetime.datetime):
+            # Avoid timezone-based day shifts by formatting date-only values.
+            val = val.date()
         return format_date(val, format='medium')
     except AttributeError as e:
         log.error('Babel error: %s, Current user locale: %s, Current User: %s', e,
@@ -72,6 +75,8 @@ def formatdate_filter(val):
 
 @jinjia.app_template_filter('formatdateinput')
 def format_date_input(val):
+    if isinstance(val, datetime.datetime):
+        val = val.date()
     input_date = val.isoformat().split('T', 1)[0]  # Hack to support dates <1900
     return '' if input_date == "0101-01-01" else input_date
 

@@ -8,6 +8,7 @@
 import atexit
 import os
 import sys
+import sqlite3
 from datetime import datetime, timezone, timedelta
 import itertools
 import uuid
@@ -823,10 +824,19 @@ def migrate_user_table(engine, _session):
         _session.query(exists().where(User.auto_send_enabled)).scalar()
         _session.commit()
     except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
-            trans.commit()
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
+                trans.commit()
+        except Exception as e:
+            db_hint = app_DB_path or str(engine.url)
+            log.error(
+                "Failed to add auto_send_enabled column to user table in app.db (%s). "
+                "Check file permissions, locks, and CALIBRE_DBPATH mapping. Error: %s",
+                db_hint,
+                e,
+            )
 
     # Migration to add per-user email subject for Kindle sending
     try:
@@ -1154,6 +1164,8 @@ def init_db(app_db_path):
     Session.configure(bind=engine)
     session = Session()
 
+    _healthcheck_app_db(app_db_path)
+
     if os.path.exists(app_db_path):
         Base.metadata.create_all(engine)
         migrate_Database(session)
@@ -1162,6 +1174,33 @@ def init_db(app_db_path):
         Base.metadata.create_all(engine)
         create_admin_user(session)
         create_anonymous_user(session)
+
+
+def _healthcheck_app_db(app_db_path: str) -> None:
+    """Basic startup checks for app.db path, permissions, and integrity."""
+    try:
+        if not app_db_path:
+            log.error("app.db path is empty; cannot validate settings database")
+            return
+        if os.path.isdir(app_db_path):
+            log.error("app.db path points to a directory: %s", app_db_path)
+            return
+        if not os.path.exists(app_db_path):
+            log.warning("app.db not found at %s; it will be created on first run", app_db_path)
+            return
+        if not os.access(app_db_path, os.W_OK):
+            log.error("app.db is not writable: %s", app_db_path)
+        network_share_mode = os.environ.get("NETWORK_SHARE_MODE", "false").lower() in ("1", "true", "yes")
+        if network_share_mode:
+            log.info("Skipping PRAGMA quick_check for app.db due to NETWORK_SHARE_MODE=true")
+            return
+        try:
+            with sqlite3.connect(app_db_path, timeout=5) as con:
+                con.execute("PRAGMA quick_check;")
+        except sqlite3.OperationalError as e:
+            log.error("app.db integrity/lock check failed for %s: %s", app_db_path, e)
+    except Exception as e:
+        log.error("app.db healthcheck failed for %s: %s", app_db_path, e)
 
 def password_change(user_credentials=None):
     if user_credentials:

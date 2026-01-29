@@ -1,3 +1,10 @@
+# Calibre-Web Automated – fork of Calibre-Web
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+# See CONTRIBUTORS for full list of authors.
+
+import os
 import sqlite3
 
 from cps import db, logger
@@ -24,8 +31,17 @@ def init_calibre_db_from_config(config, settings_path):
     return db.CalibreDB.session_factory is not None
 
 
-def init_calibre_db_from_app_db(app_db_path="/config/app.db"):
+def init_calibre_db_from_app_db(app_db_path=None):
     """Initialize CalibreDB by reading config from app.db (for background workers)."""
+    if app_db_path is None:
+        base_path = os.environ.get("CALIBRE_DBPATH", "/config")
+        if base_path.endswith(".db"):
+            if os.path.basename(base_path) != "app.db":
+                app_db_path = os.path.join(os.path.dirname(base_path), "app.db")
+            else:
+                app_db_path = base_path
+        else:
+            app_db_path = os.path.join(base_path, "app.db")
     if db.CalibreDB.session_factory and getattr(db.CalibreDB.config, "config_title_regex", None):
         return True
     calibre_dir = None

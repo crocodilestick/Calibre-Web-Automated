@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -184,12 +184,26 @@ def cleanup_lock():
 atexit.register(cleanup_lock)
 
 
+def get_app_db_path() -> str:
+    """Resolve app.db path consistently with the main app config."""
+    app_db_path = os.environ.get("CWA_APP_DB_PATH")
+    if app_db_path:
+        return app_db_path
+    base_path = os.environ.get("CALIBRE_DBPATH", "/config")
+    if base_path.endswith(".db"):
+        if os.path.basename(base_path) != "app.db":
+            return os.path.join(os.path.dirname(base_path), "app.db")
+        return base_path
+    return os.path.join(base_path, "app.db")
+
+
 def _load_cps_settings_from_app_db() -> None:
     """Load minimal CPS settings needed for GDrive + internal HTTPS handling."""
     if not _cps_config:
         return
     try:
-        with sqlite3.connect("/config/app.db", timeout=30) as con:
+        app_db_path = get_app_db_path()
+        with sqlite3.connect(app_db_path, timeout=30) as con:
             cur = con.cursor()
             row = cur.execute(
                 "SELECT config_use_google_drive, config_google_drive_folder, "
@@ -208,7 +222,7 @@ def _load_cps_settings_from_app_db() -> None:
             if row[4]:
                 _cps_config.config_keyfile = row[4]
     except Exception as e:
-        print(f"[ingest-processor] WARN: Could not read CPS settings from app.db: {e}", flush=True)
+        print(f"[ingest-processor] WARN: Could not read CPS settings from app.db ({app_db_path}): {e}", flush=True)
 
 try:
     # Ensure project root is on sys.path to import cps
@@ -235,7 +249,7 @@ try:
         from cps.services.worker import WorkerThread
         from cps import ub as _ub
         from cps.calibre_init import init_calibre_db_from_app_db
-        init_calibre_db_from_app_db()
+        init_calibre_db_from_app_db(get_app_db_path())
         _CPS_AVAILABLE = True
         print("[ingest-processor] Auto-send and metadata functionality available", flush=True)
     except ImportError as e:
@@ -304,7 +318,8 @@ def get_internal_api_url(path):
         keyfile = getattr(_cps_config, "config_keyfile", None)
     if not certfile and not keyfile:
         try:
-            with sqlite3.connect("/config/app.db", timeout=30) as con:
+            app_db_path = get_app_db_path()
+            with sqlite3.connect(app_db_path, timeout=30) as con:
                 cur = con.cursor()
                 row = cur.execute(
                     "SELECT config_certfile, config_keyfile FROM settings LIMIT 1"
@@ -312,7 +327,7 @@ def get_internal_api_url(path):
                 if row:
                     certfile, keyfile = row[0], row[1]
         except Exception as e:
-            print(f"[ingest-processor] WARN: Could not read TLS settings from app.db: {e}", flush=True)
+            print(f"[ingest-processor] WARN: Could not read TLS settings from app.db ({app_db_path}): {e}", flush=True)
 
     if certfile and keyfile and os.path.isfile(certfile) and os.path.isfile(keyfile):
         protocol = "https"
@@ -364,14 +379,15 @@ class NewBookProcessor:
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
         self.ingest_folder = os.path.normpath(self.ingest_folder)
         # Ensure library_dir is consistent with the main app's config
-        with sqlite3.connect("/config/app.db", timeout=30) as con:
+        app_db_path = get_app_db_path()
+        with sqlite3.connect(app_db_path, timeout=30) as con:
             cur = con.cursor()
             try:
                 db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
                 if db_path:
                     self.library_dir = db_path
             except Exception as e:
-                print(f"[ingest-processor] WARN: Could not read config_calibre_dir from app.db, using default. Error: {e}", flush=True)
+                print(f"[ingest-processor] WARN: Could not read config_calibre_dir from app.db ({app_db_path}), using default. Error: {e}", flush=True)
 
         Path(self.tmp_conversion_dir).mkdir(exist_ok=True)
         self.staging_dir = os.path.join(self.tmp_conversion_dir, "staging")
@@ -406,7 +422,8 @@ class NewBookProcessor:
             r'^(A|The|An|Der|Die|Das|Den|Ein|Eine|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+'
         )
         try:
-            with sqlite3.connect("/config/app.db", timeout=30) as con:
+            app_db_path = get_app_db_path()
+            with sqlite3.connect(app_db_path, timeout=30) as con:
                 cur = con.cursor()
                 row = cur.execute(
                     "SELECT config_title_regex FROM settings LIMIT 1"
@@ -414,7 +431,7 @@ class NewBookProcessor:
                 if row and row[0]:
                     return row[0]
         except Exception as e:
-            print(f"[ingest-processor] WARN: Could not read config_title_regex from app.db: {e}", flush=True)
+            print(f"[ingest-processor] WARN: Could not read config_title_regex from app.db ({app_db_path}): {e}", flush=True)
         return default_regex
 
     @staticmethod
@@ -476,7 +493,8 @@ class NewBookProcessor:
             return False
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        with sqlite3.connect("/config/app.db", timeout=30) as con:
+        app_db_path = get_app_db_path()
+        with sqlite3.connect(app_db_path, timeout=30) as con:
             cur = con.cursor()
             split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -967,7 +985,7 @@ class NewBookProcessor:
             actual_title = result[1]
 
             # Get users with auto-send enabled
-            app_db_path = "/config/app.db"
+            app_db_path = get_app_db_path()
             with sqlite3.connect(app_db_path, timeout=30) as con:
                 cur = con.cursor()
                 cur.execute("""

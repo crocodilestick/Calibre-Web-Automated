@@ -9,6 +9,7 @@ import atexit
 import os
 import sys
 import sqlite3
+import time
 from datetime import datetime, timezone, timedelta
 import itertools
 import uuid
@@ -53,6 +54,39 @@ Base = declarative_base()
 searched_ids = {}
 
 logged_in = dict()
+
+
+def _safe_session_rollback(_session, label=""):
+    try:
+        _session.rollback()
+    except Exception as e:
+        if label:
+            log.debug("Failed to rollback session after %s migration check: %s", label, e)
+
+
+def _run_ddl_with_retry(engine, statements, retries=5, base_delay=0.25):
+    if isinstance(statements, str):
+        statements = [statements]
+
+    last_error = None
+    for attempt in range(retries):
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("PRAGMA busy_timeout=5000"))
+                trans = conn.begin()
+                for stmt in statements:
+                    conn.execute(text(stmt))
+                trans.commit()
+            return True
+        except exc.OperationalError as e:
+            last_error = e
+            if "database is locked" in str(e).lower() and attempt < retries - 1:
+                time.sleep(base_delay * (2 ** attempt))
+                continue
+            raise
+    if last_error:
+        raise last_error
+    return False
 
 
 def signal_store_user_session(object, user):
@@ -784,30 +818,29 @@ def migrate_user_session_table(engine, _session):
         _session.query(exists().where(User_Sessions.random)).scalar()
         _session.commit()
     except exc.OperationalError:  # Database is not compatible, some columns are missing
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user_session ADD column 'random' String"))
-            conn.execute(text("ALTER TABLE user_session ADD column 'expiry' Integer"))
-            trans.commit()
+        _safe_session_rollback(_session, "user_session")
+        _run_ddl_with_retry(
+            engine,
+            [
+                "ALTER TABLE user_session ADD column 'random' String",
+                "ALTER TABLE user_session ADD column 'expiry' Integer",
+            ],
+        )
 
 def migrate_user_table(engine, _session):
     try:
         _session.query(exists().where(User.hardcover_token)).scalar()
         _session.commit()
     except exc.OperationalError:  # Database is not compatible, some columns are missing
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'hardcover_token' String"))
-            trans.commit()
+        _safe_session_rollback(_session, "user.hardcover_token")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'hardcover_token' String")
     # Migration for per-user theme column
     try:
         _session.query(exists().where(User.theme)).scalar()
         _session.commit()
     except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
-            trans.commit()
+        _safe_session_rollback(_session, "user.theme")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'theme' Integer DEFAULT 0")
 
     # Force migration: All users to caliBlur theme (theme=1) for v5.0.0 frontend development
     try:
@@ -824,11 +857,9 @@ def migrate_user_table(engine, _session):
         _session.query(exists().where(User.auto_send_enabled)).scalar()
         _session.commit()
     except exc.OperationalError:
+        _safe_session_rollback(_session, "user.auto_send_enabled")
         try:
-            with engine.connect() as conn:
-                trans = conn.begin()
-                conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
-                trans.commit()
+            _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0")
         except Exception as e:
             db_hint = app_DB_path or str(engine.url)
             log.error(
@@ -843,10 +874,8 @@ def migrate_user_table(engine, _session):
         _session.query(exists().where(User.kindle_mail_subject)).scalar()
         _session.commit()
     except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''"))
-            trans.commit()
+        _safe_session_rollback(_session, "user.kindle_mail_subject")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''")
 
     # Migration to enable duplicates sidebar for existing admin users
     try:
@@ -870,37 +899,44 @@ def migrate_oauth_provider_table(engine, _session):
         _session.query(exists().where(OAuthProvider.oauth_base_url)).scalar()
         _session.commit()
     except exc.OperationalError:  # Database is not compatible, some columns are missing
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_base_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_authorize_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_token_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL"))
-            trans.commit()
+        _safe_session_rollback(_session, "oauthProvider.base_urls")
+        _run_ddl_with_retry(
+            engine,
+            [
+                "ALTER TABLE oauthProvider ADD column 'oauth_base_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_authorize_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_token_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL",
+            ],
+        )
 
     # Add new OAuth enhancement fields
     try:
         _session.query(exists().where(OAuthProvider.metadata_url)).scalar()
         _session.commit()
     except exc.OperationalError:  # New columns are missing
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'metadata_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'scope' String DEFAULT 'openid profile email'"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'username_mapper' String DEFAULT 'preferred_username'"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'email_mapper' String DEFAULT 'email'"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'login_button' String DEFAULT 'OpenID Connect'"))
-            trans.commit()
+        _safe_session_rollback(_session, "oauthProvider.metadata_url")
+        _run_ddl_with_retry(
+            engine,
+            [
+                "ALTER TABLE oauthProvider ADD column 'metadata_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'scope' String DEFAULT 'openid profile email'",
+                "ALTER TABLE oauthProvider ADD column 'username_mapper' String DEFAULT 'preferred_username'",
+                "ALTER TABLE oauthProvider ADD column 'email_mapper' String DEFAULT 'email'",
+                "ALTER TABLE oauthProvider ADD column 'login_button' String DEFAULT 'OpenID Connect'",
+            ],
+        )
 
 
 def migrate_config_table(engine, _session):
     """Migrate configuration table to add new authentication columns"""
     if not engine or not _session:
-        log.error("Cannot migrate config table: missing engine or session")
-        return
-
-    # Add OAuth redirect host configuration
+            _safe_session_rollback(_session, "settings.config_reverse_proxy_auto_create_users")
+            _run_ddl_with_retry(
+                engine,
+                "ALTER TABLE settings ADD column 'config_reverse_proxy_auto_create_users' Boolean DEFAULT 0",
+            )
     try:
         # Test if the new column exists
         _session.execute(text("SELECT config_oauth_redirect_host FROM settings LIMIT 1"))
@@ -939,10 +975,11 @@ def migrate_config_table(engine, _session):
         _session.commit()
     except exc.OperationalError:  # Column doesn't exist
         try:
-            with engine.connect() as conn:
-                trans = conn.begin()
-                conn.execute(text("ALTER TABLE settings ADD column 'config_ldap_auto_create_users' Boolean DEFAULT 1"))
-                trans.commit()
+            _safe_session_rollback(_session, "settings.config_ldap_auto_create_users")
+            _run_ddl_with_retry(
+                engine,
+                "ALTER TABLE settings ADD column 'config_ldap_auto_create_users' Boolean DEFAULT 1",
+            )
         except Exception as e:
             log.error("Failed to add config_ldap_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
@@ -956,20 +993,16 @@ def migrate_magic_shelf_table(engine, _session):
         _session.query(exists().where(MagicShelf.is_system)).scalar()
         _session.commit()
     except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE magic_shelf ADD column 'is_system' Boolean DEFAULT 0"))
-            trans.commit()
+        _safe_session_rollback(_session, "magic_shelf.is_system")
+        _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'is_system' Boolean DEFAULT 0")
     
     # Check and add kobo_sync column
     try:
         _session.query(exists().where(MagicShelf.kobo_sync)).scalar()
         _session.commit()
     except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0"))
-            trans.commit()
+        _safe_session_rollback(_session, "magic_shelf.kobo_sync")
+        _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0")
 
 
 # Migrate database to current version, has to be updated after every database change. Currently migration from

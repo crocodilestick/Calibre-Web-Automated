@@ -260,6 +260,33 @@ class EPUBFixer:
                 
                 self.files[filename] = content
 
+    def fix_container_xml(self):
+        """Fix duplicate XML declarations in META-INF/container.xml"""
+        filename = 'META-INF/container.xml'
+        if filename not in self.files:
+            return
+
+        content = self.files[filename]
+        content = content.lstrip()
+
+        decl_pattern = r'<\?xml[^>]*\?>'
+        decls = list(re.finditer(decl_pattern, content))
+        if len(decls) <= 1:
+            return
+
+        first = decls[0]
+        cleaned = content[:first.end()] + re.sub(decl_pattern, '', content[first.end():])
+
+        # Validate to avoid breaking container.xml
+        try:
+            minidom.parseString(cleaned)
+        except Exception as e:
+            print_and_log(f"[cwa-kindle-epub-fixer] Warning: container.xml still invalid after cleanup: {e}", log=self.manually_triggered)
+            return
+
+        self.files[filename] = cleaned
+        self.fixed_problems.append("Removed duplicate XML declaration(s) in META-INF/container.xml")
+
     def fix_body_id_link(self):
         """Fix linking to body ID showing up as unresolved hyperlink"""
         body_id_list = []
@@ -766,6 +793,8 @@ class EPUBFixer:
         # Run fixing procedures
         print_and_log("[cwa-kindle-epub-fixer] Checking linking to body ID to prevent unresolved hyperlinks...", log=self.manually_triggered)
         self.fix_body_id_link()
+        print_and_log("[cwa-kindle-epub-fixer] Checking META-INF/container.xml integrity...", log=self.manually_triggered)
+        self.fix_container_xml()
         print_and_log("[cwa-kindle-epub-fixer] Checking UTF-8 encoding declaration...", log=self.manually_triggered)
         self.fix_encoding()
         print_and_log("[cwa-kindle-epub-fixer] Checking language field tag is valid...", log=self.manually_triggered)

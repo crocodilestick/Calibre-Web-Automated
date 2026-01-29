@@ -9,7 +9,7 @@ from flask_babel import gettext as _
 from sqlalchemy import func, and_, case
 from sqlalchemy.sql.expression import true, false
 from sqlalchemy.orm import joinedload
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 import hashlib
 import os
@@ -29,6 +29,23 @@ from cwa_db import CWA_DB
 
 duplicates = Blueprint('duplicates', __name__)
 log = logger.create()
+
+
+def _normalize_timestamp(ts):
+    if ts is None:
+        return None
+    if ts.tzinfo is None:
+        return ts.replace(tzinfo=timezone.utc)
+    return ts.astimezone(timezone.utc)
+
+
+def _timestamp_or_default(ts, default):
+    normalized = _normalize_timestamp(ts)
+    return normalized if normalized is not None else default
+
+
+_AWARE_MIN = datetime.min.replace(tzinfo=timezone.utc)
+_AWARE_MAX = datetime.max.replace(tzinfo=timezone.utc)
 
 
 def admin_or_edit_required(f):
@@ -101,15 +118,15 @@ def select_book_to_keep(books, strategy):
     
     if strategy == 'newest':
         # Keep the most recently added book
-        return max(books, key=lambda b: b.timestamp if b.timestamp else datetime.min)
+        return max(books, key=lambda b: _timestamp_or_default(b.timestamp, _AWARE_MIN))
 
     elif strategy == 'oldest':
         # Keep the earliest added book
-        return min(books, key=lambda b: b.timestamp if b.timestamp else datetime.max)
+        return min(books, key=lambda b: _timestamp_or_default(b.timestamp, _AWARE_MAX))
 
     elif strategy == 'merge':
         # Merge into the newest book by default
-        return max(books, key=lambda b: b.timestamp if b.timestamp else datetime.min)
+        return max(books, key=lambda b: _timestamp_or_default(b.timestamp, _AWARE_MIN))
     
     elif strategy == 'highest_quality_format':
         # Get format priority from settings
@@ -147,7 +164,7 @@ def select_book_to_keep(books, strategy):
             return max(scores) if scores else 0
         
         # Keep book with highest quality format, fallback to newest if tie
-        return max(books, key=lambda b: (get_best_format_score(b), b.timestamp if b.timestamp else datetime.min))
+        return max(books, key=lambda b: (get_best_format_score(b), _timestamp_or_default(b.timestamp, _AWARE_MIN)))
     
     elif strategy == 'most_metadata':
         # Count metadata completeness
@@ -193,7 +210,7 @@ def select_book_to_keep(books, strategy):
             return score
         
         # Keep book with most complete metadata, fallback to newest if tie
-        return max(books, key=lambda b: (metadata_score(b), b.timestamp if b.timestamp else datetime.min))
+        return max(books, key=lambda b: (metadata_score(b), _timestamp_or_default(b.timestamp, _AWARE_MIN)))
     
     elif strategy == 'largest_file_size':
         # Sum all format file sizes
@@ -203,11 +220,11 @@ def select_book_to_keep(books, strategy):
             return sum(data.uncompressed_size for data in book.data if hasattr(data, 'uncompressed_size') and data.uncompressed_size)
         
         # Keep book with largest total file size, fallback to newest if tie
-        return max(books, key=lambda b: (total_file_size(b), b.timestamp if b.timestamp else datetime.min))
+        return max(books, key=lambda b: (total_file_size(b), _timestamp_or_default(b.timestamp, _AWARE_MIN)))
     
     else:
         # Default fallback: keep newest
-        return max(books, key=lambda b: b.timestamp if b.timestamp else datetime.min)
+        return max(books, key=lambda b: _timestamp_or_default(b.timestamp, _AWARE_MIN))
 
 
 def get_unresolved_duplicate_count(user_id=None):
@@ -855,7 +872,7 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
     for key, books in grouped_books.items():
         if len(books) > 1:
             # Sort books by timestamp (newest first)
-            books.sort(key=lambda x: x.timestamp if x.timestamp else datetime.min, reverse=True)
+            books.sort(key=lambda x: _timestamp_or_default(x.timestamp, _AWARE_MIN), reverse=True)
             
             # Add additional information for display
             for book in books:

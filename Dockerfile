@@ -284,7 +284,7 @@ RUN \
 # Add unrar from unrar stage
 COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
 
-# Set calibre environment variables
+# Set calibre environment variable
 ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
 
 # Ports and volumes

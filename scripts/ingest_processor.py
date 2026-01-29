@@ -1179,7 +1179,7 @@ class NewBookProcessor:
             # Schedule in the long-lived web process so the debounce survives
             # the short-lived ingest process exiting.
             try:
-                delay_seconds = int(self.cwa_settings.get('duplicate_scan_debounce_seconds', 30))
+                delay_seconds = int(self.cwa_settings.get('duplicate_scan_debounce_seconds', 5))
                 delay_seconds = max(5, min(600, delay_seconds))
                 url = get_internal_api_url("/cwa-internal/queue-duplicate-scan")
                 payload = {"delay_seconds": delay_seconds}

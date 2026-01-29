@@ -855,7 +855,7 @@
         <label for="duplicate_scan_debounce_seconds" class="settings-section-header">{{_('After import debounce (seconds)')}}</label>
         <input type="number" min="5" max="600" step="1" class="cwa-settings-input"
                name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds"
-               value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 30) }}"
+               value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 5) }}"
                style="width: 120px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
       </div>
       <div class="cwa-settings-tip" style="margin-top: 2rem;">
@@ -999,7 +999,7 @@
             {{_('Merge Formats')}} - {{_('Merge formats into the newest book, delete the rest')}}
           </option>
           <option value="highest_quality_format" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'highest_quality_format' %} selected {% endif %}>
-            {{_('Keep Highest Quality Format')}} - {{_('Prefer EPUB > KEPUB > AZW3 > MOBI > PDF')}}
+            {{_('Keep Highest Quality Format')}} - {{_('Prefer formats based on your Duplicate Format Priority Ranking')}}
           </option>
           <option value="most_metadata" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'most_metadata' %} selected {% endif %}>
             {{_('Keep Most Metadata')}} - {{_('Keep book with most complete information')}}

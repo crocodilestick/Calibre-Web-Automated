@@ -7,9 +7,13 @@
     'use strict';
     
     const STORAGE_KEY = 'cwa_duplicates_notification_shown';
-    // Removed automatic polling - badge updates only on cache invalidation events
+    const LAST_COUNT_KEY = 'cwa_duplicates_last_count';
+    const POLL_INTERVAL_MS = 1500;
+    const POLL_MAX_ATTEMPTS = 80; // ~2 minutes
     
     let currentDuplicateCount = 0;
+    let pollAttempts = 0;
+    let pollTimer = null;
     
     /**
      * Check if notification was already shown in this session
@@ -23,6 +27,16 @@
      */
     function markNotificationShown() {
         sessionStorage.setItem(STORAGE_KEY, 'true');
+    }
+
+    function getLastNotifiedCount() {
+        const val = sessionStorage.getItem(LAST_COUNT_KEY);
+        const parsed = parseInt(val, 10);
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function setLastNotifiedCount(count) {
+        sessionStorage.setItem(LAST_COUNT_KEY, String(count || 0));
     }
     
     /**
@@ -61,15 +75,45 @@
             return { success: false, count: 0, preview: [], enabled: false };
         });
     }
+
+    function startStatusPolling() {
+        if (pollTimer) {
+            return;
+        }
+        pollAttempts = 0;
+        pollTimer = setInterval(() => {
+            pollAttempts += 1;
+            fetchDuplicateStatus().then(handleStatusResponse);
+            if (pollAttempts >= POLL_MAX_ATTEMPTS) {
+                stopStatusPolling();
+            }
+        }, POLL_INTERVAL_MS);
+    }
+
+    function stopStatusPolling() {
+        if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+        }
+    }
+
+    function isModalActive() {
+        const modal = document.getElementById('duplicate-notification-modal');
+        return modal && modal.classList.contains('active');
+    }
     
     /**
      * Show the notification modal
      */
     function showNotificationModal(data) {
         const { count, preview } = data;
+
+        if (isModalActive()) {
+            return;
+        }
         
-        // Don't show if already shown this session
-        if (wasNotificationShown()) {
+        const lastCount = getLastNotifiedCount();
+        if (wasNotificationShown() && count <= lastCount) {
             return;
         }
         
@@ -103,9 +147,41 @@
                 // Focus trap
                 modal.focus();
                 
-                // Mark as shown
+                // Mark as shown and store count
                 markNotificationShown();
+                setLastNotifiedCount(count);
+                stopStatusPolling();
             }, 500);
+        }
+    }
+
+    function handleStatusResponse(data) {
+        if (!data || !data.success) {
+            return;
+        }
+
+        updateBadge(data.count);
+
+        if (data.count > 0 && data.enabled) {
+            showNotificationModal(data);
+            if (isModalActive()) {
+                stopStatusPolling();
+                return;
+            }
+        }
+
+        if (data.needs_scan || data.stale) {
+            startStatusPolling();
+            return;
+        }
+
+        if (data.count > 0) {
+            stopStatusPolling();
+            return;
+        }
+
+        if (data.enabled) {
+            startStatusPolling();
         }
     }
     
@@ -176,15 +252,24 @@
         
         // Fetch initial status once on page load
         // No periodic updates - badge refreshes after ingest operations only
-        fetchDuplicateStatus().then(data => {
-            if (data.success) {
-                // Update badge
-                updateBadge(data.count);
-                
-                // Show notification modal if there are duplicates and notifications are enabled
-                if (data.count > 0 && data.enabled) {
-                    showNotificationModal(data);
-                }
+        const bootstrapData = window.cwaDuplicateBootstrap;
+        if (bootstrapData && typeof bootstrapData === 'object') {
+            handleStatusResponse({
+                success: true,
+                enabled: !!bootstrapData.enabled,
+                count: Number(bootstrapData.count || 0),
+                preview: bootstrapData.preview || [],
+                cached: !!bootstrapData.cached,
+                stale: !!bootstrapData.stale,
+                needs_scan: !!bootstrapData.stale
+            });
+        }
+
+        fetchDuplicateStatus().then(handleStatusResponse);
+
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                fetchDuplicateStatus().then(handleStatusResponse);
             }
         });
     }

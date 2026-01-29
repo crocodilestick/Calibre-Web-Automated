@@ -285,7 +285,10 @@
                       <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}">
                         <span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}
                         {% if element['id'] == 'duplicates' %}
-                          <span id="duplicate-count-badge" class="duplicate-badge" style="display: none;">0</span>
+                          {% set dup_count = duplicate_notification.count if duplicate_notification is defined else 0 %}
+                          <span id="duplicate-count-badge" class="duplicate-badge" style="{% if dup_count > 0 %}display: inline-block;{% else %}display: none;{% endif %}">
+                            {% if dup_count > 99 %}99+{% else %}{{ dup_count }}{% endif %}
+                          </span>
                         {% endif %}
                       </a>
                     </li>
@@ -441,6 +444,9 @@
         </a>
       </div>
     </div>
+    <script>
+      window.cwaDuplicateBootstrap = {{ duplicate_notification|tojson if duplicate_notification is defined else '{}' }};
+    </script>
     <script src="{{ url_for('static', filename='js/duplicate-notifier.js') }}"></script>
     {% endif %}
   </body>

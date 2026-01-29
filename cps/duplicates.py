@@ -231,6 +231,31 @@ def get_unresolved_duplicate_count(user_id=None):
         return 0
 
 
+def filter_dismissed_groups(duplicate_groups, user_id=None):
+    """Filter dismissed duplicate groups for a given user."""
+    if not duplicate_groups:
+        return []
+    if user_id is None:
+        try:
+            user_id = current_user.id
+        except Exception:
+            user_id = None
+    if not user_id:
+        return duplicate_groups
+
+    try:
+        dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
+            .filter(ub.DismissedDuplicateGroup.user_id == user_id)\
+            .all()
+        dismissed_hashes = {row[0] for row in dismissed_groups}
+        if not dismissed_hashes:
+            return duplicate_groups
+        return [group for group in duplicate_groups if group.get('group_hash') not in dismissed_hashes]
+    except Exception as e:
+        log.error("[cwa-duplicates] Error filtering dismissed groups: %s", str(e))
+        return duplicate_groups
+
+
 @duplicates.route("/duplicates")
 @login_required_if_no_ano
 @admin_or_edit_required
@@ -240,8 +265,24 @@ def show_duplicates():
     log.info("[cwa-duplicates] Loading duplicates page for user: %s", current_user.name)
     
     try:
-        # Use SQL/Python detection to find duplicates with proper user filtering
-        duplicate_groups = find_duplicate_books()
+        # Use SQL/Python detection to find all duplicates once, then filter for current user
+        all_groups = find_duplicate_books(include_dismissed=True)
+        duplicate_groups = filter_dismissed_groups(all_groups, current_user.id if current_user else None)
+
+        # Update cache so notifications reflect the latest scan
+        try:
+            max_book_id = 0
+            try:
+                max_id_result = calibre_db.session.query(func.max(db.Books.id)).scalar()
+                max_book_id = max_id_result if max_id_result is not None else 0
+            except Exception as max_ex:
+                log.warning("[cwa-duplicates] Could not get max book ID for cache update: %s", str(max_ex))
+
+            cwa_db_cache = CWA_DB()
+            cwa_db_cache.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
+            log.debug("[cwa-duplicates] Cache updated from /duplicates page load")
+        except Exception as cache_ex:
+            log.warning("[cwa-duplicates] Failed to update cache from /duplicates page: %s", str(cache_ex))
 
         # Compute next scheduled scan run
         cwa_db = CWA_DB()
@@ -981,19 +1022,10 @@ def get_duplicate_status():
             duplicate_groups = cache_data['duplicate_groups']
             
             # Filter out dismissed groups for this user
-            if current_user and current_user.id:
-                try:
-                    dismissed_hashes = set()
-                    dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
-                        .filter(ub.DismissedDuplicateGroup.user_id == current_user.id)\
-                        .all()
-                    dismissed_hashes = {row[0] for row in dismissed_groups}
-                    
-                    if dismissed_hashes:
-                        duplicate_groups = [group for group in duplicate_groups 
-                                          if group['group_hash'] not in dismissed_hashes]
-                except Exception as e:
-                    log.error("[cwa-duplicates] Error filtering dismissed groups: %s", str(e))
+            duplicate_groups = filter_dismissed_groups(
+                duplicate_groups,
+                current_user.id if current_user and current_user.id else None
+            )
             
             count = len(duplicate_groups)
             
@@ -1006,7 +1038,7 @@ def get_duplicate_status():
                     'count': group['count'],
                     'hash': group['group_hash']
                 })
-            
+
             return jsonify({
                 'success': True,
                 'enabled': bool(notifications_enabled),

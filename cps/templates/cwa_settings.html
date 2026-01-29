@@ -657,9 +657,9 @@
           {% endif %}
         {% endfor %}
       </select>
-      <div class="cwa-settings-tip">
-        <small class="settings-explanation">
-          {{_("NOTE: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
+      <div class="cwa-settings-tip" style ="margin-top: 3rem;">
+        <small style="color: var(--color-info-text);">
+          💡 {{_("Note: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
         </small>
       </div>
     </div>
@@ -721,33 +721,6 @@
     </div>
 
     <div class="settings-container">
-      <h4 class="settings-section-header">{{_('CWA Auto-Ingest - Ignored Formats')}}</h4>
-      <p class="cwa-settings-explanation settings-explanation">
-        {{_("The formats selected here will be ignored by CWA's Auto-Ingest feature, meaning files in these formats won't be added to the library by CWA during the ingest process")}}
-      </p>
-      <div style="max-width: 90rem; padding-left: 30px;">
-        {% for format in ignorable_formats -%}
-          <label for="ignore_ingest_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
-            {% if format in cwa_settings['auto_ingest_ignored_formats'] %}
-              {% if format == cwa_settings['auto_convert_target_format'] %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
-              {% else %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
-              {% endif %}
-            {% else %}
-              {% if format == cwa_settings['auto_convert_target_format'] %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
-              {% else %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
-              {% endif %}
-            {% endif %}
-            <span style="padding-left: 4px; vertical-align: middle;">{{ format }}</span>
-          </label>
-        {% endfor %}
-      </div>
-    </div>
-
-<div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Auto-Ingest Automerge')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
@@ -784,6 +757,33 @@
     </div>
 
     <div class="settings-container">
+      <h4 class="settings-section-header">{{_('CWA Auto-Ingest - Ignored Formats')}}</h4>
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_("The formats selected here will be ignored by CWA's Auto-Ingest feature, meaning files in these formats won't be added to the library by CWA during the ingest process")}}
+      </p>
+      <div style="max-width: 90rem; padding-left: 30px;">
+        {% for format in ignorable_formats -%}
+          <label for="ignore_ingest_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
+            {% if format in cwa_settings['auto_ingest_ignored_formats'] %}
+              {% if format == cwa_settings['auto_convert_target_format'] %}
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
+              {% else %}
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
+              {% endif %}
+            {% else %}
+              {% if format == cwa_settings['auto_convert_target_format'] %}
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
+              {% else %}
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
+              {% endif %}
+            {% endif %}
+            <span style="padding-left: 4px; vertical-align: middle;">{{ format }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Duplicate Detection System')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
@@ -792,13 +792,18 @@
 
       <div class="checkbox-wrapper" style="margin-bottom: 1.5rem;">
         <input type="checkbox" id="duplicate_detection_enabled" name="duplicate_detection_enabled" value="1" {% if cwa_settings['duplicate_detection_enabled'] %} checked {% endif %}>
-        <label for="duplicate_detection_enabled">{{_('Enable Duplicate Detection')}}</label>
-        <small class="settings-explanation">{{_('When enabled, CWA will scan for duplicate books after each import')}}</small>
+        <label for="duplicate_detection_enabled" style="margin-left: 1rem;">{{_('Enable Duplicate Detection')}}</label>
       </div>
+      <div class="cwa-settings-tip" style="margin-top: 1rem;">
+        <small>
+          {{_('When enabled, CWA will scan for duplicate books after each import')}}
+        </small>
+      </div>
+
 
       <!-- Detection Method (Hybrid default) -->
       {% set scan_method = cwa_settings.get('duplicate_scan_method')|default('hybrid', true) %}
-      <div class="form-group" style="max-width: 520px;">
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
         <label for="duplicate_scan_method" class="settings-section-header" style="margin-top: 8px;">{{_('Duplicate Detection Method')}}</label>
         <select class="cwa-settings-select" name="duplicate_scan_method" id="duplicate_scan_method" style="width: fit-content;">
           <option value="hybrid" {% if scan_method == 'hybrid' %}selected{% endif %}>
@@ -811,9 +816,11 @@
             {{_('Legacy SQL only (experimental)')}}
           </option>
         </select>
-        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 10px;">
-          {{_('Hybrid mode uses a fast SQL prefilter to narrow candidates, then applies the robust Python logic for final results.') }}
-        </p>
+      </div>
+      <div class="cwa-settings-tip">
+        <small>
+          {{_('Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies the robust Python logic for final results.') }}
+        </small>
       </div>
 
       <!-- Keep SQL prefilter enabled by default for hybrid/auto modes -->
@@ -829,11 +836,11 @@
 
       <div class="checkbox-wrapper" style="margin-bottom: 1rem;">
         <input type="checkbox" id="duplicate_scan_enabled" name="duplicate_scan_enabled" value="1" {% if cwa_settings['duplicate_scan_enabled'] %} checked {% endif %}>
-        <label for="duplicate_scan_enabled">{{_('Enable automatic duplicate scans')}}</label>
+        <label for="duplicate_scan_enabled" style="margin-left: 1rem;">{{_('Enable automatic duplicate scans')}}</label>
       </div>
 
-      <div class="form-group" style="max-width: 520px;">
-        <label for="duplicate_scan_frequency" class="settings-section-header">{{_('After import scans')}}</label>
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
+        <label for="duplicate_scan_frequency">{{_('After import scans')}}</label>
         <select class="cwa-settings-select" name="duplicate_scan_frequency" id="duplicate_scan_frequency" style="width: fit-content;">
           <option value="after_import" {% if cwa_settings.get('duplicate_scan_frequency', 'after_import') == 'after_import' %}selected{% endif %}>
             {{_('Run after each import (debounced)')}}
@@ -844,27 +851,33 @@
         </select>
       </div>
 
-      <div class="form-group" style="max-width: 520px; margin-top: 0.75rem;">
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
         <label for="duplicate_scan_debounce_seconds" class="settings-section-header">{{_('After import debounce (seconds)')}}</label>
         <input type="number" min="5" max="600" step="1" class="cwa-settings-input"
                name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds"
                value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 30) }}"
                style="width: 120px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
-        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 8px;">
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 2rem;">
+        <small class="cwa-settings-explanation" style="margin-top: 8px;">
           {{_('Wait this many seconds after the last import before starting a background scan.') }}
-        </p>
+        </small>
       </div>
 
-      <div class="form-group" style="max-width: 520px; margin-top: 1rem;">
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
         <label for="duplicate_scan_cron" class="settings-section-header">{{_('Scheduled scans (cron expression)')}}</label>
         <input type="text" class="cwa-settings-input" name="duplicate_scan_cron" id="duplicate_scan_cron" placeholder="0 3 * * *"
                value="{{ cwa_settings.get('duplicate_scan_cron', '') }}" style="width: 220px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
-        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 8px;">
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 1rem;">
+        <small>
           {{_('Leave blank to disable scheduled scans. Example:')}} <code>0 3 * * *</code>
-        </p>
-        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 6px;">
+        </small>
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 1rem;">
+        <small>
           {{_('If enabled, after-import scans and cron scans can both run. Use “Manual only” to disable after-import scans while keeping cron schedules.')}}
-        </p>
+        </small>
       </div>
 
       {% if next_duplicate_scan_run %}
@@ -887,43 +900,43 @@
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_title" name="duplicate_detection_title" value="1" {% if cwa_settings['duplicate_detection_title'] %} checked {% endif %}>
           <label for="duplicate_detection_title">{{_('Title')}}</label>
-          <small class="settings-explanation">{{_('Consider book titles when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book titles when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_author" name="duplicate_detection_author" value="1" {% if cwa_settings['duplicate_detection_author'] %} checked {% endif %}>
           <label for="duplicate_detection_author">{{_('Author')}}</label>
-          <small class="settings-explanation">{{_('Consider book authors when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book authors when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_language" name="duplicate_detection_language" value="1" {% if cwa_settings['duplicate_detection_language'] %} checked {% endif %}>
           <label for="duplicate_detection_language">{{_('Language')}}</label>
-          <small class="settings-explanation">{{_('Consider book language when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book language when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_series" name="duplicate_detection_series" value="1" {% if cwa_settings['duplicate_detection_series'] %} checked {% endif %}>
           <label for="duplicate_detection_series">{{_('Series')}}</label>
-          <small class="settings-explanation">{{_('Consider book series when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book series when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_publisher" name="duplicate_detection_publisher" value="1" {% if cwa_settings['duplicate_detection_publisher'] %} checked {% endif %}>
           <label for="duplicate_detection_publisher">{{_('Publisher')}}</label>
-          <small class="settings-explanation">{{_('Consider book publisher when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book publisher when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_format" name="duplicate_detection_format" value="1" {% if cwa_settings['duplicate_detection_format'] %} checked {% endif %}>
           <label for="duplicate_detection_format">{{_('Format')}}</label>
-          <small class="settings-explanation">{{_('Consider file format when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider file format when detecting duplicates')}}</small>
         </div>
       </div>
 
-      <div class="cwa-settings-tip">
+      <div class="cwa-settings-tip" style="margin-top: 3rem;">
         <small class="settings-explanation">
-          <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
+          💡 <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
         </small>
       </div>
     </div>
@@ -943,9 +956,9 @@
         </ul>
       </div>
 
-      <div class="cwa-settings-tip">
+      <div class="cwa-settings-tip" style="margin-top: 3rem">
         <small class="settings-explanation">
-          <strong>{{_('Tip:')}}</strong> {{_('When resolving duplicates with "Highest Quality Format" strategy, books with higher-ranked formats will be kept. Lower priority formats will be deleted.')}}
+          💡 <strong>{{_('Tip:')}}</strong> {{_('When resolving duplicates with "Highest Quality Format" strategy, books with higher-ranked formats will be kept. Lower priority formats will be deleted.')}}
         </small>
       </div>
     </div>
@@ -961,19 +974,19 @@
 
       <div class="checkbox-wrapper">
         <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="1" {% if cwa_settings['duplicate_notifications_enabled'] %} checked {% endif %}>
-        <label for="duplicate_notifications_enabled">{{_('Enable Duplicate Notifications')}}</label>
+        <label for="duplicate_notifications_enabled" style="margin-left: 1rem;">{{_('Enable Duplicate Notifications')}}</label>
       </div>
         <p class="cwa-settings-tip" style="font-size: small;">{{_('Show popup notifications when unresolved duplicates are detected. Admins and users with edit rights will see a badge on the Duplicates sidebar button and a notification popup when they login.')}}</small>
 
       <div class="checkbox-wrapper">
         <input type="checkbox" id="duplicate_auto_resolve_enabled" name="duplicate_auto_resolve_enabled" value="1" {% if cwa_settings['duplicate_auto_resolve_enabled'] %} checked {% endif %}>
-        <label for="duplicate_auto_resolve_enabled">{{_('Enable Automatic Duplicate Resolution')}} ⚠️</label>
+        <label for="duplicate_auto_resolve_enabled" style="margin-left: 1rem;">{{_('Enable Automatic Duplicate Resolution')}} ⚠️</label>
       </div>
       <p class="cwa-settings-tip" style="background: #e74c3c57; border-color: #e74c3c; font-size: small;">
         <strong>{{_('Warning:')}}</strong> {{_('This will automatically delete books based on the strategy below. Original files will be backed up to')}} <code>/config/processed_books/</code>
       </p>
 
-      <div class="form-group" style="padding: 2rem; background: #151e2680;">
+      <div class="form-group" style="padding: 2rem 3rem 2rem 3rem; background: #151e2680;">
         <h4 for="duplicate_auto_resolve_strategy" class="settings-section-header">{{_('Auto-Resolution Strategy')}}</h4>
         <select class="form-control" id="duplicate_auto_resolve_strategy" name="duplicate_auto_resolve_strategy">
           <option value="newest" {% if cwa_settings.get('duplicate_auto_resolve_strategy', 'newest') == 'newest' %} selected {% endif %}>
@@ -998,20 +1011,18 @@
         <p class="cwa-settings-explanation settings-explanation" style="margin-top: 2rem !important;">{{_('Choose which book to keep when duplicates are automatically resolved.')}}</p>
       </div>
 
-      <div class="form-group" style="padding: 2rem; background: #151e2680;">
+      <div class="form-group" style="padding: 2rem 3rem 2rem 3rem; background: #151e2680;">
         <h4 class="settings-section-header">{{_('Rate Limiting')}}</h4>
         <label for="duplicate_auto_resolve_cooldown_minutes">{{_('Cooldown Period (minutes)')}}</label>
         <input type="number" class="form-control" id="duplicate_auto_resolve_cooldown_minutes" 
                name="duplicate_auto_resolve_cooldown_minutes" min="0" max="1440"
                value="{{ cwa_settings.get('duplicate_auto_resolve_cooldown_minutes', 0) if cwa_settings.get('duplicate_auto_resolve_cooldown_minutes') not in [False, None, ''] else 0 }}">
-        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 1rem;">
-          {{_('Minimum time between automatic resolutions (0 to disable). Prevents rapid-fire deletions during batch imports.')}}
-        </p>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 2rem !important;">{{_('Minimum time between automatic resolutions (0 to disable). Prevents rapid-fire deletions during batch imports.')}}</p>
       </div>
 
-      <div class="cwa-settings-tip">
+      <div class="cwa-settings-tip" style="margin-top: 3rem;">
         <small class="settings-explanation">
-          <strong>{{_('Note:')}}</strong> {{_('Auto-resolution runs after duplicate scans detect new duplicates. Dismissed duplicate groups are never auto-resolved.')}}
+          💡 <strong>{{_('Note:')}}</strong> {{_('Auto-resolution runs after duplicate scans detect new duplicates. Dismissed duplicate groups are never auto-resolved.')}}
         </small>
       </div>
     </div>

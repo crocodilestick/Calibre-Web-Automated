@@ -8,10 +8,10 @@
 <div class="discover">
   <h2>{{title}}</h2>
   <form style="width: -webkit-fill-available;" role="form" method="POST" class="col-md-10 col-lg-6" action="{{ url_for('admin.db_configuration') }}" autocomplete="off">
-    <div class="settings-container">
+    <div class="settings-container" style="padding-top: 4rem;">
        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
        <label style="font-size: 32px; margin-bottom: 3rem; line-height: 1.22; margin-top: 2rem;" for="config_calibre_dir">{{_('Location of Calibre Database (metadata.db file)')}}</label>
-       <div style="margin-bottom: 3rem; padding-left: 0;" class="form-group required input-group">
+       <div style="margin-bottom: 3rem; padding-left: 0; margin-top: 3rem;" class="form-group required input-group">
         <input style="background-color: #ffedde33;" type="text" class="form-control" id="config_calibre_dir" name="config_calibre_dir" value="{% if config.config_calibre_dir != None %}{{ config.config_calibre_dir }}{% endif %}" autocomplete="off" readonly>
         <span class="input-group-btn">
           <button type="button" data-toggle="modal" id="calibre_modal_path" data-link="config_calibre_dir" data-filefilter="metadata.db" data-target="#fileModal" id="library_path" class="btn btn-default" disabled>

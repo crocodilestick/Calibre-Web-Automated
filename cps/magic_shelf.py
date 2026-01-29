@@ -307,6 +307,14 @@ def build_filter_from_rule(rule, user_id=None):
 
     # Handle relationships using .any()
     relationship_name = RELATIONSHIP_MAP.get(field_name)
+    negated_relationship_ops = {
+        'not_equal': 'equal',
+        'not_contains': 'contains',
+        'not_begins_with': 'begins_with',
+        'not_ends_with': 'ends_with',
+        'not_in': 'in',
+        'not_between': 'between',
+    }
     try:
         if relationship_name:
             # Special handling for is_empty/is_null on relationships:
@@ -315,6 +323,15 @@ def build_filter_from_rule(rule, user_id=None):
                 return ~getattr(db.Books, relationship_name).any()
             elif operator_name in ['is_not_empty', 'is_not_null']:
                 return getattr(db.Books, relationship_name).any()
+            elif operator_name in negated_relationship_ops:
+                base_operator_name = negated_relationship_ops[operator_name]
+                base_operator = OPERATOR_MAP.get(base_operator_name)
+                if not base_operator:
+                    return None
+                filter_expr = base_operator(column, value)
+                if filter_expr is None:
+                    return None
+                return ~getattr(db.Books, relationship_name).any(filter_expr)
             else:
                 filter_expr = operator(column, value)
                 if filter_expr is None:

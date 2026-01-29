@@ -120,7 +120,8 @@
   </div>
   {% endif %}
 
-  {% if page != 'newest' %}<div class="shelf-actions">{% endif %}
+  {% set show_shelf_actions = page != 'discover' %}
+  {% if show_shelf_actions %}<div class="shelf-actions">{% endif %}
     {% if page == 'magicshelf' %}
     <div class="magic-shelf-buttons">
         <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1, refresh=1)}}" 
@@ -184,7 +185,7 @@
     {% endif %}
     </div>
    {% endif %}
-  {% if page != 'newest' %}</div>{% endif %}
+  {% if show_shelf_actions %}</div>{% endif %}
   <div class="row display-flex">
     {% if entries[0] %}
     {% for entry in entries %}

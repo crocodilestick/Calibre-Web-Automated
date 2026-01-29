@@ -1003,7 +1003,7 @@
         <label for="duplicate_auto_resolve_cooldown_minutes">{{_('Cooldown Period (minutes)')}}</label>
         <input type="number" class="form-control" id="duplicate_auto_resolve_cooldown_minutes" 
                name="duplicate_auto_resolve_cooldown_minutes" min="0" max="1440"
-               value="{{ cwa_settings.get('duplicate_auto_resolve_cooldown_minutes', 0) }}">
+               value="{{ cwa_settings.get('duplicate_auto_resolve_cooldown_minutes', 0) if cwa_settings.get('duplicate_auto_resolve_cooldown_minutes') not in [False, None, ''] else 0 }}">
         <p class="cwa-settings-explanation settings-explanation" style="margin-top: 1rem;">
           {{_('Minimum time between automatic resolutions (0 to disable). Prevents rapid-fire deletions during batch imports.')}}
         </p>

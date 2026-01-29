@@ -47,6 +47,7 @@
 {% endblock %}
 {% block body %}
 <div class="discover hardcover-review-page">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <h2>{{_('Hardcover Match Review 🔖')}}</h2>
   
   <div class="row" style="margin-top: 20px;">
@@ -62,20 +63,21 @@
       </div>
       {% else %}
       
-      <div class="status-hero warning" style="text-align: center;">
+      <div class="status-hero warning" style="text-align: center; max-width: 140rem; margin-inline: auto;">
         <span class="status-hero-icon">⚠️</span>
         <h3 class="status-hero-title">{{_('Review Required')}}</h3>
         <p class="status-hero-message">{{_('%(count)s book(s) have ambiguous Hardcover matches. Please review each match and select the correct result, or skip/reject if no good match exists.', count=matches|length)}}</p>
       </div>
-      
-      <p class="lead" style="margin: 30px 0 20px 0; color: #bbb; text-align: center;">
+    
+    <div class="settings-container" style="max-width: 140rem;">
+      <h3 style="margin-top: 30px; margin-bottom: 20px;">🔖 {{_('Pending Matches')}}</h3>
+
+      <p class="lead" style="margin: 30px 0 20px 0; color: #bbb; text-align: left;">
         {{_('Review and approve ambiguous Hardcover ID matches for your books. High-confidence matches are applied automatically; these require manual verification.')}}
       </p>
       
-      <h3 style="margin-top: 30px; margin-bottom: 20px;">🔖 {{_('Pending Matches')}}</h3>
-      
       {% for match in matches %}
-      <div class="settings-container" style="margin-bottom: 30px;" id="match-card-{{match.id}}">
+      <div style="margin-bottom: 30px;" id="match-card-{{match.id}}">
         <div style="background-color: rgba(42, 52, 65, 0.6); padding: 20px; border-radius: 8px; border: 1px solid #3a4451;">
           <div style="border-bottom: 1px solid #3a4451; padding-bottom: 15px; margin-bottom: 20px;">
             <h4 style="margin: 0; color: #fff; font-size: 1.3em;">
@@ -89,7 +91,7 @@
           <div style="padding: 10px 0;">
           <h5 style="margin-top: 0; margin-bottom: 20px; color: #f8be03;">{{_('Candidate Matches')}} <span style="color: #aaa; font-size: 0.85em;">({{_('Top %(count)s', count=match.results|length)}})</span></h5>
           
-          <div class="row">
+          <div class="row hardcover-match-row" style="justify-content: flex-start !important;">
             {% for result in match.results[:3] %}
             <div class="col-md-4" style="margin-bottom: 20px;">
               <div class="match-candidate" style="border: 1px solid #3a4451; border-radius: 6px; padding: 15px; background-color: rgba(26, 32, 39, 0.5); height: 100%; position: relative; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#f8be03'; this.style.backgroundColor='rgba(26, 32, 39, 0.8)'" onmouseout="this.style.borderColor='#3a4451'; this.style.backgroundColor='rgba(26, 32, 39, 0.5)';">
@@ -107,8 +109,16 @@
                 
                 <!-- Cover Image -->
                 {% if result.cover %}
+                {% set cover_url = result.cover %}
+                {% if cover_url.startswith('//') %}
+                {% set cover_url = 'https:' ~ cover_url %}
+                {% endif %}
                 <div style="text-align: center; margin-bottom: 15px; margin-top: 30px;">
-                  <img src="{{result.cover}}" alt="Cover" style="max-width: 100%; max-height: 200px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                  <img src="{{cover_url|replace('http://', 'https://')}}" alt="Cover" class="hardcover-cover-image" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='generic_cover.svg') }}';">
+                </div>
+                {% else %}
+                <div style="text-align: center; margin-bottom: 15px; margin-top: 30px;">
+                  <img src="{{ url_for('static', filename='generic_cover.svg') }}" alt="Cover" class="hardcover-cover-image" loading="lazy">
                 </div>
                 {% endif %}
                 
@@ -178,10 +188,37 @@
     </div>
   </div>
 </div>
+</div>
 
 <style>
   .settings-container {
     margin-bottom: 25px;
+  }
+
+  .hardcover-review-page .hardcover-match-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+  }
+
+  .hardcover-review-page .hardcover-match-row > [class*="col-"] {
+    display: flex;
+  }
+
+  .hardcover-review-page .match-candidate {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .hardcover-review-page .hardcover-cover-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: none
   }
   
   .match-candidate img {
@@ -201,135 +238,136 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   }
 </style>
+{% endblock %}
 
+{% block js %}
 <script>
 $(document).ready(function() {
-    // Handle accept match button
-    $('.accept-match-btn').click(function() {
-        var queueId = $(this).data('queue-id');
-        var resultId = $(this).data('result-id');
-        var btn = $(this);
+  // Handle accept match button
+  $('.accept-match-btn').click(function() {
+    var queueId = $(this).data('queue-id');
+    var resultId = $(this).data('result-id');
+    var btn = $(this);
         
-        btn.prop('disabled', true).text('{{_("Processing...")}}');
+    btn.prop('disabled', true).text('{{_("Processing...")}}');
         
-        $.ajax({
-            url: '{{url_for("admin.hardcover_review_action")}}',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                queue_id: queueId,
-                action: 'accept',
-                selected_result_id: resultId
-            }),
-            success: function(response) {
-                var data = JSON.parse(response);
-                if (data.success) {
-                    $('#match-card-' + queueId).fadeOut(500, function() {
-                        $(this).remove();
-                        // Check if no more matches
-                        if ($('.card').length === 0) {
-                            location.reload();
-                        }
-                    });
-                } else {
-                    alert('{{_("Error")}}: ' + data.error);
-                    btn.prop('disabled', false).text('{{_("✓ Select This Match")}}');
-                }
-            },
-            error: function(xhr) {
-                var errorMsg = '{{_("Failed to apply match")}}';
-                if (xhr.responseJSON && xhr.responseJSON.error) {
-                    errorMsg = xhr.responseJSON.error;
-                }
-                alert('{{_("Error")}}: ' + errorMsg);
-                btn.prop('disabled', false).text('{{_("✓ Select This Match")}}');
+    $.ajax({
+      url: '{{url_for("admin.hardcover_review_action")}}',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        queue_id: queueId,
+        action: 'accept',
+        selected_result_id: resultId
+      }),
+      success: function(response) {
+        var data = JSON.parse(response);
+        if (data.success) {
+          $('#match-card-' + queueId).fadeOut(500, function() {
+            $(this).remove();
+            if ($('.settings-container').length === 0) {
+              location.reload();
             }
-        });
-    });
-    
-    // Handle reject button
-    $('.reject-match-btn').click(function() {
-        var queueId = $(this).data('queue-id');
-        var btn = $(this);
-        
-        if (!confirm('{{_("Are you sure you want to reject all matches for this book? This cannot be undone.")}}')) {
-            return;
+          });
+        } else {
+          alert('{{_("Error")}}: ' + data.error);
+          btn.prop('disabled', false).text('{{_("✓ Select This Match")}}');
         }
-        
-        btn.prop('disabled', true).text('{{_("Processing...")}}');
-        
-        $.ajax({
-            url: '{{url_for("admin.hardcover_review_action")}}',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                queue_id: queueId,
-                action: 'reject'
-            }),
-            success: function(response) {
-                var data = JSON.parse(response);
-                if (data.success) {
-                    $('#match-card-' + queueId).fadeOut(500, function() {
-                        $(this).remove();
-                        if ($('.card').length === 0) {
-                            location.reload();
-                        }
-                    });
-                } else {
-                    alert('{{_("Error")}}: ' + data.error);
-                    btn.prop('disabled', false).text('{{_("✗ Reject All Matches")}}');
-                }
-            },
-            error: function(xhr) {
-                var errorMsg = '{{_("Failed to reject match")}}';
-                if (xhr.responseJSON && xhr.responseJSON.error) {
-                    errorMsg = xhr.responseJSON.error;
-                }
-                alert('{{_("Error")}}: ' + errorMsg);
-                btn.prop('disabled', false).text('{{_("✗ Reject All Matches")}}');
-            }
-        });
+      },
+      error: function(xhr) {
+        var errorMsg = '{{_("Failed to apply match")}}';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        }
+        alert('{{_("Error")}}: ' + errorMsg);
+        btn.prop('disabled', false).text('{{_("✓ Select This Match")}}');
+      }
     });
+  });
     
-    // Handle skip button
-    $('.skip-match-btn').click(function() {
-        var queueId = $(this).data('queue-id');
-        var btn = $(this);
+  // Handle reject button
+  $('.reject-match-btn').click(function() {
+    var queueId = $(this).data('queue-id');
+    var btn = $(this);
         
-        btn.prop('disabled', true).text('{{_("Processing...")}}');
+    if (!confirm('{{_("Are you sure you want to reject all matches for this book? This cannot be undone.")}}')) {
+      return;
+    }
         
-        $.ajax({
-            url: '{{url_for("admin.hardcover_review_action")}}',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                queue_id: queueId,
-                action: 'skip'
-            }),
-            success: function(response) {
-                var data = JSON.parse(response);
-                if (data.success) {
-                    $('#match-card-' + queueId).fadeOut(500, function() {
-                        $(this).remove();
-                        if ($('.card').length === 0) {
-                            location.reload();
-                        }
-                    });
-                } else {
-                    alert('{{_("Error")}}: ' + data.error);
-                    btn.prop('disabled', false).text('{{_("→ Skip for Now")}}');
-                }
-            },
-            error: function(xhr) {
-                var errorMsg = '{{_("Failed to skip match")}}';
-                if (xhr.responseJSON && xhr.responseJSON.error) {
-                    errorMsg = xhr.responseJSON.error;
-                }
-                alert('{{_("Error")}}: ' + errorMsg);
-                btn.prop('disabled', false).text('{{_("→ Skip for Now")}}');
+    btn.prop('disabled', true).text('{{_("Processing...")}}');
+        
+    $.ajax({
+      url: '{{url_for("admin.hardcover_review_action")}}',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        queue_id: queueId,
+        action: 'reject'
+      }),
+      success: function(response) {
+        var data = JSON.parse(response);
+        if (data.success) {
+          $('#match-card-' + queueId).fadeOut(500, function() {
+            $(this).remove();
+            if ($('.settings-container').length === 0) {
+              location.reload();
             }
-        });
+          });
+        } else {
+          alert('{{_("Error")}}: ' + data.error);
+          btn.prop('disabled', false).text('{{_("✗ Reject All Matches")}}');
+        }
+      },
+      error: function(xhr) {
+        var errorMsg = '{{_("Failed to reject match")}}';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        }
+        alert('{{_("Error")}}: ' + errorMsg);
+        btn.prop('disabled', false).text('{{_("✗ Reject All Matches")}}');
+      }
     });
+  });
+    
+  // Handle skip button
+  $('.skip-match-btn').click(function() {
+    var queueId = $(this).data('queue-id');
+    var btn = $(this);
+        
+    btn.prop('disabled', true).text('{{_("Processing...")}}');
+        
+    $.ajax({
+      url: '{{url_for("admin.hardcover_review_action")}}',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        queue_id: queueId,
+        action: 'skip'
+      }),
+      success: function(response) {
+        var data = JSON.parse(response);
+        if (data.success) {
+          $('#match-card-' + queueId).fadeOut(500, function() {
+            $(this).remove();
+            if ($('.settings-container').length === 0) {
+              location.reload();
+            }
+          });
+        } else {
+          alert('{{_("Error")}}: ' + data.error);
+          btn.prop('disabled', false).text('{{_("→ Skip for Now")}}');
+        }
+      },
+      error: function(xhr) {
+        var errorMsg = '{{_("Failed to skip match")}}';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        }
+        alert('{{_("Error")}}: ' + errorMsg);
+        btn.prop('disabled', false).text('{{_("→ Skip for Now")}}');
+      }
+    });
+  });
 });
 </script>
 {% endblock %}

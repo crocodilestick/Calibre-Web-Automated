@@ -390,7 +390,9 @@ $(function() {
         selectedLayoutMode = "fitRows";
     }
 
-    $(".discover .row").isotope({
+    $(".discover .row").filter(function() {
+        return $(this).find(".book").length > 0;
+    }).isotope({
         // options
         itemSelector : ".book",
         layoutMode : selectedLayoutMode
@@ -1004,7 +1006,9 @@ $(function() {
     });
 
     $(window).resize(function() {
-        $(".discover .row").isotope("layout");
+        $(".discover .row").filter(function() {
+            return !!$(this).data("isotope");
+        }).isotope("layout");
     });
 
     $("#import_ldap_users").click(function() {
@@ -1029,7 +1033,9 @@ $(function() {
         $(this).parent().find("a.author-name").slice($(this).data("authors-max")).toggle();
         $(this).parent().find("span.author-hidden-divider").toggle();
         $(this).html() === $(this).data("collapse-caption") ? $(this).html("(...)") : $(this).html($(this).data("collapse-caption"));
-        $(".discover .row").isotope("layout");
+        $(".discover .row").filter(function() {
+            return !!$(this).data("isotope");
+        }).isotope("layout");
     });
 
     $(".update-view").click(function(e) {

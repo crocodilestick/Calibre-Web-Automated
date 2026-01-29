@@ -122,6 +122,8 @@ def add_security_headers(resp):
     csp += "; img-src 'self'"
     if request.path.startswith("/author/") and config.config_use_goodreads:
         csp += " images.gr-assets.com i.gr-assets.com s.gr-assets.com"
+    if request.endpoint == "admin.hardcover_review_matches":
+        csp += " https:"
     csp += " data:"
     if request.endpoint == "edit-book.show_edit_book" or config.config_use_google_drive:
         csp += " *"

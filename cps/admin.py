@@ -295,8 +295,19 @@ def hardcover_review_matches():
 def hardcover_review_action():
     """Process review action (accept/reject/skip) for a queued match"""
     try:
-        data = request.get_json()
-        queue_id = int(data.get('queue_id'))
+        data = request.get_json(silent=True) or request.form
+        if not data:
+            return json.dumps({'success': False, 'error': 'Missing request data'}), 400
+
+        queue_id_value = data.get('queue_id')
+        if queue_id_value is None:
+            return json.dumps({'success': False, 'error': 'Missing queue_id'}), 400
+
+        try:
+            queue_id = int(queue_id_value)
+        except (TypeError, ValueError):
+            return json.dumps({'success': False, 'error': 'Invalid queue_id'}), 400
+
         action = data.get('action')  # 'accept', 'reject', 'skip'
         selected_result_id = data.get('selected_result_id')
         
@@ -310,7 +321,6 @@ def hardcover_review_action():
         
         if action == 'accept' and selected_result_id:
             # Apply the selected Hardcover ID to the book
-            import json
             results = json.loads(match.hardcover_results)
             selected_result = next((r for r in results if str(r['id']) == str(selected_result_id)), None)
             
@@ -345,7 +355,7 @@ def hardcover_review_action():
                 match.reviewed = 1
                 match.selected_result_id = str(selected_result_id)
                 match.review_action = 'accept'
-                match.reviewed_at = datetime.datetime.utcnow().isoformat()
+                match.reviewed_at = datetime.utcnow().isoformat()
                 match.reviewed_by = current_user.name
                 ub.session.commit()
                 
@@ -362,7 +372,7 @@ def hardcover_review_action():
             # Mark as reviewed with appropriate action
             match.reviewed = 1
             match.review_action = action
-            match.reviewed_at = datetime.datetime.utcnow().isoformat()
+            match.reviewed_at = datetime.utcnow().isoformat()
             match.reviewed_by = current_user.name
             ub.session.commit()
             

@@ -8,12 +8,13 @@
     
     const STORAGE_KEY = 'cwa_duplicates_notification_shown';
     const LAST_COUNT_KEY = 'cwa_duplicates_last_count';
-    const POLL_INTERVAL_MS = 1500;
-    const POLL_MAX_ATTEMPTS = 80; // ~2 minutes
+    const POLL_INTERVAL_MS = 2500;
+    const POLL_MAX_ATTEMPTS = 60; // ~2.5 minutes
     
     let currentDuplicateCount = 0;
     let pollAttempts = 0;
     let pollTimer = null;
+    let lastPreviewSignature = '';
     
     /**
      * Check if notification was already shown in this session
@@ -80,6 +81,9 @@
         if (pollTimer) {
             return;
         }
+        if (isModalActive()) {
+            return;
+        }
         pollAttempts = 0;
         pollTimer = setInterval(() => {
             pollAttempts += 1;
@@ -126,12 +130,16 @@
         // Update preview list
         const previewList = document.getElementById('duplicate-notification-preview');
         if (previewList && preview && preview.length > 0) {
-            previewList.innerHTML = preview.map(item => `
-                <li class="duplicate-preview-item">
-                    <strong>${escapeHtml(item.title)}</strong>
-                    <small>${escapeHtml(item.author)} - ${item.count} copies</small>
-                </li>
-            `).join('');
+            const signature = preview.map(item => `${item.title}|${item.author}|${item.count}`).join('||');
+            if (signature !== lastPreviewSignature) {
+                lastPreviewSignature = signature;
+                previewList.innerHTML = preview.map(item => `
+                    <li class="duplicate-preview-item">
+                        <strong>${escapeHtml(item.title)}</strong>
+                        <small>${escapeHtml(item.author)} - ${item.count} copies</small>
+                    </li>
+                `).join('');
+            }
         }
         
         // Show modal and backdrop
@@ -143,10 +151,10 @@
             setTimeout(() => {
                 backdrop.classList.add('active');
                 modal.classList.add('active');
-                
+
                 // Focus trap
                 modal.focus();
-                
+
                 // Mark as shown and store count
                 markNotificationShown();
                 setLastNotifiedCount(count);
@@ -160,17 +168,22 @@
             return;
         }
 
+        if (isModalActive()) {
+            stopStatusPolling();
+            return;
+        }
+
         updateBadge(data.count);
 
         if (data.count > 0 && data.enabled) {
+            stopStatusPolling();
             showNotificationModal(data);
             if (isModalActive()) {
-                stopStatusPolling();
                 return;
             }
         }
 
-        if (data.needs_scan || data.stale) {
+        if ((data.needs_scan || data.stale) && !isModalActive()) {
             startStatusPolling();
             return;
         }
@@ -266,6 +279,7 @@
         }
 
         fetchDuplicateStatus().then(handleStatusResponse);
+        startStatusPolling();
 
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {

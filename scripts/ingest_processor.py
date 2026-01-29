@@ -611,6 +611,10 @@ class NewBookProcessor:
     def delete_current_file(self) -> None:
         """Deletes file just processed from ingest folder"""
         try:
+            ext = Path(self.filename).suffix.replace('.', '')
+            if ext in self.ingest_ignored_formats or self.filename.endswith(".cwa.json") or self.filename.endswith(".cwa.failed.json"):
+                print(f"[ingest-processor] Skipping delete for ignored/temporary file: {self.filename}", flush=True)
+                return
             if os.path.exists(self.filepath):
                 os.remove(self.filepath) # Removes processed file
             else:
@@ -1230,6 +1234,7 @@ def main(filepath=None):
         filepath = sys.argv[1]
 
     nbp = None
+    skip_delete = False
     try:
         ##############################################################################################
         # Truncates the filename if it is too long
@@ -1237,6 +1242,11 @@ def main(filepath=None):
         filename = os.path.basename(filepath)
         name, ext = os.path.splitext(filename)
         allowed_len = MAX_LENGTH - len(ext)
+
+        # Ignore sidecar manifests entirely (handled when the real file is processed)
+        if filename.endswith(".cwa.json") or filename.endswith(".cwa.failed.json"):
+            print(f"[ingest-processor] Skipping sidecar manifest file: {filename}", flush=True)
+            return
 
         if len(name) > allowed_len:
             new_name = name[:allowed_len] + ext
@@ -1262,6 +1272,7 @@ def main(filepath=None):
             ready = nbp.is_file_in_use()
             if not ready:
                 print(f"[ingest-processor] WARN: File did not become ready in time or vanished (after {timeout_minutes} minutes): {nbp.filename}", flush=True)
+                skip_delete = True
                 return
 
         # Sidecar manifest handling for explicit actions (e.g., add_format)
@@ -1314,6 +1325,7 @@ def main(filepath=None):
         if ext in nbp.ingest_ignored_formats:
             # Do NOT delete ignored temporary files; they may be renamed shortly (e.g. .uploading -> .epub)
             print(f"[ingest-processor] Skipping ignored/temporary file (no action taken): {nbp.filename}", flush=True)
+            skip_delete = True
             return
 
         if nbp.is_target_format: # File can just be imported
@@ -1380,7 +1392,10 @@ def main(filepath=None):
                 print(f"[ingest-processor] Error setting library permissions during cleanup: {e}", flush=True)
 
             try:
-                nbp.delete_current_file()
+                if skip_delete:
+                    print(f"[ingest-processor] Skipping delete for ignored/temporary file: {nbp.filename}", flush=True)
+                else:
+                    nbp.delete_current_file()
             except Exception as e:
                 print(f"[ingest-processor] Error deleting current file during cleanup: {e}", flush=True)
 

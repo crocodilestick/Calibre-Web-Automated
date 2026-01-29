@@ -416,7 +416,9 @@ class CWA_DB:
             'hardcover_auto_fetch_schedule_hour': 2,
             'hardcover_auto_fetch_min_confidence': 0.85,
             'hardcover_auto_fetch_batch_size': 50,
-            'hardcover_auto_fetch_rate_limit': 5.0
+            'hardcover_auto_fetch_rate_limit': 5.0,
+            'ingest_stale_temp_minutes': 120,
+            'ingest_stale_temp_interval': 600
         }
         
         # Apply defaults for missing keys
@@ -425,7 +427,7 @@ class CWA_DB:
                 cwa_settings[key] = default_value
 
         # Define which settings should remain as integers (not converted to boolean)
-        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds']
+        integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds']
         
         # Define which settings should remain as floats (not converted to boolean)
         float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']

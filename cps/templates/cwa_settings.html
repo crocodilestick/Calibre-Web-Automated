@@ -300,6 +300,47 @@
                     border-radius: 4px;
                     background-color: #151e2680;">
       <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 5-120 minutes (default: 15)')}}</small>
+
+      <div class="cwa-settings-tip" style="margin-top: 12px;">
+        <small class="settings-explanation">
+          💡 <strong>{{_('Stale temp cleanup')}}:</strong>
+          {{_('Ignored temporary upload files (.uploading, .part, etc.) can be cleaned after a set age. Setting either value to 0 disables cleanup. Changes apply on the next cleanup cycle.')}}
+        </small>
+      </div>
+
+      <div style="margin-top: 10px;">
+        <label for="ingest_stale_temp_minutes" class="settings-section-header" style="padding-right: 10px; margin-bottom: 6px !important; padding-bottom: 0px !important;">{{_('Stale temp age (minutes):')}}</label>
+        <input type="number"
+               name="ingest_stale_temp_minutes"
+               id="ingest_stale_temp_minutes"
+               value="{{ cwa_settings['ingest_stale_temp_minutes'] }}"
+               min="0"
+               max="10080"
+               step="1"
+               style="width: 120px;
+                      padding: 5px;
+                      border: 1px solid transparent;
+                      border-radius: 4px;
+                      background-color: #151e2680;">
+        <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0-10080 minutes (default: 120)')}}</small>
+      </div>
+
+      <div style="margin-top: 10px;">
+        <label for="ingest_stale_temp_interval" class="settings-section-header" style="padding-right: 10px; margin-bottom: 6px !important; padding-bottom: 0px !important;">{{_('Stale temp cleanup interval (seconds):')}}</label>
+        <input type="number"
+               name="ingest_stale_temp_interval"
+               id="ingest_stale_temp_interval"
+               value="{{ cwa_settings['ingest_stale_temp_interval'] }}"
+               min="0"
+               max="86400"
+               step="1"
+               style="width: 120px;
+                      padding: 5px;
+                      border: 1px solid transparent;
+                      border-radius: 4px;
+                      background-color: #151e2680;">
+        <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0-86400 seconds (default: 600)')}}</small>
+      </div>
     </div>
 
     <!-- Auto-Send Delay Setting -->

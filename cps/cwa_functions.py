@@ -619,7 +619,7 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
-    integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'duplicate_auto_resolve_cooldown_minutes']  # Special handling for integer settings
+    integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'duplicate_auto_resolve_cooldown_minutes']  # Special handling for integer settings
     float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']  # Special handling for float settings
     json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']  # Special handling for JSON settings
     skip_settings = ['auto_convert_ignored_formats', 'auto_ingest_ignored_formats', 'auto_convert_retained_formats']  # Handled through individual format checkboxes
@@ -699,6 +699,10 @@ def set_cwa_settings():
                         # Validate range
                         if setting == 'ingest_timeout_minutes':
                             int_value = max(5, min(120, int_value))  # Clamp between 5 and 120 minutes
+                        elif setting == 'ingest_stale_temp_minutes':
+                            int_value = max(0, min(10080, int_value))  # Clamp between 0 and 10080 minutes (7 days)
+                        elif setting == 'ingest_stale_temp_interval':
+                            int_value = max(0, min(86400, int_value))  # Clamp between 0 and 86400 seconds (24 hours)
                         elif setting == 'auto_send_delay_minutes':
                             int_value = max(1, min(60, int_value))  # Clamp between 1 and 60 minutes
                         elif setting == 'hardcover_auto_fetch_batch_size':
@@ -716,6 +720,10 @@ def set_cwa_settings():
                         # Use current value if conversion fails
                         if setting == 'ingest_timeout_minutes':
                             result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
+                        elif setting == 'ingest_stale_temp_minutes':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 120)  # Default to 120 minutes
+                        elif setting == 'ingest_stale_temp_interval':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 600)  # Default to 600 seconds
                         elif setting == 'auto_send_delay_minutes':
                             result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
                         elif setting == 'hardcover_auto_fetch_batch_size':
@@ -727,6 +735,10 @@ def set_cwa_settings():
                 else:
                     if setting == 'ingest_timeout_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
+                    elif setting == 'ingest_stale_temp_minutes':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 120)  # Default to 120 minutes
+                    elif setting == 'ingest_stale_temp_interval':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 600)  # Default to 600 seconds
                     elif setting == 'auto_send_delay_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 5)  # Default to 5 minutes
                     elif setting == 'hardcover_auto_fetch_batch_size':
@@ -847,6 +859,7 @@ def set_cwa_settings():
         getattr(config, "config_hardcover_token", None) or 
         getenv("HARDCOVER_TOKEN")
     )
+
 
     next_scan_run = get_next_duplicate_scan_run(cwa_settings)
 

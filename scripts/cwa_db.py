@@ -71,6 +71,34 @@ class CWA_DB:
         return tables, schema
 
 
+    def _normalize_user_ids(self, user_id) -> list[int]:
+        """Normalize user filters to a list of integer IDs."""
+        if user_id is None:
+            return []
+        if isinstance(user_id, (list, tuple, set)):
+            return [int(uid) for uid in user_id if uid is not None]
+        try:
+            return [int(user_id)]
+        except (TypeError, ValueError):
+            return []
+
+
+    def _has_user_filter(self, user_id) -> bool:
+        """Return True when a valid user filter is provided."""
+        return len(self._normalize_user_ids(user_id)) > 0
+
+
+    def _build_user_filter(self, user_id) -> str:
+        """Builds SQL filter for a single user ID or list of user IDs."""
+        user_ids = self._normalize_user_ids(user_id)
+        if not user_ids:
+            return ""
+        if len(user_ids) == 1:
+            return f" AND user_id = {user_ids[0]}"
+        user_ids_csv = ",".join(str(uid) for uid in user_ids)
+        return f" AND user_id IN ({user_ids_csv})"
+
+
     def get_cwa_default_settings(self):
         for table in self.tables:
             if "cwa_settings" in table:
@@ -827,7 +855,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -859,7 +887,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -891,7 +919,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -930,7 +958,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -968,7 +996,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -1384,7 +1412,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Get LOGIN events ordered by user and time
@@ -1480,7 +1508,7 @@ class CWA_DB:
                 date_filter_prev = f"timestamp >= date('now', '-{days * 2} days') AND timestamp < date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Count total searches in period
@@ -1572,7 +1600,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Get shelf activity (parse shelf_name from extra_data JSON)
@@ -1624,7 +1652,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Categorize events
@@ -1674,7 +1702,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Debug: Check what event types actually exist
@@ -1746,7 +1774,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Get API activity by time (focus on API events)
@@ -2005,7 +2033,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -2038,7 +2066,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -2070,7 +2098,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -2110,7 +2138,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # 1. Activity timeline - Daily counts by event type
@@ -2124,7 +2152,7 @@ class CWA_DB:
             timeline_data = self.cur.fetchall()
 
             # 2. Top active users or most active days (depending on user filter)
-            if user_id:
+            if self._has_user_filter(user_id):
                 # Show most active days for specific user
                 self.cur.execute(f"""
                     SELECT date(timestamp) as day, COUNT(*) as activity_count
@@ -2203,7 +2231,7 @@ class CWA_DB:
             event_breakdown = self.cur.fetchall()
 
             # 7. Total activity metrics
-            if user_id:
+            if self._has_user_filter(user_id):
                 # For single user, show total logins instead of active users
                 self.cur.execute(f"""
                     SELECT 

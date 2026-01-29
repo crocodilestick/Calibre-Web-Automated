@@ -7,7 +7,7 @@
 from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort, jsonify, current_app
 from flask_babel import gettext as _, lazy_gettext as _l
 
-from . import logger, config, constants, csrf, helper
+from . import logger, config, constants, csrf, helper, ub
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
@@ -975,25 +975,69 @@ def cwa_stats_show():
     
     cwa_db = CWA_DB()
     
-    # Get list of active users for dropdown
-    active_users = cwa_db.get_active_users()
+    # Get list of active users for dropdown (resolve names via app.db)
+    active_users_raw = cwa_db.get_active_users()
+    active_user_ids = [row[0] for row in active_users_raw if row and row[0] is not None]
+    user_name_map = {}
+    if active_user_ids:
+        try:
+            db_users = ub.session.query(ub.User.id, ub.User.name, ub.User.email)\
+                .filter(ub.User.id.in_(active_user_ids))\
+                .all()
+            for user_id_entry, name, email in db_users:
+                display_name = name or email or _("Unknown User")
+                user_name_map[user_id_entry] = display_name
+        except Exception as e:
+            log.debug(f"Error resolving active users: {e}")
+
+    active_users = []
+    seen_user_ids = set()
+    unknown_user_ids = set()
+    for user_id_entry, user_name in active_users_raw:
+        if user_id_entry in seen_user_ids:
+            continue
+        seen_user_ids.add(user_id_entry)
+
+        resolved_name = user_name_map.get(user_id_entry)
+        if resolved_name:
+            display_name = resolved_name
+            active_users.append((user_id_entry, display_name))
+            continue
+
+        raw_name = (user_name or "").strip()
+        is_unknown = not raw_name or raw_name.lower() in {"unknown", "unknown user"}
+
+        if is_unknown:
+            unknown_user_ids.add(user_id_entry)
+            continue
+
+        active_users.append((user_id_entry, raw_name))
+
+    if unknown_user_ids:
+        active_users.append((-1, _("Unknown User")))
+
+    active_users.sort(key=lambda item: (item[1] or "").lower())
+
+    user_id_filter = user_id
+    if user_id == -1:
+        user_id_filter = list(unknown_user_ids)
     
     # Get user activity dashboard stats with date range and optional user filter
     if start_date and end_date:
-        dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date, user_id=user_id)
-        hourly_heatmap = cwa_db.get_hourly_activity_heatmap(start_date=start_date, end_date=end_date, user_id=user_id)
-        reading_velocity = cwa_db.get_reading_velocity(start_date=start_date, end_date=end_date, user_id=user_id)
-        format_preferences = cwa_db.get_format_preferences(start_date=start_date, end_date=end_date, user_id=user_id)
-        discovery_sources = cwa_db.get_discovery_sources(start_date=start_date, end_date=end_date, user_id=user_id)
-        device_breakdown = cwa_db.get_device_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
+        dashboard_stats = cwa_db.get_dashboard_stats(start_date=start_date, end_date=end_date, user_id=user_id_filter)
+        hourly_heatmap = cwa_db.get_hourly_activity_heatmap(start_date=start_date, end_date=end_date, user_id=user_id_filter)
+        reading_velocity = cwa_db.get_reading_velocity(start_date=start_date, end_date=end_date, user_id=user_id_filter)
+        format_preferences = cwa_db.get_format_preferences(start_date=start_date, end_date=end_date, user_id=user_id_filter)
+        discovery_sources = cwa_db.get_discovery_sources(start_date=start_date, end_date=end_date, user_id=user_id_filter)
+        device_breakdown = cwa_db.get_device_breakdown(start_date=start_date, end_date=end_date, user_id=user_id_filter)
         failed_logins = cwa_db.get_failed_logins(start_date=start_date, end_date=end_date)
     else:
-        dashboard_stats = cwa_db.get_dashboard_stats(days=days, user_id=user_id)
-        hourly_heatmap = cwa_db.get_hourly_activity_heatmap(days=days, user_id=user_id)
-        reading_velocity = cwa_db.get_reading_velocity(days=days, user_id=user_id)
-        format_preferences = cwa_db.get_format_preferences(days=days, user_id=user_id)
-        discovery_sources = cwa_db.get_discovery_sources(days=days, user_id=user_id)
-        device_breakdown = cwa_db.get_device_breakdown(days=days, user_id=user_id)
+        dashboard_stats = cwa_db.get_dashboard_stats(days=days, user_id=user_id_filter)
+        hourly_heatmap = cwa_db.get_hourly_activity_heatmap(days=days, user_id=user_id_filter)
+        reading_velocity = cwa_db.get_reading_velocity(days=days, user_id=user_id_filter)
+        format_preferences = cwa_db.get_format_preferences(days=days, user_id=user_id_filter)
+        discovery_sources = cwa_db.get_discovery_sources(days=days, user_id=user_id_filter)
+        device_breakdown = cwa_db.get_device_breakdown(days=days, user_id=user_id_filter)
         failed_logins = cwa_db.get_failed_logins(days=days)
     
     # Get library stats (for Library tab)
@@ -1024,19 +1068,19 @@ def cwa_stats_show():
     
     # Get Sprint 5 user activity enhancements
     if start_date and end_date:
-        session_duration = cwa_db.get_session_duration_stats(start_date=start_date, end_date=end_date, user_id=user_id)
-        search_success = cwa_db.get_search_success_rate(start_date=start_date, end_date=end_date, user_id=user_id)
-        shelf_activity = cwa_db.get_shelf_activity_stats(start_date=start_date, end_date=end_date, user_id=user_id, limit=10)
-        api_usage_breakdown = cwa_db.get_api_usage_breakdown(start_date=start_date, end_date=end_date, user_id=user_id)
-        endpoint_frequency = cwa_db.get_endpoint_frequency_grouped(start_date=start_date, end_date=end_date, user_id=user_id, limit=20)
-        api_timing = cwa_db.get_api_timing_heatmap(start_date=start_date, end_date=end_date, user_id=user_id)
+        session_duration = cwa_db.get_session_duration_stats(start_date=start_date, end_date=end_date, user_id=user_id_filter)
+        search_success = cwa_db.get_search_success_rate(start_date=start_date, end_date=end_date, user_id=user_id_filter)
+        shelf_activity = cwa_db.get_shelf_activity_stats(start_date=start_date, end_date=end_date, user_id=user_id_filter, limit=10)
+        api_usage_breakdown = cwa_db.get_api_usage_breakdown(start_date=start_date, end_date=end_date, user_id=user_id_filter)
+        endpoint_frequency = cwa_db.get_endpoint_frequency_grouped(start_date=start_date, end_date=end_date, user_id=user_id_filter, limit=20)
+        api_timing = cwa_db.get_api_timing_heatmap(start_date=start_date, end_date=end_date, user_id=user_id_filter)
     else:
-        session_duration = cwa_db.get_session_duration_stats(days=days, user_id=user_id)
-        search_success = cwa_db.get_search_success_rate(days=days, user_id=user_id)
-        shelf_activity = cwa_db.get_shelf_activity_stats(days=days, user_id=user_id, limit=10)
-        api_usage_breakdown = cwa_db.get_api_usage_breakdown(days=days, user_id=user_id)
-        endpoint_frequency = cwa_db.get_endpoint_frequency_grouped(days=days, user_id=user_id, limit=20)
-        api_timing = cwa_db.get_api_timing_heatmap(days=days, user_id=user_id)
+        session_duration = cwa_db.get_session_duration_stats(days=days, user_id=user_id_filter)
+        search_success = cwa_db.get_search_success_rate(days=days, user_id=user_id_filter)
+        shelf_activity = cwa_db.get_shelf_activity_stats(days=days, user_id=user_id_filter, limit=10)
+        api_usage_breakdown = cwa_db.get_api_usage_breakdown(days=days, user_id=user_id_filter)
+        endpoint_frequency = cwa_db.get_endpoint_frequency_grouped(days=days, user_id=user_id_filter, limit=20)
+        api_timing = cwa_db.get_api_timing_heatmap(days=days, user_id=user_id_filter)
     
     # Get system logs data
     data_enforcement = cwa_db.enforce_show(paths=False, verbose=False, web_ui=True)

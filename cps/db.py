@@ -588,8 +588,22 @@ class CalibreDB:
                     # After setup_db, session_factory should exist, try to init session
                     if self.session is None and self.session_factory is not None:
                         self.init_session(expire_on_commit)
+                        if self.session is not None:
+                            return
                 except Exception as ex:
                     log.error(f"Failed to rebuild database setup in ensure_session: {ex}")
+
+            # Fallback: attempt to initialize from app.db if config is missing or setup failed
+            if self.session is None and ub.app_DB_path:
+                try:
+                    log.warning("Session still unavailable; attempting init from app.db")
+                    from .calibre_init import init_calibre_db_from_app_db
+                    if init_calibre_db_from_app_db(ub.app_DB_path):
+                        self.init_session(expire_on_commit)
+                        if self.session is not None:
+                            return
+                except Exception as ex:
+                    log.error(f"Failed to init session from app.db in ensure_session: {ex}")
             
             # If we still don't have a session, log warning
             # Don't raise exception - let caller handle AttributeError if they try to use None session

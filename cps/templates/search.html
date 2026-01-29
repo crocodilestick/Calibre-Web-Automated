@@ -5,6 +5,11 @@
     {% if entries|length < 1 %}
       <h2>{{_('No Results Found')}}</h2>
       <p>{{_('Search Term:')}} {{adv_searchterm}}</p>
+      {% if shelfmark_bool %}
+        <p>{{_('You can also try to download the book from')}} 
+          <a href="https://{{shelfmark_url}}/?q={{adv_searchterm}}" target="_blank">Shelfmark.</a>
+        </p>
+      {% endif %}
     {% else %}
       <h2>{{result_count}} {{_('Results for:')}} {{adv_searchterm}}</h2>
       {% if current_user.is_authenticated %}

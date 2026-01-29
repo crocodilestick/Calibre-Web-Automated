@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -50,6 +50,8 @@ def simple_search():
         return render_title_template('search.html',
                                      searchterm="",
                                      result_count=0,
+                                     shelfmark_bool=config.config_use_shelfmark and config.config_shelfmark_url != "",
+                                     shelfmark_url=config.config_shelfmark_url,
                                      title=_("Search"),
                                      page="search")
 
@@ -378,6 +380,8 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
     entries = calibre_db.order_authors(results, list_return=True, combined=True)
     return render_title_template('search.html',
                                  adv_searchterm=search_term,
+                                 shelfmark_bool=config.config_use_shelfmark,
+                                 shelfmark_url=config.config_shelfmark_url,
                                  pagination=pagination,
                                  entries=entries,
                                  result_count=result_count,
@@ -434,6 +438,8 @@ def render_search_results(term, offset=None, order=None, limit=None):
                                  searchterm=term,
                                  pagination=pagination,
                                  query=term,
+                                 shelfmark_bool=config.config_use_shelfmark,
+                                 shelfmark_url=config.config_shelfmark_url,
                                  adv_searchterm=term,
                                  entries=entries,
                                  result_count=result_count,

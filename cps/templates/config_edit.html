@@ -234,6 +234,16 @@
     </div>
     {% endif %}
     <div class="form-group">
+      <input type="checkbox" name="config_use_shelfmark" id="config_use_shelfmark" data-control="shelfmark-settings" {% if config.config_use_shelfmark %}checked{% endif %}>
+      <label for="config_use_shelfmark">{{_('Use Shelfmark')}}</label>
+    </div>
+    <div data-related="shelfmark-settings">
+      <div class="form-group">
+        <label for="config_shelfmark_url">{{_('Shelfmark URL')}}</label>
+        <input type="text" class="form-control" id="config_shelfmark_url" name="config_shelfmark_url" value="{% if config.config_shelfmark_url != None %}{{ config.config_shelfmark_url }}{% endif %}" autocomplete="off">
+      </div>
+    </div>
+    <div class="form-group">
       <input type="checkbox" id="config_hardcover_sync" name="config_hardcover_sync" data-control="hardcover-settings" {% if config.config_hardcover_sync %}checked{% endif %}>
       <label for="config_hardcover_sync">{{_('Enable Hardcover Sync')}}</label>
     </div>

@@ -173,6 +173,15 @@
       <div class="cwa-settings-tip">
         <small>{{_('This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.') | safe }}</small>
       </div>
+      {% if cwa_settings.get('kindle_epub_fixer_aggressive') %}
+      <input type="checkbox" id="kindle_epub_fixer_aggressive" name="kindle_epub_fixer_aggressive" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Riskier transformations; use only if safe mode fails">
+      {% else %}
+      <input type="checkbox" id="kindle_epub_fixer_aggressive" name="kindle_epub_fixer_aggressive" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Riskier transformations; use only if safe mode fails">
+      {% endif %}
+      <label for="kindle_epub_fixer_aggressive" style="padding-left: 10px;">{{_('Enable Aggressive EPUB Fixer Mode (riskier)')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_("Aggressive mode applies more invasive fixes and will attempt lower-confidence encoding conversions. Safe mode is recommended for most libraries.")}}
+      </p>
 
       {% if cwa_settings['archived_cleanup_enabled'] %}
       <input type="checkbox" id="archived_cleanup_enabled" name="archived_cleanup_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Runs daily by default">

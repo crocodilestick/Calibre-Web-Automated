@@ -21,11 +21,22 @@ import traceback
 from datetime import datetime
 import json
 import shutil
+from typing import Optional, Tuple
 
 import pwd
 import grp
 
 from cwa_db import CWA_DB
+
+try:
+    from charset_normalizer import from_bytes as _charset_from_bytes
+except Exception:
+    _charset_from_bytes = None
+
+try:
+    import chardet
+except Exception:
+    chardet = None
 
 ### Code adapted from https://github.com/innocenat/kindle-epub-fix
 ### Translated from Javascript to Python & modified by crocodilestick
@@ -129,6 +140,182 @@ class EPUBFixer:
         self.files = {}
         self.binary_files = {}
         self.entries = []
+        self.file_original_bytes = {}
+        self.file_encodings = {}
+        self.file_encoding_sources = {}
+        self.file_target_encodings = {}
+        self.file_decode_confidence = {}
+        self.decode_warnings = []
+
+        self.aggressive_mode = bool(self.cwa_settings.get('kindle_epub_fixer_aggressive', 0))
+        self.encoding_confidence_threshold = 0.7 if not self.aggressive_mode else 0.4
+
+    def _normalize_encoding_name(self, encoding: Optional[str]) -> Optional[str]:
+        if not encoding:
+            return None
+        return encoding.strip().lower().replace('_', '-').replace(' ', '')
+
+    def _sniff_bom(self, data: bytes) -> Optional[str]:
+        if data.startswith(b'\xff\xfe\x00\x00'):
+            return 'utf-32-le'
+        if data.startswith(b'\x00\x00\xfe\xff'):
+            return 'utf-32-be'
+        if data.startswith(b'\xef\xbb\xbf'):
+            return 'utf-8-sig'
+        if data.startswith(b'\xff\xfe'):
+            return 'utf-16-le'
+        if data.startswith(b'\xfe\xff'):
+            return 'utf-16-be'
+        return None
+
+    def _extract_xml_declared_encoding(self, data: bytes) -> Optional[str]:
+        try:
+            head = data[:1024].decode('ascii', errors='ignore')
+        except Exception:
+            return None
+        match = re.search(r'<\?xml[^>]*encoding=["\']([^"\']+)["\']', head, re.IGNORECASE)
+        if match:
+            return match.group(1)
+        return None
+
+    def _extract_html_meta_charset(self, data: bytes) -> Optional[str]:
+        try:
+            head = data[:2048].decode('ascii', errors='ignore')
+        except Exception:
+            return None
+        match = re.search(r'<meta[^>]+charset=["\']?([^"\'>\s]+)', head, re.IGNORECASE)
+        if match:
+            return match.group(1)
+        match = re.search(r'charset=([^"\'>\s;]+)', head, re.IGNORECASE)
+        if match:
+            return match.group(1)
+        return None
+
+    def _detect_encoding(self, data: bytes, filename: str) -> Tuple[Optional[str], float, str]:
+        bom = self._sniff_bom(data)
+        if bom:
+            return bom, 1.0, 'bom'
+
+        xml_decl = self._extract_xml_declared_encoding(data)
+        if xml_decl:
+            return xml_decl, 1.0, 'xml_decl'
+
+        html_meta = self._extract_html_meta_charset(data)
+        if html_meta:
+            return html_meta, 0.95, 'html_meta'
+
+        if _charset_from_bytes is not None:
+            try:
+                best = _charset_from_bytes(data).best()
+                if best and best.encoding:
+                    return best.encoding, float(best.confidence or 0.0), 'charset_normalizer'
+            except Exception:
+                pass
+
+        if chardet is not None:
+            try:
+                result = chardet.detect(data)
+                if result and result.get('encoding'):
+                    return result.get('encoding'), float(result.get('confidence') or 0.0), 'chardet'
+            except Exception:
+                pass
+
+        return None, 0.0, 'unknown'
+
+    def _decode_text_entry(self, filename: str, data: bytes) -> Optional[str]:
+        self.file_original_bytes[filename] = data
+
+        encoding, confidence, source = self._detect_encoding(data, filename)
+        encoding = self._normalize_encoding_name(encoding)
+        self.file_encodings[filename] = encoding
+        self.file_encoding_sources[filename] = source
+        self.file_decode_confidence[filename] = confidence
+
+        if not encoding:
+            self.decode_warnings.append(f"No encoding detected for {filename}; leaving bytes unchanged")
+            return None
+
+        if confidence < self.encoding_confidence_threshold and source not in ('bom', 'xml_decl', 'html_meta'):
+            self.decode_warnings.append(
+                f"Low encoding confidence for {filename} ({encoding}, {confidence:.2f}); leaving bytes unchanged"
+            )
+            return None
+
+        is_utf16 = encoding.startswith('utf-16')
+        allow_utf16 = is_utf16 and source in ('bom', 'xml_decl')
+
+        if is_utf16 and not allow_utf16:
+            if self.aggressive_mode and confidence >= 0.85:
+                self.decode_warnings.append(
+                    f"UTF-16 detected without BOM/declaration for {filename}; converting to UTF-8 (aggressive mode)"
+                )
+            else:
+                self.decode_warnings.append(
+                    f"UTF-16 detected without BOM/declaration for {filename}; leaving bytes unchanged"
+                )
+                return None
+
+        try:
+            text = data.decode(encoding, errors='strict')
+        except Exception:
+            if self.aggressive_mode:
+                try:
+                    text = data.decode(encoding, errors='replace')
+                    self.decode_warnings.append(
+                        f"Decoded {filename} with replacement characters using {encoding}"
+                    )
+                except Exception:
+                    self.decode_warnings.append(
+                        f"Failed to decode {filename} using {encoding}; leaving bytes unchanged"
+                    )
+                    return None
+            else:
+                self.decode_warnings.append(
+                    f"Failed to decode {filename} using {encoding}; leaving bytes unchanged"
+                )
+                return None
+
+        if is_utf16 and allow_utf16:
+            target_encoding = encoding
+        else:
+            target_encoding = 'utf-8'
+
+        self.file_target_encodings[filename] = target_encoding
+
+        if encoding != target_encoding:
+            self.fixed_problems.append(f"Converted {filename} from {encoding} to {target_encoding}")
+
+        return text
+
+    def _get_text_content(self, filename: str) -> Optional[str]:
+        content = self.files.get(filename)
+        if isinstance(content, bytes):
+            return None
+        return content
+
+    def _update_html_charset(self, content: str, target_encoding: str) -> str:
+        charset = target_encoding.lower()
+        if charset.startswith('utf-16'):
+            charset = 'utf-16'
+
+        http_equiv_pattern = re.compile(
+            r'(<meta[^>]+http-equiv=["\']content-type["\'][^>]*content=["\'][^"\']*charset=)([^"\'>\s;]+)([^"\']*["\'][^>]*>)',
+            re.IGNORECASE
+        )
+        if http_equiv_pattern.search(content):
+            return http_equiv_pattern.sub(rf"\1{charset}\3", content, count=1)
+
+        meta_charset_pattern = re.compile(r'<meta[^>]+charset=["\']?[^"\'>\s]+[^>]*>', re.IGNORECASE)
+        if meta_charset_pattern.search(content):
+            return meta_charset_pattern.sub(f'<meta charset="{charset}">', content, count=1)
+
+        head_pattern = re.compile(r'<head[^>]*>', re.IGNORECASE)
+        match = head_pattern.search(content)
+        if match:
+            insert_at = match.end()
+            return content[:insert_at] + f"\n    <meta charset=\"{charset}\">" + content[insert_at:]
+
+        return f"<meta charset=\"{charset}\">\n" + content
 
     def _extract_book_info_from_path(self, file_path: str) -> tuple[int | None, str]:
         """Extract book ID and format from file path.
@@ -223,42 +410,61 @@ class EPUBFixer:
             self.entries = zip_ref.namelist()
             for filename in self.entries:
                 ext = filename.split('.')[-1]
-                if filename == 'mimetype' or ext in ['html', 'xhtml', 'htm', 'xml', 'svg', 'css', 'opf', 'ncx']:
-                    self.files[filename] = zip_ref.read(filename).decode('utf-8')
+                if filename == 'mimetype':
+                    self.files[filename] = zip_ref.read(filename)
+                    continue
+
+                if ext in ['html', 'xhtml', 'htm', 'xml', 'svg', 'css', 'opf', 'ncx']:
+                    data = zip_ref.read(filename)
+                    decoded = self._decode_text_entry(filename, data)
+                    if decoded is None:
+                        self.files[filename] = data
+                    else:
+                        self.files[filename] = decoded
                 else:
                     self.binary_files[filename] = zip_ref.read(filename)
 
     def fix_encoding(self):
         """Add UTF-8 encoding declaration if missing and fix malformed XML declarations"""
-        encoding = '<?xml version="1.0" encoding="utf-8"?>'
-        regex = r'^<\?xml\s+version=["\'][\d.]+["\']\s+encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>'
-        # Pattern to detect malformed XML declarations (excessive whitespace)
-        malformed_xml_pattern = r'^<\?xml\s+version=["\'][\d.]+["\']\s{2,}encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>'
+        xml_decl_pattern = re.compile(r'^(\s*)<\?xml[^>]*\?>', re.IGNORECASE)
+        xml_decl_encoding_pattern = re.compile(
+            r'^\s*<\?xml[^>]*encoding=["\']([^"\']+)["\']',
+            re.IGNORECASE
+        )
 
         for filename in list(self.files.keys()):
             ext = filename.split('.')[-1]
-            # Check HTML, XHTML, XML, OPF, and NCX files
-            if ext in ['html', 'xhtml', 'xml', 'opf', 'ncx']:
-                content = self.files[filename]
-                content = content.lstrip()
-                
-                # First, check for malformed XML declaration (double/triple spaces)
-                if re.match(malformed_xml_pattern, content, re.IGNORECASE):
-                    # Replace malformed declaration with clean one
-                    content = re.sub(
-                        r'^<\?xml\s+version=["\'][\d.]+["\']\s+encoding=["\'][a-zA-Z\d\-\.]+["\'].*?\?>',
-                        encoding,
-                        content,
-                        count=1,
-                        flags=re.IGNORECASE
-                    )
-                    self.fixed_problems.append(f"Fixed malformed XML declaration in {filename}")
-                # Then check if encoding declaration is missing
-                elif not re.match(regex, content, re.IGNORECASE):
-                    content = encoding + '\n' + content
-                    self.fixed_problems.append(f"Added encoding declaration to {filename}")
-                
-                self.files[filename] = content
+            content = self._get_text_content(filename)
+            if content is None:
+                continue
+
+            target_encoding = self.file_target_encodings.get(filename, 'utf-8')
+            declared_encoding = target_encoding
+            if declared_encoding.startswith('utf-16'):
+                declared_encoding = 'utf-16'
+
+            if ext in ['html', 'htm']:
+                updated = self._update_html_charset(content, declared_encoding)
+                if updated != content:
+                    self.fixed_problems.append(f"Updated HTML charset in {filename} to {declared_encoding}")
+                self.files[filename] = updated
+                continue
+
+            if ext not in ['xhtml', 'xml', 'opf', 'ncx', 'svg']:
+                continue
+
+            new_decl = f'<?xml version="1.0" encoding="{declared_encoding}"?>'
+            decl_match = xml_decl_encoding_pattern.match(content)
+            if decl_match:
+                current_encoding = self._normalize_encoding_name(decl_match.group(1))
+                if current_encoding != self._normalize_encoding_name(declared_encoding):
+                    content = xml_decl_pattern.sub(r'\1' + new_decl, content, count=1)
+                    self.fixed_problems.append(f"Updated XML declaration in {filename} to {declared_encoding}")
+            else:
+                content = new_decl + '\n' + content
+                self.fixed_problems.append(f"Added XML declaration to {filename}")
+
+            self.files[filename] = content
 
     def fix_container_xml(self):
         """Fix duplicate XML declarations in META-INF/container.xml"""
@@ -266,7 +472,9 @@ class EPUBFixer:
         if filename not in self.files:
             return
 
-        content = self.files[filename]
+        content = self._get_text_content(filename)
+        if content is None:
+            return
         content = content.lstrip()
 
         decl_pattern = r'<\?xml[^>]*\?>'
@@ -295,8 +503,15 @@ class EPUBFixer:
         for filename in self.files:
             ext = filename.split('.')[-1]
             if ext in ['html', 'xhtml']:
-                html = self.files[filename]
-                dom = minidom.parseString(html)
+                html = self._get_text_content(filename)
+                if html is None:
+                    continue
+                if '<body' not in html:
+                    continue
+                try:
+                    dom = minidom.parseString(html)
+                except Exception:
+                    continue
                 body_elements = dom.getElementsByTagName('body')
                 if body_elements and body_elements[0].hasAttribute('id'):
                     body_id = body_elements[0].getAttribute('id')
@@ -307,8 +522,11 @@ class EPUBFixer:
         # Replace all
         for filename in self.files:
             for src, target in body_id_list:
-                if src in self.files[filename]:
-                    self.files[filename] = self.files[filename].replace(src, target)
+                content = self._get_text_content(filename)
+                if content is None:
+                    continue
+                if src in content:
+                    self.files[filename] = content.replace(src, target)
                     self.fixed_problems.append(f"Replaced link target {src} with {target} in file {filename}.")
 
     def fix_book_language(self, default_language='en', epub_path=None):
@@ -346,7 +564,14 @@ class EPUBFixer:
                 print('Cannot find OPF file!')
                 return
 
-            opf = minidom.parseString(self.files[opf_filename])
+            opf_content = self._get_text_content(opf_filename)
+            if opf_content is None:
+                return
+            if not self.aggressive_mode and 'xmlns:dc' not in opf_content:
+                print_and_log(f"[cwa-kindle-epub-fixer] Skipping language update for {opf_filename} (missing xmlns:dc)", log=self.manually_triggered)
+                return
+
+            opf = minidom.parseString(opf_content)
             language_tags = opf.getElementsByTagName('dc:language')
             language = None
             original_language = None
@@ -401,8 +626,10 @@ class EPUBFixer:
                 language_tag = opf.createElement('dc:language')
                 text_node = opf.createTextNode(language)
                 language_tag.appendChild(text_node)
-                metadata = opf.getElementsByTagName('metadata')[0]
-                metadata.appendChild(language_tag)
+                metadata_nodes = opf.getElementsByTagName('metadata')
+                if not metadata_nodes:
+                    return
+                metadata_nodes[0].appendChild(language_tag)
             else:
                 # Update existing tag
                 if language_tags[0].firstChild:
@@ -415,10 +642,12 @@ class EPUBFixer:
             if original_language != language or not original_language:
                 # Use regex replacement to preserve XML formatting instead of minidom.toxml()
                 # This prevents attribute reordering which can break Amazon's parser
-                opf_content = self.files[opf_filename]
+                opf_content = opf_content
                 
                 if not language_tags:
                     # Need to add language tag - insert before </metadata>
+                    if '</metadata>' not in opf_content:
+                        return
                     opf_content = opf_content.replace(
                         '</metadata>',
                         f'    <dc:language>{language}</dc:language>\n  </metadata>'
@@ -483,18 +712,35 @@ class EPUBFixer:
         for filename in list(self.files.keys()):
             ext = filename.split('.')[-1]
             if ext in ['html', 'xhtml']:
-                dom = minidom.parseString(self.files[filename])
-                stray_img = []
+                content = self._get_text_content(filename)
+                if content is None:
+                    continue
+                if self.aggressive_mode:
+                    try:
+                        dom = minidom.parseString(content)
+                    except Exception:
+                        continue
+                    stray_img = []
 
-                for img in dom.getElementsByTagName('img'):
-                    if not img.getAttribute('src'):
-                        stray_img.append(img)
+                    for img in dom.getElementsByTagName('img'):
+                        if not img.getAttribute('src'):
+                            stray_img.append(img)
 
-                if stray_img:
-                    for img in stray_img:
-                        img.parentNode.removeChild(img)
-                    self.fixed_problems.append(f"Remove stray image tag(s) in {filename}")
-                    self.files[filename] = dom.toxml()
+                    if stray_img:
+                        for img in stray_img:
+                            img.parentNode.removeChild(img)
+                        self.fixed_problems.append(f"Remove stray image tag(s) in {filename}")
+                        self.files[filename] = dom.toxml()
+                else:
+                    no_src_pattern = re.compile(r'<img\b(?![^>]*\bsrc\s*=)[^>]*>', re.IGNORECASE)
+                    empty_src_pattern = re.compile(r'<img\b[^>]*\bsrc\s*=\s*["\']?\s*["\'][^>]*>', re.IGNORECASE)
+
+                    updated = empty_src_pattern.sub('', content)
+                    updated = no_src_pattern.sub('', updated)
+
+                    if updated != content:
+                        self.fixed_problems.append(f"Remove stray image tag(s) in {filename}")
+                        self.files[filename] = updated
 
     def strip_embedded_fonts(self):
         """Remove embedded font files and @font-face CSS declarations for Kindle compatibility"""
@@ -733,12 +979,19 @@ class EPUBFixer:
         with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zip_ref:
             # First write mimetype file
             if 'mimetype' in self.files:
-                zip_ref.writestr('mimetype', self.files['mimetype'], compress_type=zipfile.ZIP_STORED)
+                mimetype_content = self.files['mimetype']
+                if isinstance(mimetype_content, str):
+                    mimetype_content = mimetype_content.encode('utf-8')
+                zip_ref.writestr('mimetype', mimetype_content, compress_type=zipfile.ZIP_STORED)
 
             # Add text files
             for filename, content in self.files.items():
                 if filename != 'mimetype':
-                    zip_ref.writestr(filename, content)
+                    if isinstance(content, bytes):
+                        zip_ref.writestr(filename, content)
+                    else:
+                        encoding = self.file_target_encodings.get(filename, 'utf-8')
+                        zip_ref.writestr(filename, content.encode(encoding))
 
             # Add binary files
             for filename, content in self.binary_files.items():
@@ -789,6 +1042,10 @@ class EPUBFixer:
         # Load EPUB
         print_and_log("[cwa-kindle-epub-fixer] Loading provided EPUB...", log=self.manually_triggered)
         self.read_epub(input_path)
+
+        if self.decode_warnings:
+            for warning in self.decode_warnings:
+                print_and_log(f"[cwa-kindle-epub-fixer] Warning: {warning}", log=self.manually_triggered)
 
         # Run fixing procedures
         print_and_log("[cwa-kindle-epub-fixer] Checking linking to body ID to prevent unresolved hyperlinks...", log=self.manually_triggered)

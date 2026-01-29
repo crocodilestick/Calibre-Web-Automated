@@ -1581,6 +1581,19 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                     continue
                 
                 # Actual resolution mode
+                # Re-fetch books in the active session to avoid detached object issues
+                book_to_keep_id = book_to_keep.id
+                books_to_delete_ids = [b.id for b in books_to_delete]
+                book_to_keep_ref = calibre_db.get_book(book_to_keep_id)
+                if not book_to_keep_ref:
+                    result['errors'].append(f"Book to keep (ID {book_to_keep_id}) no longer exists")
+                    continue
+                books_to_delete = [calibre_db.get_book(book_id) for book_id in books_to_delete_ids]
+                books_to_delete = [b for b in books_to_delete if b]
+                if not books_to_delete:
+                    continue
+                book_to_keep = book_to_keep_ref
+
                 deleted_ids = []
                 backup_dir = f"/config/processed_books/duplicate_resolutions/{datetime.now().strftime('%Y%m%d_%H%M%S')}_group_{group['group_hash'][:8]}"
                 os.makedirs(backup_dir, exist_ok=True)

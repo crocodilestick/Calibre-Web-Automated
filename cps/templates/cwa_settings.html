@@ -169,9 +169,110 @@
         {{_("When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
         compatibility with Amazon's Send-to-Kindle Service. This feature is particularly useful for users who frequently send EPUB files to their Kindle devices and have experienced issues with 
         file rejections or formatting problems.")}}
+      </p>
       <div class="cwa-settings-tip">
         <small>{{_('This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.') | safe }}</small>
       </div>
+
+      {% if cwa_settings['archived_cleanup_enabled'] %}
+      <input type="checkbox" id="archived_cleanup_enabled" name="archived_cleanup_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Runs daily by default">
+      {% else %}
+      <input type="checkbox" id="archived_cleanup_enabled" name="archived_cleanup_enabled" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Runs daily by default">
+      {% endif %}
+      <label for="archived_cleanup_enabled" style="padding-left: 10px;">{{_('Enable Archived Book Cleanup')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_('Removes stale archived book references in app.db when the book no longer exists in the Calibre library. Helps keep archived counts accurate.') }}
+      </p>
+
+      <div class="form-group" style="margin-top: 10px;">
+        <label for="archived_cleanup_schedule" class="settings-section-header" style="padding-right: 10px;">{{_('Cleanup Schedule:')}}</label>
+        <select name="archived_cleanup_schedule" 
+                id="archived_cleanup_schedule" 
+                style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680; min-width: 200px;"
+                onchange="toggleArchivedCleanupScheduleOptions()">
+          <optgroup label="{{_('Frequent Intervals')}}">
+            <option value="15min" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '15min' %}selected{% endif %}>{{_('Every 15 Minutes')}}</option>
+            <option value="30min" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '30min' %}selected{% endif %}>{{_('Every 30 Minutes')}}</option>
+            <option value="1hour" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '1hour' %}selected{% endif %}>{{_('Every Hour')}}</option>
+            <option value="2hours" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '2hours' %}selected{% endif %}>{{_('Every 2 Hours')}}</option>
+            <option value="4hours" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '4hours' %}selected{% endif %}>{{_('Every 4 Hours')}}</option>
+            <option value="6hours" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '6hours' %}selected{% endif %}>{{_('Every 6 Hours')}}</option>
+            <option value="12hours" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '12hours' %}selected{% endif %}>{{_('Every 12 Hours')}}</option>
+          </optgroup>
+          <optgroup label="{{_('Daily/Weekly/Monthly')}}">
+            <option value="daily" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == 'daily' %}selected{% endif %}>{{_('Daily at Specific Time')}}</option>
+            <option value="weekly" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == 'weekly' %}selected{% endif %}>{{_('Weekly on Specific Day')}}</option>
+            <option value="monthly" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == 'monthly' %}selected{% endif %}>{{_('Monthly on Specific Day')}}</option>
+          </optgroup>
+        </select>
+        <small style="color: #bbbbbb; margin-left: 10px;">{{_('Default: daily at 03:00')}}</small>
+
+        <div id="archived_cleanup_day_selector" style="margin-top: 10px; display: none;">
+          <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Week:')}}</label>
+          <select name="archived_cleanup_schedule_day" 
+                  id="archived_cleanup_schedule_day"
+                  style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;">
+            <option value="monday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'monday' %}selected{% endif %}>{{_('Monday')}}</option>
+            <option value="tuesday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'tuesday' %}selected{% endif %}>{{_('Tuesday')}}</option>
+            <option value="wednesday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'wednesday' %}selected{% endif %}>{{_('Wednesday')}}</option>
+            <option value="thursday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'thursday' %}selected{% endif %}>{{_('Thursday')}}</option>
+            <option value="friday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'friday' %}selected{% endif %}>{{_('Friday')}}</option>
+            <option value="saturday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'saturday' %}selected{% endif %}>{{_('Saturday')}}</option>
+            <option value="sunday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'sunday' %}selected{% endif %}>{{_('Sunday')}}</option>
+          </select>
+        </div>
+
+        <div id="archived_cleanup_monthday_selector" style="margin-top: 10px; display: none;">
+          <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Month:')}}</label>
+          <input type="number" 
+                 name="archived_cleanup_schedule_day" 
+                 id="archived_cleanup_schedule_monthday"
+                 value="{{ cwa_settings.get('archived_cleanup_schedule_day', '1') if cwa_settings.get('archived_cleanup_schedule', 'daily') == 'monthly' else '1' }}" 
+                 min="1" 
+                 max="28"
+                 style="width: 80px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;">
+          <small style="color: #888; margin-left: 5px;">{{_('(1-28)')}}</small>
+        </div>
+
+        <div id="archived_cleanup_hour_selector" style="margin-top: 10px; display: none;">
+          <label style="color: #bbbbbb; margin-right: 10px;">{{_('Time of Day:')}}</label>
+          <select name="archived_cleanup_schedule_hour" 
+                  id="archived_cleanup_schedule_hour"
+                  style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;">
+            {% for hour in range(24) %}
+            <option value="{{hour}}" {% if cwa_settings.get('archived_cleanup_schedule_hour', 3) == hour %}selected{% endif %}>{{ "%02d:00"|format(hour) }}</option>
+            {% endfor %}
+          </select>
+          <small style="color: #888; margin-left: 5px;">{{_('(Server timezone: %(tz)s)', tz=config.config_timezone or 'UTC')}}</small>
+        </div>
+      </div>
+
+      <script>
+      function toggleArchivedCleanupScheduleOptions() {
+        const scheduleType = document.getElementById('archived_cleanup_schedule').value;
+        const daySelector = document.getElementById('archived_cleanup_day_selector');
+        const monthdaySelector = document.getElementById('archived_cleanup_monthday_selector');
+        const hourSelector = document.getElementById('archived_cleanup_hour_selector');
+
+        daySelector.style.display = 'none';
+        monthdaySelector.style.display = 'none';
+        hourSelector.style.display = 'none';
+
+        if (scheduleType === 'weekly') {
+          daySelector.style.display = 'block';
+          hourSelector.style.display = 'block';
+        } else if (scheduleType === 'monthly') {
+          monthdaySelector.style.display = 'block';
+          hourSelector.style.display = 'block';
+        } else if (scheduleType === 'daily') {
+          hourSelector.style.display = 'block';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        toggleArchivedCleanupScheduleOptions();
+      });
+      </script>
 
       {% if cwa_settings['auto_metadata_fetch_enabled'] %}
       <input type="checkbox" id="auto_metadata_fetch_enabled" name="auto_metadata_fetch_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Automatically fetches metadata for newly ingested books">

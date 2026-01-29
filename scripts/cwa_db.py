@@ -417,6 +417,10 @@ class CWA_DB:
             'hardcover_auto_fetch_min_confidence': 0.85,
             'hardcover_auto_fetch_batch_size': 50,
             'hardcover_auto_fetch_rate_limit': 5.0,
+            'archived_cleanup_enabled': 1,
+            'archived_cleanup_schedule': 'daily',
+            'archived_cleanup_schedule_day': 'sunday',
+            'archived_cleanup_schedule_hour': 3,
             'ingest_stale_temp_minutes': 120,
             'ingest_stale_temp_interval': 600
         }
@@ -427,7 +431,7 @@ class CWA_DB:
                 cwa_settings[key] = default_value
 
         # Define which settings should remain as integers (not converted to boolean)
-        integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds']
+        integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'archived_cleanup_schedule_hour']
         
         # Define which settings should remain as floats (not converted to boolean)
         float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']

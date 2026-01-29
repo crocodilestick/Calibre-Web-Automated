@@ -619,7 +619,7 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
-    integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'duplicate_auto_resolve_cooldown_minutes']  # Special handling for integer settings
+    integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'duplicate_auto_resolve_cooldown_minutes', 'archived_cleanup_schedule_hour']  # Special handling for integer settings
     float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']  # Special handling for float settings
     json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']  # Special handling for JSON settings
     skip_settings = ['auto_convert_ignored_formats', 'auto_ingest_ignored_formats', 'auto_convert_retained_formats']  # Handled through individual format checkboxes
@@ -637,6 +637,12 @@ def set_cwa_settings():
     # Ensure cron expression is treated as a string even if default is empty
     if 'duplicate_scan_cron' not in string_settings:
         string_settings.append('duplicate_scan_cron')
+
+    # Ensure archived cleanup schedule fields are treated as strings
+    if 'archived_cleanup_schedule' not in string_settings:
+        string_settings.append('archived_cleanup_schedule')
+    if 'archived_cleanup_schedule_day' not in string_settings:
+        string_settings.append('archived_cleanup_schedule_day')
 
     for format in ignorable_formats:
         string_settings.append(f"ignore_ingest_{format}")
@@ -709,6 +715,8 @@ def set_cwa_settings():
                             int_value = max(10, min(200, int_value))  # Clamp between 10 and 200
                         elif setting == 'hardcover_auto_fetch_schedule_hour':
                             int_value = max(0, min(23, int_value))  # Clamp between 0 and 23 hours
+                        elif setting == 'archived_cleanup_schedule_hour':
+                            int_value = max(0, min(23, int_value))  # Clamp between 0 and 23 hours
                         elif setting == 'duplicate_scan_hour':
                             int_value = max(0, min(23, int_value))
                         elif setting == 'duplicate_scan_chunk_size':
@@ -730,6 +738,8 @@ def set_cwa_settings():
                             result[setting] = cwa_db.cwa_settings.get(setting, 50)  # Default to 50
                         elif setting == 'hardcover_auto_fetch_schedule_hour':
                             result[setting] = cwa_db.cwa_settings.get(setting, 2)  # Default to 2 AM
+                        elif setting == 'archived_cleanup_schedule_hour':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 3)  # Default to 3 AM
                         elif setting == 'duplicate_scan_debounce_seconds':
                             result[setting] = cwa_db.cwa_settings.get(setting, 30)
                 else:
@@ -745,6 +755,8 @@ def set_cwa_settings():
                         result[setting] = cwa_db.cwa_settings.get(setting, 50)  # Default to 50
                     elif setting == 'hardcover_auto_fetch_schedule_hour':
                         result[setting] = cwa_db.cwa_settings.get(setting, 2)  # Default to 2 AM
+                    elif setting == 'archived_cleanup_schedule_hour':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 3)  # Default to 3 AM
                     elif setting == 'duplicate_scan_debounce_seconds':
                         result[setting] = cwa_db.cwa_settings.get(setting, 30)
 

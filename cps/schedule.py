@@ -9,7 +9,7 @@ import datetime
 
 from . import config, constants
 from .services.background_scheduler import BackgroundScheduler, CronTrigger, IntervalTrigger, use_APScheduler, DateTrigger
-from .tasks.database import TaskReconnectDatabase
+from .tasks.database import TaskReconnectDatabase, TaskCleanArchivedBooks
 from .tasks.clean import TaskClean
 from .tasks.thumbnail import TaskGenerateCoverThumbnails, TaskGenerateSeriesThumbnails, TaskClearCoverThumbnailCache
 from .tasks.thumbnail_migration import check_and_migrate_thumbnails
@@ -70,6 +70,7 @@ def register_scheduled_tasks(reconnect=True):
                            name="end scheduled task")
 
         _schedule_hardcover_auto_fetch(scheduler, timezone_info)
+        _schedule_archived_book_cleanup(scheduler, timezone_info)
 
         # Kick-off tasks, if they should currently be running
         if should_task_be_running(start, duration):
@@ -311,6 +312,68 @@ def _schedule_hardcover_auto_fetch(scheduler, timezone_info):
         
         if trigger:
             scheduler.schedule_task(task_lambda, user='System', trigger=trigger, name=name, hidden=False)
+    except Exception:
+        # Scheduling is best-effort; never block startup
+        pass
+
+
+def _schedule_archived_book_cleanup(scheduler, timezone_info):
+    """Schedule cleanup for stale archived_book entries (default 03:00 local)."""
+    try:
+        import sys as _sys
+        if '/app/calibre-web-automated/scripts/' not in _sys.path:
+            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+
+        db = CWA_DB()
+        cwa_settings = db.get_cwa_settings()
+
+        enabled = bool(cwa_settings.get('archived_cleanup_enabled', True))
+        if not enabled:
+            return
+
+        schedule_type = (cwa_settings.get('archived_cleanup_schedule') or 'daily').strip().lower()
+        schedule_day = (cwa_settings.get('archived_cleanup_schedule_day') or 'sunday')
+        schedule_hour = int(cwa_settings.get('archived_cleanup_schedule_hour', 3))
+
+        day_map = {
+            'monday': 'mon', 'tuesday': 'tue', 'wednesday': 'wed',
+            'thursday': 'thu', 'friday': 'fri', 'saturday': 'sat', 'sunday': 'sun'
+        }
+
+        trigger = None
+        name = 'clean archived book references'
+
+        if schedule_type == '15min':
+            trigger = IntervalTrigger(minutes=15, timezone=timezone_info)
+        elif schedule_type == '30min':
+            trigger = IntervalTrigger(minutes=30, timezone=timezone_info)
+        elif schedule_type == '1hour':
+            trigger = IntervalTrigger(hours=1, timezone=timezone_info)
+        elif schedule_type == '2hours':
+            trigger = IntervalTrigger(hours=2, timezone=timezone_info)
+        elif schedule_type == '4hours':
+            trigger = IntervalTrigger(hours=4, timezone=timezone_info)
+        elif schedule_type == '6hours':
+            trigger = IntervalTrigger(hours=6, timezone=timezone_info)
+        elif schedule_type == '12hours':
+            trigger = IntervalTrigger(hours=12, timezone=timezone_info)
+        elif schedule_type == 'daily':
+            trigger = CronTrigger(hour=schedule_hour, minute=0, timezone=timezone_info)
+        elif schedule_type == 'weekly':
+            day_abbr = day_map.get(str(schedule_day).lower(), 'sun')
+            trigger = CronTrigger(day_of_week=day_abbr, hour=schedule_hour, minute=0, timezone=timezone_info)
+        elif schedule_type == 'monthly':
+            try:
+                day_of_month = int(schedule_day) if str(schedule_day).isdigit() else 1
+                day_of_month = max(1, min(28, day_of_month))
+            except (ValueError, TypeError):
+                day_of_month = 1
+            trigger = CronTrigger(day=day_of_month, hour=schedule_hour, minute=0, timezone=timezone_info)
+
+        if trigger:
+            scheduler.schedule_task(lambda: TaskCleanArchivedBooks(), user='System',
+                                    trigger=trigger, name=name, hidden=True)
     except Exception:
         # Scheduling is best-effort; never block startup
         pass

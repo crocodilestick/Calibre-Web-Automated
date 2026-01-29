@@ -19,7 +19,7 @@ from flask_babel import gettext as _
 from flask_babel import lazy_gettext as N_
 from flask_babel import get_locale
 from .cw_login import current_user, login_required
-from sqlalchemy.exc import OperationalError, IntegrityError, InterfaceError
+from sqlalchemy.exc import OperationalError, IntegrityError, InterfaceError, InvalidRequestError
 from sqlalchemy.orm.exc import StaleDataError
 from sqlalchemy.sql.expression import func
 
@@ -468,7 +468,7 @@ def edit_book_param(param, vals):
         if param == 'title' and vals.get('checkT') == "false":
             book.sort = sort_param
             calibre_db.session.commit()
-    except (OperationalError, IntegrityError, StaleDataError) as e:
+    except (OperationalError, IntegrityError, StaleDataError, InvalidRequestError) as e:
         calibre_db.session.rollback()
         log.error_or_exception("Database error: {}".format(e))
         ret = Response(json.dumps({'success': False,
@@ -788,8 +788,24 @@ def do_edit_book(book_id, upload_formats=None):
             kobo_sync_status.remove_synced_book(book.id, all=True)
             calibre_db.set_metadata_dirty(book.id)
 
-        calibre_db.session.merge(book)
-        calibre_db.session.commit()
+        try:
+            calibre_db.session.merge(book)
+            calibre_db.session.commit()
+        except InvalidRequestError as e:
+            # Recover from closed/invalid transaction by recreating the session and retrying once
+            log.warning("Edit book transaction invalid, retrying commit: %s", e)
+            try:
+                calibre_db.session.rollback()
+            except Exception:
+                pass
+            try:
+                calibre_db.session.close()
+            except Exception:
+                pass
+            calibre_db.session = None
+            calibre_db.ensure_session()
+            calibre_db.session.merge(book)
+            calibre_db.session.commit()
 
         # CWA: Export of changed Metadata after commit, to avoid race conditions with folder renames
         # Only create log if there were actual meaningful metadata changes
@@ -857,7 +873,7 @@ def do_edit_book(book_id, upload_formats=None):
         else:
             return render_edit_book(book_id)
 
-    except (ValueError, OperationalError, IntegrityError, StaleDataError, InterfaceError) as e:
+    except (ValueError, OperationalError, IntegrityError, StaleDataError, InterfaceError, InvalidRequestError) as e:
         log.error_or_exception("Database or Value error: {}".format(e))
         calibre_db.session.rollback()
         flash(_("Oops! Database Error: %(error)s.", error=e.orig if hasattr(e, "orig") else e), category="error")

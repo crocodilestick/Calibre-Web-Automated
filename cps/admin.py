@@ -2081,7 +2081,10 @@ def _db_configuration_update_helper():
     to_save = request.form.to_dict()
     gdrive_error = None
 
-    incoming = to_save.get('config_calibre_dir', config.config_calibre_dir or '')
+    incoming = to_save.get('config_calibre_dir')
+    if incoming is None:
+        log.warning("DB config update missing config_calibre_dir; using current config value")
+        incoming = config.config_calibre_dir or ''
     incoming = re.sub(r'[\\/]metadata\.db$', '', incoming, flags=re.IGNORECASE)
     if not incoming and os.path.isfile('/calibre-library/metadata.db'):
         incoming = '/calibre-library'
@@ -2097,7 +2100,7 @@ def _db_configuration_update_helper():
         log.error_or_exception("Settings Database error: {}".format(e))
         _db_configuration_result(_("Oops! Database Error: %(error)s.", error=e.orig), gdrive_error)
     try:
-        metadata_db = os.path.join(to_save['config_calibre_dir'], "metadata.db")
+        metadata_db = os.path.join(to_save.get('config_calibre_dir', ''), "metadata.db")
         if config.config_use_google_drive and is_gdrive_ready() and not os.path.exists(metadata_db):
             gdriveutils.downloadFile(None, "metadata.db", metadata_db)
             db_change = True
@@ -2105,8 +2108,8 @@ def _db_configuration_update_helper():
         return _db_configuration_result('{}'.format(ex), gdrive_error)
     config.config_calibre_split = to_save.get('config_calibre_split', 0) == "on"
     if config.config_calibre_split:
-        split_dir = to_save.get("config_calibre_split_dir")
-        if not os.path.exists(split_dir):
+        split_dir = to_save.get("config_calibre_split_dir") or ""
+        if not split_dir or not os.path.exists(split_dir):
             return _db_configuration_result(_("Books path not valid"), gdrive_error)
         else:
             _config_string(to_save, "config_calibre_split_dir")

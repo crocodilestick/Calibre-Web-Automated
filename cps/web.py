@@ -10,9 +10,12 @@ import mimetypes
 import chardet  # dependency of requests
 import copy
 import importlib
+import re
+import zipfile
+import xml.etree.ElementTree as ET
 
 from flask import Blueprint, jsonify
-from flask import request, redirect, send_from_directory, make_response, flash, abort, url_for, Response
+from flask import request, redirect, send_from_directory, send_file, make_response, flash, abort, url_for, Response
 from flask import session as flask_session
 from flask_babel import gettext as _
 from flask_babel import get_locale
@@ -1802,6 +1805,82 @@ def get_robots():
         abort(403)
 
 
+def _is_valid_container_xml(container_bytes):
+    try:
+        ET.fromstring(container_bytes)
+        return True
+    except Exception:
+        return False
+
+
+def _sanitize_container_xml(container_bytes):
+    try:
+        text = container_bytes.decode("utf-8", errors="replace")
+    except Exception:
+        return container_bytes
+
+    decl_pattern = re.compile(r"<\?xml[^>]*\?>")
+    decls = list(decl_pattern.finditer(text))
+    if len(decls) <= 1:
+        return container_bytes
+
+    first = decls[0]
+    cleaned = text[:first.end()] + decl_pattern.sub("", text[first.end():])
+    return cleaned.encode("utf-8")
+
+
+def _get_fixed_epub_path(book_id, original_path):
+    fix_dir = os.path.join(constants.CONFIG_DIR, "epub_fixes")
+    try:
+        os.makedirs(fix_dir, exist_ok=True)
+    except Exception:
+        return None
+
+    try:
+        mtime = int(os.path.getmtime(original_path))
+    except Exception:
+        mtime = 0
+    return os.path.join(fix_dir, f"{book_id}_{mtime}.epub")
+
+
+def _repair_epub_container_if_needed(book_id, original_path):
+    try:
+        with zipfile.ZipFile(original_path, "r") as zin:
+            container_bytes = zin.read("META-INF/container.xml")
+            if _is_valid_container_xml(container_bytes):
+                return None
+
+        fixed_path = _get_fixed_epub_path(book_id, original_path)
+        if not fixed_path:
+            return None
+        if os.path.exists(fixed_path):
+            return fixed_path
+
+        temp_path = fixed_path + ".tmp"
+        with zipfile.ZipFile(original_path, "r") as zin, zipfile.ZipFile(temp_path, "w") as zout:
+            for item in zin.infolist():
+                data = zin.read(item.filename)
+                if item.filename == "META-INF/container.xml":
+                    data = _sanitize_container_xml(data)
+
+                zi = zipfile.ZipInfo(item.filename)
+                zi.date_time = item.date_time
+                zi.compress_type = item.compress_type
+                zi.external_attr = item.external_attr
+                zi.internal_attr = item.internal_attr
+                zi.extra = item.extra
+                zi.comment = item.comment
+                zout.writestr(zi, data, compress_type=item.compress_type)
+
+        os.replace(temp_path, fixed_path)
+        return fixed_path
+    except KeyError:
+        return None
+    except Exception as ex:
+        log.error("Failed to repair EPUB container.xml for book %s: %s", book_id, ex)
+        return None
+
+
 @web.route("/show/<int:book_id>/<book_format>", defaults={'anyname': 'None'})
 @web.route("/show/<int:book_id>/<book_format>/<anyname>")
 @login_required_if_no_ano
@@ -1827,6 +1906,15 @@ def serve_book(book_id, book_format, anyname):
             log.error_or_exception(ex)
             return "File Not Found"
     else:
+        if book_format.upper() == 'EPUB':
+            original_path = os.path.join(config.get_book_path(), book.path, data.name + "." + book_format)
+            fixed_path = _repair_epub_container_if_needed(book_id, original_path)
+            if fixed_path:
+                response = make_response(send_file(fixed_path, mimetype="application/epub+zip"))
+                if not range_header:
+                    log.info('Serving repaired book: %s', data.name)
+                    response.headers['Accept-Ranges'] = 'bytes'
+                return response
         if book_format.upper() == 'TXT':
             log.info('Serving book: %s', data.name)
             try:

@@ -11,7 +11,7 @@
               {% if not current_user.is_anonymous %}
                 <li id="nav_createshelf" class="create-shelf"><a href="{{url_for('shelf.create_shelf')}}">{{_('Create a Shelf')}}</a></li>
                 <li id="nav_createmagicshelf" class="create-shelf"><a href="{{url_for('web.create_magic_shelf')}}">{{_('Create a Magic Shelf')}}</a></li>
-                <li id="nav_about" {% if page == 'stat' %}class="active"{% endif %}><a href="{{url_for('about.stats')}}"><span class="glyphicon glyphicon-info-sign"></span> {{_('About')}}</a></li>
+                <li id="nav_about" {% if page == 'stat' %}class="active"{% endif %}><a href="{{url_for('about.package_versions')}}"><span class="glyphicon glyphicon-info-sign"></span> {{_('About')}}</a></li>
               {% endif %}
               {% endif %}
               

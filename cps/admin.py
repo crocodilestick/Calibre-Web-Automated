@@ -459,24 +459,7 @@ def cwa_get_package_versions() -> tuple[str, str, str, str]:
 @user_login_required
 @admin_required
 def admin():
-    version = updater_thread.get_current_version_info()
     cwa_version, kepubify_version, calibre_version = cwa_get_package_versions()
-    if version is False:
-        commit = _('Unknown')
-    else:
-        if 'datetime' in version:
-            commit = version['datetime']
-
-            tz = timedelta(seconds=time.timezone if (time.localtime().tm_isdst == 0) else time.altzone)
-            form_date = datetime.strptime(commit[:19], "%Y-%m-%dT%H:%M:%S")
-            if len(commit) > 19:  # check if string has timezone
-                if commit[19] == '+':
-                    form_date -= timedelta(hours=int(commit[20:22]), minutes=int(commit[23:]))
-                elif commit[19] == '-':
-                    form_date += timedelta(hours=int(commit[20:22]), minutes=int(commit[23:]))
-            commit = format_datetime(form_date - tz, format='short')
-        else:
-            commit = version['version'].replace("b", " Beta")
 
     all_user = ub.session.query(ub.User).all()
     # email_settings = mail_config.get_mail_settings()
@@ -484,7 +467,7 @@ def admin():
     t = timedelta(hours=config.schedule_duration // 60, minutes=config.schedule_duration % 60)
     schedule_duration = format_timedelta(t, threshold=.99)
 
-    return render_title_template("admin.html", allUser=all_user, config=config, commit=commit,
+    return render_title_template("admin.html", allUser=all_user, config=config,
                                  cwa_version=cwa_version, kepubify_version=kepubify_version,
                                  calibre_version=calibre_version, feature_support=feature_support,
                                  schedule_time=schedule_time, schedule_duration=schedule_duration,

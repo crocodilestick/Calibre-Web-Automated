@@ -211,6 +211,7 @@ jobs:
       # --- 5. Export Digest for Merge Job ---
       - name: Export digest
         run: |
+          rm -rf /tmp/digests
           mkdir -p /tmp/digests
           digest="${{ steps.build.outputs.digest }}"
           touch "/tmp/digests/${digest#sha256:}"

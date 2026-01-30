@@ -3,8 +3,6 @@ name: Build & Push - Dev - Split Strategy
 
 on:
   push:
-    branches:
-      - '**'
     branches-ignore:
       - 'main'
     paths:

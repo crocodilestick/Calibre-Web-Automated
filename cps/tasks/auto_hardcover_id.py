@@ -12,7 +12,7 @@ from os import getenv
 from typing import List, Optional
 
 from cps import config, db, logger, ub
-from cps.services.worker import CalibreTask, STAT_FAIL, STAT_FINISH_SUCCESS
+from cps.services.worker import CalibreTask, STAT_FAIL, STAT_FINISH_SUCCESS, STAT_CANCELLED, STAT_ENDED
 from flask_babel import lazy_gettext as N_
 from sqlalchemy import not_
 
@@ -63,6 +63,22 @@ class TaskAutoHardcoverID(CalibreTask):
         self.consecutive_errors = 0
         self.current_delay = rate_limit_delay
 
+    def _cancel_requested(self) -> bool:
+        return self.stat in (STAT_CANCELLED, STAT_ENDED)
+
+    def _sleep_with_cancel_check(self, total_seconds: float, step: float = 0.5) -> bool:
+        """
+        Sleep in small increments so cancellation can be detected promptly.
+        Returns False if cancellation was requested.
+        """
+        end_time = time.time() + total_seconds
+        while time.time() < end_time:
+            if self._cancel_requested():
+                self.log.info("Task cancelled by user")
+                return False
+            time.sleep(min(step, max(0, end_time - time.time())))
+        return True
+
     def run(self, worker_thread):
         # Check if Hardcover provider is available
         if Hardcover is None:
@@ -91,7 +107,7 @@ class TaskAutoHardcoverID(CalibreTask):
             batch_count = (total_books + self.batch_size - 1) // self.batch_size
             for batch_num in range(batch_count):
                 # Check if task was cancelled
-                if self.stat == 5:  # STAT_CANCELLED
+                if self._cancel_requested():
                     self.log.info("Task cancelled by user")
                     return
                 
@@ -103,7 +119,7 @@ class TaskAutoHardcoverID(CalibreTask):
                 
                 for book in batch:
                     # Check if cancelled
-                    if self.stat == 5:
+                    if self._cancel_requested():
                         self.log.info("Task cancelled by user")
                         return
                     
@@ -128,7 +144,8 @@ class TaskAutoHardcoverID(CalibreTask):
                         
                         # Rate limiting: wait between requests
                         if self.books_processed < total_books:
-                            time.sleep(self.current_delay)
+                            if not self._sleep_with_cancel_check(self.current_delay):
+                                return
                             
                     except Exception as e:
                         self.log.error(f"Error processing book {book.id} '{book.title}': {e}")
@@ -138,7 +155,8 @@ class TaskAutoHardcoverID(CalibreTask):
                         # Exponential backoff
                         self.current_delay = min(self.current_delay * 2, 60.0)
                         self.log.warning(f"Consecutive errors: {self.consecutive_errors}. Increasing delay to {self.current_delay}s")
-                        time.sleep(self.current_delay)
+                        if not self._sleep_with_cancel_check(self.current_delay):
+                            return
             
             # Save final stats
             self._save_stats()

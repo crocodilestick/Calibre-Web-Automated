@@ -17,13 +17,16 @@
 # --build-arg="VERSION=2.1.0" \
 # --tag crocodilestick/calibre-web-automated:latest .
 
-# ============================================================================
+# ==========================================================================
 # STAGE 1: Dependencies - Install system packages and Python dependencies
-# ============================================================================
-FROM ghcr.io/linuxserver/baseimage-ubuntu:noble AS dependencies
-
+# ==========================================================================
 ARG CALIBRE_RELEASE=9.0.0
 ARG KEPUBIFY_RELEASE=v4.0.4
+
+FROM ghcr.io/linuxserver/baseimage-ubuntu:noble AS dependencies
+
+ARG CALIBRE_RELEASE
+ARG KEPUBIFY_RELEASE
 
 # Set the default shell for the following RUN instructions to bash instead of sh
 SHELL ["/bin/bash", "-c"]
@@ -167,13 +170,11 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:noble
 
 ARG BUILD_DATE
 ARG VERSION
-ARG CALIBREWEB_RELEASE=0.6.24
-ARG CALIBRE_RELEASE=8.9.0
-ARG KEPUBIFY_RELEASE=v4.0.4
+ARG CALIBRE_RELEASE
+ARG KEPUBIFY_RELEASE
 
 LABEL build_version="Version:- ${VERSION}"
 LABEL build_date="${BUILD_DATE}"
-LABEL CW-base-version="${CALIBREWEB_RELEASE}"
 LABEL maintainer="CrocodileStick"
 
 # Set the default shell for the following RUN instructions to bash instead of sh

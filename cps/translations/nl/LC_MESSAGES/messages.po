@@ -29,7 +29,7 @@ msgstr "Statistieken"
 #: cps/admin.py:162
 #, fuzzy
 msgid "Server restarted, please reload page."
-msgstr "De server is herstart, vernieuw de pagina"
+msgstr "De server is opnieuw gestart, vernieuw de pagina"
 
 #: cps/admin.py:164
 #, fuzzy

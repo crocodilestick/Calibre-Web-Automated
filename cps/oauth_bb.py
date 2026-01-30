@@ -294,11 +294,35 @@ def register_user_from_generic_oauth(token=None):
 
     provider_username = str(provider_username)
     provider_user_id = str(provider_user_id)
+    provider_email = userinfo.get(email_field)
+    if provider_email is not None:
+        provider_email = str(provider_email)
 
-    user = (
-        ub.session.query(ub.User)
-        .filter(ub.User.name == provider_username)
-    ).first()
+    is_linking = (
+        current_user and current_user.is_authenticated and
+        session.get('oauth_linking_provider') == str(generic['id'])
+    )
+
+    user = None
+    if is_linking:
+        if provider_email:
+            existing_email_user = (
+                ub.session.query(ub.User)
+                .filter(ub.User.email == provider_email)
+            ).first()
+            if existing_email_user and existing_email_user.id != current_user.id:
+                log.warning("OAuth link rejected: email '%s' already belongs to user '%s'", 
+                            provider_email, existing_email_user.name)
+                flash(_("Failed to link OAuth account. Please try again."), category="error")
+                session.pop('oauth_linking_provider', None)
+                session.modified = True
+                return redirect(url_for('web.profile'))
+        user = current_user
+    else:
+        user = (
+            ub.session.query(ub.User)
+            .filter(ub.User.name == provider_username)
+        ).first()
 
     # Check if user should have admin role based on group membership
     # Handle various group formats: list, string, or None
@@ -435,6 +459,8 @@ def register_user_from_generic_oauth(token=None):
 
     # DIRECT LOGIN: Return the response from binding/login (redirect)
     # This aligns with the "Atomic" strategy to prevent loops
+    session.pop('oauth_linking_provider', None)
+    session.modified = True
     return bind_oauth_or_register(str(generic['id']), provider_user_id, 'generic.login', 'generic')
 
 
@@ -1031,6 +1057,9 @@ def generic_login():
     log.warning("Fallback OAuth route '/link/generic' accessed - direct login may have failed")
     # This route is now only a fallback if the direct login hijack fails
     # or if the user navigates here manually.
+    if current_user and current_user.is_authenticated:
+        session['oauth_linking_provider'] = str(oauthblueprints[2]['id'])
+        session.modified = True
     if not oauthblueprints[2]['blueprint'].session.authorized:
         return redirect(url_for("generic.login"))
     try:

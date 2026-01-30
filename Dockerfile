@@ -22,7 +22,7 @@
 # ============================================================================
 FROM ghcr.io/linuxserver/baseimage-ubuntu:noble AS dependencies
 
-ARG CALIBRE_RELEASE=8.9.0
+ARG CALIBRE_RELEASE=9.0.0
 ARG KEPUBIFY_RELEASE=v4.0.4
 
 # Set the default shell for the following RUN instructions to bash instead of sh

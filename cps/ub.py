@@ -71,12 +71,10 @@ def _run_ddl_with_retry(engine, statements, retries=5, base_delay=0.25):
     last_error = None
     for attempt in range(retries):
         try:
-            with engine.connect() as conn:
+            with engine.begin() as conn:
                 conn.execute(text("PRAGMA busy_timeout=5000"))
-                trans = conn.begin()
                 for stmt in statements:
                     conn.execute(text(stmt))
-                trans.commit()
             return True
         except exc.OperationalError as e:
             last_error = e

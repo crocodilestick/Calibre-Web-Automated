@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - '**'
+    branches-ignore:
+      - 'main'
     paths:
       - 'empty_library/**'
       - 'cps/**'
@@ -16,6 +18,15 @@ on:
       - 'koreader/**'
       - '**/cps.py'
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref (branch or SHA) to build'
+        required: false
+        default: ''
+      branch:
+        description: 'Branch name for tagging'
+        required: false
+        default: ''
 
 jobs:
   # --------------------------------------------------------------------------------
@@ -25,10 +36,24 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Checkout correct branch
+      - name: Set build ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.ref }}" ]; then
+            echo "BUILD_REF=${{ inputs.ref }}" >> $GITHUB_ENV
+          else
+            echo "BUILD_REF=${{ github.ref }}" >> $GITHUB_ENV
+          fi
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.branch }}" ]; then
+            echo "BRANCH_NAME=${{ inputs.branch }}" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout correct ref
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ env.BUILD_REF }}
 
       # --- 1. Calculate Variables ---
       - name: Set repo name to lowercase
@@ -37,10 +62,10 @@ jobs:
       - name: Determine Docker Image Tag
         id: tag
         run: |
-          if [[ "${{ github.ref_name }}" == "main" ]]; then
+          if [[ "${{ env.BRANCH_NAME }}" == "main" ]]; then
             echo "IMAGE_TAG=dev" >> $GITHUB_ENV
           else
-            sanitized_branch=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
+            sanitized_branch=$(echo "${{ env.BRANCH_NAME }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
             echo "IMAGE_TAG=dev-${sanitized_branch}" >> $GITHUB_ENV
           fi
 
@@ -106,10 +131,24 @@ jobs:
     runs-on: [self-hosted, linux, ARM64]
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Checkout correct branch
+      - name: Set build ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.ref }}" ]; then
+            echo "BUILD_REF=${{ inputs.ref }}" >> $GITHUB_ENV
+          else
+            echo "BUILD_REF=${{ github.ref }}" >> $GITHUB_ENV
+          fi
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.branch }}" ]; then
+            echo "BRANCH_NAME=${{ inputs.branch }}" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout correct ref
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ env.BUILD_REF }}
 
       # --- 1. Calculate Variables ---
       - name: Set repo name to lowercase
@@ -118,10 +157,10 @@ jobs:
       - name: Determine Docker Image Tag
         id: tag
         run: |
-          if [[ "${{ github.ref_name }}" == "main" ]]; then
+          if [[ "${{ env.BRANCH_NAME }}" == "main" ]]; then
             echo "IMAGE_TAG=dev" >> $GITHUB_ENV
           else
-            sanitized_branch=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
+            sanitized_branch=$(echo "${{ env.BRANCH_NAME }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
             echo "IMAGE_TAG=dev-${sanitized_branch}" >> $GITHUB_ENV
           fi
 
@@ -204,10 +243,24 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
       # --- 1. Calculate Variables ---
-      - name: Checkout correct branch
+      - name: Set build ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.ref }}" ]; then
+            echo "BUILD_REF=${{ inputs.ref }}" >> $GITHUB_ENV
+          else
+            echo "BUILD_REF=${{ github.ref }}" >> $GITHUB_ENV
+          fi
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.branch }}" ]; then
+            echo "BRANCH_NAME=${{ inputs.branch }}" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout correct ref
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ env.BUILD_REF }}
 
       - name: Set repo name to lowercase
         run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
@@ -216,10 +269,10 @@ jobs:
         id: tag
         run: |
           # 1. Determine the "Floating" Tag (e.g., 'dev' or 'dev-featurebranch')
-          if [[ "${{ github.ref_name }}" == "main" ]]; then
+          if [[ "${{ env.BRANCH_NAME }}" == "main" ]]; then
             echo "FLOAT_TAG=dev" >> $GITHUB_ENV
           else
-            sanitized_branch=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
+            sanitized_branch=$(echo "${{ env.BRANCH_NAME }}" | sed 's/[^a-zA-Z0-9.-]/-/g')
             echo "FLOAT_TAG=dev-${sanitized_branch}" >> $GITHUB_ENV
           fi
           

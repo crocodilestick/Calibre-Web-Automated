@@ -12,12 +12,18 @@ on:
       - '.github/workflows/update-translations.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: write
+
 jobs:
   update-translations:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,6 +38,37 @@ jobs:
 
       - name: Run update_translations.sh
         run: bash scripts/update_translations.sh
+
+      - name: Commit translation updates
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f messages.pot cps/translations/*/LC_MESSAGES/messages.po
+          if git diff --cached --quiet; then
+            echo "No translation changes to commit"
+            echo "TRANSLATION_COMMITTED=0" >> $GITHUB_ENV
+          else
+            git commit -m "Update translations [skip ci]"
+            git push
+            echo "TRANSLATION_COMMITTED=1" >> $GITHUB_ENV
+            echo "TRANSLATION_COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          fi
+
+      - name: Select dev build SHA
+        run: |
+          if [ "${{ env.TRANSLATION_COMMITTED }}" = "1" ]; then
+            echo "DEV_BUILD_SHA=${{ env.TRANSLATION_COMMIT_SHA }}" >> $GITHUB_ENV
+          else
+            echo "DEV_BUILD_SHA=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+
+      - name: Trigger dev build for main
+        run: |
+          curl -L -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/docker-image-build-dev.yml/dispatches \
+            -d "{\"ref\":\"main\",\"inputs\":{\"ref\":\"${DEV_BUILD_SHA}\",\"branch\":\"main\"}}"
 
       - name: Clone wiki repo
         env:

@@ -21,7 +21,7 @@ import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
-from sqlalchemy.orm import relationship, sessionmaker, scoped_session, joinedload
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session, joinedload, object_session
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.exc import OperationalError
@@ -390,6 +390,7 @@ class Books(Base):
     __tablename__ = 'books'
 
     DEFAULT_PUBDATE = datetime(101, 1, 1, 0, 0, 0, 0)  # ("0101-01-01 00:00:00+00:00")
+    _has_isbn_column = None
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(collation='NOCASE'), nullable=False, default='Unknown')
@@ -402,8 +403,6 @@ class Books(Base):
     path = Column(String, default="", nullable=False)
     has_cover = Column(Integer, default=0)
     uuid = Column(String)
-    isbn = Column(String(collation='NOCASE'), default="")
-    flags = Column(Integer, nullable=False, default=1)
 
     authors = relationship(Authors, secondary=books_authors_link, backref='books')
     tags = relationship(Tags, secondary=books_tags_link, backref='books', order_by="Tags.name")
@@ -436,6 +435,22 @@ class Books(Base):
     @property
     def atom_timestamp(self):
         return self.timestamp.strftime('%Y-%m-%dT%H:%M:%S+00:00') or ''
+
+    @property
+    def isbn(self):
+        for identifier in self.identifiers:
+            if identifier.type and identifier.type.lower() == "isbn":
+                return identifier.val or ""
+        if self._has_isbn_column:
+            session = object_session(self)
+            if session is not None:
+                try:
+                    value = session.execute(text("SELECT isbn FROM books WHERE id = :id"),
+                                            {"id": self.id}).scalar()
+                    return value or ""
+                except Exception:
+                    return ""
+        return ""
 
 
 class CustomColumns(Base):
@@ -779,6 +794,12 @@ class CalibreDB:
                 except OperationalError as e:
                     log.error_or_exception(e)
                     return None
+
+            try:
+                cols = conn.execute(text("PRAGMA table_info(books)")).fetchall()
+                Books._has_isbn_column = any(row[1] == "isbn" for row in cols)
+            except Exception:
+                Books._has_isbn_column = False
 
             cls.session_factory = scoped_session(sessionmaker(autocommit=False,
                                                               autoflush=True,

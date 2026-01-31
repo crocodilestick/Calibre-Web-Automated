@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 18:20+0100\n"
+"POT-Creation-Date: 2026-01-31 17:44+0000\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -4454,9 +4454,9 @@ msgid ""
 "\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/"
 "innocenat\">innocenat</a>."
 msgstr ""
-"Cet outil a été adapté à partir de l'outil <a href=\"https://kindle-epub-"
-"fix.netlify.app/\">kindle-epub-fix.netlify.app</a> créé par <a "
-"href=\"https://github.com/innocenat\">innocenat</a>."
+"Cet outil a été adapté à partir de l'outil <a href=\"https://kindle-epub-fix."
+"netlify.app/\">kindle-epub-fix.netlify.app</a> créé par <a href=\"https://"
+"github.com/innocenat\">innocenat</a>."
 
 #: cps/templates/cwa_settings.html:181
 msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
@@ -7053,10 +7053,18 @@ msgid ""
 msgstr ""
 
 #: cps/templates/user_edit.html:377
+#, fuzzy
+msgid "User Permissions"
+msgstr "Permissions"
 
 #: cps/templates/user_edit.html:378
+msgid "Configure what actions this user is allowed to perform."
+msgstr ""
 
 #: cps/templates/user_edit.html:433
+#, fuzzy
+msgid "Magic Shelves Visibility"
+msgstr "Étagères magiques ✨"
 
 #: cps/templates/user_edit.html:434
 msgid ""

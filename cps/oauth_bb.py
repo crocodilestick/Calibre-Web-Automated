@@ -334,6 +334,7 @@ def register_user_from_generic_oauth(token=None):
 
     # Check if user should have admin role based on group membership
     # Handle various group formats: list, string, or None
+    groups_present = 'groups' in userinfo
     user_groups = userinfo.get('groups', [])
     if isinstance(user_groups, str):
         # Handle comma-separated or space-separated string
@@ -399,7 +400,7 @@ def register_user_from_generic_oauth(token=None):
         # Only enforce if group-based admin management is enabled (global setting)
         current_is_admin = user.role_admin()
         
-        if config.config_enable_oauth_group_admin_management:
+        if config.config_enable_oauth_group_admin_management and groups_present and len(user_groups) > 0:
             if should_be_admin and not current_is_admin:
                 # User was added to admin group - grant admin role
                 user.role |= constants.ROLE_ADMIN

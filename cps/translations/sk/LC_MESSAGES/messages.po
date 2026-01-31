@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 11:53+0100\n"
+"POT-Creation-Date: 2026-01-31 12:15+0100\n"
 "PO-Revision-Date: 2023-11-01 06:12+0100\n"
 "Last-Translator: Branislav Hanáček <brango@brango.sk>\n"
 "Language-Team: \n"
@@ -1497,26 +1497,26 @@ msgid ""
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:316 cps/oauth_bb.py:562
+#: cps/oauth_bb.py:316 cps/oauth_bb.py:563
 msgid "Failed to link OAuth account. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:533
+#: cps/oauth_bb.py:534
 msgid ""
 "OAuth error: Provider returned invalid user information. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:546 cps/remotelogin.py:149
+#: cps/oauth_bb.py:547 cps/remotelogin.py:149
 #, python-format
 msgid "Success! You are now logged in as: %(nickname)s"
 msgstr "Úspech! Teraz ste prihlásený ako: %(nickname)s"
 
-#: cps/oauth_bb.py:556
+#: cps/oauth_bb.py:557
 #, python-format
 msgid "Link to %(oauth)s Succeeded"
 msgstr "Spojenie na %(oauth)s bolo úspešné"
 
-#: cps/oauth_bb.py:564
+#: cps/oauth_bb.py:565
 #, python-format
 msgid ""
 "Login failed: No user account is linked to your %(provider)s account. Please "
@@ -1524,87 +1524,87 @@ msgid ""
 "account."
 msgstr ""
 
-#: cps/oauth_bb.py:572
+#: cps/oauth_bb.py:573
 msgid "OAuth authentication failed. Please try again or contact administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:576
+#: cps/oauth_bb.py:577
 #, fuzzy
 msgid "OAuth system error. Please contact administrator."
 msgstr "Poštový server nie je nastavený, kontaktujte prosím správcu."
 
-#: cps/oauth_bb.py:609
+#: cps/oauth_bb.py:610
 #, python-format
 msgid "Unlink to %(oauth)s Succeeded"
 msgstr "Odpojenie z %(oauth)s bolo úspešné"
 
-#: cps/oauth_bb.py:614
+#: cps/oauth_bb.py:615
 #, python-format
 msgid "Unlink to %(oauth)s Failed"
 msgstr "Odpojenie z %(oauth)s zlyhalo"
 
-#: cps/oauth_bb.py:617
+#: cps/oauth_bb.py:618
 #, python-format
 msgid "Not Linked to %(oauth)s"
 msgstr "Nie je pripojený k %(oauth)s"
 
-#: cps/oauth_bb.py:822
+#: cps/oauth_bb.py:823
 msgid "Failed to log in with GitHub."
 msgstr "Prihlásenie na GitHub zlyhalo."
 
-#: cps/oauth_bb.py:828
+#: cps/oauth_bb.py:829
 msgid "Failed to fetch user info from GitHub."
 msgstr "Získanie používateľa z GitHub-u zlyhalo."
 
-#: cps/oauth_bb.py:849
+#: cps/oauth_bb.py:850
 msgid "Failed to log in with Google."
 msgstr "Prihlásenie na Google zlyhalo."
 
-#: cps/oauth_bb.py:858
+#: cps/oauth_bb.py:859
 msgid "Failed to fetch user info from Google."
 msgstr "Získanie používateľa z Google zlyhalo."
 
-#: cps/oauth_bb.py:883
+#: cps/oauth_bb.py:884
 #, fuzzy
 msgid "Failed to log in with Generic OAuth."
 msgstr "Prihlásenie na GitHub zlyhalo."
 
-#: cps/oauth_bb.py:899
+#: cps/oauth_bb.py:900
 msgid "OAuth authentication failed: Token validation error. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:903
+#: cps/oauth_bb.py:904
 msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:911 cps/oauth_bb.py:929 cps/oauth_bb.py:947
+#: cps/oauth_bb.py:912 cps/oauth_bb.py:930 cps/oauth_bb.py:948
 msgid ""
 "OAuth error: Invalid redirect URI. If you're experiencing this error "
 "repeatedly, please configure the 'OAuth Redirect Host' setting in Admin > "
 "Basic Configuration > OAuth."
 msgstr ""
 
-#: cps/oauth_bb.py:983
+#: cps/oauth_bb.py:984
 msgid "GitHub Oauth error, please retry later."
 msgstr "Chyba GitHub OAuth, skúste to prosím neskôr."
 
-#: cps/oauth_bb.py:990
+#: cps/oauth_bb.py:991
 #, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "Chyba GitHub OAuth: {}"
 
-#: cps/oauth_bb.py:1040
+#: cps/oauth_bb.py:1041
 msgid "Google Oauth error, please retry later."
 msgstr "Chyba Google OAuth, skúste to prosím neskôr."
 
-#: cps/oauth_bb.py:1047
+#: cps/oauth_bb.py:1048
 #, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Chyba Google OAuth: {}"
 
-#: cps/oauth_bb.py:1083 cps/oauth_bb.py:1091
+#: cps/oauth_bb.py:1084 cps/oauth_bb.py:1092
 #, fuzzy, python-brace-format
 msgid "OAuth error: {}"
 msgstr "Chyba GitHub OAuth: {}"

@@ -1237,6 +1237,27 @@ def make_calibre_web_auth_response():
     )
 
 
+def make_calibre_web_oauth_response():
+    # Provide a dummy OAuth token response for unregistered devices or
+    # when Kobo Store proxying is disabled.
+    content = request.get_json(silent=True) or {}
+    access_token = base64.b64encode(os.urandom(24)).decode('utf-8')
+    refresh_token = base64.b64encode(os.urandom(24)).decode('utf-8')
+    payload = {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "scope": content.get("scope", ""),
+        "user_id": content.get("user_id", ""),
+        # Include legacy field names used by some Kobo requests
+        "AccessToken": access_token,
+        "RefreshToken": refresh_token,
+        "TokenType": "Bearer",
+    }
+    return make_response(jsonify(payload))
+
+
 @csrf.exempt
 @kobo.route("/v1/auth/device", methods=["POST"])
 @requires_kobo_auth
@@ -1248,6 +1269,16 @@ def HandleAuthRequest():
         except Exception:
             log.error("Failed to receive or parse response from Kobo's auth endpoint. Falling back to un-proxied mode.")
     return make_calibre_web_auth_response()
+
+
+@csrf.exempt
+@kobo.route("/oauth/token", methods=["GET", "POST"])
+@kobo.route("/oauth/refresh", methods=["GET", "POST"])
+@kobo.route("/oauth/<path:subpath>", methods=["GET", "POST"])
+@requires_kobo_auth
+def HandleOauthRequest(subpath=None):
+    log.debug("Kobo OAuth request: %s", request.path)
+    return make_calibre_web_oauth_response()
 
 
 @kobo.route("/v1/initialization")
@@ -1334,6 +1365,14 @@ def HandleInitRequest():
                                                                _external=True))
         if config.config_hardcover_annotations_sync and bool(hardcover):
             kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
+
+    # When not proxying Kobo Store requests, point oauth_host to CWA and
+    # serve dummy OAuth responses for unregistered devices.
+    if not config.config_kobo_proxy:
+        oauth_token_url = url_for("kobo.HandleOauthRequest",
+                                  auth_token=kobo_auth.get_auth_token(),
+                                  _external=True)
+        kobo_resources["oauth_host"] = oauth_token_url.rsplit("/oauth", 1)[0] + "/oauth"
 
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="

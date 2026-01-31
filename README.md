@@ -48,7 +48,8 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 Calibre-Web Automated aims to be an all-in-one solution, combining the modern lightweight web UI from Calibre-Web with the robust, versatile feature set of Calibre, with a slew of extra features and automations thrown in on top.
 
-![Calibre-Web Automated Example Homepage](README_images/CWA-Homepage.png)
+![Calibre-Web Automated Example Homepage](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/CWA-Homepage.png?raw=true)
+![Calibre-Web Automated Example Book Page](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/new-book-details-page.png?raw=true)
 <p style="text-align:center;"><i>CWA allows you to keep your ebook library accessible & organised and looks good while doing it</i> 😎🦚</p>
 
 ## _Affiliated Projects_ 👬

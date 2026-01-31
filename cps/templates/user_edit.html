@@ -354,7 +354,7 @@
     </div>
     
     <!-- User Permissions Card (Admin Only) -->
-    {% if not content.role_anonymous() and profile %}
+    {% if not content.role_anonymous() and (profile or (current_user and current_user.role_admin() and not new_user)) %}
     <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('OPDS Catalog Order')}}</h4>
       <p class="settings-explanation">{{_('Reorder the OPDS root catalog by listing entry IDs in the order you want. Unknown IDs are ignored and missing entries are appended automatically.')}}</p>

@@ -2518,12 +2518,58 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
 
     except Exception as ex:
         flash(str(ex), category="error")
+        from . import magic_shelf
+        system_shelf_templates = magic_shelf.SYSTEM_SHELF_TEMPLATES
+        hidden_items = ub.session.query(
+            ub.HiddenMagicShelfTemplate.template_key,
+            ub.HiddenMagicShelfTemplate.shelf_id
+        ).filter(
+            ub.HiddenMagicShelfTemplate.user_id == current_user.id
+        ).all()
+        hidden_shelf_templates = {item.template_key for item in hidden_items if item.template_key}
+        hidden_custom_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+
+        all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.is_public == 1,
+            ub.MagicShelf.user_id != current_user.id,
+            ub.MagicShelf.is_system == False
+        ).all()
+
+        hidden_custom_shelves = [s for s in all_public_shelves if s.id in hidden_custom_shelf_ids]
+        visible_public_shelves = [s for s in all_public_shelves if s.id not in hidden_custom_shelf_ids]
+
+        from .opds import (
+            get_opds_root_order_for_user,
+            get_opds_hidden_entries_for_user,
+            OPDS_ROOT_ENTRY_DEFS,
+            OPDS_ROOT_ORDER_DEFAULT,
+        )
+        opds_root_order = get_opds_root_order_for_user(current_user)
+        opds_root_order_string = ",".join(opds_root_order)
+        opds_hidden_entries = list(get_opds_hidden_entries_for_user(current_user))
+        opds_hidden_entries_string = ",".join(opds_hidden_entries)
+        opds_root_labels = [
+            {
+                "key": key,
+                "label": _(OPDS_ROOT_ENTRY_DEFS[key]['title']),
+            }
+            for key in OPDS_ROOT_ORDER_DEFAULT
+            if key in OPDS_ROOT_ENTRY_DEFS
+        ]
         return render_title_template("user_edit.html",
                                      content=current_user,
                                      config=config,
                                      translations=translations,
                                      profile=1,
                                      languages=languages,
+                                     system_shelf_templates=system_shelf_templates,
+                                     hidden_shelf_templates=hidden_shelf_templates,
+                                     hidden_custom_shelf_ids=hidden_custom_shelf_ids,
+                                     hidden_custom_shelves=hidden_custom_shelves,
+                                     visible_public_shelves=visible_public_shelves,
+                                     opds_root_order_string=opds_root_order_string,
+                                     opds_hidden_entries_string=opds_hidden_entries_string,
+                                     opds_root_labels=opds_root_labels,
                                      title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                      page="me",
                                      kobo_support=kobo_support,

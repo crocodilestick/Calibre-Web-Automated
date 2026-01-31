@@ -17,6 +17,8 @@ from datetime import datetime, timedelta
 from datetime import time as datetime_time
 from functools import wraps
 from urllib.parse import urlparse
+import shutil
+import subprocess
 
 from flask import Blueprint, flash, redirect, url_for, abort, request, make_response, send_from_directory, g, Response, jsonify
 from markupsafe import Markup
@@ -112,6 +114,16 @@ def before_request():
                 _db.CalibreDB.setup_db(config.config_calibre_dir, _cli_param.settings_path)
         except Exception as e:
             log.error('Autoconfig safety net error: %s', e)
+    # If config says DB is configured but session is unavailable, try to recover and force reconfig on failure
+    if config.db_configured:
+        try:
+            calibre_db.ensure_session()
+        except Exception as e:
+            log.error("ensure_session failed in before_request: %s", e)
+        if calibre_db.session is None:
+            log.error("Calibre DB session unavailable; redirecting to DB configuration")
+            config.db_configured = False
+            flash(_("Calibre database unavailable. Please reconfigure the library path."), category="error")
     #try:
         #if not ub.check_user_session(current_user.id,
         #                             flask_session.get('_id')) and 'opds' not in request.path \
@@ -1661,10 +1673,14 @@ def new_user():
         content.sidebar_view = config.config_default_show
         content.locale = config.config_default_locale
         content.default_language = config.config_default_language
+    opds_context = _build_opds_context(content)
     return render_title_template("user_edit.html", new_user=1, content=content,
                                  config=config, translations=translations,
                                  languages=languages, title=_("Add New User"), page="newuser",
-                                 kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check)
+                                 kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check,
+                                 opds_root_order_string=opds_context["opds_root_order_string"],
+                                 opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
+                                 opds_root_labels=opds_context["opds_root_labels"])
 
 
 @admi.route("/admin/mailsettings", methods=["GET"])
@@ -1797,6 +1813,32 @@ def update_scheduledtasks():
     return edit_scheduledtasks()
 
 
+def _build_opds_context(user):
+    from .opds import (
+        get_opds_root_order_for_user,
+        get_opds_hidden_entries_for_user,
+        OPDS_ROOT_ENTRY_DEFS,
+        OPDS_ROOT_ORDER_DEFAULT,
+    )
+    opds_root_order = get_opds_root_order_for_user(user)
+    opds_root_order_string = ",".join(opds_root_order)
+    opds_hidden_entries = list(get_opds_hidden_entries_for_user(user))
+    opds_hidden_entries_string = ",".join(opds_hidden_entries)
+    opds_root_labels = [
+        {
+            "key": key,
+            "label": _(OPDS_ROOT_ENTRY_DEFS[key]['title']),
+        }
+        for key in OPDS_ROOT_ORDER_DEFAULT
+        if key in OPDS_ROOT_ENTRY_DEFS
+    ]
+    return {
+        "opds_root_order_string": opds_root_order_string,
+        "opds_hidden_entries_string": opds_hidden_entries_string,
+        "opds_root_labels": opds_root_labels,
+    }
+
+
 @admi.route("/admin/user/<int:user_id>", methods=["GET", "POST"])
 @user_login_required
 @admin_required
@@ -1837,6 +1879,7 @@ def edit_user(user_id):
         resp = _handle_edit_user(to_save, content, languages, translations, kobo_support)
         if resp:
             return resp
+    opds_context = _build_opds_context(content)
     return render_title_template("user_edit.html",
                                  translations=translations,
                                  languages=languages,
@@ -1851,6 +1894,9 @@ def edit_user(user_id):
                                  hidden_custom_shelf_ids=hidden_custom_shelf_ids,
                                  hidden_custom_shelves=hidden_custom_shelves,
                                  visible_public_shelves=visible_public_shelves,
+                                 opds_root_order_string=opds_context["opds_root_order_string"],
+                                 opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
+                                 opds_root_labels=opds_context["opds_root_labels"],
                                  title=_("Edit User %(nick)s", nick=content.name),
                                  page="edituser")
 
@@ -2429,11 +2475,15 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
             raise Exception(_("E-mail is not from valid domain"))
     except Exception as ex:
         flash(str(ex), category="error")
+        opds_context = _build_opds_context(content)
         return render_title_template("user_edit.html", new_user=1, content=content,
                                      config=config,
                                      translations=translations,
                                      languages=languages, title=_("Add new user"), page="newuser",
-                                     kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check)
+                                     kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check,
+                                     opds_root_order_string=opds_context["opds_root_order_string"],
+                                     opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
+                                     opds_root_labels=opds_context["opds_root_labels"])
     try:
         content.allowed_tags = config.config_allowed_tags
         content.denied_tags = config.config_denied_tags
@@ -2535,6 +2585,40 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     # Auto-send and metadata fetch settings
     content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
     content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+
+    # OPDS root order
+    opds_order_raw = to_save.get("opds_root_order", "").strip()
+    if opds_order_raw:
+        from .opds import normalize_opds_root_order
+        opds_order_list = [item.strip() for item in opds_order_raw.split(',') if item.strip()]
+        normalized_order = normalize_opds_root_order(opds_order_list)
+        if content.view_settings is None:
+            content.view_settings = {}
+        content.view_settings.setdefault('opds', {})['root_order'] = normalized_order
+        flag_modified(content, "view_settings")
+    else:
+        if content.view_settings and content.view_settings.get('opds', {}).get('root_order'):
+            content.view_settings['opds'].pop('root_order', None)
+            if not content.view_settings['opds']:
+                content.view_settings.pop('opds', None)
+            flag_modified(content, "view_settings")
+
+    # OPDS hidden entries
+    opds_hidden_raw = to_save.get("opds_hidden_entries", "").strip()
+    if opds_hidden_raw:
+        from .opds import OPDS_ROOT_ENTRY_DEFS
+        hidden_entries = [item.strip() for item in opds_hidden_raw.split(',') if item.strip()]
+        hidden_entries = [key for key in hidden_entries if key in OPDS_ROOT_ENTRY_DEFS]
+        if content.view_settings is None:
+            content.view_settings = {}
+        content.view_settings.setdefault('opds', {})['hidden_entries'] = hidden_entries
+        flag_modified(content, "view_settings")
+    else:
+        if content.view_settings and content.view_settings.get('opds', {}).get('hidden_entries'):
+            content.view_settings['opds'].pop('hidden_entries', None)
+            if not content.view_settings['opds']:
+                content.view_settings.pop('opds', None)
+            flag_modified(content, "view_settings")
     
     # Handle hidden magic shelf templates and custom shelves
     from . import magic_shelf
@@ -2626,6 +2710,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     except Exception as ex:
         log.error(ex)
         flash(str(ex), category="error")
+        opds_context = _build_opds_context(content)
         return render_title_template("user_edit.html",
                                      translations=translations,
                                      languages=languages,
@@ -2635,6 +2720,9 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
                                      content=content,
                                      config=config,
                                      registered_oauth=oauth_bb.oauth_check,
+                                     opds_root_order_string=opds_context["opds_root_order_string"],
+                                     opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
+                                     opds_root_labels=opds_context["opds_root_labels"],
                                      title=_("Edit User %(nick)s", nick=content.name),
                                      page="edituser")
     try:
@@ -2778,3 +2866,50 @@ def test_metadata():
     except Exception as e:
         log.error("Metadata test failed: %s", e)
         return json.dumps({'success': False, 'message': _('An unknown error occurred.')}), 200
+
+# --- Last Resort Calibre DB Restore ---
+@admi.route("/admin/restore_calibre_db", methods=["POST"])
+@user_login_required
+@admin_required
+def restore_calibre_db():
+    """Restore Calibre metadata.db and clean app.db book-linked tables (last resort recovery)."""
+    try:
+        # 1. Backup both DBs
+        backup_dir = f"/config/backup/restore_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        os.makedirs(backup_dir, exist_ok=True)
+        shutil.copy2(config.config_calibre_dir + "/metadata.db", backup_dir + "/metadata.db.bak")
+        shutil.copy2("/config/app.db", backup_dir + "/app.db.bak")
+
+        # 2. Run calibredb restore_database
+        restore_cmd = [
+            "/app/calibre/calibredb", "restore_database",
+            "--with-library", config.config_calibre_dir,
+            "--really-do-it"
+        ]
+        result = subprocess.run(restore_cmd, capture_output=True, text=True)
+        log.info(f"calibredb restore_database output: {result.stdout}\n{result.stderr}")
+        if result.returncode != 0:
+            flash(_("Restore failed: %(err)s", err=result.stderr), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        # 3. Wipe all book-linked tables in app.db
+        from sqlalchemy import text as sql_text
+        book_tables = [
+            "book_shelf_link", "book_read_link", "bookmark", "archived_book", "kobo_synced_books",
+            "kobo_reading_state", "kobo_bookmark", "kobo_statistics", "kobo_annotation_sync",
+            "hardcover_book_blacklist", "hardcover_match_queue", "downloads", "magic_shelf_cache"
+        ]
+        for table in book_tables:
+            try:
+                ub.session.execute(sql_text(f"DELETE FROM {table}"))
+                ub.session.commit()
+            except Exception as e:
+                log.error(f"Failed to wipe table {table}: {e}")
+                ub.session.rollback()
+
+        flash(_("Restore complete. Both databases were backed up to %(dir)s. All book-linked data was reset.", dir=backup_dir), category="success")
+        return redirect(url_for("admin.db_configuration"))
+    except Exception as e:
+        log.error(f"Restore failed: {e}")
+        flash(_("Restore failed: %(err)s", err=str(e)), category="error")
+        return redirect(url_for("admin.db_configuration"))

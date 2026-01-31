@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 14:22+0100\n"
+"POT-Creation-Date: 2026-01-31 14:37+0100\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -2855,7 +2855,7 @@ msgstr "V redu"
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:184
-#: cps/templates/detail.html:459 cps/templates/duplicates.html:540
+#: cps/templates/detail.html:471 cps/templates/duplicates.html:540
 #: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
@@ -2954,7 +2954,7 @@ msgstr "Pretvori knjigo"
 msgid "Uploading..."
 msgstr "Nalaganje..."
 
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:289
+#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
@@ -2979,7 +2979,7 @@ msgstr "Napaka"
 msgid "Upload Format"
 msgstr "Nalaganje vrsta"
 
-#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:368
+#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:371
 #: cps/templates/cwa_settings.html:1059 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Avtor"
@@ -2996,9 +2996,9 @@ msgstr "Številka serije"
 msgid "Published Date"
 msgstr "Datum objave"
 
-#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:369
+#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:313
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:325
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3014,7 +3014,7 @@ msgstr "Jezik"
 msgid "Rating"
 msgstr "Ocena"
 
-#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:370
+#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:373
 #: cps/templates/cwa_settings.html:330 cps/templates/cwa_settings.html:332
 #: cps/templates/search_form.html:154
 msgid "Description"
@@ -3024,15 +3024,15 @@ msgstr "Opis"
 msgid "Identifiers"
 msgstr "Identifikatorji"
 
-#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:379
+#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:382
 msgid "Identifier Type"
 msgstr "Vrsta identifikatorja"
 
-#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:380
+#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:383
 msgid "Identifier Value"
 msgstr "Vrednost identifikatorja"
 
-#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:381
+#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:384
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "Odstrani"
@@ -3099,19 +3099,23 @@ msgstr "Ključna beseda"
 msgid "Search keyword"
 msgstr "Ključna beseda za iskanje"
 
-#: cps/templates/book_edit.html:285 cps/templates/book_edit.html:365
+#: cps/templates/book_edit.html:282
+msgid "Selected metadata fields were applied to the edit form."
+msgstr ""
+
+#: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "Nalaganje..."
 
-#: cps/templates/book_edit.html:366
+#: cps/templates/book_edit.html:369
 msgid "Search error!"
 msgstr "Napaka pri iskanju!"
 
-#: cps/templates/book_edit.html:367
+#: cps/templates/book_edit.html:370
 msgid "No Result(s) found! Please try another keyword."
 msgstr "Ni najden noben rezultat! Poskusite z drugo ključno besedo."
 
-#: cps/templates/book_edit.html:371
+#: cps/templates/book_edit.html:374
 msgid "Source"
 msgstr "Vir:"
 
@@ -3287,7 +3291,7 @@ msgstr "Naslednje knjige bodo označene kot prebrane:"
 msgid "The following books will be marked unread:"
 msgstr "Naslednje knjige bodo označene kot neprebrane:"
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:457
+#: cps/templates/book_table.html:282 cps/templates/detail.html:469
 msgid "Edit Metadata"
 msgstr "Urejanje metapodatkov"
 
@@ -5158,36 +5162,41 @@ msgstr "Poslušaj v brskalniku"
 msgid "Book %(index)s of %(range)s"
 msgstr "Knjiga %(index)s v %(range)s"
 
-#: cps/templates/detail.html:322 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:286
+#, fuzzy
+msgid "File sizes"
+msgstr "Velikosti pisave"
+
+#: cps/templates/detail.html:334 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "Objavljeno"
 
-#: cps/templates/detail.html:372 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:384 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Označi kot neprebrano"
 
-#: cps/templates/detail.html:373 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:385 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Označi kot prebrano"
 
-#: cps/templates/detail.html:383 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:395 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "Obnovi iz arhiva"
 
-#: cps/templates/detail.html:384 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:396 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "Dodaj v arhiv"
 
-#: cps/templates/detail.html:395 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:407 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Opis:"
 
-#: cps/templates/detail.html:410 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:422 cps/templates/listenmp3.html:190
 #: cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "Dodaj na polico"
 
-#: cps/templates/detail.html:422 cps/templates/detail.html:441
+#: cps/templates/detail.html:434 cps/templates/detail.html:453
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
 #: cps/templates/layout.html:301 cps/templates/layout.html:310
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218

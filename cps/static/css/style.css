@@ -565,6 +565,31 @@ input.pill:not(:checked) + label .glyphicon {
   color: #666;
 }
 
+#meta-import-alert.meta-import-alert {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(6px) scale(0.98);
+  z-index: 1055;
+  text-align: center;
+  margin: 0;
+  border-radius: 10px;
+  border: 1px solid #b7e2c1;
+  color: #1f6f3f;
+  background: linear-gradient(135deg, #e9f7ee 0%, #d3f0dc 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+  padding: 10px 16px;
+  min-width: 280px;
+  max-width: min(720px, calc(100vw - 32px));
+}
+
+#meta-import-alert.meta-import-alert.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
 .padded-bottom {
   /* margin-bottom: 15px; */
 }

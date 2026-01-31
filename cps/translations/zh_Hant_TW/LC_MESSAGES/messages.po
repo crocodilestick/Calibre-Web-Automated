@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 14:22+0100\n"
+"POT-Creation-Date: 2026-01-31 14:37+0100\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -2816,7 +2816,7 @@ msgstr "確定"
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:184
-#: cps/templates/detail.html:459 cps/templates/duplicates.html:540
+#: cps/templates/detail.html:471 cps/templates/duplicates.html:540
 #: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
@@ -2916,7 +2916,7 @@ msgstr "轉換書籍"
 msgid "Uploading..."
 msgstr "正在上傳..."
 
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:289
+#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
@@ -2941,7 +2941,7 @@ msgstr "錯誤"
 msgid "Upload Format"
 msgstr "上傳格式"
 
-#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:368
+#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:371
 #: cps/templates/cwa_settings.html:1059 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "作者"
@@ -2958,9 +2958,9 @@ msgstr "叢書編號"
 msgid "Published Date"
 msgstr "出版日期"
 
-#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:369
+#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:313
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:325
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -2976,7 +2976,7 @@ msgstr "語言"
 msgid "Rating"
 msgstr "評分"
 
-#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:370
+#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:373
 #: cps/templates/cwa_settings.html:330 cps/templates/cwa_settings.html:332
 #: cps/templates/search_form.html:154
 msgid "Description"
@@ -2986,15 +2986,15 @@ msgstr "簡介"
 msgid "Identifiers"
 msgstr "書號"
 
-#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:379
+#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:382
 msgid "Identifier Type"
 msgstr "書號類型"
 
-#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:380
+#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:383
 msgid "Identifier Value"
 msgstr "書號編號"
 
-#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:381
+#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:384
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "移除"
@@ -3060,19 +3060,23 @@ msgstr "關鍵字"
 msgid "Search keyword"
 msgstr " 搜索關鍵字 "
 
-#: cps/templates/book_edit.html:285 cps/templates/book_edit.html:365
+#: cps/templates/book_edit.html:282
+msgid "Selected metadata fields were applied to the edit form."
+msgstr ""
+
+#: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "加載中..."
 
-#: cps/templates/book_edit.html:366
+#: cps/templates/book_edit.html:369
 msgid "Search error!"
 msgstr "搜索錯誤！"
 
-#: cps/templates/book_edit.html:367
+#: cps/templates/book_edit.html:370
 msgid "No Result(s) found! Please try another keyword."
 msgstr "無搜索結果！請嘗試另一個關鍵字。"
 
-#: cps/templates/book_edit.html:371
+#: cps/templates/book_edit.html:374
 msgid "Source"
 msgstr "來源"
 
@@ -3251,7 +3255,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:457
+#: cps/templates/book_table.html:282 cps/templates/detail.html:469
 msgid "Edit Metadata"
 msgstr "編輯元數據"
 
@@ -5101,36 +5105,40 @@ msgstr "在線聽書"
 msgid "Book %(index)s of %(range)s"
 msgstr "%(range)s 第%(index)s冊"
 
-#: cps/templates/detail.html:322 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:286
+msgid "File sizes"
+msgstr ""
+
+#: cps/templates/detail.html:334 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "出版日期"
 
-#: cps/templates/detail.html:372 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:384 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "標為未讀"
 
-#: cps/templates/detail.html:373 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:385 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "標為已讀"
 
-#: cps/templates/detail.html:383 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:395 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "從歸檔檔案還原"
 
-#: cps/templates/detail.html:384 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:396 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "添加到歸檔"
 
-#: cps/templates/detail.html:395 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:407 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "簡介:"
 
-#: cps/templates/detail.html:410 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:422 cps/templates/listenmp3.html:190
 #: cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "添加到書架"
 
-#: cps/templates/detail.html:422 cps/templates/detail.html:441
+#: cps/templates/detail.html:434 cps/templates/detail.html:453
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
 #: cps/templates/layout.html:301 cps/templates/layout.html:310
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218

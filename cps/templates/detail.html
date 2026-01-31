@@ -280,6 +280,18 @@
                 </div>
             {% endif %}
 
+            {% if entry.data|length > 0 %}
+                <div class="formats">
+                    <p>
+                        <span class="label label-default">{{ _('File sizes') }}:</span>
+                        {% for format in entry.data %}
+                            <span class="btn btn-xs btn-info" role="button">{{ format.format }}
+                                ({{ format.uncompressed_size|filesizeformat_binary }})</span>
+                        {% endfor %}
+                    </p>
+                </div>
+            {% endif %}
+
             {% if entry.identifiers|length > 0 %}
                 <div class="identifiers">
                     <p>

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 14:22+0100\n"
+"POT-Creation-Date: 2026-01-31 14:37+0100\n"
 "PO-Revision-Date: 2025-12-02 12:00+0000\n"
 "Last-Translator: Alex <298750+alexantao@users.noreply.github.com>\n"
 "Language-Team: pt_BR <LL@li.org>\n"
@@ -2914,7 +2914,7 @@ msgstr "Ok"
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:184
-#: cps/templates/detail.html:459 cps/templates/duplicates.html:540
+#: cps/templates/detail.html:471 cps/templates/duplicates.html:540
 #: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
@@ -3014,7 +3014,7 @@ msgstr "Converter livro"
 msgid "Uploading..."
 msgstr "Enviando..."
 
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:289
+#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
@@ -3039,7 +3039,7 @@ msgstr "Erro"
 msgid "Upload Format"
 msgstr "Formato de upload"
 
-#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:368
+#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:371
 #: cps/templates/cwa_settings.html:1059 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Autor"
@@ -3056,9 +3056,9 @@ msgstr "ID da série"
 msgid "Published Date"
 msgstr "Data de Publicação"
 
-#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:369
+#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:313
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:325
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3074,7 +3074,7 @@ msgstr "Idioma"
 msgid "Rating"
 msgstr "Avaliação"
 
-#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:370
+#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:373
 #: cps/templates/cwa_settings.html:330 cps/templates/cwa_settings.html:332
 #: cps/templates/search_form.html:154
 msgid "Description"
@@ -3084,15 +3084,15 @@ msgstr "Descrição"
 msgid "Identifiers"
 msgstr "Identificadores"
 
-#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:379
+#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:382
 msgid "Identifier Type"
 msgstr "Tipo de identificador"
 
-#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:380
+#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:383
 msgid "Identifier Value"
 msgstr "Valor do Identificador"
 
-#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:381
+#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:384
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "Remover"
@@ -3158,20 +3158,24 @@ msgstr "Palavra-chave"
 msgid "Search keyword"
 msgstr "Pesquisar palavra-chave"
 
-#: cps/templates/book_edit.html:285 cps/templates/book_edit.html:365
+#: cps/templates/book_edit.html:282
+msgid "Selected metadata fields were applied to the edit form."
+msgstr ""
+
+#: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "Carregando..."
 
-#: cps/templates/book_edit.html:366
+#: cps/templates/book_edit.html:369
 msgid "Search error!"
 msgstr "Erro de busca!"
 
-#: cps/templates/book_edit.html:367
+#: cps/templates/book_edit.html:370
 msgid "No Result(s) found! Please try another keyword."
 msgstr ""
 "Nenhum resultado(s) encontrado(s)! Por favor, tente outra palavra-chave."
 
-#: cps/templates/book_edit.html:371
+#: cps/templates/book_edit.html:374
 msgid "Source"
 msgstr "Fonte"
 
@@ -3348,7 +3352,7 @@ msgstr "Os seguintes livros serão marcados como lidos:"
 msgid "The following books will be marked unread:"
 msgstr "Os seguintes livros serão marcados como não lidos:"
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:457
+#: cps/templates/book_table.html:282 cps/templates/detail.html:469
 msgid "Edit Metadata"
 msgstr "Editar Metadados"
 
@@ -5321,36 +5325,41 @@ msgstr "Ouvir no Browser"
 msgid "Book %(index)s of %(range)s"
 msgstr "Livro %(index)s de %(range)s"
 
-#: cps/templates/detail.html:322 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:286
+#, fuzzy
+msgid "File sizes"
+msgstr "Tamanhos das Fonte"
+
+#: cps/templates/detail.html:334 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "Publicado em"
 
-#: cps/templates/detail.html:372 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:384 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Marcar como Não Lido"
 
-#: cps/templates/detail.html:373 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:385 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Marcar como Lido"
 
-#: cps/templates/detail.html:383 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:395 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "Desarquivar"
 
-#: cps/templates/detail.html:384 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:396 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "Arquivar"
 
-#: cps/templates/detail.html:395 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:407 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Descrição:"
 
-#: cps/templates/detail.html:410 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:422 cps/templates/listenmp3.html:190
 #: cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "Adicionar à estante"
 
-#: cps/templates/detail.html:422 cps/templates/detail.html:441
+#: cps/templates/detail.html:434 cps/templates/detail.html:453
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
 #: cps/templates/layout.html:301 cps/templates/layout.html:310
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218

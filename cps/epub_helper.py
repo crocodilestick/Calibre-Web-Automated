@@ -50,6 +50,10 @@ def get_content_opf(file_path, ns=None):
     tree = etree.fromstring(txt)
     cf_name = tree.xpath('n:rootfiles/n:rootfile/@full-path', namespaces=ns)[0]
     cf = epubZip.read(cf_name)
+    # Some EPUBs include a BOM or stray whitespace before the XML declaration,
+    # which causes lxml to error with: "XML declaration allowed only at the start".
+    # Strip BOM/leading whitespace to make parsing resilient.
+    cf = cf.lstrip(b"\xef\xbb\xbf\r\n\t ")
 
     return etree.fromstring(cf), cf_name
 

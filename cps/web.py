@@ -2482,6 +2482,40 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
             except Exception:
                 pass
 
+        # OPDS root order
+        opds_order_raw = to_save.get("opds_root_order", "").strip()
+        if opds_order_raw:
+            from .opds import normalize_opds_root_order
+            opds_order_list = [item.strip() for item in opds_order_raw.split(',') if item.strip()]
+            normalized_order = normalize_opds_root_order(opds_order_list)
+            if current_user.view_settings is None:
+                current_user.view_settings = {}
+            current_user.view_settings.setdefault('opds', {})['root_order'] = normalized_order
+            flag_modified(current_user, "view_settings")
+        else:
+            if current_user.view_settings and current_user.view_settings.get('opds', {}).get('root_order'):
+                current_user.view_settings['opds'].pop('root_order', None)
+                if not current_user.view_settings['opds']:
+                    current_user.view_settings.pop('opds', None)
+                flag_modified(current_user, "view_settings")
+
+        # OPDS hidden entries
+        opds_hidden_raw = to_save.get("opds_hidden_entries", "").strip()
+        if opds_hidden_raw:
+            from .opds import OPDS_ROOT_ENTRY_DEFS
+            hidden_entries = [item.strip() for item in opds_hidden_raw.split(',') if item.strip()]
+            hidden_entries = [key for key in hidden_entries if key in OPDS_ROOT_ENTRY_DEFS]
+            if current_user.view_settings is None:
+                current_user.view_settings = {}
+            current_user.view_settings.setdefault('opds', {})['hidden_entries'] = hidden_entries
+            flag_modified(current_user, "view_settings")
+        else:
+            if current_user.view_settings and current_user.view_settings.get('opds', {}).get('hidden_entries'):
+                current_user.view_settings['opds'].pop('hidden_entries', None)
+                if not current_user.view_settings['opds']:
+                    current_user.view_settings.pop('opds', None)
+                flag_modified(current_user, "view_settings")
+
     except Exception as ex:
         flash(str(ex), category="error")
         return render_title_template("user_edit.html",
@@ -2565,6 +2599,20 @@ def profile():
     hidden_custom_shelves = [s for s in all_public_shelves if s.id in hidden_custom_shelf_ids]
     visible_public_shelves = [s for s in all_public_shelves if s.id not in hidden_custom_shelf_ids]
 
+    from .opds import get_opds_root_order_for_user, get_opds_hidden_entries_for_user, OPDS_ROOT_ENTRY_DEFS, OPDS_ROOT_ORDER_DEFAULT
+    opds_root_order = get_opds_root_order_for_user(current_user)
+    opds_root_order_string = ",".join(opds_root_order)
+    opds_hidden_entries = list(get_opds_hidden_entries_for_user(current_user))
+    opds_hidden_entries_string = ",".join(opds_hidden_entries)
+    opds_root_labels = [
+        {
+            "key": key,
+            "label": _(OPDS_ROOT_ENTRY_DEFS[key]['title'])
+        }
+        for key in OPDS_ROOT_ORDER_DEFAULT
+        if key in OPDS_ROOT_ENTRY_DEFS
+    ]
+
     return render_title_template("user_edit.html",
                                  translations=translations,
                                  profile=1,
@@ -2578,6 +2626,9 @@ def profile():
                                  hidden_custom_shelf_ids=hidden_custom_shelf_ids,
                                  hidden_custom_shelves=hidden_custom_shelves,
                                  visible_public_shelves=visible_public_shelves,
+                                 opds_root_order_string=opds_root_order_string,
+                                 opds_hidden_entries_string=opds_hidden_entries_string,
+                                 opds_root_labels=opds_root_labels,
                                  title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                  page="me",
                                  registered_oauth=local_oauth_check,

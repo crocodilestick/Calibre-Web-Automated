@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-30 22:02+0100\n"
+"POT-Creation-Date: 2026-01-31 14:06+0100\n"
 "PO-Revision-Date: 2019-04-06 23:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -110,7 +110,7 @@ msgstr "Alapvető beállítások"
 msgid "UI Configuration"
 msgstr "Felhasználói felület beállításai"
 
-#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:943 cps/search.py:153
+#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:944 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -121,7 +121,7 @@ msgstr "A %(column)d egyéni oszlop nem létezik a Calibre adatbázisban"
 msgid "Edit Users"
 msgstr "Felhasználók kezelése"
 
-#: cps/admin.py:618 cps/opds.py:549 cps/templates/grid.html:14
+#: cps/admin.py:618 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Mind"
@@ -136,7 +136,7 @@ msgid "{} users deleted successfully"
 msgstr "{} felhasználók sikeresen törölve"
 
 #: cps/admin.py:682 cps/templates/config_view_edit.html:170
-#: cps/templates/user_edit.html:202 cps/templates/user_edit.html:225
+#: cps/templates/user_edit.html:241 cps/templates/user_edit.html:264
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Minden megjelenítése"
@@ -392,7 +392,7 @@ msgstr "Siker! A Gmail-fiók hitelesítve."
 #: cps/admin.py:2413 cps/admin.py:2607 cps/editbooks.py:879
 #: cps/editbooks.py:1638 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
-#: cps/tasks/convert.py:145 cps/web.py:2525
+#: cps/tasks/convert.py:145 cps/web.py:2559
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Hoppá! Adatbázis hiba: %(error)s"
@@ -1038,7 +1038,7 @@ msgstr "Profilkép sikeresen frissítve."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA Profilkép Menedzsment (WIP)"
 
-#: cps/db.py:1216 cps/templates/config_edit.html:294
+#: cps/db.py:1217 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:80
 #: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -1135,8 +1135,8 @@ msgstr ""
 msgid "File to be uploaded must have an extension"
 msgstr "A feltöltendő fájlnak kiterjesztéssel kell rendelkeznie!"
 
-#: cps/editbooks.py:691 cps/editbooks.py:1261 cps/web.py:612 cps/web.py:2597
-#: cps/web.py:2675 cps/web.py:2744
+#: cps/editbooks.py:691 cps/editbooks.py:1261 cps/web.py:612 cps/web.py:2648
+#: cps/web.py:2726 cps/web.py:2795
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -1521,26 +1521,26 @@ msgid ""
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:316 cps/oauth_bb.py:554
+#: cps/oauth_bb.py:316 cps/oauth_bb.py:563
 msgid "Failed to link OAuth account. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:525
+#: cps/oauth_bb.py:534
 msgid ""
 "OAuth error: Provider returned invalid user information. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:538 cps/remotelogin.py:149
+#: cps/oauth_bb.py:547 cps/remotelogin.py:149
 #, python-format
 msgid "Success! You are now logged in as: %(nickname)s"
 msgstr "Be vagy jelentkezve mint: %(nickname)s"
 
-#: cps/oauth_bb.py:548
+#: cps/oauth_bb.py:557
 #, python-format
 msgid "Link to %(oauth)s Succeeded"
 msgstr "Link %(oauth)s-hoz/hez sikeres"
 
-#: cps/oauth_bb.py:556
+#: cps/oauth_bb.py:565
 #, python-format
 msgid ""
 "Login failed: No user account is linked to your %(provider)s account. Please "
@@ -1548,92 +1548,102 @@ msgid ""
 "account."
 msgstr ""
 
-#: cps/oauth_bb.py:564
+#: cps/oauth_bb.py:573
 msgid "OAuth authentication failed. Please try again or contact administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:568
+#: cps/oauth_bb.py:577
 #, fuzzy
 msgid "OAuth system error. Please contact administrator."
 msgstr ""
 "Hoppá! A mailszerver nincs beállítva. Kérjük, forduljon a rendszergazdához"
 
-#: cps/oauth_bb.py:601
+#: cps/oauth_bb.py:610
 #, python-format
 msgid "Unlink to %(oauth)s Succeeded"
 msgstr "A %(oauth)s-hoz/hez való kapcsolódás megszüntetése sikeres volt"
 
-#: cps/oauth_bb.py:606
+#: cps/oauth_bb.py:615
 #, python-format
 msgid "Unlink to %(oauth)s Failed"
 msgstr "A %(oauth)s-hoz/hez való kapcsolódás megszüntetése sikertelen"
 
-#: cps/oauth_bb.py:609
+#: cps/oauth_bb.py:618
 #, python-format
 msgid "Not Linked to %(oauth)s"
 msgstr "Nincs kapcsolata %(oauth)s-tal"
 
-#: cps/oauth_bb.py:814
+#: cps/oauth_bb.py:823
 msgid "Failed to log in with GitHub."
 msgstr "A Github-fiókkal való bejelentkezés sikertelen."
 
-#: cps/oauth_bb.py:820
+#: cps/oauth_bb.py:829
 msgid "Failed to fetch user info from GitHub."
 msgstr "Nem sikerült lekérni a felhasználói adatokat a GitHub-ról."
 
-#: cps/oauth_bb.py:841
+#: cps/oauth_bb.py:850
 msgid "Failed to log in with Google."
 msgstr "A Google-fiókkal való bejelentkezés sikertelen."
 
-#: cps/oauth_bb.py:850
+#: cps/oauth_bb.py:859
 msgid "Failed to fetch user info from Google."
 msgstr "Nem sikerült lekérni a felhasználói adatokat a Google-tól."
 
-#: cps/oauth_bb.py:875
+#: cps/oauth_bb.py:884
 msgid "Failed to log in with Generic OAuth."
 msgstr ""
 
-#: cps/oauth_bb.py:891
+#: cps/oauth_bb.py:900
 msgid "OAuth authentication failed: Token validation error. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:895
+#: cps/oauth_bb.py:904
 msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:903 cps/oauth_bb.py:921 cps/oauth_bb.py:939
+#: cps/oauth_bb.py:912 cps/oauth_bb.py:930 cps/oauth_bb.py:948
 msgid ""
 "OAuth error: Invalid redirect URI. If you're experiencing this error "
 "repeatedly, please configure the 'OAuth Redirect Host' setting in Admin > "
 "Basic Configuration > OAuth."
 msgstr ""
 
-#: cps/oauth_bb.py:975
+#: cps/oauth_bb.py:984
 msgid "GitHub Oauth error, please retry later."
 msgstr "GitHub Oauth hiba, kérjük, próbálja meg később újból."
 
-#: cps/oauth_bb.py:982
+#: cps/oauth_bb.py:991
 #, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "GitHub Oauth hiba: {}"
 
-#: cps/oauth_bb.py:1032
+#: cps/oauth_bb.py:1041
 msgid "Google Oauth error, please retry later."
 msgstr "Google Oauth hiba, kérjük, próbálja meg később újból."
 
-#: cps/oauth_bb.py:1039
+#: cps/oauth_bb.py:1048
 #, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Google Oauth hiba: {}"
 
-#: cps/oauth_bb.py:1075 cps/oauth_bb.py:1083
+#: cps/oauth_bb.py:1084 cps/oauth_bb.py:1092
 #, python-brace-format
 msgid "OAuth error: {}"
 msgstr ""
 
-#: cps/opds.py:308
+#: cps/opds.py:199 cps/web.py:2610
+#, fuzzy
+msgid "title"
+msgstr "Cím"
+
+#: cps/opds.py:200
+#, fuzzy
+msgid "description"
+msgstr "Leírás"
+
+#: cps/opds.py:483
 #, python-brace-format
 msgid "{} Stars"
 msgstr "{} csillag"
@@ -1664,7 +1674,7 @@ msgstr "Könyvek"
 msgid "Show recent books"
 msgstr "Legutóbbi könyvek megjelenítése"
 
-#: cps/render_template.py:43 cps/templates/index.xml:27
+#: cps/render_template.py:43
 msgid "Hot Books"
 msgstr "Népszerű könyvek"
 
@@ -1681,7 +1691,7 @@ msgstr "Letöltött könyvek"
 msgid "Show Downloaded Books"
 msgstr "Letöltött könyvek megjelenítése"
 
-#: cps/render_template.py:57 cps/templates/index.xml:36 cps/web.py:502
+#: cps/render_template.py:57 cps/web.py:502
 msgid "Top Rated Books"
 msgstr "Legmagasabbra értékelt könyvek"
 
@@ -1689,8 +1699,7 @@ msgstr "Legmagasabbra értékelt könyvek"
 msgid "Show Top Rated Books"
 msgstr "Legmagasabbra értékelt könyvek megjelenítése"
 
-#: cps/render_template.py:60 cps/templates/index.xml:63
-#: cps/templates/index.xml:67 cps/web.py:851
+#: cps/render_template.py:60 cps/web.py:851
 msgid "Read Books"
 msgstr "Elolvasott könyvek"
 
@@ -1699,8 +1708,7 @@ msgstr "Elolvasott könyvek"
 msgid "Show Read and Unread"
 msgstr "Mutassa az olvasva/olvasatlan állapotot"
 
-#: cps/render_template.py:64 cps/templates/index.xml:70
-#: cps/templates/index.xml:74 cps/web.py:854
+#: cps/render_template.py:64 cps/web.py:854
 msgid "Unread Books"
 msgstr "Olvasatlan könyvek"
 
@@ -1712,13 +1720,12 @@ msgstr "Olvasatlan könyvek megjelenítése"
 msgid "Discover"
 msgstr "Felfedezés"
 
-#: cps/render_template.py:69 cps/templates/index.xml:58
-#: cps/templates/user_table.html:160 cps/templates/user_table.html:163
+#: cps/render_template.py:69 cps/templates/user_table.html:160
+#: cps/templates/user_table.html:163
 msgid "Show Random Books"
 msgstr "Véletlenszerű könyvajánló"
 
-#: cps/render_template.py:70 cps/templates/book_table.html:106
-#: cps/templates/index.xml:97 cps/web.py:1762
+#: cps/render_template.py:70 cps/templates/book_table.html:106 cps/web.py:1762
 msgid "Categories"
 msgstr "Címkék"
 
@@ -1730,7 +1737,7 @@ msgstr "Címkék megjelenítése"
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:351
 #: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1071
-#: cps/templates/hardcover_review_matches.html:134 cps/templates/index.xml:106
+#: cps/templates/hardcover_review_matches.html:134
 #: cps/templates/search_form.html:70 cps/web.py:1642 cps/web.py:1654
 msgid "Series"
 msgstr "Sorozatok"
@@ -1742,7 +1749,7 @@ msgstr "Sorozatok megjelenítése"
 
 #: cps/render_template.py:76 cps/templates/book_table.html:105
 #: cps/templates/cwa_settings.html:323 cps/templates/cwa_settings.html:325
-#: cps/templates/hardcover_review_matches.html:128 cps/templates/index.xml:79
+#: cps/templates/hardcover_review_matches.html:128
 msgid "Authors"
 msgstr "Szerzők"
 
@@ -1751,8 +1758,7 @@ msgstr "Szerzők"
 msgid "Show Author Section"
 msgstr "Szerzők megjelenítése"
 
-#: cps/render_template.py:80 cps/templates/book_table.html:111
-#: cps/templates/index.xml:88 cps/web.py:1610
+#: cps/render_template.py:80 cps/templates/book_table.html:111 cps/web.py:1610
 msgid "Publishers"
 msgstr "Kiadók"
 
@@ -1762,8 +1768,7 @@ msgid "Show Publisher Section"
 msgstr "Kiadói rész megjelenítése"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/index.xml:115 cps/templates/search_form.html:108
-#: cps/web.py:1734
+#: cps/templates/search_form.html:108 cps/web.py:1734
 msgid "Languages"
 msgstr "Nyelvek"
 
@@ -1772,7 +1777,7 @@ msgstr "Nyelvek"
 msgid "Show Language Section"
 msgstr "Nyelvi rész megjelenítése"
 
-#: cps/render_template.py:87 cps/templates/index.xml:124 cps/web.py:1694
+#: cps/render_template.py:87 cps/web.py:1694
 msgid "Ratings"
 msgstr "Értékelések"
 
@@ -1781,7 +1786,7 @@ msgstr "Értékelések"
 msgid "Show Ratings Section"
 msgstr "Értékelések megjelenítése"
 
-#: cps/render_template.py:90 cps/templates/index.xml:133
+#: cps/render_template.py:90
 msgid "File formats"
 msgstr "Fájlformátumok"
 
@@ -2387,17 +2392,17 @@ msgstr "Kérjük, érvényes felhasználónevet adjon meg a jelszó visszaállí
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Be vagy jelentkezve mint: %(nickname)s"
 
-#: cps/web.py:2514
+#: cps/web.py:2548
 #, fuzzy
 msgid "Success! Profile Updated"
 msgstr "A profil frissítve."
 
-#: cps/web.py:2520
+#: cps/web.py:2554
 #, fuzzy
 msgid "Oops! An account already exists for this Email."
 msgstr "Már létezik felhasználó ehhez az e-mail címhez."
 
-#: cps/web.py:2688
+#: cps/web.py:2739
 msgid "Invalid book ID."
 msgstr "Érvénytelen könyv azonosító"
 
@@ -2579,12 +2584,12 @@ msgstr "Felhasználók&nbsp;&nbsp;👤"
 
 #: cps/templates/admin.html:14 cps/templates/login.html:10
 #: cps/templates/login.html:12 cps/templates/register.html:9
-#: cps/templates/user_edit.html:136 cps/templates/user_table.html:134
+#: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Felhasználónév"
 
 #: cps/templates/admin.html:15 cps/templates/register.html:14
-#: cps/templates/user_edit.html:144 cps/templates/user_table.html:135
+#: cps/templates/user_edit.html:183 cps/templates/user_table.html:135
 msgid "Email"
 msgstr "E-mail"
 
@@ -2593,7 +2598,7 @@ msgstr "E-mail"
 msgid "Send to eReader Email"
 msgstr "Küldés az e-olvasó emailjére"
 
-#: cps/templates/admin.html:17 cps/templates/user_edit.html:172
+#: cps/templates/admin.html:17 cps/templates/user_edit.html:211
 #, fuzzy
 msgid "Send to eReader Subject"
 msgstr "Küldés e-olvasóra"
@@ -2604,7 +2609,7 @@ msgid "Admin"
 msgstr "Rendszergazda"
 
 #: cps/templates/admin.html:20 cps/templates/login.html:15
-#: cps/templates/login.html:16 cps/templates/user_edit.html:155
+#: cps/templates/login.html:16 cps/templates/user_edit.html:194
 msgid "Password"
 msgstr "Jelszó"
 
@@ -2630,7 +2635,7 @@ msgstr "Szerkesztés"
 #: cps/templates/book_table.html:62 cps/templates/book_table.html:141
 #: cps/templates/book_table.html:190 cps/templates/duplicates.html:539
 #: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
-#: cps/templates/user_edit.html:266 cps/templates/user_table.html:150
+#: cps/templates/user_edit.html:305 cps/templates/user_table.html:150
 msgid "Delete"
 msgstr "Törlés"
 
@@ -2900,7 +2905,7 @@ msgstr "OK"
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:94
 #: cps/templates/tasks.html:166 cps/templates/tasks.html:173
-#: cps/templates/user_edit.html:445
+#: cps/templates/user_edit.html:502
 msgid "Cancel"
 msgstr "Mégsem"
 
@@ -2998,7 +3003,7 @@ msgstr "Feltöltés..."
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:463
+#: cps/templates/user_edit.html:520
 msgid "Close"
 msgstr "Bezárás"
 
@@ -3125,7 +3130,7 @@ msgstr "Metaadatok beszerzése"
 #: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:215
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
-#: cps/templates/user_edit.html:443
+#: cps/templates/user_edit.html:500
 msgid "Save"
 msgstr "Mentés"
 
@@ -4110,36 +4115,36 @@ msgstr ""
 msgid "Permissions"
 msgstr "Verzió"
 
-#: cps/templates/config_view_edit.html:115 cps/templates/user_edit.html:327
+#: cps/templates/config_view_edit.html:115 cps/templates/user_edit.html:384
 msgid "Admin User"
 msgstr "Rendszergazda felhasználó"
 
-#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:333
+#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:390
 msgid "Allow Downloads"
 msgstr "Letöltés engedélyezése"
 
-#: cps/templates/config_view_edit.html:125 cps/templates/user_edit.html:338
+#: cps/templates/config_view_edit.html:125 cps/templates/user_edit.html:395
 msgid "Allow eBook Viewer"
 msgstr ""
 
-#: cps/templates/config_view_edit.html:131 cps/templates/user_edit.html:344
+#: cps/templates/config_view_edit.html:131 cps/templates/user_edit.html:401
 msgid "Allow Uploads"
 msgstr "Feltöltés engedélyezése"
 
-#: cps/templates/config_view_edit.html:137 cps/templates/user_edit.html:350
+#: cps/templates/config_view_edit.html:137 cps/templates/user_edit.html:407
 msgid "Allow Edit"
 msgstr "Szerkesztés engedélyezése"
 
-#: cps/templates/config_view_edit.html:142 cps/templates/user_edit.html:355
+#: cps/templates/config_view_edit.html:142 cps/templates/user_edit.html:412
 #, fuzzy
 msgid "Allow Delete Books"
 msgstr "Könyv törlése"
 
-#: cps/templates/config_view_edit.html:147 cps/templates/user_edit.html:361
+#: cps/templates/config_view_edit.html:147 cps/templates/user_edit.html:418
 msgid "Allow Changing Password"
 msgstr "Jelszó változtatásának engedélyezése"
 
-#: cps/templates/config_view_edit.html:152 cps/templates/user_edit.html:366
+#: cps/templates/config_view_edit.html:152 cps/templates/user_edit.html:423
 msgid "Allow Editing Public Shelves"
 msgstr "Nyilvános polcok szerkesztésének engedélyezése"
 
@@ -4176,12 +4181,12 @@ msgstr "Új felhasználók alapértelmezett látható elemei"
 msgid "Choose which sidebar sections are visible by default for new users."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:195 cps/templates/user_edit.html:305
+#: cps/templates/config_view_edit.html:195 cps/templates/user_edit.html:344
 #: cps/templates/user_table.html:155
 msgid "Show Random Books in Detail View"
 msgstr "Mutasson könyveket találomra a részletes nézetben"
 
-#: cps/templates/config_view_edit.html:201 cps/templates/user_edit.html:311
+#: cps/templates/config_view_edit.html:201 cps/templates/user_edit.html:350
 msgid "Add Allowed/Denied Tags"
 msgstr ""
 
@@ -4467,7 +4472,7 @@ msgid "Cover Image"
 msgstr "Borító"
 
 #: cps/templates/cwa_settings.html:387 cps/templates/cwa_settings.html:494
-#: cps/templates/cwa_settings.html:699
+#: cps/templates/cwa_settings.html:699 cps/templates/user_edit.html:368
 msgid "Tip"
 msgstr ""
 
@@ -5225,9 +5230,10 @@ msgid "Add to shelf"
 msgstr "Hozzáadás polchoz"
 
 #: cps/templates/detail.html:422 cps/templates/detail.html:441
-#: cps/templates/feed.xml:81 cps/templates/layout.html:301
-#: cps/templates/layout.html:310 cps/templates/listenmp3.html:201
-#: cps/templates/listenmp3.html:218 cps/templates/search.html:22
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
 msgid "(Public)"
 msgstr ""
 
@@ -5477,6 +5483,10 @@ msgstr "Regisztráláshoz engedélyezett tartományok"
 msgid "Next"
 msgstr "Következő"
 
+#: cps/templates/feed.xml:83
+msgid "(Magic)"
+msgstr ""
+
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""
 "Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or "
@@ -5704,77 +5714,6 @@ msgstr ""
 msgid "Sort descending according to series index"
 msgstr ""
 
-#: cps/templates/index.xml:19
-msgid "Alphabetical Books"
-msgstr ""
-
-#: cps/templates/index.xml:23
-msgid "Books sorted alphabetically"
-msgstr ""
-
-#: cps/templates/index.xml:31
-msgid "Popular publications from this catalog based on Downloads."
-msgstr "Ebből a katalógusból származó népszerű kiadványok letöltések alapján."
-
-#: cps/templates/index.xml:40
-msgid "Popular publications from this catalog based on Rating."
-msgstr "Ebből a katalógusból származó népszerű kiadványok értékelések alapján."
-
-#: cps/templates/index.xml:45
-#, fuzzy
-msgid "Recently added Books"
-msgstr "Olvasott könyvek"
-
-#: cps/templates/index.xml:49
-msgid "The latest Books"
-msgstr "A legfrissebb könyvek"
-
-#: cps/templates/index.xml:54
-msgid "Random Books"
-msgstr "Könyvek találomra"
-
-#: cps/templates/index.xml:83
-msgid "Books ordered by Author"
-msgstr "Könyvek szerző szerint rendezve"
-
-#: cps/templates/index.xml:92
-msgid "Books ordered by publisher"
-msgstr "Könyvek kiadók szerint rendezve"
-
-#: cps/templates/index.xml:101
-msgid "Books ordered by category"
-msgstr "Könyvek címke szerint rendezve"
-
-#: cps/templates/index.xml:110
-msgid "Books ordered by series"
-msgstr "Könyvek sorozat szerint rendezve"
-
-#: cps/templates/index.xml:119
-#, fuzzy
-msgid "Books ordered by Languages"
-msgstr "Könyvek sorozat szerint rendezve"
-
-#: cps/templates/index.xml:128
-#, fuzzy
-msgid "Books ordered by Rating"
-msgstr "Könyvek címke szerint rendezve"
-
-#: cps/templates/index.xml:137
-#, fuzzy
-msgid "Books ordered by file formats"
-msgstr "Könyvek sorozat szerint rendezve"
-
-#: cps/templates/index.xml:142 cps/templates/layout.html:298
-#: cps/templates/search_form.html:88
-#, fuzzy
-msgid "Shelves"
-msgstr "Sorozatok kizárása"
-
-#: cps/templates/index.xml:146
-#, fuzzy
-msgid "Books organized in shelves"
-msgstr "Könyvek sorozat szerint rendezve"
-
 #: cps/templates/layout.html:93 cps/templates/login.html:44
 msgid "Home"
 msgstr "Kezdőlap"
@@ -5789,7 +5728,7 @@ msgid "Search Library"
 msgstr "Könyvtárban"
 
 #: cps/templates/layout.html:132 cps/templates/layout.html:169
-#: cps/templates/user_edit.html:245 cps/templates/user_edit.html:247
+#: cps/templates/user_edit.html:284 cps/templates/user_edit.html:286
 msgid "Account"
 msgstr "Felhasználói fiók"
 
@@ -5829,6 +5768,11 @@ msgstr "Frissítés folyamatban, ne töltsd újra az oldalt"
 #: cps/templates/layout.html:281
 msgid "Browse"
 msgstr "Böngészés"
+
+#: cps/templates/layout.html:298 cps/templates/search_form.html:88
+#, fuzzy
+msgid "Shelves"
+msgstr "Sorozatok kizárása"
 
 #: cps/templates/layout.html:304
 #, fuzzy
@@ -6176,7 +6120,7 @@ msgstr "Forgatás jobbra"
 msgid "Flip Image"
 msgstr "Kép tükrözése"
 
-#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:211
+#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:250
 msgid "Theme"
 msgstr "Téma"
 
@@ -6566,178 +6510,198 @@ msgstr "Profilkép sikeresen frissítve."
 msgid "Error cancelling scheduled item"
 msgstr ""
 
-#: cps/templates/user_edit.html:124
+#: cps/templates/user_edit.html:163
 #, fuzzy
 msgid "Your Profile"
 msgstr "Az e-mail címed"
 
-#: cps/templates/user_edit.html:124
+#: cps/templates/user_edit.html:163
 #, fuzzy
 msgid "User Settings"
 msgstr "Beállítások"
 
-#: cps/templates/user_edit.html:132
+#: cps/templates/user_edit.html:171
 msgid "Account Information"
 msgstr ""
 
-#: cps/templates/user_edit.html:141
+#: cps/templates/user_edit.html:180
 msgid ""
 "If you need to change your email address or password, you can do so here."
 msgstr ""
 
-#: cps/templates/user_edit.html:151
+#: cps/templates/user_edit.html:190
 msgid "Reset user Password"
 msgstr "Felhasználó jelszavának alaphelyzetbe állítása"
 
-#: cps/templates/user_edit.html:163
+#: cps/templates/user_edit.html:202
 #, fuzzy
 msgid "eReader Configuration"
 msgstr "Szerver beállítások"
 
-#: cps/templates/user_edit.html:166
+#: cps/templates/user_edit.html:205
 #, fuzzy
 msgid "Send to eReader Email Address"
 msgstr "Kindle"
 
-#: cps/templates/user_edit.html:167
+#: cps/templates/user_edit.html:206
 msgid "Use comma to separate multiple addresses"
 msgstr ""
 
-#: cps/templates/user_edit.html:168
+#: cps/templates/user_edit.html:207
 msgid ""
 "Email address(es) for your eReader devices. Separate multiple addresses with "
 "commas."
 msgstr ""
 
-#: cps/templates/user_edit.html:179
+#: cps/templates/user_edit.html:218
 msgid "Automatically send new books to my eReader(s)"
 msgstr ""
 
-#: cps/templates/user_edit.html:180
+#: cps/templates/user_edit.html:219
 msgid ""
 "When enabled, newly ingested books will be automatically sent to all "
 "configured eReader email addresses above."
 msgstr ""
 
-#: cps/templates/user_edit.html:188
+#: cps/templates/user_edit.html:227
 msgid "Language & Theme Preferences"
 msgstr ""
 
-#: cps/templates/user_edit.html:191
+#: cps/templates/user_edit.html:230
 #, fuzzy
 msgid "Interface Language"
 msgstr "Nyelvek kizárása"
 
-#: cps/templates/user_edit.html:200 cps/templates/user_edit.html:223
+#: cps/templates/user_edit.html:239 cps/templates/user_edit.html:262
 msgid "Language of Books"
 msgstr "Mutasd a könyveket a következő nyelvvel"
 
-#: cps/templates/user_edit.html:207 cps/templates/user_edit.html:230
+#: cps/templates/user_edit.html:246 cps/templates/user_edit.html:269
 msgid "Filter the library to only show books in a specific language."
 msgstr ""
 
-#: cps/templates/user_edit.html:220
+#: cps/templates/user_edit.html:259
 #, fuzzy
 msgid "Book Language Filter"
 msgstr "Hiányzik a könyv érvényes nyelve"
 
-#: cps/templates/user_edit.html:238
+#: cps/templates/user_edit.html:277
 msgid "OAuth & API Integrations"
 msgstr ""
 
-#: cps/templates/user_edit.html:243
+#: cps/templates/user_edit.html:282
 #, fuzzy
 msgid "OAuth Settings"
 msgstr "Beállítások"
 
-#: cps/templates/user_edit.html:245
+#: cps/templates/user_edit.html:284
 msgid "Link"
 msgstr ""
 
-#: cps/templates/user_edit.html:247
+#: cps/templates/user_edit.html:286
 msgid "Unlink"
 msgstr ""
 
-#: cps/templates/user_edit.html:255
+#: cps/templates/user_edit.html:294
 msgid "Hardcover API Token"
 msgstr ""
 
-#: cps/templates/user_edit.html:257
+#: cps/templates/user_edit.html:296
 msgid "API token for Hardcover metadata provider integration."
 msgstr ""
 
-#: cps/templates/user_edit.html:263
+#: cps/templates/user_edit.html:302
 msgid "Kobo Sync Token"
 msgstr ""
 
-#: cps/templates/user_edit.html:265
+#: cps/templates/user_edit.html:304
 msgid "Create/View"
 msgstr ""
 
-#: cps/templates/user_edit.html:269
+#: cps/templates/user_edit.html:308
 msgid "Force full kobo sync"
 msgstr ""
 
-#: cps/templates/user_edit.html:276
+#: cps/templates/user_edit.html:315
 msgid "Sync only books in selected shelves with Kobo"
 msgstr ""
 
-#: cps/templates/user_edit.html:286
+#: cps/templates/user_edit.html:325
 #, fuzzy
 msgid "Sidebar Display Settings"
 msgstr "SMTP e-mail kiszolgáló beállítások"
 
-#: cps/templates/user_edit.html:287
+#: cps/templates/user_edit.html:326
 msgid "Choose which sections to display in your sidebar navigation."
 msgstr ""
 
-#: cps/templates/user_edit.html:312
+#: cps/templates/user_edit.html:351
 msgid "Add allowed/Denied Custom Column Values"
 msgstr ""
 
-#: cps/templates/user_edit.html:320
-msgid "User Permissions"
+#: cps/templates/user_edit.html:359
+msgid "OPDS Catalog Order"
 msgstr ""
 
-#: cps/templates/user_edit.html:321
-msgid "Configure what actions this user is allowed to perform."
+#: cps/templates/user_edit.html:360
+msgid ""
+"Reorder the OPDS root catalog by listing entry IDs in the order you want. "
+"Unknown IDs are ignored and missing entries are appended automatically."
 msgstr ""
 
-#: cps/templates/user_edit.html:376
-msgid "Magic Shelves Visibility"
+#: cps/templates/user_edit.html:368
+msgid ""
+"Drag to reorder OPDS root entries. Missing entries are appended "
+"automatically."
 msgstr ""
 
 #: cps/templates/user_edit.html:377
+msgid "User Permissions"
+msgstr ""
+
+#: cps/templates/user_edit.html:378
+msgid "Configure what actions this user is allowed to perform."
+msgstr ""
+
+#: cps/templates/user_edit.html:433
+msgid "Magic Shelves Visibility"
+msgstr ""
+
+#: cps/templates/user_edit.html:434
 msgid ""
 "Uncheck shelves you want to hide from your sidebar. System shelves cannot be "
 "deleted, only hidden. Public shelves from other users can also be hidden."
 msgstr ""
 
-#: cps/templates/user_edit.html:381
+#: cps/templates/user_edit.html:438
 msgid "Default System Shelves:"
 msgstr ""
 
-#: cps/templates/user_edit.html:405
+#: cps/templates/user_edit.html:462
 #, fuzzy
 msgid "Public Shelves:"
 msgstr "Polc szerkesztése"
 
-#: cps/templates/user_edit.html:430
+#: cps/templates/user_edit.html:487
 #, python-format
 msgid "%(visible)s of %(total)s default shelves visible"
 msgstr ""
 
-#: cps/templates/user_edit.html:434
+#: cps/templates/user_edit.html:491
 #, python-format
 msgid "%(visible)s of %(total)s public shelves visible"
 msgstr ""
 
-#: cps/templates/user_edit.html:448 cps/templates/user_table.html:170
+#: cps/templates/user_edit.html:505 cps/templates/user_table.html:170
 msgid "Delete User"
 msgstr "A felhasználó törlése"
 
-#: cps/templates/user_edit.html:459
+#: cps/templates/user_edit.html:516
 msgid "Generate Kobo Auth URL"
+msgstr ""
+
+#: cps/templates/user_edit.html:575
+msgid "Visible"
 msgstr ""
 
 #: cps/templates/user_table.html:80 cps/templates/user_table.html:103
@@ -6848,6 +6812,52 @@ msgstr ""
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Sorozat választó mutatása"
+
+#~ msgid "Popular publications from this catalog based on Downloads."
+#~ msgstr ""
+#~ "Ebből a katalógusból származó népszerű kiadványok letöltések alapján."
+
+#~ msgid "Popular publications from this catalog based on Rating."
+#~ msgstr ""
+#~ "Ebből a katalógusból származó népszerű kiadványok értékelések alapján."
+
+#, fuzzy
+#~ msgid "Recently added Books"
+#~ msgstr "Olvasott könyvek"
+
+#~ msgid "The latest Books"
+#~ msgstr "A legfrissebb könyvek"
+
+#~ msgid "Random Books"
+#~ msgstr "Könyvek találomra"
+
+#~ msgid "Books ordered by Author"
+#~ msgstr "Könyvek szerző szerint rendezve"
+
+#~ msgid "Books ordered by publisher"
+#~ msgstr "Könyvek kiadók szerint rendezve"
+
+#~ msgid "Books ordered by category"
+#~ msgstr "Könyvek címke szerint rendezve"
+
+#~ msgid "Books ordered by series"
+#~ msgstr "Könyvek sorozat szerint rendezve"
+
+#, fuzzy
+#~ msgid "Books ordered by Languages"
+#~ msgstr "Könyvek sorozat szerint rendezve"
+
+#, fuzzy
+#~ msgid "Books ordered by Rating"
+#~ msgstr "Könyvek címke szerint rendezve"
+
+#, fuzzy
+#~ msgid "Books ordered by file formats"
+#~ msgstr "Könyvek sorozat szerint rendezve"
+
+#, fuzzy
+#~ msgid "Books organized in shelves"
+#~ msgstr "Könyvek sorozat szerint rendezve"
 
 #~ msgid "Unable to fetch OAuth metadata from URL."
 #~ msgstr "Nem sikerült lekérni az OAuth metaadatokat a megadott URL‑ről."

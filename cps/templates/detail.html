@@ -117,6 +117,16 @@
             font-size: 0.85em;
         }
 
+        .meta-pill.uuid-copy {
+            cursor: pointer;
+            color: inherit;
+            margin-left: 10px;
+        }
+
+        .meta-pill.uuid-copy:focus {
+            outline: none;
+        }
+
         .meta-link {
             color: inherit;
             text-decoration: none;
@@ -469,6 +479,30 @@
                         {% endif %}
 
                         <div class="book-metadata">
+                            <div class="book-id meta-chip">
+                                <span>{{ _('ID') }}:</span>
+                                <span class="meta-value">{{ entry.id }}</span>
+                            </div>
+                            {% if entry.uuid %}
+                                <div class="book-uuid meta-chip">
+                                    <span>{{ _('UUID') }}:</span>
+                                    <button type="button" class="meta-pill uuid-copy"
+                                            data-uuid="{{ entry.uuid }}"
+                                            data-toast="{{ _('UUID copied to clipboard') }}"
+                                            data-toast-error="{{ _('Unable to copy UUID') }}"
+                                            aria-label="{{ _('Copy UUID') }}">
+                                        {{ _('Copy UUID') }}
+                                    </button>
+                                </div>
+                            {% endif %}
+                            <div class="book-date-added meta-chip">
+                                <span>{{ _('Date added') }}:</span>
+                                <span class="meta-value">{{ entry.timestamp|formatdate }}</span>
+                            </div>
+                            <div class="book-last-modified meta-chip">
+                                <span>{{ _('Last modified') }}:</span>
+                                <span class="meta-value">{{ entry.last_modified|formatdate }}</span>
+                            </div>
                             {% if entry.data|length > 0 %}
                                 <div class="formats meta-chip">
                                     <span>{{ _('File sizes') }}</span>
@@ -851,6 +885,40 @@
                 });
             });
         }
+
+        $(".uuid-copy").on("click", function () {
+            var $btn = $(this);
+            var uuid = $btn.data("uuid");
+            if (!uuid) {
+                return;
+            }
+            var successMessage = $btn.data("toast");
+            var errorMessage = $btn.data("toast-error");
+            function showSuccess() {
+                showActionToast(successMessage, $btn[0]);
+            }
+            function showError() {
+                showActionToast(errorMessage, $btn[0]);
+            }
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(uuid).then(showSuccess).catch(showError);
+                return;
+            }
+            var $temp = $("<textarea>").val(uuid).css({ position: "fixed", left: "-9999px", top: "-9999px" });
+            $("body").append($temp);
+            $temp[0].select();
+            try {
+                var copied = document.execCommand("copy");
+                if (copied) {
+                    showSuccess();
+                } else {
+                    showError();
+                }
+            } catch (e) {
+                showError();
+            }
+            $temp.remove();
+        });
     });
 </script>
 

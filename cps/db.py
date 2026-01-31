@@ -794,6 +794,8 @@ class CalibreDB:
                     cls.setup_db_cc_classes(cc)
                 except OperationalError as e:
                     log.error_or_exception(e)
+                    if cls.config:
+                        cls.config.invalidate(e)
                     return None
 
             try:

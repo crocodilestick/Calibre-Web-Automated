@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 18:16+0100\n"
+"POT-Creation-Date: 2026-01-31 18:20+0100\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -1777,7 +1777,7 @@ msgid "Show Publisher Section"
 msgstr "Mostrar Sección de Editores"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/detail.html:518 cps/templates/search_form.html:108
+#: cps/templates/detail.html:525 cps/templates/search_form.html:108
 #: cps/web.py:1734
 msgid "Languages"
 msgstr "Idiomas"
@@ -2883,7 +2883,7 @@ msgstr "Ok"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:742
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:749
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
 #: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
@@ -2949,7 +2949,7 @@ msgstr "reducir"
 msgid "More by"
 msgstr "Más de"
 
-#: cps/templates/book_edit.html:11
+#: cps/templates/book_edit.html:11 cps/templates/detail.html:443
 msgid "Delete Book"
 msgstr "Borrar Libro"
 
@@ -3026,7 +3026,7 @@ msgstr "Fecha de Publicación"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:546
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:553
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -5232,12 +5232,12 @@ msgid "Read in Browser"
 msgstr "Leer en el Navegador"
 
 #: cps/templates/detail.html:417 cps/templates/detail.html:418
-#: cps/templates/detail.html:600 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:607 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Marcar como no leído"
 
 #: cps/templates/detail.html:417 cps/templates/detail.html:418
-#: cps/templates/detail.html:601 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:608 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Marcar como leído"
 
@@ -5252,12 +5252,12 @@ msgid "Marked as unread"
 msgstr "Marcar como no leído"
 
 #: cps/templates/detail.html:425 cps/templates/detail.html:426
-#: cps/templates/detail.html:607 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:614 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "Restarurar desde el archivo"
 
 #: cps/templates/detail.html:425 cps/templates/detail.html:426
-#: cps/templates/detail.html:608 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:615 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "Añadir al archivo"
 
@@ -5270,68 +5270,68 @@ msgstr "Archivado"
 msgid "Restored from archive"
 msgstr "Restarurar desde el archivo"
 
-#: cps/templates/detail.html:459
+#: cps/templates/detail.html:466
 #, fuzzy
 msgid "Rating updated"
 msgstr "Configuración de la Base de Datos actualizada"
 
-#: cps/templates/detail.html:460
+#: cps/templates/detail.html:467
 #, fuzzy
 msgid "Rating cleared"
 msgstr "Valoración mayor que"
 
-#: cps/templates/detail.html:478 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:485 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "Libro %(index)s de %(range)s"
 
-#: cps/templates/detail.html:483
+#: cps/templates/detail.html:490
 msgid "ID"
 msgstr ""
 
-#: cps/templates/detail.html:488
+#: cps/templates/detail.html:495
 msgid "UUID"
 msgstr ""
 
-#: cps/templates/detail.html:491
+#: cps/templates/detail.html:498
 msgid "UUID copied to clipboard"
 msgstr ""
 
-#: cps/templates/detail.html:492
+#: cps/templates/detail.html:499
 msgid "Unable to copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:493 cps/templates/detail.html:494
+#: cps/templates/detail.html:500 cps/templates/detail.html:501
 msgid "Copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:499
+#: cps/templates/detail.html:506
 msgid "Date added"
 msgstr ""
 
-#: cps/templates/detail.html:503
+#: cps/templates/detail.html:510
 msgid "Last modified"
 msgstr ""
 
-#: cps/templates/detail.html:508
+#: cps/templates/detail.html:515
 #, fuzzy
 msgid "File sizes"
 msgstr "Tamaños de letra"
 
-#: cps/templates/detail.html:552 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:559 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "Publicado"
 
-#: cps/templates/detail.html:619 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:626 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Descripción:"
 
-#: cps/templates/detail.html:632 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:639 cps/templates/listenmp3.html:190
 #: cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "Agregar a la estantería"
 
-#: cps/templates/detail.html:644 cps/templates/detail.html:663
+#: cps/templates/detail.html:651 cps/templates/detail.html:670
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
 #: cps/templates/layout.html:301 cps/templates/layout.html:310
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
@@ -5339,41 +5339,41 @@ msgstr "Agregar a la estantería"
 msgid "(Public)"
 msgstr "(Público)"
 
-#: cps/templates/detail.html:686
+#: cps/templates/detail.html:693
 msgid "Select eReader Email Addresses"
 msgstr "Seleccionar direcciones de correo electrónico del eReader"
 
-#: cps/templates/detail.html:699
+#: cps/templates/detail.html:706
 msgid "Choose email addresses:"
 msgstr "Seleccionar direcciones de correo electrónico:"
 
-#: cps/templates/detail.html:704
+#: cps/templates/detail.html:711
 msgid "Select All"
 msgstr "Seleccionar Todo"
 
-#: cps/templates/detail.html:722
+#: cps/templates/detail.html:729
 #, fuzzy
 msgid "Additional email addresses:"
 msgstr "Seleccionar direcciones de correo electrónico:"
 
-#: cps/templates/detail.html:723
+#: cps/templates/detail.html:730
 #, fuzzy
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "Seleccionar direcciones de correo electrónico:"
 
-#: cps/templates/detail.html:724
+#: cps/templates/detail.html:731
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:725
+#: cps/templates/detail.html:732
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:729
+#: cps/templates/detail.html:736
 msgid "Select format:"
 msgstr "Seleccionar formato:"
 
-#: cps/templates/detail.html:741
+#: cps/templates/detail.html:748
 msgid "Send"
 msgstr "Enviar"
 

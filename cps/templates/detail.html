@@ -437,6 +437,13 @@
                                             <span class="glyphicon glyphicon-pencil"></span>
                                         </a>
                                     {% endif %}
+                                    {% if current_user.role_edit() and current_user.role_delete_books() %}
+                                        <button type="button" class="btn btn-danger action-icon-btn" id="delete"
+                                                data-toggle="modal" data-delete-id="{{ entry.id }}" data-target="#deleteModal"
+                                                title="{{ _('Delete Book') }}" aria-label="{{ _('Delete Book') }}">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -746,6 +753,7 @@
                 </div>
             </div>
         {% endif %}
+        {{ delete_book(current_user.role_delete_books() and current_user.role_edit()) }}
     </div>
 </div>
 {% endblock %}

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 16:11+0100\n"
+"POT-Creation-Date: 2026-01-31 18:07+0100\n"
 "PO-Revision-Date: 2020-04-23 22:47+0300\n"
 "Last-Translator: iz <iz7iz7iz@protonmail.ch>\n"
 "Language-Team: \n"
@@ -191,7 +191,7 @@ msgstr ""
 msgid "No Valid Book Language Given"
 msgstr ""
 
-#: cps/admin.py:830 cps/editbooks.py:493
+#: cps/admin.py:830 cps/editbooks.py:500
 msgid "Parameter not found"
 msgstr ""
 
@@ -368,8 +368,8 @@ msgid "Success! Gmail Account Verified."
 msgstr ""
 
 #: cps/admin.py:1714 cps/admin.py:1717 cps/admin.py:2137 cps/admin.py:2348
-#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:932
-#: cps/editbooks.py:1691 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:939
+#: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2559
 #, python-format
@@ -1087,54 +1087,54 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr "Bu eKitabı dönüştürürken bir hata oluştu: %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1128 cps/editbooks.py:1637
+#: cps/editbooks.py:305 cps/editbooks.py:1135 cps/editbooks.py:1644
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "'%(ext)s' uzantılı dosyaların bu sunucuya yüklenmesine izin verilmiyor"
 
-#: cps/editbooks.py:310 cps/editbooks.py:1134 cps/editbooks.py:1648
+#: cps/editbooks.py:310 cps/editbooks.py:1141 cps/editbooks.py:1655
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "'%(ext)s' uzantılı dosyaların bu sunucuya yüklenmesine izin verilmiyor"
 
-#: cps/editbooks.py:314 cps/editbooks.py:1138 cps/editbooks.py:1653
+#: cps/editbooks.py:314 cps/editbooks.py:1145 cps/editbooks.py:1660
 msgid "File to be uploaded must have an extension"
 msgstr "Yüklenecek dosyanın mutlaka bir uzantısı olması gerekli"
 
-#: cps/editbooks.py:744 cps/editbooks.py:1314 cps/web.py:612 cps/web.py:2648
+#: cps/editbooks.py:751 cps/editbooks.py:1321 cps/web.py:612 cps/web.py:2648
 #: cps/web.py:2726 cps/web.py:2795
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
 
-#: cps/editbooks.py:776 cps/editbooks.py:1721
+#: cps/editbooks.py:783 cps/editbooks.py:1728
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:796 cps/editbooks.py:1116
+#: cps/editbooks.py:803 cps/editbooks.py:1123
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 
-#: cps/editbooks.py:808 cps/editbooks.py:1090 cps/editbooks.py:1448
+#: cps/editbooks.py:815 cps/editbooks.py:1097 cps/editbooks.py:1455
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s geçerli bir dil değil"
 
-#: cps/editbooks.py:919
+#: cps/editbooks.py:926
 msgid "Metadata successfully updated"
 msgstr "Metaveri başarıyla güncellendi"
 
-#: cps/editbooks.py:937
+#: cps/editbooks.py:944
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:985 cps/editbooks.py:1030 cps/editbooks.py:1739
+#: cps/editbooks.py:992 cps/editbooks.py:1037 cps/editbooks.py:1746
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
-#: cps/editbooks.py:1034
+#: cps/editbooks.py:1041
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1142,52 +1142,52 @@ msgstr ""
 "Yüklenen eKitap muhtemelen kitaplıkta zaten var. Yenisini yüklemeden "
 "değiştirmeyi düşünün: "
 
-#: cps/editbooks.py:1146
+#: cps/editbooks.py:1153
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "%(filename)s dosyası geçici dizine kaydedilemedi"
 
-#: cps/editbooks.py:1166
+#: cps/editbooks.py:1173
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr ""
 
-#: cps/editbooks.py:1224 cps/editbooks.py:1226
+#: cps/editbooks.py:1231 cps/editbooks.py:1233
 msgid "Book Format Successfully Deleted"
 msgstr ""
 
-#: cps/editbooks.py:1233 cps/editbooks.py:1235
+#: cps/editbooks.py:1240 cps/editbooks.py:1242
 msgid "Book Successfully Deleted"
 msgstr ""
 
-#: cps/editbooks.py:1299
+#: cps/editbooks.py:1306
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1353
+#: cps/editbooks.py:1360
 msgid "edit metadata"
 msgstr "metaveri düzenle"
 
-#: cps/editbooks.py:1407
+#: cps/editbooks.py:1414
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 
-#: cps/editbooks.py:1642
+#: cps/editbooks.py:1649
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1666
+#: cps/editbooks.py:1673
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "%(path)s dizini oluşturulamadı. (İzin reddedildi)"
 
-#: cps/editbooks.py:1673
+#: cps/editbooks.py:1680
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "%(file)s dosyası kaydedilemedi."
 
-#: cps/editbooks.py:1698
+#: cps/editbooks.py:1705
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "%(book)s kitabına %(ext)s dosya biçimi eklendi"
@@ -1223,7 +1223,7 @@ msgstr "%(fn)s eKitabı için %(format)s biçimi Google Drive'da bulunamadı"
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s bulunamadı: %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225
+#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:391
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Kindle'a gönder"
@@ -1719,7 +1719,8 @@ msgid "Show Publisher Section"
 msgstr "Yayıncı seçimini göster"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/search_form.html:108 cps/web.py:1734
+#: cps/templates/detail.html:484 cps/templates/search_form.html:108
+#: cps/web.py:1734
 msgid "Languages"
 msgstr "Diller"
 
@@ -2541,8 +2542,8 @@ msgstr "Yönetim"
 msgid "Password"
 msgstr "Şifre"
 
-#: cps/templates/admin.html:24 cps/templates/shelf.html:8
-#: cps/templates/user_table.html:147
+#: cps/templates/admin.html:24 cps/templates/detail.html:370
+#: cps/templates/shelf.html:8 cps/templates/user_table.html:147
 #, fuzzy
 msgid "Download"
 msgstr "İndirmeye İzin Ver"
@@ -2835,13 +2836,13 @@ msgstr ""
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/duplicates.html:540
-#: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
-#: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
-#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
-#: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:94
-#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
-#: cps/templates/user_edit.html:502
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:708
+#: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
+#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
+#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
+#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:502
 msgid "Cancel"
 msgstr ""
 
@@ -2984,7 +2985,7 @@ msgstr "Yayınlanma (sonra)"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:512
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3287,7 +3288,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:282
+#: cps/templates/book_table.html:282 cps/templates/detail.html:426
 #, fuzzy
 msgid "Edit Metadata"
 msgstr "metaveri düzenle"
@@ -5082,6 +5083,133 @@ msgstr ""
 msgid "Click to See More"
 msgstr ""
 
+#: cps/templates/detail.html:400
+#, fuzzy
+msgid "Read in Browser"
+msgstr "Okunanlar"
+
+#: cps/templates/detail.html:407 cps/templates/detail.html:408
+#: cps/templates/detail.html:566 cps/templates/listenmp3.html:158
+msgid "Mark As Unread"
+msgstr "Okunmadı olarak işaretle"
+
+#: cps/templates/detail.html:407 cps/templates/detail.html:408
+#: cps/templates/detail.html:567 cps/templates/listenmp3.html:158
+msgid "Mark As Read"
+msgstr "Okundu olarak işaretle"
+
+#: cps/templates/detail.html:409
+#, fuzzy
+msgid "Marked as read"
+msgstr "Okunmadı olarak işaretle"
+
+#: cps/templates/detail.html:410
+#, fuzzy
+msgid "Marked as unread"
+msgstr "Okunmadı olarak işaretle"
+
+#: cps/templates/detail.html:415 cps/templates/detail.html:416
+#: cps/templates/detail.html:573 cps/templates/listenmp3.html:166
+msgid "Restore from archive"
+msgstr ""
+
+#: cps/templates/detail.html:415 cps/templates/detail.html:416
+#: cps/templates/detail.html:574 cps/templates/listenmp3.html:166
+#, fuzzy
+msgid "Add to archive"
+msgstr "Kitaplığa ekle"
+
+#: cps/templates/detail.html:417 cps/templates/listenmp3.html:167
+#, fuzzy
+msgid "Archived"
+msgstr "Ara"
+
+#: cps/templates/detail.html:418
+#, fuzzy
+msgid "Restored from archive"
+msgstr "Kitaplığa ekle"
+
+#: cps/templates/detail.html:449
+#, fuzzy
+msgid "Rating updated"
+msgstr "E-posta sunucusu ayarları güncellendi"
+
+#: cps/templates/detail.html:450
+#, fuzzy
+msgid "Rating cleared"
+msgstr "Değerlendirme"
+
+#: cps/templates/detail.html:468 cps/templates/listenmp3.html:62
+#, python-format
+msgid "Book %(index)s of %(range)s"
+msgstr ""
+
+#: cps/templates/detail.html:474
+msgid "File sizes"
+msgstr ""
+
+#: cps/templates/detail.html:518 cps/templates/listenmp3.html:111
+#, fuzzy
+msgid "Published"
+msgstr "Yayınevi"
+
+#: cps/templates/detail.html:585 cps/templates/listenmp3.html:177
+msgid "Description:"
+msgstr "Açıklama:"
+
+#: cps/templates/detail.html:598 cps/templates/listenmp3.html:190
+#: cps/templates/search.html:16
+msgid "Add to shelf"
+msgstr "Kitaplığa ekle"
+
+#: cps/templates/detail.html:610 cps/templates/detail.html:629
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
+msgid "(Public)"
+msgstr ""
+
+#: cps/templates/detail.html:652
+#, fuzzy
+msgid "Select eReader Email Addresses"
+msgstr "E-Posta adresiniz"
+
+#: cps/templates/detail.html:665
+#, fuzzy
+msgid "Choose email addresses:"
+msgstr "E-Posta adresiniz"
+
+#: cps/templates/detail.html:670
+#, fuzzy
+msgid "Select All"
+msgstr "Kitaplık oluştur"
+
+#: cps/templates/detail.html:688
+msgid "Additional email addresses:"
+msgstr ""
+
+#: cps/templates/detail.html:689
+msgid "Enter additional email addresses (separated by commas):"
+msgstr ""
+
+#: cps/templates/detail.html:690
+msgid "example@domain.com, another@domain.com"
+msgstr ""
+
+#: cps/templates/detail.html:691
+msgid "Enter one or more email addresses separated by commas"
+msgstr ""
+
+#: cps/templates/detail.html:695
+#, fuzzy
+msgid "Select format:"
+msgstr "Biçimleri Sil:"
+
+#: cps/templates/detail.html:707
+msgid "Send"
+msgstr ""
+
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
 msgstr ""
@@ -5325,13 +5453,6 @@ msgstr "Sonraki"
 
 #: cps/templates/feed.xml:83
 msgid "(Magic)"
-msgstr ""
-
-#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
-#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
-#: cps/templates/search.html:22
-msgid "(Public)"
 msgstr ""
 
 #: cps/templates/generate_kobo_auth_url.html:6
@@ -5688,49 +5809,9 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: cps/templates/listenmp3.html:62
-#, python-format
-msgid "Book %(index)s of %(range)s"
-msgstr ""
-
-#: cps/templates/listenmp3.html:111
-#, fuzzy
-msgid "Published"
-msgstr "Yayınevi"
-
-#: cps/templates/listenmp3.html:158
-msgid "Mark As Unread"
-msgstr "Okunmadı olarak işaretle"
-
-#: cps/templates/listenmp3.html:158
-msgid "Mark As Read"
-msgstr "Okundu olarak işaretle"
-
 #: cps/templates/listenmp3.html:159
 msgid "Read"
 msgstr "Okudum"
-
-#: cps/templates/listenmp3.html:166
-msgid "Restore from archive"
-msgstr ""
-
-#: cps/templates/listenmp3.html:166
-#, fuzzy
-msgid "Add to archive"
-msgstr "Kitaplığa ekle"
-
-#: cps/templates/listenmp3.html:167
-#, fuzzy
-msgid "Archived"
-msgstr "Ara"
-
-#: cps/templates/listenmp3.html:177
-msgid "Description:"
-msgstr "Açıklama:"
-
-#: cps/templates/listenmp3.html:190 cps/templates/search.html:16
-msgid "Add to shelf"
-msgstr "Kitaplığa ekle"
 
 #: cps/templates/login.html:23
 #, fuzzy
@@ -6705,22 +6786,6 @@ msgstr ""
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Seri seçimini göster"
-
-#, fuzzy
-#~ msgid "Select eReader Email Addresses"
-#~ msgstr "E-Posta adresiniz"
-
-#, fuzzy
-#~ msgid "Select All"
-#~ msgstr "Kitaplık oluştur"
-
-#, fuzzy
-#~ msgid "Select format:"
-#~ msgstr "Biçimleri Sil:"
-
-#, fuzzy
-#~ msgid "Read in Browser"
-#~ msgstr "Okunanlar"
 
 #~ msgid "Popular publications from this catalog based on Downloads."
 #~ msgstr "İndirilme sayısına göre bu katalogdaki popüler yayınlar."

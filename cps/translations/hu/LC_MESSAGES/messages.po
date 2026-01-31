@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 16:11+0100\n"
+"POT-Creation-Date: 2026-01-31 18:07+0100\n"
 "PO-Revision-Date: 2019-04-06 23:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -194,7 +194,7 @@ msgstr ""
 msgid "No Valid Book Language Given"
 msgstr "Hiányzik a könyv érvényes nyelve"
 
-#: cps/admin.py:830 cps/editbooks.py:493
+#: cps/admin.py:830 cps/editbooks.py:500
 msgid "Parameter not found"
 msgstr "Paraméter nem található"
 
@@ -398,8 +398,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Siker! A Gmail-fiók hitelesítve."
 
 #: cps/admin.py:1714 cps/admin.py:1717 cps/admin.py:2137 cps/admin.py:2348
-#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:932
-#: cps/editbooks.py:1691 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:939
+#: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2559
 #, python-format
@@ -1126,61 +1126,61 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr "Hiba történt a könyv átalakításakor: %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1128 cps/editbooks.py:1637
+#: cps/editbooks.py:305 cps/editbooks.py:1135 cps/editbooks.py:1644
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr ""
 "A(z) \"%(ext)s\" kiterjesztésű fájlok feltöltése nincs engedélyezve ezen a "
 "szerveren."
 
-#: cps/editbooks.py:310 cps/editbooks.py:1134 cps/editbooks.py:1648
+#: cps/editbooks.py:310 cps/editbooks.py:1141 cps/editbooks.py:1655
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr ""
 "A(z) \"%(ext)s\" kiterjesztésű fájlok feltöltése nincs engedélyezve ezen a "
 "szerveren."
 
-#: cps/editbooks.py:314 cps/editbooks.py:1138 cps/editbooks.py:1653
+#: cps/editbooks.py:314 cps/editbooks.py:1145 cps/editbooks.py:1660
 msgid "File to be uploaded must have an extension"
 msgstr "A feltöltendő fájlnak kiterjesztéssel kell rendelkeznie!"
 
-#: cps/editbooks.py:744 cps/editbooks.py:1314 cps/web.py:612 cps/web.py:2648
+#: cps/editbooks.py:751 cps/editbooks.py:1321 cps/web.py:612 cps/web.py:2648
 #: cps/web.py:2726 cps/web.py:2795
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
 "Hiba történt az e-könyv megnyitásakor. A fájl nem létezik vagy nem érhető el:"
 
-#: cps/editbooks.py:776 cps/editbooks.py:1721
+#: cps/editbooks.py:783 cps/editbooks.py:1728
 msgid "User has no rights to upload cover"
 msgstr "A felhasználónak nincs joga borítót feltölteni"
 
-#: cps/editbooks.py:796 cps/editbooks.py:1116
+#: cps/editbooks.py:803 cps/editbooks.py:1123
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Az azonosítók nem különböztetnek meg a kis- és nagybetűket. A régi "
 "azonosítók felülírása"
 
-#: cps/editbooks.py:808 cps/editbooks.py:1090 cps/editbooks.py:1448
+#: cps/editbooks.py:815 cps/editbooks.py:1097 cps/editbooks.py:1455
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "A(z) %(langname)s nem érvényes nyelv"
 
-#: cps/editbooks.py:919
+#: cps/editbooks.py:926
 msgid "Metadata successfully updated"
 msgstr "A metaadatok sikeresen frissültek"
 
-#: cps/editbooks.py:937
+#: cps/editbooks.py:944
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Hiba a könyv szerkesztésénél: {}"
 
-#: cps/editbooks.py:985 cps/editbooks.py:1030 cps/editbooks.py:1739
+#: cps/editbooks.py:992 cps/editbooks.py:1037 cps/editbooks.py:1746
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Ismeretlen"
 
-#: cps/editbooks.py:1034
+#: cps/editbooks.py:1041
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1188,53 +1188,53 @@ msgstr ""
 "A feltöltött könyv valószínűleg már megtalálható a könyvtárban. Fontolja meg "
 "módosítását, mielőtt újat tölt fel:"
 
-#: cps/editbooks.py:1146
+#: cps/editbooks.py:1153
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "A %(filename)s fájl nem menthető a temp könyvtárba"
 
-#: cps/editbooks.py:1166
+#: cps/editbooks.py:1173
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "A borítófájl %(file)s áthelyezése sikertelen: %(error)s"
 
-#: cps/editbooks.py:1224 cps/editbooks.py:1226
+#: cps/editbooks.py:1231 cps/editbooks.py:1233
 msgid "Book Format Successfully Deleted"
 msgstr "A könyvformátum sikeresen törölve"
 
-#: cps/editbooks.py:1233 cps/editbooks.py:1235
+#: cps/editbooks.py:1240 cps/editbooks.py:1242
 msgid "Book Successfully Deleted"
 msgstr "A könyv sikeresen törölve"
 
-#: cps/editbooks.py:1299
+#: cps/editbooks.py:1306
 msgid "You are missing permissions to delete books"
 msgstr "Nincs jogosultsága könyvek törlésére"
 
-#: cps/editbooks.py:1353
+#: cps/editbooks.py:1360
 msgid "edit metadata"
 msgstr "Metaadatok szerkesztése"
 
-#: cps/editbooks.py:1407
+#: cps/editbooks.py:1414
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "Sorozatindex: %(seriesindex)s nem érvényes szám, kihagyva"
 
-#: cps/editbooks.py:1642
+#: cps/editbooks.py:1649
 msgid "User has no rights to upload additional file formats"
 msgstr "A felhasználónak nincs joga további fájlformátumokat feltölteni"
 
-#: cps/editbooks.py:1666
+#: cps/editbooks.py:1673
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr ""
 "Nem sikerült létrehozni az elérési utat (hozzáférés megtagadva): %(path)s."
 
-#: cps/editbooks.py:1673
+#: cps/editbooks.py:1680
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Nem sikerült elmenteni a %(file)s fájlt."
 
-#: cps/editbooks.py:1698
+#: cps/editbooks.py:1705
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "A(z) %(ext)s fájlformátum hozzáadva a könyvhez: %(book)s."
@@ -1270,7 +1270,7 @@ msgstr "%(format)s nem található a Google Drive-on: %(fn)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s nem található: %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225
+#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:391
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Küldés e-olvasóra"
@@ -1777,7 +1777,8 @@ msgid "Show Publisher Section"
 msgstr "Kiadói rész megjelenítése"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/search_form.html:108 cps/web.py:1734
+#: cps/templates/detail.html:484 cps/templates/search_form.html:108
+#: cps/web.py:1734
 msgid "Languages"
 msgstr "Nyelvek"
 
@@ -2622,8 +2623,8 @@ msgstr "Rendszergazda"
 msgid "Password"
 msgstr "Jelszó"
 
-#: cps/templates/admin.html:24 cps/templates/shelf.html:8
-#: cps/templates/user_table.html:147
+#: cps/templates/admin.html:24 cps/templates/detail.html:370
+#: cps/templates/shelf.html:8 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "Letöltés"
 
@@ -2906,13 +2907,13 @@ msgstr "OK"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/duplicates.html:540
-#: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
-#: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
-#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
-#: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:94
-#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
-#: cps/templates/user_edit.html:502
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:708
+#: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
+#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
+#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
+#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:502
 msgid "Cancel"
 msgstr "Mégsem"
 
@@ -3051,7 +3052,7 @@ msgstr "Kiadás éve"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:512
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3355,7 +3356,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:282
+#: cps/templates/book_table.html:282 cps/templates/detail.html:426
 msgid "Edit Metadata"
 msgstr "Metaadatok szerkesztése"
 
@@ -5157,6 +5158,132 @@ msgstr ""
 msgid "Click to See More"
 msgstr ""
 
+#: cps/templates/detail.html:400
+msgid "Read in Browser"
+msgstr "Olvasás böngészőben"
+
+#: cps/templates/detail.html:407 cps/templates/detail.html:408
+#: cps/templates/detail.html:566 cps/templates/listenmp3.html:158
+msgid "Mark As Unread"
+msgstr "Legyen olvasatlan"
+
+#: cps/templates/detail.html:407 cps/templates/detail.html:408
+#: cps/templates/detail.html:567 cps/templates/listenmp3.html:158
+msgid "Mark As Read"
+msgstr "Legyen olvasott"
+
+#: cps/templates/detail.html:409
+#, fuzzy
+msgid "Marked as read"
+msgstr "Legyen olvasott"
+
+#: cps/templates/detail.html:410
+#, fuzzy
+msgid "Marked as unread"
+msgstr "Legyen olvasatlan"
+
+#: cps/templates/detail.html:415 cps/templates/detail.html:416
+#: cps/templates/detail.html:573 cps/templates/listenmp3.html:166
+msgid "Restore from archive"
+msgstr ""
+
+#: cps/templates/detail.html:415 cps/templates/detail.html:416
+#: cps/templates/detail.html:574 cps/templates/listenmp3.html:166
+#, fuzzy
+msgid "Add to archive"
+msgstr "Hozzáadás polchoz"
+
+#: cps/templates/detail.html:417 cps/templates/listenmp3.html:167
+#, fuzzy
+msgid "Archived"
+msgstr "Keresés"
+
+#: cps/templates/detail.html:418
+#, fuzzy
+msgid "Restored from archive"
+msgstr "Hozzáadás polchoz"
+
+#: cps/templates/detail.html:449
+#, fuzzy
+msgid "Rating updated"
+msgstr "Adatbázis beállítások frissítve"
+
+#: cps/templates/detail.html:450
+#, fuzzy
+msgid "Rating cleared"
+msgstr "Értékelés nagyob mint"
+
+#: cps/templates/detail.html:468 cps/templates/listenmp3.html:62
+#, python-format
+msgid "Book %(index)s of %(range)s"
+msgstr ""
+
+#: cps/templates/detail.html:474
+msgid "File sizes"
+msgstr ""
+
+#: cps/templates/detail.html:518 cps/templates/listenmp3.html:111
+#, fuzzy
+msgid "Published"
+msgstr "Kiadó"
+
+#: cps/templates/detail.html:585 cps/templates/listenmp3.html:177
+msgid "Description:"
+msgstr "Ismertető:"
+
+#: cps/templates/detail.html:598 cps/templates/listenmp3.html:190
+#: cps/templates/search.html:16
+msgid "Add to shelf"
+msgstr "Hozzáadás polchoz"
+
+#: cps/templates/detail.html:610 cps/templates/detail.html:629
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
+msgid "(Public)"
+msgstr ""
+
+#: cps/templates/detail.html:652
+#, fuzzy
+msgid "Select eReader Email Addresses"
+msgstr "Kindle"
+
+#: cps/templates/detail.html:665
+#, fuzzy
+msgid "Choose email addresses:"
+msgstr "Kindle"
+
+#: cps/templates/detail.html:670
+#, fuzzy
+msgid "Select All"
+msgstr "Polc készítése"
+
+#: cps/templates/detail.html:688
+msgid "Additional email addresses:"
+msgstr ""
+
+#: cps/templates/detail.html:689
+msgid "Enter additional email addresses (separated by commas):"
+msgstr ""
+
+#: cps/templates/detail.html:690
+msgid "example@domain.com, another@domain.com"
+msgstr ""
+
+#: cps/templates/detail.html:691
+msgid "Enter one or more email addresses separated by commas"
+msgstr ""
+
+#: cps/templates/detail.html:695
+#, fuzzy
+msgid "Select format:"
+msgstr "Formátumok törlése:"
+
+#: cps/templates/detail.html:707
+msgid "Send"
+msgstr ""
+
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
 msgstr ""
@@ -5405,13 +5532,6 @@ msgstr "Következő"
 
 #: cps/templates/feed.xml:83
 msgid "(Magic)"
-msgstr ""
-
-#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
-#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
-#: cps/templates/search.html:22
-msgid "(Public)"
 msgstr ""
 
 #: cps/templates/generate_kobo_auth_url.html:6
@@ -5777,49 +5897,9 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: cps/templates/listenmp3.html:62
-#, python-format
-msgid "Book %(index)s of %(range)s"
-msgstr ""
-
-#: cps/templates/listenmp3.html:111
-#, fuzzy
-msgid "Published"
-msgstr "Kiadó"
-
-#: cps/templates/listenmp3.html:158
-msgid "Mark As Unread"
-msgstr "Legyen olvasatlan"
-
-#: cps/templates/listenmp3.html:158
-msgid "Mark As Read"
-msgstr "Legyen olvasott"
-
 #: cps/templates/listenmp3.html:159
 msgid "Read"
 msgstr "Olvasva"
-
-#: cps/templates/listenmp3.html:166
-msgid "Restore from archive"
-msgstr ""
-
-#: cps/templates/listenmp3.html:166
-#, fuzzy
-msgid "Add to archive"
-msgstr "Hozzáadás polchoz"
-
-#: cps/templates/listenmp3.html:167
-#, fuzzy
-msgid "Archived"
-msgstr "Keresés"
-
-#: cps/templates/listenmp3.html:177
-msgid "Description:"
-msgstr "Ismertető:"
-
-#: cps/templates/listenmp3.html:190 cps/templates/search.html:16
-msgid "Add to shelf"
-msgstr "Hozzáadás polchoz"
 
 #: cps/templates/login.html:23
 #, fuzzy
@@ -6799,21 +6879,6 @@ msgstr ""
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Sorozat választó mutatása"
-
-#, fuzzy
-#~ msgid "Select eReader Email Addresses"
-#~ msgstr "Kindle"
-
-#, fuzzy
-#~ msgid "Select All"
-#~ msgstr "Polc készítése"
-
-#, fuzzy
-#~ msgid "Select format:"
-#~ msgstr "Formátumok törlése:"
-
-#~ msgid "Read in Browser"
-#~ msgstr "Olvasás böngészőben"
 
 #, fuzzy
 #~ msgid "Listen in Browser"

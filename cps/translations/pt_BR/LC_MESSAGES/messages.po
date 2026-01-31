@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 16:11+0100\n"
+"POT-Creation-Date: 2026-01-31 18:07+0100\n"
 "PO-Revision-Date: 2025-12-02 12:00+0000\n"
 "Last-Translator: Alex <298750+alexantao@users.noreply.github.com>\n"
 "Language-Team: pt_BR <LL@li.org>\n"
@@ -195,7 +195,7 @@ msgstr "Nenhum Idioma Válido Fornecido"
 msgid "No Valid Book Language Given"
 msgstr "Nenhum Idioma do Livro Válido Fornecido"
 
-#: cps/admin.py:830 cps/editbooks.py:493
+#: cps/admin.py:830 cps/editbooks.py:500
 msgid "Parameter not found"
 msgstr "Parâmetro não encontrado"
 
@@ -397,8 +397,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Sucesso ! Conta Gmail Verificada."
 
 #: cps/admin.py:1714 cps/admin.py:1717 cps/admin.py:2137 cps/admin.py:2348
-#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:932
-#: cps/editbooks.py:1691 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:939
+#: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2559
 #, python-format
@@ -1133,22 +1133,22 @@ msgstr "Livro enfileirado com sucesso para conversão para %(book_format)s"
 msgid "There was an error converting this book: %(res)s"
 msgstr "Ocorreu um erro ao converter este livro: %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1128 cps/editbooks.py:1637
+#: cps/editbooks.py:305 cps/editbooks.py:1135 cps/editbooks.py:1644
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Tipo do arquivo não pode ser enviada para este servidor"
 
-#: cps/editbooks.py:310 cps/editbooks.py:1134 cps/editbooks.py:1648
+#: cps/editbooks.py:310 cps/editbooks.py:1141 cps/editbooks.py:1655
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr ""
 "A extensão de arquivo '%(ext)s' não pode ser enviada para este servidor"
 
-#: cps/editbooks.py:314 cps/editbooks.py:1138 cps/editbooks.py:1653
+#: cps/editbooks.py:314 cps/editbooks.py:1145 cps/editbooks.py:1660
 msgid "File to be uploaded must have an extension"
 msgstr "O arquivo a ser carregado deve ter uma extensão"
 
-#: cps/editbooks.py:744 cps/editbooks.py:1314 cps/web.py:612 cps/web.py:2648
+#: cps/editbooks.py:751 cps/editbooks.py:1321 cps/web.py:612 cps/web.py:2648
 #: cps/web.py:2726 cps/web.py:2795
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
@@ -1156,36 +1156,36 @@ msgstr ""
 "Oops! O Livro selecionado não está disponível. O arquivo não existe ou não é "
 "acessível"
 
-#: cps/editbooks.py:776 cps/editbooks.py:1721
+#: cps/editbooks.py:783 cps/editbooks.py:1728
 msgid "User has no rights to upload cover"
 msgstr "Usuário não tem permissão para fazer upload da capa"
 
-#: cps/editbooks.py:796 cps/editbooks.py:1116
+#: cps/editbooks.py:803 cps/editbooks.py:1123
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Os identificadores não diferenciam maiúsculas de minúsculas, substituindo o "
 "identificador antigo"
 
-#: cps/editbooks.py:808 cps/editbooks.py:1090 cps/editbooks.py:1448
+#: cps/editbooks.py:815 cps/editbooks.py:1097 cps/editbooks.py:1455
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s não é um idioma válido"
 
-#: cps/editbooks.py:919
+#: cps/editbooks.py:926
 msgid "Metadata successfully updated"
 msgstr "Metadados atualizados com sucesso"
 
-#: cps/editbooks.py:937
+#: cps/editbooks.py:944
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Erro ao editar o livro: {}"
 
-#: cps/editbooks.py:985 cps/editbooks.py:1030 cps/editbooks.py:1739
+#: cps/editbooks.py:992 cps/editbooks.py:1037 cps/editbooks.py:1746
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: cps/editbooks.py:1034
+#: cps/editbooks.py:1041
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1193,53 +1193,53 @@ msgstr ""
 "O livro carregado provavelmente existe na biblioteca, considere alterar "
 "antes de carregar novo: "
 
-#: cps/editbooks.py:1146
+#: cps/editbooks.py:1153
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "O arquivo %(filename)s não pôde ser salvo no diretório temporário"
 
-#: cps/editbooks.py:1166
+#: cps/editbooks.py:1173
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Falha ao mover arquivo de capa %(file)s: %(error)s"
 
-#: cps/editbooks.py:1224 cps/editbooks.py:1226
+#: cps/editbooks.py:1231 cps/editbooks.py:1233
 msgid "Book Format Successfully Deleted"
 msgstr "Formato do Livro Apagado com Sucesso"
 
-#: cps/editbooks.py:1233 cps/editbooks.py:1235
+#: cps/editbooks.py:1240 cps/editbooks.py:1242
 msgid "Book Successfully Deleted"
 msgstr "Livro Apagado com Sucesso"
 
-#: cps/editbooks.py:1299
+#: cps/editbooks.py:1306
 msgid "You are missing permissions to delete books"
 msgstr "Você não tem permissão para apagar livros"
 
-#: cps/editbooks.py:1353
+#: cps/editbooks.py:1360
 msgid "edit metadata"
 msgstr "editar metadados"
 
-#: cps/editbooks.py:1407
+#: cps/editbooks.py:1414
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s não é um número válido, ignorando"
 
-#: cps/editbooks.py:1642
+#: cps/editbooks.py:1649
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 "Usuário não tem direitos para fazer upload de formatos de arquivo adicionais"
 
-#: cps/editbooks.py:1666
+#: cps/editbooks.py:1673
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Falha ao criar o caminho %(path)s (Permissão negada)."
 
-#: cps/editbooks.py:1673
+#: cps/editbooks.py:1680
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Falha ao armazenar o arquivo %(file)s."
 
-#: cps/editbooks.py:1698
+#: cps/editbooks.py:1705
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Formato de arquivo %(ext)s adicionado a %(book)s"
@@ -1275,7 +1275,7 @@ msgstr "%(format)s não encontrado no Google Drive: %(fn)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s não encontrado: %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225
+#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:391
 msgid "Send to eReader"
 msgstr "Enviar para E-Reader"
 
@@ -1792,7 +1792,8 @@ msgid "Show Publisher Section"
 msgstr "Mostrar seção de editoras"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/search_form.html:108 cps/web.py:1734
+#: cps/templates/detail.html:484 cps/templates/search_form.html:108
+#: cps/web.py:1734
 msgid "Languages"
 msgstr "Idiomas"
 
@@ -2632,8 +2633,8 @@ msgstr "Admin"
 msgid "Password"
 msgstr "Senha"
 
-#: cps/templates/admin.html:24 cps/templates/shelf.html:8
-#: cps/templates/user_table.html:147
+#: cps/templates/admin.html:24 cps/templates/detail.html:370
+#: cps/templates/shelf.html:8 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "Baixar"
 
@@ -2912,13 +2913,13 @@ msgstr "Ok"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/duplicates.html:540
-#: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
-#: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
-#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
-#: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:94
-#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
-#: cps/templates/user_edit.html:502
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:708
+#: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
+#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
+#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
+#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:502
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -3056,7 +3057,7 @@ msgstr "Data de Publicação"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:512
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3350,7 +3351,7 @@ msgstr "Os seguintes livros serão marcados como lidos:"
 msgid "The following books will be marked unread:"
 msgstr "Os seguintes livros serão marcados como não lidos:"
 
-#: cps/templates/book_table.html:282
+#: cps/templates/book_table.html:282 cps/templates/detail.html:426
 msgid "Edit Metadata"
 msgstr "Editar Metadados"
 
@@ -5269,6 +5270,131 @@ msgstr ""
 msgid "Click to See More"
 msgstr "Clique para Ver Mais"
 
+#: cps/templates/detail.html:400
+msgid "Read in Browser"
+msgstr "Ler no Browser"
+
+#: cps/templates/detail.html:407 cps/templates/detail.html:408
+#: cps/templates/detail.html:566 cps/templates/listenmp3.html:158
+msgid "Mark As Unread"
+msgstr "Marcar como Não Lido"
+
+#: cps/templates/detail.html:407 cps/templates/detail.html:408
+#: cps/templates/detail.html:567 cps/templates/listenmp3.html:158
+msgid "Mark As Read"
+msgstr "Marcar como Lido"
+
+#: cps/templates/detail.html:409
+#, fuzzy
+msgid "Marked as read"
+msgstr "Marcar como Lido"
+
+#: cps/templates/detail.html:410
+#, fuzzy
+msgid "Marked as unread"
+msgstr "Marcar como Não Lido"
+
+#: cps/templates/detail.html:415 cps/templates/detail.html:416
+#: cps/templates/detail.html:573 cps/templates/listenmp3.html:166
+msgid "Restore from archive"
+msgstr "Desarquivar"
+
+#: cps/templates/detail.html:415 cps/templates/detail.html:416
+#: cps/templates/detail.html:574 cps/templates/listenmp3.html:166
+msgid "Add to archive"
+msgstr "Arquivar"
+
+#: cps/templates/detail.html:417 cps/templates/listenmp3.html:167
+msgid "Archived"
+msgstr "Arquivado"
+
+#: cps/templates/detail.html:418
+#, fuzzy
+msgid "Restored from archive"
+msgstr "Desarquivar"
+
+#: cps/templates/detail.html:449
+#, fuzzy
+msgid "Rating updated"
+msgstr "Configurações do Banco de Dados Atualizada"
+
+#: cps/templates/detail.html:450
+#, fuzzy
+msgid "Rating cleared"
+msgstr "Avaliação Acima"
+
+#: cps/templates/detail.html:468 cps/templates/listenmp3.html:62
+#, python-format
+msgid "Book %(index)s of %(range)s"
+msgstr "Livro %(index)s de %(range)s"
+
+#: cps/templates/detail.html:474
+#, fuzzy
+msgid "File sizes"
+msgstr "Tamanhos das Fonte"
+
+#: cps/templates/detail.html:518 cps/templates/listenmp3.html:111
+msgid "Published"
+msgstr "Publicado em"
+
+#: cps/templates/detail.html:585 cps/templates/listenmp3.html:177
+msgid "Description:"
+msgstr "Descrição:"
+
+#: cps/templates/detail.html:598 cps/templates/listenmp3.html:190
+#: cps/templates/search.html:16
+msgid "Add to shelf"
+msgstr "Adicionar à estante"
+
+#: cps/templates/detail.html:610 cps/templates/detail.html:629
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
+msgid "(Public)"
+msgstr "(Público)"
+
+#: cps/templates/detail.html:652
+#, fuzzy
+msgid "Select eReader Email Addresses"
+msgstr "Selecione o endereço de e-mail do E-Reader"
+
+#: cps/templates/detail.html:665
+msgid "Choose email addresses:"
+msgstr "Escolha o endereço de email:"
+
+#: cps/templates/detail.html:670
+#, fuzzy
+msgid "Select All"
+msgstr "Selecione Todos"
+
+#: cps/templates/detail.html:688
+#, fuzzy
+msgid "Additional email addresses:"
+msgstr "Escolha o endereço de email:"
+
+#: cps/templates/detail.html:689
+#, fuzzy
+msgid "Enter additional email addresses (separated by commas):"
+msgstr "Escolha o endereço de email:"
+
+#: cps/templates/detail.html:690
+msgid "example@domain.com, another@domain.com"
+msgstr ""
+
+#: cps/templates/detail.html:691
+msgid "Enter one or more email addresses separated by commas"
+msgstr ""
+
+#: cps/templates/detail.html:695
+#, fuzzy
+msgid "Select format:"
+msgstr "Selecionar formatos:"
+
+#: cps/templates/detail.html:707
+msgid "Send"
+msgstr "Enviar"
+
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
 msgstr "Gerenciador de Duplicatas do CWA"
@@ -5521,13 +5647,6 @@ msgstr "Próximo"
 #: cps/templates/feed.xml:83
 msgid "(Magic)"
 msgstr ""
-
-#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
-#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
-#: cps/templates/search.html:22
-msgid "(Public)"
-msgstr "(Público)"
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""
@@ -5893,46 +6012,9 @@ msgstr "Filtrar por iniciais"
 msgid "Grid"
 msgstr "Grade"
 
-#: cps/templates/listenmp3.html:62
-#, python-format
-msgid "Book %(index)s of %(range)s"
-msgstr "Livro %(index)s de %(range)s"
-
-#: cps/templates/listenmp3.html:111
-msgid "Published"
-msgstr "Publicado em"
-
-#: cps/templates/listenmp3.html:158
-msgid "Mark As Unread"
-msgstr "Marcar como Não Lido"
-
-#: cps/templates/listenmp3.html:158
-msgid "Mark As Read"
-msgstr "Marcar como Lido"
-
 #: cps/templates/listenmp3.html:159
 msgid "Read"
 msgstr "Lido"
-
-#: cps/templates/listenmp3.html:166
-msgid "Restore from archive"
-msgstr "Desarquivar"
-
-#: cps/templates/listenmp3.html:166
-msgid "Add to archive"
-msgstr "Arquivar"
-
-#: cps/templates/listenmp3.html:167
-msgid "Archived"
-msgstr "Arquivado"
-
-#: cps/templates/listenmp3.html:177
-msgid "Description:"
-msgstr "Descrição:"
-
-#: cps/templates/listenmp3.html:190 cps/templates/search.html:16
-msgid "Add to shelf"
-msgstr "Adicionar à estante"
 
 #: cps/templates/login.html:23
 #, fuzzy
@@ -6899,37 +6981,8 @@ msgstr "Sincronizar Estantes Selecionadas com Kobo"
 msgid "Show Read/Unread Section"
 msgstr "Mostrar seção de lidos/não lidos"
 
-#, fuzzy
-#~ msgid "Select eReader Email Addresses"
-#~ msgstr "Selecione o endereço de e-mail do E-Reader"
-
-#~ msgid "Choose email addresses:"
-#~ msgstr "Escolha o endereço de email:"
-
-#, fuzzy
-#~ msgid "Select All"
-#~ msgstr "Selecione Todos"
-
-#, fuzzy
-#~ msgid "Additional email addresses:"
-#~ msgstr "Escolha o endereço de email:"
-
-#, fuzzy
-#~ msgid "Select format:"
-#~ msgstr "Selecionar formatos:"
-
-#~ msgid "Send"
-#~ msgstr "Enviar"
-
-#~ msgid "Read in Browser"
-#~ msgstr "Ler no Browser"
-
 #~ msgid "Listen in Browser"
 #~ msgstr "Ouvir no Browser"
-
-#, fuzzy
-#~ msgid "File sizes"
-#~ msgstr "Tamanhos das Fonte"
 
 #~ msgid "Alphabetical Books"
 #~ msgstr "Livros Alfabéticos"

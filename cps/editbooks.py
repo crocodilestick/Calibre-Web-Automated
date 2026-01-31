@@ -466,6 +466,13 @@ def edit_book_param(param, vals):
                 ret = Response(json.dumps({'success': False,
                                            'msg': rename_error}),
                                mimetype='application/json')
+        elif param == 'rating':
+            rating_changed = edit_book_ratings({'rating': vals.get('value', '')}, book)
+            ret = Response(json.dumps({'success': True, 'newValue': vals.get('value', '')}),
+                           mimetype='application/json')
+            metadata_changed = rating_changed
+            log_key = 'rating'
+            log_value = vals.get('value', '')
         elif param == 'is_archived':
             is_archived = change_archived_books(book.id, vals['value'] == "True",
                                                 message="Book {} archive bit set to: {}".format(book.id, vals['value']))

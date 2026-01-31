@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 16:11+0100\n"
+"POT-Creation-Date: 2026-01-31 18:07+0100\n"
 "PO-Revision-Date: 2025-06-07 14:44+0300\n"
 "Last-Translator: UsamaFoad <usamafoad@gmail.com>\n"
 "Language-Team: \n"
@@ -191,7 +191,7 @@ msgstr "لم يتم تحديد موقع صالح"
 msgid "No Valid Book Language Given"
 msgstr "لم يتم تقديم لغة الكتاب الصالحة"
 
-#: cps/admin.py:830 cps/editbooks.py:493
+#: cps/admin.py:830 cps/editbooks.py:500
 msgid "Parameter not found"
 msgstr "لم يتم العثور على المُتغير"
 
@@ -382,8 +382,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "تم التحقق بنجاح! تم التحقق من حساب Gmail."
 
 #: cps/admin.py:1714 cps/admin.py:1717 cps/admin.py:2137 cps/admin.py:2348
-#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:932
-#: cps/editbooks.py:1691 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:939
+#: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2559
 #, python-format
@@ -1103,53 +1103,53 @@ msgstr "تم وضع الكتاب في قائمة الانتظار بنجاح ل�
 msgid "There was an error converting this book: %(res)s"
 msgstr "حدث خطأ أثناء تحويل هذا الكتاب: %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1128 cps/editbooks.py:1637
+#: cps/editbooks.py:305 cps/editbooks.py:1135 cps/editbooks.py:1644
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "لا يُسمح بتحميل نوع الملف إلى هذا الخادم"
 
-#: cps/editbooks.py:310 cps/editbooks.py:1134 cps/editbooks.py:1648
+#: cps/editbooks.py:310 cps/editbooks.py:1141 cps/editbooks.py:1655
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "لا يُسمح بتحميل ملحق الملف '%(ext)s' إلى هذا الخادم"
 
-#: cps/editbooks.py:314 cps/editbooks.py:1138 cps/editbooks.py:1653
+#: cps/editbooks.py:314 cps/editbooks.py:1145 cps/editbooks.py:1660
 msgid "File to be uploaded must have an extension"
 msgstr "يجب أن يكون للملف المراد تحميله امتداد"
 
-#: cps/editbooks.py:744 cps/editbooks.py:1314 cps/web.py:612 cps/web.py:2648
+#: cps/editbooks.py:751 cps/editbooks.py:1321 cps/web.py:612 cps/web.py:2648
 #: cps/web.py:2726 cps/web.py:2795
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "عفواً! الكتاب المحدد غير متوفر. الملف غير موجود أو غير قابل للوصول"
 
-#: cps/editbooks.py:776 cps/editbooks.py:1721
+#: cps/editbooks.py:783 cps/editbooks.py:1728
 msgid "User has no rights to upload cover"
 msgstr "ليس لدى المستخدم الحق في تحميل الغلاف"
 
-#: cps/editbooks.py:796 cps/editbooks.py:1116
+#: cps/editbooks.py:803 cps/editbooks.py:1123
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "المعرفات ليست حساسة لحالة الأحرف، مما يؤدي إلى استبدال المعرف القديم"
 
-#: cps/editbooks.py:808 cps/editbooks.py:1090 cps/editbooks.py:1448
+#: cps/editbooks.py:815 cps/editbooks.py:1097 cps/editbooks.py:1455
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' ليست لغة صالحة"
 
-#: cps/editbooks.py:919
+#: cps/editbooks.py:926
 msgid "Metadata successfully updated"
 msgstr "تم تحديث البيانات الوصفية بنجاح"
 
-#: cps/editbooks.py:937
+#: cps/editbooks.py:944
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "خطأ في تحرير الكتاب: {}"
 
-#: cps/editbooks.py:985 cps/editbooks.py:1030 cps/editbooks.py:1739
+#: cps/editbooks.py:992 cps/editbooks.py:1037 cps/editbooks.py:1746
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "غير معروف"
 
-#: cps/editbooks.py:1034
+#: cps/editbooks.py:1041
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1157,52 +1157,52 @@ msgstr ""
 "من المحتمل أن يكون الكتاب الذي تم تحميله موجودًا في المكتبة، لذا فكر في "
 "التغيير قبل تحميل كتاب جديد: "
 
-#: cps/editbooks.py:1146
+#: cps/editbooks.py:1153
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "لم يتم حفظ الملف %(filename)s في الدليل المؤقت"
 
-#: cps/editbooks.py:1166
+#: cps/editbooks.py:1173
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "فشل نقل ملف الغلاف %(file)s: %(error)s"
 
-#: cps/editbooks.py:1224 cps/editbooks.py:1226
+#: cps/editbooks.py:1231 cps/editbooks.py:1233
 msgid "Book Format Successfully Deleted"
 msgstr "تم حذف تنسيق الكتاب بنجاح"
 
-#: cps/editbooks.py:1233 cps/editbooks.py:1235
+#: cps/editbooks.py:1240 cps/editbooks.py:1242
 msgid "Book Successfully Deleted"
 msgstr "تم حذف الكتاب بنجاح"
 
-#: cps/editbooks.py:1299
+#: cps/editbooks.py:1306
 msgid "You are missing permissions to delete books"
 msgstr "أنت تفتقد الأذونات اللازمة لحذف الكتب"
 
-#: cps/editbooks.py:1353
+#: cps/editbooks.py:1360
 msgid "edit metadata"
 msgstr "تحرير البيانات الوصفية"
 
-#: cps/editbooks.py:1407
+#: cps/editbooks.py:1414
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "مؤشر السلسلة: %(seriesindex)s ليس رقمًا صالحًا، تخطي"
 
-#: cps/editbooks.py:1642
+#: cps/editbooks.py:1649
 msgid "User has no rights to upload additional file formats"
 msgstr "ليس للمستخدم الحق في تحميل تنسيقات ملفات إضافية"
 
-#: cps/editbooks.py:1666
+#: cps/editbooks.py:1673
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "فشل إنشاء المسار %(path)s (تم رفض الإذن)."
 
-#: cps/editbooks.py:1673
+#: cps/editbooks.py:1680
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "فشل تخزين الملف %(file)s."
 
-#: cps/editbooks.py:1698
+#: cps/editbooks.py:1705
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "تمت إضافة تنسيق الملف %(ext)s إلى %(book)s"
@@ -1237,7 +1237,7 @@ msgstr "لم يتم العثور على %(format)s على Google Drive: %(fn)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "لم يتم العثور على %(format)s: %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225
+#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:391
 msgid "Send to eReader"
 msgstr "إرسال إلى القارئ الإلكتروني"
 
@@ -1731,7 +1731,8 @@ msgid "Show Publisher Section"
 msgstr "عرض قسم الناشرين"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/search_form.html:108 cps/web.py:1734
+#: cps/templates/detail.html:484 cps/templates/search_form.html:108
+#: cps/web.py:1734
 msgid "Languages"
 msgstr "اللغات"
 
@@ -2537,8 +2538,8 @@ msgstr "المسؤول"
 msgid "Password"
 msgstr "كلمة المرور"
 
-#: cps/templates/admin.html:24 cps/templates/shelf.html:8
-#: cps/templates/user_table.html:147
+#: cps/templates/admin.html:24 cps/templates/detail.html:370
+#: cps/templates/shelf.html:8 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "تنزيل"
 
@@ -2814,13 +2815,13 @@ msgstr "موافق"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/duplicates.html:540
-#: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
-#: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
-#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
-#: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:94
-#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
-#: cps/templates/user_edit.html:502
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:708
+#: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
+#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
+#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
+#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:502
 msgid "Cancel"
 msgstr "إلغاء"
 
@@ -2957,7 +2958,7 @@ msgstr "تاريخ النشر"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:512
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3248,7 +3249,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:282
+#: cps/templates/book_table.html:282 cps/templates/detail.html:426
 msgid "Edit Metadata"
 msgstr "تحرير البيانات الوصفية"
 
@@ -5037,6 +5038,130 @@ msgstr ""
 msgid "Click to See More"
 msgstr ""
 
+#: cps/templates/detail.html:400
+msgid "Read in Browser"
+msgstr "قراءة في المتصفح"
+
+#: cps/templates/detail.html:407 cps/templates/detail.html:408
+#: cps/templates/detail.html:566 cps/templates/listenmp3.html:158
+msgid "Mark As Unread"
+msgstr "وضع علامة كـ غير مقروء"
+
+#: cps/templates/detail.html:407 cps/templates/detail.html:408
+#: cps/templates/detail.html:567 cps/templates/listenmp3.html:158
+msgid "Mark As Read"
+msgstr "وضع علامة كـ مقروء"
+
+#: cps/templates/detail.html:409
+#, fuzzy
+msgid "Marked as read"
+msgstr "وضع علامة كـ غير مقروء"
+
+#: cps/templates/detail.html:410
+#, fuzzy
+msgid "Marked as unread"
+msgstr "وضع علامة كـ غير مقروء"
+
+#: cps/templates/detail.html:415 cps/templates/detail.html:416
+#: cps/templates/detail.html:573 cps/templates/listenmp3.html:166
+msgid "Restore from archive"
+msgstr "استعادة من الأرشيف"
+
+#: cps/templates/detail.html:415 cps/templates/detail.html:416
+#: cps/templates/detail.html:574 cps/templates/listenmp3.html:166
+msgid "Add to archive"
+msgstr "إضافة إلى الأرشيف"
+
+#: cps/templates/detail.html:417 cps/templates/listenmp3.html:167
+msgid "Archived"
+msgstr "مؤرشف"
+
+#: cps/templates/detail.html:418
+#, fuzzy
+msgid "Restored from archive"
+msgstr "استعادة من الأرشيف"
+
+#: cps/templates/detail.html:449
+#, fuzzy
+msgid "Rating updated"
+msgstr "تم تحديث إعدادات قاعدة البيانات"
+
+#: cps/templates/detail.html:450
+#, fuzzy
+msgid "Rating cleared"
+msgstr "التقييم أعلى من"
+
+#: cps/templates/detail.html:468 cps/templates/listenmp3.html:62
+#, python-format
+msgid "Book %(index)s of %(range)s"
+msgstr "كتاب %(index)s من %(range)s"
+
+#: cps/templates/detail.html:474
+#, fuzzy
+msgid "File sizes"
+msgstr "أحجام الخطوط"
+
+#: cps/templates/detail.html:518 cps/templates/listenmp3.html:111
+msgid "Published"
+msgstr "تاريخ النشر"
+
+#: cps/templates/detail.html:585 cps/templates/listenmp3.html:177
+msgid "Description:"
+msgstr "الوصف:"
+
+#: cps/templates/detail.html:598 cps/templates/listenmp3.html:190
+#: cps/templates/search.html:16
+msgid "Add to shelf"
+msgstr "إضافة إلى الرف"
+
+#: cps/templates/detail.html:610 cps/templates/detail.html:629
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
+msgid "(Public)"
+msgstr "(عام)"
+
+#: cps/templates/detail.html:652
+#, fuzzy
+msgid "Select eReader Email Addresses"
+msgstr "إرسال إلى بريد قارئ الكتب الإلكترونية"
+
+#: cps/templates/detail.html:665
+#, fuzzy
+msgid "Choose email addresses:"
+msgstr "إرسال إلى بريد قارئ الكتب الإلكترونية"
+
+#: cps/templates/detail.html:670
+#, fuzzy
+msgid "Select All"
+msgstr "تحديد"
+
+#: cps/templates/detail.html:688
+msgid "Additional email addresses:"
+msgstr ""
+
+#: cps/templates/detail.html:689
+msgid "Enter additional email addresses (separated by commas):"
+msgstr ""
+
+#: cps/templates/detail.html:690
+msgid "example@domain.com, another@domain.com"
+msgstr ""
+
+#: cps/templates/detail.html:691
+msgid "Enter one or more email addresses separated by commas"
+msgstr ""
+
+#: cps/templates/detail.html:695
+#, fuzzy
+msgid "Select format:"
+msgstr "حذف التنسيقات:"
+
+#: cps/templates/detail.html:707
+msgid "Send"
+msgstr ""
+
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
 msgstr ""
@@ -5279,13 +5404,6 @@ msgstr "التالي"
 #: cps/templates/feed.xml:83
 msgid "(Magic)"
 msgstr ""
-
-#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
-#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
-#: cps/templates/search.html:22
-msgid "(Public)"
-msgstr "(عام)"
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""
@@ -5643,46 +5761,9 @@ msgstr ""
 msgid "Grid"
 msgstr "شبكة"
 
-#: cps/templates/listenmp3.html:62
-#, python-format
-msgid "Book %(index)s of %(range)s"
-msgstr "كتاب %(index)s من %(range)s"
-
-#: cps/templates/listenmp3.html:111
-msgid "Published"
-msgstr "تاريخ النشر"
-
-#: cps/templates/listenmp3.html:158
-msgid "Mark As Unread"
-msgstr "وضع علامة كـ غير مقروء"
-
-#: cps/templates/listenmp3.html:158
-msgid "Mark As Read"
-msgstr "وضع علامة كـ مقروء"
-
 #: cps/templates/listenmp3.html:159
 msgid "Read"
 msgstr "قراءة"
-
-#: cps/templates/listenmp3.html:166
-msgid "Restore from archive"
-msgstr "استعادة من الأرشيف"
-
-#: cps/templates/listenmp3.html:166
-msgid "Add to archive"
-msgstr "إضافة إلى الأرشيف"
-
-#: cps/templates/listenmp3.html:167
-msgid "Archived"
-msgstr "مؤرشف"
-
-#: cps/templates/listenmp3.html:177
-msgid "Description:"
-msgstr "الوصف:"
-
-#: cps/templates/listenmp3.html:190 cps/templates/search.html:16
-msgid "Add to shelf"
-msgstr "إضافة إلى الرف"
 
 #: cps/templates/login.html:23
 #, fuzzy
@@ -6616,27 +6697,8 @@ msgstr "مزامنة الرفوف المختارة مع Kobo"
 msgid "Show Read/Unread Section"
 msgstr "إظهار قسم المقروء/غير المقروء"
 
-#, fuzzy
-#~ msgid "Select eReader Email Addresses"
-#~ msgstr "إرسال إلى بريد قارئ الكتب الإلكترونية"
-
-#, fuzzy
-#~ msgid "Select All"
-#~ msgstr "تحديد"
-
-#, fuzzy
-#~ msgid "Select format:"
-#~ msgstr "حذف التنسيقات:"
-
-#~ msgid "Read in Browser"
-#~ msgstr "قراءة في المتصفح"
-
 #~ msgid "Listen in Browser"
 #~ msgstr "استماع في المتصفح"
-
-#, fuzzy
-#~ msgid "File sizes"
-#~ msgstr "أحجام الخطوط"
 
 #~ msgid "Alphabetical Books"
 #~ msgstr "الكتب الأبجدية"

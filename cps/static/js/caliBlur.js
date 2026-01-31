@@ -52,6 +52,9 @@ setTimeout(function () {
 
 // Wrap book description in div container
 if ($("body.book").length > 0) {
+    // New card-based detail layout should not be mutated by legacy DOM rewrites
+    var isNewDetailLayout = $(".book-detail-card").length > 0;
+    if (!isNewDetailLayout) {
 
     description = $(".comments");
     bookInfo = $(".author").nextUntil("#decription");
@@ -81,6 +84,7 @@ if ($("body.book").length > 0) {
     $(".rating").insertBefore(".hr");
     $("#remove-from-shelves").insertAfter(".hr");
     $(description).appendTo(".bookinfo")
+    }
 
     // Sexy blurred backgrounds (desktop always; mobile only if allow-mobile-blur class present)
     if ( $(window).width() >= 768 || $('body').hasClass('allow-mobile-blur') ) {
@@ -95,21 +99,23 @@ if ($("body.book").length > 0) {
     }
 
     // Metadata Fields - Publishers, Published, Languages and Custom
-    $('.publishers, .publishing-date, .real_custom_columns, .languages').each(function () {
-        var splitText = $(this).text().split(':');
-        var label = splitText.shift().trim();
-        var value = splitText.join(':').trim();
-        var class_value = ""
-        // Preserve Links
-        if ($(this).find('a').length) {
-            value = $(this).find('a').first().removeClass();
-        }
-        // Preserve glyphicons
-        if ($(this).find('span').length) {
-            class_value = $(this).find('span').first().attr('class');
-        }
-        $(this).html('<span>' + label + '</span><span class="' + class_value + '"></span>').find('span').last().append(value);
-    });
+    if (!isNewDetailLayout) {
+        $('.publishers, .publishing-date, .real_custom_columns, .languages').each(function () {
+            var splitText = $(this).text().split(':');
+            var label = splitText.shift().trim();
+            var value = splitText.join(':').trim();
+            var class_value = ""
+            // Preserve Links
+            if ($(this).find('a').length) {
+                value = $(this).find('a').first().removeClass();
+            }
+            // Preserve glyphicons
+            if ($(this).find('span').length) {
+                class_value = $(this).find('span').first().attr('class');
+            }
+            $(this).html('<span>' + label + '</span><span class="' + class_value + '"></span>').find('span').last().append(value);
+        });
+    }
 
     $(".book-meta h2:first").clone()
         .prependTo(".book-meta > .btn-toolbar:first");

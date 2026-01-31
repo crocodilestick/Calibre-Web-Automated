@@ -51,16 +51,18 @@ class IBDb(Metadata):
                 log.warning(e)
                 return []
             for result in results.json().get("books", []):
-                val.append(
-                    self._parse_search_result(
-                        result=result, generic_cover=generic_cover, locale=locale
-                    )
+                match = self._parse_search_result(
+                    result=result, generic_cover=generic_cover, locale=locale
                 )
+                if match:
+                    val.append(match)
         return val
 
     def _parse_search_result(
         self, result: Dict, generic_cover: str, locale: str
-    ) -> MetaRecord:
+    ) -> Optional[MetaRecord]:
+        if not result.get("id") or not result.get("title"):
+            return None
         match = MetaRecord(
             id=result["id"],
             title=result["title"],

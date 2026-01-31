@@ -113,7 +113,7 @@ class LubimyCzytac(Metadata):
                 result.raise_for_status()
             except Exception as e:
                 log.warning(e)
-                return None
+                return []
             root = fromstring(result.text)
             lc_parser = LubimyCzytacParser(root=root, metadata=self)
             matches = lc_parser.parse_search_results()

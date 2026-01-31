@@ -137,10 +137,16 @@ def metadata_change_active_provider(prov_name):
         global_enabled = _get_global_provider_enabled_map()
         if provider is not None:
             if bool(global_enabled.get(provider.__id__, True)):
-                data = provider.search(new_state.get("query", ""))
+                try:
+                    data = provider.search(new_state.get("query", ""))
+                except Exception as exc:
+                    log.warning("Metadata provider %s failed: %s", provider.__class__.__name__, exc)
+                    data = []
             else:
                 data = []
-        return make_response(jsonify([asdict(x) for x in data]))
+        if not data:
+            return make_response(jsonify([]))
+        return make_response(jsonify([asdict(x) for x in data if x]))
     return ""
 
 
@@ -162,5 +168,14 @@ def metadata_search():
                 if active.get(c.__id__, True) and bool(global_enabled.get(c.__id__, True))
             }
             for future in concurrent.futures.as_completed(meta):
-                data.extend([asdict(x) for x in future.result() if x])
+                try:
+                    result = future.result()
+                except Exception as exc:
+                    provider = meta.get(future)
+                    provider_name = provider.__class__.__name__ if provider else "Unknown"
+                    log.warning("Metadata provider %s failed: %s", provider_name, exc)
+                    continue
+                if not result:
+                    continue
+                data.extend([asdict(x) for x in result if x])
     return  make_response(jsonify(data))

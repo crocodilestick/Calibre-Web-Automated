@@ -49,16 +49,21 @@ class google_scholar(Metadata):
                 match = self._parse_search_result(
                     result=result, generic_cover="", locale=locale
                 )
-                val.append(match)
+                if match:
+                    val.append(match)
         return val
 
     def _parse_search_result(
         self, result: Dict, generic_cover: str, locale: str
-    ) -> MetaRecord:
+    ) -> Optional[MetaRecord]:
+        bib = result.get("bib", {}) if isinstance(result, dict) else {}
+        title = bib.get("title") or ""
+        if not title:
+            return None
         match = MetaRecord(
             id=result.get("pub_url", result.get("eprint_url", "")),
-            title=result["bib"].get("title"),
-            authors=result["bib"].get("author", []),
+            title=title,
+            authors=bib.get("author", []) or [],
             url=result.get("pub_url", result.get("eprint_url", "")),
             source=MetaSourceInfo(
                 id=self.__id__, description=self.__name__, link=self.META_URL
@@ -66,8 +71,9 @@ class google_scholar(Metadata):
         )
 
         match.cover = result.get("image", {}).get("original_url", generic_cover)
-        match.description = unquote(result["bib"].get("abstract", ""))
-        match.publisher = result["bib"].get("venue", "")
-        match.publishedDate = result["bib"].get("pub_year") + "-01-01"
+        match.description = unquote(bib.get("abstract", "") or "")
+        match.publisher = bib.get("venue", "") or ""
+        pub_year = bib.get("pub_year")
+        match.publishedDate = f"{pub_year}-01-01" if pub_year else ""
         match.identifiers = {"scholar": match.id}
         return match

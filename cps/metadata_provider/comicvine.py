@@ -47,8 +47,8 @@ class ComicVine(Metadata):
                 result.raise_for_status()
             except Exception as e:
                 log.warning(e)
-                return None
-            for result in result.json()["results"]:
+                return []
+            for result in result.json().get("results", []):
                 match = self._parse_search_result(
                     result=result, generic_cover=generic_cover, locale=locale
                 )

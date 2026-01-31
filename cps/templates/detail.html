@@ -22,7 +22,7 @@
         }
 
         .book-detail-card {
-            width: min(1400px, 100%);
+            width: min(1500px, 100%);
             background: rgba(0, 0, 0, 0.20);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 18px;
@@ -115,6 +115,65 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.12);
             font-size: 0.85em;
+        }
+
+        .meta-pill.tag-pill {
+            position: relative;
+            padding-right: 20px;
+        }
+
+        .meta-pill.tag-pill::after {
+            content: "•";
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 12px;
+            line-height: 1;
+        }
+
+        .meta-pill.tag-pill:hover::after {
+            opacity: 0;
+        }
+
+        .tag-remove {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            line-height: 1;
+            padding: 0 2px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .meta-pill.tag-pill:hover .tag-remove {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+        }
+
+        .meta-pill.tag-pill:hover .tag-remove {
+            display: inline-flex;
+        }
+
+        .tag-add {
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .tag-add-input {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font: inherit;
+            outline: none;
+            width: 140px;
+            min-width: 80px;
         }
 
         .meta-pill.uuid-copy {
@@ -614,13 +673,28 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
-                            {% if entry.tags|length > 0 %}
-                                <div class="tags meta-chip">
+                            {% if entry.tags|length > 0 or (current_user.role_edit() and not current_user.is_anonymous) %}
+                                <div class="tags meta-chip" id="detail-tags"
+                                     data-book-id="{{ entry.id }}"
+                                     data-update-url="{{ url_for('edit-book.edit_list_book', param='tags') }}">
                                     <span class="glyphicon glyphicon-tags"></span>
                                     {% for tag in entry.tags %}
-                                        <a href="{{ url_for('web.books_list', data='category', sort_param='stored', book_id=tag.id) }}"
-                                           class="meta-pill meta-link" role="button">{{ tag.name }}</a>
+                                        {% if current_user.role_edit() and not current_user.is_anonymous %}
+                                            <a href="{{ url_for('web.books_list', data='category', sort_param='stored', book_id=tag.id) }}"
+                                               class="meta-pill meta-link tag-pill" role="button" data-tag="{{ tag.name }}">
+                                                <span class="tag-label">{{ tag.name }}</span>
+                                                <button type="button" class="tag-remove" aria-label="{{ _('Remove tag') }}">&times;</button>
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ url_for('web.books_list', data='category', sort_param='stored', book_id=tag.id) }}"
+                                               class="meta-pill meta-link" role="button">{{ tag.name }}</a>
+                                        {% endif %}
                                     {% endfor %}
+                                    {% if current_user.role_edit() and not current_user.is_anonymous %}
+                                        <button type="button" class="meta-pill tag-add" id="add-tag-pill" data-label="{{ _('Add tag') }}">
+                                            + {{ _('Add tag') }}
+                                        </button>
+                                    {% endif %}
                                 </div>
                             {% endif %}
                             {% if entry.publishers|length > 0 %}
@@ -952,6 +1026,122 @@
                 showError();
             }
             $temp.remove();
+        });
+
+        var $tagsContainer = $("#detail-tags");
+        function getCurrentTags() {
+            return $tagsContainer.find(".tag-pill").map(function () {
+                return $(this).data("tag");
+            }).get().filter(function (tag) {
+                return tag && tag.trim().length > 0;
+            });
+        }
+
+        function updateTags(tags) {
+            if (!$tagsContainer.length) {
+                return;
+            }
+            $.ajax({
+                url: $tagsContainer.data("update-url"),
+                method: "post",
+                data: {
+                    pk: $tagsContainer.data("book-id"),
+                    value: tags.join(",")
+                }
+            }).done(function () {
+                window.location.reload();
+            }).fail(function (xhr) {
+                showActionToast(xhr.responseText || "{{ _('Failed to update tags') }}", $tagsContainer[0]);
+            });
+        }
+
+        $(document).on("click", ".tag-remove", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $pill = $(this).closest(".tag-pill");
+            var tagToRemove = $pill.data("tag");
+            var tags = getCurrentTags().filter(function (tag) {
+                return tag !== tagToRemove;
+            });
+            updateTags(tags);
+        });
+
+        $("#add-tag-pill").on("click", function (e) {
+            e.preventDefault();
+            var $pill = $(this);
+            if ($pill.data("editing")) {
+                $pill.find("input").focus();
+                return;
+            }
+            var label = $pill.data("label") || "{{ _('Add tag') }}";
+            var finalized = false;
+
+            function restorePill() {
+                $pill.text("+ " + label);
+                $pill.data("editing", false);
+            }
+
+            function submitTags(rawValue) {
+                if (finalized) {
+                    return;
+                }
+                finalized = true;
+                var additions = rawValue.split(",").map(function (tag) {
+                    return tag.trim();
+                }).filter(function (tag) {
+                    return tag.length > 0;
+                });
+                if (!additions.length) {
+                    restorePill();
+                    return;
+                }
+                var existing = getCurrentTags();
+                var merged = existing.slice();
+                additions.forEach(function (tag) {
+                    if (merged.indexOf(tag) === -1) {
+                        merged.push(tag);
+                    }
+                });
+                restorePill();
+                updateTags(merged);
+            }
+
+            function cancelEdit() {
+                if (finalized) {
+                    return;
+                }
+                finalized = true;
+                restorePill();
+            }
+
+            var $input = $("<input>", {
+                type: "text",
+                "class": "tag-add-input",
+                "aria-label": label
+            });
+
+            $pill.data("editing", true);
+            $pill.empty().append($input);
+            $input.trigger("focus");
+
+            $input.on("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    submitTags($input.val());
+                    return;
+                }
+                if (event.key === "Escape") {
+                    event.preventDefault();
+                    cancelEdit();
+                }
+            });
+
+            $input.on("blur", function () {
+                if (finalized) {
+                    return;
+                }
+                submitTags($input.val());
+            });
         });
     });
 </script>

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-30 22:02+0100\n"
+"POT-Creation-Date: 2026-01-31 11:53+0100\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -1514,26 +1514,26 @@ msgid ""
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:316 cps/oauth_bb.py:554
+#: cps/oauth_bb.py:316 cps/oauth_bb.py:562
 msgid "Failed to link OAuth account. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:525
+#: cps/oauth_bb.py:533
 msgid ""
 "OAuth error: Provider returned invalid user information. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:538 cps/remotelogin.py:149
+#: cps/oauth_bb.py:546 cps/remotelogin.py:149
 #, python-format
 msgid "Success! You are now logged in as: %(nickname)s"
 msgstr "Tutto OK! Ora sei connesso come: %(nickname)s"
 
-#: cps/oauth_bb.py:548
+#: cps/oauth_bb.py:556
 #, python-format
 msgid "Link to %(oauth)s Succeeded"
 msgstr "Collegamento riuscito a %(oauth)s"
 
-#: cps/oauth_bb.py:556
+#: cps/oauth_bb.py:564
 #, python-format
 msgid ""
 "Login failed: No user account is linked to your %(provider)s account. Please "
@@ -1541,87 +1541,87 @@ msgid ""
 "account."
 msgstr ""
 
-#: cps/oauth_bb.py:564
+#: cps/oauth_bb.py:572
 msgid "OAuth authentication failed. Please try again or contact administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:568
+#: cps/oauth_bb.py:576
 #, fuzzy
 msgid "OAuth system error. Please contact administrator."
 msgstr ""
 "Il server e-mail non è configurato, per favore contatta l'amministratore."
 
-#: cps/oauth_bb.py:601
+#: cps/oauth_bb.py:609
 #, python-format
 msgid "Unlink to %(oauth)s Succeeded"
 msgstr "Scollegamento da %(oauth)s riuscito"
 
-#: cps/oauth_bb.py:606
+#: cps/oauth_bb.py:614
 #, python-format
 msgid "Unlink to %(oauth)s Failed"
 msgstr "Scollegamento da %(oauth)s non riuscito"
 
-#: cps/oauth_bb.py:609
+#: cps/oauth_bb.py:617
 #, python-format
 msgid "Not Linked to %(oauth)s"
 msgstr "Non collegato a %(oauth)s"
 
-#: cps/oauth_bb.py:814
+#: cps/oauth_bb.py:822
 msgid "Failed to log in with GitHub."
 msgstr "Impossibile accedere con GitHub."
 
-#: cps/oauth_bb.py:820
+#: cps/oauth_bb.py:828
 msgid "Failed to fetch user info from GitHub."
 msgstr "Impossibile recuperare le informazioni dell'utente da GitHub."
 
-#: cps/oauth_bb.py:841
+#: cps/oauth_bb.py:849
 msgid "Failed to log in with Google."
 msgstr "Impossibile accedere con Google."
 
-#: cps/oauth_bb.py:850
+#: cps/oauth_bb.py:858
 msgid "Failed to fetch user info from Google."
 msgstr "Impossibile recuperare le informazioni dell'utente da Google."
 
-#: cps/oauth_bb.py:875
+#: cps/oauth_bb.py:883
 msgid "Failed to log in with Generic OAuth."
 msgstr "Errore nel collegamento con OAuth generico."
 
-#: cps/oauth_bb.py:891
+#: cps/oauth_bb.py:899
 msgid "OAuth authentication failed: Token validation error. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:895
+#: cps/oauth_bb.py:903
 msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:903 cps/oauth_bb.py:921 cps/oauth_bb.py:939
+#: cps/oauth_bb.py:911 cps/oauth_bb.py:929 cps/oauth_bb.py:947
 msgid ""
 "OAuth error: Invalid redirect URI. If you're experiencing this error "
 "repeatedly, please configure the 'OAuth Redirect Host' setting in Admin > "
 "Basic Configuration > OAuth."
 msgstr ""
 
-#: cps/oauth_bb.py:975
+#: cps/oauth_bb.py:983
 msgid "GitHub Oauth error, please retry later."
 msgstr "Errore GitHub Oauth, riprova più tardi."
 
-#: cps/oauth_bb.py:982
+#: cps/oauth_bb.py:990
 #, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "Errore GitHub Oauth: {}"
 
-#: cps/oauth_bb.py:1032
+#: cps/oauth_bb.py:1040
 msgid "Google Oauth error, please retry later."
 msgstr "Errore OAuth di Google, riprova più tardi."
 
-#: cps/oauth_bb.py:1039
+#: cps/oauth_bb.py:1047
 #, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Errore OAuth di Google: {}"
 
-#: cps/oauth_bb.py:1075 cps/oauth_bb.py:1083
+#: cps/oauth_bb.py:1083 cps/oauth_bb.py:1091
 #, python-brace-format
 msgid "OAuth error: {}"
 msgstr "Errore Oauth: {}"

@@ -323,6 +323,14 @@ def register_user_from_generic_oauth(token=None):
             ub.session.query(ub.User)
             .filter(ub.User.name == provider_username)
         ).first()
+        if not user and provider_email:
+            user = (
+                ub.session.query(ub.User)
+                .filter(ub.User.email == provider_email)
+            ).first()
+            if user:
+                log.info("OAuth login matched existing user by email '%s' (user '%s'), provider username '%s'",
+                         provider_email, user.name, provider_username)
 
     # Check if user should have admin role based on group membership
     # Handle various group formats: list, string, or None

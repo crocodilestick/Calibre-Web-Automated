@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 22:54+0100\n"
+"POT-Creation-Date: 2026-01-31 23:02+0100\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -1355,52 +1355,52 @@ msgstr "올바르지 않은 표지 파일입니다."
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "표지 파일은 jpg/jpeg 형식만 지원합니다."
 
-#: cps/helper.py:1250 cps/helper.py:1481
+#: cps/helper.py:1260 cps/helper.py:1491
 msgid "Cover"
 msgstr "표지"
 
-#: cps/helper.py:1267
+#: cps/helper.py:1277
 msgid "UnRar binary file not found"
 msgstr "UnRar 바이너리 파일을 찾을 수 없습니다."
 
-#: cps/helper.py:1278
+#: cps/helper.py:1288
 msgid "Error executing UnRar"
 msgstr "UnRar 실행 중 오류가 발생했습니다."
 
-#: cps/helper.py:1284
+#: cps/helper.py:1294
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1293
+#: cps/helper.py:1303
 msgid "Could not find the specified directory"
 msgstr "지정된 디렉토리를 찾을 수 없습니다."
 
-#: cps/helper.py:1296
+#: cps/helper.py:1306
 msgid "Please specify a directory, not a file"
 msgstr "파일이 아닌 폴더를 지정하세요."
 
-#: cps/helper.py:1310
+#: cps/helper.py:1320
 msgid "Calibre binaries not viable"
 msgstr "Calibre 바이너리 파일을 사용할 수 없습니다."
 
-#: cps/helper.py:1319
+#: cps/helper.py:1329
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Calibre 바이너리 파일이 누락되었습니다: %(missing)s"
 
-#: cps/helper.py:1321
+#: cps/helper.py:1331
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "실행 권한이 없습니다: %(missing)s"
 
-#: cps/helper.py:1326
+#: cps/helper.py:1336
 msgid "Error executing Calibre"
 msgstr "Calibre 실행 오류"
 
-#: cps/helper.py:1483 cps/templates/admin.html:240
+#: cps/helper.py:1493 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "메타데이터 백업이 작업에 추가되었습니다."
 

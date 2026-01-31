@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 22:54+0100\n"
+"POT-Creation-Date: 2026-01-31 23:02+0100\n"
 "PO-Revision-Date: 2022-08-11 16:46+0200\n"
 "Last-Translator: pollitor <pollitor@gmx.com>\n"
 "Language-Team: gl\n"
@@ -1417,55 +1417,55 @@ msgstr "Contido do arquivo de cuberta non válido"
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Soamente se admiten como cuberta os arquivos jpg/jpeg"
 
-#: cps/helper.py:1250 cps/helper.py:1481
+#: cps/helper.py:1260 cps/helper.py:1491
 #, fuzzy
 msgid "Cover"
 msgstr "Descubrir"
 
-#: cps/helper.py:1267
+#: cps/helper.py:1277
 msgid "UnRar binary file not found"
 msgstr "Non se atopa o arquivo binario de UnRar"
 
-#: cps/helper.py:1278
+#: cps/helper.py:1288
 msgid "Error executing UnRar"
 msgstr "Erro executando UnRar"
 
-#: cps/helper.py:1284
+#: cps/helper.py:1294
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1293
+#: cps/helper.py:1303
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1296
+#: cps/helper.py:1306
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1310
+#: cps/helper.py:1320
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "A base de datos non é modificable"
 
-#: cps/helper.py:1319
+#: cps/helper.py:1329
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1321
+#: cps/helper.py:1331
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Faltan permisos de execución"
 
-#: cps/helper.py:1326
+#: cps/helper.py:1336
 #, fuzzy
 msgid "Error executing Calibre"
 msgstr "Erro executando UnRar"
 
-#: cps/helper.py:1483 cps/templates/admin.html:240
+#: cps/helper.py:1493 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr ""
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 22:54+0100\n"
+"POT-Creation-Date: 2026-01-31 23:02+0100\n"
 "PO-Revision-Date: 2025-09-09 20:18+0200\n"
 "Last-Translator: Sven Fischer <git-dev@linux4tw.de>\n"
 "Language-Team: German\n"
@@ -1409,52 +1409,52 @@ msgstr "Ungültiger Coverdatei-Inhalt"
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Nur jpg/jpeg-Dateien werden als Cover unterstützt"
 
-#: cps/helper.py:1250 cps/helper.py:1481
+#: cps/helper.py:1260 cps/helper.py:1491
 msgid "Cover"
 msgstr "Titelbild"
 
-#: cps/helper.py:1267
+#: cps/helper.py:1277
 msgid "UnRar binary file not found"
 msgstr "UnRar-Programm nicht gefunden"
 
-#: cps/helper.py:1278
+#: cps/helper.py:1288
 msgid "Error executing UnRar"
 msgstr "Fehler beim Ausführen von UnRar"
 
-#: cps/helper.py:1284
+#: cps/helper.py:1294
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1293
+#: cps/helper.py:1303
 msgid "Could not find the specified directory"
 msgstr "Angegebener Ordner konnte nicht gefunden werden"
 
-#: cps/helper.py:1296
+#: cps/helper.py:1306
 msgid "Please specify a directory, not a file"
 msgstr "Bitte keine Datei sondern einen Ordner angeben"
 
-#: cps/helper.py:1310
+#: cps/helper.py:1320
 msgid "Calibre binaries not viable"
 msgstr "Die Calibre Programmdaten sind nicht verwendbar."
 
-#: cps/helper.py:1319
+#: cps/helper.py:1329
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Fehlendes Calibre-Programm: %(missing)s"
 
-#: cps/helper.py:1321
+#: cps/helper.py:1331
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Ausführberechtigung fehlt: %(missing)s"
 
-#: cps/helper.py:1326
+#: cps/helper.py:1336
 msgid "Error executing Calibre"
 msgstr "Fehler beim Ausführen von Calibre"
 
-#: cps/helper.py:1483 cps/templates/admin.html:240
+#: cps/helper.py:1493 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Alle Bücher für Metadaten-Backup einreihen"
 

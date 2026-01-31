@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 22:54+0100\n"
+"POT-Creation-Date: 2026-01-31 23:02+0100\n"
 "PO-Revision-Date: 2019-04-06 23:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1430,53 +1430,53 @@ msgstr "Hibás borítófájl"
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Csak jpg/jpeg fájlok támogatottak borítófájlként"
 
-#: cps/helper.py:1250 cps/helper.py:1481
+#: cps/helper.py:1260 cps/helper.py:1491
 #, fuzzy
 msgid "Cover"
 msgstr "Borító"
 
-#: cps/helper.py:1267
+#: cps/helper.py:1277
 msgid "UnRar binary file not found"
 msgstr "UnRar bináris fájl nem található"
 
-#: cps/helper.py:1278
+#: cps/helper.py:1288
 msgid "Error executing UnRar"
 msgstr "Hiba az UnRar végrehajtása közben"
 
-#: cps/helper.py:1284
+#: cps/helper.py:1294
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1293
+#: cps/helper.py:1303
 msgid "Could not find the specified directory"
 msgstr "A megadott könyvtár nem található"
 
-#: cps/helper.py:1296
+#: cps/helper.py:1306
 msgid "Please specify a directory, not a file"
 msgstr "Kérjük, adjon meg egy könyvtárat, ne fájlt!"
 
-#: cps/helper.py:1310
+#: cps/helper.py:1320
 msgid "Calibre binaries not viable"
 msgstr "A Calibre bináris fájlok nem használhatók"
 
-#: cps/helper.py:1319
+#: cps/helper.py:1329
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Hiányzó Calibre bináris fájlok: %(missing)s"
 
-#: cps/helper.py:1321
+#: cps/helper.py:1331
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Hiányzó végrehajtható engedély: %(missing)s"
 
-#: cps/helper.py:1326
+#: cps/helper.py:1336
 msgid "Error executing Calibre"
 msgstr "Hiba a Calibre futtatása közben"
 
-#: cps/helper.py:1483 cps/templates/admin.html:240
+#: cps/helper.py:1493 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Az összes könyv sorba állítása a metaadatok biztonsági mentéséhez"
 

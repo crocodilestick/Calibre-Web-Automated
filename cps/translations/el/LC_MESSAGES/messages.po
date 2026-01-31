@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 22:54+0100\n"
+"POT-Creation-Date: 2026-01-31 23:02+0100\n"
 "PO-Revision-Date: 2025-09-03 14:59+0200\n"
 "Last-Translator: Depountis Georgios\n"
 "Language-Team: \n"
@@ -1417,56 +1417,56 @@ msgstr ""
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Μόνο jpg/jpeg αρχεία υποστηρίζονται ως αρχεία φόντου"
 
-#: cps/helper.py:1250 cps/helper.py:1481
+#: cps/helper.py:1260 cps/helper.py:1491
 #, fuzzy
 msgid "Cover"
 msgstr "Ανακάλυψε"
 
-#: cps/helper.py:1267
+#: cps/helper.py:1277
 msgid "UnRar binary file not found"
 msgstr "Δεν βρέθηκε δυαδικό αρχείο UnRar"
 
-#: cps/helper.py:1278
+#: cps/helper.py:1288
 #, fuzzy
 msgid "Error executing UnRar"
 msgstr "Σφάλμα εκτέλεσης UnRar"
 
-#: cps/helper.py:1284
+#: cps/helper.py:1294
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1293
+#: cps/helper.py:1303
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1296
+#: cps/helper.py:1306
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1310
+#: cps/helper.py:1320
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "Η DB δεν μπορεί να Γραφτεί"
 
-#: cps/helper.py:1319
+#: cps/helper.py:1329
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1321
+#: cps/helper.py:1331
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Λείπουν άδειες εκτέλεσης"
 
-#: cps/helper.py:1326
+#: cps/helper.py:1336
 #, fuzzy
 msgid "Error executing Calibre"
 msgstr "Σφάλμα εκτέλεσης UnRar"
 
-#: cps/helper.py:1483 cps/templates/admin.html:240
+#: cps/helper.py:1493 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr ""
 

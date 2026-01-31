@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 22:54+0100\n"
+"POT-Creation-Date: 2026-01-31 23:02+0100\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -1363,54 +1363,54 @@ msgstr "封面文件内容无效"
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "仅将 jpg、jpeg 文件作为封面文件"
 
-#: cps/helper.py:1250 cps/helper.py:1481
+#: cps/helper.py:1260 cps/helper.py:1491
 msgid "Cover"
 msgstr "封面"
 
-#: cps/helper.py:1267
+#: cps/helper.py:1277
 msgid "UnRar binary file not found"
 msgstr "找不到 UnRar 执行文件"
 
-#: cps/helper.py:1278
+#: cps/helper.py:1288
 msgid "Error executing UnRar"
 msgstr "执行 UnRar 时出错"
 
-#: cps/helper.py:1284
+#: cps/helper.py:1294
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1293
+#: cps/helper.py:1303
 msgid "Could not find the specified directory"
 msgstr "找不到指定的目录"
 
-#: cps/helper.py:1296
+#: cps/helper.py:1306
 msgid "Please specify a directory, not a file"
 msgstr "请指定一个目录，而不是文件"
 
-#: cps/helper.py:1310
+#: cps/helper.py:1320
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "数据库不可写入"
 
-#: cps/helper.py:1319
+#: cps/helper.py:1329
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "缺少 Calibre 执行文件: %(missing)s"
 
-#: cps/helper.py:1321
+#: cps/helper.py:1331
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "缺少执行权限"
 
-#: cps/helper.py:1326
+#: cps/helper.py:1336
 #, fuzzy
 msgid "Error executing Calibre"
 msgstr "执行 UnRar 时出错"
 
-#: cps/helper.py:1483 cps/templates/admin.html:240
+#: cps/helper.py:1493 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "将所有书籍加入元数据备份队列"
 

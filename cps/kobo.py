@@ -292,7 +292,10 @@ def HandleSyncRequest():
         ts_created = book.Books.timestamp.replace(tzinfo=None)
 
         try:
-            ts_created = max(ts_created, book.date_added)
+            if book.date_added is not None:
+                ts_created = max(ts_created, book.date_added)
+            else:
+                log.debug("Kobo Sync: book %s has no date_added", book.Books.id)
         except AttributeError:
             pass
 

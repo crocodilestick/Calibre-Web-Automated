@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 13:53+0100\n"
+"POT-Creation-Date: 2026-01-31 14:06+0100\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Edit Users"
 msgstr "Modifica utenti"
 
-#: cps/admin.py:618 cps/opds.py:785 cps/templates/grid.html:14
+#: cps/admin.py:618 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Tutti"
@@ -132,7 +132,7 @@ msgid "{} users deleted successfully"
 msgstr "{} utenti eliminati correttamente"
 
 #: cps/admin.py:682 cps/templates/config_view_edit.html:170
-#: cps/templates/user_edit.html:202 cps/templates/user_edit.html:225
+#: cps/templates/user_edit.html:241 cps/templates/user_edit.html:264
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Mostra tutto"
@@ -388,7 +388,7 @@ msgstr "Tutto OK! Account Gmail verificato."
 #: cps/admin.py:2413 cps/admin.py:2607 cps/editbooks.py:879
 #: cps/editbooks.py:1638 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
-#: cps/tasks/convert.py:145 cps/web.py:2525
+#: cps/tasks/convert.py:145 cps/web.py:2559
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Errore nel database: %(error)s."
@@ -1129,8 +1129,8 @@ msgstr ""
 msgid "File to be uploaded must have an extension"
 msgstr "Il file da caricare deve avere un'estensione"
 
-#: cps/editbooks.py:691 cps/editbooks.py:1261 cps/web.py:612 cps/web.py:2597
-#: cps/web.py:2675 cps/web.py:2744
+#: cps/editbooks.py:691 cps/editbooks.py:1261 cps/web.py:612 cps/web.py:2648
+#: cps/web.py:2726 cps/web.py:2795
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -1626,17 +1626,17 @@ msgstr "Errore OAuth di Google: {}"
 msgid "OAuth error: {}"
 msgstr "Errore Oauth: {}"
 
-#: cps/opds.py:186
+#: cps/opds.py:199 cps/web.py:2610
 #, fuzzy
 msgid "title"
 msgstr "Titolo"
 
-#: cps/opds.py:187
+#: cps/opds.py:200
 #, fuzzy
 msgid "description"
 msgstr "Descrizione"
 
-#: cps/opds.py:470
+#: cps/opds.py:483
 #, python-brace-format
 msgid "{} Stars"
 msgstr "{} stelle"
@@ -1667,7 +1667,7 @@ msgstr "Libri"
 msgid "Show recent books"
 msgstr "Mostra Libri recenti"
 
-#: cps/render_template.py:43 cps/templates/index.xml:27
+#: cps/render_template.py:43
 msgid "Hot Books"
 msgstr "Libri hot"
 
@@ -1684,7 +1684,7 @@ msgstr "Libri scaricati"
 msgid "Show Downloaded Books"
 msgstr "Mostra Libri scaricati"
 
-#: cps/render_template.py:57 cps/templates/index.xml:36 cps/web.py:502
+#: cps/render_template.py:57 cps/web.py:502
 msgid "Top Rated Books"
 msgstr "Libri più votati"
 
@@ -1692,8 +1692,7 @@ msgstr "Libri più votati"
 msgid "Show Top Rated Books"
 msgstr "Mostra Libri più votati"
 
-#: cps/render_template.py:60 cps/templates/index.xml:63
-#: cps/templates/index.xml:67 cps/web.py:851
+#: cps/render_template.py:60 cps/web.py:851
 msgid "Read Books"
 msgstr "Libri letti"
 
@@ -1701,8 +1700,7 @@ msgstr "Libri letti"
 msgid "Show Read and Unread"
 msgstr "Mostra Libri letti e Libri da leggere"
 
-#: cps/render_template.py:64 cps/templates/index.xml:70
-#: cps/templates/index.xml:74 cps/web.py:854
+#: cps/render_template.py:64 cps/web.py:854
 msgid "Unread Books"
 msgstr "Libri da leggere"
 
@@ -1714,13 +1712,12 @@ msgstr "Mostra da leggere"
 msgid "Discover"
 msgstr "Libri casuali"
 
-#: cps/render_template.py:69 cps/templates/index.xml:58
-#: cps/templates/user_table.html:160 cps/templates/user_table.html:163
+#: cps/render_template.py:69 cps/templates/user_table.html:160
+#: cps/templates/user_table.html:163
 msgid "Show Random Books"
 msgstr "Mostra Libri casuali"
 
-#: cps/render_template.py:70 cps/templates/book_table.html:106
-#: cps/templates/index.xml:97 cps/web.py:1762
+#: cps/render_template.py:70 cps/templates/book_table.html:106 cps/web.py:1762
 msgid "Categories"
 msgstr "Categorie"
 
@@ -1731,7 +1728,7 @@ msgstr "Mostra sezione Categorie"
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:351
 #: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1071
-#: cps/templates/hardcover_review_matches.html:134 cps/templates/index.xml:106
+#: cps/templates/hardcover_review_matches.html:134
 #: cps/templates/search_form.html:70 cps/web.py:1642 cps/web.py:1654
 msgid "Series"
 msgstr "Serie"
@@ -1742,7 +1739,7 @@ msgstr "Mostra sezione Serie"
 
 #: cps/render_template.py:76 cps/templates/book_table.html:105
 #: cps/templates/cwa_settings.html:323 cps/templates/cwa_settings.html:325
-#: cps/templates/hardcover_review_matches.html:128 cps/templates/index.xml:79
+#: cps/templates/hardcover_review_matches.html:128
 msgid "Authors"
 msgstr "Autori"
 
@@ -1750,8 +1747,7 @@ msgstr "Autori"
 msgid "Show Author Section"
 msgstr "Mostra sezione Autori"
 
-#: cps/render_template.py:80 cps/templates/book_table.html:111
-#: cps/templates/index.xml:88 cps/web.py:1610
+#: cps/render_template.py:80 cps/templates/book_table.html:111 cps/web.py:1610
 msgid "Publishers"
 msgstr "Editori"
 
@@ -1760,8 +1756,7 @@ msgid "Show Publisher Section"
 msgstr "Mostra sezione Editori"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/index.xml:115 cps/templates/search_form.html:108
-#: cps/web.py:1734
+#: cps/templates/search_form.html:108 cps/web.py:1734
 msgid "Languages"
 msgstr "Lingue"
 
@@ -1769,7 +1764,7 @@ msgstr "Lingue"
 msgid "Show Language Section"
 msgstr "Mostra sezione Lingue"
 
-#: cps/render_template.py:87 cps/templates/index.xml:124 cps/web.py:1694
+#: cps/render_template.py:87 cps/web.py:1694
 msgid "Ratings"
 msgstr "Valutazioni"
 
@@ -1777,7 +1772,7 @@ msgstr "Valutazioni"
 msgid "Show Ratings Section"
 msgstr "Mostra sezione Valutazioni"
 
-#: cps/render_template.py:90 cps/templates/index.xml:133
+#: cps/render_template.py:90
 msgid "File formats"
 msgstr "Formati di file"
 
@@ -2373,15 +2368,15 @@ msgstr "Inserisci un nome utente valido per reimpostare la password"
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Ora sei connesso come: '%(nickname)s'"
 
-#: cps/web.py:2514
+#: cps/web.py:2548
 msgid "Success! Profile Updated"
 msgstr "Tutto OK! Profilo aggiornato"
 
-#: cps/web.py:2520
+#: cps/web.py:2554
 msgid "Oops! An account already exists for this Email."
 msgstr "Esiste già un account per questa e-mail."
 
-#: cps/web.py:2688
+#: cps/web.py:2739
 msgid "Invalid book ID."
 msgstr "Book ID non valido."
 
@@ -2556,12 +2551,12 @@ msgstr "Utenti&nbsp;&nbsp;👤"
 
 #: cps/templates/admin.html:14 cps/templates/login.html:10
 #: cps/templates/login.html:12 cps/templates/register.html:9
-#: cps/templates/user_edit.html:136 cps/templates/user_table.html:134
+#: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Nome utente"
 
 #: cps/templates/admin.html:15 cps/templates/register.html:14
-#: cps/templates/user_edit.html:144 cps/templates/user_table.html:135
+#: cps/templates/user_edit.html:183 cps/templates/user_table.html:135
 msgid "Email"
 msgstr "E-mail"
 
@@ -2569,7 +2564,7 @@ msgstr "E-mail"
 msgid "Send to eReader Email"
 msgstr "Invia all'e-mail dell'eReader"
 
-#: cps/templates/admin.html:17 cps/templates/user_edit.html:172
+#: cps/templates/admin.html:17 cps/templates/user_edit.html:211
 #, fuzzy
 msgid "Send to eReader Subject"
 msgstr "Invia all'eReader"
@@ -2580,7 +2575,7 @@ msgid "Admin"
 msgstr "Amministratore"
 
 #: cps/templates/admin.html:20 cps/templates/login.html:15
-#: cps/templates/login.html:16 cps/templates/user_edit.html:155
+#: cps/templates/login.html:16 cps/templates/user_edit.html:194
 msgid "Password"
 msgstr "Password"
 
@@ -2605,7 +2600,7 @@ msgstr "Modifica"
 #: cps/templates/book_table.html:62 cps/templates/book_table.html:141
 #: cps/templates/book_table.html:190 cps/templates/duplicates.html:539
 #: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
-#: cps/templates/user_edit.html:266 cps/templates/user_table.html:150
+#: cps/templates/user_edit.html:305 cps/templates/user_table.html:150
 msgid "Delete"
 msgstr "Elimina"
 
@@ -2862,7 +2857,7 @@ msgstr "OK"
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:94
 #: cps/templates/tasks.html:166 cps/templates/tasks.html:173
-#: cps/templates/user_edit.html:445
+#: cps/templates/user_edit.html:502
 msgid "Cancel"
 msgstr "Annulla"
 
@@ -2959,7 +2954,7 @@ msgstr "Caricamento in corso..."
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:463
+#: cps/templates/user_edit.html:520
 msgid "Close"
 msgstr "Chiudi"
 
@@ -3086,7 +3081,7 @@ msgstr "Recupera i metadati"
 #: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:215
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
-#: cps/templates/user_edit.html:443
+#: cps/templates/user_edit.html:500
 msgid "Save"
 msgstr "Salva"
 
@@ -4085,35 +4080,35 @@ msgstr ""
 msgid "Permissions"
 msgstr "Versione"
 
-#: cps/templates/config_view_edit.html:115 cps/templates/user_edit.html:327
+#: cps/templates/config_view_edit.html:115 cps/templates/user_edit.html:384
 msgid "Admin User"
 msgstr "Utente amministratore"
 
-#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:333
+#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:390
 msgid "Allow Downloads"
 msgstr "Consenti download"
 
-#: cps/templates/config_view_edit.html:125 cps/templates/user_edit.html:338
+#: cps/templates/config_view_edit.html:125 cps/templates/user_edit.html:395
 msgid "Allow eBook Viewer"
 msgstr "Consenti visualizzatore eBook"
 
-#: cps/templates/config_view_edit.html:131 cps/templates/user_edit.html:344
+#: cps/templates/config_view_edit.html:131 cps/templates/user_edit.html:401
 msgid "Allow Uploads"
 msgstr "Consenti caricamenti"
 
-#: cps/templates/config_view_edit.html:137 cps/templates/user_edit.html:350
+#: cps/templates/config_view_edit.html:137 cps/templates/user_edit.html:407
 msgid "Allow Edit"
 msgstr "Consenti modifiche"
 
-#: cps/templates/config_view_edit.html:142 cps/templates/user_edit.html:355
+#: cps/templates/config_view_edit.html:142 cps/templates/user_edit.html:412
 msgid "Allow Delete Books"
 msgstr "Consenti eliminazione libri"
 
-#: cps/templates/config_view_edit.html:147 cps/templates/user_edit.html:361
+#: cps/templates/config_view_edit.html:147 cps/templates/user_edit.html:418
 msgid "Allow Changing Password"
 msgstr "Consenti modifica password"
 
-#: cps/templates/config_view_edit.html:152 cps/templates/user_edit.html:366
+#: cps/templates/config_view_edit.html:152 cps/templates/user_edit.html:423
 msgid "Allow Editing Public Shelves"
 msgstr "Consenti modifica scaffali pubblici"
 
@@ -4148,12 +4143,12 @@ msgstr "Visibilità predefinita per i nuovi utenti"
 msgid "Choose which sidebar sections are visible by default for new users."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:195 cps/templates/user_edit.html:305
+#: cps/templates/config_view_edit.html:195 cps/templates/user_edit.html:344
 #: cps/templates/user_table.html:155
 msgid "Show Random Books in Detail View"
 msgstr "Mostra Libri casuali nella visualizzazione dettagliata"
 
-#: cps/templates/config_view_edit.html:201 cps/templates/user_edit.html:311
+#: cps/templates/config_view_edit.html:201 cps/templates/user_edit.html:350
 msgid "Add Allowed/Denied Tags"
 msgstr "Aggiungi etichetta consentiti/negati"
 
@@ -4459,7 +4454,7 @@ msgid "Cover Image"
 msgstr "Copertina"
 
 #: cps/templates/cwa_settings.html:387 cps/templates/cwa_settings.html:494
-#: cps/templates/cwa_settings.html:699
+#: cps/templates/cwa_settings.html:699 cps/templates/user_edit.html:368
 msgid "Tip"
 msgstr ""
 
@@ -5749,71 +5744,6 @@ msgstr "Ordina in ordine ascendente in base al numero della serie"
 msgid "Sort descending according to series index"
 msgstr "Ordina in ordine discendente in base al numero della serie"
 
-#: cps/templates/index.xml:19
-msgid "Alphabetical Books"
-msgstr "Libri in ordine alfabetico"
-
-#: cps/templates/index.xml:23
-msgid "Books sorted alphabetically"
-msgstr "Libri ordinati alfabeticamente"
-
-#: cps/templates/index.xml:31
-msgid "Popular publications from this catalog based on Downloads."
-msgstr "Pubblicazioni popolari in questo catalogo in base ai download."
-
-#: cps/templates/index.xml:40
-msgid "Popular publications from this catalog based on Rating."
-msgstr "Pubblicazioni popolari in questo catalogo in base alle valutazioni."
-
-#: cps/templates/index.xml:45
-msgid "Recently added Books"
-msgstr "Libri aggiunti di recente"
-
-#: cps/templates/index.xml:49
-msgid "The latest Books"
-msgstr "Gli ultimi libri"
-
-#: cps/templates/index.xml:54
-msgid "Random Books"
-msgstr "Libri casuali"
-
-#: cps/templates/index.xml:83
-msgid "Books ordered by Author"
-msgstr "Libri ordinati per autore"
-
-#: cps/templates/index.xml:92
-msgid "Books ordered by publisher"
-msgstr "Libri ordinati per editore"
-
-#: cps/templates/index.xml:101
-msgid "Books ordered by category"
-msgstr "Libri ordinati per categoria"
-
-#: cps/templates/index.xml:110
-msgid "Books ordered by series"
-msgstr "Libri ordinati per serie"
-
-#: cps/templates/index.xml:119
-msgid "Books ordered by Languages"
-msgstr "Libri ordinati per lingua"
-
-#: cps/templates/index.xml:128
-msgid "Books ordered by Rating"
-msgstr "Libri ordinati per valutazione"
-
-#: cps/templates/index.xml:137
-msgid "Books ordered by file formats"
-msgstr "Libri ordinati per formato di file"
-
-#: cps/templates/index.xml:142 cps/templates/layout.html:298
-#: cps/templates/search_form.html:88
-msgid "Shelves"
-msgstr "Scaffali"
-
-#: cps/templates/index.xml:146
-msgid "Books organized in shelves"
-msgstr "Libri organizzati in scaffali"
-
 #: cps/templates/layout.html:93 cps/templates/login.html:44
 msgid "Home"
 msgstr "Home"
@@ -5827,7 +5757,7 @@ msgid "Search Library"
 msgstr "Cerca nella biblioteca"
 
 #: cps/templates/layout.html:132 cps/templates/layout.html:169
-#: cps/templates/user_edit.html:245 cps/templates/user_edit.html:247
+#: cps/templates/user_edit.html:284 cps/templates/user_edit.html:286
 msgid "Account"
 msgstr "Account"
 
@@ -5863,6 +5793,10 @@ msgstr "Per favore non aggiornare la pagina"
 #: cps/templates/layout.html:281
 msgid "Browse"
 msgstr "Naviga"
+
+#: cps/templates/layout.html:298 cps/templates/search_form.html:88
+msgid "Shelves"
+msgstr "Scaffali"
 
 #: cps/templates/layout.html:304
 #, fuzzy
@@ -6196,7 +6130,7 @@ msgstr "Ruota a sinistra"
 msgid "Flip Image"
 msgstr "Capovolgi immagine"
 
-#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:211
+#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:250
 msgid "Theme"
 msgstr "Tema"
 
@@ -6571,179 +6505,199 @@ msgstr "I libri duplicati selezionati sono stati eliminati!"
 msgid "Error cancelling scheduled item"
 msgstr ""
 
-#: cps/templates/user_edit.html:124
+#: cps/templates/user_edit.html:163
 #, fuzzy
 msgid "Your Profile"
 msgstr "La tua e-mail"
 
-#: cps/templates/user_edit.html:124
+#: cps/templates/user_edit.html:163
 #, fuzzy
 msgid "User Settings"
 msgstr "Impostazioni"
 
-#: cps/templates/user_edit.html:132
+#: cps/templates/user_edit.html:171
 msgid "Account Information"
 msgstr ""
 
-#: cps/templates/user_edit.html:141
+#: cps/templates/user_edit.html:180
 msgid ""
 "If you need to change your email address or password, you can do so here."
 msgstr ""
 
-#: cps/templates/user_edit.html:151
+#: cps/templates/user_edit.html:190
 msgid "Reset user Password"
 msgstr "Reimposta la password dell'utente"
 
-#: cps/templates/user_edit.html:163
+#: cps/templates/user_edit.html:202
 #, fuzzy
 msgid "eReader Configuration"
 msgstr "Configurazione del server"
 
-#: cps/templates/user_edit.html:166
+#: cps/templates/user_edit.html:205
 #, fuzzy
 msgid "Send to eReader Email Address"
 msgstr "Seleziona gli indirizzi email dell'eReader"
 
-#: cps/templates/user_edit.html:167
+#: cps/templates/user_edit.html:206
 msgid "Use comma to separate multiple addresses"
 msgstr ""
 
-#: cps/templates/user_edit.html:168
+#: cps/templates/user_edit.html:207
 msgid ""
 "Email address(es) for your eReader devices. Separate multiple addresses with "
 "commas."
 msgstr ""
 
-#: cps/templates/user_edit.html:179
+#: cps/templates/user_edit.html:218
 msgid "Automatically send new books to my eReader(s)"
 msgstr ""
 
-#: cps/templates/user_edit.html:180
+#: cps/templates/user_edit.html:219
 msgid ""
 "When enabled, newly ingested books will be automatically sent to all "
 "configured eReader email addresses above."
 msgstr ""
 
-#: cps/templates/user_edit.html:188
+#: cps/templates/user_edit.html:227
 msgid "Language & Theme Preferences"
 msgstr ""
 
-#: cps/templates/user_edit.html:191
+#: cps/templates/user_edit.html:230
 #, fuzzy
 msgid "Interface Language"
 msgstr "Inserisci lingue"
 
-#: cps/templates/user_edit.html:200 cps/templates/user_edit.html:223
+#: cps/templates/user_edit.html:239 cps/templates/user_edit.html:262
 msgid "Language of Books"
 msgstr "Lingua dei libri"
 
-#: cps/templates/user_edit.html:207 cps/templates/user_edit.html:230
+#: cps/templates/user_edit.html:246 cps/templates/user_edit.html:269
 msgid "Filter the library to only show books in a specific language."
 msgstr ""
 
-#: cps/templates/user_edit.html:220
+#: cps/templates/user_edit.html:259
 #, fuzzy
 msgid "Book Language Filter"
 msgstr "Nessun libro valido per la lingua specificata"
 
-#: cps/templates/user_edit.html:238
+#: cps/templates/user_edit.html:277
 msgid "OAuth & API Integrations"
 msgstr ""
 
-#: cps/templates/user_edit.html:243
+#: cps/templates/user_edit.html:282
 msgid "OAuth Settings"
 msgstr "Impostazioni OAuth"
 
-#: cps/templates/user_edit.html:245
+#: cps/templates/user_edit.html:284
 msgid "Link"
 msgstr "Collega"
 
-#: cps/templates/user_edit.html:247
+#: cps/templates/user_edit.html:286
 msgid "Unlink"
 msgstr "Scollega"
 
-#: cps/templates/user_edit.html:255
+#: cps/templates/user_edit.html:294
 #, fuzzy
 msgid "Hardcover API Token"
 msgstr "Hardcover API token"
 
-#: cps/templates/user_edit.html:257
+#: cps/templates/user_edit.html:296
 msgid "API token for Hardcover metadata provider integration."
 msgstr ""
 
-#: cps/templates/user_edit.html:263
+#: cps/templates/user_edit.html:302
 msgid "Kobo Sync Token"
 msgstr "Token di sincronizzazione Kobo"
 
-#: cps/templates/user_edit.html:265
+#: cps/templates/user_edit.html:304
 msgid "Create/View"
 msgstr "Crea/Visualizza"
 
-#: cps/templates/user_edit.html:269
+#: cps/templates/user_edit.html:308
 msgid "Force full kobo sync"
 msgstr "Forza sincronizzazione kobo completa"
 
-#: cps/templates/user_edit.html:276
+#: cps/templates/user_edit.html:315
 msgid "Sync only books in selected shelves with Kobo"
 msgstr "Sincronizza con Kobo unicamente i libri negli scaffali selezionati"
 
-#: cps/templates/user_edit.html:286
+#: cps/templates/user_edit.html:325
 #, fuzzy
 msgid "Sidebar Display Settings"
 msgstr "Impostazioni di sicurezza"
 
-#: cps/templates/user_edit.html:287
+#: cps/templates/user_edit.html:326
 msgid "Choose which sections to display in your sidebar navigation."
 msgstr ""
 
-#: cps/templates/user_edit.html:312
+#: cps/templates/user_edit.html:351
 msgid "Add allowed/Denied Custom Column Values"
 msgstr "Aggiungi valori personali consentiti/negati nelle colonne"
 
-#: cps/templates/user_edit.html:320
-msgid "User Permissions"
+#: cps/templates/user_edit.html:359
+msgid "OPDS Catalog Order"
 msgstr ""
 
-#: cps/templates/user_edit.html:321
-msgid "Configure what actions this user is allowed to perform."
+#: cps/templates/user_edit.html:360
+msgid ""
+"Reorder the OPDS root catalog by listing entry IDs in the order you want. "
+"Unknown IDs are ignored and missing entries are appended automatically."
 msgstr ""
 
-#: cps/templates/user_edit.html:376
-msgid "Magic Shelves Visibility"
+#: cps/templates/user_edit.html:368
+msgid ""
+"Drag to reorder OPDS root entries. Missing entries are appended "
+"automatically."
 msgstr ""
 
 #: cps/templates/user_edit.html:377
+msgid "User Permissions"
+msgstr ""
+
+#: cps/templates/user_edit.html:378
+msgid "Configure what actions this user is allowed to perform."
+msgstr ""
+
+#: cps/templates/user_edit.html:433
+msgid "Magic Shelves Visibility"
+msgstr ""
+
+#: cps/templates/user_edit.html:434
 msgid ""
 "Uncheck shelves you want to hide from your sidebar. System shelves cannot be "
 "deleted, only hidden. Public shelves from other users can also be hidden."
 msgstr ""
 
-#: cps/templates/user_edit.html:381
+#: cps/templates/user_edit.html:438
 msgid "Default System Shelves:"
 msgstr ""
 
-#: cps/templates/user_edit.html:405
+#: cps/templates/user_edit.html:462
 #, fuzzy
 msgid "Public Shelves:"
 msgstr "Modifica gli scaffali pubblici"
 
-#: cps/templates/user_edit.html:430
+#: cps/templates/user_edit.html:487
 #, python-format
 msgid "%(visible)s of %(total)s default shelves visible"
 msgstr ""
 
-#: cps/templates/user_edit.html:434
+#: cps/templates/user_edit.html:491
 #, python-format
 msgid "%(visible)s of %(total)s public shelves visible"
 msgstr ""
 
-#: cps/templates/user_edit.html:448 cps/templates/user_table.html:170
+#: cps/templates/user_edit.html:505 cps/templates/user_table.html:170
 msgid "Delete User"
 msgstr "Elimina utente"
 
-#: cps/templates/user_edit.html:459
+#: cps/templates/user_edit.html:516
 msgid "Generate Kobo Auth URL"
 msgstr "Genera URL di autenticazione per Kobo"
+
+#: cps/templates/user_edit.html:575
+msgid "Visible"
+msgstr ""
 
 #: cps/templates/user_table.html:80 cps/templates/user_table.html:103
 msgid "Select..."
@@ -6842,6 +6796,51 @@ msgstr "Sincronizza gli scaffali selezionati con Kobo"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "Mostra sezione Libri letti e Libri da leggere"
+
+#~ msgid "Alphabetical Books"
+#~ msgstr "Libri in ordine alfabetico"
+
+#~ msgid "Books sorted alphabetically"
+#~ msgstr "Libri ordinati alfabeticamente"
+
+#~ msgid "Popular publications from this catalog based on Downloads."
+#~ msgstr "Pubblicazioni popolari in questo catalogo in base ai download."
+
+#~ msgid "Popular publications from this catalog based on Rating."
+#~ msgstr "Pubblicazioni popolari in questo catalogo in base alle valutazioni."
+
+#~ msgid "Recently added Books"
+#~ msgstr "Libri aggiunti di recente"
+
+#~ msgid "The latest Books"
+#~ msgstr "Gli ultimi libri"
+
+#~ msgid "Random Books"
+#~ msgstr "Libri casuali"
+
+#~ msgid "Books ordered by Author"
+#~ msgstr "Libri ordinati per autore"
+
+#~ msgid "Books ordered by publisher"
+#~ msgstr "Libri ordinati per editore"
+
+#~ msgid "Books ordered by category"
+#~ msgstr "Libri ordinati per categoria"
+
+#~ msgid "Books ordered by series"
+#~ msgstr "Libri ordinati per serie"
+
+#~ msgid "Books ordered by Languages"
+#~ msgstr "Libri ordinati per lingua"
+
+#~ msgid "Books ordered by Rating"
+#~ msgstr "Libri ordinati per valutazione"
+
+#~ msgid "Books ordered by file formats"
+#~ msgstr "Libri ordinati per formato di file"
+
+#~ msgid "Books organized in shelves"
+#~ msgstr "Libri organizzati in scaffali"
 
 #~ msgid "Unable to fetch OAuth metadata from URL."
 #~ msgstr "Impossibile recuperare i metadati OAuth dall'URL."

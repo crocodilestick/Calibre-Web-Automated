@@ -109,6 +109,45 @@
       font-size: 1rem;
     }
   }
+
+  .opds-order-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: #2a3441;
+    border: 1px solid #444;
+    border-radius: 6px;
+    cursor: move;
+    transition: all 0.2s;
+  }
+
+  .opds-order-item.dragging {
+    opacity: 0.6;
+    background: #344151;
+    border-color: #5a6b7d;
+  }
+
+  .opds-order-drag-handle {
+    color: #ffc200;
+    margin-right: 12px;
+    font-size: 18px;
+    user-select: none;
+  }
+
+  .opds-order-label {
+    color: white;
+    font-weight: 500;
+  }
+
+  .opds-order-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #c5c5c5;
+    font-size: 13px;
+  }
 </style>
 {% endblock %}
 {% block body %}
@@ -315,6 +354,24 @@
     </div>
     
     <!-- User Permissions Card (Admin Only) -->
+    {% if not content.role_anonymous() and profile %}
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('OPDS Catalog Order')}}</h4>
+      <p class="settings-explanation">{{_('Reorder the OPDS root catalog by listing entry IDs in the order you want. Unknown IDs are ignored and missing entries are appended automatically.')}}</p>
+      <input type="hidden" name="opds_root_order" id="opds_root_order" value="{{ opds_root_order_string }}">
+      <input type="hidden" name="opds_hidden_entries" id="opds_hidden_entries" value="{{ opds_hidden_entries_string }}">
+      <div id="opds_root_order_container" style="margin-top: 1rem;">
+        <ul id="opds_root_order_list" style="list-style: none; padding: 0; margin: 0;"></ul>
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 1.5rem;">
+        <small class="settings-explanation">
+          💡 <strong>{{_('Tip')}}:</strong> {{_('Drag to reorder OPDS root entries. Missing entries are appended automatically.') }}
+        </small>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- User Permissions Card (Admin Only) -->
     {% if current_user and current_user.role_admin() and not profile %}
     <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('User Permissions')}}</h4>
@@ -465,6 +522,149 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const opdsLabels = {{ opds_root_labels | tojson }};
+  const opdsOrderRaw = "{{ opds_root_order_string }}";
+  const opdsHiddenRaw = "{{ opds_hidden_entries_string }}";
+
+  function parseOrder(raw) {
+    if (!raw) return [];
+    return raw.split(',').map(item => item.trim()).filter(Boolean);
+  }
+
+  function buildOrderList(labels, order) {
+    const labelMap = new Map(labels.map(item => [item.key, item.label]));
+    const seen = new Set();
+    const result = [];
+    order.forEach(key => {
+      if (labelMap.has(key) && !seen.has(key)) {
+        result.push(key);
+        seen.add(key);
+      }
+    });
+    labels.forEach(item => {
+      if (!seen.has(item.key)) {
+        result.push(item.key);
+        seen.add(item.key);
+      }
+    });
+    return result;
+  }
+
+  function renderOpdsOrderList() {
+    const container = document.getElementById('opds_root_order_list');
+    if (!container) return;
+
+    const order = buildOrderList(opdsLabels, parseOrder(opdsOrderRaw));
+    container.innerHTML = '';
+
+    const hiddenSet = new Set(parseOrder(opdsHiddenRaw));
+    order.forEach(key => {
+      const label = opdsLabels.find(item => item.key === key)?.label || key;
+      const isHidden = hiddenSet.has(key);
+      const li = document.createElement('li');
+      li.className = 'opds-order-item';
+      li.dataset.key = key;
+      li.innerHTML = `
+        <span class="opds-order-drag-handle">☰</span>
+        <span class="opds-order-label">${label}</span>
+        <label class="opds-order-toggle">
+          <input type="checkbox" class="opds-order-visible" data-key="${key}" ${isHidden ? '' : 'checked'}>
+          {{_('Visible')}}
+        </label>
+      `;
+      container.appendChild(li);
+    });
+
+    setupOpdsDragDrop();
+    updateOpdsHiddenInput();
+  }
+
+  function setupOpdsDragDrop() {
+    let dragged = null;
+    let isDragging = false;
+
+    const items = document.querySelectorAll('.opds-order-item');
+    items.forEach(item => {
+      item.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        dragged = this;
+        this.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging || !dragged) return;
+      const container = document.getElementById('opds_root_order_list');
+      const afterElement = getOpdsAfterElement(container, e.clientY);
+      if (afterElement == null) {
+        container.appendChild(dragged);
+      } else {
+        container.insertBefore(dragged, afterElement);
+      }
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      if (dragged) {
+        dragged.classList.remove('dragging');
+        dragged = null;
+      }
+      document.body.style.userSelect = '';
+      updateOpdsHiddenInput();
+    });
+  }
+
+  function getOpdsAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.opds-order-item:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      }
+      return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function updateOpdsHiddenInput() {
+    const container = document.getElementById('opds_root_order_list');
+    const hiddenInput = document.getElementById('opds_root_order');
+    const hiddenEntriesInput = document.getElementById('opds_hidden_entries');
+    if (!container || !hiddenInput) return;
+    const items = container.querySelectorAll('.opds-order-item');
+    const order = Array.from(items).map(item => item.dataset.key);
+    hiddenInput.value = order.join(',');
+
+    if (!hiddenEntriesInput) return;
+    const hidden = [];
+    container.querySelectorAll('.opds-order-visible').forEach(checkbox => {
+      if (!checkbox.checked) {
+        hidden.push(checkbox.dataset.key);
+      }
+    });
+    hiddenEntriesInput.value = hidden.join(',');
+  }
+
+  const form = document.querySelector('form[role="form"]');
+  if (form) {
+    form.addEventListener('submit', updateOpdsHiddenInput);
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.classList.contains('opds-order-visible')) {
+      updateOpdsHiddenInput();
+    }
+  });
+
+  renderOpdsOrderList();
+});
+</script>
 
 {% endblock %}
 {% block modal %}

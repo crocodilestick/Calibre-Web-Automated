@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 23:02+0100\n"
+"POT-Creation-Date: 2026-01-31 23:04+0100\n"
 "PO-Revision-Date: 2023-01-06 11:00+0000\n"
 "Last-Translator: Vegard Fladby <vegard.fladby@gmail.com>\n"
 "Language-Team: \n"
@@ -23,225 +23,229 @@ msgstr ""
 msgid "Statistics"
 msgstr "Statistikk"
 
-#: cps/admin.py:165
+#: cps/admin.py:124
+msgid "Calibre database unavailable. Please reconfigure the library path."
+msgstr ""
+
+#: cps/admin.py:175
 #, fuzzy
 msgid "Server restarted, please reload page."
 msgstr "Server startet på nytt. Last inn siden på nytt"
 
-#: cps/admin.py:167
+#: cps/admin.py:177
 #, fuzzy
 msgid "Performing Server shutdown, please close window."
 msgstr "Utfører avslutning av server, vennligst lukk vinduet"
 
-#: cps/admin.py:175
+#: cps/admin.py:185
 msgid "Success! Database Reconnected"
 msgstr ""
 
-#: cps/admin.py:178
+#: cps/admin.py:188
 msgid "Unknown command"
 msgstr "Ukjent kommando"
 
-#: cps/admin.py:189
+#: cps/admin.py:199
 #, fuzzy
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
 "Test e-post i kø for sending til %(email)s, sjekk Oppgaver for resultat"
 
-#: cps/admin.py:209
+#: cps/admin.py:219
 msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
 msgstr ""
 
-#: cps/admin.py:237
+#: cps/admin.py:247
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
 msgstr ""
 
-#: cps/admin.py:242
+#: cps/admin.py:252
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
 msgstr ""
 
-#: cps/admin.py:281 cps/templates/admin.html:223
+#: cps/admin.py:291 cps/templates/admin.html:223
 msgid "Review Hardcover Matches"
 msgstr ""
 
-#: cps/admin.py:288
+#: cps/admin.py:298
 #, python-format
 msgid "Error loading review queue: %(error)s"
 msgstr ""
 
-#: cps/admin.py:363
+#: cps/admin.py:373
 #, fuzzy
 msgid "Hardcover ID applied successfully"
 msgstr "{} brukere ble slettet"
 
-#: cps/admin.py:380
+#: cps/admin.py:390
 #, python-format
 msgid "Match %(action)s"
 msgstr ""
 
-#: cps/admin.py:418
+#: cps/admin.py:428
 msgid "No pending matches to reject"
 msgstr ""
 
-#: cps/admin.py:424
+#: cps/admin.py:434
 #, python-format
 msgid "Rejected %(count)s match(es)"
 msgstr ""
 
-#: cps/admin.py:461
+#: cps/admin.py:471
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
 msgstr ""
 
-#: cps/admin.py:463
+#: cps/admin.py:473
 msgid "No books with covers found to process."
 msgstr ""
 
-#: cps/admin.py:475
+#: cps/admin.py:485
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
 msgstr ""
 
-#: cps/admin.py:517
+#: cps/admin.py:527
 msgid "Admin page"
 msgstr "Admin side"
 
-#: cps/admin.py:537
+#: cps/admin.py:547
 msgid "Basic Configuration"
 msgstr "Grunnleggende konfigurasjon"
 
-#: cps/admin.py:575
+#: cps/admin.py:585
 msgid "UI Configuration"
 msgstr "UI-konfigurasjon"
 
-#: cps/admin.py:599 cps/admin.py:1281 cps/db.py:944 cps/search.py:153
+#: cps/admin.py:609 cps/admin.py:1291 cps/db.py:944 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Egendefinert kolonnenr.%(column)d finnes ikke i caliber-databasen"
 
-#: cps/admin.py:617 cps/templates/admin.html:55
+#: cps/admin.py:627 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Rediger brukere"
 
-#: cps/admin.py:661 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:671 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Alle"
 
-#: cps/admin.py:688 cps/admin.py:1806
+#: cps/admin.py:698 cps/admin.py:1816
 msgid "User not found"
 msgstr "Bruker ikke funnet"
 
-#: cps/admin.py:702
+#: cps/admin.py:712
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} brukere ble slettet"
 
-#: cps/admin.py:725 cps/templates/config_view_edit.html:170
+#: cps/admin.py:735 cps/templates/config_view_edit.html:170
 #: cps/templates/user_edit.html:241 cps/templates/user_edit.html:264
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Vis alt"
 
-#: cps/admin.py:746 cps/admin.py:752
+#: cps/admin.py:756 cps/admin.py:762
 msgid "Malformed request"
 msgstr "Feil utformet forespørsel"
 
-#: cps/admin.py:764 cps/admin.py:2619
+#: cps/admin.py:774 cps/admin.py:2629
 msgid "Guest Name can't be changed"
 msgstr "Gjestenavn kan ikke endres"
 
-#: cps/admin.py:778
+#: cps/admin.py:788
 msgid "Guest can't have this role"
 msgstr "Gjesten kan ikke ha denne rollen"
 
-#: cps/admin.py:790 cps/admin.py:2511
+#: cps/admin.py:800 cps/admin.py:2521
 msgid "No admin user remaining, can't remove admin role"
 msgstr "Ingen administratorbruker igjen, kan ikke fjerne administratorrollen"
 
-#: cps/admin.py:794 cps/admin.py:808
+#: cps/admin.py:804 cps/admin.py:818
 msgid "Value has to be true or false"
 msgstr "Verdien må være sann eller usann"
 
-#: cps/admin.py:796
+#: cps/admin.py:806
 msgid "Invalid role"
 msgstr "Ugyldig rolle"
 
-#: cps/admin.py:800
+#: cps/admin.py:810
 msgid "Guest can't have this view"
 msgstr "Gjestene kan ikke ha denne utsikten"
 
-#: cps/admin.py:810
+#: cps/admin.py:820
 msgid "Invalid view"
 msgstr "Ugyldig visning"
 
-#: cps/admin.py:813
+#: cps/admin.py:823
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "Gjestenes lokalitet bestemmes automatisk og kan ikke angis"
 
-#: cps/admin.py:817
+#: cps/admin.py:827
 msgid "No Valid Locale Given"
 msgstr "Ingen gyldig lokalitet gitt"
 
-#: cps/admin.py:828
+#: cps/admin.py:838
 msgid "No Valid Book Language Given"
 msgstr "Ikke oppgitt gyldig bokspråk"
 
-#: cps/admin.py:830 cps/editbooks.py:500
+#: cps/admin.py:840 cps/editbooks.py:500
 msgid "Parameter not found"
 msgstr "Parameter ikke funnet"
 
-#: cps/admin.py:867
+#: cps/admin.py:877
 msgid "Invalid Read Column"
 msgstr "Ugyldig lesekolonne"
 
-#: cps/admin.py:873
+#: cps/admin.py:883
 msgid "Invalid Restricted Column"
 msgstr "Ugyldig begrenset kolonne"
 
-#: cps/admin.py:893 cps/admin.py:2364
+#: cps/admin.py:903 cps/admin.py:2374
 #, fuzzy
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Calibre-Web-konfigurasjonen er oppdatert"
 
-#: cps/admin.py:905
+#: cps/admin.py:915
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Vil du virkelig slette Kobo-tokenet?"
 
-#: cps/admin.py:907
+#: cps/admin.py:917
 msgid "Do you really want to delete this domain?"
 msgstr "Vil du virkelig slette dette domenet?"
 
-#: cps/admin.py:909
+#: cps/admin.py:919
 msgid "Do you really want to delete this user?"
 msgstr "Vil du virkelig slette denne brukeren?"
 
-#: cps/admin.py:911
+#: cps/admin.py:921
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Er du sikker på at du vil slette denne hyllen?"
 
-#: cps/admin.py:913
+#: cps/admin.py:923
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr "Er du sikker på at du vil endre lokaliteter for valgte bruker(e)?"
 
-#: cps/admin.py:915
+#: cps/admin.py:925
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr "Er du sikker på at du vil endre synlige bokspråk for valgte bruker(e)?"
 
-#: cps/admin.py:917
+#: cps/admin.py:927
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
 "Er du sikker på at du vil endre den valgte rollen for den(e) valgte brukeren?"
 
-#: cps/admin.py:919
+#: cps/admin.py:929
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -249,7 +253,7 @@ msgstr ""
 "Er du sikker på at du vil endre de valgte begrensningene for den(e) valgte "
 "brukeren?"
 
-#: cps/admin.py:921
+#: cps/admin.py:931
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -257,18 +261,18 @@ msgstr ""
 "Er du sikker på at du vil endre de valgte synlighetsbegrensningene for "
 "valgte bruker(e)?"
 
-#: cps/admin.py:924
+#: cps/admin.py:934
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
 "Er du sikker på at du vil endre atferden for hyllesynkronisering for de(n) "
 "valgte brukeren(e)?"
 
-#: cps/admin.py:926
+#: cps/admin.py:936
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Er du sikker på at du vil endre plassering av Caliber-biblioteket?"
 
-#: cps/admin.py:928
+#: cps/admin.py:938
 #, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
@@ -277,7 +281,7 @@ msgstr ""
 "Calibre-Web vil søke etter oppdaterte omslag og oppdatere "
 "omslagsminiatyrbilder, kan dette ta litt tid?"
 
-#: cps/admin.py:931
+#: cps/admin.py:941
 #, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
@@ -286,84 +290,84 @@ msgstr ""
 "Er du sikker på at du vil slette Calibre-Webs synkroniseringsdatabase for å "
 "tvinge frem en full synkronisering med Kobo Reader?"
 
-#: cps/admin.py:1170 cps/admin.py:1176 cps/admin.py:1186 cps/admin.py:1196
+#: cps/admin.py:1180 cps/admin.py:1186 cps/admin.py:1196 cps/admin.py:1206
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Benekte"
 
-#: cps/admin.py:1172 cps/admin.py:1178 cps/admin.py:1188 cps/admin.py:1198
+#: cps/admin.py:1182 cps/admin.py:1188 cps/admin.py:1198 cps/admin.py:1208
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Tillate"
 
-#: cps/admin.py:1231
+#: cps/admin.py:1241
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} synkroniseringsoppføringer slettet"
 
-#: cps/admin.py:1272
+#: cps/admin.py:1282
 msgid "Tag not found"
 msgstr "Merket ble ikke funnet"
 
-#: cps/admin.py:1290
+#: cps/admin.py:1300
 msgid "Invalid Action"
 msgstr "Ugyldig handling"
 
-#: cps/admin.py:1417
+#: cps/admin.py:1427
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json er ikke konfigurert for webapplikasjon"
 
-#: cps/admin.py:1556
+#: cps/admin.py:1566
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Loggfilplasseringen er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:1562
+#: cps/admin.py:1572
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr ""
 "Plasseringen av tilgangsloggfilen er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:1597
+#: cps/admin.py:1607
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "Angi en LDAP-leverandør, port, DN og brukerobjektidentifikator"
 
-#: cps/admin.py:1603
+#: cps/admin.py:1613
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Vennligst skriv inn en LDAP-tjenestekonto og passord"
 
-#: cps/admin.py:1606
+#: cps/admin.py:1616
 msgid "Please Enter a LDAP Service Account"
 msgstr "Angi en LDAP-tjenestekonto"
 
-#: cps/admin.py:1611
+#: cps/admin.py:1621
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-gruppeobjektfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1613
+#: cps/admin.py:1623
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-gruppeobjektfilter har uovertruffen parentes"
 
-#: cps/admin.py:1617
+#: cps/admin.py:1627
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-brukerobjektfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1619
+#: cps/admin.py:1629
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-brukerobjektfilter har uovertruffen parentes"
 
-#: cps/admin.py:1626
+#: cps/admin.py:1636
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-medlemsbrukerfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1628
+#: cps/admin.py:1638
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "LDAP-medlemsbrukerfilter har uovertruffen parentes"
 
-#: cps/admin.py:1635
+#: cps/admin.py:1645
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -371,21 +375,21 @@ msgstr ""
 "LDAP CA-sertifikat, sertifikat eller nøkkelplassering er ikke gyldig. Angi "
 "riktig bane"
 
-#: cps/admin.py:1666 cps/templates/admin.html:57
+#: cps/admin.py:1676 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Legg til ny bruker"
 
-#: cps/admin.py:1675 cps/templates/admin.html:105
+#: cps/admin.py:1685 cps/templates/admin.html:105
 #, fuzzy
 msgid "Edit Email Server Settings"
 msgstr "Rediger e-postserverinnstillinger"
 
-#: cps/admin.py:1694
+#: cps/admin.py:1704
 msgid "Success! Gmail Account Verified."
 msgstr ""
 
-#: cps/admin.py:1714 cps/admin.py:1717 cps/admin.py:2137 cps/admin.py:2348
-#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:939
+#: cps/admin.py:1724 cps/admin.py:1727 cps/admin.py:2147 cps/admin.py:2358
+#: cps/admin.py:2466 cps/admin.py:2660 cps/editbooks.py:939
 #: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2559
@@ -393,335 +397,335 @@ msgstr ""
 msgid "Oops! Database Error: %(error)s."
 msgstr "Databasefeil: %(error)s."
 
-#: cps/admin.py:1724
+#: cps/admin.py:1734
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
 msgstr ""
 "Test e-post i kø for sending til %(email)s, sjekk Oppgaver for resultat"
 
-#: cps/admin.py:1727
+#: cps/admin.py:1737
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Det oppsto en feil ved sending av test-e-posten: %(res)s"
 
-#: cps/admin.py:1729
+#: cps/admin.py:1739
 msgid "Please configure your e-mail address first..."
 msgstr "Vennligst konfigurer e-postadressen din først..."
 
-#: cps/admin.py:1731
+#: cps/admin.py:1741
 #, fuzzy
 msgid "Email Server Settings updated"
 msgstr "E-postserverinnstillinger oppdatert"
 
-#: cps/admin.py:1754 cps/templates/admin.html:200
+#: cps/admin.py:1764 cps/templates/admin.html:200
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Rediger innstillinger for planlagte oppgaver"
 
-#: cps/admin.py:1766
+#: cps/admin.py:1776
 msgid "Invalid start time for task specified"
 msgstr "Ugyldig starttidspunkt for spesifisert oppgave"
 
-#: cps/admin.py:1771
+#: cps/admin.py:1781
 msgid "Invalid duration for task specified"
 msgstr "Ugyldig varighet for spesifisert oppgave"
 
-#: cps/admin.py:1781
+#: cps/admin.py:1791
 msgid "Scheduled tasks settings updated"
 msgstr "Innstillinger for planlagte oppgaver er oppdatert"
 
-#: cps/admin.py:1791 cps/admin.py:1869 cps/admin.py:2646 cps/web.py:2092
+#: cps/admin.py:1801 cps/admin.py:1879 cps/admin.py:2656 cps/web.py:2092
 #, fuzzy
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "En ukjent feil oppstod. Prøv igjen senere."
 
-#: cps/admin.py:1795
+#: cps/admin.py:1805
 msgid "Settings DB is not Writeable"
 msgstr "Innstillinger DB er ikke skrivbar"
 
-#: cps/admin.py:1854 cps/admin.py:2638
+#: cps/admin.py:1864 cps/admin.py:2648
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Rediger bruker %(nick)s"
 
-#: cps/admin.py:1866
+#: cps/admin.py:1876
 #, fuzzy, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Passord for bruker %(user)s tilbakestilling"
 
-#: cps/admin.py:1872
+#: cps/admin.py:1882
 #, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Vennligst konfigurer SMTP-postinnstillingene først..."
 
-#: cps/admin.py:1883
+#: cps/admin.py:1893
 msgid "Logfile viewer"
 msgstr "Loggfilviser"
 
-#: cps/admin.py:1949
+#: cps/admin.py:1959
 msgid "Requesting update package"
 msgstr "Ber om oppdateringspakke"
 
-#: cps/admin.py:1950
+#: cps/admin.py:1960
 msgid "Downloading update package"
 msgstr "Laster ned oppdateringspakken"
 
-#: cps/admin.py:1951
+#: cps/admin.py:1961
 msgid "Unzipping update package"
 msgstr "Pakker ut oppdateringspakken"
 
-#: cps/admin.py:1952
+#: cps/admin.py:1962
 msgid "Replacing files"
 msgstr "Erstatter filer"
 
-#: cps/admin.py:1953
+#: cps/admin.py:1963
 msgid "Database connections are closed"
 msgstr "Databaseforbindelser er stengt"
 
-#: cps/admin.py:1954
+#: cps/admin.py:1964
 msgid "Stopping server"
 msgstr "Stopper server"
 
-#: cps/admin.py:1955
+#: cps/admin.py:1965
 msgid "Update finished, please press okay and reload page"
 msgstr "Oppdatering fullført, vennligst trykk OK og last inn siden på nytt"
 
-#: cps/admin.py:1956 cps/admin.py:1957 cps/admin.py:1958 cps/admin.py:1959
-#: cps/admin.py:1960 cps/admin.py:1961
+#: cps/admin.py:1966 cps/admin.py:1967 cps/admin.py:1968 cps/admin.py:1969
+#: cps/admin.py:1970 cps/admin.py:1971
 msgid "Update failed:"
 msgstr "Oppdatering mislyktes:"
 
-#: cps/admin.py:1956 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
+#: cps/admin.py:1966 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
 msgid "HTTP Error"
 msgstr "HTTP-feil"
 
-#: cps/admin.py:1957 cps/updater.py:390 cps/updater.py:627
+#: cps/admin.py:1967 cps/updater.py:390 cps/updater.py:627
 msgid "Connection error"
 msgstr "Tilkoblingsfeil"
 
-#: cps/admin.py:1958 cps/updater.py:392 cps/updater.py:629
+#: cps/admin.py:1968 cps/updater.py:392 cps/updater.py:629
 msgid "Timeout while establishing connection"
 msgstr "Tidsavbrudd under etablering av tilkobling"
 
-#: cps/admin.py:1959 cps/updater.py:394 cps/updater.py:631
+#: cps/admin.py:1969 cps/updater.py:394 cps/updater.py:631
 msgid "General error"
 msgstr "Generell feil"
 
-#: cps/admin.py:1960
+#: cps/admin.py:1970
 msgid "Update file could not be saved in temp dir"
 msgstr "Oppdateringsfilen kunne ikke lagres i temp dir"
 
-#: cps/admin.py:1961
+#: cps/admin.py:1971
 msgid "Files could not be replaced during update"
 msgstr "Filer kunne ikke erstattes under oppdatering"
 
-#: cps/admin.py:1985
+#: cps/admin.py:1995
 msgid "Failed to extract at least One LDAP User"
 msgstr "Kunne ikke pakke ut minst én LDAP-bruker"
 
-#: cps/admin.py:2030
+#: cps/admin.py:2040
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Kunne ikke opprette minst én LDAP-bruker"
 
-#: cps/admin.py:2043
+#: cps/admin.py:2053
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Feil: %(ldaperror)s"
 
-#: cps/admin.py:2047
+#: cps/admin.py:2057
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Feil: Ingen bruker ble returnert som svar fra LDAP-serveren"
 
-#: cps/admin.py:2083
+#: cps/admin.py:2093
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Minst én LDAP-bruker ikke funnet i databasen"
 
-#: cps/admin.py:2085
+#: cps/admin.py:2095
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Bruker ble importert"
 
-#: cps/admin.py:2149
+#: cps/admin.py:2159
 msgid "Books path not valid"
 msgstr ""
 
-#: cps/admin.py:2156
+#: cps/admin.py:2166
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "DB-plassering er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:2184
+#: cps/admin.py:2194
 msgid "DB is not Writeable"
 msgstr "DB er ikke skrivbar"
 
-#: cps/admin.py:2197
+#: cps/admin.py:2207
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Nøkkelfilplasseringen er ikke gyldig. Angi riktig bane"
 
-#: cps/admin.py:2201
+#: cps/admin.py:2211
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr ""
 "Sertifikatfilplasseringen er ikke gyldig, vennligst skriv inn riktig bane"
 
-#: cps/admin.py:2270
+#: cps/admin.py:2280
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
 
-#: cps/admin.py:2273
+#: cps/admin.py:2283
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 
-#: cps/admin.py:2292 cps/admin.py:2299
+#: cps/admin.py:2302 cps/admin.py:2309
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2296
+#: cps/admin.py:2306
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2331
+#: cps/admin.py:2341
 msgid "Password length has to be between 1 and 40"
 msgstr ""
 
-#: cps/admin.py:2391
+#: cps/admin.py:2401
 msgid "Database Settings updated"
 msgstr "Databaseinnstillinger oppdatert"
 
-#: cps/admin.py:2399
+#: cps/admin.py:2409
 msgid "Database Configuration"
 msgstr "Databasekonfigurasjon"
 
-#: cps/admin.py:2420 cps/web.py:2061
+#: cps/admin.py:2430 cps/web.py:2061
 #, fuzzy
 msgid "Oops! Please complete all fields."
 msgstr "Vennligst fyll ut alle feltene!"
 
-#: cps/admin.py:2429
+#: cps/admin.py:2439
 msgid "E-mail is not from valid domain"
 msgstr "E-post er ikke fra gyldig domene"
 
-#: cps/admin.py:2435
+#: cps/admin.py:2445
 msgid "Add new user"
 msgstr "Legg til ny bruker"
 
-#: cps/admin.py:2446
+#: cps/admin.py:2456
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Bruker '%(user)s' opprettet"
 
-#: cps/admin.py:2452
+#: cps/admin.py:2462
 #, fuzzy
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "Fant en eksisterende konto for denne e-postadressen eller navnet."
 
-#: cps/admin.py:2482
+#: cps/admin.py:2492
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Brukeren '%(nick)s' slettet"
 
-#: cps/admin.py:2485
+#: cps/admin.py:2495
 msgid "Can't delete Guest User"
 msgstr "Kan ikke slette gjestebruker"
 
-#: cps/admin.py:2488
+#: cps/admin.py:2498
 msgid "No admin user remaining, can't delete user"
 msgstr "Ingen administratorbruker igjen, kan ikke slette bruker"
 
-#: cps/admin.py:2613 cps/web.py:2396
+#: cps/admin.py:2623 cps/web.py:2396
 #, fuzzy
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-postadresse kan ikke være tom og må være en gyldig e-post"
 
-#: cps/admin.py:2642
+#: cps/admin.py:2652
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Bruker '%(nick)s' oppdatert"
 
-#: cps/admin.py:2707
+#: cps/admin.py:2717
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2712
+#: cps/admin.py:2722
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2714 cps/admin.py:2771
+#: cps/admin.py:2724 cps/admin.py:2781
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr ""
 
-#: cps/admin.py:2716
+#: cps/admin.py:2726
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr ""
 
-#: cps/admin.py:2718
+#: cps/admin.py:2728
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 
-#: cps/admin.py:2720
+#: cps/admin.py:2730
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr ""
 
-#: cps/admin.py:2723
+#: cps/admin.py:2733
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Tilkoblingsfeil"
 
-#: cps/admin.py:2749
+#: cps/admin.py:2759
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr ""
 
-#: cps/admin.py:2760
+#: cps/admin.py:2770
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 
-#: cps/admin.py:2762
+#: cps/admin.py:2772
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "Ingen utgivelsesinformasjon tilgjengelig"
 
-#: cps/admin.py:2764
+#: cps/admin.py:2774
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2769
+#: cps/admin.py:2779
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:2773
+#: cps/admin.py:2783
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr ""
 
-#: cps/admin.py:2775
+#: cps/admin.py:2785
 msgid "Connection failed: Request timed out."
 msgstr ""
 
-#: cps/admin.py:2777
+#: cps/admin.py:2787
 msgid "Connection failed: Invalid JSON in response."
 msgstr ""
 
-#: cps/admin.py:2780
+#: cps/admin.py:2790
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "En ukjent feil oppstod. Prøv igjen senere."

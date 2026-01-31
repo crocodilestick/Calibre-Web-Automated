@@ -30,6 +30,9 @@ curHref = window.location.href.split("/");
 prevHref = document.referrer.split("/");
 $(".plexBack a").attr('href', encodeURI(document.referrer));
 
+// Detect new detail layout for conditional behavior
+var isNewDetailLayout = $(".book-detail-card").length > 0;
+
 if (history.length === 1 ||
     curHref[0] +
     curHref[1] +
@@ -53,7 +56,6 @@ setTimeout(function () {
 // Wrap book description in div container
 if ($("body.book").length > 0) {
     // New card-based detail layout should not be mutated by legacy DOM rewrites
-    var isNewDetailLayout = $(".book-detail-card").length > 0;
     if (!isNewDetailLayout) {
 
     description = $(".comments");
@@ -117,118 +119,120 @@ if ($("body.book").length > 0) {
         });
     }
 
-    $(".book-meta h2:first").clone()
-        .prependTo(".book-meta > .btn-toolbar:first");
+    if (!isNewDetailLayout) {
+        $(".book-meta h2:first").clone()
+            .prependTo(".book-meta > .btn-toolbar:first");
 
-    // If only one download type exists still put the items into a drop-drown list.
-    downloads = $("a[id^=btnGroupDrop]").get();
-    if ($(downloads).length === 1) {
-        $('<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-download"></span>Download<span class="caret"></span></button><ul class="dropdown-menu leramslist aria-labelledby="btnGroupDrop1"></ul>').insertBefore(downloads[downloads.length - 1]);
-        $(downloads).detach();
-        $.each(downloads, function (i, val) {
-            $("<li>" + downloads[i].outerHTML + "</li>").appendTo(".leramslist");
-        });
-        $(".leramslist").find("span").remove();
-        $(".leramslist a").removeClass("btn btn-primary").removeAttr("role");
-    }
+        // If only one download type exists still put the items into a drop-drown list.
+        downloads = $("a[id^=btnGroupDrop]").get();
+        if ($(downloads).length === 1) {
+            $('<button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-download"></span>Download<span class="caret"></span></button><ul class="dropdown-menu leramslist aria-labelledby="btnGroupDrop1"></ul>').insertBefore(downloads[downloads.length - 1]);
+            $(downloads).detach();
+            $.each(downloads, function (i, val) {
+                $("<li>" + downloads[i].outerHTML + "</li>").appendTo(".leramslist");
+            });
+            $(".leramslist").find("span").remove();
+            $(".leramslist a").removeClass("btn btn-primary").removeAttr("role");
+        }
 
-    // Add classes to buttons
-    $("#sendbtn").parent().addClass("sendBtn");
-    $("[id*=btnGroupDrop]").parent().addClass("downloadBtn");
-    $("read-in-browser").parent().addClass("readBtn");
-    $("listen-in-browser").parent().addClass("listenBtn");
-    $(".downloadBtn button:first").addClass("download-text");
+        // Add classes to buttons
+        $("#sendbtn").parent().addClass("sendBtn");
+        $("[id*=btnGroupDrop]").parent().addClass("downloadBtn");
+        $("read-in-browser").parent().addClass("readBtn");
+        $("listen-in-browser").parent().addClass("listenBtn");
+        $(".downloadBtn button:first").addClass("download-text");
 
-    // Move all options in book details page to the same group
-    $("[aria-label*='Delete book']")
-        .prependTo('[aria-label^="Download, send"]')
-        .children().removeClass("btn-sm");
-    $(".custom_columns")
-        .addClass(" btn-group")
-        .attr("role", "group")
-        .removeClass("custom_columns")
-        .prependTo('[aria-label^="Download, send"]');
-    $("#have_read_cb")
-        .after('<label class="block-label readLbl" for="#have_read_cb"></label>');
-    $("#have_read_form").next("p").remove();
-    $("#have_read_form").next("p").remove();
-    $("#archived_cb")
-        .after('<label class="block-label readLbl" for="#archived_cb"></label>');
-    $("#shelf-actions").prependTo('[aria-label^="Download, send"]');
+        // Move all options in book details page to the same group
+        $("[aria-label*='Delete book']")
+            .prependTo('[aria-label^="Download, send"]')
+            .children().removeClass("btn-sm");
+        $(".custom_columns")
+            .addClass(" btn-group")
+            .attr("role", "group")
+            .removeClass("custom_columns")
+            .prependTo('[aria-label^="Download, send"]');
+        $("#have_read_cb")
+            .after('<label class="block-label readLbl" for="#have_read_cb"></label>');
+        $("#have_read_form").next("p").remove();
+        $("#have_read_form").next("p").remove();
+        $("#archived_cb")
+            .after('<label class="block-label readLbl" for="#archived_cb"></label>');
+        $("#shelf-actions").prependTo('[aria-label^="Download, send"]');
 
-    $(".more-stuff .col-sm-12 #back").hide()
+        $(".more-stuff .col-sm-12 #back").hide()
 /*        .html("&laquo; Previous")
         .addClass("page-link")
         .removeClass("btn btn-default")
         .prependTo('[aria-label^="Download, send"]');*/
 
-    // Move dropdown lists higher in dom, replace bootstrap toggle with own toggle.
-    $('ul[aria-labelledby="read-in-browser"]').insertBefore(".blur-wrapper").addClass("readinbrowser-drop");
-    $('ul[aria-labelledby="listen-in-browser"]').insertBefore(".blur-wrapper").addClass("readinbrowser-drop");
-    $('ul[aria-labelledby="send-to-kereader"]').insertBefore(".blur-wrapper").addClass("sendtoereader-drop");
-    $(".leramslist").insertBefore(".blur-wrapper");
-    $('ul[aria-labelledby="btnGroupDrop1"]').insertBefore(".blur-wrapper").addClass("leramslist");
-    $("#add-to-shelves").insertBefore(".blur-wrapper");
-    $("#back")
-    $("#read-in-browser").click(function () {
-        $(".readinbrowser-drop").toggle();
-    });
-    $("#listen-in-browser").click(function () {
-        $(".readinbrowser-drop").toggle();
-    });
+        // Move dropdown lists higher in dom, replace bootstrap toggle with own toggle.
+        $('ul[aria-labelledby="read-in-browser"]').insertBefore(".blur-wrapper").addClass("readinbrowser-drop");
+        $('ul[aria-labelledby="listen-in-browser"]').insertBefore(".blur-wrapper").addClass("readinbrowser-drop");
+        $('ul[aria-labelledby="send-to-kereader"]').insertBefore(".blur-wrapper").addClass("sendtoereader-drop");
+        $(".leramslist").insertBefore(".blur-wrapper");
+        $('ul[aria-labelledby="btnGroupDrop1"]').insertBefore(".blur-wrapper").addClass("leramslist");
+        $("#add-to-shelves").insertBefore(".blur-wrapper");
+        $("#back")
+        $("#read-in-browser").click(function () {
+            $(".readinbrowser-drop").toggle();
+        });
+        $("#listen-in-browser").click(function () {
+            $(".readinbrowser-drop").toggle();
+        });
 
 
-    $(".downloadBtn").click(function () {
-        $(".leramslist").toggle();
-    });
+        $(".downloadBtn").click(function () {
+            $(".leramslist").toggle();
+        });
 
-    $("#sendbtn2").click(function () {
-        $(".sendtoereader-drop").toggle();
-    });
+        $("#sendbtn2").click(function () {
+            $(".sendtoereader-drop").toggle();
+        });
 
 
-    $('div[aria-label="Add to shelves"]').click(function () {
-        $("#add-to-shelves").toggle();
-    });
+        $('div[aria-label="Add to shelves"]').click(function () {
+            $("#add-to-shelves").toggle();
+        });
 
-    //Work to reposition dropdowns. Does not currently solve for
-    //screen resizing
-    function dropdownToggle() {
-        var topPos = $(".book-meta > .btn-toolbar:first").offset().top;
-        var windowWidth = $(window).width();
+        //Work to reposition dropdowns. Does not currently solve for
+        //screen resizing
+        function dropdownToggle() {
+            var topPos = $(".book-meta > .btn-toolbar:first").offset().top;
+            var windowWidth = $(window).width();
 
-        function positionDropdown(trigger, dropdown) {
-            if (trigger.length > 0) {
-                var position = trigger.offset().left;
-                if (position + dropdown.width() > windowWidth) {
-                    var positionOff = position + dropdown.width() - windowWidth;
-                    var newPosition = position - positionOff - 5;
-                    dropdown.attr("style", "left: " + newPosition + "px !important; right: auto; top: " + topPos + "px");
-                } else {
-                    dropdown.attr("style", "left: " + position + "px !important; right: auto; top: " + topPos + "px");
+            function positionDropdown(trigger, dropdown) {
+                if (trigger.length > 0) {
+                    var position = trigger.offset().left;
+                    if (position + dropdown.width() > windowWidth) {
+                        var positionOff = position + dropdown.width() - windowWidth;
+                        var newPosition = position - positionOff - 5;
+                        dropdown.attr("style", "left: " + newPosition + "px !important; right: auto; top: " + topPos + "px");
+                    } else {
+                        dropdown.attr("style", "left: " + position + "px !important; right: auto; top: " + topPos + "px");
+                    }
                 }
             }
+
+            positionDropdown($("#read-in-browser"), $(".readinbrowser-drop"));
+            positionDropdown($("#sendbtn2"), $(".sendtoereader-drop"));
+            positionDropdown($("#btnGroupDrop1"), $(".leramslist"));
+            positionDropdown($('div[aria-label="Add to shelves"]'), $("#add-to-shelves"));
         }
 
-        positionDropdown($("#read-in-browser"), $(".readinbrowser-drop"));
-        positionDropdown($("#sendbtn2"), $(".sendtoereader-drop"));
-        positionDropdown($("#btnGroupDrop1"), $(".leramslist"));
-        positionDropdown($('div[aria-label="Add to shelves"]'), $("#add-to-shelves"));
+        dropdownToggle();
+
+        var resizeTimer;
+        $(window).on("resize", function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                dropdownToggle();
+            }, 250);
+        });
+
+        // Clone book rating for mobile view.
+        $(".book-meta > .bookinfo > .rating").clone().insertBefore(".book-meta > .description").addClass("rating-mobile");// Clone book rating for mobile view.
+        $(".book-meta > .bookinfo > .rating").clone().insertBefore(".book-meta > .description").addClass("rating-mobile");
     }
-
-    dropdownToggle();
-
-    var resizeTimer;
-    $(window).on("resize", function () {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            dropdownToggle();
-        }, 250);
-    });
-
-// Clone book rating for mobile view.
-    $(".book-meta > .bookinfo > .rating").clone().insertBefore(".book-meta > .description").addClass("rating-mobile");// Clone book rating for mobile view.
-    $(".book-meta > .bookinfo > .rating").clone().insertBefore(".book-meta > .description").addClass("rating-mobile");
 }
 
 ///////////////////////////////
@@ -245,7 +249,9 @@ $(document).mouseup(function (e) {
     container.push($("ul[aria-labelledby=\"read-in-browser\"]"));
     container.push($(".sendtoereader-drop"));
     container.push($(".leramslist"));
-    container.push($("#add-to-shelves"));
+    if (!(isNewDetailLayout && $("body.book").length > 0)) {
+        container.push($("#add-to-shelves"));
+    }
     container.push($(".navbar-collapse.collapse.in"));
 
     $.each(container, function (key, value) {
@@ -597,8 +603,8 @@ $("#archived_cb:checked").attr({
     .addClass("readunread-btn-tooltip");
 
 $("button#delete").attr({
-    "data-toggle-two": "tooltip",
-    "title": $("button#delete").text(),           //"Delete"
+    "data-toggle": "tooltip",
+    "title": $("button#delete").attr("title") || $("button#delete").attr("aria-label") || $("button#delete").text(),
     "data-placement": "left",
     "data-viewport": ".btn-toolbar"
 })

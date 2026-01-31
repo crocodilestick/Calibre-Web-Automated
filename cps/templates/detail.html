@@ -209,7 +209,17 @@
             align-items: center;
         }
 
-        .book-action-bar .btn, .book-action-bar .btn-group > .btn {
+        .book-action-bar .btn-group {
+            position: relative;
+            z-index: 3;
+            pointer-events: auto;
+        }
+
+        .book-action-bar .dropdown-menu {
+            z-index: 4;
+        }
+
+        .book-action-bar .action-icon-btn {
             position: static;
             align-content: center;
             height: 60px;
@@ -243,6 +253,10 @@
 
         .action-icon-btn .caret {
             margin-left: 0;
+        }
+
+        ul.dropdown-menu > li {
+            cursor: pointer;
         }
 
         @media (max-width: 768px) {
@@ -442,7 +456,61 @@
                                                 data-toggle="modal" data-delete-id="{{ entry.id }}" data-target="#deleteModal"
                                                 title="{{ _('Delete Book') }}" aria-label="{{ _('Delete Book') }}">
                                             <span class="glyphicon glyphicon-trash"></span>
+                                            <span class="sr-only">{{ _('Delete Book') }}</span>
                                         </button>
+                                    {% endif %}
+                                    {% if current_user.is_authenticated and (current_user.shelf.all() or g.shelves_access) %}
+                                        {% set shelf_state = namespace(has_available=false) %}
+                                        {% for shelf in g.shelves_access %}
+                                            {% if not shelf.id in books_shelfs and ( not shelf.is_public or current_user.role_edit_shelfs() ) %}
+                                                {% set shelf_state.has_available = true %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if shelf_state.has_available %}
+                                        <div class="btn-group" role="group" aria-label="Add to shelves">
+                                            <button id="addShelfMenu" type="button" class="btn btn-primary dropdown-toggle action-icon-btn"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                    title="{{ _('Add to shelf') }}" aria-label="{{ _('Add to shelf') }}">
+                                                <span class="glyphicon glyphicon-list"></span>
+                                            </button>
+                                            <ul id="add-to-shelves" class="dropdown-menu" aria-labelledby="addShelfMenu">
+                                                {% for shelf in g.shelves_access %}
+                                                    {% if not shelf.id in books_shelfs and ( not shelf.is_public or current_user.role_edit_shelfs() ) %}
+                                                        <li>
+                                                            <a data-href="{{ url_for('shelf.add_to_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
+                                                               data-remove-href="{{ url_for('shelf.remove_from_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
+                                                               data-shelf-action="add">
+                                                                {{ shelf.name }}{% if shelf.is_public == 1 %}
+                                                                    {{ _('(Public)') }}{% endif %}
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                        {% if books_shelfs %}
+                                        <div class="btn-group" role="group" aria-label="Remove from shelves">
+                                            <button id="removeShelfMenu" type="button" class="btn btn-default dropdown-toggle action-icon-btn"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                    title="{{ _('Remove from shelf') }}" aria-label="{{ _('Remove from shelf') }}">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                            <ul id="remove-from-shelves" class="dropdown-menu" aria-labelledby="removeShelfMenu">
+                                                {% for shelf in g.shelves_access %}
+                                                    {% if shelf.id in books_shelfs %}
+                                                        <li>
+                                                            <a data-href="{{ url_for('shelf.remove_from_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
+                                                               data-add-href="{{ url_for('shelf.add_to_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
+                                                               data-shelf-action="remove">
+                                                                {{ shelf.name }}{% if shelf.is_public == 1 %} {{ _('(Public)') }}{% endif %}
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -515,7 +583,14 @@
                                     <span>{{ _('File sizes') }}</span>
                                     <span class="meta-value">
                                         {% for format in entry.data %}
-                                            <span class="meta-pill">{{ format.format }} ({{ format.uncompressed_size|filesizeformat_binary }})</span>
+                                            {% if current_user.role_download() %}
+                                                <a href="{{ url_for('web.download_link', book_id=entry.id, book_format=format.format|lower, anyname=entry.id|string+'.'+format.format|lower|replace('kepub', 'kepub.epub')) }}"
+                                                   class="meta-pill meta-link" role="button">
+                                                    {{ format.format }} ({{ format.uncompressed_size|filesizeformat_binary }})
+                                                </a>
+                                            {% else %}
+                                                <span class="meta-pill">{{ format.format }} ({{ format.uncompressed_size|filesizeformat_binary }})</span>
+                                            {% endif %}
                                         {% endfor %}
                                     </span>
                                 </div>
@@ -627,57 +702,7 @@
                         {{ entry.comments[0].text|safe }}
                     </div>
                 {% endif %}
-
-                <div class="more-stuff">
-                    {% if current_user.is_authenticated %}
-                        {% if current_user.shelf.all() or g.shelves_access %}
-                            <div id="shelf-actions" class="btn-toolbar" role="toolbar">
-                                <div class="btn-group" role="group" aria-label="Add to shelves">
-                                    <button id="add-to-shelf" type="button"
-                                            class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"
-                                            aria-haspopup="true" aria-expanded="false">
-                                        <span class="glyphicon glyphicon-list"></span> {{ _('Add to shelf') }}
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul id="add-to-shelves" class="dropdown-menu" aria-labelledby="add-to-shelf">
-                                        {% for shelf in g.shelves_access %}
-                                            {% if not shelf.id in books_shelfs and ( not shelf.is_public or current_user.role_edit_shelfs() ) %}
-                                                <li>
-                                                    <a data-href="{{ url_for('shelf.add_to_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
-                                                       data-remove-href="{{ url_for('shelf.remove_from_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
-                                                       data-shelf-action="add"
-                                                    >
-                                                        {{ shelf.name }}{% if shelf.is_public == 1 %}
-                                                            {{ _('(Public)') }}{% endif %}
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                                <div id="remove-from-shelves" class="btn-group" role="group"
-                                     aria-label="Remove from shelves">
-                                    {% if books_shelfs %}
-                                        {% for shelf in g.shelves_access %}
-                                            {% if shelf.id in books_shelfs %}
-                                                <a data-href="{{ url_for('shelf.remove_from_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
-                                                   data-add-href="{{ url_for('shelf.add_to_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
-                                                   class="btn btn-sm btn-default" role="button"
-                                                   data-shelf-action="remove"
-                                                >
-        			              <span {% if not shelf.is_public or current_user.role_edit_shelfs() %}
-        			                  class="glyphicon glyphicon-remove"
-        			              {% endif %}></span> {{ shelf.name }}{% if shelf.is_public == 1 %} {{ _('(Public)') }}{% endif %}
-                                                </a>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                </div>
-                                <div id="shelf-action-errors" class="pull-left" role="alert"></div>
-                            </div>
-                        {% endif %}
-                    {% endif %}
-                </div>
+                <div id="shelf-action-errors" class="pull-left" role="alert"></div>
             </div>
         </div>
         <div id="action-toast" class="action-toast" role="status" aria-live="polite"></div>
@@ -767,10 +792,11 @@
     </li>
 </script>
 <script type="text/template" id="template-shelf-remove">
-    <a data-href="<%= remove %>" data-add-href="<%= add %>" class="btn btn-sm btn-default"
-       data-shelf-action="remove">
-        <span class="glyphicon glyphicon-remove"></span> <%= content %>
-    </a>
+    <li>
+        <a data-href="<%= remove %>" data-add-href="<%= add %>" data-shelf-action="remove">
+            <%= content %>
+        </a>
+    </li>
 </script>
 <script src="{{ url_for('static', filename='js/details.js') }}"></script>
 <script src="{{ url_for('static', filename='js/email_selection.js') }}"></script>

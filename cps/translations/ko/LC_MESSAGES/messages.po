@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 12:15+0100\n"
+"POT-Creation-Date: 2026-01-31 13:53+0100\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -106,7 +106,7 @@ msgstr "기본 설정"
 msgid "UI Configuration"
 msgstr "UI 설정"
 
-#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:943 cps/search.py:153
+#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:944 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -116,7 +116,7 @@ msgstr "사용자 정의 열 번호 %(column)d이(가) calibre 데이터베이�
 msgid "Edit Users"
 msgstr "사용자 관리"
 
-#: cps/admin.py:618 cps/opds.py:549 cps/templates/grid.html:14
+#: cps/admin.py:618 cps/opds.py:785 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "모두"
@@ -992,7 +992,7 @@ msgstr "프로필 사진이 갱신되었습니다."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA 프로필 사진 관리자 (개발중)"
 
-#: cps/db.py:1216 cps/templates/config_edit.html:294
+#: cps/db.py:1217 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:80
 #: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -1556,7 +1556,17 @@ msgstr "Google 인증 오류가 발생했습니다: {}"
 msgid "OAuth error: {}"
 msgstr "OAuth 오류: {}"
 
-#: cps/opds.py:308
+#: cps/opds.py:186
+#, fuzzy
+msgid "title"
+msgstr "제목"
+
+#: cps/opds.py:187
+#, fuzzy
+msgid "description"
+msgstr "설명"
+
+#: cps/opds.py:470
 #, python-brace-format
 msgid "{} Stars"
 msgstr "{} Stars"
@@ -5126,9 +5136,10 @@ msgid "Add to shelf"
 msgstr "서재에 추가"
 
 #: cps/templates/detail.html:422 cps/templates/detail.html:441
-#: cps/templates/feed.xml:81 cps/templates/layout.html:301
-#: cps/templates/layout.html:310 cps/templates/listenmp3.html:201
-#: cps/templates/listenmp3.html:218 cps/templates/search.html:22
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
 msgid "(Public)"
 msgstr "(공개)"
 
@@ -5368,6 +5379,10 @@ msgstr "차단 도메인 (블랙리스트)"
 #: cps/templates/feed.xml:22 cps/templates/layout.html:344
 msgid "Next"
 msgstr "다음"
+
+#: cps/templates/feed.xml:83
+msgid "(Magic)"
+msgstr ""
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""

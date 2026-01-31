@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre Web - polski (POT: 2021-06-12 08:52)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 12:15+0100\n"
+"POT-Creation-Date: 2026-01-31 13:53+0100\n"
 "PO-Revision-Date: 2021-06-12 15:35+0200\n"
 "Last-Translator: Radosław Kierznowski <radek.kierznowski@outlook.com>\n"
 "Language-Team: \n"
@@ -108,7 +108,7 @@ msgstr "Konfiguracja Podstawowa"
 msgid "UI Configuration"
 msgstr "Konfiguracja Interfejsu"
 
-#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:943 cps/search.py:153
+#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:944 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -120,7 +120,7 @@ msgid "Edit Users"
 msgstr "Edytuj Użytkowników"
 
 # ???
-#: cps/admin.py:618 cps/opds.py:549 cps/templates/grid.html:14
+#: cps/admin.py:618 cps/opds.py:785 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Wszystko"
@@ -1032,7 +1032,7 @@ msgstr "Zdjęcie profilowe zostało pomyślnie zaktualizowane."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "Zarządzanie zdjęciami profilowymi CWA (w budowie)"
 
-#: cps/db.py:1216 cps/templates/config_edit.html:294
+#: cps/db.py:1217 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:80
 #: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -1622,7 +1622,17 @@ msgstr "Błąd Google Oauth: {}"
 msgid "OAuth error: {}"
 msgstr "Błąd OAuth: {}"
 
-#: cps/opds.py:308
+#: cps/opds.py:186
+#, fuzzy
+msgid "title"
+msgstr "Tytuł"
+
+#: cps/opds.py:187
+#, fuzzy
+msgid "description"
+msgstr "Opis"
+
+#: cps/opds.py:470
 #, python-brace-format
 msgid "{} Stars"
 msgstr "{} Gwiazdek"
@@ -5231,9 +5241,10 @@ msgid "Add to shelf"
 msgstr "Dodaj do półki"
 
 #: cps/templates/detail.html:422 cps/templates/detail.html:441
-#: cps/templates/feed.xml:81 cps/templates/layout.html:301
-#: cps/templates/layout.html:310 cps/templates/listenmp3.html:201
-#: cps/templates/listenmp3.html:218 cps/templates/search.html:22
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
 msgid "(Public)"
 msgstr "(publiczna)"
 
@@ -5480,6 +5491,10 @@ msgstr "Domeny zabronione (czarna lista)"
 #: cps/templates/feed.xml:22 cps/templates/layout.html:344
 msgid "Next"
 msgstr "Następne"
+
+#: cps/templates/feed.xml:83
+msgid "(Magic)"
+msgstr ""
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""

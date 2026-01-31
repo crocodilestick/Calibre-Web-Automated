@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 12:15+0100\n"
+"POT-Creation-Date: 2026-01-31 13:53+0100\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -106,7 +106,7 @@ msgstr "基本配置"
 msgid "UI Configuration"
 msgstr "界面配置"
 
-#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:943 cps/search.py:153
+#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:944 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -116,7 +116,7 @@ msgstr "自定义列号：%(column)d 在 Calibre 数据库中不存在"
 msgid "Edit Users"
 msgstr "管理用户"
 
-#: cps/admin.py:618 cps/opds.py:549 cps/templates/grid.html:14
+#: cps/admin.py:618 cps/opds.py:785 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "全部"
@@ -1000,7 +1000,7 @@ msgstr "成功删除 {} 个用户"
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA 头像管理（开发中）"
 
-#: cps/db.py:1216 cps/templates/config_edit.html:294
+#: cps/db.py:1217 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:80
 #: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -1567,7 +1567,17 @@ msgstr "Google Oauth 错误: {}"
 msgid "OAuth error: {}"
 msgstr "GitHub Oauth 错误: {}"
 
-#: cps/opds.py:308
+#: cps/opds.py:186
+#, fuzzy
+msgid "title"
+msgstr "标题"
+
+#: cps/opds.py:187
+#, fuzzy
+msgid "description"
+msgstr "简介"
+
+#: cps/opds.py:470
 #, python-brace-format
 msgid "{} Stars"
 msgstr "{} 星"
@@ -5111,9 +5121,10 @@ msgid "Add to shelf"
 msgstr "添加到书架"
 
 #: cps/templates/detail.html:422 cps/templates/detail.html:441
-#: cps/templates/feed.xml:81 cps/templates/layout.html:301
-#: cps/templates/layout.html:310 cps/templates/listenmp3.html:201
-#: cps/templates/listenmp3.html:218 cps/templates/search.html:22
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
 msgid "(Public)"
 msgstr "(公共)"
 
@@ -5357,6 +5368,10 @@ msgstr "禁止注册的域名（黑名单）"
 #: cps/templates/feed.xml:22 cps/templates/layout.html:344
 msgid "Next"
 msgstr "下一个"
+
+#: cps/templates/feed.xml:83
+msgid "(Magic)"
+msgstr ""
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""

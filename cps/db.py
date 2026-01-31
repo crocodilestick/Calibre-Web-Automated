@@ -449,6 +449,7 @@ class Books(Base):
                                             {"id": self.id}).scalar()
                     return value or ""
                 except Exception:
+                    Books._has_isbn_column = False
                     return ""
         return ""
 
@@ -796,7 +797,7 @@ class CalibreDB:
                     return None
 
             try:
-                cols = conn.execute(text("PRAGMA table_info(books)")).fetchall()
+                cols = conn.execute(text("PRAGMA calibre.table_info(books)")).fetchall()
                 Books._has_isbn_column = any(row[1] == "isbn" for row in cols)
             except Exception:
                 Books._has_isbn_column = False

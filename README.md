@@ -164,56 +164,9 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - This results in a frustrating situation for many CW users who utilise CW's Send-To-Kindle function, and are disappointed to find that the High-Quality Covers they picked out and carefully chosen Metadata they sourced are completely absent on all their other devices! UGH!
 - CWA's **Automatic Cover & Metadata Enforcement Feature** makes it so that **WHATEVER** you changes you make to **YOUR** books, **_are made to the books themselves_**, as well as in the Web UI, **making what you see, what you get.**
 
-![Cover Enforcement CWA](README_images/cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
-
-#### **Batch Editing & Deletion!** 🗂️🗄️
-- Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
-- To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
-- _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
-
-![](/README_images/cwa-bulk-editting-diagram.png)
-
 #### **Automated Back Up Service** 🔒
 - Worried what will happen if something goes wrong during one of CWA's automated functions? Don't be!
 - By default, the originals all files processed by CWA are stored in `/config/processed_books` though this can be toggled in the CWA Settings panel
-
-#### **Automatic EPUB Fixer Service** 🔨
-- Ever had it where you're super excited to start reading your next book but for some reason, Amazon's Send-to-Kindle service just keeps rejecting it? Well no more!
-
-- Originally developed by [innocenat](https://github.com/innocenat/kindle-epub-fix), this tool corrects the following potential issues for every EPUB processed by CWA:
-  - Fixes UTF-8 encoding problem by adding UTF-8 declaration if no encoding is specified
-  - Fixes hyperlink problem (result in Amazon rejecting the EPUB) when NCX table of content link to `<body>` with ID hash.
-  - Detect invalid and/or missing language tag in metadata, and prompt user to select new language.
-  - Remove stray `<img>` tags with no source field.
-  - Resolves several EPUB compatibility issues, such as UTF-8 encoding, hyperlink problems, invalid/missing language tags, and stray image tags.
-- This **ensures maximum comparability** for each EPUB file with the Amazon **Send-to-Kindle** service and for those who don't use Amazon devices, has the side benefit of cleaning up your lower quality files!
-- Enabled by default but can be toggled in settings.
-- Files processed by the EPUB-Fixer service are by default automatically backed up to `/config/processed_books` however this can also be toggled in the settings.
-- Bulk processing of whole library with progress tracking available in the Admin Panel
-- Available via both the Web UI and CLI
-
-#### **EPUB Fixer 2.0** 📧✅
-- Major Kindle compatibility upgrades to prevent Amazon E999 rejections
-- Repairs malformed language tags, XML declarations, and UTF-8 headers
-- Cleans invalid NCX links, broken CSS/fonts, and stray image tags
-- Enabled by default, with per-run backups in `/config/processed_books`
-
-#### **Simple to use Multi-Format Conversion Service** 🌌
-- This utility gives the user the option to either keep a copy of the original of all converted files in `/config/processed_books` or to trust the process and have CWA simply convert and replace those files (not recommended)
-- Full usage details can be found [here](#the-convert-library-tool)
-
-![CWA Convert Library Web UI](/README_images/CWA-new-process-ui.gif)
-
-#### **Additional Metadata Providers** 🗃️
-- Users can now make use of [isbndb.com](https://isbndb.com/)'s huge database when fetching metadata for the books in their library!
-- Access is being provided via [ibdb.dev](https://ibdb.dev/) thanks to a generous donation to the community by [@chad3814](https://www.github.com/chad3814)
-- [Hardcover](https://hardcover.app/) and Kobo metadata providers are supported, alongside new LitRes support
-
-#### **Automatic Metadata Fetch on Ingest** 🏷️🤖
-- Optionally fetch and apply metadata automatically during ingest
-- Provider hierarchy is respected with smart fallback
-- Choose whether to overwrite existing fields or only fill missing data
-- Works seamlessly with Auto-Send and EPUB Fixer workflows
 
 #### **Smart Duplicate Detection System & Management** 🔍
 - Hybrid SQL + fuzzy matching detects duplicates missed by traditional scans
@@ -237,11 +190,51 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - Format selection and multi-recipient sending
 - Works with per-user settings and optional custom email subjects
 
+#### **Automatic Metadata Fetch on Ingest** 🏷️🤖
+- Optionally fetch and apply metadata automatically during ingest
+- Provider hierarchy is respected with smart fallback
+- Choose whether to overwrite existing fields or only fill missing data
+- Works seamlessly with Auto-Send and EPUB Fixer workflows
+
+#### **Deep Stats & Analytics** 📊✨
+- Full analytics center with user activity, library, API usage, and time-based insights
+- Export sections to CSV for offline analysis
+- User-specific filtering and custom date ranges
+- Interactive charts with dark-mode styling
+
+![](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/cwa-stats-showcse.gif?raw=true)
+
 #### **Enhanced Send-to-eReader Modal** ✉️
 - Send to multiple devices at once
 - Ad-hoc email addresses supported for sharing with friends, family or even temporary devices
 
 ![](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/new-send-to-ereader-modal.png?raw=true)
+
+#### **Automatic EPUB Fixer Service** 📧✅
+- Ever had it where you're super excited to start reading your next book but for some reason, Amazon's Send-to-Kindle service just keeps rejecting it? Well no more!
+
+- Originally developed by [innocenat](https://github.com/innocenat/kindle-epub-fix), this tool corrects the following potential issues for every EPUB processed by CWA:
+  - Fixes UTF-8 encoding problem by adding UTF-8 declaration if no encoding is specified
+  - Fixes hyperlink problem (result in Amazon rejecting the EPUB) when NCX table of content link to `<body>` with ID hash.
+  - Detect invalid and/or missing language tag in metadata, and prompt user to select new language.
+  - Remove stray `<img>` tags with no source field.
+  - Resolves several EPUB compatibility issues, such as UTF-8 encoding, hyperlink problems, invalid/missing language tags, and stray image tags.
+  - Repairs malformed language tags, XML declarations, and UTF-8 headers
+  - Cleans invalid NCX links, broken CSS/fonts, and stray image tags
+- This **ensures maximum comparability** for each EPUB file with the Amazon **Send-to-Kindle** service and for those who don't use Amazon devices, has the side benefit of cleaning up your lower quality files!
+- Enabled by default, with per-run backups in `/config/processed_books`
+- Bulk processing of whole library with progress tracking available in the Admin Panel
+
+![CWA EPUB Fixer Service Web UI](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/CWA-new-process-ui.gif?raw=true)
+
+#### **Simple to use Multi-Format Conversion Service** 🌌
+- This utility gives the user the option to either keep a copy of the original of all converted files in `/config/processed_books` or to trust the process and have CWA simply convert and replace those files (not recommended)
+- Full usage details can be found [here](#the-convert-library-tool)
+
+#### **Additional Metadata Providers** 🗃️
+- Users can now make use of [isbndb.com](https://isbndb.com/)'s huge database when fetching metadata for the books in their library!
+- Access is being provided via [ibdb.dev](https://ibdb.dev/) thanks to a generous donation to the community by [@chad3814](https://www.github.com/chad3814)
+- [Hardcover](https://hardcover.app/) and Kobo metadata providers are supported, alongside new LitRes support
 
 #### **KOReader Syncing (KOSync)** 📖⚡
 Built-in KOReader progress sync with automatic book identification:
@@ -260,14 +253,6 @@ Built-in KOReader progress sync with automatic book identification:
 - **Enterprise Ready:** Support for custom scopes, multiple authentication methods, and comprehensive troubleshooting
 - **📖 [Full OAuth Configuration Guide](https://github.com/crocodilestick/Calibre-Web-Automated/wiki/OAuth-Configuration)** for detailed setup instructions
 
-#### **Deep Stats & Analytics** 📊✨
-- Full analytics center with user activity, library, API usage, and time-based insights
-- Export sections to CSV for offline analysis
-- User-specific filtering and custom date ranges
-- Interactive charts with dark-mode styling
-
-![](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/cwa-stats-showcse.gif?raw=true)
-
 #### **Automatic Hardcover ID Fetch** 💜🤖
 - Background task auto-populates missing Hardcover IDs
 - Configurable scheduling with progress tracking in Tasks
@@ -284,9 +269,9 @@ Built-in KOReader progress sync with automatic book identification:
       - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
       - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
 
-#### **Easy Dark/ Light Mode Switching** ☀️🌙
+<!-- #### **Easy Dark/ Light Mode Switching** ☀️🌙
   - **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
-  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
+  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure -->
 
 #### **Internal Update Notification System** 🛎️
   - Users will now be automatically notified of the availability of new updates from within the Web UI
@@ -302,7 +287,12 @@ Built-in KOReader progress sync with automatic book identification:
   - Minimises disk space usage and helps keep back up files as organised as possible
   - __Enabled by default but can be disabled in the CWA Settings page in the Admin panel__
 
-![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
+#### **Batch Editing & Deletion!** 🗂️🗄️
+- Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
+- To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
+- _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
+
+![](/README_images/cwa-bulk-editting-diagram.png)
 
 # Features Currently Under Active Development and on our Roadmap 🏗️🛣️
 
@@ -432,7 +422,7 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
 1. Open your browser and navigate to http://localhost:8083 or http://localhost:8083/opds for the OPDS catalog
 2. Log in with the default admin credentials (_below_)
 3. Configure your Calibre-Web Automated instance via the Admin Page
-  - A guide to what all of the stock CW Settings do can be found [here](https://github.com/janeczku/calibre-web/wiki/Configuration#basic-configuration)
+  - If you need help with any of the settings, consult the CWA Wiki [here](https://github.com/crocodilestick/Calibre-Web-Automated/wiki)
   - Make sure `Enable Uploads` is enabled in `Settings -> Basic Configuration -> Feature Configuration`
 4. Configure CWA to behave as you would like it to in the CWA Settings panel
   - Here you can turn certain features on and off, set your Target Format, which file formats should be ignored and which should be auto-converted ect.
@@ -488,3 +478,12 @@ $ docker compose -f docker-compose.yml.dev up -d
 - CWA is really lucky to have a very passionate and active community of people that really help shape CWA into what it is today
 - If you have any ideas or want to contribute to the project, you're more than welcome to! We accept anyone regardless of skill level of expertise!
 - If you've got a good idea or want to simply suggest improvements, simply get in touch with us on the Discord Server [here](https://discord.gg/EjgSeek94R)!
+
+# Supporting the Project ❤️
+
+CWA is and always will be free and open source. If it makes your library life easier and you're able to support development, contributions go directly to:
+- Testing hardware (ereader devices & tablets ect.)
+- Development tools and infrastructure
+- Coffee ☕ (lots of coffee)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/crocodilestick)

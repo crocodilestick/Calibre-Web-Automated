@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 14:37+0100\n"
+"POT-Creation-Date: 2026-01-31 16:11+0100\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -189,7 +189,7 @@ msgstr "无可用本地化"
 msgid "No Valid Book Language Given"
 msgstr "无有效书籍语言"
 
-#: cps/admin.py:830 cps/editbooks.py:463
+#: cps/admin.py:830 cps/editbooks.py:493
 msgid "Parameter not found"
 msgstr "参数未找到"
 
@@ -367,8 +367,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Gmail 账户验证成功"
 
 #: cps/admin.py:1714 cps/admin.py:1717 cps/admin.py:2137 cps/admin.py:2348
-#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:879
-#: cps/editbooks.py:1638 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:932
+#: cps/editbooks.py:1691 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2559
 #, python-format
@@ -1087,105 +1087,105 @@ msgstr "书籍已经被成功加入 %(book_format)s 格式转换队列"
 msgid "There was an error converting this book: %(res)s"
 msgstr "转换此书籍时出现错误： %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1075 cps/editbooks.py:1584
+#: cps/editbooks.py:305 cps/editbooks.py:1128 cps/editbooks.py:1637
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "不能上传文件扩展名为“%(ext)s”的文件到此服务器"
 
-#: cps/editbooks.py:310 cps/editbooks.py:1081 cps/editbooks.py:1595
+#: cps/editbooks.py:310 cps/editbooks.py:1134 cps/editbooks.py:1648
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "不能上传文件扩展名为“%(ext)s”的文件到此服务器"
 
-#: cps/editbooks.py:314 cps/editbooks.py:1085 cps/editbooks.py:1600
+#: cps/editbooks.py:314 cps/editbooks.py:1138 cps/editbooks.py:1653
 msgid "File to be uploaded must have an extension"
 msgstr "要上传的文件必须具有扩展名"
 
-#: cps/editbooks.py:691 cps/editbooks.py:1261 cps/web.py:612 cps/web.py:2648
+#: cps/editbooks.py:744 cps/editbooks.py:1314 cps/web.py:612 cps/web.py:2648
 #: cps/web.py:2726 cps/web.py:2795
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "糟糕！选择书名无法打开。文件不存在或者文件不可访问"
 
-#: cps/editbooks.py:723 cps/editbooks.py:1668
+#: cps/editbooks.py:776 cps/editbooks.py:1721
 msgid "User has no rights to upload cover"
 msgstr "用户没有权限上传封面"
 
-#: cps/editbooks.py:743 cps/editbooks.py:1063
+#: cps/editbooks.py:796 cps/editbooks.py:1116
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "标识符不区分大小写，覆盖旧标识符"
 
-#: cps/editbooks.py:755 cps/editbooks.py:1037 cps/editbooks.py:1395
+#: cps/editbooks.py:808 cps/editbooks.py:1090 cps/editbooks.py:1448
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' 不是一种有效语言"
 
-#: cps/editbooks.py:866
+#: cps/editbooks.py:919
 msgid "Metadata successfully updated"
 msgstr "已成功更新元数据"
 
-#: cps/editbooks.py:884
+#: cps/editbooks.py:937
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "编辑书籍时出错: {}"
 
-#: cps/editbooks.py:932 cps/editbooks.py:977 cps/editbooks.py:1686
+#: cps/editbooks.py:985 cps/editbooks.py:1030 cps/editbooks.py:1739
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "未知"
 
-#: cps/editbooks.py:981
+#: cps/editbooks.py:1034
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr "上传的书籍可能已经存在，建议修改后重新上传： "
 
-#: cps/editbooks.py:1093
+#: cps/editbooks.py:1146
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "文件 %(filename)s 无法保存到临时目录"
 
-#: cps/editbooks.py:1113
+#: cps/editbooks.py:1166
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "移动封面文件失败 %(file)s：%(error)s"
 
-#: cps/editbooks.py:1171 cps/editbooks.py:1173
+#: cps/editbooks.py:1224 cps/editbooks.py:1226
 msgid "Book Format Successfully Deleted"
 msgstr "书籍的此格式副本已成功删除"
 
-#: cps/editbooks.py:1180 cps/editbooks.py:1182
+#: cps/editbooks.py:1233 cps/editbooks.py:1235
 msgid "Book Successfully Deleted"
 msgstr "书籍已成功删除"
 
-#: cps/editbooks.py:1246
+#: cps/editbooks.py:1299
 msgid "You are missing permissions to delete books"
 msgstr "您没有删除书籍的权限"
 
-#: cps/editbooks.py:1300
+#: cps/editbooks.py:1353
 msgid "edit metadata"
 msgstr "编辑元数据"
 
-#: cps/editbooks.py:1354
+#: cps/editbooks.py:1407
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s 不是一个有效的数值，忽略"
 
-#: cps/editbooks.py:1589
+#: cps/editbooks.py:1642
 msgid "User has no rights to upload additional file formats"
 msgstr "用户没有权限上传其他文件格式"
 
-#: cps/editbooks.py:1613
+#: cps/editbooks.py:1666
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "创建路径 %(path)s 失败 (权限不足)"
 
-#: cps/editbooks.py:1620
+#: cps/editbooks.py:1673
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "保存文件 %(file)s 失败"
 
-#: cps/editbooks.py:1645
+#: cps/editbooks.py:1698
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "已添加 %(ext)s 格式到 %(book)s"
@@ -1217,7 +1217,7 @@ msgstr "Google Drive %(fn)s 上找不到 %(format)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "找不到 %(format)s：%(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:111
+#: cps/helper.py:101 cps/helper.py:225
 msgid "Send to eReader"
 msgstr "发送到电子阅读器"
 
@@ -2513,8 +2513,7 @@ msgstr "管理权限"
 msgid "Password"
 msgstr "密码"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:81
-#: cps/templates/detail.html:94 cps/templates/shelf.html:8
+#: cps/templates/admin.html:24 cps/templates/shelf.html:8
 #: cps/templates/user_table.html:147
 msgid "Download"
 msgstr "下载书籍"
@@ -2793,8 +2792,7 @@ msgstr "确定"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:184
-#: cps/templates/detail.html:471 cps/templates/duplicates.html:540
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/duplicates.html:540
 #: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
@@ -2937,14 +2935,14 @@ msgstr "出版日期"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:325
+#: cps/templates/cwa_settings.html:1077
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "出版社"
 
 #: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1065
-#: cps/templates/detail.html:278 cps/templates/listenmp3.html:69
+#: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "语言"
 
@@ -3229,7 +3227,7 @@ msgstr "以下书籍将被标为已读："
 msgid "The following books will be marked unread:"
 msgstr "以下书籍将被标为未读："
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:469
+#: cps/templates/book_table.html:282
 msgid "Edit Metadata"
 msgstr "编辑元数据"
 
@@ -5047,102 +5045,6 @@ msgstr ""
 msgid "Click to See More"
 msgstr "点击查看更多"
 
-#: cps/templates/detail.html:124
-#, fuzzy
-msgid "Select eReader Email Addresses"
-msgstr "接收书籍的电子阅读器邮箱地址"
-
-#: cps/templates/detail.html:139
-msgid "Choose email addresses:"
-msgstr "选择邮箱地址:"
-
-#: cps/templates/detail.html:144
-#, fuzzy
-msgid "Select All"
-msgstr "创建书架"
-
-#: cps/templates/detail.html:163
-#, fuzzy
-msgid "Additional email addresses:"
-msgstr "选择邮箱地址:"
-
-#: cps/templates/detail.html:164
-msgid "Enter additional email addresses (separated by commas):"
-msgstr ""
-
-#: cps/templates/detail.html:165
-msgid "example@domain.com, another@domain.com"
-msgstr ""
-
-#: cps/templates/detail.html:166
-msgid "Enter one or more email addresses separated by commas"
-msgstr ""
-
-#: cps/templates/detail.html:171
-#, fuzzy
-msgid "Select format:"
-msgstr "删除格式:"
-
-#: cps/templates/detail.html:183
-msgid "Send"
-msgstr "发送"
-
-#: cps/templates/detail.html:197 cps/templates/detail.html:198
-#: cps/templates/detail.html:211 cps/templates/detail.html:212
-msgid "Read in Browser"
-msgstr "在线阅读"
-
-#: cps/templates/detail.html:221 cps/templates/detail.html:241
-msgid "Listen in Browser"
-msgstr "在线听书"
-
-#: cps/templates/detail.html:271 cps/templates/listenmp3.html:62
-#, python-format
-msgid "Book %(index)s of %(range)s"
-msgstr "%(range)s 第 %(index)s 册"
-
-#: cps/templates/detail.html:286
-#, fuzzy
-msgid "File sizes"
-msgstr "字体大小"
-
-#: cps/templates/detail.html:334 cps/templates/listenmp3.html:111
-msgid "Published"
-msgstr "出版日期"
-
-#: cps/templates/detail.html:384 cps/templates/listenmp3.html:158
-msgid "Mark As Unread"
-msgstr "标为未读"
-
-#: cps/templates/detail.html:385 cps/templates/listenmp3.html:158
-msgid "Mark As Read"
-msgstr "标为已读"
-
-#: cps/templates/detail.html:395 cps/templates/listenmp3.html:166
-msgid "Restore from archive"
-msgstr "从档案还原"
-
-#: cps/templates/detail.html:396 cps/templates/listenmp3.html:166
-msgid "Add to archive"
-msgstr "添加到归档"
-
-#: cps/templates/detail.html:407 cps/templates/listenmp3.html:177
-msgid "Description:"
-msgstr "简介:"
-
-#: cps/templates/detail.html:422 cps/templates/listenmp3.html:190
-#: cps/templates/search.html:16
-msgid "Add to shelf"
-msgstr "添加到书架"
-
-#: cps/templates/detail.html:434 cps/templates/detail.html:453
-#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
-#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
-#: cps/templates/search.html:22
-msgid "(Public)"
-msgstr "(公共)"
-
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
 msgstr "CWA 重复书籍管理器"
@@ -5387,6 +5289,13 @@ msgstr "下一个"
 #: cps/templates/feed.xml:83
 msgid "(Magic)"
 msgstr ""
+
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
+msgid "(Public)"
+msgstr "(公共)"
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""
@@ -5744,13 +5653,46 @@ msgstr "按首字母过滤"
 msgid "Grid"
 msgstr "网格"
 
+#: cps/templates/listenmp3.html:62
+#, python-format
+msgid "Book %(index)s of %(range)s"
+msgstr "%(range)s 第 %(index)s 册"
+
+#: cps/templates/listenmp3.html:111
+msgid "Published"
+msgstr "出版日期"
+
+#: cps/templates/listenmp3.html:158
+msgid "Mark As Unread"
+msgstr "标为未读"
+
+#: cps/templates/listenmp3.html:158
+msgid "Mark As Read"
+msgstr "标为已读"
+
 #: cps/templates/listenmp3.html:159
 msgid "Read"
 msgstr "已读"
 
+#: cps/templates/listenmp3.html:166
+msgid "Restore from archive"
+msgstr "从档案还原"
+
+#: cps/templates/listenmp3.html:166
+msgid "Add to archive"
+msgstr "添加到归档"
+
 #: cps/templates/listenmp3.html:167
 msgid "Archived"
 msgstr "归档"
+
+#: cps/templates/listenmp3.html:177
+msgid "Description:"
+msgstr "简介:"
+
+#: cps/templates/listenmp3.html:190 cps/templates/search.html:16
+msgid "Add to shelf"
+msgstr "添加到书架"
 
 #: cps/templates/login.html:23
 #, fuzzy
@@ -6697,6 +6639,38 @@ msgstr "同步所选书架到 Kobo"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "显示已读、未读栏目"
+
+#, fuzzy
+#~ msgid "Select eReader Email Addresses"
+#~ msgstr "接收书籍的电子阅读器邮箱地址"
+
+#~ msgid "Choose email addresses:"
+#~ msgstr "选择邮箱地址:"
+
+#, fuzzy
+#~ msgid "Select All"
+#~ msgstr "创建书架"
+
+#, fuzzy
+#~ msgid "Additional email addresses:"
+#~ msgstr "选择邮箱地址:"
+
+#, fuzzy
+#~ msgid "Select format:"
+#~ msgstr "删除格式:"
+
+#~ msgid "Send"
+#~ msgstr "发送"
+
+#~ msgid "Read in Browser"
+#~ msgstr "在线阅读"
+
+#~ msgid "Listen in Browser"
+#~ msgstr "在线听书"
+
+#, fuzzy
+#~ msgid "File sizes"
+#~ msgstr "字体大小"
 
 #~ msgid "Alphabetical Books"
 #~ msgstr "字母排序书籍"

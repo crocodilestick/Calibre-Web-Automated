@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 14:37+0100\n"
+"POT-Creation-Date: 2026-01-31 16:11+0100\n"
 "PO-Revision-Date: 2023-12-20 22:00+0100\n"
 "Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at "
 "proton.me>\n"
@@ -200,7 +200,7 @@ msgstr "Geen geldige locale is opgegeven"
 msgid "No Valid Book Language Given"
 msgstr "Geen geldige boek taal is opgegeven"
 
-#: cps/admin.py:830 cps/editbooks.py:463
+#: cps/admin.py:830 cps/editbooks.py:493
 msgid "Parameter not found"
 msgstr "Parameter is niet gevonden"
 
@@ -401,8 +401,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Gelukt! Gmail account geverifieerd."
 
 #: cps/admin.py:1714 cps/admin.py:1717 cps/admin.py:2137 cps/admin.py:2348
-#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:879
-#: cps/editbooks.py:1638 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:932
+#: cps/editbooks.py:1691 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2559
 #, python-format
@@ -1135,21 +1135,21 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr "Er is een fout opgetreden bij het converteren van dit boek: %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1075 cps/editbooks.py:1584
+#: cps/editbooks.py:305 cps/editbooks.py:1128 cps/editbooks.py:1637
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "De bestandsextensie '%(ext)s' is niet toegestaan op deze server"
 
-#: cps/editbooks.py:310 cps/editbooks.py:1081 cps/editbooks.py:1595
+#: cps/editbooks.py:310 cps/editbooks.py:1134 cps/editbooks.py:1648
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "De bestandsextensie '%(ext)s' is niet toegestaan op deze server"
 
-#: cps/editbooks.py:314 cps/editbooks.py:1085 cps/editbooks.py:1600
+#: cps/editbooks.py:314 cps/editbooks.py:1138 cps/editbooks.py:1653
 msgid "File to be uploaded must have an extension"
 msgstr "Het te uploaden bestand moet voorzien zijn van een extensie"
 
-#: cps/editbooks.py:691 cps/editbooks.py:1261 cps/web.py:612 cps/web.py:2648
+#: cps/editbooks.py:744 cps/editbooks.py:1314 cps/web.py:612 cps/web.py:2648
 #: cps/web.py:2726 cps/web.py:2795
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
@@ -1157,36 +1157,36 @@ msgstr ""
 "Oeps! Geselecteerd boek is niet beschikbaar. Bestand bestaat niet of is niet "
 "toegankelijk"
 
-#: cps/editbooks.py:723 cps/editbooks.py:1668
+#: cps/editbooks.py:776 cps/editbooks.py:1721
 msgid "User has no rights to upload cover"
 msgstr "Gebruiker mist rechten om de omslag te uploaden"
 
-#: cps/editbooks.py:743 cps/editbooks.py:1063
+#: cps/editbooks.py:796 cps/editbooks.py:1116
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Identificatoren zijn niet hoofdlettergevoelig, overschrijf huidige "
 "identificatoren"
 
-#: cps/editbooks.py:755 cps/editbooks.py:1037 cps/editbooks.py:1395
+#: cps/editbooks.py:808 cps/editbooks.py:1090 cps/editbooks.py:1448
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s is geen geldige taal"
 
-#: cps/editbooks.py:866
+#: cps/editbooks.py:919
 msgid "Metadata successfully updated"
 msgstr "De metagegevens zijn bijgewerkt"
 
-#: cps/editbooks.py:884
+#: cps/editbooks.py:937
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Fout tijdens bijwerken van boek: {}"
 
-#: cps/editbooks.py:932 cps/editbooks.py:977 cps/editbooks.py:1686
+#: cps/editbooks.py:985 cps/editbooks.py:1030 cps/editbooks.py:1739
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Onbekend"
 
-#: cps/editbooks.py:981
+#: cps/editbooks.py:1034
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1194,52 +1194,52 @@ msgstr ""
 "Geüpload boek staat mogelijk al in de bibliotheek, controleer alvorens door "
 "te gaan: "
 
-#: cps/editbooks.py:1093
+#: cps/editbooks.py:1146
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Bestand %(filename)s kon niet opgeslagen worden in de tijdelijke map"
 
-#: cps/editbooks.py:1113
+#: cps/editbooks.py:1166
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Omslag %(file)s niet verplaatst: %(error)s"
 
-#: cps/editbooks.py:1171 cps/editbooks.py:1173
+#: cps/editbooks.py:1224 cps/editbooks.py:1226
 msgid "Book Format Successfully Deleted"
 msgstr "Het boekformaat is verwijderd"
 
-#: cps/editbooks.py:1180 cps/editbooks.py:1182
+#: cps/editbooks.py:1233 cps/editbooks.py:1235
 msgid "Book Successfully Deleted"
 msgstr "Het boek is verwijderd"
 
-#: cps/editbooks.py:1246
+#: cps/editbooks.py:1299
 msgid "You are missing permissions to delete books"
 msgstr "U mist rechten om boeken te verwijderen"
 
-#: cps/editbooks.py:1300
+#: cps/editbooks.py:1353
 msgid "edit metadata"
 msgstr "metagegevens bewerken"
 
-#: cps/editbooks.py:1354
+#: cps/editbooks.py:1407
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s is geen geldig nummer, sla het over"
 
-#: cps/editbooks.py:1589
+#: cps/editbooks.py:1642
 msgid "User has no rights to upload additional file formats"
 msgstr "Gebruiker mist rechten om extra bestandsformaten te uploaden"
 
-#: cps/editbooks.py:1613
+#: cps/editbooks.py:1666
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Kan de locatie '%(path)s' niet aanmaken (niet gemachtigd)."
 
-#: cps/editbooks.py:1620
+#: cps/editbooks.py:1673
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Kan %(file)s niet opslaan."
 
-#: cps/editbooks.py:1645
+#: cps/editbooks.py:1698
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Bestandsformaat %(ext)s toegevoegd aan %(book)s"
@@ -1274,7 +1274,7 @@ msgstr "%(format)s niet aangetroffen op Google Drive: %(fn)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s niet gevonden %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:111
+#: cps/helper.py:101 cps/helper.py:225
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Versturen naar Kindle"
@@ -2630,8 +2630,7 @@ msgstr "Beheer"
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:81
-#: cps/templates/detail.html:94 cps/templates/shelf.html:8
+#: cps/templates/admin.html:24 cps/templates/shelf.html:8
 #: cps/templates/user_table.html:147
 msgid "Download"
 msgstr "Downloaden"
@@ -2914,8 +2913,7 @@ msgstr "Oké"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:184
-#: cps/templates/detail.html:471 cps/templates/duplicates.html:540
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/duplicates.html:540
 #: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
@@ -3058,14 +3056,14 @@ msgstr "Publicatiedatum"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:325
+#: cps/templates/cwa_settings.html:1077
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Uitgever"
 
 #: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1065
-#: cps/templates/detail.html:278 cps/templates/listenmp3.html:69
+#: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "Taal"
 
@@ -3354,7 +3352,7 @@ msgstr "De volgende boeken zullen als gelezen worden gemarkeerd:"
 msgid "The following books will be marked unread:"
 msgstr "De volgende boeken zullen als ongelezen worden gemarkeerd:"
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:469
+#: cps/templates/book_table.html:282
 msgid "Edit Metadata"
 msgstr "Metagegevens bewerken"
 
@@ -5242,102 +5240,6 @@ msgstr ""
 msgid "Click to See More"
 msgstr "Klik om meer te zien"
 
-#: cps/templates/detail.html:124
-#, fuzzy
-msgid "Select eReader Email Addresses"
-msgstr "Kindle-e-mailadres"
-
-#: cps/templates/detail.html:139
-msgid "Choose email addresses:"
-msgstr "Kies e-mailadressen:"
-
-#: cps/templates/detail.html:144
-#, fuzzy
-msgid "Select All"
-msgstr "Boekenplank maken"
-
-#: cps/templates/detail.html:163
-#, fuzzy
-msgid "Additional email addresses:"
-msgstr "Kies e-mailadressen:"
-
-#: cps/templates/detail.html:164
-msgid "Enter additional email addresses (separated by commas):"
-msgstr ""
-
-#: cps/templates/detail.html:165
-msgid "example@domain.com, another@domain.com"
-msgstr ""
-
-#: cps/templates/detail.html:166
-msgid "Enter one or more email addresses separated by commas"
-msgstr ""
-
-#: cps/templates/detail.html:171
-#, fuzzy
-msgid "Select format:"
-msgstr "Formaten verwijderen:"
-
-#: cps/templates/detail.html:183
-msgid "Send"
-msgstr "Verzenden"
-
-#: cps/templates/detail.html:197 cps/templates/detail.html:198
-#: cps/templates/detail.html:211 cps/templates/detail.html:212
-msgid "Read in Browser"
-msgstr "Lezen in webbrowser"
-
-#: cps/templates/detail.html:221 cps/templates/detail.html:241
-msgid "Listen in Browser"
-msgstr "Luisteren in webbrowser"
-
-#: cps/templates/detail.html:271 cps/templates/listenmp3.html:62
-#, fuzzy, python-format
-msgid "Book %(index)s of %(range)s"
-msgstr "Boek %(index)s van %(range)s"
-
-#: cps/templates/detail.html:286
-#, fuzzy
-msgid "File sizes"
-msgstr "Lettertypegrootte"
-
-#: cps/templates/detail.html:334 cps/templates/listenmp3.html:111
-msgid "Published"
-msgstr "Gepubliceerd"
-
-#: cps/templates/detail.html:384 cps/templates/listenmp3.html:158
-msgid "Mark As Unread"
-msgstr "Markeren als ongelezen"
-
-#: cps/templates/detail.html:385 cps/templates/listenmp3.html:158
-msgid "Mark As Read"
-msgstr "Markeren als gelezen"
-
-#: cps/templates/detail.html:395 cps/templates/listenmp3.html:166
-msgid "Restore from archive"
-msgstr "Terughalen uit archief"
-
-#: cps/templates/detail.html:396 cps/templates/listenmp3.html:166
-msgid "Add to archive"
-msgstr "Toevoegen aan archief"
-
-#: cps/templates/detail.html:407 cps/templates/listenmp3.html:177
-msgid "Description:"
-msgstr "Beschrijving:"
-
-#: cps/templates/detail.html:422 cps/templates/listenmp3.html:190
-#: cps/templates/search.html:16
-msgid "Add to shelf"
-msgstr "Toevoegen aan boekenplank"
-
-#: cps/templates/detail.html:434 cps/templates/detail.html:453
-#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
-#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
-#: cps/templates/search.html:22
-msgid "(Public)"
-msgstr "(Openbaar)"
-
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
 msgstr "CWA Duplicaten Beheerder"
@@ -5590,6 +5492,13 @@ msgstr "Volgende"
 #: cps/templates/feed.xml:83
 msgid "(Magic)"
 msgstr ""
+
+#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
+#: cps/templates/search.html:22
+msgid "(Public)"
+msgstr "(Openbaar)"
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""
@@ -5954,13 +5863,46 @@ msgstr "Filter op eerste letter"
 msgid "Grid"
 msgstr "Raster"
 
+#: cps/templates/listenmp3.html:62
+#, fuzzy, python-format
+msgid "Book %(index)s of %(range)s"
+msgstr "Boek %(index)s van %(range)s"
+
+#: cps/templates/listenmp3.html:111
+msgid "Published"
+msgstr "Gepubliceerd"
+
+#: cps/templates/listenmp3.html:158
+msgid "Mark As Unread"
+msgstr "Markeren als ongelezen"
+
+#: cps/templates/listenmp3.html:158
+msgid "Mark As Read"
+msgstr "Markeren als gelezen"
+
 #: cps/templates/listenmp3.html:159
 msgid "Read"
 msgstr "Gelezen"
 
+#: cps/templates/listenmp3.html:166
+msgid "Restore from archive"
+msgstr "Terughalen uit archief"
+
+#: cps/templates/listenmp3.html:166
+msgid "Add to archive"
+msgstr "Toevoegen aan archief"
+
 #: cps/templates/listenmp3.html:167
 msgid "Archived"
 msgstr "Gearchiveerd"
+
+#: cps/templates/listenmp3.html:177
+msgid "Description:"
+msgstr "Beschrijving:"
+
+#: cps/templates/listenmp3.html:190 cps/templates/search.html:16
+msgid "Add to shelf"
+msgstr "Toevoegen aan boekenplank"
 
 #: cps/templates/login.html:23
 #, fuzzy
@@ -6930,6 +6872,38 @@ msgstr "Synchroniseer geselecteerde boekenplanken met Kobo"
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Toon gelezen/niet gelezen selectie"
+
+#, fuzzy
+#~ msgid "Select eReader Email Addresses"
+#~ msgstr "Kindle-e-mailadres"
+
+#~ msgid "Choose email addresses:"
+#~ msgstr "Kies e-mailadressen:"
+
+#, fuzzy
+#~ msgid "Select All"
+#~ msgstr "Boekenplank maken"
+
+#, fuzzy
+#~ msgid "Additional email addresses:"
+#~ msgstr "Kies e-mailadressen:"
+
+#, fuzzy
+#~ msgid "Select format:"
+#~ msgstr "Formaten verwijderen:"
+
+#~ msgid "Send"
+#~ msgstr "Verzenden"
+
+#~ msgid "Read in Browser"
+#~ msgstr "Lezen in webbrowser"
+
+#~ msgid "Listen in Browser"
+#~ msgstr "Luisteren in webbrowser"
+
+#, fuzzy
+#~ msgid "File sizes"
+#~ msgstr "Lettertypegrootte"
 
 #~ msgid "Alphabetical Books"
 #~ msgstr "Alfabetische Boeken"

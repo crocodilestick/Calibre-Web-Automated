@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 23:59+0100\n"
+"POT-Creation-Date: 2026-02-01 00:23+0100\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -161,7 +161,7 @@ msgstr "Показать все"
 msgid "Malformed request"
 msgstr "Некорректный запрос"
 
-#: cps/admin.py:776 cps/admin.py:2669
+#: cps/admin.py:776 cps/admin.py:2703
 msgid "Guest Name can't be changed"
 msgstr "Имя гостевого пользователя нельзя изменить"
 
@@ -407,7 +407,7 @@ msgid "Success! Gmail Account Verified."
 msgstr "Успех! Учетная запись Gmail подтверждена."
 
 #: cps/admin.py:1730 cps/admin.py:1733 cps/admin.py:2183 cps/admin.py:2394
-#: cps/admin.py:2506 cps/admin.py:2704 cps/editbooks.py:939
+#: cps/admin.py:2506 cps/admin.py:2738 cps/editbooks.py:939
 #: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
@@ -436,7 +436,7 @@ msgstr "Пожалуйста, сначала настройте адрес эл�
 msgid "Email Server Settings updated"
 msgstr "Настройки почтового сервера обновлены"
 
-#: cps/admin.py:1770 cps/templates/admin.html:200
+#: cps/admin.py:1770 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Редактировать настройки запланированных заданий"
 
@@ -452,7 +452,7 @@ msgstr "Указана неверная продолжительность за�
 msgid "Scheduled tasks settings updated"
 msgstr "Настройки запланированных заданий обновлены"
 
-#: cps/admin.py:1807 cps/admin.py:1915 cps/admin.py:2700 cps/web.py:2092
+#: cps/admin.py:1807 cps/admin.py:1915 cps/admin.py:2734 cps/web.py:2092
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Неизвестная ошибка. Пожалуйста, попробуйте позже."
 
@@ -465,7 +465,7 @@ msgstr "База данных настроек недоступна для за�
 msgid "title"
 msgstr "Название"
 
-#: cps/admin.py:1900 cps/admin.py:2692
+#: cps/admin.py:1900 cps/admin.py:2726
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Редактирование пользователя %(nick)s"
@@ -661,109 +661,109 @@ msgstr "Нельзя удалить гостевого пользователя"
 msgid "No admin user remaining, can't delete user"
 msgstr "Нет оставшихся администраторов, нельзя удалить пользователя"
 
-#: cps/admin.py:2663 cps/web.py:2396
+#: cps/admin.py:2697 cps/web.py:2396
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "Email не может быть пустым и должен быть действительным адресом"
 
-#: cps/admin.py:2696
+#: cps/admin.py:2730
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Пользователь '%(nick)s' обновлен"
 
-#: cps/admin.py:2761
+#: cps/admin.py:2795
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2766
+#: cps/admin.py:2800
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2768 cps/admin.py:2825
+#: cps/admin.py:2802 cps/admin.py:2859
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Ошибка подключения: сервер вернул код состояния %(code)s"
 
-#: cps/admin.py:2770
+#: cps/admin.py:2804
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr "Ошибка подключения: не удалось подключиться к серверу."
 
-#: cps/admin.py:2772
+#: cps/admin.py:2806
 #, fuzzy
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr "Ошибка подключения: время ожидания запроса истекло."
 
-#: cps/admin.py:2774
+#: cps/admin.py:2808
 #, fuzzy
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr "Ошибка подключения: неверный JSON в ответе."
 
-#: cps/admin.py:2777
+#: cps/admin.py:2811
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Ошибка соединения"
 
-#: cps/admin.py:2803
+#: cps/admin.py:2837
 #, fuzzy, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr "В метаданных отсутствуют обязательные поля: %(fields)s"
 
-#: cps/admin.py:2814
+#: cps/admin.py:2848
 #, fuzzy, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "URL метаданных действителен! Найдено %(count)s конечных точек."
 
-#: cps/admin.py:2816
+#: cps/admin.py:2850
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "Информация о выпуске недоступна"
 
-#: cps/admin.py:2818
+#: cps/admin.py:2852
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2823
+#: cps/admin.py:2857
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:2827
+#: cps/admin.py:2861
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr "Ошибка подключения: не удалось подключиться к серверу."
 
-#: cps/admin.py:2829
+#: cps/admin.py:2863
 msgid "Connection failed: Request timed out."
 msgstr "Ошибка подключения: время ожидания запроса истекло."
 
-#: cps/admin.py:2831
+#: cps/admin.py:2865
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Ошибка подключения: неверный JSON в ответе."
 
-#: cps/admin.py:2834
+#: cps/admin.py:2868
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже."
 
-#: cps/admin.py:2858 cps/admin.py:2880
+#: cps/admin.py:2892 cps/admin.py:2914
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Ошибка соединения"
 
-#: cps/admin.py:2876
+#: cps/admin.py:2910
 #, python-format
 msgid ""
 "Restore complete. Both databases were backed up to %(dir)s. All book-linked "
@@ -2756,8 +2756,8 @@ msgstr "Имя заголовка обратного прокси"
 
 #: cps/templates/admin.html:164
 #, fuzzy
-msgid "Edit Calibre Database Configuration"
-msgstr "Редактировать конфигурацию базы данных Calibre"
+msgid "CWA Settings"
+msgstr "Настройки CWA"
 
 #: cps/templates/admin.html:165
 msgid "Edit Basic Configuration"
@@ -2767,50 +2767,50 @@ msgstr "Редактировать основные настройки"
 msgid "Edit UI Configuration"
 msgstr "Редактировать настройки интерфейса"
 
-#: cps/templates/admin.html:172
+#: cps/templates/admin.html:167
+#, fuzzy
+msgid "Edit Calibre Database Configuration"
+msgstr "Редактировать конфигурацию базы данных Calibre"
+
+#: cps/templates/admin.html:173
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
 msgstr "Запланированные задания&nbsp;&nbsp;⌛"
 
-#: cps/templates/admin.html:175 cps/templates/schedule_edit.html:12
+#: cps/templates/admin.html:176 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:19
 #, fuzzy
 msgid "Start Time"
 msgstr "Время начала"
 
-#: cps/templates/admin.html:179 cps/templates/schedule_edit.html:20
+#: cps/templates/admin.html:180 cps/templates/schedule_edit.html:20
 msgid "Maximum Duration"
 msgstr "Максимальная продолжительность"
 
-#: cps/templates/admin.html:183 cps/templates/schedule_edit.html:29
+#: cps/templates/admin.html:184 cps/templates/schedule_edit.html:29
 msgid "Scheduled Thumbnail Refresh"
 msgstr ""
 
-#: cps/templates/admin.html:187
+#: cps/templates/admin.html:188
 msgid "Generate series cover thumbnails"
 msgstr "Генерировать миниатюры обложек серий"
 
-#: cps/templates/admin.html:191 cps/templates/admin.html:232
+#: cps/templates/admin.html:192 cps/templates/admin.html:232
 #: cps/templates/schedule_edit.html:38
 #, fuzzy
 msgid "Reconnect Calibre Database"
 msgstr "Переподключить базу данных Calibre"
 
-#: cps/templates/admin.html:195 cps/templates/schedule_edit.html:42
+#: cps/templates/admin.html:196 cps/templates/schedule_edit.html:42
 msgid "Generate Metadata Backup Files"
 msgstr "Генерировать файлы резервных копий метаданных"
 
-#: cps/templates/admin.html:201
+#: cps/templates/admin.html:202
 msgid "Refresh Thumbnail Cache"
 msgstr "Обновить кэш миниатюр"
 
-#: cps/templates/admin.html:207
+#: cps/templates/admin.html:208
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
 msgstr "Функции администрирования CWA&nbsp;&nbsp;⚡"
-
-#: cps/templates/admin.html:208
-#, fuzzy
-msgid "CWA Settings"
-msgstr "Настройки CWA"
 
 #: cps/templates/admin.html:209
 #, fuzzy

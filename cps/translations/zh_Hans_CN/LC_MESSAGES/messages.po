@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 23:59+0100\n"
+"POT-Creation-Date: 2026-02-01 00:23+0100\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -153,7 +153,7 @@ msgstr "显示全部"
 msgid "Malformed request"
 msgstr "格式错误的请求"
 
-#: cps/admin.py:776 cps/admin.py:2669
+#: cps/admin.py:776 cps/admin.py:2703
 msgid "Guest Name can't be changed"
 msgstr "访客名称无法更改"
 
@@ -371,7 +371,7 @@ msgid "Success! Gmail Account Verified."
 msgstr "Gmail 账户验证成功"
 
 #: cps/admin.py:1730 cps/admin.py:1733 cps/admin.py:2183 cps/admin.py:2394
-#: cps/admin.py:2506 cps/admin.py:2704 cps/editbooks.py:939
+#: cps/admin.py:2506 cps/admin.py:2738 cps/editbooks.py:939
 #: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
@@ -398,7 +398,7 @@ msgstr "请先配置您的邮箱地址..."
 msgid "Email Server Settings updated"
 msgstr "邮件服务器设置已更新"
 
-#: cps/admin.py:1770 cps/templates/admin.html:200
+#: cps/admin.py:1770 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "编辑计划任务设置"
 
@@ -414,7 +414,7 @@ msgstr "指定任务的持续时间无效"
 msgid "Scheduled tasks settings updated"
 msgstr "已更新计划任务设置"
 
-#: cps/admin.py:1807 cps/admin.py:1915 cps/admin.py:2700 cps/web.py:2092
+#: cps/admin.py:1807 cps/admin.py:1915 cps/admin.py:2734 cps/web.py:2092
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "发生一个未知错误，请稍后再试"
 
@@ -427,7 +427,7 @@ msgstr "设置数据库不可写"
 msgid "title"
 msgstr "标题"
 
-#: cps/admin.py:1900 cps/admin.py:2692
+#: cps/admin.py:1900 cps/admin.py:2726
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "编辑用户 %(nick)s"
@@ -616,109 +616,109 @@ msgstr "无法删除游客用户"
 msgid "No admin user remaining, can't delete user"
 msgstr "管理员账户不存在，无法删除用户"
 
-#: cps/admin.py:2663 cps/web.py:2396
+#: cps/admin.py:2697 cps/web.py:2396
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "电子邮件地址不能为空，并且必须是有效的电子邮件"
 
-#: cps/admin.py:2696
+#: cps/admin.py:2730
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "用户“%(nick)s”已更新"
 
-#: cps/admin.py:2761
+#: cps/admin.py:2795
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2766
+#: cps/admin.py:2800
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2768 cps/admin.py:2825
+#: cps/admin.py:2802 cps/admin.py:2859
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "连接失败：服务器返回状态码 %(code)s"
 
-#: cps/admin.py:2770
+#: cps/admin.py:2804
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr "连接失败：无法连接到服务器。"
 
-#: cps/admin.py:2772
+#: cps/admin.py:2806
 #, fuzzy
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr "连接失败：请求超时。"
 
-#: cps/admin.py:2774
+#: cps/admin.py:2808
 #, fuzzy
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr "连接失败：响应中的 JSON 无效。"
 
-#: cps/admin.py:2777
+#: cps/admin.py:2811
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "连接错误"
 
-#: cps/admin.py:2803
+#: cps/admin.py:2837
 #, fuzzy, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr "元数据缺少必填字段：%(fields)s"
 
-#: cps/admin.py:2814
+#: cps/admin.py:2848
 #, fuzzy, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "元数据 URL 有效！找到 %(count)s 个端点。"
 
-#: cps/admin.py:2816
+#: cps/admin.py:2850
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "无可用发布信息"
 
-#: cps/admin.py:2818
+#: cps/admin.py:2852
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2823
+#: cps/admin.py:2857
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:2827
+#: cps/admin.py:2861
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr "连接失败：无法连接到服务器。"
 
-#: cps/admin.py:2829
+#: cps/admin.py:2863
 msgid "Connection failed: Request timed out."
 msgstr "连接失败：请求超时。"
 
-#: cps/admin.py:2831
+#: cps/admin.py:2865
 msgid "Connection failed: Invalid JSON in response."
 msgstr "连接失败：响应中的 JSON 无效。"
 
-#: cps/admin.py:2834
+#: cps/admin.py:2868
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "发生一个未知错误，请稍后再试"
 
-#: cps/admin.py:2858 cps/admin.py:2880
+#: cps/admin.py:2892 cps/admin.py:2914
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "连接错误"
 
-#: cps/admin.py:2876
+#: cps/admin.py:2910
 #, python-format
 msgid ""
 "Restore complete. Both databases were backed up to %(dir)s. All book-linked "
@@ -2649,8 +2649,9 @@ msgid "Reverse Proxy Header Name"
 msgstr "反向代理头部名称"
 
 #: cps/templates/admin.html:164
-msgid "Edit Calibre Database Configuration"
-msgstr "编辑 Calibre 数据库配置"
+#, fuzzy
+msgid "CWA Settings"
+msgstr "设置"
 
 #: cps/templates/admin.html:165
 msgid "Edit Basic Configuration"
@@ -2660,49 +2661,48 @@ msgstr "编辑基本配置"
 msgid "Edit UI Configuration"
 msgstr "编辑界面配置"
 
-#: cps/templates/admin.html:172
+#: cps/templates/admin.html:167
+msgid "Edit Calibre Database Configuration"
+msgstr "编辑 Calibre 数据库配置"
+
+#: cps/templates/admin.html:173
 #, fuzzy
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
 msgstr "计划任务"
 
-#: cps/templates/admin.html:175 cps/templates/schedule_edit.html:12
+#: cps/templates/admin.html:176 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:19
 msgid "Start Time"
 msgstr "任务开始运行的时间"
 
-#: cps/templates/admin.html:179 cps/templates/schedule_edit.html:20
+#: cps/templates/admin.html:180 cps/templates/schedule_edit.html:20
 msgid "Maximum Duration"
 msgstr "最长任务持续时间"
 
-#: cps/templates/admin.html:183 cps/templates/schedule_edit.html:29
+#: cps/templates/admin.html:184 cps/templates/schedule_edit.html:29
 msgid "Scheduled Thumbnail Refresh"
 msgstr ""
 
-#: cps/templates/admin.html:187
+#: cps/templates/admin.html:188
 msgid "Generate series cover thumbnails"
 msgstr "生成丛书封面缩略图"
 
-#: cps/templates/admin.html:191 cps/templates/admin.html:232
+#: cps/templates/admin.html:192 cps/templates/admin.html:232
 #: cps/templates/schedule_edit.html:38
 msgid "Reconnect Calibre Database"
 msgstr "重新连接到 Calibre 库"
 
-#: cps/templates/admin.html:195 cps/templates/schedule_edit.html:42
+#: cps/templates/admin.html:196 cps/templates/schedule_edit.html:42
 msgid "Generate Metadata Backup Files"
 msgstr "生成元数据备份文件"
 
-#: cps/templates/admin.html:201
+#: cps/templates/admin.html:202
 msgid "Refresh Thumbnail Cache"
 msgstr "刷新封面缩略图缓存"
 
-#: cps/templates/admin.html:207
+#: cps/templates/admin.html:208
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
 msgstr "CWA 管理功能&nbsp;&nbsp;⚡"
-
-#: cps/templates/admin.html:208
-#, fuzzy
-msgid "CWA Settings"
-msgstr "设置"
 
 #: cps/templates/admin.html:209
 #, fuzzy

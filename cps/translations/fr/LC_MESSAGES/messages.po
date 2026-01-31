@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 23:59+0100\n"
+"POT-Creation-Date: 2026-02-01 00:23+0100\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -184,7 +184,7 @@ msgstr "Montrer tout"
 msgid "Malformed request"
 msgstr "Demande malformée"
 
-#: cps/admin.py:776 cps/admin.py:2669
+#: cps/admin.py:776 cps/admin.py:2703
 msgid "Guest Name can't be changed"
 msgstr "Le nom de l’invité ne peut pas être modifié"
 
@@ -431,7 +431,7 @@ msgid "Success! Gmail Account Verified."
 msgstr "Bravo ! Compte Gmail vérifié."
 
 #: cps/admin.py:1730 cps/admin.py:1733 cps/admin.py:2183 cps/admin.py:2394
-#: cps/admin.py:2506 cps/admin.py:2704 cps/editbooks.py:939
+#: cps/admin.py:2506 cps/admin.py:2738 cps/editbooks.py:939
 #: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
@@ -460,7 +460,7 @@ msgstr "Veuillez d'abord configurer votre adresse de courriel..."
 msgid "Email Server Settings updated"
 msgstr "Les paramètres du serveur de courriels ont été mis à jour"
 
-#: cps/admin.py:1770 cps/templates/admin.html:200
+#: cps/admin.py:1770 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Modifier les paramètres des tâches planifiées"
 
@@ -476,7 +476,7 @@ msgstr "Durée non valide pour la tâche spécifiée"
 msgid "Scheduled tasks settings updated"
 msgstr "Paramètres des tâches planifiées mis à jour"
 
-#: cps/admin.py:1807 cps/admin.py:1915 cps/admin.py:2700 cps/web.py:2092
+#: cps/admin.py:1807 cps/admin.py:1915 cps/admin.py:2734 cps/web.py:2092
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Une erreur inconnue est survenue. Veuillez réessayer plus tard."
 
@@ -489,7 +489,7 @@ msgstr "La base de données des paramètres n'est pas accessible en écriture"
 msgid "title"
 msgstr "Titre"
 
-#: cps/admin.py:1900 cps/admin.py:2692
+#: cps/admin.py:1900 cps/admin.py:2726
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Éditer l'utilisateur %(nick)s"
@@ -699,16 +699,16 @@ msgstr "Impossible de supprimer l’utilisateur Invité"
 msgid "No admin user remaining, can't delete user"
 msgstr "Aucun utilisateur admin restant, impossible de supprimer l’utilisateur"
 
-#: cps/admin.py:2663 cps/web.py:2396
+#: cps/admin.py:2697 cps/web.py:2396
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "L'adresse e-mail ne peut pas être vide et doit être valide"
 
-#: cps/admin.py:2696
+#: cps/admin.py:2730
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Utilisateur '%(nick)s'  mis à jour"
 
-#: cps/admin.py:2761
+#: cps/admin.py:2795
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
@@ -716,7 +716,7 @@ msgstr ""
 "Connexion réussie ! Le point de terminaison de découverte OIDC est "
 "accessible.%(endpoints)s"
 
-#: cps/admin.py:2766
+#: cps/admin.py:2800
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -724,13 +724,13 @@ msgstr ""
 "Échec de la connexion : point de terminaison OIDC introuvable (404). "
 "Vérifiez que l'URL de base est correcte."
 
-#: cps/admin.py:2768 cps/admin.py:2825
+#: cps/admin.py:2802 cps/admin.py:2859
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr ""
 "Echec de la connexion: Le serveur a retourné le code de status %(code)s"
 
-#: cps/admin.py:2770
+#: cps/admin.py:2804
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
@@ -739,7 +739,7 @@ msgstr ""
 "Échec de la connexion : impossible de se connecter au serveur. Vérifiez "
 "l'URL et la connexion réseau."
 
-#: cps/admin.py:2772
+#: cps/admin.py:2806
 #, fuzzy
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
@@ -747,7 +747,7 @@ msgstr ""
 "Échec de la connexion : délai d'attente expiré. Le serveur est peut-être "
 "lent ou inaccessible."
 
-#: cps/admin.py:2774
+#: cps/admin.py:2808
 #, fuzzy
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
@@ -756,12 +756,12 @@ msgstr ""
 "Échec de la connexion : le serveur a renvoyé un JSON non valide. Il ne "
 "s'agit peut-être pas d'un point de terminaison OIDC."
 
-#: cps/admin.py:2777
+#: cps/admin.py:2811
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Échec de la connexion : %(error)s"
 
-#: cps/admin.py:2803
+#: cps/admin.py:2837
 #, fuzzy, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -771,32 +771,32 @@ msgstr ""
 "se peut que ce ne soit pas un point de terminaison de métadonnées OIDC "
 "valide."
 
-#: cps/admin.py:2814
+#: cps/admin.py:2848
 #, fuzzy, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 "L'URL des métadonnées est valide ! %(count)s points de terminaison OAuth "
 "trouvés."
 
-#: cps/admin.py:2816
+#: cps/admin.py:2850
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr " Le point de terminaison des informations utilisateur est disponible."
 
-#: cps/admin.py:2818
+#: cps/admin.py:2852
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 " Remarque : point de terminaison des informations utilisateur introuvable - "
 "cela peut entraîner des problèmes d'authentification."
 
-#: cps/admin.py:2823
+#: cps/admin.py:2857
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 "URL des métadonnées introuvable (404). Veuillez vérifier que l'URL est "
 "correcte."
 
-#: cps/admin.py:2827
+#: cps/admin.py:2861
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
@@ -805,24 +805,24 @@ msgstr ""
 "Échec de la connexion : impossible de se connecter à l'URL des métadonnées. "
 "Vérifiez l'URL et la connectivité réseau."
 
-#: cps/admin.py:2829
+#: cps/admin.py:2863
 msgid "Connection failed: Request timed out."
 msgstr "Echec de la connexion: Délai d'attente dépassé."
 
-#: cps/admin.py:2831
+#: cps/admin.py:2865
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Echec de la connexion: Réponse JSON invalide."
 
-#: cps/admin.py:2834
+#: cps/admin.py:2868
 msgid "An unknown error occurred."
 msgstr "Une erreur inconnue est survenue."
 
-#: cps/admin.py:2858 cps/admin.py:2880
+#: cps/admin.py:2892 cps/admin.py:2914
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Échec de la connexion : %(error)s"
 
-#: cps/admin.py:2876
+#: cps/admin.py:2910
 #, python-format
 msgid ""
 "Restore complete. Both databases were backed up to %(dir)s. All book-linked "
@@ -2832,8 +2832,8 @@ msgid "Reverse Proxy Header Name"
 msgstr "Nom de l'en-tête du Reverse Proxy"
 
 #: cps/templates/admin.html:164
-msgid "Edit Calibre Database Configuration"
-msgstr "Éditer la configuration de la base de données Calibre"
+msgid "CWA Settings"
+msgstr "Paramètres de CWA"
 
 #: cps/templates/admin.html:165
 msgid "Edit Basic Configuration"
@@ -2843,47 +2843,47 @@ msgstr "Éditer la configuration principale"
 msgid "Edit UI Configuration"
 msgstr "Éditer la configuration de l’interface utilisateur"
 
-#: cps/templates/admin.html:172
+#: cps/templates/admin.html:167
+msgid "Edit Calibre Database Configuration"
+msgstr "Éditer la configuration de la base de données Calibre"
+
+#: cps/templates/admin.html:173
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
 msgstr "Tâches planifiées"
 
-#: cps/templates/admin.html:175 cps/templates/schedule_edit.html:12
+#: cps/templates/admin.html:176 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:19
 msgid "Start Time"
 msgstr "Heure de début"
 
-#: cps/templates/admin.html:179 cps/templates/schedule_edit.html:20
+#: cps/templates/admin.html:180 cps/templates/schedule_edit.html:20
 msgid "Maximum Duration"
 msgstr "Durée maximale"
 
-#: cps/templates/admin.html:183 cps/templates/schedule_edit.html:29
+#: cps/templates/admin.html:184 cps/templates/schedule_edit.html:29
 msgid "Scheduled Thumbnail Refresh"
 msgstr "Actualisation programmée des vignettes"
 
-#: cps/templates/admin.html:187
+#: cps/templates/admin.html:188
 msgid "Generate series cover thumbnails"
 msgstr "Génération des vignettes de couvertures des séries"
 
-#: cps/templates/admin.html:191 cps/templates/admin.html:232
+#: cps/templates/admin.html:192 cps/templates/admin.html:232
 #: cps/templates/schedule_edit.html:38
 msgid "Reconnect Calibre Database"
 msgstr "Reconnecter la base de données Calibre"
 
-#: cps/templates/admin.html:195 cps/templates/schedule_edit.html:42
+#: cps/templates/admin.html:196 cps/templates/schedule_edit.html:42
 msgid "Generate Metadata Backup Files"
 msgstr "Générer un fichier de sauvegarde des métadonnées"
 
-#: cps/templates/admin.html:201
+#: cps/templates/admin.html:202
 msgid "Refresh Thumbnail Cache"
 msgstr "Actualiser le cache des vignettes"
 
-#: cps/templates/admin.html:207
+#: cps/templates/admin.html:208
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
 msgstr "Fonctions d'administration CWA&nbsp;&nbsp;⚡"
-
-#: cps/templates/admin.html:208
-msgid "CWA Settings"
-msgstr "Paramètres de CWA"
 
 #: cps/templates/admin.html:209
 msgid "Show CWA Stats"

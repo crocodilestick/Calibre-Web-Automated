@@ -75,6 +75,12 @@
       <p class="lead" style="margin: 30px 0 20px 0; color: #bbb; text-align: left;">
         {{_('Review and approve ambiguous Hardcover ID matches for your books. High-confidence matches are applied automatically; these require manual verification.')}}
       </p>
+
+      <div style="margin: 0 0 20px 0; text-align: right;">
+        <button class="btn btn-danger reject-all-pending-btn" style="min-width: 220px;">
+          ✗ {{_('Reject All Pending')}}
+        </button>
+      </div>
       
       {% for match in matches %}
       <div style="margin-bottom: 30px;" id="match-card-{{match.id}}">
@@ -325,6 +331,43 @@ $(document).ready(function() {
         }
         alert('{{_("Error")}}: ' + errorMsg);
         btn.prop('disabled', false).text('{{_("✗ Reject All Matches")}}');
+      }
+    });
+  });
+
+  // Handle reject all pending button
+  $('.reject-all-pending-btn').click(function() {
+    var btn = $(this);
+
+    if (!confirm('{{_("Are you sure you want to reject all pending matches? This cannot be undone.")}}')) {
+      return;
+    }
+
+    btn.prop('disabled', true).text('{{_("Processing...")}}');
+
+    $.ajax({
+      url: '{{url_for("admin.hardcover_review_reject_all")}}',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({}),
+      success: function(response) {
+        var data = JSON.parse(response);
+        if (data.success) {
+          $('.settings-container').fadeOut(300, function() {
+            location.reload();
+          });
+        } else {
+          alert('{{_("Error")}}: ' + data.error);
+          btn.prop('disabled', false).text('{{_("✗ Reject All Pending")}}');
+        }
+      },
+      error: function(xhr) {
+        var errorMsg = '{{_("Failed to reject all pending matches")}}';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        }
+        alert('{{_("Error")}}: ' + errorMsg);
+        btn.prop('disabled', false).text('{{_("✗ Reject All Pending")}}');
       }
     });
   });

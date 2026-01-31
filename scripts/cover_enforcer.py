@@ -645,6 +645,39 @@ class Enforcer:
             return
 
 
+    def _parse_log_filename(self, log_path: str):
+        """Return (book_id, timestamp) from a log filename, or (None, None) if invalid."""
+        log_name = os.path.basename(log_path)
+        try:
+            timestamp_raw = log_name.split('-')[0]
+            book_id = (log_name.split('-')[1]).split('.')[0]
+            timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
+            return book_id, timestamp
+        except Exception:
+            return None, None
+
+
+    def select_latest_log_for_book(self, book_id: str, current_log_path: str | None = None) -> str | None:
+        """Select the latest log file for a given book_id; optionally prefer current_log_path if newest."""
+        log_files = [os.path.join(dirpath, f)
+                     for (dirpath, _, filenames) in os.walk(change_logs_dir)
+                     for f in filenames if f.endswith('.json')]
+        latest_path = None
+        latest_ts = None
+        for log in log_files:
+            parsed_book_id, ts = self._parse_log_filename(log)
+            if parsed_book_id != str(book_id) or ts is None:
+                continue
+            if latest_ts is None or ts > latest_ts:
+                latest_ts = ts
+                latest_path = log
+        if latest_path is None:
+            return current_log_path
+        if current_log_path and os.path.abspath(current_log_path) == os.path.abspath(latest_path):
+            return current_log_path
+        return latest_path
+
+
     def record_failed_enforcement(self, log_info: dict, error: Exception | str) -> None:
         """Record a failed enforcement attempt so admins can see it in stats."""
         try:
@@ -664,30 +697,56 @@ class Enforcer:
         os.system(f"rm -r {metadata_temp_dir}/*")
 
 
-    def check_for_other_logs(self):
-        log_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(change_logs_dir) for f in filenames]
+    def check_for_other_logs(self, processed_book_ids: set | None = None):
+        processed_book_ids = processed_book_ids or set()
+        log_files = [os.path.join(dirpath, f)
+                     for (dirpath, _, filenames) in os.walk(change_logs_dir)
+                     for f in filenames if f.endswith('.json')]
+
         if len(log_files) > 0:
             print(f"[cover-metadata-enforcer] {len(log_files)} Additional metadata changes detected, processing now..", flush=True)
+
+            # Coalesce logs per book to the newest entry
+            latest_by_book: dict[str, tuple[str, datetime]] = {}
             for log in log_files:
-                if log.endswith('.json'):
-                    log_info = self.read_log(auto=False, log_path=log)
-                    # Skip if log_info is None (file was deleted or invalid)
-                    if log_info is None:
-                        continue
-                    book_dir = self.get_book_dir_from_log(log_info)
-                    try:
-                        book_objects = self.enforce_cover(book_dir)
-                        if book_objects:
-                            for book in book_objects:
-                                book.log_info = log_info
-                                book.log_info['file_path'] = book.file_path
-                                self.db.enforce_add_entry_from_log(book.log_info)
-                        else:
-                            self.record_failed_enforcement(log_info, "No supported files or enforcement failed")
-                    except Exception as e:
-                        self.record_failed_enforcement(log_info, e)
-                    finally:
-                        self.delete_log(auto=False, log_path=log)
+                book_id, ts = self._parse_log_filename(log)
+                if book_id is None or ts is None:
+                    continue
+                if book_id not in latest_by_book or ts > latest_by_book[book_id][1]:
+                    latest_by_book[book_id] = (log, ts)
+
+            # Delete any older logs for the same book
+            latest_paths = {entry[0] for entry in latest_by_book.values()}
+            for log in log_files:
+                if log not in latest_paths:
+                    self.delete_log(auto=False, log_path=log)
+
+            for log_path, _ in latest_by_book.values():
+                log_info = self.read_log(auto=False, log_path=log_path)
+                # Skip if log_info is None (file was deleted or invalid)
+                if log_info is None:
+                    continue
+
+                book_id = str(log_info.get('book_id', '')).strip()
+                if book_id in processed_book_ids:
+                    self.delete_log(auto=False, log_path=log_path)
+                    continue
+
+                book_dir = self.get_book_dir_from_log(log_info)
+                try:
+                    book_objects = self.enforce_cover(book_dir)
+                    if book_objects:
+                        for book in book_objects:
+                            book.log_info = log_info
+                            book.log_info['file_path'] = book.file_path
+                            self.db.enforce_add_entry_from_log(book.log_info)
+                    else:
+                        self.record_failed_enforcement(log_info, "No supported files or enforcement failed")
+                except Exception as e:
+                    self.record_failed_enforcement(log_info, e)
+                finally:
+                    processed_book_ids.add(book_id)
+                    self.delete_log(auto=False, log_path=log_path)
 
 
 def main():
@@ -757,6 +816,17 @@ def main():
         if log_info is None:
             print(f"[cover-metadata-enforcer] Skipping processing due to missing or invalid log file. This is normal if the file was already processed.")
             sys.exit(0)
+
+        # If multiple logs exist for the same book, prefer the newest one
+        current_log_path = os.path.join(change_logs_dir, args.log)
+        latest_log_path = enforcer.select_latest_log_for_book(log_info.get('book_id'), current_log_path=current_log_path)
+        if latest_log_path and os.path.abspath(latest_log_path) != os.path.abspath(current_log_path):
+            # Switch to the latest log and delete the older one
+            enforcer.delete_log(auto=False, log_path=current_log_path)
+            log_info = enforcer.read_log(auto=False, log_path=latest_log_path)
+            if log_info is None:
+                print(f"[cover-metadata-enforcer] Skipping processing due to missing or invalid log file. This is normal if the file was already processed.")
+                sys.exit(0)
         
         book_dir = enforcer.get_book_dir_from_log(log_info)
         if enforcer.enforcer_on:
@@ -772,7 +842,7 @@ def main():
                     book.log_info['file_path'] = book.file_path
                     enforcer.db.enforce_add_entry_from_log(book.log_info)
                 enforcer.delete_log()
-                enforcer.check_for_other_logs()
+                enforcer.check_for_other_logs(processed_book_ids={str(log_info.get('book_id', '')).strip()})
             except Exception as e:
                 enforcer.record_failed_enforcement(log_info, e)
                 enforcer.delete_log()

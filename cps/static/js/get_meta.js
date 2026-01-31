@@ -19,10 +19,69 @@
 $(function () {
   var msg = i18nMsg;
   var keyword = "";
+  var metaSelectionKey = "cwa.metaSelection";
+  var metaSelectionCache = null;
+  var metaAlertTimer = null;
 
   var templates = {
     bookResult: _.template($("#template-book-result").html()),
   };
+
+  function isLocalStorageAvailable() {
+    try {
+      var testKey = "__cwa_meta_test__";
+      localStorage.setItem(testKey, "1");
+      localStorage.removeItem(testKey);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function getMetaSelections() {
+    if (metaSelectionCache !== null) {
+      return metaSelectionCache;
+    }
+    if (!isLocalStorageAvailable()) {
+      metaSelectionCache = {};
+      return metaSelectionCache;
+    }
+    try {
+      var stored = localStorage.getItem(metaSelectionKey);
+      metaSelectionCache = stored ? JSON.parse(stored) : {};
+      if (typeof metaSelectionCache !== "object" || metaSelectionCache === null) {
+        metaSelectionCache = {};
+      }
+    } catch (e) {
+      metaSelectionCache = {};
+    }
+    return metaSelectionCache;
+  }
+
+  function setMetaSelection(key, value) {
+    var selections = getMetaSelections();
+    selections[key] = value;
+    if (!isLocalStorageAvailable()) {
+      return;
+    }
+    try {
+      localStorage.setItem(metaSelectionKey, JSON.stringify(selections));
+    } catch (e) {
+      // Ignore storage failures (quota/private mode)
+    }
+  }
+
+  function applyMetaSelections(container) {
+    var selections = getMetaSelections();
+    container
+      .find('input[type="checkbox"][data-meta-value]')
+      .each(function () {
+        var key = $(this).data("meta-value");
+        if (Object.prototype.hasOwnProperty.call(selections, key)) {
+          $(this).prop("checked", selections[key]);
+        }
+      });
+  }
 
   function getUniqueValues(attribute_name, book) {
     var presentArray = $.map(
@@ -100,6 +159,20 @@ $(function () {
         }, {});
       populateIdentifiers(selectedIdentifiers);
     }
+    var $alert = $("#meta-import-alert");
+    if ($alert.length) {
+      if (metaAlertTimer) {
+        clearTimeout(metaAlertTimer);
+        metaAlertTimer = null;
+      }
+      $alert.show().addClass("is-visible");
+      metaAlertTimer = setTimeout(function () {
+        $alert.removeClass("is-visible");
+        setTimeout(function () {
+          $alert.hide();
+        }, 250);
+      }, 2000);
+    }
   }
 
   function populateIdentifiers(identifiers) {
@@ -157,6 +230,7 @@ $(function () {
               $book.find("button").on("click", function () {
                 populateForm(book, idx);
               });
+              applyMetaSelections($book);
               $("#book-list").append($book);
             });
           } else {
@@ -241,10 +315,19 @@ $(function () {
           $book.find("button").on("click", function () {
             populateForm(book, idx);
           });
+          applyMetaSelections($book);
           $("#book-list").append($book);
         });
       },
     });
+  });
+
+  $(document).on("change", 'input[type="checkbox"][data-meta-value]', function () {
+    var key = $(this).data("meta-value");
+    var val = $(this).prop("checked");
+    if (key) {
+      setMetaSelection(key, val);
+    }
   });
 
   $("#meta-search").on("submit", function (e) {

@@ -372,23 +372,38 @@ def edit_book_param(param, vals):
     book = calibre_db.get_book(vals['pk'])
     sort_param = ""
     ret = ""
+    metadata_changed = False
+    log_key = None
+    log_value = None
     try:
         if param == 'series_index':
             edit_book_series_index(vals['value'], book)
             ret = Response(json.dumps({'success': True, 'newValue': book.series_index}), mimetype='application/json')
+            metadata_changed = True
+            log_key = 'series_index'
+            log_value = vals.get('value', '')
         elif param == 'tags':
             edit_book_tags(vals['value'], book)
             ret = Response(json.dumps({'success': True, 'newValue': ', '.join([tag.name for tag in book.tags])}),
                            mimetype='application/json')
+            metadata_changed = True
+            log_key = 'tags'
+            log_value = vals.get('value', '')
         elif param == 'series':
             edit_book_series(vals['value'], book)
             ret = Response(json.dumps({'success': True, 'newValue':  ', '.join([serie.name for serie in book.series])}),
                            mimetype='application/json')
+            metadata_changed = True
+            log_key = 'series'
+            log_value = vals.get('value', '')
         elif param == 'publishers':
             edit_book_publisher(vals['value'], book)
             ret = Response(json.dumps({'success': True,
                                        'newValue': ', '.join([publisher.name for publisher in book.publishers])}),
                            mimetype='application/json')
+            metadata_changed = True
+            log_key = 'publisher'
+            log_value = vals.get('value', '')
         elif param == 'languages':
             invalid = list()
             edit_book_languages(vals['value'], book, invalid=invalid)
@@ -402,6 +417,9 @@ def edit_book_param(param, vals):
                     lang_names.append(isoLanguages.get_language_name(get_locale(), lang.lang_code))
                 ret = Response(json.dumps({'success': True, 'newValue':  ', '.join(lang_names)}),
                                mimetype='application/json')
+                metadata_changed = True
+                log_key = 'languages'
+                log_value = vals.get('value', '')
         elif param == 'author_sort':
             book.author_sort = vals['value']
             ret = Response(json.dumps({'success': True, 'newValue':  book.author_sort}),
@@ -415,6 +433,9 @@ def edit_book_param(param, vals):
                 if not rename_error:
                     ret = Response(json.dumps({'success': True, 'newValue':  book.title}),
                                    mimetype='application/json')
+                    metadata_changed = True
+                    log_key = 'title'
+                    log_value = vals.get('value', '')
                 else:
                     ret = Response(json.dumps({'success': False,
                                                'msg': rename_error}),
@@ -427,6 +448,9 @@ def edit_book_param(param, vals):
             edit_book_comments(vals['value'], book)
             ret = Response(json.dumps({'success': True, 'newValue':  book.comments[0].text}),
                            mimetype='application/json')
+            metadata_changed = True
+            log_key = 'comments'
+            log_value = vals.get('value', '')
         elif param == 'authors':
             input_authors, __ = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
             rename_error = helper.update_dir_structure(book.id, config.get_book_path(), input_authors[0])
@@ -435,10 +459,20 @@ def edit_book_param(param, vals):
                     'success': True,
                     'newValue':  ' & '.join([author.replace('|', ',') for author in input_authors])}),
                     mimetype='application/json')
+                metadata_changed = True
+                log_key = 'authors'
+                log_value = vals.get('value', '')
             else:
                 ret = Response(json.dumps({'success': False,
                                            'msg': rename_error}),
                                mimetype='application/json')
+        elif param == 'rating':
+            rating_changed = edit_book_ratings({'rating': vals.get('value', '')}, book)
+            ret = Response(json.dumps({'success': True, 'newValue': vals.get('value', '')}),
+                           mimetype='application/json')
+            metadata_changed = rating_changed
+            log_key = 'rating'
+            log_value = vals.get('value', '')
         elif param == 'is_archived':
             is_archived = change_archived_books(book.id, vals['value'] == "True",
                                                 message="Book {} archive bit set to: {}".format(book.id, vals['value']))
@@ -459,15 +493,41 @@ def edit_book_param(param, vals):
             else:
                 ret = Response(json.dumps({'success': True, 'newValue': vals['value']}),
                                mimetype='application/json')
+            metadata_changed = True
+            log_key = param
+            log_value = vals.get('value', '')
         else:
             return _("Parameter not found"), 400
         book.last_modified = datetime.now(timezone.utc)
+
+        if metadata_changed:
+            calibre_db.set_metadata_dirty(book.id)
 
         calibre_db.session.commit()
         # revert change for sort if automatic fields link is deactivated
         if param == 'title' and vals.get('checkT') == "false":
             book.sort = sort_param
             calibre_db.session.commit()
+
+        if metadata_changed and log_key is not None:
+            try:
+                payload = {log_key: log_value}
+                payload.setdefault('title', book.title)
+                payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
+                payload['_cwa_meta'] = {
+                    'modify_date': True,
+                    'change_count': 1,
+                    'has_content': log_value != '',
+                    'timestamp': datetime.now().isoformat()
+                }
+
+                now = datetime.now()
+                log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                with open(log_path, 'w', encoding='utf-8') as f:
+                    json.dump(payload, f, indent=4, ensure_ascii=False)
+                log.debug(f"Created metadata change log for book {book.id} with changes: {list(payload.keys())}")
+            except Exception as e:
+                log.error_or_exception(f"Failed to write metadata change log for book {book.id}: {e}")
     except (OperationalError, IntegrityError, StaleDataError, InvalidRequestError) as e:
         calibre_db.session.rollback()
         log.error_or_exception("Database error: {}".format(e))

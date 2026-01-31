@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-01-31 14:06+0100\n"
+"POT-Creation-Date: 2026-01-31 18:20+0100\n"
 "PO-Revision-Date: 2023-01-06 11:00+0000\n"
 "Last-Translator: Vegard Fladby <vegard.fladby@gmail.com>\n"
 "Language-Team: \n"
@@ -84,155 +84,164 @@ msgid "Match %(action)s"
 msgstr ""
 
 #: cps/admin.py:418
+msgid "No pending matches to reject"
+msgstr ""
+
+#: cps/admin.py:424
+#, python-format
+msgid "Rejected %(count)s match(es)"
+msgstr ""
+
+#: cps/admin.py:461
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
 msgstr ""
 
-#: cps/admin.py:420
+#: cps/admin.py:463
 msgid "No books with covers found to process."
 msgstr ""
 
-#: cps/admin.py:432
+#: cps/admin.py:475
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
 msgstr ""
 
-#: cps/admin.py:474
+#: cps/admin.py:517
 msgid "Admin page"
 msgstr "Admin side"
 
-#: cps/admin.py:494
+#: cps/admin.py:537
 msgid "Basic Configuration"
 msgstr "Grunnleggende konfigurasjon"
 
-#: cps/admin.py:532
+#: cps/admin.py:575
 msgid "UI Configuration"
 msgstr "UI-konfigurasjon"
 
-#: cps/admin.py:556 cps/admin.py:1238 cps/db.py:944 cps/search.py:153
+#: cps/admin.py:599 cps/admin.py:1281 cps/db.py:944 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Egendefinert kolonnenr.%(column)d finnes ikke i caliber-databasen"
 
-#: cps/admin.py:574 cps/templates/admin.html:55
+#: cps/admin.py:617 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Rediger brukere"
 
-#: cps/admin.py:618 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:661 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Alle"
 
-#: cps/admin.py:645 cps/admin.py:1763
+#: cps/admin.py:688 cps/admin.py:1806
 msgid "User not found"
 msgstr "Bruker ikke funnet"
 
-#: cps/admin.py:659
+#: cps/admin.py:702
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} brukere ble slettet"
 
-#: cps/admin.py:682 cps/templates/config_view_edit.html:170
+#: cps/admin.py:725 cps/templates/config_view_edit.html:170
 #: cps/templates/user_edit.html:241 cps/templates/user_edit.html:264
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Vis alt"
 
-#: cps/admin.py:703 cps/admin.py:709
+#: cps/admin.py:746 cps/admin.py:752
 msgid "Malformed request"
 msgstr "Feil utformet forespørsel"
 
-#: cps/admin.py:721 cps/admin.py:2576
+#: cps/admin.py:764 cps/admin.py:2619
 msgid "Guest Name can't be changed"
 msgstr "Gjestenavn kan ikke endres"
 
-#: cps/admin.py:735
+#: cps/admin.py:778
 msgid "Guest can't have this role"
 msgstr "Gjesten kan ikke ha denne rollen"
 
-#: cps/admin.py:747 cps/admin.py:2468
+#: cps/admin.py:790 cps/admin.py:2511
 msgid "No admin user remaining, can't remove admin role"
 msgstr "Ingen administratorbruker igjen, kan ikke fjerne administratorrollen"
 
-#: cps/admin.py:751 cps/admin.py:765
+#: cps/admin.py:794 cps/admin.py:808
 msgid "Value has to be true or false"
 msgstr "Verdien må være sann eller usann"
 
-#: cps/admin.py:753
+#: cps/admin.py:796
 msgid "Invalid role"
 msgstr "Ugyldig rolle"
 
-#: cps/admin.py:757
+#: cps/admin.py:800
 msgid "Guest can't have this view"
 msgstr "Gjestene kan ikke ha denne utsikten"
 
-#: cps/admin.py:767
+#: cps/admin.py:810
 msgid "Invalid view"
 msgstr "Ugyldig visning"
 
-#: cps/admin.py:770
+#: cps/admin.py:813
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "Gjestenes lokalitet bestemmes automatisk og kan ikke angis"
 
-#: cps/admin.py:774
+#: cps/admin.py:817
 msgid "No Valid Locale Given"
 msgstr "Ingen gyldig lokalitet gitt"
 
-#: cps/admin.py:785
+#: cps/admin.py:828
 msgid "No Valid Book Language Given"
 msgstr "Ikke oppgitt gyldig bokspråk"
 
-#: cps/admin.py:787 cps/editbooks.py:463
+#: cps/admin.py:830 cps/editbooks.py:500
 msgid "Parameter not found"
 msgstr "Parameter ikke funnet"
 
-#: cps/admin.py:824
+#: cps/admin.py:867
 msgid "Invalid Read Column"
 msgstr "Ugyldig lesekolonne"
 
-#: cps/admin.py:830
+#: cps/admin.py:873
 msgid "Invalid Restricted Column"
 msgstr "Ugyldig begrenset kolonne"
 
-#: cps/admin.py:850 cps/admin.py:2321
+#: cps/admin.py:893 cps/admin.py:2364
 #, fuzzy
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Calibre-Web-konfigurasjonen er oppdatert"
 
-#: cps/admin.py:862
+#: cps/admin.py:905
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Vil du virkelig slette Kobo-tokenet?"
 
-#: cps/admin.py:864
+#: cps/admin.py:907
 msgid "Do you really want to delete this domain?"
 msgstr "Vil du virkelig slette dette domenet?"
 
-#: cps/admin.py:866
+#: cps/admin.py:909
 msgid "Do you really want to delete this user?"
 msgstr "Vil du virkelig slette denne brukeren?"
 
-#: cps/admin.py:868
+#: cps/admin.py:911
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Er du sikker på at du vil slette denne hyllen?"
 
-#: cps/admin.py:870
+#: cps/admin.py:913
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr "Er du sikker på at du vil endre lokaliteter for valgte bruker(e)?"
 
-#: cps/admin.py:872
+#: cps/admin.py:915
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr "Er du sikker på at du vil endre synlige bokspråk for valgte bruker(e)?"
 
-#: cps/admin.py:874
+#: cps/admin.py:917
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
 "Er du sikker på at du vil endre den valgte rollen for den(e) valgte brukeren?"
 
-#: cps/admin.py:876
+#: cps/admin.py:919
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -240,7 +249,7 @@ msgstr ""
 "Er du sikker på at du vil endre de valgte begrensningene for den(e) valgte "
 "brukeren?"
 
-#: cps/admin.py:878
+#: cps/admin.py:921
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -248,18 +257,18 @@ msgstr ""
 "Er du sikker på at du vil endre de valgte synlighetsbegrensningene for "
 "valgte bruker(e)?"
 
-#: cps/admin.py:881
+#: cps/admin.py:924
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
 "Er du sikker på at du vil endre atferden for hyllesynkronisering for de(n) "
 "valgte brukeren(e)?"
 
-#: cps/admin.py:883
+#: cps/admin.py:926
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Er du sikker på at du vil endre plassering av Caliber-biblioteket?"
 
-#: cps/admin.py:885
+#: cps/admin.py:928
 #, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
@@ -268,7 +277,7 @@ msgstr ""
 "Calibre-Web vil søke etter oppdaterte omslag og oppdatere "
 "omslagsminiatyrbilder, kan dette ta litt tid?"
 
-#: cps/admin.py:888
+#: cps/admin.py:931
 #, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
@@ -277,84 +286,84 @@ msgstr ""
 "Er du sikker på at du vil slette Calibre-Webs synkroniseringsdatabase for å "
 "tvinge frem en full synkronisering med Kobo Reader?"
 
-#: cps/admin.py:1127 cps/admin.py:1133 cps/admin.py:1143 cps/admin.py:1153
+#: cps/admin.py:1170 cps/admin.py:1176 cps/admin.py:1186 cps/admin.py:1196
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Benekte"
 
-#: cps/admin.py:1129 cps/admin.py:1135 cps/admin.py:1145 cps/admin.py:1155
+#: cps/admin.py:1172 cps/admin.py:1178 cps/admin.py:1188 cps/admin.py:1198
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Tillate"
 
-#: cps/admin.py:1188
+#: cps/admin.py:1231
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} synkroniseringsoppføringer slettet"
 
-#: cps/admin.py:1229
+#: cps/admin.py:1272
 msgid "Tag not found"
 msgstr "Merket ble ikke funnet"
 
-#: cps/admin.py:1247
+#: cps/admin.py:1290
 msgid "Invalid Action"
 msgstr "Ugyldig handling"
 
-#: cps/admin.py:1374
+#: cps/admin.py:1417
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json er ikke konfigurert for webapplikasjon"
 
-#: cps/admin.py:1513
+#: cps/admin.py:1556
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Loggfilplasseringen er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:1519
+#: cps/admin.py:1562
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr ""
 "Plasseringen av tilgangsloggfilen er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:1554
+#: cps/admin.py:1597
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "Angi en LDAP-leverandør, port, DN og brukerobjektidentifikator"
 
-#: cps/admin.py:1560
+#: cps/admin.py:1603
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Vennligst skriv inn en LDAP-tjenestekonto og passord"
 
-#: cps/admin.py:1563
+#: cps/admin.py:1606
 msgid "Please Enter a LDAP Service Account"
 msgstr "Angi en LDAP-tjenestekonto"
 
-#: cps/admin.py:1568
+#: cps/admin.py:1611
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-gruppeobjektfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1570
+#: cps/admin.py:1613
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-gruppeobjektfilter har uovertruffen parentes"
 
-#: cps/admin.py:1574
+#: cps/admin.py:1617
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-brukerobjektfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1576
+#: cps/admin.py:1619
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-brukerobjektfilter har uovertruffen parentes"
 
-#: cps/admin.py:1583
+#: cps/admin.py:1626
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-medlemsbrukerfilter må ha én \"%s\"-formatidentifikator"
 
-#: cps/admin.py:1585
+#: cps/admin.py:1628
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "LDAP-medlemsbrukerfilter har uovertruffen parentes"
 
-#: cps/admin.py:1592
+#: cps/admin.py:1635
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -362,357 +371,357 @@ msgstr ""
 "LDAP CA-sertifikat, sertifikat eller nøkkelplassering er ikke gyldig. Angi "
 "riktig bane"
 
-#: cps/admin.py:1623 cps/templates/admin.html:57
+#: cps/admin.py:1666 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Legg til ny bruker"
 
-#: cps/admin.py:1632 cps/templates/admin.html:105
+#: cps/admin.py:1675 cps/templates/admin.html:105
 #, fuzzy
 msgid "Edit Email Server Settings"
 msgstr "Rediger e-postserverinnstillinger"
 
-#: cps/admin.py:1651
+#: cps/admin.py:1694
 msgid "Success! Gmail Account Verified."
 msgstr ""
 
-#: cps/admin.py:1671 cps/admin.py:1674 cps/admin.py:2094 cps/admin.py:2305
-#: cps/admin.py:2413 cps/admin.py:2607 cps/editbooks.py:879
-#: cps/editbooks.py:1638 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:1714 cps/admin.py:1717 cps/admin.py:2137 cps/admin.py:2348
+#: cps/admin.py:2456 cps/admin.py:2650 cps/editbooks.py:939
+#: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2559
 #, fuzzy, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Databasefeil: %(error)s."
 
-#: cps/admin.py:1681
+#: cps/admin.py:1724
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
 msgstr ""
 "Test e-post i kø for sending til %(email)s, sjekk Oppgaver for resultat"
 
-#: cps/admin.py:1684
+#: cps/admin.py:1727
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Det oppsto en feil ved sending av test-e-posten: %(res)s"
 
-#: cps/admin.py:1686
+#: cps/admin.py:1729
 msgid "Please configure your e-mail address first..."
 msgstr "Vennligst konfigurer e-postadressen din først..."
 
-#: cps/admin.py:1688
+#: cps/admin.py:1731
 #, fuzzy
 msgid "Email Server Settings updated"
 msgstr "E-postserverinnstillinger oppdatert"
 
-#: cps/admin.py:1711 cps/templates/admin.html:200
+#: cps/admin.py:1754 cps/templates/admin.html:200
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Rediger innstillinger for planlagte oppgaver"
 
-#: cps/admin.py:1723
+#: cps/admin.py:1766
 msgid "Invalid start time for task specified"
 msgstr "Ugyldig starttidspunkt for spesifisert oppgave"
 
-#: cps/admin.py:1728
+#: cps/admin.py:1771
 msgid "Invalid duration for task specified"
 msgstr "Ugyldig varighet for spesifisert oppgave"
 
-#: cps/admin.py:1738
+#: cps/admin.py:1781
 msgid "Scheduled tasks settings updated"
 msgstr "Innstillinger for planlagte oppgaver er oppdatert"
 
-#: cps/admin.py:1748 cps/admin.py:1826 cps/admin.py:2603 cps/web.py:2092
+#: cps/admin.py:1791 cps/admin.py:1869 cps/admin.py:2646 cps/web.py:2092
 #, fuzzy
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "En ukjent feil oppstod. Prøv igjen senere."
 
-#: cps/admin.py:1752
+#: cps/admin.py:1795
 msgid "Settings DB is not Writeable"
 msgstr "Innstillinger DB er ikke skrivbar"
 
-#: cps/admin.py:1811 cps/admin.py:2595
+#: cps/admin.py:1854 cps/admin.py:2638
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Rediger bruker %(nick)s"
 
-#: cps/admin.py:1823
+#: cps/admin.py:1866
 #, fuzzy, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Passord for bruker %(user)s tilbakestilling"
 
-#: cps/admin.py:1829
+#: cps/admin.py:1872
 #, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Vennligst konfigurer SMTP-postinnstillingene først..."
 
-#: cps/admin.py:1840
+#: cps/admin.py:1883
 msgid "Logfile viewer"
 msgstr "Loggfilviser"
 
-#: cps/admin.py:1906
+#: cps/admin.py:1949
 msgid "Requesting update package"
 msgstr "Ber om oppdateringspakke"
 
-#: cps/admin.py:1907
+#: cps/admin.py:1950
 msgid "Downloading update package"
 msgstr "Laster ned oppdateringspakken"
 
-#: cps/admin.py:1908
+#: cps/admin.py:1951
 msgid "Unzipping update package"
 msgstr "Pakker ut oppdateringspakken"
 
-#: cps/admin.py:1909
+#: cps/admin.py:1952
 msgid "Replacing files"
 msgstr "Erstatter filer"
 
-#: cps/admin.py:1910
+#: cps/admin.py:1953
 msgid "Database connections are closed"
 msgstr "Databaseforbindelser er stengt"
 
-#: cps/admin.py:1911
+#: cps/admin.py:1954
 msgid "Stopping server"
 msgstr "Stopper server"
 
-#: cps/admin.py:1912
+#: cps/admin.py:1955
 msgid "Update finished, please press okay and reload page"
 msgstr "Oppdatering fullført, vennligst trykk OK og last inn siden på nytt"
 
-#: cps/admin.py:1913 cps/admin.py:1914 cps/admin.py:1915 cps/admin.py:1916
-#: cps/admin.py:1917 cps/admin.py:1918
+#: cps/admin.py:1956 cps/admin.py:1957 cps/admin.py:1958 cps/admin.py:1959
+#: cps/admin.py:1960 cps/admin.py:1961
 msgid "Update failed:"
 msgstr "Oppdatering mislyktes:"
 
-#: cps/admin.py:1913 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
+#: cps/admin.py:1956 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
 msgid "HTTP Error"
 msgstr "HTTP-feil"
 
-#: cps/admin.py:1914 cps/updater.py:390 cps/updater.py:627
+#: cps/admin.py:1957 cps/updater.py:390 cps/updater.py:627
 msgid "Connection error"
 msgstr "Tilkoblingsfeil"
 
-#: cps/admin.py:1915 cps/updater.py:392 cps/updater.py:629
+#: cps/admin.py:1958 cps/updater.py:392 cps/updater.py:629
 msgid "Timeout while establishing connection"
 msgstr "Tidsavbrudd under etablering av tilkobling"
 
-#: cps/admin.py:1916 cps/updater.py:394 cps/updater.py:631
+#: cps/admin.py:1959 cps/updater.py:394 cps/updater.py:631
 msgid "General error"
 msgstr "Generell feil"
 
-#: cps/admin.py:1917
+#: cps/admin.py:1960
 msgid "Update file could not be saved in temp dir"
 msgstr "Oppdateringsfilen kunne ikke lagres i temp dir"
 
-#: cps/admin.py:1918
+#: cps/admin.py:1961
 msgid "Files could not be replaced during update"
 msgstr "Filer kunne ikke erstattes under oppdatering"
 
-#: cps/admin.py:1942
+#: cps/admin.py:1985
 msgid "Failed to extract at least One LDAP User"
 msgstr "Kunne ikke pakke ut minst én LDAP-bruker"
 
-#: cps/admin.py:1987
+#: cps/admin.py:2030
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Kunne ikke opprette minst én LDAP-bruker"
 
-#: cps/admin.py:2000
+#: cps/admin.py:2043
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Feil: %(ldaperror)s"
 
-#: cps/admin.py:2004
+#: cps/admin.py:2047
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Feil: Ingen bruker ble returnert som svar fra LDAP-serveren"
 
-#: cps/admin.py:2040
+#: cps/admin.py:2083
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Minst én LDAP-bruker ikke funnet i databasen"
 
-#: cps/admin.py:2042
+#: cps/admin.py:2085
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Bruker ble importert"
 
-#: cps/admin.py:2106
+#: cps/admin.py:2149
 msgid "Books path not valid"
 msgstr ""
 
-#: cps/admin.py:2113
+#: cps/admin.py:2156
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "DB-plassering er ikke gyldig, skriv inn riktig bane"
 
-#: cps/admin.py:2141
+#: cps/admin.py:2184
 msgid "DB is not Writeable"
 msgstr "DB er ikke skrivbar"
 
-#: cps/admin.py:2154
+#: cps/admin.py:2197
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Nøkkelfilplasseringen er ikke gyldig. Angi riktig bane"
 
-#: cps/admin.py:2158
+#: cps/admin.py:2201
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr ""
 "Sertifikatfilplasseringen er ikke gyldig, vennligst skriv inn riktig bane"
 
-#: cps/admin.py:2227
+#: cps/admin.py:2270
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
 
-#: cps/admin.py:2230
+#: cps/admin.py:2273
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 
-#: cps/admin.py:2249 cps/admin.py:2256
+#: cps/admin.py:2292 cps/admin.py:2299
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2253
+#: cps/admin.py:2296
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2288
+#: cps/admin.py:2331
 msgid "Password length has to be between 1 and 40"
 msgstr ""
 
-#: cps/admin.py:2348
+#: cps/admin.py:2391
 msgid "Database Settings updated"
 msgstr "Databaseinnstillinger oppdatert"
 
-#: cps/admin.py:2356
+#: cps/admin.py:2399
 msgid "Database Configuration"
 msgstr "Databasekonfigurasjon"
 
-#: cps/admin.py:2377 cps/web.py:2061
+#: cps/admin.py:2420 cps/web.py:2061
 #, fuzzy
 msgid "Oops! Please complete all fields."
 msgstr "Vennligst fyll ut alle feltene!"
 
-#: cps/admin.py:2386
+#: cps/admin.py:2429
 msgid "E-mail is not from valid domain"
 msgstr "E-post er ikke fra gyldig domene"
 
-#: cps/admin.py:2392
+#: cps/admin.py:2435
 msgid "Add new user"
 msgstr "Legg til ny bruker"
 
-#: cps/admin.py:2403
+#: cps/admin.py:2446
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Bruker '%(user)s' opprettet"
 
-#: cps/admin.py:2409
+#: cps/admin.py:2452
 #, fuzzy
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "Fant en eksisterende konto for denne e-postadressen eller navnet."
 
-#: cps/admin.py:2439
+#: cps/admin.py:2482
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Brukeren '%(nick)s' slettet"
 
-#: cps/admin.py:2442
+#: cps/admin.py:2485
 msgid "Can't delete Guest User"
 msgstr "Kan ikke slette gjestebruker"
 
-#: cps/admin.py:2445
+#: cps/admin.py:2488
 msgid "No admin user remaining, can't delete user"
 msgstr "Ingen administratorbruker igjen, kan ikke slette bruker"
 
-#: cps/admin.py:2570 cps/web.py:2396
+#: cps/admin.py:2613 cps/web.py:2396
 #, fuzzy
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-postadresse kan ikke være tom og må være en gyldig e-post"
 
-#: cps/admin.py:2599
+#: cps/admin.py:2642
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Bruker '%(nick)s' oppdatert"
 
-#: cps/admin.py:2664
+#: cps/admin.py:2707
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2669
+#: cps/admin.py:2712
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2671 cps/admin.py:2728
+#: cps/admin.py:2714 cps/admin.py:2771
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr ""
 
-#: cps/admin.py:2673
+#: cps/admin.py:2716
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr ""
 
-#: cps/admin.py:2675
+#: cps/admin.py:2718
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 
-#: cps/admin.py:2677
+#: cps/admin.py:2720
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr ""
 
-#: cps/admin.py:2680
+#: cps/admin.py:2723
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Tilkoblingsfeil"
 
-#: cps/admin.py:2706
+#: cps/admin.py:2749
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr ""
 
-#: cps/admin.py:2717
+#: cps/admin.py:2760
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 
-#: cps/admin.py:2719
+#: cps/admin.py:2762
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "Ingen utgivelsesinformasjon tilgjengelig"
 
-#: cps/admin.py:2721
+#: cps/admin.py:2764
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2726
+#: cps/admin.py:2769
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:2730
+#: cps/admin.py:2773
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr ""
 
-#: cps/admin.py:2732
+#: cps/admin.py:2775
 msgid "Connection failed: Request timed out."
 msgstr ""
 
-#: cps/admin.py:2734
+#: cps/admin.py:2777
 msgid "Connection failed: Invalid JSON in response."
 msgstr ""
 
-#: cps/admin.py:2737
+#: cps/admin.py:2780
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "En ukjent feil oppstod. Prøv igjen senere."
@@ -1100,21 +1109,21 @@ msgstr "Boken ble satt i kø for konvertering til %(book_format)s"
 msgid "There was an error converting this book: %(res)s"
 msgstr "Det oppsto en feil ved konvertering av denne boken: %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1075 cps/editbooks.py:1584
+#: cps/editbooks.py:305 cps/editbooks.py:1135 cps/editbooks.py:1644
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Filtypen «%(ext)s» er ikke tillatt å lastes opp til denne serveren"
 
-#: cps/editbooks.py:310 cps/editbooks.py:1081 cps/editbooks.py:1595
+#: cps/editbooks.py:310 cps/editbooks.py:1141 cps/editbooks.py:1655
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Filtypen «%(ext)s» er ikke tillatt å lastes opp til denne serveren"
 
-#: cps/editbooks.py:314 cps/editbooks.py:1085 cps/editbooks.py:1600
+#: cps/editbooks.py:314 cps/editbooks.py:1145 cps/editbooks.py:1660
 msgid "File to be uploaded must have an extension"
 msgstr "Filen som skal lastes opp må ha en utvidelse"
 
-#: cps/editbooks.py:691 cps/editbooks.py:1261 cps/web.py:612 cps/web.py:2648
+#: cps/editbooks.py:751 cps/editbooks.py:1321 cps/web.py:612 cps/web.py:2648
 #: cps/web.py:2726 cps/web.py:2795
 #, fuzzy
 msgid ""
@@ -1123,36 +1132,36 @@ msgstr ""
 "Oops! Den valgte boktittelen er utilgjengelig. Filen eksisterer ikke eller "
 "er ikke tilgjengelig"
 
-#: cps/editbooks.py:723 cps/editbooks.py:1668
+#: cps/editbooks.py:783 cps/editbooks.py:1728
 msgid "User has no rights to upload cover"
 msgstr "Brukeren har ingen rettigheter til å laste opp cover"
 
-#: cps/editbooks.py:743 cps/editbooks.py:1063
+#: cps/editbooks.py:803 cps/editbooks.py:1123
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Identifikatorer skiller ikke mellom store og små bokstaver, overskriver "
 "gammel identifikator"
 
-#: cps/editbooks.py:755 cps/editbooks.py:1037 cps/editbooks.py:1395
+#: cps/editbooks.py:815 cps/editbooks.py:1097 cps/editbooks.py:1455
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' er ikke et gyldig språk"
 
-#: cps/editbooks.py:866
+#: cps/editbooks.py:926
 msgid "Metadata successfully updated"
 msgstr "Metadata ble oppdatert"
 
-#: cps/editbooks.py:884
+#: cps/editbooks.py:944
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Feil ved redigering av bok: {}"
 
-#: cps/editbooks.py:932 cps/editbooks.py:977 cps/editbooks.py:1686
+#: cps/editbooks.py:992 cps/editbooks.py:1037 cps/editbooks.py:1746
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Ukjent"
 
-#: cps/editbooks.py:981
+#: cps/editbooks.py:1041
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1160,52 +1169,52 @@ msgstr ""
 "Opplastet bok finnes sannsynligvis i biblioteket, vurder å endre før du "
 "laster opp ny: "
 
-#: cps/editbooks.py:1093
+#: cps/editbooks.py:1153
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Filen %(filename)s kunne ikke lagres i midlertidig dir"
 
-#: cps/editbooks.py:1113
+#: cps/editbooks.py:1173
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Kunne ikke flytte omslagsfil %(file)s: %(error)s"
 
-#: cps/editbooks.py:1171 cps/editbooks.py:1173
+#: cps/editbooks.py:1231 cps/editbooks.py:1233
 msgid "Book Format Successfully Deleted"
 msgstr "Bokformatet er slettet"
 
-#: cps/editbooks.py:1180 cps/editbooks.py:1182
+#: cps/editbooks.py:1240 cps/editbooks.py:1242
 msgid "Book Successfully Deleted"
 msgstr "Boken ble slettet"
 
-#: cps/editbooks.py:1246
+#: cps/editbooks.py:1306
 msgid "You are missing permissions to delete books"
 msgstr "Du mangler tillatelser til å slette bøker"
 
-#: cps/editbooks.py:1300
+#: cps/editbooks.py:1360
 msgid "edit metadata"
 msgstr "redigere metadata"
 
-#: cps/editbooks.py:1354
+#: cps/editbooks.py:1414
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s er ikke et gyldig tall, hopper over"
 
-#: cps/editbooks.py:1589
+#: cps/editbooks.py:1649
 msgid "User has no rights to upload additional file formats"
 msgstr "Brukeren har ingen rettigheter til å laste opp flere filformater"
 
-#: cps/editbooks.py:1613
+#: cps/editbooks.py:1673
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Kunne ikke opprette banen %(path)s (Tillatelse nektet)."
 
-#: cps/editbooks.py:1620
+#: cps/editbooks.py:1680
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Kunne ikke lagre filen %(file)s."
 
-#: cps/editbooks.py:1645
+#: cps/editbooks.py:1705
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Filformat %(ext)s lagt til %(book)s"
@@ -1241,7 +1250,7 @@ msgstr "%(format)s ikke funnet på Google Disk: %(fn)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s ikke funnet: %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:111
+#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:401
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Send til E-Reader"
@@ -1720,7 +1729,7 @@ msgstr "Vis kategorivalg"
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:351
 #: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1071
-#: cps/templates/hardcover_review_matches.html:134
+#: cps/templates/hardcover_review_matches.html:140
 #: cps/templates/search_form.html:70 cps/web.py:1642 cps/web.py:1654
 msgid "Series"
 msgstr "Serie"
@@ -1732,7 +1741,7 @@ msgstr "Vis serieutvalg"
 
 #: cps/render_template.py:76 cps/templates/book_table.html:105
 #: cps/templates/cwa_settings.html:323 cps/templates/cwa_settings.html:325
-#: cps/templates/hardcover_review_matches.html:128
+#: cps/templates/hardcover_review_matches.html:134
 msgid "Authors"
 msgstr "Forfattere"
 
@@ -1751,7 +1760,8 @@ msgid "Show Publisher Section"
 msgstr "Vis utgivervalg"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/search_form.html:108 cps/web.py:1734
+#: cps/templates/detail.html:525 cps/templates/search_form.html:108
+#: cps/web.py:1734
 msgid "Languages"
 msgstr "Språk"
 
@@ -2580,9 +2590,8 @@ msgstr "Admin"
 msgid "Password"
 msgstr "Passord"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:81
-#: cps/templates/detail.html:94 cps/templates/shelf.html:8
-#: cps/templates/user_table.html:147
+#: cps/templates/admin.html:24 cps/templates/detail.html:380
+#: cps/templates/shelf.html:8 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "nedlasting"
 
@@ -2864,14 +2873,13 @@ msgstr "OK"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:86
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:184
-#: cps/templates/detail.html:459 cps/templates/duplicates.html:540
-#: cps/templates/duplicates.html:567 cps/templates/modal_dialogs.html:64
-#: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
-#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
-#: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:94
-#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
-#: cps/templates/user_edit.html:502
+#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:749
+#: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
+#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
+#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
+#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:502
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -2931,7 +2939,7 @@ msgstr "redusere"
 msgid "More by"
 msgstr "Mer av"
 
-#: cps/templates/book_edit.html:11
+#: cps/templates/book_edit.html:11 cps/templates/detail.html:443
 msgid "Delete Book"
 msgstr "Slett bok"
 
@@ -2966,7 +2974,7 @@ msgstr "Konverter bok"
 msgid "Uploading..."
 msgstr "Laster inn..."
 
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:289
+#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
@@ -2975,12 +2983,14 @@ msgid "Close"
 msgstr "Lukk"
 
 #: cps/templates/book_edit.html:52 cps/templates/duplicates.html:620
-#: cps/templates/hardcover_review_matches.html:273
-#: cps/templates/hardcover_review_matches.html:282
-#: cps/templates/hardcover_review_matches.html:317
-#: cps/templates/hardcover_review_matches.html:326
-#: cps/templates/hardcover_review_matches.html:357
-#: cps/templates/hardcover_review_matches.html:366
+#: cps/templates/hardcover_review_matches.html:279
+#: cps/templates/hardcover_review_matches.html:288
+#: cps/templates/hardcover_review_matches.html:323
+#: cps/templates/hardcover_review_matches.html:332
+#: cps/templates/hardcover_review_matches.html:360
+#: cps/templates/hardcover_review_matches.html:369
+#: cps/templates/hardcover_review_matches.html:400
+#: cps/templates/hardcover_review_matches.html:409
 #: cps/templates/layout.html:151
 #, fuzzy
 msgid "Error"
@@ -2990,7 +3000,7 @@ msgstr "Serverport"
 msgid "Upload Format"
 msgstr "Last opp format"
 
-#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:368
+#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:371
 #: cps/templates/cwa_settings.html:1059 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Forfatter"
@@ -3007,16 +3017,16 @@ msgstr "Serie-ID"
 msgid "Published Date"
 msgstr "Publiseringsdato"
 
-#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:369
+#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:313
-#: cps/templates/hardcover_review_matches.html:142
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:553
+#: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Forlegger"
 
 #: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1065
-#: cps/templates/detail.html:278 cps/templates/listenmp3.html:69
+#: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "Språk"
 
@@ -3025,7 +3035,7 @@ msgstr "Språk"
 msgid "Rating"
 msgstr "Vurdering"
 
-#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:370
+#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:373
 #: cps/templates/cwa_settings.html:330 cps/templates/cwa_settings.html:332
 #: cps/templates/search_form.html:154
 msgid "Description"
@@ -3035,15 +3045,15 @@ msgstr "Beskrivelse"
 msgid "Identifiers"
 msgstr "Identifikatorer"
 
-#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:379
+#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:382
 msgid "Identifier Type"
 msgstr "Identifikatortype"
 
-#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:380
+#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:383
 msgid "Identifier Value"
 msgstr "Identifikatorverdi"
 
-#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:381
+#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:384
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "Ta bort"
@@ -3109,19 +3119,23 @@ msgstr "Nøkkelord"
 msgid "Search keyword"
 msgstr "Søk nøkkelord"
 
-#: cps/templates/book_edit.html:285 cps/templates/book_edit.html:365
+#: cps/templates/book_edit.html:282
+msgid "Selected metadata fields were applied to the edit form."
+msgstr ""
+
+#: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "Laster inn..."
 
-#: cps/templates/book_edit.html:366
+#: cps/templates/book_edit.html:369
 msgid "Search error!"
 msgstr "Søkefeil!"
 
-#: cps/templates/book_edit.html:367
+#: cps/templates/book_edit.html:370
 msgid "No Result(s) found! Please try another keyword."
 msgstr "Ingen resultater! Prøv et annet søkeord."
 
-#: cps/templates/book_edit.html:371
+#: cps/templates/book_edit.html:374
 msgid "Source"
 msgstr "Kilde"
 
@@ -3296,7 +3310,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:457
+#: cps/templates/book_table.html:282 cps/templates/detail.html:436
 #, fuzzy
 msgid "Edit Metadata"
 msgstr "redigere metadata"
@@ -5101,94 +5115,116 @@ msgstr ""
 msgid "Click to See More"
 msgstr ""
 
-#: cps/templates/detail.html:124
-#, fuzzy
-msgid "Select eReader Email Addresses"
-msgstr "Send til E-Reader E-postadresse"
-
-#: cps/templates/detail.html:139
-msgid "Choose email addresses:"
-msgstr ""
-
-#: cps/templates/detail.html:144
-#, fuzzy
-msgid "Select All"
-msgstr "Lag en hylle"
-
-#: cps/templates/detail.html:163
-msgid "Additional email addresses:"
-msgstr ""
-
-#: cps/templates/detail.html:164
-msgid "Enter additional email addresses (separated by commas):"
-msgstr ""
-
-#: cps/templates/detail.html:165
-msgid "example@domain.com, another@domain.com"
-msgstr ""
-
-#: cps/templates/detail.html:166
-msgid "Enter one or more email addresses separated by commas"
-msgstr ""
-
-#: cps/templates/detail.html:171
-#, fuzzy
-msgid "Select format:"
-msgstr "Slett formater:"
-
-#: cps/templates/detail.html:183
-msgid "Send"
-msgstr ""
-
-#: cps/templates/detail.html:197 cps/templates/detail.html:198
-#: cps/templates/detail.html:211 cps/templates/detail.html:212
+#: cps/templates/detail.html:410
 #, fuzzy
 msgid "Read in Browser"
 msgstr "Lese bøker"
 
-#: cps/templates/detail.html:221 cps/templates/detail.html:241
-msgid "Listen in Browser"
-msgstr ""
-
-#: cps/templates/detail.html:271 cps/templates/listenmp3.html:62
-#, fuzzy, python-format
-msgid "Book %(index)s of %(range)s"
-msgstr "Sletting av bok %(index)s mislyktes: %(range)s"
-
-#: cps/templates/detail.html:322 cps/templates/listenmp3.html:111
-#, fuzzy
-msgid "Published"
-msgstr "Forlegger"
-
-#: cps/templates/detail.html:372 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:417 cps/templates/detail.html:418
+#: cps/templates/detail.html:607 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr ""
 
-#: cps/templates/detail.html:373 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:417 cps/templates/detail.html:418
+#: cps/templates/detail.html:608 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr ""
 
-#: cps/templates/detail.html:383 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:419
+#, fuzzy
+msgid "Marked as read"
+msgstr "Slå sammen valgte bøker"
+
+#: cps/templates/detail.html:420
+#, fuzzy
+msgid "Marked as unread"
+msgstr "Slå sammen valgte bøker"
+
+#: cps/templates/detail.html:425 cps/templates/detail.html:426
+#: cps/templates/detail.html:614 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr ""
 
-#: cps/templates/detail.html:384 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:425 cps/templates/detail.html:426
+#: cps/templates/detail.html:615 cps/templates/listenmp3.html:166
 #, fuzzy
 msgid "Add to archive"
 msgstr "Rediger en hylle"
 
-#: cps/templates/detail.html:395 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:427 cps/templates/listenmp3.html:167
+#, fuzzy
+msgid "Archived"
+msgstr "Arkiverte bøker"
+
+#: cps/templates/detail.html:428
+#, fuzzy
+msgid "Restored from archive"
+msgstr "Rediger en hylle"
+
+#: cps/templates/detail.html:466
+#, fuzzy
+msgid "Rating updated"
+msgstr "Databaseinnstillinger oppdatert"
+
+#: cps/templates/detail.html:467
+#, fuzzy
+msgid "Rating cleared"
+msgstr "Vurdering: Ingen"
+
+#: cps/templates/detail.html:485 cps/templates/listenmp3.html:62
+#, fuzzy, python-format
+msgid "Book %(index)s of %(range)s"
+msgstr "Sletting av bok %(index)s mislyktes: %(range)s"
+
+#: cps/templates/detail.html:490
+msgid "ID"
+msgstr ""
+
+#: cps/templates/detail.html:495
+msgid "UUID"
+msgstr ""
+
+#: cps/templates/detail.html:498
+msgid "UUID copied to clipboard"
+msgstr ""
+
+#: cps/templates/detail.html:499
+msgid "Unable to copy UUID"
+msgstr ""
+
+#: cps/templates/detail.html:500 cps/templates/detail.html:501
+msgid "Copy UUID"
+msgstr ""
+
+#: cps/templates/detail.html:506
+msgid "Date added"
+msgstr ""
+
+#: cps/templates/detail.html:510
+msgid "Last modified"
+msgstr ""
+
+#: cps/templates/detail.html:515
+msgid "File sizes"
+msgstr ""
+
+#: cps/templates/detail.html:559 cps/templates/listenmp3.html:111
+#, fuzzy
+msgid "Published"
+msgstr "Forlegger"
+
+#: cps/templates/detail.html:626 cps/templates/listenmp3.html:177
 #, fuzzy
 msgid "Description:"
 msgstr "Beskrivelse"
 
-#: cps/templates/detail.html:410 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:639 cps/templates/listenmp3.html:190
 #: cps/templates/search.html:16
 #, fuzzy
 msgid "Add to shelf"
 msgstr "Rediger en hylle"
 
-#: cps/templates/detail.html:422 cps/templates/detail.html:441
+#: cps/templates/detail.html:651 cps/templates/detail.html:670
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
 #: cps/templates/layout.html:301 cps/templates/layout.html:310
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
@@ -5196,6 +5232,46 @@ msgstr "Rediger en hylle"
 #, fuzzy
 msgid "(Public)"
 msgstr "Offentlig hylle"
+
+#: cps/templates/detail.html:693
+#, fuzzy
+msgid "Select eReader Email Addresses"
+msgstr "Send til E-Reader E-postadresse"
+
+#: cps/templates/detail.html:706
+#, fuzzy
+msgid "Choose email addresses:"
+msgstr "Send til E-Reader E-postadresse"
+
+#: cps/templates/detail.html:711
+#, fuzzy
+msgid "Select All"
+msgstr "Lag en hylle"
+
+#: cps/templates/detail.html:729
+msgid "Additional email addresses:"
+msgstr ""
+
+#: cps/templates/detail.html:730
+msgid "Enter additional email addresses (separated by commas):"
+msgstr ""
+
+#: cps/templates/detail.html:731
+msgid "example@domain.com, another@domain.com"
+msgstr ""
+
+#: cps/templates/detail.html:732
+msgid "Enter one or more email addresses separated by commas"
+msgstr ""
+
+#: cps/templates/detail.html:736
+#, fuzzy
+msgid "Select format:"
+msgstr "Slett formater:"
+
+#: cps/templates/detail.html:748
+msgid "Send"
+msgstr ""
 
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
@@ -5495,65 +5571,71 @@ msgid ""
 "verification."
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:88
+#: cps/templates/hardcover_review_matches.html:81
+#, fuzzy
+msgid "Reject All Pending"
+msgstr "Lag en hylle"
+
+#: cps/templates/hardcover_review_matches.html:94
 #, fuzzy
 msgid "Search Query"
 msgstr "Søkefeil!"
 
-#: cps/templates/hardcover_review_matches.html:92
+#: cps/templates/hardcover_review_matches.html:98
 msgid "Candidate Matches"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:92
+#: cps/templates/hardcover_review_matches.html:98
 #, python-format
 msgid "Top %(count)s"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:102
-#: cps/templates/hardcover_review_matches.html:104
-#: cps/templates/hardcover_review_matches.html:106
+#: cps/templates/hardcover_review_matches.html:108
+#: cps/templates/hardcover_review_matches.html:110
+#: cps/templates/hardcover_review_matches.html:112
 msgid "Confidence"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:149
+#: cps/templates/hardcover_review_matches.html:155
 msgid "Match Reason"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:154
+#: cps/templates/hardcover_review_matches.html:160
 #, fuzzy
 msgid "View on Hardcover"
 msgstr "Se bok på Lagre"
 
-#: cps/templates/hardcover_review_matches.html:162
+#: cps/templates/hardcover_review_matches.html:168
 msgid "Select This Match"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:174
+#: cps/templates/hardcover_review_matches.html:180
 #, fuzzy
 msgid "Reject All"
 msgstr "Lag en hylle"
 
-#: cps/templates/hardcover_review_matches.html:179
+#: cps/templates/hardcover_review_matches.html:185
 msgid "Skip for Now"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:252
-#: cps/templates/hardcover_review_matches.html:297
-#: cps/templates/hardcover_review_matches.html:337
+#: cps/templates/hardcover_review_matches.html:258
+#: cps/templates/hardcover_review_matches.html:303
+#: cps/templates/hardcover_review_matches.html:346
+#: cps/templates/hardcover_review_matches.html:380
 #, fuzzy
 msgid "Processing..."
 msgstr "Laster inn..."
 
-#: cps/templates/hardcover_review_matches.html:274
-#: cps/templates/hardcover_review_matches.html:283
+#: cps/templates/hardcover_review_matches.html:280
+#: cps/templates/hardcover_review_matches.html:289
 msgid "✓ Select This Match"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:278
+#: cps/templates/hardcover_review_matches.html:284
 msgid "Failed to apply match"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:293
+#: cps/templates/hardcover_review_matches.html:299
 #, fuzzy
 msgid ""
 "Are you sure you want to reject all matches for this book? This cannot be "
@@ -5561,22 +5643,40 @@ msgid ""
 msgstr ""
 "Er du sikker på at du vil endre den valgte rollen for den(e) valgte brukeren?"
 
-#: cps/templates/hardcover_review_matches.html:318
-#: cps/templates/hardcover_review_matches.html:327
+#: cps/templates/hardcover_review_matches.html:324
+#: cps/templates/hardcover_review_matches.html:333
 msgid "✗ Reject All Matches"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:322
+#: cps/templates/hardcover_review_matches.html:328
 #, fuzzy
 msgid "Failed to reject match"
 msgstr "Kunne ikke opprette bane for dekning"
 
-#: cps/templates/hardcover_review_matches.html:358
-#: cps/templates/hardcover_review_matches.html:367
+#: cps/templates/hardcover_review_matches.html:342
+#, fuzzy
+msgid ""
+"Are you sure you want to reject all pending matches? This cannot be undone."
+msgstr ""
+"Er du sikker på at du vil endre den valgte rollen for den(e) valgte brukeren?"
+
+#: cps/templates/hardcover_review_matches.html:361
+#: cps/templates/hardcover_review_matches.html:370
+#, fuzzy
+msgid "✗ Reject All Pending"
+msgstr "Lag en hylle"
+
+#: cps/templates/hardcover_review_matches.html:365
+#, fuzzy
+msgid "Failed to reject all pending matches"
+msgstr "Kunne ikke opprette bane for dekning"
+
+#: cps/templates/hardcover_review_matches.html:401
+#: cps/templates/hardcover_review_matches.html:410
 msgid "→ Skip for Now"
 msgstr ""
 
-#: cps/templates/hardcover_review_matches.html:362
+#: cps/templates/hardcover_review_matches.html:405
 msgid "Failed to skip match"
 msgstr ""
 
@@ -5784,11 +5884,6 @@ msgstr ""
 #, fuzzy
 msgid "Read"
 msgstr "redusere"
-
-#: cps/templates/listenmp3.html:167
-#, fuzzy
-msgid "Archived"
-msgstr "Arkiverte bøker"
 
 #: cps/templates/login.html:23
 #, fuzzy
@@ -6845,14 +6940,6 @@ msgstr "Vis serieutvalg"
 
 #, fuzzy
 #~ msgid "Unarchive selected books"
-#~ msgstr "Slå sammen valgte bøker"
-
-#, fuzzy
-#~ msgid "Mark selected books as read"
-#~ msgstr "Slå sammen valgte bøker"
-
-#, fuzzy
-#~ msgid "Mark selected books as unread"
 #~ msgstr "Slå sammen valgte bøker"
 
 #, fuzzy, python-format

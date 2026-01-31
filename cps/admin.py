@@ -387,6 +387,49 @@ def hardcover_review_action():
         return json.dumps({'success': False, 'error': str(e)}), 500
 
 
+@admi.route("/admin/hardcover/review-reject-all", methods=["POST"])
+@user_login_required
+@admin_required
+def hardcover_review_reject_all():
+    """Reject all pending Hardcover matches"""
+    try:
+        reviewed_at = datetime.utcnow().isoformat()
+        updated_count = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 0
+        ).update(
+            {
+                ub.HardcoverMatchQueue.reviewed: 1,
+                ub.HardcoverMatchQueue.review_action: 'reject',
+                ub.HardcoverMatchQueue.reviewed_at: reviewed_at,
+                ub.HardcoverMatchQueue.reviewed_by: current_user.name
+            },
+            synchronize_session=False
+        )
+        ub.session.commit()
+
+        log.info(
+            f"User {current_user.name} rejected all pending Hardcover matches "
+            f"({updated_count})"
+        )
+
+        if updated_count == 0:
+            return json.dumps({
+                'success': True,
+                'message': _('No pending matches to reject'),
+                'count': 0
+            })
+
+        return json.dumps({
+            'success': True,
+            'message': _('Rejected %(count)s match(es)', count=updated_count),
+            'count': updated_count
+        })
+    except Exception as e:
+        ub.session.rollback()
+        log.error(f"Error rejecting all pending matches: {e}")
+        return json.dumps({'success': False, 'error': str(e)}), 500
+
+
 # method is available without login and not protected by CSRF to make it easy reachable, is per default switched off
 # needed for docker applications, as changes on metadata.db from host are not visible to application
 @admi.route("/reconnect", methods=['GET'])

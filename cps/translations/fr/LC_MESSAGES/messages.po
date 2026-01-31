@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 00:23+0100\n"
+"POT-Creation-Date: 2026-02-01 00:33+0100\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -3568,7 +3568,7 @@ msgstr "Révoquer"
 
 #: cps/templates/config_db.html:91
 #, fuzzy
-msgid "Last Resort: Restore Calibre Database"
+msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Reconnecter la base de données Calibre"
 
 #: cps/templates/config_db.html:92

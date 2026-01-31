@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 00:23+0100\n"
+"POT-Creation-Date: 2026-02-01 00:33+0100\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -3506,7 +3506,7 @@ msgstr "Отозвать"
 
 #: cps/templates/config_db.html:91
 #, fuzzy
-msgid "Last Resort: Restore Calibre Database"
+msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Переподключить базу данных Calibre"
 
 #: cps/templates/config_db.html:92

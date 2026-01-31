@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 00:23+0100\n"
+"POT-Creation-Date: 2026-02-01 00:33+0100\n"
 "PO-Revision-Date: 2023-12-20 22:00+0100\n"
 "Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at "
 "proton.me>\n"
@@ -3502,7 +3502,7 @@ msgstr "Intrekken"
 
 #: cps/templates/config_db.html:91
 #, fuzzy
-msgid "Last Resort: Restore Calibre Database"
+msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Opnieuw verbinding maken met Calibre database"
 
 #: cps/templates/config_db.html:92

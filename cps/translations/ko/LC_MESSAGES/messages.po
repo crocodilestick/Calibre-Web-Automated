@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 00:23+0100\n"
+"POT-Creation-Date: 2026-02-01 00:33+0100\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -3362,7 +3362,7 @@ msgstr "취소"
 
 #: cps/templates/config_db.html:91
 #, fuzzy
-msgid "Last Resort: Restore Calibre Database"
+msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Calibre 데이터베이스 다시 연결"
 
 #: cps/templates/config_db.html:92

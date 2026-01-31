@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 00:23+0100\n"
+"POT-Creation-Date: 2026-02-01 00:33+0100\n"
 "PO-Revision-Date: 2025-12-02 12:00+0000\n"
 "Last-Translator: Alex <298750+alexantao@users.noreply.github.com>\n"
 "Language-Team: pt_BR <LL@li.org>\n"
@@ -3513,7 +3513,7 @@ msgstr "Revogar"
 
 #: cps/templates/config_db.html:91
 #, fuzzy
-msgid "Last Resort: Restore Calibre Database"
+msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Reconectar à Biblioteca do Calibre"
 
 #: cps/templates/config_db.html:92

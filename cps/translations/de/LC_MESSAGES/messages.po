@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 00:23+0100\n"
+"POT-Creation-Date: 2026-02-01 00:33+0100\n"
 "PO-Revision-Date: 2025-09-09 20:18+0200\n"
 "Last-Translator: Sven Fischer <git-dev@linux4tw.de>\n"
 "Language-Team: German\n"
@@ -3456,7 +3456,7 @@ msgstr "Widerrufen"
 
 #: cps/templates/config_db.html:91
 #, fuzzy
-msgid "Last Resort: Restore Calibre Database"
+msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Mit Calibre-Datenbank neu verbinden"
 
 #: cps/templates/config_db.html:92

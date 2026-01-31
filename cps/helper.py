@@ -1168,8 +1168,13 @@ def do_download_file(book, book_format, client, data, headers):
                 output = os.path.join(config.config_calibre_dir, book.path, book_name + "." + book_format)
                 gd.downloadFile(book.path, book_name + "." + book_format, output)
                 if book_format == "kepub" and config.config_kepubifypath:
-                    filename, download_name = do_kepubify_metadata_replace(book, output)
-                    metadata_was_embedded = True
+                    try:
+                        filename, download_name = do_kepubify_metadata_replace(book, output)
+                        metadata_was_embedded = True
+                    except Exception as e:
+                        log.error_or_exception(f"Failed to kepubify metadata for book {book.id}: {e}")
+                        filename = os.path.dirname(output)
+                        download_name = os.path.splitext(os.path.basename(output))[0]
                 elif book_format != "kepub" and config.config_binariesdir:
                     filename, download_name = do_calibre_export(book.id, book_format)
                     metadata_was_embedded = True
@@ -1187,9 +1192,14 @@ def do_download_file(book, book_format, client, data, headers):
             headers["Content-Disposition"] = headers["Content-Disposition"].replace(".kepub", ".kepub.epub")
 
         if book_format == "kepub" and config.config_kepubifypath and config.config_embed_metadata:
-            filename, download_name = do_kepubify_metadata_replace(book, os.path.join(filename,
-                                                                                      book_name + "." + book_format))
-            metadata_was_embedded = True
+            try:
+                filename, download_name = do_kepubify_metadata_replace(book, os.path.join(filename,
+                                                                                          book_name + "." + book_format))
+                metadata_was_embedded = True
+            except Exception as e:
+                log.error_or_exception(f"Failed to kepubify metadata for book {book.id}: {e}")
+                filename = os.path.join(config.get_book_path(), book.path)
+                download_name = book_name
         elif book_format != "kepub" and config.config_binariesdir and config.config_embed_metadata:
             filename, download_name = do_calibre_export(book.id, book_format)
             metadata_was_embedded = True

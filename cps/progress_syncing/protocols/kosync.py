@@ -46,7 +46,7 @@ from werkzeug.security import check_password_hash
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 
-from ... import logger, ub, csrf, config, constants, services
+from ... import logger, ub, csrf, config, constants, services, usermanagement
 from ...render_template import render_title_template
 from ..models import KOSyncProgress
 
@@ -129,6 +129,10 @@ def authenticate_user() -> Optional[ub.User]:
     Returns:
         User object if authentication succeeds, None otherwise
     """
+    if config.config_allow_reverse_proxy_header_login:
+        if user := usermanagement.load_user_from_reverse_proxy_header(request):
+            return user
+
     auth_header = request.headers.get('Authorization')
 
     if not auth_header or not auth_header.startswith('Basic '):

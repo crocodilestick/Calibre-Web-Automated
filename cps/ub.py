@@ -875,19 +875,34 @@ def migrate_user_table(engine, _session):
         _safe_session_rollback(_session, "user.kindle_mail_subject")
         _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''")
 
-    # Migration to enable duplicates sidebar for existing admin users
+    # Migration to enable duplicates sidebar for existing admin users (one-time)
     try:
         from . import constants
         SIDEBAR_DUPLICATES = constants.SIDEBAR_DUPLICATES
 
-        # Check if any admin users don't have duplicates enabled
-        admin_users = _session.query(User).filter(User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN).all()
-        for user in admin_users:
-            if not (user.sidebar_view & SIDEBAR_DUPLICATES):
-                user.sidebar_view |= SIDEBAR_DUPLICATES
-                print(f"[Migration] Enabled duplicates sidebar for admin user: {user.name}")
+        migration_dir = os.path.join(constants.CONFIG_DIR, ".cwa_migrations")
+        migration_marker = os.path.join(migration_dir, "duplicates_sidebar_v1")
 
-        _session.commit()
+        if not os.path.isfile(migration_marker):
+            # Check if any admin users don't have duplicates enabled
+            admin_users = _session.query(User).filter(
+                User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN
+            ).all()
+            for user in admin_users:
+                if not (user.sidebar_view & SIDEBAR_DUPLICATES):
+                    user.sidebar_view |= SIDEBAR_DUPLICATES
+                    print(f"[Migration] Enabled duplicates sidebar for admin user: {user.name}")
+
+            _session.commit()
+            try:
+                os.makedirs(migration_dir, exist_ok=True)
+                with open(migration_marker, "w", encoding="utf-8") as marker:
+                    marker.write(datetime.now(timezone.utc).isoformat())
+            except Exception as marker_error:
+                print(
+                    f"[Migration] Warning: Could not persist duplicates sidebar migration marker: {marker_error}",
+                    flush=True,
+                )
     except Exception as e:
         print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
         _session.rollback()

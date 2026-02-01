@@ -17,8 +17,8 @@
         .book-detail-page {
             display: flex;
             justify-content: center;
-            padding: 1.5rem 0;
             margin-top: 2rem;
+            margin-left: 1rem;
         }
 
         .book-detail-card {
@@ -272,8 +272,9 @@
         .book-action-bar .action-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
+            column-gap: 8px;
+            align-items: flex-start;
+            justify-content: flex-start;
         }
 
         .book-action-bar .btn-group {
@@ -330,6 +331,10 @@
             body > div.container-fluid > div > div.col-sm-10 > div.single {
                 padding-left: 0px !important;
                 padding-right: 0px !important;
+            }
+
+            .book-detail-page {
+                margin-left: 0rem;
             }
 
             .well > h2, body.shelf > div.container-fluid > div > div.col-sm-10 > div.discover > h2, body:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover:only-of-type > h2 {
@@ -439,7 +444,7 @@
     </style>
 {% endblock %}
 {% block body %}
-<div class="discover">
+<div class="discover" style="margin: 0px !important;">
 <h2>{{title}}</h2>
 <div class="single">
     <div class="book-detail-page">

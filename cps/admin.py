@@ -353,14 +353,20 @@ def hardcover_review_action():
             try:
                 identifiers_to_add = selected_result.get('identifiers', {})
                 for id_type, id_value in identifiers_to_add.items():
+                    id_value_str = str(id_value).strip() if id_value is not None else ""
+                    if not id_type or not id_value_str:
+                        continue
                     # Check if identifier already exists
                     existing = calibre_db.session.query(db.Identifiers).filter(
                         db.Identifiers.book == match.book_id,
                         db.Identifiers.type == id_type
                     ).first()
                     
-                    if not existing:
-                        new_identifier = db.Identifiers(str(id_value), id_type, match.book_id)
+                    if existing:
+                        if existing.val != id_value_str:
+                            existing.val = id_value_str
+                    else:
+                        new_identifier = db.Identifiers(id_value_str, id_type, match.book_id)
                         calibre_db.session.add(new_identifier)
                 
                 calibre_db.session.commit()

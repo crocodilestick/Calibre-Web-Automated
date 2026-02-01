@@ -175,13 +175,30 @@ $(function () {
     }
   }
 
+  function findIdentifierRow(type) {
+    var normalized = (type || "").trim().toLowerCase();
+    var match = null;
+    $("#identifier-table tbody tr").each(function () {
+      var $typeInput = $(this).find("input.identifier-type");
+      if (!$typeInput.length) {
+        return;
+      }
+      var currentType = ($typeInput.val() || "").trim().toLowerCase();
+      if (currentType === normalized) {
+        match = $(this);
+        return false;
+      }
+    });
+    return match;
+  }
+
   function populateIdentifiers(identifiers) {
     for (const property in identifiers) {
       console.log(`${property}: ${identifiers[property]}`);
-      if ($('input[name="identifier-type-' + property + '"]').length) {
-        $('input[name="identifier-val-' + property + '"]').val(
-          identifiers[property]
-        );
+      var $row = findIdentifierRow(property);
+      if ($row && $row.length) {
+        $row.find("input.identifier-type").val(property);
+        $row.find("input.identifier-val").val(identifiers[property]);
       } else {
         addIdentifier(property, identifiers[property]);
       }
@@ -189,27 +206,28 @@ $(function () {
   }
 
   function addIdentifier(name, value) {
+    var randId = Math.floor(Math.random() * 1000000).toString();
     var line = "<tr>";
     line +=
-      '<td><input type="text" class="form-control" name="identifier-type-' +
-      name +
+      '<td><input type="text" class="form-control identifier-type" name="identifier-type-' +
+      randId +
       '" required="required" placeholder="' +
       _("Identifier Type") +
       '" value="' +
       name +
       '"></td>';
     line +=
-      '<td><input type="text" class="form-control" name="identifier-val-' +
-      name +
+      '<td><input type="text" class="form-control identifier-val" name="identifier-val-' +
+      randId +
       '" required="required" placeholder="' +
       _("Identifier Value") +
       '" value="' +
       value +
       '"></td>';
     line +=
-      '<td><a class="btn btn-default" onclick="removeIdentifierLine(this)">' +
+      '<td><button type="button" class="btn btn-default identifier-remove">' +
       _("Remove") +
-      "</a></td>";
+      "</button></td>";
     line += "</tr>";
     $("#identifier-table").append(line);
   }

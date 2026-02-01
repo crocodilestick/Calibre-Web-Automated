@@ -129,13 +129,13 @@
     <div class="form-group">
       <label>{{_('Identifiers')}}</label>
       <table class="table" id="identifier-table"><tbody>
-	{% for identifier in book.identifiers %}
-	<tr>
-      <td><input type="text" class="form-control" name="identifier-type-{{identifier.type}}" value="{{identifier.type}}" required="required" placeholder="{{_('Identifier Type')}}"></td>
-	  <td><input type="text" class="form-control" name="identifier-val-{{identifier.type}}" value="{{identifier.val}}" required="required" placeholder="{{_('Identifier Value')}}"></td>
-	  <td><a class="btn btn-default" onclick="removeIdentifierLine(this)">{{_('Remove')}}</a></td>
-	</tr>
-	{% endfor %}
+  {% for identifier in book.identifiers %}
+  <tr>
+      <td><input type="text" class="form-control identifier-type" name="identifier-type-{{identifier.id}}" value="{{identifier.type}}" required="required" placeholder="{{_('Identifier Type')}}"></td>
+    <td><input type="text" class="form-control identifier-val" name="identifier-val-{{identifier.id}}" value="{{identifier.val}}" required="required" placeholder="{{_('Identifier Value')}}"></td>
+    <td><button type="button" class="btn btn-default identifier-remove">{{_('Remove')}}</button></td>
+  </tr>
+  {% endfor %}
       </tbody>
       </table>
       <a id="add-identifier-line" class="btn btn-default">{{_('Add Identifier')}}</a>
@@ -379,15 +379,16 @@
     // create a random identifier type to have a valid name in form. This will not be used when dealing with the form
     var rand_id = Math.floor(Math.random() * 1000000).toString();
     var line = '<tr>';
-    line += '<td><input type="text" class="form-control" name="identifier-type-'+ rand_id +'" required="required" placeholder={{_('Identifier Type')|safe|tojson}}></td>';
-    line += '<td><input type="text" class="form-control" name="identifier-val-'+ rand_id +'" required="required" placeholder={{_('Identifier Value')|safe|tojson}}></td>';
-    line += '<td><a class="btn btn-default" onclick="removeIdentifierLine(this)">{{_('Remove')}}</a></td>';
+    line += '<td><input type="text" class="form-control identifier-type" name="identifier-type-'+ rand_id +'" required="required" placeholder={{_('Identifier Type')|safe|tojson}}></td>';
+    line += '<td><input type="text" class="form-control identifier-val" name="identifier-val-'+ rand_id +'" required="required" placeholder={{_('Identifier Value')|safe|tojson}}></td>';
+    line += '<td><button type="button" class="btn btn-default identifier-remove">{{_("Remove")}}</button></td>';
     line += '</tr>';
     $("#identifier-table").append(line);
   });
-  function removeIdentifierLine(el) {
-    $(el).parent().parent().remove();
-  }
+  $(document).on("click", ".identifier-remove", function(event) {
+    event.preventDefault();
+    $(this).closest("tr").remove();
+  });
   function coverDimensions(el) {
     var existing_cover = document.querySelector("#detailcover")
     el.nextElementSibling.innerText = el.naturalWidth + 'x' + el.naturalHeight

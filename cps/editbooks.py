@@ -965,15 +965,22 @@ def identifier_list(to_save, book):
     id_type_prefix = 'identifier-type-'
     id_val_prefix = 'identifier-val-'
     result = []
-    for type_key, type_value in to_save.items():
-        if not type_key.startswith(id_type_prefix):
+    rows = {}
+    for key, value in to_save.items():
+        if key.startswith(id_type_prefix):
+            row_id = key[len(id_type_prefix):]
+            rows.setdefault(row_id, {})['type'] = value
+        elif key.startswith(id_val_prefix):
+            row_id = key[len(id_val_prefix):]
+            rows.setdefault(row_id, {})['val'] = value
+    for row in rows.values():
+        id_type = (row.get('type') or "").strip()
+        id_val = (row.get('val') or "").strip()
+        if not id_type or not id_val:
             continue
-        val_key = id_val_prefix + type_key[len(id_type_prefix):]
-        if val_key not in to_save.keys():
-            continue
-        if to_save[val_key].startswith("data:"):
-            to_save[val_key], __, __ = str.partition(to_save[val_key], ",")
-        result.append(db.Identifiers(to_save[val_key], type_value, book.id))
+        if id_val.startswith("data:"):
+            id_val, __, __ = str.partition(id_val, ",")
+        result.append(db.Identifiers(id_val, id_type, book.id))
     return result
 
 
@@ -1922,10 +1929,20 @@ def modify_identifiers(input_identifiers, db_identifiers, db_session):
        db_identifiers is a list of already persisted list of Identifiers objects."""
     changed = False
     error = False
-    input_dict = dict([(identifier.type.lower(), identifier) for identifier in input_identifiers])
-    if len(input_identifiers) != len(input_dict):
-        error = True
-    db_dict = dict([(identifier.type.lower(), identifier) for identifier in db_identifiers])
+    input_dict = {}
+    for identifier in input_identifiers:
+        identifier_type = (identifier.type or "").strip().lower()
+        if not identifier_type:
+            continue
+        if identifier_type in input_dict:
+            error = True
+        input_dict[identifier_type] = identifier
+    db_dict = {}
+    for identifier in db_identifiers:
+        identifier_type = (identifier.type or "").strip().lower()
+        if not identifier_type:
+            continue
+        db_dict[identifier_type] = identifier
     # delete db identifiers not present in input or modify them with input val
     for identifier_type, identifier in db_dict.items():
         if identifier_type not in input_dict.keys():

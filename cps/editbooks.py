@@ -244,6 +244,9 @@ def edit_selected_books():
             # Collect all changes
             changes = {key: d.get(key) for key in ['title', 'title_sort', 'author_sort', 'authors', 'categories', 'series', 'languages', 'publishers', 'comments'] if d.get(key)}
 
+            metadata_changed = False
+            log_payload = {}
+
             # Apply changes without committing or updating directory structure yet
             title_changed = False
             authors_changed = False
@@ -251,8 +254,10 @@ def edit_selected_books():
 
             if 'title' in changes:
                 vals['value'] = changes['title']
-                handle_title_on_edit(book, vals.get('value', ""))
-                title_changed = True
+                if handle_title_on_edit(book, vals.get('value', "")):
+                    title_changed = True
+                    metadata_changed = True
+                    log_payload['title'] = vals.get('value', "")
 
             if 'title_sort' in changes:
                 vals['value'] = changes['title_sort']
@@ -264,29 +269,42 @@ def edit_selected_books():
 
             if 'authors' in changes:
                 vals['value'] = changes['authors']
-                input_authors, __ = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
-                authors_changed = True
+                input_authors, author_change = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
+                if author_change:
+                    authors_changed = True
+                    metadata_changed = True
+                    log_payload['authors'] = vals.get('value', "")
 
             if 'categories' in changes:
                 vals['value'] = changes['categories']
-                edit_book_tags(vals['value'], book)
+                if edit_book_tags(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['tags'] = vals.get('value', "")
 
             if 'series' in changes:
                 vals['value'] = changes['series']
-                edit_book_series(vals['value'], book)
+                if edit_book_series(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['series'] = vals.get('value', "")
 
             if 'languages' in changes:
                 vals['value'] = changes['languages']
                 invalid = list()
-                edit_book_languages(vals['value'], book, invalid=invalid)
+                if edit_book_languages(vals['value'], book, invalid=invalid):
+                    metadata_changed = True
+                    log_payload['languages'] = vals.get('value', "")
 
             if 'publishers' in changes:
                 vals['value'] = changes['publishers']
-                edit_book_publisher(vals['value'], book)
+                if edit_book_publisher(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['publisher'] = vals.get('value', "")
 
             if 'comments' in changes:
                 vals['value'] = changes['comments']
-                edit_book_comments(vals['value'], book)
+                if edit_book_comments(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['comments'] = vals.get('value', "")
 
             # Update directory structure once if title or authors changed
             if title_changed or authors_changed:
@@ -297,12 +315,35 @@ def edit_selected_books():
                     continue # or return an error response
 
             book.last_modified = datetime.now(timezone.utc)
+
+            if metadata_changed:
+                calibre_db.set_metadata_dirty(book.id)
             try:
                 calibre_db.session.commit()
             except (OperationalError, IntegrityError, StaleDataError) as e:
                 calibre_db.session.rollback()
                 log.error_or_exception("Database error: {}".format(e))
                 # Handle error appropriately
+                continue
+
+            if metadata_changed and log_payload:
+                try:
+                    log_payload.setdefault('title', book.title)
+                    log_payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
+                    log_payload['_cwa_meta'] = {
+                        'modify_date': True,
+                        'change_count': len([k for k in log_payload.keys() if not k.startswith('_')]),
+                        'has_content': any(v != '' for k, v in log_payload.items() if not k.startswith('_')),
+                        'timestamp': datetime.now().isoformat()
+                    }
+
+                    now = datetime.now()
+                    log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                    with open(log_path, 'w', encoding='utf-8') as f:
+                        json.dump(log_payload, f, indent=4, ensure_ascii=False)
+                    log.debug(f"Created metadata change log for book {book.id} with changes: {list(log_payload.keys())}")
+                except Exception as e:
+                    log.error_or_exception(f"Failed to write metadata change log for book {book.id}: {e}")
 
         return json.dumps({'success': True})
     return ""

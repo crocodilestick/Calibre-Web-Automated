@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 22:25+0100\n"
+"POT-Creation-Date: 2026-02-01 23:00+0100\n"
 "PO-Revision-Date: 2018-08-27 17:06+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -197,7 +197,7 @@ msgstr ""
 msgid "No Valid Book Language Given"
 msgstr ""
 
-#: cps/admin.py:850 cps/editbooks.py:545
+#: cps/admin.py:850 cps/editbooks.py:586
 msgid "Parameter not found"
 msgstr ""
 
@@ -376,8 +376,8 @@ msgid "Success! Gmail Account Verified."
 msgstr ""
 
 #: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
-#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:984
-#: cps/editbooks.py:1750 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1025
+#: cps/editbooks.py:1791 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
 #, python-format
@@ -1009,8 +1009,9 @@ msgid "Calibre-Web Automated - Convert Library"
 msgstr ""
 
 #: cps/cwa_functions.py:1915 cps/cwa_functions.py:1939
-msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+#, fuzzy
+msgid "Calibre-Web Automated - EPUB Fixer Service"
+msgstr "រក្សាទុកការកំណត់រួចផ្ញើអ៊ីមែលសាកល្បង"
 
 #: cps/cwa_functions.py:2024
 msgid "You must be an admin to access this page."
@@ -1134,105 +1135,105 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr ""
 
-#: cps/editbooks.py:316 cps/editbooks.py:1187 cps/editbooks.py:1696
+#: cps/editbooks.py:357 cps/editbooks.py:1228 cps/editbooks.py:1737
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "ឯកសារប្រភេទ '%(ext)s' មិនត្រូវបានអនុញ្ញាតឲអាប់ឡូដទៅម៉ាស៊ីន server នេះទេ"
 
-#: cps/editbooks.py:321 cps/editbooks.py:1193 cps/editbooks.py:1707
+#: cps/editbooks.py:362 cps/editbooks.py:1234 cps/editbooks.py:1748
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "ឯកសារប្រភេទ '%(ext)s' មិនត្រូវបានអនុញ្ញាតឲអាប់ឡូដទៅម៉ាស៊ីន server នេះទេ"
 
-#: cps/editbooks.py:325 cps/editbooks.py:1197 cps/editbooks.py:1712
+#: cps/editbooks.py:366 cps/editbooks.py:1238 cps/editbooks.py:1753
 msgid "File to be uploaded must have an extension"
 msgstr "ឯកសារដែលត្រូវអាប់ឡូដត្រូវមានកន្ទុយឯកសារ"
 
-#: cps/editbooks.py:796 cps/editbooks.py:1373 cps/web.py:612 cps/web.py:2694
+#: cps/editbooks.py:837 cps/editbooks.py:1414 cps/web.py:612 cps/web.py:2694
 #: cps/web.py:2772 cps/web.py:2841
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
 
-#: cps/editbooks.py:828 cps/editbooks.py:1780
+#: cps/editbooks.py:869 cps/editbooks.py:1821
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:848 cps/editbooks.py:1175
+#: cps/editbooks.py:889 cps/editbooks.py:1216
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 
-#: cps/editbooks.py:860 cps/editbooks.py:1149 cps/editbooks.py:1507
+#: cps/editbooks.py:901 cps/editbooks.py:1190 cps/editbooks.py:1548
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr ""
 
-#: cps/editbooks.py:971
+#: cps/editbooks.py:1012
 msgid "Metadata successfully updated"
 msgstr ""
 
-#: cps/editbooks.py:989
+#: cps/editbooks.py:1030
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:1044 cps/editbooks.py:1089 cps/editbooks.py:1798
+#: cps/editbooks.py:1085 cps/editbooks.py:1130 cps/editbooks.py:1839
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "មិនដឹង"
 
-#: cps/editbooks.py:1093
+#: cps/editbooks.py:1134
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr ""
 
-#: cps/editbooks.py:1205
+#: cps/editbooks.py:1246
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr ""
 
-#: cps/editbooks.py:1225
+#: cps/editbooks.py:1266
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr ""
 
-#: cps/editbooks.py:1283 cps/editbooks.py:1285
+#: cps/editbooks.py:1324 cps/editbooks.py:1326
 msgid "Book Format Successfully Deleted"
 msgstr ""
 
-#: cps/editbooks.py:1292 cps/editbooks.py:1294
+#: cps/editbooks.py:1333 cps/editbooks.py:1335
 msgid "Book Successfully Deleted"
 msgstr ""
 
-#: cps/editbooks.py:1358
+#: cps/editbooks.py:1399
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1412
+#: cps/editbooks.py:1453
 msgid "edit metadata"
 msgstr "កែប្រែទិន្នន័យមេតា"
 
-#: cps/editbooks.py:1466
+#: cps/editbooks.py:1507
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 
-#: cps/editbooks.py:1701
+#: cps/editbooks.py:1742
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1725
+#: cps/editbooks.py:1766
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "មិនអាចបង្កើតទីតាំង %(path)s (ពុំមានសិទ្ធិ)។"
 
-#: cps/editbooks.py:1732
+#: cps/editbooks.py:1773
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "មិនអាចរក្សាទុកឯកសារ %(file)s ។"
 
-#: cps/editbooks.py:1757
+#: cps/editbooks.py:1798
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "ឯកសារទម្រង់ %(ext)s ត្រូវបានបន្ថែមទៅ %(book)s"
@@ -2756,8 +2757,9 @@ msgid "CWA Library Conversion Service"
 msgstr ""
 
 #: cps/templates/admin.html:215
-msgid "CWA Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+#, fuzzy
+msgid "CWA EPUB Fixer Service"
+msgstr "ស្រាវជ្រាវ"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"

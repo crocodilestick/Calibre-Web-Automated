@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 20:24+0100\n"
+"POT-Creation-Date: 2026-02-01 22:25+0100\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -122,7 +122,7 @@ msgstr "基本配置"
 msgid "UI Configuration"
 msgstr "界面配置"
 
-#: cps/admin.py:619 cps/admin.py:1301 cps/db.py:946 cps/search.py:153
+#: cps/admin.py:619 cps/admin.py:1301 cps/db.py:959 cps/search.py:153
 #: cps/web.py:832
 #, fuzzy, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -1052,7 +1052,7 @@ msgstr "成功刪除 {} 個用戶"
 msgid "CWA Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1219 cps/templates/config_edit.html:294
+#: cps/db.py:1232 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:80
 #: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -2847,7 +2847,7 @@ msgid "Are you sure you want to restart?"
 msgstr "您確定要重啟嗎？"
 
 #: cps/templates/admin.html:294 cps/templates/admin.html:308
-#: cps/templates/admin.html:328 cps/templates/config_db.html:113
+#: cps/templates/admin.html:328 cps/templates/config_db.html:139
 #: cps/templates/duplicates.html:609 cps/templates/duplicates.html:631
 msgid "OK"
 msgstr "確定"
@@ -2857,7 +2857,7 @@ msgstr "確定"
 #: cps/templates/book_table.html:191 cps/templates/book_table.html:211
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
-#: cps/templates/book_table.html:365 cps/templates/config_db.html:86
+#: cps/templates/book_table.html:365 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:861
@@ -3088,7 +3088,7 @@ msgstr "查看保存書籍"
 msgid "Fetch Metadata"
 msgstr "獲取元數據"
 
-#: cps/templates/book_edit.html:252 cps/templates/config_db.html:85
+#: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
 #: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:215
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
@@ -3332,12 +3332,12 @@ msgstr ""
 msgid "Add"
 msgstr "新增"
 
-#: cps/templates/config_db.html:13
+#: cps/templates/config_db.html:38
 #, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
 msgstr "Calibre 數據庫路徑"
 
-#: cps/templates/config_db.html:23
+#: cps/templates/config_db.html:48
 msgid ""
 "CWA is configured so that your Calibre Database (<code>metadata.db</code> "
 "file) should always be somewhere in <code>/calibre-library</code>.\n"
@@ -3352,13 +3352,13 @@ msgid ""
 "wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
 
-#: cps/templates/config_db.html:29
+#: cps/templates/config_db.html:54
 msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
 "CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
 msgstr ""
 
-#: cps/templates/config_db.html:30
+#: cps/templates/config_db.html:55
 msgid ""
 "These paths are internal to CWA only, you can change what they're bind to to "
 "your heart's content on the left-hand side but there's no reason to\n"
@@ -3369,7 +3369,7 @@ msgid ""
 "and there, enter the path to the rest of the library</b>"
 msgstr ""
 
-#: cps/templates/config_db.html:34
+#: cps/templates/config_db.html:59
 msgid ""
 "E.g. As long as your library's <code>metadata.db</code> file is bound "
 "somewhere within <code>/calibre-library</code>, you could bind the dir\n"
@@ -3380,43 +3380,43 @@ msgid ""
 "option."
 msgstr ""
 
-#: cps/templates/config_db.html:38
+#: cps/templates/config_db.html:63
 msgid "Split Library Functionality"
 msgstr ""
 
-#: cps/templates/config_db.html:41
+#: cps/templates/config_db.html:66
 msgid ""
 "<b>Separate Book Files from Library</b> - <code>metadata.db</code> file "
 "should remain in <code>/calibre-library</code>, however your library files "
 "can be wherever you desire"
 msgstr ""
 
-#: cps/templates/config_db.html:54
+#: cps/templates/config_db.html:79
 msgid "Use Google Drive?"
 msgstr "是否使用Google Drive?"
 
-#: cps/templates/config_db.html:59
+#: cps/templates/config_db.html:84
 msgid "Authenticate Google Drive"
 msgstr "驗證 Google Drive"
 
-#: cps/templates/config_db.html:64
+#: cps/templates/config_db.html:89
 msgid "Google Drive Calibre folder"
 msgstr "Google Drive Calibre 目錄路徑"
 
-#: cps/templates/config_db.html:72
+#: cps/templates/config_db.html:97
 msgid "Metadata Watch Channel ID"
 msgstr "元數據監視通道ID"
 
-#: cps/templates/config_db.html:75
+#: cps/templates/config_db.html:100
 msgid "Revoke"
 msgstr "撤回"
 
-#: cps/templates/config_db.html:91
+#: cps/templates/config_db.html:117
 #, fuzzy
 msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Calibre 數據庫路徑"
 
-#: cps/templates/config_db.html:92
+#: cps/templates/config_db.html:118
 msgid ""
 "If your Calibre library is corrupted and cannot be opened, you can attempt "
 "to restore it from the OPF files in your library. This will <b>erase all per-"
@@ -3426,17 +3426,17 @@ msgid ""
 "destructive action.</b> A restore log will be saved alongside the backups."
 msgstr ""
 
-#: cps/templates/config_db.html:95
+#: cps/templates/config_db.html:121
 #, fuzzy
 msgid "Are you sure? This cannot be undone."
 msgstr "您確定要關閉嗎？"
 
-#: cps/templates/config_db.html:95
+#: cps/templates/config_db.html:121
 #, fuzzy
 msgid "Restore Calibre Database (Last Resort)"
 msgstr "Calibre 數據庫路徑"
 
-#: cps/templates/config_db.html:111
+#: cps/templates/config_db.html:137
 msgid "New db location is invalid, please enter valid path"
 msgstr "新數據庫路徑無效，請輸入有效的路徑"
 

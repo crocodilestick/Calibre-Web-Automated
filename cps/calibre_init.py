@@ -32,6 +32,12 @@ class _MinimalConfig:
         self.config_restricted_column = restricted_column
         self.config_columns_to_ignore = columns_to_ignore
 
+    def invalidate(self, error=None):
+        if error:
+            log.error(error)
+        log.warning("invalidating configuration")
+        self.db_configured = False
+
 
 def init_calibre_db_from_config(config, settings_path):
     """Initialize CalibreDB using an already-loaded config object."""

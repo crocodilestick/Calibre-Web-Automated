@@ -767,12 +767,12 @@ msgstr "Restauración fallida: La ruta de la biblioteca de Calibre no está conf
 #: cps/admin.py:2897
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
-msgstr "Restauración fallida: metadata.db no encontrado en %(ruta)s"
+msgstr "Restauración fallida: metadata.db no encontrado en %(path)s"
 
 #: cps/admin.py:2902
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
-msgstr "Restauración fallida: app.db no encontrado en %(ruta)s"
+msgstr "Restauración fallida: app.db no encontrado en %(path)s"
 
 #: cps/admin.py:2974 cps/admin.py:3014
 #, fuzzy, python-format
@@ -1121,8 +1121,6 @@ msgstr "Libros Duplicados"
 #: cps/duplicates.py:1117
 msgid "Duplicate group already dismissed"
 msgstr "El grupo de duplicados ya se ha descartado."
-``
-
 
 #: cps/duplicates.py:1137
 #, fuzzy
@@ -2626,8 +2624,6 @@ msgstr "En la Biblioteca"
 #: cps/tasks/ops.py:95
 msgid "EPUB Fixer – full run"
 msgstr "Reparador de EPUB – ejecución completa"
-`
-
 
 #: cps/tasks/ops.py:142
 msgid "EPUB Fixer"
@@ -3876,7 +3872,7 @@ msgid ""
 "users. Recommended for enterprise environments."
 msgstr ""
 "Crea cuentas de usuario automáticamente cuando la autenticación LDAP tiene "
-"éxito para nuevos usuarios. Recomendado para entornos empresarial
+"éxito para nuevos usuarios. Recomendado para entornos empresariales."
 
 
 #: cps/templates/config_edit.html:359
@@ -4114,7 +4110,7 @@ msgstr ""
 
 #: cps/templates/config_edit.html:558
 msgid "Enable OAuth Group-Based Admin Role Management"
-msgstr "Habilitar la gestión del rol de administrador por grupos OAu
+msgstr "Habilitar la gestión del rol de administrador por grupos OAuth"
 
 
 #: cps/templates/config_edit.html:559
@@ -4210,7 +4206,7 @@ msgstr "Nº de libros aleatorios a mostrar"
 
 #: cps/templates/config_view_edit.html:53
 msgid "Number of random books shown on the home page (1-30)."
-msgstr ""
+msgstr "Número de libros aleatorios mostrados en la página de inicio (1-30)."
 
 #: cps/templates/config_view_edit.html:57
 msgid "No. of Authors to Display Before Hiding (0=Disable Hiding)"
@@ -4245,7 +4241,7 @@ msgid ""
 "own preferred theme in their profile."
 msgstr ""
 "Tema predeterminado para nuevos usuarios y navegación anónima. Los usuarios "
-"pueden elegir su tema preferido en su perfil.
+"pueden elegir su tema preferido en su perfil."
 
 
 #: cps/templates/config_view_edit.html:72
@@ -4295,7 +4291,7 @@ msgstr "Ajustes por defecto para nuevos usuarios"
 
 #: cps/templates/config_view_edit.html:109
 msgid "These settings will be applied to all newly created user accounts."
-msgstr "Estos ajustes se aplicarán a todas las cuentas de usuario creadas
+msgstr "Estos ajustes se aplicarán a todas las cuentas de usuario creadas."
 
 
 #: cps/templates/config_view_edit.html:111
@@ -4364,7 +4360,7 @@ msgstr "Visibilidad predeterminada para nuevos usuarios"
 
 #: cps/templates/config_view_edit.html:182
 msgid "Choose which sidebar sections are visible by default for new users."
-msgstr "Elige qué secciones de la barra lateral estarán visibles por defecto para los nuevos
+msgstr "Elige qué secciones de la barra lateral estarán visibles por defecto para los nuevos usuarios."
 
 
 #: cps/templates/config_view_edit.html:195 cps/templates/user_edit.html:344
@@ -4530,8 +4526,6 @@ msgstr ""
 "Elimina referencias obsoletas a libros archivados en app.db cuando el libro "
 "ya no existe en la biblioteca de Calibre. Ayuda a mantener precisos los "
 "contadores de archivados."
-``
-
 
 #: cps/templates/cwa_settings.html:197
 msgid "Cleanup Schedule:"
@@ -5135,7 +5129,7 @@ msgstr ""
 "Los formatos seleccionados aquí siempre se añadirán a la biblioteca, incluso "
 "después de haberse convertido al formato de destino. Sin embargo, si el "
 "formato está en la lista \"CWA Auto-Ingest - Ignored Formats\", no se "
-"importará. Ten en cuenta que el formato de destino siempre se co
+"importará. Ten en cuenta que el formato de destino siempre se conserva."
 
 
 #: cps/templates/cwa_settings.html:875
@@ -5834,8 +5828,7 @@ msgstr "Nota: Los formatos de archivo de los libros de origen se añadirán al l
 
 #: cps/templates/duplicates.html:580
 msgid "Resolution Preview"
-msgstr
-
+msgstr "Vista previa de resolución"
 
 #: cps/templates/duplicates.html:598
 msgid "Success"

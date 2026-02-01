@@ -37,9 +37,6 @@ from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
 from werkzeug.utils import secure_filename
 import uuid
-import os
-import json
-from .cwa_functions import get_ingest_dir
 
 editbook = Blueprint('edit-book', __name__)
 log = logger.create()
@@ -98,6 +95,13 @@ def edit_book(book_id):
 def upload():
     # Upload a new format to an existing book via ingest sidecar manifest
     if len(request.files.getlist("btn-upload-format")):
+        try:
+            _ensure_ingest_dir_writable(allow_create=True, check_write=False)
+        except PermissionError as e:
+            log.error_or_exception("Ingest directory not writable: %s", e)
+            flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
+                  category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
         raw_book_id = request.form.get('book_id', -1)
         try:
             book_id = int(raw_book_id)
@@ -148,6 +152,13 @@ def upload():
 
     # New book uploads: queue files to ingest atomically
     elif len(request.files.getlist("btn-upload")):
+        try:
+            _ensure_ingest_dir_writable(allow_create=True, check_write=False)
+        except PermissionError as e:
+            log.error_or_exception("Ingest directory not writable: %s", e)
+            flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
+                  category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
         for requested_file in request.files.getlist("btn-upload"):
             if not _validate_uploaded_file(requested_file):
                 return Response(json.dumps({"location": url_for('web.index')}), mimetype='application/json')
@@ -318,8 +329,11 @@ def _validate_uploaded_file(uploaded_file):
 # Helper to get a unique, prefixed path in the ingest directory
 def _get_ingest_path(uploaded_file, prefix_parts=None):
     ingest_dir = get_ingest_dir()
-    os.makedirs(ingest_dir, exist_ok=True)
-
+    try:
+        os.makedirs(ingest_dir, exist_ok=True)
+    except Exception as e:
+        log.error_or_exception("Failed to create ingest directory %s: %s", ingest_dir, e)
+        raise
     # Ensure proper ownership of ingest directory (fix for issue #603)
     try:
         nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
@@ -333,6 +347,8 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
     except Exception as e:
         # Silently ignore any other permission-related errors but log for debugging
         log.debug('Other permission error setting ingest directory ownership: %s', e)
+
+    _ensure_ingest_dir_writable(ingest_dir)
 
     base_name = secure_filename(uploaded_file.filename)
     # CWA change: use timestamp for more predictable sorting vs uuid
@@ -354,6 +370,35 @@ def _save_to_ingest_atomic_rename(uploaded_file, final_path):
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
         raise e
+
+
+def _ensure_ingest_dir_writable(ingest_dir=None, allow_create=False, check_write=True):
+    ingest_dir = ingest_dir or get_ingest_dir()
+    if not ingest_dir:
+        raise PermissionError("Ingest directory not configured")
+    if allow_create and not os.path.isdir(ingest_dir):
+        try:
+            os.makedirs(ingest_dir, exist_ok=True)
+        except Exception as e:
+            raise PermissionError("Ingest directory missing and could not be created: {} ({})".format(ingest_dir, e))
+    if not os.path.isdir(ingest_dir):
+        raise PermissionError("Ingest directory missing: {}".format(ingest_dir))
+    if check_write:
+        if not os.access(ingest_dir, os.W_OK | os.X_OK):
+            raise PermissionError("Ingest directory not writable: {}".format(ingest_dir))
+        # Verify write by touching a temp file (covers ACL/mount oddities)
+        test_path = os.path.join(ingest_dir, ".cwa_write_test_{}".format(uuid.uuid4().hex))
+        try:
+            with open(test_path, "w", encoding="utf-8") as handle:
+                handle.write("ok")
+        except Exception as e:
+            raise PermissionError("Ingest directory not writable: {} ({})".format(ingest_dir, e))
+        finally:
+            try:
+                if os.path.exists(test_path):
+                    os.remove(test_path)
+            except Exception:
+                pass
 
 # Separated from /editbooks so that /editselectedbooks can also use this
 #

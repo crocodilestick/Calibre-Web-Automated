@@ -139,17 +139,22 @@
 
         .tag-remove {
             position: absolute;
-            right: 4px;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 0;
+            top: 0;
+            bottom: 0;
             background: transparent;
             border: none;
             color: rgba(255, 255, 255, 0.7);
             font-size: 12px;
             line-height: 1;
-            padding: 0 2px;
+            padding: 0 8px;
             cursor: pointer;
             display: none;
+            width: 24px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
         }
 
         .meta-pill.tag-pill:hover .tag-remove {

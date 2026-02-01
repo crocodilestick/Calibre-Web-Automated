@@ -7,7 +7,7 @@
 from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort, jsonify, current_app
 from flask_babel import gettext as _, lazy_gettext as _l
 
-from . import logger, config, constants, csrf, helper, ub
+from . import logger, config, constants, csrf, helper, ub, calibre_db
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
@@ -1869,8 +1869,11 @@ def get_status():
 ##                                                                            ##
 ##————————————————————————————————————————————————————————————————————————————##
 
-def epub_fixer_start(queue):
-    ef_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/kindle_epub_fixer.py', '--all'])
+def epub_fixer_start(queue, input_file: str | None = None):
+    if input_file:
+        ef_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/kindle_epub_fixer.py', '--input_file', input_file])
+    else:
+        ef_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/kindle_epub_fixer.py', '--all'])
     queue.put(ef_process)
 
 def is_epub_fixer_finished() -> bool:
@@ -1912,7 +1915,7 @@ def kill_epub_fixer(queue):
 
 @epub_fixer.route('/cwa-epub-fixer-overview', methods=["GET"])
 def show_epub_fixer_page():
-    return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer")
+    return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - EPUB Fixer Service"), page="cwa-epub-fixer")
 
 @epub_fixer.route('/cwa-epub-fixer/schedule/<int:delay>', methods=["GET"])
 @login_required_if_no_ano
@@ -1936,7 +1939,7 @@ def schedule_epub_fixer(delay: int):
 def show_epub_fixer_logs():
     logs = get_logs_from_archive("epub-fixer")
     log_dates = get_log_dates(logs)
-    return render_title_template('cwa_list_logs.html', title=_("Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"), page="cwa-epub-fixer-logs",
+    return render_title_template('cwa_list_logs.html', title=_("Calibre-Web Automated - EPUB Fixer Service"), page="cwa-epub-fixer-logs",
                                 logs=logs, log_dates=log_dates)
 
 @epub_fixer.route('/cwa-epub-fixer/download-current-log/<log_filename>')
@@ -1984,10 +1987,67 @@ def start_epub_fixer():
     ef_kill_thread.start()
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
+
+@epub_fixer.route('/cwa-epub-fixer/run-book', methods=["POST"])
+@csrf.exempt
+@login_required_if_no_ano
+def run_epub_fixer_for_book():
+    if config.config_use_google_drive:
+        return jsonify({"success": False, "error": _("Single-book EPUB Fixer is not supported with Google Drive libraries.")}), 400
+
+    payload = request.get_json(silent=True) or {}
+    book_id = payload.get("book_id") or request.form.get("book_id")
+    try:
+        book_id = int(book_id)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "error": _("Invalid book selection.")}), 400
+
+    try:
+        calibre_db.ensure_session()
+        book = calibre_db.get_book(book_id)
+        if not book:
+            return jsonify({"success": False, "error": _("Book not found.")}), 404
+
+        data = calibre_db.get_book_format(book_id, "EPUB")
+        if not data:
+            data = calibre_db.get_book_format(book_id, "EPUB3")
+        if not data:
+            return jsonify({"success": False, "error": _("Selected book has no EPUB format.")}), 400
+
+        epub_path = os.path.join(config.get_book_path(), book.path, f"{data.name}.{data.format.lower()}")
+        if not os.path.exists(epub_path):
+            return jsonify({"success": False, "error": _("EPUB file not found on disk.")}), 404
+
+        # Wipe conversion log from previous runs
+        open('/config/epub-fixer.log', 'w').close()
+        # Remove any left over kill file
+        try:
+            os.remove(tempfile.gettempdir() + "/.kill_epub_fixer_trigger")
+        except FileNotFoundError:
+            ...
+
+        process_queue = queue.Queue()
+        ef_thread = Thread(target=epub_fixer_start, args=(process_queue, epub_path))
+        ef_thread.start()
+        ef_kill_thread = Thread(target=kill_epub_fixer, args=(process_queue,))
+        ef_kill_thread.start()
+        return jsonify({"success": True, "message": _("EPUB Fixer started for selected book.")})
+    except Exception as e:
+        log.error(f"Failed to start EPUB Fixer for book {book_id}: {e}")
+        return jsonify({"success": False, "error": _("Failed to start EPUB Fixer for selected book.")}), 500
+
 @epub_fixer.route('/epub-fixer-cancel', methods=["GET"])
 def cancel_epub_fixer():
     # Create kill trigger file
     open(tempfile.gettempdir() + "/.kill_epub_fixer_trigger", 'w').close()
+    try:
+        subprocess.run([
+            "pkill",
+            "-f",
+            "/app/calibre-web-automated/scripts/kindle_epub_fixer.py"
+        ], check=False)
+    except Exception as e:
+        log.error(f"Failed to terminate epub fixer process: {e}")
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
 @epub_fixer.route('/epub-fixer-status', methods=["GET"])

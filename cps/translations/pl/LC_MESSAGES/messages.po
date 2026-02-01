@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre Web - polski (POT: 2021-06-12 08:52)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 23:00+0100\n"
+"POT-Creation-Date: 2026-02-01 23:54+0100\n"
 "PO-Revision-Date: 2021-06-12 15:35+0200\n"
 "Last-Translator: Radosław Kierznowski <radek.kierznowski@outlook.com>\n"
 "Language-Team: \n"
@@ -1040,49 +1040,82 @@ msgstr "Wystąpił błąd"
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Konwersja biblioteki"
 
-#: cps/cwa_functions.py:1915 cps/cwa_functions.py:1939
+#: cps/cwa_functions.py:1918 cps/cwa_functions.py:1942
 #, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Calibre-Web Automated - Usługa naprawy EPUB dla wysyłki do Kindle"
 
-#: cps/cwa_functions.py:2024
+#: cps/cwa_functions.py:1996
+msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
+msgstr ""
+
+#: cps/cwa_functions.py:2003
+#, fuzzy
+msgid "Invalid book selection."
+msgstr "Nieprawidłowe ID książki."
+
+#: cps/cwa_functions.py:2009
+#, fuzzy
+msgid "Book not found."
+msgstr "Nie znaleziono tokenu"
+
+#: cps/cwa_functions.py:2015
+#, fuzzy
+msgid "Selected book has no EPUB format."
+msgstr "Łączenie wybranych książek"
+
+#: cps/cwa_functions.py:2019
+#, fuzzy
+msgid "EPUB file not found on disk."
+msgstr "Nie znaleziono na dysku formatu %(format)s"
+
+#: cps/cwa_functions.py:2034
+#, fuzzy
+msgid "EPUB Fixer started for selected book."
+msgstr "Łączenie wybranych książek"
+
+#: cps/cwa_functions.py:2037
+msgid "Failed to start EPUB Fixer for selected book."
+msgstr ""
+
+#: cps/cwa_functions.py:2084
 msgid "You must be an admin to access this page."
 msgstr "Musisz być administratorem, aby uzyskać dostęp do tej strony."
 
-#: cps/cwa_functions.py:2039
+#: cps/cwa_functions.py:2099
 msgid "Both username and image data are required."
 msgstr "Wymagana jest zarówno nazwa użytkownika, jak i dane obrazu."
 
-#: cps/cwa_functions.py:2047
+#: cps/cwa_functions.py:2107
 msgid "Invalid image data format. Must be a valid image."
 msgstr ""
 
-#: cps/cwa_functions.py:2055
+#: cps/cwa_functions.py:2115
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr ""
 
-#: cps/cwa_functions.py:2067
+#: cps/cwa_functions.py:2127
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr ""
 
-#: cps/cwa_functions.py:2071
+#: cps/cwa_functions.py:2131
 msgid "Invalid Base64 image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2075
+#: cps/cwa_functions.py:2135
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "Nieprawidłowy format adresu e-mail"
 
-#: cps/cwa_functions.py:2080
+#: cps/cwa_functions.py:2140
 msgid "Error validating image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2098
+#: cps/cwa_functions.py:2158
 msgid "Profile picture updated successfully."
 msgstr "Zdjęcie profilowe zostało pomyślnie zaktualizowane."
 
-#: cps/cwa_functions.py:2111
+#: cps/cwa_functions.py:2171
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "Zarządzanie zdjęciami profilowymi CWA (w budowie)"
 
@@ -1863,9 +1896,9 @@ msgid ""
 msgstr ""
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
-#: cps/templates/feed.xml:34 cps/templates/index.xml:12
-#: cps/templates/layout.html:113 cps/templates/layout.html:116
-#: cps/templates/search_form.html:247
+#: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
+#: cps/templates/index.xml:12 cps/templates/layout.html:113
+#: cps/templates/layout.html:116 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Szukaj"
 
@@ -2906,7 +2939,7 @@ msgstr "OK"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:861
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:861
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
 #: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
@@ -4232,28 +4265,28 @@ msgid "Add Allowed/Denied custom column values"
 msgstr "Dodaj dozwolone/zabronione wartości własnych kolumn"
 
 #: cps/templates/cwa_convert_library.html:10
-#: cps/templates/cwa_epub_fixer.html:10
+#: cps/templates/cwa_epub_fixer.html:34
 msgid "Run Archive"
 msgstr "Uruchom archiwizację"
 
 # ???
 #: cps/templates/cwa_convert_library.html:11
-#: cps/templates/cwa_epub_fixer.html:11 cps/templates/cwa_read_log.html:9
+#: cps/templates/cwa_epub_fixer.html:35 cps/templates/cwa_read_log.html:9
 msgid "Download Log"
 msgstr "Pobierz log"
 
 #: cps/templates/cwa_convert_library.html:24
-#: cps/templates/cwa_epub_fixer.html:24 cps/templates/index.xml:7
+#: cps/templates/cwa_epub_fixer.html:39 cps/templates/index.xml:7
 msgid "Start"
 msgstr "Rozpocznij"
 
 #: cps/templates/cwa_convert_library.html:27
-#: cps/templates/cwa_epub_fixer.html:27
+#: cps/templates/cwa_epub_fixer.html:44
 msgid "Schedule 5m"
 msgstr ""
 
 #: cps/templates/cwa_convert_library.html:28
-#: cps/templates/cwa_epub_fixer.html:28
+#: cps/templates/cwa_epub_fixer.html:45
 msgid "Schedule 15m"
 msgstr ""
 
@@ -4265,14 +4298,57 @@ msgstr ""
 msgid "Error scheduling Convert Library"
 msgstr ""
 
-#: cps/templates/cwa_epub_fixer.html:100
+#: cps/templates/cwa_epub_fixer.html:22
+msgid "Run on a single book"
+msgstr ""
+
+#: cps/templates/cwa_epub_fixer.html:24
+msgid "Search by title/author"
+msgstr ""
+
+#: cps/templates/cwa_epub_fixer.html:29
+#, fuzzy
+msgid "Run on selected book"
+msgstr "Łączenie wybranych książek"
+
+#: cps/templates/cwa_epub_fixer.html:120
 #, fuzzy
 msgid "EPUB Fixer scheduled successfully"
 msgstr "{} użytkowników usuniętych pomyślnie"
 
-#: cps/templates/cwa_epub_fixer.html:103
+#: cps/templates/cwa_epub_fixer.html:123
 #, fuzzy
 msgid "Error scheduling EPUB Fixer"
+msgstr "Błąd wysyłania e-maila"
+
+#: cps/templates/cwa_epub_fixer.html:132
+#, fuzzy
+msgid "No matches found"
+msgstr "Brak wyników"
+
+#: cps/templates/cwa_epub_fixer.html:167
+#, fuzzy
+msgid "Enter a search term"
+msgstr "Wprowadź nazwę użytkownika"
+
+#: cps/templates/cwa_epub_fixer.html:175
+#, fuzzy
+msgid "Failed to search library"
+msgstr "Przeszukaj bibliotekę"
+
+#: cps/templates/cwa_epub_fixer.html:182
+#, fuzzy
+msgid "Select a book first"
+msgstr "Wybierz półkę"
+
+#: cps/templates/cwa_epub_fixer.html:195
+#, fuzzy
+msgid "EPUB Fixer started for selected book"
+msgstr "Łączenie wybranych książek"
+
+#: cps/templates/cwa_epub_fixer.html:200
+#, fuzzy
+msgid "Error starting EPUB Fixer"
 msgstr "Błąd wysyłania e-maila"
 
 #: cps/templates/cwa_settings.html:136
@@ -7076,19 +7152,11 @@ msgstr "Pokaż sekcję przeczytane/nieprzeczytane"
 #~ msgstr "Usuń zaznaczone"
 
 #, fuzzy
-#~ msgid "Edit selected books"
-#~ msgstr "Łączenie wybranych książek"
-
-#, fuzzy
 #~ msgid "Unarchive selected books"
 #~ msgstr "Łączenie wybranych książek"
 
 #, fuzzy
 #~ msgid "Mark selected books as read"
-#~ msgstr "Łączenie wybranych książek"
-
-#, fuzzy
-#~ msgid "Mark selected books as unread"
 #~ msgstr "Łączenie wybranych książek"
 
 #, fuzzy

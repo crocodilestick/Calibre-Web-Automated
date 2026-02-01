@@ -76,6 +76,9 @@ except FileNotFoundError:
 USER_NAME = "abc"
 GROUP_NAME = "abc"
 
+# Kill trigger path
+KILL_TRIGGER_PATH = os.path.join(tempfile.gettempdir(), ".kill_epub_fixer_trigger")
+
 # Get UID and GID (skip if user doesn't exist, e.g., in CI environments)
 uid = None
 gid = None
@@ -104,6 +107,16 @@ def print_and_log(string, log=True) -> None:
     if log:
         logger.info(string.replace("[cwa-kindle-epub-fixer] ", ""))
     print(string)
+
+
+def exit_if_cancelled() -> None:
+    if os.path.exists(KILL_TRIGGER_PATH):
+        print_and_log(f"CWA EPUB FIXER PROCESS TERMINATED BY USER AT {datetime.now()}")
+        try:
+            os.remove(KILL_TRIGGER_PATH)
+        except FileNotFoundError:
+            ...
+        sys.exit(0)
 
 ### LOCK FILES
 # Creates a lock file unless one already exists meaning an instance of the script is
@@ -1133,14 +1146,16 @@ def main():
 
     ### INPUT_FILE PROVIDED
     elif args.input_file and not args.all:
+        logger.info(f"CWA Kindle EPUB Fixer Service - Run Started: {datetime.now()}\n")
+        exit_if_cancelled()
         # Validate input file
         if not Path(args.input_file).exists():
             print(f"[cwa-kindle-epub-fixer] ERROR - Given file {args.input_file} does not exist")
-            # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+            logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(3)
         if not args.input_file.lower().endswith('.epub'):
             print("[cwa-kindle-epub-fixer] ERROR - The input file must be an EPUB file with a .epub extension.")
-            # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+            logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(1)
         # Determine output path
         if args.output:
@@ -1153,26 +1168,30 @@ def main():
         # Run EPUBFixer
         print(f"[cwa-kindle-epub-fixer] Processing given file - {args.input_file}...")
         try:
+            exit_if_cancelled()
             EPUBFixer(manually_triggered=True).process(args.input_file, output_path, args.language)
         except Exception as e:
             print(f"[cwa-kindle-epub-fixer] ERROR - Error processing {args.input_file}: {e}")
-            # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+            logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
             sys.exit(6)
-        # logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
+        logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}\n")
         sys.exit(0)
 
     ### ALL PASSED AS ARGUMENT
     elif args.all and not args.input_file:
         logger.info(f"CWA Kindle EPUB Fixer Service - Run Started: {datetime.now()}\n")
         print_and_log("[cwa-kindle-epub-fixer] Processing all epubs in library...")
+        exit_if_cancelled()
         epubs_to_process = get_all_epubs_in_library()
         if len(epubs_to_process) > 0:
             print_and_log(f"[cwa-kindle-epub-fixer] {len(epubs_to_process)} EPUBs found to process.")
             errored_files = {}
             for count, epub in enumerate(epubs_to_process):
+                exit_if_cancelled()
                 current_position = f"{count + 1}/{len(epubs_to_process)}"
                 try:
                     print_and_log(f"\n[cwa-kindle-epub-fixer] {current_position} - Processing {epub}...")
+                    exit_if_cancelled()
                     EPUBFixer(manually_triggered=True, current_position=current_position).process(epub, epub, args.language)
                 except Exception as e:
                     print_and_log(f"[cwa-kindle-epub-fixer] {current_position} - The following error occurred when processing {epub}:\n{e}")

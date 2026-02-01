@@ -1,35 +1,52 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<div class="discover">
-  <h2>{{title}}</h2>
+<div class="discover" style="">
+  <h2 style="color: white !important;">{{title}}</h2>
     <div>
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="color: whitesmoke; margin-top: 0px !important; margin-bottom: 2.4rem;">CWA Send-to-Kindle EPUB Fixer</h3>
-        <div>
-          <a class="btn btn-default" href="{{ url_for('epub_fixer.show_epub_fixer_logs') }}" style="background-color: #334148; vertical-align: top; float: right; margin-left: 10px;">{{_('Run Archive')}}</a>
-          <a class="btn btn-default" href="{{ url_for('epub_fixer.download_current_log', log_filename='epub-fixer.log') }}" style="background-color: #334148; vertical-align: top; float: right;">{{_('Download Log')}}</a>
-        </div>
-      </div>
-      <div style="display: flex;
-                  justify-content: space-between;
-                  gap: 20px;">
-        <p style="font-size: 11px; max-width: 70%;">
-          Upon loading this page, if you have previously started a run of the CWA Send-to_kindle EPUB Fixer service either here in the Web UI or through the CLI, you will see the output of the most recent previous run below. 
-          Once you start a run, you are free to leave the page and return whenever you want to check on the run's progress. If you wish to cancel a run that is still in progress, simply press the Cancel button above 
-          and the run will terminate ASAP. This tool is based on the <a href="https://kindle-epub-fix.netlify.app/">Amazon Kindle EPUB Fix</a> tool by <a href="https://github.com/innocenat/kindle-epub-fix">innocenat</a>
-        </p>
-        <div>
-          <a class="btn btn-default" href="{{ url_for('epub_fixer.cancel_epub_fixer') }}" style="vertical-align: top; float: right; width: 100px; margin-left: 10px;">{{_('Cancel')}}</a>
-          <a class="btn btn-default" href="{{ url_for('epub_fixer.start_epub_fixer') }}" style="vertical-align: top; float: right; width: 100px;">{{_('Start')}}</a>
-          {% if current_user.role_admin() %}
-          <div class="btn-group" role="group" aria-label="schedule" style="float: right; margin-top: 4px;">
-            <button class="btn btn-default" onclick="scheduleEpubFixer(5)">{{ _('Schedule 5m') }}</button>
-            <button class="btn btn-default" onclick="scheduleEpubFixer(15)">{{ _('Schedule 15m') }}</button>
+      <div style="display: flex; justify-content: space-between; align-items: center;"></div>
+        <div style="display: flex;
+                    justify-content: space-between;
+                    gap: 20px;
+                    flex-wrap: wrap;">
+          <div style="width: fit-content;
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: space-between;">
+            <p style="font-size: 11px; max-width: max(50vw, 600px); width: -webkit-fill-available;">
+              Upon loading this page, if you have previously started a run of the CWA EPUB Fixer service either here in the Web UI or through the CLI, you will see the output of the most recent previous run below. 
+              Once you start a run, you are free to leave the page and return whenever you want to check on the run's progress. If you wish to cancel a run that is still in progress, simply press the Cancel button above 
+              and the run will terminate ASAP. This tool is based on the <a href="https://kindle-epub-fix.netlify.app/" class="external" target="_blank">Amazon Kindle EPUB Fix</a> tool by <a href="https://github.com/innocenat/kindle-epub-fix" class="external" target="_blank">innocenat</a>
+            </p>
+            <div style="margin-bottom: 10px; max-width: max(50vw, 600px); width: -webkit-fill-available;">
+              <label for="epub_fixer_book_search" style="color: #bbbbbb; display: block; margin-bottom: 4px;">{{ _('Run on a single book') }}</label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="epub_fixer_book_search" placeholder="{{ _('Search by title/author') }}" style="flex: 1; padding: 6px 8px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680; color: #fff;">
+                <button class="btn btn-default" type="button" onclick="searchEpubFixerBooks()" style="padding: 6px 10px;">{{ _('Search') }}</button>
+              </div>
+              <div id="epub_fixer_search_results" style="margin-top: 6px; max-height: 160px; overflow-y: auto; background: #0f151b; border-radius: 4px; display: none;"></div>
+              <input type="hidden" id="epub_fixer_selected_book_id" value="">
+              <button class="btn btn-default" type="button" onclick="runEpubFixerForSelectedBook()" style="margin-top: 6px; width: 100%;">{{ _('Run on selected book') }}</button>
+            </div>
           </div>
-          {% endif %}
+          <div style="display: flex; flex-direction: column; align-content: flex-start; justify-content: flex-end;">
+            <div>
+              <a class="btn btn-default" href="{{ url_for('epub_fixer.show_epub_fixer_logs') }}" style="background-color: #334148; vertical-align: top; float: right; margin-left: 10px;">{{_('Run Archive')}}</a>
+              <a class="btn btn-default" href="{{ url_for('epub_fixer.download_current_log', log_filename='epub-fixer.log') }}" style="background-color: #334148; vertical-align: top; float: right;">{{_('Download Log')}}</a>
+            </div>
+            <h3>Bulk Proccessing</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; margin-bottom: 1rem;">
+              <a class="btn btn-default" href="{{ url_for('epub_fixer.start_epub_fixer') }}" style="width: 100px;">{{_('Start')}}</a>
+              <a class="btn btn-default" href="{{ url_for('epub_fixer.cancel_epub_fixer') }}" style="width: 100px;">{{_('Cancel')}}</a>
+            </div>
+            {% if current_user.role_admin() %}
+            <div class="btn-group" role="group" aria-label="schedule" style="display: flex; justify-content: flex-start; flex-wrap: wrap; flex-direction: row; gap: 1rem; margin-bottom: 8px;">
+              <button class="btn btn-default" onclick="scheduleEpubFixer(5)">{{ _('Schedule 5m') }}</button>
+              <button class="btn btn-default" onclick="scheduleEpubFixer(15)">{{ _('Schedule 15m') }}</button>
+            </div>
+            {% endif %}
+          </div>
         </div>
-      </div>
       <div class="progress-container" style="margin: 20px 0;">
         <div id="progress-bar" style="width: 0%; height: 25px; background-color: green; text-align: center; color: white;"></div>
       </div>
@@ -60,12 +77,15 @@
       .attr('role', 'alert')
       .css({
         'position': 'fixed',
-        'top': '70px',
+        'bottom': '70px',
         'right': '20px',
         'z-index': '9999',
-        'min-width': '300px',
-        'max-width': '500px',
-        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)'
+        'width':'600px',
+        'text-align': 'center',
+        'max-height': 'fit-content',
+        'overflow-y': 'auto',
+        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+        'overflow-x': 'hidden'
       })
       .html(`
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -102,6 +122,83 @@
     .catch(err => {
       showNotification('{{ _("Error scheduling EPUB Fixer") }}: ' + err.message, 'danger');
     });
+  }
+
+  function renderEpubFixerSearchResults(rows) {
+    const container = document.getElementById('epub_fixer_search_results');
+    container.innerHTML = '';
+    if (!rows || !rows.length) {
+      container.style.display = 'block';
+      container.innerHTML = '<div style="padding: 8px; color: #bbb;">{{ _("No matches found") }}</div>';
+      return;
+    }
+
+    rows.forEach(row => {
+      const title = row.title || 'Untitled';
+      let authors = '';
+      if (Array.isArray(row.authors)) {
+        authors = row.authors.map(a => a.name || a).join(', ');
+      } else if (typeof row.authors === 'string') {
+        authors = row.authors;
+      }
+      const label = authors ? `${title} — ${authors}` : title;
+
+      const item = document.createElement('div');
+      item.textContent = label;
+      item.style.padding = '6px 8px';
+      item.style.cursor = 'pointer';
+      item.style.borderBottom = '1px solid #1b242c';
+      item.onmouseenter = () => item.style.background = '#1b242c';
+      item.onmouseleave = () => item.style.background = 'transparent';
+      item.onclick = () => {
+        document.getElementById('epub_fixer_selected_book_id').value = row.id;
+        document.getElementById('epub_fixer_book_search').value = label;
+        container.style.display = 'none';
+      };
+      container.appendChild(item);
+    });
+
+    container.style.display = 'block';
+  }
+
+  async function searchEpubFixerBooks() {
+    const query = document.getElementById('epub_fixer_book_search').value.trim();
+    if (!query) {
+      showNotification('{{ _("Enter a search term") }}', 'warning');
+      return;
+    }
+    try {
+      const res = await fetch(`/ajax/listbooks?search=${encodeURIComponent(query)}&limit=10&offset=0`);
+      const data = await res.json();
+      renderEpubFixerSearchResults((data && data.rows) ? data.rows : []);
+    } catch (e) {
+      showNotification('{{ _("Failed to search library") }}', 'danger');
+    }
+  }
+
+  async function runEpubFixerForSelectedBook() {
+    const bookId = document.getElementById('epub_fixer_selected_book_id').value;
+    if (!bookId) {
+      showNotification('{{ _("Select a book first") }}', 'warning');
+      return;
+    }
+    try {
+      const res = await fetch("{{ url_for('epub_fixer.run_epub_fixer_for_book') }}", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book_id: bookId })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to start');
+      }
+      showNotification('{{ _("EPUB Fixer started for selected book") }}', 'success');
+        setTimeout(function() {
+          window.location.reload();
+        }, 500);
+    } catch (e) {
+      showNotification('{{ _("Error starting EPUB Fixer") }}: ' + e.message, 'danger');
+    }
   }
   
   async function getStatus() {

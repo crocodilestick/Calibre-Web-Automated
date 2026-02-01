@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 23:54+0100\n"
+"POT-Creation-Date: 2026-02-02 00:18+0100\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -1223,7 +1223,7 @@ msgid "File to be uploaded must have an extension"
 msgstr "Il file da caricare deve avere un'estensione"
 
 #: cps/editbooks.py:837 cps/editbooks.py:1414 cps/web.py:612 cps/web.py:2694
-#: cps/web.py:2772 cps/web.py:2841
+#: cps/web.py:2785 cps/web.py:2870
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -2465,7 +2465,7 @@ msgstr "Tutto OK! Profilo aggiornato"
 msgid "Oops! An account already exists for this Email."
 msgstr "Esiste già un account per questa e-mail."
 
-#: cps/web.py:2785
+#: cps/web.py:2798
 msgid "Invalid book ID."
 msgstr "Book ID non valido."
 
@@ -2939,7 +2939,7 @@ msgstr "OK"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:861
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:870
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
 #: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
@@ -5350,12 +5350,12 @@ msgid "Read in Browser"
 msgstr "Leggi nel browser"
 
 #: cps/templates/detail.html:503 cps/templates/detail.html:504
-#: cps/templates/detail.html:769 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:778 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Contrassegna come da leggere"
 
 #: cps/templates/detail.html:503 cps/templates/detail.html:504
-#: cps/templates/detail.html:770 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:779 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Contrassegna come letto"
 
@@ -5370,12 +5370,12 @@ msgid "Marked as unread"
 msgstr "Contrassegna come da leggere"
 
 #: cps/templates/detail.html:511 cps/templates/detail.html:512
-#: cps/templates/detail.html:776 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:785 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "Ripristina dall'archivio"
 
 #: cps/templates/detail.html:511 cps/templates/detail.html:512
-#: cps/templates/detail.html:777 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:786 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "Aggiungi all'archivio"
 
@@ -5460,7 +5460,7 @@ msgid "Remove tag"
 msgstr "Rimuovi"
 
 #: cps/templates/detail.html:707 cps/templates/detail.html:708
-#: cps/templates/detail.html:1089
+#: cps/templates/detail.html:1098
 msgid "Add tag"
 msgstr ""
 
@@ -5468,49 +5468,54 @@ msgstr ""
 msgid "Published"
 msgstr "Pubblicato"
 
-#: cps/templates/detail.html:788 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:727
+#, fuzzy
+msgid "KOReader Progress"
+msgstr "Avanzamento"
+
+#: cps/templates/detail.html:797 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Descrizione:"
 
-#: cps/templates/detail.html:805
+#: cps/templates/detail.html:814
 msgid "Select eReader Email Addresses"
 msgstr "Seleziona gli indirizzi email dell'eReader"
 
-#: cps/templates/detail.html:818
+#: cps/templates/detail.html:827
 msgid "Choose email addresses:"
 msgstr "Scegli gli indirizzi email:"
 
-#: cps/templates/detail.html:823
+#: cps/templates/detail.html:832
 msgid "Select All"
 msgstr "Seleziona tutto"
 
-#: cps/templates/detail.html:841
+#: cps/templates/detail.html:850
 #, fuzzy
 msgid "Additional email addresses:"
 msgstr "Scegli gli indirizzi email:"
 
-#: cps/templates/detail.html:842
+#: cps/templates/detail.html:851
 #, fuzzy
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "Scegli gli indirizzi email:"
 
-#: cps/templates/detail.html:843
+#: cps/templates/detail.html:852
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:844
+#: cps/templates/detail.html:853
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:848
+#: cps/templates/detail.html:857
 msgid "Select format:"
 msgstr "Seleziona formato:"
 
-#: cps/templates/detail.html:860
+#: cps/templates/detail.html:869
 msgid "Send"
 msgstr "Invia"
 
-#: cps/templates/detail.html:1067
+#: cps/templates/detail.html:1076
 #, fuzzy
 msgid "Failed to update tags"
 msgstr "Impossibile creare il percorso per la copertina"

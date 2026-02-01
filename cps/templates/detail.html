@@ -230,7 +230,7 @@
         }
 
         .rating .glyphicon-star-empty {
-            color: rgba(255, 255, 255, 0.35);
+            color: #ffffff82;
         }
 
         .rating .rating-input {
@@ -720,6 +720,15 @@
                                 <div class="publishing-date meta-chip">
                                     <span>{{ _('Published') }}:</span>
                                     <span class="meta-value">{{ entry.pubdate|formatdate }}</span>
+                                </div>
+                            {% endif %}
+                            {% if kosync_progress is not none %}
+                                <div class="meta-chip">
+                                    <span class="meta-label">{{ _('KOReader Progress') }}:</span>
+                                    <span class="meta-value">{{ kosync_progress|formatfloat(1) }}%</span>
+                                    {% if kosync_progress_timestamp %}
+                                        <span class="meta-value">({{ kosync_progress_timestamp|formatdate }})</span>
+                                    {% endif %}
                                 </div>
                             {% endif %}
                             {% if cc|length > 0 %}

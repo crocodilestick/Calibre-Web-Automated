@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 17:39+0100\n"
+"POT-Creation-Date: 2026-02-01 20:24+0100\n"
 "PO-Revision-Date: 2025-09-03 14:59+0200\n"
 "Last-Translator: Depountis Georgios\n"
 "Language-Team: \n"
@@ -1697,8 +1697,8 @@ msgid "{} Stars"
 msgstr ""
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:4
-#: cps/templates/login.html:32 cps/web.py:2170
+#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/templates/login.html:39 cps/web.py:2170
 msgid "Login"
 msgstr "Σύνδεση"
 
@@ -2320,7 +2320,7 @@ msgid "Please wait one minute to register next user"
 msgstr ""
 
 #: cps/templates/layout.html:135 cps/templates/layout.html:177
-#: cps/templates/login.html:41 cps/templates/register.html:17 cps/web.py:2049
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2049
 #: cps/web.py:2053 cps/web.py:2058 cps/web.py:2062 cps/web.py:2068
 #: cps/web.py:2093 cps/web.py:2097 cps/web.py:2110 cps/web.py:2113
 msgid "Register"
@@ -2636,8 +2636,8 @@ msgstr "Ανέβασμα"
 msgid "Users&nbsp;&nbsp;👤"
 msgstr ""
 
-#: cps/templates/admin.html:14 cps/templates/login.html:10
-#: cps/templates/login.html:12 cps/templates/register.html:9
+#: cps/templates/admin.html:14 cps/templates/login.html:17
+#: cps/templates/login.html:19 cps/templates/register.html:9
 #: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Όνομα Χρήστη"
@@ -2662,8 +2662,8 @@ msgstr "Αποστολή στο Kindle"
 msgid "Admin"
 msgstr "Διαχειριστής"
 
-#: cps/templates/admin.html:20 cps/templates/login.html:15
-#: cps/templates/login.html:16 cps/templates/user_edit.html:194
+#: cps/templates/admin.html:20 cps/templates/login.html:22
+#: cps/templates/login.html:23 cps/templates/user_edit.html:194
 msgid "Password"
 msgstr "Κωδικός"
 
@@ -5892,7 +5892,7 @@ msgstr ""
 msgid "Sort descending according to series index"
 msgstr ""
 
-#: cps/templates/layout.html:93 cps/templates/login.html:44
+#: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
 msgstr "Κεντρική"
 
@@ -6004,32 +6004,32 @@ msgstr ""
 msgid "Read"
 msgstr "Διαβάστηκε"
 
-#: cps/templates/login.html:23
+#: cps/templates/login.html:30
 #, fuzzy
 msgid "Show Password"
 msgstr "SMTP Κωδικός"
 
-#: cps/templates/login.html:28
+#: cps/templates/login.html:35
 msgid "Remember Me"
 msgstr "Να με Θυμάσαι"
 
-#: cps/templates/login.html:34
+#: cps/templates/login.html:41
 msgid "Forgot Password?"
 msgstr "Ξέχασες τον Κωδικό;"
 
-#: cps/templates/login.html:48
+#: cps/templates/login.html:55
 #, fuzzy
 msgid ""
 "Log in with Magic\n"
 "      Link"
 msgstr "Σύνδεση με το Μαγικό Σύνδεσμο"
 
-#: cps/templates/login.html:88
+#: cps/templates/login.html:95
 #, fuzzy
 msgid "Log in with SSO"
 msgstr "Σύνδεση με το Μαγικό Σύνδεσμο"
 
-#: cps/templates/login.html:95
+#: cps/templates/login.html:102
 msgid ""
 "Standard login is disabled. Please use one of the alternative login methods."
 msgstr ""

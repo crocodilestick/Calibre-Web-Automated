@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 17:39+0100\n"
+"POT-Creation-Date: 2026-02-01 20:24+0100\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -1626,8 +1626,8 @@ msgid "{} Stars"
 msgstr "{} Stars"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:4
-#: cps/templates/login.html:32 cps/web.py:2170
+#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/templates/login.html:39 cps/web.py:2170
 msgid "Login"
 msgstr "로그인"
 
@@ -2231,7 +2231,7 @@ msgid "Please wait one minute to register next user"
 msgstr "다음 사용자를 등록은 1분 뒤 가능합니다."
 
 #: cps/templates/layout.html:135 cps/templates/layout.html:177
-#: cps/templates/login.html:41 cps/templates/register.html:17 cps/web.py:2049
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2049
 #: cps/web.py:2053 cps/web.py:2058 cps/web.py:2062 cps/web.py:2068
 #: cps/web.py:2093 cps/web.py:2097 cps/web.py:2110 cps/web.py:2113
 msgid "Register"
@@ -2527,8 +2527,8 @@ msgstr "업로드"
 msgid "Users&nbsp;&nbsp;👤"
 msgstr ""
 
-#: cps/templates/admin.html:14 cps/templates/login.html:10
-#: cps/templates/login.html:12 cps/templates/register.html:9
+#: cps/templates/admin.html:14 cps/templates/login.html:17
+#: cps/templates/login.html:19 cps/templates/register.html:9
 #: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "사용자 이름"
@@ -2552,8 +2552,8 @@ msgstr "전자책 리더로 보내기"
 msgid "Admin"
 msgstr "관리자"
 
-#: cps/templates/admin.html:20 cps/templates/login.html:15
-#: cps/templates/login.html:16 cps/templates/user_edit.html:194
+#: cps/templates/admin.html:20 cps/templates/login.html:22
+#: cps/templates/login.html:23 cps/templates/user_edit.html:194
 msgid "Password"
 msgstr "비밀번호"
 
@@ -5794,7 +5794,7 @@ msgstr "시리즈 순서 오름차순 정렬"
 msgid "Sort descending according to series index"
 msgstr "시리즈 순서 내림차순 정렬"
 
-#: cps/templates/layout.html:93 cps/templates/login.html:44
+#: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
 msgstr "홈"
 
@@ -5904,31 +5904,31 @@ msgstr "격자"
 msgid "Read"
 msgstr "읽음"
 
-#: cps/templates/login.html:23
+#: cps/templates/login.html:30
 #, fuzzy
 msgid "Show Password"
 msgstr "SMTP 비밀번호"
 
-#: cps/templates/login.html:28
+#: cps/templates/login.html:35
 msgid "Remember Me"
 msgstr "로그인 유지"
 
-#: cps/templates/login.html:34
+#: cps/templates/login.html:41
 msgid "Forgot Password?"
 msgstr "비밀번호를 잊으셨나요?"
 
-#: cps/templates/login.html:48
+#: cps/templates/login.html:55
 #, fuzzy
 msgid ""
 "Log in with Magic\n"
 "      Link"
 msgstr "매직 링크로 로그인"
 
-#: cps/templates/login.html:88
+#: cps/templates/login.html:95
 msgid "Log in with SSO"
 msgstr "SSO로 로그인"
 
-#: cps/templates/login.html:95
+#: cps/templates/login.html:102
 msgid ""
 "Standard login is disabled. Please use one of the alternative login methods."
 msgstr ""

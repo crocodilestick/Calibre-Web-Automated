@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 17:39+0100\n"
+"POT-Creation-Date: 2026-02-01 20:24+0100\n"
 "PO-Revision-Date: 2025-06-07 14:44+0300\n"
 "Last-Translator: UsamaFoad <usamafoad@gmail.com>\n"
 "Language-Team: \n"
@@ -1662,8 +1662,8 @@ msgid "{} Stars"
 msgstr "{} نجوم"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:4
-#: cps/templates/login.html:32 cps/web.py:2170
+#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/templates/login.html:39 cps/web.py:2170
 msgid "Login"
 msgstr "تسجيل الدخول"
 
@@ -2259,7 +2259,7 @@ msgid "Please wait one minute to register next user"
 msgstr "يرجى الانتظار دقيقة واحدة لتسجيل مستخدم آخر"
 
 #: cps/templates/layout.html:135 cps/templates/layout.html:177
-#: cps/templates/login.html:41 cps/templates/register.html:17 cps/web.py:2049
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2049
 #: cps/web.py:2053 cps/web.py:2058 cps/web.py:2062 cps/web.py:2068
 #: cps/web.py:2093 cps/web.py:2097 cps/web.py:2110 cps/web.py:2113
 msgid "Register"
@@ -2553,8 +2553,8 @@ msgstr "تحميل"
 msgid "Users&nbsp;&nbsp;👤"
 msgstr ""
 
-#: cps/templates/admin.html:14 cps/templates/login.html:10
-#: cps/templates/login.html:12 cps/templates/register.html:9
+#: cps/templates/admin.html:14 cps/templates/login.html:17
+#: cps/templates/login.html:19 cps/templates/register.html:9
 #: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "اسم المستخدم"
@@ -2578,8 +2578,8 @@ msgstr "إرسال إلى القارئ الإلكتروني"
 msgid "Admin"
 msgstr "المسؤول"
 
-#: cps/templates/admin.html:20 cps/templates/login.html:15
-#: cps/templates/login.html:16 cps/templates/user_edit.html:194
+#: cps/templates/admin.html:20 cps/templates/login.html:22
+#: cps/templates/login.html:23 cps/templates/user_edit.html:194
 msgid "Password"
 msgstr "كلمة المرور"
 
@@ -5773,7 +5773,7 @@ msgstr "الفرز تصاعديًا حسب فهرس السلسلة"
 msgid "Sort descending according to series index"
 msgstr "الفرز تنازليًا حسب فهرس السلسلة"
 
-#: cps/templates/layout.html:93 cps/templates/login.html:44
+#: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
 msgstr "الرئيسية"
 
@@ -5884,32 +5884,32 @@ msgstr "شبكة"
 msgid "Read"
 msgstr "قراءة"
 
-#: cps/templates/login.html:23
+#: cps/templates/login.html:30
 #, fuzzy
 msgid "Show Password"
 msgstr "كلمة مرور SMTP"
 
-#: cps/templates/login.html:28
+#: cps/templates/login.html:35
 msgid "Remember Me"
 msgstr "تذكرني"
 
-#: cps/templates/login.html:34
+#: cps/templates/login.html:41
 msgid "Forgot Password?"
 msgstr "هل نسيت كلمة المرور؟"
 
-#: cps/templates/login.html:48
+#: cps/templates/login.html:55
 #, fuzzy
 msgid ""
 "Log in with Magic\n"
 "      Link"
 msgstr "تسجيل الدخول بالرابط السحري"
 
-#: cps/templates/login.html:88
+#: cps/templates/login.html:95
 #, fuzzy
 msgid "Log in with SSO"
 msgstr "تسجيل الدخول بالرابط السحري"
 
-#: cps/templates/login.html:95
+#: cps/templates/login.html:102
 msgid ""
 "Standard login is disabled. Please use one of the alternative login methods."
 msgstr ""

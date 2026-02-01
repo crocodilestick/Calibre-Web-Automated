@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 17:39+0100\n"
+"POT-Creation-Date: 2026-02-01 20:24+0100\n"
 "PO-Revision-Date: 2023-12-20 22:00+0100\n"
 "Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at "
 "proton.me>\n"
@@ -1711,8 +1711,8 @@ msgid "{} Stars"
 msgstr "{} sterren"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:4
-#: cps/templates/login.html:32 cps/web.py:2170
+#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/templates/login.html:39 cps/web.py:2170
 msgid "Login"
 msgstr "Inloggen"
 
@@ -2340,7 +2340,7 @@ msgstr ""
 "Wacht alstublieft één minuut voor het registreren van de volgende gebruiker"
 
 #: cps/templates/layout.html:135 cps/templates/layout.html:177
-#: cps/templates/login.html:41 cps/templates/register.html:17 cps/web.py:2049
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2049
 #: cps/web.py:2053 cps/web.py:2058 cps/web.py:2062 cps/web.py:2068
 #: cps/web.py:2093 cps/web.py:2097 cps/web.py:2110 cps/web.py:2113
 msgid "Register"
@@ -2645,8 +2645,8 @@ msgstr "Uploaden"
 msgid "Users&nbsp;&nbsp;👤"
 msgstr "Gebruikers&nbsp;&nbsp;👤"
 
-#: cps/templates/admin.html:14 cps/templates/login.html:10
-#: cps/templates/login.html:12 cps/templates/register.html:9
+#: cps/templates/admin.html:14 cps/templates/login.html:17
+#: cps/templates/login.html:19 cps/templates/register.html:9
 #: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Gebruikersnaam"
@@ -2671,8 +2671,8 @@ msgstr "Versturen naar Kindle"
 msgid "Admin"
 msgstr "Beheer"
 
-#: cps/templates/admin.html:20 cps/templates/login.html:15
-#: cps/templates/login.html:16 cps/templates/user_edit.html:194
+#: cps/templates/admin.html:20 cps/templates/login.html:22
+#: cps/templates/login.html:23 cps/templates/user_edit.html:194
 msgid "Password"
 msgstr "Wachtwoord"
 
@@ -5992,7 +5992,7 @@ msgstr "Sorteer oplopend volgens de serie index"
 msgid "Sort descending according to series index"
 msgstr "Sorteer aflopend volgens de serie index"
 
-#: cps/templates/layout.html:93 cps/templates/login.html:44
+#: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
 msgstr "Startpagina"
 
@@ -6105,32 +6105,32 @@ msgstr "Raster"
 msgid "Read"
 msgstr "Gelezen"
 
-#: cps/templates/login.html:23
+#: cps/templates/login.html:30
 #, fuzzy
 msgid "Show Password"
 msgstr "SMTP-wachtwoord"
 
-#: cps/templates/login.html:28
+#: cps/templates/login.html:35
 msgid "Remember Me"
 msgstr "Gegevens opslaan"
 
-#: cps/templates/login.html:34
+#: cps/templates/login.html:41
 msgid "Forgot Password?"
 msgstr "Wachtwoord Vergeten?"
 
-#: cps/templates/login.html:48
+#: cps/templates/login.html:55
 #, fuzzy
 msgid ""
 "Log in with Magic\n"
 "      Link"
 msgstr "Inloggen met magische koppeling"
 
-#: cps/templates/login.html:88
+#: cps/templates/login.html:95
 #, fuzzy
 msgid "Log in with SSO"
 msgstr "Inloggen met magische koppeling"
 
-#: cps/templates/login.html:95
+#: cps/templates/login.html:102
 msgid ""
 "Standard login is disabled. Please use one of the alternative login methods."
 msgstr ""

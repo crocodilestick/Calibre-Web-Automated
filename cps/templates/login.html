@@ -1,8 +1,15 @@
 {% extends "layout.html" %}
 {% block body %}
-<div class="well col-sm-6 col-sm-offset-2">
+<div style="background-color: rgba(0, 0, 0, .4);
+    border: none;
+    padding-bottom: 4rem;
+    margin: 0;
+    display: flex;
+    margin-top: 8rem;
+    height: fit-content;
+    justify-content: center;" class="well col-sm-6 col-sm-offset-2">
   <h2 style="margin-top: 0">{{_('Login')}}</h2>
-  <form method="POST" role="form">
+  <form method="POST" role="form" style="background: none;">
     <input type="hidden" name="next" value="{{next_url}}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     {% if not config.config_disable_standard_login %}

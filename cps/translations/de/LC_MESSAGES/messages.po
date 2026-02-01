@@ -4023,7 +4023,7 @@ msgstr "Sicherheitseinstellungen"
 
 #: cps/templates/config_edit.html:553
 msgid "Disable Standard Login (Username/Password)"
-msgstr ""
+msgstr "Standardanmeldung deaktivieren (Benutzername/Passwort)"
 
 #: cps/templates/config_edit.html:554
 msgid ""

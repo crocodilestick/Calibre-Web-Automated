@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 00:33+0100\n"
+"POT-Creation-Date: 2026-02-01 01:22+0100\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -23,29 +23,29 @@ msgstr ""
 msgid "Statistics"
 msgstr "Statistik"
 
-#: cps/admin.py:126
+#: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
 msgstr ""
 
-#: cps/admin.py:177
+#: cps/admin.py:179
 #, fuzzy
 msgid "Server restarted, please reload page."
 msgstr "Server dimulai ulang, harap muat ulang halaman"
 
-#: cps/admin.py:179
+#: cps/admin.py:181
 #, fuzzy
 msgid "Performing Server shutdown, please close window."
 msgstr "Mematikan server, silakan tutup jendela"
 
-#: cps/admin.py:187
+#: cps/admin.py:189
 msgid "Success! Database Reconnected"
 msgstr ""
 
-#: cps/admin.py:190
+#: cps/admin.py:192
 msgid "Unknown command"
 msgstr "Perintah tidak diketahui"
 
-#: cps/admin.py:201
+#: cps/admin.py:203
 #, fuzzy
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
@@ -53,203 +53,203 @@ msgstr ""
 "Uji email diantrean untuk dikirim ke %(email), harap periksa Tasks untuk "
 "hasilnya"
 
-#: cps/admin.py:221
+#: cps/admin.py:223
 msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
 msgstr ""
 
-#: cps/admin.py:249
+#: cps/admin.py:251
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
 msgstr ""
 
-#: cps/admin.py:254
+#: cps/admin.py:256
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
 msgstr ""
 
-#: cps/admin.py:293 cps/templates/admin.html:223
+#: cps/admin.py:295 cps/templates/admin.html:223
 msgid "Review Hardcover Matches"
 msgstr ""
 
-#: cps/admin.py:300
+#: cps/admin.py:302
 #, python-format
 msgid "Error loading review queue: %(error)s"
 msgstr ""
 
-#: cps/admin.py:375
+#: cps/admin.py:383
 #, fuzzy
 msgid "Hardcover ID applied successfully"
 msgstr "{} pengguna berhasil dihapus"
 
-#: cps/admin.py:392
+#: cps/admin.py:400
 #, python-format
 msgid "Match %(action)s"
 msgstr ""
 
-#: cps/admin.py:430
+#: cps/admin.py:438
 msgid "No pending matches to reject"
 msgstr ""
 
-#: cps/admin.py:436
+#: cps/admin.py:444
 #, python-format
 msgid "Rejected %(count)s match(es)"
 msgstr ""
 
-#: cps/admin.py:473
+#: cps/admin.py:481
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
 msgstr ""
 
-#: cps/admin.py:475
+#: cps/admin.py:483
 msgid "No books with covers found to process."
 msgstr ""
 
-#: cps/admin.py:487
+#: cps/admin.py:495
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
 msgstr ""
 
-#: cps/admin.py:529
+#: cps/admin.py:537
 msgid "Admin page"
 msgstr "Halaman Admin"
 
-#: cps/admin.py:549
+#: cps/admin.py:557
 msgid "Basic Configuration"
 msgstr "Pengaturan Dasar"
 
-#: cps/admin.py:587
+#: cps/admin.py:595
 msgid "UI Configuration"
 msgstr "Pengaturan Antarmuka"
 
-#: cps/admin.py:611 cps/admin.py:1293 cps/db.py:946 cps/search.py:153
+#: cps/admin.py:619 cps/admin.py:1301 cps/db.py:946 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Kolom Kustom No.%(column)d tidak ada di basis data kaliber"
 
-#: cps/admin.py:629 cps/templates/admin.html:55
+#: cps/admin.py:637 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Edit pengguna"
 
-#: cps/admin.py:673 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:681 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Semua"
 
-#: cps/admin.py:700 cps/admin.py:1848
+#: cps/admin.py:708 cps/admin.py:1856
 msgid "User not found"
 msgstr "Pengguna tidak ditemukan"
 
-#: cps/admin.py:714
+#: cps/admin.py:722
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} pengguna berhasil dihapus"
 
-#: cps/admin.py:737 cps/templates/config_view_edit.html:170
+#: cps/admin.py:745 cps/templates/config_view_edit.html:170
 #: cps/templates/user_edit.html:241 cps/templates/user_edit.html:264
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Tampilkan semua"
 
-#: cps/admin.py:758 cps/admin.py:764
+#: cps/admin.py:766 cps/admin.py:772
 msgid "Malformed request"
 msgstr "Permintaan salah"
 
-#: cps/admin.py:776 cps/admin.py:2703
+#: cps/admin.py:784 cps/admin.py:2711
 msgid "Guest Name can't be changed"
 msgstr "Nama Tamu tidak dapat diganti"
 
-#: cps/admin.py:790
+#: cps/admin.py:798
 msgid "Guest can't have this role"
 msgstr "Tamu tidak dapat memiliki peran ini"
 
-#: cps/admin.py:802 cps/admin.py:2561
+#: cps/admin.py:810 cps/admin.py:2569
 msgid "No admin user remaining, can't remove admin role"
 msgstr ""
 "Tidak ada pengguna admin yang tersisa, tidak dapat menghapus peran admin"
 
-#: cps/admin.py:806 cps/admin.py:820
+#: cps/admin.py:814 cps/admin.py:828
 msgid "Value has to be true or false"
 msgstr "Nilai harus benar atau salah"
 
-#: cps/admin.py:808
+#: cps/admin.py:816
 msgid "Invalid role"
 msgstr "Peran tidak valid"
 
-#: cps/admin.py:812
+#: cps/admin.py:820
 msgid "Guest can't have this view"
 msgstr " Tamu tidak dapat mengakses tampilan ini"
 
-#: cps/admin.py:822
+#: cps/admin.py:830
 msgid "Invalid view"
 msgstr " Tampilan tidak valid"
 
-#: cps/admin.py:825
+#: cps/admin.py:833
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "Lokal Tamu ditentukan secara otomatis dan tidak dapat disetel"
 
-#: cps/admin.py:829
+#: cps/admin.py:837
 msgid "No Valid Locale Given"
 msgstr "Tidak Ada Lokal yang Valid Diberikan"
 
-#: cps/admin.py:840
+#: cps/admin.py:848
 msgid "No Valid Book Language Given"
 msgstr "Tidak Ada Bahasa Buku yang Valid Diberikan"
 
-#: cps/admin.py:842 cps/editbooks.py:500
+#: cps/admin.py:850 cps/editbooks.py:500
 msgid "Parameter not found"
 msgstr "Parameter tidak ditemukan"
 
-#: cps/admin.py:879
+#: cps/admin.py:887
 msgid "Invalid Read Column"
 msgstr "Kolom Baca Tidak Valid"
 
-#: cps/admin.py:885
+#: cps/admin.py:893
 msgid "Invalid Restricted Column"
 msgstr "Kolom Dibatasi Tidak Valid"
 
-#: cps/admin.py:905 cps/admin.py:2410
+#: cps/admin.py:913 cps/admin.py:2418
 #, fuzzy
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Pengaturan Calibre-Web telah diperbarui"
 
-#: cps/admin.py:917
+#: cps/admin.py:925
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Apakah Anda yakin ingin menghapus Token Kobo?"
 
-#: cps/admin.py:919
+#: cps/admin.py:927
 msgid "Do you really want to delete this domain?"
 msgstr "Apakah Anda yakin ingin menghapus domain ini?"
 
-#: cps/admin.py:921
+#: cps/admin.py:929
 msgid "Do you really want to delete this user?"
 msgstr "Apakah Anda yakin ingin menghapus pengguna ini?"
 
-#: cps/admin.py:923
+#: cps/admin.py:931
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Apakah Anda yakin ingin menghapus rak ini?"
 
-#: cps/admin.py:925
+#: cps/admin.py:933
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr ""
 "Apakah Anda yakin ingin merubah lokalisasi untuk pengguna yang dipilih?"
 
-#: cps/admin.py:927
+#: cps/admin.py:935
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr ""
 "Apakah Anda yakin ingin merubah bahasa buku yang terlihat untuk pengguna "
 "yang dipilih?"
 
-#: cps/admin.py:929
+#: cps/admin.py:937
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr "Apakah Anda yakin ingin merubah peran untuk pengguna yang dipilih?"
 
-#: cps/admin.py:931
+#: cps/admin.py:939
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -257,7 +257,7 @@ msgstr ""
 "Apakah Anda yakin ingin mengubah batasan yang dipilih untuk pengguna yang "
 "dipilih?"
 
-#: cps/admin.py:933
+#: cps/admin.py:941
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -265,18 +265,18 @@ msgstr ""
 "Apakah Anda yakin ingin merubah batasan visibilitas untuk pengguna yang "
 "dipilih?"
 
-#: cps/admin.py:936
+#: cps/admin.py:944
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
 "Apakah Anda yakin ingin mengubah perilaku sinkronisasi rak untuk pengguna "
 "yang dipilih?"
 
-#: cps/admin.py:938
+#: cps/admin.py:946
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Apakah Anda yakin ingin mengubah lokasi perpustakaan Calibre?"
 
-#: cps/admin.py:940
+#: cps/admin.py:948
 #, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
@@ -285,7 +285,7 @@ msgstr ""
 "Calibre-Web akan mencari Sampul yang diperbarui dan memperbarui Thumbnail "
 "Sampul, ini mungkin memakan waktu cukup lama?"
 
-#: cps/admin.py:943
+#: cps/admin.py:951
 #, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
@@ -294,87 +294,87 @@ msgstr ""
 "Apakah Anda yakin ingin menghapus database sinkronisasi Calibre-Web untuk "
 "memaksakan sinkronisasi penuh dengan Kobo Reader Anda?"
 
-#: cps/admin.py:1182 cps/admin.py:1188 cps/admin.py:1198 cps/admin.py:1208
+#: cps/admin.py:1190 cps/admin.py:1196 cps/admin.py:1206 cps/admin.py:1216
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Tolak"
 
-#: cps/admin.py:1184 cps/admin.py:1190 cps/admin.py:1200 cps/admin.py:1210
+#: cps/admin.py:1192 cps/admin.py:1198 cps/admin.py:1208 cps/admin.py:1218
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Izinkan"
 
-#: cps/admin.py:1243
+#: cps/admin.py:1251
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} entri sinkronisasi dihapus"
 
-#: cps/admin.py:1284
+#: cps/admin.py:1292
 msgid "Tag not found"
 msgstr "Tag tidak ditemukan"
 
-#: cps/admin.py:1302
+#: cps/admin.py:1310
 msgid "Invalid Action"
 msgstr "Tindakan Tidak Valid"
 
-#: cps/admin.py:1429
+#: cps/admin.py:1437
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json Tidak Diatur Untuk Aplikasi Web"
 
-#: cps/admin.py:1568
+#: cps/admin.py:1576
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokasi Logfile tidak Valid, Harap Masukkan Jalur yang Benar"
 
-#: cps/admin.py:1574
+#: cps/admin.py:1582
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Akses Logfile Catatan tidak Valid, Harap Masukkan Jalur yang Benar"
 
-#: cps/admin.py:1609
+#: cps/admin.py:1617
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "Harap Masukkan Provider LDAP, Port, DN dan User Obect Identifier"
 
-#: cps/admin.py:1615
+#: cps/admin.py:1623
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Masukkan Akun Layanan LDAP dan Kata Sandi"
 
-#: cps/admin.py:1618
+#: cps/admin.py:1626
 msgid "Please Enter a LDAP Service Account"
 msgstr "Masukkan Akun Layanan LDAP"
 
-#: cps/admin.py:1623
+#: cps/admin.py:1631
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter Objek Grup LDAP Harus Memiliki Satu Pengidentifikasi Format \"%s\""
 
-#: cps/admin.py:1625
+#: cps/admin.py:1633
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "Filter Objek Grup LDAP Memiliki Tanda kurung yang Tak Berpasangan"
 
-#: cps/admin.py:1629
+#: cps/admin.py:1637
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter Objek Pengguna LDAP harus Memiliki Satu Pengidentifikasi Format \"%s\""
 
-#: cps/admin.py:1631
+#: cps/admin.py:1639
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "Filter Objek Pengguna LDAP Memiliki Tanda kurung yang Tak Berpasangan"
 
-#: cps/admin.py:1638
+#: cps/admin.py:1646
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter Pengguna Anggota LDAP harus Memiliki Satu Pengenal Format \"%s\""
 
-#: cps/admin.py:1640
+#: cps/admin.py:1648
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr ""
 "Filter Pengguna Anggota LDAP Memiliki Tanda Kurung yang Tak Berpasangan"
 
-#: cps/admin.py:1647
+#: cps/admin.py:1655
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -382,28 +382,28 @@ msgstr ""
 "Lokasi LDAP Sertifikat CA, Sertifikat, atau Kunci tidak Valid, Harap "
 "Masukkan Jalur yang Benar "
 
-#: cps/admin.py:1679 cps/templates/admin.html:57
+#: cps/admin.py:1687 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Tambah Pengguna Baru"
 
-#: cps/admin.py:1691 cps/templates/admin.html:105
+#: cps/admin.py:1699 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "Edit Pengaturan Server Email"
 
-#: cps/admin.py:1710
+#: cps/admin.py:1718
 msgid "Success! Gmail Account Verified."
 msgstr ""
 
-#: cps/admin.py:1730 cps/admin.py:1733 cps/admin.py:2183 cps/admin.py:2394
-#: cps/admin.py:2506 cps/admin.py:2738 cps/editbooks.py:939
-#: cps/editbooks.py:1698 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
+#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:939
+#: cps/editbooks.py:1705 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Kesalahan basis data: %(error)s"
 
-#: cps/admin.py:1740
+#: cps/admin.py:1748
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
@@ -411,341 +411,364 @@ msgstr ""
 "Uji email diantrean untuk dikirim ke %(email)s, harap periksa Tasks untuk "
 "hasilnya"
 
-#: cps/admin.py:1743
+#: cps/admin.py:1751
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Terjadi kesalahan saat mengirim email tes: %(res)s"
 
-#: cps/admin.py:1745
+#: cps/admin.py:1753
 msgid "Please configure your e-mail address first..."
 msgstr "Harap atur alamat email Anda terlebih dahulu.."
 
-#: cps/admin.py:1747
+#: cps/admin.py:1755
 msgid "Email Server Settings updated"
 msgstr "Setelan server email diperbarui"
 
-#: cps/admin.py:1770 cps/templates/admin.html:201
+#: cps/admin.py:1778 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Edit Pengaturan Tugas Terjadwal"
 
-#: cps/admin.py:1782
+#: cps/admin.py:1790
 msgid "Invalid start time for task specified"
 msgstr "Waktu mulai tidak valid untuk tugas yang ditentukan"
 
-#: cps/admin.py:1787
+#: cps/admin.py:1795
 msgid "Invalid duration for task specified"
 msgstr "Durasi tidak valid untuk tugas yang ditentukan"
 
-#: cps/admin.py:1797
+#: cps/admin.py:1805
 msgid "Scheduled tasks settings updated"
 msgstr "Pengaturan tugas terjadwal diperbarui"
 
-#: cps/admin.py:1807 cps/admin.py:1915 cps/admin.py:2734 cps/web.py:2092
+#: cps/admin.py:1815 cps/admin.py:1923 cps/admin.py:2742 cps/web.py:2092
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Terjadi kesalahan yang tidak diketahui. Coba lagi nanti."
 
-#: cps/admin.py:1811
+#: cps/admin.py:1819
 msgid "Settings DB is not Writeable"
 msgstr "Pengaturan DB tidak dapat ditulisi"
 
-#: cps/admin.py:1830 cps/opds.py:199 cps/web.py:2554 cps/web.py:2656
+#: cps/admin.py:1838 cps/opds.py:199 cps/web.py:2554 cps/web.py:2656
 #, fuzzy
 msgid "title"
 msgstr "Judul"
 
-#: cps/admin.py:1900 cps/admin.py:2726
+#: cps/admin.py:1908 cps/admin.py:2734
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Edit pengguna %(nick)s"
 
-#: cps/admin.py:1912
+#: cps/admin.py:1920
 #, fuzzy, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Kata sandi untuk pengaturan ulang pengguna %(user) "
 
-#: cps/admin.py:1918
+#: cps/admin.py:1926
 #, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Harap atur pengaturan email SMTP terlebih dahulu..."
 
-#: cps/admin.py:1929
+#: cps/admin.py:1937
 msgid "Logfile viewer"
 msgstr "Penampil berkas log"
 
-#: cps/admin.py:1995
+#: cps/admin.py:2003
 msgid "Requesting update package"
 msgstr "Meminta paket pembaruan"
 
-#: cps/admin.py:1996
+#: cps/admin.py:2004
 msgid "Downloading update package"
 msgstr "Mengunduh paket pembaruan"
 
-#: cps/admin.py:1997
+#: cps/admin.py:2005
 msgid "Unzipping update package"
 msgstr "Mengekstrak paket pembaruan"
 
-#: cps/admin.py:1998
+#: cps/admin.py:2006
 msgid "Replacing files"
 msgstr "Mengganti berkas"
 
-#: cps/admin.py:1999
+#: cps/admin.py:2007
 msgid "Database connections are closed"
 msgstr "Koneksi basis data ditutup"
 
-#: cps/admin.py:2000
+#: cps/admin.py:2008
 msgid "Stopping server"
 msgstr "Menghentikan server"
 
-#: cps/admin.py:2001
+#: cps/admin.py:2009
 msgid "Update finished, please press okay and reload page"
 msgstr "Pembaruan selesai, silakan tekan OK dan muat ulang halaman"
 
-#: cps/admin.py:2002 cps/admin.py:2003 cps/admin.py:2004 cps/admin.py:2005
-#: cps/admin.py:2006 cps/admin.py:2007
+#: cps/admin.py:2010 cps/admin.py:2011 cps/admin.py:2012 cps/admin.py:2013
+#: cps/admin.py:2014 cps/admin.py:2015
 msgid "Update failed:"
 msgstr "Pembaruan gagal:"
 
-#: cps/admin.py:2002 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
+#: cps/admin.py:2010 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
 msgid "HTTP Error"
 msgstr "Kesalahan HTTP"
 
-#: cps/admin.py:2003 cps/updater.py:390 cps/updater.py:627
+#: cps/admin.py:2011 cps/updater.py:390 cps/updater.py:627
 msgid "Connection error"
 msgstr "Kesalahan koneksi"
 
-#: cps/admin.py:2004 cps/updater.py:392 cps/updater.py:629
+#: cps/admin.py:2012 cps/updater.py:392 cps/updater.py:629
 msgid "Timeout while establishing connection"
 msgstr "Batas waktu saat membuat koneksi"
 
-#: cps/admin.py:2005 cps/updater.py:394 cps/updater.py:631
+#: cps/admin.py:2013 cps/updater.py:394 cps/updater.py:631
 msgid "General error"
 msgstr "Kesalahan umum"
 
-#: cps/admin.py:2006
+#: cps/admin.py:2014
 msgid "Update file could not be saved in temp dir"
 msgstr "Berkas pembaruan tidak dapat disimpan di direktori temp"
 
-#: cps/admin.py:2007
+#: cps/admin.py:2015
 msgid "Files could not be replaced during update"
 msgstr "Berkas tidak dapat diganti selama pembaruan"
 
-#: cps/admin.py:2031
+#: cps/admin.py:2039
 msgid "Failed to extract at least One LDAP User"
 msgstr "Gagal mengekstrak setidaknya Satu Pengguna LDAP"
 
-#: cps/admin.py:2076
+#: cps/admin.py:2084
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Gagal Membuat Sedikitnya Satu Pengguna LDAP"
 
-#: cps/admin.py:2089
+#: cps/admin.py:2097
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Kesalahan: %(ldaperror)s"
 
-#: cps/admin.py:2093
+#: cps/admin.py:2101
 msgid "Error: No user returned in response of LDAP server"
 msgstr ""
 "Error: Tidak ada pengguna yang dikembalikan sebagai respons dari server LDAP"
 
-#: cps/admin.py:2129
+#: cps/admin.py:2137
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Setidaknya Satu Pengguna LDAP Tidak Ditemukan di Basis Data"
 
-#: cps/admin.py:2131
+#: cps/admin.py:2139
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Pengguna Berhasil Diimpor"
 
-#: cps/admin.py:2195
+#: cps/admin.py:2203
 msgid "Books path not valid"
 msgstr ""
 
-#: cps/admin.py:2202
+#: cps/admin.py:2210
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "Lokasi Basis Data tidak Valid, Harap Masukkan Jalur yang Benar"
 
-#: cps/admin.py:2230
+#: cps/admin.py:2238
 msgid "DB is not Writeable"
 msgstr "Basis Data tidak dapat ditulisi"
 
-#: cps/admin.py:2243
+#: cps/admin.py:2251
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokasi keyfile tidak Valid, Harap Masukkan Jalur yang Benar "
 
-#: cps/admin.py:2247
+#: cps/admin.py:2255
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokasi Sertifikat tidak Valid, Harap Masukkan Jalur yang Benar "
 
-#: cps/admin.py:2316
+#: cps/admin.py:2324
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
 
-#: cps/admin.py:2319
+#: cps/admin.py:2327
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 
-#: cps/admin.py:2338 cps/admin.py:2345
+#: cps/admin.py:2346 cps/admin.py:2353
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2342
+#: cps/admin.py:2350
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2377
+#: cps/admin.py:2385
 msgid "Password length has to be between 1 and 40"
 msgstr ""
 
-#: cps/admin.py:2437
+#: cps/admin.py:2445
 msgid "Database Settings updated"
 msgstr "Pengaturan Basis Data diperbarui"
 
-#: cps/admin.py:2445
+#: cps/admin.py:2453
 msgid "Database Configuration"
 msgstr "Pengaturan Basis Data"
 
-#: cps/admin.py:2466 cps/web.py:2061
+#: cps/admin.py:2474 cps/web.py:2061
 msgid "Oops! Please complete all fields."
 msgstr "Harap masukkan seluruh isian!"
 
-#: cps/admin.py:2475
+#: cps/admin.py:2483
 msgid "E-mail is not from valid domain"
 msgstr "Email bukan dari domain yang valid"
 
-#: cps/admin.py:2482
+#: cps/admin.py:2490
 msgid "Add new user"
 msgstr "Tambahkan pengguna baru"
 
-#: cps/admin.py:2496
+#: cps/admin.py:2504
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Pengguna '%(user)s' telah dibuat"
 
-#: cps/admin.py:2502
+#: cps/admin.py:2510
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "Ditemukan akun yang ada untuk alamat email atau nama ini."
 
-#: cps/admin.py:2532
+#: cps/admin.py:2540
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Pengguna '%(nick)s' telah dihapus"
 
-#: cps/admin.py:2535
+#: cps/admin.py:2543
 msgid "Can't delete Guest User"
 msgstr "Tidak dapat menghapus Pengguna Tamu"
 
-#: cps/admin.py:2538
+#: cps/admin.py:2546
 msgid "No admin user remaining, can't delete user"
 msgstr "Tidak ada pengguna admin tersisa, tidak dapat menghapus pengguna"
 
-#: cps/admin.py:2697 cps/web.py:2396
+#: cps/admin.py:2705 cps/web.py:2396
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "Alamat email tidak boleh kosong dan harus berupa email yang valid"
 
-#: cps/admin.py:2730
+#: cps/admin.py:2738
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Pengguna '%(nick)s' diperbarui"
 
-#: cps/admin.py:2795
+#: cps/admin.py:2803
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2800
+#: cps/admin.py:2808
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2802 cps/admin.py:2859
+#: cps/admin.py:2810 cps/admin.py:2867
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr ""
 
-#: cps/admin.py:2804
+#: cps/admin.py:2812
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr ""
 
-#: cps/admin.py:2806
+#: cps/admin.py:2814
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 
-#: cps/admin.py:2808
+#: cps/admin.py:2816
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr ""
 
-#: cps/admin.py:2811
+#: cps/admin.py:2819
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Kesalahan koneksi"
 
-#: cps/admin.py:2837
+#: cps/admin.py:2845
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr ""
 
-#: cps/admin.py:2848
+#: cps/admin.py:2856
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 
-#: cps/admin.py:2850
+#: cps/admin.py:2858
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "Tidak ada informasi rilis yang tersedia"
 
-#: cps/admin.py:2852
+#: cps/admin.py:2860
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2857
+#: cps/admin.py:2865
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:2861
+#: cps/admin.py:2869
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr ""
 
-#: cps/admin.py:2863
+#: cps/admin.py:2871
 msgid "Connection failed: Request timed out."
 msgstr ""
 
-#: cps/admin.py:2865
+#: cps/admin.py:2873
 msgid "Connection failed: Invalid JSON in response."
 msgstr ""
 
-#: cps/admin.py:2868
+#: cps/admin.py:2876
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "Terjadi kesalahan yang tidak diketahui. Coba lagi nanti."
 
-#: cps/admin.py:2892 cps/admin.py:2914
+#: cps/admin.py:2888
+#, fuzzy
+msgid "Restore already in progress."
+msgstr "Kesalahan koneksi"
+
+#: cps/admin.py:2892
+msgid "Restore failed: Calibre library path is not configured."
+msgstr ""
+
+#: cps/admin.py:2897
+#, python-format
+msgid "Restore failed: metadata.db not found at %(path)s"
+msgstr ""
+
+#: cps/admin.py:2902
+#, python-format
+msgid "Restore failed: app.db not found at %(path)s"
+msgstr ""
+
+#: cps/admin.py:2974 cps/admin.py:3014
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Kesalahan koneksi"
 
-#: cps/admin.py:2910
+#: cps/admin.py:2991
+msgid "Restore completed but app.db cleanup failed. See logs for details."
+msgstr ""
+
+#: cps/admin.py:3010
 #, python-format
 msgid ""
-"Restore complete. Both databases were backed up to %(dir)s. All book-linked "
+"Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
 "data was reset."
 msgstr ""
 
@@ -1132,21 +1155,21 @@ msgstr "Buku berhasil diantrekan untuk dikonversi ke %(book_format)s"
 msgid "There was an error converting this book: %(res)s"
 msgstr "Terjadi kesalahan saat mengonversi buku ini: %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1135 cps/editbooks.py:1644
+#: cps/editbooks.py:305 cps/editbooks.py:1142 cps/editbooks.py:1651
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Ekstensi berkas '%(ext)s' tidak diizinkan untuk diunggah ke server ini"
 
-#: cps/editbooks.py:310 cps/editbooks.py:1141 cps/editbooks.py:1655
+#: cps/editbooks.py:310 cps/editbooks.py:1148 cps/editbooks.py:1662
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Ekstensi berkas '%(ext)s' tidak diizinkan untuk diunggah ke server ini"
 
-#: cps/editbooks.py:314 cps/editbooks.py:1145 cps/editbooks.py:1660
+#: cps/editbooks.py:314 cps/editbooks.py:1152 cps/editbooks.py:1667
 msgid "File to be uploaded must have an extension"
 msgstr "Berkas yang akan diunggah harus memiliki ekstensi"
 
-#: cps/editbooks.py:751 cps/editbooks.py:1321 cps/web.py:612 cps/web.py:2694
+#: cps/editbooks.py:751 cps/editbooks.py:1328 cps/web.py:612 cps/web.py:2694
 #: cps/web.py:2772 cps/web.py:2841
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
@@ -1154,15 +1177,15 @@ msgstr ""
 "Ups! Judul buku yang dipilih tidak tersedia. Berkas tidak ada atau tidak "
 "dapat diakses"
 
-#: cps/editbooks.py:783 cps/editbooks.py:1728
+#: cps/editbooks.py:783 cps/editbooks.py:1735
 msgid "User has no rights to upload cover"
 msgstr "Pengguna tidak berhak mengganti sampul"
 
-#: cps/editbooks.py:803 cps/editbooks.py:1123
+#: cps/editbooks.py:803 cps/editbooks.py:1130
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "IDは大文字小文字を区別しません。元のIDを上書きします"
 
-#: cps/editbooks.py:815 cps/editbooks.py:1097 cps/editbooks.py:1455
+#: cps/editbooks.py:815 cps/editbooks.py:1104 cps/editbooks.py:1462
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' bukan bahasa yang valid"
@@ -1176,12 +1199,12 @@ msgstr "Metadata berhasil diperbarui"
 msgid "Error editing book: {}"
 msgstr "Kesalahan pengeditan buku: {}"
 
-#: cps/editbooks.py:992 cps/editbooks.py:1037 cps/editbooks.py:1746
+#: cps/editbooks.py:999 cps/editbooks.py:1044 cps/editbooks.py:1753
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Tidak diketahui"
 
-#: cps/editbooks.py:1041
+#: cps/editbooks.py:1048
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1189,52 +1212,52 @@ msgstr ""
 "Buku yang diunggah mungkin ada di perpustakaan, pertimbangkan untuk "
 "mengubahnya sebelum mengunggah yang baru: "
 
-#: cps/editbooks.py:1153
+#: cps/editbooks.py:1160
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Berkas %(filename)s tidak dapat disimpan ke direktori temp"
 
-#: cps/editbooks.py:1173
+#: cps/editbooks.py:1180
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Gagal Memindahkan Berkas Sampul %(file)s: %(error)s"
 
-#: cps/editbooks.py:1231 cps/editbooks.py:1233
+#: cps/editbooks.py:1238 cps/editbooks.py:1240
 msgid "Book Format Successfully Deleted"
 msgstr "Format Buku Berhasil Dihapus"
 
-#: cps/editbooks.py:1240 cps/editbooks.py:1242
+#: cps/editbooks.py:1247 cps/editbooks.py:1249
 msgid "Book Successfully Deleted"
 msgstr "Buku Berhasil Dihapus"
 
-#: cps/editbooks.py:1306
+#: cps/editbooks.py:1313
 msgid "You are missing permissions to delete books"
 msgstr "Anda tidak memiliki izin untuk menghapus buku"
 
-#: cps/editbooks.py:1360
+#: cps/editbooks.py:1367
 msgid "edit metadata"
 msgstr "edit metadata"
 
-#: cps/editbooks.py:1414
+#: cps/editbooks.py:1421
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s dilewati karena bukan angka yang valid"
 
-#: cps/editbooks.py:1649
+#: cps/editbooks.py:1656
 msgid "User has no rights to upload additional file formats"
 msgstr "Pengguna tidak memiliki izin untuk mengunggah format berkas tambahan"
 
-#: cps/editbooks.py:1673
+#: cps/editbooks.py:1680
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Gagal membuat jalur %(path)s (Izin ditolak)."
 
-#: cps/editbooks.py:1680
+#: cps/editbooks.py:1687
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Gagal menyimpan berkas %(file)s."
 
-#: cps/editbooks.py:1705
+#: cps/editbooks.py:1712
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Format berkas %(ext)s ditambahkan ke %(book)s"
@@ -3445,7 +3468,7 @@ msgid ""
 "book data</b> (reading progress, bookmarks, shelf links, downloads, etc.) in "
 "the app database, but will not affect user accounts or settings. <b>Both "
 "databases will be automatically backed up in /config/backup before any "
-"destructive action.</b>"
+"destructive action.</b> A restore log will be saved alongside the backups."
 msgstr ""
 
 #: cps/templates/config_db.html:95

@@ -89,7 +89,7 @@
     <hr style="margin: 3rem 0;">
     <div style="margin-top: 2rem;">
       <h2>{{ _('Last Resort: Restore Calibre Database (experimental)') }}</h2>
-      <p style="font-size: 14px; margin-top: 4rem; margin-bottom: 4rem;">{{ _('If your Calibre library is corrupted and cannot be opened, you can attempt to restore it from the OPF files in your library. This will <b>erase all per-book data</b> (reading progress, bookmarks, shelf links, downloads, etc.) in the app database, but will not affect user accounts or settings. <b>Both databases will be automatically backed up in /config/backup before any destructive action.</b>') | safe }}</p>
+      <p style="font-size: 14px; margin-top: 4rem; margin-bottom: 4rem;">{{ _('If your Calibre library is corrupted and cannot be opened, you can attempt to restore it from the OPF files in your library. This will <b>erase all per-book data</b> (reading progress, bookmarks, shelf links, downloads, etc.) in the app database, but will not affect user accounts or settings. <b>Both databases will be automatically backed up in /config/backup before any destructive action.</b> A restore log will be saved alongside the backups.') | safe }}</p>
       <form method="POST" action="{{ url_for('admin.restore_calibre_db') }}" style="display:inline;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="btn btn-danger" onclick="return confirm('{{ _('Are you sure? This cannot be undone.') }}');">{{ _('Restore Calibre Database (Last Resort)') }}</button>

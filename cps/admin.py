@@ -19,6 +19,8 @@ from functools import wraps
 from urllib.parse import urlparse
 import shutil
 import subprocess
+import tempfile
+import fcntl
 
 from flask import Blueprint, flash, redirect, url_for, abort, request, make_response, send_from_directory, g, Response, jsonify
 from markupsafe import Markup
@@ -2873,43 +2875,153 @@ def test_metadata():
 @admin_required
 def restore_calibre_db():
     """Restore Calibre metadata.db and clean app.db book-linked tables (last resort recovery)."""
+    lock_path = "/tmp/restore_calibre_db.lock"
+    service_lock_handles = []
     try:
+        if os.path.exists(lock_path):
+            flash(_("Restore already in progress."), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        if not config.config_calibre_dir:
+            flash(_("Restore failed: Calibre library path is not configured."), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        metadata_path = os.path.join(config.config_calibre_dir, "metadata.db")
+        if not os.path.exists(metadata_path):
+            flash(_("Restore failed: metadata.db not found at %(path)s", path=metadata_path), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        app_db_path = ub.app_DB_path or cli_param.settings_path or "/config/app.db"
+        if not os.path.exists(app_db_path):
+            flash(_("Restore failed: app.db not found at %(path)s", path=app_db_path), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        # Create lock file
+        with open(lock_path, "w", encoding="utf-8") as lock_file:
+            lock_file.write(str(os.getpid()))
+
         # 1. Backup both DBs
         backup_dir = f"/config/backup/restore_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         os.makedirs(backup_dir, exist_ok=True)
-        shutil.copy2(config.config_calibre_dir + "/metadata.db", backup_dir + "/metadata.db.bak")
-        shutil.copy2("/config/app.db", backup_dir + "/app.db.bak")
+        shutil.copy2(metadata_path, os.path.join(backup_dir, "metadata.db.bak"))
+        shutil.copy2(app_db_path, os.path.join(backup_dir, "app.db.bak"))
 
-        # 2. Run calibredb restore_database
+        log_path = os.path.join(backup_dir, "restore.log")
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write(f"Restore started at {datetime.now().isoformat()}\n")
+
+        # Pause background services and close active sessions to reduce lock contention
+        try:
+            ingest_lock_path = os.path.join(tempfile.gettempdir(), "ingest_processor.lock")
+            ingest_lock = open(ingest_lock_path, "w")
+            fcntl.flock(ingest_lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            ingest_lock.write("restore_calibre_db")
+            ingest_lock.flush()
+            service_lock_handles.append(ingest_lock)
+        except Exception as e:
+            log.warning("Failed to lock ingest processor: %s", e)
+
+        try:
+            cover_lock_path = os.path.join(tempfile.gettempdir(), "cover_enforcer.lock")
+            cover_lock = open(cover_lock_path, "w")
+            fcntl.flock(cover_lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            cover_lock.write("restore_calibre_db")
+            cover_lock.flush()
+            service_lock_handles.append(cover_lock)
+        except Exception as e:
+            log.warning("Failed to lock cover enforcer: %s", e)
+
+        # Close active sessions to reduce lock contention
+        try:
+            calibre_db.dispose()
+        except Exception as e:
+            log.warning("Failed to dispose sessions before restore: %s", e)
+
+        # 2. Run calibredb check_library (pre)
+        calibredb_binary = get_calibre_binarypath("calibredb") or "/app/calibre/calibredb"
+        check_cmd = [
+            calibredb_binary, "check_library",
+            "--with-library", config.config_calibre_dir
+        ]
+        check_result = subprocess.run(check_cmd, capture_output=True, text=True, timeout=300)
+        log.info("calibredb check_library (pre) output: %s\n%s", check_result.stdout, check_result.stderr)
+        if check_result.returncode != 0:
+            log.warning("calibredb check_library (pre) returned code %s", check_result.returncode)
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write("\n[check_library pre]\n")
+            log_file.write(check_result.stdout or "")
+            log_file.write(check_result.stderr or "")
+
+        # 3. Run calibredb restore_database
         restore_cmd = [
-            "/app/calibre/calibredb", "restore_database",
+            calibredb_binary, "restore_database",
             "--with-library", config.config_calibre_dir,
             "--really-do-it"
         ]
-        result = subprocess.run(restore_cmd, capture_output=True, text=True)
-        log.info(f"calibredb restore_database output: {result.stdout}\n{result.stderr}")
+        result = subprocess.run(restore_cmd, capture_output=True, text=True, timeout=1200)
+        log.info("calibredb restore_database output: %s\n%s", result.stdout, result.stderr)
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write("\n[restore_database]\n")
+            log_file.write(result.stdout or "")
+            log_file.write(result.stderr or "")
         if result.returncode != 0:
             flash(_("Restore failed: %(err)s", err=result.stderr), category="error")
             return redirect(url_for("admin.db_configuration"))
 
-        # 3. Wipe all book-linked tables in app.db
+        # 4. Wipe all book-linked tables in app.db
         from sqlalchemy import text as sql_text
         book_tables = [
             "book_shelf_link", "book_read_link", "bookmark", "archived_book", "kobo_synced_books",
             "kobo_reading_state", "kobo_bookmark", "kobo_statistics", "kobo_annotation_sync",
             "hardcover_book_blacklist", "hardcover_match_queue", "downloads", "magic_shelf_cache"
         ]
-        for table in book_tables:
-            try:
+        try:
+            for table in book_tables:
                 ub.session.execute(sql_text(f"DELETE FROM {table}"))
-                ub.session.commit()
-            except Exception as e:
-                log.error(f"Failed to wipe table {table}: {e}")
-                ub.session.rollback()
+            ub.session.commit()
+        except Exception as e:
+            log.error("Failed to wipe book-linked tables: %s", e)
+            ub.session.rollback()
+            flash(_("Restore completed but app.db cleanup failed. See logs for details."), category="error")
+            return redirect(url_for("admin.db_configuration"))
 
-        flash(_("Restore complete. Both databases were backed up to %(dir)s. All book-linked data was reset.", dir=backup_dir), category="success")
+        # 5. Run calibredb check_library (post)
+        check_result_post = subprocess.run(check_cmd, capture_output=True, text=True, timeout=300)
+        log.info("calibredb check_library (post) output: %s\n%s", check_result_post.stdout, check_result_post.stderr)
+        if check_result_post.returncode != 0:
+            log.warning("calibredb check_library (post) returned code %s", check_result_post.returncode)
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write("\n[check_library post]\n")
+            log_file.write(check_result_post.stdout or "")
+            log_file.write(check_result_post.stderr or "")
+
+        # 6. Reconnect CalibreDB to clear stale sessions
+        try:
+            calibre_db.reconnect_db(config, ub.app_DB_path)
+        except Exception as e:
+            log.error("Failed to reconnect CalibreDB after restore: %s", e)
+
+        flash(_("Restore complete. Backups and restore log saved to %(dir)s. All book-linked data was reset.", dir=backup_dir), category="success")
         return redirect(url_for("admin.db_configuration"))
     except Exception as e:
         log.error(f"Restore failed: {e}")
         flash(_("Restore failed: %(err)s", err=str(e)), category="error")
         return redirect(url_for("admin.db_configuration"))
+    finally:
+        try:
+            if os.path.exists(lock_path):
+                os.remove(lock_path)
+        except Exception:
+            pass
+        try:
+            for handle in service_lock_handles:
+                try:
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+                except Exception:
+                    pass
+                try:
+                    handle.close()
+                except Exception:
+                    pass
+        except Exception:
+            pass

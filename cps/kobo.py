@@ -8,6 +8,8 @@
 
 import base64
 from datetime import datetime, timezone
+from cps import cw_babel
+from kobo_sync_utils import get_kobo_created_ts
 import os
 import uuid
 import zipfile
@@ -289,15 +291,7 @@ def HandleSyncRequest():
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
             reading_states_in_new_entitlements.append(book.Books.id)
 
-        ts_created = book.Books.timestamp.replace(tzinfo=None)
-
-        try:
-            if book.date_added is not None:
-                ts_created = max(ts_created, book.date_added)
-            else:
-                log.debug("Kobo Sync: book %s has no date_added", book.Books.id)
-        except AttributeError:
-            pass
+        ts_created = get_kobo_created_ts(book)
 
         if ts_created > sync_token.books_last_created:
             sync_results.append({"NewEntitlement": entitlement})

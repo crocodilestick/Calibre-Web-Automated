@@ -460,6 +460,11 @@ class EPUBFixer:
                 if current_encoding != self._normalize_encoding_name(declared_encoding):
                     content = xml_decl_pattern.sub(r'\1' + new_decl, content, count=1)
                     self.fixed_problems.append(f"Updated XML declaration in {filename} to {declared_encoding}")
+            elif xml_decl_pattern.match(content):
+                # This checks to see if there is an xml declaration without an encoding present.
+                # If there is, replace the entire xml declaration with one that includes the encoding.
+                content = xml_decl_pattern.sub(new_decl, content, count=1)
+                self.fixed_problems.append(f"Added {declared_encoding} to XML declaration missing encoding info in {filename}")
             else:
                 content = new_decl + '\n' + content
                 self.fixed_problems.append(f"Added XML declaration to {filename}")

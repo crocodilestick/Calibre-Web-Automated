@@ -704,6 +704,7 @@ class CalibreDB:
         dbpath = os.path.join(config_calibre_dir, "metadata.db")
         if not os.path.exists(dbpath):
             return False, False
+        db_writable = os.access(dbpath, os.W_OK)
         try:
             check_engine = create_engine('sqlite://',
                                          echo=False,
@@ -717,9 +718,12 @@ class CalibreDB:
                 # Controlled by env var NETWORK_SHARE_MODE (default False)
                 try:
                     nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
-                    if not nsm:
+                    if not nsm and db_writable:
                         connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
                         connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
+                    else:
+                        reason = "NETWORK_SHARE_MODE=true" if nsm else "metadata.db not writable"
+                        log.warning("WAL mode disabled for calibre/app_settings (%s)", reason)
                 except Exception:
                     pass
                 local_session = scoped_session(sessionmaker())
@@ -755,8 +759,11 @@ class CalibreDB:
             if not os.path.exists(dbpath):
                 log.error(f"setup_db failed: metadata.db not found at {dbpath}")
                 if cls.config:
-                    cls.config.invalidate()
+                    if hasattr(cls.config, "invalidate"):
+                        cls.config.invalidate()
                 return None
+
+            db_writable = os.access(dbpath, os.W_OK)
 
             try:
                 cls.engine = create_engine('sqlite://',
@@ -771,9 +778,12 @@ class CalibreDB:
                     # Controlled by env var NETWORK_SHARE_MODE (default False)
                     try:
                         nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
-                        if not nsm:
+                        if not nsm and db_writable:
                             connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
                             connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
+                        else:
+                            reason = "NETWORK_SHARE_MODE=true" if nsm else "metadata.db not writable"
+                            log.warning("WAL mode disabled for calibre/app_settings (%s)", reason)
                     except Exception:
                         pass
 
@@ -782,7 +792,8 @@ class CalibreDB:
             except Exception as ex:
                 log.error(f"setup_db failed during engine creation: {ex}")
                 if cls.config:
-                    cls.config.invalidate(ex)
+                    if hasattr(cls.config, "invalidate"):
+                        cls.config.invalidate(ex)
                 return None
 
             if cls.config:
@@ -795,7 +806,8 @@ class CalibreDB:
                 except OperationalError as e:
                     log.error_or_exception(e)
                     if cls.config:
-                        cls.config.invalidate(e)
+                        if hasattr(cls.config, "invalidate"):
+                            cls.config.invalidate(e)
                     return None
 
             try:
@@ -812,7 +824,8 @@ class CalibreDB:
 
             # Ensure progress syncing tables exist in metadata.db (book checksums)
             from .progress_syncing.models import ensure_calibre_db_tables
-            ensure_calibre_db_tables(conn)
+            if db_writable and not os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on'):
+                ensure_calibre_db_tables(conn)
 
             cls._init = True
         # End of with cls._reconnect_lock

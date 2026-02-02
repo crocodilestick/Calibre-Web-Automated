@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-01 01:48+0100\n"
+"POT-Creation-Date: 2026-02-02 00:18+0100\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -122,7 +122,7 @@ msgstr "基本配置"
 msgid "UI Configuration"
 msgstr "界面配置"
 
-#: cps/admin.py:619 cps/admin.py:1301 cps/db.py:946 cps/search.py:153
+#: cps/admin.py:619 cps/admin.py:1301 cps/db.py:959 cps/search.py:153
 #: cps/web.py:832
 #, fuzzy, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -196,7 +196,7 @@ msgstr "無可用本地化"
 msgid "No Valid Book Language Given"
 msgstr "無有效書籍語言"
 
-#: cps/admin.py:850 cps/editbooks.py:500
+#: cps/admin.py:850 cps/editbooks.py:586
 msgid "Parameter not found"
 msgstr "參數未找到"
 
@@ -371,8 +371,8 @@ msgid "Success! Gmail Account Verified."
 msgstr ""
 
 #: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
-#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:939
-#: cps/editbooks.py:1705 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1025
+#: cps/editbooks.py:1791 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
 #, python-format
@@ -1006,53 +1006,87 @@ msgstr ""
 msgid "Calibre-Web Automated - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:1915 cps/cwa_functions.py:1939
-msgid "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Service"
+#: cps/cwa_functions.py:1918 cps/cwa_functions.py:1942
+#, fuzzy
+msgid "Calibre-Web Automated - EPUB Fixer Service"
+msgstr "Calibre 電子書轉換器設置"
+
+#: cps/cwa_functions.py:1996
+msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2024
+#: cps/cwa_functions.py:2003
+#, fuzzy
+msgid "Invalid book selection."
+msgstr "無效角色"
+
+#: cps/cwa_functions.py:2009
+#, fuzzy
+msgid "Book not found."
+msgstr "找不到Token"
+
+#: cps/cwa_functions.py:2015
+#, fuzzy
+msgid "Selected book has no EPUB format."
+msgstr "合併選中的書籍"
+
+#: cps/cwa_functions.py:2019
+#, fuzzy
+msgid "EPUB file not found on disk."
+msgstr "硬碟上找不到 %(format)s 格式"
+
+#: cps/cwa_functions.py:2034
+#, fuzzy
+msgid "EPUB Fixer started for selected book."
+msgstr "合併選中的書籍"
+
+#: cps/cwa_functions.py:2037
+msgid "Failed to start EPUB Fixer for selected book."
+msgstr ""
+
+#: cps/cwa_functions.py:2084
 msgid "You must be an admin to access this page."
 msgstr ""
 
-#: cps/cwa_functions.py:2039
+#: cps/cwa_functions.py:2099
 msgid "Both username and image data are required."
 msgstr ""
 
-#: cps/cwa_functions.py:2047
+#: cps/cwa_functions.py:2107
 msgid "Invalid image data format. Must be a valid image."
 msgstr ""
 
-#: cps/cwa_functions.py:2055
+#: cps/cwa_functions.py:2115
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr ""
 
-#: cps/cwa_functions.py:2067
+#: cps/cwa_functions.py:2127
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr ""
 
-#: cps/cwa_functions.py:2071
+#: cps/cwa_functions.py:2131
 msgid "Invalid Base64 image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2075
+#: cps/cwa_functions.py:2135
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "無效的郵件地址格式"
 
-#: cps/cwa_functions.py:2080
+#: cps/cwa_functions.py:2140
 msgid "Error validating image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2098
+#: cps/cwa_functions.py:2158
 #, fuzzy
 msgid "Profile picture updated successfully."
 msgstr "成功刪除 {} 個用戶"
 
-#: cps/cwa_functions.py:2111
+#: cps/cwa_functions.py:2171
 msgid "CWA Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1219 cps/templates/config_edit.html:294
+#: cps/db.py:1232 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:80
 #: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -1098,137 +1132,143 @@ msgstr ""
 msgid "Invalid resolution strategy"
 msgstr "無效角色"
 
-#: cps/editbooks.py:107
+#: cps/editbooks.py:102 cps/editbooks.py:159
+msgid ""
+"Ingest folder is not writable. Check your /cwa-book-ingest volume "
+"permissions."
+msgstr ""
+
+#: cps/editbooks.py:111
 msgid "Missing or invalid book id for format upload"
 msgstr ""
 
-#: cps/editbooks.py:113
+#: cps/editbooks.py:117
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:138 cps/editbooks.py:158 cps/templates/book_edit.html:52
+#: cps/editbooks.py:142 cps/editbooks.py:169 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:151
 msgid "Upload done, processing, please wait..."
 msgstr "上傳完成，正在處理中，請稍候..."
 
-#: cps/editbooks.py:143 cps/editbooks.py:162
+#: cps/editbooks.py:147 cps/editbooks.py:173
 #, fuzzy
 msgid "Failed to queue upload for processing"
 msgstr "創建封面路徑失敗"
 
-#: cps/editbooks.py:178
+#: cps/editbooks.py:189
 msgid "Source or destination format for conversion missing"
 msgstr "轉換的來源或目的格式不存在"
 
-#: cps/editbooks.py:186
+#: cps/editbooks.py:197
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr "書籍已經被成功加入到 %(book_format)s 格式轉換隊列"
 
-#: cps/editbooks.py:190
+#: cps/editbooks.py:201
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "轉換此書籍時出現錯誤： %(res)s"
 
-#: cps/editbooks.py:305 cps/editbooks.py:1142 cps/editbooks.py:1651
+#: cps/editbooks.py:357 cps/editbooks.py:1228 cps/editbooks.py:1737
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "不能上傳文件附檔名為“%(ext)s”的文件到此服務器"
 
-#: cps/editbooks.py:310 cps/editbooks.py:1148 cps/editbooks.py:1662
+#: cps/editbooks.py:362 cps/editbooks.py:1234 cps/editbooks.py:1748
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "不能上傳文件附檔名為“%(ext)s”的文件到此服務器"
 
-#: cps/editbooks.py:314 cps/editbooks.py:1152 cps/editbooks.py:1667
+#: cps/editbooks.py:366 cps/editbooks.py:1238 cps/editbooks.py:1753
 msgid "File to be uploaded must have an extension"
 msgstr "要上傳的文件必須具有附檔名"
 
-#: cps/editbooks.py:751 cps/editbooks.py:1328 cps/web.py:612 cps/web.py:2694
-#: cps/web.py:2772 cps/web.py:2841
+#: cps/editbooks.py:837 cps/editbooks.py:1414 cps/web.py:612 cps/web.py:2694
+#: cps/web.py:2785 cps/web.py:2870
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "糟糕！選擇書名無法打開。文件不存在或者文件不可訪問"
 
-#: cps/editbooks.py:783 cps/editbooks.py:1735
+#: cps/editbooks.py:869 cps/editbooks.py:1821
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:803 cps/editbooks.py:1130
+#: cps/editbooks.py:889 cps/editbooks.py:1216
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "標識符不區分大小寫，覆蓋舊標識符"
 
-#: cps/editbooks.py:815 cps/editbooks.py:1104 cps/editbooks.py:1462
+#: cps/editbooks.py:901 cps/editbooks.py:1190 cps/editbooks.py:1548
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s 不是一種有效語言"
 
-#: cps/editbooks.py:926
+#: cps/editbooks.py:1012
 msgid "Metadata successfully updated"
 msgstr "已成功更新元數據"
 
-#: cps/editbooks.py:944
+#: cps/editbooks.py:1030
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:999 cps/editbooks.py:1044 cps/editbooks.py:1753
+#: cps/editbooks.py:1085 cps/editbooks.py:1130 cps/editbooks.py:1839
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "未知"
 
-#: cps/editbooks.py:1048
+#: cps/editbooks.py:1134
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr "上傳的書籍可能已經存在，建議修改後重新上傳： "
 
-#: cps/editbooks.py:1160
+#: cps/editbooks.py:1246
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "文件 %(filename)s 無法保存到臨時目錄"
 
-#: cps/editbooks.py:1180
+#: cps/editbooks.py:1266
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "移動封面文件失敗 %(file)s：%(error)s"
 
-#: cps/editbooks.py:1238 cps/editbooks.py:1240
+#: cps/editbooks.py:1324 cps/editbooks.py:1326
 msgid "Book Format Successfully Deleted"
 msgstr "書籍格式已成功刪除"
 
-#: cps/editbooks.py:1247 cps/editbooks.py:1249
+#: cps/editbooks.py:1333 cps/editbooks.py:1335
 msgid "Book Successfully Deleted"
 msgstr "書籍已成功刪除"
 
-#: cps/editbooks.py:1313
+#: cps/editbooks.py:1399
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1367
+#: cps/editbooks.py:1453
 msgid "edit metadata"
 msgstr "編輯元數據"
 
-#: cps/editbooks.py:1421
+#: cps/editbooks.py:1507
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s 不是一個有效的數值，忽略"
 
-#: cps/editbooks.py:1656
+#: cps/editbooks.py:1742
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1680
+#: cps/editbooks.py:1766
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "創建路徑 %(path)s 失敗(權限拒絕)。"
 
-#: cps/editbooks.py:1687
+#: cps/editbooks.py:1773
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "保存文件 %(file)s 失敗。"
 
-#: cps/editbooks.py:1712
+#: cps/editbooks.py:1798
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "已添加 %(ext)s 格式到 %(book)s"
@@ -1260,7 +1300,7 @@ msgstr "Google Drive %(fn)s 上找不到 %(format)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "找不到 %(format)s：%(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:479
+#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:487
 #, fuzzy
 msgid "Send to eReader"
 msgstr "發送到Kindle"
@@ -1634,8 +1674,8 @@ msgid "{} Stars"
 msgstr "{} 星"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:4
-#: cps/templates/login.html:32 cps/web.py:2170
+#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/templates/login.html:39 cps/web.py:2170
 msgid "Login"
 msgstr "登入"
 
@@ -1753,7 +1793,7 @@ msgid "Show Publisher Section"
 msgstr "顯示出版社選擇"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/detail.html:664 cps/templates/search_form.html:108
+#: cps/templates/detail.html:672 cps/templates/search_form.html:108
 #: cps/web.py:1734
 msgid "Languages"
 msgstr "語言"
@@ -1814,9 +1854,9 @@ msgid ""
 msgstr ""
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
-#: cps/templates/feed.xml:34 cps/templates/index.xml:12
-#: cps/templates/layout.html:113 cps/templates/layout.html:116
-#: cps/templates/search_form.html:247
+#: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
+#: cps/templates/index.xml:12 cps/templates/layout.html:113
+#: cps/templates/layout.html:116 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "搜尋"
 
@@ -2243,7 +2283,7 @@ msgid "Please wait one minute to register next user"
 msgstr ""
 
 #: cps/templates/layout.html:135 cps/templates/layout.html:177
-#: cps/templates/login.html:41 cps/templates/register.html:17 cps/web.py:2049
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2049
 #: cps/web.py:2053 cps/web.py:2058 cps/web.py:2062 cps/web.py:2068
 #: cps/web.py:2093 cps/web.py:2097 cps/web.py:2110 cps/web.py:2113
 msgid "Register"
@@ -2369,7 +2409,7 @@ msgstr "資料已更新"
 msgid "Oops! An account already exists for this Email."
 msgstr "使用此郵箱的賬號已經存在。"
 
-#: cps/web.py:2785
+#: cps/web.py:2798
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "無效角色"
@@ -2545,8 +2585,8 @@ msgstr "上傳書籍"
 msgid "Users&nbsp;&nbsp;👤"
 msgstr ""
 
-#: cps/templates/admin.html:14 cps/templates/login.html:10
-#: cps/templates/login.html:12 cps/templates/register.html:9
+#: cps/templates/admin.html:14 cps/templates/login.html:17
+#: cps/templates/login.html:19 cps/templates/register.html:9
 #: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "用戶名"
@@ -2571,12 +2611,12 @@ msgstr "發送到Kindle"
 msgid "Admin"
 msgstr "管理權限"
 
-#: cps/templates/admin.html:20 cps/templates/login.html:15
-#: cps/templates/login.html:16 cps/templates/user_edit.html:194
+#: cps/templates/admin.html:20 cps/templates/login.html:22
+#: cps/templates/login.html:23 cps/templates/user_edit.html:194
 msgid "Password"
 msgstr "密碼"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:458
+#: cps/templates/admin.html:24 cps/templates/detail.html:466
 #: cps/templates/shelf.html:8 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "下載書籍"
@@ -2771,8 +2811,9 @@ msgid "CWA Library Conversion Service"
 msgstr ""
 
 #: cps/templates/admin.html:215
-msgid "CWA Send-to-Kindle EPUB Fixer Service"
-msgstr ""
+#, fuzzy
+msgid "CWA EPUB Fixer Service"
+msgstr "發現"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
@@ -2841,7 +2882,7 @@ msgid "Are you sure you want to restart?"
 msgstr "您確定要重啟嗎？"
 
 #: cps/templates/admin.html:294 cps/templates/admin.html:308
-#: cps/templates/admin.html:328 cps/templates/config_db.html:113
+#: cps/templates/admin.html:328 cps/templates/config_db.html:139
 #: cps/templates/duplicates.html:609 cps/templates/duplicates.html:631
 msgid "OK"
 msgstr "確定"
@@ -2851,10 +2892,10 @@ msgstr "確定"
 #: cps/templates/book_table.html:191 cps/templates/book_table.html:211
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
-#: cps/templates/book_table.html:365 cps/templates/config_db.html:86
+#: cps/templates/book_table.html:365 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:23 cps/templates/detail.html:853
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:870
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
 #: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
@@ -2920,8 +2961,8 @@ msgstr "減少"
 msgid "More by"
 msgstr "更多"
 
-#: cps/templates/book_edit.html:11 cps/templates/detail.html:521
-#: cps/templates/detail.html:523
+#: cps/templates/book_edit.html:11 cps/templates/detail.html:529
+#: cps/templates/detail.html:531
 msgid "Delete Book"
 msgstr "刪除書籍"
 
@@ -2999,7 +3040,7 @@ msgstr "出版日期"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:707
+#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:715
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3082,7 +3123,7 @@ msgstr "查看保存書籍"
 msgid "Fetch Metadata"
 msgstr "獲取元數據"
 
-#: cps/templates/book_edit.html:252 cps/templates/config_db.html:85
+#: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
 #: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:215
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
@@ -3294,7 +3335,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:514
+#: cps/templates/book_table.html:282 cps/templates/detail.html:522
 msgid "Edit Metadata"
 msgstr "編輯元數據"
 
@@ -3326,12 +3367,12 @@ msgstr ""
 msgid "Add"
 msgstr "新增"
 
-#: cps/templates/config_db.html:13
+#: cps/templates/config_db.html:38
 #, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
 msgstr "Calibre 數據庫路徑"
 
-#: cps/templates/config_db.html:23
+#: cps/templates/config_db.html:48
 msgid ""
 "CWA is configured so that your Calibre Database (<code>metadata.db</code> "
 "file) should always be somewhere in <code>/calibre-library</code>.\n"
@@ -3346,13 +3387,13 @@ msgid ""
 "wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
 
-#: cps/templates/config_db.html:29
+#: cps/templates/config_db.html:54
 msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
 "CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
 msgstr ""
 
-#: cps/templates/config_db.html:30
+#: cps/templates/config_db.html:55
 msgid ""
 "These paths are internal to CWA only, you can change what they're bind to to "
 "your heart's content on the left-hand side but there's no reason to\n"
@@ -3363,7 +3404,7 @@ msgid ""
 "and there, enter the path to the rest of the library</b>"
 msgstr ""
 
-#: cps/templates/config_db.html:34
+#: cps/templates/config_db.html:59
 msgid ""
 "E.g. As long as your library's <code>metadata.db</code> file is bound "
 "somewhere within <code>/calibre-library</code>, you could bind the dir\n"
@@ -3374,43 +3415,43 @@ msgid ""
 "option."
 msgstr ""
 
-#: cps/templates/config_db.html:38
+#: cps/templates/config_db.html:63
 msgid "Split Library Functionality"
 msgstr ""
 
-#: cps/templates/config_db.html:41
+#: cps/templates/config_db.html:66
 msgid ""
 "<b>Separate Book Files from Library</b> - <code>metadata.db</code> file "
 "should remain in <code>/calibre-library</code>, however your library files "
 "can be wherever you desire"
 msgstr ""
 
-#: cps/templates/config_db.html:54
+#: cps/templates/config_db.html:79
 msgid "Use Google Drive?"
 msgstr "是否使用Google Drive?"
 
-#: cps/templates/config_db.html:59
+#: cps/templates/config_db.html:84
 msgid "Authenticate Google Drive"
 msgstr "驗證 Google Drive"
 
-#: cps/templates/config_db.html:64
+#: cps/templates/config_db.html:89
 msgid "Google Drive Calibre folder"
 msgstr "Google Drive Calibre 目錄路徑"
 
-#: cps/templates/config_db.html:72
+#: cps/templates/config_db.html:97
 msgid "Metadata Watch Channel ID"
 msgstr "元數據監視通道ID"
 
-#: cps/templates/config_db.html:75
+#: cps/templates/config_db.html:100
 msgid "Revoke"
 msgstr "撤回"
 
-#: cps/templates/config_db.html:91
+#: cps/templates/config_db.html:117
 #, fuzzy
 msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Calibre 數據庫路徑"
 
-#: cps/templates/config_db.html:92
+#: cps/templates/config_db.html:118
 msgid ""
 "If your Calibre library is corrupted and cannot be opened, you can attempt "
 "to restore it from the OPF files in your library. This will <b>erase all per-"
@@ -3420,17 +3461,17 @@ msgid ""
 "destructive action.</b> A restore log will be saved alongside the backups."
 msgstr ""
 
-#: cps/templates/config_db.html:95
+#: cps/templates/config_db.html:121
 #, fuzzy
 msgid "Are you sure? This cannot be undone."
 msgstr "您確定要關閉嗎？"
 
-#: cps/templates/config_db.html:95
+#: cps/templates/config_db.html:121
 #, fuzzy
 msgid "Restore Calibre Database (Last Resort)"
 msgstr "Calibre 數據庫路徑"
 
-#: cps/templates/config_db.html:111
+#: cps/templates/config_db.html:137
 msgid "New db location is invalid, please enter valid path"
 msgstr "新數據庫路徑無效，請輸入有效的路徑"
 
@@ -4164,29 +4205,29 @@ msgid "Add Allowed/Denied custom column values"
 msgstr "添加顯示或隱藏書籍的自定義欄位值"
 
 #: cps/templates/cwa_convert_library.html:10
-#: cps/templates/cwa_epub_fixer.html:10
+#: cps/templates/cwa_epub_fixer.html:34
 #, fuzzy
 msgid "Run Archive"
 msgstr "歸檔"
 
 #: cps/templates/cwa_convert_library.html:11
-#: cps/templates/cwa_epub_fixer.html:11 cps/templates/cwa_read_log.html:9
+#: cps/templates/cwa_epub_fixer.html:35 cps/templates/cwa_read_log.html:9
 #, fuzzy
 msgid "Download Log"
 msgstr "下載書籍"
 
 #: cps/templates/cwa_convert_library.html:24
-#: cps/templates/cwa_epub_fixer.html:24 cps/templates/index.xml:7
+#: cps/templates/cwa_epub_fixer.html:39 cps/templates/index.xml:7
 msgid "Start"
 msgstr "開始"
 
 #: cps/templates/cwa_convert_library.html:27
-#: cps/templates/cwa_epub_fixer.html:27
+#: cps/templates/cwa_epub_fixer.html:44
 msgid "Schedule 5m"
 msgstr ""
 
 #: cps/templates/cwa_convert_library.html:28
-#: cps/templates/cwa_epub_fixer.html:28
+#: cps/templates/cwa_epub_fixer.html:45
 msgid "Schedule 15m"
 msgstr ""
 
@@ -4198,14 +4239,57 @@ msgstr ""
 msgid "Error scheduling Convert Library"
 msgstr ""
 
-#: cps/templates/cwa_epub_fixer.html:100
+#: cps/templates/cwa_epub_fixer.html:22
+msgid "Run on a single book"
+msgstr ""
+
+#: cps/templates/cwa_epub_fixer.html:24
+msgid "Search by title/author"
+msgstr ""
+
+#: cps/templates/cwa_epub_fixer.html:29
+#, fuzzy
+msgid "Run on selected book"
+msgstr "合併選中的書籍"
+
+#: cps/templates/cwa_epub_fixer.html:120
 #, fuzzy
 msgid "EPUB Fixer scheduled successfully"
 msgstr "成功刪除 {} 個用戶"
 
-#: cps/templates/cwa_epub_fixer.html:103
+#: cps/templates/cwa_epub_fixer.html:123
 #, fuzzy
 msgid "Error scheduling EPUB Fixer"
+msgstr "下載封面時出錯"
+
+#: cps/templates/cwa_epub_fixer.html:132
+#, fuzzy
+msgid "No matches found"
+msgstr "無搜索結果"
+
+#: cps/templates/cwa_epub_fixer.html:167
+#, fuzzy
+msgid "Enter a search term"
+msgstr "輸入用戶名"
+
+#: cps/templates/cwa_epub_fixer.html:175
+#, fuzzy
+msgid "Failed to search library"
+msgstr "搜索書庫"
+
+#: cps/templates/cwa_epub_fixer.html:182
+#, fuzzy
+msgid "Select a book first"
+msgstr "創建書架"
+
+#: cps/templates/cwa_epub_fixer.html:195
+#, fuzzy
+msgid "EPUB Fixer started for selected book"
+msgstr "合併選中的書籍"
+
+#: cps/templates/cwa_epub_fixer.html:200
+#, fuzzy
+msgid "Error starting EPUB Fixer"
 msgstr "下載封面時出錯"
 
 #: cps/templates/cwa_settings.html:136
@@ -5116,55 +5200,55 @@ msgstr ""
 msgid "Click to See More"
 msgstr ""
 
-#: cps/templates/detail.html:488
+#: cps/templates/detail.html:496
 msgid "Read in Browser"
 msgstr "在線閱讀"
 
-#: cps/templates/detail.html:495 cps/templates/detail.html:496
-#: cps/templates/detail.html:761 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:503 cps/templates/detail.html:504
+#: cps/templates/detail.html:778 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "標為未讀"
 
-#: cps/templates/detail.html:495 cps/templates/detail.html:496
-#: cps/templates/detail.html:762 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:503 cps/templates/detail.html:504
+#: cps/templates/detail.html:779 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "標為已讀"
 
-#: cps/templates/detail.html:497
+#: cps/templates/detail.html:505
 #, fuzzy
 msgid "Marked as read"
 msgstr "標為未讀"
 
-#: cps/templates/detail.html:498
+#: cps/templates/detail.html:506
 #, fuzzy
 msgid "Marked as unread"
 msgstr "標為未讀"
 
-#: cps/templates/detail.html:503 cps/templates/detail.html:504
-#: cps/templates/detail.html:768 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:511 cps/templates/detail.html:512
+#: cps/templates/detail.html:785 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "從歸檔檔案還原"
 
-#: cps/templates/detail.html:503 cps/templates/detail.html:504
-#: cps/templates/detail.html:769 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:511 cps/templates/detail.html:512
+#: cps/templates/detail.html:786 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "添加到歸檔"
 
-#: cps/templates/detail.html:505 cps/templates/listenmp3.html:167
+#: cps/templates/detail.html:513 cps/templates/listenmp3.html:167
 msgid "Archived"
 msgstr "歸檔"
 
-#: cps/templates/detail.html:506
+#: cps/templates/detail.html:514
 #, fuzzy
 msgid "Restored from archive"
 msgstr "從歸檔檔案還原"
 
-#: cps/templates/detail.html:537 cps/templates/listenmp3.html:190
+#: cps/templates/detail.html:545 cps/templates/listenmp3.html:190
 #: cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "添加到書架"
 
-#: cps/templates/detail.html:548 cps/templates/detail.html:570
+#: cps/templates/detail.html:556 cps/templates/detail.html:578
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
 #: cps/templates/layout.html:301 cps/templates/layout.html:310
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
@@ -5172,117 +5256,122 @@ msgstr "添加到書架"
 msgid "(Public)"
 msgstr "(公共)"
 
-#: cps/templates/detail.html:560
+#: cps/templates/detail.html:568
 #, fuzzy
 msgid "Remove from shelf"
 msgstr "從歸檔檔案還原"
 
-#: cps/templates/detail.html:598
+#: cps/templates/detail.html:606
 #, fuzzy
 msgid "Rating updated"
 msgstr "郵件服務器設置已更新"
 
-#: cps/templates/detail.html:599
+#: cps/templates/detail.html:607
 #, fuzzy
 msgid "Rating cleared"
 msgstr "評分大於"
 
-#: cps/templates/detail.html:617 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:625 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "%(range)s 第%(index)s冊"
 
-#: cps/templates/detail.html:622
+#: cps/templates/detail.html:630
 msgid "ID"
 msgstr ""
 
-#: cps/templates/detail.html:627
+#: cps/templates/detail.html:635
 msgid "UUID"
 msgstr ""
 
-#: cps/templates/detail.html:630
+#: cps/templates/detail.html:638
 msgid "UUID copied to clipboard"
 msgstr ""
 
-#: cps/templates/detail.html:631
+#: cps/templates/detail.html:639
 msgid "Unable to copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:632 cps/templates/detail.html:633
+#: cps/templates/detail.html:640 cps/templates/detail.html:641
 msgid "Copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:638
+#: cps/templates/detail.html:646
 msgid "Date added"
 msgstr ""
 
-#: cps/templates/detail.html:642
+#: cps/templates/detail.html:650
 msgid "Last modified"
 msgstr ""
 
-#: cps/templates/detail.html:647
+#: cps/templates/detail.html:655
 msgid "File sizes"
 msgstr ""
 
-#: cps/templates/detail.html:691
+#: cps/templates/detail.html:699
 #, fuzzy
 msgid "Remove tag"
 msgstr "移除"
 
-#: cps/templates/detail.html:699 cps/templates/detail.html:700
-#: cps/templates/detail.html:1081
+#: cps/templates/detail.html:707 cps/templates/detail.html:708
+#: cps/templates/detail.html:1098
 msgid "Add tag"
 msgstr ""
 
-#: cps/templates/detail.html:713 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:721 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "出版日期"
 
-#: cps/templates/detail.html:780 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:727
+#, fuzzy
+msgid "KOReader Progress"
+msgstr "任務進度"
+
+#: cps/templates/detail.html:797 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "簡介:"
 
-#: cps/templates/detail.html:797
+#: cps/templates/detail.html:814
 #, fuzzy
 msgid "Select eReader Email Addresses"
 msgstr "接收書籍的Kindle郵箱地址"
 
-#: cps/templates/detail.html:810
+#: cps/templates/detail.html:827
 #, fuzzy
 msgid "Choose email addresses:"
 msgstr "接收書籍的Kindle郵箱地址"
 
-#: cps/templates/detail.html:815
+#: cps/templates/detail.html:832
 #, fuzzy
 msgid "Select All"
 msgstr "創建書架"
 
-#: cps/templates/detail.html:833
+#: cps/templates/detail.html:850
 msgid "Additional email addresses:"
 msgstr ""
 
-#: cps/templates/detail.html:834
+#: cps/templates/detail.html:851
 msgid "Enter additional email addresses (separated by commas):"
 msgstr ""
 
-#: cps/templates/detail.html:835
+#: cps/templates/detail.html:852
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:836
+#: cps/templates/detail.html:853
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:840
+#: cps/templates/detail.html:857
 #, fuzzy
 msgid "Select format:"
 msgstr "刪除格式:"
 
-#: cps/templates/detail.html:852
+#: cps/templates/detail.html:869
 msgid "Send"
 msgstr ""
 
-#: cps/templates/detail.html:1059
+#: cps/templates/detail.html:1076
 #, fuzzy
 msgid "Failed to update tags"
 msgstr "創建封面路徑失敗"
@@ -5784,7 +5873,7 @@ msgstr "按叢書編號排序"
 msgid "Sort descending according to series index"
 msgstr "按叢書編號逆排序"
 
-#: cps/templates/layout.html:93 cps/templates/login.html:44
+#: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
 msgstr "首頁"
 
@@ -5896,32 +5985,32 @@ msgstr ""
 msgid "Read"
 msgstr "已讀"
 
-#: cps/templates/login.html:23
+#: cps/templates/login.html:30
 #, fuzzy
 msgid "Show Password"
 msgstr "SMTP密碼"
 
-#: cps/templates/login.html:28
+#: cps/templates/login.html:35
 msgid "Remember Me"
 msgstr "記住我"
 
-#: cps/templates/login.html:34
+#: cps/templates/login.html:41
 msgid "Forgot Password?"
 msgstr "忘記密碼？"
 
-#: cps/templates/login.html:48
+#: cps/templates/login.html:55
 #, fuzzy
 msgid ""
 "Log in with Magic\n"
 "      Link"
 msgstr "通過魔法連接登入"
 
-#: cps/templates/login.html:88
+#: cps/templates/login.html:95
 #, fuzzy
 msgid "Log in with SSO"
 msgstr "通過魔法連接登入"
 
-#: cps/templates/login.html:95
+#: cps/templates/login.html:102
 msgid ""
 "Standard login is disabled. Please use one of the alternative login methods."
 msgstr ""
@@ -6927,19 +7016,11 @@ msgstr "顯示已讀/未讀選擇"
 #~ msgstr "刪除選取選項"
 
 #, fuzzy
-#~ msgid "Edit selected books"
-#~ msgstr "合併選中的書籍"
-
-#, fuzzy
 #~ msgid "Unarchive selected books"
 #~ msgstr "合併選中的書籍"
 
 #, fuzzy
 #~ msgid "Mark selected books as read"
-#~ msgstr "合併選中的書籍"
-
-#, fuzzy
-#~ msgid "Mark selected books as unread"
 #~ msgstr "合併選中的書籍"
 
 #, fuzzy

@@ -3940,7 +3940,9 @@ body.login > .container-fluid {
 body.login > div.container-fluid > div.row-fluid > div.col-sm-10 {
     width: 100%;
     height: 100%;
-    overflow-y: visible !important
+    overflow-y: visible !important;
+    display: flex;
+    justify-content: center;
 }
 
 body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse {

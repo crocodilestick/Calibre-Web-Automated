@@ -603,9 +603,9 @@ $("#archived_cb:checked").attr({
     .addClass("readunread-btn-tooltip");
 
 $("button#delete").attr({
-    "data-toggle": "tooltip",
+    "data-toggle-two": "tooltip",
     "title": $("button#delete").attr("title") || $("button#delete").attr("aria-label") || $("button#delete").text(),
-    "data-placement": "left",
+    "data-placement": "bottom",
     "data-viewport": ".btn-toolbar"
 })
     .addClass("delete-book-btn-tooltip");

@@ -753,7 +753,7 @@ class EPUBFixer:
                         self.files[filename] = dom.toxml()
                 else:
                     no_src_pattern = re.compile(r'<img\b(?![^>]*\bsrc\s*=)[^>]*>', re.IGNORECASE)
-                    empty_src_pattern = re.compile(r'<img\b[^>]*\bsrc\s*=\s*["\']?\s*["\'][^>]*>', re.IGNORECASE)
+                    empty_src_pattern = re.compile(r'<img\b[^>]*\bsrc\s*=\s*(?:"\s*"|\'\s*\')[^>]*>', re.IGNORECASE)
 
                     updated = empty_src_pattern.sub('', content)
                     updated = no_src_pattern.sub('', updated)

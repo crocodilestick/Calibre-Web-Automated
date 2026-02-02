@@ -70,6 +70,23 @@ def add_to_shelf(shelf_id, book_id):
     try:
         ub.session.merge(shelf)
         ub.session.commit()
+        
+        # Track shelf activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            import json
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='SHELF_ADD',
+                item_id=book_id,
+                item_title=book.title if book else None,
+                extra_data=json.dumps({'shelf_name': shelf.name})
+            )
+        except Exception as e:
+            log.debug(f"Failed to log shelf activity: {e}")
+            
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
@@ -86,8 +103,19 @@ def add_to_shelf(shelf_id, book_id):
         else:
             return redirect(url_for('web.index'))
     if shelf.kobo_sync and config.config_hardcover_sync and bool(hardcover):
-        hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
-        hardcoverClient.add_book(book.identifiers)
+        try:
+            hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
+            # Will add the book to Hardcover if it doesn't exist,
+            # and leave it alone otherwise
+            # (updating status is handled in update_reading_progress
+            # and the book may be blacklisted from syncing)
+            if not hardcoverClient.get_user_book(book.identifiers):
+                hardcoverClient.add_book(book.identifiers)
+        except hardcover.MissingHardcoverToken:
+            log.info(f"User {current_user.name} has no Hardcover token, cannot add to Hardcover")
+        except Exception as e:
+            log.debug(f"Failed to create Hardcover client for {current_user.name}: {e}")
+
     return "", 204
 
 
@@ -176,6 +204,24 @@ def remove_from_shelf(shelf_id, book_id):
             ub.session.delete(book_shelf)
             shelf.last_modified = datetime.now(timezone.utc)
             ub.session.commit()
+            
+            # Track shelf activity
+            try:
+                from scripts.cwa_db import CWA_DB
+                import json
+                book = calibre_db.session.query(db.Books).filter(db.Books.id == book_id).one_or_none()
+                cwa_db = CWA_DB()
+                cwa_db.log_activity(
+                    user_id=int(current_user.id),
+                    user_name=current_user.name,
+                    event_type='SHELF_REMOVE',
+                    item_id=book_id,
+                    item_title=book.title if book else None,
+                    extra_data=json.dumps({'shelf_name': shelf.name})
+                )
+            except Exception as e:
+                log.debug(f"Failed to log shelf activity: {e}")
+                
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()
             log.error_or_exception("Settings Database error: {}".format(e))
@@ -516,7 +562,7 @@ def add_selected_to_shelf():
         maxOrder = ub.session.query(func.max(ub.BookShelf.order)).filter(ub.BookShelf.shelf == shelf_id).scalar()
         if maxOrder is None:
             maxOrder = 0
-        
+
         new_entry = ub.BookShelf(shelf=shelf.id, book_id=book_id, order=maxOrder + 1)
         shelf.books.append(new_entry)
         success_count += 1

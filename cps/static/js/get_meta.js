@@ -19,10 +19,69 @@
 $(function () {
   var msg = i18nMsg;
   var keyword = "";
+  var metaSelectionKey = "cwa.metaSelection";
+  var metaSelectionCache = null;
+  var metaAlertTimer = null;
 
   var templates = {
     bookResult: _.template($("#template-book-result").html()),
   };
+
+  function isLocalStorageAvailable() {
+    try {
+      var testKey = "__cwa_meta_test__";
+      localStorage.setItem(testKey, "1");
+      localStorage.removeItem(testKey);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function getMetaSelections() {
+    if (metaSelectionCache !== null) {
+      return metaSelectionCache;
+    }
+    if (!isLocalStorageAvailable()) {
+      metaSelectionCache = {};
+      return metaSelectionCache;
+    }
+    try {
+      var stored = localStorage.getItem(metaSelectionKey);
+      metaSelectionCache = stored ? JSON.parse(stored) : {};
+      if (typeof metaSelectionCache !== "object" || metaSelectionCache === null) {
+        metaSelectionCache = {};
+      }
+    } catch (e) {
+      metaSelectionCache = {};
+    }
+    return metaSelectionCache;
+  }
+
+  function setMetaSelection(key, value) {
+    var selections = getMetaSelections();
+    selections[key] = value;
+    if (!isLocalStorageAvailable()) {
+      return;
+    }
+    try {
+      localStorage.setItem(metaSelectionKey, JSON.stringify(selections));
+    } catch (e) {
+      // Ignore storage failures (quota/private mode)
+    }
+  }
+
+  function applyMetaSelections(container) {
+    var selections = getMetaSelections();
+    container
+      .find('input[type="checkbox"][data-meta-value]')
+      .each(function () {
+        var key = $(this).data("meta-value");
+        if (Object.prototype.hasOwnProperty.call(selections, key)) {
+          $(this).prop("checked", selections[key]);
+        }
+      });
+  }
 
   function getUniqueValues(attribute_name, book) {
     var presentArray = $.map(
@@ -47,7 +106,11 @@ $(function () {
       )
     );
     if (updateItems.description) {
-      tinymce.get("comments").setContent(book.description);
+      if (typeof tinymce !== "undefined" && tinymce.get("comments")) {
+        tinymce.get("comments").setContent(book.description);
+      } else {
+        $("#comments").val(book.description);
+      }
     }
     if (updateItems.tags) {
       var uniqueTags = getUniqueValues("tags", book);
@@ -62,15 +125,21 @@ $(function () {
       $("#title").val(book.title);
     }
     $("#languages").val(uniqueLanguages.join(", "));
-    // Removed as users can't fetch ratings from metadata providers
-    // $("#rating").data("rating").setValue(Math.round(book.rating)); 
+    if (updateItems.rating) {
+      var roundedRating = Math.round(book.rating);
+      var ratingWidget = $("#rating").data("rating");
+      if (ratingWidget && typeof ratingWidget.setValue === "function") {
+        ratingWidget.setValue(roundedRating);
+      }
+      $("#rating").val(roundedRating);
+    }
 
     if (updateItems.cover && book.cover && $("#cover_url").length) {
       $(".cover img").attr("src", book.cover);
       $("#cover_url").val(book.cover);
     }
     if (updateItems.pubDate) {
-      $("#pubdate").val(book.publishedDate);
+      $("#pubdate").val(book.publishedDate).trigger("change");
     }
     if (updateItems.publisher) {
       $("#publisher").val(book.publisher);
@@ -90,15 +159,46 @@ $(function () {
         }, {});
       populateIdentifiers(selectedIdentifiers);
     }
+    var $alert = $("#meta-import-alert");
+    if ($alert.length) {
+      if (metaAlertTimer) {
+        clearTimeout(metaAlertTimer);
+        metaAlertTimer = null;
+      }
+      $alert.show().addClass("is-visible");
+      metaAlertTimer = setTimeout(function () {
+        $alert.removeClass("is-visible");
+        setTimeout(function () {
+          $alert.hide();
+        }, 250);
+      }, 2000);
+    }
+  }
+
+  function findIdentifierRow(type) {
+    var normalized = (type || "").trim().toLowerCase();
+    var match = null;
+    $("#identifier-table tbody tr").each(function () {
+      var $typeInput = $(this).find("input.identifier-type");
+      if (!$typeInput.length) {
+        return;
+      }
+      var currentType = ($typeInput.val() || "").trim().toLowerCase();
+      if (currentType === normalized) {
+        match = $(this);
+        return false;
+      }
+    });
+    return match;
   }
 
   function populateIdentifiers(identifiers) {
     for (const property in identifiers) {
       console.log(`${property}: ${identifiers[property]}`);
-      if ($('input[name="identifier-type-' + property + '"]').length) {
-        $('input[name="identifier-val-' + property + '"]').val(
-          identifiers[property]
-        );
+      var $row = findIdentifierRow(property);
+      if ($row && $row.length) {
+        $row.find("input.identifier-type").val(property);
+        $row.find("input.identifier-val").val(identifiers[property]);
       } else {
         addIdentifier(property, identifiers[property]);
       }
@@ -106,27 +206,28 @@ $(function () {
   }
 
   function addIdentifier(name, value) {
+    var randId = Math.floor(Math.random() * 1000000).toString();
     var line = "<tr>";
     line +=
-      '<td><input type="text" class="form-control" name="identifier-type-' +
-      name +
+      '<td><input type="text" class="form-control identifier-type" name="identifier-type-' +
+      randId +
       '" required="required" placeholder="' +
       _("Identifier Type") +
       '" value="' +
       name +
       '"></td>';
     line +=
-      '<td><input type="text" class="form-control" name="identifier-val-' +
-      name +
+      '<td><input type="text" class="form-control identifier-val" name="identifier-val-' +
+      randId +
       '" required="required" placeholder="' +
       _("Identifier Value") +
       '" value="' +
       value +
       '"></td>';
     line +=
-      '<td><a class="btn btn-default" onclick="removeIdentifierLine(this)">' +
+      '<td><button type="button" class="btn btn-default identifier-remove">' +
       _("Remove") +
-      "</a></td>";
+      "</button></td>";
     line += "</tr>";
     $("#identifier-table").append(line);
   }
@@ -147,6 +248,7 @@ $(function () {
               $book.find("button").on("click", function () {
                 populateForm(book, idx);
               });
+              applyMetaSelections($book);
               $("#book-list").append($book);
             });
           } else {
@@ -177,27 +279,33 @@ $(function () {
       type: "get",
       dataType: "json",
       success: function success(data) {
+        var anyDisabled = false;
+        var disabledNames = [];
         data.forEach(function (provider) {
-          var checked = "";
-          if (provider.active) {
-            checked = "checked";
+          // Hide globally disabled providers but collect their names for a note
+          if (provider.hasOwnProperty('globally_enabled') && !provider.globally_enabled) {
+            anyDisabled = true;
+            disabledNames.push(provider.name);
+            return; // Skip rendering this provider
           }
+
+          var checked = provider.active ? "checked" : "";
+          var inputId = 'show-' + provider.name;
           var $provider_button =
-            '<input type="checkbox" id="show-' +
-            provider.name +
-            '" class="pill" data-initial="' +
-            provider.initial +
-            '" data-control="' +
-            provider.id +
-            '" ' +
-            checked +
-            '><label for="show-' +
-            provider.name +
-            '">' +
-            provider.name +
-            ' <span class="glyphicon glyphicon-ok"></span></label>';
+            '<input type="checkbox" id="' + inputId + '" class="pill" data-initial="' +
+            provider.initial + '" data-control="' + provider.id + '" ' + checked + '>' +
+            '<label for="' + inputId + '">' +
+            provider.name + ' <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' +
+            '</label>';
           $("#metadata_provider").append($provider_button);
         });
+        if (anyDisabled) {
+          var disabledList = disabledNames.join(', ');
+          var note = $('<div class="text-muted" style="margin-bottom:8px;">' +
+                       '<span class="glyphicon glyphicon-lock" aria-hidden="true"></span> ' +
+                       'Some providers are disabled: ' + disabledList + '</div>');
+          $("#metadata_provider").prepend(note);
+        }
       },
     });
   }
@@ -225,10 +333,19 @@ $(function () {
           $book.find("button").on("click", function () {
             populateForm(book, idx);
           });
+          applyMetaSelections($book);
           $("#book-list").append($book);
         });
       },
     });
+  });
+
+  $(document).on("change", 'input[type="checkbox"][data-meta-value]', function () {
+    var key = $(this).data("meta-value");
+    var val = $(this).prop("checked");
+    if (key) {
+      setMetaSelection(key, val);
+    }
   });
 
   $("#meta-search").on("submit", function (e) {

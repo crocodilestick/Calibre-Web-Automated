@@ -12,9 +12,10 @@ import importlib
 from collections import OrderedDict
 
 import flask
+from flask import redirect, url_for
 from flask_babel import gettext as _
 
-from . import db, calibre_db, converter, uploader, constants, dep_check
+from . import db, calibre_db, converter, uploader, dep_check
 from .render_template import render_title_template
 from .usermanagement import user_login_required
 
@@ -34,18 +35,6 @@ sorted_modules = OrderedDict((sorted(modules.items(), key=lambda x: x[0].casefol
 
 
 def collect_stats():
-    if constants.NIGHTLY_VERSION[0] == "$Format:%H$":
-        calibre_web_version = constants.STABLE_VERSION.replace("b", " Beta")
-    else:
-        calibre_web_version = (constants.STABLE_VERSION.replace("b", " Beta") + ' - '
-                               + constants.NIGHTLY_VERSION[0].replace('%', '%%') + ' - '
-                               + constants.NIGHTLY_VERSION[1].replace('%', '%%'))
-
-    if getattr(sys, 'frozen', False):
-        calibre_web_version += " - Exe-Version"
-    elif constants.HOME_CONFIG:
-        calibre_web_version += " - pyPi"
-
     try:
         with open("/app/CWA_RELEASE", "r") as f:
             cwa_version = f.read()
@@ -57,7 +46,6 @@ def collect_stats():
         Python=sys.version,
         Platform='{0[0]} {0[2]} {0[3]} {0[4]} {0[5]}'.format(platform.uname()),
     ))
-    _VERSIONS['Calibre-Web'] = calibre_web_version
     _VERSIONS['Unrar'] = converter.get_unrar_version()
     _VERSIONS['Ebook converter'] = converter.get_calibre_version()
     _VERSIONS['Kepubify'] = converter.get_kepubify_version()
@@ -66,12 +54,18 @@ def collect_stats():
     return _VERSIONS
 
 
-@about.route("/stats")
+@about.route("/package-versions")
 @user_login_required
-def stats():
+def package_versions():
     counter = calibre_db.session.query(db.Books).count()
     authors = calibre_db.session.query(db.Authors).count()
     categories = calibre_db.session.query(db.Tags).count()
     series = calibre_db.session.query(db.Series).count()
     return render_title_template('stats.html', bookcounter=counter, authorcounter=authors, versions=collect_stats(),
                                  categorycounter=categories, seriecounter=series, title=_("Statistics"), page="stat")
+
+
+@about.route("/stats")
+@user_login_required
+def stats():
+    return redirect(url_for('cwa_stats.cwa_stats_show'), code=301)

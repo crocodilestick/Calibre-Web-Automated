@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.service: calibre-web-automated
+  name: calibre-web-automated
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.service: calibre-web-automated
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        diun.enable: "true" # Enable Diun monitoring for image updates (must setup DIUN separately)
+      labels:
+        app.service: calibre-web-automated
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "2000"
+            - name: PUID
+              value: "2000"
+            - name: TZ
+              value: America/Los_Angeles # Change to your timezone
+          image: crocodilestick/calibre-web-automated:latest
+          imagePullPolicy: Always #Always enables updates with a rollout restart
+          name: calibre-web-automated
+          ports:
+            - containerPort: 8083
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: calibre-web-automated-config
+            - mountPath: /cwa-book-ingest
+              name: calibre-web-automated-ingest
+            - mountPath: /calibre-library
+              name: calibre-library
+          resources: {} # Add resource requests/limits here if needed
+      restartPolicy: Always
+      # Volumes will vary based on your storage solution - here Longhorn PVCs are used
+      # except for the ingest folder which is a hostPath to a NAS mount so files can be 
+      # manually deposited for import (or via automation)
+      volumes:
+        - name: calibre-web-automated-config
+          persistentVolumeClaim:
+            claimName: calibre-web-automated-config
+        - name: calibre-library
+          persistentVolumeClaim:
+            claimName: calibre-library-pvc
+        - name: calibre-web-automated-ingest
+          hostPath:
+            path: /nas/path/to/import-ebooks

@@ -1,0 +1,416 @@
+{% extends "layout.html" %}
+{% block header %}
+<style>
+  .status-hero {
+    background: linear-gradient(135deg, #2a3441 0%, #1f2c35 100%);
+    padding: 2.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid #3a4451;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .status-hero-icon {
+    font-size: 3em;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  
+  .status-hero-title {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+  }
+  
+  .status-hero-message {
+    font-size: 1.15em;
+    color: #bbb;
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  .status-hero.success {
+    background: linear-gradient(135deg, #2d5c3f 0%, #1f4129 100%);
+    border-color: #3d7d54;
+  }
+  
+  .status-hero.warning {
+    background: linear-gradient(135deg, #7d5c2a 0%, #5c421f 100%);
+    border-color: #9d7d3d;
+  }
+  
+  .status-hero-actions {
+    margin-top: 1.5rem;
+  }
+</style>
+{% endblock %}
+{% block body %}
+<div class="discover hardcover-review-page">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h2>{{_('Hardcover Match Review 🔖')}}</h2>
+  
+  <div class="row" style="margin-top: 20px;">
+    <div class="col-sm-12">
+      {% if matches|length == 0 %}
+      <div class="status-hero success" style="text-align: center;">
+        <span class="status-hero-icon">✅</span>
+        <h3 class="status-hero-title">{{_('All Caught Up!')}}</h3>
+        <p class="status-hero-message">{{_('There are no pending Hardcover matches requiring review. New matches will appear here when the auto-fetch task runs.')}}</p>
+        <div class="status-hero-actions">
+          <a href="{{url_for('admin.admin')}}" class="btn btn-primary btn-lg">{{_('Back to Admin Panel')}}</a>
+        </div>
+      </div>
+      {% else %}
+      
+      <div class="status-hero warning" style="text-align: center; max-width: 140rem; margin-inline: auto;">
+        <span class="status-hero-icon">⚠️</span>
+        <h3 class="status-hero-title">{{_('Review Required')}}</h3>
+        <p class="status-hero-message">{{_('%(count)s book(s) have ambiguous Hardcover matches. Please review each match and select the correct result, or skip/reject if no good match exists.', count=matches|length)}}</p>
+      </div>
+    
+    <div class="settings-container" style="max-width: 140rem;">
+      <h3 style="margin-top: 30px; margin-bottom: 20px;">🔖 {{_('Pending Matches')}}</h3>
+
+      <p class="lead" style="margin: 30px 0 20px 0; color: #bbb; text-align: left;">
+        {{_('Review and approve ambiguous Hardcover ID matches for your books. High-confidence matches are applied automatically; these require manual verification.')}}
+      </p>
+
+      <div style="margin: 0 0 20px 0; text-align: right;">
+        <button class="btn btn-danger reject-all-pending-btn" style="min-width: 220px;">
+          ✗ {{_('Reject All Pending')}}
+        </button>
+      </div>
+      
+      {% for match in matches %}
+      <div style="margin-bottom: 30px;" id="match-card-{{match.id}}">
+        <div style="background-color: rgba(42, 52, 65, 0.6); padding: 20px; border-radius: 8px; border: 1px solid #3a4451;">
+          <div style="border-bottom: 1px solid #3a4451; padding-bottom: 15px; margin-bottom: 20px;">
+            <h4 style="margin: 0; color: #fff; font-size: 1.3em;">
+              📚 {{match.book_title}}
+              <small style="color: #aaa; font-size: 0.65em; margin-left: 10px;">ID: {{match.book_id}}</small>
+            </h4>
+            <p style="margin: 8px 0 5px 0; color: #bbb; font-size: 0.95em;">✍️ {{match.book_authors}}</p>
+            <small style="color: #888; font-size: 0.85em;">{{_('Search Query')}}: <em>{{match.search_query}}</em></small>
+          </div>
+          
+          <div style="padding: 10px 0;">
+          <h5 style="margin-top: 0; margin-bottom: 20px; color: #f8be03;">{{_('Candidate Matches')}} <span style="color: #aaa; font-size: 0.85em;">({{_('Top %(count)s', count=match.results|length)}})</span></h5>
+          
+          <div class="row hardcover-match-row" style="justify-content: flex-start !important;">
+            {% for result in match.results[:3] %}
+            <div class="col-md-4" style="margin-bottom: 20px;">
+              <div class="match-candidate" style="border: 1px solid #3a4451; border-radius: 6px; padding: 15px; background-color: rgba(26, 32, 39, 0.5); height: 100%; position: relative; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#f8be03'; this.style.backgroundColor='rgba(26, 32, 39, 0.8)'" onmouseout="this.style.borderColor='#3a4451'; this.style.backgroundColor='rgba(26, 32, 39, 0.5)';">
+                <!-- Confidence Score Badge -->
+                <div style="position: absolute; top: 10px; right: 10px;">
+                  {% set score = match.scores[loop.index0][0] %}
+                  {% if score >= 0.85 %}
+                  <span class="label label-success" style="font-size: 1.1em; padding: 5px 10px;">{{_('Confidence')}}: {{"{:.0%}".format(score)}}</span>
+                  {% elif score >= 0.7 %}
+                  <span class="label label-warning" style="font-size: 1.1em; padding: 5px 10px;">{{_('Confidence')}}: {{"{:.0%}".format(score)}}</span>
+                  {% else %}
+                  <span class="label label-danger" style="font-size: 1.1em; padding: 5px 10px;">{{_('Confidence')}}: {{"{:.0%}".format(score)}}</span>
+                  {% endif %}
+                </div>
+                
+                <!-- Cover Image -->
+                {% if result.cover %}
+                {% set cover_url = result.cover %}
+                {% if cover_url.startswith('//') %}
+                {% set cover_url = 'https:' ~ cover_url %}
+                {% endif %}
+                <div style="text-align: center; margin-bottom: 15px; margin-top: 30px;">
+                  <img src="{{cover_url|replace('http://', 'https://')}}" alt="Cover" class="hardcover-cover-image" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='generic_cover.svg') }}';">
+                </div>
+                {% else %}
+                <div style="text-align: center; margin-bottom: 15px; margin-top: 30px;">
+                  <img src="{{ url_for('static', filename='generic_cover.svg') }}" alt="Cover" class="hardcover-cover-image" loading="lazy">
+                </div>
+                {% endif %}
+                
+                <!-- Title & Authors -->
+                <h5 style="margin: 10px 0; color: #fff;">{{result.title}}</h5>
+                <p style="color: #bbb; font-size: 0.9em; margin: 5px 0;">
+                  <strong>{{_('Authors')}}:</strong> {{result.authors|join(', ')}}
+                </p>
+                
+                <!-- Series Info -->
+                {% if result.series %}
+                <p style="color: #bbb; font-size: 0.9em; margin: 5px 0;">
+                  <strong>{{_('Series')}}:</strong> {{result.series}}
+                  {% if result.series_index %}#{{result.series_index}}{% endif %}
+                </p>
+                {% endif %}
+                
+                <!-- Publisher & Date -->
+                {% if result.publisher or result.publishedDate %}
+                <p style="color: #bbb; font-size: 0.9em; margin: 5px 0;">
+                  {% if result.publisher %}<strong>{{_('Publisher')}}:</strong> {{result.publisher}}{% endif %}
+                  {% if result.publishedDate %} ({{result.publishedDate[:4]}}){% endif %}
+                </p>
+                {% endif %}
+                
+                <!-- Match Reason -->
+                <div style="margin-top: 10px; padding: 8px; background-color: rgba(0,0,0,0.3); border-radius: 4px; font-size: 0.85em; color: #aaa;">
+                  <strong>{{_('Match Reason')}}:</strong> {{match.scores[loop.index0][1]}}
+                </div>
+                
+                <!-- Hardcover Link -->
+                <p style="margin-top: 10px;">
+                  <a href="{{result.url}}" target="_blank" style="color: #f8be03;">{{_('View on Hardcover')}} →</a>
+                </p>
+                
+                <!-- Action Button -->
+                <button class="btn btn-success btn-block accept-match-btn" 
+                        data-queue-id="{{match.id}}" 
+                        data-result-id="{{result.id}}"
+                        style="margin-top: 15px; font-weight: bold;">
+                  ✓ {{_('Select This Match')}}
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          
+          <!-- Action Buttons -->
+          <div style="margin-top: 25px; border-top: 1px solid #3a4451; padding-top: 20px; text-align: center;">
+            <button class="btn btn-danger reject-match-btn" 
+                    data-queue-id="{{match.id}}"
+                    style="margin-right: 10px; min-width: 150px;">
+              ✗ {{_('Reject All')}}
+            </button>
+            <button class="btn btn-default skip-match-btn" 
+                    data-queue-id="{{match.id}}"
+                    style="min-width: 150px;">
+              → {{_('Skip for Now')}}
+            </button>
+          </div>
+        </div>
+      </div>
+      </div>
+      {% endfor %}
+      
+      {% endif %}
+    </div>
+  </div>
+</div>
+</div>
+
+<style>
+  .settings-container {
+    margin-bottom: 25px;
+  }
+
+  .hardcover-review-page .hardcover-match-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+  }
+
+  .hardcover-review-page .hardcover-match-row > [class*="col-"] {
+    display: flex;
+  }
+
+  .hardcover-review-page .match-candidate {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .hardcover-review-page .hardcover-cover-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: none
+  }
+  
+  .match-candidate img {
+    transition: transform 0.2s ease;
+  }
+  
+  .match-candidate:hover img {
+    transform: scale(1.05);
+  }
+  
+  .btn {
+    transition: all 0.2s ease;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+  // Handle accept match button
+  $('.accept-match-btn').click(function() {
+    var queueId = $(this).data('queue-id');
+    var resultId = $(this).data('result-id');
+    var btn = $(this);
+        
+    btn.prop('disabled', true).text('{{_("Processing...")}}');
+        
+    $.ajax({
+      url: '{{url_for("admin.hardcover_review_action")}}',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        queue_id: queueId,
+        action: 'accept',
+        selected_result_id: resultId
+      }),
+      success: function(response) {
+        var data = JSON.parse(response);
+        if (data.success) {
+          $('#match-card-' + queueId).fadeOut(500, function() {
+            $(this).remove();
+            if ($('.settings-container').length === 0) {
+              location.reload();
+            }
+          });
+        } else {
+          alert('{{_("Error")}}: ' + data.error);
+          btn.prop('disabled', false).text('{{_("✓ Select This Match")}}');
+        }
+      },
+      error: function(xhr) {
+        var errorMsg = '{{_("Failed to apply match")}}';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        }
+        alert('{{_("Error")}}: ' + errorMsg);
+        btn.prop('disabled', false).text('{{_("✓ Select This Match")}}');
+      }
+    });
+  });
+    
+  // Handle reject button
+  $('.reject-match-btn').click(function() {
+    var queueId = $(this).data('queue-id');
+    var btn = $(this);
+        
+    if (!confirm('{{_("Are you sure you want to reject all matches for this book? This cannot be undone.")}}')) {
+      return;
+    }
+        
+    btn.prop('disabled', true).text('{{_("Processing...")}}');
+        
+    $.ajax({
+      url: '{{url_for("admin.hardcover_review_action")}}',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        queue_id: queueId,
+        action: 'reject'
+      }),
+      success: function(response) {
+        var data = JSON.parse(response);
+        if (data.success) {
+          $('#match-card-' + queueId).fadeOut(500, function() {
+            $(this).remove();
+            if ($('.settings-container').length === 0) {
+              location.reload();
+            }
+          });
+        } else {
+          alert('{{_("Error")}}: ' + data.error);
+          btn.prop('disabled', false).text('{{_("✗ Reject All Matches")}}');
+        }
+      },
+      error: function(xhr) {
+        var errorMsg = '{{_("Failed to reject match")}}';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        }
+        alert('{{_("Error")}}: ' + errorMsg);
+        btn.prop('disabled', false).text('{{_("✗ Reject All Matches")}}');
+      }
+    });
+  });
+
+  // Handle reject all pending button
+  $('.reject-all-pending-btn').click(function() {
+    var btn = $(this);
+
+    if (!confirm('{{_("Are you sure you want to reject all pending matches? This cannot be undone.")}}')) {
+      return;
+    }
+
+    btn.prop('disabled', true).text('{{_("Processing...")}}');
+
+    $.ajax({
+      url: '{{url_for("admin.hardcover_review_reject_all")}}',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({}),
+      success: function(response) {
+        var data = JSON.parse(response);
+        if (data.success) {
+          $('.settings-container').fadeOut(300, function() {
+            location.reload();
+          });
+        } else {
+          alert('{{_("Error")}}: ' + data.error);
+          btn.prop('disabled', false).text('{{_("✗ Reject All Pending")}}');
+        }
+      },
+      error: function(xhr) {
+        var errorMsg = '{{_("Failed to reject all pending matches")}}';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        }
+        alert('{{_("Error")}}: ' + errorMsg);
+        btn.prop('disabled', false).text('{{_("✗ Reject All Pending")}}');
+      }
+    });
+  });
+    
+  // Handle skip button
+  $('.skip-match-btn').click(function() {
+    var queueId = $(this).data('queue-id');
+    var btn = $(this);
+        
+    btn.prop('disabled', true).text('{{_("Processing...")}}');
+        
+    $.ajax({
+      url: '{{url_for("admin.hardcover_review_action")}}',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        queue_id: queueId,
+        action: 'skip'
+      }),
+      success: function(response) {
+        var data = JSON.parse(response);
+        if (data.success) {
+          $('#match-card-' + queueId).fadeOut(500, function() {
+            $(this).remove();
+            if ($('.settings-container').length === 0) {
+              location.reload();
+            }
+          });
+        } else {
+          alert('{{_("Error")}}: ' + data.error);
+          btn.prop('disabled', false).text('{{_("→ Skip for Now")}}');
+        }
+      },
+      error: function(xhr) {
+        var errorMsg = '{{_("Failed to skip match")}}';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        }
+        alert('{{_("Error")}}: ' + errorMsg);
+        btn.prop('disabled', false).text('{{_("→ Skip for Now")}}');
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

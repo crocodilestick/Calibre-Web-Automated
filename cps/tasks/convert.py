@@ -236,8 +236,19 @@ class TaskConvert(CalibreTask):
                 copyfile(converted_file[0], (file_path + format_new_ext))
                 os.unlink(converted_file[0])
             else:
+                if config.config_embed_metadata and config.config_binariesdir and os.path.isfile(filename):
+                    try:
+                        os.remove(filename)
+                    except OSError:
+                        pass
                 return 1, N_("Converted file not found or more than one file in folder %(folder)s",
                              folder=os.path.dirname(file_path))
+
+        if config.config_embed_metadata and config.config_binariesdir and os.path.isfile(filename):
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
         return check, None
 
     def _convert_calibre(self, file_path, format_old_ext, format_new_ext, has_cover):

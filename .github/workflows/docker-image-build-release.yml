@@ -1,0 +1,239 @@
+name: Build & Push - Release - Split Strategy
+# Automatically builds/pushes multi-platform release images when a GitHub Release is published
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+jobs:
+  # --------------------------------------------------------------------------------
+  # JOB 1: Build Intel (amd64) on GitHub Runners
+  # --------------------------------------------------------------------------------
+  build-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # --- 1. Calculate Variables ---
+      - name: Set repo name to lowercase
+        run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Determine Version
+        run: |
+          # If triggered by a release, use the tag (e.g., v1.0.0)
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "VERSION_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            # If triggered manually, fallback to avoid build failure
+            echo "VERSION_TAG=manual-build" >> $GITHUB_ENV
+          fi
+
+      # --- 2. Logins ---
+      - name: DockerHub Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PA_TOKEN }}
+
+      - name: GitHub Container Registry Login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- 3. Build & Push (Digest Only) ---
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          provenance: false
+          context: .
+          platforms: linux/amd64
+          # CACHE STRATEGY: Use GitHub Actions Cache (Ephemeral Runner)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          outputs: |
+            type=image,name=${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated,push-by-digest=true,name-canonical=true,push=true
+            type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
+          build-args: |
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+            VERSION=${{ env.VERSION_TAG }}
+
+      # --- 4. Export Digest ---
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-amd64
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # --------------------------------------------------------------------------------
+  # JOB 2: Build ARM (arm64 Only) on Oracle Runner
+  # --------------------------------------------------------------------------------
+  build-arm:
+    # Use your self-hosted runner labels here
+    runs-on: [self-hosted, linux, ARM64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # --- 1. Calculate Variables ---
+      - name: Set repo name to lowercase
+        run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Determine Version
+        run: |
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "VERSION_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION_TAG=manual-build" >> $GITHUB_ENV
+          fi
+
+      # --- 2. Logins ---
+      - name: DockerHub Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PA_TOKEN }}
+
+      - name: GitHub Container Registry Login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- 3. Build & Push (Digest Only) ---
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          provenance: false
+          context: .
+          platforms: linux/arm64
+          # CACHE STRATEGY: Use Local Disk Cache (Persistent Oracle Runner)
+          # Reuses the same cache folder as your DEV builds for speed
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          outputs: |
+            type=image,name=${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated,push-by-digest=true,name-canonical=true,push=true
+            type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
+          build-args: |
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+            VERSION=${{ env.VERSION_TAG }}
+
+      # --- 4. Rotate Cache (Prevent Infinite Growth) ---
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      # --- 5. Export Digest ---
+      - name: Export digest
+        run: |
+          rm -rf /tmp/digests
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-arm
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+      # --- 6. Janitor: Clean up Docker Garbage ---
+      - name: Prune Docker Garbage
+        if: always() # Run even if build fails to keep disk clean
+        run: |
+          echo "Pruning dangling images..."
+          docker image prune -f
+          echo "Pruning old build cache (older than 1 week)..."
+          docker builder prune -f --filter "until=168h"
+
+  # --------------------------------------------------------------------------------
+  # JOB 3: Merge & Tag (Runs on GitHub)
+  # --------------------------------------------------------------------------------
+  merge:
+    runs-on: ubuntu-latest
+    needs: [build-amd64, build-arm]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set repo name to lowercase
+        run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      # --- 1. Define Release Tags ---
+      - name: Determine Docker Tags
+        id: tag
+        run: |
+          # Use the Release Tag (e.g., v3.0.0)
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "RELEASE_TAG=manual-build" >> $GITHUB_ENV
+          fi
+
+      # --- 2. Logins ---
+      - name: DockerHub Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PA_TOKEN }}
+
+      - name: GitHub Container Registry Login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- 3. Merge Digests ---
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          # 1. Push to DockerHub (Specific Tag + Latest)
+          docker buildx imagetools create \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:${{ env.RELEASE_TAG }} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:latest \
+            $(printf '${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated@sha256:%s ' *)
+          
+          # 2. Push to GHCR (Specific Tag + Latest)
+          docker buildx imagetools create \
+            -t ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:${{ env.RELEASE_TAG }} \
+            -t ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:latest \
+            $(printf 'ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}@sha256:%s ' *)

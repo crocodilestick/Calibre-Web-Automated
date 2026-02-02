@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -26,7 +26,7 @@ class Litres(Metadata):
     API_URL = "https://api.litres.ru/foundation/api/search"
     API_ARTS_URL = "https://api.litres.ru/foundation/api/arts/{}"
     DEFAULT_LIMIT = 7
-    TIMEOUT = 20
+    TIMEOUT = 15
     DEFAULT_TYPES = [
         "text_book",
         "audiobook",
@@ -264,7 +264,7 @@ class Litres(Metadata):
         ).strip()
 
         formats = ['pdf', 'epub']
-        pattern = r'\s*\([^)]*(' + '|'.join(formats) + ')[^)]*\)'
+        pattern = r'\s*\([^)]*(' + '|'.join(formats) + r')[^)]*\)'
 
         title =  re.sub(pattern, '', title, flags=re.IGNORECASE)
         return title

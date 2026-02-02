@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 
 # Optionally skip auto-library based on DISABLE_LIBRARY_AUTOMOUNT env var
 if [[ "${DISABLE_LIBRARY_AUTOMOUNT,,}" == "true" || "${DISABLE_LIBRARY_AUTOMOUNT,,}" == "yes" || "${DISABLE_LIBRARY_AUTOMOUNT}" == "1" ]]; then

@@ -99,7 +99,7 @@ $("#archived_cb").on("change", function() {
         )
     };
 
-    $("#add-to-shelves, #remove-from-shelves").on("click", "[data-shelf-action]", function (e) {
+    $(document).on("click", "#add-to-shelves [data-shelf-action], #remove-from-shelves [data-shelf-action]", function (e) {
         e.preventDefault();
         $.ajax({
                 url: $(this).data('href'),
@@ -129,10 +129,11 @@ $("#archived_cb").on("change", function() {
                         break;
                 }
                 this.parentNode.removeChild(this);
+                    window.location.reload();
             }.bind(this))
             .fail(function(xhr) {
                 var $msg = $("<span/>", { "class": "text-danger"}).text(xhr.responseText);
-                $("#shelf-action-status").html($msg);
+                $("#shelf-action-errors").html($msg);
 
                 setTimeout(function() {
                     $msg.remove();
@@ -153,4 +154,28 @@ $(function () {
             $rb.tooltip({ container: "body", trigger: "hover focus", placement: "bottom", viewport: "body" });
         } catch (e) { /* noop */ }
     }
+});
+
+// Add tooltips for all toolbar buttons on book details page
+$(function () {
+    var $toolbarButtons = $(".book-action-bar .action-icon-btn, .book-action-bar .dropdown-toggle");
+    if (!$toolbarButtons.length) {
+        return;
+    }
+    $toolbarButtons.each(function () {
+        var $btn = $(this);
+        var title = $.trim($btn.attr("title") || $btn.attr("aria-label") || $btn.text());
+        if (!title) {
+            return;
+        }
+        $btn.attr({
+            "data-toggle-two": "tooltip",
+            "data-placement": "bottom",
+            "data-viewport": "body",
+            "title": title
+        });
+    });
+    try {
+        $("[data-toggle-two='tooltip']").tooltip({ container: "body", trigger: "hover focus", placement: "bottom", viewport: "body" });
+    } catch (e) { /* noop */ }
 });

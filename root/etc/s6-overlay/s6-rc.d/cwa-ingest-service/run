@@ -1,16 +1,93 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 
 echo "========== STARTING CWA-INGEST SERVICE =========="
 
 WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
 echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
+# Create queue file for retry processing (persistent across restarts)
+QUEUE_FILE="/config/cwa_ingest_retry_queue"
+touch "$QUEUE_FILE"
+
+# Create status file for basic status tracking (persistent across restarts)
+STATUS_FILE="/config/cwa_ingest_status"
+echo "idle" > "$STATUS_FILE"
+
+# Ensure failed backup directory exists
+mkdir -p "/config/processed_books/failed" 2>/dev/null || true
+
+# Function to get timeout from database
+get_timeout_from_db() {
+    local timeout_minutes
+    # Try sqlite3 first, fallback to Python if not available
+    if command -v sqlite3 >/dev/null 2>&1; then
+        timeout_minutes=$(sqlite3 /config/cwa.db "SELECT ingest_timeout_minutes FROM cwa_settings LIMIT 1;" 2>/dev/null || echo "15")
+    else
+        # Fallback to Python
+        timeout_minutes=$(python3 -c "
+import sqlite3
+try:
+    conn = sqlite3.connect('/config/cwa.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT ingest_timeout_minutes FROM cwa_settings LIMIT 1')
+    result = cursor.fetchone()
+    conn.close()
+    print(result[0] if result else 15)
+except:
+    print(15)
+" 2>/dev/null || echo "15")
+    fi
+    echo $((timeout_minutes * 60))  # Convert to seconds
+}
+
 # Tunables (override via env)
 STABLE_CHECKS=${CWA_INGEST_STABLE_CHECKS:-6}
 STABLE_CONSEC_MATCH=${CWA_INGEST_STABLE_CONSEC_MATCH:-2}
 STABLE_INTERVAL=${CWA_INGEST_STABLE_INTERVAL:-0.5}
-SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|cwa.json)$'
+MAX_QUEUE_SIZE=${CWA_INGEST_MAX_QUEUE_SIZE:-50}
+SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|acsm|kfx|kfx-zip)$'
 TEMP_SUFFIXES='crdownload download part uploading'
+get_stale_temp_minutes_from_db() {
+        local minutes
+        if command -v sqlite3 >/dev/null 2>&1; then
+                minutes=$(sqlite3 /config/cwa.db "SELECT ingest_stale_temp_minutes FROM cwa_settings LIMIT 1;" 2>/dev/null || echo "120")
+        else
+                minutes=$(python3 -c "
+import sqlite3
+try:
+    conn = sqlite3.connect('/config/cwa.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT ingest_stale_temp_minutes FROM cwa_settings LIMIT 1')
+    result = cursor.fetchone()
+    conn.close()
+    print(result[0] if result else 120)
+except:
+    print(120)
+" 2>/dev/null || echo "120")
+        fi
+        echo "$minutes"
+}
+
+get_stale_temp_interval_from_db() {
+        local seconds
+        if command -v sqlite3 >/dev/null 2>&1; then
+                seconds=$(sqlite3 /config/cwa.db "SELECT ingest_stale_temp_interval FROM cwa_settings LIMIT 1;" 2>/dev/null || echo "600")
+        else
+                seconds=$(python3 -c "
+import sqlite3
+try:
+    conn = sqlite3.connect('/config/cwa.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT ingest_stale_temp_interval FROM cwa_settings LIMIT 1')
+    result = cursor.fetchone()
+    conn.close()
+    print(result[0] if result else 600)
+except:
+    print(600)
+" 2>/dev/null || echo "600")
+        fi
+        echo "$seconds"
+}
 
 wait_for_stable_file() {
         local file="$1" last_size="" same_count=0 i sz
@@ -40,6 +117,24 @@ run_fallback() {
         done
 }
 
+cleanup_stale_temps() {
+        # Skip if disabled or watch folder doesn't exist
+        local minutes
+        minutes=$(get_stale_temp_minutes_from_db)
+        if [ -z "$minutes" ] || [ "$minutes" -le 0 ] || [ ! -d "$WATCH_FOLDER" ]; then
+                return 0
+        fi
+        local deleted_any=0
+        for suf in $TEMP_SUFFIXES; do
+                if find "$WATCH_FOLDER" -type f -name "*.$suf" -mmin +"$minutes" -print -delete 2>/dev/null | grep -q .; then
+                        deleted_any=1
+                fi
+        done
+        if [ $deleted_any -eq 1 ]; then
+                echo "[cwa-ingest-service] Cleaned stale temp files older than ${minutes} minutes"
+        fi
+}
+
 is_docker_desktop() {
         local osr mounts
         osr=$(cat /proc/sys/kernel/osrelease 2>/dev/null || true)
@@ -50,19 +145,115 @@ is_docker_desktop() {
         return 1
 }
 
+process_retry_queue() {
+        if [ -s "$QUEUE_FILE" ]; then
+                echo "[cwa-ingest-service] Processing retry queue..."
+                local temp_queue=$(mktemp)
+
+                while IFS= read -r queued_file; do
+                        if [ -f "$queued_file" ]; then
+                                echo "[cwa-ingest-service] Retrying: $queued_file"
+                                local configured_timeout=$(get_timeout_from_db)  # Get configured timeout from database
+                                local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
+                                timeout $safety_timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
+                                local retry_exit=$?
+
+                                if [ $retry_exit -eq 2 ]; then
+                                        # Still busy, keep in queue
+                                        echo "$queued_file" >> "$temp_queue"
+                                elif [ $retry_exit -eq 124 ]; then
+                                        # Timeout, remove problematic file
+                                        echo "[cwa-ingest-service] TIMEOUT on retry: $queued_file, removing"
+                                        if [ -d "/config/processed_books/failed" ]; then
+                                                local timestamp=$(date '+%Y%m%d_%H%M%S')
+                                                local failed_filename="${timestamp}_retry_timeout_$(basename "$queued_file")"
+                                                cp "$queued_file" "/config/processed_books/failed/$failed_filename" 2>/dev/null || true
+                                        fi
+                                        rm -f "$queued_file" 2>/dev/null || true
+                                elif [ $retry_exit -eq 0 ]; then
+                                        echo "[cwa-ingest-service] Successfully processed retry: $queued_file"
+                                else
+                                        echo "[cwa-ingest-service] Error on retry: $queued_file (exit: $retry_exit)"
+                                fi
+                        fi
+                done < "$QUEUE_FILE"
+
+                mv "$temp_queue" "$QUEUE_FILE"
+
+                if [ -s "$QUEUE_FILE" ]; then
+                        echo "[cwa-ingest-service] $(wc -l < "$QUEUE_FILE") files remain in retry queue"
+                fi
+        fi
+}
+
 handle_event() {
         local filepath="$1"
+        local configured_timeout=$(get_timeout_from_db)  # Get configured timeout from database
+        local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
+        local filename=$(basename "$filepath")
+
         # temp suffixes
         for suf in $TEMP_SUFFIXES; do
                 [[ "$filepath" == *.$suf ]] && return 0
         done
+        # ignore sidecar manifests
+        if [[ "$filepath" == *.cwa.json ]] || [[ "$filepath" == *.cwa.failed.json ]]; then
+                echo "[cwa-ingest-service] Skipping sidecar manifest: $filepath (handled with data file)"
+                return 0
+        fi
         # extension filter
         if ! [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]; then
                 return 0
         fi
-        
+
+        cleanup_stale_temps
+
         echo "[cwa-ingest-service] New file detected - $filepath - Starting Ingest Processor..."
-        python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+        echo "[cwa-ingest-service] Configured timeout: ${configured_timeout}s, Safety timeout: ${safety_timeout}s"
+        echo "processing:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+
+        # Use safety timeout as last resort - processor should handle its own timeout internally
+        timeout $safety_timeout python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+        local exit_code=$?
+
+        if [ $exit_code -eq 124 ]; then
+                echo "[cwa-ingest-service] SAFETY TIMEOUT: $filepath took longer than safety timeout of ${safety_timeout} seconds"
+                echo "[cwa-ingest-service] This indicates a serious issue - processor should have timed out internally at ${configured_timeout} seconds"
+                echo "safety_timeout:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                # Move problematic file to failed backup with timestamp
+                if [ -d "/config/processed_books/failed" ]; then
+                        local timestamp=$(date '+%Y%m%d_%H%M%S')
+                        local failed_filename="${timestamp}_safety_timeout_${filename}"
+                        echo "[cwa-ingest-service] Moving $filename to failed backup as $failed_filename"
+                        cp "$filepath" "/config/processed_books/failed/$failed_filename" 2>/dev/null || true
+                fi
+                rm -f "$filepath" 2>/dev/null || true
+        elif [ $exit_code -eq 2 ]; then
+                echo "[cwa-ingest-service] Processor busy, adding to retry queue: $filepath"
+                echo "queued:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+
+                # Add to queue with size management
+                echo "$filepath" >> "$QUEUE_FILE"
+
+                # Check queue size and trim if necessary
+                local queue_size=$(wc -l < "$QUEUE_FILE" 2>/dev/null || echo 0)
+                if [ "$queue_size" -gt "$MAX_QUEUE_SIZE" ]; then
+                        echo "[cwa-ingest-service] Queue size ($queue_size) exceeds maximum ($MAX_QUEUE_SIZE), removing oldest entries"
+                        local temp_queue=$(mktemp)
+                        tail -n "$MAX_QUEUE_SIZE" "$QUEUE_FILE" > "$temp_queue"
+                        mv "$temp_queue" "$QUEUE_FILE"
+                fi
+        elif [ $exit_code -ne 0 ]; then
+                echo "[cwa-ingest-service] Error processing $filepath (exit code: $exit_code)"
+                echo "error:$filename:$exit_code:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+        else
+                echo "[cwa-ingest-service] Successfully processed: $filepath"
+                echo "completed:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                # Try to process any queued files after successful completion
+                process_retry_queue
+        fi
+
+        echo "idle" > "$STATUS_FILE"
 }
 
 if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
@@ -77,6 +268,21 @@ fi
 if is_docker_desktop; then
         echo "[cwa-ingest-service] Docker Desktop detected -> using fallback watcher"
         run_fallback; exit 0
+fi
+
+# Background cleanup loop for stale temp files
+if [ -n "$(get_stale_temp_interval_from_db)" ]; then
+        (
+                while true; do
+                        cleanup_stale_temps
+                        interval=$(get_stale_temp_interval_from_db)
+                        if [ -z "$interval" ] || [ "$interval" -le 0 ]; then
+                                sleep 60
+                        else
+                                sleep "$interval"
+                        fi
+                done
+        ) &
 fi
 
 ( set -o pipefail

@@ -44,6 +44,22 @@ $(function() {
             });
         }, 1000);
     }
+    if ($('#upcomingtable').length) {
+        $('#upcomingtable').bootstrapTable({
+            formatNoMatches: function () {
+                return '';
+            },
+            striped: true
+        });
+    }
+    if ($('#upcomingopstable').length) {
+        $('#upcomingopstable').bootstrapTable({
+            formatNoMatches: function () {
+                return '';
+            },
+            striped: true
+        });
+    }
 
     $(document).on('click', '#select_all', function() {
         $('#books-table').bootstrapTable('checkAll');

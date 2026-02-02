@@ -13,6 +13,38 @@ var reader;
         bookmarks: calibre.bookmark ? [calibre.bookmark] : []
     });
 
+    function showReaderError(message, error) {
+        try {
+            console.error(message, error || "");
+        } catch (e) {}
+        var loader = document.getElementById("loader");
+        if (loader) {
+            loader.style.display = "none";
+        }
+        var viewer = document.getElementById("viewer");
+        if (viewer) {
+            viewer.innerHTML = "<div class=\"reader-error\">" + message + "</div>";
+        }
+    }
+
+    if (reader && reader.book && typeof reader.book.on === 'function') {
+        reader.book.on("openFailed", function(error) {
+            showReaderError("Failed to open this EPUB. It may be corrupted or DRM-protected.", error);
+        });
+        reader.book.on("error", function(error) {
+            showReaderError("An error occurred while loading this EPUB.", error);
+        });
+    }
+
+    if (reader && reader.rendition && typeof reader.rendition.on === 'function') {
+        reader.rendition.on("displayerror", function(error) {
+            showReaderError("Unable to display this EPUB content.", error);
+        });
+        reader.rendition.on("loaderror", function(error) {
+            showReaderError("Unable to load this EPUB resource.", error);
+        });
+    }
+
     Object.keys(themes).forEach(function (theme) {
         reader.rendition.themes.register(theme, themes[theme].css_path);
     });
@@ -29,28 +61,30 @@ var reader;
     var touchStart = 0;
     var touchEnd = 0;
 
-    reader.rendition.on('touchstart', function(event) {
-        touchStart = event.changedTouches[0].screenX;
-    });
-    reader.rendition.on('touchend', function(event) {
-      touchEnd = event.changedTouches[0].screenX;
-        if (touchStart < touchEnd) {
-            if(reader.book.package.metadata.direction === "rtl") {
-    			reader.rendition.next();
-    		} else {
-    			reader.rendition.prev();
-    		}
-            // Swiped Right
-        }
-        if (touchStart > touchEnd) {
-            if(reader.book.package.metadata.direction === "rtl") {
-    			reader.rendition.prev();
-    		} else {
-                reader.rendition.next();
-    		}
-            // Swiped Left
-        }
-    });
+    if (reader && reader.rendition) {
+        reader.rendition.on('touchstart', function(event) {
+            touchStart = event.changedTouches[0].screenX;
+        });
+        reader.rendition.on('touchend', function(event) {
+          touchEnd = event.changedTouches[0].screenX;
+            if (touchStart < touchEnd) {
+                if(reader.book.package.metadata.direction === "rtl") {
+					reader.rendition.next();
+				} else {
+					reader.rendition.prev();
+				}
+                // Swiped Right
+            }
+            if (touchStart > touchEnd) {
+                if(reader.book.package.metadata.direction === "rtl") {
+					reader.rendition.prev();
+				} else {
+                    reader.rendition.next();
+				}
+                // Swiped Left
+            }
+        });
+    }
 
     /**
      * @param {string} action - Add or remove bookmark
@@ -84,9 +118,22 @@ var reader;
         var reflowBox = document.getElementById('sidebarReflow');
         if (reflowBox && reader && reader.settings) {
             reader.settings.sidebarReflow = reflowBox.checked;
-            // Try to trigger a layout update (simulate a resize or call a known method)
-            if (reader.rendition && typeof reader.rendition.resize === 'function') {
-                setTimeout(function() { reader.rendition.resize(); }, 0);
+            // Trigger resize after first render to avoid calling resize too early
+            if (reader.rendition && typeof reader.rendition.on === 'function') {
+                let resizedOnce = false;
+                reader.rendition.on('rendered', function() {
+                    if (resizedOnce) {
+                        return;
+                    }
+                    resizedOnce = true;
+                    if (reader && reader.rendition && typeof reader.rendition.resize === 'function') {
+                        try {
+                            reader.rendition.resize();
+                        } catch (e) {
+                            // Avoid breaking the reader when resize isn't available
+                        }
+                    }
+                });
             }
         }
         // Ensure reflow logic is always applied if the class is present
@@ -103,7 +150,7 @@ var reader;
         // Font size
         let savedFontSize = localStorage.getItem("calibre.reader.fontSize");
         let fontSizeFader = document.getElementById('fontSizeFader');
-        if (savedFontSize && fontSizeFader) {
+        if (savedFontSize && fontSizeFader && reader && reader.rendition && reader.rendition.themes) {
             fontSizeFader.value = savedFontSize;
             reader.rendition.themes.fontSize(`${savedFontSize}%`);
         }
@@ -120,7 +167,7 @@ var reader;
         if (savedFont && typeof selectFont === 'function') {
             selectFont(savedFont);
             let fontValue = fontMap[savedFont] || '';
-            if (savedFont !== 'default' && fontValue) {
+            if (savedFont !== 'default' && fontValue && reader && reader.rendition && reader.rendition.themes) {
                 reader.rendition.themes.font(fontValue);
             }
         }

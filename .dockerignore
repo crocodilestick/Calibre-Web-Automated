@@ -18,3 +18,11 @@ changelogs
 cwa-wiki
 wiki_images
 .devcontainer
+
+# Test infrastructure (not needed in production image)
+tests/
+pytest.ini
+requirements-dev.txt
+TEST*.md
+TESTING*.md
+.pytest_cache/

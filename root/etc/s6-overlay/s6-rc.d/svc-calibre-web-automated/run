@@ -4,5 +4,5 @@
 export CALIBRE_DBPATH=/config
 
 exec \
-    s6-notifyoncheck -d -n 300 -w 1000 -c "nc -z localhost 8083" \
+    s6-notifyoncheck -d -n 300 -w 1000 -c "nc -z localhost ${CWA_PORT_OVERRIDE:-8083}" \
         cd /app/calibre-web-automated s6-setuidgid abc python3 /app/calibre-web-automated/cps.py

@@ -1,167 +1,521 @@
 {% extends "layout.html" %}
+{% block header %}
+<style>
+  /* Hide the original :before pseudo-elements for user_edit template */
+  body.me > div.container-fluid > div.row-fluid > div.col-sm-10:before {
+    display: none !important;
+  }
+  
+  body.me > div.container-fluid > div > div.col-sm-10 > div.discover[name="profile-page"]:before {
+    display: none !important;
+  }
+  
+  /* Main container positioning */
+  body.me > div.container-fluid > div > div.col-sm-10 > div.discover[name="profile-page"] {
+      margin: 4rem !important;
+      width: 80% !important;
+      padding: 0px !important;
+      border: none;
+      justify-self: center;
+  }
+  
+  /* Profile header flexbox container */
+  .profile-header-container {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #1f2c3554;
+    border-radius: 8px;
+  }
+  
+  .profile-picture {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYwIiBoZWlnaHQ9IjU2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgPHBhdGggZD0iTTE0NC4yOTEgNDkyLjMyNUMxNjYuNjI0IDQ3Ni4yNjUgMTkzLjE5NCA0NjYuMTU2IDIyNCA0NjJjMTIuNDQ0IDkuMzMzIDMxLjExMSAxNCA1NiAxNHM0My41NTYtNC42NjcgNTYtMTRjMzAuODA2IDQuMTU2IDU3LjM3NiAxNC4yNjQgNzkuNzA5IDMwLjMyNUMzNzYuNTI3IDUxNy40MzUgMzI5Ljk1MSA1MzIgMjgwIDUzMmMtNDkuOTUxIDAtOTYuNTI3LTE0LjU2NS0xMzUuNzA5LTM5LjY3NXoiIGZpbGwtb3BhY2l0eT0iLjYiLz4KICAgICAgICA8cGF0aCBkPSJNMjI0IDQ2MmwxMi44OC00MC4yNTFDMTk2LjQyOSAzOTcuNDYyIDE2OCAzNDAuMDM1IDE2OCAyNzMuMDU5YzAtMzUuMTkzIDcuODQ5LTY3Ljc1IDIxLjE2OC05NC4yNDggMTYuMTczIDQuOTc3IDM1LjMxNSA3Ljg1NiA1NS44MzIgNy44NTYgNTEuMTA0IDAgOTMuNjgtMTcuODYgMTAzLjA3Mi00MS41MTZDMzc0Ljc3OSAxNzQuNTg4IDM5MiAyMjAuOTMxIDM5MiAyNzMuMDU5YzAgNjYuOTc2LTI4LjQyOSAxMjQuNDAzLTY4Ljg4IDE0OC42OUwzMzYgNDYyYy0xMi40NDQgOS4zMzMtMzEuMTExIDE0LTU2IDE0LTI0LjY5NCAwLTQzLjI2My00LjU5NC01NS43MDctMTMuNzgyTDIyNCA0NjJ6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgICAgIDxwYXRoIGQ9Ik0xODAuMDY0IDM0NS44NDlDMTU1LjI4MiAzMTguMDY3IDE0MCAyNzkuOTk3IDE0MCAyMzhjMC04NS4wNTIgNjIuNjgtMTU0IDE0MC0xNTRzMTQwIDY4Ljk0OCAxNDAgMTU0YzAgNDEuOTk3LTE1LjI4MiA4MC4wNjctNDAuMDY0IDEwNy44NDkgNy43MTYtMjEuODYyIDEyLjA2NC00Ni41OTYgMTIuMDY0LTcyLjc5IDAtNTIuMTI4LTE3LjIyMS05OC40NzEtNDMuOTI4LTEyNy45MDgtOS4zOTIgMjMuNjU2LTUxLjk2OCA0MS41MTYtMTAzLjA3MiA0MS41MTYtMjAuNTE3IDAtMzkuNjU5LTIuODc5LTU1LjgzMi03Ljg1NkMxNzUuODQ5IDIwNS4zMDkgMTY4IDIzNy44NjYgMTY4IDI3My4wNTljMCAyNi4xOTQgNC4zNDggNTAuOTI4IDEyLjA2NCA3Mi43OXoiIGZpbGwtb3BhY2l0eT0iLjQ1Ii8+CiAgICAgICAgPHBhdGggZD0iTTI4MCA1MzJjMTM5LjE3NiAwIDI1Mi0xMTIuODI0IDI1Mi0yNTJTNDE5LjE3NiAyOCAyODAgMjggMjggMTQwLjgyNCAyOCAyODBzMTEyLjgyNCAyNTIgMjUyIDI1MnptMCAyOEMxMjUuMzYgNTYwIDAgNDM0LjY0IDAgMjgwUzEyNS4zNiAwIDI4MCAwczI4MCAxMjUuMzYgMjgwIDI4MC0xMjUuMzYgMjgwLTI4MCAyODB6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgPC9nPgo8L3N2Zz4K);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .profile-picture .fallback-icon {
+    display: none;
+    font-size: 4rem;
+    line-height: 1;
+  }
+  
+  .profile-picture.no-custom-picture {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYwIiBoZWlnaHQ9IjU2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgPHBhdGggZD0iTTE0NC4yOTEgNDkyLjMyNUMxNjYuNjI0IDQ3Ni4yNjUgMTkzLjE5NCA0NjYuMTU2IDIyNCA0NjJjMTIuNDQ0IDkuMzMzIDMxLjExMSAxNCA1NiAxNHM0My41NTYtNC42NjcgNTYtMTRjMzAuODA2IDQuMTU2IDU3LjM3NiAxNC4yNjQgNzkuNzA5IDMwLjMyNUMzNzYuNTI3IDUxNy40MzUgMzI5Ljk1MSA1MzIgMjgwIDUzMmMtNDkuOTUxIDAtOTYuNTI3LTE0LjU2NS0xMzUuNzA5LTM5LjY3NXoiIGZpbGwtb3BhY2l0eT0iLjYiLz4KICAgICAgICA8cGF0aCBkPSJNMjI0IDQ2MmwxMi44OC00MC4yNTFDMTk2LjQyOSAzOTcuNDYyIDE2OCAzNDAuMDM1IDE2OCAyNzMuMDU5YzAtMzUuMTkzIDcuODQ5LTY3Ljc1IDIxLjE2OC05NC4yNDggMTYuMTczIDQuOTc3IDM1LjMxNSA3Ljg1NiA1NS44MzIgNy44NTYgNTEuMTA0IDAgOTMuNjgtMTcuODYgMTAzLjA3Mi00MS41MTZDMzc0Ljc3OSAxNzQuNTg4IDM5MiAyMjAuOTMxIDM5MiAyNzMuMDU5YzAgNjYuOTc2LTI4LjQyOSAxMjQuNDAzLTY4Ljg4IDE0OC42OUwzMzYgNDYyYy0xMi40NDQgOS4zMzMtMzEuMTExIDE0LTU2IDE0LTI0LjY5NCAwLTQzLjI2My00LjU5NC01NS43MDctMTMuNzgyTDIyNCA0NjJ6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgICAgIDxwYXRoIGQ9Ik0xODAuMDY0IDM0NS44NDlDMTU1LjI4MiAzMTguMDY3IDE0MCAyNzkuOTk3IDE0MCAyMzhjMC04NS4wNTIgNjIuNjgtMTU0IDE0MC0xNTRzMTQwIDY4Ljk0OCAxNDAgMTU0YzAgNDEuOTk3LTE1LjI4MiA4MC4wNjctNDAuMDY0IDEwNy44NDkgNy43MTYtMjEuODYyIDEyLjA2NC00Ni41OTYgMTIuMDY0LTcyLjc5IDAtNTIuMTI4LTE3LjIyMS05OC40NzEtNDMuOTI4LTEyNy45MDgtOS4zOTIgMjMuNjU2LTUxLjk2OCA0MS41MTYtMTAzLjA3MiA0MS41MTYtMjAuNTE3IDAtMzkuNjU5LTIuODc5LTU1LjgzMi03Ljg1NkMxNzUuODQ5IDIwNS4zMDkgMTY4IDIzNy44NjYgMTY4IDI3My4wNTljMCAyNi4xOTQgNC4zNDggNTAuOTI4IDEyLjA2NCA3Mi43OXoiIGZpbGwtb3BhY2l0eT0iLjQ1Ii8+CiAgICAgICAgPHBhdGggZD0iTTI4MCA1MzJjMTM5LjE3NiAwIDI1Mi0xMTIuODI0IDI1Mi0yNTJTNDE5LjE3NiAyOCAyODAgMjggMjggMTQwLjgyNCAyOCAyODBzMTEyLjgyNCAyNTIgMjUyIDI1MnptMCAyOEMxMjUuMzYgNTYwIDAgNDM0LjY0IDAgMjgwUzEyNS4zNiAwIDI4MCAwczI4MCAxMjUuMzYgMjgwIDI4MC0xMjUuMzYgMjgwLTI4MCAyODB6IiBmaWxsLW9wYWNpdHk9Ii43NSIvPgogICAgPC9nPgo8L3N2Zz4K);
+  }
+  
+  .profile-title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .profile-title-section h2 {
+    margin: 0;
+    color: #ffc200;
+  }
+  
+  .profile-subtitle {
+    font-size: 1.2rem;
+    color: #bbbbbb;
+    margin: 0;
+  }
+  
+  /* Mobile responsive styles for user_edit template - triggers below 768px */
+  @media (max-width: 768px) {
+    body.me > div.container-fluid > div > div.col-sm-10 > div.discover[name="profile-page"] {
+      margin-inline: 3rem !important;
+      width: 90% !important;
+      justify-self: center !important;
+      padding-top: 0px !important;
+    }
+    
+    .profile-header-container {
+      flex-direction: column;
+      text-align: center;
+      padding: 15px;
+      gap: 15px;
+    }
+    
+    .profile-picture {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .profile-picture .fallback-icon {
+      font-size: 3rem;
+    }
+    
+    .profile-title-section {
+      align-items: center;
+    }
+    
+    .profile-title-section h2 {
+      font-size: 1.5rem;
+    }
+    
+    .profile-subtitle {
+      font-size: 1rem;
+    }
+  }
+
+  .opds-order-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: #2a3441;
+    border: 1px solid #444;
+    border-radius: 6px;
+    cursor: move;
+    transition: all 0.2s;
+  }
+
+  .opds-order-item.dragging {
+    opacity: 0.6;
+    background: #344151;
+    border-color: #5a6b7d;
+  }
+
+  .opds-order-drag-handle {
+    color: #ffc200;
+    margin-right: 12px;
+    font-size: 18px;
+    user-select: none;
+  }
+
+  .opds-order-label {
+    color: white;
+    font-weight: 500;
+  }
+
+  .opds-order-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #c5c5c5;
+    font-size: 13px;
+  }
+</style>
+{% endblock %}
 {% block body %}
-<div class="discover">
-  <h1>{{title}}</h1>
-  <form role="form" method="POST" autocomplete="off">
+<div name="profile-page" class="discover" style="padding-top: 0px !important;">
+  <h2>{{title}}</h2>
+  <!-- Profile Header with Picture and Title -->
+  <div class="profile-header-container">
+    <div class="profile-picture" id="user-profile-picture">
+      <span class="fallback-icon">👤</span>
+    </div>
+    <div class="profile-title-section">
+      <h2>{{title}}</h2>
+      <p class="profile-subtitle">{% if profile %}{{_('Your Profile')}}{% else %}{{_('User Settings')}}{% endif %}</p>
+    </div>
+  </div>
+  <form role="form" method="POST" autocomplete="off" style="margin-top: 3rem;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="col-md-10 col-lg-8">
-    {% if new_user or ( current_user and content.name != "Guest" and current_user.role_admin() ) %}
-    <div class="form-group required">
-      <label for="name">{{_('Username')}}</label>
-      <input type="text" class="form-control" name="name" id="name" value="{{ content.name if content.name != None }}" autocomplete="off">
-    </div>
-    {% endif %}
-    <div class="form-group">
-      <label for="email">{{_('Email')}}</label>
-      <input type="email" class="form-control" name="email" id="email" value="{{ content.email if content.email != None }}" autocomplete="off">
-    </div>
-    {% if ( current_user and current_user.role_passwd() or current_user.role_admin() ) and not content.role_anonymous() %}
-      {% if current_user and current_user.role_admin() and not new_user and not profile and ( mail_configured and content.email if content.email != None ) %}
-        <a class="btn btn-default postAction" id="resend_password" role="button" data-action="{{url_for('admin.reset_user_password', user_id = content.id) }}">{{_('Reset user Password')}}</a>
+    
+    <!-- User Account Information Card -->
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('Account Information')}}</h4>
+      
+      {% if new_user or ( current_user and content.name != "Guest" and current_user.role_admin() ) %}
+      <div class="form-group required">
+        <label for="name">{{_('Username')}}</label>
+        <input type="text" class="form-control" name="name" id="name" value="{{ content.name if content.name != None }}" autocomplete="off">
+      </div>
       {% endif %}
+
+      <p class="cwa-settings-tip">{{_('If you need to change your email address or password, you can do so here.')}}</p>
+      
+      <div class="form-group">
+        <label for="email">{{_('Email')}}</label>
+        <input type="email" class="form-control" name="email" id="email" value="{{ content.email if content.email != None }}" autocomplete="off">
+      </div>
+      
+      {% if ( current_user and current_user.role_passwd() or current_user.role_admin() ) and not content.role_anonymous() %}
+        {% if current_user and current_user.role_admin() and not new_user and not profile and ( mail_configured and content.email if content.email != None ) %}
+        <div style="margin-bottom: 15px;">
+          <a class="btn btn-default postAction" id="resend_password" role="button" data-action="{{url_for('admin.reset_user_password', user_id = content.id) }}">{{_('Reset user Password')}}</a>
+        </div>
+        {% endif %}
         <div class="form-group">
           <label for="password">{{_('Password')}}</label>
           <input type="password" class="form-control" name="password" id="password" data-lang="{{ current_user.locale }}" data-verify="{{ config.config_password_policy }}" {% if config.config_password_policy %} data-min={{ config.config_password_min_length }} data-word={{ config.config_password_character }} data-special={{ config.config_password_special }} data-upper={{ config.config_password_upper }} data-lower={{ config.config_password_lower }} data-number={{ config.config_password_number }}{% endif %} value="" autocomplete="off">
         </div>
-    {% endif %}
-    <div class="form-group">
-      <label for="kindle_mail">{{_('Send to eReader Email Address. Use comma to separate emails for multiple eReaders')}}</label>
-      <input type="email" class="form-control" name="kindle_mail" id="kindle_mail" value="{{ content.kindle_mail if content.kindle_mail != None }}">
+      {% endif %}
     </div>
+    
+    <!-- eReader Configuration Card -->
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('eReader Configuration')}}</h4>
+      
+      <div class="form-group">
+        <label for="kindle_mail">{{_('Send to eReader Email Address')}}</label>
+        <input type="email" class="form-control" name="kindle_mail" id="kindle_mail" value="{{ content.kindle_mail if content.kindle_mail != None }}" placeholder="{{_('Use comma to separate multiple addresses')}}">
+        <p class="cwa-settings-tip">{{_('Email address(es) for your eReader devices. Separate multiple addresses with commas.')}}</p>
+      </div>
+      
+      <div class="form-group">
+        <label for="kindle_mail_subject">{{_('Send to eReader Subject')}}</label>
+        <input type="text" class="form-control" name="kindle_mail_subject" id="kindle_mail_subject" value="{{ content.kindle_mail_subject if content.kindle_mail_subject != None }}">
+      </div>
+
+      {% if not content.role_anonymous() %}
+      <div style="margin-top: 20px;">
+        <input type="checkbox" id="allow_additional_ereader_emails" name="allow_additional_ereader_emails" {% if content.allow_additional_ereader_emails %}checked{% endif %} style="accent-color: var(--color-secondary);">
+        <label for="allow_additional_ereader_emails">{{_('Enable Send-to-eReader Pop-up Modal')}}</label>
+        <p class="cwa-settings-tip">
+          {{_('Enables or disables the Send-to-eReader Pop-up Modal that allows users to enter extra email addresses and only send to a selection of saved addresses when sending to eReader.')}}
+          <br><br>
+          {{_('When disabled, emails will be sent to all configured eReader addresses without prompting.')}}
+        </p>
+      </div>
+      {% endif %}
+      
+      {% if not content.role_anonymous() %}
+      <div style="margin-top: 20px;">
+        <input type="checkbox" id="auto_send_enabled" name="auto_send_enabled" {% if content.auto_send_enabled %}checked{% endif %} style="accent-color: var(--color-secondary);">
+        <label for="auto_send_enabled">{{_('Automatically send new books to my eReader(s)')}}</label>
+        <p class="cwa-settings-tip">{{_('When enabled, newly ingested books will be automatically sent to all configured eReader email addresses above.')}}</p>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Language & Theme Preferences Card -->
     {% if not content.role_anonymous() %}
-    <div class="form-group">
-    <label for="locale">{{_('Language')}}</label>
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('Language & Theme Preferences')}}</h4>
+      
+      <div class="form-group">
+        <label for="locale">{{_('Interface Language')}}</label>
         <select name="locale" id="locale" class="form-control">
-            {%  for translation in translations %}
-                <option value="{{translation}}" {% if translation|string == content.locale %}selected{% endif %}>{{ translation.display_name|capitalize }}</option>
-            {% endfor %}
+          {%  for translation in translations %}
+            <option value="{{translation}}" {% if translation|string == content.locale %}selected{% endif %}>{{ translation.display_name|capitalize }}</option>
+          {% endfor %}
         </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="default_language">{{_('Language of Books')}}</label>
+        <select name="default_language" id="default_language" class="form-control">
+          <option value="all" {% if content.default_language == "all" %}selected{% endif %}>{{ _('Show All') }}</option>
+          {%  for language in languages %}
+          <option value="{{ language.lang_code }}" {% if content.default_language == language.lang_code %}selected{% endif %}>{{ language.name }}</option>
+          {% endfor %}
+        </select>
+        <p class="cwa-settings-tip">{{_('Filter the library to only show books in a specific language.')}}</p>
+      </div>
+      
+      <div class="form-group">
+        <label for="theme">{{ _('Theme') }}</label>
+        <select name="theme" id="theme" class="form-control">
+          <option value="0" {% if content.theme == 0 %}selected{% endif %}>Standard</option>
+          <option value="1" {% if content.theme == 1 %}selected{% endif %}>caliBlur (Dark)</option>
+        </select>
+      </div>
+    </div>
+    {% else %}
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('Book Language Filter')}}</h4>
+      
+      <div class="form-group">
+        <label for="default_language">{{_('Language of Books')}}</label>
+        <select name="default_language" id="default_language" class="form-control">
+          <option value="all" {% if content.default_language == "all" %}selected{% endif %}>{{ _('Show All') }}</option>
+          {%  for language in languages %}
+          <option value="{{ language.lang_code }}" {% if content.default_language == language.lang_code %}selected{% endif %}>{{ language.name }}</option>
+          {% endfor %}
+        </select>
+        <p class="settings-explanation">{{_('Filter the library to only show books in a specific language.')}}</p>
+      </div>
+    </div>
+    {% endif %}
+    
+    <!-- OAuth & API Integrations Card -->
+    {% if (registered_oauth.keys()| length > 0 and not new_user and profile) or (hardcover_support and not new_user) or (kobo_support and not new_user) %}
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('OAuth & API Integrations')}}</h4>
+      
+      {% if registered_oauth.keys()| length > 0 and not new_user and profile %}
+        {% for id, name in registered_oauth.items() %}
+        <div class="form-group" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 0.5rem;">
+          <label style="display: block; margin-bottom: 8px;">{{ name|capitalize }} {{_('OAuth Settings')}}</label>
+          {% if id not in oauth_status %}
+          <a href="{{ url_for('oauth.'+ name +'_login') }}" id="config_{{ id }}_oauth" class="btn btn-primary">{{_('Link')}} {{ name|capitalize }} {{_('Account')}}</a>
+          {% else %}
+          <a href="{{ url_for('oauth.'+ name +'_login_unlink') }}" id="config_{{ id }}_oauth" class="btn btn-primary">{{_('Unlink')}} {{ name|capitalize }} {{_('Account')}}</a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      {% endif %}
+      
+      {% if hardcover_support and not new_user %}
+      <div class="form-group">
+        <label for="hardcover_token">{{_('Hardcover API Token')}}</label>
+        <input type="text" class="form-control" name="hardcover_token" id="hardcover_token" value="{{ content.hardcover_token if content.hardcover_token != None }}">
+        <p class="cwa-settings-tip">{{_('API token for Hardcover metadata provider integration.')}}</p>
+      </div>
+      {% endif %}
+      
+      {% if kobo_support and not new_user %}
+      <div style="margin-top: 25px;">
+        <label style="display: block; margin-bottom: 12px; font-weight: bold;">{{ _('Kobo Sync Token')}}</label>
+        <div style="margin-bottom: 10px;">
+          <a class="btn btn-default" id="config_create_kobo_token" data-toggle="modal" data-target="#modal_kobo_token" data-remote="false" href="{{ url_for('kobo_auth.generate_auth_token', user_id=content.id) }}">{{_('Create/View')}}</a>
+          <div class="btn btn-danger" id="config_delete_kobo_token" data-value="{{ content.id }}" data-remote="false" {% if not content.remote_auth_token.first() %} style="display: none;" {% endif %}>{{_('Delete')}}</div>
+        </div>
+        <div>
+          <div class="btn btn-default" id="kobo_full_sync" data-value="{% if current_user.role_admin() %}{{ content.id }}{% else %}0{% endif %}" {% if not content.remote_auth_token.first() %} style="display: none;" {% endif %}>{{_('Force full kobo sync')}}</div>
+        </div>
+        {% if kobo_support and not content.role_anonymous() and not simple %}
+        <div style="margin-top: 20px;
+                    background: #202c34a3;
+                    padding: 2rem;">
+          <input type="checkbox" name="kobo_only_shelves_sync" id="kobo_only_shelves_sync" {% if content.kobo_only_shelves_sync %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="kobo_only_shelves_sync">{{_('Sync only books in selected shelves with Kobo')}}</label>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Sidebar Display Settings Card -->
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('Sidebar Display Settings')}}</h4>
+      <p class="settings-explanation">{{_('Choose which sections to display in your sidebar navigation.')}}</p>
+      
+      <div style="display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                  gap: 12px;
+                  margin-top: 20px;
+                  background: #202c34a3;
+                  padding: 2rem;">
+        {% for element in sidebar %}
+          {% if element['config_show'] %}
+          <div>
+            <input type="checkbox" name="show_{{element['visibility']}}" id="show_{{element['visibility']}}" {% if content.check_visibility(element['visibility']) %}checked{% endif %} style="accent-color: var(--color-secondary);">
+            <label for="show_{{element['visibility']}}">{{element['show_text']}}</label>
+          </div>
+          {% endif %}
+        {% endfor %}
+        <div>
+          <input type="checkbox" name="Show_detail_random" id="Show_detail_random" {% if content.show_detail_random() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="Show_detail_random">{{_('Show Random Books in Detail View')}}</label>
+        </div>
+      </div>
+      
+      {% if ( current_user and current_user.role_admin() and not new_user ) and not simple %}
+      <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #5c6b74;">
+        <a href="#" id="get_user_tags" class="btn btn-default" data-id="{{content.id}}" data-toggle="modal" data-target="#restrictModal">{{_('Add Allowed/Denied Tags')}}</a>
+        <a href="#" id="get_user_column_values" data-id="{{content.id}}" class="btn btn-default" data-toggle="modal" data-target="#restrictModal" style="margin-left: 10px;">{{_('Add allowed/Denied Custom Column Values')}}</a>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- User Permissions Card (Admin Only) -->
+    {% if not content.role_anonymous() and (profile or (current_user and current_user.role_admin() and not new_user)) %}
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('OPDS Catalog Order')}}</h4>
+      <p class="settings-explanation">{{_('Reorder the OPDS root catalog by listing entry IDs in the order you want. Unknown IDs are ignored and missing entries are appended automatically.')}}</p>
+      <input type="hidden" name="opds_root_order" id="opds_root_order" value="{{ opds_root_order_string }}">
+      <input type="hidden" name="opds_hidden_entries" id="opds_hidden_entries" value="{{ opds_hidden_entries_string }}">
+      <div id="opds_root_order_container" style="margin-top: 1rem;">
+        <ul id="opds_root_order_list" style="list-style: none; padding: 0; margin: 0;"></ul>
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 1.5rem;">
+        <small class="settings-explanation">
+          💡 <strong>{{_('Tip')}}:</strong> {{_('Drag to reorder OPDS root entries. Missing entries are appended automatically.') }}
+        </small>
+      </div>
     </div>
     {% endif %}
 
-    <div class="form-group">
-      <label for="default_language">{{_('Language of Books')}}</label>
-        <select name="default_language" id="default_language" class="form-control">
-            <option value="all" {% if content.default_language == "all" %}selected{% endif %}>{{ _('Show All') }}</option>
-            {%  for language in languages %}
-            <option value="{{ language.lang_code }}" {% if content.default_language == language.lang_code %}selected{% endif %}>{{ language.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    {% if not content.role_anonymous() %}
-    <div class="form-group">
-      <label for="theme">{{ _('Theme') }}</label>
-      <select name="theme" id="theme" class="form-control">
-        <option value="0" {% if content.theme == 0 %}selected{% endif %}>Standard</option>
-        <option value="1" {% if content.theme == 1 %}selected{% endif %}>caliBlur (Dark)</option>
-      </select>
-    </div>
-    {% endif %}
-    {% if registered_oauth.keys()| length > 0 and not new_user and profile %}
-      {% for id, name in registered_oauth.items() %}
-    <div class="form-group">
-      <label>{{ name }} {{_('OAuth Settings')}}</label>
-        {% if id not in oauth_status %}
-        <a href="{{ url_for('oauth.'+ name +'_login') }}" id="config_{{ id }}_oauth" class="btn btn-primary">{{_('Link')}}</a>
-        {% else %}
-        <a href="{{ url_for('oauth.'+ name +'_login_unlink') }}" id="config_{{ id }}_oauth" class="btn btn-primary">{{_('Unlink')}}</a>
-        {% endif %}
-      {% endfor %}
-    </div>
-    {% endif %}
-    {% if hardcover_support and not new_user %}
-    <div class="form-group">
-      <label for="hardcover_token">{{_('Hardcover API token')}}</label>
-      <input type="text" class="form-control" name="hardcover_token" id="hardcover_token" value="{{ content.hardcover_token if content.hardcover_token != None }}">
-    </div>
-    {% endif %}
-    {% if kobo_support and not new_user %}
-    <label>{{ _('Kobo Sync Token')}}</label>
-    <div class="form-group col">
-      <a class="btn btn-default" id="config_create_kobo_token" data-toggle="modal" data-target="#modal_kobo_token" data-remote="false" href="{{ url_for('kobo_auth.generate_auth_token', user_id=content.id) }}">{{_('Create/View')}}</a>
-      <div class="btn btn-danger" id="config_delete_kobo_token" data-value="{{ content.id }}" data-remote="false" {% if not content.remote_auth_token.first() %} style="display: none;" {% endif %}>{{_('Delete')}}</div>
-    </div>
-    <div class="form-group col">
-      <div class="btn btn-default" id="kobo_full_sync" data-value="{% if current_user.role_admin() %}{{ content.id }}{% else %}0{% endif %}" {% if not content.remote_auth_token.first() %} style="display: none;" {% endif %}>{{_('Force full kobo sync')}}</div>
-    </div>
-    {% endif %}
-    <div class="col-sm-6">
-    {% for element in sidebar %}
-      {% if element['config_show'] %}
-        <div class="form-group">
-          <input type="checkbox" name="show_{{element['visibility']}}" id="show_{{element['visibility']}}" {% if content.check_visibility(element['visibility']) %}checked{% endif %}>
-          <label for="show_{{element['visibility']}}">{{element['show_text']}}</label>
-        </div>
-      {% endif %}
-    {% endfor %}
-      <div class="form-group">
-          <input type="checkbox" name="Show_detail_random" id="Show_detail_random" {% if content.show_detail_random() %}checked{% endif %}>
-          <label for="Show_detail_random">{{_('Show Random Books in Detail View')}}</label>
-      </div>
-      {% if ( current_user and current_user.role_admin() and not new_user ) and not simple %}
-      <a href="#" id="get_user_tags" class="btn btn-default" data-id="{{content.id}}" data-toggle="modal" data-target="#restrictModal">{{_('Add Allowed/Denied Tags')}}</a>
-      <a href="#" id="get_user_column_values" data-id="{{content.id}}" class="btn btn-default" data-toggle="modal" data-target="#restrictModal">{{_('Add allowed/Denied Custom Column Values')}}</a>
-      {% endif %}
-    </div>
-      <div class="col-sm-6">
+    <!-- User Permissions Card (Admin Only) -->
     {% if current_user and current_user.role_admin() and not profile %}
-    {% if not content.role_anonymous() %}
-    <div class="form-group">
-      <input type="checkbox" name="admin_role" id="admin_role" {% if content.role_admin() %}checked{% endif %}>
-      <label for="admin_role">{{_('Admin User')}}</label>
-    </div>
-    {% endif %}
-    <div class="form-group">
-      <input type="checkbox" name="download_role" id="download_role" {% if content.role_download() %}checked{% endif %}>
-      <label for="download_role">{{_('Allow Downloads')}}</label>
-    </div>
-    <div class="form-group">
-      <input type="checkbox" name="viewer_role" id="viewer_role" {% if content.role_viewer() %}checked{% endif %}>
-      <label for="viewer_role">{{_('Allow eBook Viewer')}}</label>
-    </div>
-    {% if config.config_uploading %}
-    <div class="form-group">
-      <input type="checkbox" name="upload_role" id="upload_role" {% if content.role_upload() %}checked{% endif %}>
-      <label for="upload_role">{{_('Allow Uploads')}}</label>
-    </div>
-    {% endif %}
-    <div class="form-group">
-      <input type="checkbox" name="edit_role" data-control="edit_settings" id="edit_role" {% if content.role_edit() %}checked{% endif %}>
-      <label for="edit_role">{{_('Allow Edit')}}</label>
-    </div>
-    <div data-related="edit_settings">
-      <div class="form-group">
-        <input type="checkbox" name="delete_role" id="delete_role" {% if content.role_delete_books() %}checked{% endif %}>
-        <label for="delete_role">{{_('Allow Delete Books')}}</label>
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('User Permissions')}}</h4>
+      <p class="settings-explanation">{{_('Configure what actions this user is allowed to perform.')}}</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-top: 20px;">
+        {% if not content.role_anonymous() %}
+        <div>
+          <input type="checkbox" name="admin_role" id="admin_role" {% if content.role_admin() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="admin_role">{{_('Admin User')}}</label>
+        </div>
+        {% endif %}
+        
+        <div>
+          <input type="checkbox" name="download_role" id="download_role" {% if content.role_download() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="download_role">{{_('Allow Downloads')}}</label>
+        </div>
+        
+        <div>
+          <input type="checkbox" name="viewer_role" id="viewer_role" {% if content.role_viewer() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="viewer_role">{{_('Allow eBook Viewer')}}</label>
+        </div>
+        
+        {% if config.config_uploading %}
+        <div>
+          <input type="checkbox" name="upload_role" id="upload_role" {% if content.role_upload() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="upload_role">{{_('Allow Uploads')}}</label>
+        </div>
+        {% endif %}
+        
+        <div>
+          <input type="checkbox" name="edit_role" data-control="edit_settings" id="edit_role" {% if content.role_edit() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="edit_role">{{_('Allow Edit')}}</label>
+        </div>
+        
+        <div data-related="edit_settings">
+          <input type="checkbox" name="delete_role" id="delete_role" {% if content.role_delete_books() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="delete_role">{{_('Allow Delete Books')}}</label>
+        </div>
+        
+        {% if not content.role_anonymous() %}
+        <div>
+          <input type="checkbox" name="passwd_role" id="passwd_role" {% if content.role_passwd() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="passwd_role">{{_('Allow Changing Password')}}</label>
+        </div>
+        
+        <div>
+          <input type="checkbox" name="edit_shelf_role" id="edit_shelf_role" {% if content.role_edit_shelfs() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="edit_shelf_role">{{_('Allow Editing Public Shelves')}}</label>
+        </div>
+        {% endif %}
       </div>
     </div>
-    {% if not content.role_anonymous() %}
-      <div class="form-group">
-        <input type="checkbox" name="passwd_role" id="passwd_role" {% if content.role_passwd() %}checked{% endif %}>
-        <label for="passwd_role">{{_('Allow Changing Password')}}</label>
-      </div>
-      <div class="form-group">
-        <input type="checkbox" name="edit_shelf_role" id="edit_shelf_role" {% if content.role_edit_shelfs() %}checked{% endif %}>
-        <label for="edit_shelf_role">{{_('Allow Editing Public Shelves')}}</label>
-      </div>
     {% endif %}
-  {% endif %}
-    {% if kobo_support and not content.role_anonymous() and not simple%}
-    <div class="form-group">
-      <input type="checkbox" name="kobo_only_shelves_sync" id="kobo_only_shelves_sync" {% if content.kobo_only_shelves_sync %}checked{% endif %}>
-      <label for="kobo_only_shelves_sync">{{_('Sync only books in selected shelves with Kobo')}}</label>
+    
+    <!-- Magic Shelves Visibility Card -->
+    {% if not content.role_anonymous() and not new_user %}
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('Magic Shelves Visibility')}}</h4>
+      <p class="settings-explanation">{{_('Uncheck shelves you want to hide from your sidebar. System shelves cannot be deleted, only hidden. Public shelves from other users can also be hidden.')}}</p>
+      
+      {% if system_shelf_templates|length > 0 %}
+      <div style="margin-top: 20px; margin-bottom: 20px;">
+        <strong style="color: #ffc200;">{{_('Default System Shelves:')}}</strong>
+      </div>
+      <div style="display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                  gap: 8px;
+                  margin-left: 10px;
+                  background: #202c34a3;
+                  padding: 2rem;">
+        {% for key, template in system_shelf_templates.items() %}
+        <div>
+          <input type="checkbox" 
+                name="show_magic_shelf_{{ key }}" 
+                id="show_magic_shelf_{{ key }}" 
+                {% if key not in hidden_shelf_templates %}checked{% endif %}
+                style="accent-color: var(--color-secondary);">
+          <label for="show_magic_shelf_{{ key }}">{{ template['icon'] }} {{ template['name'] }}</label>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      {% set all_public_shelves = visible_public_shelves + hidden_custom_shelves %}
+      {% if all_public_shelves|length > 0 %}
+      <div style="margin-top: 30px; margin-bottom: 20px;">
+        <strong style="color: #ffc200;">{{_('Public Shelves:')}}</strong>
+      </div>
+      <div style="display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                  gap: 8px;
+                  margin-left: 10px;
+                  background: #202c34a3;
+                  padding: 2rem;
+                  margin-bottom: 2rem;">
+        {% for shelf in all_public_shelves %}
+        <div>
+          <input type="checkbox" 
+                 name="show_custom_shelf_{{ shelf.id }}" 
+                 id="show_custom_shelf_{{ shelf.id }}"
+                 {% if shelf.id not in hidden_custom_shelf_ids %}checked{% endif %}
+                 style="accent-color: var(--color-secondary);">
+          <label for="show_custom_shelf_{{ shelf.id }}">{{ shelf.icon }} {{ shelf.name }} <small style="color: #888;">(by {{ shelf.user.name }})</small></label>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      {% if system_shelf_templates|length > 0 or all_public_shelves|length > 0 %}
+      <div class="settings-disclaimer" style="margin-top: 25px !important; padding-top: 20px; border-top: 1px solid #5c6b74;">
+        {% if system_shelf_templates|length > 0 %}
+        {{_('%(visible)s of %(total)s default shelves visible', visible=(system_shelf_templates|length - hidden_shelf_templates|length), total=system_shelf_templates|length)}}
+        {% endif %}
+        {% if all_public_shelves|length > 0 %}
+        {% set visible_count = all_public_shelves|length - hidden_custom_shelf_ids|length %}
+        {% if system_shelf_templates|length > 0 %} • {% endif %}{{_('%(visible)s of %(total)s public shelves visible', visible=visible_count, total=all_public_shelves|length)}}
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
     {% endif %}
-    </div>
-    <div class="col-sm-12">
-      <div id="user_submit" class="btn btn-default">{{_('Save')}}</div>
+    
+    <!-- Action Buttons -->
+    <div style="margin-bottom: 4rem; display: flex; flex-direction: column; gap: 0.5rem;">
+      <div id="user_submit" class="btn btn-default" style="width: -webkit-fill-available;">{{_('Save')}}</div>
       {% if not profile %}
-        <div class="btn btn-default" data-back="{{ url_for('admin.admin') }}" id="back">{{_('Cancel')}}</div>
+        <div class="btn btn-default" data-back="{{ url_for('admin.admin') }}" id="back" style="width: -webkit-fill-available;">{{_('Cancel')}}</div>
       {% endif %}
       {% if current_user and current_user.role_admin() and not profile and not new_user and not content.role_anonymous() %}
-        <div class="btn btn-danger" id="btndeluser" data-value="{{ content.id }}" data-remote="false" >{{_('Delete User')}}</div>
+        <div class="btn btn-danger" id="btndeluser" data-value="{{ content.id }}" data-remote="false" style="width: -webkit-fill-available;">{{_('Delete User')}}</div>
       {% endif %}
-    </div>
     </div>
   </form>
 </div>
@@ -181,12 +535,190 @@
   </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const opdsLabels = {{ opds_root_labels | tojson }};
+  const opdsOrderRaw = "{{ opds_root_order_string }}";
+  const opdsHiddenRaw = "{{ opds_hidden_entries_string }}";
+
+  function parseOrder(raw) {
+    if (!raw) return [];
+    return raw.split(',').map(item => item.trim()).filter(Boolean);
+  }
+
+  function buildOrderList(labels, order) {
+    const labelMap = new Map(labels.map(item => [item.key, item.label]));
+    const seen = new Set();
+    const result = [];
+    order.forEach(key => {
+      if (labelMap.has(key) && !seen.has(key)) {
+        result.push(key);
+        seen.add(key);
+      }
+    });
+    labels.forEach(item => {
+      if (!seen.has(item.key)) {
+        result.push(item.key);
+        seen.add(item.key);
+      }
+    });
+    return result;
+  }
+
+  function renderOpdsOrderList() {
+    const container = document.getElementById('opds_root_order_list');
+    if (!container) return;
+
+    const order = buildOrderList(opdsLabels, parseOrder(opdsOrderRaw));
+    container.innerHTML = '';
+
+    const hiddenSet = new Set(parseOrder(opdsHiddenRaw));
+    order.forEach(key => {
+      const label = opdsLabels.find(item => item.key === key)?.label || key;
+      const isHidden = hiddenSet.has(key);
+      const li = document.createElement('li');
+      li.className = 'opds-order-item';
+      li.dataset.key = key;
+      li.innerHTML = `
+        <span class="opds-order-drag-handle">☰</span>
+        <span class="opds-order-label">${label}</span>
+        <label class="opds-order-toggle">
+          <input type="checkbox" class="opds-order-visible" data-key="${key}" ${isHidden ? '' : 'checked'}>
+          {{_('Visible')}}
+        </label>
+      `;
+      container.appendChild(li);
+    });
+
+    setupOpdsDragDrop();
+    updateOpdsHiddenInput();
+  }
+
+  function setupOpdsDragDrop() {
+    let dragged = null;
+    let isDragging = false;
+
+    const items = document.querySelectorAll('.opds-order-item');
+    items.forEach(item => {
+      item.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        dragged = this;
+        this.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging || !dragged) return;
+      const container = document.getElementById('opds_root_order_list');
+      const afterElement = getOpdsAfterElement(container, e.clientY);
+      if (afterElement == null) {
+        container.appendChild(dragged);
+      } else {
+        container.insertBefore(dragged, afterElement);
+      }
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      if (dragged) {
+        dragged.classList.remove('dragging');
+        dragged = null;
+      }
+      document.body.style.userSelect = '';
+      updateOpdsHiddenInput();
+    });
+  }
+
+  function getOpdsAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.opds-order-item:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      }
+      return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function updateOpdsHiddenInput() {
+    const container = document.getElementById('opds_root_order_list');
+    const hiddenInput = document.getElementById('opds_root_order');
+    const hiddenEntriesInput = document.getElementById('opds_hidden_entries');
+    if (!container || !hiddenInput) return;
+    const items = container.querySelectorAll('.opds-order-item');
+    const order = Array.from(items).map(item => item.dataset.key);
+    hiddenInput.value = order.join(',');
+
+    if (!hiddenEntriesInput) return;
+    const hidden = [];
+    container.querySelectorAll('.opds-order-visible').forEach(checkbox => {
+      if (!checkbox.checked) {
+        hidden.push(checkbox.dataset.key);
+      }
+    });
+    hiddenEntriesInput.value = hidden.join(',');
+  }
+
+  const form = document.querySelector('form[role="form"]');
+  if (form) {
+    form.addEventListener('submit', updateOpdsHiddenInput);
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.classList.contains('opds-order-visible')) {
+      updateOpdsHiddenInput();
+    }
+  });
+
+  renderOpdsOrderList();
+});
+</script>
+
 {% endblock %}
 {% block modal %}
 {{ restrict_modal() }}
 {{ delete_confirm_modal() }}
 {% endblock %}
 {% block js %}
+<script>
+  // Load custom profile picture if available
+  (function() {
+    const username = "{{ content.name }}";
+    const profilePictureElement = document.getElementById('user-profile-picture');
+    
+    if (username && profilePictureElement) {
+      // Fetch user profiles from the JSON endpoint
+      fetch('{{ url_for("profile_pictures.user_profiles_json") }}')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to load profile pictures');
+          }
+          return response.json();
+        })
+        .then(userProfiles => {
+          console.log('User profiles loaded:', userProfiles);
+          console.log('Looking for username:', username);
+          if (userProfiles[username]) {
+            // User has a custom profile picture
+            console.log('Setting custom profile picture:', userProfiles[username]);
+            profilePictureElement.style.backgroundImage = `url(${userProfiles[username]})`;
+          } else {
+            // No custom profile picture - keep default SVG
+            console.log('No custom profile picture found, using default');
+            profilePictureElement.classList.add('no-custom-picture');
+          }
+        })
+        .catch(error => {
+          console.error('Could not load user profile picture:', error);
+          profilePictureElement.classList.add('no-custom-picture');
+        });
+    }
+  })();
+</script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-editable.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-editable.min.js') }}"></script>

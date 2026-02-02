@@ -1,0 +1,193 @@
+<!-- System Logs Content (formerly cwa_stats.html) -->
+
+<div class="stats-hero">
+    <h1>⚙️ Server Activity Dashboard</h1>
+    <p>Track server activity, file conversions, automatic fixes ect.</p>
+</div>
+
+<div>
+    <h3>Calibre-Web Automated - Server Stats</h3>
+    <div class="cwa_stats_container">
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Total Books</div>
+        <div class="cwa_stats_value">{{cwa_stats["total_books"]}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Books Enforced</div>
+        <div class="cwa_stats_value">{{cwa_stats["cwa_enforcement"]}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Books Converted</div>
+        <div class="cwa_stats_value">{{cwa_stats["cwa_conversions"]}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Books Fixed</div>
+        <div class="cwa_stats_value">{{cwa_stats["epub_fixes"]}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hardcover Auto-Fetch Stats -->
+  {% if hardcover_stats %}
+  <hr style="width: 85%;text-align: center;margin-bottom: 36px;border-width: medium;border-color: #96a2a9;border-radius: 8px;">
+  
+  <div>
+    <h3>🔖 Hardcover Auto-Fetch Statistics</h3>
+    <div class="cwa_stats_container">
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Total Processed</div>
+        <div class="cwa_stats_value">{{hardcover_stats.total_processed}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Auto-Matched</div>
+        <div class="cwa_stats_value" style="color: #5cb85c;">{{hardcover_stats.total_auto_matched}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Pending Review</div>
+        <div class="cwa_stats_value" style="color: #f0ad4e;">{{hardcover_stats.pending_review}}</div>
+      </div>
+      <div class="cwa_stats_section">
+        <div class="cwa_stats_header">Manually Reviewed</div>
+        <div class="cwa_stats_value" style="color: #5bc0de;">{{hardcover_stats.manually_reviewed}}</div>
+      </div>
+    </div>
+    
+    {% if hardcover_stats.pending_review > 0 %}
+    <div style="margin-top: 15px; text-align: center;">
+      <a href="{{url_for('admin.hardcover_review_matches')}}" class="btn btn-warning" style="font-size: 1.1em; padding: 10px 20px;">
+        📋 {{_('Review %(count)s Pending Match(es)', count=hardcover_stats.pending_review)}}
+      </a>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <hr style="width: 85%;text-align: center;margin-bottom: 36px;border-width: medium;border-color: #96a2a9;border-radius: 8px;">
+
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Calibre-Web Automated Conversion History</h3>
+        <a class="btn btn-default stats_see_more_btn" href="{{ url_for('cwa_stats.show_full_conversions') }}">{{_('Click to See More')}}</a>
+      </div>
+      <br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_conversion %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_conversions|reverse %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Calibre-Web Automated Import History</h3>
+        <a class="btn btn-default stats_see_more_btn" href="{{ url_for('cwa_stats.show_full_imports') }}">{{_('Click to See More')}}</a>
+      </div>
+      <br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_import %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_imports|reverse %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Calibre-Web Automated EPUB Fixer History</h3>
+        <a class="btn btn-default stats_see_more_btn" href="{{ url_for('cwa_stats.show_full_epub_fixer') }}">{{_('Click to See More')}}</a>
+      </div>
+      <br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_epub_fixer %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_epub_fixer|reverse %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h4 style="margin: 0;"><i>EPUB Fixer History with Paths & Fixes</i></h4>
+        <a class="btn btn-default stats_see_more_btn" href="{{ url_for('cwa_stats.show_full_epub_fixer_with_paths_fixes') }}">{{_('Click to See More')}}</a>
+      </div>
+      <br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_epub_fixer_with_fixes %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_epub_fixer_with_fixes|reverse %}
+        <tr>
+          {% for cell in row %}
+          <td>
+            <div style="max-height: 20rem; overflow-y: auto;">{{ cell | replace("\n", "<br>") | safe }}</div>
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Calibre-Web Automated Enforcement History</h3>
+        <a class="btn btn-default stats_see_more_btn" href="{{url_for('cwa_stats.show_full_enforcement')}}">{{_('Click to See More')}}</a>
+      </div>
+      <br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_enforcement %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_enforcement|reverse %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h4 style="margin: 0;"><i>Enforcement History with Paths</i></h4>
+        <a class="btn btn-default stats_see_more_btn" href="{{ url_for('cwa_stats.show_full_enforcement_path') }}">{{_('Click to See More')}}</a>
+      </div>
+      <br>
+      <table class="table table-striped">
+        <tr>
+          {% for header in headers_enforcement_with_paths %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in data_enforcement_with_paths|reverse %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>

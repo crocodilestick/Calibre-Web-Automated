@@ -283,6 +283,9 @@
       </div>
       <div class="modal-body">
         <div class="text-left">{{_('Edit the fields you want changed. Blank fields will be ignored:')}}</div>
+        <div class="text-left text-muted" style="margin-top: 6px;">
+          {{_('Multiple values are supported for Authors, Tags/Categories, Languages, and Publishers. Use comma-separated values (e.g., "Name1, Name2").')}}
+        </div>
           <br>
           Title:
           <input class="form-control" id="title_input">
@@ -300,7 +303,7 @@
           <input class="form-control" id="authors_input">
           <p></p>
 
-          Categories:
+          Tags / Categories:
           <input class="form-control" id="categories_input">
           <p></p>
 

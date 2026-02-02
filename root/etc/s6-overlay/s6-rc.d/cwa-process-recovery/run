@@ -1,0 +1,143 @@
+#!/usr/bin/with-contenv bash
+
+echo "[cwa-process-recovery] Starting process recovery and cleanup..."
+
+# Function to check if a process is running
+is_process_running() {
+    local pid="$1"
+    [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null
+}
+
+# Function to safely kill a process
+safe_kill_process() {
+    local pid="$1"
+    local name="$2"
+    
+    if is_process_running "$pid"; then
+        echo "[cwa-process-recovery] Killing stale process $name (PID: $pid)"
+        
+        # Try SIGTERM first
+        kill -TERM "$pid" 2>/dev/null || true
+        sleep 2
+        
+        # If still running, use SIGKILL
+        if is_process_running "$pid"; then
+            echo "[cwa-process-recovery] Process $pid didn't respond to SIGTERM, using SIGKILL"
+            kill -KILL "$pid" 2>/dev/null || true
+        fi
+        
+        echo "[cwa-process-recovery] Process $name (PID: $pid) terminated"
+        return 0
+    else
+        echo "[cwa-process-recovery] Process $name (PID: $pid) is not running"
+        return 1
+    fi
+}
+
+# Clean up stale temporary processing files
+cleanup_temp_files() {
+    echo "[cwa-process-recovery] Cleaning up stale temporary files..."
+    
+    local temp_dirs=(
+        "/config/.cwa_conversion_tmp"
+        "/tmp"
+    )
+    
+    local cleaned_count=0
+    
+    for temp_dir in "${temp_dirs[@]}"; do
+        if [ -d "$temp_dir" ]; then
+            # Clean up old staging directories (older than 1 hour)
+            if find "$temp_dir" -name "staging*" -type d -mmin +60 -exec rm -rf {} + 2>/dev/null; then
+                ((cleaned_count++))
+            fi
+            
+            # Clean up old conversion temp files (older than 1 hour)
+            if find "$temp_dir" -name "*.tmp" -mmin +60 -delete 2>/dev/null; then
+                ((cleaned_count++))
+            fi
+            if find "$temp_dir" -name "*_converting_*" -mmin +60 -delete 2>/dev/null; then
+                ((cleaned_count++))
+            fi
+        fi
+    done
+    
+    if [ $cleaned_count -eq 0 ]; then
+        echo "[cwa-process-recovery] No stale temporary files found"
+    else
+        echo "[cwa-process-recovery] Cleaned up $cleaned_count stale temporary file(s)"
+    fi
+}
+
+# Reset processing status if stuck
+reset_processing_status() {
+    echo "[cwa-process-recovery] Checking processing status..."
+    
+    local status_file="/config/cwa_ingest_status"
+    
+    if [ -f "$status_file" ]; then
+        local status_content=$(cat "$status_file" 2>/dev/null || echo "unknown")
+        
+        # Check if status indicates processing but no processor is running
+        if [[ "$status_content" == processing:* ]]; then
+            # Extract the timestamp from the status
+            local timestamp=$(echo "$status_content" | cut -d':' -f3- 2>/dev/null || echo "")
+            
+            if [ -n "$timestamp" ]; then
+                # Convert timestamp to epoch for comparison
+                local status_epoch=$(date -d "$timestamp" +%s 2>/dev/null || echo "0")
+                local current_epoch=$(date +%s)
+                local age_minutes=$(( (current_epoch - status_epoch) / 60 ))
+                
+                # If processing status is older than 30 minutes, reset it
+                if [ $age_minutes -gt 30 ]; then
+                    echo "[cwa-process-recovery] Processing status is $age_minutes minutes old, resetting to idle"
+                    echo "idle" > "$status_file"
+                else
+                    echo "[cwa-process-recovery] Processing status is $age_minutes minutes old, keeping as-is"
+                fi
+            else
+                echo "[cwa-process-recovery] Invalid processing status timestamp, resetting to idle"
+                echo "idle" > "$status_file"
+            fi
+        else
+            echo "[cwa-process-recovery] Processing status is: $status_content"
+        fi
+    else
+        echo "[cwa-process-recovery] No processing status file found, creating with idle status"
+        echo "idle" > "$status_file"
+    fi
+}
+
+# Check for orphaned processes that might be related to CWA
+cleanup_orphaned_processes() {
+    echo "[cwa-process-recovery] Checking for orphaned CWA processes..."
+    
+    # Look for Python processes running CWA scripts
+    local cwa_processes=$(pgrep -f "python.*ingest_processor.py\|python.*convert_library.py\|python.*kindle_epub_fixer.py" 2>/dev/null || true)
+    
+    if [ -n "$cwa_processes" ]; then
+        echo "[cwa-process-recovery] Found potential orphaned CWA processes:"
+        echo "$cwa_processes" | while read -r pid; do
+            if [ -n "$pid" ]; then
+                local cmd=$(ps -p "$pid" -o args= 2>/dev/null || echo "unknown")
+                echo "[cwa-process-recovery] PID $pid: $cmd"
+                
+                # For now, just log them - we could add logic to kill very old ones
+                # safe_kill_process "$pid" "orphaned-cwa-process"
+            fi
+        done
+    else
+        echo "[cwa-process-recovery] No orphaned CWA processes found"
+    fi
+}
+
+# Main recovery sequence
+echo "[cwa-process-recovery] ========== Starting Recovery Sequence =========="
+
+cleanup_temp_files  
+reset_processing_status
+cleanup_orphaned_processes
+
+echo "[cwa-process-recovery] ========== Recovery Sequence Complete =========="
+echo "[cwa-process-recovery] Process recovery service finished successfully"

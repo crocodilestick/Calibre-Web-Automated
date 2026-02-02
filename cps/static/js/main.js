@@ -125,7 +125,7 @@ $(".container-fluid").bind('drop', function (e) {
         $(this).css('background', '');
         const dt = new DataTransfer();
         jQuery.each(files, function (index, item) {
-            if (test.indexOf(item.name.substr(item.name.lastIndexOf('.'))) !== -1) {
+            if (test.toLowerCase().indexOf(item.name.substr(item.name.lastIndexOf('.')).toLowerCase()) !== -1) {
                 dt.items.add(item);
             }
         });
@@ -390,7 +390,9 @@ $(function() {
         selectedLayoutMode = "fitRows";
     }
 
-    $(".discover .row").isotope({
+    $(".discover .row").filter(function() {
+        return $(this).find(".book").length > 0;
+    }).isotope({
         // options
         itemSelector : ".book",
         layoutMode : selectedLayoutMode
@@ -508,14 +510,154 @@ $(function() {
     });
     $("#admin_refresh_cover_cache").click(function() {
         confirmDialog("admin_refresh_cover_cache", "GeneralChangeModal", 0, function () {
+            // Show loading state
+            $("#admin_refresh_cover_cache").prop('disabled', true).text('Starting...');
+            
+            // Remove any existing thumbnail notifications
+            $("#thumbnail_progress_notification").remove();
+            
             $.ajax({
                 method:"post",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 url: getPath() + "/ajax/updateThumbnails",
+                success: function(response) {
+                    if (response.success && response.book_count > 0 && response.task_id) {
+                        // Show initial message with CWA-style notification
+                        var notificationHtml = 
+                            '<div class="row-fluid text-center">' +
+                                '<div id="thumbnail_progress_notification" class="alert alert-info refresh-cwa">' +
+                                    '<span id="thumbnail_message">' + response.message + '</span>' +
+                                    '<br><span id="thumbnail_progress_status">Starting...</span>' +
+                                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                                        '<span aria-hidden="true">&times;</span>' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>';
+                        
+                        // Insert after the navbar
+                        $(".navbar").after(notificationHtml);
+                        
+                        // Start polling for completion
+                        pollTaskCompletion(response.task_id);
+                    } else {
+                        // Re-enable button immediately if no work to do
+                        $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
+                        
+                        // Show simple notification for no work case
+                        var alertClass = response.book_count > 0 ? 'alert-info' : 'alert-warning';
+                        var notificationHtml = 
+                            '<div class="row-fluid text-center">' +
+                                '<div id="thumbnail_progress_notification" class="alert ' + alertClass + ' refresh-cwa">' +
+                                    response.message +
+                                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                                        '<span aria-hidden="true">&times;</span>' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>';
+                        
+                        $(".navbar").after(notificationHtml);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Re-enable button
+                    $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
+                    
+                    // Show error message
+                    var errorMsg = xhr.responseJSON && xhr.responseJSON.message ? 
+                        xhr.responseJSON.message : 
+                        'Failed to start thumbnail cache refresh: ' + error;
+                    
+                    var notificationHtml = 
+                        '<div class="row-fluid text-center">' +
+                            '<div id="thumbnail_progress_notification" class="alert alert-danger">' +
+                                errorMsg +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                                    '<span aria-hidden="true">&times;</span>' +
+                                '</button>' +
+                            '</div>' +
+                        '</div>';
+                    
+                    $(".navbar").after(notificationHtml);
+                }
             });
         });
     });
+
+    // Function to poll task completion
+    function pollTaskCompletion(taskId) {
+        var pollInterval = setInterval(function() {
+            $.ajax({
+                method: "get",
+                url: getPath() + "/ajax/emailstat",
+                dataType: "json",
+                success: function(tasks) {
+                    var thumbnailTask = tasks.find(function(task) {
+                        return task.task_id === taskId;
+                    });
+                    
+                    if (thumbnailTask) {
+                        // Update progress
+                        var progressText = thumbnailTask.progress + " - " + thumbnailTask.status;
+                        $("#thumbnail_progress_status").text(progressText);
+                        
+                        // Check if task is finished
+                        if (thumbnailTask.stat === 3) { // STAT_FINISH_SUCCESS
+                            clearInterval(pollInterval);
+                            $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
+                            
+                            // Update notification to success style but keep refresh-cwa class
+                            $("#thumbnail_progress_notification")
+                                .removeClass('alert-info alert-danger alert-warning alert-success')
+                                .addClass('alert-success refresh-cwa');
+                            $("#thumbnail_message").text('✅ Thumbnail cache refresh completed successfully!');
+                            $("#thumbnail_progress_status").text('All thumbnails generated');
+                            
+                        } else if (thumbnailTask.stat === 1) { // STAT_FAIL
+                            clearInterval(pollInterval);
+                            $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
+                            
+                            // Update notification to error style but keep refresh-cwa class
+                            $("#thumbnail_progress_notification")
+                                .removeClass('alert-info alert-success alert-warning alert-danger')
+                                .addClass('alert-danger refresh-cwa');
+                            $("#thumbnail_message").text('❌ Thumbnail cache refresh failed');
+                            $("#thumbnail_progress_status").text('Error: ' + (thumbnailTask.error || 'Unknown error'));
+                        }
+                    } else {
+                        // Task not found - might be completed and cleaned up
+                        clearInterval(pollInterval);
+                        $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
+                        
+                        // Update notification to success style but keep refresh-cwa class
+                        $("#thumbnail_progress_notification")
+                            .removeClass('alert-info alert-danger alert-warning alert-success')
+                            .addClass('alert-success refresh-cwa');
+                        $("#thumbnail_message").text('✅ Thumbnail cache refresh completed!');
+                        $("#thumbnail_progress_status").text('Task finished');
+                    }
+                },
+                error: function() {
+                    // If we can't check status, assume completion after some time
+                    clearInterval(pollInterval);
+                    $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
+                    
+                    // Update with warning about status check failure but keep refresh-cwa class
+                    $("#thumbnail_progress_notification")
+                        .removeClass('alert-info alert-danger alert-success alert-warning')
+                        .addClass('alert-warning refresh-cwa');
+                    $("#thumbnail_message").text('⚠️ Status check failed');
+                    $("#thumbnail_progress_status").text('Task may have completed - check manually');
+                }
+            });
+        }, 2000); // Poll every 2 seconds
+        
+        // Stop polling after 10 minutes to prevent infinite polling
+        setTimeout(function() {
+            clearInterval(pollInterval);
+            $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
+        }, 600000);
+    }
 
     $("#restart_database").click(function() {
         $("#DialogHeader").addClass("hidden");
@@ -548,6 +690,32 @@ $(function() {
             success: function success(data) {
                 $("#spinner2").hide();
                 $("#DialogContent").html(data.text);
+                $("#DialogFinished").removeClass("hidden");
+            }
+        });
+    });
+    $("#hardcover_auto_fetch").click(function() {
+        $("#DialogHeader").addClass("hidden");
+        $("#DialogFinished").addClass("hidden");
+        $("#DialogContent").html("");
+        $("#spinner2").show();
+        $.ajax({
+            method: "post",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            url: getPath() + "/hardcover_auto_fetch",
+            success: function success(data) {
+                $("#spinner2").hide();
+                $("#DialogContent").html(data.text);
+                $("#DialogFinished").removeClass("hidden");
+            },
+            error: function error(xhr) {
+                $("#spinner2").hide();
+                var errorMessage = "Error starting Hardcover auto-fetch";
+                if (xhr.responseJSON && xhr.responseJSON.text) {
+                    errorMessage = xhr.responseJSON.text;
+                }
+                $("#DialogContent").html(errorMessage);
                 $("#DialogFinished").removeClass("hidden");
             }
         });
@@ -838,7 +1006,9 @@ $(function() {
     });
 
     $(window).resize(function() {
-        $(".discover .row").isotope("layout");
+        $(".discover .row").filter(function() {
+            return !!$(this).data("isotope");
+        }).isotope("layout");
     });
 
     $("#import_ldap_users").click(function() {
@@ -863,7 +1033,9 @@ $(function() {
         $(this).parent().find("a.author-name").slice($(this).data("authors-max")).toggle();
         $(this).parent().find("span.author-hidden-divider").toggle();
         $(this).html() === $(this).data("collapse-caption") ? $(this).html("(...)") : $(this).html($(this).data("collapse-caption"));
-        $(".discover .row").isotope("layout");
+        $(".discover .row").filter(function() {
+            return !!$(this).data("isotope");
+        }).isotope("layout");
     });
 
     $(".update-view").click(function(e) {

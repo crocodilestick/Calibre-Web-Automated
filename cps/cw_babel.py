@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -30,6 +30,9 @@ def get_locale():
     preferred = list()
     if has_request_context() and request.accept_languages:
         for x in request.accept_languages.values():
+            # Skip wildcard '*' from Accept-Language headers (common in internal API requests)
+            if x == '*':
+                continue
             try:
                 preferred.append(str(Locale.parse(x.replace('-', '_'))))
             except (UnknownLocaleError, ValueError) as e:

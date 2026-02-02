@@ -6,26 +6,38 @@ __pycache__/
 # C extensions
 *.so
 
-# Enviroment Guff
+# Test tracking (personal use, not for repo)
+TEST_IMPLEMENTATION_STATUS.md
+TEST_FIXTURES_IMPLEMENTATION.md
+TESTING_STRATEGY.md
 
+# Enviroment Guff
 .devcontainer
 poetry.lock
 replit.nix
-pyproject.toml
 .replit
 .breakpoints
 .venv
 .vscode
 .history
 cwa-wiki/
+docs/
+.venv-activate.sh
+test_venv
+cwa.code-workspace
+
+
 
 # Test Scripts
-test*
-TEST
 DEV
 */REFERENCE
 cwa.db
 *.epub
+# BUT allow test fixture ebooks
+!tests/fixtures/**/*.epub
+!tests/fixtures/**/*.mobi
+!tests/fixtures/**/*.txt
+!tests/fixtures/**/*.pdf
 
 # Dev files
 *.txz
@@ -70,6 +82,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+coverage.md
 *.cover
 *.py,cover
 .hypothesis/
@@ -146,13 +159,14 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+*.env
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+tmp/
 
 # Spyder project settings
 .spyderproject
@@ -184,3 +198,6 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Dev instance files for testing in the same folder
+instance/

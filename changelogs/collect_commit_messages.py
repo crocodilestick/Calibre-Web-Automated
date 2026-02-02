@@ -18,10 +18,10 @@ Contract / behavior:
     - --max-depth: Maximum directory depth to search (default=6) to avoid huge traversals.
     - --output: Optional output file (UTF-8). If omitted, prints to stdout.
     - --aggregate: If set, all commits across repos are merged chronologically instead of grouped by repo.
-    - --include-merges: Include merge commits (default: False).
-    - --body: Include body lines (default: subjects only).
+    - --include-merges: Include merge commits (default: True).
+    - --body: Include body lines (default: True).
     - --subjects-only: Output ONLY the commit subject lines (suppresses repo/hash/date/body formatting). Overrides --body.
-    - --markdown-list: Render output as a Markdown bullet list (commit lines become "- <text>"). Headings (### repo) preserved.
+    - --markdown-list: Render output as a Markdown bullet list (commit lines become "- <text>"). Headings (### repo) preserved. (Default: True)
     - --no-strip-newlines: Preserve blank lines inside commit bodies (default: bodies are compacted to single line).
     - --since-date / --until-date: Additional date filters applied per repo (optional, ISO format or anything git understands).
     - --reverse: Output from oldest to newest (default newest to oldest within each grouping / aggregated list).

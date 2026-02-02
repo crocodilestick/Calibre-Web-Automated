@@ -1,0 +1,217 @@
+.query-builder .rule-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    background-color: #3f3f3fad;
+    border: 1px solid transparent;
+    width: fit-content;
+}
+
+.btn-group.group-conditions {
+    display: flex;
+    gap: 0.8rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.btn-group.float-end.group-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+.rules-group-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.rule-group-container, .rule-container {
+    border-left: 2px solid #ccc;
+    padding-left: 15px;
+    margin-top: 10px;
+}
+
+.group-actions > button.btn.btn-sm.btn-success {
+    background-color: #cc7b19;
+}
+.group-actions > button.btn.btn-sm.btn-success:hover {
+    background-color: #df9844;
+}
+
+.group-actions > button.btn.btn-sm.btn-success {
+    background-color: #cc7b19;
+}
+.group-actions > button.btn.btn-sm.btn-success:hover {
+    background-color: #df9844;
+}
+.rules-list > .rule-container > .rule-filter-container > select {
+    background-color: rgb(187 187 187 / 34%);
+    color: whitesmoke;
+    text-align: center;
+    padding: 0.3rem;
+    border-radius: 6px;
+    width: --webkit-fill-available;
+}
+.rules-list > .rule-container > .rule-operator-container > select {
+    background-color: rgb(187 187 187 / 34%);
+    color: whitesmoke;
+    text-align: center;
+    padding: 0.3rem;
+    border-radius: 6px;
+}
+.rule-actions > button.btn.btn-sm.btn-danger {
+    border-radius: 6px;
+    margin: 0.3rem;
+    padding: 0.3rem 1.6rem;
+}
+.rule-value-container {
+    border-left: none !important;
+}
+
+.query-builder .rules-group-container {
+    padding: 10px;
+    padding-bottom: 6px;
+    border: 1px solid transparent;
+    background: rgb(196 200 202 / 21%);
+}
+
+.rule-value-container > select.form-select {
+    background-color: #1a252ea3;
+    padding: 0.35rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    text-align: center;
+}
+.rules-list > .rule-container > .rule-operator-container > select > option {
+    background-color: #3c4d55;
+    text-align: left;
+}
+.rules-list > .rule-container > .rule-operator-container > select > optgroup > option {
+    background-color: #4f565bad;
+    margin-left: 0px !important;
+}
+.rules-list > .rule-container > .rule-operator-container > select > optgroup {
+    background-color: #384850;
+    text-align: left;
+}
+
+.rules-list > .rule-container > .rule-filter-container > select > option {
+    background-color: #3c4d55;
+    text-align: left;
+}
+
+a.btn.btn-secondary {
+    background-color: #cc7b19;
+    color: whitesmoke;
+    margin-left: 10px;
+}
+
+a.btn.btn-secondary:hover {
+    background-color: #1a252e;
+    color: whitesmoke;
+    transition: 0.2s;
+}
+
+/* Mobile Responsive Enhancements */
+@media (max-width: 767px) {
+    .query-builder .rule-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .query-builder .rules-group-container {
+        padding: 8px;
+    }
+    
+    .rule-group-container, .rule-container {
+        padding-left: 10px;
+        border-left: 1px solid #ccc;
+    }
+    
+    .rules-group-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-group.group-conditions,
+    .btn-group.float-end.group-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .btn-group.group-conditions > .btn,
+    .btn-group.group-actions > .btn {
+        flex: 1;
+        min-height: 44px; /* Touch-friendly target size */
+        font-size: 14px;
+    }
+    
+    .rule-actions > button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    select.form-control,
+    input.form-control {
+        min-height: 44px;
+        font-size: 16px; /* Prevents iOS zoom on focus */
+    }
+    
+    .rules-list > .rule-container > .rule-filter-container > select,
+    .rules-list > .rule-container > .rule-operator-container > select,
+    .rule-value-container > select.form-select {
+        width: 100%;
+        min-height: 44px;
+    }
+}
+
+/* Tablet Adjustments */
+@media (min-width: 768px) and (max-width: 991px) {
+    .btn-group.group-conditions > .btn,
+    .btn-group.group-actions > .btn {
+        min-height: 38px;
+    }
+}
+
+/* Improved Visual Hierarchy */
+.query-builder .rules-group-container {
+    position: relative;
+}
+
+.query-builder .rules-group-container::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #cc7b19;
+}
+
+/* Better Focus States */
+.query-builder select:focus,
+.query-builder input:focus {
+    outline: 2px solid #cc7b19;
+    outline-offset: 2px;
+    border-color: #cc7b19;
+}
+
+/* Loading State */
+.query-builder.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Empty State Message */
+.query-builder-empty-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-style: italic;
+}

@@ -259,6 +259,12 @@ $("#btn-upload-cover").on("change", function () {
     $("#upload-cover").text(filename);
 });
 
+$("#book_edit_frm").on("submit", function () {
+    if (typeof tinymce !== "undefined" && typeof tinymce.triggerSave === "function") {
+        tinymce.triggerSave();
+    }
+});
+
 $("#xchange").click(function () {
     this.blur();
     var title = $("#title").val();

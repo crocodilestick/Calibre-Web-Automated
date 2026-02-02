@@ -118,12 +118,14 @@
             font-size: 0.85em;
         }
 
-        .meta-pill.tag-pill {
+        .meta-pill.tag-pill,
+        .meta-pill.shelf-pill {
             position: relative;
             padding-right: 20px;
         }
 
-        .meta-pill.tag-pill::after {
+        .meta-pill.tag-pill::after,
+        .meta-pill.shelf-pill::after {
             content: "•";
             position: absolute;
             right: 8px;
@@ -134,11 +136,13 @@
             line-height: 1;
         }
 
-        .meta-pill.tag-pill:hover::after {
+        .meta-pill.tag-pill:hover::after,
+        .meta-pill.shelf-pill:hover::after {
             opacity: 0;
         }
 
-        .tag-remove {
+        .tag-remove,
+        .shelf-remove {
             position: absolute;
             right: 0;
             top: 0;
@@ -158,24 +162,29 @@
             z-index: 1;
         }
 
-        .meta-pill.tag-pill:hover .tag-remove {
+        .meta-pill.tag-pill:hover .tag-remove,
+        .meta-pill.shelf-pill:hover .shelf-remove {
             background: rgba(255, 255, 255, 0.08);
             border-radius: 999px;
         }
 
-        .meta-pill.tag-pill:hover .tag-remove {
+        .meta-pill.tag-pill:hover .tag-remove,
+        .meta-pill.shelf-pill:hover .shelf-remove {
             display: inline-flex;
         }
 
-        .tag-add {
+        .tag-add,
+        .shelf-add {
             cursor: pointer;
         }
 
-        button#add-tag-pill:hover {
+        button#add-tag-pill:hover,
+        button#add-shelf-pill:hover {
             background: rgba(255, 255, 255, 0.3);
         }
 
-        .tag-add-input {
+        .tag-add-input,
+        .shelf-add-select {
             background: transparent;
             border: none;
             color: inherit;
@@ -183,6 +192,25 @@
             outline: none;
             width: 140px;
             min-width: 80px;
+        }
+
+        .shelf-add-select {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 999px;
+            padding: 2px 28px 2px 10px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        .shelf-add-select:focus {
+            border-color: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+        }
+
+        .shelf-add-select option {
+            background: rgba(15, 15, 15, 0.98);
+            color: rgba(255, 255, 255, 0.95);
         }
 
         .meta-pill.uuid-copy {
@@ -710,6 +738,38 @@
                                     {% endif %}
                                 </div>
                             {% endif %}
+                            {% if current_user.is_authenticated and (current_user.shelf.all() or g.shelves_access) %}
+                                {% set shelf_state = namespace(has_available=false) %}
+                                {% for shelf in g.shelves_access %}
+                                    {% if not shelf.id in books_shelfs and ( not shelf.is_public or current_user.role_edit_shelfs() ) %}
+                                        {% set shelf_state.has_available = true %}
+                                    {% endif %}
+                                {% endfor %}
+                                <div class="shelves meta-chip" id="detail-shelves"
+                                     data-book-id="{{ entry.id }}">
+                                    <span class="glyphicon glyphicon-list"></span>
+                                    {% for shelf in g.shelves_access %}
+                                        {% if shelf.id in books_shelfs %}
+                                            <a href="{{ url_for('shelf.show_shelf', shelf_id=shelf.id) }}"
+                                               class="meta-pill meta-link shelf-pill" role="button"
+                                               data-shelf-id="{{ shelf.id }}"
+                                               data-shelf-name="{{ shelf.name }}"
+                                               data-add-href="{{ url_for('shelf.add_to_shelf', book_id=entry.id, shelf_id=shelf.id) }}"
+                                               data-remove-href="{{ url_for('shelf.remove_from_shelf', book_id=entry.id, shelf_id=shelf.id) }}">
+                                                <span class="shelf-label">{{ shelf.name }}{% if shelf.is_public == 1 %} {{ _('(Public)') }}{% endif %}</span>
+                                                {% if (not shelf.is_public and shelf.user_id == current_user.id) or (shelf.is_public and current_user.role_edit_shelfs()) %}
+                                                    <button type="button" class="shelf-remove" aria-label="{{ _('Remove from shelf') }}">&times;</button>
+                                                {% endif %}
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if shelf_state.has_available %}
+                                        <button type="button" class="meta-pill shelf-add" id="add-shelf-pill" data-label="{{ _('Add to shelf') }}">
+                                            + {{ _('Add to shelf') }}
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                             {% if entry.publishers|length > 0 %}
                                 <div class="publishers meta-chip">
                                     <span>{{ _('Publisher') }}:</span>
@@ -1163,6 +1223,119 @@
                     return;
                 }
                 submitTags($input.val());
+            });
+        });
+
+        var $shelvesContainer = $("#detail-shelves");
+        var availableShelves = [
+            {% for shelf in g.shelves_access %}
+                {% if not shelf.id in books_shelfs and ( not shelf.is_public or current_user.role_edit_shelfs() ) %}
+                {
+                    id: {{ shelf.id }},
+                    name: {{ shelf.name|tojson }},
+                    addUrl: {{ url_for('shelf.add_to_shelf', book_id=entry.id, shelf_id=shelf.id)|tojson }},
+                    removeUrl: {{ url_for('shelf.remove_from_shelf', book_id=entry.id, shelf_id=shelf.id)|tojson }},
+                    isPublic: {{ 1 if shelf.is_public else 0 }}
+                },
+                {% endif %}
+            {% endfor %}
+        ];
+        var publicSuffix = {{ _('(Public)')|tojson }};
+        var shelfFailureMessage = {{ _('Failed to update shelves')|tojson }};
+
+        function postShelfAction(url) {
+            if (!url) {
+                return;
+            }
+            $.ajax({
+                url: url,
+                method: "post",
+                data: { csrf_token: $("input[name='csrf_token']").val() }
+            }).done(function () {
+                window.location.reload();
+            }).fail(function (xhr) {
+                if ($shelvesContainer.length) {
+                    showActionToast(xhr.responseText || shelfFailureMessage, $shelvesContainer[0]);
+                }
+            });
+        }
+
+        $(document).on("click", ".shelf-remove", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $pill = $(this).closest(".shelf-pill");
+            postShelfAction($pill.data("remove-href"));
+        });
+
+        $("#add-shelf-pill").on("click", function (e) {
+            e.preventDefault();
+            var $pill = $(this);
+            if ($pill.data("editing")) {
+                $pill.find("select").focus();
+                return;
+            }
+            if (!availableShelves.length) {
+                return;
+            }
+            var label = $pill.data("label") || {{ _('Add to shelf')|tojson }};
+            var finalized = false;
+
+            function restorePill() {
+                $pill.text("+ " + label);
+                $pill.data("editing", false);
+            }
+
+            function cancelEdit() {
+                if (finalized) {
+                    return;
+                }
+                finalized = true;
+                restorePill();
+            }
+
+            function submitShelf(shelfId) {
+                if (finalized) {
+                    return;
+                }
+                finalized = true;
+                var selected = availableShelves.filter(function (shelf) {
+                    return String(shelf.id) === String(shelfId);
+                })[0];
+                restorePill();
+                if (!selected) {
+                    return;
+                }
+                postShelfAction(selected.addUrl);
+            }
+
+            var $select = $("<select>", {
+                "class": "shelf-add-select",
+                "aria-label": label
+            });
+            $select.append($("<option>", { value: "", text: label }));
+            availableShelves.forEach(function (shelf) {
+                var text = shelf.name + (shelf.isPublic ? " " + publicSuffix : "");
+                $select.append($("<option>", { value: shelf.id, text: text }));
+            });
+            $pill.empty().append($select);
+            $pill.data("editing", true);
+            $select.focus();
+            $select.on("change", function () {
+                var value = $(this).val();
+                if (!value) {
+                    cancelEdit();
+                } else {
+                    submitShelf(value);
+                }
+            });
+            $select.on("blur", function () {
+                setTimeout(cancelEdit, 150);
+            });
+            $select.on("keydown", function (event) {
+                if (event.key === "Escape") {
+                    event.preventDefault();
+                    cancelEdit();
+                }
             });
         });
     });

@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -228,6 +228,31 @@ class TestCWADBConversionLogging:
         assert result is not None
         assert result[1] is not None  # timestamp column
         assert result[3] == "PDF"  # original_format
+
+
+
+@pytest.mark.unit
+class TestCWADBUserFilters:
+    """Test user filter handling in CWA_DB queries."""
+
+    def test_build_user_filter_with_list(self, temp_cwa_db):
+        """Verify list-based user filters are converted to SQL IN clause."""
+        assert temp_cwa_db._build_user_filter(None) == ""
+        assert temp_cwa_db._build_user_filter(42) == " AND user_id = 42"
+        assert temp_cwa_db._build_user_filter([1, 2]) == " AND user_id IN (1,2)"
+
+    def test_dashboard_stats_with_user_list(self, temp_cwa_db):
+        """Verify dashboard stats work with list-based user filtering."""
+        # Insert activity for two users
+        temp_cwa_db.log_activity(100, "User A", "LOGIN")
+        temp_cwa_db.log_activity(101, "User B", "LOGIN")
+
+        stats = temp_cwa_db.get_dashboard_stats(days=1, user_id=[100, 101])
+
+        assert stats["totals"]["total_events"] == 2
+        assert stats["totals"]["total_logins"] == 2
+        # List-based filter should use single-user mode (active_users = 0)
+        assert stats["totals"]["active_users"] == 0
 
 
 @pytest.mark.unit

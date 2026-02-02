@@ -99,7 +99,7 @@ $("#archived_cb").on("change", function() {
         )
     };
 
-    $("#add-to-shelves, #remove-from-shelves").on("click", "[data-shelf-action]", function (e) {
+    $(document).on("click", "#add-to-shelves [data-shelf-action], #remove-from-shelves [data-shelf-action]", function (e) {
         e.preventDefault();
         $.ajax({
                 url: $(this).data('href'),
@@ -129,10 +129,11 @@ $("#archived_cb").on("change", function() {
                         break;
                 }
                 this.parentNode.removeChild(this);
+                    window.location.reload();
             }.bind(this))
             .fail(function(xhr) {
                 var $msg = $("<span/>", { "class": "text-danger"}).text(xhr.responseText);
-                $("#shelf-action-status").html($msg);
+                $("#shelf-action-errors").html($msg);
 
                 setTimeout(function() {
                     $msg.remove();

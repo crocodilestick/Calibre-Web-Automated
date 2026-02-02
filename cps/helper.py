@@ -49,6 +49,9 @@ from .constants import (STATIC_DIR as _STATIC_DIR, CACHE_TYPE_THUMBNAILS, THUMBN
                         SUPPORTED_CALIBRE_BINARIES)
 from .subproc_wrapper import process_wait
 
+# Track books with pending thumbnail generation to prevent duplicate tasks
+_pending_thumbnail_books = set()
+
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
@@ -224,7 +227,7 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id,
     for entry in iter(book.data):
         if entry.format.upper() == book_format.upper():
             converted_file_name = entry.name + '.' + book_format.lower()
-            link = '<a href="{}">{}</a>'.format(url_for('web.show_book', book_id=book_id), escape(book.title))
+            link = '<a href="/book/{}">{}</a>'.format(book_id, escape(book.title))
             email_text = N_("%(book)s send to eReader", book=link)
             for email in ereader_mail.split(','):
                 email = strip_whitespaces(email)
@@ -427,8 +430,51 @@ def rename_all_files_on_change(one_book, new_path, old_path, all_new_name, gdriv
         if not gdrive:
             if not os.path.exists(new_path):
                 os.makedirs(new_path)
-            shutil.move(os.path.join(old_path, file_format.name + '.' + file_format.format.lower()),
-                    os.path.join(new_path, all_new_name + '.' + file_format.format.lower()))
+            
+            old_file = os.path.join(old_path, file_format.name + '.' + file_format.format.lower())
+            new_file = os.path.join(new_path, all_new_name + '.' + file_format.format.lower())
+            
+            # Skip if source and destination are the same
+            if old_file == new_file:
+                log.debug("Skipping file rename - source and destination are identical: %s", old_file)
+                continue
+            
+            # Check if source file exists
+            if not os.path.exists(old_file):
+                log.warning("Source file not found for rename: %s", old_file)
+                # Check if the file already has the new name (perhaps from a previous partial operation)
+                if os.path.exists(new_file):
+                    log.info("File already exists at destination: %s", new_file)
+                    file_format.name = all_new_name
+                    continue
+                else:
+                    log.error("Neither old nor new file exists - cannot rename %s to %s", old_file, new_file)
+                    continue
+            
+            # Check if destination already exists
+            if os.path.exists(new_file) and old_file != new_file:
+                log.warning("Destination file already exists, will overwrite: %s", new_file)
+                try:
+                    os.remove(new_file)
+                except OSError as ex:
+                    log.error("Could not remove existing destination file %s: %s", new_file, ex)
+            
+            # Attempt to rename the file
+            try:
+                shutil.move(old_file, new_file)
+                log.debug("Successfully renamed %s to %s", old_file, new_file)
+            except OSError as ex:
+                log.error("Failed to rename file from %s to %s: %s", old_file, new_file, ex)
+                # Try copy+delete as fallback for permission issues (e.g., network shares)
+                try:
+                    log.info("Attempting copy+delete fallback for %s", old_file)
+                    shutil.copy2(old_file, new_file)
+                    os.remove(old_file)
+                    log.info("Successfully copied and removed old file: %s", old_file)
+                except (OSError, IOError) as fallback_ex:
+                    log.error("Copy+delete fallback also failed for %s: %s", old_file, fallback_ex)
+                    # Don't update the database name if we failed to rename the file
+                    continue
         else:
             g_file = gd.getFileFromEbooksFolder(old_path,
                                                 file_format.name + '.' + file_format.format.lower())
@@ -558,28 +604,64 @@ def move_files_on_change(calibre_path, new_author_dir, new_titledir, localbook, 
                 os.makedirs(new_path)
             try:
                 shutil.move(original_filepath, os.path.join(new_path, db_filename))
-            except OSError:
-                log.error("Rename title from {} to {} failed with error, trying to "
-                          "move without metadata".format(path, new_path))
-                shutil.move(original_filepath, os.path.join(new_path, db_filename), copy_function=shutil.copy)
+            except OSError as ex:
+                log.error("Rename title from %s to %s failed with error: %s, trying copy+delete fallback",
+                         path, new_path, ex)
+                try:
+                    shutil.copy2(original_filepath, os.path.join(new_path, db_filename))
+                    os.remove(original_filepath)
+                except (OSError, IOError) as fallback_ex:
+                    log.error("Copy+delete fallback also failed: %s", fallback_ex)
+                    raise
             log.debug("Moving title: %s to %s", original_filepath, new_path)
         else:
             # Check new path is not valid path
             if not os.path.exists(new_path):
                 # move original path to new path
                 log.debug("Moving title: %s to %s", path, new_path)
-                shutil.move(path, new_path)
+                try:
+                    shutil.move(path, new_path)
+                except OSError as ex:
+                    log.error("Failed to move directory %s to %s: %s, trying copy tree approach", path, new_path, ex)
+                    # Fallback: try to copy tree and then remove original
+                    try:
+                        shutil.copytree(path, new_path, dirs_exist_ok=True)
+                        shutil.rmtree(path)
+                    except (OSError, IOError) as fallback_ex:
+                        log.error("Copy tree fallback also failed: %s", fallback_ex)
+                        raise
             else:  # path is valid copy only files to new location (merge)
                 log.info("Moving title: %s into existing: %s", path, new_path)
                 # Take all files and subfolder from old path (strange command)
                 for dir_name, __, file_list in os.walk(path):
                     for file in file_list:
-                        shutil.move(os.path.join(dir_name, file), os.path.join(new_path + dir_name[len(path):], file))
-            if not os.listdir(os.path.split(path)[0]):
+                        src_file = os.path.join(dir_name, file)
+                        dest_dir = new_path + dir_name[len(path):]
+                        dest_file = os.path.join(dest_dir, file)
+                        
+                        # Create destination directory if it doesn't exist
+                        if not os.path.exists(dest_dir):
+                            os.makedirs(dest_dir)
+                        
+                        try:
+                            shutil.move(src_file, dest_file)
+                        except OSError as ex:
+                            log.error("Failed to move file %s to %s: %s, trying copy+delete", src_file, dest_file, ex)
+                            try:
+                                shutil.copy2(src_file, dest_file)
+                                os.remove(src_file)
+                            except (OSError, IOError) as fallback_ex:
+                                log.error("Copy+delete fallback failed for %s: %s", src_file, fallback_ex)
+                                # Continue with other files even if one fails
+                                continue
+            
+            # Try to remove old author directory if empty
+            if os.path.exists(os.path.split(path)[0]) and not os.listdir(os.path.split(path)[0]):
                 try:
                     shutil.rmtree(os.path.split(path)[0])
                 except (IOError, OSError) as ex:
                     log.error("Deleting authorpath for book %s failed: %s", localbook.id, ex)
+        
         # change location in database to new author/title path
         localbook.path = os.path.join(new_author_dir, new_titledir).replace('\\', '/')
     except OSError as ex:
@@ -759,9 +841,9 @@ def delete_book(book, calibrepath, book_format):
 
 def get_cover_on_failure():
     try:
-        return send_from_directory(_STATIC_DIR, "generic_cover.jpg")
+        return send_from_directory(_STATIC_DIR, "generic_cover.svg")
     except PermissionError:
-        log.error("No permission to access generic_cover.jpg file.")
+        log.error("No permission to access generic_cover.svg file.")
         abort(403)
 
 
@@ -806,17 +888,24 @@ def get_book_cover_internal(book, resolution=None):
 
                     if not is_kobo_request and use_IM:
                         from .tasks.thumbnail import TaskGenerateCoverThumbnails
-                        # Create and run thumbnail generation for this book
-                        thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
-                        thumbnail_task.create_book_cover_thumbnails(book)
-
-                        # Refresh thumbnail references after generation
-                        webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
-                        jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
-                        webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
-                        jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)
+                        from .services.worker import WorkerThread
+                        
+                        # Queue thumbnail generation task if not already pending (prevents duplicate tasks)
+                        if book.id not in _pending_thumbnail_books:
+                            thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
+                            try:
+                                WorkerThread.add(None, thumbnail_task, hidden=True)
+                                # CRITICAL: Only add to pending set AFTER successful queue
+                                _pending_thumbnail_books.add(book.id)
+                                log.debug(f'Queued background thumbnail generation for book {book.id}')
+                            except Exception as queue_ex:
+                                # If queueing fails, don't add to pending set
+                                log.error(f'Failed to queue thumbnail task for book {book.id}: {queue_ex}')
+                        
+                        # Note: Thumbnails will be generated in background
+                        # Current request will fall back to serving original cover.jpg
                 except Exception as ex:
-                    log.debug(f'Failed to generate thumbnail on-demand for book {book.id}: {ex}')
+                    log.debug(f'Failed to prepare thumbnail generation for book {book.id}: {ex}')
 
             # Determine which thumbnail format to serve based on request context
             try:
@@ -1031,21 +1120,31 @@ def trigger_thumbnail_generation_for_book(book_id):
         from .tasks.thumbnail import TaskGenerateCoverThumbnails
 
         if use_IM:
-            # Queue thumbnail generation task
-            thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
-            WorkerThread.add(current_user.name, thumbnail_task, hidden=True)
-            log.debug(f'Queued thumbnail generation for book {book_id}')
+            # Skip if already pending (prevents duplicate tasks)
+            if book_id not in _pending_thumbnail_books:
+                # Queue thumbnail generation task
+                thumbnail_task = TaskGenerateCoverThumbnails(book_id=book_id, task_message="Generating thumbnails after cover update")
+                try:
+                    WorkerThread.add(current_user.name, thumbnail_task, hidden=True)
+                    # CRITICAL: Only add to pending set AFTER successful queue
+                    # Task's finally block will discard when complete
+                    _pending_thumbnail_books.add(book_id)
+                    log.debug(f'Queued thumbnail generation for book {book_id}')
+                except Exception as queue_ex:
+                    log.error(f'Failed to queue thumbnail task for book {book_id}: {queue_ex}')
+                    # If queueing fails, don't add to pending set
     except Exception as ex:
-        log.debug(f'Failed to queue thumbnail generation for book {book_id}: {ex}')
+        log.error(f'Failed to prepare thumbnail generation for book {book_id}: {ex}')
 
 
 def save_cover_with_thumbnail_update(img, book_path, book_id=None):
-    """Save cover and trigger thumbnail generation."""
+    """Save cover and force thumbnail regeneration."""
     result, message = save_cover(img, book_path)
 
-    # If cover save was successful and we have a book_id, generate thumbnails
+    # If cover save was successful and we have a book_id, force thumbnail regeneration
+    # Use replace_cover_thumbnail_cache to ensure fresh thumbnails even if generation is pending
     if result and book_id:
-        trigger_thumbnail_generation_for_book(book_id)
+        replace_cover_thumbnail_cache(book_id)
 
     return result, message
 
@@ -1069,8 +1168,13 @@ def do_download_file(book, book_format, client, data, headers):
                 output = os.path.join(config.config_calibre_dir, book.path, book_name + "." + book_format)
                 gd.downloadFile(book.path, book_name + "." + book_format, output)
                 if book_format == "kepub" and config.config_kepubifypath:
-                    filename, download_name = do_kepubify_metadata_replace(book, output)
-                    metadata_was_embedded = True
+                    try:
+                        filename, download_name = do_kepubify_metadata_replace(book, output)
+                        metadata_was_embedded = True
+                    except Exception as e:
+                        log.error_or_exception(f"Failed to kepubify metadata for book {book.id}: {e}")
+                        filename = os.path.dirname(output)
+                        download_name = os.path.splitext(os.path.basename(output))[0]
                 elif book_format != "kepub" and config.config_binariesdir:
                     filename, download_name = do_calibre_export(book.id, book_format)
                     metadata_was_embedded = True
@@ -1088,9 +1192,14 @@ def do_download_file(book, book_format, client, data, headers):
             headers["Content-Disposition"] = headers["Content-Disposition"].replace(".kepub", ".kepub.epub")
 
         if book_format == "kepub" and config.config_kepubifypath and config.config_embed_metadata:
-            filename, download_name = do_kepubify_metadata_replace(book, os.path.join(filename,
-                                                                                      book_name + "." + book_format))
-            metadata_was_embedded = True
+            try:
+                filename, download_name = do_kepubify_metadata_replace(book, os.path.join(filename,
+                                                                                          book_name + "." + book_format))
+                metadata_was_embedded = True
+            except Exception as e:
+                log.error_or_exception(f"Failed to kepubify metadata for book {book.id}: {e}")
+                filename = os.path.join(config.get_book_path(), book.path)
+                download_name = book_name
         elif book_format != "kepub" and config.config_binariesdir and config.config_embed_metadata:
             filename, download_name = do_calibre_export(book.id, book_format)
             metadata_was_embedded = True
@@ -1331,13 +1440,26 @@ def get_download_link(book_id, book_format, client):
 
 def clear_cover_thumbnail_cache(book_id):
     # Always allow clearing thumbnail cache
+    # Remove from pending set when clearing cache (e.g., during book deletion)
+    _pending_thumbnail_books.discard(book_id)
     WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
 
 
 def replace_cover_thumbnail_cache(book_id):
     # Always allow replacing thumbnail cache
-    WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
-    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Remove from pending set to allow regeneration
+    _pending_thumbnail_books.discard(book_id)
+    # Try to queue clear task (not critical if it fails)
+    try:
+        WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
+    except Exception as e:
+        log.error(f'Failed to queue thumbnail clear for book {book_id}: {e}')
+    # Queue generation task and add to pending set only if successful
+    try:
+        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+        _pending_thumbnail_books.add(book_id)
+    except Exception as e:
+        log.error(f'Failed to queue thumbnail generation for book {book_id}: {e}')
 
 
 def delete_thumbnail_cache():
@@ -1346,7 +1468,14 @@ def delete_thumbnail_cache():
 
 def add_book_to_thumbnail_cache(book_id):
     # Always generate thumbnails for new books
-    WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+    # Ensure not in pending set (shouldn't be for new books, but defensive)
+    _pending_thumbnail_books.discard(book_id)
+    # Queue generation task and add to pending set only if successful
+    try:
+        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+        _pending_thumbnail_books.add(book_id)
+    except Exception as e:
+        log.error(f'Failed to queue thumbnail generation for book {book_id}: {e}')
 
 
 def update_thumbnail_cache():

@@ -8,6 +8,8 @@
 import os
 import re
 import json
+import time
+import threading
 from datetime import datetime, timezone
 from urllib.parse import quote
 import unidecode
@@ -19,7 +21,7 @@ import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
-from sqlalchemy.orm import relationship, sessionmaker, scoped_session
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session, joinedload, object_session
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.exc import OperationalError
@@ -388,6 +390,7 @@ class Books(Base):
     __tablename__ = 'books'
 
     DEFAULT_PUBDATE = datetime(101, 1, 1, 0, 0, 0, 0)  # ("0101-01-01 00:00:00+00:00")
+    _has_isbn_column = None
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(collation='NOCASE'), nullable=False, default='Unknown')
@@ -400,8 +403,6 @@ class Books(Base):
     path = Column(String, default="", nullable=False)
     has_cover = Column(Integer, default=0)
     uuid = Column(String)
-    isbn = Column(String(collation='NOCASE'), default="")
-    flags = Column(Integer, nullable=False, default=1)
 
     authors = relationship(Authors, secondary=books_authors_link, backref='books')
     tags = relationship(Tags, secondary=books_tags_link, backref='books', order_by="Tags.name")
@@ -434,6 +435,23 @@ class Books(Base):
     @property
     def atom_timestamp(self):
         return self.timestamp.strftime('%Y-%m-%dT%H:%M:%S+00:00') or ''
+
+    @property
+    def isbn(self):
+        for identifier in self.identifiers:
+            if identifier.type and identifier.type.lower() == "isbn":
+                return identifier.val or ""
+        if self._has_isbn_column:
+            session = object_session(self)
+            if session is not None:
+                try:
+                    value = session.execute(text("SELECT isbn FROM books WHERE id = :id"),
+                                            {"id": self.id}).scalar()
+                    return value or ""
+                except Exception:
+                    Books._has_isbn_column = False
+                    return ""
+        return ""
 
 
 class CustomColumns(Base):
@@ -531,6 +549,7 @@ class CalibreDB:
     # This is a WeakSet so that references here don't keep other CalibreDB
     # instances alive once they reach the end of their respective scopes
     instances = WeakSet()
+    _reconnect_lock = threading.RLock()  # Reentrant lock to prevent concurrent reconnect operations
 
     def __init__(self, expire_on_commit=True, init=False):
         """ Initialize a new CalibreDB session
@@ -546,6 +565,9 @@ class CalibreDB:
         self.instances.add(self)
 
     def init_session(self, expire_on_commit=True):
+        if self.session_factory is None:
+            log.error("Cannot init session: session_factory is None")
+            return
         self.session = self.session_factory()
         self.session.expire_on_commit = expire_on_commit
         self.create_functions(self.config)
@@ -553,23 +575,56 @@ class CalibreDB:
     def ensure_session(self, expire_on_commit=True):
         """Ensure a valid SQLAlchemy session exists.
         This protects against brief windows where dispose() nulled the session during a reconnect.
+        Holds lock during entire recreation to prevent race conditions.
         """
-        try:
-            if self.session is None:
-                # Recreate a session from the factory if available
-                if self.session_factory is not None:
+        if self.session is not None:
+            return  # Fast path - session already exists
+        
+        # Session is None - need to recreate it
+        # Acquire lock to ensure atomic recreation (no interruption by dispose)
+        with self._reconnect_lock:
+            # Double-check after acquiring lock (another thread may have recreated it)
+            if self.session is not None:
+                return
+            
+            # Try to recreate session from factory
+            if self.session_factory is not None:
+                try:
                     self.init_session(expire_on_commit)
-                else:
-                    # As a last resort, try to rebuild the setup if config is present
-                    if self.config and getattr(self.config, 'config_calibre_dir', None):
-                        try:
-                            self.setup_db(self.config.config_calibre_dir, ub.app_DB_path)
-                            self.init_session(expire_on_commit)
-                        except Exception as ex:
-                            log.error_or_exception(ex)
-        except Exception:
-            # Never let session recovery raise in callers; they will fail later with proper logging
-            pass
+                    return  # Success
+                except Exception as ex:
+                    log.error(f"Failed to init session from factory: {ex}")
+            
+            # Factory is None or init failed - try to rebuild entire database setup
+            if self.config and getattr(self.config, 'config_calibre_dir', None):
+                try:
+                    log.warning("Session factory unavailable, attempting to rebuild database setup")
+                    # Note: setup_db will call dispose() which is safe because we hold _reconnect_lock (RLock is reentrant)
+                    self.setup_db(self.config.config_calibre_dir, ub.app_DB_path)
+                    # After setup_db, session_factory should exist, try to init session
+                    if self.session is None and self.session_factory is not None:
+                        self.init_session(expire_on_commit)
+                        if self.session is not None:
+                            return
+                except Exception as ex:
+                    log.error(f"Failed to rebuild database setup in ensure_session: {ex}")
+
+            # Fallback: attempt to initialize from app.db if config is missing or setup failed
+            if self.session is None and ub.app_DB_path:
+                try:
+                    log.warning("Session still unavailable; attempting init from app.db")
+                    from .calibre_init import init_calibre_db_from_app_db
+                    if init_calibre_db_from_app_db(ub.app_DB_path):
+                        self.init_session(expire_on_commit)
+                        if self.session is not None:
+                            return
+                except Exception as ex:
+                    log.error(f"Failed to init session from app.db in ensure_session: {ex}")
+            
+            # If we still don't have a session, log warning
+            # Don't raise exception - let caller handle AttributeError if they try to use None session
+            if self.session is None:
+                log.error("ensure_session: Unable to create session - session factory and config unavailable")
 
     @classmethod
     def setup_db_cc_classes(cls, cc):
@@ -684,63 +739,83 @@ class CalibreDB:
 
     @classmethod
     def setup_db(cls, config_calibre_dir, app_db_path):
-        cls.dispose()
+        # Wrap entire method in lock to ensure atomic setup operation
+        # RLock is reentrant, so nested calls (e.g., from reconnect_db) are safe
+        with cls._reconnect_lock:
+            # Always call dispose to clean up old sessions/connections
+            cls.dispose()
 
-        if not config_calibre_dir:
-            cls.config.invalidate()
-            return None
-
-        dbpath = os.path.join(config_calibre_dir, "metadata.db")
-        if not os.path.exists(dbpath):
-            cls.config.invalidate()
-            return None
-
-        try:
-            cls.engine = create_engine('sqlite://',
-                                       echo=False,
-                                       isolation_level="SERIALIZABLE",
-                                       connect_args={'check_same_thread': False, 'timeout': 30},
-                                       poolclass=StaticPool)
-            with cls.engine.begin() as connection:
-                connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
-                connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
-                # Try enabling WAL to improve concurrency unless running on a network share
-                # Controlled by env var NETWORK_SHARE_MODE (default False)
-                try:
-                    nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
-                    if not nsm:
-                        connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
-                        connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
-                except Exception:
-                    pass
-
-            conn = cls.engine.connect()
-            # conn.text_factory = lambda b: b.decode(errors = 'ignore') possible fix for #1302
-        except Exception as ex:
-            cls.config.invalidate(ex)
-            return None
-
-        cls.config.db_configured = True
-
-        if not cc_classes:
-            try:
-                cc = conn.execute(text("SELECT id, datatype FROM custom_columns"))
-                cls.setup_db_cc_classes(cc)
-            except OperationalError as e:
-                log.error_or_exception(e)
+            if not config_calibre_dir:
+                log.error("setup_db failed: config_calibre_dir is None or empty")
+                if cls.config:
+                    cls.config.invalidate()
                 return None
 
-        cls.session_factory = scoped_session(sessionmaker(autocommit=False,
-                                                          autoflush=True,
-                                                          bind=cls.engine, future=True))
-        for inst in cls.instances:
-            inst.init_session()
+            dbpath = os.path.join(config_calibre_dir, "metadata.db")
+            if not os.path.exists(dbpath):
+                log.error(f"setup_db failed: metadata.db not found at {dbpath}")
+                if cls.config:
+                    cls.config.invalidate()
+                return None
 
-        # Ensure progress syncing tables exist in metadata.db (book checksums)
-        from .progress_syncing.models import ensure_calibre_db_tables
-        ensure_calibre_db_tables(conn)
+            try:
+                cls.engine = create_engine('sqlite://',
+                                           echo=False,
+                                           isolation_level="SERIALIZABLE",
+                                           connect_args={'check_same_thread': False, 'timeout': 30},
+                                           poolclass=StaticPool)
+                with cls.engine.begin() as connection:
+                    connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
+                    connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                    # Try enabling WAL to improve concurrency unless running on a network share
+                    # Controlled by env var NETWORK_SHARE_MODE (default False)
+                    try:
+                        nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+                        if not nsm:
+                            connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
+                            connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
+                    except Exception:
+                        pass
 
-        cls._init = True
+                conn = cls.engine.connect()
+                # conn.text_factory = lambda b: b.decode(errors = 'ignore') possible fix for #1302
+            except Exception as ex:
+                log.error(f"setup_db failed during engine creation: {ex}")
+                if cls.config:
+                    cls.config.invalidate(ex)
+                return None
+
+            if cls.config:
+                cls.config.db_configured = True
+
+            if not cc_classes:
+                try:
+                    cc = conn.execute(text("SELECT id, datatype FROM custom_columns"))
+                    cls.setup_db_cc_classes(cc)
+                except OperationalError as e:
+                    log.error_or_exception(e)
+                    if cls.config:
+                        cls.config.invalidate(e)
+                    return None
+
+            try:
+                cols = conn.execute(text("PRAGMA calibre.table_info(books)")).fetchall()
+                Books._has_isbn_column = any(row[1] == "isbn" for row in cols)
+            except Exception:
+                Books._has_isbn_column = False
+
+            cls.session_factory = scoped_session(sessionmaker(autocommit=False,
+                                                              autoflush=True,
+                                                              bind=cls.engine, future=True))
+            for inst in cls.instances:
+                inst.init_session()
+
+            # Ensure progress syncing tables exist in metadata.db (book checksums)
+            from .progress_syncing.models import ensure_calibre_db_tables
+            ensure_calibre_db_tables(conn)
+
+            cls._init = True
+        # End of with cls._reconnect_lock
 
     def get_book(self, book_id):
         self.ensure_session()
@@ -748,8 +823,20 @@ class CalibreDB:
 
     def get_filtered_book(self, book_id, allow_show_archived=False):
         self.ensure_session()
-        return self.session.query(Books).filter(Books.id == book_id). \
-            filter(self.common_filters(allow_show_archived)).first()
+        # Eagerly load all relationships to prevent detached instance errors during editing
+        return (self.session.query(Books)
+                .options(joinedload(Books.authors),
+                         joinedload(Books.tags),
+                         joinedload(Books.comments),
+                         joinedload(Books.data),
+                         joinedload(Books.series),
+                         joinedload(Books.ratings),
+                         joinedload(Books.languages),
+                         joinedload(Books.publishers),
+                         joinedload(Books.identifiers))
+                .filter(Books.id == book_id)
+                .filter(self.common_filters(allow_show_archived))
+                .first())
 
     def get_book_read_archived(self, book_id, read_column, allow_show_archived=False):
         self.ensure_session()
@@ -767,6 +854,8 @@ class CalibreDB:
                 log.error("Custom Column No.{} does not exist in calibre database".format(read_column))
                 # Skip linking read column and return None instead of read status
                 bd = self.session.query(Books, None, ub.ArchivedBook.is_archived)
+        # Eagerly load the data relationship to prevent session errors
+        bd = bd.options(joinedload(Books.data))
         return (bd.filter(Books.id == book_id)
                 .join(ub.ArchivedBook, and_(Books.id == ub.ArchivedBook.book_id,
                                             int(current_user.id) == ub.ArchivedBook.user_id), isouter=True)
@@ -779,6 +868,22 @@ class CalibreDB:
     def get_book_format(self, book_id, file_format):
         self.ensure_session()
         return self.session.query(Data).filter(Data.book == book_id).filter(Data.format == file_format).first()
+
+    def get_author_by_name(self, name):
+        self.ensure_session()
+        return self.session.query(Authors).filter(Authors.name == name).first()
+
+    def get_tag_by_name(self, name):
+        self.ensure_session()
+        return self.session.query(Tags).filter(Tags.name == name).first()
+
+    def get_series_by_name(self, name):
+        self.ensure_session()
+        return self.session.query(Series).filter(Series.name == name).first()
+
+    def get_publisher_by_name(self, name):
+        self.ensure_session()
+        return self.session.query(Publishers).filter(Publishers.name == name).first()
 
     def set_metadata_dirty(self, book_id):
         self.ensure_session()
@@ -795,7 +900,7 @@ class CalibreDB:
             log.error("Database error: {}".format(e))
 
     # Language and content filters for displaying in the UI
-    def common_filters(self, allow_show_archived=False, return_all_languages=False):
+    def common_filters(self, allow_show_archived=False, return_all_languages=False, viewing_tag_id=None):
         if not allow_show_archived:
             archived_books = (ub.session.query(ub.ArchivedBook)
                               .filter(ub.ArchivedBook.user_id==int(current_user.id))
@@ -813,6 +918,15 @@ class CalibreDB:
         negtags_list = current_user.list_denied_tags()
         postags_list = current_user.list_allowed_tags()
         neg_content_tags_filter = false() if negtags_list == [''] else Books.tags.any(Tags.name.in_(negtags_list))
+        
+        # Issue #906: When viewing a specific tag category, include that tag in allowed tags
+        if viewing_tag_id is not None and postags_list != ['']:
+            # Get the tag name for the viewing_tag_id
+            viewing_tag = self.session.query(Tags).filter(Tags.id == viewing_tag_id).first()
+            if viewing_tag and viewing_tag.name not in postags_list:
+                # Temporarily add the viewed tag to the allowed list for this query
+                postags_list = postags_list + [viewing_tag.name]
+        
         pos_content_tags_filter = true() if postags_list == [''] else Books.tags.any(Tags.name.in_(postags_list))
         if self.config.config_restricted_column:
             try:
@@ -881,18 +995,22 @@ class CalibreDB:
 
     # Fill indexpage with all requested data from database
     def fill_indexpage(self, page, pagesize, database, db_filter, order,
-                       join_archive_read=False, config_read_column=0, *join):
+                       join_archive_read=False, config_read_column=0, *join, **kwargs):
         self.ensure_session()
         return self.fill_indexpage_with_archived_books(page, database, pagesize, db_filter, order, False,
-                                                       join_archive_read, config_read_column, *join)
+                                                       join_archive_read, config_read_column, *join, **kwargs)
 
     def fill_indexpage_with_archived_books(self, page, database, pagesize, db_filter, order, allow_show_archived,
-                                           join_archive_read, config_read_column, *join):
+                                           join_archive_read, config_read_column, *join, **kwargs):
         self.ensure_session()
+        viewing_tag_id = kwargs.get('viewing_tag_id')
         pagesize = pagesize or self.config.config_books_per_page
         if current_user.show_detail_random():
             random_query = self.generate_linked_query(config_read_column, database)
-            randm = (random_query.filter(self.common_filters(allow_show_archived))
+            # Eagerly load the data relationship for random books to prevent session errors
+            if database == Books:
+                random_query = random_query.options(joinedload(Books.data))
+            randm = (random_query.filter(self.common_filters(allow_show_archived, viewing_tag_id=viewing_tag_id))
                      .order_by(func.random())
                      .limit(self.config.config_random_books).all())
         else:
@@ -901,6 +1019,11 @@ class CalibreDB:
             query = self.generate_linked_query(config_read_column, database)
         else:
             query = self.session.query(database)
+        
+        # Eagerly load the data relationship to prevent DetachedInstanceError in templates
+        if database == Books:
+            query = query.options(joinedload(Books.data))
+        
         off = int(int(pagesize) * (page - 1))
 
         indx = len(join)
@@ -919,11 +1042,15 @@ class CalibreDB:
                 indx -= 1
                 element += 1
         query = query.filter(db_filter)\
-            .filter(self.common_filters(allow_show_archived))
+            .filter(self.common_filters(allow_show_archived, viewing_tag_id=viewing_tag_id))
         entries = list()
         pagination = list()
         try:
-            pagination = Pagination(page, pagesize, query.count())
+            if database == Books:
+                total_count = query.with_entities(Books.id).distinct().count()
+            else:
+                total_count = query.count()
+            pagination = Pagination(page, pagesize, total_count)
             entries = query.order_by(*order).offset(off).limit(pagesize).all()
         except Exception as ex:
             log.error_or_exception(ex)
@@ -946,10 +1073,13 @@ class CalibreDB:
             # error = False
             for auth in sort_authors:
                 auth = strip_whitespaces(auth)
+                # Skip empty author strings to prevent spurious errors
+                if not auth:
+                    continue
                 results = self.session.query(Authors).filter(Authors.sort == auth).all()
                 # ToDo: How to handle not found author name
                 if not len(results):
-                    log.error("Author {} not found to display name in right order".format(auth))
+                    log.error("Author '{}' not found to display name in right order".format(auth))
                     # error = True
                     break
                 for r in results:
@@ -1023,6 +1153,8 @@ class CalibreDB:
                     getattr(Books,
                             'custom_column_' + str(c.id)).any(
                         func.lower(cc_classes[c.id].value).ilike("%" + term + "%")))
+        # Eagerly load the data relationship to prevent session errors
+        query = query.options(joinedload(Books.data))
         return query.filter(self.common_filters(True)).filter(or_(*filter_expression))
 
     def get_cc_columns(self, config, filter_config_custom_read=False):
@@ -1099,15 +1231,20 @@ class CalibreDB:
 
     def create_functions(self, config=None):
         self.ensure_session()
+        if self.session is None:
+            log.error("create_functions: Cannot create functions because session is None")
+            return
+        
         # user defined sort function for calibre databases (Series, etc.)
-        def _title_sort(title):
-            # calibre sort stuff
-            title_pat = re.compile(config.config_title_regex, re.IGNORECASE)
-            match = title_pat.search(title)
-            if match:
-                prep = match.group(1)
-                title = title[len(prep):] + ', ' + prep
-            return strip_whitespaces(title)
+        if config:
+            def _title_sort(title):
+                # calibre sort stuff
+                title_pat = re.compile(config.config_title_regex, re.IGNORECASE)
+                match = title_pat.search(title)
+                if match:
+                    prep = match.group(1)
+                    title = title[len(prep):] + ', ' + prep
+                return strip_whitespaces(title)
 
         try:
             # sqlalchemy <1.4.24 and sqlalchemy 2.0
@@ -1126,28 +1263,29 @@ class CalibreDB:
     @classmethod
     def dispose(cls):
         # global session
-
-        for inst in cls.instances:
-            old_session = inst.session
-            inst.session = None
-            if old_session:
-                try:
-                    old_session.close()
-                except Exception:
-                    pass
-                if old_session.bind:
+        # Use lock to prevent concurrent dispose/reconnect operations
+        with cls._reconnect_lock:
+            for inst in cls.instances:
+                old_session = inst.session
+                inst.session = None
+                if old_session:
                     try:
-                        old_session.bind.dispose()
+                        old_session.close()
                     except Exception:
                         pass
+                    if old_session.bind:
+                        try:
+                            old_session.bind.dispose()
+                        except Exception:
+                            pass
 
-        for attr in list(Books.__dict__.keys()):
-            if attr.startswith("custom_column_"):
-                setattr(Books, attr, None)
+            for attr in list(Books.__dict__.keys()):
+                if attr.startswith("custom_column_"):
+                    setattr(Books, attr, None)
 
-        for db_class in cc_classes.values():
-            Base.metadata.remove(db_class.__table__)
-        cc_classes.clear()
+            for db_class in cc_classes.values():
+                Base.metadata.remove(db_class.__table__)
+            cc_classes.clear()
 
         for table in reversed(Base.metadata.sorted_tables):
             name = table.key
@@ -1156,24 +1294,26 @@ class CalibreDB:
                     Base.metadata.remove(table)
 
     def reconnect_db(self, config, app_db_path):
-        # Be resilient if database wasn't initialized yet
-        try:
-            self.dispose()
-        except Exception:
-            # Ignore dispose errors during reconnect
-            pass
+        # Use lock to ensure atomic reconnect operation
+        with self._reconnect_lock:
+            # Be resilient if database wasn't initialized yet
+            try:
+                self.dispose()
+            except Exception:
+                # Ignore dispose errors during reconnect
+                pass
 
-        # engine is a class-level attribute that may be None before first setup
-        try:
-            if getattr(self, 'engine', None) is not None:
-                self.engine.dispose()
-        except Exception:
-            # Ignore engine dispose errors; we'll rebuild below
-            pass
+            # engine is a class-level attribute that may be None before first setup
+            try:
+                if getattr(self, 'engine', None) is not None:
+                    self.engine.dispose()
+            except Exception:
+                # Ignore engine dispose errors; we'll rebuild below
+                pass
 
-        # Rebuild engine/session factory and update config
-        self.setup_db(config.config_calibre_dir, app_db_path)
-        self.update_config(config)
+            # Rebuild engine/session factory and update config
+            self.setup_db(config.config_calibre_dir, app_db_path)
+            self.update_config(config)
 
 
 def lcase(s):

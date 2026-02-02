@@ -4,15 +4,22 @@
  */
 function qFinished(callback){
     let timeout=setInterval(()=>{
-        if(reader.rendition.q.running===undefined)
+        if (reader && reader.rendition && reader.rendition.q && reader.rendition.q.running === undefined) {
             clearInterval(timeout);
             callback();
+        }
         },300
     )
 }
 
 function calculateProgress(){
+    if (!reader || !reader.rendition || !reader.rendition.location || !reader.rendition.location.end) {
+        return 0;
+    }
     let data=reader.rendition.location.end;
+    if (!data || !data.cfi || !epub || !epub.locations) {
+        return 0;
+    }
     return Math.round(epub.locations.percentageFromCfi(data.cfi)*100);
 }
 
@@ -40,7 +47,9 @@ function calculateProgress(){
 
 window.addEventListener('locationchange',()=>{
     let newPos=calculateProgress();
-    progressDiv.textContent=newPos+"%";
+    if (progressDiv) {
+        progressDiv.textContent=newPos+"%";
+    }
     // Save progress to localStorage per book
     if (window.calibre && window.calibre.bookUrl) {
         // Use bookUrl as a unique key, or use bookid if available
@@ -54,9 +63,12 @@ var epub=ePub(calibre.bookUrl)
 let progressDiv=document.getElementById("progress");
 
 qFinished(()=>{
+    if (!epub || !epub.locations) {
+        return;
+    }
     epub.locations.generate().then(()=> {
         // Restore progress from localStorage if available
-        if (window.calibre && window.calibre.bookUrl) {
+        if (window.calibre && window.calibre.bookUrl && reader && reader.rendition) {
             let bookKey = window.calibre.bookUrl;
             let savedProgress = localStorage.getItem("calibre.reader.progress." + bookKey);
             if (savedProgress) {

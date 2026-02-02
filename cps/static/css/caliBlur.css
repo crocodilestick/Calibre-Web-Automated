@@ -1827,7 +1827,7 @@ body > div.container-fluid > div > div.col-sm-10 > div.single {
     height: auto;
     width: calc(100vw - 254px);
     margin: 0 !important;
-    padding: 60px 15px !important
+    padding: 60px 15px;
 }
 
 body > div.container-fluid > div > div.col-sm-10 > div.discover {
@@ -2313,7 +2313,8 @@ body.advsearch > div.container-fluid > div > div.col-sm-10 > div.col-md-10.col-l
 }
 
 body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
-    content: "My Profile"
+    content: "My Profile";
+    padding-left: 0px;
 }
 
 .well {
@@ -2445,7 +2446,7 @@ body > div.row-fluid {
     opacity: 1 !important;
     right: 0;
     border-radius: 10px;
-    background-color: #000;
+    background-color: #00000082;
     color: #eee;
     border: 0;
     -webkit-box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
@@ -2980,7 +2981,8 @@ body.advanced_search > div.container-fluid > div > div.col-sm-10 > div.col-sm-8:
 
 a:focus {
     outline: 0;
-    outline-offset: 0
+    outline-offset: 0;
+    color: rgb(255 255 255 / 50%);
 }
 
 #bookDetailsModal {
@@ -3163,9 +3165,6 @@ body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-
 body.book .author {
     font-size: 15px;
     line-height: 30px;
-    margin-top: -5px;
-    max-width: calc(100% - 176px);
-    margin-left: 76px
 }
 
 .book-meta > p {
@@ -5609,7 +5608,7 @@ body.admin.modal-open .navbar {
     font-weight: 400;
     position: absolute;
     left: calc(50% + 185px);
-    top: 88px;
+    top: 120px;
     font-size: 16px;
     color: #eee;
     opacity: .5;
@@ -7061,8 +7060,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     body > div.container-fluid > div > div.col-sm-10 > div.single {
         width: 100%;
-        padding-left: 40px !important;
-        padding-right: 40px !important;
+        padding-left: 40px;
+        padding-right: 40px;
         padding-top: 20px !important;
     }
 
@@ -7098,7 +7097,6 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .book-meta > .bookinfo > p:first-of-type, body.book .author {
-        margin-left: 220px;
         line-height: 1
     }
 

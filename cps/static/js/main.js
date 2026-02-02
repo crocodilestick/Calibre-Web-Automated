@@ -390,7 +390,9 @@ $(function() {
         selectedLayoutMode = "fitRows";
     }
 
-    $(".discover .row").isotope({
+    $(".discover .row").filter(function() {
+        return $(this).find(".book").length > 0;
+    }).isotope({
         // options
         itemSelector : ".book",
         layoutMode : selectedLayoutMode
@@ -692,6 +694,32 @@ $(function() {
             }
         });
     });
+    $("#hardcover_auto_fetch").click(function() {
+        $("#DialogHeader").addClass("hidden");
+        $("#DialogFinished").addClass("hidden");
+        $("#DialogContent").html("");
+        $("#spinner2").show();
+        $.ajax({
+            method: "post",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            url: getPath() + "/hardcover_auto_fetch",
+            success: function success(data) {
+                $("#spinner2").hide();
+                $("#DialogContent").html(data.text);
+                $("#DialogFinished").removeClass("hidden");
+            },
+            error: function error(xhr) {
+                $("#spinner2").hide();
+                var errorMessage = "Error starting Hardcover auto-fetch";
+                if (xhr.responseJSON && xhr.responseJSON.text) {
+                    errorMessage = xhr.responseJSON.text;
+                }
+                $("#DialogContent").html(errorMessage);
+                $("#DialogFinished").removeClass("hidden");
+            }
+        });
+    });
     $("#perform_update").click(function() {
         $("#DialogHeader").removeClass("hidden");
         $("#spinner2").show();
@@ -978,7 +1006,9 @@ $(function() {
     });
 
     $(window).resize(function() {
-        $(".discover .row").isotope("layout");
+        $(".discover .row").filter(function() {
+            return !!$(this).data("isotope");
+        }).isotope("layout");
     });
 
     $("#import_ldap_users").click(function() {
@@ -1003,7 +1033,9 @@ $(function() {
         $(this).parent().find("a.author-name").slice($(this).data("authors-max")).toggle();
         $(this).parent().find("span.author-hidden-divider").toggle();
         $(this).html() === $(this).data("collapse-caption") ? $(this).html("(...)") : $(this).html($(this).data("collapse-caption"));
-        $(".discover .row").isotope("layout");
+        $(".discover .row").filter(function() {
+            return !!$(this).data("isotope");
+        }).isotope("layout");
     });
 
     $(".update-view").click(function(e) {

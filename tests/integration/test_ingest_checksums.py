@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -150,7 +150,7 @@ class TestIngestChecksumGeneration:
         assert len(checksums) >= 1
 
     def test_checksum_persists_after_container_restart(
-        self, cwa_container, ingest_folder, library_folder, test_epub
+        self, container_name, ingest_folder, library_folder, test_epub
     ):
         """Test that checksums survive container restart."""
         from conftest import volume_copy, get_db_path
@@ -172,7 +172,6 @@ class TestIngestChecksumGeneration:
         # Restart container (if we have container control)
         # This might not work in all test environments
         try:
-            container_name = cwa_container.name if hasattr(cwa_container, 'name') else 'calibre-web-automated'
             subprocess.run(['docker', 'restart', container_name], check=True, timeout=30)
             time.sleep(20)  # Wait for restart
 
@@ -314,14 +313,12 @@ class TestChecksumInitialization:
                 assert len(checksum) == 32
                 assert all(c in '0123456789abcdef' for c in checksum.lower())
 
-    def test_sentinel_file_prevents_regeneration(self, cwa_container):
+    def test_sentinel_file_prevents_regeneration(self, container_name):
         """Test that checksum generation only runs once per library."""
         import subprocess
 
         # Check if sentinel file exists
         try:
-            container_name = cwa_container.name if hasattr(cwa_container, 'name') else 'calibre-web-automated'
-
             result = subprocess.run(
                 ['docker', 'exec', container_name, 'test', '-f', '/config/.checksums_generated'],
                 capture_output=True

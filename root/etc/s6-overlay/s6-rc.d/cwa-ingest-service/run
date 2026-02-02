@@ -45,8 +45,49 @@ STABLE_CHECKS=${CWA_INGEST_STABLE_CHECKS:-6}
 STABLE_CONSEC_MATCH=${CWA_INGEST_STABLE_CONSEC_MATCH:-2}
 STABLE_INTERVAL=${CWA_INGEST_STABLE_INTERVAL:-0.5}
 MAX_QUEUE_SIZE=${CWA_INGEST_MAX_QUEUE_SIZE:-50}
-SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|acsm|kfx|kfx-zip|cwa.json)$'
+SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|acsm|kfx|kfx-zip)$'
 TEMP_SUFFIXES='crdownload download part uploading'
+get_stale_temp_minutes_from_db() {
+        local minutes
+        if command -v sqlite3 >/dev/null 2>&1; then
+                minutes=$(sqlite3 /config/cwa.db "SELECT ingest_stale_temp_minutes FROM cwa_settings LIMIT 1;" 2>/dev/null || echo "120")
+        else
+                minutes=$(python3 -c "
+import sqlite3
+try:
+    conn = sqlite3.connect('/config/cwa.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT ingest_stale_temp_minutes FROM cwa_settings LIMIT 1')
+    result = cursor.fetchone()
+    conn.close()
+    print(result[0] if result else 120)
+except:
+    print(120)
+" 2>/dev/null || echo "120")
+        fi
+        echo "$minutes"
+}
+
+get_stale_temp_interval_from_db() {
+        local seconds
+        if command -v sqlite3 >/dev/null 2>&1; then
+                seconds=$(sqlite3 /config/cwa.db "SELECT ingest_stale_temp_interval FROM cwa_settings LIMIT 1;" 2>/dev/null || echo "600")
+        else
+                seconds=$(python3 -c "
+import sqlite3
+try:
+    conn = sqlite3.connect('/config/cwa.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT ingest_stale_temp_interval FROM cwa_settings LIMIT 1')
+    result = cursor.fetchone()
+    conn.close()
+    print(result[0] if result else 600)
+except:
+    print(600)
+" 2>/dev/null || echo "600")
+        fi
+        echo "$seconds"
+}
 
 wait_for_stable_file() {
         local file="$1" last_size="" same_count=0 i sz
@@ -74,6 +115,24 @@ run_fallback() {
         while read -r events filepath; do
                 handle_event "$filepath"
         done
+}
+
+cleanup_stale_temps() {
+        # Skip if disabled or watch folder doesn't exist
+        local minutes
+        minutes=$(get_stale_temp_minutes_from_db)
+        if [ -z "$minutes" ] || [ "$minutes" -le 0 ] || [ ! -d "$WATCH_FOLDER" ]; then
+                return 0
+        fi
+        local deleted_any=0
+        for suf in $TEMP_SUFFIXES; do
+                if find "$WATCH_FOLDER" -type f -name "*.$suf" -mmin +"$minutes" -print -delete 2>/dev/null | grep -q .; then
+                        deleted_any=1
+                fi
+        done
+        if [ $deleted_any -eq 1 ]; then
+                echo "[cwa-ingest-service] Cleaned stale temp files older than ${minutes} minutes"
+        fi
 }
 
 is_docker_desktop() {
@@ -137,10 +196,17 @@ handle_event() {
         for suf in $TEMP_SUFFIXES; do
                 [[ "$filepath" == *.$suf ]] && return 0
         done
+        # ignore sidecar manifests
+        if [[ "$filepath" == *.cwa.json ]] || [[ "$filepath" == *.cwa.failed.json ]]; then
+                echo "[cwa-ingest-service] Skipping sidecar manifest: $filepath (handled with data file)"
+                return 0
+        fi
         # extension filter
         if ! [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]; then
                 return 0
         fi
+
+        cleanup_stale_temps
 
         echo "[cwa-ingest-service] New file detected - $filepath - Starting Ingest Processor..."
         echo "[cwa-ingest-service] Configured timeout: ${configured_timeout}s, Safety timeout: ${safety_timeout}s"
@@ -202,6 +268,21 @@ fi
 if is_docker_desktop; then
         echo "[cwa-ingest-service] Docker Desktop detected -> using fallback watcher"
         run_fallback; exit 0
+fi
+
+# Background cleanup loop for stale temp files
+if [ -n "$(get_stale_temp_interval_from_db)" ]; then
+        (
+                while true; do
+                        cleanup_stale_temps
+                        interval=$(get_stale_temp_interval_from_db)
+                        if [ -z "$interval" ] || [ "$interval" -le 0 ]; then
+                                sleep 60
+                        else
+                                sleep "$interval"
+                        fi
+                done
+        ) &
 fi
 
 ( set -o pipefail

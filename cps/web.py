@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -10,9 +10,12 @@ import mimetypes
 import chardet  # dependency of requests
 import copy
 import importlib
+import re
+import zipfile
+import xml.etree.ElementTree as ET
 
 from flask import Blueprint, jsonify
-from flask import request, redirect, send_from_directory, make_response, flash, abort, url_for, Response
+from flask import request, redirect, send_from_directory, send_file, make_response, flash, abort, url_for, Response
 from flask import session as flask_session
 from flask_babel import gettext as _
 from flask_babel import get_locale
@@ -40,6 +43,7 @@ from .redirect import get_redirect_location
 from .cw_babel import get_available_locale
 from .usermanagement import login_required_if_no_ano
 from .kobo_sync_status import remove_synced_book
+from . import magic_shelf
 from .render_template import render_title_template
 from .kobo_sync_status import change_archived_books
 from . import limiter
@@ -65,13 +69,32 @@ feature_support = {
 }
 
 try:
-    from .oauth_bb import oauth_check, register_user_with_oauth, logout_oauth_user, get_oauth_status
+    from . import oauth_bb
+    # Import functions directly since they don't change
+    register_user_with_oauth = oauth_bb.register_user_with_oauth
+    logout_oauth_user = oauth_bb.logout_oauth_user
+    get_oauth_status = oauth_bb.get_oauth_status
 
     feature_support['oauth'] = True
 except ImportError:
     feature_support['oauth'] = False
-    oauth_check = {}
-    register_user_with_oauth = logout_oauth_user = get_oauth_status = None
+    # Create a mock oauth_bb module for when OAuth is not available
+    class MockOAuth:
+        oauth_check = {}
+        oauthblueprints = []
+        @staticmethod
+        def register_user_with_oauth(*args, **kwargs):
+            return None
+        @staticmethod  
+        def logout_oauth_user(*args, **kwargs):
+            return None
+        @staticmethod
+        def get_oauth_status(*args, **kwargs):
+            return None
+    oauth_bb = MockOAuth()
+    register_user_with_oauth = oauth_bb.register_user_with_oauth
+    logout_oauth_user = oauth_bb.logout_oauth_user
+    get_oauth_status = oauth_bb.get_oauth_status
 
 from functools import wraps
 
@@ -99,6 +122,8 @@ def add_security_headers(resp):
     csp += "; img-src 'self'"
     if request.path.startswith("/author/") and config.config_use_goodreads:
         csp += " images.gr-assets.com i.gr-assets.com s.gr-assets.com"
+    if request.endpoint == "admin.hardcover_review_matches":
+        csp += " https:"
     csp += " data:"
     if request.endpoint == "edit-book.show_edit_book" or config.config_use_google_drive:
         csp += " *"
@@ -443,6 +468,8 @@ def render_books_list(data, sort_param, book_id, page):
         term = json.loads(flask_session.get('query', '{}'))
         offset = int(int(config.config_books_per_page) * (page - 1))
         return render_adv_search_results(term, offset, order, config.config_books_per_page)
+    elif data == "magicshelf":
+        return render_magic_shelf(book_id, sort_param, page)
     else:
         website = data or "newest"
         entries, random, pagination = calibre_db.fill_indexpage(page, 0, db.Books, True, order[0],
@@ -738,6 +765,7 @@ def render_category_books(page, book_id, order):
     else:
         tagsname = calibre_db.session.query(db.Tags).filter(db.Tags.id == book_id).first()
         if tagsname:
+            # Issue #906: Pass viewing_tag_id to allow this tag even if not in allowed tags
             entries, random, pagination = calibre_db.fill_indexpage(page, 0,
                                                                     db.Books,
                                                                     db.Books.tags.any(db.Tags.id == book_id),
@@ -746,7 +774,8 @@ def render_category_books(page, book_id, order):
                                                                     True, config.config_read_column,
                                                                     db.books_series_link,
                                                                     db.Books.id == db.books_series_link.c.book,
-                                                                    db.Series)
+                                                                    db.Series,
+                                                                    viewing_tag_id=book_id)
             tagsname = tagsname.name
         else:
             abort(404)
@@ -850,6 +879,97 @@ def render_archived_books(page, sort_param):
     return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
                                  title=name, page=page_name, order=sort_param[1])
 
+
+@web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")
+@login_required_if_no_ano
+def render_magic_shelf(shelf_id, sort_param, page):
+    """Render a magic shelf with proper pagination and sorting."""
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found")
+        abort(404)
+    
+    # Check access - users can view their own shelves OR public shelves
+    if shelf.user_id != current_user.id and shelf.is_public != 1:
+        log.warning(f"User {current_user.id} attempted to access private magic shelf {shelf_id} owned by {shelf.user_id}")
+        abort(403)
+    
+    # Get sort order using the same function as other book lists
+    order = get_sort_function(sort_param, "magicshelf")
+    
+    # Get pagination settings\
+    per_page = config.config_books_per_page or 20
+    
+    # Build sort order - order[0] is a list, we need to unpack it
+    sort_order = order[0] if order and len(order) > 0 else []
+    
+    # Check for cache bypass
+    bypass_cache = request.args.get('refresh') == '1'
+
+    # Get books with pagination
+    try:
+        books, total_count = magic_shelf.get_books_for_magic_shelf(
+            shelf_id, 
+            page=page, 
+            page_size=per_page,
+            sort_order=sort_order,
+            sort_param=sort_param,
+            bypass_cache=bypass_cache
+        )
+        log.debug(f"Magic shelf {shelf_id} returned {len(books)} books out of {total_count} total")
+
+        # Log activity
+        try:
+            from scripts.cwa_db import CWA_DB
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=current_user.id,
+                user_name=current_user.name,
+                event_type='MAGIC_SHELF_VIEW',
+                item_id=shelf_id,
+                item_title=shelf.name,
+                extra_data=json.dumps({'shelf_name': shelf.name, 'shelf_type': 'magic'})
+            )
+        except Exception as e:
+            log.error(f"Failed to log magic shelf activity: {e}")
+
+    except Exception as e:
+        log.error(f"Error retrieving books for magic shelf {shelf_id}: {e}")
+        flash(_("Error loading magic shelf"), category="error")
+        return redirect(url_for('web.index'))
+    
+    # Create proper pagination object
+    from .pagination import Pagination
+    pagination = Pagination(page, per_page, total_count)
+    
+    # Wrap books in entry objects with .Books attribute for template compatibility
+    class Entry:
+        def __init__(self, book):
+            self.Books = book
+    
+    entries = [Entry(book) for book in books]
+    
+    # Check if this shelf is hidden by current user (for public shelves)
+    is_hidden = False
+    if shelf.user_id != current_user.id:
+        is_hidden = ub.session.query(ub.HiddenMagicShelfTemplate).filter(
+            ub.HiddenMagicShelfTemplate.user_id == current_user.id,
+            ub.HiddenMagicShelfTemplate.shelf_id == shelf_id
+        ).first() is not None
+    
+    return render_title_template('index.html', 
+                                 entries=entries, 
+                                 pagination=pagination,
+                                 title=_("Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s", icon=shelf.icon, name=shelf.name), 
+                                 page="magicshelf",
+                                 shelf=shelf,
+                                 is_hidden_shelf=is_hidden,
+                                 id=shelf_id, 
+                                 order=order[1])
+
+
 # ################################### Health Check ##################################################################
 
 @web.route("/health")
@@ -904,6 +1024,402 @@ def index(page):
 @login_required_if_no_ano
 def books_list(data, sort_param, book_id, page):
     return render_books_list(data, sort_param, book_id, page)
+
+
+@web.route("/magicshelf/preview", methods=["POST"])
+@user_login_required
+def preview_magic_shelf():
+    """Preview what books match the given rules without saving the shelf."""
+    try:
+        data = request.get_json()
+        rules = data.get('rules')
+        
+        if not rules or not rules.get('rules'):
+            return jsonify({"success": False, "message": _("No rules provided")}), 400
+        
+        # Temporarily create a query to count matching books
+        try:
+            query_filter = magic_shelf.build_query_from_rules(rules, user_id=current_user.id)
+            if query_filter is None:
+                return jsonify({"success": False, "message": _("Invalid rules format")}), 400
+            
+            cdb = db.CalibreDB(init=True)
+            query = cdb.session.query(db.Books)
+            query = query.filter(query_filter)
+            query = query.filter(cdb.common_filters())
+            
+            # Get total count
+            total_count = query.count()
+            
+            # Get sample books (first 5)
+            sample_books = query.limit(5).all()
+            sample_titles = [book.title for book in sample_books]
+            
+            return jsonify({
+                "success": True,
+                "count": total_count,
+                "sample_books": sample_titles
+            })
+            
+        except Exception as e:
+            log.error(f"Error previewing magic shelf rules: {str(e)}", exc_info=True)
+            return jsonify({"success": False, "message": _("Error processing rules")}), 500
+            
+    except Exception as e:
+        log.error(f"Error in preview_magic_shelf: {e}")
+        return jsonify({"success": False, "message": _("Invalid request")}), 400
+
+
+@web.route("/magicshelf", methods=["GET", "POST"])
+@user_login_required
+def create_magic_shelf():
+    # Curated emoji list for magic shelf icons - organized by category
+    ALLOWED_ICONS = [
+        # Books & Reading
+        '📚', '📖', '📕', '📗', '📘', '📙', '📔', '📓', '📒', '📰',
+        # Stars & Favorites
+        '⭐', '🌟', '✨', '💫', '🌠', '⚡', '🔥', '💥', '🎯', '🏆',
+        # Hearts
+        '❤️', '💙', '💚', '💛', '🧡', '💜', '🖤', '🤍', '💖', '💝',
+        # Entertainment
+        '🎭', '🎬', '🎪', '🎨', '🎮', '🎲', '🎰', '🎳', '🎱', '🎸',
+        # Travel & Space
+        '🚀', '🛸', '🌌', '🌍', '🌎', '🌏', '🗺️', '🧭', '⛰️', '🏔️',
+        # Fantasy & Magic
+        '🔮', '🎃', '👻', '🦄', '🐉', '🐲', '🧙', '🧚', '🧛', '🧜',
+        # Awards & Achievement
+        '🥇', '🥈', '🥉', '🏅', '🎖️', '👑', '💎', '💍', '🔱', '🎗️',
+        # Time & Organization
+        '⏰', '⏱️', '⌛', '⏳', '🕰️', '🔔', '📅', '📆', '📌', '📍',
+        # Learning & Science
+        '🎓', '🏫', '📝', '✏️', '📐', '📏', '🔬', '🔭', '🖌️', '🖍️',
+        # Nature & Weather
+        '🌈', '☀️', '🌙', '🌸', '🌺', '🌻', '🌹', '🌷', '🍀', '🌱'
+    ]
+    
+    if request.method == "POST":
+        data = request.get_json()
+        name = strip_whitespaces(data.get('name', ''))
+        rules = data.get('rules')
+        icon = data.get('icon', '🪄')
+        kobo_sync = data.get('kobo_sync', False)
+        is_public = data.get('is_public', False)
+        
+        # Only allow public if user has permission
+        if is_public and not current_user.role_edit_shelfs():
+            is_public = False
+        
+        # Validate inputs
+        if not name or not rules:
+            return jsonify({"success": False, "message": _("Name and rules are required")}), 400
+        
+        if len(name) > 100:
+            return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
+        
+        # Use default icon if none provided, otherwise accept any emoji/symbol
+        if not icon:
+            icon = '🪄'
+        
+        try:
+            new_shelf = ub.MagicShelf(
+                name=name,
+                user_id=current_user.id,
+                rules=rules,
+                icon=icon,
+                kobo_sync=kobo_sync,
+                is_public=1 if is_public else 0
+            )
+            ub.session.add(new_shelf)
+            ub.session_commit()
+            log.info(f"User {current_user.id} created magic shelf '{name}' (ID: {new_shelf.id})")
+            return jsonify({"success": True, "shelf_id": new_shelf.id})
+        except Exception as e:
+            log.error(f"Error creating magic shelf: {e}")
+            ub.session.rollback()
+            return jsonify({"success": False, "message": _("Error creating shelf")}), 500
+    
+    # For GET request, render the creation form
+    # Fetch available languages for the dropdown
+    languages = calibre_db.session.query(db.Languages).all()
+    language_map = {}
+    for lang in languages:
+        try:
+            lang_name = isoLanguages.get_language_name(get_locale(), lang.lang_code)
+            language_map[lang.lang_code] = lang_name
+        except:
+            language_map[lang.lang_code] = lang.lang_code
+
+    return render_title_template('magic_shelf_edit.html', 
+                                 title=_("Create Magic Shelf"), 
+                                 page="magic_shelf_create",
+                                 allowed_icons=ALLOWED_ICONS,
+                                 languages=language_map)
+
+
+@web.route("/magicshelf/<int:shelf_id>/edit", methods=["GET", "POST"])
+@user_login_required
+def edit_magic_shelf(shelf_id):
+    # Curated emoji list for magic shelf icons - organized by category
+    ALLOWED_ICONS = [
+        # Books & Reading
+        '📚', '📖', '📕', '📗', '📘', '📙', '📔', '📓', '📒', '📰',
+        # Stars & Favorites
+        '⭐', '🌟', '✨', '💫', '🌠', '⚡', '🔥', '💥', '🎯', '🏆',
+        # Hearts
+        '❤️', '💙', '💚', '💛', '🧡', '💜', '🖤', '🤍', '💖', '💝',
+        # Entertainment
+        '🎭', '🎬', '🎪', '🎨', '🎮', '🎲', '🎰', '🎳', '🎱', '🎸',
+        # Travel & Space
+        '🚀', '🛸', '🌌', '🌍', '🌎', '🌏', '🗺️', '🧭', '⛰️', '🏔️',
+        # Fantasy & Magic
+        '🔮', '🎃', '👻', '🦄', '🐉', '🐲', '🧙', '🧚', '🧛', '🧜',
+        # Awards & Achievement
+        '🥇', '🥈', '🥉', '🏅', '🎖️', '👑', '💎', '💍', '🔱', '🎗️',
+        # Time & Organization
+        '⏰', '⏱️', '⌛', '⏳', '🕰️', '🔔', '📅', '📆', '📌', '📍',
+        # Learning & Science
+        '🎓', '🏫', '📝', '✏️', '📐', '📏', '🔬', '🔭', '🖌️', '🖍️',
+        # Nature & Weather
+        '🌈', '☀️', '🌙', '🌸', '🌺', '🌻', '🌹', '🌷', '🍀', '🌱'
+    ]
+    
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found")
+        abort(404)
+    
+    # Check if user can edit this shelf (owner or admin only)
+    if shelf.user_id != current_user.id and not current_user.role_admin():
+        log.warning(f"User {current_user.id} attempted to edit magic shelf {shelf_id} without permission")
+        abort(403)
+
+    if request.method == "POST":
+        data = request.get_json()
+        name = strip_whitespaces(data.get('name', shelf.name))
+        rules = data.get('rules', shelf.rules)
+        icon = data.get('icon', shelf.icon)
+        kobo_sync = data.get('kobo_sync', shelf.kobo_sync)
+        is_public = data.get('is_public', shelf.is_public == 1)
+        
+        # Only allow changing public status if user has permission
+        if is_public != (shelf.is_public == 1):
+            if not current_user.role_edit_shelfs():
+                return jsonify({"success": False, "message": _("Permission denied to change public status")}), 403
+        
+        # Validate inputs
+        if not name:
+            return jsonify({"success": False, "message": _("Shelf name is required")}), 400
+        
+        if len(name) > 100:
+            return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
+        
+        # Use default icon if none provided, otherwise accept any emoji/symbol
+        if not icon:
+            icon = '🪄'
+        
+        try:
+            shelf.name = name
+            shelf.rules = rules
+            shelf.icon = icon
+            shelf.kobo_sync = kobo_sync
+            shelf.is_public = 1 if is_public else 0
+            flag_modified(shelf, "rules")
+            
+            # Invalidate Complex Query Cache
+            ub.session.query(ub.MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
+            
+            ub.session_commit()
+            
+            # Invalidate cache
+            if 'magic_shelf_counts' in flask_session:
+                counts = flask_session['magic_shelf_counts']
+                if str(shelf_id) in counts:
+                    del counts[str(shelf_id)]
+                    flask_session.modified = True
+            
+            log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}') with icon '{icon}'")
+            return jsonify({"success": True})
+        except Exception as e:
+            log.error(f"Error updating magic shelf {shelf_id}: {e}")
+            ub.session.rollback()
+            return jsonify({"success": False, "message": _("Error updating shelf")}), 500
+
+    # For GET request, render the edit form
+    # Fetch available languages for the dropdown
+    languages = calibre_db.session.query(db.Languages).all()
+    language_map = {}
+    for lang in languages:
+        try:
+            lang_name = isoLanguages.get_language_name(get_locale(), lang.lang_code)
+            language_map[lang.lang_code] = lang_name
+        except:
+            language_map[lang.lang_code] = lang.lang_code
+
+    return render_title_template('magic_shelf_edit.html', 
+                                 shelf=shelf, 
+                                 title=_("Edit Magic Shelf"), 
+                                 page="magic_shelf_edit",
+                                 allowed_icons=ALLOWED_ICONS,
+                                 languages=language_map)
+
+
+@web.route("/magicshelf/<int:shelf_id>/duplicate", methods=["POST"])
+@user_login_required
+def duplicate_magic_shelf(shelf_id):
+    """Duplicate an existing magic shelf (especially useful for system templates)."""
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found for duplication")
+        return jsonify({"success": False, "message": _("Shelf not found")}), 404
+    
+    # Users can duplicate their own shelves or any public shelf
+    if shelf.user_id != current_user.id and not shelf.is_public:
+        log.warning(f"User {current_user.id} attempted to duplicate private shelf {shelf_id} owned by {shelf.user_id}")
+        return jsonify({"success": False, "message": _("Permission denied")}), 403
+    
+    try:
+        # Create duplicate with " (Copy)" suffix
+        new_name = f"{shelf.name} (Copy)"
+        
+        # If name already exists, add number
+        counter = 1
+        while ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.user_id == current_user.id,
+            ub.MagicShelf.name == new_name
+        ).first():
+            counter += 1
+            new_name = f"{shelf.name} (Copy {counter})"
+        
+        duplicate_shelf = ub.MagicShelf(
+            user_id=current_user.id,
+            name=new_name,
+            icon=shelf.icon,
+            rules=shelf.rules.copy() if shelf.rules else {},
+            is_system=False,  # Duplicates are never system shelves
+            is_public=0  # Duplicates start as private
+        )
+        
+        ub.session.add(duplicate_shelf)
+        ub.session_commit()
+        
+        log.info(f"User {current_user.id} duplicated magic shelf {shelf_id} as '{new_name}' (ID: {duplicate_shelf.id})")
+        return jsonify({
+            "success": True, 
+            "shelf_id": duplicate_shelf.id,
+            "message": _("Shelf duplicated successfully")
+        })
+        
+    except Exception as e:
+        log.error(f"Error duplicating magic shelf {shelf_id}: {e}")
+        ub.session.rollback()
+        return jsonify({"success": False, "message": _("Error duplicating shelf")}), 500
+
+
+@web.route("/magicshelf/<int:shelf_id>/delete", methods=["POST"])
+@user_login_required
+def delete_magic_shelf(shelf_id):
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found for deletion")
+        abort(404)
+    
+    # Check if user can delete this shelf
+    can_delete = False
+    if shelf.user_id == current_user.id:
+        can_delete = True
+    elif shelf.is_public == 1 and current_user.role_edit_shelfs():
+        can_delete = True
+    
+    if not can_delete:
+        log.warning(f"User {current_user.id} attempted to delete magic shelf {shelf_id} without permission")
+        abort(403)
+    
+    # Prevent deletion of system shelves
+    if shelf.is_system:
+        log.warning(f"User {current_user.id} attempted to delete system shelf {shelf_id}")
+        return jsonify({
+            "success": False, 
+            "message": _("System shelves cannot be deleted. You can hide them in your user profile settings.")
+        }), 400
+    
+    try:
+        shelf_name = shelf.name
+        # Delete cache entries first
+        ub.session.query(ub.MagicShelfCache).filter_by(shelf_id=shelf_id).delete()
+        # Delete any hide records for this shelf
+        ub.session.query(ub.HiddenMagicShelfTemplate).filter_by(shelf_id=shelf_id).delete()
+        # Delete the shelf
+        ub.session.delete(shelf)
+        ub.session_commit()
+        log.info(f"User {current_user.id} deleted magic shelf {shelf_id} ('{shelf_name}')")
+        return jsonify({"success": True})
+    except Exception as e:
+        log.error(f"Error deleting magic shelf {shelf_id}: {e}")
+        ub.session.rollback()
+        return jsonify({"success": False, "message": _("Error deleting shelf")}), 500
+
+
+@web.route("/magicshelf/<int:shelf_id>/hide", methods=["POST"])
+@user_login_required
+def hide_magic_shelf(shelf_id):
+    """Hide a public magic shelf (user doesn't want to see it in their sidebar)."""
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        log.warning(f"Magic shelf {shelf_id} not found")
+        abort(404)
+    
+    # Can only hide shelves you don't own (public or system)
+    if shelf.user_id == current_user.id:
+        return jsonify({
+            "success": False, 
+            "message": _("You cannot hide your own shelves. Delete them instead if you don't want them.")
+        }), 400
+    
+    # Check if already hidden
+    existing = ub.session.query(ub.HiddenMagicShelfTemplate).filter(
+        ub.HiddenMagicShelfTemplate.user_id == current_user.id,
+        ub.HiddenMagicShelfTemplate.shelf_id == shelf_id
+    ).first()
+    
+    if existing:
+        return jsonify({"success": True, "message": _("Shelf already hidden")})
+    
+    try:
+        hidden = ub.HiddenMagicShelfTemplate(
+            user_id=current_user.id,
+            shelf_id=shelf_id
+        )
+        ub.session.add(hidden)
+        ub.session_commit()
+        log.info(f"User {current_user.id} hid magic shelf {shelf_id} ('{shelf.name}')")
+        return jsonify({"success": True})
+    except Exception as e:
+        log.error(f"Error hiding magic shelf {shelf_id}: {e}")
+        ub.session.rollback()
+        return jsonify({"success": False, "message": _("Error hiding shelf")}), 500
+
+
+@web.route("/magicshelf/<int:shelf_id>/unhide", methods=["POST"])
+@user_login_required
+def unhide_magic_shelf(shelf_id):
+    """Unhide a previously hidden magic shelf."""
+    try:
+        hidden = ub.session.query(ub.HiddenMagicShelfTemplate).filter(
+            ub.HiddenMagicShelfTemplate.user_id == current_user.id,
+            ub.HiddenMagicShelfTemplate.shelf_id == shelf_id
+        ).first()
+        
+        if not hidden:
+            return jsonify({"success": True, "message": _("Shelf was not hidden")})
+        
+        ub.session.delete(hidden)
+        ub.session_commit()
+        log.info(f"User {current_user.id} unhid magic shelf {shelf_id}")
+        return jsonify({"success": True})
+    except Exception as e:
+        log.error(f"Error unhiding magic shelf {shelf_id}: {e}")
+        ub.session.rollback()
+        return jsonify({"success": False, "message": _("Error unhiding shelf")}), 500
 
 
 @web.route("/table")
@@ -1291,6 +1807,82 @@ def get_robots():
         abort(403)
 
 
+def _is_valid_container_xml(container_bytes):
+    try:
+        ET.fromstring(container_bytes)
+        return True
+    except Exception:
+        return False
+
+
+def _sanitize_container_xml(container_bytes):
+    try:
+        text = container_bytes.decode("utf-8", errors="replace")
+    except Exception:
+        return container_bytes
+
+    decl_pattern = re.compile(r"<\?xml[^>]*\?>")
+    decls = list(decl_pattern.finditer(text))
+    if len(decls) <= 1:
+        return container_bytes
+
+    first = decls[0]
+    cleaned = text[:first.end()] + decl_pattern.sub("", text[first.end():])
+    return cleaned.encode("utf-8")
+
+
+def _get_fixed_epub_path(book_id, original_path):
+    fix_dir = os.path.join(constants.CONFIG_DIR, "epub_fixes")
+    try:
+        os.makedirs(fix_dir, exist_ok=True)
+    except Exception:
+        return None
+
+    try:
+        mtime = int(os.path.getmtime(original_path))
+    except Exception:
+        mtime = 0
+    return os.path.join(fix_dir, f"{book_id}_{mtime}.epub")
+
+
+def _repair_epub_container_if_needed(book_id, original_path):
+    try:
+        with zipfile.ZipFile(original_path, "r") as zin:
+            container_bytes = zin.read("META-INF/container.xml")
+            if _is_valid_container_xml(container_bytes):
+                return None
+
+        fixed_path = _get_fixed_epub_path(book_id, original_path)
+        if not fixed_path:
+            return None
+        if os.path.exists(fixed_path):
+            return fixed_path
+
+        temp_path = fixed_path + ".tmp"
+        with zipfile.ZipFile(original_path, "r") as zin, zipfile.ZipFile(temp_path, "w") as zout:
+            for item in zin.infolist():
+                data = zin.read(item.filename)
+                if item.filename == "META-INF/container.xml":
+                    data = _sanitize_container_xml(data)
+
+                zi = zipfile.ZipInfo(item.filename)
+                zi.date_time = item.date_time
+                zi.compress_type = item.compress_type
+                zi.external_attr = item.external_attr
+                zi.internal_attr = item.internal_attr
+                zi.extra = item.extra
+                zi.comment = item.comment
+                zout.writestr(zi, data, compress_type=item.compress_type)
+
+        os.replace(temp_path, fixed_path)
+        return fixed_path
+    except KeyError:
+        return None
+    except Exception as ex:
+        log.error("Failed to repair EPUB container.xml for book %s: %s", book_id, ex)
+        return None
+
+
 @web.route("/show/<int:book_id>/<book_format>", defaults={'anyname': 'None'})
 @web.route("/show/<int:book_id>/<book_format>/<anyname>")
 @login_required_if_no_ano
@@ -1316,6 +1908,15 @@ def serve_book(book_id, book_format, anyname):
             log.error_or_exception(ex)
             return "File Not Found"
     else:
+        if book_format.upper() == 'EPUB':
+            original_path = os.path.join(config.get_book_path(), book.path, data.name + "." + book_format)
+            fixed_path = _repair_epub_container_if_needed(book_id, original_path)
+            if fixed_path:
+                response = make_response(send_file(fixed_path, mimetype="application/epub+zip"))
+                if not range_header:
+                    log.info('Serving repaired book: %s', data.name)
+                    response.headers['Accept-Ranges'] = 'bytes'
+                return response
         if book_format.upper() == 'TXT':
             log.info('Serving book: %s', data.name)
             try:
@@ -1550,12 +2151,14 @@ def render_login(username="", password=""):
     if url_for("web.logout") == next_url:
         next_url = url_for("web.index")
 
+    # Get OAuth check status
+    oauth_check = oauth_bb.oauth_check if feature_support['oauth'] else {}
+
     # Get generic OAuth login button text for display
     generic_login_button = None
     if feature_support['oauth']:
         try:
             # oauth_bb is already imported at module level, access oauthblueprints from it
-            from . import oauth_bb
             # oauthblueprints[2] is the generic OIDC provider (index 0=github, 1=google, 2=generic)
             if hasattr(oauth_bb, 'oauthblueprints') and len(oauth_bb.oauthblueprints) > 2:
                 generic_login_button = oauth_bb.oauthblueprints[2].get('login_button') or 'OpenID Connect'
@@ -1811,6 +2414,65 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         # Auto-send and metadata fetch settings
         current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
         current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+        
+        # Handle hidden magic shelf templates and custom shelves
+        from . import magic_shelf
+        if not current_user.is_anonymous:
+            # Get all system template keys
+            all_template_keys = set(magic_shelf.SYSTEM_SHELF_TEMPLATES.keys())
+            # Get currently hidden items for this user
+            current_hidden = ub.session.query(ub.HiddenMagicShelfTemplate).filter(
+                ub.HiddenMagicShelfTemplate.user_id == current_user.id
+            ).all()
+            current_hidden_template_keys = {h.template_key for h in current_hidden if h.template_key}
+            current_hidden_shelf_ids = {h.shelf_id for h in current_hidden if h.shelf_id}
+            
+            # Handle system templates
+            visible_template_keys = {key for key in all_template_keys if to_save.get(f"show_magic_shelf_{key}") == "on"}
+            should_be_hidden_templates = all_template_keys - visible_template_keys
+            
+            # Add newly hidden templates
+            for key in should_be_hidden_templates:
+                if key not in current_hidden_template_keys:
+                    new_hidden = ub.HiddenMagicShelfTemplate(
+                        user_id=current_user.id,
+                        template_key=key
+                    )
+                    ub.session.add(new_hidden)
+                    log.info(f"User {current_user.id} hid system shelf template '{key}'")
+            
+            # Remove templates that should no longer be hidden
+            for hidden in current_hidden:
+                if hidden.template_key and hidden.template_key in visible_template_keys:
+                    ub.session.delete(hidden)
+                    log.info(f"User {current_user.id} unhid system shelf template '{hidden.template_key}'")
+            
+            # Handle custom public shelves - get all available ones
+            all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+                ub.MagicShelf.is_public == 1,
+                ub.MagicShelf.user_id != current_user.id,
+                ub.MagicShelf.is_system == False
+            ).all()
+            
+            # Check which ones should be visible (checked)
+            visible_shelf_ids = {s.id for s in all_public_shelves if to_save.get(f"show_custom_shelf_{s.id}") == "on"}
+            
+            # Hide shelves that are unchecked but not currently hidden
+            for shelf in all_public_shelves:
+                if shelf.id not in visible_shelf_ids and shelf.id not in current_hidden_shelf_ids:
+                    new_hidden = ub.HiddenMagicShelfTemplate(
+                        user_id=current_user.id,
+                        shelf_id=shelf.id
+                    )
+                    ub.session.add(new_hidden)
+                    log.info(f"User {current_user.id} hid custom shelf {shelf.id}")
+            
+            # Unhide shelves that are checked but currently hidden
+            for hidden in current_hidden:
+                if hidden.shelf_id and hidden.shelf_id in visible_shelf_ids:
+                    ub.session.delete(hidden)
+                    log.info(f"User {current_user.id} unhid custom shelf {hidden.shelf_id}")
+        
         # Theme change
         if 'theme' in to_save:
             try:
@@ -1820,15 +2482,95 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
             except Exception:
                 pass
 
+        # OPDS root order
+        opds_order_raw = to_save.get("opds_root_order", "").strip()
+        if opds_order_raw:
+            from .opds import normalize_opds_root_order
+            opds_order_list = [item.strip() for item in opds_order_raw.split(',') if item.strip()]
+            normalized_order = normalize_opds_root_order(opds_order_list)
+            if current_user.view_settings is None:
+                current_user.view_settings = {}
+            current_user.view_settings.setdefault('opds', {})['root_order'] = normalized_order
+            flag_modified(current_user, "view_settings")
+        else:
+            if current_user.view_settings and current_user.view_settings.get('opds', {}).get('root_order'):
+                current_user.view_settings['opds'].pop('root_order', None)
+                if not current_user.view_settings['opds']:
+                    current_user.view_settings.pop('opds', None)
+                flag_modified(current_user, "view_settings")
+
+        # OPDS hidden entries
+        opds_hidden_raw = to_save.get("opds_hidden_entries", "").strip()
+        if opds_hidden_raw:
+            from .opds import OPDS_ROOT_ENTRY_DEFS
+            hidden_entries = [item.strip() for item in opds_hidden_raw.split(',') if item.strip()]
+            hidden_entries = [key for key in hidden_entries if key in OPDS_ROOT_ENTRY_DEFS]
+            if current_user.view_settings is None:
+                current_user.view_settings = {}
+            current_user.view_settings.setdefault('opds', {})['hidden_entries'] = hidden_entries
+            flag_modified(current_user, "view_settings")
+        else:
+            if current_user.view_settings and current_user.view_settings.get('opds', {}).get('hidden_entries'):
+                current_user.view_settings['opds'].pop('hidden_entries', None)
+                if not current_user.view_settings['opds']:
+                    current_user.view_settings.pop('opds', None)
+                flag_modified(current_user, "view_settings")
+
     except Exception as ex:
         flash(str(ex), category="error")
+        from . import magic_shelf
+        system_shelf_templates = magic_shelf.SYSTEM_SHELF_TEMPLATES
+        hidden_items = ub.session.query(
+            ub.HiddenMagicShelfTemplate.template_key,
+            ub.HiddenMagicShelfTemplate.shelf_id
+        ).filter(
+            ub.HiddenMagicShelfTemplate.user_id == current_user.id
+        ).all()
+        hidden_shelf_templates = {item.template_key for item in hidden_items if item.template_key}
+        hidden_custom_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+
+        all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.is_public == 1,
+            ub.MagicShelf.user_id != current_user.id,
+            ub.MagicShelf.is_system == False
+        ).all()
+
+        hidden_custom_shelves = [s for s in all_public_shelves if s.id in hidden_custom_shelf_ids]
+        visible_public_shelves = [s for s in all_public_shelves if s.id not in hidden_custom_shelf_ids]
+
+        from .opds import (
+            get_opds_root_order_for_user,
+            get_opds_hidden_entries_for_user,
+            OPDS_ROOT_ENTRY_DEFS,
+            OPDS_ROOT_ORDER_DEFAULT,
+        )
+        opds_root_order = get_opds_root_order_for_user(current_user)
+        opds_root_order_string = ",".join(opds_root_order)
+        opds_hidden_entries = list(get_opds_hidden_entries_for_user(current_user))
+        opds_hidden_entries_string = ",".join(opds_hidden_entries)
+        opds_root_labels = [
+            {
+                "key": key,
+                "label": _(OPDS_ROOT_ENTRY_DEFS[key]['title']),
+            }
+            for key in OPDS_ROOT_ORDER_DEFAULT
+            if key in OPDS_ROOT_ENTRY_DEFS
+        ]
         return render_title_template("user_edit.html",
                                      content=current_user,
                                      config=config,
                                      translations=translations,
                                      profile=1,
                                      languages=languages,
-                                     title=_("%(name)s's Profile", name=current_user.name),
+                                     system_shelf_templates=system_shelf_templates,
+                                     hidden_shelf_templates=hidden_shelf_templates,
+                                     hidden_custom_shelf_ids=hidden_custom_shelf_ids,
+                                     hidden_custom_shelves=hidden_custom_shelves,
+                                     visible_public_shelves=visible_public_shelves,
+                                     opds_root_order_string=opds_root_order_string,
+                                     opds_hidden_entries_string=opds_hidden_entries_string,
+                                     opds_root_labels=opds_root_labels,
+                                     title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                      page="me",
                                      kobo_support=kobo_support,
                                      hardcover_support=hardcover_support,
@@ -1837,8 +2579,12 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
 
     val = 0
     for key, __ in to_save.items():
-        if key.startswith('show'):
-            val += int(key[5:])
+        if key.startswith('show') and not key.startswith('show_magic_shelf_') and not key.startswith('show_custom_shelf_'):
+            try:
+                val += int(key[5:])
+            except (ValueError, IndexError) as e:
+                log.warning(f"Skipping invalid sidebar checkbox key: {key}")
+                continue
     current_user.sidebar_view = val
     if to_save.get("Show_detail_random"):
         current_user.sidebar_view += constants.DETAIL_RANDOM
@@ -1847,6 +2593,8 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         ub.session.commit()
         flash(_("Success! Profile Updated"), category="success")
         log.debug("Profile updated")
+        # Redirect to refresh sidebar with updated shelf visibility
+        return redirect(url_for('web.profile'))
     except IntegrityError:
         ub.session.rollback()
         flash(_("Oops! An account already exists for this Email."), category="error")
@@ -1866,13 +2614,51 @@ def profile():
     hardcover_support = feature_support['hardcover']
     if feature_support['oauth'] and config.config_login_type == 2:
         oauth_status = get_oauth_status()
-        local_oauth_check = oauth_check
+        local_oauth_check = oauth_bb.oauth_check
     else:
         oauth_status = None
         local_oauth_check = {}
-
+    
     if request.method == "POST":
-        change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_status, translations, languages)
+        return change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_status, translations, languages)
+    
+    # Query magic shelf data after POST to get updated values
+    from . import magic_shelf
+    system_shelf_templates = magic_shelf.SYSTEM_SHELF_TEMPLATES
+    hidden_items = ub.session.query(
+        ub.HiddenMagicShelfTemplate.template_key,
+        ub.HiddenMagicShelfTemplate.shelf_id
+    ).filter(
+        ub.HiddenMagicShelfTemplate.user_id == current_user.id
+    ).all()
+    hidden_shelf_templates = {item.template_key for item in hidden_items if item.template_key}
+    hidden_custom_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+    
+    # Get ALL public custom shelves that user doesn't own (both hidden and visible)
+    all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+        ub.MagicShelf.is_public == 1,
+        ub.MagicShelf.user_id != current_user.id,
+        ub.MagicShelf.is_system == False
+    ).all()
+    
+    # Separate into hidden and visible
+    hidden_custom_shelves = [s for s in all_public_shelves if s.id in hidden_custom_shelf_ids]
+    visible_public_shelves = [s for s in all_public_shelves if s.id not in hidden_custom_shelf_ids]
+
+    from .opds import get_opds_root_order_for_user, get_opds_hidden_entries_for_user, OPDS_ROOT_ENTRY_DEFS, OPDS_ROOT_ORDER_DEFAULT
+    opds_root_order = get_opds_root_order_for_user(current_user)
+    opds_root_order_string = ",".join(opds_root_order)
+    opds_hidden_entries = list(get_opds_hidden_entries_for_user(current_user))
+    opds_hidden_entries_string = ",".join(opds_hidden_entries)
+    opds_root_labels = [
+        {
+            "key": key,
+            "label": _(OPDS_ROOT_ENTRY_DEFS[key]['title'])
+        }
+        for key in OPDS_ROOT_ORDER_DEFAULT
+        if key in OPDS_ROOT_ENTRY_DEFS
+    ]
+
     return render_title_template("user_edit.html",
                                  translations=translations,
                                  profile=1,
@@ -1881,7 +2667,15 @@ def profile():
                                  config=config,
                                  kobo_support=kobo_support,
                                  hardcover_support=hardcover_support,
-                                 title=_("%(name)s's Profile", name=current_user.name),
+                                 system_shelf_templates=system_shelf_templates,
+                                 hidden_shelf_templates=hidden_shelf_templates,
+                                 hidden_custom_shelf_ids=hidden_custom_shelf_ids,
+                                 hidden_custom_shelves=hidden_custom_shelves,
+                                 visible_public_shelves=visible_public_shelves,
+                                 opds_root_order_string=opds_root_order_string,
+                                 opds_hidden_entries_string=opds_hidden_entries_string,
+                                 opds_root_labels=opds_root_labels,
+                                 title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                  page="me",
                                  registered_oauth=local_oauth_check,
                                  oauth_status=oauth_status)
@@ -2007,6 +2801,19 @@ def show_book(book_id):
             book_in_shelves.append(sh.shelf)
 
         entry.tags = sort(entry.tags, key=lambda tag: tag.name)
+        
+        # Filter tags based on user's allowed/denied tags (Issue #906)
+        if current_user.is_authenticated:
+            allowed_tags = current_user.list_allowed_tags()
+            denied_tags = current_user.list_denied_tags()
+            
+            # If allowed tags are configured (not empty), filter to only show allowed tags
+            if allowed_tags and allowed_tags != ['']:
+                entry.tags = [tag for tag in entry.tags if tag.name in allowed_tags]
+            
+            # Remove denied tags
+            if denied_tags and denied_tags != ['']:
+                entry.tags = [tag for tag in entry.tags if tag.name not in denied_tags]
 
         entry.ordered_authors = calibre_db.order_authors([entry])
 

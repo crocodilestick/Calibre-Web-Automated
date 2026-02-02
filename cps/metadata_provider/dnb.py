@@ -56,7 +56,7 @@ class DNB(Metadata):
     def search(self, query: str, generic_cover: str = "", locale: str = "en") -> Optional[List[MetaRecord]]:
         try:
             if not self.active:
-                return None
+                return []
 
             val = []
 

@@ -23,7 +23,7 @@
           <a class="btn btn-default" href="{{ url_for('convert_library.cancel_convert_library') }}" style="vertical-align: top; float: right; width: 100px; margin-left: 10px;">{{_('Cancel')}}</a>
           <a class="btn btn-default" href="{{ url_for('convert_library.start_conversion') }}" style="vertical-align: top; float: right; width: 100px;">{{_('Start')}}</a>
           {% if current_user.role_admin() %}
-          <div class="btn-group" role="group" aria-label="schedule" style="float: right; margin-right: 10px;">
+          <div class="btn-group" role="group" aria-label="schedule" style="float: right; margin-right: 10px; display: flex; gap: 1rem;">
             <button class="btn btn-default" onclick="scheduleConvertLibrary(5)">{{ _('Schedule 5m') }}</button>
             <button class="btn btn-default" onclick="scheduleConvertLibrary(15)">{{ _('Schedule 15m') }}</button>
           </div>

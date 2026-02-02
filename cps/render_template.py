@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
-from flask import render_template, g, abort, request, flash
+from flask import render_template, g, abort, request, flash, current_app
 from flask_babel import gettext as _
 from flask_babel import get_locale
 import polib
@@ -99,7 +99,7 @@ def get_sidebar_config(kwargs=None):
             {"glyph": "glyphicon-th-list", "text": _('Books List'), "link": 'web.books_table', "id": "list",
              "visibility": constants.SIDEBAR_LIST, 'public': (not current_user.is_anonymous), "page": "list",
              "show_text": _('Show Books List'), "config_show": content})
-    if current_user.role_admin():
+    if current_user.role_admin() or current_user.role_edit():
         sidebar.append(
             {"glyph": "glyphicon-copy", "text": _('Duplicates'), "link": 'duplicates.show_duplicates', "id": "duplicates",
              "visibility": constants.SIDEBAR_DUPLICATES, 'public': (not current_user.is_anonymous), "page": "duplicates",
@@ -115,10 +115,16 @@ def cwa_update_available() -> tuple[bool, str, str]:
         current_version = constants.INSTALLED_VERSION
         tag_name = constants.STABLE_VERSION
 
-        if current_version == "V0.0.0" or tag_name == "V0.0.0":
+        def _normalize_version(value: str) -> str:
+            return (value or "").lstrip("vV")
+
+        current_normalized = _normalize_version(current_version)
+        tag_normalized = _normalize_version(tag_name)
+
+        if current_normalized in ("", "0.0.0") or tag_normalized in ("", "0.0.0"):
             return False, "0.0.0", "0.0.0"
 
-        return (tag_name != current_version), current_version, tag_name
+        return (tag_normalized != current_normalized), current_version, tag_name
     except Exception as e:
         print(f"[cwa-update-notification-service] Error checking for CWA updates: {e}", flush=True)
         return False, "0.0.0", "0.0.0"
@@ -174,7 +180,7 @@ def theme_migration_notification() -> None:
             pass
     
     # Show notification
-    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v4.0.0.")
+    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v5.0.0.")
     flash(message, category="theme_migration")
     
     # Mark as shown today
@@ -224,6 +230,13 @@ def translations_missing_notification() -> None:
 # Returns the template for rendering and includes the instance name
 def render_title_template(*args, **kwargs):
     sidebar, simple = get_sidebar_config(kwargs)
+    try:
+        magic_shelf_routes = {
+            "render": 'web.render_magic_shelf' in current_app.view_functions,
+            "create": 'web.create_magic_shelf' in current_app.view_functions,
+        }
+    except Exception:
+        magic_shelf_routes = {"render": False, "create": False}
     if current_user.role_admin():
         try:
             cwa_update_notification()
@@ -239,10 +252,67 @@ def render_title_template(*args, **kwargs):
         translations_missing_notification()
     except Exception as e:
         print(f"[translation-notification-service] The following error occurred when checking for missing translations:\n{e}", flush=True)
+    duplicate_notification = {
+        "enabled": False,
+        "count": 0,
+        "preview": [],
+        "cached": False,
+        "stale": False,
+    }
+    try:
+        if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()):
+            cwa_db = CWA_DB()
+            detection_enabled = cwa_db.cwa_settings.get('duplicate_detection_enabled', 1)
+            notifications_enabled = bool(cwa_db.cwa_settings.get('duplicate_notifications_enabled', 1))
+            if detection_enabled:
+                cache_data = cwa_db.get_duplicate_cache()
+                if cache_data and cache_data.get('duplicate_groups') is not None:
+                    duplicate_groups = cache_data.get('duplicate_groups') or []
+                    try:
+                        dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
+                            .filter(ub.DismissedDuplicateGroup.user_id == current_user.id)\
+                            .all()
+                        dismissed_hashes = {row[0] for row in dismissed_groups}
+                        if dismissed_hashes:
+                            duplicate_groups = [
+                                group for group in duplicate_groups
+                                if group.get('group_hash') not in dismissed_hashes
+                            ]
+                    except Exception:
+                        pass
+
+                    preview = []
+                    for group in duplicate_groups[:3]:
+                        preview.append({
+                            'title': group.get('title', ''),
+                            'author': group.get('author', ''),
+                            'count': group.get('count', 0),
+                            'hash': group.get('group_hash', '')
+                        })
+
+                    duplicate_notification = {
+                        "enabled": notifications_enabled,
+                        "count": len(duplicate_groups),
+                        "preview": preview,
+                        "cached": True,
+                        "stale": bool(cache_data.get('scan_pending')),
+                    }
+                else:
+                    duplicate_notification = {
+                        "enabled": notifications_enabled,
+                        "count": 0,
+                        "preview": [],
+                        "cached": False,
+                        "stale": True,
+                    }
+    except Exception as e:
+        log.debug("[cwa-duplicates] Failed to build duplicate notification context: %s", str(e))
     try:
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
-                               accept=config.config_upload_formats.split(','),
-                               *args, **kwargs)
+                       accept=config.config_upload_formats.split(','),
+                       magic_shelf_routes=magic_shelf_routes,
+                       duplicate_notification=duplicate_notification,
+                       *args, **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))
         abort(403)

@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -25,7 +25,7 @@ class CWA_DB:
         # Support both Docker and CI environments for schema path
         script_dir = os.path.dirname(os.path.abspath(__file__))
         self.schema_path = os.path.join(script_dir, "cwa_schema.sql")
-        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes", "cwa_user_activity"]
+        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes", "cwa_user_activity", "cwa_duplicate_cache", "cwa_duplicate_resolutions"]
         self.tables, self.schema = self.make_tables()
 
         self.cwa_default_settings = self.get_cwa_default_settings()
@@ -71,6 +71,34 @@ class CWA_DB:
         return tables, schema
 
 
+    def _normalize_user_ids(self, user_id) -> list[int]:
+        """Normalize user filters to a list of integer IDs."""
+        if user_id is None:
+            return []
+        if isinstance(user_id, (list, tuple, set)):
+            return [int(uid) for uid in user_id if uid is not None]
+        try:
+            return [int(user_id)]
+        except (TypeError, ValueError):
+            return []
+
+
+    def _has_user_filter(self, user_id) -> bool:
+        """Return True when a valid user filter is provided."""
+        return len(self._normalize_user_ids(user_id)) > 0
+
+
+    def _build_user_filter(self, user_id) -> str:
+        """Builds SQL filter for a single user ID or list of user IDs."""
+        user_ids = self._normalize_user_ids(user_id)
+        if not user_ids:
+            return ""
+        if len(user_ids) == 1:
+            return f" AND user_id = {user_ids[0]}"
+        user_ids_csv = ",".join(str(uid) for uid in user_ids)
+        return f" AND user_id IN ({user_ids_csv})"
+
+
     def get_cwa_default_settings(self):
         for table in self.tables:
             if "cwa_settings" in table:
@@ -79,19 +107,44 @@ class CWA_DB:
 
         settings_lines = []
         for line in settings_table.split('\n'):
-            if line[:4] == "    ":
-                settings_lines.append(line.strip())
+            stripped = line.strip()
+            # Skip comment lines and empty lines
+            if line[:4] == "    " and not stripped.startswith('--') and stripped:
+                settings_lines.append(stripped)
 
         default_settings = {}
         for line in settings_lines:
-            components = line.split(' ')
-            setting_name = components[0]
-            setting_value = components[3]
-
-            try:
-                setting_value = int(setting_value)
-            except ValueError:
-                setting_value = setting_value.replace('"', '')
+            # Extract setting name and DEFAULT value more carefully
+            # Format: setting_name TYPE DEFAULT value [NOT NULL]
+            if ' DEFAULT ' not in line:
+                continue
+                
+            setting_name = line.split()[0]
+            
+            # Extract everything after DEFAULT
+            default_start = line.index(' DEFAULT ') + len(' DEFAULT ')
+            remainder = line[default_start:].strip()
+            
+            # Handle different value types
+            if remainder.startswith("'"):
+                # String value with single quotes - could be '', or 'value', or JSON
+                # Find the matching closing quote
+                end_quote = remainder.index("'", 1)
+                setting_value = remainder[1:end_quote]  # Extract content between quotes
+            elif ' ' in remainder:
+                # Value followed by other keywords (like NOT NULL)
+                setting_value = remainder.split()[0]
+                try:
+                    setting_value = int(setting_value)
+                except ValueError:
+                    pass
+            else:
+                # Simple value at end of line
+                setting_value = remainder
+                try:
+                    setting_value = int(setting_value)
+                except ValueError:
+                    pass
 
             default_settings |= {setting_name:setting_value}
 
@@ -104,11 +157,21 @@ class CWA_DB:
         # print(f"[cwa-db] DEBUG: Current available cwa_settings: {cwa_setting_names}")
 
         # Add any settings present in the schema file but not in the db
+        newly_added_settings = []
         for setting in self.cwa_default_settings.keys():
             if setting not in cwa_setting_names:
                 success = self.add_missing_setting(setting)
                 if success:
                     print(f"[cwa-db] Setting '{setting}' successfully added to cwa.db!")
+                    newly_added_settings.append(setting)
+        
+        # Sync newly added settings with schema defaults
+        # This handles cases where schema default was updated after column was added
+        if newly_added_settings:
+            self.sync_new_settings_with_defaults(newly_added_settings)
+        
+        # Fix for issue #903: Repair incorrectly parsed default values from older versions
+        self.fix_malformed_setting_values()
         
         # Delete any settings in the db but not in the schema file
         for setting in cwa_setting_names:
@@ -120,6 +183,81 @@ class CWA_DB:
                     print(f"[cwa-db] Deprecated setting '{setting}' successfully removed from cwa.db!")
                 except Exception as e:
                     print(f"[cwa-db] The following error occurred when trying to remove {setting} from cwa.db:\n{e}")
+    
+    
+    def sync_new_settings_with_defaults(self, newly_added_settings) -> None:
+        """Sync newly added settings to match schema defaults
+        
+        This ensures that if a column was added with one default value, then the schema 
+        was updated with a different default, existing databases get the new default.
+        """
+        try:
+            # Get current values
+            self.cur.execute("SELECT * FROM cwa_settings")
+            headers = [header[0] for header in self.cur.description]
+            current_values = dict(zip(headers, self.cur.fetchone()))
+            
+            # Update any newly added settings that don't match schema defaults
+            updates_made = []
+            for setting in newly_added_settings:
+                current_val = current_values.get(setting)
+                expected_val = self.cwa_default_settings.get(setting)
+                
+                # Compare with type handling (int vs string)
+                if str(current_val) != str(expected_val):
+                    self.cur.execute(f"UPDATE cwa_settings SET {setting}=?", (expected_val,))
+                    updates_made.append(f"{setting}: {current_val} -> {expected_val}")
+            
+            if updates_made:
+                self.con.commit()
+                print(f"[cwa-db] Synced {len(updates_made)} new setting(s) with schema defaults:")
+                for update in updates_made:
+                    print(f"[cwa-db]   - {update}")
+        except Exception as e:
+            print(f"[cwa-db] Warning: Failed to sync new settings with defaults: {e}")
+
+
+    def fix_malformed_setting_values(self) -> None:
+        """Fix settings that may have been incorrectly parsed in older versions.
+        
+        Issue #903: Old parser would save '' as literal two-quote string and truncate JSON.
+        This migration fixes existing databases with malformed values.
+        """
+        try:
+            self.cur.execute("SELECT duplicate_scan_cron, duplicate_format_priority FROM cwa_settings")
+            row = self.cur.fetchone()
+            if not row:
+                return
+            
+            cron_value, format_priority = row
+            fixes_made = []
+            
+            # Fix duplicate_scan_cron if it's the literal string "''"
+            if cron_value == "''":
+                self.cur.execute("UPDATE cwa_settings SET duplicate_scan_cron = ''")
+                fixes_made.append("duplicate_scan_cron: removed literal quotes")
+            
+            # Fix duplicate_format_priority if it's malformed (not valid JSON or missing formats)
+            if format_priority:
+                try:
+                    import json
+                    parsed = json.loads(format_priority)
+                    # Check if it has at least the basic formats
+                    if not isinstance(parsed, dict) or 'EPUB' not in parsed:
+                        raise ValueError("Missing expected format data")
+                except (json.JSONDecodeError, ValueError):
+                    # Reset to default if malformed
+                    default_json = self.cwa_default_settings.get('duplicate_format_priority', '{}')
+                    self.cur.execute("UPDATE cwa_settings SET duplicate_format_priority = ?", (default_json,))
+                    fixes_made.append("duplicate_format_priority: reset to default due to malformed JSON")
+            
+            if fixes_made:
+                self.con.commit()
+                print(f"[cwa-db] Fixed {len(fixes_made)} malformed setting value(s) from previous version:")
+                for fix in fixes_made:
+                    print(f"[cwa-db]   - {fix}")
+        except Exception as e:
+            print(f"[cwa-db] Warning: Failed to fix malformed setting values: {e}")
 
 
     def add_missing_setting(self, setting) -> bool:
@@ -128,6 +266,9 @@ class CWA_DB:
             if match:
                 try:
                     command = line.replace('\n', '').strip()
+                    # Skip SQL comments
+                    if command.startswith('--') or not command:
+                        continue
                     command = command.replace(',', ';')
                     with open('/config/.cwa_db_debug', 'a') as f:
                         f.write(command)
@@ -158,19 +299,27 @@ class CWA_DB:
         column_names_in_schema = {}
         for table in self.tables:
             column_names = []
+            table_name = None  # Reset for each table
             table = table.split('\n')
             for line in table:
                 if line[:27] == "CREATE TABLE IF NOT EXISTS ":
                     table_name = line[27:].replace('(', '').strip()
                 elif line[:4] == "    ":
                     column_names.append(line.strip().split(' ')[0])
-            if 'table_name' in locals():
-                column_names_in_schema |= {table_name:column_names} # type: ignore
+            if table_name is not None:  # Only add if table_name was actually found
+                column_names_in_schema[table_name] = column_names
 
         for table in self.stats_tables:
             # Skip if table wasn't found in current DB (it was just created empty)
             if not current_column_names[table]:
                 continue
+            
+            # Skip if table not found in schema (shouldn't happen but safety check)
+            if table not in column_names_in_schema:
+                print(f"[cwa-db] Warning: Table '{table}' in stats_tables but not found in schema")
+                continue
+            
+            columns_added = False  # Track if we added any columns this iteration
                 
             if len(current_column_names[table]) < len(column_names_in_schema[table]): # Adds new columns not yet in existing db
                 num_new_columns = len(column_names_in_schema[table]) - len(current_column_names[table])
@@ -179,11 +328,29 @@ class CWA_DB:
                         for line in self.schema:
                             matches = re.findall(column_names_in_schema[table][-x], line)
                             if matches:
-                                new_column = line.strip().replace(',', '')
-                                self.cur.execute(f"ALTER TABLE {table} ADD {new_column};")
+                                # Extract column definition, remove trailing comma and SQL comments
+                                new_column = line.strip()
+                                if '--' in new_column:
+                                    new_column = new_column[:new_column.index('--')].strip()
+                                new_column = new_column.rstrip(',')
+                                self.cur.execute(f"ALTER TABLE {table} ADD COLUMN {new_column}")
                                 self.con.commit()
                                 print(f'[cwa-db] Missing Column detected in cwa.db. Added new column "{column_names_in_schema[table][-x]}" to table "{table}" in cwa.db')
-            else: # Number of columns in table matches the schema, now checks whether the names are the same
+                                columns_added = True
+                                break  # Found and added the column, move to next missing column
+            
+            # Only check for column renames if we didn't just add columns
+            # (newly added columns are correct, don't try to rename them)
+            if not columns_added and len(current_column_names[table]) == len(column_names_in_schema[table]):
+                # Check if all columns exist but just in different order (SQLite ADD COLUMN always appends)
+                current_set = set(current_column_names[table])
+                schema_set = set(column_names_in_schema[table])
+                
+                if current_set == schema_set:
+                    # All columns exist, just in different order - this is fine, SQLite can't reorder
+                    continue
+                
+                # Columns differ, check for actual renames needed
                 for x in range(len(column_names_in_schema[table])):
                     if current_column_names[table][x] != column_names_in_schema[table][x]:
                         self.cur.execute(f"ALTER TABLE {table} RENAME COLUMN {current_column_names[table][x]} TO {column_names_in_schema[table][x]}")
@@ -241,14 +408,39 @@ class CWA_DB:
         headers = [header[0] for header in self.cur.description]
         cwa_settings = [dict(zip(headers,row)) for row in self.cur.fetchall()][0]
 
+        # Define default values for new columns (in case db doesn't have them yet)
+        schema_defaults = {
+            'hardcover_auto_fetch_enabled': 0,
+            'hardcover_auto_fetch_schedule': 'weekly',
+            'hardcover_auto_fetch_schedule_day': 'sunday',
+            'hardcover_auto_fetch_schedule_hour': 2,
+            'hardcover_auto_fetch_min_confidence': 0.85,
+            'hardcover_auto_fetch_batch_size': 50,
+            'hardcover_auto_fetch_rate_limit': 5.0,
+            'archived_cleanup_enabled': 1,
+            'archived_cleanup_schedule': 'daily',
+            'archived_cleanup_schedule_day': 'sunday',
+            'archived_cleanup_schedule_hour': 3,
+            'ingest_stale_temp_minutes': 120,
+            'ingest_stale_temp_interval': 600
+        }
+        
+        # Apply defaults for missing keys
+        for key, default_value in schema_defaults.items():
+            if key not in cwa_settings:
+                cwa_settings[key] = default_value
+
         # Define which settings should remain as integers (not converted to boolean)
-        integer_settings = ['ingest_timeout_minutes', 'auto_send_delay_minutes']
+        integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'archived_cleanup_schedule_hour']
+        
+        # Define which settings should remain as floats (not converted to boolean)
+        float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']
         
         # Define which settings should remain as JSON strings (not split by comma)
-        json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled']
+        json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']
 
         for header in headers:
-            if isinstance(cwa_settings[header], int) and header not in integer_settings:
+            if isinstance(cwa_settings[header], int) and header not in integer_settings and header not in float_settings:
                 cwa_settings[header] = bool(cwa_settings[header])
             elif isinstance(cwa_settings[header], str) and ',' in cwa_settings[header] and header not in json_settings:
                 cwa_settings[header] = cwa_settings[header].split(',')
@@ -262,15 +454,27 @@ class CWA_DB:
             if setting == "auto_convert_ignored_formats" or setting == "auto_ingest_ignored_formats" or setting == "auto_convert_retained_formats":
                 result[setting] = ','.join(result[setting])
 
-            # Use parameterized queries to safely handle non-English characters and quotes
-            self.cur.execute(f"UPDATE cwa_settings SET {setting}=?;", (result[setting],))
-            self.con.commit()
+            # Skip updates for unset values to avoid NOT NULL constraint failures
+            if result[setting] is None:
+                continue
+
+            try:
+                # Use parameterized queries to safely handle non-English characters and quotes
+                self.cur.execute(f"UPDATE cwa_settings SET {setting}=?;", (result[setting],))
+                self.con.commit()
+            except Exception as e:
+                print(f"[CWA_DB] Error updating setting '{setting}' with value '{result[setting]}': {e}")
+                # Continue to next setting instead of failing completely
+                continue
         self.set_default_settings()
 
 
-    def enforce_add_entry_from_log(self, log_info: dict):
+    def enforce_add_entry_from_log(self, log_info: dict, trigger_type: str = "auto -log"):
         """Adds an entry to the db from a change log file"""
-        self.cur.execute("INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);", (log_info['timestamp'], log_info['book_id'], log_info['title'], log_info['authors'], log_info['file_path'], 'auto -log'))
+        self.cur.execute(
+            "INSERT INTO cwa_enforcement(timestamp, book_id, book_title, author, file_path, trigger_type) VALUES (?, ?, ?, ?, ?, ?);",
+            (log_info['timestamp'], log_info['book_id'], log_info['title'], log_info['authors'], log_info['file_path'], trigger_type)
+        )
         self.con.commit()
 
 
@@ -468,6 +672,29 @@ class CWA_DB:
         except Exception as e:
             print(f"[cwa-db] ERROR marking scheduled job cancelled: {e}")
 
+    def scheduled_cancel_for_book(self, book_id: int) -> int:
+        """Cancel all scheduled jobs (auto-send, etc.) for a specific book
+        
+        Args:
+            book_id: The book ID whose scheduled jobs should be cancelled
+            
+        Returns:
+            int: Number of jobs cancelled
+        """
+        try:
+            self.cur.execute(
+                "UPDATE cwa_scheduled_jobs SET state='cancelled' WHERE book_id=? AND state='scheduled'",
+                (int(book_id),)
+            )
+            self.con.commit()
+            cancelled_count = self.cur.rowcount
+            if cancelled_count > 0:
+                print(f"[cwa-db] Cancelled {cancelled_count} scheduled job(s) for book {book_id}", flush=True)
+            return cancelled_count
+        except Exception as e:
+            print(f"[cwa-db] ERROR cancelling scheduled jobs for book {book_id}: {e}", flush=True)
+            return 0
+
     def scheduled_update_job_id(self, row_id: int, scheduler_job_id: str) -> None:
         try:
             self.cur.execute("UPDATE cwa_scheduled_jobs SET scheduler_job_id=? WHERE id=?", (scheduler_job_id, int(row_id)))
@@ -637,7 +864,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -669,7 +896,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -701,7 +928,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -740,7 +967,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -778,7 +1005,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -1194,7 +1421,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Get LOGIN events ordered by user and time
@@ -1290,7 +1517,7 @@ class CWA_DB:
                 date_filter_prev = f"timestamp >= date('now', '-{days * 2} days') AND timestamp < date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Count total searches in period
@@ -1382,7 +1609,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Get shelf activity (parse shelf_name from extra_data JSON)
@@ -1391,13 +1618,19 @@ class CWA_DB:
                     json_extract(extra_data, '$.shelf_name') as shelf_name,
                     SUM(CASE WHEN event_type = 'SHELF_ADD' THEN 1 ELSE 0 END) as add_count,
                     SUM(CASE WHEN event_type = 'SHELF_REMOVE' THEN 1 ELSE 0 END) as remove_count,
-                    SUM(CASE WHEN event_type = 'SHELF_ADD' THEN 1 ELSE -1 END) as net_change
+                    SUM(CASE 
+                        WHEN event_type = 'SHELF_ADD' THEN 1 
+                        WHEN event_type = 'SHELF_REMOVE' THEN -1 
+                        ELSE 0 
+                    END) as net_change,
+                    SUM(CASE WHEN event_type = 'MAGIC_SHELF_VIEW' THEN 1 ELSE 0 END) as view_count,
+                    json_extract(extra_data, '$.shelf_type') as shelf_type
                 FROM cwa_user_activity
-                WHERE event_type IN ('SHELF_ADD', 'SHELF_REMOVE')
+                WHERE event_type IN ('SHELF_ADD', 'SHELF_REMOVE', 'MAGIC_SHELF_VIEW')
                     AND {combined_filter}
                     AND json_extract(extra_data, '$.shelf_name') IS NOT NULL
                 GROUP BY shelf_name
-                ORDER BY add_count DESC, net_change DESC
+                ORDER BY (add_count + view_count) DESC, net_change DESC
                 LIMIT {limit}
             """)
             
@@ -1428,7 +1661,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Categorize events
@@ -1478,7 +1711,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Debug: Check what event types actually exist
@@ -1550,7 +1783,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # Get API activity by time (focus on API events)
@@ -1809,7 +2042,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -1842,7 +2075,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -1874,7 +2107,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             self.cur.execute(f"""
@@ -1914,7 +2147,7 @@ class CWA_DB:
                 date_filter = f"timestamp >= date('now', '-{days} days')"
             
             # Add user filter if provided
-            user_filter = f" AND user_id = {user_id}" if user_id else ""
+            user_filter = self._build_user_filter(user_id)
             combined_filter = date_filter + user_filter
             
             # 1. Activity timeline - Daily counts by event type
@@ -1928,7 +2161,7 @@ class CWA_DB:
             timeline_data = self.cur.fetchall()
 
             # 2. Top active users or most active days (depending on user filter)
-            if user_id:
+            if self._has_user_filter(user_id):
                 # Show most active days for specific user
                 self.cur.execute(f"""
                     SELECT date(timestamp) as day, COUNT(*) as activity_count
@@ -2007,7 +2240,7 @@ class CWA_DB:
             event_breakdown = self.cur.fetchall()
 
             # 7. Total activity metrics
-            if user_id:
+            if self._has_user_filter(user_id):
                 # For single user, show total logins instead of active users
                 self.cur.execute(f"""
                     SELECT 
@@ -2079,6 +2312,145 @@ class CWA_DB:
                     "total_searches": 0,
                 }
             }
+
+    def invalidate_duplicate_cache(self):
+        """Mark duplicate cache as needing refresh"""
+        try:
+            self.cur.execute("""
+                UPDATE cwa_duplicate_cache 
+                SET scan_pending = 1 
+                WHERE id = 1
+            """)
+            self.con.commit()
+            return True
+        except Exception as e:
+            print(f"[cwa-db] Error invalidating duplicate cache: {e}")
+            return False
+
+    def get_duplicate_cache(self):
+        """Get cached duplicate scan results"""
+        import json
+        try:
+            self.cur.execute("""
+                SELECT scan_timestamp, duplicate_groups_json, total_count, scan_pending, last_scanned_book_id
+                FROM cwa_duplicate_cache 
+                WHERE id = 1
+            """)
+            row = self.cur.fetchone()
+            if row and row[1]:  # Has cached data
+                return {
+                    'scan_timestamp': row[0],
+                    'duplicate_groups': json.loads(row[1]),
+                    'total_count': row[2],
+                    'scan_pending': bool(row[3]),
+                    'last_scanned_book_id': row[4]
+                }
+            return None
+        except Exception as e:
+            print(f"[cwa-db] Error getting duplicate cache: {e}")
+            return None
+
+    def update_duplicate_cache(self, duplicate_groups, total_count, max_book_id=None):
+        """Update duplicate cache with fresh scan results
+        
+        Args:
+            duplicate_groups: List of duplicate group dictionaries
+            total_count: Total number of duplicate groups found
+            max_book_id: Maximum book ID in metadata.db (optional, for incremental scanning)
+        """
+        import json
+        from datetime import datetime
+        try:
+            # Serialize duplicate groups to JSON (extract only serializable data)
+            serializable_groups = []
+            for group in duplicate_groups:
+                serializable_group = {
+                    'title': group.get('title', ''),
+                    'author': group.get('author', ''),
+                    'count': group.get('count', 0),
+                    'group_hash': group.get('group_hash', ''),
+                    'book_ids': [book.id for book in group.get('books', [])]
+                }
+                serializable_groups.append(serializable_group)
+            
+            groups_json = json.dumps(serializable_groups)
+            
+            # Update cache with optional max_book_id for incremental scanning
+            if max_book_id is not None:
+                self.cur.execute("""
+                    UPDATE cwa_duplicate_cache 
+                    SET scan_timestamp = ?, 
+                        duplicate_groups_json = ?, 
+                        total_count = ?, 
+                        scan_pending = 0,
+                        last_scanned_book_id = ?
+                    WHERE id = 1
+                """, (datetime.now().isoformat(), groups_json, total_count, max_book_id))
+            else:
+                self.cur.execute("""
+                    UPDATE cwa_duplicate_cache 
+                    SET scan_timestamp = ?, 
+                        duplicate_groups_json = ?, 
+                        total_count = ?, 
+                        scan_pending = 0
+                    WHERE id = 1
+                """, (datetime.now().isoformat(), groups_json, total_count))
+            self.con.commit()
+            return True
+        except Exception as e:
+            print(f"[cwa-db] Error updating duplicate cache: {e}")
+            return False
+
+    def log_duplicate_resolution(self, group_hash, group_title, group_author, kept_book_id, 
+                                 deleted_book_ids, strategy, trigger_type, user_id=None, notes=None):
+        """Log a duplicate resolution to audit table"""
+        import json
+        try:
+            self.cur.execute("""
+                INSERT INTO cwa_duplicate_resolutions 
+                (group_hash, group_title, group_author, kept_book_id, deleted_book_ids, 
+                 strategy, trigger_type, user_id, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (group_hash, group_title, group_author, kept_book_id, 
+                  json.dumps(deleted_book_ids), strategy, trigger_type, user_id, notes))
+            self.con.commit()
+            return True
+        except Exception as e:
+            print(f"[cwa-db] Error logging duplicate resolution: {e}")
+            return False
+
+    def get_resolution_history(self, limit=100):
+        """Get recent resolution history"""
+        import json
+        try:
+            self.cur.execute("""
+                SELECT id, timestamp, group_hash, group_title, group_author, 
+                       kept_book_id, deleted_book_ids, strategy, trigger_type, user_id, notes
+                FROM cwa_duplicate_resolutions 
+                ORDER BY timestamp DESC 
+                LIMIT ?
+            """, (limit,))
+            
+            results = []
+            for row in self.cur.fetchall():
+                results.append({
+                    'id': row[0],
+                    'timestamp': row[1],
+                    'group_hash': row[2],
+                    'group_title': row[3],
+                    'group_author': row[4],
+                    'kept_book_id': row[5],
+                    'deleted_book_ids': json.loads(row[6]),
+                    'strategy': row[7],
+                    'trigger_type': row[8],
+                    'user_id': row[9],
+                    'notes': row[10]
+                })
+            return results
+        except Exception as e:
+            print(f"[cwa-db] Error getting resolution history: {e}")
+            return []
+
 
 def main():
     db = CWA_DB()

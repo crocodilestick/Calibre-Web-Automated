@@ -12,12 +12,12 @@ DUPLICATE_FIXER="$SCRIPT_DIR/fix_po_duplicates.py"
 
 # Set up Python environment
 PYTHON_CMD="python3"
-PYBABEL_CMD="pybabel"
+PYBABEL_CMD="python3 -m babel.messages.frontend"
 
 # Check if virtual environment exists and use it
 if [ -f "$ROOT_DIR/.venv/bin/python" ]; then
     PYTHON_CMD="$ROOT_DIR/.venv/bin/python"
-    PYBABEL_CMD="$ROOT_DIR/.venv/bin/pybabel"
+    PYBABEL_CMD="$PYTHON_CMD -m babel.messages.frontend"
 fi
 
 # Get the latest version from GitHub releases

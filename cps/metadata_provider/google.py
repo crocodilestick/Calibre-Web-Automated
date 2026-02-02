@@ -55,13 +55,14 @@ class Google(Metadata):
     def _parse_search_result(
         self, result: Dict, generic_cover: str, locale: str
     ) -> MetaRecord|None:
-        if "title" not in result["volumeInfo"]:
+        volume_info = result.get("volumeInfo", {})
+        if "title" not in volume_info:
             return None
 
         match = MetaRecord(
             id=result["id"],
-            title=result["volumeInfo"]["title"],
-            authors=result["volumeInfo"].get("authors", []),
+            title=volume_info["title"],
+            authors=volume_info.get("authors", []),
             url=Google.BOOK_URL + result["id"],
             source=MetaSourceInfo(
                 id=self.__id__,
@@ -71,17 +72,17 @@ class Google(Metadata):
         )
 
         match.cover = self._parse_cover(result=result, generic_cover=generic_cover)
-        match.description = result["volumeInfo"].get("description", "")
+        match.description = volume_info.get("description", "")
         match.languages = self._parse_languages(result=result, locale=locale)
-        match.publisher = result["volumeInfo"].get("publisher", "")
+        match.publisher = volume_info.get("publisher", "")
         try:
-            datetime.strptime(result["volumeInfo"].get("publishedDate", ""), "%Y-%m-%d")
-            match.publishedDate = result["volumeInfo"].get("publishedDate", "")
+            datetime.strptime(volume_info.get("publishedDate", ""), "%Y-%m-%d")
+            match.publishedDate = volume_info.get("publishedDate", "")
         except ValueError:
             match.publishedDate = ""
-        match.rating = result["volumeInfo"].get("averageRating", 0)
+        match.rating = volume_info.get("averageRating", 0)
         match.series, match.series_index = "", 1
-        match.tags = result["volumeInfo"].get("categories", [])
+        match.tags = volume_info.get("categories", [])
 
         match.identifiers = {"google": match.id}
         match = self._parse_isbn(result=result, match=match)

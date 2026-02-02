@@ -87,43 +87,16 @@ def migrate_thumbnail_structure():
             log.info("Thumbnail migration: No old subdirectories found, skipping migration")
             return
             
-        log.info(f"Thumbnail migration: Found {len(subdirs_found)} old subdirectories, starting migration")
+        log.info(f"Thumbnail migration: Found {len(subdirs_found)} old subdirectories with legacy thumbnails")
+        log.info("Thumbnail migration: Using lazy migration strategy - legacy thumbnails will be replaced on-demand")
+        log.info("Thumbnail migration: Old subdirectories will be cleaned up automatically as thumbnails regenerate")
         
-        # Clear all thumbnail database entries
-        session = ub.get_new_session_instance()
-        try:
-            deleted_count = session.query(ub.Thumbnail).delete()
-            session.commit()
-            log.info(f"Thumbnail migration: Cleared {deleted_count} old database entries")
-        except Exception as ex:
-            log.error(f"Thumbnail migration: Failed to clear database entries: {ex}")
-            session.rollback()
-        finally:
-            session.close()
+        # Note: We don't delete thumbnails immediately anymore.
+        # The TaskGenerateCoverThumbnails.create_book_cover_thumbnails() method already
+        # detects legacy thumbnails (via legacy_naming check) and migrates them on-demand.
+        # This prevents mass regeneration on first page load after update.
         
-        # Remove old files and subdirectories
-        files_removed = 0
-        dirs_removed = 0
-        
-        for subdir in subdirs_found:
-            subdir_path = os.path.join(thumbnails_dir, subdir)
-            try:
-                if os.path.exists(subdir_path):
-                    # Count files before removal
-                    for root, dirs, files in os.walk(subdir_path):
-                        files_removed += len(files)
-                    
-                    # Remove the entire subdirectory
-                    shutil.rmtree(subdir_path)
-                    dirs_removed += 1
-                    log.debug(f"Thumbnail migration: Removed subdirectory {subdir}")
-            except Exception as ex:
-                log.warning(f"Thumbnail migration: Failed to remove {subdir_path}: {ex}")
-        
-        log.info(f"Thumbnail migration: Removed {files_removed} old files and {dirs_removed} subdirectories")
-        log.info("Thumbnail migration: Complete. Thumbnails will be regenerated automatically as needed.")
-        
-        # Mark migration as completed
+        # Mark migration as completed so this only runs once
         set_migration_completed()
         
     except Exception as ex:

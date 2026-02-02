@@ -526,6 +526,9 @@ class HardcoverClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
+            # 401 Unauthorized means invalid/missing token - treat as missing token
+            if response.status_code == 401:
+                raise MissingHardcoverToken("Invalid or expired Hardcover API token")
             raise Exception(f"HTTP error occurred: {e}")
         result = response.json()
         if "errors" in result:

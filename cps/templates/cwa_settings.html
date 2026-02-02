@@ -169,9 +169,119 @@
         {{_("When active, the encoding among other attributes of all EPUB files processed by CWA will be checked and fixed to ensure maximum 
         compatibility with Amazon's Send-to-Kindle Service. This feature is particularly useful for users who frequently send EPUB files to their Kindle devices and have experienced issues with 
         file rejections or formatting problems.")}}
+      </p>
       <div class="cwa-settings-tip">
         <small>{{_('This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.') | safe }}</small>
       </div>
+      {% if cwa_settings.get('kindle_epub_fixer_aggressive') %}
+      <input type="checkbox" id="kindle_epub_fixer_aggressive" name="kindle_epub_fixer_aggressive" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Riskier transformations; use only if safe mode fails">
+      {% else %}
+      <input type="checkbox" id="kindle_epub_fixer_aggressive" name="kindle_epub_fixer_aggressive" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Riskier transformations; use only if safe mode fails">
+      {% endif %}
+      <label for="kindle_epub_fixer_aggressive" style="padding-left: 10px;">{{_('Enable Aggressive EPUB Fixer Mode (riskier)')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_("Aggressive mode applies more invasive fixes and will attempt lower-confidence encoding conversions. Safe mode is recommended for most libraries.")}}
+      </p>
+
+      {% if cwa_settings['archived_cleanup_enabled'] %}
+      <input type="checkbox" id="archived_cleanup_enabled" name="archived_cleanup_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Runs daily by default">
+      {% else %}
+      <input type="checkbox" id="archived_cleanup_enabled" name="archived_cleanup_enabled" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Runs daily by default">
+      {% endif %}
+      <label for="archived_cleanup_enabled" style="padding-left: 10px;">{{_('Enable Archived Book Cleanup')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_('Removes stale archived book references in app.db when the book no longer exists in the Calibre library. Helps keep archived counts accurate.') }}
+      </p>
+
+      <div class="form-group" style="margin-top: 10px;">
+        <label for="archived_cleanup_schedule" class="settings-section-header" style="padding-right: 10px;">{{_('Cleanup Schedule:')}}</label>
+        <select name="archived_cleanup_schedule" 
+                id="archived_cleanup_schedule" 
+                style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680; min-width: 200px;"
+                onchange="toggleArchivedCleanupScheduleOptions()">
+          <optgroup label="{{_('Frequent Intervals')}}">
+            <option value="15min" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '15min' %}selected{% endif %}>{{_('Every 15 Minutes')}}</option>
+            <option value="30min" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '30min' %}selected{% endif %}>{{_('Every 30 Minutes')}}</option>
+            <option value="1hour" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '1hour' %}selected{% endif %}>{{_('Every Hour')}}</option>
+            <option value="2hours" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '2hours' %}selected{% endif %}>{{_('Every 2 Hours')}}</option>
+            <option value="4hours" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '4hours' %}selected{% endif %}>{{_('Every 4 Hours')}}</option>
+            <option value="6hours" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '6hours' %}selected{% endif %}>{{_('Every 6 Hours')}}</option>
+            <option value="12hours" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == '12hours' %}selected{% endif %}>{{_('Every 12 Hours')}}</option>
+          </optgroup>
+          <optgroup label="{{_('Daily/Weekly/Monthly')}}">
+            <option value="daily" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == 'daily' %}selected{% endif %}>{{_('Daily at Specific Time')}}</option>
+            <option value="weekly" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == 'weekly' %}selected{% endif %}>{{_('Weekly on Specific Day')}}</option>
+            <option value="monthly" {% if cwa_settings.get('archived_cleanup_schedule', 'daily') == 'monthly' %}selected{% endif %}>{{_('Monthly on Specific Day')}}</option>
+          </optgroup>
+        </select>
+        <small style="color: #bbbbbb; margin-left: 10px;">{{_('Default: daily at 03:00')}}</small>
+
+        <div id="archived_cleanup_day_selector" style="margin-top: 10px; display: none;">
+          <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Week:')}}</label>
+          <select name="archived_cleanup_schedule_day" 
+                  id="archived_cleanup_schedule_day"
+                  style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;">
+            <option value="monday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'monday' %}selected{% endif %}>{{_('Monday')}}</option>
+            <option value="tuesday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'tuesday' %}selected{% endif %}>{{_('Tuesday')}}</option>
+            <option value="wednesday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'wednesday' %}selected{% endif %}>{{_('Wednesday')}}</option>
+            <option value="thursday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'thursday' %}selected{% endif %}>{{_('Thursday')}}</option>
+            <option value="friday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'friday' %}selected{% endif %}>{{_('Friday')}}</option>
+            <option value="saturday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'saturday' %}selected{% endif %}>{{_('Saturday')}}</option>
+            <option value="sunday" {% if cwa_settings.get('archived_cleanup_schedule_day', 'sunday') == 'sunday' %}selected{% endif %}>{{_('Sunday')}}</option>
+          </select>
+        </div>
+
+        <div id="archived_cleanup_monthday_selector" style="margin-top: 10px; display: none;">
+          <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Month:')}}</label>
+          <input type="number" 
+                 name="archived_cleanup_schedule_day" 
+                 id="archived_cleanup_schedule_monthday"
+                 value="{{ cwa_settings.get('archived_cleanup_schedule_day', '1') if cwa_settings.get('archived_cleanup_schedule', 'daily') == 'monthly' else '1' }}" 
+                 min="1" 
+                 max="28"
+                 style="width: 80px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;">
+          <small style="color: #888; margin-left: 5px;">{{_('(1-28)')}}</small>
+        </div>
+
+        <div id="archived_cleanup_hour_selector" style="margin-top: 10px; display: none;">
+          <label style="color: #bbbbbb; margin-right: 10px;">{{_('Time of Day:')}}</label>
+          <select name="archived_cleanup_schedule_hour" 
+                  id="archived_cleanup_schedule_hour"
+                  style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;">
+            {% for hour in range(24) %}
+            <option value="{{hour}}" {% if cwa_settings.get('archived_cleanup_schedule_hour', 3) == hour %}selected{% endif %}>{{ "%02d:00"|format(hour) }}</option>
+            {% endfor %}
+          </select>
+          <small style="color: #888; margin-left: 5px;">{{_('(Server timezone: %(tz)s)', tz=config.config_timezone or 'UTC')}}</small>
+        </div>
+      </div>
+
+      <script>
+      function toggleArchivedCleanupScheduleOptions() {
+        const scheduleType = document.getElementById('archived_cleanup_schedule').value;
+        const daySelector = document.getElementById('archived_cleanup_day_selector');
+        const monthdaySelector = document.getElementById('archived_cleanup_monthday_selector');
+        const hourSelector = document.getElementById('archived_cleanup_hour_selector');
+
+        daySelector.style.display = 'none';
+        monthdaySelector.style.display = 'none';
+        hourSelector.style.display = 'none';
+
+        if (scheduleType === 'weekly') {
+          daySelector.style.display = 'block';
+          hourSelector.style.display = 'block';
+        } else if (scheduleType === 'monthly') {
+          monthdaySelector.style.display = 'block';
+          hourSelector.style.display = 'block';
+        } else if (scheduleType === 'daily') {
+          hourSelector.style.display = 'block';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        toggleArchivedCleanupScheduleOptions();
+      });
+      </script>
 
       {% if cwa_settings['auto_metadata_fetch_enabled'] %}
       <input type="checkbox" id="auto_metadata_fetch_enabled" name="auto_metadata_fetch_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Automatically fetches metadata for newly ingested books">
@@ -300,6 +410,47 @@
                     border-radius: 4px;
                     background-color: #151e2680;">
       <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 5-120 minutes (default: 15)')}}</small>
+
+      <div class="cwa-settings-tip" style="margin-top: 12px;">
+        <small class="settings-explanation">
+          💡 <strong>{{_('Stale temp cleanup')}}:</strong>
+          {{_('Ignored temporary upload files (.uploading, .part, etc.) can be cleaned after a set age. Setting either value to 0 disables cleanup. Changes apply on the next cleanup cycle.')}}
+        </small>
+      </div>
+
+      <div style="margin-top: 10px;">
+        <label for="ingest_stale_temp_minutes" class="settings-section-header" style="padding-right: 10px; margin-bottom: 6px !important; padding-bottom: 0px !important;">{{_('Stale temp age (minutes):')}}</label>
+        <input type="number"
+               name="ingest_stale_temp_minutes"
+               id="ingest_stale_temp_minutes"
+               value="{{ cwa_settings['ingest_stale_temp_minutes'] }}"
+               min="0"
+               max="10080"
+               step="1"
+               style="width: 120px;
+                      padding: 5px;
+                      border: 1px solid transparent;
+                      border-radius: 4px;
+                      background-color: #151e2680;">
+        <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0-10080 minutes (default: 120)')}}</small>
+      </div>
+
+      <div style="margin-top: 10px;">
+        <label for="ingest_stale_temp_interval" class="settings-section-header" style="padding-right: 10px; margin-bottom: 6px !important; padding-bottom: 0px !important;">{{_('Stale temp cleanup interval (seconds):')}}</label>
+        <input type="number"
+               name="ingest_stale_temp_interval"
+               id="ingest_stale_temp_interval"
+               value="{{ cwa_settings['ingest_stale_temp_interval'] }}"
+               min="0"
+               max="86400"
+               step="1"
+               style="width: 120px;
+                      padding: 5px;
+                      border: 1px solid transparent;
+                      border-radius: 4px;
+                      background-color: #151e2680;">
+        <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0-86400 seconds (default: 600)')}}</small>
+      </div>
     </div>
 
     <!-- Auto-Send Delay Setting -->
@@ -362,6 +513,195 @@
       </div>
     </div>
 
+    <!-- Hardcover Auto-Fetch Settings -->
+    <div class="settings-container">
+      <h4 class="settings-section-header">🔖 {{_('Hardcover Auto-Fetch Settings')}}</h4>
+      <p class="settings-description">
+        {{_('Automatically fetch and assign Hardcover IDs to books in your library. Hardcover IDs enable reading progress sync and annotation sync with Hardcover.app when using compatible eReaders.')}}
+      </p>
+      
+      {% if not hardcover_token_available %}
+      <div class="alert alert-warning" style="margin: 15px 0; padding: 12px; background-color: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 4px;">
+        <strong>⚠️ {{_('Hardcover Token Required')}}</strong><br>
+        <span style="font-size: 0.9em;">{{_('To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in your docker-compose environment variables or configure a global token in Basic Configuration. Without a valid token, this feature will remain disabled.')}}</span>
+      </div>
+      {% endif %}
+      
+      <div style="margin-top: 20px;">
+        <!-- Enable Auto-Fetch -->
+        {% if cwa_settings['hardcover_auto_fetch_enabled'] and hardcover_token_available %}
+        <input type="checkbox" id="hardcover_auto_fetch_enabled" name="hardcover_auto_fetch_enabled" value="True" checked style="accent-color: var(--color-secondary);" {% if not hardcover_token_available %}disabled{% endif %}>
+        {% else %}
+        <input type="checkbox" id="hardcover_auto_fetch_enabled" name="hardcover_auto_fetch_enabled" value="True" style="accent-color: var(--color-secondary);" {% if not hardcover_token_available %}disabled{% endif %}>
+        {% endif %}
+        <label for="hardcover_auto_fetch_enabled" style="padding-left: 10px; {% if not hardcover_token_available %}color: #888; cursor: not-allowed;{% endif %}">{{_('Enable Hardcover Auto-Fetch')}}</label>
+        <p class="cwa-settings-tooltip">
+          {{_('Automatically search Hardcover for books without Hardcover IDs. High-confidence matches are applied automatically; low-confidence matches are queued for manual review.')}}
+        </p>
+
+        <!-- Schedule Interval -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_schedule" class="settings-section-header" style="padding-right: 10px;">{{_('Run Schedule:')}}</label>
+          <select name="hardcover_auto_fetch_schedule" 
+                  id="hardcover_auto_fetch_schedule" 
+                  style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680; min-width: 200px;"
+                  onchange="toggleScheduleOptions()"
+                  {% if not hardcover_token_available %}disabled{% endif %}>
+            <optgroup label="{{_('Frequent Intervals')}}">
+              <option value="15min" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '15min' %}selected{% endif %}>{{_('Every 15 Minutes')}}</option>
+              <option value="30min" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '30min' %}selected{% endif %}>{{_('Every 30 Minutes')}}</option>
+              <option value="1hour" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '1hour' %}selected{% endif %}>{{_('Every Hour')}}</option>
+              <option value="2hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '2hours' %}selected{% endif %}>{{_('Every 2 Hours')}}</option>
+              <option value="4hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '4hours' %}selected{% endif %}>{{_('Every 4 Hours')}}</option>
+              <option value="6hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '6hours' %}selected{% endif %}>{{_('Every 6 Hours')}}</option>
+              <option value="12hours" {% if cwa_settings['hardcover_auto_fetch_schedule'] == '12hours' %}selected{% endif %}>{{_('Every 12 Hours')}}</option>
+            </optgroup>
+            <optgroup label="{{_('Daily/Weekly/Monthly')}}">
+              <option value="daily" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'daily' %}selected{% endif %}>{{_('Daily at Specific Time')}}</option>
+              <option value="weekly" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'weekly' %}selected{% endif %}>{{_('Weekly on Specific Day')}}</option>
+              <option value="monthly" {% if cwa_settings['hardcover_auto_fetch_schedule'] == 'monthly' %}selected{% endif %}>{{_('Monthly on Specific Day')}}</option>
+            </optgroup>
+          </select>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('How often to automatically run the Hardcover ID fetch task')}}</small>
+          
+          <!-- Day of Week Selector (for weekly) -->
+          <div id="schedule_day_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Week:')}}</label>
+            <select name="hardcover_auto_fetch_schedule_day" 
+                    id="hardcover_auto_fetch_schedule_day"
+                    style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                    {% if not hardcover_token_available %}disabled{% endif %}>
+              <option value="monday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'monday' %}selected{% endif %}>{{_('Monday')}}</option>
+              <option value="tuesday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'tuesday' %}selected{% endif %}>{{_('Tuesday')}}</option>
+              <option value="wednesday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'wednesday' %}selected{% endif %}>{{_('Wednesday')}}</option>
+              <option value="thursday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'thursday' %}selected{% endif %}>{{_('Thursday')}}</option>
+              <option value="friday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'friday' %}selected{% endif %}>{{_('Friday')}}</option>
+              <option value="saturday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'saturday' %}selected{% endif %}>{{_('Saturday')}}</option>
+              <option value="sunday" {% if cwa_settings.get('hardcover_auto_fetch_schedule_day', 'sunday') == 'sunday' %}selected{% endif %}>{{_('Sunday')}}</option>
+            </select>
+          </div>
+          
+          <!-- Day of Month Selector (for monthly) -->
+          <div id="schedule_monthday_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Day of Month:')}}</label>
+            <input type="number" 
+                   name="hardcover_auto_fetch_schedule_day" 
+                   id="hardcover_auto_fetch_schedule_monthday"
+                   value="{{ cwa_settings.get('hardcover_auto_fetch_schedule_day', '1') if cwa_settings['hardcover_auto_fetch_schedule'] == 'monthly' else '1' }}" 
+                   min="1" 
+                   max="28"
+                   style="width: 80px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                   {% if not hardcover_token_available %}disabled{% endif %}>
+            <small style="color: #888; margin-left: 5px;">{{_('(1-28)')}}</small>
+          </div>
+          
+          <!-- Hour Selector (for daily/weekly/monthly) -->
+          <div id="schedule_hour_selector" style="margin-top: 10px; display: none;">
+            <label style="color: #bbbbbb; margin-right: 10px;">{{_('Time of Day:')}}</label>
+            <select name="hardcover_auto_fetch_schedule_hour" 
+                    id="hardcover_auto_fetch_schedule_hour"
+                    style="padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                    {% if not hardcover_token_available %}disabled{% endif %}>
+              {% for hour in range(24) %}
+              <option value="{{hour}}" {% if cwa_settings.get('hardcover_auto_fetch_schedule_hour', 2) == hour %}selected{% endif %}>{{ "%02d:00"|format(hour) }}</option>
+              {% endfor %}
+            </select>
+            <small style="color: #888; margin-left: 5px;">{{_('(Server timezone: %(tz)s)', tz=config.config_timezone or 'UTC')}}</small>
+          </div>
+        </div>
+        
+        <script>
+        function toggleScheduleOptions() {
+          const scheduleType = document.getElementById('hardcover_auto_fetch_schedule').value;
+          const daySelector = document.getElementById('schedule_day_selector');
+          const monthdaySelector = document.getElementById('schedule_monthday_selector');
+          const hourSelector = document.getElementById('schedule_hour_selector');
+          
+          // Hide all by default
+          daySelector.style.display = 'none';
+          monthdaySelector.style.display = 'none';
+          hourSelector.style.display = 'none';
+          
+          // Show relevant selectors based on schedule type
+          if (scheduleType === 'weekly') {
+            daySelector.style.display = 'block';
+            hourSelector.style.display = 'block';
+          } else if (scheduleType === 'monthly') {
+            monthdaySelector.style.display = 'block';
+            hourSelector.style.display = 'block';
+          } else if (scheduleType === 'daily') {
+            hourSelector.style.display = 'block';
+          }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+          toggleScheduleOptions();
+        });
+        </script>
+
+        <!-- Minimum Confidence Threshold -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_min_confidence" class="settings-section-header" style="padding-right: 10px;">{{_('Minimum Confidence Threshold:')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_min_confidence" 
+                 id="hardcover_auto_fetch_min_confidence" 
+                 value="{{ cwa_settings['hardcover_auto_fetch_min_confidence'] }}" 
+                 min="0.5" 
+                 max="1.0" 
+               step="0.001"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0.50-1.00 (default: 0.85)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Matches with confidence scores above this threshold are automatically applied. Lower scores are queued for manual review. Higher values = fewer auto-matches but higher accuracy.')}}
+          </p>
+        </div>
+
+        <!-- Batch Size -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_batch_size" class="settings-section-header" style="padding-right: 10px;">{{_('Batch Size:')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_batch_size" 
+                 id="hardcover_auto_fetch_batch_size" 
+                 value="{{ cwa_settings.get('hardcover_auto_fetch_batch_size', 50) }}" 
+                 min="10" 
+                 max="200" 
+                 step="10"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 10-200 books per run (default: 50)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Number of books to process in each scheduled run. Smaller batches reduce API load; larger batches process your library faster.')}}
+          </p>
+        </div>
+
+        <!-- Rate Limit Delay -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label for="hardcover_auto_fetch_rate_limit" class="settings-section-header" style="padding-right: 10px;">{{_('Rate Limit Delay (seconds):')}}</label>
+          <input type="number" 
+                 name="hardcover_auto_fetch_rate_limit" 
+                 id="hardcover_auto_fetch_rate_limit" 
+                 value="{{ cwa_settings['hardcover_auto_fetch_rate_limit'] }}" 
+                 min="0" 
+                 max="60" 
+                 step="0.5"
+                 style="width: 100px; padding: 5px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680;"
+                 {% if not hardcover_token_available %}disabled{% endif %}>
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 0-60 seconds (default: 5.0)')}}</small>
+          <p class="cwa-settings-tooltip">
+            {{_('Delay between API requests to Hardcover. Prevents rate limiting and protects your API key. Uses exponential backoff on errors.')}}
+          </p>
+        </div>
+
+        <div class="cwa-settings-tip" style="margin-top: 20px;">
+          <small style="color: var(--color-info-text);">
+            💡 <strong>{{_('Tip')}}:</strong> {{_('You can manually trigger the Hardcover auto-fetch task from the Admin panel at any time. Check the CWA Stats page to see progress and review queued matches that need manual approval.')}}
+          </small>
+        </div>
+      </div>
+    </div>
+
     <div class="settings-container">
         <h4 class="settings-section-header">{{_('Web UI Settings')}}</h4>
 
@@ -383,6 +723,16 @@
       <label for="contribute_translations_notifications" style="padding-left: 10px;">{{_('Enable Contribute Translations Notifications')}}</label><br>
       <p class="cwa-settings-tooltip">
         {{_('When disabled, you will no longer receive notifications in the Web UI when using a language other than English if the translations for your chosen language are not complete.')}}
+      </p>
+
+      {% if config['config_kobo_sync_magic_shelves'] %}
+      <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
+      {% else %}
+      <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Requires Kobo Sync to be enabled in Basic Configuration">
+      {% endif %}
+      <label for="config_kobo_sync_magic_shelves" style="padding-left: 10px;">{{_('Sync Magic Shelves to Kobo')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_('When active, your Magic Shelves will be synced to your Kobo device as collections. Note: You must also enable Kobo Sync in Basic Configuration.')}}
       </p>
 
       {% if cwa_settings['enable_mobile_blur'] %}
@@ -458,9 +808,9 @@
           {% endif %}
         {% endfor %}
       </select>
-      <div class="cwa-settings-tip">
-        <small class="settings-explanation">
-          {{_("NOTE: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
+      <div class="cwa-settings-tip" style ="margin-top: 3rem;">
+        <small style="color: var(--color-info-text);">
+          💡 {{_("Note: CWA's Metadata Enforcement service can currently only support file in either EPUB and AZW3 format. Files in other formats will simply be ignored by the service")}}
         </small>
       </div>
     </div>
@@ -522,33 +872,6 @@
     </div>
 
     <div class="settings-container">
-      <h4 class="settings-section-header">{{_('CWA Auto-Ingest - Ignored Formats')}}</h4>
-      <p class="cwa-settings-explanation settings-explanation">
-        {{_("The formats selected here will be ignored by CWA's Auto-Ingest feature, meaning files in these formats won't be added to the library by CWA during the ingest process")}}
-      </p>
-      <div style="max-width: 90rem; padding-left: 30px;">
-        {% for format in ignorable_formats -%}
-          <label for="ignore_ingest_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
-            {% if format in cwa_settings['auto_ingest_ignored_formats'] %}
-              {% if format == cwa_settings['auto_convert_target_format'] %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
-              {% else %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
-              {% endif %}
-            {% else %}
-              {% if format == cwa_settings['auto_convert_target_format'] %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
-              {% else %}
-                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
-              {% endif %}
-            {% endif %}
-            <span style="padding-left: 4px; vertical-align: middle;">{{ format }}</span>
-          </label>
-        {% endfor %}
-      </div>
-    </div>
-
-<div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Auto-Ingest Automerge')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
@@ -585,6 +908,139 @@
     </div>
 
     <div class="settings-container">
+      <h4 class="settings-section-header">{{_('CWA Auto-Ingest - Ignored Formats')}}</h4>
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_("The formats selected here will be ignored by CWA's Auto-Ingest feature, meaning files in these formats won't be added to the library by CWA during the ingest process")}}
+      </p>
+      <div style="max-width: 90rem; padding-left: 30px;">
+        {% for format in ignorable_formats -%}
+          <label for="ignore_ingest_{{ format }}" style="width: 75px; padding-right: 6px; display: inline-block !important;">
+            {% if format in cwa_settings['auto_ingest_ignored_formats'] %}
+              {% if format == cwa_settings['auto_convert_target_format'] %}
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
+              {% else %}
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" checked style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
+              {% endif %}
+            {% else %}
+              {% if format == cwa_settings['auto_convert_target_format'] %}
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" disabled style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
+              {% else %}
+                <input type="checkbox" id="ignore_ingest_{{ format }}" name="ignore_ingest_{{ format }}" value="{{ format }}" style="vertical-align: middle; accent-color: var(--color-secondary); display: inline-block !important;"">
+              {% endif %}
+            {% endif %}
+            <span style="padding-left: 4px; vertical-align: middle;">{{ format }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('CWA Duplicate Detection System')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Enable or disable the duplicate detection system. When disabled, duplicate scanning will not run and no notifications will be shown.')}}
+      </p>
+
+      <div class="checkbox-wrapper" style="margin-bottom: 1.5rem;">
+        <input type="checkbox" id="duplicate_detection_enabled" name="duplicate_detection_enabled" value="1" {% if cwa_settings['duplicate_detection_enabled'] %} checked {% endif %}>
+        <label for="duplicate_detection_enabled" style="margin-left: 1rem;">{{_('Enable Duplicate Detection')}}</label>
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 1rem;">
+        <small>
+          {{_('When enabled, CWA will scan for duplicate books after each import')}}
+        </small>
+      </div>
+
+
+      <!-- Detection Method (Hybrid default) -->
+      {% set scan_method = cwa_settings.get('duplicate_scan_method')|default('hybrid', true) %}
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
+        <label for="duplicate_scan_method" class="settings-section-header" style="margin-top: 8px;">{{_('Duplicate Detection Method')}}</label>
+        <select class="cwa-settings-select" name="duplicate_scan_method" id="duplicate_scan_method" style="width: fit-content;">
+          <option value="hybrid" {% if scan_method == 'hybrid' %}selected{% endif %}>
+            {{_('Hybrid (SQL prefilter + Python validation)')}}
+          </option>
+          <option value="python" {% if scan_method == 'python' %}selected{% endif %}>
+            {{_('Python only (slowest, most robust)')}}
+          </option>
+          <option value="sql" {% if scan_method == 'sql' %}selected{% endif %}>
+            {{_('Legacy SQL only (experimental)')}}
+          </option>
+        </select>
+      </div>
+      <div class="cwa-settings-tip">
+        <small>
+          {{_('Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies the robust Python logic for final results.') }}
+        </small>
+      </div>
+
+      <!-- Keep SQL prefilter enabled by default for hybrid/auto modes -->
+      <input type="hidden" id="duplicate_detection_use_sql" name="duplicate_detection_use_sql" value="1">
+    </div>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Automatic Duplicate Scanning')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure background duplicate scans. These run automatically without blocking the UI.') }}
+      </p>
+
+      <div class="checkbox-wrapper" style="margin-bottom: 1rem;">
+        <input type="checkbox" id="duplicate_scan_enabled" name="duplicate_scan_enabled" value="1" {% if cwa_settings['duplicate_scan_enabled'] %} checked {% endif %}>
+        <label for="duplicate_scan_enabled" style="margin-left: 1rem;">{{_('Enable automatic duplicate scans')}}</label>
+      </div>
+
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
+        <label for="duplicate_scan_frequency">{{_('After import scans')}}</label>
+        <select class="cwa-settings-select" name="duplicate_scan_frequency" id="duplicate_scan_frequency" style="width: fit-content;">
+          <option value="after_import" {% if cwa_settings.get('duplicate_scan_frequency', 'after_import') == 'after_import' %}selected{% endif %}>
+            {{_('Run after each import (debounced)')}}
+          </option>
+          <option value="manual" {% if cwa_settings.get('duplicate_scan_frequency') == 'manual' %}selected{% endif %}>
+            {{_('Manual only')}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
+        <label for="duplicate_scan_debounce_seconds" class="settings-section-header">{{_('After import debounce (seconds)')}}</label>
+        <input type="number" min="5" max="600" step="1" class="cwa-settings-input"
+               name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds"
+               value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 5) }}"
+               style="width: 120px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 2rem;">
+        <small class="cwa-settings-explanation" style="margin-top: 8px;">
+          {{_('Wait this many seconds after the last import before starting a background scan.') }}
+        </small>
+      </div>
+
+      <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
+        <label for="duplicate_scan_cron" class="settings-section-header">{{_('Scheduled scans (cron expression)')}}</label>
+        <input type="text" class="cwa-settings-input" name="duplicate_scan_cron" id="duplicate_scan_cron" placeholder="0 3 * * *"
+               value="{{ cwa_settings.get('duplicate_scan_cron', '') }}" style="width: 220px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 1rem;">
+        <small>
+          {{_('Leave blank to disable scheduled scans. Example:')}} <code>0 3 * * *</code>
+        </small>
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 1rem;">
+        <small>
+          {{_('If enabled, after-import scans and cron scans can both run. Use “Manual only” to disable after-import scans while keeping cron schedules.')}}
+        </small>
+      </div>
+
+      {% if next_duplicate_scan_run %}
+        <div class="cwa-settings-tip" style="margin-top: 12px;">
+          <small class="settings-explanation">
+            <strong>{{_('Next scheduled scan:')}}</strong> {{ next_duplicate_scan_run }}
+          </small>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Duplicate Detection Criteria')}}</h4>
 
       <p class="cwa-settings-explanation settings-explanation">
@@ -595,43 +1051,129 @@
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_title" name="duplicate_detection_title" value="1" {% if cwa_settings['duplicate_detection_title'] %} checked {% endif %}>
           <label for="duplicate_detection_title">{{_('Title')}}</label>
-          <small class="settings-explanation">{{_('Consider book titles when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book titles when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_author" name="duplicate_detection_author" value="1" {% if cwa_settings['duplicate_detection_author'] %} checked {% endif %}>
           <label for="duplicate_detection_author">{{_('Author')}}</label>
-          <small class="settings-explanation">{{_('Consider book authors when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book authors when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_language" name="duplicate_detection_language" value="1" {% if cwa_settings['duplicate_detection_language'] %} checked {% endif %}>
           <label for="duplicate_detection_language">{{_('Language')}}</label>
-          <small class="settings-explanation">{{_('Consider book language when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book language when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_series" name="duplicate_detection_series" value="1" {% if cwa_settings['duplicate_detection_series'] %} checked {% endif %}>
           <label for="duplicate_detection_series">{{_('Series')}}</label>
-          <small class="settings-explanation">{{_('Consider book series when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book series when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_publisher" name="duplicate_detection_publisher" value="1" {% if cwa_settings['duplicate_detection_publisher'] %} checked {% endif %}>
           <label for="duplicate_detection_publisher">{{_('Publisher')}}</label>
-          <small class="settings-explanation">{{_('Consider book publisher when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider book publisher when detecting duplicates')}}</small>
         </div>
 
         <div class="checkbox-wrapper">
           <input type="checkbox" id="duplicate_detection_format" name="duplicate_detection_format" value="1" {% if cwa_settings['duplicate_detection_format'] %} checked {% endif %}>
           <label for="duplicate_detection_format">{{_('Format')}}</label>
-          <small class="settings-explanation">{{_('Consider file format when detecting duplicates')}}</small>
+          <small class="settings-explanation"> - {{_('Consider file format when detecting duplicates')}}</small>
         </div>
       </div>
 
-      <div class="cwa-settings-tip">
+      <div class="cwa-settings-tip" style="margin-top: 3rem;">
         <small class="settings-explanation">
-          <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
+          💡 <strong>{{_('Note:')}}</strong> {{_('At least one criterion must be selected. Title and Author are recommended as core criteria.')}}
+        </small>
+      </div>
+    </div>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Format Priority Ranking')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure which file formats are preferred when using the "Highest Quality Format" auto-resolution strategy. Drag and drop to reorder formats by priority (higher = better).')}}
+      </p>
+
+      <input type="hidden" id="duplicate_format_priority" name="duplicate_format_priority" value='{{ cwa_settings.get("duplicate_format_priority", "{\"EPUB\":100,\"KEPUB\":95,\"AZW3\":90,\"MOBI\":80,\"AZW\":75,\"PDF\":60,\"TXT\":40,\"CBZ\":35,\"CBR\":35,\"FB2\":30,\"DJVU\":25,\"HTML\":20,\"RTF\":15,\"DOC\":10,\"DOCX\":10}") }}'>
+      
+      <div id="format_priority_container" style="margin-top: 1rem;">
+        <ul id="format_priority_list" style="list-style: none; padding: 0; margin: 0;">
+          <!-- Will be populated by JavaScript -->
+        </ul>
+      </div>
+
+      <div class="cwa-settings-tip" style="margin-top: 3rem">
+        <small class="settings-explanation">
+          💡 <strong>{{_('Tip:')}}</strong> {{_('When resolving duplicates with "Highest Quality Format" strategy, books with higher-ranked formats will be kept. Lower priority formats will be deleted.')}}
+        </small>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Duplicate Notifications & Auto-Resolution')}}</h4>
+
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Configure how you are notified about duplicate books and optionally enable automatic resolution.')}}
+      </p>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" value="1" {% if cwa_settings['duplicate_notifications_enabled'] %} checked {% endif %}>
+        <label for="duplicate_notifications_enabled" style="margin-left: 1rem;">{{_('Enable Duplicate Notifications')}}</label>
+      </div>
+        <p class="cwa-settings-tip" style="font-size: small;">{{_('Show popup notifications when unresolved duplicates are detected. Admins and users with edit rights will see a badge on the Duplicates sidebar button and a notification popup when they login.')}}</small>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="duplicate_auto_resolve_enabled" name="duplicate_auto_resolve_enabled" value="1" {% if cwa_settings['duplicate_auto_resolve_enabled'] %} checked {% endif %}>
+        <label for="duplicate_auto_resolve_enabled" style="margin-left: 1rem;">{{_('Enable Automatic Duplicate Resolution')}} ⚠️</label>
+      </div>
+      <p class="cwa-settings-tip" style="background: #e74c3c57; border-color: #e74c3c; font-size: small;">
+        <strong>{{_('Warning:')}}</strong> {{_('This will automatically delete books based on the strategy below. Original files will be backed up to')}} <code>/config/processed_books/</code>
+      </p>
+
+      <div class="form-group" style="padding: 2rem 3rem 2rem 3rem; background: #151e2680;">
+        <h4 for="duplicate_auto_resolve_strategy" class="settings-section-header">{{_('Auto-Resolution Strategy')}}</h4>
+        <select class="form-control" id="duplicate_auto_resolve_strategy" name="duplicate_auto_resolve_strategy">
+          <option value="newest" {% if cwa_settings.get('duplicate_auto_resolve_strategy', 'newest') == 'newest' %} selected {% endif %}>
+            {{_('Keep Newest')}} - {{_('Delete older copies, keep the most recently added book')}}
+          </option>
+          <option value="oldest" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'oldest' %} selected {% endif %}>
+            {{_('Keep Oldest')}} - {{_('Delete newer copies, keep the earliest added')}}
+          </option>
+          <option value="merge" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'merge' %} selected {% endif %}>
+            {{_('Merge Formats')}} - {{_('Merge formats into the newest book, delete the rest')}}
+          </option>
+          <option value="highest_quality_format" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'highest_quality_format' %} selected {% endif %}>
+            {{_('Keep Highest Quality Format')}} - {{_('Prefer formats based on your Duplicate Format Priority Ranking')}}
+          </option>
+          <option value="most_metadata" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'most_metadata' %} selected {% endif %}>
+            {{_('Keep Most Metadata')}} - {{_('Keep book with most complete information')}}
+          </option>
+          <option value="largest_file_size" {% if cwa_settings.get('duplicate_auto_resolve_strategy') == 'largest_file_size' %} selected {% endif %}>
+            {{_('Keep Largest File Size')}} - {{_('Keep book with largest total file size')}}
+          </option>
+        </select>
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 2rem !important;">{{_('Choose which book to keep when duplicates are automatically resolved.')}}</p>
+      </div>
+
+      <div class="form-group" style="padding: 2rem 3rem 2rem 3rem; background: #151e2680;">
+        <h4 class="settings-section-header">{{_('Rate Limiting')}}</h4>
+        <label for="duplicate_auto_resolve_cooldown_minutes">{{_('Cooldown Period (minutes)')}}</label>
+        <input type="number" class="form-control" id="duplicate_auto_resolve_cooldown_minutes" 
+               name="duplicate_auto_resolve_cooldown_minutes" min="0" max="1440"
+               value="{{ cwa_settings.get('duplicate_auto_resolve_cooldown_minutes', 0) if cwa_settings.get('duplicate_auto_resolve_cooldown_minutes') not in [False, None, ''] else 0 }}">
+        <p class="cwa-settings-explanation settings-explanation" style="margin-top: 2rem !important;">{{_('Minimum time between automatic resolutions (0 to disable). Prevents rapid-fire deletions during batch imports.')}}</p>
+      </div>
+
+      <div class="cwa-settings-tip" style="margin-top: 3rem;">
+        <small class="settings-explanation">
+          💡 <strong>{{_('Note:')}}</strong> {{_('Auto-resolution runs after duplicate scans detect new duplicates. Dismissed duplicate groups are never auto-resolved.')}}
         </small>
       </div>
     </div>
@@ -865,6 +1407,147 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize the hidden input value
   updateHiddenInput();
+  
+  // Format Priority Ranking System
+  function initializeFormatPriorityList() {
+    const hiddenInput = document.getElementById('duplicate_format_priority');
+    const container = document.getElementById('format_priority_list');
+    
+    if (!hiddenInput || !container) return;
+    
+    try {
+      // Decode HTML entities if present
+      const rawValue = hiddenInput.value || '{}';
+      const decodedValue = rawValue.replace(/&quot;/g, '"').replace(/&#34;/g, '"');
+      const formatPriority = JSON.parse(decodedValue);
+      
+      // Convert to array and sort by priority (highest first)
+      const formatArray = Object.entries(formatPriority).map(([format, priority]) => ({
+        format: format,
+        priority: priority
+      }));
+      formatArray.sort((a, b) => b.priority - a.priority);
+      
+      // Check if we actually have formats to display
+      if (formatArray.length === 0) {
+        console.error('No format priority data found');
+        container.innerHTML = '<li style="color: #e74c3c; padding: 12px;">No format data available. Please save settings to initialize.</li>';
+        return;
+      }
+      
+      // Populate list
+      container.innerHTML = '';
+      formatArray.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = 'format-priority-item';
+        li.dataset.format = item.format;
+        li.dataset.priority = item.priority;
+        li.draggable = true;
+        li.innerHTML = `
+          <div style="display: flex; align-items: center; padding: 6px; margin-bottom: 8px; background: #2a3441; border: 1px solid #444; border-radius: 6px; cursor: move; transition: all 0.2s; padding-left: 2rem;">
+            <span style="color: #ffc200; margin-right: 15px; font-size: 18px;">☰</span>
+            <span style="flex: 1; color: white; font-weight: 500;">${item.format}</span>
+            <span style="color: #4CAF50; font-size: 13px; padding: 4px 8px; background: rgba(76, 160, 80, 0.1); border-radius: 4px;">Priority: ${item.priority}</span>
+          </div>
+        `;
+        container.appendChild(li);
+      });
+      
+      setupFormatPriorityDragDrop();
+    } catch (e) {
+      console.error('Error initializing format priority list:', e);
+      console.error('Hidden input value:', hiddenInput ? hiddenInput.value : 'not found');
+      container.innerHTML = '<li style="color: #e74c3c; padding: 12px;">Error loading format priority: ' + e.message + '</li>';
+    }
+  }
+  
+  function setupFormatPriorityDragDrop() {
+    let draggedFormatElement = null;
+    let isDraggingFormat = false;
+    
+    const items = document.querySelectorAll('.format-priority-item');
+    
+    items.forEach(item => {
+      item.addEventListener('mousedown', function(e) {
+        isDraggingFormat = true;
+        draggedFormatElement = this;
+        this.style.opacity = '0.5';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+      if (!isDraggingFormat || !draggedFormatElement) return;
+      
+      const container = document.getElementById('format_priority_list');
+      const afterElement = getFormatAfterElement(container, e.clientY);
+      
+      if (afterElement == null) {
+        container.appendChild(draggedFormatElement);
+      } else {
+        container.insertBefore(draggedFormatElement, afterElement);
+      }
+    });
+    
+    document.addEventListener('mouseup', function(e) {
+      if (!isDraggingFormat) return;
+      
+      isDraggingFormat = false;
+      if (draggedFormatElement) {
+        draggedFormatElement.style.opacity = '1';
+        draggedFormatElement = null;
+      }
+      document.body.style.userSelect = '';
+      updateFormatPriorityHiddenInput();
+    });
+  }
+  
+  function getFormatAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.format-priority-item')].filter(el => el.style.opacity !== '0.5');
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+  
+  function updateFormatPriorityHiddenInput() {
+    const container = document.getElementById('format_priority_list');
+    const hiddenInput = document.getElementById('duplicate_format_priority');
+    const items = container.querySelectorAll('.format-priority-item');
+    
+    // Recalculate priorities based on order (top = highest)
+    const formatPriority = {};
+    const totalItems = items.length;
+    
+    items.forEach((item, index) => {
+      const format = item.dataset.format;
+      // Higher priority for items at the top
+      const priority = 100 - (index * Math.floor(100 / totalItems));
+      formatPriority[format] = priority;
+    });
+    
+    hiddenInput.value = JSON.stringify(formatPriority);
+    
+    // Update priority badges
+    items.forEach((item, index) => {
+      const format = item.dataset.format;
+      const priorityBadge = item.querySelector('span:last-child');
+      if (priorityBadge) {
+        priorityBadge.textContent = `Priority: ${formatPriority[format]}`;
+      }
+    });
+  }
+  
+  // Initialize format priority list on page load
+  initializeFormatPriorityList();
 });
 </script>
 {% endblock %}

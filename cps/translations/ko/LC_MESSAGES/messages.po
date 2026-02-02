@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 00:18+0100\n"
+"POT-Creation-Date: 2026-02-02 12:22+0100\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -193,7 +193,7 @@ msgstr "올바른 언어가 아닙니다."
 msgid "No Valid Book Language Given"
 msgstr "제공된 책의 언어가 올바르지 않습니다."
 
-#: cps/admin.py:850 cps/editbooks.py:586
+#: cps/admin.py:850 cps/editbooks.py:587
 msgid "Parameter not found"
 msgstr "매개변수를 찾을 수 없습니다."
 
@@ -371,8 +371,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Gmail 계정 인증에 성공했습니다."
 
 #: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
-#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1025
-#: cps/editbooks.py:1791 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1033
+#: cps/editbooks.py:1799 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
 #, python-format
@@ -873,209 +873,209 @@ msgid ""
 "wait..."
 msgstr "서재 새로고침 중 🔄 새 책을 찾고 있습니다. 잠시 기다려 주세요…"
 
-#: cps/cwa_functions.py:842
+#: cps/cwa_functions.py:848
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 
-#: cps/cwa_functions.py:878
+#: cps/cwa_functions.py:884
 msgid "Calibre-Web Automated User Settings"
 msgstr "Calibre-Web Automated 사용자 설정"
 
-#: cps/cwa_functions.py:924 cps/cwa_functions.py:926 cps/cwa_functions.py:930
-#: cps/cwa_functions.py:932 cps/cwa_functions.py:935 cps/cwa_functions.py:937
+#: cps/cwa_functions.py:930 cps/cwa_functions.py:932 cps/cwa_functions.py:936
+#: cps/cwa_functions.py:938 cps/cwa_functions.py:941 cps/cwa_functions.py:943
 msgid "Timestamp"
 msgstr "타임스탬프"
 
-#: cps/cwa_functions.py:924 cps/cwa_functions.py:926
+#: cps/cwa_functions.py:930 cps/cwa_functions.py:932
 #: cps/templates/tasks.html:43
 msgid "Book ID"
 msgstr "책 ID"
 
-#: cps/cwa_functions.py:924 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:930 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "책 제목"
 
-#: cps/cwa_functions.py:924
+#: cps/cwa_functions.py:930
 msgid "Book Author"
 msgstr "저자"
 
-#: cps/cwa_functions.py:924
+#: cps/cwa_functions.py:930
 msgid "Trigger Type"
 msgstr "트리거 유형"
 
-#: cps/cwa_functions.py:926 cps/cwa_functions.py:932
+#: cps/cwa_functions.py:932 cps/cwa_functions.py:938
 msgid "Filepath"
 msgstr "파일 위치"
 
-#: cps/cwa_functions.py:930 cps/cwa_functions.py:932 cps/cwa_functions.py:935
-#: cps/cwa_functions.py:937
+#: cps/cwa_functions.py:936 cps/cwa_functions.py:938 cps/cwa_functions.py:941
+#: cps/cwa_functions.py:943
 msgid "Filename"
 msgstr "파일명"
 
-#: cps/cwa_functions.py:930
+#: cps/cwa_functions.py:936
 msgid "Manual?"
 msgstr "수동?"
 
-#: cps/cwa_functions.py:930
+#: cps/cwa_functions.py:936
 msgid "No. Fixes"
 msgstr "아니오, 고칩니다."
 
-#: cps/cwa_functions.py:930 cps/cwa_functions.py:935 cps/cwa_functions.py:937
+#: cps/cwa_functions.py:936 cps/cwa_functions.py:941 cps/cwa_functions.py:943
 msgid "Original Backed Up?"
 msgstr "원본이 백업되었습니까?"
 
-#: cps/cwa_functions.py:932
+#: cps/cwa_functions.py:938
 msgid "Fixes Applied"
 msgstr "수정사항 적용."
 
-#: cps/cwa_functions.py:937
+#: cps/cwa_functions.py:943
 msgid "Original Format"
 msgstr "원본 형식"
 
-#: cps/cwa_functions.py:937
+#: cps/cwa_functions.py:943
 msgid "End Format"
 msgstr "결과 형식"
 
-#: cps/cwa_functions.py:1013 cps/cwa_functions.py:1042
+#: cps/cwa_functions.py:1019 cps/cwa_functions.py:1048
 #, fuzzy
 msgid "Unknown User"
 msgstr "알 수 없음"
 
-#: cps/cwa_functions.py:1150
+#: cps/cwa_functions.py:1156
 #, fuzzy
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Calibre-Web Automated 서버 정보 & 아카이브"
 
-#: cps/cwa_functions.py:1534
+#: cps/cwa_functions.py:1540
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr "Calibre-Web Automated - 전체 적용 내역"
 
-#: cps/cwa_functions.py:1543
+#: cps/cwa_functions.py:1549
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr "Calibre-Web Automated - 전체 적용 내역 (경로 포함)"
 
-#: cps/cwa_functions.py:1552
+#: cps/cwa_functions.py:1558
 msgid "Calibre-Web Automated - Full Import History"
 msgstr "Calibre-Web Automated - 전체 가져오기 내역"
 
-#: cps/cwa_functions.py:1561
+#: cps/cwa_functions.py:1567
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr "Calibre-Web Automated - 전체 변환 내역"
 
-#: cps/cwa_functions.py:1570
+#: cps/cwa_functions.py:1576
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr "Calibre-Web Automated - 전체 EPUB Fixer 내역 (경로 & 수정 제외)"
 
-#: cps/cwa_functions.py:1579
+#: cps/cwa_functions.py:1585
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr "Calibre-Web Automated - 전체 EPUB Fixer 내역 (경로 & 수정 포함)"
 
-#: cps/cwa_functions.py:1597
+#: cps/cwa_functions.py:1603
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ 모든 모니터링 서비스가 정상 실행중입니다! 👍"
 
-#: cps/cwa_functions.py:1599
+#: cps/cwa_functions.py:1605
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
 "🔴 가져오기 서비스는 실행중이지만, 메타데이터 변경점 감지기가 정지되었습니다."
 
-#: cps/cwa_functions.py:1601
+#: cps/cwa_functions.py:1607
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 "🔴 메타데이터 변경점 감지기는 실행중이지만, 가져오기 서비스가 정지되었습니다."
 
-#: cps/cwa_functions.py:1603
+#: cps/cwa_functions.py:1609
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr "⛔ 가져오기 서비스와 메타데이터 변경점 감지기 모두 정지되었습니다."
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1611
 msgid "An Error has occurred"
 msgstr "오류가 발생했습니다."
 
-#: cps/cwa_functions.py:1776 cps/cwa_functions.py:1802
+#: cps/cwa_functions.py:1782 cps/cwa_functions.py:1808
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - 서재 변환"
 
-#: cps/cwa_functions.py:1918 cps/cwa_functions.py:1942
+#: cps/cwa_functions.py:1924 cps/cwa_functions.py:1948
 #, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Calibre-Web Automated - Send-to-Kindle EPUB Fixer 서비스"
 
-#: cps/cwa_functions.py:1996
+#: cps/cwa_functions.py:2002
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2003
+#: cps/cwa_functions.py:2009
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "잘못된 "
 
-#: cps/cwa_functions.py:2009
+#: cps/cwa_functions.py:2015
 #, fuzzy
 msgid "Book not found."
 msgstr "토큰을 찾을 수 없습니다."
 
-#: cps/cwa_functions.py:2015
+#: cps/cwa_functions.py:2021
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "선택한 책 병합"
 
-#: cps/cwa_functions.py:2019
+#: cps/cwa_functions.py:2025
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s 형식을 찾을 수 없습니다."
 
-#: cps/cwa_functions.py:2034
+#: cps/cwa_functions.py:2040
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "선택한 책 병합"
 
-#: cps/cwa_functions.py:2037
+#: cps/cwa_functions.py:2043
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2084
+#: cps/cwa_functions.py:2090
 msgid "You must be an admin to access this page."
 msgstr "이 페이지에 접근하려면 관리자권한이 필요합니다."
 
-#: cps/cwa_functions.py:2099
+#: cps/cwa_functions.py:2105
 msgid "Both username and image data are required."
 msgstr "사용자명과 사진 데이터가 필요합니다."
 
-#: cps/cwa_functions.py:2107
+#: cps/cwa_functions.py:2113
 msgid "Invalid image data format. Must be a valid image."
 msgstr ""
 
-#: cps/cwa_functions.py:2115
+#: cps/cwa_functions.py:2121
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr ""
 
-#: cps/cwa_functions.py:2127
+#: cps/cwa_functions.py:2133
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr ""
 
-#: cps/cwa_functions.py:2131
+#: cps/cwa_functions.py:2137
 msgid "Invalid Base64 image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2135
+#: cps/cwa_functions.py:2141
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "올바른 이메일 주소가 아닙니다."
 
-#: cps/cwa_functions.py:2140
+#: cps/cwa_functions.py:2146
 msgid "Error validating image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2158
+#: cps/cwa_functions.py:2164
 msgid "Profile picture updated successfully."
 msgstr "프로필 사진이 갱신되었습니다."
 
-#: cps/cwa_functions.py:2171
+#: cps/cwa_functions.py:2177
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA 프로필 사진 관리자 (개발중)"
 
@@ -1124,141 +1124,141 @@ msgstr ""
 msgid "Invalid resolution strategy"
 msgstr "잘못된 권한입니다."
 
-#: cps/editbooks.py:102 cps/editbooks.py:159
+#: cps/editbooks.py:103 cps/editbooks.py:160
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
 
-#: cps/editbooks.py:111
+#: cps/editbooks.py:112
 msgid "Missing or invalid book id for format upload"
 msgstr "형식 업로드를 위한 책 ID가 없거나 잘못되었습니다."
 
-#: cps/editbooks.py:117
+#: cps/editbooks.py:118
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:142 cps/editbooks.py:169 cps/templates/book_edit.html:52
+#: cps/editbooks.py:143 cps/editbooks.py:170 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:151
 msgid "Upload done, processing, please wait..."
 msgstr "업로드 완료, 처리 중입니다. 잠시만 기다려 주세요."
 
-#: cps/editbooks.py:147 cps/editbooks.py:173
+#: cps/editbooks.py:148 cps/editbooks.py:174
 msgid "Failed to queue upload for processing"
 msgstr "연산대기열로 업로드에 실패했습니다."
 
-#: cps/editbooks.py:189
+#: cps/editbooks.py:190
 msgid "Source or destination format for conversion missing"
 msgstr "변환할 원본 또는 대상 형식이 지정되지 않았습니다."
 
-#: cps/editbooks.py:197
+#: cps/editbooks.py:198
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr "%(book_format)s 형식으로 변환하기 위해 작업에 추가되었습니다."
 
-#: cps/editbooks.py:201
+#: cps/editbooks.py:202
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "책 변환 중 오류가 발생했습니다: %(res)s"
 
-#: cps/editbooks.py:357 cps/editbooks.py:1228 cps/editbooks.py:1737
+#: cps/editbooks.py:358 cps/editbooks.py:1236 cps/editbooks.py:1745
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "업로드할 수 없는 파일 형식입니다."
 
-#: cps/editbooks.py:362 cps/editbooks.py:1234 cps/editbooks.py:1748
+#: cps/editbooks.py:363 cps/editbooks.py:1242 cps/editbooks.py:1756
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "파일 확장자 '%(ext)s'은(는) 서버에 업로드할 수 없습니다"
 
-#: cps/editbooks.py:366 cps/editbooks.py:1238 cps/editbooks.py:1753
+#: cps/editbooks.py:367 cps/editbooks.py:1246 cps/editbooks.py:1761
 msgid "File to be uploaded must have an extension"
 msgstr "확장자가 없는 파일은 업로드할 수 없습니다."
 
-#: cps/editbooks.py:837 cps/editbooks.py:1414 cps/web.py:612 cps/web.py:2694
+#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2694
 #: cps/web.py:2785 cps/web.py:2870
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "선택한 책을 사용할 수 없습니다. 파일이 없거나 접근할 수 없습니다."
 
-#: cps/editbooks.py:869 cps/editbooks.py:1821
+#: cps/editbooks.py:872 cps/editbooks.py:1829
 msgid "User has no rights to upload cover"
 msgstr "표지 업로드 권한이 없습니다."
 
-#: cps/editbooks.py:889 cps/editbooks.py:1216
+#: cps/editbooks.py:895 cps/editbooks.py:1224
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "식별자는 대소문자 구분 없어 덮어씁니다."
 
-#: cps/editbooks.py:901 cps/editbooks.py:1190 cps/editbooks.py:1548
+#: cps/editbooks.py:907 cps/editbooks.py:1198 cps/editbooks.py:1556
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s'은(는) 올바른 언어가 아닙니다."
 
-#: cps/editbooks.py:1012
+#: cps/editbooks.py:1020
 msgid "Metadata successfully updated"
 msgstr "메타데이터가 업데이트되었습니다."
 
-#: cps/editbooks.py:1030
+#: cps/editbooks.py:1038
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "책 편집 중 오류가 발생했습니다: {}"
 
-#: cps/editbooks.py:1085 cps/editbooks.py:1130 cps/editbooks.py:1839
+#: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "알 수 없음"
 
-#: cps/editbooks.py:1134
+#: cps/editbooks.py:1142
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr "업로드된 책이 이미 존재하는 것 같습니다. 확인이 필요합니다: "
 
-#: cps/editbooks.py:1246
+#: cps/editbooks.py:1254
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "파일 %(filename)s을(를) 임시 폴더에 저장할 수 없습니다."
 
-#: cps/editbooks.py:1266
+#: cps/editbooks.py:1274
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "표지 파일 %(file)s을(를) 이동하지 못했습니다 :%(error)s"
 
-#: cps/editbooks.py:1324 cps/editbooks.py:1326
+#: cps/editbooks.py:1332 cps/editbooks.py:1334
 msgid "Book Format Successfully Deleted"
 msgstr "책 형식이 삭제되었습니다."
 
-#: cps/editbooks.py:1333 cps/editbooks.py:1335
+#: cps/editbooks.py:1341 cps/editbooks.py:1343
 msgid "Book Successfully Deleted"
 msgstr "책이 삭제되었습니다."
 
-#: cps/editbooks.py:1399
+#: cps/editbooks.py:1407
 msgid "You are missing permissions to delete books"
 msgstr "책을 삭제할 권한이 없습니다."
 
-#: cps/editbooks.py:1453
+#: cps/editbooks.py:1461
 msgid "edit metadata"
 msgstr "메타데이터 편집"
 
-#: cps/editbooks.py:1507
+#: cps/editbooks.py:1515
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "시리즈 순서 %(seriesindex)s은(는) 올바르지 않아 건너뜁니다."
 
-#: cps/editbooks.py:1742
+#: cps/editbooks.py:1750
 msgid "User has no rights to upload additional file formats"
 msgstr "추가 파일 형식을 업로드할 권한이 없습니다."
 
-#: cps/editbooks.py:1766
+#: cps/editbooks.py:1774
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "쓰기 권한이 없어 %(path)s 경로 생성에 실패했습니다."
 
-#: cps/editbooks.py:1773
+#: cps/editbooks.py:1781
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "%(file)s 파일 저장에 실패했습니다."
 
-#: cps/editbooks.py:1798
+#: cps/editbooks.py:1806
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "파일 형식 %(ext)s이(가) %(book)s에 추가되었습니다"
@@ -1279,82 +1279,82 @@ msgstr ""
 "콜백 도메인이 인증되지 않았습니다. Google 개발자 콘솔에서 도메인 인증 절차를 "
 "진행해 주세요."
 
-#: cps/helper.py:83
+#: cps/helper.py:84
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "책 ID %(book)d의 %(format)s 형식을 찾을 수 없습니다."
 
-#: cps/helper.py:89 cps/tasks/convert.py:77
+#: cps/helper.py:90 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "Google 드라이브에서 %(format)s 파일을 찾을 수 없습니다: %(fn)s"
 
-#: cps/helper.py:94
+#: cps/helper.py:95
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s을(를) 찾을 수 없습니다: %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:487
+#: cps/helper.py:102 cps/helper.py:226 cps/templates/detail.html:515
 msgid "Send to eReader"
 msgstr "전자책 리더로 보내기"
 
-#: cps/helper.py:103 cps/helper.py:123 cps/helper.py:236
+#: cps/helper.py:104 cps/helper.py:124 cps/helper.py:237
 msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "이 이메일은 Calibre-Web Automated에서 전송되었습니다."
 
-#: cps/helper.py:121
+#: cps/helper.py:122
 msgid "Calibre-Web Automated Test Email"
 msgstr "Calibre-Web Automated 테스트 이메일"
 
-#: cps/helper.py:122
+#: cps/helper.py:123
 msgid "Test Email"
 msgstr "테스트 이메일"
 
-#: cps/helper.py:139
+#: cps/helper.py:140
 msgid "Get Started with Calibre-Web Automated"
 msgstr "Calibre-Web Automated 시작하기"
 
-#: cps/helper.py:144
+#: cps/helper.py:145
 #, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "사용자 %(name)s의 등록 이메일"
 
-#: cps/helper.py:155 cps/helper.py:161
+#: cps/helper.py:156 cps/helper.py:162
 #, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "%(orig)s을(를) %(format)s로 변환하여 전자책 리더로 보내기"
 
-#: cps/helper.py:180 cps/helper.py:184 cps/helper.py:188
+#: cps/helper.py:181 cps/helper.py:185 cps/helper.py:189
 #, python-format
 msgid "Send %(format)s to eReader"
 msgstr "%(format)s을 전자책 리더로 보내기"
 
-#: cps/helper.py:231
+#: cps/helper.py:232
 #, python-format
 msgid "%(book)s send to eReader"
 msgstr "%(book)s을(를) 전자책 리더로 보내기"
 
-#: cps/helper.py:238
+#: cps/helper.py:239
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "요청한 파일을 읽을 수 없습니다. 파일 접근 권한을 확인해주세요."
 
-#: cps/helper.py:384
+#: cps/helper.py:385
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "읽기 상태를 설정할 수 없습니다: {}"
 
-#: cps/helper.py:407
+#: cps/helper.py:408
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr "책 %(id)s의 폴더 삭제에 실패했습니다. %(path)s에 하위 폴더가 있습니다."
 
-#: cps/helper.py:413
+#: cps/helper.py:414
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "책 %(id)s 삭제에 실패했습니다: %(message)s"
 
-#: cps/helper.py:424
+#: cps/helper.py:425
 #, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
@@ -1363,128 +1363,133 @@ msgstr ""
 "데이터베이스 경로가 올바르지 않아 책 %(id)s을(를) 데이터베이스에서만 삭제합니"
 "다: %(path)s"
 
-#: cps/helper.py:513
+#: cps/helper.py:514
 #, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr "저자명 '%(src)s'에서 '%(dest)s'(으)로 변경하지 못했습니다: %(error)s"
 
-#: cps/helper.py:582 cps/helper.py:591
+#: cps/helper.py:583 cps/helper.py:592
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Google 드라이브에서 %(file)s 파일을 찾을 수 없습니다."
 
-#: cps/helper.py:669
+#: cps/helper.py:670
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr "제목을 '%(src)s'에서 '%(dest)s'(으)로 변경하지 못했습니다: %(error)s"
 
-#: cps/helper.py:708
+#: cps/helper.py:709
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "Google 드라이브에서 경로 %(path)s을(를) 찾을 수 없습니다."
 
-#: cps/helper.py:768
+#: cps/helper.py:769
 msgid "Found an existing account for this Email address"
 msgstr "이미 사용 중인 이메일 주소입니다."
 
-#: cps/helper.py:776
+#: cps/helper.py:777
 msgid "This username is already taken"
 msgstr "이미 사용 중인 사용자 이름입니다."
 
-#: cps/helper.py:790
+#: cps/helper.py:791
 msgid "Invalid Email address format"
 msgstr "올바른 이메일 주소가 아닙니다."
 
-#: cps/helper.py:812
+#: cps/helper.py:813
 msgid "Password doesn't comply with password validation rules"
 msgstr "비밀번호가 설정된 규칙에 맞지 않습니다."
 
-#: cps/helper.py:1026
+#: cps/helper.py:1048
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr "표지 업로드에 필요한 Python 모듈 'advocate'이 설치되지 않았습니다."
 
-#: cps/helper.py:1036
+#: cps/helper.py:1053 cps/helper.py:1061
+#, python-format
+msgid "Cover image exceeds maximum size of %(size)s MB"
+msgstr ""
+
+#: cps/helper.py:1072
 msgid "Error Downloading Cover"
 msgstr "표지 다운로드 중 오류가 발생했습니다."
 
-#: cps/helper.py:1039
+#: cps/helper.py:1075
 msgid "Cover Format Error"
 msgstr "표지 형식 오류입니다."
 
-#: cps/helper.py:1042
+#: cps/helper.py:1078
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr "표지 업로드를 위해 로컬 호스트나 로컬 네트워크에 접근할 수 없습니다."
 
-#: cps/helper.py:1052
+#: cps/helper.py:1094
 msgid "Failed to create path for cover"
 msgstr "표지 경로 생성에 실패했습니다."
 
-#: cps/helper.py:1068
+#: cps/helper.py:1110
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "표지 파일이 올바른 이미지 파일이 아니거나 저장할 수 없습니다."
 
-#: cps/helper.py:1085
+#: cps/helper.py:1127
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "jpg/jpeg/png/webp/bmp 형식만 지원합니다."
 
-#: cps/helper.py:1097
+#: cps/helper.py:1141
 msgid "Invalid cover file content"
 msgstr "올바르지 않은 표지 파일입니다."
 
-#: cps/helper.py:1101
+#: cps/helper.py:1145
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "표지 파일은 jpg/jpeg 형식만 지원합니다."
 
-#: cps/helper.py:1260 cps/helper.py:1491
+#: cps/helper.py:1304 cps/helper.py:1535
 msgid "Cover"
 msgstr "표지"
 
-#: cps/helper.py:1277
+#: cps/helper.py:1321
 msgid "UnRar binary file not found"
 msgstr "UnRar 바이너리 파일을 찾을 수 없습니다."
 
-#: cps/helper.py:1288
+#: cps/helper.py:1332
 msgid "Error executing UnRar"
 msgstr "UnRar 실행 중 오류가 발생했습니다."
 
-#: cps/helper.py:1294
+#: cps/helper.py:1338
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1303
+#: cps/helper.py:1347
 msgid "Could not find the specified directory"
 msgstr "지정된 디렉토리를 찾을 수 없습니다."
 
-#: cps/helper.py:1306
+#: cps/helper.py:1350
 msgid "Please specify a directory, not a file"
 msgstr "파일이 아닌 폴더를 지정하세요."
 
-#: cps/helper.py:1320
+#: cps/helper.py:1364
 msgid "Calibre binaries not viable"
 msgstr "Calibre 바이너리 파일을 사용할 수 없습니다."
 
-#: cps/helper.py:1329
+#: cps/helper.py:1373
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Calibre 바이너리 파일이 누락되었습니다: %(missing)s"
 
-#: cps/helper.py:1331
+#: cps/helper.py:1375
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "실행 권한이 없습니다: %(missing)s"
 
-#: cps/helper.py:1336
+#: cps/helper.py:1380
 msgid "Error executing Calibre"
 msgstr "Calibre 실행 오류"
 
-#: cps/helper.py:1493 cps/templates/admin.html:240
+#: cps/helper.py:1537 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "메타데이터 백업이 작업에 추가되었습니다."
 
@@ -1745,7 +1750,7 @@ msgstr "카테고리 보기"
 
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:351
-#: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1071
+#: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1092
 #: cps/templates/hardcover_review_matches.html:140
 #: cps/templates/search_form.html:70 cps/web.py:1642 cps/web.py:1654
 msgid "Series"
@@ -1774,7 +1779,7 @@ msgid "Show Publisher Section"
 msgstr "출판사 보기"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
-#: cps/templates/detail.html:672 cps/templates/search_form.html:108
+#: cps/templates/detail.html:700 cps/templates/search_form.html:108
 #: cps/web.py:1734
 msgid "Languages"
 msgstr "언어"
@@ -2591,7 +2596,7 @@ msgstr "관리자"
 msgid "Password"
 msgstr "비밀번호"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:466
+#: cps/templates/admin.html:24 cps/templates/detail.html:494
 #: cps/templates/shelf.html:8 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "다운로드"
@@ -2862,7 +2867,7 @@ msgstr "예"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:870
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:930
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
 #: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
@@ -2928,8 +2933,8 @@ msgstr "줄이기"
 msgid "More by"
 msgstr "더보기"
 
-#: cps/templates/book_edit.html:11 cps/templates/detail.html:529
-#: cps/templates/detail.html:531
+#: cps/templates/book_edit.html:11 cps/templates/detail.html:557
+#: cps/templates/detail.html:559
 msgid "Delete Book"
 msgstr "책 삭제"
 
@@ -2988,7 +2993,7 @@ msgid "Upload Format"
 msgstr "다른 형식 업로드"
 
 #: cps/templates/book_edit.html:90 cps/templates/book_edit.html:371
-#: cps/templates/cwa_settings.html:1059 cps/templates/search_form.html:12
+#: cps/templates/cwa_settings.html:1080 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "저자"
 
@@ -3006,13 +3011,13 @@ msgstr "발행일"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:715
+#: cps/templates/cwa_settings.html:1098 cps/templates/detail.html:775
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "출판사"
 
-#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1065
+#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1086
 #: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "언어"
@@ -3183,7 +3188,7 @@ msgstr "제목 입력"
 
 #: cps/templates/book_table.html:102 cps/templates/config_view_edit.html:39
 #: cps/templates/cwa_settings.html:316 cps/templates/cwa_settings.html:318
-#: cps/templates/cwa_settings.html:1053 cps/templates/shelf_edit.html:8
+#: cps/templates/cwa_settings.html:1074 cps/templates/shelf_edit.html:8
 #: cps/templates/tasks.html:41 cps/templates/tasks.html:64
 msgid "Title"
 msgstr "제목"
@@ -3287,7 +3292,7 @@ msgstr "다읍 책이 읽음표시됩니다:"
 msgid "The following books will be marked unread:"
 msgstr "다음 책의 읽음표시가 해제됩니다:"
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:522
+#: cps/templates/book_table.html:282 cps/templates/detail.html:550
 msgid "Edit Metadata"
 msgstr "메타데이터 편집"
 
@@ -4344,51 +4349,51 @@ msgstr ""
 msgid "Cleanup Schedule:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:202 cps/templates/cwa_settings.html:550
+#: cps/templates/cwa_settings.html:202 cps/templates/cwa_settings.html:571
 msgid "Frequent Intervals"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:203 cps/templates/cwa_settings.html:551
+#: cps/templates/cwa_settings.html:203 cps/templates/cwa_settings.html:572
 msgid "Every 15 Minutes"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:204 cps/templates/cwa_settings.html:552
+#: cps/templates/cwa_settings.html:204 cps/templates/cwa_settings.html:573
 msgid "Every 30 Minutes"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:205 cps/templates/cwa_settings.html:553
+#: cps/templates/cwa_settings.html:205 cps/templates/cwa_settings.html:574
 msgid "Every Hour"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:206 cps/templates/cwa_settings.html:554
+#: cps/templates/cwa_settings.html:206 cps/templates/cwa_settings.html:575
 msgid "Every 2 Hours"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:207 cps/templates/cwa_settings.html:555
+#: cps/templates/cwa_settings.html:207 cps/templates/cwa_settings.html:576
 msgid "Every 4 Hours"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:208 cps/templates/cwa_settings.html:556
+#: cps/templates/cwa_settings.html:208 cps/templates/cwa_settings.html:577
 msgid "Every 6 Hours"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:209 cps/templates/cwa_settings.html:557
+#: cps/templates/cwa_settings.html:209 cps/templates/cwa_settings.html:578
 msgid "Every 12 Hours"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:211 cps/templates/cwa_settings.html:559
+#: cps/templates/cwa_settings.html:211 cps/templates/cwa_settings.html:580
 msgid "Daily/Weekly/Monthly"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:212 cps/templates/cwa_settings.html:560
+#: cps/templates/cwa_settings.html:212 cps/templates/cwa_settings.html:581
 msgid "Daily at Specific Time"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:561
+#: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:582
 msgid "Weekly on Specific Day"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:562
+#: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:583
 msgid "Monthly on Specific Day"
 msgstr ""
 
@@ -4396,51 +4401,51 @@ msgstr ""
 msgid "Default: daily at 03:00"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:569
+#: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:590
 msgid "Day of Week:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:574
+#: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:595
 msgid "Monday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:575
+#: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:596
 msgid "Tuesday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:226 cps/templates/cwa_settings.html:576
+#: cps/templates/cwa_settings.html:226 cps/templates/cwa_settings.html:597
 msgid "Wednesday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:227 cps/templates/cwa_settings.html:577
+#: cps/templates/cwa_settings.html:227 cps/templates/cwa_settings.html:598
 msgid "Thursday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:228 cps/templates/cwa_settings.html:578
+#: cps/templates/cwa_settings.html:228 cps/templates/cwa_settings.html:599
 msgid "Friday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:229 cps/templates/cwa_settings.html:579
+#: cps/templates/cwa_settings.html:229 cps/templates/cwa_settings.html:600
 msgid "Saturday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:230 cps/templates/cwa_settings.html:580
+#: cps/templates/cwa_settings.html:230 cps/templates/cwa_settings.html:601
 msgid "Sunday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:586
+#: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:607
 msgid "Day of Month:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:243 cps/templates/cwa_settings.html:595
+#: cps/templates/cwa_settings.html:243 cps/templates/cwa_settings.html:616
 msgid "(1-28)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:247 cps/templates/cwa_settings.html:600
+#: cps/templates/cwa_settings.html:247 cps/templates/cwa_settings.html:621
 msgid "Time of Day:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:255 cps/templates/cwa_settings.html:609
+#: cps/templates/cwa_settings.html:255 cps/templates/cwa_settings.html:630
 #, python-format
 msgid "(Server timezone: %(tz)s)"
 msgstr ""
@@ -4501,8 +4506,9 @@ msgstr "식별자"
 msgid "Cover Image"
 msgstr "표지"
 
-#: cps/templates/cwa_settings.html:387 cps/templates/cwa_settings.html:494
-#: cps/templates/cwa_settings.html:699 cps/templates/user_edit.html:368
+#: cps/templates/cwa_settings.html:387 cps/templates/cwa_settings.html:408
+#: cps/templates/cwa_settings.html:515 cps/templates/cwa_settings.html:720
+#: cps/templates/user_edit.html:368
 msgid "Tip"
 msgstr ""
 
@@ -4513,11 +4519,26 @@ msgid ""
 "while Direct mode will replace all selected fields with provider data."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:396
+#: cps/templates/cwa_settings.html:392
+msgid "Cover File Max Size (MB):"
+msgstr ""
+
+#: cps/templates/cwa_settings.html:405
+#, fuzzy
+msgid "Range: 1-200 MB (default: 15)"
+msgstr "범위: 5-120분 (기본값: 15)"
+
+#: cps/templates/cwa_settings.html:408
+msgid ""
+"Limits the maximum size of cover images downloaded from metadata providers "
+"or URLs to prevent slow or stalled saves."
+msgstr ""
+
+#: cps/templates/cwa_settings.html:417
 msgid "Ingest Processing Timeout"
 msgstr "가져오기 프로세스 시간 초과"
 
-#: cps/templates/cwa_settings.html:398
+#: cps/templates/cwa_settings.html:419
 msgid ""
 "Maximum time (in minutes) to allow for processing a single book before "
 "timing out. Files that timeout are moved to the failed backup folder for "
@@ -4526,49 +4547,49 @@ msgstr ""
 "개별 책당 최대 연산 시간(단위: 분). 시간 초과한 책은 검사를 위해 실패한 백업 "
 "폴더로 이동됩니다."
 
-#: cps/templates/cwa_settings.html:400
+#: cps/templates/cwa_settings.html:421
 msgid "Timeout (minutes):"
 msgstr "시간 초과 (분):"
 
-#: cps/templates/cwa_settings.html:412
+#: cps/templates/cwa_settings.html:433
 msgid "Range: 5-120 minutes (default: 15)"
 msgstr "범위: 5-120분 (기본값: 15)"
 
-#: cps/templates/cwa_settings.html:416
+#: cps/templates/cwa_settings.html:437
 msgid "Stale temp cleanup"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:417
+#: cps/templates/cwa_settings.html:438
 msgid ""
 "Ignored temporary upload files (.uploading, .part, etc.) can be cleaned "
 "after a set age. Setting either value to 0 disables cleanup. Changes apply "
 "on the next cleanup cycle."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:422
+#: cps/templates/cwa_settings.html:443
 #, fuzzy
 msgid "Stale temp age (minutes):"
 msgstr "시간 초과 (분):"
 
-#: cps/templates/cwa_settings.html:435
+#: cps/templates/cwa_settings.html:456
 #, fuzzy
 msgid "Range: 0-10080 minutes (default: 120)"
 msgstr "범위: 5-120분 (기본값: 15)"
 
-#: cps/templates/cwa_settings.html:439
+#: cps/templates/cwa_settings.html:460
 msgid "Stale temp cleanup interval (seconds):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:452
+#: cps/templates/cwa_settings.html:473
 #, fuzzy
 msgid "Range: 0-86400 seconds (default: 600)"
 msgstr "범위: 5-120분 (기본값: 15)"
 
-#: cps/templates/cwa_settings.html:458
+#: cps/templates/cwa_settings.html:479
 msgid "Auto-Send Delay for New Books"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:460
+#: cps/templates/cwa_settings.html:481
 msgid ""
 "Delay (in minutes) before automatically sending newly ingested books to "
 "eReaders. This allows time for metadata fetching and other processing to "
@@ -4576,155 +4597,155 @@ msgid ""
 "their profile."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:462
+#: cps/templates/cwa_settings.html:483
 #, fuzzy
 msgid "Delay (minutes):"
 msgstr "시간 초과 (분):"
 
-#: cps/templates/cwa_settings.html:474
+#: cps/templates/cwa_settings.html:495
 #, fuzzy
 msgid "Range: 1-60 minutes (default: 5)"
 msgstr "범위: 5-120분 (기본값: 15)"
 
-#: cps/templates/cwa_settings.html:479
+#: cps/templates/cwa_settings.html:500
 msgid "Auto Metadata Fetch Provider Hierarchy"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:481
+#: cps/templates/cwa_settings.html:502
 msgid ""
 "Configure the order in which metadata providers are searched when "
 "automatically fetching metadata for new books. Drag and drop to reorder "
 "providers. Only enabled providers will be used."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:494
+#: cps/templates/cwa_settings.html:515
 msgid "Providers are tried in order from top to bottom. Drag to reorder."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:503
+#: cps/templates/cwa_settings.html:524
 msgid "Enabled Metadata Providers"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:505
+#: cps/templates/cwa_settings.html:526
 msgid "Unchecked providers are disabled globally."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:518
+#: cps/templates/cwa_settings.html:539
 #, fuzzy
 msgid "Hardcover Auto-Fetch Settings"
 msgstr "Hardcover API 토큰"
 
-#: cps/templates/cwa_settings.html:520
+#: cps/templates/cwa_settings.html:541
 msgid ""
 "Automatically fetch and assign Hardcover IDs to books in your library. "
 "Hardcover IDs enable reading progress sync and annotation sync with "
 "Hardcover.app when using compatible eReaders."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:525
+#: cps/templates/cwa_settings.html:546
 #, fuzzy
 msgid "Hardcover Token Required"
 msgstr "Hardcover API 토큰"
 
-#: cps/templates/cwa_settings.html:526
+#: cps/templates/cwa_settings.html:547
 msgid ""
 "To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in your "
 "docker-compose environment variables or configure a global token in Basic "
 "Configuration. Without a valid token, this feature will remain disabled."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:537
+#: cps/templates/cwa_settings.html:558
 #, fuzzy
 msgid "Enable Hardcover Auto-Fetch"
 msgstr "Kobo sync 활성화"
 
-#: cps/templates/cwa_settings.html:539
+#: cps/templates/cwa_settings.html:560
 msgid ""
 "Automatically search Hardcover for books without Hardcover IDs. High-"
 "confidence matches are applied automatically; low-confidence matches are "
 "queued for manual review."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:544
+#: cps/templates/cwa_settings.html:565
 msgid "Run Schedule:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:565
+#: cps/templates/cwa_settings.html:586
 msgid "How often to automatically run the Hardcover ID fetch task"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:645
+#: cps/templates/cwa_settings.html:666
 msgid "Minimum Confidence Threshold:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:655
+#: cps/templates/cwa_settings.html:676
 #, fuzzy
 msgid "Range: 0.50-1.00 (default: 0.85)"
 msgstr "범위: 5-120분 (기본값: 15)"
 
-#: cps/templates/cwa_settings.html:657
+#: cps/templates/cwa_settings.html:678
 msgid ""
 "Matches with confidence scores above this threshold are automatically "
 "applied. Lower scores are queued for manual review. Higher values = fewer "
 "auto-matches but higher accuracy."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:663
+#: cps/templates/cwa_settings.html:684
 msgid "Batch Size:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:673
+#: cps/templates/cwa_settings.html:694
 #, fuzzy
 msgid "Range: 10-200 books per run (default: 50)"
 msgstr "범위: 5-120분 (기본값: 15)"
 
-#: cps/templates/cwa_settings.html:675
+#: cps/templates/cwa_settings.html:696
 msgid ""
 "Number of books to process in each scheduled run. Smaller batches reduce API "
 "load; larger batches process your library faster."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:681
+#: cps/templates/cwa_settings.html:702
 msgid "Rate Limit Delay (seconds):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:691
+#: cps/templates/cwa_settings.html:712
 #, fuzzy
 msgid "Range: 0-60 seconds (default: 5.0)"
 msgstr "범위: 5-120분 (기본값: 15)"
 
-#: cps/templates/cwa_settings.html:693
+#: cps/templates/cwa_settings.html:714
 msgid ""
 "Delay between API requests to Hardcover. Prevents rate limiting and protects "
 "your API key. Uses exponential backoff on errors."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:699
+#: cps/templates/cwa_settings.html:720
 msgid ""
 "You can manually trigger the Hardcover auto-fetch task from the Admin panel "
 "at any time. Check the CWA Stats page to see progress and review queued "
 "matches that need manual approval."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:706
+#: cps/templates/cwa_settings.html:727
 msgid "Web UI Settings"
 msgstr "Web UI 설정"
 
-#: cps/templates/cwa_settings.html:713
+#: cps/templates/cwa_settings.html:734
 msgid "Enable CWA Update Notifications"
 msgstr "CWA 업데이트 알림 켜기"
 
-#: cps/templates/cwa_settings.html:715
+#: cps/templates/cwa_settings.html:736
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
 msgstr "켜진 경우, Web UI에서 새 CWA 버전 알림을 받습니다."
 
-#: cps/templates/cwa_settings.html:723
+#: cps/templates/cwa_settings.html:744
 msgid "Enable Contribute Translations Notifications"
 msgstr "번역 공헌 알림 켜기"
 
-#: cps/templates/cwa_settings.html:725
+#: cps/templates/cwa_settings.html:746
 msgid ""
 "When disabled, you will no longer receive notifications in the Web UI when "
 "using a language other than English if the translations for your chosen "
@@ -4733,22 +4754,22 @@ msgstr ""
 "비활성화된 경우, 사용중인 언어가 번역 미완료인 경우 Web UI에서 알림을 받지 않"
 "습니다. (영어 제외)"
 
-#: cps/templates/cwa_settings.html:733
+#: cps/templates/cwa_settings.html:754
 #, fuzzy
 msgid "Sync Magic Shelves to Kobo"
 msgstr "선택한 서재 Kobo 동기화"
 
-#: cps/templates/cwa_settings.html:735
+#: cps/templates/cwa_settings.html:756
 msgid ""
 "When active, your Magic Shelves will be synced to your Kobo device as "
 "collections. Note: You must also enable Kobo Sync in Basic Configuration."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:743
+#: cps/templates/cwa_settings.html:764
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
 msgstr "모바일에서 흐린 배경 활성화 (&lt;768px)"
 
-#: cps/templates/cwa_settings.html:745
+#: cps/templates/cwa_settings.html:766
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
@@ -4756,15 +4777,15 @@ msgstr ""
 "활성화된 경우, 흐림 효과는 작은 창에서도 나타납니다. 스크롤이나 전환 효과가 "
 "느린 경우 비활성화하십시오."
 
-#: cps/templates/cwa_settings.html:750
+#: cps/templates/cwa_settings.html:771
 msgid "Automatic Backup Settings"
 msgstr "자동 백업 설정"
 
-#: cps/templates/cwa_settings.html:757
+#: cps/templates/cwa_settings.html:778
 msgid "Enable CWA Import Auto-Backup"
 msgstr "CWA 자동 백업 불러오기 활성화"
 
-#: cps/templates/cwa_settings.html:759
+#: cps/templates/cwa_settings.html:780
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
@@ -4772,11 +4793,11 @@ msgstr ""
 "활성화된 경우, 모든 불러온 파일의 복사본이 <i>/config/processed_books/"
 "imported</i>에 저장됩니다."
 
-#: cps/templates/cwa_settings.html:767
+#: cps/templates/cwa_settings.html:788
 msgid "Enable CWA Conversion Auto-Backup"
 msgstr "CWA 변환 자동 백업 활성화"
 
-#: cps/templates/cwa_settings.html:769
+#: cps/templates/cwa_settings.html:790
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
@@ -4784,11 +4805,11 @@ msgstr ""
 "활성화된 경우, 변환 대상인 원본 파일이 /config/processed_books/converted에 저"
 "장됩니다."
 
-#: cps/templates/cwa_settings.html:777
+#: cps/templates/cwa_settings.html:798
 msgid "Enable CWA EPUB Fixer Auto-Backup"
 msgstr "CWA EPUB Fixer 자동 백업 활성화"
 
-#: cps/templates/cwa_settings.html:779
+#: cps/templates/cwa_settings.html:800
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
@@ -4796,11 +4817,11 @@ msgstr ""
 "활성화된 경우, CWA Kindle EPUB Fixer 서비스 대상인 원본 EPUB 파일이 /config/"
 "processed_books/fixed_originals에 저장됩니다."
 
-#: cps/templates/cwa_settings.html:789
+#: cps/templates/cwa_settings.html:810
 msgid "Enable CWA Auto-Zip Backups"
 msgstr "CWA 자동 압축 백업 활성화"
 
-#: cps/templates/cwa_settings.html:791
+#: cps/templates/cwa_settings.html:812
 msgid ""
 "When active, just before midnight each day, the cwa-auto-zipper service will "
 "make zip archives of all the backed up converted, imported and failed files "
@@ -4812,11 +4833,11 @@ msgstr ""
 "포합합니다. /config/processed_books 이하 경로를 정리하고 저장소 사용량을 최소"
 "화합니다."
 
-#: cps/templates/cwa_settings.html:796
+#: cps/templates/cwa_settings.html:817
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
 msgstr "CWA 자동 변환 목표 확장자 - 기본값 EPUB"
 
-#: cps/templates/cwa_settings.html:799
+#: cps/templates/cwa_settings.html:820
 msgid ""
 "When the Auto-Convert feature is active, all ingested books will be "
 "automatically converted to the format chosen here (except those formats "
@@ -4825,11 +4846,11 @@ msgstr ""
 "자동 변환이 활성화된 경우, 가져오기 한 모든 책이 지정된 형식으로 변환됩니다. "
 "(예외처리된 이하의 형식 목록 제외)"
 
-#: cps/templates/cwa_settings.html:801
+#: cps/templates/cwa_settings.html:822
 msgid "Choose a target format:"
 msgstr "목표 책 형식 지정:"
 
-#: cps/templates/cwa_settings.html:813
+#: cps/templates/cwa_settings.html:834
 #, fuzzy
 msgid ""
 "Note: CWA's Metadata Enforcement service can currently only support file in "
@@ -4839,11 +4860,11 @@ msgstr ""
 "참고: CWA 메타데이터 적용 서비스는, 현재 EPUB과 AZW3 형식만 지원합니다. 이외"
 "의 형식은 무시합니다."
 
-#: cps/templates/cwa_settings.html:819
+#: cps/templates/cwa_settings.html:840
 msgid "CWA Auto-Convert - Ignored Formats"
 msgstr "CWA 자동 변환 - 무시할 형식"
 
-#: cps/templates/cwa_settings.html:821
+#: cps/templates/cwa_settings.html:842
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
@@ -4851,12 +4872,12 @@ msgstr ""
 "지정된 형식은 CWA 자동 변환이 활성화되어 있어도 변환하지 않고, 현재 형식 그대"
 "로 가져옵니다."
 
-#: cps/templates/cwa_settings.html:846
+#: cps/templates/cwa_settings.html:867
 #, fuzzy
 msgid "CWA Auto-Convert - Retained Formats"
 msgstr "CWA 자동 변환 - 무시할 형식"
 
-#: cps/templates/cwa_settings.html:848
+#: cps/templates/cwa_settings.html:869
 msgid ""
 "The formats selected here will always be added to the library, even after "
 "they have been converted to the target format. However, if the format is in "
@@ -4864,19 +4885,19 @@ msgid ""
 "Note that the target format is always retained."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:875
+#: cps/templates/cwa_settings.html:896
 msgid "CWA Auto-Ingest Automerge"
 msgstr "CWA 자동 가져오기 자동병합"
 
-#: cps/templates/cwa_settings.html:878
+#: cps/templates/cwa_settings.html:899
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
 msgstr "Calibre는 가져오기 중 중복된 책을 감지합니다. 책 제목과 "
 
-#: cps/templates/cwa_settings.html:878
+#: cps/templates/cwa_settings.html:899
 msgid "automerge"
 msgstr "자동병합"
 
-#: cps/templates/cwa_settings.html:879
+#: cps/templates/cwa_settings.html:900
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
@@ -4884,23 +4905,23 @@ msgstr ""
 "설정. 중복된 책 중 한 쪽을 삭제하거나, 모두 유지(기본값) 중 선택할 수 있습니"
 "다."
 
-#: cps/templates/cwa_settings.html:897
+#: cps/templates/cwa_settings.html:918
 msgid "Discards duplicate import, keeps library copy"
 msgstr "중복으로 가져오기 된 책을 삭제하고, 현재 서재에 있는 파일을 유지합니다"
 
-#: cps/templates/cwa_settings.html:901
+#: cps/templates/cwa_settings.html:922
 msgid "Overwrites library copy with newly imported file"
 msgstr "서재에 있는 책을 새로 가져오기한 파일로 덮어씁니다"
 
-#: cps/templates/cwa_settings.html:905
+#: cps/templates/cwa_settings.html:926
 msgid "Creates a duplicate record, keeping both copies"
 msgstr "중복된 항목을 모두 저장합니다."
 
-#: cps/templates/cwa_settings.html:911
+#: cps/templates/cwa_settings.html:932
 msgid "CWA Auto-Ingest - Ignored Formats"
 msgstr "CWA 자동 가져오기 - 무시할 형식"
 
-#: cps/templates/cwa_settings.html:913
+#: cps/templates/cwa_settings.html:934
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Ingest feature, "
 "meaning files in these formats won't be added to the library by CWA during "
@@ -4909,288 +4930,288 @@ msgstr ""
 "지정된 형식은 CWA 자동 가져오기 기능을 사용하지 않습니다. 이 형식의 파일들은 "
 "CWA 가져오기 프로세스를 통해서는 서재에 추가되지 않습니다."
 
-#: cps/templates/cwa_settings.html:938
+#: cps/templates/cwa_settings.html:959
 #, fuzzy
 msgid "CWA Duplicate Detection System"
 msgstr "CWA 중복 관리자"
 
-#: cps/templates/cwa_settings.html:941
+#: cps/templates/cwa_settings.html:962
 msgid ""
 "Enable or disable the duplicate detection system. When disabled, duplicate "
 "scanning will not run and no notifications will be shown."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:946
+#: cps/templates/cwa_settings.html:967
 #, fuzzy
 msgid "Enable Duplicate Detection"
 msgstr "공개 등록 사용"
 
-#: cps/templates/cwa_settings.html:950
+#: cps/templates/cwa_settings.html:971
 msgid "When enabled, CWA will scan for duplicate books after each import"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:958
+#: cps/templates/cwa_settings.html:979
 msgid "Duplicate Detection Method"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:961
+#: cps/templates/cwa_settings.html:982
 msgid "Hybrid (SQL prefilter + Python validation)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:964
+#: cps/templates/cwa_settings.html:985
 msgid "Python only (slowest, most robust)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:967
+#: cps/templates/cwa_settings.html:988
 msgid "Legacy SQL only (experimental)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:973
+#: cps/templates/cwa_settings.html:994
 msgid ""
 "Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies "
 "the robust Python logic for final results."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:982
+#: cps/templates/cwa_settings.html:1003
 #, fuzzy
 msgid "Automatic Duplicate Scanning"
 msgstr "자동 백업 설정"
 
-#: cps/templates/cwa_settings.html:985
+#: cps/templates/cwa_settings.html:1006
 msgid ""
 "Configure background duplicate scans. These run automatically without "
 "blocking the UI."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:990
+#: cps/templates/cwa_settings.html:1011
 msgid "Enable automatic duplicate scans"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:994
+#: cps/templates/cwa_settings.html:1015
 msgid "After import scans"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:997
+#: cps/templates/cwa_settings.html:1018
 msgid "Run after each import (debounced)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1000
+#: cps/templates/cwa_settings.html:1021
 #, fuzzy
 msgid "Manual only"
 msgstr "수동?"
 
-#: cps/templates/cwa_settings.html:1006
+#: cps/templates/cwa_settings.html:1027
 msgid "After import debounce (seconds)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1014
+#: cps/templates/cwa_settings.html:1035
 msgid ""
 "Wait this many seconds after the last import before starting a background "
 "scan."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1019
+#: cps/templates/cwa_settings.html:1040
 msgid "Scheduled scans (cron expression)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1025
+#: cps/templates/cwa_settings.html:1046
 msgid "Leave blank to disable scheduled scans. Example:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1030
+#: cps/templates/cwa_settings.html:1051
 msgid ""
 "If enabled, after-import scans and cron scans can both run. Use “Manual "
 "only” to disable after-import scans while keeping cron schedules."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1037 cps/templates/duplicates.html:398
+#: cps/templates/cwa_settings.html:1058 cps/templates/duplicates.html:398
 msgid "Next scheduled scan:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1044
+#: cps/templates/cwa_settings.html:1065
 #, fuzzy
 msgid "CWA Duplicate Detection Criteria"
 msgstr "CWA 중복 관리자"
 
-#: cps/templates/cwa_settings.html:1047
+#: cps/templates/cwa_settings.html:1068
 msgid ""
 "Configure which metadata fields are used to determine if books are "
 "duplicates. Books must match ALL selected criteria to be considered "
 "duplicates."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1054
+#: cps/templates/cwa_settings.html:1075
 msgid "Consider book titles when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1060
+#: cps/templates/cwa_settings.html:1081
 msgid "Consider book authors when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1066
+#: cps/templates/cwa_settings.html:1087
 msgid "Consider book language when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1072
+#: cps/templates/cwa_settings.html:1093
 msgid "Consider book series when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1078
+#: cps/templates/cwa_settings.html:1099
 msgid "Consider book publisher when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1083
+#: cps/templates/cwa_settings.html:1104
 #, fuzzy
 msgid "Format"
 msgstr "결과 형식"
 
-#: cps/templates/cwa_settings.html:1084
+#: cps/templates/cwa_settings.html:1105
 msgid "Consider file format when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1090 cps/templates/cwa_settings.html:1176
+#: cps/templates/cwa_settings.html:1111 cps/templates/cwa_settings.html:1197
 msgid "Note:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1090
+#: cps/templates/cwa_settings.html:1111
 msgid ""
 "At least one criterion must be selected. Title and Author are recommended as "
 "core criteria."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1096
+#: cps/templates/cwa_settings.html:1117
 msgid "Duplicate Format Priority Ranking"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1099
+#: cps/templates/cwa_settings.html:1120
 msgid ""
 "Configure which file formats are preferred when using the \"Highest Quality "
 "Format\" auto-resolution strategy. Drag and drop to reorder formats by "
 "priority (higher = better)."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1112
+#: cps/templates/cwa_settings.html:1133
 msgid "Tip:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1112
+#: cps/templates/cwa_settings.html:1133
 msgid ""
 "When resolving duplicates with \"Highest Quality Format\" strategy, books "
 "with higher-ranked formats will be kept. Lower priority formats will be "
 "deleted."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1120
+#: cps/templates/cwa_settings.html:1141
 msgid "Duplicate Notifications & Auto-Resolution"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1123
+#: cps/templates/cwa_settings.html:1144
 msgid ""
 "Configure how you are notified about duplicate books and optionally enable "
 "automatic resolution."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1128
+#: cps/templates/cwa_settings.html:1149
 #, fuzzy
 msgid "Enable Duplicate Notifications"
 msgstr "CWA 업데이트 알림 켜기"
 
-#: cps/templates/cwa_settings.html:1130
+#: cps/templates/cwa_settings.html:1151
 msgid ""
 "Show popup notifications when unresolved duplicates are detected. Admins and "
 "users with edit rights will see a badge on the Duplicates sidebar button and "
 "a notification popup when they login."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1134
+#: cps/templates/cwa_settings.html:1155
 #, fuzzy
 msgid "Enable Automatic Duplicate Resolution"
 msgstr "공개 등록 사용"
 
-#: cps/templates/cwa_settings.html:1137 cps/templates/duplicates.html:437
+#: cps/templates/cwa_settings.html:1158 cps/templates/duplicates.html:437
 msgid "Warning:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1137
+#: cps/templates/cwa_settings.html:1158
 msgid ""
 "This will automatically delete books based on the strategy below. Original "
 "files will be backed up to"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1141
+#: cps/templates/cwa_settings.html:1162
 msgid "Auto-Resolution Strategy"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1144
+#: cps/templates/cwa_settings.html:1165
 msgid "Keep Newest"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1144
+#: cps/templates/cwa_settings.html:1165
 msgid "Delete older copies, keep the most recently added book"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1147
+#: cps/templates/cwa_settings.html:1168
 msgid "Keep Oldest"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1147
+#: cps/templates/cwa_settings.html:1168
 msgid "Delete newer copies, keep the earliest added"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1150
+#: cps/templates/cwa_settings.html:1171
 #, fuzzy
 msgid "Merge Formats"
 msgstr "원본 형식"
 
-#: cps/templates/cwa_settings.html:1150
+#: cps/templates/cwa_settings.html:1171
 msgid "Merge formats into the newest book, delete the rest"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1153
+#: cps/templates/cwa_settings.html:1174
 msgid "Keep Highest Quality Format"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1153
+#: cps/templates/cwa_settings.html:1174
 msgid "Prefer formats based on your Duplicate Format Priority Ranking"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1156
+#: cps/templates/cwa_settings.html:1177
 #, fuzzy
 msgid "Keep Most Metadata"
 msgstr "메타데이터 시험"
 
-#: cps/templates/cwa_settings.html:1156
+#: cps/templates/cwa_settings.html:1177
 msgid "Keep book with most complete information"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1159
+#: cps/templates/cwa_settings.html:1180
 msgid "Keep Largest File Size"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1159
+#: cps/templates/cwa_settings.html:1180
 msgid "Keep book with largest total file size"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1162
+#: cps/templates/cwa_settings.html:1183
 msgid "Choose which book to keep when duplicates are automatically resolved."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1166
+#: cps/templates/cwa_settings.html:1187
 #, fuzzy
 msgid "Rate Limiting"
 msgstr "평점"
 
-#: cps/templates/cwa_settings.html:1167
+#: cps/templates/cwa_settings.html:1188
 msgid "Cooldown Period (minutes)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1171
+#: cps/templates/cwa_settings.html:1192
 msgid ""
 "Minimum time between automatic resolutions (0 to disable). Prevents rapid-"
 "fire deletions during batch imports."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1176
+#: cps/templates/cwa_settings.html:1197
 msgid ""
 "Auto-resolution runs after duplicate scans detect new duplicates. Dismissed "
 "duplicate groups are never auto-resolved."
@@ -5213,55 +5234,57 @@ msgstr ""
 msgid "Click to See More"
 msgstr "더보기"
 
-#: cps/templates/detail.html:496
+#: cps/templates/detail.html:524
 msgid "Read in Browser"
 msgstr "웹에서 보기"
 
-#: cps/templates/detail.html:503 cps/templates/detail.html:504
-#: cps/templates/detail.html:778 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:531 cps/templates/detail.html:532
+#: cps/templates/detail.html:838 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "읽지 않음으로 표시"
 
-#: cps/templates/detail.html:503 cps/templates/detail.html:504
-#: cps/templates/detail.html:779 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:531 cps/templates/detail.html:532
+#: cps/templates/detail.html:839 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "읽음으로 표시"
 
-#: cps/templates/detail.html:505
+#: cps/templates/detail.html:533
 #, fuzzy
 msgid "Marked as read"
 msgstr "읽음으로 표시"
 
-#: cps/templates/detail.html:506
+#: cps/templates/detail.html:534
 #, fuzzy
 msgid "Marked as unread"
 msgstr "읽지 않음으로 표시"
 
-#: cps/templates/detail.html:511 cps/templates/detail.html:512
-#: cps/templates/detail.html:785 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:539 cps/templates/detail.html:540
+#: cps/templates/detail.html:845 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "보관함에서 복원"
 
-#: cps/templates/detail.html:511 cps/templates/detail.html:512
-#: cps/templates/detail.html:786 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:539 cps/templates/detail.html:540
+#: cps/templates/detail.html:846 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "보관함에 추가"
 
-#: cps/templates/detail.html:513 cps/templates/listenmp3.html:167
+#: cps/templates/detail.html:541 cps/templates/listenmp3.html:167
 msgid "Archived"
 msgstr "보관됨"
 
-#: cps/templates/detail.html:514
+#: cps/templates/detail.html:542
 #, fuzzy
 msgid "Restored from archive"
 msgstr "보관함에서 복원"
 
-#: cps/templates/detail.html:545 cps/templates/listenmp3.html:190
-#: cps/templates/search.html:16
+#: cps/templates/detail.html:573 cps/templates/detail.html:767
+#: cps/templates/detail.html:768 cps/templates/detail.html:1280
+#: cps/templates/listenmp3.html:190 cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "서재에 추가"
 
-#: cps/templates/detail.html:556 cps/templates/detail.html:578
+#: cps/templates/detail.html:584 cps/templates/detail.html:606
+#: cps/templates/detail.html:759 cps/templates/detail.html:1243
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
 #: cps/templates/layout.html:301 cps/templates/layout.html:310
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
@@ -5269,123 +5292,128 @@ msgstr "서재에 추가"
 msgid "(Public)"
 msgstr "(공개)"
 
-#: cps/templates/detail.html:568
+#: cps/templates/detail.html:596 cps/templates/detail.html:761
 #, fuzzy
 msgid "Remove from shelf"
 msgstr "보관함에서 복원"
 
-#: cps/templates/detail.html:606
+#: cps/templates/detail.html:634
 #, fuzzy
 msgid "Rating updated"
 msgstr "데이터베이스 설정이 업데이트되었습니다."
 
-#: cps/templates/detail.html:607
+#: cps/templates/detail.html:635
 #, fuzzy
 msgid "Rating cleared"
 msgstr "평점(이상)"
 
-#: cps/templates/detail.html:625 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:653 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "책 %(index)s / %(range)s"
 
-#: cps/templates/detail.html:630
+#: cps/templates/detail.html:658
 msgid "ID"
 msgstr ""
 
-#: cps/templates/detail.html:635
+#: cps/templates/detail.html:663
 msgid "UUID"
 msgstr ""
 
-#: cps/templates/detail.html:638
+#: cps/templates/detail.html:666
 msgid "UUID copied to clipboard"
 msgstr ""
 
-#: cps/templates/detail.html:639
+#: cps/templates/detail.html:667
 msgid "Unable to copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:640 cps/templates/detail.html:641
+#: cps/templates/detail.html:668 cps/templates/detail.html:669
 msgid "Copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:646
+#: cps/templates/detail.html:674
 msgid "Date added"
 msgstr ""
 
-#: cps/templates/detail.html:650
+#: cps/templates/detail.html:678
 msgid "Last modified"
 msgstr ""
 
-#: cps/templates/detail.html:655
+#: cps/templates/detail.html:683
 #, fuzzy
 msgid "File sizes"
 msgstr "글자 크기"
 
-#: cps/templates/detail.html:699
+#: cps/templates/detail.html:727
 #, fuzzy
 msgid "Remove tag"
 msgstr "삭제"
 
-#: cps/templates/detail.html:707 cps/templates/detail.html:708
-#: cps/templates/detail.html:1098
+#: cps/templates/detail.html:735 cps/templates/detail.html:736
+#: cps/templates/detail.html:1158
 msgid "Add tag"
 msgstr ""
 
-#: cps/templates/detail.html:721 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:781 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "발행일"
 
-#: cps/templates/detail.html:727
+#: cps/templates/detail.html:787
 #, fuzzy
 msgid "KOReader Progress"
 msgstr "진행률"
 
-#: cps/templates/detail.html:797 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:857 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "설명:"
 
-#: cps/templates/detail.html:814
+#: cps/templates/detail.html:874
 msgid "Select eReader Email Addresses"
 msgstr "eReader 이메일 주소 선택"
 
-#: cps/templates/detail.html:827
+#: cps/templates/detail.html:887
 msgid "Choose email addresses:"
 msgstr "이메일 주소 선택:"
 
-#: cps/templates/detail.html:832
+#: cps/templates/detail.html:892
 msgid "Select All"
 msgstr "모두 선택"
 
-#: cps/templates/detail.html:850
+#: cps/templates/detail.html:910
 #, fuzzy
 msgid "Additional email addresses:"
 msgstr "이메일 주소 선택:"
 
-#: cps/templates/detail.html:851
+#: cps/templates/detail.html:911
 #, fuzzy
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "이메일 주소 선택:"
 
-#: cps/templates/detail.html:852
+#: cps/templates/detail.html:912
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:853
+#: cps/templates/detail.html:913
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:857
+#: cps/templates/detail.html:917
 msgid "Select format:"
 msgstr "형식 선택:"
 
-#: cps/templates/detail.html:869
+#: cps/templates/detail.html:929
 msgid "Send"
 msgstr "보내기"
 
-#: cps/templates/detail.html:1076
+#: cps/templates/detail.html:1136
 #, fuzzy
 msgid "Failed to update tags"
+msgstr "표지 경로 생성에 실패했습니다."
+
+#: cps/templates/detail.html:1244
+#, fuzzy
+msgid "Failed to update shelves"
 msgstr "표지 경로 생성에 실패했습니다."
 
 #: cps/templates/duplicates.html:365

@@ -1059,39 +1059,33 @@ msgstr "Ein Fehler ist aufgetreten"
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Bibliothek konvertieren"
 
-#: cps/cwa_functions.py:1924 cps/cwa_functions.py:1948
-#, fuzzy
+#: cps/cwa_functions.py:1918 cps/cwa_functions.py:1942
 msgid "Calibre-Web Automated - EPUB Fixer Service"
-msgstr "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Dienst"
+msgstr "Calibre-Web Automated - EPUB-Fixer-Dienst"
 
 #: cps/cwa_functions.py:2002
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2009
-#, fuzzy
+#: cps/cwa_functions.py:2003
 msgid "Invalid book selection."
-msgstr "Ungültige Buch-ID."
+msgstr "Ungültige Buchauswahl."
+
+#: cps/cwa_functions.py:2009
+msgid "Book not found."
+msgstr "Buch wurde nicht gefunden."
 
 #: cps/cwa_functions.py:2015
-#, fuzzy
-msgid "Book not found."
-msgstr "Token wurde nicht gefunden"
-
-#: cps/cwa_functions.py:2021
-#, fuzzy
 msgid "Selected book has no EPUB format."
-msgstr "Ausgewählte Bücher als ungelesen markieren"
+msgstr "Das ausgewählte Buch hat kein EPUB-Format."
 
-#: cps/cwa_functions.py:2025
-#, fuzzy
+#: cps/cwa_functions.py:2019
 msgid "EPUB file not found on disk."
-msgstr "%(format)s Format nicht gefunden"
+msgstr "EPUB-Datei wurde nicht auf dem Datenträger gefunden."
 
-#: cps/cwa_functions.py:2040
-#, fuzzy
+#: cps/cwa_functions.py:2034
 msgid "EPUB Fixer started for selected book."
-msgstr "Ausgewählte Bücher bearbeiten"
+msgstr "EPUB-Fixer für das ausgewählte Buch gestartet."
 
 #: cps/cwa_functions.py:2043
 msgid "Failed to start EPUB Fixer for selected book."
@@ -2262,7 +2256,7 @@ msgstr "Fehler beim Erstellen des Regals"
 
 #: cps/templates/layout.html:313 cps/web.py:1153
 msgid "Create Magic Shelf"
-msgstr "Magisches Regal erstellen"
+msgstr "Neues magisches Regal"
 
 #: cps/web.py:1207
 msgid "Permission denied to change public status"
@@ -2890,9 +2884,8 @@ msgid "CWA Library Conversion Service"
 msgstr "CWA Bibliotheksumwandlungsdienst"
 
 #: cps/templates/admin.html:215
-#, fuzzy
 msgid "CWA EPUB Fixer Service"
-msgstr "CWA Send-to-Kindle EPUB Fixer-Dienst"
+msgstr "CWA EPUB-Fixer-Dienst"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
@@ -4389,9 +4382,8 @@ msgid "Search by title/author"
 msgstr ""
 
 #: cps/templates/cwa_epub_fixer.html:29
-#, fuzzy
 msgid "Run on selected book"
-msgstr "Ausgewählte Bücher unarchivieren"
+msgstr "Für das ausgewählte Buch ausführen"
 
 #: cps/templates/cwa_epub_fixer.html:120
 msgid "EPUB Fixer scheduled successfully"
@@ -4402,34 +4394,28 @@ msgid "Error scheduling EPUB Fixer"
 msgstr "Fehler beim Planen des EPUB Fixers"
 
 #: cps/templates/cwa_epub_fixer.html:132
-#, fuzzy
 msgid "No matches found"
-msgstr "Keine Ergebnisse gefunden"
+msgstr "Keine Treffer gefunden"
 
 #: cps/templates/cwa_epub_fixer.html:167
-#, fuzzy
 msgid "Enter a search term"
-msgstr "Benutzernamen eingeben"
+msgstr "Suchbegriff eingeben"
 
 #: cps/templates/cwa_epub_fixer.html:175
-#, fuzzy
 msgid "Failed to search library"
-msgstr "Überspringen des Treffers fehlgeschlagen"
+msgstr "Suche in der Bibliothek fehlgeschlagen"
 
 #: cps/templates/cwa_epub_fixer.html:182
-#, fuzzy
 msgid "Select a book first"
-msgstr "Wähle ein Regal"
+msgstr "Bitte zuerst ein Buch auswählen"
 
 #: cps/templates/cwa_epub_fixer.html:195
-#, fuzzy
 msgid "EPUB Fixer started for selected book"
-msgstr "Ausgewählte Bücher bearbeiten"
+msgstr "EPUB-Fixer für das ausgewählte Buch gestartet"
 
 #: cps/templates/cwa_epub_fixer.html:200
-#, fuzzy
 msgid "Error starting EPUB Fixer"
-msgstr "Fehler beim Planen des EPUB Fixers"
+msgstr "Fehler beim Starten des EPUB-Fixers"
 
 #: cps/templates/cwa_settings.html:136
 msgid "Enable/Disable Calibre-Web Automated Services"
@@ -5629,10 +5615,9 @@ msgstr "Tag hinzufügen"
 msgid "Published"
 msgstr "Herausgabedatum"
 
-#: cps/templates/detail.html:787
-#, fuzzy
+#: cps/templates/detail.html:727
 msgid "KOReader Progress"
-msgstr "Fortschritt"
+msgstr "KOReader-Fortschritt"
 
 #: cps/templates/detail.html:857 cps/templates/listenmp3.html:177
 msgid "Description:"

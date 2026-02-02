@@ -164,10 +164,18 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     p.add_argument("--max-depth", type=int, default=6, help="Maximum directory depth for repo discovery (default: 6)")
     p.add_argument("--output", help="Optional output file (UTF-8). If omitted, prints to stdout")
     p.add_argument("--aggregate", action="store_true", help="Aggregate commits from all repos into a single chronological list")
-    p.add_argument("--include-merges", action="store_true", help="Include merge commits (default: exclude)")
-    p.add_argument("--body", action="store_true", help="Include commit body text")
+    p.add_argument("--include-merges", action="store_true", default=True, help="Include merge commits (default: True)")
+    p.add_argument(
+        "--no-include-merges",
+        dest="include_merges",
+        action="store_false",
+        help="Exclude merge commits",
+    )
+    p.add_argument("--body", action="store_true", default=True, help="Include commit body text (default: True)")
+    p.add_argument("--no-body", dest="body", action="store_false", help="Exclude commit body text")
     p.add_argument("--subjects-only", action="store_true", help="Output only commit subjects (one per line); overrides other formatting flags")
-    p.add_argument("--markdown-list", action="store_true", help="Render output as a Markdown bullet list")
+    p.add_argument("--markdown-list", action="store_true", default=True, help="Render output as a Markdown bullet list (default: True)")
+    p.add_argument("--no-markdown-list", dest="markdown_list", action="store_false", help="Disable Markdown bullet list output")
     p.add_argument("--no-strip-newlines", action="store_true", help="Preserve newlines inside commit body (default flattens)")
     p.add_argument("--since-date", help="Optional additional since date filter (git understands many formats)")
     p.add_argument("--until-date", help="Optional until date filter")

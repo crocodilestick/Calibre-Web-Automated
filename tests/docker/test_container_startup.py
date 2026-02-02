@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -90,21 +90,18 @@ class TestDockerEnvironmentVariables:
 class TestDockerHealthChecks:
     """Test container health and readiness."""
     
-    def test_container_stays_running(self):
+    def test_container_stays_running(self, cwa_api_client):
         """Verify container doesn't crash immediately after startup."""
         # Wait 10 seconds and verify it's still running
         time.sleep(10)
         
         # Try to access the web interface - if container crashed, this will fail
-        # Default to 8085 to avoid conflicts with production CWA on 8083
-        test_port = os.getenv('CWA_TEST_PORT', '8085')
-        
+        # The cwa_api_client fixture ensures the container is ready before this test runs
         try:
-            response = requests.get(f"http://localhost:{test_port}", timeout=5)
+            response = cwa_api_client["session"].get(cwa_api_client["base_url"], timeout=5)
             assert response.status_code == 200
         except requests.exceptions.ConnectionError:
-            pytest.skip(f"No CWA container available on port {test_port}")
-        assert response.status_code == 200
+            pytest.fail("Container crashed after initial startup")
     
     def test_logs_directory_created(self, test_volumes):
         """Verify log directory structure is created."""

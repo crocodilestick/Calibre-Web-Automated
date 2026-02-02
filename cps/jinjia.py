@@ -61,6 +61,9 @@ def mimetype_filter(val):
 @jinjia.app_template_filter('formatdate')
 def formatdate_filter(val):
     try:
+        if isinstance(val, datetime.datetime):
+            # Avoid timezone-based day shifts by formatting date-only values.
+            val = val.date()
         return format_date(val, format='medium')
     except AttributeError as e:
         log.error('Babel error: %s, Current user locale: %s, Current User: %s', e,
@@ -72,6 +75,8 @@ def formatdate_filter(val):
 
 @jinjia.app_template_filter('formatdateinput')
 def format_date_input(val):
+    if isinstance(val, datetime.datetime):
+        val = val.date()
     input_date = val.isoformat().split('T', 1)[0]  # Hack to support dates <1900
     return '' if input_date == "0101-01-01" else input_date
 
@@ -96,18 +101,21 @@ def yesno(value, yes, no):
 
 @jinjia.app_template_filter('formatfloat')
 def formatfloat(value, decimals=1):
-    if not value:
-        return value
+    # Handle None and empty string cases
+    if value is None or (isinstance(value, str) and value.strip() == ''):
+        return ''
+    
     try:
         # Convert to float if it's a string (series_index is stored as String in DB)
         float_value = float(value) if isinstance(value, str) else value
         formated_value = ('{0:.' + str(decimals) + 'f}').format(float_value)
-        if formated_value.endswith('.' + "0" * decimals):
-            formated_value = formated_value.rstrip('0').rstrip('.')
+        # Remove trailing zeros and unnecessary decimal point
+        formated_value = formated_value.rstrip('0').rstrip('.')
         return formated_value
-    except (ValueError, TypeError):
-        # If conversion fails, return the original value
-        return value
+    except (ValueError, TypeError) as e:
+        # If conversion fails, log the error and return empty string for safety
+        log.debug(f'formatfloat filter error: Cannot convert value "{value}" to float: {e}')
+        return ''
 
 
 '''@jinjia.app_template_filter('formatseriesindex')
@@ -175,6 +183,40 @@ def get_cover_srcset(series):
         url = url_for('web.get_series_cover', series_id=series.id, resolution=shortname, c=cache_timestamp())
         srcset.append(f'{url} {resolution}x')
     return ', '.join(srcset)
+
+
+@jinjia.app_template_filter('filesizeformat_binary')
+def filesizeformat_binary(num_bytes):
+    """
+    Format bytes to human-readable binary (power-of-2) file size.
+    Uses KiB, MiB, GiB notation (1024-based) to match internal storage.
+    This ensures consistency with email size limits and file system reporting.
+    """
+    if num_bytes is None:
+        return '0 B'
+    
+    try:
+        num_bytes = float(num_bytes)
+    except (ValueError, TypeError):
+        return '0 B'
+    
+    # Binary (power-of-2) units
+    units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB']
+    unit_index = 0
+    size = float(num_bytes)
+    
+    while size >= 1024.0 and unit_index < len(units) - 1:
+        size /= 1024.0
+        unit_index += 1
+    
+    # Format with 1 decimal place, but remove if .0
+    if unit_index == 0:  # Bytes - no decimal
+        return f"{int(size)} {units[unit_index]}"
+    else:
+        formatted = f"{size:.1f}"
+        if formatted.endswith('.0'):
+            formatted = formatted[:-2]
+        return f"{formatted} {units[unit_index]}"
 
 
 @jinjia.app_template_filter('music')

@@ -3,6 +3,13 @@
 
 echo "[cwa-init] Starting CWA initialization process..."
 
+# Check for unsupported architecture
+ARCH=$(uname -m)
+if [[ "$ARCH" != "x86_64" && "$ARCH" != "aarch64" ]]; then
+  echo "[cwa-init] WARNING: Unsupported architecture detected: $ARCH"
+  echo "[cwa-init] CWA is optimized for x86_64 and aarch64. You may experience issues."
+fi
+
 # Verify essential directories exist and are accessible
 echo "[cwa-init] Verifying essential directories..."
 for dir in "/app/calibre-web-automated" "/config" "/calibre-library" "/app/calibre"; do
@@ -83,8 +90,30 @@ install -d -o abc -g abc /config/processed_books/converted
 install -d -o abc -g abc /config/processed_books/imported
 install -d -o abc -g abc /config/processed_books/failed
 install -d -o abc -g abc /config/processed_books/fixed_originals
+install -d -o abc -g abc /config/processed_books/duplicate_resolutions
 install -d -o abc -g abc /config/log_archive
 install -d -o abc -g abc /config/.cwa_conversion_tmp
+
+# Ensure ingest directory exists and is writable (matches dirs.json)
+INGEST_DIR=$(python3 - <<'PY'
+import json
+try:
+    with open('/app/calibre-web-automated/dirs.json', 'r', encoding='utf-8') as f:
+        print(json.load(f).get('ingest_folder', '').strip())
+except Exception:
+    print('')
+PY
+)
+if [ -n "$INGEST_DIR" ]; then
+  # Create directory if missing
+  install -d -o abc -g abc "$INGEST_DIR" 2>/dev/null || mkdir -p "$INGEST_DIR" 2>/dev/null || true
+  # Set ownership unless network share mode
+  if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+    echo "[cwa-init] NETWORK_SHARE_MODE=true detected; skipping chown of $INGEST_DIR"
+  else
+    chown -R abc:abc "$INGEST_DIR" 2>/dev/null || true
+  fi
+fi
 
 # For Calibre Plugins
 install -d -o abc -g abc /config/.config/calibre/plugins
@@ -94,7 +123,7 @@ install -d -o abc -g abc /config/.config/calibre/plugins
 #  Remove any leftover lock files
 #------------------------------------------------------------------------------------------------------------------------
 
-declare -a lockFiles=("ingest_processor.lock" "convert_library.lock" "cover_enforcer.lock" "kindle_epub_fixer.lock")
+declare -a lockFiles=("ingest_processor.lock" "convert_library.lock" "cover_enforcer.lock" "kindle_epub_fixer.lock" "restore_calibre_db.lock")
 
 echo "[cwa-init] Checking for leftover lock files from previous instance..."
 
@@ -310,7 +339,7 @@ fi
 echo "[cwa-init] Resolving CWA versions (installed + latest stable) ..."
 
 # Installed version baked at build time
-export CWA_INSTALLED_VERSION="$(cat /app/CWA_RELEASE 2>/dev/null || echo 'V0.0.0')"
+export CWA_INSTALLED_VERSION="$(cat /app/CWA_RELEASE 2>/dev/null || echo 'v0.0.0')"
 echo "[cwa-init] Installed version: $CWA_INSTALLED_VERSION"
 
 # Latest stable release from GitHub (best-effort, fast timeout)
@@ -336,11 +365,11 @@ else
 fi
 
 # Validate the fetched version or use fallback
-if [[ -n "$CWA_STABLE_VERSION" && "$CWA_STABLE_VERSION" =~ ^V[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+if [[ -n "$CWA_STABLE_VERSION" && "$CWA_STABLE_VERSION" =~ ^[Vv]?[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]; then
   echo "[cwa-init] Valid stable version retrieved: $CWA_STABLE_VERSION"
 else
   echo "[cwa-init] Invalid or missing stable version, using fallback"
-  CWA_STABLE_VERSION="V0.0.0"
+  CWA_STABLE_VERSION="v0.0.0"
 fi
 
 export CWA_STABLE_VERSION

@@ -3,8 +3,9 @@
 <link href="{{ url_for('static', filename='css/libs/bootstrap-table.min.css') }}" rel="stylesheet">
 {% endblock %}
 {% block body %}
-<div class="discover">
+<div class="discover" style="padding-inline: 2rem !important;">
     <h2>{{_('Tasks')}}</h2>
+    <h3>{{ _('Background Tasks Overview') }}</h3>
     <table class="table table-no-bordered" id="tasktable" data-url="{{  url_for('tasks.get_email_status_json') }}"  data-sort-name="starttime" data-sort-order="asc" data-locale="{{ current_user.locale }}" data-classes="table table-no-bordered table-hover">
       <thead>
         <tr>
@@ -117,10 +118,19 @@
         'z-index': '9999',
         'min-width': '300px',
         'max-width': '500px',
-        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)'
+        'height': 'fit-content',
+        'overflow': 'auto',
+        'padding': '15px',
+        'margin-bottom': '20px',
+        'border': '1px solid transparent',
+        'border-radius': '4px',
+        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+        'background-color': type === 'success' ? '#dff0d8' : type === 'danger' ? '#f2dede' : type === 'warning' ? '#fcf8e3' : '#d9edf7',
+        'border-color': type === 'success' ? '#d6e9c6' : type === 'danger' ? '#ebccd1' : type === 'warning' ? '#faebcc' : '#bce8f1',
+        'color': type === 'success' ? '#3c763d' : type === 'danger' ? '#a94442' : type === 'warning' ? '#8a6d3b' : '#31708f'
       })
       .html(`
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="position: relative; top: -2px; right: -21px; color: inherit; opacity: 0.5;">
           <span aria-hidden="true">&times;</span>
         </button>
         ${message}

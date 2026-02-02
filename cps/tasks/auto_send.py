@@ -93,7 +93,9 @@ class TaskAutoSend(CalibreTask):
             self._handleError(f"Auto-send task failed: {str(e)}")
         finally:
             if 'calibre_db_instance' in locals():
-                calibre_db_instance.session.close()
+                session = getattr(calibre_db_instance, "session", None)
+                if session:
+                    session.close()
 
     @property
     def name(self):

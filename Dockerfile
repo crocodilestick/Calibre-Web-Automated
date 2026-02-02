@@ -17,13 +17,16 @@
 # --build-arg="VERSION=2.1.0" \
 # --tag crocodilestick/calibre-web-automated:latest .
 
-# ============================================================================
+# ==========================================================================
 # STAGE 1: Dependencies - Install system packages and Python dependencies
-# ============================================================================
+# ==========================================================================
+ARG CALIBRE_RELEASE=9.0.0
+ARG KEPUBIFY_RELEASE=v4.0.4
+
 FROM ghcr.io/linuxserver/baseimage-ubuntu:noble AS dependencies
 
-ARG CALIBRE_RELEASE=8.9.0
-ARG KEPUBIFY_RELEASE=v4.0.4
+ARG CALIBRE_RELEASE
+ARG KEPUBIFY_RELEASE
 
 # Set the default shell for the following RUN instructions to bash instead of sh
 SHELL ["/bin/bash", "-c"]
@@ -38,43 +41,46 @@ RUN \
   apt-get update && \
   echo "**** install build packages ****" && \
   apt-get install -y --no-install-recommends \
-    build-essential \
-    libldap2-dev \
-    libsasl2-dev \
-    gettext \
-    python3.13-dev \
-    python3.13-venv \
-    curl && \
+  build-essential \
+  libldap2-dev \
+  libsasl2-dev \
+  gettext \
+  python3.13-dev \
+  python3.13-venv \
+  curl && \
   echo "**** install runtime packages ****" && \
   apt-get install -y --no-install-recommends \
-    imagemagick \
-    ghostscript \
-    libldap2 \
-    libmagic1 \
-    libsasl2-2 \
-    libxi6 \
-    libxslt1.1 \
-    xdg-utils \
-    inotify-tools \
-    python3.13 \
-    nano \
-    sqlite3 \
-    zip && \
+  imagemagick \
+  ghostscript \
+  libldap2 \
+  libmagic1 \
+  libsasl2-2 \
+  libxi6 \
+  libxslt1.1 \
+  xdg-utils \
+  inotify-tools \
+  python3.13 \
+  nano \
+  sqlite3 \
+  zip && \
   # STEP 1.2 - Install additional Calibre required packages
   apt-get install -y --no-install-recommends \
-    libxtst6 \
-    libxrandr2 \
-    libxkbfile1 \
-    libxcomposite1 \
-    libopengl0 \
-    libnss3 \
-    libxkbcommon0 \
-    libegl1 \
-    libxdamage1 \
-    libgl1 \
-    libglx-mesa0 \
-    xz-utils \
-    binutils && \
+  libxtst6 \
+  libxrandr2 \
+  libxkbfile1 \
+  libxcomposite1 \
+  libxcursor1 \
+  libxfixes3 \
+  libxrender1 \
+  libopengl0 \
+  libnss3 \
+  libxkbcommon0 \
+  libegl1 \
+  libxdamage1 \
+  libgl1 \
+  libglx-mesa0 \
+  xz-utils \
+  binutils && \
   # Install lsof 4.99.5 from source to fix hanging issue with 4.95 (issue #654)
   echo "**** install lsof 4.99.5 from source ****" && \
   LSOF_VERSION="4.99.5" && \
@@ -97,8 +103,8 @@ RUN \
 RUN \
   python3.13 -m venv /lsiopy && \
   /lsiopy/bin/pip install -U --no-cache-dir \
-    pip \
-    wheel
+  pip \
+  wheel
 
 # STEP 3 - Copy requirements files and install Python packages
 # Copy only requirements files first to leverage Docker layer caching
@@ -106,28 +112,28 @@ COPY --chown=abc:abc requirements.txt optional-requirements.txt /app/calibre-web
 
 RUN \
   # STEP 3.1 - Installing the required python packages listed in 'requirements.txt' and 'optional-requirements.txt'
-    # HOWEVER, they are not pulled from PyPi directly, they are pulled from linuxserver's Ubuntu Wheel Index
-    # This is essentially a repository of precompiled some of the most popular packages with C/C++ source code
-    # This provides the install maximum compatibility with multiple different architectures including: x86_64, armv71 and aarch64
-    # You can read more about python wheels here: https://realpython.com/python-wheels/
+  # HOWEVER, they are not pulled from PyPi directly, they are pulled from linuxserver's Ubuntu Wheel Index
+  # This is essentially a repository of precompiled some of the most popular packages with C/C++ source code
+  # This provides the install maximum compatibility with multiple different architectures including: x86_64, armv71 and aarch64
+  # You can read more about python wheels here: https://realpython.com/python-wheels/
   /lsiopy/bin/pip install -U --no-cache-dir --find-links https://wheel-index.linuxserver.io/ubuntu/ -r \
-    /app/calibre-web-automated/requirements.txt -r /app/calibre-web-automated/optional-requirements.txt
+  /app/calibre-web-automated/requirements.txt -r /app/calibre-web-automated/optional-requirements.txt
 
 # STEP 4 - Install kepubify
 RUN \
   echo "**** install kepubify ****" && \
   if [[ $KEPUBIFY_RELEASE == 'newest' ]]; then \
-    KEPUBIFY_RELEASE=$(curl -sX GET "https://api.github.com/repos/pgaskin/kepubify/releases/latest" \
-    | awk '/tag_name/{print $4;exit}' FS='[""]'); \
+  KEPUBIFY_RELEASE=$(curl -sX GET "https://api.github.com/repos/pgaskin/kepubify/releases/latest" \
+  | awk '/tag_name/{print $4;exit}' FS='[""]'); \
   fi && \
   if [ "$(uname -m)" == "x86_64" ]; then \
-    curl -o \
-      /usr/bin/kepubify -L \
-      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit; \
+  curl -o \
+  /usr/bin/kepubify -L \
+  https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit; \
   elif [ "$(uname -m)" == "aarch64" ]; then \
-    curl -o \
-      /usr/bin/kepubify -L \
-      https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-arm64; \
+  curl -o \
+  /usr/bin/kepubify -L \
+  https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-arm64; \
   fi && \
   chmod +x /usr/bin/kepubify
 
@@ -137,20 +143,20 @@ RUN \
   mkdir -p /app/calibre && \
   # STEP 5.2 - Download the desired version of Calibre, determined by the CALIBRE_RELEASE variable and the architecture of the build environment
   if [ "$(uname -m)" == "x86_64" ]; then \
-    curl -o \
-      /calibre.txz -L \
-      "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-x86_64.txz"; \
+  curl -o \
+  /calibre.txz -L \
+  "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-x86_64.txz"; \
   elif [ "$(uname -m)" == "aarch64" ]; then \
-    curl -o \
-      /calibre.txz -L \
-      "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-arm64.txz"; \
+  curl -o \
+  /calibre.txz -L \
+  "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-arm64.txz"; \
   fi && \
   # STEP 5.3 - Extract the downloaded file to /app/calibre
   tar xf \
-      /calibre.txz -C \
-      /app/calibre && \
+  /calibre.txz -C \
+  /app/calibre && \
   # STEP 5.3.1 - Remove the ABI tag from the extracted libQt6* files to allow them to be used on older kernels
-    # Removed in V3.1.4 because it was breaking Calibre features that require Qt6. Replaced with a kernel check in the cwa-init service
+  # Removed in V3.1.4 because it was breaking Calibre features that require Qt6. Replaced with a kernel check in the cwa-init service
   # STEP 5.4 - Delete the extracted calibre.txz to save space in final image
   rm /calibre.txz
 
@@ -164,13 +170,11 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:noble
 
 ARG BUILD_DATE
 ARG VERSION
-ARG CALIBREWEB_RELEASE=0.6.24
-ARG CALIBRE_RELEASE=8.9.0
-ARG KEPUBIFY_RELEASE=v4.0.4
+ARG CALIBRE_RELEASE
+ARG KEPUBIFY_RELEASE
 
 LABEL build_version="Version:- ${VERSION}"
 LABEL build_date="${BUILD_DATE}"
-LABEL CW-base-version="${CALIBREWEB_RELEASE}"
 LABEL maintainer="CrocodileStick"
 
 # Set the default shell for the following RUN instructions to bash instead of sh
@@ -193,42 +197,47 @@ RUN \
   apt-get update && \
   echo "**** install runtime packages ****" && \
   apt-get install -y --no-install-recommends \
-    imagemagick \
-    ghostscript \
-    libldap2 \
-    libmagic1 \
-    libsasl2-2 \
-    libxi6 \
-    libxslt1.1 \
-    xdg-utils \
-    inotify-tools \
-    python3.13 \
-    nano \
-    sqlite3 \
-    zip \
-    libxtst6 \
-    libxrandr2 \
-    libxkbfile1 \
-    libxcomposite1 \
-    libopengl0 \
-    libnss3 \
-    libxkbcommon0 \
-    libegl1 \
-    libxdamage1 \
-    libgl1 \
-    libglx-mesa0 \
-    xz-utils \
-    curl && \
+  imagemagick \
+  ghostscript \
+  libldap2 \
+  libmagic1 \
+  libsasl2-2 \
+  libxi6 \
+  libxslt1.1 \
+  xdg-utils \
+  inotify-tools \
+  python3.13 \
+  nano \
+  sqlite3 \
+  zip \
+  gettext \
+  libasound2t64 \
+  libxtst6 \
+  libxrandr2 \
+  libxkbfile1 \
+  libxcomposite1 \
+  libxcursor1 \
+  libxfixes3 \
+  libxrender1 \
+  libopengl0 \
+  libnss3 \
+  libxkbcommon0 \
+  libegl1 \
+  libxdamage1 \
+  libgl1 \
+  libglx-mesa0 \
+  xz-utils \
+  curl && \
   # Create python3 symlink to point to python3.13
   ln -sf /usr/bin/python3.13 /usr/bin/python3 && \
   # Cleanup
   apt-get -y purge software-properties-common && \
   apt-get -y autoremove && \
   rm -rf \
-    /tmp/* \
-    /var/lib/apt/lists/* \
-    /var/tmp/* \
-    /root/.cache
+  /tmp/* \
+  /var/lib/apt/lists/* \
+  /var/tmp/* \
+  /root/.cache
 
 # STEP 6 - Copy application files
 # Copy the rest of the application code (changes most frequently)
@@ -245,28 +254,28 @@ RUN \
   # STEP 7.3 - Create koplugin.zip from KOReader plugin folder
   echo "~~~~ Creating koplugin.zip from KOReader plugin folder... ~~~~" && \
   if [ -d "/app/calibre-web-automated/koreader/plugins/cwasync.koplugin" ]; then \
-    cd /app/calibre-web-automated/koreader/plugins && \
-    # Calculate digest of all files in the plugin for debugging purposes
-    echo "Calculating digest of plugin files..." && \
-    PLUGIN_DIGEST=$(find cwasync.koplugin -type f -name "*.lua" -o -name "*.json" | sort | xargs sha256sum | sha256sum | cut -d' ' -f1) && \
-    echo "Plugin digest: $PLUGIN_DIGEST" && \
-    # Create a file named after the digest inside the plugin folder
-    echo "Plugin files digest: $PLUGIN_DIGEST" > cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
-    echo "Build date: $(date)" >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
-    echo "Files included:" >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
-    find cwasync.koplugin -type f -name "*.lua" -o -name "*.json" | sort >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
-    zip -r koplugin.zip cwasync.koplugin/ && \
-    echo "Created koplugin.zip from cwasync.koplugin folder with digest file: ${PLUGIN_DIGEST}.digest"; \
+  cd /app/calibre-web-automated/koreader/plugins && \
+  # Calculate digest of all files in the plugin for debugging purposes
+  echo "Calculating digest of plugin files..." && \
+  PLUGIN_DIGEST=$(find cwasync.koplugin -type f -name "*.lua" -o -name "*.json" | sort | xargs sha256sum | sha256sum | cut -d' ' -f1) && \
+  echo "Plugin digest: $PLUGIN_DIGEST" && \
+  # Create a file named after the digest inside the plugin folder
+  echo "Plugin files digest: $PLUGIN_DIGEST" > cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
+  echo "Build date: $(date)" >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
+  echo "Files included:" >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
+  find cwasync.koplugin -type f -name "*.lua" -o -name "*.json" | sort >> cwasync.koplugin/${PLUGIN_DIGEST}.digest && \
+  zip -r koplugin.zip cwasync.koplugin/ && \
+  echo "Created koplugin.zip from cwasync.koplugin folder with digest file: ${PLUGIN_DIGEST}.digest"; \
   else \
-    echo "Warning: cwasync.koplugin folder not found, skipping zip creation"; \
+  echo "Warning: cwasync.koplugin folder not found, skipping zip creation"; \
   fi && \
   # STEP 7.4 - Move koplugin.zip to static directory
   if [ -f "/app/calibre-web-automated/koreader/plugins/koplugin.zip" ]; then \
-    mkdir -p /app/calibre-web-automated/cps/static && \
-    cp /app/calibre-web-automated/koreader/plugins/koplugin.zip /app/calibre-web-automated/cps/static/ && \
-    echo "Moved koplugin.zip to static directory"; \
+  mkdir -p /app/calibre-web-automated/cps/static && \
+  cp /app/calibre-web-automated/koreader/plugins/koplugin.zip /app/calibre-web-automated/cps/static/ && \
+  echo "Moved koplugin.zip to static directory"; \
   else \
-    echo "Warning: koplugin.zip not found, skipping move to static directory"; \
+  echo "Warning: koplugin.zip not found, skipping move to static directory"; \
   fi && \
   # STEP 7.5 - ADD files referencing the versions of the installed main packages
   echo "$VERSION" >| /app/CWA_RELEASE && \
@@ -290,4 +299,4 @@ VOLUME /calibre-library
 # Health check for container orchestration
 # Uses shell form to support environment variable substitution for CWA_PORT_OVERRIDE
 HEALTHCHECK --interval=30s --timeout=3s --start-period=120s --retries=3 \
-  CMD curl -f http://localhost:${CWA_PORT_OVERRIDE:-8083}/ || exit 1
+  CMD curl -f http://localhost:${CWA_PORT_OVERRIDE:-8083}/ || curl -f -k https://localhost:${CWA_PORT_OVERRIDE:-8083}/ || exit 1

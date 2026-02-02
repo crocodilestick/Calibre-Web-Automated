@@ -489,6 +489,7 @@
           <div class="form-group">
             <label for="config_generic_oauth_admin_group">{{_('OAuth group for Admin')}}</label>
             <input type="text" class="form-control" id="config_generic_oauth_admin_group" name="config_generic_oauth_admin_group" value="{% if generic['oauth_admin_group'] != None %}{{ generic['oauth_admin_group'] }}{% endif %}" autocomplete="off">
+            <div class="help-block">{{_('Name of the OAuth group that grants admin privileges. Leave empty to disable group-based admin management, or use the global setting in Security Settings for more control.')}}</div>
           </div>
           <div class="form-group">
             <label for="config_generic_oauth_login_button">{{_('Login Button Text')}}</label>
@@ -551,6 +552,11 @@
                 <input type="checkbox" id="config_disable_standard_login" name="config_disable_standard_login" {% if config.config_disable_standard_login %}checked{% endif %}>
                 <label for="config_disable_standard_login">{{_('Disable Standard Login (Username/Password)')}}</label>
                 <div class="help-block">{{_('Hides the standard login form. Users must log in via OAuth or LDAP. Ensure you have a working alternative login method before enabling.')}}</div>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="config_enable_oauth_group_admin_management" name="config_enable_oauth_group_admin_management" {% if config.config_enable_oauth_group_admin_management %}checked{% endif %}>
+                <label for="config_enable_oauth_group_admin_management">{{_('Enable OAuth Group-Based Admin Role Management')}}</label>
+                <div class="help-block">{{_('When enabled, admin privileges are automatically granted or revoked based on OAuth group membership. Disable this to manually manage admin roles in the user management panel, preventing OAuth logins from overriding local role assignments.')}}</div>
             </div>
             <div class="form-group">
               <input type="checkbox" id="config_ratelimiter" name="config_ratelimiter" {% if config.config_ratelimiter %}checked{% endif %}>
@@ -639,6 +645,16 @@ $(document).ready(function() {
 
   // Trigger change on load to set initial state
   $('#config_login_type').trigger('change');
+  
+  // Warn about potential lockout when disabling standard login without OAuth (Issue #715)
+  $('#config_disable_standard_login').on('change', function() {
+    var isDisabled = $(this).is(':checked');
+    var loginType = $('#config_login_type').val();
+    
+    if (isDisabled && loginType === '0') {
+      alert('Warning: You are about to disable standard login without enabling OAuth or LDAP authentication. This may lock you out of the system. Ensure you have configured and tested an alternative login method before saving.');
+    }
+  });
 
   $('#test_oidc_connection').on('click', function() {
     var serverUrl = $('#config_generic_oauth_server_url_test').val() || $('#config_generic_oauth_server_url').val();

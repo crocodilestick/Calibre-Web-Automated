@@ -8,6 +8,8 @@
 
 import base64
 from datetime import datetime, timezone
+from cps import cw_babel
+from kobo_sync_utils import get_kobo_created_ts
 import os
 import uuid
 import zipfile
@@ -23,7 +25,8 @@ from flask import (
     current_app,
     url_for,
     redirect,
-    abort
+    abort,
+    Response,
 )
 from .cw_login import current_user
 from werkzeug.datastructures import Headers
@@ -33,7 +36,7 @@ from sqlalchemy.exc import StatementError
 from sqlalchemy.sql import select
 import requests
 
-from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_lib, ub, csrf, kobo_sync_status
+from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_lib, ub, csrf, kobo_sync_status, magic_shelf
 from . import isoLanguages
 from .epub import get_epub_layout
 from .constants import COVER_THUMBNAIL_SMALL, COVER_THUMBNAIL_MEDIUM, COVER_THUMBNAIL_LARGE
@@ -104,15 +107,17 @@ def redirect_or_proxy_request():
             # so we instead proxy to the Kobo store ourselves.
             store_response = make_request_to_kobo_store()
 
-            response_headers = store_response.headers
-            for header_key in CONNECTION_SPECIFIC_HEADERS:
-                response_headers.pop(header_key, default=None)
-
-            return make_response(
-                store_response.content, store_response.status_code, response_headers.items()
-            )
+            return make_proxy_response(store_response)
     else:
         return make_response(jsonify({}))
+
+
+def make_proxy_response(store_response: requests.Response) -> Response:
+    response_headers = store_response.headers
+    for header_key in CONNECTION_SPECIFIC_HEADERS:
+        response_headers.pop(header_key, default=None)
+
+    return make_response(store_response.content, store_response.status_code, response_headers.items())
 
 
 def convert_to_kobo_timestamp_string(timestamp):
@@ -121,6 +126,28 @@ def convert_to_kobo_timestamp_string(timestamp):
     except AttributeError as exc:
         log.debug("Timestamp not valid: {}".format(exc))
         return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def get_magic_shelf_book_ids_for_kobo(user_id):
+    if not config.config_kobo_sync_magic_shelves:
+        return set()
+
+    magic_shelves = ub.session.query(ub.MagicShelf).filter_by(user_id=user_id, kobo_sync=True).all()
+    if not magic_shelves:
+        return set()
+
+    book_ids = set()
+    for shelf in magic_shelves:
+        books, _ = magic_shelf.get_books_for_magic_shelf(
+            shelf.id, page=1, page_size=None
+        )
+        for book in books:
+            book_ids.add(book.id)
+
+    if book_ids:
+        log.debug("Kobo Sync: magic shelf allowed books: %s", len(book_ids))
+
+    return book_ids
 
 
 @kobo.route("/v1/library/sync")
@@ -155,7 +182,9 @@ def HandleSyncRequest():
 
 
     # Two-Way-Sync Deletion Logic
+    magic_shelf_book_ids = set()
     if current_user.kobo_only_shelves_sync:
+        magic_shelf_book_ids = get_magic_shelf_book_ids_for_kobo(current_user.id)
         try:
             # Check all books that are on Kobo according to the database
             synced_books_query = ub.session.query(ub.KoboSyncedBooks.book_id).filter(ub.KoboSyncedBooks.user_id == current_user.id)
@@ -166,6 +195,8 @@ def HandleSyncRequest():
                                    .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id)
                                    .filter(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True))
             allowed_book_ids = {item.book_id for item in allowed_books_query}
+            if magic_shelf_book_ids:
+                allowed_book_ids |= magic_shelf_book_ids
 
             # Spot the difference: books that need to be deleted
             books_to_delete_ids = synced_book_ids - allowed_book_ids
@@ -210,18 +241,21 @@ def HandleSyncRequest():
                                                                           ub.ArchivedBook.user_id == current_user.id))
                            .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
                                                       .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
-                           .filter(or_(
-                                ub.BookShelf.date_added > sync_token.books_last_modified,
-                                db.Books.last_modified > sync_token.books_last_modified,
-                           ))
+                          .filter(or_(
+                              ub.BookShelf.date_added > sync_token.books_last_modified,
+                              db.Books.last_modified > sync_token.books_last_modified,
+                              db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
+                          ))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .order_by(db.Books.last_modified)
                            .order_by(db.Books.id)
-                           .join(ub.BookShelf, db.Books.id == ub.BookShelf.book_id)
-                           .join(ub.Shelf)
-                           .filter(ub.Shelf.user_id == current_user.id)
-                           .filter(ub.Shelf.kobo_sync)
+                           .outerjoin(ub.BookShelf, db.Books.id == ub.BookShelf.book_id)
+                           .outerjoin(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)
+                           .filter(or_(
+                               and_(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True),
+                               db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
+                           ))
                            .distinct())
     else:
         changed_entries = calibre_db.session.query(db.Books,
@@ -257,12 +291,7 @@ def HandleSyncRequest():
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
             reading_states_in_new_entitlements.append(book.Books.id)
 
-        ts_created = book.Books.timestamp.replace(tzinfo=None)
-
-        try:
-            ts_created = max(ts_created, book.date_added)
-        except AttributeError:
-            pass
+        ts_created = get_kobo_created_ts(book)
 
         if ts_created > sync_token.books_last_created:
             sync_results.append({"NewEntitlement": entitlement})
@@ -294,12 +323,14 @@ def HandleSyncRequest():
 
     log.debug("Kobo Sync: rstate last modified: {}".format(sync_token.reading_state_last_modified))
     if only_kobo_shelves:
-        changed_reading_states = changed_reading_states.join(ub.BookShelf,
-                                                             ub.KoboReadingState.book_id == ub.BookShelf.book_id)\
-            .join(ub.Shelf)\
-            .filter(current_user.id == ub.Shelf.user_id)\
-            .filter(ub.Shelf.kobo_sync,
-                    ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified)\
+        changed_reading_states = changed_reading_states.outerjoin(ub.BookShelf,
+                                                                  ub.KoboReadingState.book_id == ub.BookShelf.book_id)\
+            .outerjoin(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)\
+            .filter(ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified)\
+            .filter(or_(
+                and_(current_user.id == ub.Shelf.user_id, ub.Shelf.kobo_sync == True),
+                ub.KoboReadingState.book_id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
+            ))\
             .distinct()
     else:
         changed_reading_states = changed_reading_states.filter(
@@ -322,6 +353,52 @@ def HandleSyncRequest():
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
 
     sync_shelves(sync_token, sync_results, only_kobo_shelves)
+
+    # Add magic shelves as collections
+    if config.config_kobo_sync_magic_shelves:
+
+        for shelf in ub.session.query(ub.MagicShelf)\
+            .filter_by(user_id=current_user.id, kobo_sync=False)\
+            .all():
+
+            sync_results.append({
+                "DeletedTag": {
+                    "Tag": {
+                        "Id": shelf.uuid,
+                        "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified)
+                    }
+                }
+            })
+
+        magic_shelves = ub.session.query(ub.MagicShelf)\
+            .filter_by(user_id=current_user.id, kobo_sync=True)\
+            .all()
+
+        new_tags_last_modified = sync_token.tags_last_modified
+            
+        for shelf in magic_shelves:
+            books, _ = magic_shelf.get_books_for_magic_shelf(
+                shelf.id, page=1, page_size=1000
+            )
+
+            new_tags_last_modified = max(shelf.last_modified, new_tags_last_modified)
+
+            tag = create_kobo_tag_magic(shelf, books)
+            if not tag:
+                continue
+
+            if shelf.created > sync_token.tags_last_modified:
+                log.debug("Syncing new magic shelf %s to Kobo device", shelf.name)
+                sync_results.append({
+                    "NewTag": tag
+                })
+            else:
+                log.debug("Syncing changed magic shelf %s to Kobo device", shelf.name)
+                sync_results.append({
+                    "ChangedTag": tag
+                })
+
+        sync_token.tags_last_modified = new_tags_last_modified
 
     # update last created timestamp to distinguish between new and changed entitlements
     if not cont_sync:
@@ -352,6 +429,23 @@ def generate_sync_response(sync_token, sync_results, set_cont=False):
     if set_cont:
         extra_headers["x-kobo-sync"] = "continue"
     sync_token.to_headers(extra_headers)
+
+    # Track Kobo sync activity
+    try:
+        from scripts.cwa_db import CWA_DB
+        import json as json_lib
+        cwa_db = CWA_DB()
+        cwa_db.log_activity(
+            user_id=int(current_user.id),
+            user_name=current_user.name,
+            event_type='KOBO_SYNC',
+            extra_data=json_lib.dumps({
+                'books_synced': len(sync_results),
+                'endpoint': '/v1/library/sync'
+            })
+        )
+    except Exception as e:
+        log.debug(f"Failed to log Kobo sync activity: {e}")
 
     # log.debug("Kobo Sync Content: {}".format(sync_results))
     # jsonify decodes the unicode string different to what kobo expects
@@ -781,6 +875,25 @@ def create_kobo_tag(shelf):
         )
     return {"Tag": tag}
 
+# Creates a Kobo "Tag" object from a ub.MagicShelf object
+def create_kobo_tag_magic(shelf, books):
+    tag = {
+        "Created": convert_to_kobo_timestamp_string(shelf.created),
+        "Id": shelf.uuid,
+        "Items": [],
+        "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified),
+        "Name": shelf.name,
+        "Type": "UserTag"
+    }
+    for book in books:
+        tag["Items"].append(
+            {
+                "RevisionId": book.uuid,
+                "Type": "ProductRevisionTagItem"
+            }
+        )
+    return {"Tag": tag}
+
 
 @csrf.exempt
 @kobo.route("/v1/library/<book_uuid>/state", methods=["GET", "PUT"])
@@ -836,17 +949,7 @@ def HandleStateRequest(book_uuid):
             ub.session.rollback()
             abort(400, description="Malformed request data is missing 'ReadingStates' key")
 
-        if config.config_hardcover_sync and bool(hardcover):
-            # Check if book is blacklisted from reading progress syncing
-            book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
-                ub.HardcoverBookBlacklist.book_id == book.id
-            ).first()
-
-            if book_blacklist and book_blacklist.blacklist_reading_progress:
-                log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
-            else:
-                hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
-                hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
+        push_reading_state_to_hardcover(book, request_bookmark)
 
         ub.session.merge(kobo_reading_state)
         ub.session_commit()
@@ -854,6 +957,44 @@ def HandleStateRequest(book_uuid):
             "RequestResult": "Success",
             "UpdateResults": [update_results_response],
         })
+
+
+def push_reading_state_to_hardcover(book: db.Books, request_bookmark: dict):
+    """
+    Sync reading progress to Hardcover if enabled for the user and book is not blacklisted.
+
+    Most exceptions are caught and logged so that issues with Hardcover do not prevent
+    the Kobo from clearing its reading state sync queue.
+
+    :param book: The book for which to sync reading progress.
+    :param request_bookmark: The bookmark data from the Kobo request.
+    :return: None
+    """
+
+    if not config.config_hardcover_sync or not bool(hardcover):
+        return
+
+    # Check if book is blacklisted from reading progress syncing
+    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+        ub.HardcoverBookBlacklist.book_id == book.id).first()
+
+    if book_blacklist and book_blacklist.blacklist_reading_progress:
+        log.debug(f"Skipping reading progress sync for book {book.id} - blacklisted for reading progress")
+        return
+
+    try:
+        hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
+    except hardcover.MissingHardcoverToken:
+        log.info(f"User {current_user.name} has no Hardcover token, not syncing reading progress to Hardcover")
+        return
+    except Exception as e:
+        log.error(f"Failed to create Hardcover client for user {current_user.name}: {e}")
+        return
+
+    try:
+        hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
+    except Exception as e:
+        log.error(f"Failed to update reading progress for book {book.id} in Hardcover: {e}")
 
 
 def get_read_status_for_kobo(ub_book_read):
@@ -1007,8 +1148,9 @@ def HandleBookDeletionRequest(book_uuid):
 @kobo.route("/v1/library/<dummy>", methods=["DELETE", "GET", "POST"])
 @kobo.route("/v1/library/<dummy>/preview", methods=["POST"])
 def HandleUnimplementedRequest(dummy=None):
-    log.debug("Unimplemented Library Request received: %s (request is forwarded to kobo if configured)",
-              request.base_url)
+    log.debug(f"Unimplemented Library Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 
@@ -1021,7 +1163,9 @@ def HandleUnimplementedRequest(dummy=None):
 @kobo.route("/v1/analytics/<dummy>", methods=["GET", "POST"])
 @kobo.route("/v1/assets", methods=["GET"])
 def HandleUserRequest(dummy=None):
-    log.debug("Unimplemented User Request received: %s (request is forwarded to kobo if configured)", request.base_url)
+    log.debug("Unimplemented User Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 
@@ -1057,14 +1201,17 @@ def handle_getests():
 @kobo.route("/v1/products/books/<dummy>/", methods=["GET", "POST"])
 @kobo.route("/v1/products/dailydeal", methods=["GET", "POST"])
 @kobo.route("/v1/products/deals", methods=["GET", "POST"])
+@kobo.route("/v1/products/featuredforkoboplus/")
 @kobo.route("/v1/products", methods=["GET", "POST"])
 @kobo.route("/v1/affiliate", methods=["GET", "POST"])
 @kobo.route("/v1/deals", methods=["GET", "POST"])
 @kobo.route("/v1/categories/<dummy>", methods=["GET", "POST"])
 @kobo.route("/v1/categories/<dummy>/featured", methods=["GET", "POST"])
+@kobo.route("/v1/categories/<dummy>/products")
 def HandleProductsRequest(dummy=None):
-    log.debug("Unimplemented Products Request received: %s (request is forwarded to kobo if configured)",
-              request.base_url)
+    log.debug(f"Unimplemented Products Request received: %s (%s)",
+              request.base_url,
+              'forwarded to Kobo Store' if config.config_kobo_proxy else 'returning empty response')
     return redirect_or_proxy_request()
 
 
@@ -1087,6 +1234,27 @@ def make_calibre_web_auth_response():
     )
 
 
+def make_calibre_web_oauth_response():
+    # Provide a dummy OAuth token response for unregistered devices or
+    # when Kobo Store proxying is disabled.
+    content = request.get_json(silent=True) or {}
+    access_token = base64.b64encode(os.urandom(24)).decode('utf-8')
+    refresh_token = base64.b64encode(os.urandom(24)).decode('utf-8')
+    payload = {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "scope": content.get("scope", ""),
+        "user_id": content.get("user_id", ""),
+        # Include legacy field names used by some Kobo requests
+        "AccessToken": access_token,
+        "RefreshToken": refresh_token,
+        "TokenType": "Bearer",
+    }
+    return make_response(jsonify(payload))
+
+
 @csrf.exempt
 @kobo.route("/v1/auth/device", methods=["POST"])
 @requires_kobo_auth
@@ -1100,6 +1268,16 @@ def HandleAuthRequest():
     return make_calibre_web_auth_response()
 
 
+@csrf.exempt
+@kobo.route("/oauth/token", methods=["GET", "POST"])
+@kobo.route("/oauth/refresh", methods=["GET", "POST"])
+@kobo.route("/oauth/<path:subpath>", methods=["GET", "POST"])
+@requires_kobo_auth
+def HandleOauthRequest(subpath=None):
+    log.debug("Kobo OAuth request: %s", request.path)
+    return make_calibre_web_oauth_response()
+
+
 @kobo.route("/v1/initialization")
 @requires_kobo_auth
 def HandleInitRequest():
@@ -1110,11 +1288,29 @@ def HandleInitRequest():
         try:
             store_response = make_request_to_kobo_store()
             store_response_json = store_response.json()
+
+            # It is relatively important to handle ExpiredToken errors here to trigger re-authentication.
+            # Kobo uses this endpoint to assure that the auth token is valid and recover from errors elsewhere.
+            # If this does not work properly users may get stuck with an expired token and no way to re-authenticate.
+            # The handling here has been kept minimal because some users may not wish to auth with Onestore,
+            # but Kobo requires auth for more endpoints than used to be the case, and it perhaps does not make sense
+            # for users to enable proxy requests to the Kobo Store without a working Kobo account.
+
+            if rs := store_response_json.get("ResponseStatus", {}):
+                if ec := rs.get("ErrorCode", ""):
+                    msg = rs.get("Message", "(No message provided)")
+                    if ec == "ExpiredToken":
+                        log.info(f"Kobo Store session expired: {msg}. Triggering re-authentication.")
+                        return make_proxy_response(store_response)
+                    log.warning(f"Kobo: Kobo Store initialization returned error code {ec}: {msg}")
             if "Resources" in store_response_json:
                 kobo_resources = store_response_json["Resources"]
-        except Exception:
-            log.error("Failed to receive or parse response from Kobo's init endpoint. Falling back to un-proxied mode.")
+            else:
+                log.error("Kobo: Kobo Store initialization response missing 'Resources' field.")
+        except Exception as e:
+            log.error_or_exception(f"Failed to receive or parse response from Kobo's init endpoint: {e}")
     if not kobo_resources:
+        log.debug("Using fallback Kobo resource definitions")
         kobo_resources = NATIVE_KOBO_RESOURCES()
 
     if not current_app.wsgi_app.is_proxied:
@@ -1167,6 +1363,14 @@ def HandleInitRequest():
         if config.config_hardcover_annotations_sync and bool(hardcover):
             kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
+    # When not proxying Kobo Store requests, point oauth_host to CWA and
+    # serve dummy OAuth responses for unregistered devices.
+    if not config.config_kobo_proxy:
+        oauth_token_url = url_for("kobo.HandleOauthRequest",
+                                  auth_token=kobo_auth.get_auth_token(),
+                                  _external=True)
+        kobo_resources["oauth_host"] = oauth_token_url.rsplit("/oauth", 1)[0] + "/oauth"
+
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="
 
@@ -1206,7 +1410,7 @@ def NATIVE_KOBO_RESOURCES():
         },
         "book": "https://storeapi.kobo.com/v1/products/books/{ProductId}",
         "book_detail_page": "https://www.kobo.com/{region}/{language}/ebook/{slug}",
-        "book_detail_page_rakuten": "http://books.rakuten.co.jp/rk/{crossrevisionid}",
+        "book_detail_page_rakuten": "https://books.rakuten.co.jp/rk/{crossrevisionid}",
         "book_landing_page": "https://www.kobo.com/ebooks",
         "book_subscription": "https://storeapi.kobo.com/v1/products/books/subscriptions",
         "browse_history": "https://storeapi.kobo.com/v1/user/browsehistory",
@@ -1254,7 +1458,7 @@ def NATIVE_KOBO_RESOURCES():
         "giftcard_redeem_url": "https://www.kobo.com/{storefront}/{language}/redeem",
         "googledrive_link_account_start": "https://authorize.kobo.com/{region}/{language}/linkcloudstorage/provider/google_drive",
         "gpb_flow_enabled": "False",
-        "help_page": "http://www.kobo.com/help",
+        "help_page": "https://www.kobo.com/help",
         "image_host": "https://cdn.kobo.com/book-images/",
         "image_url_quality_template": "https://cdn.kobo.com/book-images/{ImageId}/{Width}/{Height}/{Quality}/{IsGreyscale}/image.jpg",
         "image_url_template": "https://cdn.kobo.com/book-images/{ImageId}/{Width}/{Height}/false/image.jpg",

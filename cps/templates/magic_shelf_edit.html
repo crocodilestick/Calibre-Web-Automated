@@ -1,0 +1,889 @@
+{% extends "layout.html" %}
+
+{% block header %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/query-builder.default.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/query_builder.css') }}">
+<style>
+/* Icon Picker Styles - Dark Theme Compatible */
+.icon-picker-container {
+    margin-top: 10px;
+}
+.icon-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #3e444c;
+    border-radius: 4px;
+    background: #292d32;
+}
+.icon-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 45px;
+    border: 2px solid #3e444c;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #21252b;
+    font-size: 28px;
+}
+.icon-option:hover {
+    border-color: #428bca;
+    background: #2c3e50;
+    transform: scale(1.05);
+}
+.icon-option.selected {
+    border-color: #cc7b19;
+    background: #3d3020;
+}
+
+.icon-search {
+    margin-bottom: 10px;
+}
+
+/* Preview Results Styles */
+.preview-results {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 4px;
+    display: none;
+}
+.preview-results.success {
+    background: #1e3a28;
+    border: 1px solid #2d5a3d;
+    color: #90ee90;
+}
+.preview-results.error {
+    background: #3a1e1e;
+    border: 1px solid #5a2d2d;
+    color: #ff9090;
+}
+
+/* Date Format Help Tooltips */
+.date-format-help {
+    margin-top: 5px;
+    padding: 8px 12px;
+    background: #21252b;
+    border: 1px solid #3e444c;
+    border-radius: 4px;
+    color: #90b8e0;
+    font-size: 12px;
+    display: none;
+}
+.date-format-help.warning {
+    background: #3a2e1e;
+    border-color: #5a4d2d;
+    color: #ffcc66;
+}
+.preview-book-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+.preview-book-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #3e444c;
+    color: #e8e8e8;
+}
+.preview-book-list li:last-child {
+    border-bottom: none;
+}
+/* Mobile Responsive */
+@media (max-width: 767px) {
+    .icon-picker-grid {
+        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+        gap: 5px;
+    }
+    .icon-option {
+        height: 40px;
+    }
+    .icon-option i {
+        font-size: 20px;
+    }
+}
+/* Help Panel Styles - Dark Theme */
+.help-panel .panel-body {
+    background: #292d32;
+    color: #e8e8e8;
+}
+.help-panel .panel-heading {
+    cursor: pointer;
+    user-select: none;
+    background: #21252b;
+    border-bottom: 1px solid #3e444c;
+}
+.help-panel .panel-heading:hover {
+    background: #2c3137;
+}
+.help-panel .panel-title {
+    color: #e8e8e8;
+}
+.help-content {
+    margin-top: 15px;
+    color: #e8e8e8;
+}
+.help-content p, .help-content ul, .help-content li {
+    color: #e8e8e8;
+}
+.help-example {
+    background: #21252b;
+    padding: 10px;
+    border-left: 3px solid #cc7b19;
+    margin: 10px 0;
+    color: #e8e8e8;
+}
+.help-example code {
+    background: #1a1d21;
+    color: #cc7b19;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+/* Override form control backgrounds for dark theme */
+#magic-shelf-form .form-control {
+    background-color: #292d32 !important;
+    border: 1px solid #3e444c !important;
+    color: #e8e8e8 !important;
+}
+#magic-shelf-form .form-control:focus {
+    background-color: #21252b;
+    border-color: #428bca;
+    color: #e8e8e8;
+}
+#magic-shelf-form label {
+    color: #e8e8e8;
+}
+#magic-shelf-form .text-muted {
+    color: #8b949e !important;
+}
+/* Query Builder dark theme overrides */
+.query-builder {
+    background: #292d32 !important;
+}
+.query-builder .rules-group-container {
+    background: #21252b !important;
+    border-color: #3e444c !important;
+}
+.query-builder .rule-container {
+    background: #292d32 !important;
+    border-color: #3e444c !important;
+}
+.query-builder select,
+.query-builder input[type="text"],
+.query-builder input[type="number"],
+.query-builder input[type="date"] {
+    background: #21252b !important;
+    border-color: #3e444c !important;
+    color: #e8e8e8 !important;
+}
+/* Alert styles for dark theme */
+.alert-info {
+    background-color: #1e3a5f !important;
+    border-color: #2d5a8f !important;
+    color: #9ec9ff !important;
+}
+.alert-info .btn {
+    color: #fff;
+}
+
+.panel.panel-default {
+    background: #22272b9e;
+    border-color: #292d32;
+}
+
+div.help-panel > .panel-body {
+    padding: 0px;
+}
+
+.help-content {
+    padding: 4rem;
+    padding-top: 1rem;
+}
+
+.system-template-notice {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #cc7b197a;
+    padding-left: 2rem;
+    border-left: 4px solid #cc7b19;
+}
+
+.query-builder .rules-group-container {
+    padding: 2rem;
+}
+
+.space {
+    padding: 5px;
+}
+
+.btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 1rem;
+    flex-direction: row;
+}
+
+.rule-value-container {
+    display: flex !important;
+    gap: 2rem;
+    flex-direction: row;
+    padding: 1rem;
+    padding-inline: 2rem !important;
+    background: #202429;
+    border-radius: 4px;
+    flex-wrap: wrap;
+}
+
+.rule-value-container > label {
+    display: flex !important;
+    gap: 0.75rem;
+    flex-direction: row;
+    align-items: flex-start;
+    width: fit-content;
+    background: #292d32;
+    padding: 0.5rem;
+    padding-inline: 1rem;
+}
+
+/* Date format hint styling - matches preview results box */
+.date-format-hint {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    background: #1a1d21;
+    border: 1px solid #3a3d41;
+    border-radius: 4px;
+    border-left: 4px solid #5bc0de;
+}
+
+.date-format-hint .hint-icon {
+    color: #5bc0de;
+    margin-right: 0.5rem;
+}
+
+.date-format-hint .hint-format {
+    color: #cc7b19;
+    font-weight: bold;
+}
+
+.date-format-hint.show {
+    display: block;
+    border-radius: 4px;
+    border: 1px solid #3e444c;
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="discover">
+        <h2>{{ title }}</h2>
+
+    <div class="row">
+        <div class="col-md-12">
+        <!-- Help Panel -->
+        <div class="panel panel-default help-panel">
+            <div class="panel-heading" onclick="$('#help-content').slideToggle();">
+                <h4 class="panel-title">
+                    <span class="glyphicon space glyphicon-question-sign"></span> What are Magic Shelves? 
+                    <small class="pull-right"><span class="glyphicon space glyphicon-chevron-down"></span></small>
+                </h4>
+            </div>
+            <div class="panel-body">
+            <div id="help-content" class="help-content" style="display: none;">
+                <p><strong>Magic Shelves</strong> are dynamic shelves that automatically populate based on rules you define. No manual organization needed!</p>
+                
+                <div class="help-example">
+                    <strong>Example:</strong> Create a "Recently Added" shelf that shows all books added in the last 30 days:
+                    <ul>
+                        <li>Field: <code>Date Added</code></li>
+                        <li>Operator: <code>greater than</code></li>
+                        <li>Value: <code>30 days ago</code></li>
+                    </ul>
+                </div>
+                
+                <p><strong>Tips:</strong></p>
+                <ul>
+                    <li>Use the <strong>+ Rule</strong> button to add more conditions</li>
+                    <li>Use the <strong>+ Group</strong> button to create nested AND/OR logic</li>
+                    <li>Click <strong>Preview Rules</strong> to see what books match before saving</li>
+                    <li>Best experienced on desktop/tablet (mobile view is limited)</li>
+                </ul>
+            </div>
+            </div><!-- /.panel-body -->
+        </div><!-- /.help-panel -->
+
+        <!-- Main Form -->
+        <div class="panel panel-default">
+            <div class="panel-body">
+                
+                <form id="magic-shelf-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <!-- Shelf Name -->
+                    <div class="form-group">
+                        {% if shelf and shelf.is_system %}
+                        <div class="system-template-notice">
+                            <span class="glyphicon space glyphicon-info-sign"></span>
+                            <strong>{{_('System Template')}}</strong>: {{_('This is a pre-configured template shelf. You can edit it freely.')}}
+                        </div>
+                        {% endif %}
+                        <label for="shelf-name">
+                            Shelf Name <span class="text-danger">*</span>
+                            <span class="glyphicon space glyphicon-question-sign" data-toggle="tooltip" title="Give your shelf a descriptive name (max 100 characters)"></span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="shelf-name" 
+                               value="{{ shelf.name if shelf else '' }}" 
+                               maxlength="100"
+                               placeholder="e.g., Recently Added, Highly Rated, Unread Sci-Fi"
+                               required>
+                        <small class="form-text text-muted">
+                            <span id="char-count">0</span>/100 characters
+                        </small>
+                    </div>
+
+                    <!-- Icon Picker -->
+                    <div class="form-group">
+                        <label for="shelf-icon">
+                            Shelf Icon
+                            <span class="glyphicon space glyphicon-question-sign" data-toggle="tooltip" title="Select from the grid below or type/paste your own emoji"></span>
+                        </label>
+
+                        <input type="text" 
+                               class="form-control" 
+                               id="shelf-icon" 
+                               value="{{ shelf.icon if shelf else '🪄' }}"
+                               placeholder="🪄"
+                               maxlength="10"
+                               style="font-size: 24px; width: 100px;">
+                        <small class="form-text text-muted">
+                            Type your own emoji or select from the quick-pick options below
+                        </small>
+                        
+                        <div class="icon-picker-container">
+                            <label class="control-label">Quick Pick Icons:</label>
+                            <input type="text" 
+                                   class="form-control icon-search" 
+                                   id="icon-search" 
+                                   placeholder="Search quick-pick icons...">
+                            <div class="icon-picker-grid" id="icon-picker-grid">
+                                {% for icon in allowed_icons %}
+                                <div class="icon-option" data-icon="{{ icon }}" title="{{ icon }}">
+                                    {{ icon }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kobo Sync Checkbox -->
+                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                        <label>
+                            <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-kobo-sync" {{ 'checked' if shelf and shelf.kobo_sync else '' }}>
+                            Enable Kobo sync (shelf appears on Kobo devices)
+                        </label>
+                        <small class="form-text text-muted">Only works if Kobo integration is enabled</small>
+                    </div>
+
+                    <!-- Public Shelf Checkbox (only for custom shelves with permission) -->
+                    {% if current_user.role_edit_shelfs() and not (shelf and shelf.is_system) %}
+                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                        <label>
+                            <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-is-public" {{ 'checked' if shelf and shelf.is_public == 1 else '' }}>
+                            {{_('Share with Everyone (Public)')}}
+                        </label>
+                        <small class="form-text text-muted">
+                            {{_('Other users can view this shelf. Users with "Edit Public Shelves" permission can edit/delete it.')}}
+                        </small>
+                    </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <!-- Rules Builder -->
+                    <h4>
+                        Rules <span class="text-danger">*</span>
+                        <span class="glyphicon space glyphicon-question-sign" data-toggle="tooltip" title="Define conditions that books must match to appear in this shelf"></span>
+                    </h4>
+                    <div id="builder"></div>
+                    
+                    <!-- Date Format Hint (shown when date fields are used) -->
+                    <div id="date-format-hint" class="date-format-hint">
+                        <span class="glyphicon glyphicon-info-sign hint-icon"></span>
+                        <strong>Date Format:</strong> Use <span class="hint-format">YYYY-MM-DD</span> format for date fields (e.g., 2024-01-15)
+                    </div>
+                    
+                    <!-- Preview Results -->
+                    <div id="preview-results" class="preview-results">
+                        <h5><span class="glyphicon space glyphicon-eye-open"></span> Preview Results</h5>
+                        <div id="preview-content"></div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Action Buttons -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-info" id="preview-btn">
+                            <span class="glyphicon space glyphicon-eye-open"></span> Preview Rules
+                        </button>
+                        <button type="submit" class="btn btn-default" id="save-shelf-btn">
+                            <span class="glyphicon space glyphicon-floppy-disk"></span> Save Shelf
+                        </button>
+                        <a href="{{ url_for('web.index') }}" class="btn btn-default">
+                            <span class="glyphicon space glyphicon-remove"></span> Cancel
+                        </a>
+                        {% if shelf %}
+                            {% if shelf.is_system %}
+                            <button type="button" 
+                                    class="btn btn-danger pull-right" 
+                                    id="delete-shelf-btn" 
+                                    disabled
+                                    data-toggle="tooltip"
+                                    title="{{_('System shelves cannot be deleted. You can hide them in your user profile settings.')}}">
+                                <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
+                            </button>
+                            {% else %}
+                            <button type="button" class="btn btn-danger pull-right" id="delete-shelf-btn">
+                                <span class="glyphicon space glyphicon-trash"></span> Delete Shelf
+                            </button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div><!-- /.col-md-12 -->
+    </div><!-- /.row -->
+</div><!-- /.discover -->
+{% endblock %}
+
+{% set rules_json = shelf.rules|tojson if shelf and shelf.rules else 'null' %}
+{% set languages_json = languages|tojson if languages else '{}' %}
+{% block js %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/query-builder.standalone.min.js') }}"></script>
+<script>
+$(function() {
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Character counter for shelf name
+    $('#shelf-name').on('input', function() {
+        $('#char-count').text($(this).val().length);
+    }).trigger('input');
+    
+    // Icon Picker Logic
+    var $iconInput = $('#shelf-icon');
+    var $iconOptions = $('.icon-option');
+    var $iconSearch = $('#icon-search');
+    
+    // Set initial selected icon in grid
+    var currentIcon = $iconInput.val();
+    $('.icon-option[data-icon="' + currentIcon + '"]').addClass('selected');
+    
+    // When user clicks a quick-pick icon, populate the input field
+    $iconOptions.on('click', function() {
+        var icon = $(this).data('icon');
+        $iconOptions.removeClass('selected');
+        $(this).addClass('selected');
+        $iconInput.val(icon);
+    });
+
+    // When user types/pastes in the input, update grid selection if it matches
+    $iconInput.on('input change paste', function() {
+        var icon = $(this).val();
+        $iconOptions.removeClass('selected');
+        $('.icon-option[data-icon="' + icon + '"]').addClass('selected');
+    });
+    
+    // Icon search filter
+    $iconSearch.on('input', function() {
+        var searchTerm = $(this).val().toLowerCase();
+        $iconOptions.each(function() {
+            var iconName = $(this).data('icon').toLowerCase();
+            if (iconName.indexOf(searchTerm) !== -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+    
+    // Query Builder Configuration
+    var languages = {{ languages_json|safe }};
+    var fields = [
+        {
+            id: 'title', 
+            label: 'Title', 
+            type: 'string',
+            description: 'The book title'
+        },
+        {
+            id: 'author', 
+            label: 'Author', 
+            type: 'string',
+            description: 'Author name'
+        },
+        {
+            id: 'tag', 
+            label: 'Tag', 
+            type: 'string',
+            description: 'Book tags/genres'
+        },
+        {
+            id: 'series', 
+            label: 'Series', 
+            type: 'string',
+            description: 'Series name'
+        },
+        {
+            id: 'publisher', 
+            label: 'Publisher', 
+            type: 'string',
+            description: 'Publisher name'
+        },
+        {
+            id: 'language', 
+            label: 'Language', 
+            type: 'string',
+            input: 'select',
+            values: languages,
+            description: 'Book language'
+        },
+        {
+            id: 'rating', 
+            label: 'Rating', 
+            type: 'integer', 
+            input: 'select', 
+            values: {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10},
+            description: 'Book rating (1-10)'
+        },
+        {
+            id: 'pubdate', 
+            label: 'Published Date', 
+            type: 'date', 
+            validation: {format: 'YYYY-MM-DD'},
+            description: 'Original publication date'
+        },
+        {
+            id: 'timestamp', 
+            label: 'Date Added', 
+            type: 'date', 
+            validation: {format: 'YYYY-MM-DD'},
+            description: 'When book was added to library'
+        },
+        {
+            id: 'has_cover', 
+            label: 'Has Cover', 
+            type: 'integer', 
+            input: 'radio', 
+            values: {1: 'Yes', 0: 'No'},
+            description: 'Whether book has cover image'
+        },
+        {
+            id: 'read_status',
+            label: 'Read Status',
+            type: 'integer',  // Changed from 'boolean' to 'integer'
+            input: 'radio',
+            values: {0: 'Unread', 1: 'Read'},  // Swapped order for clarity
+            description: 'Book read status'
+        },
+        {
+            id: 'series_index', 
+            label: 'Series Index', 
+            type: 'double',
+            description: 'Position in series'
+        },
+        {
+            id: 'comments', 
+            label: 'Description', 
+            type: 'string',
+            description: 'Book description/comments'
+        },
+        {
+            id: 'hardcover_id',
+            label: 'Has Hardcover ID',
+            type: 'integer',
+            input: 'radio',
+            values: {1: 'Yes', 0: 'No'},
+            description: 'Whether book has Hardcover identifier'
+        }
+    ];
+
+    var operators = [
+        {type: 'equal', optgroup: 'basic'},
+        {type: 'not_equal', optgroup: 'basic'},
+        {type: 'in', optgroup: 'basic'},
+        {type: 'not_in', optgroup: 'basic'},
+        {type: 'less', optgroup: 'number'},
+        {type: 'less_or_equal', optgroup: 'number'},
+        {type: 'greater', optgroup: 'number'},
+        {type: 'greater_or_equal', optgroup: 'number'},
+        {type: 'between', optgroup: 'number'},
+        {type: 'not_between', optgroup: 'number'},
+        {type: 'begins_with', optgroup: 'string'},
+        {type: 'not_begins_with', optgroup: 'string'},
+        {type: 'contains', optgroup: 'string'},
+        {type: 'not_contains', optgroup: 'string'},
+        {type: 'ends_with', optgroup: 'string'},
+        {type: 'not_ends_with', optgroup: 'string'},
+        {type: 'is_empty'},
+        {type: 'is_not_empty'},
+        {type: 'is_null'},
+        {type: 'is_not_null'}
+    ];
+
+    var rules = {{ rules_json|safe }};
+
+    // Date validation helper
+    function isValidDate(dateString) {
+        if (!dateString) return true; // Empty is valid (will be handled by is_empty operator)
+        var regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(dateString)) return false;
+        var date = new Date(dateString);
+        var timestamp = date.getTime();
+        if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) return false;
+        return date.toISOString().startsWith(dateString);
+    }
+
+    // Show/hide date format hint based on rules
+    function checkForDateFields() {
+        var hasDateField = false;
+        
+        // Check all filter dropdowns for date fields
+        $('#builder .rule-filter-container select').each(function() {
+            var filterId = $(this).val();
+            if (filterId === 'pubdate' || filterId === 'timestamp') {
+                hasDateField = true;
+                return false; // break out of each loop
+            }
+        });
+        
+        if (hasDateField) {
+            $('#date-format-hint').addClass('show');
+        } else {
+            $('#date-format-hint').removeClass('show');
+        }
+    }
+
+    $('#builder').queryBuilder({
+        plugins: ['bt-tooltip-errors'],
+        filters: fields,
+        operators: operators,
+        rules: rules
+    });
+    
+    // Check for date fields on initialization and after changes
+    $('#builder').on('afterCreateRuleInput.queryBuilder afterUpdateRuleFilter.queryBuilder afterUpdateRuleValue.queryBuilder afterDeleteRule.queryBuilder afterUpdateRuleOperator.queryBuilder', function(e) {
+        setTimeout(function() {
+            checkForDateFields();
+        }, 100);
+        
+        // Validate date inputs
+        $(this).find('input[type="text"]').each(function() {
+            var $input = $(this);
+            var $rule = $input.closest('.rule-container');
+            var filterId = $rule.find('.rule-filter-container select').val();
+            
+            if (filterId === 'pubdate' || filterId === 'timestamp') {
+                $input.off('blur.dateValidation').on('blur.dateValidation', function() {
+                    var value = $(this).val();
+                    if (value && !isValidDate(value)) {
+                        $(this).css('border-color', '#d9534f');
+                        if (!$(this).next('.date-error').length) {
+                            $(this).after('<div class="date-error" style="color: #d9534f; font-size: 12px; margin-top: 4px;">Invalid format. Use YYYY-MM-DD (e.g., 2024-01-15)</div>');
+                        }
+                    } else {
+                        $(this).css('border-color', '');
+                        $(this).next('.date-error').remove();
+                    }
+                });
+            }
+        });
+    });
+    
+    // Also listen for direct changes on filter dropdowns
+    $('#builder').on('change', '.rule-filter-container select', function() {
+        setTimeout(function() {
+            checkForDateFields();
+        }, 100);
+    });
+    
+    // Initial check
+    setTimeout(function() {
+        checkForDateFields();
+    }, 100);
+
+    // Preview Rules Functionality
+    $('#preview-btn').on('click', function() {
+        var $btn = $(this);
+        var $results = $('#preview-results');
+        var $content = $('#preview-content');
+        
+        var rules = $('#builder').queryBuilder('getRules');
+        if (!rules) {
+            $results.removeClass('success').addClass('error').show();
+            $content.html('<p><strong>Error:</strong> Please define at least one rule.</p>');
+            return;
+        }
+        
+        $btn.prop('disabled', true).html('<span class="glyphicon space glyphicon-refresh glyphicon-refresh-animate"></span> Loading...');
+        
+        $.ajax({
+            url: "{{ url_for('web.preview_magic_shelf') }}",
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({rules: rules}),
+            success: function(response) {
+                if (response.success) {
+                    $results.removeClass('error').addClass('success').show();
+                    var html = '<p><strong><span class="glyphicon space glyphicon-ok-circle"></span> ' + response.count + ' book(s) match these rules</strong></p>';
+                    if (response.sample_books && response.sample_books.length > 0) {
+                        html += '<p><small>Sample results:</small></p><ul class="preview-book-list">';
+                        response.sample_books.forEach(function(book) {
+                            html += '<li>' + book + '</li>';
+                        });
+                        html += '</ul>';
+                    }
+                    $content.html(html);
+                } else {
+                    $results.removeClass('success').addClass('error').show();
+                    $content.html('<p><strong>Error:</strong> ' + response.message + '</p>');
+                }
+            },
+            error: function(xhr) {
+                $results.removeClass('success').addClass('error').show();
+                var message = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                $content.html('<p><strong>Error:</strong> ' + message + '</p>');
+            },
+            complete: function() {
+                $btn.prop('disabled', false).html('<span class="glyphicon space glyphicon-eye-open"></span> Preview Rules');
+            }
+        });
+    });
+
+    // Form Submission
+    $('#magic-shelf-form').on('submit', function(e) {
+        console.log('Form submit triggered');
+        e.preventDefault();
+        var rules = $('#builder').queryBuilder('getRules');
+        console.log('Rules:', rules);
+
+
+        if (!rules) {
+            alert('Please define at least one rule.');
+            return;
+        }
+
+        var shelfName = $('#shelf-name').val().trim();
+        if (!shelfName) {
+            alert('Please enter a shelf name.');
+            return;
+        }
+
+        var shelfData = {
+            name: shelfName,
+            icon: $('#shelf-icon').val(),
+            rules: rules,
+            kobo_sync: $('#shelf-kobo-sync').is(':checked'),
+            is_public: $('#shelf-is-public').is(':checked')
+        };
+
+        console.log('Submitting shelf data:', shelfData);
+
+        var url = "{{ url_for('web.create_magic_shelf') }}";
+        var method = "POST";
+
+        {% if shelf %}
+        url = "{{ url_for('web.edit_magic_shelf', shelf_id=shelf.id) }}";
+        {% endif %}
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: 'application/json',
+            data: JSON.stringify(shelfData),
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = "{{ url_for('web.index') }}";
+                } else {
+                    alert('Error saving shelf: ' + (response.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr) {
+                console.error('AJAX error:', xhr);
+                var message = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert('Error: ' + message);
+            }
+        });
+    });
+
+    // Delete Shelf
+    {% if shelf %}
+    $('#delete-shelf-btn').on('click', function() {
+        if (confirm('Are you sure you want to delete this shelf? This action cannot be undone.')) {
+            $.ajax({
+                url: "{{ url_for('web.delete_magic_shelf', shelf_id=shelf.id) }}",
+                method: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = "{{ url_for('web.index') }}";
+                    } else {
+                        alert('Error deleting shelf: ' + (response.message || 'Unknown error'));
+                    }
+                },
+                error: function(xhr) {
+                    var message = 'An unexpected error occurred.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    alert('Error: ' + message);
+                }
+            });
+        }
+    });
+    
+    // Duplicate Shelf
+    $('#duplicate-shelf-btn').on('click', function() {
+        var $btn = $(this);
+        $btn.prop('disabled', true).html('<span class="glyphicon space glyphicon-refresh glyphicon-refresh-animate"></span> Duplicating...');
+        
+        $.ajax({
+            url: "{{ url_for('web.duplicate_magic_shelf', shelf_id=shelf.id) }}",
+            method: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    // Redirect to edit the new duplicated shelf
+                    window.location.href = "{{ url_for('web.edit_magic_shelf', shelf_id=0) }}".replace('/0', '/' + response.shelf_id);
+                } else {
+                    alert('Error duplicating shelf: ' + (response.message || 'Unknown error'));
+                $btn.prop('disabled', false).html('<span class="glyphicon space glyphicon-duplicate"></span> Duplicate');
+                }
+            },
+            error: function(xhr) {
+                var message = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert('Error: ' + message);
+                $btn.prop('disabled', false).html('<span class="glyphicon space glyphicon-duplicate"></span> Duplicate');
+            }
+        });
+    });
+    {% endif %}
+});
+</script>
+{% endblock %}

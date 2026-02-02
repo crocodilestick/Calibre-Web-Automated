@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -18,7 +18,25 @@ import time
 import uuid
 from pathlib import Path
 from typing import Generator, List, Union
+
 import pytest
+
+
+def _get_test_uid_gid() -> tuple[str, str]:
+    """Return UID/GID strings for test containers.
+
+    Uses explicit overrides when provided, otherwise falls back to host uid/gid
+    on POSIX systems, or 1000/1000 as a default.
+    """
+    env_uid = os.getenv("CWA_TEST_PUID", "").strip()
+    env_gid = os.getenv("CWA_TEST_PGID", "").strip()
+    if env_uid and env_gid:
+        return env_uid, env_gid
+
+    if os.name == "posix" and hasattr(os, "getuid") and hasattr(os, "getgid"):
+        return str(os.getuid()), str(os.getgid())
+
+    return "1000", "1000"
 
 
 def volume_copy(src: Union[Path, str], dst: Union['VolumePath', Path, str]):
@@ -301,12 +319,14 @@ def cwa_container_dind(test_volumes_dind):
     
     print(f"\n🔵 Starting CWA container with volumes...")
     subprocess.run(["docker", "rm", "-f", container_name], capture_output=True)
+
+    test_uid, test_gid = _get_test_uid_gid()
     
     subprocess.run([
         "docker", "run", "-d",
         "--name", container_name,
-        "-e", "PUID=1000",
-        "-e", "PGID=1000",
+        "-e", f"PUID={test_uid}",
+        "-e", f"PGID={test_gid}",
         "-v", f"{library_volume}:/calibre-library",
         "-v", f"{ingest_volume}:/cwa-book-ingest",
         "crocodilestick/calibre-web-automated:latest"

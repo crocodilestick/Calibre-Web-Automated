@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -14,6 +14,7 @@ import time
 import shutil
 import sqlite3
 import fcntl
+import threading
 from pathlib import Path
 
 from cwa_db import CWA_DB
@@ -30,6 +31,10 @@ fetch_and_apply_metadata = None
 TaskAutoSend = None
 WorkerThread = None
 _ub = None
+
+# Debounced duplicate scan timer
+_duplicate_scan_timer = None
+_duplicate_scan_lock = threading.Lock()
 
 class ProcessLock:
     """Robust process lock using both file locking and PID tracking"""
@@ -178,6 +183,47 @@ def cleanup_lock():
 # Register cleanup function
 atexit.register(cleanup_lock)
 
+
+def get_app_db_path() -> str:
+    """Resolve app.db path consistently with the main app config."""
+    app_db_path = os.environ.get("CWA_APP_DB_PATH")
+    if app_db_path:
+        return app_db_path
+    base_path = os.environ.get("CALIBRE_DBPATH", "/config")
+    if base_path.endswith(".db"):
+        if os.path.basename(base_path) != "app.db":
+            return os.path.join(os.path.dirname(base_path), "app.db")
+        return base_path
+    return os.path.join(base_path, "app.db")
+
+
+def _load_cps_settings_from_app_db() -> None:
+    """Load minimal CPS settings needed for GDrive + internal HTTPS handling."""
+    if not _cps_config:
+        return
+    try:
+        app_db_path = get_app_db_path()
+        with sqlite3.connect(app_db_path, timeout=30) as con:
+            cur = con.cursor()
+            row = cur.execute(
+                "SELECT config_use_google_drive, config_google_drive_folder, "
+                "config_calibre_dir, config_certfile, config_keyfile "
+                "FROM settings LIMIT 1"
+            ).fetchone()
+            if not row:
+                return
+
+            _cps_config.config_use_google_drive = bool(row[0]) if row[0] is not None else False
+            _cps_config.config_google_drive_folder = row[1]
+            if row[2]:
+                _cps_config.config_calibre_dir = row[2]
+            if row[3]:
+                _cps_config.config_certfile = row[3]
+            if row[4]:
+                _cps_config.config_keyfile = row[4]
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Could not read CPS settings from app.db ({app_db_path}): {e}", flush=True)
+
 try:
     # Ensure project root is on sys.path to import cps
     cps_path = os.path.dirname(os.path.dirname(__file__))
@@ -189,6 +235,7 @@ try:
         from cps import gdriveutils as _gdriveutils, config as _cps_config
         _GDRIVE_AVAILABLE = True
         print("[ingest-processor] GDrive functionality available", flush=True)
+        _load_cps_settings_from_app_db()
     except (ImportError, TypeError, AttributeError) as e:
         print(f"[ingest-processor] GDrive functionality not available: {e}", flush=True)
         _gdriveutils = None
@@ -201,6 +248,8 @@ try:
         from cps.tasks.auto_send import TaskAutoSend
         from cps.services.worker import WorkerThread
         from cps import ub as _ub
+        from cps.calibre_init import init_calibre_db_from_app_db
+        init_calibre_db_from_app_db(get_app_db_path())
         _CPS_AVAILABLE = True
         print("[ingest-processor] Auto-send and metadata functionality available", flush=True)
     except ImportError as e:
@@ -255,6 +304,44 @@ except Exception as e:
     print(f"[ingest-processor] WARN: Could not scan processed_books: {e}", flush=True)
     backup_destinations = {}
 
+def get_internal_api_url(path):
+    """Construct internal API URL, respecting SSL configuration"""
+    port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
+    if not port.isdigit():
+        port = '8083'
+    
+    protocol = "http"
+    certfile = None
+    keyfile = None
+    if _cps_config:
+        certfile = getattr(_cps_config, "config_certfile", None)
+        keyfile = getattr(_cps_config, "config_keyfile", None)
+    if not certfile and not keyfile:
+        try:
+            app_db_path = get_app_db_path()
+            with sqlite3.connect(app_db_path, timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute(
+                    "SELECT config_certfile, config_keyfile FROM settings LIMIT 1"
+                ).fetchone()
+                if row:
+                    certfile, keyfile = row[0], row[1]
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Could not read TLS settings from app.db ({app_db_path}): {e}", flush=True)
+
+    if certfile and keyfile and os.path.isfile(certfile) and os.path.isfile(keyfile):
+        protocol = "https"
+            
+    if not path.startswith("/"):
+        path = "/" + path
+        
+    return f"{protocol}://127.0.0.1:{port}{path}"
+
+
+def get_internal_api_headers():
+    """Provide headers that satisfy localhost-only internal endpoint checks."""
+    return {"X-Forwarded-For": "127.0.0.1"}
+
 class NewBookProcessor:
     def __init__(self, filepath: str):
         # Settings / DB
@@ -292,14 +379,15 @@ class NewBookProcessor:
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
         self.ingest_folder = os.path.normpath(self.ingest_folder)
         # Ensure library_dir is consistent with the main app's config
-        with sqlite3.connect("/config/app.db", timeout=30) as con:
+        app_db_path = get_app_db_path()
+        with sqlite3.connect(app_db_path, timeout=30) as con:
             cur = con.cursor()
             try:
                 db_path = cur.execute('SELECT config_calibre_dir FROM settings;').fetchone()[0]
                 if db_path:
                     self.library_dir = db_path
             except Exception as e:
-                print(f"[ingest-processor] WARN: Could not read config_calibre_dir from app.db, using default. Error: {e}", flush=True)
+                print(f"[ingest-processor] WARN: Could not read config_calibre_dir from app.db ({app_db_path}), using default. Error: {e}", flush=True)
 
         Path(self.tmp_conversion_dir).mkdir(exist_ok=True)
         self.staging_dir = os.path.join(self.tmp_conversion_dir, "staging")
@@ -326,16 +414,35 @@ class NewBookProcessor:
         # Track the last added Calibre book id(s) from calibredb output
         self.last_added_book_id: int | None = None
         self.last_added_book_ids: list[int] = []
+        self._title_sort_regex = self._get_title_sort_regex()
+
+    @staticmethod
+    def _get_title_sort_regex() -> str:
+        default_regex = (
+            r'^(A|The|An|Der|Die|Das|Den|Ein|Eine|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+'
+        )
+        try:
+            app_db_path = get_app_db_path()
+            with sqlite3.connect(app_db_path, timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute(
+                    "SELECT config_title_regex FROM settings LIMIT 1"
+                ).fetchone()
+                if row and row[0]:
+                    return row[0]
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Could not read config_title_regex from app.db ({app_db_path}): {e}", flush=True)
+        return default_regex
 
     @staticmethod
     def _parse_added_book_ids(output: str) -> list[int]:
-        """Parse calibredb stdout for the 'Added book ids: X[, Y, ...]' line and return IDs.
+        """Parse calibredb stdout for the 'Added/Merged/Updated book ids: X[, Y, ...]' line and return IDs.
 
-        Handles variations like 'Added book id: 4' or 'Added book ids: 4, 5'.
+        Handles variations like 'Added book id: 4' or 'Merged book ids: 4, 5'.
         """
         try:
             import re
-            m = re.search(r"Added book id[s]?:\s*([0-9,\s]+)", output, flags=re.IGNORECASE)
+            m = re.search(r"(?:Added|Merged|Updated) book id[s]?:\s*([0-9,\s]+)", output, flags=re.IGNORECASE)
             if not m:
                 return []
             nums = m.group(1)
@@ -343,9 +450,51 @@ class NewBookProcessor:
             return ids
         except Exception:
             return []
+
+    def _fallback_last_added_book_id(self) -> None:
+        """Fallback to the most recently modified book when calibredb output lacks IDs."""
+        if self.last_added_book_id is not None:
+            return
+        try:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute(
+                    "SELECT id FROM books ORDER BY last_modified DESC LIMIT 1"
+                ).fetchone()
+                if row:
+                    self.last_added_book_id = int(row[0])
+                    self.last_added_book_ids = [self.last_added_book_id]
+                    print(
+                        "[ingest-processor] WARN: Could not parse calibredb output; using most recently modified book ID.",
+                        flush=True,
+                    )
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Failed to infer book ID after import: {e}", flush=True)
+
+    def _register_title_sort_function(self, connection: sqlite3.Connection) -> bool:
+        """Register title_sort SQL function on a raw SQLite connection."""
+        try:
+            import re
+            title_pat = re.compile(self._title_sort_regex, re.IGNORECASE)
+
+            def _title_sort(title):
+                if title is None:
+                    title = ""
+                match = title_pat.search(title)
+                if match:
+                    prep = match.group(1)
+                    title = title[len(prep):] + ', ' + prep
+                return " ".join(str(title).split())
+
+            connection.create_function("title_sort", 1, _title_sort)
+            return True
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Could not register title_sort function: {e}", flush=True)
+            return False
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        with sqlite3.connect("/config/app.db", timeout=30) as con:
+        app_db_path = get_app_db_path()
+        with sqlite3.connect(app_db_path, timeout=30) as con:
             cur = con.cursor()
             split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -396,7 +545,8 @@ class NewBookProcessor:
                 raise KeyError(f"No backup destination for type '{backup_type}'")
             # Ensure destination directory exists
             os.makedirs(output_path, exist_ok=True)
-            shutil.copy2(input_file, output_path)
+            destination = shutil.copy(input_file, output_path)
+            os.utime(destination, None)
         except Exception as e:
             # Never let backups crash ingest; just log the problem
             print(f"[ingest-processor]: ERROR - Failed to backup '{input_file}' to '{output_path}': {e}")
@@ -480,6 +630,10 @@ class NewBookProcessor:
     def delete_current_file(self) -> None:
         """Deletes file just processed from ingest folder"""
         try:
+            ext = Path(self.filename).suffix.replace('.', '')
+            if ext in self.ingest_ignored_formats or self.filename.endswith(".cwa.json") or self.filename.endswith(".cwa.failed.json"):
+                print(f"[ingest-processor] Skipping delete for ignored/temporary file: {self.filename}", flush=True)
+                return
             if os.path.exists(self.filepath):
                 os.remove(self.filepath) # Removes processed file
             else:
@@ -586,6 +740,8 @@ class NewBookProcessor:
                 if added_ids:
                     self.last_added_book_ids = added_ids
                     self.last_added_book_id = added_ids[-1]
+                else:
+                    self._fallback_last_added_book_id()
             else:  # audiobook path
                 meta = audiobook.get_audio_file_info(str(staged_path), format, os.path.basename(str(staged_path)), False)
 
@@ -631,6 +787,8 @@ class NewBookProcessor:
                 if added_ids:
                     self.last_added_book_ids = added_ids
                     self.last_added_book_id = added_ids[-1]
+                else:
+                    self._fallback_last_added_book_id()
             print(f"[ingest-processor] Added {staged_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:
@@ -658,6 +816,12 @@ class NewBookProcessor:
             # This solves the issue where multiple books don't appear until container restart
             self.refresh_cwa_session()
 
+            # Invalidate duplicate cache since a new book was added
+            self.invalidate_duplicate_cache()
+
+            # Debounced duplicate scan (after import)
+            self.schedule_debounced_duplicate_scan()
+
             # Generate KOReader sync checksums for the imported book
             if self.last_added_book_id is not None:
                 self.generate_book_checksums(staged_path.stem, book_id=self.last_added_book_id)
@@ -670,6 +834,9 @@ class NewBookProcessor:
                 try:
                     with sqlite3.connect(self.metadata_db, timeout=30) as con:
                         cur = con.cursor()
+                        if not self._register_title_sort_function(con):
+                            print("[ingest-processor] INFO: Skipping timestamp adjust (title_sort SQL function unavailable).", flush=True)
+                            return
                         # pre_import_max_timestamp may be None (empty library) -> update all rows where timestamp < last_modified
                         if pre_import_max_timestamp is None:
                             cur.execute('UPDATE books SET timestamp = last_modified WHERE timestamp < last_modified')
@@ -690,12 +857,29 @@ class NewBookProcessor:
             if staged_path.exists():
                 os.remove(staged_path)
 
+    def _validate_book_exists(self, book_id: int) -> bool:
+        """Check if a book with the given ID exists in the Calibre library"""
+        try:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
+                cur = con.cursor()
+                row = cur.execute("SELECT id FROM books WHERE id = ?", (book_id,)).fetchone()
+                return row is not None
+        except Exception as e:
+            print(f"[ingest-processor] ERROR: Failed to validate book_id {book_id}: {e}", flush=True)
+            return False
+
     def add_format_to_book(self, book_id:int, book_path:str) -> None:
         """Attach a new format file to an existing Calibre book using calibredb add_format"""
         source_path = Path(book_path)
         if not source_path.exists() or source_path.stat().st_size == 0:
             print(f"[ingest-processor] ERROR: Source file for add_format is missing or empty, skipping: {book_path}", flush=True)
             self.backup(self.filepath, backup_type="failed") # Backup original file
+            return
+
+        # Validate that the book exists before attempting to add format
+        if not self._validate_book_exists(book_id):
+            print(f"[ingest-processor] ERROR: Book ID {book_id} not found in library, cannot add format: {os.path.basename(book_path)}", flush=True)
+            self.backup(self.filepath, backup_type="failed")
             return
 
         # Stage file for import
@@ -708,16 +892,17 @@ class NewBookProcessor:
             return
 
         try:
-            subprocess.run([
+            result = subprocess.run([
                 "calibredb", "add_format", str(book_id), str(staged_path), f"--library-path={self.library_dir}"
-            ], env=self.calibre_env, check=True)
+            ], env=self.calibre_env, check=True, capture_output=True, text=True)
             print(f"[ingest-processor] Added new format for book id {book_id}: {os.path.basename(str(staged_path))}", flush=True)
             if self.cwa_settings['auto_backup_imports']:
                 self.backup(str(staged_path), backup_type="imported")
             # Optional post-add-format GDrive sync
             gdrive_sync_if_enabled()
         except subprocess.CalledProcessError as e:
-            print(f"[ingest-processor] Failed to add format for book id {book_id}: {os.path.basename(str(staged_path))}\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
+            stderr_output = e.stderr if e.stderr else "No error details available"
+            print(f"[ingest-processor] Failed to add format for book id {book_id}: {os.path.basename(str(staged_path))}\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\nError details: {stderr_output}", flush=True)
             self.backup(str(staged_path), backup_type="failed")
         except Exception as e:
             print(f"[ingest-processor] Unexpected error while adding format for book id {book_id}: {e}", flush=True)
@@ -800,7 +985,7 @@ class NewBookProcessor:
             actual_title = result[1]
 
             # Get users with auto-send enabled
-            app_db_path = "/config/app.db"
+            app_db_path = get_app_db_path()
             with sqlite3.connect(app_db_path, timeout=30) as con:
                 cur = con.cursor()
                 cur.execute("""
@@ -824,10 +1009,7 @@ class NewBookProcessor:
                     # Prefer to schedule in the long-lived web process so it shows in UI
                     scheduled_via_api = False
                     try:
-                        port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
-                        if not port.isdigit():
-                            port = '8083'
-                        url = f"http://127.0.0.1:{port}/cwa-internal/schedule-auto-send"
+                        url = get_internal_api_url("/cwa-internal/schedule-auto-send")
                         payload = {
                             'book_id': int(book_id),
                             'user_id': int(user_id),
@@ -835,7 +1017,13 @@ class NewBookProcessor:
                             'username': username,
                             'title': actual_title,
                         }
-                        resp = requests.post(url, json=payload, timeout=5)
+                        resp = requests.post(
+                            url,
+                            json=payload,
+                            headers=get_internal_api_headers(),
+                            timeout=5,
+                            verify=False,
+                        )
                         if resp.status_code == 200:
                             try:
                                 run_at = resp.json().get('run_at', 'soon')
@@ -959,12 +1147,14 @@ class NewBookProcessor:
         """
         # Route DB reconnect via the long-lived web process to avoid cross-process config/session issues
         try:
-            port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
-            if not port.isdigit():
-                port = '8083'
-            url = f"http://127.0.0.1:{port}/cwa-internal/reconnect-db"
+            url = get_internal_api_url("/cwa-internal/reconnect-db")
             print("[ingest-processor] Refreshing Calibre-Web database session...", flush=True)
-            resp = requests.post(url, timeout=5)
+            resp = requests.post(
+                url,
+                headers=get_internal_api_headers(),
+                timeout=5,
+                verify=False,
+            )
             if resp.status_code == 200:
                 print("[ingest-processor] Database session refresh enqueued", flush=True)
             else:
@@ -972,6 +1162,72 @@ class NewBookProcessor:
         except Exception as e:
             print(f"[ingest-processor] WARN: Failed to call DB refresh endpoint: {e}", flush=True)
             print("[ingest-processor] Continuing despite session refresh failure - books may require manual refresh", flush=True)
+
+
+    def invalidate_duplicate_cache(self) -> None:
+        """Invalidate the duplicate detection cache after adding a new book
+
+        This marks the cache as stale (scan_pending=1) but does NOT trigger an automatic scan.
+        Users must manually trigger a scan from the /duplicates page, or wait for scheduled scans.
+        """
+        try:
+            url = get_internal_api_url("/duplicates/invalidate-cache")
+            resp = requests.post(
+                url,
+                headers=get_internal_api_headers(),
+                timeout=5,
+                verify=False,
+            )
+            if resp.status_code == 200:
+                print("[ingest-processor] Duplicate cache invalidated", flush=True)
+            else:
+                print(f"[ingest-processor] WARN: Duplicate cache invalidation returned {resp.status_code}", flush=True)
+        except Exception as e:
+            # Don't fail the import if cache invalidation fails
+            print(f"[ingest-processor] WARN: Failed to invalidate duplicate cache: {e}", flush=True)
+
+
+    def schedule_debounced_duplicate_scan(self) -> None:
+        """Schedule a debounced background duplicate scan if enabled.
+
+        Uses a 60-second timer that resets on each new import to avoid repeated scans
+        during batch ingest.
+        """
+        try:
+            enabled = bool(self.cwa_settings.get('duplicate_scan_enabled', 0))
+            frequency = self.cwa_settings.get('duplicate_scan_frequency', 'manual')
+
+            if not enabled or frequency != 'after_import':
+                return
+            # Schedule in the long-lived web process so the debounce survives
+            # the short-lived ingest process exiting.
+            try:
+                delay_seconds = int(self.cwa_settings.get('duplicate_scan_debounce_seconds', 5))
+                delay_seconds = max(5, min(600, delay_seconds))
+                url = get_internal_api_url("/cwa-internal/queue-duplicate-scan")
+                payload = {"delay_seconds": delay_seconds}
+                resp = requests.post(
+                    url,
+                    json=payload,
+                    headers=get_internal_api_headers(),
+                    timeout=5,
+                    verify=False,
+                )
+                if resp.status_code == 200:
+                    try:
+                        body = resp.json()
+                        if body.get('queued'):
+                            print("[ingest-processor] Debounced duplicate scan scheduled via web process", flush=True)
+                        elif body.get('skipped'):
+                            print("[ingest-processor] Duplicate scan scheduling skipped (disabled/manual)", flush=True)
+                    except Exception:
+                        print("[ingest-processor] Debounced duplicate scan scheduled via web process", flush=True)
+                else:
+                    print(f"[ingest-processor] WARN: Duplicate scan scheduling returned {resp.status_code}", flush=True)
+            except Exception as e:
+                print(f"[ingest-processor] WARN: Failed to schedule duplicate scan via web API: {e}", flush=True)
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Failed to schedule debounced duplicate scan: {e}", flush=True)
 
 
     def set_library_permissions(self):
@@ -997,6 +1253,7 @@ def main(filepath=None):
         filepath = sys.argv[1]
 
     nbp = None
+    skip_delete = False
     try:
         ##############################################################################################
         # Truncates the filename if it is too long
@@ -1004,6 +1261,11 @@ def main(filepath=None):
         filename = os.path.basename(filepath)
         name, ext = os.path.splitext(filename)
         allowed_len = MAX_LENGTH - len(ext)
+
+        # Ignore sidecar manifests entirely (handled when the real file is processed)
+        if filename.endswith(".cwa.json") or filename.endswith(".cwa.failed.json"):
+            print(f"[ingest-processor] Skipping sidecar manifest file: {filename}", flush=True)
+            return
 
         if len(name) > allowed_len:
             new_name = name[:allowed_len] + ext
@@ -1029,6 +1291,7 @@ def main(filepath=None):
             ready = nbp.is_file_in_use()
             if not ready:
                 print(f"[ingest-processor] WARN: File did not become ready in time or vanished (after {timeout_minutes} minutes): {nbp.filename}", flush=True)
+                skip_delete = True
                 return
 
         # Sidecar manifest handling for explicit actions (e.g., add_format)
@@ -1039,19 +1302,35 @@ def main(filepath=None):
                     manifest = json.load(mf)
                 action = manifest.get("action")
                 if action == "add_format":
+                    success = False
                     try:
                         book_id = int(manifest.get("book_id", -1))
                     except Exception:
                         book_id = -1
+                    
                     if book_id > -1:
-                        nbp.add_format_to_book(book_id, filepath)
+                        # Validate book exists before attempting add_format
+                        if nbp._validate_book_exists(book_id):
+                            nbp.add_format_to_book(book_id, filepath)
+                            success = True
+                        else:
+                            print(f"[ingest-processor] ERROR: Book ID {book_id} not found in library for {os.path.basename(filepath)}", flush=True)
+                            nbp.backup(filepath, backup_type="failed")
                     else:
-                        print(f"[ingest-processor] Invalid book_id in manifest for {os.path.basename(filepath)}", flush=True)
-                    # Cleanup file and manifest regardless of outcome
+                        print(f"[ingest-processor] ERROR: Invalid book_id in manifest for {os.path.basename(filepath)}", flush=True)
+                        nbp.backup(filepath, backup_type="failed")
+                    
+                    # Cleanup manifest: delete on success, preserve on failure for debugging
                     try:
-                        os.remove(manifest_path)
-                    except Exception:
-                        ...
+                        if success:
+                            os.remove(manifest_path)
+                        else:
+                            failed_manifest_path = manifest_path.replace(".cwa.json", ".cwa.failed.json")
+                            os.rename(manifest_path, failed_manifest_path)
+                            print(f"[ingest-processor] Preserved failed manifest: {os.path.basename(failed_manifest_path)}", flush=True)
+                    except Exception as e:
+                        print(f"[ingest-processor] WARN: Failed to handle manifest cleanup: {e}", flush=True)
+                    
                     nbp.set_library_permissions()
                     nbp.delete_current_file()
                     return
@@ -1065,6 +1344,7 @@ def main(filepath=None):
         if ext in nbp.ingest_ignored_formats:
             # Do NOT delete ignored temporary files; they may be renamed shortly (e.g. .uploading -> .epub)
             print(f"[ingest-processor] Skipping ignored/temporary file (no action taken): {nbp.filename}", flush=True)
+            skip_delete = True
             return
 
         if nbp.is_target_format: # File can just be imported
@@ -1131,7 +1411,10 @@ def main(filepath=None):
                 print(f"[ingest-processor] Error setting library permissions during cleanup: {e}", flush=True)
 
             try:
-                nbp.delete_current_file()
+                if skip_delete:
+                    print(f"[ingest-processor] Skipping delete for ignored/temporary file: {nbp.filename}", flush=True)
+                else:
+                    nbp.delete_current_file()
             except Exception as e:
                 print(f"[ingest-processor] Error deleting current file during cleanup: {e}", flush=True)
 

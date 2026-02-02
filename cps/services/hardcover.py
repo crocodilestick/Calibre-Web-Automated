@@ -60,7 +60,7 @@ USER_BOOK_FRAGMENT = """
 
 def escape_markdown(text):
     """Escape markdown special characters to prevent injection.
-    
+
     Escapes both markdown syntax and HTML to prevent injection attacks
     when annotations are displayed on Hardcover.
     """
@@ -75,14 +75,25 @@ def escape_markdown(text):
     return text
 
 
+class MissingHardcoverToken(Exception):
+    """Exception raised when Hardcover API token is missing."""
+    pass
+
+
 class HardcoverClient:
-    def __init__(self, token):
+    def __init__(self, token: str):
+        if not token:
+            raise MissingHardcoverToken("Hardcover API token is required")
         self.endpoint = GRAPHQL_ENDPOINT
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}",
         }
-        self.privacy = self.get_privacy()
+        try:
+            self.privacy = self.get_privacy()
+        except Exception as e:
+            log.error(f"Error fetching Hardcover account privacy setting: {e}")
+            raise
 
     def get_privacy(self):
         query = """
@@ -100,7 +111,7 @@ class HardcoverClient:
         if not ids or not any(key in ids for key in ["hardcover-edition", "hardcover-id", "hardcover-slug"]):
             log.warning("No Hardcover identifiers (hardcover-id, hardcover-edition, or hardcover-slug) found for book. Skipping Hardcover sync.")
             return None
-        
+
         query = ""
         variables = {}
         if "hardcover-edition" in ids:
@@ -212,13 +223,13 @@ class HardcoverClient:
     def add_journal_entry(self, identifiers, note_text, progress_percent=None, progress_page=None, highlighted_text=None):
         """
         Add a journal entry (reading note) to Hardcover.
-        
+
         Args:
             identifiers: Book identifiers (hardcover-id, hardcover-edition, isbn)
             note_text: The note text to add
             progress_percent: Optional reading progress (0-100)
             highlighted_text: Optional highlighted quote
-        
+
         Returns:
             Response from Hardcover API or None if failed
         """
@@ -226,17 +237,17 @@ class HardcoverClient:
         if len(ids) == 0:
             log.warning("No valid Hardcover identifiers found")
             return None
-        
+
         book = self.get_user_book(ids)
         if not book:
             log.warning("Book not found on Hardcover, cannot add journal entry")
             return None
-        
+
         user_book_id = book.get("book_id")
         if not user_book_id:
             log.warning("No user_book_id found")
             return None
-        
+
         # Combine highlighted text and note
         # Escape markdown special characters to prevent injection
         journal_text = ""
@@ -253,21 +264,21 @@ class HardcoverClient:
         else:
             log.warning("No text provided for journal entry")
             return None
-        
+
         # Calculate page number and prepare metadata if progress is provided
         metadata = {}
         if progress_percent is not None or progress_page is not None:
             pages = book.get("edition", {}).get("pages", 0)
-            
+
             # Calculate actual page number from percentage or use provided page
             page_number = progress_page if progress_page else round(pages * (progress_percent / 100))
-            
+
             # Calculate percentage from page number if only page was provided
             page_percent = round((page_number / pages) * 100, DECIMAL_PLACES) if pages else None
-            
+
             # Use provided percentage or calculated percentage
             percent = round(progress_percent, DECIMAL_PLACES) if progress_percent is not None else page_percent
-            
+
             # Match Hardcover's web UI metadata structure for progress tracking
             metadata["position"] = {
                 "type": "pages",           # Progress type (pages vs. percentage)
@@ -276,7 +287,7 @@ class HardcoverClient:
                 "possible": pages          # Total pages in book
             }
             log.info(f"Calculated page {page_number} from {progress_percent:.1f}% of {pages} pages")
-        
+
         mutation = """
             mutation ($bookId: Int!, $entry: String!, $event: String!, $privacySettingId: Int!, $editionId: Int, $actionAt: date, $tags: [BasicTag]!, $metadata: jsonb) {
                 insert_reading_journal(object: {
@@ -300,7 +311,7 @@ class HardcoverClient:
         variables = {
             "bookId": int(book.get("book_id")),
             "entry": journal_text,
-            # quote or note in Hardcover, 
+            # quote or note in Hardcover,
             "event": "note" if note_text else "quote",
             "privacySettingId": self.privacy,
             "editionId": int(book.get("edition", {}).get("id")) if book.get("edition") else None,
@@ -310,19 +321,19 @@ class HardcoverClient:
             ],
             "metadata": metadata if metadata else None
         }
-        
+
         try:
             response = self.execute(query=mutation, variables=variables)
-            
+
             if not response:
                 log.error("Empty response from Hardcover API")
                 return None
-            
+
             errors = response.get("insert_reading_journal", {}).get("errors")
             if errors:
                 log.error(f"Hardcover journal entry errors: {errors}")
                 return None
-            
+
             journal_entry = response.get("insert_reading_journal", {}).get("reading_journal")
             if not journal_entry:
                 log.error("No journal entry returned in response")
@@ -348,7 +359,7 @@ class HardcoverClient:
     def update_journal_entry(self, journal_id: int, note_text: str | None = None, highlighted_text: str | None = None):
         """
         Update a journal entry (reading note) in Hardcover.
-        
+
         Args:
             journal_id: The ID of the journal entry to update
             note_text: The note text to update
@@ -383,21 +394,21 @@ class HardcoverClient:
         variables = {
             "journalId": journal_id,
             "entry": journal_text,
-            # quote or note in Hardcover, 
+            # quote or note in Hardcover,
             "event": "note" if note_text else "quote",
         }
         try:
             response = self.execute(query=mutation, variables=variables)
-            
+
             if not response:
                 log.error("Empty response from Hardcover API")
                 return None
-            
+
             errors = response.get("update_reading_journal", {}).get("errors")
             if errors:
                 log.error(f"Hardcover journal entry errors: {errors}")
                 return None
-            
+
             journal_entry = response.get("update_reading_journal", {}).get("reading_journal")
             if not journal_entry:
                 log.error("No journal entry returned in response")
@@ -422,10 +433,10 @@ class HardcoverClient:
     def delete_journal_entry(self, journal_id: int):
         """
         Delete a journal entry from Hardcover.
-        
+
         Args:
             journal_id: The ID of the journal entry to delete
-        
+
         Returns:
             The deleted journal entry ID or None if failed
         """
@@ -445,9 +456,9 @@ class HardcoverClient:
         if not ids or "hardcover-id" not in ids:
             log.warning("No hardcover-id identifier found for book. Cannot add book to Hardcover. Please fetch metadata to add Hardcover identifiers.")
             return None
-        
+
         mutation = (
-            """     
+            """
             mutation ($object: UserBookCreateInput!) {
                 insert_user_book(object: $object) {
                     error
@@ -474,7 +485,7 @@ class HardcoverClient:
         return response.get("insert_user_book", {}).get("user_book", {})
 
     def add_read(self, book, pages=0):
-        mutation = """     
+        mutation = """
             mutation ($id: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
                 insert_user_book_read(user_book_id: $id, user_book_read: {
                     progress_pages: $pages,
@@ -515,6 +526,9 @@ class HardcoverClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
+            # 401 Unauthorized means invalid/missing token - treat as missing token
+            if response.status_code == 401:
+                raise MissingHardcoverToken("Invalid or expired Hardcover API token")
             raise Exception(f"HTTP error occurred: {e}")
         result = response.json()
         if "errors" in result:

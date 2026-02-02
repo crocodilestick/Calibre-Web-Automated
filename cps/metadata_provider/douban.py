@@ -164,11 +164,18 @@ class Douban(Metadata):
         decode_content = r.content.decode("utf8")
         html = etree.HTML(decode_content)
 
-        match.title = html.xpath(self.TITTLE_XPATH)[0].text
-        match.cover = html.xpath(
-            self.COVER_XPATH)[0].attrib["href"] or generic_cover
+        title_nodes = html.xpath(self.TITTLE_XPATH)
+        if not title_nodes or not title_nodes[0].text:
+            return None
+        match.title = title_nodes[0].text
+        cover_nodes = html.xpath(self.COVER_XPATH)
+        if cover_nodes and cover_nodes[0].attrib.get("href"):
+            match.cover = cover_nodes[0].attrib["href"]
+        else:
+            match.cover = generic_cover
         try:
-            rating_num = float(html.xpath(self.RATING_XPATH)[0].text.strip())
+            rating_nodes = html.xpath(self.RATING_XPATH)
+            rating_num = float(rating_nodes[0].text.strip()) if rating_nodes else 0
         except Exception:
             rating_num = 0
         match.rating = int(-1 * rating_num // 2 * -1) if rating_num else 0
@@ -187,25 +194,37 @@ class Douban(Metadata):
         info = html.xpath(self.INFO_XPATH)
 
         for element in info:
-            text = element.text
+            text = element.text or ""
             if self.AUTHORS_PATTERN.search(text):
                 next_element = element.getnext()
                 while next_element is not None and next_element.tag != "br":
-                    match.authors.append(next_element.text)
+                    if next_element.text:
+                        match.authors.append(next_element.text)
                     next_element = next_element.getnext()
             elif self.PUBLISHER_PATTERN.search(text):
-                if publisher := element.tail.strip():
-                    match.publisher = publisher
+                tail = (element.tail or "").strip()
+                if tail:
+                    match.publisher = tail
                 else:
-                    match.publisher = element.getnext().text
+                    next_el = element.getnext()
+                    if next_el is not None and next_el.text:
+                        match.publisher = next_el.text
             elif self.SUBTITLE_PATTERN.search(text):
-                match.title = f'{match.title}:{element.tail.strip()}'
+                tail = (element.tail or "").strip()
+                if tail:
+                    match.title = f"{match.title}:{tail}"
             elif self.PUBLISHED_DATE_PATTERN.search(text):
-                match.publishedDate = self._clean_date(element.tail.strip())
+                tail = (element.tail or "").strip()
+                if tail:
+                    match.publishedDate = self._clean_date(tail)
             elif self.SERIES_PATTERN.search(text):
-                match.series = element.getnext().text
+                next_el = element.getnext()
+                if next_el is not None and next_el.text:
+                    match.series = next_el.text
             elif i_type := self.IDENTIFIERS_PATTERN.search(text):
-                match.identifiers[i_type.group()] = element.tail.strip()
+                tail = (element.tail or "").strip()
+                if tail:
+                    match.identifiers[i_type.group()] = tail
 
         return match
 

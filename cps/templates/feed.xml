@@ -77,13 +77,21 @@
   {% endif %}
   {% for entry in listelements %}
   <entry>
-    {% if entry.__class__.__name__ == 'Shelf' and entry.is_public == 1 %}
+    {% set is_magic = entry.is_magic_shelf|default(false) %}
+    {% set is_public = entry.is_public|default(0) %}
+    {% if is_magic %}
+    <title>{% if entry.icon %}{{entry.icon}} {% endif %}{{entry.name}} {{_('(Magic)')}}{% if is_public == 1 %} {{_('(Public)')}}{% endif %}</title>
+    {% elif entry.__class__.__name__ == 'Shelf' and entry.is_public == 1 %}
     <title>{{entry.name}} {{_('(Public)')}}</title>
     {% else %}
     <title>{{entry.name}}</title>
     {% endif %}
-    <id>{{ url_for(folder, book_id=entry.id) }}</id>
-    <link rel="subsection" type="application/atom+xml;profile=opds-catalog" href="{{url_for(folder, book_id=entry.id)}}"/>
+    {% set entry_href = entry.opds_url|default('') %}
+    {% if not entry_href %}
+      {% set entry_href = url_for(folder, book_id=entry.id) %}
+    {% endif %}
+    <id>{{ entry_href }}</id>
+    <link rel="subsection" type="application/atom+xml;profile=opds-catalog" href="{{ entry_href }}"/>
   </entry>
   {% endfor %}
   {% for entry in letterelements %}

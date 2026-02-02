@@ -44,8 +44,8 @@ class TestConvertLibraryScheduling:
         with open(cwa_functions_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Verify internal endpoint is called
-        assert 'http://127.0.0.1:{port}/cwa-internal/schedule-convert-library' in content
+        # Verify internal endpoint is called via helper function
+        assert 'helper.get_internal_api_url("/cwa-internal/schedule-convert-library")' in content
     
     def test_internal_convert_library_endpoint_exists(self):
         """Verify /cwa-internal/schedule-convert-library endpoint exists"""
@@ -111,8 +111,8 @@ class TestEpubFixerScheduling:
         with open(cwa_functions_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Verify internal endpoint is called
-        assert 'http://127.0.0.1:{port}/cwa-internal/schedule-epub-fixer' in content
+        # Verify internal endpoint is called via helper function
+        assert 'helper.get_internal_api_url("/cwa-internal/schedule-epub-fixer")' in content
     
     def test_internal_epub_fixer_endpoint_exists(self):
         """Verify /cwa-internal/schedule-epub-fixer endpoint exists"""

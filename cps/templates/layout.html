@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="{{ current_user.locale }}">
   <head>
-    <title>{{instance}} | {{title}}</title>
+    <title>{{instance}} | {{title|safe}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -24,6 +24,9 @@
       <link href="{{ url_for('static', filename='css/caliBlur_override.css') }}" rel="stylesheet" media="screen">
     {% endif %}
     <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
+    {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
+    <link href="{{ url_for('static', filename='css/duplicates-notifications.css') }}" rel="stylesheet" media="screen">
+    {% endif %}
     <script>
       let checkMessagesInterval = null; // Store interval ID
 
@@ -138,7 +141,7 @@
               </li>
               {% endif %}
               <li class="cwa-switch-theme">
-                <a id="cwa-switch-theme" href="{{ url_for('switch_theme.cwa_switch_theme') }}" title="Switch Theme">
+                <a id="cwa-switch-theme" href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;" title="Temporarily disabled until v5.0.0" data-toggle="tooltip" data-placement="bottom" onclick="return false;">
                   <span class="glyphicon glyphicon-sunglasses"></span>
                   <span class="hidden-sm">{{_('Switch Theme')}}</span>
                 </a>
@@ -209,10 +212,30 @@
         </div>
       </div>
       {%endif%}
+      {%if message[0] == "cwa_arch_warning" %}
+      <div class="row-fluid text-center">
+        <div id="flash_danger" class="alert alert-danger alert-cwa">
+          {{ message[1] }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      {%endif%}
       {%if message[0] == "translation_missing" %}
       <div class="row-fluid text-center">
         <div id="flash_info" class="alert alert-info alert-cwa">
           {{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/wiki/Contributing-Translations">{{ _('Contribute here!') }}</a>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      {%endif%}
+      {%if message[0] == "theme_migration" %}
+      <div class="row-fluid text-center">
+        <div id="flash_info" class="alert alert-info alert-cwa">
+          {{ message[1] }}
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -258,20 +281,41 @@
               <li class="nav-head hidden-xs">{{_('Browse')}}</li>
               {% for element in sidebar %}
                 {% if current_user.check_visibility(element['visibility']) and element['public'] %}
-                    <li id="nav_{{element['id']}}" {% if page == element['page'] %}class="active"{% endif %}><a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}"><span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}</a></li>
+                    <li id="nav_{{element['id']}}" {% if page == element['page'] %}class="active"{% endif %} style="{% if element['id'] == 'duplicates' %}position: relative;{% endif %}">
+                      <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}">
+                        <span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}
+                        {% if element['id'] == 'duplicates' %}
+                          {% set dup_count = duplicate_notification.count if duplicate_notification is defined else 0 %}
+                          <span id="duplicate-count-badge" class="duplicate-badge" style="{% if dup_count > 0 %}display: inline-block;{% else %}display: none;{% endif %}">
+                            {% if dup_count > 99 %}99+{% else %}{{ dup_count }}{% endif %}
+                          </span>
+                        {% endif %}
+                      </a>
+                    </li>
                 {% endif %}
               {% endfor %}
               {% if current_user.is_authenticated or g.allow_anonymous %}
                 <li class="nav-head hidden-xs public-shelves">{{_('Shelves')}}</li>
                 {% for shelf in g.shelves_access %}
-                  <li><a href="{{url_for('shelf.show_shelf', shelf_id=shelf.id)}}"><span class="glyphicon glyphicon-list shelf"></span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.books.all()|length}})</span></a></li>
+                  {% set book_count = shelf.books.count() %}
+                  <li><a href="{{url_for('shelf.show_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{book_count}})"><span class="glyphicon glyphicon-list shelf"></span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{book_count}})</span></a></li>
                 {% endfor %}
               {% if not current_user.is_anonymous %}
-                <li id="nav_createshelf" class="create-shelf"><a href="{{url_for('shelf.create_shelf')}}">{{_('Create a Shelf')}}</a></li>
-                <li id="nav_about" {% if page == 'stat' %}class="active"{% endif %}><a href="{{url_for('about.stats')}}"><span class="glyphicon glyphicon-info-sign"></span> {{_('About')}}</a></li>
+                <li id="nav_createshelf" class="create-shelf"><a href="{{url_for('shelf.create_shelf')}}">{{_('Create Shelf')}}</a></li>
               {% endif %}
               {% endif %}
-              
+              {% if current_user.is_authenticated and magic_shelf_routes.render %}
+                <li class="nav-head hidden-xs" style="margin-top: 1rem;">{{_('Magic Shelves ✨')}}</li>
+                  {% for shelf in g.magic_shelves_access %}
+                    <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>
+                  {% endfor %}
+                {% if magic_shelf_routes.create %}
+                  <li id="nav_createmagicshelf" class="create-shelf"><a href="{{url_for('web.create_magic_shelf')}}" style="display: flex; align-items: center;">{{_('Create Magic Shelf')}}</a></li>
+                {% endif %}
+              {% endif %}
+              <!-- {% if not current_user.is_anonymous %}
+                <li id="nav_about" {% if page == 'stat' %}class="active"{% endif %}><a href="{{url_for('about.package_versions')}}"><span class="glyphicon glyphicon-info-sign"></span> {{_('About')}}</a></li>
+              {% endif %} -->
             </ul>
           </nav>
         </div>
@@ -321,8 +365,11 @@
     {% block modal %}{% endblock %}
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="{{ url_for('static', filename='js/libs/jquery.min.js') }}"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{{ url_for('static', filename='js/libs/bootstrap.min.js') }}"></script>
+
+  <!-- Patch: Define global bootstrap object for plugins expecting Bootstrap 5+ -->
+  <script>window.bootstrap = window.bootstrap || {};</script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{{ url_for('static', filename='js/libs/underscore-umd-min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/intention.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/context.min.js') }}"></script>
@@ -370,5 +417,37 @@
       window.addEventListener('DOMContentLoaded', updateFilterHeaderFixed);
       window.addEventListener('resize', updateFilterHeaderFixed);
       </script>
+    {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
+    <!-- Duplicate Notification Modal -->
+    <div id="duplicate-notification-backdrop" class="duplicate-notification-backdrop"></div>
+    <div id="duplicate-notification-modal" class="duplicate-notification-modal" tabindex="-1" role="dialog" aria-labelledby="duplicate-notification-title">
+      <div class="duplicate-notification-header">
+        <button id="duplicate-notification-close" class="duplicate-notification-close" aria-label="{{_('Close')}}">&times;</button>
+        <h2 id="duplicate-notification-title">{{_('Duplicate Books Detected')}}</h2>
+        <p>{{_('You have unresolved duplicate books in your library')}}</p>
+      </div>
+      <div class="duplicate-notification-body">
+        <div class="duplicate-count-section">
+          <div class="duplicate-count-badge" id="duplicate-notification-count">0</div>
+          <h3>{{_('Duplicate Groups Found')}}</h3>
+        </div>
+        <ul id="duplicate-notification-preview" class="duplicate-preview-list">
+          <!-- Preview items will be inserted here by JavaScript -->
+        </ul>
+      </div>
+      <div class="duplicate-notification-footer">
+        <button id="duplicate-notification-remind" class="duplicate-notification-btn duplicate-notification-btn-secondary">
+          {{_('Remind Me Later')}}
+        </button>
+        <a href="{{ url_for('duplicates.show_duplicates') }}" class="duplicate-notification-btn duplicate-notification-btn-primary">
+          {{_('View & Resolve Duplicates')}}
+        </a>
+      </div>
+    </div>
+    <script>
+      window.cwaDuplicateBootstrap = {{ duplicate_notification|tojson if duplicate_notification is defined else '{}' }};
+    </script>
+    <script src="{{ url_for('static', filename='js/duplicate-notifier.js') }}"></script>
+    {% endif %}
   </body>
 </html>

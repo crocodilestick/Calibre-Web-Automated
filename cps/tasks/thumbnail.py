@@ -66,38 +66,50 @@ class TaskGenerateCoverThumbnails(CalibreTask):
         ]
 
     def run(self, worker_thread):
-        if use_IM and self.stat != STAT_CANCELLED and self.stat != STAT_ENDED:
-            self.message = 'Scanning Books'
-            books_with_covers = self.get_books_with_covers(self.book_id)
-            count = len(books_with_covers)
+        try:
+            if use_IM and self.stat != STAT_CANCELLED and self.stat != STAT_ENDED:
+                self.message = 'Scanning Books'
+                books_with_covers = self.get_books_with_covers(self.book_id)
+                count = len(books_with_covers)
 
-            total_generated = 0
-            for i, book in enumerate(books_with_covers):
+                total_generated = 0
+                for i, book in enumerate(books_with_covers):
 
-                # Generate new thumbnails for missing covers
-                generated = self.create_book_cover_thumbnails(book)
+                    # Generate new thumbnails for missing covers
+                    generated = self.create_book_cover_thumbnails(book)
 
-                # Increment the progress
-                self.progress = (1.0 / count) * i
+                    # Increment the progress
+                    self.progress = (1.0 / count) * i
 
-                if generated > 0:
-                    total_generated += generated
-                    self.message = N_('Generated %(count)s cover thumbnails', count=total_generated)
+                    if generated > 0:
+                        total_generated += generated
+                        self.message = N_('Generated %(count)s cover thumbnails', count=total_generated)
 
-                # Check if job has been cancelled or ended
-                if self.stat == STAT_CANCELLED:
-                    self.log.info(f'GenerateCoverThumbnails task has been cancelled.')
-                    return
+                    # Check if job has been cancelled or ended
+                    if self.stat == STAT_CANCELLED:
+                        self.log.info(f'GenerateCoverThumbnails task has been cancelled.')
+                        return
 
-                if self.stat == STAT_ENDED:
-                    self.log.info(f'GenerateCoverThumbnails task has been ended.')
-                    return
+                    if self.stat == STAT_ENDED:
+                        self.log.info(f'GenerateCoverThumbnails task has been ended.')
+                        return
 
-            if total_generated == 0:
-                self.self_cleanup = True
+                if total_generated == 0:
+                    self.self_cleanup = True
 
-        self._handleSuccess()
-        self.app_db_session.remove()
+            self._handleSuccess()
+        finally:
+            # CRITICAL: Clear book from pending set on ALL exit paths (success, cancel, end, error)
+            # This must run even if task is cancelled, ended, or errors out
+            if self.book_id != -1:
+                try:
+                    from .. import helper
+                    helper._pending_thumbnail_books.discard(self.book_id)
+                except Exception:
+                    pass  # Silently fail if helper module not available
+            
+            # Always clean up database session
+            self.app_db_session.remove()
 
     @staticmethod
     def get_books_with_covers(book_id=-1):

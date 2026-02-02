@@ -6,6 +6,8 @@
 # See CONTRIBUTORS for full list of authors.
 
 import os
+import sys
+import time
 from datetime import datetime, timezone
 import json
 from shutil import copyfile
@@ -18,7 +20,7 @@ from flask_babel import gettext as _
 from flask_babel import lazy_gettext as N_
 from flask_babel import get_locale
 from .cw_login import current_user, login_required
-from sqlalchemy.exc import OperationalError, IntegrityError, InterfaceError
+from sqlalchemy.exc import OperationalError, IntegrityError, InterfaceError, InvalidRequestError
 from sqlalchemy.orm.exc import StaleDataError
 from sqlalchemy.sql.expression import func
 
@@ -36,9 +38,6 @@ from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
 from werkzeug.utils import secure_filename
 import uuid
-import os
-import json
-from .cwa_functions import get_ingest_dir
 
 editbook = Blueprint('edit-book', __name__)
 log = logger.create()
@@ -97,6 +96,13 @@ def edit_book(book_id):
 def upload():
     # Upload a new format to an existing book via ingest sidecar manifest
     if len(request.files.getlist("btn-upload-format")):
+        try:
+            _ensure_ingest_dir_writable(allow_create=True, check_write=False)
+        except PermissionError as e:
+            log.error_or_exception("Ingest directory not writable: %s", e)
+            flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
+                  category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
         raw_book_id = request.form.get('book_id', -1)
         try:
             book_id = int(raw_book_id)
@@ -104,6 +110,12 @@ def upload():
             book_id = -1
         if book_id == -1:
             flash(_("Missing or invalid book id for format upload"), category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+
+        # Validate that the book exists before creating manifest
+        book = calibre_db.get_book(book_id)
+        if not book:
+            flash(_("Cannot upload format: Book no longer exists in library"), category="error")
             return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
 
         for requested_file in request.files.getlist("btn-upload-format"):
@@ -141,6 +153,13 @@ def upload():
 
     # New book uploads: queue files to ingest atomically
     elif len(request.files.getlist("btn-upload")):
+        try:
+            _ensure_ingest_dir_writable(allow_create=True, check_write=False)
+        except PermissionError as e:
+            log.error_or_exception("Ingest directory not writable: %s", e)
+            flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
+                  category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
         for requested_file in request.files.getlist("btn-upload"):
             if not _validate_uploaded_file(requested_file):
                 return Response(json.dumps({"location": url_for('web.index')}), mimetype='application/json')
@@ -226,6 +245,9 @@ def edit_selected_books():
             # Collect all changes
             changes = {key: d.get(key) for key in ['title', 'title_sort', 'author_sort', 'authors', 'categories', 'series', 'languages', 'publishers', 'comments'] if d.get(key)}
 
+            metadata_changed = False
+            log_payload = {}
+
             # Apply changes without committing or updating directory structure yet
             title_changed = False
             authors_changed = False
@@ -233,8 +255,10 @@ def edit_selected_books():
 
             if 'title' in changes:
                 vals['value'] = changes['title']
-                handle_title_on_edit(book, vals.get('value', ""))
-                title_changed = True
+                if handle_title_on_edit(book, vals.get('value', "")):
+                    title_changed = True
+                    metadata_changed = True
+                    log_payload['title'] = vals.get('value', "")
 
             if 'title_sort' in changes:
                 vals['value'] = changes['title_sort']
@@ -246,29 +270,42 @@ def edit_selected_books():
 
             if 'authors' in changes:
                 vals['value'] = changes['authors']
-                input_authors, __ = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
-                authors_changed = True
+                input_authors, author_change = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
+                if author_change:
+                    authors_changed = True
+                    metadata_changed = True
+                    log_payload['authors'] = vals.get('value', "")
 
             if 'categories' in changes:
                 vals['value'] = changes['categories']
-                edit_book_tags(vals['value'], book)
+                if edit_book_tags(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['tags'] = vals.get('value', "")
 
             if 'series' in changes:
                 vals['value'] = changes['series']
-                edit_book_series(vals['value'], book)
+                if edit_book_series(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['series'] = vals.get('value', "")
 
             if 'languages' in changes:
                 vals['value'] = changes['languages']
                 invalid = list()
-                edit_book_languages(vals['value'], book, invalid=invalid)
+                if edit_book_languages(vals['value'], book, invalid=invalid):
+                    metadata_changed = True
+                    log_payload['languages'] = vals.get('value', "")
 
             if 'publishers' in changes:
                 vals['value'] = changes['publishers']
-                edit_book_publisher(vals['value'], book)
+                if edit_book_publisher(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['publisher'] = vals.get('value', "")
 
             if 'comments' in changes:
                 vals['value'] = changes['comments']
-                edit_book_comments(vals['value'], book)
+                if edit_book_comments(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['comments'] = vals.get('value', "")
 
             # Update directory structure once if title or authors changed
             if title_changed or authors_changed:
@@ -279,12 +316,35 @@ def edit_selected_books():
                     continue # or return an error response
 
             book.last_modified = datetime.now(timezone.utc)
+
+            if metadata_changed:
+                calibre_db.set_metadata_dirty(book.id)
             try:
                 calibre_db.session.commit()
             except (OperationalError, IntegrityError, StaleDataError) as e:
                 calibre_db.session.rollback()
                 log.error_or_exception("Database error: {}".format(e))
                 # Handle error appropriately
+                continue
+
+            if metadata_changed and log_payload:
+                try:
+                    log_payload.setdefault('title', book.title)
+                    log_payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
+                    log_payload['_cwa_meta'] = {
+                        'modify_date': True,
+                        'change_count': len([k for k in log_payload.keys() if not k.startswith('_')]),
+                        'has_content': any(v != '' for k, v in log_payload.items() if not k.startswith('_')),
+                        'timestamp': datetime.now().isoformat()
+                    }
+
+                    now = datetime.now()
+                    log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                    with open(log_path, 'w', encoding='utf-8') as f:
+                        json.dump(log_payload, f, indent=4, ensure_ascii=False)
+                    log.debug(f"Created metadata change log for book {book.id} with changes: {list(log_payload.keys())}")
+                except Exception as e:
+                    log.error_or_exception(f"Failed to write metadata change log for book {book.id}: {e}")
 
         return json.dumps({'success': True})
     return ""
@@ -311,8 +371,11 @@ def _validate_uploaded_file(uploaded_file):
 # Helper to get a unique, prefixed path in the ingest directory
 def _get_ingest_path(uploaded_file, prefix_parts=None):
     ingest_dir = get_ingest_dir()
-    os.makedirs(ingest_dir, exist_ok=True)
-
+    try:
+        os.makedirs(ingest_dir, exist_ok=True)
+    except Exception as e:
+        log.error_or_exception("Failed to create ingest directory %s: %s", ingest_dir, e)
+        raise
     # Ensure proper ownership of ingest directory (fix for issue #603)
     try:
         nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
@@ -326,6 +389,8 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
     except Exception as e:
         # Silently ignore any other permission-related errors but log for debugging
         log.debug('Other permission error setting ingest directory ownership: %s', e)
+
+    _ensure_ingest_dir_writable(ingest_dir)
 
     base_name = secure_filename(uploaded_file.filename)
     # CWA change: use timestamp for more predictable sorting vs uuid
@@ -348,6 +413,35 @@ def _save_to_ingest_atomic_rename(uploaded_file, final_path):
             os.remove(tmp_path)
         raise e
 
+
+def _ensure_ingest_dir_writable(ingest_dir=None, allow_create=False, check_write=True):
+    ingest_dir = ingest_dir or get_ingest_dir()
+    if not ingest_dir:
+        raise PermissionError("Ingest directory not configured")
+    if allow_create and not os.path.isdir(ingest_dir):
+        try:
+            os.makedirs(ingest_dir, exist_ok=True)
+        except Exception as e:
+            raise PermissionError("Ingest directory missing and could not be created: {} ({})".format(ingest_dir, e))
+    if not os.path.isdir(ingest_dir):
+        raise PermissionError("Ingest directory missing: {}".format(ingest_dir))
+    if check_write:
+        if not os.access(ingest_dir, os.W_OK | os.X_OK):
+            raise PermissionError("Ingest directory not writable: {}".format(ingest_dir))
+        # Verify write by touching a temp file (covers ACL/mount oddities)
+        test_path = os.path.join(ingest_dir, ".cwa_write_test_{}".format(uuid.uuid4().hex))
+        try:
+            with open(test_path, "w", encoding="utf-8") as handle:
+                handle.write("ok")
+        except Exception as e:
+            raise PermissionError("Ingest directory not writable: {} ({})".format(ingest_dir, e))
+        finally:
+            try:
+                if os.path.exists(test_path):
+                    os.remove(test_path)
+            except Exception:
+                pass
+
 # Separated from /editbooks so that /editselectedbooks can also use this
 #
 # param: the property of the book to be changed
@@ -365,23 +459,38 @@ def edit_book_param(param, vals):
     book = calibre_db.get_book(vals['pk'])
     sort_param = ""
     ret = ""
+    metadata_changed = False
+    log_key = None
+    log_value = None
     try:
         if param == 'series_index':
             edit_book_series_index(vals['value'], book)
             ret = Response(json.dumps({'success': True, 'newValue': book.series_index}), mimetype='application/json')
+            metadata_changed = True
+            log_key = 'series_index'
+            log_value = vals.get('value', '')
         elif param == 'tags':
             edit_book_tags(vals['value'], book)
             ret = Response(json.dumps({'success': True, 'newValue': ', '.join([tag.name for tag in book.tags])}),
                            mimetype='application/json')
+            metadata_changed = True
+            log_key = 'tags'
+            log_value = vals.get('value', '')
         elif param == 'series':
             edit_book_series(vals['value'], book)
             ret = Response(json.dumps({'success': True, 'newValue':  ', '.join([serie.name for serie in book.series])}),
                            mimetype='application/json')
+            metadata_changed = True
+            log_key = 'series'
+            log_value = vals.get('value', '')
         elif param == 'publishers':
             edit_book_publisher(vals['value'], book)
             ret = Response(json.dumps({'success': True,
                                        'newValue': ', '.join([publisher.name for publisher in book.publishers])}),
                            mimetype='application/json')
+            metadata_changed = True
+            log_key = 'publisher'
+            log_value = vals.get('value', '')
         elif param == 'languages':
             invalid = list()
             edit_book_languages(vals['value'], book, invalid=invalid)
@@ -395,6 +504,9 @@ def edit_book_param(param, vals):
                     lang_names.append(isoLanguages.get_language_name(get_locale(), lang.lang_code))
                 ret = Response(json.dumps({'success': True, 'newValue':  ', '.join(lang_names)}),
                                mimetype='application/json')
+                metadata_changed = True
+                log_key = 'languages'
+                log_value = vals.get('value', '')
         elif param == 'author_sort':
             book.author_sort = vals['value']
             ret = Response(json.dumps({'success': True, 'newValue':  book.author_sort}),
@@ -408,6 +520,9 @@ def edit_book_param(param, vals):
                 if not rename_error:
                     ret = Response(json.dumps({'success': True, 'newValue':  book.title}),
                                    mimetype='application/json')
+                    metadata_changed = True
+                    log_key = 'title'
+                    log_value = vals.get('value', '')
                 else:
                     ret = Response(json.dumps({'success': False,
                                                'msg': rename_error}),
@@ -420,6 +535,9 @@ def edit_book_param(param, vals):
             edit_book_comments(vals['value'], book)
             ret = Response(json.dumps({'success': True, 'newValue':  book.comments[0].text}),
                            mimetype='application/json')
+            metadata_changed = True
+            log_key = 'comments'
+            log_value = vals.get('value', '')
         elif param == 'authors':
             input_authors, __ = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
             rename_error = helper.update_dir_structure(book.id, config.get_book_path(), input_authors[0])
@@ -428,10 +546,20 @@ def edit_book_param(param, vals):
                     'success': True,
                     'newValue':  ' & '.join([author.replace('|', ',') for author in input_authors])}),
                     mimetype='application/json')
+                metadata_changed = True
+                log_key = 'authors'
+                log_value = vals.get('value', '')
             else:
                 ret = Response(json.dumps({'success': False,
                                            'msg': rename_error}),
                                mimetype='application/json')
+        elif param == 'rating':
+            rating_changed = edit_book_ratings({'rating': vals.get('value', '')}, book)
+            ret = Response(json.dumps({'success': True, 'newValue': vals.get('value', '')}),
+                           mimetype='application/json')
+            metadata_changed = rating_changed
+            log_key = 'rating'
+            log_value = vals.get('value', '')
         elif param == 'is_archived':
             is_archived = change_archived_books(book.id, vals['value'] == "True",
                                                 message="Book {} archive bit set to: {}".format(book.id, vals['value']))
@@ -452,16 +580,42 @@ def edit_book_param(param, vals):
             else:
                 ret = Response(json.dumps({'success': True, 'newValue': vals['value']}),
                                mimetype='application/json')
+            metadata_changed = True
+            log_key = param
+            log_value = vals.get('value', '')
         else:
             return _("Parameter not found"), 400
         book.last_modified = datetime.now(timezone.utc)
+
+        if metadata_changed:
+            calibre_db.set_metadata_dirty(book.id)
 
         calibre_db.session.commit()
         # revert change for sort if automatic fields link is deactivated
         if param == 'title' and vals.get('checkT') == "false":
             book.sort = sort_param
             calibre_db.session.commit()
-    except (OperationalError, IntegrityError, StaleDataError) as e:
+
+        if metadata_changed and log_key is not None:
+            try:
+                payload = {log_key: log_value}
+                payload.setdefault('title', book.title)
+                payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
+                payload['_cwa_meta'] = {
+                    'modify_date': True,
+                    'change_count': 1,
+                    'has_content': log_value != '',
+                    'timestamp': datetime.now().isoformat()
+                }
+
+                now = datetime.now()
+                log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                with open(log_path, 'w', encoding='utf-8') as f:
+                    json.dump(payload, f, indent=4, ensure_ascii=False)
+                log.debug(f"Created metadata change log for book {book.id} with changes: {list(payload.keys())}")
+            except Exception as e:
+                log.error_or_exception(f"Failed to write metadata change log for book {book.id}: {e}")
+    except (OperationalError, IntegrityError, StaleDataError, InvalidRequestError) as e:
         calibre_db.session.rollback()
         log.error_or_exception("Database error: {}".format(e))
         ret = Response(json.dumps({'success': False,
@@ -538,6 +692,7 @@ def delete_selected_books():
     if vals:
         for book_id in vals:
             delete_book_from_table(book_id, "", True)
+        _queue_duplicate_scan_after_change()
         return json.dumps({'success': True})
     return ""
 
@@ -596,9 +751,34 @@ def merge_list_book():
                                                         element.format,
                                                         element.uncompressed_size,
                                                         to_name))
+                            to_file.append(element.format)
                     delete_book_from_table(from_book.id, "", True)
-                    return json.dumps({'success': True})
+            calibre_db.session.commit()
+            _queue_duplicate_scan_after_change()
+            return json.dumps({'success': True})
     return ""
+
+
+def _queue_duplicate_scan_after_change():
+    """Queue a debounced duplicate scan after manual changes."""
+    try:
+        import requests
+        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+
+        cwa_db = CWA_DB()
+        delay_seconds = int(cwa_db.cwa_settings.get('duplicate_scan_debounce_seconds', 5))
+        delay_seconds = max(5, min(600, delay_seconds))
+        url = helper.get_internal_api_url("/cwa-internal/queue-duplicate-scan")
+        requests.post(
+            url,
+            json={"delay_seconds": delay_seconds},
+            headers={"X-Forwarded-For": "127.0.0.1"},
+            timeout=5,
+            verify=False,
+        )
+    except Exception as e:
+        log.error("Failed to queue duplicate scan after change: %s", str(e))
 
 
 @editbook.route("/ajax/xchange", methods=['POST'])
@@ -646,6 +826,8 @@ def table_xchange_author_title():
 
 
 def do_edit_book(book_id, upload_formats=None):
+    request_start = time.monotonic()
+    log.debug("[edit_book] start book_id=%s user=%s upload_formats=%s", book_id, getattr(current_user, "name", "unknown"), bool(upload_formats))
     modify_date = False
     edit_error = False
 
@@ -688,16 +870,19 @@ def do_edit_book(book_id, upload_formats=None):
             if not current_user.role_edit():
                 edit_error = True
                 flash(_("User has no rights to upload cover"), category="error")
-            elif to_save["cover_url"].endswith('/static/generic_cover.jpg'):
+            elif to_save["cover_url"].endswith('/static/generic_cover.svg'):
                 book.has_cover = 0
             else:
+                cover_start = time.monotonic()
                 result, error = helper.save_cover_from_url(to_save["cover_url"].strip(), book.path)
                 if result:
                     book.has_cover = 1
                     modify_date = True
-                    # Trigger thumbnail generation after successful cover fetch
-                    helper.trigger_thumbnail_generation_for_book(book.id)
+                    # Force thumbnail regeneration after successful cover fetch
+                    helper.replace_cover_thumbnail_cache(book.id)
+                    log.debug("[edit_book] cover saved book_id=%s duration=%.3fs", book.id, time.monotonic() - cover_start)
                 else:
+                    log.warning("[edit_book] cover save failed book_id=%s duration=%.3fs error=%s", book.id, time.monotonic() - cover_start, error)
                     edit_error = True
                     flash(error, category="error")
 
@@ -755,8 +940,26 @@ def do_edit_book(book_id, upload_formats=None):
             kobo_sync_status.remove_synced_book(book.id, all=True)
             calibre_db.set_metadata_dirty(book.id)
 
-        calibre_db.session.merge(book)
-        calibre_db.session.commit()
+        try:
+            calibre_db.session.merge(book)
+            calibre_db.session.commit()
+            log.debug("[edit_book] db commit ok book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
+        except InvalidRequestError as e:
+            # Recover from closed/invalid transaction by recreating the session and retrying once
+            log.warning("Edit book transaction invalid, retrying commit: %s", e)
+            try:
+                calibre_db.session.rollback()
+            except Exception:
+                pass
+            try:
+                calibre_db.session.close()
+            except Exception:
+                pass
+            calibre_db.session = None
+            calibre_db.ensure_session()
+            calibre_db.session.merge(book)
+            calibre_db.session.commit()
+            log.debug("[edit_book] db commit retry ok book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
 
         # CWA: Export of changed Metadata after commit, to avoid race conditions with folder renames
         # Only create log if there were actual meaningful metadata changes
@@ -824,7 +1027,7 @@ def do_edit_book(book_id, upload_formats=None):
         else:
             return render_edit_book(book_id)
 
-    except (ValueError, OperationalError, IntegrityError, StaleDataError, InterfaceError) as e:
+    except (ValueError, OperationalError, IntegrityError, StaleDataError, InterfaceError, InvalidRequestError) as e:
         log.error_or_exception("Database or Value error: {}".format(e))
         calibre_db.session.rollback()
         flash(_("Oops! Database Error: %(error)s.", error=e.orig if hasattr(e, "orig") else e), category="error")
@@ -856,15 +1059,22 @@ def identifier_list(to_save, book):
     id_type_prefix = 'identifier-type-'
     id_val_prefix = 'identifier-val-'
     result = []
-    for type_key, type_value in to_save.items():
-        if not type_key.startswith(id_type_prefix):
+    rows = {}
+    for key, value in to_save.items():
+        if key.startswith(id_type_prefix):
+            row_id = key[len(id_type_prefix):]
+            rows.setdefault(row_id, {})['type'] = value
+        elif key.startswith(id_val_prefix):
+            row_id = key[len(id_val_prefix):]
+            rows.setdefault(row_id, {})['val'] = value
+    for row in rows.values():
+        id_type = (row.get('type') or "").strip()
+        id_val = (row.get('val') or "").strip()
+        if not id_type or not id_val:
             continue
-        val_key = id_val_prefix + type_key[len(id_type_prefix):]
-        if val_key not in to_save.keys():
-            continue
-        if to_save[val_key].startswith("data:"):
-            to_save[val_key], __, __ = str.partition(to_save[val_key], ",")
-        result.append(db.Identifiers(to_save[val_key], type_value, book.id))
+        if id_val.startswith("data:"):
+            id_val, __, __ = str.partition(id_val, ",")
+        result.append(db.Identifiers(id_val, id_type, book.id))
     return result
 
 
@@ -1052,7 +1262,7 @@ def move_coverfile(meta, db_book):
     if meta.cover:
         cover_file = meta.cover
     else:
-        cover_file = os.path.join(constants.STATIC_DIR, 'generic_cover.jpg')
+        cover_file = os.path.join(constants.STATIC_DIR, 'generic_cover.svg')
     new_cover_path = os.path.join(config.get_book_path(), db_book.path)
     try:
         os.makedirs(new_cover_path, exist_ok=True)
@@ -1070,6 +1280,7 @@ def delete_whole_book(book_id, book):
     # delete book from shelves, Downloads, Read list
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).delete()
     ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id).delete()
+    ub.session.query(ub.ArchivedBook).filter(ub.ArchivedBook.book_id == book_id).delete()
     ub.delete_download(book_id)
     ub.session_commit()
 
@@ -1165,6 +1376,18 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()
+                
+                # Invalidate duplicate cache after book deletion
+                try:
+                    import sys
+                    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+                    from cwa_db import CWA_DB
+                    cwa_db = CWA_DB()
+                    cwa_db.invalidate_duplicate_cache()
+                    cwa_db.close()
+                except Exception as e:
+                    log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
+                
             except Exception as ex:
                 log.error_or_exception(ex)
                 calibre_db.session.rollback()
@@ -1310,7 +1533,9 @@ def edit_book_comments(comments, book):
                 modify_date = True
         else:
             if comments:
-                book.comments.append(db.Comments(comment=comments, book=book.id))
+                # Add comment via session instead of appending to collection during flush
+                new_comment = db.Comments(comment=comments, book=book.id)
+                calibre_db.session.add(new_comment)
                 modify_date = True
         return modify_date
 
@@ -1605,7 +1830,8 @@ def upload_cover(cover_request, book):
                 return False
             ret, message = helper.save_cover_with_thumbnail_update(requested_file, book.path, book.id)
             if ret is True:
-                helper.replace_cover_thumbnail_cache(book.id)
+                # Note: save_cover_with_thumbnail_update already triggers thumbnail generation
+                # No need to call replace_cover_thumbnail_cache here (would create duplicate tasks)
                 return True
             else:
                 flash(message, category="error")
@@ -1720,15 +1946,18 @@ def add_objects(db_book_object, db_object, db_session, db_type, add_elements):
             else:  # db_type should be tag or language
                 new_element = db_object(add_element)
             db_session.add(new_element)
-            db_book_object.append(new_element)
+            # Append new element (should not exist in collection, but check for safety)
+            if new_element not in db_book_object:
+                db_book_object.append(new_element)
         else:
             if len(db_element) == 1:
                 db_element = create_objects_for_addition(db_element[0], add_element, db_type)
             else:
                 db_el = db_session.query(db_object).filter(db_filter == add_element).first()
                 db_element = db_element[0] if not db_el else db_el
-            # add element to book
-            db_book_object.append(db_element)
+            # add element to book only if not already present (prevents UNIQUE constraint errors)
+            if db_element not in db_book_object:
+                db_book_object.append(db_element)
 
     return changed
 
@@ -1794,10 +2023,20 @@ def modify_identifiers(input_identifiers, db_identifiers, db_session):
        db_identifiers is a list of already persisted list of Identifiers objects."""
     changed = False
     error = False
-    input_dict = dict([(identifier.type.lower(), identifier) for identifier in input_identifiers])
-    if len(input_identifiers) != len(input_dict):
-        error = True
-    db_dict = dict([(identifier.type.lower(), identifier) for identifier in db_identifiers])
+    input_dict = {}
+    for identifier in input_identifiers:
+        identifier_type = (identifier.type or "").strip().lower()
+        if not identifier_type:
+            continue
+        if identifier_type in input_dict:
+            error = True
+        input_dict[identifier_type] = identifier
+    db_dict = {}
+    for identifier in db_identifiers:
+        identifier_type = (identifier.type or "").strip().lower()
+        if not identifier_type:
+            continue
+        db_dict[identifier_type] = identifier
     # delete db identifiers not present in input or modify them with input val
     for identifier_type, identifier in db_dict.items():
         if identifier_type not in input_dict.keys():

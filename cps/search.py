@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -32,6 +32,19 @@ log = logger.create()
 def simple_search():
     term = request.args.get("query")
     if term:
+        # Track search activity
+        if current_user.is_authenticated:
+            try:
+                from scripts.cwa_db import CWA_DB
+                cwa_db = CWA_DB()
+                cwa_db.log_activity(
+                    user_id=int(current_user.id),
+                    user_name=current_user.name,
+                    event_type='SEARCH',
+                    extra_data=term[:100]  # Limit search term length
+                )
+            except Exception as e:
+                log.debug(f"Failed to log search activity: {e}")
         return redirect(url_for('web.books_list', data="search", sort_param='stored', query=term.strip()))
     else:
         return render_title_template('search.html',

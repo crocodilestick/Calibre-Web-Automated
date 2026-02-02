@@ -12,18 +12,9 @@ import re
 from flask_babel import lazy_gettext as N_
 
 from cps.services.worker import CalibreTask, STAT_CANCELLED, STAT_ENDED
-from cps import logger
+from cps import logger, helper
 
 log = logger.create()
-
-
-def _get_port():
-    port = os.getenv('CWA_PORT_OVERRIDE', '8083')
-    try:
-        port = str(int(str(port).strip()))
-    except Exception:
-        port = '8083'
-    return port
 
 
 class TaskConvertLibraryRun(CalibreTask):
@@ -42,8 +33,8 @@ class TaskConvertLibraryRun(CalibreTask):
         # trigger run via internal route
         try:
             import requests
-            url = f"http://127.0.0.1:{_get_port()}/cwa-convert-library-start"
-            requests.get(url, timeout=10)
+            url = helper.get_internal_api_url("/cwa-convert-library-start")
+            requests.get(url, timeout=10, verify=False)
         except Exception as e:
             self._handleError(f"Failed to start Convert Library: {e}")
             return
@@ -55,8 +46,8 @@ class TaskConvertLibraryRun(CalibreTask):
             if self.stat in (STAT_CANCELLED, STAT_ENDED):
                 try:
                     import requests
-                    url = f"http://127.0.0.1:{_get_port()}/convert-library-cancel"
-                    requests.get(url, timeout=5)
+                    url = helper.get_internal_api_url("/convert-library-cancel")
+                    requests.get(url, timeout=5, verify=False)
                 except Exception:
                     pass
                 # treat as clean end; UI already shows cancelled/ended state
@@ -109,8 +100,8 @@ class TaskEpubFixerRun(CalibreTask):
         # trigger run via internal route
         try:
             import requests
-            url = f"http://127.0.0.1:{_get_port()}/cwa-epub-fixer-start"
-            requests.get(url, timeout=10)
+            url = helper.get_internal_api_url("/cwa-epub-fixer-start")
+            requests.get(url, timeout=10, verify=False)
         except Exception as e:
             self._handleError(f"Failed to start EPUB Fixer: {e}")
             return
@@ -120,8 +111,8 @@ class TaskEpubFixerRun(CalibreTask):
             if self.stat in (STAT_CANCELLED, STAT_ENDED):
                 try:
                     import requests
-                    url = f"http://127.0.0.1:{_get_port()}/epub-fixer-cancel"
-                    requests.get(url, timeout=5)
+                    url = helper.get_internal_api_url("/epub-fixer-cancel")
+                    requests.get(url, timeout=5, verify=False)
                 except Exception:
                     pass
                 return

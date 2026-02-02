@@ -8,6 +8,8 @@
 import atexit
 import os
 import sys
+import sqlite3
+import time
 from datetime import datetime, timezone, timedelta
 import itertools
 import uuid
@@ -29,7 +31,7 @@ except ImportError as e:
         OAuthConsumerMixin = BaseException
         oauth_support = False
 from sqlalchemy import create_engine, exc, exists, event, text
-from sqlalchemy import Column, ForeignKey, Index
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint
 from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import func
@@ -52,6 +54,37 @@ Base = declarative_base()
 searched_ids = {}
 
 logged_in = dict()
+
+
+def _safe_session_rollback(_session, label=""):
+    try:
+        _session.rollback()
+    except Exception as e:
+        if label:
+            log.debug("Failed to rollback session after %s migration check: %s", label, e)
+
+
+def _run_ddl_with_retry(engine, statements, retries=5, base_delay=0.25):
+    if isinstance(statements, str):
+        statements = [statements]
+
+    last_error = None
+    for attempt in range(retries):
+        try:
+            with engine.begin() as conn:
+                conn.execute(text("PRAGMA busy_timeout=5000"))
+                for stmt in statements:
+                    conn.execute(text(stmt))
+            return True
+        except exc.OperationalError as e:
+            last_error = e
+            if "database is locked" in str(e).lower() and attempt < retries - 1:
+                time.sleep(base_delay * (2 ** attempt))
+                continue
+            raise
+    if last_error:
+        raise last_error
+    return False
 
 
 def signal_store_user_session(object, user):
@@ -235,6 +268,7 @@ class User(UserBase, Base):
     kindle_mail = Column(String(120), default="")
     kindle_mail_subject = Column(String(256), default="", doc="Subject line for eReader email sending, empty=default")
     shelf = relationship('Shelf', backref='user', lazy='dynamic', order_by='Shelf.name')
+    magic_shelf = relationship('MagicShelf', backref='user', lazy='dynamic', order_by='MagicShelf.name')
     downloads = relationship('Downloads', backref='user', lazy='dynamic')
     locale = Column(String(2), default="en")
     sidebar_view = Column(Integer, default=1)
@@ -383,6 +417,87 @@ class Shelf(Base):
 
     def __repr__(self):
         return '<Shelf %d:%r>' % (self.id, self.name)
+
+
+# Baseclass representing Magic Shelfs in calibre-web in app.db
+class MagicShelf(Base):
+    __tablename__ = 'magic_shelf'
+
+    id = Column(Integer, primary_key=True)
+    uuid = Column(String, default=lambda: str(uuid.uuid4()))
+    name = Column(String)
+    is_public = Column(Integer, default=0)
+    is_system = Column(Boolean, default=False)  # System-created template shelves
+    user_id = Column(Integer, ForeignKey('user.id'))
+    icon = Column(String, default="glyphicon-star")
+    rules = Column(JSON, default={})
+    kobo_sync = Column(Boolean, default=False)  # Sync to Kobo devices
+    created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'name', 'is_system', name='unique_user_system_shelf_name'),
+    )
+
+    def __repr__(self):
+        return '<MagicShelf %d:%r>' % (self.id, self.name)
+
+
+class MagicShelfCache(Base):
+    __tablename__ = 'magic_shelf_cache'
+
+    id = Column(Integer, primary_key=True)
+    shelf_id = Column(Integer, ForeignKey('magic_shelf.id'), index=True)
+    user_id = Column(Integer, ForeignKey('user.id'), index=True)
+    sort_param = Column(String, default='stored')
+    book_ids = Column(JSON)  # Stores [1, 45, 2, ...]
+    total_count = Column(Integer)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Composite index for fast lookups
+    __table_args__ = (
+        Index('ix_magic_shelf_cache_lookup', 'shelf_id', 'user_id', 'sort_param'),
+    )
+
+
+class HiddenMagicShelfTemplate(Base):
+    __tablename__ = 'hidden_magic_shelf_templates'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    template_key = Column(String, nullable=True)  # For system templates: 'recently_added', 'highly_rated', etc.
+    shelf_id = Column(Integer, ForeignKey('magic_shelf.id'), nullable=True)  # For custom public shelves
+    hidden_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        # Either template_key OR shelf_id must be set, but not both
+        # User can only hide the same template/shelf once
+        UniqueConstraint('user_id', 'template_key', name='unique_user_template_hidden'),
+        UniqueConstraint('user_id', 'shelf_id', name='unique_user_shelf_hidden'),
+    )
+
+    def __repr__(self):
+        if self.template_key:
+            return '<HiddenMagicShelfTemplate %d: user=%d template=%s>' % (self.id, self.user_id, self.template_key)
+        else:
+            return '<HiddenMagicShelfTemplate %d: user=%d shelf_id=%d>' % (self.id, self.user_id, self.shelf_id)
+
+
+class DismissedDuplicateGroup(Base):
+    __tablename__ = 'dismissed_duplicate_groups'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    group_hash = Column(String(32), nullable=False)  # MD5 hash of title+author combo
+    dismissed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        # User can only dismiss the same duplicate group once
+        UniqueConstraint('user_id', 'group_hash', name='unique_user_duplicate_dismissed'),
+    )
+
+    def __repr__(self):
+        return '<DismissedDuplicateGroup %d: user=%d hash=%s>' % (self.id, self.user_id, self.group_hash)
 
 
 # Baseclass representing Relationship between books and Shelfs in Calibre-Web in app.db (N:M)
@@ -535,6 +650,28 @@ class HardcoverBookBlacklist(Base):
         return f'<HardcoverBookBlacklist book_id={self.book_id} annotations={self.blacklist_annotations} progress={self.blacklist_reading_progress}>'
 
 
+class HardcoverMatchQueue(Base):
+    """Queue for ambiguous Hardcover metadata matches requiring manual review."""
+    __tablename__ = 'hardcover_match_queue'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, nullable=False)
+    book_title = Column(String, nullable=False)
+    book_authors = Column(String, nullable=False)
+    search_query = Column(String, nullable=False)
+    hardcover_results = Column(String, nullable=False)  # JSON array of MetaRecord candidates
+    confidence_scores = Column(String, nullable=False)  # JSON array of [score, reason] tuples
+    created_at = Column(String, nullable=False)
+    reviewed = Column(Integer, default=0, nullable=False)  # 0=pending, 1=reviewed
+    selected_result_id = Column(String, default=None)  # Hardcover ID if manually selected
+    review_action = Column(String, default=None)  # 'accept', 'reject', 'skip'
+    reviewed_at = Column(String, default=None)
+    reviewed_by = Column(String, default=None)
+
+    def __repr__(self):
+        return f'<HardcoverMatchQueue book_id={self.book_id} title="{self.book_title}" reviewed={bool(self.reviewed)}>'
+
+
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, 'before_flush')
 def receive_before_flush(session, flush_context, instances):
@@ -646,9 +783,17 @@ class Thumbnail(Base):
 # Add missing tables during migration of database
 def add_missing_tables(engine, _session):
     if not engine.dialect.has_table(engine.connect(), "archived_book"):
-        ArchivedBook.__table__.create(bind=engine)
+        ArchivedBook.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "thumbnail"):
-        Thumbnail.__table__.create(bind=engine)
+        Thumbnail.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "kosync_progress"):
+        KOSyncProgress.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "magic_shelf"):
+        MagicShelf.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "magic_shelf_cache"):
+        MagicShelfCache.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "hidden_magic_shelf_templates"):
+        HiddenMagicShelfTemplate.__table__.create(bind=engine, checkfirst=True)
 
 
 # migrate all settings missing in registration table
@@ -671,64 +816,93 @@ def migrate_user_session_table(engine, _session):
         _session.query(exists().where(User_Sessions.random)).scalar()
         _session.commit()
     except exc.OperationalError:  # Database is not compatible, some columns are missing
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user_session ADD column 'random' String"))
-            conn.execute(text("ALTER TABLE user_session ADD column 'expiry' Integer"))
-            trans.commit()
+        _safe_session_rollback(_session, "user_session")
+        _run_ddl_with_retry(
+            engine,
+            [
+                "ALTER TABLE user_session ADD column 'random' String",
+                "ALTER TABLE user_session ADD column 'expiry' Integer",
+            ],
+        )
 
 def migrate_user_table(engine, _session):
     try:
         _session.query(exists().where(User.hardcover_token)).scalar()
         _session.commit()
     except exc.OperationalError:  # Database is not compatible, some columns are missing
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'hardcover_token' String"))
-            trans.commit()
+        _safe_session_rollback(_session, "user.hardcover_token")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'hardcover_token' String")
     # Migration for per-user theme column
     try:
         _session.query(exists().where(User.theme)).scalar()
         _session.commit()
     except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'theme' Integer DEFAULT 0"))
-            trans.commit()
+        _safe_session_rollback(_session, "user.theme")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'theme' Integer DEFAULT 0")
+
+    # Force migration: All users to caliBlur theme (theme=1) for v5.0.0 frontend development
+    try:
+        users_migrated = _session.query(User).filter(User.theme == 0).update({User.theme: 1})
+        if users_migrated > 0:
+            _session.commit()
+            print(f"[theme-migration] Migrated {users_migrated} user(s) from light theme (0) to caliBlur theme (1). The light/legacy theme has been temporarily disabled from v3.2.0 and won't be re-enabled until the release of a new CWA frontend in v5.0.0.", flush=True)
+    except Exception as e:
+        print(f"[theme-migration] Error migrating users to caliBlur theme: {e}", flush=True)
+        _session.rollback()
 
     # Migration for auto-send feature columns
     try:
         _session.query(exists().where(User.auto_send_enabled)).scalar()
         _session.commit()
     except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0"))
-            trans.commit()
+        _safe_session_rollback(_session, "user.auto_send_enabled")
+        try:
+            _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'auto_send_enabled' Boolean DEFAULT 0")
+        except Exception as e:
+            db_hint = app_DB_path or str(engine.url)
+            log.error(
+                "Failed to add auto_send_enabled column to user table in app.db (%s). "
+                "Check file permissions, locks, and CALIBRE_DBPATH mapping. Error: %s",
+                db_hint,
+                e,
+            )
 
     # Migration to add per-user email subject for Kindle sending
     try:
         _session.query(exists().where(User.kindle_mail_subject)).scalar()
         _session.commit()
     except exc.OperationalError:
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''"))
-            trans.commit()
+        _safe_session_rollback(_session, "user.kindle_mail_subject")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''")
 
-    # Migration to enable duplicates sidebar for existing admin users
+    # Migration to enable duplicates sidebar for existing admin users (one-time)
     try:
         from . import constants
         SIDEBAR_DUPLICATES = constants.SIDEBAR_DUPLICATES
 
-        # Check if any admin users don't have duplicates enabled
-        admin_users = _session.query(User).filter(User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN).all()
-        for user in admin_users:
-            if not (user.sidebar_view & SIDEBAR_DUPLICATES):
-                user.sidebar_view |= SIDEBAR_DUPLICATES
-                print(f"[Migration] Enabled duplicates sidebar for admin user: {user.name}")
+        migration_dir = os.path.join(constants.CONFIG_DIR, ".cwa_migrations")
+        migration_marker = os.path.join(migration_dir, "duplicates_sidebar_v1")
 
-        _session.commit()
+        if not os.path.isfile(migration_marker):
+            # Check if any admin users don't have duplicates enabled
+            admin_users = _session.query(User).filter(
+                User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN
+            ).all()
+            for user in admin_users:
+                if not (user.sidebar_view & SIDEBAR_DUPLICATES):
+                    user.sidebar_view |= SIDEBAR_DUPLICATES
+                    print(f"[Migration] Enabled duplicates sidebar for admin user: {user.name}")
+
+            _session.commit()
+            try:
+                os.makedirs(migration_dir, exist_ok=True)
+                with open(migration_marker, "w", encoding="utf-8") as marker:
+                    marker.write(datetime.now(timezone.utc).isoformat())
+            except Exception as marker_error:
+                print(
+                    f"[Migration] Warning: Could not persist duplicates sidebar migration marker: {marker_error}",
+                    flush=True,
+                )
     except Exception as e:
         print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
         _session.rollback()
@@ -738,37 +912,44 @@ def migrate_oauth_provider_table(engine, _session):
         _session.query(exists().where(OAuthProvider.oauth_base_url)).scalar()
         _session.commit()
     except exc.OperationalError:  # Database is not compatible, some columns are missing
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_base_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_authorize_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_token_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL"))
-            trans.commit()
+        _safe_session_rollback(_session, "oauthProvider.base_urls")
+        _run_ddl_with_retry(
+            engine,
+            [
+                "ALTER TABLE oauthProvider ADD column 'oauth_base_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_authorize_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_token_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL",
+            ],
+        )
 
     # Add new OAuth enhancement fields
     try:
         _session.query(exists().where(OAuthProvider.metadata_url)).scalar()
         _session.commit()
     except exc.OperationalError:  # New columns are missing
-        with engine.connect() as conn:
-            trans = conn.begin()
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'metadata_url' String DEFAULT NULL"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'scope' String DEFAULT 'openid profile email'"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'username_mapper' String DEFAULT 'preferred_username'"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'email_mapper' String DEFAULT 'email'"))
-            conn.execute(text("ALTER TABLE oauthProvider ADD column 'login_button' String DEFAULT 'OpenID Connect'"))
-            trans.commit()
+        _safe_session_rollback(_session, "oauthProvider.metadata_url")
+        _run_ddl_with_retry(
+            engine,
+            [
+                "ALTER TABLE oauthProvider ADD column 'metadata_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'scope' String DEFAULT 'openid profile email'",
+                "ALTER TABLE oauthProvider ADD column 'username_mapper' String DEFAULT 'preferred_username'",
+                "ALTER TABLE oauthProvider ADD column 'email_mapper' String DEFAULT 'email'",
+                "ALTER TABLE oauthProvider ADD column 'login_button' String DEFAULT 'OpenID Connect'",
+            ],
+        )
 
 
 def migrate_config_table(engine, _session):
     """Migrate configuration table to add new authentication columns"""
     if not engine or not _session:
-        logger.get_logger("cps.ub").error("Cannot migrate config table: missing engine or session")
-        return
-
-    # Add OAuth redirect host configuration
+            _safe_session_rollback(_session, "settings.config_reverse_proxy_auto_create_users")
+            _run_ddl_with_retry(
+                engine,
+                "ALTER TABLE settings ADD column 'config_reverse_proxy_auto_create_users' Boolean DEFAULT 0",
+            )
     try:
         # Test if the new column exists
         _session.execute(text("SELECT config_oauth_redirect_host FROM settings LIMIT 1"))
@@ -780,7 +961,7 @@ def migrate_config_table(engine, _session):
                 conn.execute(text("ALTER TABLE settings ADD column 'config_oauth_redirect_host' String DEFAULT ''"))
                 trans.commit()
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_oauth_redirect_host column: %s", e)
+            log.error("Failed to add config_oauth_redirect_host column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
 
@@ -796,7 +977,7 @@ def migrate_config_table(engine, _session):
                 conn.execute(text("ALTER TABLE settings ADD column 'config_reverse_proxy_auto_create_users' Boolean DEFAULT 0"))
                 trans.commit()
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
+            log.error("Failed to add config_reverse_proxy_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
 
@@ -807,14 +988,34 @@ def migrate_config_table(engine, _session):
         _session.commit()
     except exc.OperationalError:  # Column doesn't exist
         try:
-            with engine.connect() as conn:
-                trans = conn.begin()
-                conn.execute(text("ALTER TABLE settings ADD column 'config_ldap_auto_create_users' Boolean DEFAULT 1"))
-                trans.commit()
+            _safe_session_rollback(_session, "settings.config_ldap_auto_create_users")
+            _run_ddl_with_retry(
+                engine,
+                "ALTER TABLE settings ADD column 'config_ldap_auto_create_users' Boolean DEFAULT 1",
+            )
         except Exception as e:
-            logger.get_logger("cps.ub").error("Failed to add config_ldap_auto_create_users column: %s", e)
+            log.error("Failed to add config_ldap_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
             pass
+
+
+def migrate_magic_shelf_table(engine, _session):
+    """Migrate magic_shelf table to add new columns."""
+    # Check and add is_system column
+    try:
+        _session.query(exists().where(MagicShelf.is_system)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "magic_shelf.is_system")
+        _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'is_system' Boolean DEFAULT 0")
+    
+    # Check and add kobo_sync column
+    try:
+        _session.query(exists().where(MagicShelf.kobo_sync)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "magic_shelf.kobo_sync")
+        _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0")
 
 
 # Migrate database to current version, has to be updated after every database change. Currently migration from
@@ -828,10 +1029,76 @@ def migrate_Database(_session):
     migrate_user_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
+    migrate_magic_shelf_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables
     ensure_app_db_tables(engine.raw_connection())
+    
+    # Migrate system magic shelves for existing users
+    try:
+        from . import magic_shelf
+        
+        # Get all valid current template names
+        current_template_names = {template['name'] for template in magic_shelf.SYSTEM_SHELF_TEMPLATES.values()}
+        
+        log.info("Migrating system magic shelves...")
+        users = _session.query(User).filter(User.role != constants.ROLE_ANONYMOUS).all()
+        total_deleted = 0
+        total_created = 0
+        
+        for user in users:
+            # Get all system shelves for this user
+            user_system_shelves = _session.query(MagicShelf).filter(
+                MagicShelf.user_id == user.id,
+                MagicShelf.is_system == True
+            ).all()
+            
+            # Delete system shelves that don't match current templates
+            for shelf in user_system_shelves:
+                if shelf.name not in current_template_names:
+                    # This is an old/deprecated system shelf - delete it
+                    _session.query(MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
+                    _session.query(HiddenMagicShelfTemplate).filter_by(shelf_id=shelf.id).delete()
+                    _session.delete(shelf)
+                    total_deleted += 1
+                    log.debug(f"Deleted deprecated system shelf '{shelf.name}' (ID: {shelf.id}) for user {user.id}")
+            
+            # Get user's template-based hide preferences (not shelf-specific)
+            hidden_templates = _session.query(HiddenMagicShelfTemplate.template_key).filter(
+                HiddenMagicShelfTemplate.user_id == user.id,
+                HiddenMagicShelfTemplate.template_key.isnot(None)
+            ).all()
+            hidden_keys = {ht.template_key for ht in hidden_templates}
+            
+            # Create missing current templates
+            templates_to_create = []
+            for template_key, template_data in magic_shelf.SYSTEM_SHELF_TEMPLATES.items():
+                # Skip if user has hidden this template type
+                if template_key in hidden_keys:
+                    continue
+                
+                # Check if user already has this current template
+                has_template = _session.query(MagicShelf).filter(
+                    MagicShelf.user_id == user.id,
+                    MagicShelf.name == template_data['name'],
+                    MagicShelf.is_system == True
+                ).first()
+                
+                if not has_template:
+                    templates_to_create.append(template_key)
+            
+            # Create missing templates
+            if templates_to_create:
+                created = magic_shelf.create_system_magic_shelves(user.id, templates_to_create)
+                total_created += created
+        
+        if total_deleted > 0 or total_created > 0:
+            _session.commit()
+            log.info(f"System shelf migration complete: {total_deleted} old shelves removed, {total_created} new shelves created")
+    except Exception as e:
+        log.error(f"Error during system shelf migration: {e}")
+        _session.rollback()
 
 
 def clean_database(_session):
@@ -878,6 +1145,8 @@ def create_anonymous_user(_session):
     _session.add(user)
     try:
         _session.commit()
+        # Note: Anonymous users don't get system shelves
+        # They will be created if/when the user registers
     except Exception:
         _session.rollback()
 
@@ -895,8 +1164,28 @@ def create_admin_user(_session):
     _session.add(user)
     try:
         _session.commit()
+        # Create system magic shelves for admin user
+        try:
+            from . import magic_shelf
+            magic_shelf.create_system_magic_shelves(user.id)
+        except Exception as e:
+            log.error(f"Failed to create system magic shelves for admin: {e}")
     except Exception:
         _session.rollback()
+
+
+def create_system_magic_shelves_for_user(user_id):
+    """
+    Create system magic shelves for a user if they don't already exist.
+    Should be called after user creation.
+    """
+    try:
+        from . import magic_shelf
+        return magic_shelf.create_system_magic_shelves(user_id)
+    except Exception as e:
+        log.error(f"Failed to create system magic shelves for user {user_id}: {e}")
+        return 0
+
 
 def init_db_thread():
     global app_DB_path
@@ -921,6 +1210,8 @@ def init_db(app_db_path):
     Session.configure(bind=engine)
     session = Session()
 
+    _healthcheck_app_db(app_db_path)
+
     if os.path.exists(app_db_path):
         Base.metadata.create_all(engine)
         migrate_Database(session)
@@ -929,6 +1220,33 @@ def init_db(app_db_path):
         Base.metadata.create_all(engine)
         create_admin_user(session)
         create_anonymous_user(session)
+
+
+def _healthcheck_app_db(app_db_path: str) -> None:
+    """Basic startup checks for app.db path, permissions, and integrity."""
+    try:
+        if not app_db_path:
+            log.error("app.db path is empty; cannot validate settings database")
+            return
+        if os.path.isdir(app_db_path):
+            log.error("app.db path points to a directory: %s", app_db_path)
+            return
+        if not os.path.exists(app_db_path):
+            log.warning("app.db not found at %s; it will be created on first run", app_db_path)
+            return
+        if not os.access(app_db_path, os.W_OK):
+            log.error("app.db is not writable: %s", app_db_path)
+        network_share_mode = os.environ.get("NETWORK_SHARE_MODE", "false").lower() in ("1", "true", "yes")
+        if network_share_mode:
+            log.info("Skipping PRAGMA quick_check for app.db due to NETWORK_SHARE_MODE=true")
+            return
+        try:
+            with sqlite3.connect(app_db_path, timeout=5) as con:
+                con.execute("PRAGMA quick_check;")
+        except sqlite3.OperationalError as e:
+            log.error("app.db integrity/lock check failed for %s: %s", app_db_path, e)
+    except Exception as e:
+        log.error("app.db healthcheck failed for %s: %s", app_db_path, e)
 
 def password_change(user_credentials=None):
     if user_credentials:

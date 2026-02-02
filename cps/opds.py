@@ -9,7 +9,7 @@ import datetime
 import json
 from urllib.parse import unquote_plus
 
-from flask import Blueprint, request, render_template, make_response, abort, Response, g
+from flask import Blueprint, request, render_template, make_response, abort, Response, g, url_for
 from flask_babel import get_locale
 from flask_babel import gettext as _
 
@@ -17,7 +17,7 @@ from flask_babel import gettext as _
 from sqlalchemy.sql.expression import func, text, or_, and_, true
 from sqlalchemy.exc import InvalidRequestError, OperationalError
 
-from . import logger, config, db, calibre_db, ub, isoLanguages, constants
+from . import logger, config, db, calibre_db, ub, isoLanguages, constants, magic_shelf
 from .usermanagement import requires_basic_auth_if_no_ano, auth
 from .helper import get_download_link, get_book_cover
 from .pagination import Pagination
@@ -28,12 +28,211 @@ opds = Blueprint('opds', __name__)
 
 log = logger.create()
 
+OPDS_ROOT_ORDER_DEFAULT = [
+    'books',
+    'hot',
+    'top_rated',
+    'recent',
+    'random',
+    'read',
+    'unread',
+    'authors',
+    'publishers',
+    'categories',
+    'series',
+    'languages',
+    'ratings',
+    'formats',
+    'shelves',
+    'magic_shelves',
+]
+
+OPDS_ROOT_ENTRY_DEFS = {
+    'books': {
+        'endpoint': 'opds.feed_booksindex',
+        'title': 'Alphabetical Books',
+        'description': 'Books sorted alphabetically',
+        'visible': lambda user, allow_anonymous: True,
+    },
+    'hot': {
+        'endpoint': 'opds.feed_hot',
+        'title': 'Hot Books',
+        'description': 'Popular publications from this catalog based on Downloads.',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_HOT),
+    },
+    'top_rated': {
+        'endpoint': 'opds.feed_best_rated',
+        'title': 'Top Rated Books',
+        'description': 'Popular publications from this catalog based on Rating.',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_BEST_RATED),
+    },
+    'recent': {
+        'endpoint': 'opds.feed_new',
+        'title': 'Recently added Books',
+        'description': 'The latest Books',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_RECENT),
+    },
+    'random': {
+        'endpoint': 'opds.feed_discover',
+        'title': 'Random Books',
+        'description': 'Show Random Books',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_RANDOM),
+    },
+    'read': {
+        'endpoint': 'opds.feed_read_books',
+        'title': 'Read Books',
+        'description': 'Read Books',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_READ_AND_UNREAD) and not user.is_anonymous,
+    },
+    'unread': {
+        'endpoint': 'opds.feed_unread_books',
+        'title': 'Unread Books',
+        'description': 'Unread Books',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_READ_AND_UNREAD) and not user.is_anonymous,
+    },
+    'authors': {
+        'endpoint': 'opds.feed_authorindex',
+        'title': 'Authors',
+        'description': 'Books ordered by Author',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_AUTHOR),
+    },
+    'publishers': {
+        'endpoint': 'opds.feed_publisherindex',
+        'title': 'Publishers',
+        'description': 'Books ordered by publisher',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_PUBLISHER),
+    },
+    'categories': {
+        'endpoint': 'opds.feed_categoryindex',
+        'title': 'Categories',
+        'description': 'Books ordered by category',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_CATEGORY),
+    },
+    'series': {
+        'endpoint': 'opds.feed_seriesindex',
+        'title': 'Series',
+        'description': 'Books ordered by series',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_SERIES),
+    },
+    'languages': {
+        'endpoint': 'opds.feed_languagesindex',
+        'title': 'Languages',
+        'description': 'Books ordered by Languages',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_LANGUAGE),
+    },
+    'ratings': {
+        'endpoint': 'opds.feed_ratingindex',
+        'title': 'Ratings',
+        'description': 'Books ordered by Rating',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_RATING),
+    },
+    'formats': {
+        'endpoint': 'opds.feed_formatindex',
+        'title': 'File formats',
+        'description': 'Books ordered by file formats',
+        'visible': lambda user, __: user.check_visibility(constants.SIDEBAR_FORMAT),
+    },
+    'shelves': {
+        'endpoint': 'opds.feed_shelfindex',
+        'title': 'Shelves',
+        'description': 'Books organized in shelves',
+        'visible': lambda user, allow_anonymous: user.is_authenticated or allow_anonymous,
+    },
+    'magic_shelves': {
+        'endpoint': 'opds.feed_magic_shelfindex',
+        'title': 'Magic Shelves',
+        'description': 'Books organized in magic shelves',
+        'visible': lambda user, allow_anonymous: user.is_authenticated or allow_anonymous,
+    },
+}
+
+
+def normalize_opds_root_order(order):
+    if not isinstance(order, list):
+        order = []
+    seen = set()
+    normalized = []
+    for key in order:
+        if key in OPDS_ROOT_ENTRY_DEFS and key not in seen:
+            normalized.append(key)
+            seen.add(key)
+    for key in OPDS_ROOT_ORDER_DEFAULT:
+        if key not in seen:
+            normalized.append(key)
+            seen.add(key)
+    return normalized
+
+
+def get_opds_root_order_for_user(user):
+    try:
+        order = (user.view_settings or {}).get('opds', {}).get('root_order', [])
+    except Exception:
+        order = []
+    if not order:
+        return OPDS_ROOT_ORDER_DEFAULT
+    return normalize_opds_root_order(order)
+
+
+def get_opds_hidden_entries_for_user(user):
+    try:
+        hidden = (user.view_settings or {}).get('opds', {}).get('hidden_entries', [])
+    except Exception:
+        hidden = []
+    if not isinstance(hidden, list):
+        return set()
+    return {key for key in hidden if key in OPDS_ROOT_ENTRY_DEFS}
+
+
+def get_opds_root_entries(user, allow_anonymous):
+    hidden_entries = get_opds_hidden_entries_for_user(user)
+    entries = []
+    for key in get_opds_root_order_for_user(user):
+        entry_def = OPDS_ROOT_ENTRY_DEFS.get(key)
+        if not entry_def:
+            continue
+        if key in hidden_entries:
+            continue
+        if not entry_def['visible'](user, allow_anonymous):
+            continue
+        entries.append({
+            'key': key,
+            'title': _(entry_def['title']),
+            'description': _(entry_def['description']),
+            'url': url_for(entry_def['endpoint']),
+        })
+    return entries
+
+
+@opds.before_request
+def track_opds_access():
+    """Track OPDS feed access for analytics"""
+    try:
+        from scripts.cwa_db import CWA_DB
+        from .cw_login import current_user
+        import json as json_lib
+        
+        # Only track if user is authenticated
+        if current_user and hasattr(current_user, 'is_authenticated') and current_user.is_authenticated:
+            cwa_db = CWA_DB()
+            cwa_db.log_activity(
+                user_id=int(current_user.id),
+                user_name=current_user.name,
+                event_type='OPDS_ACCESS',
+                extra_data=json_lib.dumps({
+                    'endpoint': request.path,
+                    'method': request.method
+                })
+            )
+    except Exception as e:
+        log.debug(f"Failed to log OPDS access: {e}")
+
 
 @opds.route("/opds/")
 @opds.route("/opds")
 @requires_basic_auth_if_no_ano
 def feed_index():
-    return render_xml_template('index.xml')
+    entries = get_opds_root_entries(auth.current_user(), g.allow_anonymous)
+    return render_xml_template('index.xml', entries=entries)
 
 
 @opds.route("/opds/osd")
@@ -357,12 +556,46 @@ def feed_shelfindex():
     if not (auth.current_user().is_authenticated or g.allow_anonymous):
         abort(404)
     off = request.args.get("offset") or 0
-    shelf = ub.session.query(ub.Shelf).filter(
-        or_(ub.Shelf.is_public == 1, ub.Shelf.user_id == auth.current_user().id)).order_by(ub.Shelf.name).all()
+    if auth.current_user().is_anonymous:
+        shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.is_public == 1).order_by(ub.Shelf.name).all()
+    else:
+        shelf = ub.session.query(ub.Shelf).filter(
+            or_(ub.Shelf.is_public == 1, ub.Shelf.user_id == auth.current_user().id)).order_by(ub.Shelf.name).all()
     number = len(shelf)
     pagination = Pagination((int(off) / (int(config.config_books_per_page)) + 1), config.config_books_per_page,
                             number)
     return render_xml_template('feed.xml', listelements=shelf, folder='opds.feed_shelf', pagination=pagination)
+
+
+@opds.route("/opds/magicshelfindex")
+@requires_basic_auth_if_no_ano
+def feed_magic_shelfindex():
+    if not (auth.current_user().is_authenticated or g.allow_anonymous):
+        abort(404)
+    off = request.args.get("offset") or 0
+
+    if auth.current_user().is_anonymous:
+        magic_shelves = ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.is_public == 1).order_by(ub.MagicShelf.name).all()
+    else:
+        magic_shelves = ub.session.query(ub.MagicShelf).filter(
+            or_(ub.MagicShelf.is_public == 1, ub.MagicShelf.user_id == auth.current_user().id)
+        ).order_by(ub.MagicShelf.name).all()
+
+    class OpdsMagicShelfEntry:
+        def __init__(self, magic):
+            self.id = magic.id
+            self.name = magic.name
+            self.is_public = magic.is_public
+            self.icon = magic.icon
+            self.is_magic_shelf = True
+            self.opds_url = url_for('opds.feed_magic_shelf', shelf_id=magic.id)
+
+    listelements = [OpdsMagicShelfEntry(magic) for magic in magic_shelves]
+    pagination = Pagination((int(off) / (int(config.config_books_per_page)) + 1),
+                            config.config_books_per_page,
+                            len(listelements))
+    return render_xml_template('feed.xml', listelements=listelements, folder='opds.feed_magic_shelf', pagination=pagination)
 
 
 @opds.route("/opds/shelf/<int:book_id>")
@@ -403,6 +636,46 @@ def feed_shelf(book_id):
                 ub.session.rollback()
                 log.error_or_exception("Settings Database error: {}".format(e))
     return render_xml_template('feed.xml', entries=result, pagination=pagination)
+
+
+@opds.route("/opds/magicshelf/<int:shelf_id>")
+@requires_basic_auth_if_no_ano
+def feed_magic_shelf(shelf_id):
+    if not (auth.current_user().is_authenticated or g.allow_anonymous):
+        abort(404)
+    off = request.args.get("offset") or 0
+
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        abort(404)
+
+    if auth.current_user().is_anonymous:
+        if shelf.is_public != 1:
+            abort(404)
+    else:
+        if shelf.user_id != auth.current_user().id and shelf.is_public != 1:
+            abort(403)
+
+    per_page = int(config.config_books_per_page) if config.config_books_per_page else 20
+    page = int(off) // per_page + 1
+    sort_order = [db.Books.timestamp.desc()]
+
+    books, total_count = magic_shelf.get_books_for_magic_shelf(
+        shelf_id,
+        page=page,
+        page_size=per_page,
+        sort_order=sort_order,
+        sort_param='opds',
+        bypass_cache=True
+    )
+
+    class Entry:
+        def __init__(self, book):
+            self.Books = book
+
+    entries = [Entry(book) for book in books]
+    pagination = Pagination(page, per_page, total_count)
+    return render_xml_template('feed.xml', entries=entries, pagination=pagination)
 
 
 @opds.route("/opds/download/<book_id>/<book_format>/")

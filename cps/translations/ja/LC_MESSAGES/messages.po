@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 00:18+0100\n"
+"POT-Creation-Date: 2026-02-02 01:32+0100\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -28,30 +28,27 @@ msgid "Calibre database unavailable. Please reconfigure the library path."
 msgstr ""
 
 #: cps/admin.py:179
-#, fuzzy
 msgid "Server restarted, please reload page."
-msgstr "サーバーを再起動しました。ページを再読み込みしてください"
+msgstr "サーバーを再起動しました。ページを再読み込みしてください。"
 
 #: cps/admin.py:181
-#, fuzzy
 msgid "Performing Server shutdown, please close window."
-msgstr "サーバーをシャットダウンしています。ページを閉じてください"
+msgstr "サーバーをシャットダウンしています。ウィンドウを閉じてください。"
 
 #: cps/admin.py:189
 msgid "Success! Database Reconnected"
-msgstr ""
+msgstr "成功！データベースに再接続しました"
 
 #: cps/admin.py:192
 msgid "Unknown command"
 msgstr "不明なコマンド"
 
 #: cps/admin.py:203
-#, fuzzy
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
-"%(email)s へのテストメール送信がキューに追加されました。結果を見るにはタスク"
-"を確認してください"
+"成功！書籍がメタデータバックアップのキューに追加されました。結果はタスクを確"
+"認してください"
 
 #: cps/admin.py:223
 msgid ""
@@ -212,9 +209,8 @@ msgid "Invalid Restricted Column"
 msgstr "無効な制限列"
 
 #: cps/admin.py:913 cps/admin.py:2418
-#, fuzzy
 msgid "Calibre-Web Automated configuration updated"
-msgstr "Calibre-Webの設定を更新しました"
+msgstr "Calibre-Web Automatedの設定を更新しました"
 
 #: cps/admin.py:925
 msgid "Do you really want to delete the Kobo Token?"
@@ -268,21 +264,20 @@ msgid "Are you sure you want to change Calibre library location?"
 msgstr "Calibreライブラリのパスを変更してもよろしいですか？"
 
 #: cps/admin.py:948
-#, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
 msgstr ""
-"Calibre-Webは新しい表紙を検索してそのサムネイルを更新しますが、これにはしばら"
-"く時間がかかるかもしれません"
+"Calibre-Web Automatedは更新されたカバーを検索し、カバーサムネイルを更新しま"
+"す。しばらくお待ちください。"
 
 #: cps/admin.py:951
-#, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
 msgstr ""
-"Calibre-Webの同期DBを削除して強制的にKoboリーダーと同期してもよろしいですか？"
+"Calibre-Web Automatedの同期データベースを削除してKoboリーダーとの完全同期を強"
+"制しますか？"
 
 #: cps/admin.py:1190 cps/admin.py:1196 cps/admin.py:1206 cps/admin.py:1216
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
@@ -365,7 +360,8 @@ msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
 msgstr ""
-"LDAPのCA証明書、証明書、キーの場所が無効です。正しいパスを入力してください"
+"LDAP CA証明書、証明書、またはキーの場所が無効です。正しいパスを入力してくださ"
+"いLDAPのCA証明書、証明書、キーの場所が無効です。正しいパスを入力してください"
 
 #: cps/admin.py:1687 cps/templates/admin.html:57
 msgid "Add New User"
@@ -377,7 +373,7 @@ msgstr "メールサーバー設定を編集"
 
 #: cps/admin.py:1718
 msgid "Success! Gmail Account Verified."
-msgstr ""
+msgstr "成功！Gmailアカウントが確認されました。"
 
 #: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
 #: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1025
@@ -393,8 +389,9 @@ msgstr "DBエラー: %(error)s"
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
 msgstr ""
-"%(email)s へのテストメール送信がキューに追加されました。結果を見るにはタスク"
-"を確認してください"
+"テストメールが %(email)s への送信キューに追加されました。結果はタスクを確認し"
+"てください%(email)s へのテストメール送信がキューに追加されました。結果を見る"
+"にはタスクを確認してください"
 
 #: cps/admin.py:1751
 #, python-format
@@ -444,14 +441,13 @@ msgid "Edit User %(nick)s"
 msgstr "ユーザー %(nick)s を編集"
 
 #: cps/admin.py:1920
-#, fuzzy, python-format
+#, python-format
 msgid "Success! Password for user %(user)s reset"
-msgstr "ユーザー %(user)s のパスワードをリセット"
+msgstr "成功！ユーザー %(user)s のパスワードをリセットしました"
 
 #: cps/admin.py:1926
-#, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
-msgstr "初めにSMTPメールの設定をしてください"
+msgstr "SMTPメール設定を行ってください。"
 
 #: cps/admin.py:1937
 msgid "Logfile viewer"
@@ -542,7 +538,7 @@ msgstr "{}人のユーザーをインポートしました"
 
 #: cps/admin.py:2203
 msgid "Books path not valid"
-msgstr ""
+msgstr "書籍パスが無効です"
 
 #: cps/admin.py:2210
 msgid "DB Location is not Valid, Please Enter Correct Path"
@@ -584,7 +580,7 @@ msgstr ""
 
 #: cps/admin.py:2385
 msgid "Password length has to be between 1 and 40"
-msgstr ""
+msgstr "パスワードの長さは1〜40文字である必要があります"
 
 #: cps/admin.py:2445
 msgid "Database Settings updated"
@@ -631,7 +627,7 @@ msgstr "管理者ユーザーが残っておらず、ユーザーを削除でき
 
 #: cps/admin.py:2705 cps/web.py:2396
 msgid "Email can't be empty and has to be a valid Email"
-msgstr ""
+msgstr "メールアドレスは空欄にできず、有効なメールアドレスである必要があります"
 
 #: cps/admin.py:2738
 #, python-format
@@ -653,7 +649,7 @@ msgstr ""
 #: cps/admin.py:2810 cps/admin.py:2867
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
-msgstr ""
+msgstr "接続失敗：サーバーがステータスコード %(code)s を返しました"
 
 #: cps/admin.py:2812
 msgid ""
@@ -711,21 +707,19 @@ msgstr ""
 
 #: cps/admin.py:2871
 msgid "Connection failed: Request timed out."
-msgstr ""
+msgstr "接続失敗：リクエストがタイムアウトしました。"
 
 #: cps/admin.py:2873
 msgid "Connection failed: Invalid JSON in response."
-msgstr ""
+msgstr "接続失敗：レスポンスに無効なJSONが含まれています。"
 
 #: cps/admin.py:2876
-#, fuzzy
 msgid "An unknown error occurred."
-msgstr "不明なエラーが発生しました。あとで再試行してください。"
+msgstr "不明なエラーが発生しました。"
 
 #: cps/admin.py:2888
-#, fuzzy
 msgid "Restore already in progress."
-msgstr "接続エラー"
+msgstr ""
 
 #: cps/admin.py:2892
 msgid "Restore failed: Calibre library path is not configured."
@@ -742,9 +736,9 @@ msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
 
 #: cps/admin.py:2974 cps/admin.py:3014
-#, fuzzy, python-format
+#, python-format
 msgid "Restore failed: %(err)s"
-msgstr "接続エラー"
+msgstr ""
 
 #: cps/admin.py:2991
 msgid "Restore completed but app.db cleanup failed. See logs for details."
@@ -759,113 +753,111 @@ msgstr ""
 
 #: cps/constants.py:207
 msgid "Czech"
-msgstr ""
+msgstr "チェコ語"
 
 #: cps/constants.py:208
 msgid "German"
-msgstr ""
+msgstr "ドイツ語"
 
 #: cps/constants.py:209
 msgid "Greek"
-msgstr ""
+msgstr "ギリシャ語"
 
 #: cps/constants.py:210
 msgid "Spanish"
-msgstr ""
+msgstr "スペイン語"
 
 #: cps/constants.py:211
-#, fuzzy
 msgid "Finnish"
-msgstr "終了"
+msgstr "フィンランド語"
 
 #: cps/constants.py:212
 msgid "French"
-msgstr ""
+msgstr "フランス語"
 
 #: cps/constants.py:213
 msgid "Galician"
-msgstr ""
+msgstr "ガリシア語"
 
 #: cps/constants.py:214
 msgid "Hungarian"
-msgstr ""
+msgstr "ハンガリー語"
 
 #: cps/constants.py:215
 msgid "Indonesian"
-msgstr ""
+msgstr "インドネシア語"
 
 #: cps/constants.py:216
 msgid "Italian"
-msgstr ""
+msgstr "イタリア語"
 
 #: cps/constants.py:217
 msgid "Japanese"
-msgstr ""
+msgstr "日本語"
 
 #: cps/constants.py:218
 msgid "Khmer"
-msgstr ""
+msgstr "クメール語"
 
 #: cps/constants.py:219
 msgid "Korean"
-msgstr ""
+msgstr "韓国語"
 
 #: cps/constants.py:220
 msgid "Dutch"
-msgstr ""
+msgstr "オランダ語"
 
 #: cps/constants.py:221
 msgid "Norwegian"
-msgstr ""
+msgstr "ノルウェー語"
 
 #: cps/constants.py:222
-#, fuzzy
 msgid "Polish"
-msgstr "出版社"
+msgstr "ポーランド語"
 
 #: cps/constants.py:223
 msgid "Portuguese"
-msgstr ""
+msgstr "ポルトガル語"
 
 #: cps/constants.py:224
 msgid "Portuguese (Brazil)"
-msgstr ""
+msgstr "ポルトガル語（ブラジル）"
 
 #: cps/constants.py:225
 msgid "Russian"
-msgstr ""
+msgstr "ロシア語"
 
 #: cps/constants.py:226
 msgid "Slovak"
-msgstr ""
+msgstr "スロバキア語"
 
 #: cps/constants.py:227
 msgid "Slovenian"
-msgstr ""
+msgstr "スロベニア語"
 
 #: cps/constants.py:228
 msgid "Swedish"
-msgstr ""
+msgstr "スウェーデン語"
 
 #: cps/constants.py:229
 msgid "Turkish"
-msgstr ""
+msgstr "トルコ語"
 
 #: cps/constants.py:230
 msgid "Ukrainian"
-msgstr ""
+msgstr "ウクライナ語"
 
 #: cps/constants.py:231
 msgid "Vietnamese"
-msgstr ""
+msgstr "ベトナム語"
 
 #: cps/constants.py:232
 msgid "Chinese (Simplified, China)"
-msgstr ""
+msgstr "中国語（簡体字、中国）"
 
 #: cps/constants.py:233
 msgid "Chinese (Traditional, Taiwan)"
-msgstr ""
+msgstr "中国語（繁体字、台湾）"
 
 #: cps/converter.py:20
 msgid "not installed"
@@ -884,26 +876,25 @@ msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr ""
+"ライブラリ更新 🔄 見落とされた可能性のある書籍を確認中です、お待ちください..."
 
 #: cps/cwa_functions.py:842
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 
 #: cps/cwa_functions.py:878
-#, fuzzy
 msgid "Calibre-Web Automated User Settings"
-msgstr "Calibre E-Book Converterの設定"
+msgstr "Calibre-Web Automated ユーザー設定"
 
 #: cps/cwa_functions.py:924 cps/cwa_functions.py:926 cps/cwa_functions.py:930
 #: cps/cwa_functions.py:932 cps/cwa_functions.py:935 cps/cwa_functions.py:937
 msgid "Timestamp"
-msgstr ""
+msgstr "タイムスタンプ"
 
 #: cps/cwa_functions.py:924 cps/cwa_functions.py:926
 #: cps/templates/tasks.html:43
-#, fuzzy
 msgid "Book ID"
-msgstr "本"
+msgstr "書籍ID"
 
 #: cps/cwa_functions.py:924 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
@@ -911,52 +902,47 @@ msgid "Book Title"
 msgstr "本のタイトル"
 
 #: cps/cwa_functions.py:924
-#, fuzzy
 msgid "Book Author"
 msgstr "著者"
 
 #: cps/cwa_functions.py:924
 msgid "Trigger Type"
-msgstr ""
+msgstr "トリガータイプ"
 
 #: cps/cwa_functions.py:926 cps/cwa_functions.py:932
-#, fuzzy
 msgid "Filepath"
-msgstr "ファイル形式"
+msgstr "ファイルパス"
 
 #: cps/cwa_functions.py:930 cps/cwa_functions.py:932 cps/cwa_functions.py:935
 #: cps/cwa_functions.py:937
-#, fuzzy
 msgid "Filename"
-msgstr "名前"
+msgstr "ファイル名"
 
 #: cps/cwa_functions.py:930
 msgid "Manual?"
-msgstr ""
+msgstr "手動？"
 
 #: cps/cwa_functions.py:930
 msgid "No. Fixes"
-msgstr ""
+msgstr "修正数"
 
 #: cps/cwa_functions.py:930 cps/cwa_functions.py:935 cps/cwa_functions.py:937
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "元ファイルをバックアップ済み？"
 
 #: cps/cwa_functions.py:932
 msgid "Fixes Applied"
-msgstr ""
+msgstr "適用された修正"
 
 #: cps/cwa_functions.py:937
 msgid "Original Format"
-msgstr ""
+msgstr "元の形式"
 
 #: cps/cwa_functions.py:937
-#, fuzzy
 msgid "End Format"
-msgstr "アップロード形式"
+msgstr "変換後の形式"
 
 #: cps/cwa_functions.py:1013 cps/cwa_functions.py:1042
-#, fuzzy
 msgid "Unknown User"
 msgstr "不明"
 
@@ -967,59 +953,59 @@ msgstr "Calibre-Web テストメール"
 
 #: cps/cwa_functions.py:1534
 msgid "Calibre-Web Automated - Full Enforcement History"
-msgstr ""
+msgstr "Calibre-Web Automated - 完全な適用履歴"
 
 #: cps/cwa_functions.py:1543
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
-msgstr ""
+msgstr "Calibre-Web Automated - 完全な適用履歴（パス付き）"
 
 #: cps/cwa_functions.py:1552
 msgid "Calibre-Web Automated - Full Import History"
-msgstr ""
+msgstr "Calibre-Web Automated - 完全なインポート履歴"
 
 #: cps/cwa_functions.py:1561
 msgid "Calibre-Web Automated - Full Conversion History"
-msgstr ""
+msgstr "Calibre-Web Automated - 完全な変換履歴"
 
 #: cps/cwa_functions.py:1570
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
-msgstr ""
+msgstr "Calibre-Web Automated - 完全なEPUB修正履歴（パスと修正なし）"
 
 #: cps/cwa_functions.py:1579
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
-msgstr ""
+msgstr "Calibre-Web Automated - 完全なEPUB修正履歴（パスと修正付き）"
 
 #: cps/cwa_functions.py:1597
 msgid "✅ All Monitoring Services are running as intended! 👍"
-msgstr ""
+msgstr "✅ すべての監視サービスが正常に稼働しています！👍"
 
 #: cps/cwa_functions.py:1599
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
-msgstr ""
+msgstr "🔴 取り込みサービスは稼働中ですが、メタデータ変更検出は停止しています"
 
 #: cps/cwa_functions.py:1601
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
-msgstr ""
+msgstr "🔴 メタデータ変更検出は稼働中ですが、取り込みサービスは停止しています"
 
 #: cps/cwa_functions.py:1603
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
-msgstr ""
+msgstr "⛔ 取り込みサービスとメタデータ変更検出の両方が停止しています"
 
 #: cps/cwa_functions.py:1605
 msgid "An Error has occurred"
-msgstr ""
+msgstr "エラーが発生しました"
 
 #: cps/cwa_functions.py:1776 cps/cwa_functions.py:1802
 msgid "Calibre-Web Automated - Convert Library"
-msgstr ""
+msgstr "Calibre-Web Automated - ライブラリ変換"
 
 #: cps/cwa_functions.py:1918 cps/cwa_functions.py:1942
 #, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
-msgstr "Calibre E-Book Converterの設定"
+msgstr "Calibre-Web Automated - Kindle送信用EPUB修正サービス"
 
 #: cps/cwa_functions.py:1996
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
@@ -1028,7 +1014,7 @@ msgstr ""
 #: cps/cwa_functions.py:2003
 #, fuzzy
 msgid "Invalid book selection."
-msgstr "無効なロール"
+msgstr "無効な書籍IDです。"
 
 #: cps/cwa_functions.py:2009
 #, fuzzy
@@ -1046,9 +1032,8 @@ msgid "EPUB file not found on disk."
 msgstr "%(format)s 形式は存在しません"
 
 #: cps/cwa_functions.py:2034
-#, fuzzy
 msgid "EPUB Fixer started for selected book."
-msgstr "選択した本を統合"
+msgstr ""
 
 #: cps/cwa_functions.py:2037
 msgid "Failed to start EPUB Fixer for selected book."
@@ -1056,11 +1041,11 @@ msgstr ""
 
 #: cps/cwa_functions.py:2084
 msgid "You must be an admin to access this page."
-msgstr ""
+msgstr "このページにアクセスするには管理者権限が必要です。"
 
 #: cps/cwa_functions.py:2099
 msgid "Both username and image data are required."
-msgstr ""
+msgstr "ユーザー名と画像データの両方が必要です。"
 
 #: cps/cwa_functions.py:2107
 msgid "Invalid image data format. Must be a valid image."
@@ -1079,22 +1064,20 @@ msgid "Invalid Base64 image data."
 msgstr ""
 
 #: cps/cwa_functions.py:2135
-#, fuzzy
 msgid "Invalid image data format."
-msgstr "メールアドレスの形式が無効"
+msgstr ""
 
 #: cps/cwa_functions.py:2140
 msgid "Error validating image data."
 msgstr ""
 
 #: cps/cwa_functions.py:2158
-#, fuzzy
 msgid "Profile picture updated successfully."
-msgstr "{}人のユーザーが削除されました"
+msgstr "プロフィール画像を更新しました。"
 
 #: cps/cwa_functions.py:2171
 msgid "CWA Profile Picture Management (WIP)"
-msgstr ""
+msgstr "CWA プロフィール画像管理（開発中）"
 
 #: cps/db.py:1232 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:80
@@ -1106,9 +1089,8 @@ msgid "None"
 msgstr "なし"
 
 #: cps/duplicates.py:314 cps/duplicates.py:324
-#, fuzzy
 msgid "Duplicate Books"
-msgstr "本を削除"
+msgstr "重複する書籍"
 
 #: cps/duplicates.py:1117
 msgid "Duplicate group already dismissed"
@@ -1150,7 +1132,7 @@ msgstr ""
 
 #: cps/editbooks.py:111
 msgid "Missing or invalid book id for format upload"
-msgstr ""
+msgstr "フォーマットアップロード用の書籍IDがないか無効です"
 
 #: cps/editbooks.py:117
 msgid "Cannot upload format: Book no longer exists in library"
@@ -1162,9 +1144,8 @@ msgid "Upload done, processing, please wait..."
 msgstr "アップロード完了。現在処理中ですのでお待ち下さい..."
 
 #: cps/editbooks.py:147 cps/editbooks.py:173
-#, fuzzy
 msgid "Failed to queue upload for processing"
-msgstr "表紙ファイルの作成に失敗しました"
+msgstr "アップロードの処理キューへの追加に失敗しました"
 
 #: cps/editbooks.py:189
 msgid "Source or destination format for conversion missing"
@@ -1181,11 +1162,10 @@ msgid "There was an error converting this book: %(res)s"
 msgstr "この本の変換中にエラーが発生しました: %(res)s"
 
 #: cps/editbooks.py:357 cps/editbooks.py:1228 cps/editbooks.py:1737
-#, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr ""
-"ファイル拡張子 '%(ext)s' をこのサーバーにアップロードすることは許可されていま"
-"せん"
+"このファイル形式はこのサーバーへのアップロードが許可されていませんファイル拡"
+"張子 '%(ext)s' をこのサーバーにアップロードすることは許可されていません"
 
 #: cps/editbooks.py:362 cps/editbooks.py:1234 cps/editbooks.py:1748
 #, python-format
@@ -1236,8 +1216,9 @@ msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr ""
-"アップロードした本はすでにライブラリに存在します。新しくアップロードする前に"
-"変更を加えてください: "
+"アップロードされた書籍はすでにライブラリに存在する可能性があります。新しく"
+"アップロードする前に変更を検討してください：アップロードした本はすでにライブ"
+"ラリに存在します。新しくアップロードする前に変更を加えてください: "
 
 #: cps/editbooks.py:1246
 #, python-format
@@ -1266,9 +1247,10 @@ msgid "edit metadata"
 msgstr "メタデータを編集"
 
 #: cps/editbooks.py:1507
-#, fuzzy, python-format
+#, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
-msgstr "%(seriesindex)s は有効な数字ではありません。スキップします"
+msgstr ""
+"シリーズ番号: %(seriesindex)s は有効な数字ではありません。スキップします"
 
 #: cps/editbooks.py:1742
 msgid "User has no rights to upload additional file formats"
@@ -1295,15 +1277,17 @@ msgid ""
 "Drive again"
 msgstr ""
 "Googleドライブの設定が完了していません。Googleドライブを無効にしてから再度有"
-"効にしてみてください"
+"効にしてくださいGoogleドライブの設定が完了していません。Googleドライブを無効"
+"にしてから再度有効にしてみてください"
 
 #: cps/gdrive.py:81
 msgid ""
 "Callback domain is not verified, please follow steps to verify domain in "
 "google developer console"
 msgstr ""
-"コールバックドメインが認証されていません。Google Developer Consoleでドメイン"
-"を認証してください"
+"コールバックドメインが確認されていません。Google開発者コンソールでドメインを"
+"確認する手順に従ってくださいコールバックドメインが認証されていません。Google "
+"Developer Consoleでドメインを認証してください"
 
 #: cps/helper.py:83
 #, python-format
@@ -1325,44 +1309,40 @@ msgid "Send to eReader"
 msgstr "E-Readerに送信"
 
 #: cps/helper.py:103 cps/helper.py:123 cps/helper.py:236
-#, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
-msgstr "このメールはCalibre-Web経由で送信されました。"
+msgstr "このメールはCalibre-Web Automatedから送信されました。"
 
 #: cps/helper.py:121
-#, fuzzy
 msgid "Calibre-Web Automated Test Email"
-msgstr "Calibre-Web テストメール"
+msgstr "Calibre-Web Automated テストメール"
 
 #: cps/helper.py:122
-#, fuzzy
 msgid "Test Email"
 msgstr "テストメール"
 
 #: cps/helper.py:139
-#, fuzzy
 msgid "Get Started with Calibre-Web Automated"
-msgstr "Calibre-Webを始める"
+msgstr "Calibre-Web Automatedを始める"
 
 #: cps/helper.py:144
-#, fuzzy, python-format
+#, python-format
 msgid "Registration Email for user: %(name)s"
-msgstr "ユーザー: %(name)s 用の登録メール"
+msgstr "ユーザー: %(name)s の登録メール"
 
 #: cps/helper.py:155 cps/helper.py:161
-#, fuzzy, python-format
+#, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
-msgstr "%(orig)s を %(format)s に変換してからE-Readerに送信"
+msgstr "%(orig)s を %(format)s に変換して電子書籍リーダーに送信"
 
 #: cps/helper.py:180 cps/helper.py:184 cps/helper.py:188
-#, fuzzy, python-format
+#, python-format
 msgid "Send %(format)s to eReader"
-msgstr "E-Readerに %(format)s を送信"
+msgstr "%(format)s を電子書籍リーダーに送信"
 
 #: cps/helper.py:231
-#, fuzzy, python-format
+#, python-format
 msgid "%(book)s send to eReader"
-msgstr "%(book)s をE-Readerに送信"
+msgstr "%(book)s を電子書籍リーダーに送信"
 
 #: cps/helper.py:238
 msgid "The requested file could not be read. Maybe wrong permissions?"
@@ -1380,8 +1360,9 @@ msgstr "読み込みステータスを設定できません: {}"
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr ""
-"%(id)s の本フォルダの削除に失敗しました。そこにはサブフォルダがあります: "
-"%(path)s"
+"書籍 %(id)s のフォルダ削除に失敗しました。パスにサブフォルダがあります："
+"%(path)s%(id)s の本フォルダの削除に失敗しました。そこにはサブフォルダがありま"
+"す: %(path)s"
 
 #: cps/helper.py:413
 #, python-format
@@ -1394,14 +1375,16 @@ msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
 "%(path)s"
 msgstr ""
-"本 %(id)s はDBのみから削除されます。DB内の本のパスが有効ではありません: "
-"%(path)s"
+"書籍 %(id)s をデータベースからのみ削除します。データベース内の書籍パスが無効"
+"です：%(path)s本 %(id)s はDBのみから削除されます。DB内の本のパスが有効ではあ"
+"りません: %(path)s"
 
 #: cps/helper.py:513
 #, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
+"著者名を '%(src)s' から '%(dest)s' に変更できませんでした。エラー：%(error)s"
 "エラー: %(error)s により、著者名を %(src)s から %(dest)s に変更できませんでし"
 "た"
 
@@ -1424,27 +1407,27 @@ msgstr "本のパス %(path)s はGoogleドライブ上にありません"
 
 #: cps/helper.py:768
 msgid "Found an existing account for this Email address"
-msgstr ""
+msgstr "このメールアドレスで既存のアカウントが見つかりました"
 
 #: cps/helper.py:776
 msgid "This username is already taken"
 msgstr "このユーザー名はすでに使われています"
 
 #: cps/helper.py:790
-#, fuzzy
 msgid "Invalid Email address format"
-msgstr "メールアドレスの形式が無効"
+msgstr "メールアドレスの形式が無効です"
 
 #: cps/helper.py:812
 msgid "Password doesn't comply with password validation rules"
-msgstr ""
+msgstr "パスワードがパスワード検証ルールに準拠していません"
 
 #: cps/helper.py:1026
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
-"表紙のアップロードに必要なPythonモジュール 'advocate' がインストールされてい"
-"ません"
+"Pythonモジュール 'advocate' がインストールされていませんが、カバーアップロー"
+"ドに必要です表紙のアップロードに必要なPythonモジュール 'advocate' がインス"
+"トールされていません"
 
 #: cps/helper.py:1036
 msgid "Error Downloading Cover"
@@ -1459,8 +1442,9 @@ msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
-"表紙アップロードのためにlocalhostやローカルネットワークにアクセスすることは許"
-"可されていません"
+"カバーアップロードのためにlocalhostまたはローカルネットワークにアクセスするこ"
+"とは許可されていません表紙アップロードのためにlocalhostやローカルネットワーク"
+"にアクセスすることは許可されていません"
 
 #: cps/helper.py:1052
 msgid "Failed to create path for cover"
@@ -1483,16 +1467,14 @@ msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "表紙ファイルは jpg/jpeg のみ対応しています"
 
 #: cps/helper.py:1260 cps/helper.py:1491
-#, fuzzy
 msgid "Cover"
-msgstr "見つける"
+msgstr "表紙"
 
 #: cps/helper.py:1277
 msgid "UnRar binary file not found"
 msgstr "UnRarのバイナリファイルが見つかりません"
 
 #: cps/helper.py:1288
-#, fuzzy
 msgid "Error executing UnRar"
 msgstr "UnRarの実行中にエラーが発生しました"
 
@@ -1505,44 +1487,41 @@ msgstr ""
 
 #: cps/helper.py:1303
 msgid "Could not find the specified directory"
-msgstr ""
+msgstr "指定されたディレクトリが見つかりませんでした"
 
 #: cps/helper.py:1306
 msgid "Please specify a directory, not a file"
-msgstr ""
+msgstr "ファイルではなくディレクトリを指定してください"
 
 #: cps/helper.py:1320
-#, fuzzy
 msgid "Calibre binaries not viable"
-msgstr "DBへの書き込みができません"
+msgstr "Calibreバイナリが使用できません"
 
 #: cps/helper.py:1329
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
-msgstr ""
+msgstr "Calibreバイナリがありません：%(missing)s"
 
 #: cps/helper.py:1331
-#, fuzzy, python-format
+#, python-format
 msgid "Missing executable permissions: %(missing)s"
-msgstr "実行権限がありません"
+msgstr "実行権限がありません: %(missing)s"
 
 #: cps/helper.py:1336
-#, fuzzy
 msgid "Error executing Calibre"
-msgstr "UnRarの実行中にエラーが発生しました"
+msgstr "Calibreの実行中にエラーが発生しました"
 
 #: cps/helper.py:1493 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
-msgstr ""
+msgstr "すべての書籍をメタデータバックアップのキューに追加"
 
 #: cps/kobo_auth.py:80
-#, fuzzy
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
 "api_endpoint for kobo device"
 msgstr ""
-"localhost以外からCalibre-Webにアクセスし、有効なKobo端末用APIエンドポイントを"
-"取得してください"
+"Koboデバイス用の有効なAPIエンドポイントを取得するには、localhost以外から"
+"Calibre-Web Automatedにアクセスしてください"
 
 #: cps/kobo_auth.py:106
 msgid "Kobo Setup"
@@ -1653,9 +1632,8 @@ msgid "Failed to fetch user info from Google."
 msgstr "Googleからのユーザー情報取得に失敗しました。"
 
 #: cps/oauth_bb.py:884
-#, fuzzy
 msgid "Failed to log in with Generic OAuth."
-msgstr "GitHubアカウントでのログインに失敗しました。"
+msgstr "汎用OAuthでのログインに失敗しました。"
 
 #: cps/oauth_bb.py:900
 msgid "OAuth authentication failed: Token validation error. Please try again."
@@ -1693,9 +1671,9 @@ msgid "Google Oauth error: {}"
 msgstr "Google OAuth エラー: {}"
 
 #: cps/oauth_bb.py:1084 cps/oauth_bb.py:1092
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "OAuth error: {}"
-msgstr "GitHub OAuth エラー: {}"
+msgstr "OAuthエラー: {}"
 
 #: cps/opds.py:200
 #, fuzzy
@@ -1763,9 +1741,8 @@ msgid "Read Books"
 msgstr "既読の本"
 
 #: cps/render_template.py:62
-#, fuzzy
 msgid "Show Read and Unread"
-msgstr "既読の本と未読の本を表示"
+msgstr "既読と未読を表示"
 
 #: cps/render_template.py:64 cps/web.py:854
 msgid "Unread Books"
@@ -1789,9 +1766,8 @@ msgid "Categories"
 msgstr "カテゴリ"
 
 #: cps/render_template.py:72 cps/templates/user_table.html:159
-#, fuzzy
 msgid "Show Category Section"
-msgstr "カテゴリ選択を表示"
+msgstr "カテゴリセクションを表示"
 
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:351
@@ -1802,9 +1778,8 @@ msgid "Series"
 msgstr "シリーズ"
 
 #: cps/render_template.py:75 cps/templates/user_table.html:158
-#, fuzzy
 msgid "Show Series Section"
-msgstr "シリーズ選択を表示"
+msgstr "シリーズセクションを表示"
 
 #: cps/render_template.py:76 cps/templates/book_table.html:105
 #: cps/templates/cwa_settings.html:323 cps/templates/cwa_settings.html:325
@@ -1813,18 +1788,16 @@ msgid "Authors"
 msgstr "著者"
 
 #: cps/render_template.py:78 cps/templates/user_table.html:161
-#, fuzzy
 msgid "Show Author Section"
-msgstr "著者選択を表示"
+msgstr "著者セクションを表示"
 
 #: cps/render_template.py:80 cps/templates/book_table.html:111 cps/web.py:1610
 msgid "Publishers"
 msgstr "出版社"
 
 #: cps/render_template.py:82 cps/templates/user_table.html:164
-#, fuzzy
 msgid "Show Publisher Section"
-msgstr "出版社選択を表示"
+msgstr "出版社セクションを表示"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
 #: cps/templates/detail.html:672 cps/templates/search_form.html:108
@@ -1833,36 +1806,32 @@ msgid "Languages"
 msgstr "言語"
 
 #: cps/render_template.py:86 cps/templates/user_table.html:156
-#, fuzzy
 msgid "Show Language Section"
-msgstr "言語選択を表示"
+msgstr "言語セクションを表示"
 
 #: cps/render_template.py:87 cps/web.py:1694
 msgid "Ratings"
 msgstr "評価"
 
 #: cps/render_template.py:89 cps/templates/user_table.html:165
-#, fuzzy
 msgid "Show Ratings Section"
-msgstr "評価選択を表示"
+msgstr "評価セクションを表示"
 
 #: cps/render_template.py:90
 msgid "File formats"
 msgstr "ファイル形式"
 
 #: cps/render_template.py:92 cps/templates/user_table.html:166
-#, fuzzy
 msgid "Show File Formats Section"
-msgstr "ファイル形式選択を表示"
+msgstr "ファイル形式セクションを表示"
 
 #: cps/render_template.py:94 cps/web.py:877
 msgid "Archived Books"
 msgstr "アーカイブされた本"
 
 #: cps/render_template.py:96 cps/templates/user_table.html:167
-#, fuzzy
 msgid "Show Archived Books"
-msgstr "アーカイブされた本を表示"
+msgstr "アーカイブされた書籍を表示"
 
 #: cps/render_template.py:99 cps/web.py:1430
 msgid "Books List"
@@ -1874,12 +1843,11 @@ msgstr "本の一覧を表示"
 
 #: cps/render_template.py:104
 msgid "Duplicates"
-msgstr ""
+msgstr "重複"
 
 #: cps/render_template.py:106
-#, fuzzy
 msgid "Show Duplicate Books"
-msgstr "高評価の本を表示"
+msgstr "重複する書籍を表示"
 
 #: cps/render_template.py:183
 msgid ""
@@ -1913,9 +1881,9 @@ msgid "Rating >= %(rating)s"
 msgstr "評価 >= %(rating)s"
 
 #: cps/search.py:237
-#, fuzzy, python-format
+#, python-format
 msgid "Read Status = '%(status)s'"
-msgstr "既読/未読状況 = %(status)s"
+msgstr "既読状況 = '%(status)s'"
 
 #: cps/search.py:354
 msgid "Error on search for custom columns, please restart Calibre-Web"
@@ -1943,7 +1911,7 @@ msgstr "この本は %(shelfname)s にすでに追加されています"
 #: cps/shelf.py:63
 #, python-format
 msgid "%(book_id)s is a invalid Book Id. Could not be added to Shelf"
-msgstr ""
+msgstr "%(book_id)s は無効な書籍IDです。本棚に追加できませんでした"
 
 #: cps/shelf.py:100
 #, python-format
@@ -2089,8 +2057,9 @@ msgid ""
 "A new update is available. Click on the button below to update to the latest "
 "version."
 msgstr ""
-"アップデートが利用可能です。下のボタンをクリックして最新バージョンにアップ"
-"デートしてください。"
+"新しいアップデートが利用可能です。下のボタンをクリックして最新バージョンに更"
+"新してください。アップデートが利用可能です。下のボタンをクリックして最新バー"
+"ジョンにアップデートしてください。"
 
 #: cps/updater.py:473
 msgid "Could not fetch update information"
@@ -2107,8 +2076,9 @@ msgid ""
 "A new update is available. Click on the button below to update to version: "
 "%(version)s"
 msgstr ""
-"アップデートが利用可能です。下のボタンをクリックしてバージョン: %(version)s "
-"にアップデートしてください。"
+"新しいアップデートが利用可能です。下のボタンをクリックして最新バージョンに更"
+"新してください。アップデートが利用可能です。下のボタンをクリックしてバージョ"
+"ン: %(version)s にアップデートしてください。"
 
 #: cps/updater.py:535
 msgid "No release information available"
@@ -2293,14 +2263,13 @@ msgid "File formats list"
 msgstr "ファイル形式一覧"
 
 #: cps/web.py:1961 cps/web.py:1999
-#, fuzzy
 msgid "Please configure the SMTP mail settings first..."
-msgstr "初めにSMTPメールの設定をしてください"
+msgstr "まずSMTPメール設定を行ってください..."
 
 #: cps/web.py:1965
-#, fuzzy
 msgid "Oops! Please update your profile with a valid eReader Email."
-msgstr "初めにKindleのメールアドレスを設定してください"
+msgstr ""
+"有効な電子書籍リーダーのメールアドレスをプロフィールに設定してください。"
 
 #: cps/web.py:1987
 #, python-format
@@ -2314,16 +2283,15 @@ msgstr "%(res)s を送信中にエラーが発生しました"
 
 #: cps/web.py:2007
 msgid "No email addresses selected"
-msgstr ""
+msgstr "メールアドレスが選択されていません"
 
 #: cps/web.py:2029
-#, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
-msgstr "本の %(eReadermail)s への送信がキューに追加されました"
+msgstr "成功！選択したアドレスへの送信キューに書籍を追加しました"
 
 #: cps/web.py:2048
 msgid "Please wait one minute to register next user"
-msgstr ""
+msgstr "次のユーザー登録まで1分お待ちください"
 
 #: cps/templates/layout.html:135 cps/templates/layout.html:177
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2049
@@ -2333,9 +2301,8 @@ msgid "Register"
 msgstr "登録"
 
 #: cps/web.py:2052 cps/web.py:2217
-#, fuzzy
 msgid "Connection error to limiter backend, please contact your administrator"
-msgstr "メールサーバーが設定されていません。管理者に連絡してください"
+msgstr "リミッターバックエンドへの接続エラーです。管理者に連絡してください"
 
 #: cps/web.py:2057 cps/web.py:2109
 msgid ""
@@ -2351,23 +2318,20 @@ msgid "Success! Confirmation Email has been sent."
 msgstr "確認メールがこのメールアドレスに送信されました。"
 
 #: cps/web.py:2146
-#, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
-msgstr "Calibre-Webインスタンスが未設定です。管理者に連絡してください"
+msgstr ""
 
 #: cps/web.py:2191
-#, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
-msgstr "メールサーバーが設定されていません。管理者に連絡してください"
+msgstr ""
 
 #: cps/web.py:2196 cps/web.py:2223
-#, fuzzy
 msgid "Cannot activate LDAP authentication"
-msgstr "LDAP認証を有効化できません"
+msgstr "LDAP認証を有効にできません"
 
 #: cps/web.py:2205
 msgid "Standard login is disabled."
@@ -2375,30 +2339,29 @@ msgstr ""
 
 #: cps/web.py:2213
 msgid "Please wait one minute before next login"
-msgstr ""
+msgstr "次のログインまで1分お待ちください"
 
 #: cps/web.py:2231
 msgid "Username cannot be empty"
 msgstr ""
 
 #: cps/web.py:2243
-#, fuzzy, python-format
+#, python-format
 msgid "you are now logged in as: '%(nickname)s'"
-msgstr "%(nickname)s としてログイン中"
+msgstr "'%(nickname)s' としてログインしました"
 
 #: cps/web.py:2262
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
-msgstr "%(nickname)s としてログイン中"
+msgstr ""
 
 #: cps/web.py:2267 cps/web.py:2270
-#, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
-msgstr "Calibre-Webインスタンスが未設定です。管理者に連絡してください"
+msgstr ""
 
 #: cps/web.py:2274
 msgid ""
@@ -2407,61 +2370,55 @@ msgid ""
 msgstr ""
 
 #: cps/web.py:2282
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
 "known"
 msgstr ""
-"代わりに '%(nickname)s' としてログインします。LDAPサーバーにアクセスできない"
-"か、ユーザーが存在しません"
+"フォールバックログイン：'%(nickname)s'、LDAPサーバーに到達できないか、ユー"
+"ザーが不明です"
 
 #: cps/web.py:2288
-#, fuzzy, python-format
+#, python-format
 msgid "Could not login: %(message)s"
-msgstr "ログインできません: %(message)s"
+msgstr "ログインできませんでした: %(message)s"
 
 #: cps/web.py:2311 cps/web.py:2312 cps/web.py:2355
-#, fuzzy
 msgid "Wrong Username or Password"
-msgstr "ユーザー名またはパスワードが違います"
+msgstr "ユーザー名またはパスワードが間違っています"
 
 #: cps/web.py:2320
-#, fuzzy
 msgid "New Password was sent to your email address"
-msgstr "新しいパスワードがあなたのメールアドレスに送信されました"
+msgstr "新しいパスワードをメールアドレスに送信しました"
 
 #: cps/web.py:2324
-#, fuzzy
 msgid "An unknown error occurred. Please try again later."
-msgstr "不明なエラーが発生しました。あとで再試行してください。"
+msgstr "不明なエラーが発生しました。後でもう一度お試しください。"
 
 #: cps/web.py:2326
-#, fuzzy
 msgid "Please enter valid username to reset password"
-msgstr "パスワードをリセットするには、有効なユーザー名を入力してください"
+msgstr "パスワードをリセットするには有効なユーザー名を入力してください"
 
 #: cps/web.py:2334
-#, fuzzy, python-format
+#, python-format
 msgid "You are now logged in as: '%(nickname)s'"
-msgstr "%(nickname)s としてログイン中"
+msgstr "'%(nickname)s' としてログインしました"
 
 #: cps/web.py:2594
-#, fuzzy
 msgid "Success! Profile Updated"
-msgstr "プロフィールを更新しました"
+msgstr "成功！プロフィールを更新しました"
 
 #: cps/web.py:2600
 msgid "Oops! An account already exists for this Email."
 msgstr "このメールアドレスで登録されたアカウントがすでに存在します"
 
 #: cps/web.py:2798
-#, fuzzy
 msgid "Invalid book ID."
-msgstr "無効なロール"
+msgstr "無効な書籍IDです。"
 
 #: cps/progress_syncing/protocols/kosync.py:440
 msgid "KOReader Sync Plugin"
-msgstr ""
+msgstr "KOReader同期プラグイン"
 
 #: cps/services/gmail.py:48
 msgid "Found no valid gmail.json file with OAuth information"
@@ -2496,7 +2453,7 @@ msgstr ""
 
 #: cps/tasks/clean.py:18
 msgid "Delete temp folder contents"
-msgstr ""
+msgstr "一時フォルダの内容を削除"
 
 #: cps/tasks/convert.py:98
 #, python-format
@@ -2580,9 +2537,8 @@ msgid "E-mail"
 msgstr "メール"
 
 #: cps/tasks/metadata_backup.py:23
-#, fuzzy
 msgid "Backing up Metadata"
-msgstr "メタデータを編集"
+msgstr "メタデータをバックアップ中"
 
 #: cps/tasks/ops.py:28
 msgid "Convert Library – full run"
@@ -2627,7 +2583,7 @@ msgstr "アップロード"
 
 #: cps/templates/admin.html:9
 msgid "Users&nbsp;&nbsp;👤"
-msgstr ""
+msgstr "ユーザー&nbsp;&nbsp;👤"
 
 #: cps/templates/admin.html:14 cps/templates/login.html:17
 #: cps/templates/login.html:19 cps/templates/register.html:9
@@ -2689,16 +2645,15 @@ msgstr "みんなの本棚"
 
 #: cps/templates/admin.html:58
 msgid "Manage Profile Pictures"
-msgstr ""
+msgstr "プロフィール画像の管理"
 
 #: cps/templates/admin.html:60
 msgid "Import LDAP Users"
 msgstr "LDAPユーザーをインポート"
 
 #: cps/templates/admin.html:67
-#, fuzzy
 msgid "Email Server Settings&nbsp;&nbsp;📬"
-msgstr "メールサーバー設定"
+msgstr "メールサーバー設定&nbsp;&nbsp;📬"
 
 #: cps/templates/admin.html:72 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"
@@ -2722,7 +2677,6 @@ msgid "From Email"
 msgstr "Fromメールアドレス"
 
 #: cps/templates/admin.html:95
-#, fuzzy
 msgid "Email Service"
 msgstr "メールサービス"
 
@@ -2732,7 +2686,7 @@ msgstr "OAuth2経由のGmail"
 
 #: cps/templates/admin.html:111
 msgid "Configuration&nbsp;&nbsp;⚙️"
-msgstr ""
+msgstr "設定&nbsp;&nbsp;⚙️"
 
 #: cps/templates/admin.html:114
 msgid "Calibre Database Directory"
@@ -2796,9 +2750,8 @@ msgid "Edit Calibre Database Configuration"
 msgstr "Calibre DBの設定を編集"
 
 #: cps/templates/admin.html:173
-#, fuzzy
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
-msgstr "スケジュールタスク"
+msgstr "スケジュールされたタスク&nbsp;&nbsp;⌛"
 
 #: cps/templates/admin.html:176 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:19
@@ -2824,7 +2777,7 @@ msgstr "Calibreライブラリに再接続"
 
 #: cps/templates/admin.html:196 cps/templates/schedule_edit.html:42
 msgid "Generate Metadata Backup Files"
-msgstr ""
+msgstr "メタデータバックアップファイルを生成"
 
 #: cps/templates/admin.html:202
 msgid "Refresh Thumbnail Cache"
@@ -2832,49 +2785,44 @@ msgstr "表紙サムネイルのキャッシュを更新"
 
 #: cps/templates/admin.html:208
 msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
-msgstr ""
+msgstr "CWA 管理機能&nbsp;&nbsp;⚡"
 
 #: cps/templates/admin.html:209
-#, fuzzy
 msgid "Show CWA Stats"
-msgstr "設定"
+msgstr "CWA統計を表示"
 
 #: cps/templates/admin.html:210
-#, fuzzy
 msgid "Check CWA Status"
-msgstr "アーカイブ状況"
+msgstr "CWAステータスを確認"
 
 #: cps/templates/admin.html:211
-#, fuzzy
 msgid "Setup KOReader Sync"
-msgstr "EPUBリーダー"
+msgstr "KOReader同期を設定"
 
 #: cps/templates/admin.html:214
 msgid "CWA Library Conversion Service"
-msgstr ""
+msgstr "CWA ライブラリ変換サービス"
 
 #: cps/templates/admin.html:215
 #, fuzzy
 msgid "CWA EPUB Fixer Service"
-msgstr "見つける"
+msgstr "CWA Kindle送信用EPUB修正サービス"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
-msgstr ""
+msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
-#, fuzzy
 msgid "CWA Discord Server"
-msgstr "見つける"
+msgstr "CWA Discordサーバー"
 
 #: cps/templates/admin.html:222
 msgid "Run Hardcover Auto-Fetch"
 msgstr ""
 
 #: cps/templates/admin.html:227
-#, fuzzy
 msgid "Administration&nbsp;&nbsp;🚀"
-msgstr "管理"
+msgstr "管理&nbsp;&nbsp;🚀"
 
 #: cps/templates/admin.html:228
 msgid "Download Debug Package"
@@ -2893,9 +2841,8 @@ msgid "Shutdown"
 msgstr "シャットダウン"
 
 #: cps/templates/admin.html:245
-#, fuzzy
 msgid "Version Information&nbsp;&nbsp;📜"
-msgstr "バージョン情報"
+msgstr "バージョン情報&nbsp;&nbsp;📜"
 
 #: cps/templates/admin.html:250
 msgid "Version"
@@ -2911,7 +2858,7 @@ msgstr "現在のバージョン"
 
 #: cps/templates/admin.html:263 cps/templates/admin.html:268
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: cps/templates/admin.html:275
 msgid "Check for Update"
@@ -3023,9 +2970,8 @@ msgid "Convert from:"
 msgstr "変換元:"
 
 #: cps/templates/book_edit.html:32 cps/templates/book_edit.html:39
-#, fuzzy
 msgid "select an option"
-msgstr "選択肢から選ぶ"
+msgstr "オプションを選択"
 
 #: cps/templates/book_edit.html:37
 msgid "Convert to:"
@@ -3216,48 +3162,40 @@ msgstr "統合"
 
 #: cps/templates/book_table.html:50 cps/templates/book_table.html:210
 #: cps/templates/duplicates.html:504
-#, fuzzy
 msgid "Archive"
-msgstr "アーカイブ済み"
+msgstr "アーカイブ"
 
 #: cps/templates/book_table.html:53 cps/templates/book_table.html:230
-#, fuzzy
 msgid "Unarchive"
-msgstr "アーカイブ済み"
+msgstr "アーカイブ解除"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
-#, fuzzy
 msgid "Mark as read"
-msgstr "未読に設定"
+msgstr "既読にする"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
-#, fuzzy
 msgid "Mark as unread"
-msgstr "未読に設定"
+msgstr "未読にする"
 
 #: cps/templates/book_table.html:65
-#, fuzzy
 msgid "Add to Shelf"
 msgstr "本棚に追加"
 
 #: cps/templates/book_table.html:67
-#, fuzzy
 msgid " Exchange author & title"
-msgstr "著者とタイトルを交換"
+msgstr "著者とタイトルを入れ替え"
 
 #: cps/templates/book_table.html:72
-#, fuzzy
 msgid "Select all"
-msgstr "本棚を作成する"
+msgstr "すべて選択"
 
 #: cps/templates/book_table.html:75
 msgid "Clear all"
-msgstr ""
+msgstr "すべてクリア"
 
 #: cps/templates/book_table.html:84
-#, fuzzy
 msgid "Update Title Sort automatically  "
-msgstr "タイトルのよみがなを自動で更新"
+msgstr "タイトルソートを自動更新"
 
 #: cps/templates/book_table.html:88
 msgid "Update Author Sort automatically"
@@ -3319,19 +3257,16 @@ msgid "Enter comments"
 msgstr "コメントを入力"
 
 #: cps/templates/book_table.html:112
-#, fuzzy
 msgid "Comments"
 msgstr "コメント"
 
 #: cps/templates/book_table.html:114
-#, fuzzy
 msgid "Archived?"
-msgstr "アーカイブ済み"
+msgstr "アーカイブ済み？"
 
 #: cps/templates/book_table.html:116
-#, fuzzy
 msgid "Read?"
-msgstr "既読"
+msgstr "既読？"
 
 #: cps/templates/book_table.html:119 cps/templates/book_table.html:121
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
@@ -3358,23 +3293,23 @@ msgstr "このタイトルの本に統合します"
 
 #: cps/templates/book_table.html:186
 msgid "The following books will be deleted:"
-msgstr ""
+msgstr "以下の書籍が削除されます："
 
 #: cps/templates/book_table.html:206
 msgid "The following books will be archived:"
-msgstr ""
+msgstr "以下の書籍がアーカイブされます："
 
 #: cps/templates/book_table.html:226
 msgid "The following books will be unarchived:"
-msgstr ""
+msgstr "以下の書籍のアーカイブが解除されます："
 
 #: cps/templates/book_table.html:246
 msgid "The following books will be marked read:"
-msgstr ""
+msgstr "以下の書籍が既読としてマークされます："
 
 #: cps/templates/book_table.html:266
 msgid "The following books will be marked unread:"
-msgstr ""
+msgstr "以下の書籍が未読としてマークされます："
 
 #: cps/templates/book_table.html:282 cps/templates/detail.html:522
 msgid "Edit Metadata"
@@ -3383,6 +3318,7 @@ msgstr "メタデータを編集"
 #: cps/templates/book_table.html:285
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
 msgstr ""
+"変更したいフィールドを編集してください。空白のフィールドは無視されます："
 
 #: cps/templates/book_table.html:287
 msgid ""
@@ -3391,17 +3327,16 @@ msgid ""
 msgstr ""
 
 #: cps/templates/book_table.html:343
-#, fuzzy
 msgid "Select a Shelf"
-msgstr "本棚を作成する"
+msgstr "本棚を選択"
 
 #: cps/templates/book_table.html:346
 msgid "Please select a shelf to add the selected books to:"
-msgstr ""
+msgstr "選択した書籍を追加する本棚を選択してください："
 
 #: cps/templates/book_table.html:348
 msgid "-- Select a Shelf --"
-msgstr ""
+msgstr "-- 本棚を選択 --"
 
 #: cps/templates/book_table.html:366 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
@@ -3409,9 +3344,8 @@ msgid "Add"
 msgstr "追加"
 
 #: cps/templates/config_db.html:38
-#, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
-msgstr "Calibre DBの場所"
+msgstr "Calibreデータベース（metadata.dbファイル）の場所"
 
 #: cps/templates/config_db.html:48
 msgid ""
@@ -3427,12 +3361,23 @@ msgid ""
 "        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
 "wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
+"CWAは、Calibreデータベース（<code>metadata.db</code>ファイル）が常に<code>/"
+"calibre-library</code>内のどこかにあるように設定されています。\n"
+"        CWAは起動時にdocker-composeファイルで<code>/calibre-library</code>に"
+"バインドしたディレクトリ内で既存のCalibreライブラリ/metadata.dbファイルを自動"
+"的に検索します。1つだけ見つかった場合は自動的にマウントし、複数見つかった場合"
+"はデフォルトで最大のものを自動的にマウントし、見つからない場合は新しいものを"
+"自動的に作成してマウントします。詳細は<a href=\"https://github.com/"
+"crocodilestick/Calibre-Web-Automated/wiki/Configuration#database-"
+"configuration\">こちらをご覧ください</a>！"
 
 #: cps/templates/config_db.html:54
 msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
 "CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
 msgstr ""
+"そのため、CWAのdocker-composeファイルを設定する際は、<b>ボリュームセクション"
+"のコロンの右側のパスを変更しないでください！</b>"
 
 #: cps/templates/config_db.html:55
 msgid ""
@@ -3444,6 +3389,11 @@ msgid ""
 "        library, use the <b>Separate Book Files from Library Option below "
 "and there, enter the path to the rest of the library</b>"
 msgstr ""
+"これらのパスはCWA内部専用です。左側のバインド先は自由に変更できますが、右側の"
+"パスを変更する必要はありません。\n"
+"        <br><br><code>metadata.db</code>ファイルをライブラリの残りの部分と別"
+"の場所に置きたい場合は、下の<b>書籍ファイルをライブラリから分離\n"
+"        オプションを使用し、残りのライブラリへのパスを入力してください</b>"
 
 #: cps/templates/config_db.html:59
 msgid ""
@@ -3455,10 +3405,16 @@ msgid ""
 "        once you've checked the <b>Separate Book Files from Library</b> "
 "option."
 msgstr ""
+"例：ライブラリの<code>metadata.db</code>ファイルが<code>/calibre-library</"
+"code>内のどこかにバインドされている限り、\n"
+"        対応する書籍ファイルなどを含むディレクトリを<code>/books</code>などに"
+"バインドし、<b>書籍ファイルをライブラリから分離</b>オプションを\n"
+"        チェックした後に表示されるフィールドに<code>/books</code>と入力できま"
+"す。"
 
 #: cps/templates/config_db.html:63
 msgid "Split Library Functionality"
-msgstr ""
+msgstr "分割ライブラリ機能"
 
 #: cps/templates/config_db.html:66
 msgid ""
@@ -3466,6 +3422,9 @@ msgid ""
 "should remain in <code>/calibre-library</code>, however your library files "
 "can be wherever you desire"
 msgstr ""
+"<b>書籍ファイルをライブラリから分離</b> - <code>metadata.db</code>ファイルは"
+"<code>/calibre-library</code>に残しますが、ライブラリファイルは任意の場所に配"
+"置できます"
 
 #: cps/templates/config_db.html:79
 msgid "Use Google Drive?"
@@ -3577,9 +3536,8 @@ msgid "Location and name of access logfile (access.log for no entry)"
 msgstr "アクセスログのファイル名 (空欄の場合はaccess.log)"
 
 #: cps/templates/config_edit.html:163
-#, fuzzy
 msgid "Feature Configuration"
-msgstr "サーバー設定"
+msgstr "機能設定"
 
 #: cps/templates/config_edit.html:166
 msgid "Convert non-English characters in title and author while saving to disk"
@@ -3590,6 +3548,8 @@ msgid ""
 "Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/"
 "Kepubify binaries)"
 msgstr ""
+"ダウンロード/変換/メール時に電子書籍ファイルにメタデータを埋め込む（Calibre/"
+"Kepubifyバイナリが必要）"
 
 #: cps/templates/config_edit.html:174
 msgid "Enable Uploads"
@@ -3634,7 +3594,7 @@ msgstr ""
 
 #: cps/templates/config_edit.html:216
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
-msgstr ""
+msgstr "Koboの読書進捗をHardcoverに同期（ユーザーごとにAPIキーが必要）"
 
 #: cps/templates/config_edit.html:220
 msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
@@ -3649,13 +3609,12 @@ msgid "Goodreads API Key"
 msgstr "GoodreadsのAPIキー"
 
 #: cps/templates/config_edit.html:238
-#, fuzzy
 msgid "Enable Hardcover Sync"
-msgstr "Koboの同期を有効にする"
+msgstr "Hardcover同期を有効にする"
 
 #: cps/templates/config_edit.html:242
 msgid "Hardcover API Key"
-msgstr ""
+msgstr "Hardcover APIキー"
 
 #: cps/templates/config_edit.html:248
 msgid "Allow Reverse Proxy Authentication"
@@ -3821,66 +3780,63 @@ msgstr ""
 
 #: cps/templates/config_edit.html:394
 msgid "Generic OAuth Provider"
-msgstr ""
+msgstr "汎用OAuthプロバイダー"
 
 #: cps/templates/config_edit.html:398
 msgid "OAuth Metadata URL (for auto-discovery)"
-msgstr ""
+msgstr "OAuthメタデータURL（自動検出用）"
 
 #: cps/templates/config_edit.html:402
-#, fuzzy
 msgid "Test Metadata"
-msgstr "メタデータを取得"
+msgstr "メタデータをテスト"
 
 #: cps/templates/config_edit.html:405
 msgid "Leave empty to use manual configuration below"
-msgstr ""
+msgstr "空欄のまま下の手動設定を使用"
 
 #: cps/templates/config_edit.html:411
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
-msgstr ""
+msgstr "手動エンドポイントURLを使用（自動検出を上書き）"
 
 #: cps/templates/config_edit.html:412
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
 msgstr ""
+"自動検出を使用せずにOAuthエンドポイントを個別に手動設定するにはこれをチェック"
+"してください"
 
 #: cps/templates/config_edit.html:417
-#, fuzzy
 msgid "Manual Endpoint Configuration"
-msgstr "UI設定を編集"
+msgstr "手動エンドポイント設定"
 
 #: cps/templates/config_edit.html:420
 msgid "OAuth Base URL"
-msgstr ""
+msgstr "OAuth ベースURL"
 
 #: cps/templates/config_edit.html:425
 msgid "Authorization Endpoint"
-msgstr ""
+msgstr "認証エンドポイント"
 
 #: cps/templates/config_edit.html:430
-#, fuzzy
 msgid "Token Endpoint"
-msgstr "トークンが見つかりません"
+msgstr "トークンエンドポイント"
 
 #: cps/templates/config_edit.html:435
 msgid "UserInfo Endpoint"
-msgstr ""
+msgstr "ユーザー情報エンドポイント"
 
 #: cps/templates/config_edit.html:443
-#, fuzzy
 msgid "Test Connection"
-msgstr "接続エラー"
+msgstr "接続テスト"
 
 #: cps/templates/config_edit.html:452
-#, fuzzy
 msgid "OAuth Scopes"
-msgstr "OAuth設定"
+msgstr "OAuthスコープ"
 
 #: cps/templates/config_edit.html:454
 msgid "Space-separated list of OAuth scopes"
-msgstr ""
+msgstr "スペース区切りのOAuthスコープリスト"
 
 #: cps/templates/config_edit.html:459
 msgid "OAuth Redirect Host"
@@ -3900,41 +3856,36 @@ msgid ""
 msgstr ""
 
 #: cps/templates/config_edit.html:469
-#, fuzzy
 msgid "OAuth Client Id"
-msgstr "%(provider)s OAuth クライアントID"
+msgstr "OAuthクライアントID"
 
 #: cps/templates/config_edit.html:473
-#, fuzzy
 msgid "OAuth Client Secret"
-msgstr "%(provider)s OAuth クライアントシークレット"
+msgstr "OAuthクライアントシークレット"
 
 #: cps/templates/config_edit.html:478
-#, fuzzy
 msgid "Field Mapping Configuration"
-msgstr "表示設定"
+msgstr "フィールドマッピング設定"
 
 #: cps/templates/config_edit.html:480
-#, fuzzy
 msgid "Username Field"
-msgstr "ユーザー名"
+msgstr "ユーザー名フィールド"
 
 #: cps/templates/config_edit.html:482
 msgid "JWT field to extract username from"
-msgstr ""
+msgstr "ユーザー名を抽出するJWTフィールド"
 
 #: cps/templates/config_edit.html:485
-#, fuzzy
 msgid "Email Field"
-msgstr "メールサービス"
+msgstr "メールフィールド"
 
 #: cps/templates/config_edit.html:487
 msgid "JWT field to extract email from"
-msgstr ""
+msgstr "メールアドレスを抽出するJWTフィールド"
 
 #: cps/templates/config_edit.html:490
 msgid "OAuth group for Admin"
-msgstr ""
+msgstr "管理者用OAuthグループ"
 
 #: cps/templates/config_edit.html:492
 msgid ""
@@ -3945,7 +3896,7 @@ msgstr ""
 
 #: cps/templates/config_edit.html:495
 msgid "Login Button Text"
-msgstr ""
+msgstr "ログインボタンのテキスト"
 
 #: cps/templates/config_edit.html:501
 #, python-format
@@ -3967,28 +3918,24 @@ msgid "External binaries"
 msgstr "外部バイナリ"
 
 #: cps/templates/config_edit.html:520
-#, fuzzy
 msgid "Path to Calibre Binaries"
-msgstr "Calibre E-Book Converterのパス"
+msgstr "Calibreバイナリへのパス"
 
 #: cps/templates/config_edit.html:528
-#, fuzzy
 msgid "Calibre E-Book Converter Settings"
-msgstr "Calibre E-Book Converterの設定"
+msgstr "Calibre電子書籍コンバーター設定"
 
 #: cps/templates/config_edit.html:531
 msgid "Path to Kepubify E-Book Converter"
 msgstr "Kepubify E-Book Converterのパス"
 
 #: cps/templates/config_edit.html:539
-#, fuzzy
 msgid "Location of Unrar binary"
-msgstr "UnRarバイナリのパス"
+msgstr "Unrarバイナリの場所"
 
 #: cps/templates/config_edit.html:550
-#, fuzzy
 msgid "Security Settings"
-msgstr "OAuth設定"
+msgstr "セキュリティ設定"
 
 #: cps/templates/config_edit.html:553
 msgid "Disable Standard Login (Username/Password)"
@@ -4014,61 +3961,59 @@ msgstr ""
 
 #: cps/templates/config_edit.html:563
 msgid "Limit failed login attempts"
-msgstr ""
+msgstr "ログイン失敗回数を制限"
 
 #: cps/templates/config_edit.html:567
 msgid "Configure Backend for Limiter"
-msgstr ""
+msgstr "リミッターのバックエンドを設定"
 
 #: cps/templates/config_edit.html:571
 msgid "Options for Limiter Backend"
-msgstr ""
+msgstr "リミッターバックエンドのオプション"
 
 #: cps/templates/config_edit.html:577
 msgid "Check if file extensions matches file content on upload"
-msgstr ""
+msgstr "アップロード時にファイル拡張子がファイル内容と一致するか確認"
 
 #: cps/templates/config_edit.html:580
-#, fuzzy
 msgid "Session protection"
-msgstr "選択肢から選ぶ"
+msgstr "セッション保護"
 
 #: cps/templates/config_edit.html:582
 msgid "Basic"
-msgstr ""
+msgstr "基本"
 
 #: cps/templates/config_edit.html:583
 msgid "Strong"
-msgstr ""
+msgstr "強力"
 
 #: cps/templates/config_edit.html:588
-#, fuzzy
 msgid "User Password policy"
-msgstr "パスワードをリセット"
+msgstr "ユーザーパスワードポリシー"
 
 #: cps/templates/config_edit.html:592
 msgid "Minimum password length"
-msgstr ""
+msgstr "パスワードの最小長"
 
 #: cps/templates/config_edit.html:597
 msgid "Enforce number"
-msgstr ""
+msgstr "数字を必須にする"
 
 #: cps/templates/config_edit.html:601
 msgid "Enforce lowercase characters"
-msgstr ""
+msgstr "小文字を必須にする"
 
 #: cps/templates/config_edit.html:605
 msgid "Enforce uppercase characters"
-msgstr ""
+msgstr "大文字を必須にする"
 
 #: cps/templates/config_edit.html:609
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
-msgstr ""
+msgstr "文字を必須にする（中国語/日本語/韓国語の文字に必要）"
 
 #: cps/templates/config_edit.html:613
 msgid "Enforce special characters"
-msgstr ""
+msgstr "特殊文字を必須にする"
 
 #: cps/templates/config_view_edit.html:36
 msgid "View Configuration"
@@ -4099,6 +4044,8 @@ msgid ""
 "Maximum number of authors to show in book details before truncating. Set to "
 "0 to disable."
 msgstr ""
+"デフォルトテーマ（ユーザーは好みのテーマを選択できますが、新規ユーザーにはこ"
+"のテーマがデフォルトで適用されます）"
 
 #: cps/templates/config_view_edit.html:63
 #, fuzzy
@@ -4118,6 +4065,8 @@ msgid ""
 "Default theme for new users and anonymous browsing. Users can select their "
 "own preferred theme in their profile."
 msgstr ""
+"ユーザーごとのテーマ切り替えが有効です。このグローバルデフォルトは新規ユー"
+"ザーとゲストにのみ影響します"
 
 #: cps/templates/config_view_edit.html:72
 msgid "Regular Expression for Ignoring Columns"
@@ -4246,15 +4195,13 @@ msgstr "許可/拒否カスタムカラムを追加"
 
 #: cps/templates/cwa_convert_library.html:10
 #: cps/templates/cwa_epub_fixer.html:34
-#, fuzzy
 msgid "Run Archive"
-msgstr "アーカイブ済み"
+msgstr "アーカイブを実行"
 
 #: cps/templates/cwa_convert_library.html:11
 #: cps/templates/cwa_epub_fixer.html:35 cps/templates/cwa_read_log.html:9
-#, fuzzy
 msgid "Download Log"
-msgstr "ダウンロード"
+msgstr "ログをダウンロード"
 
 #: cps/templates/cwa_convert_library.html:24
 #: cps/templates/cwa_epub_fixer.html:39 cps/templates/index.xml:7
@@ -4298,9 +4245,8 @@ msgid "EPUB Fixer scheduled successfully"
 msgstr "{}人のユーザーが削除されました"
 
 #: cps/templates/cwa_epub_fixer.html:123
-#, fuzzy
 msgid "Error scheduling EPUB Fixer"
-msgstr "本棚の削除中にエラーが発生しました"
+msgstr ""
 
 #: cps/templates/cwa_epub_fixer.html:132
 #, fuzzy
@@ -4320,7 +4266,7 @@ msgstr "ライブラリ内を検索"
 #: cps/templates/cwa_epub_fixer.html:182
 #, fuzzy
 msgid "Select a book first"
-msgstr "本棚を作成する"
+msgstr "本棚を選択"
 
 #: cps/templates/cwa_epub_fixer.html:195
 #, fuzzy
@@ -4328,18 +4274,16 @@ msgid "EPUB Fixer started for selected book"
 msgstr "選択した本を統合"
 
 #: cps/templates/cwa_epub_fixer.html:200
-#, fuzzy
 msgid "Error starting EPUB Fixer"
-msgstr "本棚の削除中にエラーが発生しました"
+msgstr ""
 
 #: cps/templates/cwa_settings.html:136
-#, fuzzy
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "Calibre-Webのログ: "
+msgstr "Calibre-Web Automatedサービスを有効/無効にする"
 
 #: cps/templates/cwa_settings.html:143
 msgid "Enable CWA Auto-Convert"
-msgstr ""
+msgstr "CWA自動変換を有効にする"
 
 #: cps/templates/cwa_settings.html:145
 msgid ""
@@ -4347,10 +4291,13 @@ msgid ""
 "converted to the target format specified below (epub by default) \n"
 "        <em>EXCEPT</em> those you have specifically told CWA to ignore below."
 msgstr ""
+"デフォルトでオン。有効時、すべての取り込まれた書籍は以下で指定したターゲット"
+"形式（デフォルトはepub）に自動的に変換されます。\n"
+"        ただし、以下で無視するよう指定した形式は<em>除きます</em>。"
 
 #: cps/templates/cwa_settings.html:154
 msgid "Enable CWA Automatic Cover & Metadata Enforcement Service"
-msgstr ""
+msgstr "CWA自動カバー＆メタデータ適用サービスを有効にする"
 
 #: cps/templates/cwa_settings.html:156
 msgid ""
@@ -4362,10 +4309,16 @@ msgid ""
 "themselves. This feature currently only supports files in EPUB \n"
 "        or AZW3 format."
 msgstr ""
+"デフォルトでオン。有効時、Web UIでメタデータやカバー画像が編集されると、CWAメ"
+"タデータ適用サービスがそれらの変更を電子書籍ファイル自体に適用します。\n"
+"        通常のStock CWまたはこの設定が無効な場合、変更はWeb UIで表示される内"
+"容にのみ適用され、電子書籍ファイル自体には適用されません。\n"
+"        この機能は現在、EPUBまたはAZW3形式のファイルのみをサポートしていま"
+"す。"
 
 #: cps/templates/cwa_settings.html:167
 msgid "Enable CWA Kindle EPUB Fixer"
-msgstr ""
+msgstr "CWA Kindle EPUB修正を有効にする"
 
 #: cps/templates/cwa_settings.html:169
 msgid ""
@@ -4376,6 +4329,9 @@ msgid ""
 "devices and have experienced issues with \n"
 "        file rejections or formatting problems."
 msgstr ""
+"有効時、CWAで処理されるすべてのEPUBファイルのエンコーディングやその他の属性が"
+"チェックされ、AmazonのSend-to-Kindleサービスとの\n"
+"        最大限の互換性を確保するために修正されます。"
 
 #: cps/templates/cwa_settings.html:174
 msgid ""
@@ -4760,23 +4716,22 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:706
-#, fuzzy
 msgid "Web UI Settings"
-msgstr "設定"
+msgstr "Web UI設定"
 
 #: cps/templates/cwa_settings.html:713
 msgid "Enable CWA Update Notifications"
-msgstr ""
+msgstr "CWA更新通知を有効にする"
 
 #: cps/templates/cwa_settings.html:715
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
-msgstr ""
+msgstr "有効時、CWAの新バージョンがリリースされるとWeb UIで通知を受け取ります"
 
 #: cps/templates/cwa_settings.html:723
 msgid "Enable Contribute Translations Notifications"
-msgstr ""
+msgstr "翻訳貢献通知を有効にする"
 
 #: cps/templates/cwa_settings.html:725
 msgid ""
@@ -4784,6 +4739,8 @@ msgid ""
 "using a language other than English if the translations for your chosen "
 "language are not complete."
 msgstr ""
+"無効時、英語以外の言語を使用していて翻訳が完了していない場合、Web UIで通知を"
+"受け取らなくなります。"
 
 #: cps/templates/cwa_settings.html:733
 #, fuzzy
@@ -4798,52 +4755,59 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:743
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
-msgstr ""
+msgstr "モバイルでぼかし背景を有効にする（&lt;768px）"
 
 #: cps/templates/cwa_settings.html:745
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
 msgstr ""
+"有効時、ぼかしカバー背景効果が小さな画面でも表示されます。スクロールやアニ"
+"メーションの遅延が発生する場合は無効にしてください。"
 
 #: cps/templates/cwa_settings.html:750
-#, fuzzy
 msgid "Automatic Backup Settings"
-msgstr "OAuth設定"
+msgstr "自動バックアップ設定"
 
 #: cps/templates/cwa_settings.html:757
 msgid "Enable CWA Import Auto-Backup"
-msgstr ""
+msgstr "CWAインポート自動バックアップを有効にする"
 
 #: cps/templates/cwa_settings.html:759
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
 msgstr ""
+"有効時、インポートされたすべてのファイルのコピーが<i>/config/processed_books/"
+"imported</i>に保存されます"
 
 #: cps/templates/cwa_settings.html:767
 msgid "Enable CWA Conversion Auto-Backup"
-msgstr ""
+msgstr "CWA変換自動バックアップを有効にする"
 
 #: cps/templates/cwa_settings.html:769
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
 msgstr ""
+"有効時、変換される取り込みファイルの元ファイルが/config/processed_books/"
+"convertedに保存されます"
 
 #: cps/templates/cwa_settings.html:777
 msgid "Enable CWA EPUB Fixer Auto-Backup"
-msgstr ""
+msgstr "CWA EPUB修正自動バックアップを有効にする"
 
 #: cps/templates/cwa_settings.html:779
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
 msgstr ""
+"有効時、CWA Kindle EPUB修正サービスで処理されるEPUBの元ファイルが/config/"
+"processed_books/fixed_originalsに保存されます"
 
 #: cps/templates/cwa_settings.html:789
 msgid "Enable CWA Auto-Zip Backups"
-msgstr ""
+msgstr "CWA自動Zipバックアップを有効にする"
 
 #: cps/templates/cwa_settings.html:791
 msgid ""
@@ -4852,10 +4816,14 @@ msgid ""
 "from that day. This is to help keep the subdirectories of /config/"
 "processed_books organised and to minimise disk space usage."
 msgstr ""
+"有効時、毎日深夜直前にcwa-auto-zipperサービスがその日のバックアップされた変換"
+"済み、インポート済み、失敗ファイルをすべてzipアーカイブにします。これは/"
+"config/processed_booksのサブディレクトリを整理し、ディスク容量の使用を最小限"
+"に抑えるためです。"
 
 #: cps/templates/cwa_settings.html:796
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
-msgstr ""
+msgstr "CWA自動変換ターゲット形式 - デフォルトはEPUB"
 
 #: cps/templates/cwa_settings.html:799
 msgid ""
@@ -4863,11 +4831,12 @@ msgid ""
 "automatically converted to the format chosen here (except those formats "
 "selected in the ignore list below)"
 msgstr ""
+"自動変換機能が有効な場合、すべての取り込まれた書籍がここで選択した形式に自動"
+"的に変換されます（以下の無視リストで選択した形式を除く）"
 
 #: cps/templates/cwa_settings.html:801
-#, fuzzy
 msgid "Choose a target format:"
-msgstr "変換する形式:"
+msgstr "変換先の形式を選択："
 
 #: cps/templates/cwa_settings.html:813
 msgid ""
@@ -4875,16 +4844,20 @@ msgid ""
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
 "by the service"
 msgstr ""
+"注意：CWAのメタデータ適用サービスは現在、EPUBとAZW3形式のファイルのみをサポー"
+"トしています。その他の形式のファイルはサービスによって無視されます"
 
 #: cps/templates/cwa_settings.html:819
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr ""
+msgstr "CWA自動変換 - 無視する形式"
 
 #: cps/templates/cwa_settings.html:821
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
 msgstr ""
+"ここで選択した形式は、自動変換機能が有効な場合にCWAの自動変換機能によって無視"
+"され、そのままインポートされます。"
 
 #: cps/templates/cwa_settings.html:846
 msgid "CWA Auto-Convert - Retained Formats"
@@ -4930,7 +4903,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:911
 msgid "CWA Auto-Ingest - Ignored Formats"
-msgstr ""
+msgstr "CWA自動取り込み - 無視する形式"
 
 #: cps/templates/cwa_settings.html:913
 msgid ""
@@ -4938,6 +4911,8 @@ msgid ""
 "meaning files in these formats won't be added to the library by CWA during "
 "the ingest process"
 msgstr ""
+"ここで選択した形式はCWAの自動取り込み機能によって無視され、取り込みプロセス中"
+"にこれらの形式のファイルはCWAによってライブラリに追加されません"
 
 #: cps/templates/cwa_settings.html:938
 msgid "CWA Duplicate Detection System"
@@ -4950,9 +4925,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:946
-#, fuzzy
 msgid "Enable Duplicate Detection"
-msgstr "誰でも登録可能にする"
+msgstr ""
 
 #: cps/templates/cwa_settings.html:950
 msgid "When enabled, CWA will scan for duplicate books after each import"
@@ -4981,9 +4955,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:982
-#, fuzzy
 msgid "Automatic Duplicate Scanning"
-msgstr "OAuth設定"
+msgstr ""
 
 #: cps/templates/cwa_settings.html:985
 msgid ""
@@ -5238,7 +5211,7 @@ msgstr ""
 #: cps/templates/cwa_stats_system.html:157
 #: cps/templates/cwa_stats_system.html:176
 msgid "Click to See More"
-msgstr ""
+msgstr "クリックして詳細を表示"
 
 #: cps/templates/detail.html:496
 msgid "Read in Browser"
@@ -5418,13 +5391,15 @@ msgstr "表紙ファイルの作成に失敗しました"
 
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
-msgstr ""
+msgstr "CWA重複管理"
 
 #: cps/templates/duplicates.html:367
 msgid ""
 "Books with matching titles, authors, and languages. Books in different "
 "languages are not considered duplicates."
 msgstr ""
+"タイトルと著者が一致する書籍。真の重複を特定するために目視確認をお勧めしま"
+"す。"
 
 #: cps/templates/duplicates.html:373
 #, fuzzy
@@ -5438,17 +5413,15 @@ msgstr "キャンセル"
 
 #: cps/templates/duplicates.html:379
 msgid "Select Duplicates"
-msgstr ""
+msgstr "重複を選択"
 
 #: cps/templates/duplicates.html:380
-#, fuzzy
 msgid "Select None"
-msgstr "選択"
+msgstr "選択解除"
 
 #: cps/templates/duplicates.html:381
-#, fuzzy
 msgid "Delete Selected"
-msgstr "選択した本を統合"
+msgstr "選択を削除"
 
 #: cps/templates/duplicates.html:409
 msgid "Auto-Resolve Duplicates"
@@ -5532,28 +5505,26 @@ msgid "Archive/delete book"
 msgstr "選択した本を統合"
 
 #: cps/templates/duplicates.html:516
-#, fuzzy
 msgid "No Duplicate Books Found"
-msgstr "結果が見つかりません"
+msgstr "重複する書籍は見つかりませんでした"
 
 #: cps/templates/duplicates.html:517
 msgid "Your library has no books with duplicate title and author combinations."
-msgstr ""
+msgstr "ライブラリにタイトルと著者の組み合わせが重複する書籍はありません。"
 
 #: cps/templates/duplicates.html:518
 msgid ""
 "This search looks for books with identical titles AND authors to avoid false "
 "positives."
-msgstr ""
+msgstr "この検索は誤検出を避けるため、タイトルと著者が同一の書籍を探します。"
 
 #: cps/templates/duplicates.html:532
-#, fuzzy
 msgid "The following books will be permanently deleted:"
-msgstr "この本はDBと"
+msgstr "以下の書籍は完全に削除されます："
 
 #: cps/templates/duplicates.html:536
 msgid "This action cannot be undone!"
-msgstr ""
+msgstr "この操作は元に戻せません！"
 
 #: cps/templates/duplicates.html:551
 #, fuzzy
@@ -5580,34 +5551,31 @@ msgstr ""
 
 #: cps/templates/duplicates.html:598
 msgid "Success"
-msgstr ""
+msgstr "成功"
 
 #: cps/templates/duplicates.html:605
 msgid "Selected duplicate books have been deleted successfully!"
-msgstr ""
+msgstr "選択した重複書籍が正常に削除されました！"
 
 #: cps/templates/duplicates.html:627
 msgid "An error occurred while processing your request."
-msgstr ""
+msgstr "リクエストの処理中にエラーが発生しました。"
 
 #: cps/templates/email_edit.html:13
 msgid "Email Account Type"
 msgstr "サーバーの種類を選択"
 
 #: cps/templates/email_edit.html:15
-#, fuzzy
 msgid "Standard Email Account"
-msgstr "標準のメールアカウントを使用"
+msgstr "標準メールアカウント"
 
 #: cps/templates/email_edit.html:16
-#, fuzzy
 msgid "Gmail Account"
-msgstr "サーバーの種類を選択"
+msgstr "Gmailアカウント"
 
 #: cps/templates/email_edit.html:22
-#, fuzzy
 msgid "Setup Gmail Account"
-msgstr "サーバーの種類を選択"
+msgstr "Gmailアカウントを設定"
 
 #: cps/templates/email_edit.html:24
 msgid "Revoke Gmail Access"
@@ -5630,7 +5598,6 @@ msgid "Attachment Size Limit"
 msgstr "添付ファイルのサイズ制限"
 
 #: cps/templates/email_edit.html:66
-#, fuzzy
 msgid "Save and Send Test Email"
 msgstr "保存してテストメールを送信"
 
@@ -5668,8 +5635,9 @@ msgid ""
 "Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or "
 "edit):"
 msgstr ""
-".kobo/Kobo/Kobo eReader.confファイルをテキストエディタで開いて追加(編集)して"
-"ください:"
+"テキストエディタで.kobo/Kobo/Kobo eReader.confファイルを開き、以下を追加（ま"
+"たは編集）してください：.kobo/Kobo/Kobo eReader.confファイルをテキストエディ"
+"タで開いて追加(編集)してください:"
 
 #: cps/templates/generate_kobo_auth_url.html:11
 msgid "Kobo Token:"
@@ -5827,11 +5795,12 @@ msgid "Failed to skip match"
 msgstr ""
 
 #: cps/templates/http_error.html:34
-#, fuzzy
 msgid ""
 "Calibre-Web Automated Instance is unconfigured, please contact your "
 "administrator"
-msgstr "Calibre-Webインスタンスが未設定です。管理者に連絡してください"
+msgstr ""
+"Calibre-Web Automatedインスタンスが設定されていません。管理者に連絡してくださ"
+"い。"
 
 #: cps/templates/http_error.html:44
 msgid "Create Issue"
@@ -5934,28 +5903,25 @@ msgid "Logout"
 msgstr "ログアウト"
 
 #: cps/templates/layout.html:146
-#, fuzzy
 msgid "Switch Theme"
-msgstr "通常テーマ"
+msgstr "テーマを切り替え"
 
 #: cps/templates/layout.html:165 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
-#, fuzzy
 msgid "Settings"
 msgstr "設定"
 
 #: cps/templates/layout.html:167
-#, fuzzy
 msgid "Refresh Library"
-msgstr "ライブラリ内を検索"
+msgstr "ライブラリを更新"
 
 #: cps/templates/layout.html:208
 msgid "See Changelog"
-msgstr ""
+msgstr "変更履歴を見る"
 
 #: cps/templates/layout.html:228
 msgid "Contribute here!"
-msgstr ""
+msgstr "ここで貢献！"
 
 #: cps/templates/layout.html:271
 msgid "Please do not refresh the page"
@@ -6014,7 +5980,7 @@ msgstr ""
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
 msgid "Filter by initial"
-msgstr ""
+msgstr "頭文字でフィルター"
 
 #: cps/templates/list.html:43
 msgid "Grid"
@@ -6045,9 +6011,8 @@ msgid ""
 msgstr "マジックリンクでログイン"
 
 #: cps/templates/login.html:95
-#, fuzzy
 msgid "Log in with SSO"
-msgstr "マジックリンクでログイン"
+msgstr "SSOでログイン"
 
 #: cps/templates/login.html:102
 msgid ""
@@ -6059,9 +6024,8 @@ msgid "Show Calibre-Web Log: "
 msgstr "Calibre-Webのログを表示: "
 
 #: cps/templates/logviewer.html:8
-#, fuzzy
 msgid "Calibre-Web Log: "
-msgstr "Calibre-Webのログを表示: "
+msgstr "Calibre-Webログ："
 
 #: cps/templates/logviewer.html:8
 msgid "Stream output, can't be displayed"
@@ -6138,15 +6102,18 @@ msgstr "ローカルから完全に削除されます"
 msgid ""
 "Important Kobo Note: deleted books will remain on any paired Kobo device."
 msgstr ""
-"Koboに関する重要な注意: 削除された本はどの連携されたKobo端末にも残ります。"
+"Koboに関する重要な注意：削除された書籍はペアリングされたKoboデバイスに残りま"
+"す。Koboに関する重要な注意: 削除された本はどの連携されたKobo端末にも残りま"
+"す。"
 
 #: cps/templates/modal_dialogs.html:57
 msgid ""
 "Books must first be archived and the device synced before a book can safely "
 "be deleted."
 msgstr ""
-"本を安全に削除するためには、初めに本をアーカイブした上で端末と同期する必要が"
-"あります"
+"書籍を安全に削除するには、まず書籍をアーカイブしてデバイスを同期する必要があ"
+"ります。本を安全に削除するためには、初めに本をアーカイブした上で端末と同期す"
+"る必要があります"
 
 #: cps/templates/modal_dialogs.html:76
 msgid "Choose File Location"
@@ -6177,9 +6144,8 @@ msgid "Ok"
 msgstr "OK"
 
 #: cps/templates/osd.xml:5
-#, fuzzy
 msgid "Calibre-Web Automated eBook Catalog"
-msgstr "Calibre-WebのeBookカタログ"
+msgstr "Calibre-Web Automated 電子書籍カタログ"
 
 #: cps/templates/read.html:7
 msgid "epub Reader"
@@ -6207,49 +6173,43 @@ msgstr "サイドバーが開いているとき、テキストを再度流し込
 
 #: cps/templates/read.html:100
 msgid "Font Sizes"
-msgstr ""
+msgstr "フォントサイズ"
 
 #: cps/templates/read.html:105
 msgid "Font"
-msgstr ""
+msgstr "フォント"
 
 #: cps/templates/read.html:106
-#, fuzzy
 msgid "Default"
-msgstr "削除"
+msgstr "デフォルト"
 
 #: cps/templates/read.html:107
 msgid "Yahei"
-msgstr ""
+msgstr "ヤヘイ"
 
 #: cps/templates/read.html:108
 msgid "SimSun"
-msgstr ""
+msgstr "宋体"
 
 #: cps/templates/read.html:109
-#, fuzzy
 msgid "KaiTi"
-msgstr "待機中"
+msgstr "楷体"
 
 #: cps/templates/read.html:110
-#, fuzzy
 msgid "Arial"
-msgstr "垂直方向"
+msgstr "Arial"
 
 #: cps/templates/read.html:113
-#, fuzzy
 msgid "Spread"
-msgstr "既読"
+msgstr "見開き"
 
 #: cps/templates/read.html:114
-#, fuzzy
 msgid "Two columns"
-msgstr "無効な読み取り列"
+msgstr "2カラム"
 
 #: cps/templates/read.html:115
-#, fuzzy
 msgid "One column"
-msgstr "無効な読み取り列"
+msgstr "1カラム"
 
 #: cps/templates/readcbr.html:8
 msgid "Comic Reader"
@@ -6268,13 +6228,12 @@ msgid "Next Page"
 msgstr "次のページ"
 
 #: cps/templates/readcbr.html:80
-#, fuzzy
 msgid "Single Page Display"
-msgstr "管理者ページ"
+msgstr "単一ページ表示"
 
 #: cps/templates/readcbr.html:81
 msgid "Long Strip Display"
-msgstr ""
+msgstr "縦スクロール表示"
 
 #: cps/templates/readcbr.html:82
 msgid "Scale to Best"
@@ -6310,16 +6269,15 @@ msgstr "テーマ"
 
 #: cps/templates/readcbr.html:110
 msgid "Display"
-msgstr ""
+msgstr "表示"
 
 #: cps/templates/readcbr.html:113
-#, fuzzy
 msgid "Single Page"
-msgstr "管理者ページ"
+msgstr "単一ページ"
 
 #: cps/templates/readcbr.html:114
 msgid "Long Strip"
-msgstr ""
+msgstr "縦スクロール"
 
 #: cps/templates/readcbr.html:119
 msgid "Scale"
@@ -6358,9 +6316,8 @@ msgid "Vertical"
 msgstr "垂直方向"
 
 #: cps/templates/readcbr.html:150
-#, fuzzy
 msgid "Direction"
-msgstr "詳細"
+msgstr "方向"
 
 #: cps/templates/readcbr.html:153
 msgid "Left to Right"
@@ -6371,14 +6328,12 @@ msgid "Right to Left"
 msgstr "右から左"
 
 #: cps/templates/readcbr.html:162
-#, fuzzy
 msgid "Reset to Top"
-msgstr "ホームに戻る"
+msgstr "先頭に戻る"
 
 #: cps/templates/readcbr.html:163
-#, fuzzy
 msgid "Remember Position"
-msgstr "アカウント情報を記憶する"
+msgstr "位置を記憶"
 
 #: cps/templates/readcbr.html:168
 msgid "Scrollbar"
@@ -6468,11 +6423,11 @@ msgstr "既読/未読"
 
 #: cps/templates/search_form.html:44 cps/templates/search_form.html:165
 msgid "Any"
-msgstr ""
+msgstr "すべて"
 
 #: cps/templates/search_form.html:45 cps/templates/search_form.html:166
 msgid "Empty"
-msgstr ""
+msgstr "空"
 
 #: cps/templates/search_form.html:60
 msgid "Exclude Tags"
@@ -6537,14 +6492,12 @@ msgid "Enable Change order"
 msgstr "並び順の変更を有効にする"
 
 #: cps/templates/shelf.html:28
-#, fuzzy
 msgid "Sort according to book added to shelf, newest first"
-msgstr "追加日が新しい順にソート"
+msgstr "本棚に追加された順でソート（新しい順）"
 
 #: cps/templates/shelf.html:29
-#, fuzzy
 msgid "Sort according to book added to shelf, oldest first"
-msgstr "追加日が古い順にソート"
+msgstr "本棚に追加された順でソート（古い順）"
 
 #: cps/templates/shelf_edit.html:14
 msgid "Share with Everyone"
@@ -6620,13 +6573,11 @@ msgid "Run Time"
 msgstr "稼働時間"
 
 #: cps/templates/tasks.html:20
-#, fuzzy
 msgid "Message"
-msgstr "統合"
+msgstr "メッセージ"
 
 #: cps/templates/tasks.html:22 cps/templates/tasks.html:46
 #: cps/templates/tasks.html:68
-#, fuzzy
 msgid "Actions"
 msgstr "アクション"
 
@@ -6667,13 +6618,15 @@ msgstr ""
 msgid ""
 "This task will be cancelled. Any progress made by this task will be saved."
 msgstr ""
-"このタスクはキャンセルされます。このタスクによる進捗はすべて保存されます。"
+"このタスクはキャンセルされます。このタスクで行われた進捗は保存されます。この"
+"タスクはキャンセルされます。このタスクによる進捗はすべて保存されます。"
 
 #: cps/templates/tasks.html:89
 msgid ""
 "If this is a scheduled task, it will be re-ran during the next scheduled "
 "time."
 msgstr ""
+"これがスケジュールされたタスクの場合、次のスケジュール時間に再実行されます。"
 "これがスケジュールタスクの場合、次のスケジュールの時刻にはもう一度実行されま"
 "す。"
 
@@ -6722,6 +6675,8 @@ msgstr "E-Readerメールアドレス"
 #: cps/templates/user_edit.html:206
 msgid "Use comma to separate multiple addresses"
 msgstr ""
+"電子書籍リーダーのメールアドレスに送信。複数のリーダーには、カンマで区切って"
+"ください"
 
 #: cps/templates/user_edit.html:207
 msgid ""
@@ -6779,7 +6734,7 @@ msgstr "リンク解除"
 
 #: cps/templates/user_edit.html:294
 msgid "Hardcover API Token"
-msgstr ""
+msgstr "Hardcover APIトークン"
 
 #: cps/templates/user_edit.html:296
 msgid "API token for Hardcover metadata provider integration."
@@ -6896,19 +6851,16 @@ msgid "Enter Username"
 msgstr "ユーザー名を入力してください"
 
 #: cps/templates/user_table.html:135
-#, fuzzy
 msgid "Enter Email"
-msgstr "テストメール"
+msgstr "メールアドレスを入力"
 
 #: cps/templates/user_table.html:136
-#, fuzzy
 msgid "Enter eReader Email"
-msgstr "E-Readerメールアドレス"
+msgstr "電子書籍リーダーのメールアドレスを入力"
 
 #: cps/templates/user_table.html:136
-#, fuzzy
 msgid "eReader Email"
-msgstr "E-Readerメール"
+msgstr "電子書籍リーダーのメールアドレス"
 
 #: cps/templates/user_table.html:137
 #, fuzzy
@@ -6977,9 +6929,8 @@ msgid "Sync selected Shelves with Kobo"
 msgstr "選択した本棚をKoboと同期"
 
 #: cps/templates/user_table.html:157
-#, fuzzy
 msgid "Show Read/Unread Section"
-msgstr "既読/未読の選択を表示"
+msgstr "既読/未読セクションを表示"
 
 #~ msgid "Listen in Browser"
 #~ msgstr "ブラウザで聞く"
@@ -7061,14 +7012,6 @@ msgstr "既読/未読の選択を表示"
 #, fuzzy
 #~ msgid "Clear selections"
 #~ msgstr "選択した本を削除"
-
-#, fuzzy
-#~ msgid "Unarchive selected books"
-#~ msgstr "選択した本を統合"
-
-#, fuzzy
-#~ msgid "Mark selected books as read"
-#~ msgstr "選択した本を統合"
 
 #, fuzzy
 #~ msgid "Mark Book as Read or Unread"

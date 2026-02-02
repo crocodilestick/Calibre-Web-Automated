@@ -134,7 +134,7 @@ def verify_password(username, password):
     
     # Use request.remote_addr (already corrected by ProxyFix) instead of raw header
     ip_address = request.remote_addr
-    log.warning('OPDS Login failed for user "%s" IP-address: %s', username, ip_address)
+    log.warning('Basic authentication failed for user "%s" IP-address: %s', username, ip_address)
     return None
 
 def get_basic_auth_error():

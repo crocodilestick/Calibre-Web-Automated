@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -387,7 +387,7 @@ class LoginManager:
         # if the sess is empty, it's an anonymous user or just logged out
         # so we can skip this
         if sess and ident != sess.get("_id", None):
-            if mode == "basic" or sess.permanent:
+            if mode == "basic" or sess.permanent or sess.get("_permanent"):
                 if sess.get("_fresh") is not False:
                     sess["_fresh"] = False
                 session_protected.send(app)

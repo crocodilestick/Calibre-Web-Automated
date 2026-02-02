@@ -1,6 +1,48 @@
 {% import 'image.html' as image %}
 {% extends "layout.html" %}
+{% block header %}
+<style>
+.shelf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between;
+    background: #202c358c;
+    padding: 2rem;
+    flex-direction: row;
+    margin-inline: 15px;
+    border-radius: 4px;
+}
+.magic-shelf-buttons {
+    display: flex;
+    gap: 1rem;
+}
+/* Override caliBlur_override.css fixed positioning */
+.shelf-actions .filterheader {
+    position: static !important;
+    margin: 0 !important;
+    display: block !important;
+    width: auto !important;
+    float: none !important;
+}
+@media (max-width: 767px) {
+    .shelf-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .magic-shelf-buttons {
+        justify-content: center;
+    }
+    .shelf-actions .filterheader {
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
 {% block body %}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 {% if current_user.show_detail_random() and page != "discover" %}
 <div class="discover random-books">
   <h2 class="random-books">{{_('Discover (Random Books)')}}</h2>
@@ -8,7 +50,11 @@
    {% for entry in random %}
     <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books_rand">
       <div class="cover">
-          <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
+          <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
+             {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+             data-book-id="{{ entry.Books.id }}"
+             data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
+             class="book-cover-link">
               <span class="img" title="{{ entry.Books.title }}">
                 {{ image.book_cover(entry.Books) }}
                 {% if entry[2] == True %}<span class="badge read glyphicon glyphicon-ok"></span>{% endif %}
@@ -64,7 +110,60 @@
 </div>
 {% endif %}
 <div class="discover load-more">
-  <h2 class="{{title}}">{{title}}</h2>
+  <h2 class="{{title}}">
+    {{title | safe}}
+  </h2>
+  {% if page == 'magicshelf' %}
+  <div class="alert alert-warning visible-xs" style="margin-top: 10px;">
+    <span class="glyphicon glyphicon-warning-sign"></span> 
+    <strong>{{_('Mobile Notice')}}</strong>: {{_('Magic shelf editing works best on desktop or tablet devices.')}}
+  </div>
+  {% endif %}
+
+  {% set show_shelf_actions = page != 'discover' %}
+  {% if show_shelf_actions %}<div class="shelf-actions">{% endif %}
+    {% if page == 'magicshelf' %}
+    <div class="magic-shelf-buttons">
+        <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1, refresh=1)}}" 
+           class="btn btn-default"
+           style="display: flex;
+                  align-items: center;
+                  flex-direction: row;
+                  gap: 0.5rem;" 
+           data-toggle="tooltip" 
+           title="{{_('Refresh shelf to update with latest changes')}}">
+          <span style="padding: 5px;" class="glyphicon glyphicon-refresh"></span> {{_('Refresh')}}
+        </a>
+        {% if shelf.user_id == current_user.id or current_user.role_admin() %}
+        <a href="{{url_for('web.edit_magic_shelf', shelf_id=id)}}" 
+           class="btn btn-default"
+           style="display: flex;
+                  align-items: center;
+                  flex-direction: row;
+                  gap: 0.5rem;" 
+           data-toggle="tooltip" 
+           title="{{_('Edit shelf rules')}}">
+          <span style="padding: 5px;" class="glyphicon glyphicon-edit"></span> {{_('Edit')}}
+        </a>
+        {% endif %}
+        {% if shelf.user_id != current_user.id %}
+        <button id="toggle-hide-shelf" 
+                class="btn btn-{% if is_hidden_shelf %}success{% else %}warning{% endif %}"
+                data-shelf-id="{{ id }}"
+                data-is-hidden="{{ 'true' if is_hidden_shelf else 'false' }}"
+                style="display: flex;
+                       align-items: center;
+                       flex-direction: row;
+                       gap: 0.5rem;" 
+                data-toggle="tooltip" 
+                title="{{_('Hide this shelf from your sidebar') if not is_hidden_shelf else _('Show this shelf in your sidebar')}}">
+          <span style="padding: 5px;" class="glyphicon glyphicon-{% if is_hidden_shelf %}eye-open{% else %}eye-close{% endif %}"></span> 
+          <span class="hide-text">{% if is_hidden_shelf %}{{_('Show Shelf')}}{% else %}{{_('Hide Shelf')}}{% endif %}</span>
+        </button>
+        {% endif %}
+    </div>
+    {% endif %}
+
    {% if page != 'discover' %}
     <div class="filterheader hidden-xs">
     {% if page == 'hot' %}
@@ -86,12 +185,17 @@
     {% endif %}
     </div>
    {% endif %}
+  {% if show_shelf_actions %}</div>{% endif %}
   <div class="row display-flex">
     {% if entries[0] %}
     {% for entry in entries %}
     <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books">
       <div class="cover">
-          <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
+          <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
+             {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+             data-book-id="{{ entry.Books.id }}"
+             data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
+             class="book-cover-link">
             <span class="img" title="{{ entry.Books.title }}">
               {{ image.book_cover(entry.Books) }}
               {% if entry[2] == True %}<span class="badge read glyphicon glyphicon-ok"></span>{% endif %}
@@ -153,4 +257,44 @@
   {% endif %}
   </div>
 </div>
+{% endblock %}
+{% block js %}
+{{ super() }}
+{% if page == 'magicshelf' %}
+<script>
+$(document).ready(function() {
+    // Handle hide/unhide shelf button
+    $('#toggle-hide-shelf').on('click', function() {
+        var $btn = $(this);
+        var shelfId = $btn.data('shelf-id');
+        var isHidden = $btn.data('is-hidden') === 'true';
+        var action = isHidden ? 'unhide' : 'hide';
+        
+        $btn.prop('disabled', true);
+        
+        $.ajax({
+            url: '/magicshelf/' + shelfId + '/' + action,
+            method: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    // Reload page to update sidebar and button state
+                    location.reload();
+                } else {
+                    alert('Error: ' + (response.message || 'Unknown error'));
+                    $btn.prop('disabled', false);
+                }
+            },
+            error: function(xhr) {
+                var message = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert('Error: ' + message);
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+});
+</script>
+{% endif %}
 {% endblock %}

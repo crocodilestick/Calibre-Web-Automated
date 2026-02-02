@@ -149,6 +149,52 @@ class WorkerThread(threading.Thread):
             if str(task.id) == str(task_id) and task.is_cancellable:
                 task.stat = STAT_CANCELLED if task.stat == STAT_WAITING else STAT_ENDED
 
+    def cancel_tasks_for_book(self, book_id):
+        """Cancel all pending tasks associated with a specific book ID
+        
+        Args:
+            book_id: The book ID whose tasks should be cancelled
+            
+        Returns:
+            int: Number of tasks cancelled
+        """
+        cancelled_count = 0
+        ins = self.get_instance()
+        
+        try:
+            with ins.doLock:
+                # Access queue and dequeued directly to avoid recursive lock from .tasks property
+                tasks_snapshot = list(ins.queue.to_list() + ins.dequeued)
+        except Exception as e:
+            log.warning("[worker] Could not get tasks snapshot: %s", str(e))
+            return 0
+        
+        # Process outside the lock to avoid deadlock
+        tasks_to_cancel = []
+        for queued_task in tasks_snapshot:
+            task = queued_task.task
+            # Check if task has a book_id attribute and it matches
+            if hasattr(task, 'book_id') and task.book_id == book_id:
+                # Only cancel if task is waiting or scheduled
+                if task.stat in (STAT_WAITING,) and task.is_cancellable:
+                    tasks_to_cancel.append((task, 'book_id'))
+            # Also check for scheduled tasks with bookId attribute (some tasks use different naming)
+            elif hasattr(task, 'bookId') and task.bookId == book_id:
+                if task.stat in (STAT_WAITING,) and task.is_cancellable:
+                    tasks_to_cancel.append((task, 'bookId'))
+        
+        # Cancel tasks without holding the main lock
+        for task, attr_name in tasks_to_cancel:
+            try:
+                task.stat = STAT_CANCELLED
+                task.error = f"Cancelled: Book {book_id} was removed from library"
+                log.info("[worker] Cancelled task %s for book %s", task.name, book_id)
+                cancelled_count += 1
+            except Exception as e:
+                log.warning("[worker] Failed to cancel task %s: %s", task.name, str(e))
+        
+        return cancelled_count
+
 
 class CalibreTask:
     __metaclass__ = abc.ABCMeta

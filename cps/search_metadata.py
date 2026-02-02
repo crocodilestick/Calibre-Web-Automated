@@ -69,15 +69,46 @@ cl = list_classes(new_list)
 # Alphabetises the list of Metadata providers
 cl.sort(key=lambda x: x.__class__.__name__)
 
+
+# Helper to load global provider enablement map from CWA settings
+def _get_global_provider_enabled_map() -> dict:
+    try:
+        # Import here to avoid circular import issues and keep startup fast
+        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB  # type: ignore
+        cwa_db = CWA_DB()
+        settings = cwa_db.get_cwa_settings()
+        
+        if not settings:
+            log.warning("Could not get CWA settings for provider enabled map")
+            return {}
+        
+        from cps.cwa_functions import parse_metadata_providers_enabled
+        return parse_metadata_providers_enabled(
+            settings.get('metadata_providers_enabled', '{}')
+        )
+    except Exception as e:
+        # On any failure, treat as all enabled (empty dict = all default to enabled)
+        log.warning(f"Error loading provider enabled map: {e}")
+        return {}
+    # Remove redundant return
+
 @meta.route("/metadata/provider")
 @user_login_required
 def metadata_provider():
     active = current_user.view_settings.get("metadata", {})
+    global_enabled = _get_global_provider_enabled_map()
     provider = list()
     for c in cl:
         ac = active.get(c.__id__, True)
         provider.append(
-            {"name": c.__name__, "active": ac, "initial": ac, "id": c.__id__}
+            {
+                "name": c.__name__,
+                "active": ac,
+                "initial": ac,
+                "id": c.__id__,
+                "globally_enabled": bool(global_enabled.get(c.__id__, True)),
+            }
         )
     return make_response(jsonify(provider))
 
@@ -102,9 +133,20 @@ def metadata_change_active_provider(prov_name):
     if "initial" in new_state and prov_name:
         data = []
         provider = next((c for c in cl if c.__id__ == prov_name), None)
+        # Respect global disablement for preview search as well
+        global_enabled = _get_global_provider_enabled_map()
         if provider is not None:
-            data = provider.search(new_state.get("query", ""))
-        return make_response(jsonify([asdict(x) for x in data]))
+            if bool(global_enabled.get(provider.__id__, True)):
+                try:
+                    data = provider.search(new_state.get("query", ""))
+                except Exception as exc:
+                    log.warning("Metadata provider %s failed: %s", provider.__class__.__name__, exc)
+                    data = []
+            else:
+                data = []
+        if not data:
+            return make_response(jsonify([]))
+        return make_response(jsonify([asdict(x) for x in data if x]))
     return ""
 
 
@@ -115,15 +157,25 @@ def metadata_search():
     data = list()
     active = current_user.view_settings.get("metadata", {})
     locale = get_locale()
+    global_enabled = _get_global_provider_enabled_map()
     if query:
-        static_cover = url_for("static", filename="generic_cover.jpg")
+        static_cover = url_for("static", filename="generic_cover.svg")
         # ret = cl[0].search(query, static_cover, locale)
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             meta = {
                 executor.submit(copy_current_request_context(c.search), query, static_cover, locale): c
                 for c in cl
-                if active.get(c.__id__, True)
+                if active.get(c.__id__, True) and bool(global_enabled.get(c.__id__, True))
             }
             for future in concurrent.futures.as_completed(meta):
-                data.extend([asdict(x) for x in future.result() if x])
+                try:
+                    result = future.result()
+                except Exception as exc:
+                    provider = meta.get(future)
+                    provider_name = provider.__class__.__name__ if provider else "Unknown"
+                    log.warning("Metadata provider %s failed: %s", provider_name, exc)
+                    continue
+                if not result:
+                    continue
+                data.extend([asdict(x) for x in result if x])
     return  make_response(jsonify(data))

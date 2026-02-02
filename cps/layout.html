@@ -1,0 +1,18 @@
+{% endif %}
+              {% if current_user.is_authenticated or g.allow_anonymous %}
+                <li class="nav-head hidden-xs public-shelves">{{_('Shelves')}}</li>
+                {% for shelf in g.shelves_access %}
+                  <li><a href="{{url_for('shelf.show_shelf', shelf_id=shelf.id)}}"><span class="glyphicon glyphicon-list shelf"></span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.books.all()|length}})</span></a></li>
+                {% endfor %}
+                <li class="nav-head hidden-xs public-shelves">{{_('Magic Shelves')}}</li>
+                {% for shelf in g.magic_shelves_access %}
+                  <li><a href="{{url_for('web.books_list', data='magicshelf', sort_param='stored', book_id=shelf.id)}}"><i class="fa {{ shelf.icon }}"></i> {{shelf.name|shortentitle(40)}}</a></li>
+                {% endfor %}
+              {% if not current_user.is_anonymous %}
+                <li id="nav_createshelf" class="create-shelf"><a href="{{url_for('shelf.create_shelf')}}">{{_('Create a Shelf')}}</a></li>
+                <li id="nav_createmagicshelf" class="create-shelf"><a href="{{url_for('web.create_magic_shelf')}}">{{_('Create a Magic Shelf')}}</a></li>
+                <li id="nav_about" {% if page == 'stat' %}class="active"{% endif %}><a href="{{url_for('about.package_versions')}}"><span class="glyphicon glyphicon-info-sign"></span> {{_('About')}}</a></li>
+              {% endif %}
+              {% endif %}
+              
+            </ul>

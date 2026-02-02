@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import atexit
+import threading
 
 from .. import logger
 from .worker import WorkerThread
@@ -14,6 +15,7 @@ try:
     from apscheduler.schedulers.background import BackgroundScheduler as BScheduler
     from apscheduler.triggers.cron import CronTrigger
     from apscheduler.triggers.date import DateTrigger
+    from apscheduler.triggers.interval import IntervalTrigger
     use_APScheduler = True
 except (ImportError, RuntimeError) as e:
     use_APScheduler = False
@@ -34,12 +36,21 @@ class BackgroundScheduler:
             logger.logging.getLogger('tzlocal').setLevel(logger.logging.WARNING)
             cls.scheduler = BScheduler()
             cls.scheduler.start()
+            cls._schedule_lock = threading.Lock()  # Prevent concurrent task scheduling
 
         return cls._instance
 
     def schedule(self, func, trigger, name=None):
         if use_APScheduler:
             return self.scheduler.add_job(func=func, trigger=trigger, name=name)
+
+    def remove_job(self, job_id: str):
+        if use_APScheduler and job_id:
+            try:
+                return self.scheduler.remove_job(job_id)
+            except Exception:
+                # Ignore if job not found
+                return None
 
     # Expects a lambda expression for the task
     def schedule_task(self, task, user=None, name=None, hidden=False, trigger=None):
@@ -66,8 +77,10 @@ class BackgroundScheduler:
     # Expects a list of lambda expressions for the tasks
     def schedule_tasks_immediately(self, tasks, user=None):
         if use_APScheduler:
-            for task in tasks:
-                self.schedule_task_immediately(task[0], user, name="immediately " + task[1], hidden=task[2])
+            # Use lock to prevent "Set changed size during iteration" when tasks are scheduled simultaneously
+            with self._schedule_lock:
+                for task in tasks:
+                    self.schedule_task_immediately(task[0], user, name="immediately " + task[1], hidden=task[2])
 
     # Remove all jobs
     def remove_all_jobs(self):

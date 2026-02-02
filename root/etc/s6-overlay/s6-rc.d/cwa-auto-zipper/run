@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 
 echo "[cwa-auto-zipper] Starting CWA-Auto-Zipper service..."
 echo "[cwa-auto-zipper] Matching internal localtime & timezone with the one provided..."

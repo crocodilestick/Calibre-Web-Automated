@@ -1,0 +1,640 @@
+{% extends "layout.html" %}
+
+{% block header %}
+<style>
+  .duplicate-group {
+      margin-bottom: 35px;
+      border: none;
+      border-radius: 12px;
+      padding: 25px;
+      background: #1c28328a;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+  }
+  .duplicate-group:hover {
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+  }
+  .duplicate-header {
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #e74c3c;
+      background: linear-gradient(90deg, rgba(231, 76, 60, 0.2) 0%, rgba(231, 76, 60, 0.04) 100%);
+      border-radius: 8px;
+      padding: 3rem;
+      margin: -10px -10px 25px -10px;
+  }
+  .duplicate-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: white;
+      text-shadow: 0 1px 3px rgba(44, 62, 80, 0.1);
+  }
+  .duplicate-author {
+      font-size: 16px;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+      font-weight: 500;
+  }
+  .duplicate-count {
+      color: white;
+      font-weight: 700;
+      background: linear-gradient(135deg, rgb(231 76 60 / 51%) 0%, rgb(231 76 60 / 42%) 100%);
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+      border: 1px solid rgba(231, 76, 60, 0.2);
+      text-transform: capitalize;
+  }
+  .books-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-start;
+  }
+  .book-item {
+      display: flex;
+      max-width: 450px;
+      padding: 20px;
+      border: none;
+      border-radius: 10px;
+      background: #34455185;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+  }
+  .book-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+  }
+  .book-item:hover {
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
+      border-color: #3498db;
+  }
+  .book-item:hover::before {
+      opacity: 1;
+  }
+  .book-item.selected {
+      border-color: #e74c3c;
+      background: #64859d78;
+      box-shadow: 0 4px 8px rgba(231, 76, 60, 0.15), 0 2px 4px rgba(231, 76, 60, 0.1);
+  }
+  .book-item.selected::before {
+      background: #e74c3c;
+      opacity: 1;
+  }
+  .book-cover {
+      flex-shrink: 0;
+      margin-right: 18px;
+      margin-left: 18px;
+      position: relative;
+  }
+  .book-cover img {
+      width: 85px;
+      height: 125px;
+      object-fit: cover;
+      border-radius: 6px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0,0,0,0.1);
+  }
+  .book-item:hover .book-cover img {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .book-details {
+      flex: 1;
+      min-width: 0;
+  }
+  .book-checkbox {
+      margin-right: 20px;
+      margin-top: 8px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #e74c3c;
+      transform: scale(1.2);
+  }
+    .book-title {
+        font-weight: 600;
+        margin-bottom: 12px;
+        line-height: 1.3;
+        color: white;
+        font-size: 15px;
+        text-shadow: 0 1px 2px rgba(44, 62, 80, 0.1);
+    }
+  .book-title-link {
+      color: white;
+      text-decoration: none;
+      transition: color 0.2s ease;
+  }
+  .book-title-link:hover {
+      color: #3498db;
+      text-decoration: none;
+  }
+  .book-cover a {
+      display: block;
+      text-decoration: none;
+  }
+  .book-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+  }
+  .book-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      background: rgba(52, 152, 219, 0.2);
+      border: 1px solid rgba(52, 152, 219, 0.4);
+      border-radius: 4px;
+      color: #3498db;
+      font-size: 12px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+  }
+  .book-action-btn:hover {
+      background: rgba(52, 152, 219, 0.3);
+      border-color: #3498db;
+      color: #5dade2;
+      text-decoration: none;
+      transform: translateY(-1px);
+  }
+  .book-action-btn .glyphicon {
+      font-size: 11px;
+  }
+  .book-meta {
+      color: white;
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 400;
+  }
+  .book-meta div {
+      margin-bottom: 6px;
+      color: white !important;
+  }
+.book-meta strong {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+.no-duplicates {
+    text-align: center;
+    padding: 60px 20px;
+    color: #f9be03;
+    background: linear-gradient(135deg, #3e474c 0%, #00101a 100%);
+    border-radius: 10px;
+    border: 0px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+  .no-duplicates h3 {
+      color: whitesmoke;
+      margin-bottom: 15px;
+  }
+  h2 {
+      color: #2c3e50;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-shadow: 0 1px 3px rgba(44, 62, 80, 0.1);
+  }
+  .text-muted {
+      color: whitesmoke !important;
+  }
+  /* Success Modal Styling */
+  #success_modal .modal-header {
+      background-color: #28a745;
+      color: white;
+      border-radius: 6px 6px 0 0;
+  }
+  #success_modal .modal-content {
+      border-radius: 6px;
+      border: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.1);
+  }
+  #success_modal .modal-body {
+      padding: 30px;
+  }
+  #success_modal .success-icon {
+      animation: success-bounce 0.6s ease-out;
+  }
+  @keyframes success-bounce {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+  }
+  /* Error Modal Styling */
+  #error_modal .modal-header {
+      background-color: #dc3545;
+      color: white;
+      border-radius: 6px 6px 0 0;
+  }
+  #error_modal .modal-content {
+      border-radius: 6px;
+      border: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.1);
+  }
+  #error_modal .modal-body {
+      padding: 30px;
+  }
+  #error_modal .error-icon {
+      animation: error-shake 0.6s ease-out;
+  }
+  @keyframes error-shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  .bulk-actions {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #1c2832;
+      border-radius: 10px;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .btn {
+      display: inline-block;
+      padding: 6px 16px;
+      font-family: Open Sans Bold, Helvetica Neue, Helvetica, Arial, sans-serif;
+      border: 0;
+      margin-bottom: 0;
+      line-height: 1.71428571;
+      text-align: center;
+      border-radius: 3px;
+      white-space: nowrap;
+      user-select: none;
+      transition: background-color .1s;
+  }
+  .btn-default {
+      border-color: #CC7B19;
+      color: #fff;
+      background-color: #CC7B19;
+  }
+  .btn-default:hover {
+      border-color: #E59029;
+      color: #fff;
+      background-color: #E59029;
+  }
+  .btn-danger {
+      color: #fff;
+      background-color: #ac3323;
+      border-color: #ac3323;
+      margin-left: 10px;
+  }
+  .btn-danger:hover:not(.disabled) {
+      background-color: #ce3d2a;
+      border-color: #641e14;
+  }
+  .btn-danger.disabled {
+      background-color: #6c757d;
+      opacity: 0.65;
+      cursor: not-allowed;
+  }
+    .btn-primary {
+      color: #fff;
+      background-color: #3498db;
+      border-color: #3498db;
+    }
+    .btn-primary:hover:not(.disabled) {
+      background-color: #2980b9;
+      border-color: #2471a3;
+    }
+    .btn-primary.disabled {
+      background-color: #6c757d;
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  .selection-info {
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 1px 2px rgba(40, 167, 69, 0.1);
+      background: #cc7b1969;
+      padding: 1rem;
+      max-height: 37px;
+      border-radius: 4px;
+      text-transform: capitalize;
+      line-height: normal;
+      padding-inline: 1.5rem;
+  }
+  div.bulk-actions > div.form-inline {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 1rem;
+  }
+  .glyphicon.glyphicon-refresh {
+      font-size: smaller !important;
+      margin-right: 6px;
+  }
+  .container-fluid img {
+      display: block;
+      width: max(10vw,120px) !important;
+      height: auto;
+      max-width: 26rem;
+      margin: auto;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  }
+  @media (max-width: 768px) {
+    .books-grid {
+      flex-direction: column;
+    }
+    .book-item {
+      max-width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="discover">
+  <h2>{{title}}</h2>
+  <div class="settings-container" style="margin-top: 3rem; max-width: none; justify-self: auto;">
+    <h2>{{_('CWA Duplicates Manager')}}</h2>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <p style="color: whitesmoke; margin-bottom: 2rem;" class="text-muted">{{_('Books with matching titles, authors, and languages. Books in different languages are not considered duplicates.')}}</p>
+      
+      <!-- Action bar - always show for manual scan trigger -->
+      <div class="bulk-actions" style="margin-bottom: 20px;">
+        <div class="form-inline">
+          <button type="button" class="btn btn-sm btn-default" id="trigger_scan">
+            <span class="glyphicon glyphicon-refresh"></span> {{_('Scan for Duplicates Now')}}
+          </button>
+          <button type="button" class="btn btn-sm btn-danger" id="cancel_scan" style="display: none;">
+            <span class="glyphicon glyphicon-ban-circle"></span> {{_('Cancel Scan')}}
+          </button>
+          {% if duplicate_groups %}
+            <button type="button" class="btn btn-sm btn-default" id="select_all">{{_('Select Duplicates')}}</button>
+            <button type="button" class="btn btn-sm btn-default" id="select_none">{{_('Select None')}}</button>
+            <button type="button" class="btn btn-sm btn-danger disabled" id="delete_selected" aria-disabled="true">{{_('Delete Selected')}}</button>
+            <span id="selection_count" class="selection-info"></span>
+          {% endif %}
+        </div>
+
+        <div id="scan_progress_container" style="margin-top: 12px; display: none;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="flex: 1; background: #22303a; border-radius: 6px; overflow: hidden; height: 10px;">
+              <div id="scan_progress_bar" style="height: 10px; width: 0%; background: linear-gradient(90deg, #2ecc71, #3498db);"></div>
+            </div>
+            <span id="scan_progress_label" style="color: #ddd; font-size: 12px;">0%</span>
+          </div>
+          <div id="scan_progress_message" style="margin-top: 6px; color: #bbb; font-size: 12px;"></div>
+        </div>
+
+        {% if next_scan_run %}
+          <div style="margin-top: 10px; color: #bbb; font-size: 12px;">
+            {{_('Next scheduled scan:')}} <span id="next_scan_run">{{ next_scan_run }}</span>
+          </div>
+        {% endif %}
+      </div>
+      
+      {% if duplicate_groups %}
+
+        <!-- Auto-Resolution Section -->
+        <div class="settings-container" style="margin-bottom: 30px; padding: 25px; background: #1c28328a; border-radius: 10px; margin-inline: 0rem; max-width: none;">
+          <h4 style="color: white; margin-bottom: 15px; display: flex; align-items: center;">
+            <span class="glyphicon glyphicon-cog" style="margin-right: 10px;"></span>
+            {{_('Auto-Resolve Duplicates')}}
+          </h4>
+          
+          <p style="color: #bbb; margin-bottom: 20px;">
+            {{_('Automatically resolve all duplicate groups by keeping one book and deleting others based on a strategy.')}}
+          </p>
+          
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label for="resolution_strategy" style="color: white; font-weight: 600;">{{_('Strategy:')}}</label>
+            <select id="resolution_strategy" class="form-control" style="background: #1c2832; color: white; border: 1px solid #444;">
+              <option value="newest">{{_('Keep Newest - Delete older copies, keep the most recently added')}}</option>
+              <option value="oldest">{{_('Keep Oldest - Delete newer copies, keep the earliest added')}}</option>
+              <option value="merge">{{_('Merge Formats - Merge formats into the newest book, delete the rest')}}</option>
+              <option value="highest_quality_format">{{_('Keep Highest Quality Format - Prefer formats based on your Duplicate Format Priority Ranking')}}</option>
+              <option value="most_metadata">{{_('Keep Most Metadata - Keep book with most complete information')}}</option>
+              <option value="largest_file_size">{{_('Keep Largest File Size - Keep book with largest total file size')}}</option>
+            </select>
+            
+            <button type="button" class="btn btn-default" id="preview_resolution">
+              <span class="glyphicon glyphicon-eye-open"></span> {{_('Preview')}}
+            </button>
+            
+            <button type="button" class="btn btn-danger disabled" id="execute_resolution" aria-disabled="true">
+              <span class="glyphicon glyphicon-flash"></span> {{_('Execute Resolution')}}
+            </button>
+          </div>
+          
+          <div class="cwa-settings-tip" style="margin-top: 15px; background: rgba(231, 76, 60, 0.15); border-left: 3px solid #e74c3c; padding: 12px; border-radius: 4px;">
+            <strong style="color: #e74c3c;">⚠️ {{_('Warning:')}}</strong>
+            <span style="color: #ddd;">{{_('This will permanently delete books. Original files will be backed up to')}} <code style="background: #2a3441; padding: 2px 6px; border-radius: 3px; color: #f39c12; line-break: anywhere;">/config/processed_books/duplicate_resolutions/</code></span>
+          </div>
+        </div>
+
+        <div class="duplicates-container">
+          {% for group in duplicate_groups %}
+          <div class="duplicate-group" data-group-hash="{{ group.group_hash }}">
+            <div class="duplicate-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="flex: 1;">
+                <div class="duplicate-title">{{ group.title }}</div>
+                <div class="duplicate-author">by {{ group.author }}</div>
+                <div class="duplicate-count">{{ group.count }} duplicate{{ 's' if group.count > 1 else '' }} found</div>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <button type="button"
+                        class="merge-selected-btn disabled"
+                        aria-disabled="true"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; margin-left: 10px;">
+                  <span class="glyphicon glyphicon-link"></span> {{_('Merge Selected')}}</button>
+                <button class="dismiss-duplicate-btn" 
+                        data-group-hash="{{ group.group_hash }}" 
+                        data-dismissed="false"
+                        title="{{_('Dismiss this duplicate group')}}"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; margin-left: 10px;">
+                  <span class="glyphicon glyphicon-eye-close"></span> {{_('Dismiss')}}
+                </button>
+              </div>
+            </div>
+            
+            <div class="books-grid">
+              {% for book in group.books %}
+              <div class="book-item" data-book-id="{{ book.id }}">
+                <input type="checkbox" class="book-checkbox" value="{{ book.id }}" data-title="{{ book.title }}" data-authors="{{ book.author_names }}">
+                
+                <div class="book-cover">
+                  <a href="{{ url_for('web.show_book', book_id=book.id) }}" title="{{_('View book details')}}">
+                    <img src="{{ book.cover_url }}" alt="Cover for {{ book.title }}" onerror="this.src='/static/generic_cover.svg'">
+                  </a>
+                </div>
+                
+                <div class="book-details">
+                  <div class="book-title">
+                    <a href="{{ url_for('web.show_book', book_id=book.id) }}" class="book-title-link">{{ book.title }}</a>
+                  </div>
+                  <div class="book-meta">
+                    <div><strong>Authors:</strong> {{ book.author_names }}</div>
+                    <div><strong>Added:</strong> {{ book.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <div><strong>Book ID:</strong> {{ book.id }}</div>
+                    {% if book.series %}
+                      <div><strong>Series:</strong> 
+                        {% for series in book.series %}
+                          {{ series.name }}{% if book.series_index %} ({{ book.series_index }}){% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    {% if book.data %}
+                      <div><strong>Formats:</strong> 
+                        {% for data in book.data %}{{ data.format }}{% if not loop.last %}, {% endif %}{% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="book-actions">
+                    <a href="{{ url_for('edit-book.show_edit_book', book_id=book.id) }}" class="book-action-btn" title="{{_('Edit book metadata')}}">
+                      <span class="glyphicon glyphicon-edit"></span> {{_('Edit')}}
+                    </a>
+                    <a href="{{ url_for('web.show_book', book_id=book.id) }}" class="book-action-btn" title="{{_('Archive/delete book')}}">
+                      <span class="glyphicon glyphicon-trash"></span> {{_('Archive')}}
+                    </a>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-duplicates">
+          <h3>{{_('No Duplicate Books Found')}}</h3>
+          <p>{{_('Your library has no books with duplicate title and author combinations.')}}</p>
+          <p class="text-muted">{{_('This search looks for books with identical titles AND authors to avoid false positives.')}}</p>
+        </div>
+      {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="delete_selected_modal" role="dialog" aria-labelledby="deleteSelectedLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-center">
+        <span>{{_('Are you really sure?')}}</span>
+      </div>
+      <div class="modal-body">
+        <p></p>
+        <div class="text-left">{{_('The following books will be permanently deleted:')}}</div>
+        <p></p>
+        <div class="text-left" id="display-delete-selected-books"></div>
+        <p></p>
+        <div class="text-left"><strong>{{_('This action cannot be undone!')}}</strong></div>
+      </div>
+      <div class="modal-footer">
+        <input id="delete_selected_confirm" type="button" class="btn btn-danger" value="{{_('Delete')}}" name="delete_selected_confirm" data-dismiss="modal">
+        <button id="delete_selected_abort" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Merge Confirmation Modal -->
+<div class="modal fade" id="merge_selected_modal" role="dialog" aria-labelledby="mergeSelectedLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-center">
+        <span>{{_('Merge Books')}}</span>
+      </div>
+      <div class="modal-body">
+        <p></p>
+        <div class="text-left">{{_('The following book will be kept:')}}</div>
+        <p></p>
+        <div class="text-left" id="display-merge-target-book" style="font-weight: bold; color: #28a745;"></div>
+        <p></p>
+        <div class="text-left">{{_('The following books will be merged into it (and then deleted):')}}</div>
+        <p></p>
+        <div class="text-left" id="display-merge-source-books"></div>
+        <p></p>
+        <div class="text-left"><strong>{{_('Note: File formats from source books will be added to the target book.')}}</strong></div>
+      </div>
+      <div class="modal-footer">
+        <input id="merge_selected_confirm" type="button" class="btn btn-primary" value="{{_('Merge')}}" name="merge_selected_confirm" data-dismiss="modal">
+        <button id="merge_selected_abort" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Resolution Preview Modal -->
+<div class="modal fade" id="resolution_preview_modal" role="dialog">
+  <div class="modal-dialog modal-lg" style="width: 50%; max-width: 1200px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #e59029; color: white;">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">&times;</button>
+        <h4 class="modal-title">
+          <span class="glyphicon glyphicon-eye-open"></span> {{_('Resolution Preview')}}
+        </h4>
+      </div>
+      <div class="modal-body" id="resolution_preview_body" style="max-height: 600px; overflow-y: auto; padding: 3rem;">
+        <!-- Preview content will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{_('Close')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="success_modal" role="dialog" aria-labelledby="successModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-center">
+        <span id="success_modal_title">{{_('Success')}}</span>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <div class="success-icon" style="font-size: 48px; color: #28a745; margin-bottom: 20px;">
+            <i class="glyphicon glyphicon-ok-circle"></i>
+          </div>
+          <p id="success_modal_message">{{_('Selected duplicate books have been deleted successfully!')}}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="success_modal_ok" type="button" class="btn btn-default" data-dismiss="modal">{{_('OK')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="error_modal" role="dialog" aria-labelledby="errorModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-center">
+        <span id="error_modal_title">{{_('Error')}}</span>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <div class="error-icon" style="font-size: 48px; color: #dc3545; margin-bottom: 20px;">
+            <i class="glyphicon glyphicon-remove-circle"></i>
+          </div>
+          <p id="error_modal_message">{{_('An error occurred while processing your request.')}}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="error_modal_ok" type="button" class="btn btn-default" data-dismiss="modal">{{_('OK')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/duplicates.js') }}"></script>
+{% endblock %} 

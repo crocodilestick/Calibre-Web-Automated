@@ -9,13 +9,13 @@ let blockKeysHandler = null;
  * Waits until queue is finished, meaning the book is done loading
  * @param callback
  */
-function qFinished(callback){
-    let timeout=setInterval(()=>{
-        if(reader.rendition.q.running===undefined)
+function qFinished(callback) {
+    let timeout = setInterval(() => {
+        if (reader && reader.rendition && reader.rendition.q && reader.rendition.q.running === undefined) {
             clearInterval(timeout);
             callback();
-        }, 300
-    )
+        }
+    }, 300);
 }
 
 /**
@@ -23,7 +23,6 @@ function qFinished(callback){
  */
 function getCSRFToken() {
     const input = document.querySelector('input[name="csrf_token"]');
-
     return input ? input.value : '';
 }
 
@@ -106,7 +105,15 @@ function hideLoading() {
 /* ---------- progress calc + locationchange ---------- */
 
 function calculateProgress() {
+    // Guard against missing reader/rendition/location data
+    if (!reader || !reader.rendition || !reader.rendition.location || !reader.rendition.location.end) {
+        return 0;
+    }
     let data = reader.rendition.location.end;
+
+    if (!data || !data.cfi || !epub || !epub.locations) {
+        return 0;
+    }
 
     return Math.round(epub.locations.percentageFromCfi(data.cfi) * 100);
 }
@@ -118,7 +125,6 @@ function calculateProgress() {
     history.pushState = function pushState() {
         let ret = oldPushState.apply(this, arguments);
         window.dispatchEvent(new Event('locationchange'));
-
         return ret;
     };
 
@@ -126,7 +132,6 @@ function calculateProgress() {
     history.replaceState = function replaceState() {
         let ret = oldReplaceState.apply(this, arguments);
         window.dispatchEvent(new Event('locationchange'));
-
         return ret;
     };
 
@@ -135,6 +140,7 @@ function calculateProgress() {
     });
 })();
 
+/* ---------- server progress API ---------- */
 
 async function saveProgressToAPI(bookId, cfi, page, percent) {
     try {
@@ -155,86 +161,121 @@ async function saveProgressToAPI(bookId, cfi, page, percent) {
     } catch (e) {
         console.error("Error saving to server: ", e);
     }
-
-    // console.log("Saved at cfi", cfi);
 }
 
 window.addEventListener('locationchange', () => {
+    // Only update if locations exist and we have a reader location
     if (!epub || !epub.locations || !epub.locations.length) return;
     if (!reader || !reader.rendition || !reader.rendition.location) return;
 
     let percent = calculateProgress();
-    progressDiv.textContent = percent + "%";
 
-    if (window.calibre && window.calibre.bookId) {
-        let cfi = reader.rendition.location.end.cfi;
-        let page = reader.rendition.location.end.displayed ? reader.rendition.location.end.displayed.page : null;
-        let bookId = window.calibre.bookId;
+    if (progressDiv) {
+        progressDiv.textContent = percent + "%";
+    }
 
+    // Prefer bookId for stable keys. Fall back to bookUrl.
+    let key = null;
+    if (window.calibre && window.calibre.bookId) key = String(window.calibre.bookId);
+    else if (window.calibre && window.calibre.bookUrl) key = String(window.calibre.bookUrl);
+
+    if (key) {
         // Save to localStorage
-        localStorage.setItem("calibre.reader.progress." + bookId, percent);
+        localStorage.setItem("calibre.reader.progress." + key, String(percent));
+    }
 
-        // Save to API
-        if (percent > 0) {
-            saveProgressToAPI(bookId, cfi, page, percent);
-        }
+    // Save to API if we have a bookId
+    if (window.calibre && window.calibre.bookId && percent > 0) {
+        let cfi = reader.rendition.location.end && reader.rendition.location.end.cfi ? reader.rendition.location.end.cfi : null;
+        let page = (reader.rendition.location.end && reader.rendition.location.end.displayed)
+            ? reader.rendition.location.end.displayed.page
+            : null;
+
+        saveProgressToAPI(window.calibre.bookId, cfi, page, percent);
     }
 });
+
+/* ---------- initial restore on load ---------- */
 
 qFinished(() => {
     showLoading("Preparing your book…");
 
+    if (!epub || !epub.locations) {
+        hideLoading();
+        return;
+    }
+
     epub.locations.generate().then(async () => {
-        if (window.calibre && window.calibre.bookId) {
-            let bookId = window.calibre.bookId;
+        // Prefer bookId for restore, else fall back to bookUrl
+        let bookId = (window.calibre && window.calibre.bookId) ? String(window.calibre.bookId) : null;
+        let bookUrl = (window.calibre && window.calibre.bookUrl) ? String(window.calibre.bookUrl) : null;
 
-            // Try to restore from API first
-            let restored = false;
+        let key = bookId || bookUrl;
+        let hasBookmark = !!(window.calibre && window.calibre.bookmark && window.calibre.bookmark.length > 0);
 
+        let restored = false;
+
+        // 1) Try restoring from API if we have a bookId
+        if (bookId) {
             try {
                 let resp = await fetch(`/api/progress/get?book_id=${encodeURIComponent(bookId)}`);
-
                 if (resp.ok) {
                     let data = await resp.json();
 
-                    if (data.progress_cfi != undefined) {
+                    if (data && data.progress_cfi !== undefined && data.progress_cfi !== null) {
                         reader.rendition.display(data.progress_cfi);
                         restored = true;
-                    } else if (data.progress_page != undefined) {
-                        // If you have page logic, implement here
-                        // Example: reader.rendition.displayPage(data.progress_page);
-                        restored = true;
-                    } else if (data.progress_percent != undefined) {
+                    } else if (data && data.progress_percent !== undefined && data.progress_percent !== null) {
                         let percentage = parseInt(data.progress_percent, 10) / 100;
-                        let cfi = epub.locations.cfiFromPercentage(percentage);
-
-                        if (cfi) {
-                            reader.rendition.display(cfi);
-                            restored = true;
+                        if (!isNaN(percentage)) {
+                            let cfi = epub.locations.cfiFromPercentage(percentage);
+                            if (cfi) {
+                                reader.rendition.display(cfi);
+                                restored = true;
+                            }
                         }
                     }
                 }
             } catch (e) {
                 console.error("Error fetching from server: ", e);
             }
+        }
 
-            // Fallback to localStorage if nothing restored
-            if (!restored) {
-                let savedProgress = localStorage.getItem("calibre.reader.progress." + bookId);
+        // 2) Fallback: localStorage (bookId first, else bookUrl)
+        if (!restored && key && reader && reader.rendition) {
+            let savedProgress = localStorage.getItem("calibre.reader.progress." + key);
 
-                if (savedProgress) {
-                    let percentage = parseInt(savedProgress, 10) / 100;
+            if (savedProgress) {
+                let percentage = parseInt(savedProgress, 10) / 100;
+                if (!isNaN(percentage)) {
                     let cfi = epub.locations.cfiFromPercentage(percentage);
-
                     if (cfi) {
                         reader.rendition.display(cfi);
+                        restored = true;
                     }
                 }
             }
         }
 
-        window.dispatchEvent(new Event('locationchange'))
+        // 3) Fallback: kosyncPercent only if no bookmark and nothing else restored
+        if (!restored && !hasBookmark && window.calibre && window.calibre.kosyncPercent !== null && window.calibre.kosyncPercent !== undefined) {
+            let kosyncPercent = parseFloat(window.calibre.kosyncPercent);
+            if (!isNaN(kosyncPercent) && kosyncPercent > 0) {
+                let percentage = kosyncPercent / 100;
+                let cfi = epub.locations.cfiFromPercentage(percentage);
+                if (cfi) {
+                    reader.rendition.display(cfi);
+                    restored = true;
+                }
+            }
+        }
+
+        // Force a refresh of the displayed progress
+        window.dispatchEvent(new Event('locationchange'));
 
         hideLoading();
+    }).catch((e) => {
+        console.error("Error generating locations: ", e);
+        hideLoading();
     });
-})
+});

@@ -14,6 +14,7 @@
               <th>{{_('Username')}}</th>
               <th>{{_('Email')}}</th>
               <th>{{_('Send to eReader Email')}}</th>
+              <th>{{_('Send to eReader Subject')}}</th>
               <th>{{_('Downloads')}}</th>
               <th class="hidden-xs ">{{_('Admin')}}</th>
               <th class="hidden-xs hidden-sm">{{_('Password')}}</th>
@@ -32,6 +33,7 @@
               <td><a class="session" href="{{url_for('admin.edit_user', user_id=user.id)}}">{{user.name}}</a></td>
               <td>{{user.email}}</td>
               <td>{{user.kindle_mail}}</td>
+              <td>{{user.kindle_mail_subject}}</td>
               <td>{{user.downloads.count()}}</td>
               <td class="hidden-xs">{{ display_bool_setting(user.role_admin()) }}</td>
               <td class="hidden-xs hidden-sm">{{ display_bool_setting(user.role_passwd()) }}</td>
@@ -159,9 +161,10 @@
         </div>
         {% endif %}
       </div>
-      <a class="btn btn-default" id="db_config" href="{{url_for('admin.db_configuration')}}">{{_('Edit Calibre Database Configuration')}}</a>
+      <a class="btn btn-default" id="cwa-settings" href="{{url_for('cwa_settings.set_cwa_settings')}}">{{_('CWA Settings')}}</a>
       <a class="btn btn-default" id="basic_config" href="{{url_for('admin.configuration')}}">{{_('Edit Basic Configuration')}}</a>
       <a class="btn btn-default" id="view_config" href="{{url_for('admin.view_configuration')}}">{{_('Edit UI Configuration')}}</a>
+      <a class="btn btn-default" id="db_config" href="{{url_for('admin.db_configuration')}}">{{_('Edit Calibre Database Configuration')}}</a>
     </div>
   </div>
 {%  if feature_support['scheduler'] %}
@@ -178,7 +181,7 @@
             <div class="col-xs-6 col-sm-3">{{schedule_duration}}</div>
           </div>
           <div class="row">
-            <div class="col-xs-6 col-sm-3">{{_('Generate Thumbnails')}}</div>
+            <div class="col-xs-6 col-sm-3">{{_('Scheduled Thumbnail Refresh')}}</div>
             <div class="col-xs-6 col-sm-3">{{ display_bool_setting(config.schedule_generate_book_covers) }}</div>
           </div>
           <!--div class="row">
@@ -196,27 +199,28 @@
 
         </div>
       <a class="btn btn-default scheduledtasks" id="admin_edit_scheduled_tasks" href="{{url_for('admin.edit_scheduledtasks')}}">{{_('Edit Scheduled Tasks Settings')}}</a>
-      {% if config.schedule_generate_book_covers %}
-        <a class="btn btn-default" id="admin_refresh_cover_cache">{{_('Refresh Thumbnail Cache')}}</a>
-      {%  endif %}
+      <a class="btn btn-default" id="admin_refresh_cover_cache">{{_('Refresh Thumbnail Cache')}}</a>
     </div>
   </div>
 {%  endif %}
 
   <div class="row form-group">
     <h2>{{_('CWA Admin Functions&nbsp;&nbsp;⚡')}}</h2>
-    <a class="btn btn-default" id="cwa-settings" href="{{url_for('cwa_settings.set_cwa_settings')}}">{{_('CWA Settings')}}</a>
     <a class="btn btn-default" id="cwa_stats" href="{{url_for('cwa_stats.cwa_stats_show')}}">{{_('Show CWA Stats')}}</a>
     <a class="btn btn-default" id="check_mon_srvs" href="{{url_for('cwa_check_status.cwa_flash_status')}}">{{_('Check CWA Status')}}</a>
     <a class="btn btn-default" id="kosync" href="{{url_for('kosync.kosync_plugin_page')}}">{{_('Setup KOReader Sync')}}</a>
   </div>
   <div class="row form-group">
     <a class="btn btn-default" id="library_convert" href="{{url_for('convert_library.show_convert_library_page')}}">{{_('CWA Library Conversion Service')}}</a>
-    <a class="btn btn-default" id="epub_fixer" href="{{url_for('epub_fixer.show_epub_fixer_page')}}">{{_('CWA Send-to-Kindle EPUB Fixer Service')}}</a>
+    <a class="btn btn-default" id="epub_fixer" href="{{url_for('epub_fixer.show_epub_fixer_page')}}">{{_('CWA EPUB Fixer Service')}}</a>
   </div>
   <div class="row form-group">
     <a class="btn btn-default github" id="cwa_github_link" href="https://github.com/crocodilestick/Calibre-Web-Automated/">{{_('CWA GitHub')}}</a>
     <a class="btn btn-default discord" id="cwa_discord_link" href="https://discord.gg/EjgSeek94R">{{_('CWA Discord Server')}}</a>
+  </div>
+  <div class="row form-group">
+    <div class="btn btn-primary" id="hardcover_auto_fetch" data-toggle="modal" data-target="#StatusDialog" style="background-color: var(--color-primary); border-color: var(--color-primary); margin-left: 8px;">🔖 {{_('Run Hardcover Auto-Fetch')}}</div>
+    <a href="{{url_for('admin.hardcover_review_matches')}}" class="btn btn-info" style="margin-left: 10px; background-color: #17a2b8; border-color: #17a2b8;">📋 {{_('Review Hardcover Matches')}}</a>
   </div>
 
   <div class="row form-group">
@@ -251,11 +255,6 @@
           <tr id="current_version">
             <td>Calibre-Web Automated</td>
             <td>{{cwa_version}} </td>
-            <td><i>{{_('Current Version')}}</i></td>
-          </tr>
-          <tr id="current_version">
-            <td>Stock Calibre-Web</td>
-            <td>{{commit}} </td>
             <td><i>{{_('Current Version')}}</i></td>
           </tr>
           <tr id="current_version">

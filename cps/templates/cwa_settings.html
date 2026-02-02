@@ -388,6 +388,27 @@
           </small>
         </div>
       </div>
+      <div class="form-group" style="margin-top: 20px;">
+          <label for="cover_download_max_mb" class="settings-section-header" style="padding-right: 10px; margin-bottom: 6px !important; padding-bottom: 0px !important; font-weight: 600;">{{_('Cover File Max Size (MB):')}}</label>
+          <input type="number"
+                 name="cover_download_max_mb"
+                 id="cover_download_max_mb"
+                 value="{{ cwa_settings.get('cover_download_max_mb', 15) }}"
+                 min="1"
+                 max="200"
+                 step="1"
+                 style="width: 120px;
+                        padding: 5px;
+                        border: 1px solid transparent;
+                        border-radius: 4px;
+                        background-color: #151e2680;">
+          <small style="color: #bbbbbb; margin-left: 10px;">{{_('Range: 1-200 MB (default: 15)')}}</small>
+          <div class="cwa-settings-tip" style="margin-top: 8px;">
+            <small style="color: var(--color-info-text);">
+              💡 <strong>{{_('Tip')}}:</strong> {{_('Limits the maximum size of cover images downloaded from metadata providers or URLs to prevent slow or stalled saves.')}}
+            </small>
+          </div>
+        </div>
     </div>
 
   <div class="settings-container">

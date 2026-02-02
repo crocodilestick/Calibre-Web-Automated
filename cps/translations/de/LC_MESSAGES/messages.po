@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 01:32+0100\n"
+"POT-Creation-Date: 2026-02-02 11:41+0100\n"
 "PO-Revision-Date: 2025-09-09 20:18+0200\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
@@ -925,215 +925,215 @@ msgstr ""
 "Bibliothek aktualisieren 🔄 Prüfe auf Bücher, die vielleicht vergessen "
 "wurden, bitte warten..."
 
-#: cps/cwa_functions.py:842
+#: cps/cwa_functions.py:848
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 "Ungültiger Cron-Ausdruck für Dubletten-Scans. Änderungen wurden nicht "
 "gespeichert."
 
-#: cps/cwa_functions.py:878
+#: cps/cwa_functions.py:884
 msgid "Calibre-Web Automated User Settings"
 msgstr "Calibre-Web Automated Benutzereinstellungen"
 
-#: cps/cwa_functions.py:924 cps/cwa_functions.py:926 cps/cwa_functions.py:930
-#: cps/cwa_functions.py:932 cps/cwa_functions.py:935 cps/cwa_functions.py:937
+#: cps/cwa_functions.py:930 cps/cwa_functions.py:932 cps/cwa_functions.py:936
+#: cps/cwa_functions.py:938 cps/cwa_functions.py:941 cps/cwa_functions.py:943
 msgid "Timestamp"
 msgstr "Zeitstempel"
 
-#: cps/cwa_functions.py:924 cps/cwa_functions.py:926
+#: cps/cwa_functions.py:930 cps/cwa_functions.py:932
 #: cps/templates/tasks.html:43
 msgid "Book ID"
 msgstr "Buch-ID"
 
-#: cps/cwa_functions.py:924 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:930 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Buchtitel"
 
-#: cps/cwa_functions.py:924
+#: cps/cwa_functions.py:930
 msgid "Book Author"
 msgstr "Autor des Buches"
 
-#: cps/cwa_functions.py:924
+#: cps/cwa_functions.py:930
 msgid "Trigger Type"
 msgstr "Auslösertyp"
 
-#: cps/cwa_functions.py:926 cps/cwa_functions.py:932
+#: cps/cwa_functions.py:932 cps/cwa_functions.py:938
 msgid "Filepath"
 msgstr "Dateipfad"
 
-#: cps/cwa_functions.py:930 cps/cwa_functions.py:932 cps/cwa_functions.py:935
-#: cps/cwa_functions.py:937
+#: cps/cwa_functions.py:936 cps/cwa_functions.py:938 cps/cwa_functions.py:941
+#: cps/cwa_functions.py:943
 msgid "Filename"
 msgstr "Dateiname"
 
-#: cps/cwa_functions.py:930
+#: cps/cwa_functions.py:936
 msgid "Manual?"
 msgstr "Manuell?"
 
-#: cps/cwa_functions.py:930
+#: cps/cwa_functions.py:936
 msgid "No. Fixes"
 msgstr "Anzahl der Korrekturen"
 
-#: cps/cwa_functions.py:930 cps/cwa_functions.py:935 cps/cwa_functions.py:937
+#: cps/cwa_functions.py:936 cps/cwa_functions.py:941 cps/cwa_functions.py:943
 msgid "Original Backed Up?"
 msgstr "Original gesichert?"
 
-#: cps/cwa_functions.py:932
+#: cps/cwa_functions.py:938
 msgid "Fixes Applied"
 msgstr "Korrekturen angewendet"
 
-#: cps/cwa_functions.py:937
+#: cps/cwa_functions.py:943
 msgid "Original Format"
 msgstr "Originalformat"
 
-#: cps/cwa_functions.py:937
+#: cps/cwa_functions.py:943
 msgid "End Format"
 msgstr "Zielformat"
 
-#: cps/cwa_functions.py:1013 cps/cwa_functions.py:1042
+#: cps/cwa_functions.py:1019 cps/cwa_functions.py:1048
 msgid "Unknown User"
 msgstr "Unbekannter Benutzer"
 
-#: cps/cwa_functions.py:1150
+#: cps/cwa_functions.py:1156
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Calibre-Web Automated Statistiken & Aktivitäten"
 
-#: cps/cwa_functions.py:1534
+#: cps/cwa_functions.py:1540
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr "Calibre-Web Automated - Vollständige Durchsetzungsgeschichte"
 
-#: cps/cwa_functions.py:1543
+#: cps/cwa_functions.py:1549
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr ""
 "Calibre-Web Automated - Vollständige Durchsetzungsgeschichte (mit Pfaden)"
 
-#: cps/cwa_functions.py:1552
+#: cps/cwa_functions.py:1558
 msgid "Calibre-Web Automated - Full Import History"
 msgstr "Calibre-Web Automated - Vollständiger Importverlauf"
 
-#: cps/cwa_functions.py:1561
+#: cps/cwa_functions.py:1567
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr "Calibre-Web Automated - Vollständige Konvertierungsgeschichte"
 
-#: cps/cwa_functions.py:1570
+#: cps/cwa_functions.py:1576
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Vollständige EPUB-Fixer-Historie (ohne Pfade und "
 "Korrekturen)"
 
-#: cps/cwa_functions.py:1579
+#: cps/cwa_functions.py:1585
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Vollständige EPUB-Fixer-Historie (mit Pfaden und "
 "Korrekturen)"
 
-#: cps/cwa_functions.py:1597
+#: cps/cwa_functions.py:1603
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Alle Überwachungsdienste laufen wie vorgesehen! 👍"
 
-#: cps/cwa_functions.py:1599
+#: cps/cwa_functions.py:1605
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 Der Ingest-Dienst läuft, aber der Metadaten-Änderungsdetektor nicht"
 
-#: cps/cwa_functions.py:1601
+#: cps/cwa_functions.py:1607
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 "🔴 Der Metadaten-Änderungsdetektor wird ausgeführt, der Ingest-Dienst jedoch "
 "nicht"
 
-#: cps/cwa_functions.py:1603
+#: cps/cwa_functions.py:1609
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 "⛔ Weder der Ingest-Dienst noch der Metadaten-Änderungsdetektor werden "
 "ausgeführt"
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1611
 msgid "An Error has occurred"
 msgstr "Ein Fehler ist aufgetreten"
 
-#: cps/cwa_functions.py:1776 cps/cwa_functions.py:1802
+#: cps/cwa_functions.py:1782 cps/cwa_functions.py:1808
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Bibliothek konvertieren"
 
-#: cps/cwa_functions.py:1918 cps/cwa_functions.py:1942
+#: cps/cwa_functions.py:1924 cps/cwa_functions.py:1948
 #, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Calibre-Web Automated - Send-to-Kindle EPUB Fixer Dienst"
 
-#: cps/cwa_functions.py:1996
+#: cps/cwa_functions.py:2002
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2003
+#: cps/cwa_functions.py:2009
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "Ungültige Buch-ID."
 
-#: cps/cwa_functions.py:2009
+#: cps/cwa_functions.py:2015
 #, fuzzy
 msgid "Book not found."
 msgstr "Token wurde nicht gefunden"
 
-#: cps/cwa_functions.py:2015
+#: cps/cwa_functions.py:2021
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "Ausgewählte Bücher als ungelesen markieren"
 
-#: cps/cwa_functions.py:2019
+#: cps/cwa_functions.py:2025
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s Format nicht gefunden"
 
-#: cps/cwa_functions.py:2034
+#: cps/cwa_functions.py:2040
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "Ausgewählte Bücher bearbeiten"
 
-#: cps/cwa_functions.py:2037
+#: cps/cwa_functions.py:2043
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2084
+#: cps/cwa_functions.py:2090
 msgid "You must be an admin to access this page."
 msgstr "Du musst Administrator sein, um auf diese Seite zugreifen zu können."
 
-#: cps/cwa_functions.py:2099
+#: cps/cwa_functions.py:2105
 msgid "Both username and image data are required."
 msgstr "Sowohl der Benutzername als auch die Bilddaten sind erforderlich."
 
-#: cps/cwa_functions.py:2107
+#: cps/cwa_functions.py:2113
 msgid "Invalid image data format. Must be a valid image."
 msgstr "Ungültiges Bilddatenformat. Es muss ein gültiges Bild sein."
 
-#: cps/cwa_functions.py:2115
+#: cps/cwa_functions.py:2121
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "Nicht unterstützter Bildtyp. Nur PNG und JPEG sind zulässig."
 
-#: cps/cwa_functions.py:2127
+#: cps/cwa_functions.py:2133
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "Bild ist zu groß. Bitte ein Bild kleiner als 500 KB verwenden."
 
-#: cps/cwa_functions.py:2131
+#: cps/cwa_functions.py:2137
 msgid "Invalid Base64 image data."
 msgstr "Ungültige Base64-Bilddaten."
 
-#: cps/cwa_functions.py:2135
+#: cps/cwa_functions.py:2141
 msgid "Invalid image data format."
 msgstr "Ungültiges Bilddatenformat."
 
-#: cps/cwa_functions.py:2140
+#: cps/cwa_functions.py:2146
 msgid "Error validating image data."
 msgstr "Fehler bei der Validierung der Bilddaten."
 
-#: cps/cwa_functions.py:2158
+#: cps/cwa_functions.py:2164
 msgid "Profile picture updated successfully."
 msgstr "Profilbild erfolgreich aktualisiert."
 
-#: cps/cwa_functions.py:2171
+#: cps/cwa_functions.py:2177
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA-Profilbildverwaltung (Laufende Arbeiten)"
 
@@ -1472,61 +1472,66 @@ msgstr "Ungültiges E-Mail Adressformat"
 msgid "Password doesn't comply with password validation rules"
 msgstr "Passwort entspricht nicht den Passwortvorgaben"
 
-#: cps/helper.py:1026
+#: cps/helper.py:1046
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 "Python-Modul 'advocate' ist nicht installiert, wird aber für das Hochladen "
 "von Covern benötigt"
 
-#: cps/helper.py:1036
+#: cps/helper.py:1051 cps/helper.py:1059
+#, python-format
+msgid "Cover image exceeds maximum size of %(size)s MB"
+msgstr ""
+
+#: cps/helper.py:1070
 msgid "Error Downloading Cover"
 msgstr "Fehler beim Herunterladen des Covers"
 
-#: cps/helper.py:1039
+#: cps/helper.py:1073
 msgid "Cover Format Error"
 msgstr "Coverdatei fehlerhaft"
 
-#: cps/helper.py:1042
+#: cps/helper.py:1076
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
 "Keine Berechtigung Cover von localhost oder dem lokalen Netzwerk hochzuladen"
 
-#: cps/helper.py:1052
+#: cps/helper.py:1092
 msgid "Failed to create path for cover"
 msgstr "Fehler beim Erzeugen des Ordners für die Coverdatei"
 
-#: cps/helper.py:1068
+#: cps/helper.py:1108
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "Coverdatei ist keine gültige Bilddatei, kann nicht gespeichert werden"
 
-#: cps/helper.py:1085
+#: cps/helper.py:1125
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "Nur jpg/jpeg/png/webp/bmp-Dateien werden als Cover unterstützt"
 
-#: cps/helper.py:1097
+#: cps/helper.py:1137
 msgid "Invalid cover file content"
 msgstr "Ungültiger Coverdatei-Inhalt"
 
-#: cps/helper.py:1101
+#: cps/helper.py:1141
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Nur jpg/jpeg-Dateien werden als Cover unterstützt"
 
-#: cps/helper.py:1260 cps/helper.py:1491
+#: cps/helper.py:1300 cps/helper.py:1531
 msgid "Cover"
 msgstr "Titelbild"
 
-#: cps/helper.py:1277
+#: cps/helper.py:1317
 msgid "UnRar binary file not found"
 msgstr "UnRar-Programm nicht gefunden"
 
-#: cps/helper.py:1288
+#: cps/helper.py:1328
 msgid "Error executing UnRar"
 msgstr "Fehler beim Ausführen von UnRar"
 
-#: cps/helper.py:1294
+#: cps/helper.py:1334
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
@@ -1535,33 +1540,33 @@ msgstr ""
 "Nicht unterstützte Architektur erkannt: %(arch)s. CWA ist für x86_64 und "
 "aarch64 optimiert."
 
-#: cps/helper.py:1303
+#: cps/helper.py:1343
 msgid "Could not find the specified directory"
 msgstr "Angegebener Ordner konnte nicht gefunden werden"
 
-#: cps/helper.py:1306
+#: cps/helper.py:1346
 msgid "Please specify a directory, not a file"
 msgstr "Bitte keine Datei sondern einen Ordner angeben"
 
-#: cps/helper.py:1320
+#: cps/helper.py:1360
 msgid "Calibre binaries not viable"
 msgstr "Die Calibre Programmdaten sind nicht verwendbar."
 
-#: cps/helper.py:1329
+#: cps/helper.py:1369
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Fehlendes Calibre-Programm: %(missing)s"
 
-#: cps/helper.py:1331
+#: cps/helper.py:1371
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Ausführberechtigung fehlt: %(missing)s"
 
-#: cps/helper.py:1336
+#: cps/helper.py:1376
 msgid "Error executing Calibre"
 msgstr "Fehler beim Ausführen von Calibre"
 
-#: cps/helper.py:1493 cps/templates/admin.html:240
+#: cps/helper.py:1533 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Alle Bücher für Metadaten-Backup einreihen"
 
@@ -1847,7 +1852,7 @@ msgstr "Zeige Kategorienabschnitt"
 
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:351
-#: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1071
+#: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1092
 #: cps/templates/hardcover_review_matches.html:140
 #: cps/templates/search_form.html:70 cps/web.py:1642 cps/web.py:1654
 msgid "Series"
@@ -3093,7 +3098,7 @@ msgid "Upload Format"
 msgstr "Format hochladen"
 
 #: cps/templates/book_edit.html:90 cps/templates/book_edit.html:371
-#: cps/templates/cwa_settings.html:1059 cps/templates/search_form.html:12
+#: cps/templates/cwa_settings.html:1080 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Autor"
 
@@ -3111,13 +3116,13 @@ msgstr "Herausgabedatum"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
 #: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1077 cps/templates/detail.html:715
+#: cps/templates/cwa_settings.html:1098 cps/templates/detail.html:715
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Verleger"
 
-#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1065
+#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1086
 #: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "Sprache"
@@ -3290,7 +3295,7 @@ msgstr "Titel eingeben"
 
 #: cps/templates/book_table.html:102 cps/templates/config_view_edit.html:39
 #: cps/templates/cwa_settings.html:316 cps/templates/cwa_settings.html:318
-#: cps/templates/cwa_settings.html:1053 cps/templates/shelf_edit.html:8
+#: cps/templates/cwa_settings.html:1074 cps/templates/shelf_edit.html:8
 #: cps/templates/tasks.html:41 cps/templates/tasks.html:64
 msgid "Title"
 msgstr "Titel"
@@ -4530,51 +4535,51 @@ msgstr ""
 msgid "Cleanup Schedule:"
 msgstr "Bereinigungszeitplan:"
 
-#: cps/templates/cwa_settings.html:202 cps/templates/cwa_settings.html:550
+#: cps/templates/cwa_settings.html:202 cps/templates/cwa_settings.html:571
 msgid "Frequent Intervals"
 msgstr "Häufige Intervalle"
 
-#: cps/templates/cwa_settings.html:203 cps/templates/cwa_settings.html:551
+#: cps/templates/cwa_settings.html:203 cps/templates/cwa_settings.html:572
 msgid "Every 15 Minutes"
 msgstr "Alle 15 Minuten"
 
-#: cps/templates/cwa_settings.html:204 cps/templates/cwa_settings.html:552
+#: cps/templates/cwa_settings.html:204 cps/templates/cwa_settings.html:573
 msgid "Every 30 Minutes"
 msgstr "Alle 30 Minuten"
 
-#: cps/templates/cwa_settings.html:205 cps/templates/cwa_settings.html:553
+#: cps/templates/cwa_settings.html:205 cps/templates/cwa_settings.html:574
 msgid "Every Hour"
 msgstr "Stündlich"
 
-#: cps/templates/cwa_settings.html:206 cps/templates/cwa_settings.html:554
+#: cps/templates/cwa_settings.html:206 cps/templates/cwa_settings.html:575
 msgid "Every 2 Hours"
 msgstr "Alle 2 Stunden"
 
-#: cps/templates/cwa_settings.html:207 cps/templates/cwa_settings.html:555
+#: cps/templates/cwa_settings.html:207 cps/templates/cwa_settings.html:576
 msgid "Every 4 Hours"
 msgstr "Alle 4 Stunden"
 
-#: cps/templates/cwa_settings.html:208 cps/templates/cwa_settings.html:556
+#: cps/templates/cwa_settings.html:208 cps/templates/cwa_settings.html:577
 msgid "Every 6 Hours"
 msgstr "Alle 6 Stunden"
 
-#: cps/templates/cwa_settings.html:209 cps/templates/cwa_settings.html:557
+#: cps/templates/cwa_settings.html:209 cps/templates/cwa_settings.html:578
 msgid "Every 12 Hours"
 msgstr "Alle 12 Stunden"
 
-#: cps/templates/cwa_settings.html:211 cps/templates/cwa_settings.html:559
+#: cps/templates/cwa_settings.html:211 cps/templates/cwa_settings.html:580
 msgid "Daily/Weekly/Monthly"
 msgstr "Täglich/Wöchentlich/Monatlich"
 
-#: cps/templates/cwa_settings.html:212 cps/templates/cwa_settings.html:560
+#: cps/templates/cwa_settings.html:212 cps/templates/cwa_settings.html:581
 msgid "Daily at Specific Time"
 msgstr "Täglich zu einer bestimmten Zeit"
 
-#: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:561
+#: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:582
 msgid "Weekly on Specific Day"
 msgstr "Wöchentlich an einem bestimmten Tag"
 
-#: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:562
+#: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:583
 msgid "Monthly on Specific Day"
 msgstr "Monatlich an einem bestimmten Tag"
 
@@ -4582,51 +4587,51 @@ msgstr "Monatlich an einem bestimmten Tag"
 msgid "Default: daily at 03:00"
 msgstr "Standard: Täglich um 03:00 Uhr"
 
-#: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:569
+#: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:590
 msgid "Day of Week:"
 msgstr "Wochentag:"
 
-#: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:574
+#: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:595
 msgid "Monday"
 msgstr "Montag"
 
-#: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:575
+#: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:596
 msgid "Tuesday"
 msgstr "Dienstag"
 
-#: cps/templates/cwa_settings.html:226 cps/templates/cwa_settings.html:576
+#: cps/templates/cwa_settings.html:226 cps/templates/cwa_settings.html:597
 msgid "Wednesday"
 msgstr "Mittwoch"
 
-#: cps/templates/cwa_settings.html:227 cps/templates/cwa_settings.html:577
+#: cps/templates/cwa_settings.html:227 cps/templates/cwa_settings.html:598
 msgid "Thursday"
 msgstr "Donnerstag"
 
-#: cps/templates/cwa_settings.html:228 cps/templates/cwa_settings.html:578
+#: cps/templates/cwa_settings.html:228 cps/templates/cwa_settings.html:599
 msgid "Friday"
 msgstr "Freitag"
 
-#: cps/templates/cwa_settings.html:229 cps/templates/cwa_settings.html:579
+#: cps/templates/cwa_settings.html:229 cps/templates/cwa_settings.html:600
 msgid "Saturday"
 msgstr "Samstag"
 
-#: cps/templates/cwa_settings.html:230 cps/templates/cwa_settings.html:580
+#: cps/templates/cwa_settings.html:230 cps/templates/cwa_settings.html:601
 msgid "Sunday"
 msgstr "Sonntag"
 
-#: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:586
+#: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:607
 msgid "Day of Month:"
 msgstr "Tag des Monats:"
 
-#: cps/templates/cwa_settings.html:243 cps/templates/cwa_settings.html:595
+#: cps/templates/cwa_settings.html:243 cps/templates/cwa_settings.html:616
 msgid "(1-28)"
 msgstr "(1-28)"
 
-#: cps/templates/cwa_settings.html:247 cps/templates/cwa_settings.html:600
+#: cps/templates/cwa_settings.html:247 cps/templates/cwa_settings.html:621
 msgid "Time of Day:"
 msgstr "Uhrzeit:"
 
-#: cps/templates/cwa_settings.html:255 cps/templates/cwa_settings.html:609
+#: cps/templates/cwa_settings.html:255 cps/templates/cwa_settings.html:630
 #, python-format
 msgid "(Server timezone: %(tz)s)"
 msgstr "(Server-Zeitzone: %(tz)s)"
@@ -4696,8 +4701,9 @@ msgstr "Identifikatoren (ISBN usw.)"
 msgid "Cover Image"
 msgstr "Titelbild"
 
-#: cps/templates/cwa_settings.html:387 cps/templates/cwa_settings.html:494
-#: cps/templates/cwa_settings.html:699 cps/templates/user_edit.html:368
+#: cps/templates/cwa_settings.html:387 cps/templates/cwa_settings.html:408
+#: cps/templates/cwa_settings.html:515 cps/templates/cwa_settings.html:720
+#: cps/templates/user_edit.html:368
 msgid "Tip"
 msgstr "Tipp"
 
@@ -4712,11 +4718,26 @@ msgstr ""
 "Qualitätskriterien auf die ausgewählten Felder an, während der direkte Modus "
 "alle ausgewählten Felder eins zu eins durch die Daten des Anbieters ersetzt."
 
-#: cps/templates/cwa_settings.html:396
+#: cps/templates/cwa_settings.html:392
+msgid "Cover File Max Size (MB):"
+msgstr ""
+
+#: cps/templates/cwa_settings.html:405
+#, fuzzy
+msgid "Range: 1-200 MB (default: 15)"
+msgstr "Bereich: 5-120 Minuten (Standard: 15)"
+
+#: cps/templates/cwa_settings.html:408
+msgid ""
+"Limits the maximum size of cover images downloaded from metadata providers "
+"or URLs to prevent slow or stalled saves."
+msgstr ""
+
+#: cps/templates/cwa_settings.html:417
 msgid "Ingest Processing Timeout"
 msgstr "Zeitüberschreitung des Ingestierungsprozesses"
 
-#: cps/templates/cwa_settings.html:398
+#: cps/templates/cwa_settings.html:419
 msgid ""
 "Maximum time (in minutes) to allow for processing a single book before "
 "timing out. Files that timeout are moved to the failed backup folder for "
@@ -4727,19 +4748,19 @@ msgstr ""
 "Zeitüberschreitung auftritt werden in Ordner für fehlgeschlagen Dateien "
 "geschoben, um sie untersuchen zu können."
 
-#: cps/templates/cwa_settings.html:400
+#: cps/templates/cwa_settings.html:421
 msgid "Timeout (minutes):"
 msgstr "Zeitüberschreitung (Minuten):"
 
-#: cps/templates/cwa_settings.html:412
+#: cps/templates/cwa_settings.html:433
 msgid "Range: 5-120 minutes (default: 15)"
 msgstr "Bereich: 5-120 Minuten (Standard: 15)"
 
-#: cps/templates/cwa_settings.html:416
+#: cps/templates/cwa_settings.html:437
 msgid "Stale temp cleanup"
 msgstr "Bereinigung veralteter temporärer Dateien"
 
-#: cps/templates/cwa_settings.html:417
+#: cps/templates/cwa_settings.html:438
 msgid ""
 "Ignored temporary upload files (.uploading, .part, etc.) can be cleaned "
 "after a set age. Setting either value to 0 disables cleanup. Changes apply "
@@ -4750,27 +4771,27 @@ msgstr ""
 "gesetzt wird, wird die Bereinigung deaktiviert. Änderungen werden beim "
 "nächsten Bereinigungszyklus angewendet."
 
-#: cps/templates/cwa_settings.html:422
+#: cps/templates/cwa_settings.html:443
 msgid "Stale temp age (minutes):"
 msgstr "Alter veralteter temporärer Dateien (Minuten):"
 
-#: cps/templates/cwa_settings.html:435
+#: cps/templates/cwa_settings.html:456
 msgid "Range: 0-10080 minutes (default: 120)"
 msgstr "Bereich: 0-10080 Minuten (Standard: 120)"
 
-#: cps/templates/cwa_settings.html:439
+#: cps/templates/cwa_settings.html:460
 msgid "Stale temp cleanup interval (seconds):"
 msgstr "Intervall zur Bereinigung veralteter temporärer Dateien (Sekunden):"
 
-#: cps/templates/cwa_settings.html:452
+#: cps/templates/cwa_settings.html:473
 msgid "Range: 0-86400 seconds (default: 600)"
 msgstr "Bereich: 0-86400 Sekunden (Standard: 600)"
 
-#: cps/templates/cwa_settings.html:458
+#: cps/templates/cwa_settings.html:479
 msgid "Auto-Send Delay for New Books"
 msgstr "Verzögerung für automatisches Senden neuer Bücher"
 
-#: cps/templates/cwa_settings.html:460
+#: cps/templates/cwa_settings.html:481
 msgid ""
 "Delay (in minutes) before automatically sending newly ingested books to "
 "eReaders. This allows time for metadata fetching and other processing to "
@@ -4782,19 +4803,19 @@ msgstr ""
 "andere Verarbeitungsschritte. Gilt nur für Benutzer, die das automatische "
 "Senden in ihrem Profil aktiviert haben."
 
-#: cps/templates/cwa_settings.html:462
+#: cps/templates/cwa_settings.html:483
 msgid "Delay (minutes):"
 msgstr "Verzögerung (Minuten):"
 
-#: cps/templates/cwa_settings.html:474
+#: cps/templates/cwa_settings.html:495
 msgid "Range: 1-60 minutes (default: 5)"
 msgstr "Bereich: 1-60 Minuten (Standard: 5)"
 
-#: cps/templates/cwa_settings.html:479
+#: cps/templates/cwa_settings.html:500
 msgid "Auto Metadata Fetch Provider Hierarchy"
 msgstr "Hierarchie der Anbieter für den automatischen Metadaten-Abruf"
 
-#: cps/templates/cwa_settings.html:481
+#: cps/templates/cwa_settings.html:502
 msgid ""
 "Configure the order in which metadata providers are searched when "
 "automatically fetching metadata for new books. Drag and drop to reorder "
@@ -4805,25 +4826,25 @@ msgstr ""
 "Verschieben Sie die Anbieter per Drag-and-Drop, um die Reihenfolge zu "
 "ändern. Es werden nur aktivierte Anbieter verwendet."
 
-#: cps/templates/cwa_settings.html:494
+#: cps/templates/cwa_settings.html:515
 msgid "Providers are tried in order from top to bottom. Drag to reorder."
 msgstr ""
 "Die Anbieter werden nacheinander von oben nach unten abgefragt. Ziehen Sie "
 "die Einträge, um die Reihenfolge zu ändern."
 
-#: cps/templates/cwa_settings.html:503
+#: cps/templates/cwa_settings.html:524
 msgid "Enabled Metadata Providers"
 msgstr "Aktivierte Metadaten-Anbieter"
 
-#: cps/templates/cwa_settings.html:505
+#: cps/templates/cwa_settings.html:526
 msgid "Unchecked providers are disabled globally."
 msgstr "Nicht ausgewählte Anbieter sind global deaktiviert."
 
-#: cps/templates/cwa_settings.html:518
+#: cps/templates/cwa_settings.html:539
 msgid "Hardcover Auto-Fetch Settings"
 msgstr "Hardcover-Auto-Fetch-Einstellungen"
 
-#: cps/templates/cwa_settings.html:520
+#: cps/templates/cwa_settings.html:541
 msgid ""
 "Automatically fetch and assign Hardcover IDs to books in your library. "
 "Hardcover IDs enable reading progress sync and annotation sync with "
@@ -4833,11 +4854,11 @@ msgstr ""
 "Hardcover-IDs ermöglichen die Synchronisierung von Lesefortschritten und "
 "Anmerkungen mit Hardcover.app bei Verwendung kompatibler eReader."
 
-#: cps/templates/cwa_settings.html:525
+#: cps/templates/cwa_settings.html:546
 msgid "Hardcover Token Required"
 msgstr "Hardcover-Token erforderlich"
 
-#: cps/templates/cwa_settings.html:526
+#: cps/templates/cwa_settings.html:547
 msgid ""
 "To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in your "
 "docker-compose environment variables or configure a global token in Basic "
@@ -4848,11 +4869,11 @@ msgstr ""
 "festlegen oder einen globalen Token in der Grundkonfiguration konfigurieren. "
 "Ohne einen gültigen Token bleibt diese Funktion deaktiviert."
 
-#: cps/templates/cwa_settings.html:537
+#: cps/templates/cwa_settings.html:558
 msgid "Enable Hardcover Auto-Fetch"
 msgstr "Hardcover-Auto-Fetch aktivieren"
 
-#: cps/templates/cwa_settings.html:539
+#: cps/templates/cwa_settings.html:560
 msgid ""
 "Automatically search Hardcover for books without Hardcover IDs. High-"
 "confidence matches are applied automatically; low-confidence matches are "
@@ -4863,25 +4884,25 @@ msgstr ""
 "zugewiesen; Übereinstimmungen mit geringer Vertrauenswürdigkeit werden zur "
 "manuellen Überprüfung in eine Warteschlange gestellt."
 
-#: cps/templates/cwa_settings.html:544
+#: cps/templates/cwa_settings.html:565
 msgid "Run Schedule:"
 msgstr "Ausführungszeitplan:"
 
-#: cps/templates/cwa_settings.html:565
+#: cps/templates/cwa_settings.html:586
 msgid "How often to automatically run the Hardcover ID fetch task"
 msgstr ""
 "Wie oft die Aufgabe zum Abrufen der Hardcover-IDs automatisch ausgeführt "
 "werden soll"
 
-#: cps/templates/cwa_settings.html:645
+#: cps/templates/cwa_settings.html:666
 msgid "Minimum Confidence Threshold:"
 msgstr "Mindest-Vertrauensschwellenwert:"
 
-#: cps/templates/cwa_settings.html:655
+#: cps/templates/cwa_settings.html:676
 msgid "Range: 0.50-1.00 (default: 0.85)"
 msgstr "Bereich: 0,50–1,00 (Standard: 0,85)"
 
-#: cps/templates/cwa_settings.html:657
+#: cps/templates/cwa_settings.html:678
 msgid ""
 "Matches with confidence scores above this threshold are automatically "
 "applied. Lower scores are queued for manual review. Higher values = fewer "
@@ -4892,15 +4913,15 @@ msgstr ""
 "vorgemerkt. Höhere Werte = weniger automatische Treffer, aber höhere "
 "Genauigkeit."
 
-#: cps/templates/cwa_settings.html:663
+#: cps/templates/cwa_settings.html:684
 msgid "Batch Size:"
 msgstr "Stapelgröße:"
 
-#: cps/templates/cwa_settings.html:673
+#: cps/templates/cwa_settings.html:694
 msgid "Range: 10-200 books per run (default: 50)"
 msgstr "Bereich: 10–200 Bücher pro Durchlauf (Standard: 50)"
 
-#: cps/templates/cwa_settings.html:675
+#: cps/templates/cwa_settings.html:696
 msgid ""
 "Number of books to process in each scheduled run. Smaller batches reduce API "
 "load; larger batches process your library faster."
@@ -4909,15 +4930,15 @@ msgstr ""
 "Stapel reduzieren die API-Last; größere Stapel verarbeiten Ihre Bibliothek "
 "schneller."
 
-#: cps/templates/cwa_settings.html:681
+#: cps/templates/cwa_settings.html:702
 msgid "Rate Limit Delay (seconds):"
 msgstr "Verzögerung für Ratenbegrenzung (Sekunden):"
 
-#: cps/templates/cwa_settings.html:691
+#: cps/templates/cwa_settings.html:712
 msgid "Range: 0-60 seconds (default: 5.0)"
 msgstr "Bereich: 0–60 Sekunden (Standard: 5,0)"
 
-#: cps/templates/cwa_settings.html:693
+#: cps/templates/cwa_settings.html:714
 msgid ""
 "Delay between API requests to Hardcover. Prevents rate limiting and protects "
 "your API key. Uses exponential backoff on errors."
@@ -4926,7 +4947,7 @@ msgstr ""
 "und schützt Ihren API-Schlüssel. Verwendet einen exponentiellen Backoff bei "
 "Fehlern."
 
-#: cps/templates/cwa_settings.html:699
+#: cps/templates/cwa_settings.html:720
 msgid ""
 "You can manually trigger the Hardcover auto-fetch task from the Admin panel "
 "at any time. Check the CWA Stats page to see progress and review queued "
@@ -4937,15 +4958,15 @@ msgstr ""
 "den Fortschritt einsehen und Treffer in der Warteschlange überprüfen, die "
 "eine manuelle Freigabe erfordern."
 
-#: cps/templates/cwa_settings.html:706
+#: cps/templates/cwa_settings.html:727
 msgid "Web UI Settings"
 msgstr "Web UI-Einstellungen"
 
-#: cps/templates/cwa_settings.html:713
+#: cps/templates/cwa_settings.html:734
 msgid "Enable CWA Update Notifications"
 msgstr "Aktiviere CWA Aktualisierungsbenachrichtigungen"
 
-#: cps/templates/cwa_settings.html:715
+#: cps/templates/cwa_settings.html:736
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
@@ -4953,11 +4974,11 @@ msgstr ""
 "Wenn aktiv, erscheint in der Web-Benutzeroberfläche eine Benachrichtigung, "
 "sobald eine neue Version von CWA veröffentlicht wird."
 
-#: cps/templates/cwa_settings.html:723
+#: cps/templates/cwa_settings.html:744
 msgid "Enable Contribute Translations Notifications"
 msgstr "Aktiviere Benachrichtigungen zur Übersetzungsbeitragung"
 
-#: cps/templates/cwa_settings.html:725
+#: cps/templates/cwa_settings.html:746
 msgid ""
 "When disabled, you will no longer receive notifications in the Web UI when "
 "using a language other than English if the translations for your chosen "
@@ -4967,11 +4988,11 @@ msgstr ""
 "mehr erhalten, wenn du eine andere Sprache als Englisch nutzt und es "
 "fehlende Übersetzungen gibt."
 
-#: cps/templates/cwa_settings.html:733
+#: cps/templates/cwa_settings.html:754
 msgid "Sync Magic Shelves to Kobo"
 msgstr "Magische Regale mit Kobo synchronisieren"
 
-#: cps/templates/cwa_settings.html:735
+#: cps/templates/cwa_settings.html:756
 msgid ""
 "When active, your Magic Shelves will be synced to your Kobo device as "
 "collections. Note: You must also enable Kobo Sync in Basic Configuration."
@@ -4980,11 +5001,11 @@ msgstr ""
 "Gerät synchronisiert. Hinweis: Sie müssen zusätzlich die Kobo-"
 "Synchronisierung in der Grundkonfiguration aktivieren."
 
-#: cps/templates/cwa_settings.html:743
+#: cps/templates/cwa_settings.html:764
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
 msgstr "Aktiviere unscharfe Hintergründe auf dem Handy (&lt;768px)"
 
-#: cps/templates/cwa_settings.html:745
+#: cps/templates/cwa_settings.html:766
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
@@ -4993,15 +5014,15 @@ msgstr ""
 "auf kleinen Bildschirm dargestellt. Deaktiviere es, wenn du beim Scrollen "
 "oder bei Animationen Stocken siehst."
 
-#: cps/templates/cwa_settings.html:750
+#: cps/templates/cwa_settings.html:771
 msgid "Automatic Backup Settings"
 msgstr "Einstellungen für automatische Backups"
 
-#: cps/templates/cwa_settings.html:757
+#: cps/templates/cwa_settings.html:778
 msgid "Enable CWA Import Auto-Backup"
 msgstr "Aktiviere CWA Import Auto-Backup"
 
-#: cps/templates/cwa_settings.html:759
+#: cps/templates/cwa_settings.html:780
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
@@ -5009,11 +5030,11 @@ msgstr ""
 "Wenn es aktiviert ist, wird eine Kopie aller importierten Dateien unter <i>/"
 "config/processed_books/imported</i> gespeichert"
 
-#: cps/templates/cwa_settings.html:767
+#: cps/templates/cwa_settings.html:788
 msgid "Enable CWA Conversion Auto-Backup"
 msgstr "Aktiviere CWA Konvertierer Auto-Backup"
 
-#: cps/templates/cwa_settings.html:769
+#: cps/templates/cwa_settings.html:790
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
@@ -5021,11 +5042,11 @@ msgstr ""
 "Wenn es aktiviert ist, werden die Orignale der ingestierten Dateien, die "
 "konvertiert wurden, gespeichert unter /config/processed_books/converted"
 
-#: cps/templates/cwa_settings.html:777
+#: cps/templates/cwa_settings.html:798
 msgid "Enable CWA EPUB Fixer Auto-Backup"
 msgstr "Aktiviere CWA EPUB Fixer Auto-Backup"
 
-#: cps/templates/cwa_settings.html:779
+#: cps/templates/cwa_settings.html:800
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
@@ -5033,11 +5054,11 @@ msgstr ""
 "Wenn es aktiviert ist, werden die Orignale der vom Kinde EPUB Fixer-Dienst "
 "verarbeiteten EPUBs gespeichert unter /config/processed_books/fixed_originals"
 
-#: cps/templates/cwa_settings.html:789
+#: cps/templates/cwa_settings.html:810
 msgid "Enable CWA Auto-Zip Backups"
 msgstr "Aktiviere CWA Auto-Zip Backups"
 
-#: cps/templates/cwa_settings.html:791
+#: cps/templates/cwa_settings.html:812
 msgid ""
 "When active, just before midnight each day, the cwa-auto-zipper service will "
 "make zip archives of all the backed up converted, imported and failed files "
@@ -5050,11 +5071,11 @@ msgstr ""
 "Unterverzeichnisse von /config/processed_books übersichtlich zu halten und "
 "die Festplattennutzung zu minimieren."
 
-#: cps/templates/cwa_settings.html:796
+#: cps/templates/cwa_settings.html:817
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
 msgstr "CWA Auto-Konvertierungszieldateiformat - Standard ist EPUB"
 
-#: cps/templates/cwa_settings.html:799
+#: cps/templates/cwa_settings.html:820
 msgid ""
 "When the Auto-Convert feature is active, all ingested books will be "
 "automatically converted to the format chosen here (except those formats "
@@ -5064,11 +5085,11 @@ msgstr ""
 "ingestierten Bücher automatisch in das hier ausgewählte Format konvertiert "
 "(außer der gewählten Formate in der Liste mit ignorierten Formaten von unten)"
 
-#: cps/templates/cwa_settings.html:801
+#: cps/templates/cwa_settings.html:822
 msgid "Choose a target format:"
 msgstr "Wähle ein Zielformat:"
 
-#: cps/templates/cwa_settings.html:813
+#: cps/templates/cwa_settings.html:834
 msgid ""
 "Note: CWA's Metadata Enforcement service can currently only support file in "
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
@@ -5078,11 +5099,11 @@ msgstr ""
 "Dateien im EPUB- oder AZW3-Format. Dateien in anderen Formaten werden vom "
 "Dienst einfach ignoriert."
 
-#: cps/templates/cwa_settings.html:819
+#: cps/templates/cwa_settings.html:840
 msgid "CWA Auto-Convert - Ignored Formats"
 msgstr "CWA Auto-Konvertierung - Ignorierte Dateiformate"
 
-#: cps/templates/cwa_settings.html:821
+#: cps/templates/cwa_settings.html:842
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
@@ -5091,11 +5112,11 @@ msgstr ""
 "ignoriert, wenn dieser aktiv ist, was bedeutet, dass sie importiert werden "
 "wie sie sind."
 
-#: cps/templates/cwa_settings.html:846
+#: cps/templates/cwa_settings.html:867
 msgid "CWA Auto-Convert - Retained Formats"
 msgstr "CWA Auto-Konvertierung - Beibehaltene Formate"
 
-#: cps/templates/cwa_settings.html:848
+#: cps/templates/cwa_settings.html:869
 msgid ""
 "The formats selected here will always be added to the library, even after "
 "they have been converted to the target format. However, if the format is in "
@@ -5108,20 +5129,20 @@ msgstr ""
 "wird es nicht importiert. Beachten Sie, dass das Zielformat immer "
 "beibehalten wird."
 
-#: cps/templates/cwa_settings.html:875
+#: cps/templates/cwa_settings.html:896
 msgid "CWA Auto-Ingest Automerge"
 msgstr "CWA Auto-Ingestierung automatisches Zusammenführen"
 
-#: cps/templates/cwa_settings.html:878
+#: cps/templates/cwa_settings.html:899
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
 msgstr ""
 "Calibre kann doppelte Buchtitel beim Import erkennen und abhängig von dem"
 
-#: cps/templates/cwa_settings.html:878
+#: cps/templates/cwa_settings.html:899
 msgid "automerge"
 msgstr "automatisches Zusammenführen"
 
-#: cps/templates/cwa_settings.html:879
+#: cps/templates/cwa_settings.html:900
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
@@ -5129,24 +5150,24 @@ msgstr ""
 "Einstellung. Es kann gesetzt werden, eine Kopie des Bücherduplikats zu "
 "löschen oder beide zu behalten (Standard)."
 
-#: cps/templates/cwa_settings.html:897
+#: cps/templates/cwa_settings.html:918
 msgid "Discards duplicate import, keeps library copy"
 msgstr "Verwirft duplizierte Importe, behält die Kopie in der Bibliothek"
 
-#: cps/templates/cwa_settings.html:901
+#: cps/templates/cwa_settings.html:922
 msgid "Overwrites library copy with newly imported file"
 msgstr ""
 "Überschreibt die Kopie in der Bibliothek mit der neu importierten Datei"
 
-#: cps/templates/cwa_settings.html:905
+#: cps/templates/cwa_settings.html:926
 msgid "Creates a duplicate record, keeping both copies"
 msgstr "Erstellt einen doppelten Eintrag, wobei beide Kopien behalten werden"
 
-#: cps/templates/cwa_settings.html:911
+#: cps/templates/cwa_settings.html:932
 msgid "CWA Auto-Ingest - Ignored Formats"
 msgstr "CWA Auto-Ingestierung - Ignorierte Dateiformate"
 
-#: cps/templates/cwa_settings.html:913
+#: cps/templates/cwa_settings.html:934
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Ingest feature, "
 "meaning files in these formats won't be added to the library by CWA during "
@@ -5156,11 +5177,11 @@ msgstr ""
 "ignoriert, was bedeutet, dass Dateien in diesen Formaten nicht zur "
 "Bibliothek von CWA hinzugefügt werden"
 
-#: cps/templates/cwa_settings.html:938
+#: cps/templates/cwa_settings.html:959
 msgid "CWA Duplicate Detection System"
 msgstr "CWA Duplikaterkennungssystem"
 
-#: cps/templates/cwa_settings.html:941
+#: cps/templates/cwa_settings.html:962
 msgid ""
 "Enable or disable the duplicate detection system. When disabled, duplicate "
 "scanning will not run and no notifications will be shown."
@@ -5169,31 +5190,31 @@ msgstr ""
 "deaktiviert, wird kein Scan nach Dubletten ausgeführt und es werden keine "
 "Benachrichtigungen angezeigt."
 
-#: cps/templates/cwa_settings.html:946
+#: cps/templates/cwa_settings.html:967
 msgid "Enable Duplicate Detection"
 msgstr "Duplikaterkennung aktivieren"
 
-#: cps/templates/cwa_settings.html:950
+#: cps/templates/cwa_settings.html:971
 msgid "When enabled, CWA will scan for duplicate books after each import"
 msgstr "Wenn aktiviert, scannt CWA nach jedem Import nach Dubletten."
 
-#: cps/templates/cwa_settings.html:958
+#: cps/templates/cwa_settings.html:979
 msgid "Duplicate Detection Method"
 msgstr "Methode zur Dublettenerkennung"
 
-#: cps/templates/cwa_settings.html:961
+#: cps/templates/cwa_settings.html:982
 msgid "Hybrid (SQL prefilter + Python validation)"
 msgstr "Hybrid (SQL-Vorfilter + Python-Validierung)"
 
-#: cps/templates/cwa_settings.html:964
+#: cps/templates/cwa_settings.html:985
 msgid "Python only (slowest, most robust)"
 msgstr "Nur Python (am langsamsten, am robustesten)"
 
-#: cps/templates/cwa_settings.html:967
+#: cps/templates/cwa_settings.html:988
 msgid "Legacy SQL only (experimental)"
 msgstr "Nur Legacy-SQL (experimentell)"
 
-#: cps/templates/cwa_settings.html:973
+#: cps/templates/cwa_settings.html:994
 msgid ""
 "Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies "
 "the robust Python logic for final results."
@@ -5202,11 +5223,11 @@ msgstr ""
 "Kandidaten einzugrenzen, und wendet dann die robuste Python-Logik für die "
 "Endergebnisse an."
 
-#: cps/templates/cwa_settings.html:982
+#: cps/templates/cwa_settings.html:1003
 msgid "Automatic Duplicate Scanning"
 msgstr "Automatischer Duplikat-Scan"
 
-#: cps/templates/cwa_settings.html:985
+#: cps/templates/cwa_settings.html:1006
 msgid ""
 "Configure background duplicate scans. These run automatically without "
 "blocking the UI."
@@ -5214,27 +5235,27 @@ msgstr ""
 "Konfigurieren Sie Dubletten-Scans im Hintergrund. Diese werden automatisch "
 "ausgeführt, ohne die Benutzeroberfläche zu blockieren."
 
-#: cps/templates/cwa_settings.html:990
+#: cps/templates/cwa_settings.html:1011
 msgid "Enable automatic duplicate scans"
 msgstr "Automatische Dubletten-Scans aktivieren"
 
-#: cps/templates/cwa_settings.html:994
+#: cps/templates/cwa_settings.html:1015
 msgid "After import scans"
 msgstr "Scans nach dem Import"
 
-#: cps/templates/cwa_settings.html:997
+#: cps/templates/cwa_settings.html:1018
 msgid "Run after each import (debounced)"
 msgstr "Nach jedem Import ausführen (mit Verzögerung)"
 
-#: cps/templates/cwa_settings.html:1000
+#: cps/templates/cwa_settings.html:1021
 msgid "Manual only"
 msgstr "Nur manuell"
 
-#: cps/templates/cwa_settings.html:1006
+#: cps/templates/cwa_settings.html:1027
 msgid "After import debounce (seconds)"
 msgstr "Wartezeit nach Import (Sekunden)"
 
-#: cps/templates/cwa_settings.html:1014
+#: cps/templates/cwa_settings.html:1035
 msgid ""
 "Wait this many seconds after the last import before starting a background "
 "scan."
@@ -5242,15 +5263,15 @@ msgstr ""
 "Wartet diese Anzahl an Sekunden nach dem letzten Import ab, bevor ein "
 "Hintergrund-Scan gestartet wird."
 
-#: cps/templates/cwa_settings.html:1019
+#: cps/templates/cwa_settings.html:1040
 msgid "Scheduled scans (cron expression)"
 msgstr "Geplante Scans (Cron-Ausdruck)"
 
-#: cps/templates/cwa_settings.html:1025
+#: cps/templates/cwa_settings.html:1046
 msgid "Leave blank to disable scheduled scans. Example:"
 msgstr "Leer lassen, um geplante Scans zu deaktivieren. Beispiel:"
 
-#: cps/templates/cwa_settings.html:1030
+#: cps/templates/cwa_settings.html:1051
 msgid ""
 "If enabled, after-import scans and cron scans can both run. Use “Manual "
 "only” to disable after-import scans while keeping cron schedules."
@@ -5259,15 +5280,15 @@ msgstr ""
 "ausgeführt werden. Wählen Sie „Nur manuell“, um Scans nach dem Import zu "
 "deaktivieren, während Cron-Zeitpläne beibehalten werden."
 
-#: cps/templates/cwa_settings.html:1037 cps/templates/duplicates.html:398
+#: cps/templates/cwa_settings.html:1058 cps/templates/duplicates.html:398
 msgid "Next scheduled scan:"
 msgstr "Nächster geplanter Scan:"
 
-#: cps/templates/cwa_settings.html:1044
+#: cps/templates/cwa_settings.html:1065
 msgid "CWA Duplicate Detection Criteria"
 msgstr "CWA-Duplikaterkennungskriterien"
 
-#: cps/templates/cwa_settings.html:1047
+#: cps/templates/cwa_settings.html:1068
 msgid ""
 "Configure which metadata fields are used to determine if books are "
 "duplicates. Books must match ALL selected criteria to be considered "
@@ -5277,39 +5298,39 @@ msgstr ""
 "ob Bücher Dubletten sind. Bücher müssen ALLE ausgewählten Kriterien "
 "erfüllen, um als Dubletten eingestuft zu werden."
 
-#: cps/templates/cwa_settings.html:1054
+#: cps/templates/cwa_settings.html:1075
 msgid "Consider book titles when detecting duplicates"
 msgstr "Buchtitel bei der Dublettenerkennung berücksichtigen"
 
-#: cps/templates/cwa_settings.html:1060
+#: cps/templates/cwa_settings.html:1081
 msgid "Consider book authors when detecting duplicates"
 msgstr "Buchautoren bei der Dublettenerkennung berücksichtigen"
 
-#: cps/templates/cwa_settings.html:1066
+#: cps/templates/cwa_settings.html:1087
 msgid "Consider book language when detecting duplicates"
 msgstr "Buchsprache bei der Dublettenerkennung berücksichtigen"
 
-#: cps/templates/cwa_settings.html:1072
+#: cps/templates/cwa_settings.html:1093
 msgid "Consider book series when detecting duplicates"
 msgstr "Buchreihen bei der Dublettenerkennung berücksichtigen"
 
-#: cps/templates/cwa_settings.html:1078
+#: cps/templates/cwa_settings.html:1099
 msgid "Consider book publisher when detecting duplicates"
 msgstr "Buchverlag bei der Dublettenerkennung berücksichtigen"
 
-#: cps/templates/cwa_settings.html:1083
+#: cps/templates/cwa_settings.html:1104
 msgid "Format"
 msgstr "Zielformat"
 
-#: cps/templates/cwa_settings.html:1084
+#: cps/templates/cwa_settings.html:1105
 msgid "Consider file format when detecting duplicates"
 msgstr "Dateiformat bei der Dublettenerkennung berücksichtigen"
 
-#: cps/templates/cwa_settings.html:1090 cps/templates/cwa_settings.html:1176
+#: cps/templates/cwa_settings.html:1111 cps/templates/cwa_settings.html:1197
 msgid "Note:"
 msgstr "Hinweis:"
 
-#: cps/templates/cwa_settings.html:1090
+#: cps/templates/cwa_settings.html:1111
 msgid ""
 "At least one criterion must be selected. Title and Author are recommended as "
 "core criteria."
@@ -5317,11 +5338,11 @@ msgstr ""
 "Es muss mindestens ein Kriterium ausgewählt werden. Titel und Autor werden "
 "als Kernkriterien empfohlen."
 
-#: cps/templates/cwa_settings.html:1096
+#: cps/templates/cwa_settings.html:1117
 msgid "Duplicate Format Priority Ranking"
 msgstr "Prioritätsrangfolge für Dubletten-Formate"
 
-#: cps/templates/cwa_settings.html:1099
+#: cps/templates/cwa_settings.html:1120
 msgid ""
 "Configure which file formats are preferred when using the \"Highest Quality "
 "Format\" auto-resolution strategy. Drag and drop to reorder formats by "
@@ -5332,11 +5353,11 @@ msgstr ""
 "Verschieben Sie die Formate per Drag-and-Drop, um die Priorität festzulegen "
 "(höher = besser)."
 
-#: cps/templates/cwa_settings.html:1112
+#: cps/templates/cwa_settings.html:1133
 msgid "Tip:"
 msgstr "Tipp:"
 
-#: cps/templates/cwa_settings.html:1112
+#: cps/templates/cwa_settings.html:1133
 msgid ""
 "When resolving duplicates with \"Highest Quality Format\" strategy, books "
 "with higher-ranked formats will be kept. Lower priority formats will be "
@@ -5346,11 +5367,11 @@ msgstr ""
 "werden Bücher mit höher eingestuften Formaten beibehalten. Formate mit "
 "niedrigerer Priorität werden gelöscht."
 
-#: cps/templates/cwa_settings.html:1120
+#: cps/templates/cwa_settings.html:1141
 msgid "Duplicate Notifications & Auto-Resolution"
 msgstr "Dubletten-Benachrichtigungen & automatische Lösung"
 
-#: cps/templates/cwa_settings.html:1123
+#: cps/templates/cwa_settings.html:1144
 msgid ""
 "Configure how you are notified about duplicate books and optionally enable "
 "automatic resolution."
@@ -5358,11 +5379,11 @@ msgstr ""
 "Konfigurieren Sie, wie Sie über Buchdubletten benachrichtigt werden, und "
 "aktivieren Sie optional die automatische Auflösung."
 
-#: cps/templates/cwa_settings.html:1128
+#: cps/templates/cwa_settings.html:1149
 msgid "Enable Duplicate Notifications"
 msgstr "Duplikatbenachrichtigungen aktivieren"
 
-#: cps/templates/cwa_settings.html:1130
+#: cps/templates/cwa_settings.html:1151
 msgid ""
 "Show popup notifications when unresolved duplicates are detected. Admins and "
 "users with edit rights will see a badge on the Duplicates sidebar button and "
@@ -5373,15 +5394,15 @@ msgstr ""
 "Schaltfläche „Dubletten“ in der Seitenleiste sowie ein Benachrichtigungs-"
 "Popup beim Login."
 
-#: cps/templates/cwa_settings.html:1134
+#: cps/templates/cwa_settings.html:1155
 msgid "Enable Automatic Duplicate Resolution"
 msgstr "Automatische Duplikatbehandlung aktivieren"
 
-#: cps/templates/cwa_settings.html:1137 cps/templates/duplicates.html:437
+#: cps/templates/cwa_settings.html:1158 cps/templates/duplicates.html:437
 msgid "Warning:"
 msgstr "Warnung:"
 
-#: cps/templates/cwa_settings.html:1137
+#: cps/templates/cwa_settings.html:1158
 msgid ""
 "This will automatically delete books based on the strategy below. Original "
 "files will be backed up to"
@@ -5389,75 +5410,75 @@ msgstr ""
 "Dies wird automatisch Bücher basierend auf der untenstehenden Strategie "
 "löschen. Originaldateien werden gesichert unter"
 
-#: cps/templates/cwa_settings.html:1141
+#: cps/templates/cwa_settings.html:1162
 msgid "Auto-Resolution Strategy"
 msgstr "Strategie zur automatischen Auflösung"
 
-#: cps/templates/cwa_settings.html:1144
+#: cps/templates/cwa_settings.html:1165
 msgid "Keep Newest"
 msgstr "Neueste behalten"
 
-#: cps/templates/cwa_settings.html:1144
+#: cps/templates/cwa_settings.html:1165
 msgid "Delete older copies, keep the most recently added book"
 msgstr "Ältere Kopien löschen, das zuletzt hinzugefügte Buch behalten"
 
-#: cps/templates/cwa_settings.html:1147
+#: cps/templates/cwa_settings.html:1168
 msgid "Keep Oldest"
 msgstr "Älteste behalten"
 
-#: cps/templates/cwa_settings.html:1147
+#: cps/templates/cwa_settings.html:1168
 msgid "Delete newer copies, keep the earliest added"
 msgstr "Neuere Kopien löschen, das zuerst hinzugefügte Buch behalten"
 
-#: cps/templates/cwa_settings.html:1150
+#: cps/templates/cwa_settings.html:1171
 msgid "Merge Formats"
 msgstr "Formate zusammenführen"
 
-#: cps/templates/cwa_settings.html:1150
+#: cps/templates/cwa_settings.html:1171
 msgid "Merge formats into the newest book, delete the rest"
 msgstr "Formate im neuesten Buch zusammenführen, den Rest löschen"
 
-#: cps/templates/cwa_settings.html:1153
+#: cps/templates/cwa_settings.html:1174
 msgid "Keep Highest Quality Format"
 msgstr "Format mit höchster Qualität behalten"
 
-#: cps/templates/cwa_settings.html:1153
+#: cps/templates/cwa_settings.html:1174
 msgid "Prefer formats based on your Duplicate Format Priority Ranking"
 msgstr ""
 "Bevorzugt Formate basierend auf Ihrer Prioritätsrangfolge für Dubletten-"
 "Formate"
 
-#: cps/templates/cwa_settings.html:1156
+#: cps/templates/cwa_settings.html:1177
 msgid "Keep Most Metadata"
 msgstr "Eintrag mit den meisten Metadaten behalten"
 
-#: cps/templates/cwa_settings.html:1156
+#: cps/templates/cwa_settings.html:1177
 msgid "Keep book with most complete information"
 msgstr "Buch mit den vollständigsten Informationen behalten"
 
-#: cps/templates/cwa_settings.html:1159
+#: cps/templates/cwa_settings.html:1180
 msgid "Keep Largest File Size"
 msgstr "Größte Dateigröße behalten"
 
-#: cps/templates/cwa_settings.html:1159
+#: cps/templates/cwa_settings.html:1180
 msgid "Keep book with largest total file size"
 msgstr "Das Buch mit der größten Gesamtdateigröße behalten"
 
-#: cps/templates/cwa_settings.html:1162
+#: cps/templates/cwa_settings.html:1183
 msgid "Choose which book to keep when duplicates are automatically resolved."
 msgstr ""
 "Auswählen, welches Buch behalten werden soll, wenn Dubletten automatisch "
 "aufgelöst werden."
 
-#: cps/templates/cwa_settings.html:1166
+#: cps/templates/cwa_settings.html:1187
 msgid "Rate Limiting"
 msgstr "Anzahl der Anfragen begrenzen"
 
-#: cps/templates/cwa_settings.html:1167
+#: cps/templates/cwa_settings.html:1188
 msgid "Cooldown Period (minutes)"
 msgstr "Abkühlzeit (Minuten)"
 
-#: cps/templates/cwa_settings.html:1171
+#: cps/templates/cwa_settings.html:1192
 msgid ""
 "Minimum time between automatic resolutions (0 to disable). Prevents rapid-"
 "fire deletions during batch imports."
@@ -5465,7 +5486,7 @@ msgstr ""
 "Mindestzeit zwischen automatischen Auflösungen (0 zum Deaktivieren). "
 "Verhindert schlagartige Löschungen während Massenimporten."
 
-#: cps/templates/cwa_settings.html:1176
+#: cps/templates/cwa_settings.html:1197
 msgid ""
 "Auto-resolution runs after duplicate scans detect new duplicates. Dismissed "
 "duplicate groups are never auto-resolved."

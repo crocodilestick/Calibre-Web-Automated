@@ -1015,16 +1015,50 @@ def get_series_thumbnail(series_id, resolution):
 
 
 # saves book cover from url
+def _get_cover_download_limit():
+    default_mb = 15
+    max_mb = default_mb
+    try:
+        cwa_db = CWA_DB()
+        max_mb = int(cwa_db.cwa_settings.get("cover_download_max_mb", default_mb))
+    except Exception:
+        max_mb = default_mb
+
+    env_override = os.getenv("CWA_COVER_DOWNLOAD_MAX_BYTES")
+    if env_override and env_override.isdigit():
+        max_bytes = int(env_override)
+        return max_bytes, round(max_bytes / (1024 * 1024), 1)
+
+    max_mb = max(1, min(200, max_mb))
+    return max_mb * 1024 * 1024, max_mb
+
+
 def save_cover_from_url(url, book_path):
+    max_cover_bytes, max_cover_mb = _get_cover_download_limit()
+    img = None
     try:
         if cli_param.allow_localhost:
-            img = requests.get(url, timeout=(10, 200), allow_redirects=False)  # ToDo: Error Handling
+            img = requests.get(url, timeout=(10, 30), allow_redirects=False, stream=True)  # ToDo: Error Handling
         elif use_advocate:
-            img = cw_advocate.get(url, timeout=(10, 200), allow_redirects=False)      # ToDo: Error Handling
+            img = cw_advocate.get(url, timeout=(10, 30), allow_redirects=False, stream=True)      # ToDo: Error Handling
         else:
             log.error("python module advocate is not installed but is needed")
             return False, _("Python module 'advocate' is not installed but is needed for cover uploads")
         img.raise_for_status()
+
+        content_length = img.headers.get("content-length")
+        if content_length and content_length.isdigit() and int(content_length) > max_cover_bytes:
+            return False, _("Cover image exceeds maximum size of %(size)s MB", size=max_cover_mb)
+
+        content = bytearray()
+        for chunk in img.iter_content(chunk_size=8192):
+            if not chunk:
+                continue
+            content.extend(chunk)
+            if len(content) > max_cover_bytes:
+                return False, _("Cover image exceeds maximum size of %(size)s MB", size=max_cover_mb)
+        img._content = bytes(content)
+
         return save_cover(img, book_path)
     except (socket.gaierror,
             requests.exceptions.HTTPError,
@@ -1040,6 +1074,12 @@ def save_cover_from_url(url, book_path):
     except UnacceptableAddressException as e:
         log.error("Localhost or local network was accessed for cover upload")
         return False, _("You are not allowed to access localhost or the local network for cover uploads")
+    finally:
+        try:
+            if img is not None:
+                img.close()
+        except Exception:
+            pass
 
 
 def save_cover_from_filestorage(filepath, saved_filename, img):

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:22+0100\n"
+"POT-Creation-Date: 2026-02-02 11:48+0000\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -2472,7 +2472,7 @@ msgstr "Ditemukan akun yang ada untuk alamat email ini"
 msgid "Invalid book ID."
 msgstr "Peran tidak valid"
 
-#: cps/progress_syncing/protocols/kosync.py:440
+#: cps/progress_syncing/protocols/kosync.py:444
 msgid "KOReader Sync Plugin"
 msgstr ""
 

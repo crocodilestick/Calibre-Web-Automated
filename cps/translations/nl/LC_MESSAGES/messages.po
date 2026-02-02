@@ -10,10 +10,10 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:22+0100\n"
+"POT-Creation-Date: 2026-02-02 11:48+0000\n"
 "PO-Revision-Date: 2023-12-20 22:00+0100\n"
-"Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at "
-"proton.me>\n"
+"Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at proton."
+"me>\n"
 "Language-Team: ed.driesen@telenet.be\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -2370,8 +2370,8 @@ msgstr "Geen e-mailadressen geselecteerd"
 #, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr ""
-"Het boek is in de wachtrij geplaatst om te worden verstuurd aan %"
-"(eReadermail)s"
+"Het boek is in de wachtrij geplaatst om te worden verstuurd aan "
+"%(eReadermail)s"
 
 #: cps/web.py:2048
 msgid "Please wait one minute to register next user"
@@ -2513,7 +2513,7 @@ msgstr "Bestaand account met dit e-mailadres aangetroffen."
 msgid "Invalid book ID."
 msgstr "Ongeldige rol"
 
-#: cps/progress_syncing/protocols/kosync.py:440
+#: cps/progress_syncing/protocols/kosync.py:444
 msgid "KOReader Sync Plugin"
 msgstr "KOReader Synchronisatie Plugin"
 

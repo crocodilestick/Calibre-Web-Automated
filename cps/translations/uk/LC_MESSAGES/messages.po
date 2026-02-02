@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:22+0100\n"
+"POT-Creation-Date: 2026-02-02 11:48+0000\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
 "Language-Team: \n"
@@ -2397,7 +2397,7 @@ msgstr ""
 msgid "Invalid book ID."
 msgstr "Не правильна роль"
 
-#: cps/progress_syncing/protocols/kosync.py:440
+#: cps/progress_syncing/protocols/kosync.py:444
 msgid "KOReader Sync Plugin"
 msgstr ""
 

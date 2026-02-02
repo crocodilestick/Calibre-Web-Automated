@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:22+0100\n"
+"POT-Creation-Date: 2026-02-02 11:48+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -2396,7 +2396,7 @@ msgstr "이미 등록된 이메일 주소입니다."
 msgid "Invalid book ID."
 msgstr "잘못된 "
 
-#: cps/progress_syncing/protocols/kosync.py:440
+#: cps/progress_syncing/protocols/kosync.py:444
 msgid "KOReader Sync Plugin"
 msgstr "KOReader Sync 플러그인"
 
@@ -3375,8 +3375,8 @@ msgid ""
 msgstr ""
 "이 경로들은 CWA 내부에서만 사용됩니다. 콜론 왼쪽 경로는 자유롭게 변경가능하"
 "나,\n"
-"        오른쪽 경로는 변경할 이유가 없습니다.<br><br>만약 "
-"<code>metadata.db<code> 파일을 나머지 서재와 다른 위치에 두고 싶다면, \n"
+"        오른쪽 경로는 변경할 이유가 없습니다.<br><br>만약 <code>metadata."
+"db<code> 파일을 나머지 서재와 다른 위치에 두고 싶다면, \n"
 "<b>아래의 ‘책 파일을 서재와 분리하기’ 옵션을 사용하고, 거기에 라이브러리의 나"
 "머지 경로를 입력하십시오.</b>"
 

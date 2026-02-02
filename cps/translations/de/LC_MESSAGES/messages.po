@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 11:42+0000\n"
+"POT-Creation-Date: 2026-02-02 11:48+0000\n"
 "PO-Revision-Date: 2025-09-09 20:18+0200\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
@@ -2503,7 +2503,7 @@ msgstr "Ups! Es existiert bereits ein Benutzer für diese E-Mail-Adresse."
 msgid "Invalid book ID."
 msgstr "Ungültige Buch-ID."
 
-#: cps/progress_syncing/protocols/kosync.py:440
+#: cps/progress_syncing/protocols/kosync.py:444
 msgid "KOReader Sync Plugin"
 msgstr "KOReader Sync-Plugin"
 

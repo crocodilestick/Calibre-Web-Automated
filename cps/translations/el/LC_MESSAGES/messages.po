@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:22+0100\n"
+"POT-Creation-Date: 2026-02-02 11:48+0000\n"
 "PO-Revision-Date: 2025-09-03 14:59+0200\n"
 "Last-Translator: Depountis Georgios\n"
 "Language-Team: \n"
@@ -2014,8 +2014,8 @@ msgstr "Δημιούργησε ένα Ράφι"
 #, fuzzy
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr ""
-"Συγγνώμη αλλά δεν σου επιτρέπεται η αφαίρεση ενός βιβλίου από αυτό το ράφι: %"
-"(sname)s"
+"Συγγνώμη αλλά δεν σου επιτρέπεται η αφαίρεση ενός βιβλίου από αυτό το ράφι: "
+"%(sname)s"
 
 #: cps/shelf.py:263
 msgid "Edit a shelf"
@@ -2503,7 +2503,7 @@ msgstr "Βρέθηκε ένας ήδη υπάρχον λογαριασμός γ�
 msgid "Invalid book ID."
 msgstr ""
 
-#: cps/progress_syncing/protocols/kosync.py:440
+#: cps/progress_syncing/protocols/kosync.py:444
 msgid "KOReader Sync Plugin"
 msgstr ""
 

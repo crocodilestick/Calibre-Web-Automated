@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:22+0100\n"
+"POT-Creation-Date: 2026-02-02 11:48+0000\n"
 "PO-Revision-Date: 2019-04-06 23:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1968,8 +1968,8 @@ msgstr "A megadott polc érvénytelen!"
 #, fuzzy
 msgid "Sorry you are not allowed to add a book to that shelf"
 msgstr ""
-"Elnézést, de nem jogosult hozzáadni a könyvet a következő polcra: %"
-"(shelfname)s"
+"Elnézést, de nem jogosult hozzáadni a könyvet a következő polcra: "
+"%(shelfname)s"
 
 #: cps/shelf.py:49
 #, python-format
@@ -2499,7 +2499,7 @@ msgstr "Már létezik felhasználó ehhez az e-mail címhez."
 msgid "Invalid book ID."
 msgstr "Érvénytelen könyv azonosító"
 
-#: cps/progress_syncing/protocols/kosync.py:440
+#: cps/progress_syncing/protocols/kosync.py:444
 msgid "KOReader Sync Plugin"
 msgstr ""
 

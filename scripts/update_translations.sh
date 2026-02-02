@@ -12,12 +12,16 @@ DUPLICATE_FIXER="$SCRIPT_DIR/fix_po_duplicates.py"
 
 # Set up Python environment
 PYTHON_CMD="python3"
-PYBABEL_CMD="pybabel"
+PYBABEL_CMD=("$PYTHON_CMD" "-m" "babel.messages.frontend")
 
-# Check if virtual environment exists and use it
+# Check if virtual environment exists and is usable
 if [ -f "$ROOT_DIR/.venv/bin/python" ]; then
-    PYTHON_CMD="$ROOT_DIR/.venv/bin/python"
-    PYBABEL_CMD="$ROOT_DIR/.venv/bin/pybabel"
+    if "$ROOT_DIR/.venv/bin/python" -c "import sys" >/dev/null 2>&1; then
+        PYTHON_CMD="$ROOT_DIR/.venv/bin/python"
+        PYBABEL_CMD=("$PYTHON_CMD" "-m" "babel.messages.frontend")
+    else
+        echo "[!] Warning: venv python is not usable; falling back to system python"
+    fi
 fi
 
 # Get the latest version from GitHub releases
@@ -34,7 +38,7 @@ echo "[i] Using Python: $PYTHON_CMD"
 echo "[i] Project version: $VERSION"
 
 # 1. Extract messages
-$PYBABEL_CMD extract -F "$CONFIG" -o "$POT" \
+"${PYBABEL_CMD[@]}" extract -F "$CONFIG" -o "$POT" \
     --project="Calibre-Web Automated" \
     --version="$VERSION" \
     --msgid-bugs-address="https://github.com/crocodilestick/Calibre-Web-Automated" \

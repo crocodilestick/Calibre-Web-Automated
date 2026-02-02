@@ -155,3 +155,27 @@ $(function () {
         } catch (e) { /* noop */ }
     }
 });
+
+// Add tooltips for all toolbar buttons on book details page
+$(function () {
+    var $toolbarButtons = $(".book-action-bar .action-icon-btn, .book-action-bar .dropdown-toggle");
+    if (!$toolbarButtons.length) {
+        return;
+    }
+    $toolbarButtons.each(function () {
+        var $btn = $(this);
+        var title = $.trim($btn.attr("title") || $btn.attr("aria-label") || $btn.text());
+        if (!title) {
+            return;
+        }
+        $btn.attr({
+            "data-toggle-two": "tooltip",
+            "data-placement": "bottom",
+            "data-viewport": "body",
+            "title": title
+        });
+    });
+    try {
+        $("[data-toggle-two='tooltip']").tooltip({ container: "body", trigger: "hover focus", placement: "bottom", viewport: "body" });
+    } catch (e) { /* noop */ }
+});

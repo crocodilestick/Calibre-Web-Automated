@@ -37,9 +37,6 @@ from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
 from werkzeug.utils import secure_filename
 import uuid
-import os
-import json
-from .cwa_functions import get_ingest_dir
 
 editbook = Blueprint('edit-book', __name__)
 log = logger.create()
@@ -98,6 +95,13 @@ def edit_book(book_id):
 def upload():
     # Upload a new format to an existing book via ingest sidecar manifest
     if len(request.files.getlist("btn-upload-format")):
+        try:
+            _ensure_ingest_dir_writable(allow_create=True, check_write=False)
+        except PermissionError as e:
+            log.error_or_exception("Ingest directory not writable: %s", e)
+            flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
+                  category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
         raw_book_id = request.form.get('book_id', -1)
         try:
             book_id = int(raw_book_id)
@@ -148,6 +152,13 @@ def upload():
 
     # New book uploads: queue files to ingest atomically
     elif len(request.files.getlist("btn-upload")):
+        try:
+            _ensure_ingest_dir_writable(allow_create=True, check_write=False)
+        except PermissionError as e:
+            log.error_or_exception("Ingest directory not writable: %s", e)
+            flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
+                  category="error")
+            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
         for requested_file in request.files.getlist("btn-upload"):
             if not _validate_uploaded_file(requested_file):
                 return Response(json.dumps({"location": url_for('web.index')}), mimetype='application/json')
@@ -233,6 +244,9 @@ def edit_selected_books():
             # Collect all changes
             changes = {key: d.get(key) for key in ['title', 'title_sort', 'author_sort', 'authors', 'categories', 'series', 'languages', 'publishers', 'comments'] if d.get(key)}
 
+            metadata_changed = False
+            log_payload = {}
+
             # Apply changes without committing or updating directory structure yet
             title_changed = False
             authors_changed = False
@@ -240,8 +254,10 @@ def edit_selected_books():
 
             if 'title' in changes:
                 vals['value'] = changes['title']
-                handle_title_on_edit(book, vals.get('value', ""))
-                title_changed = True
+                if handle_title_on_edit(book, vals.get('value', "")):
+                    title_changed = True
+                    metadata_changed = True
+                    log_payload['title'] = vals.get('value', "")
 
             if 'title_sort' in changes:
                 vals['value'] = changes['title_sort']
@@ -253,29 +269,42 @@ def edit_selected_books():
 
             if 'authors' in changes:
                 vals['value'] = changes['authors']
-                input_authors, __ = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
-                authors_changed = True
+                input_authors, author_change = handle_author_on_edit(book, vals['value'], vals.get('checkA', None) == "true")
+                if author_change:
+                    authors_changed = True
+                    metadata_changed = True
+                    log_payload['authors'] = vals.get('value', "")
 
             if 'categories' in changes:
                 vals['value'] = changes['categories']
-                edit_book_tags(vals['value'], book)
+                if edit_book_tags(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['tags'] = vals.get('value', "")
 
             if 'series' in changes:
                 vals['value'] = changes['series']
-                edit_book_series(vals['value'], book)
+                if edit_book_series(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['series'] = vals.get('value', "")
 
             if 'languages' in changes:
                 vals['value'] = changes['languages']
                 invalid = list()
-                edit_book_languages(vals['value'], book, invalid=invalid)
+                if edit_book_languages(vals['value'], book, invalid=invalid):
+                    metadata_changed = True
+                    log_payload['languages'] = vals.get('value', "")
 
             if 'publishers' in changes:
                 vals['value'] = changes['publishers']
-                edit_book_publisher(vals['value'], book)
+                if edit_book_publisher(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['publisher'] = vals.get('value', "")
 
             if 'comments' in changes:
                 vals['value'] = changes['comments']
-                edit_book_comments(vals['value'], book)
+                if edit_book_comments(vals['value'], book):
+                    metadata_changed = True
+                    log_payload['comments'] = vals.get('value', "")
 
             # Update directory structure once if title or authors changed
             if title_changed or authors_changed:
@@ -286,12 +315,35 @@ def edit_selected_books():
                     continue # or return an error response
 
             book.last_modified = datetime.now(timezone.utc)
+
+            if metadata_changed:
+                calibre_db.set_metadata_dirty(book.id)
             try:
                 calibre_db.session.commit()
             except (OperationalError, IntegrityError, StaleDataError) as e:
                 calibre_db.session.rollback()
                 log.error_or_exception("Database error: {}".format(e))
                 # Handle error appropriately
+                continue
+
+            if metadata_changed and log_payload:
+                try:
+                    log_payload.setdefault('title', book.title)
+                    log_payload.setdefault('authors', ' & '.join([a.name for a in book.authors]))
+                    log_payload['_cwa_meta'] = {
+                        'modify_date': True,
+                        'change_count': len([k for k in log_payload.keys() if not k.startswith('_')]),
+                        'has_content': any(v != '' for k, v in log_payload.items() if not k.startswith('_')),
+                        'timestamp': datetime.now().isoformat()
+                    }
+
+                    now = datetime.now()
+                    log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                    with open(log_path, 'w', encoding='utf-8') as f:
+                        json.dump(log_payload, f, indent=4, ensure_ascii=False)
+                    log.debug(f"Created metadata change log for book {book.id} with changes: {list(log_payload.keys())}")
+                except Exception as e:
+                    log.error_or_exception(f"Failed to write metadata change log for book {book.id}: {e}")
 
         return json.dumps({'success': True})
     return ""
@@ -318,8 +370,11 @@ def _validate_uploaded_file(uploaded_file):
 # Helper to get a unique, prefixed path in the ingest directory
 def _get_ingest_path(uploaded_file, prefix_parts=None):
     ingest_dir = get_ingest_dir()
-    os.makedirs(ingest_dir, exist_ok=True)
-
+    try:
+        os.makedirs(ingest_dir, exist_ok=True)
+    except Exception as e:
+        log.error_or_exception("Failed to create ingest directory %s: %s", ingest_dir, e)
+        raise
     # Ensure proper ownership of ingest directory (fix for issue #603)
     try:
         nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
@@ -333,6 +388,8 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
     except Exception as e:
         # Silently ignore any other permission-related errors but log for debugging
         log.debug('Other permission error setting ingest directory ownership: %s', e)
+
+    _ensure_ingest_dir_writable(ingest_dir)
 
     base_name = secure_filename(uploaded_file.filename)
     # CWA change: use timestamp for more predictable sorting vs uuid
@@ -354,6 +411,35 @@ def _save_to_ingest_atomic_rename(uploaded_file, final_path):
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
         raise e
+
+
+def _ensure_ingest_dir_writable(ingest_dir=None, allow_create=False, check_write=True):
+    ingest_dir = ingest_dir or get_ingest_dir()
+    if not ingest_dir:
+        raise PermissionError("Ingest directory not configured")
+    if allow_create and not os.path.isdir(ingest_dir):
+        try:
+            os.makedirs(ingest_dir, exist_ok=True)
+        except Exception as e:
+            raise PermissionError("Ingest directory missing and could not be created: {} ({})".format(ingest_dir, e))
+    if not os.path.isdir(ingest_dir):
+        raise PermissionError("Ingest directory missing: {}".format(ingest_dir))
+    if check_write:
+        if not os.access(ingest_dir, os.W_OK | os.X_OK):
+            raise PermissionError("Ingest directory not writable: {}".format(ingest_dir))
+        # Verify write by touching a temp file (covers ACL/mount oddities)
+        test_path = os.path.join(ingest_dir, ".cwa_write_test_{}".format(uuid.uuid4().hex))
+        try:
+            with open(test_path, "w", encoding="utf-8") as handle:
+                handle.write("ok")
+        except Exception as e:
+            raise PermissionError("Ingest directory not writable: {} ({})".format(ingest_dir, e))
+        finally:
+            try:
+                if os.path.exists(test_path):
+                    os.remove(test_path)
+            except Exception:
+                pass
 
 # Separated from /editbooks so that /editselectedbooks can also use this
 #

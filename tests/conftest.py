@@ -42,6 +42,23 @@ if str(scripts_dir) not in sys.path:
 USE_DOCKER_VOLUMES = os.getenv('USE_DOCKER_VOLUMES', 'false').lower() == 'true'
 AUTO_DOCKER_VOLUMES = False  # Auto-fallback when bind mounts are not visible to the container
 
+
+def _get_test_uid_gid() -> tuple[str, str]:
+    """Return UID/GID strings for test containers.
+
+    Uses explicit overrides when provided, otherwise falls back to host uid/gid
+    on POSIX systems, or 1000/1000 as a default.
+    """
+    env_uid = os.getenv("CWA_TEST_PUID", "").strip()
+    env_gid = os.getenv("CWA_TEST_PGID", "").strip()
+    if env_uid and env_gid:
+        return env_uid, env_gid
+
+    if os.name == "posix" and hasattr(os, "getuid") and hasattr(os, "getgid"):
+        return str(os.getuid()), str(os.getgid())
+
+    return "1000", "1000"
+
 # Import volume_copy helper if in volume mode (available to all tests)
 if USE_DOCKER_VOLUMES:
     print("\n🔄 Docker Volume mode enabled (USE_DOCKER_VOLUMES=true)")
@@ -522,6 +539,7 @@ def cwa_container(docker_compose_file: str, test_volumes: dict) -> Generator:
     # Runtime configuration
     test_port = os.getenv('CWA_TEST_PORT', '8085')
     test_image = os.getenv('CWA_TEST_IMAGE', 'crocodilestick/calibre-web-automated:dev')
+    test_uid, test_gid = _get_test_uid_gid()
 
     # Create a temporary docker-compose override for testing
     compose_override = repo_root / "docker-compose.test-override.yml"
@@ -534,8 +552,8 @@ services:
     image: {test_image}
     container_name: cwa-test-container
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID={test_uid}
+      - PGID={test_gid}
       - TZ=UTC
       - NETWORK_SHARE_MODE=false
     volumes:

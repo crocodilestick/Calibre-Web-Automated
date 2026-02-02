@@ -94,6 +94,27 @@ install -d -o abc -g abc /config/processed_books/duplicate_resolutions
 install -d -o abc -g abc /config/log_archive
 install -d -o abc -g abc /config/.cwa_conversion_tmp
 
+# Ensure ingest directory exists and is writable (matches dirs.json)
+INGEST_DIR=$(python3 - <<'PY'
+import json
+try:
+    with open('/app/calibre-web-automated/dirs.json', 'r', encoding='utf-8') as f:
+        print(json.load(f).get('ingest_folder', '').strip())
+except Exception:
+    print('')
+PY
+)
+if [ -n "$INGEST_DIR" ]; then
+  # Create directory if missing
+  install -d -o abc -g abc "$INGEST_DIR" 2>/dev/null || mkdir -p "$INGEST_DIR" 2>/dev/null || true
+  # Set ownership unless network share mode
+  if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+    echo "[cwa-init] NETWORK_SHARE_MODE=true detected; skipping chown of $INGEST_DIR"
+  else
+    chown -R abc:abc "$INGEST_DIR" 2>/dev/null || true
+  fi
+fi
+
 # For Calibre Plugins
 install -d -o abc -g abc /config/.config/calibre/plugins
 # ln -sf /config/.config/calibre/plugins /config/calibre_plugins

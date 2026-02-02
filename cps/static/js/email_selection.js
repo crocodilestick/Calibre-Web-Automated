@@ -55,13 +55,15 @@ $(document).ready(function() {
     // Store book ID when modal is shown
     $('#emailSelectModal').on('show.bs.modal', function (e) {
         var button = $(e.relatedTarget); // Button that triggered the modal
-        currentBookId = button.data('book-id');
+        currentBookId = button.data('book-id') || $(this).data('book-id');
         hideModalValidation(); // Clear any previous validation messages
     });
     
     // Clear custom emails and validation when modal is hidden
     $('#emailSelectModal').on('hidden.bs.modal', function () {
-        $('#custom_emails').val('');
+        if ($('#custom_emails').length) {
+            $('#custom_emails').val('');
+        }
         hideModalValidation();
     });
 
@@ -79,7 +81,8 @@ $(document).ready(function() {
         });
         
         // Get custom email addresses from textarea
-        var customEmails = $('#custom_emails').val().trim();
+        var $customEmails = $('#custom_emails');
+        var customEmails = $customEmails.length ? $customEmails.val().trim() : '';
         var hasInvalidEmail = false;
         
         if (customEmails) {
@@ -142,6 +145,58 @@ $(document).ready(function() {
             complete: function() {
                 // Re-enable send button
                 $sendBtn.prop('disabled', false);
+            }
+        });
+    });
+
+    // Handle direct send button (no modal)
+    $('#sendToEReaderBtn').click(function(e) {
+        var $btn = $(this);
+        if ($btn.data('direct-send') !== true) {
+            return;
+        }
+
+        e.preventDefault();
+
+        var bookId = $btn.data('book-id');
+        var bookFormat = $btn.data('book-format');
+        var convertFlag = $btn.data('convert');
+        var selectedEmails = $btn.data('selected-emails');
+
+        if (!bookId || !bookFormat) {
+            showPageFlashMessage('No compatible format found for sending to eReader', 'error');
+            return;
+        }
+
+        if (!selectedEmails || selectedEmails.trim().length === 0) {
+            showPageFlashMessage('Please configure your eReader email address in your profile settings.', 'error');
+            return;
+        }
+
+        $btn.prop('disabled', true);
+
+        $.ajax({
+            url: getPath() + '/send_selected/' + bookId,
+            method: 'POST',
+            data: {
+                'csrf_token': $('input[name="csrf_token"]').val(),
+                'selected_emails': selectedEmails,
+                'book_format': bookFormat,
+                'convert': convertFlag
+            },
+            success: function(response) {
+                if (response.length > 0) {
+                    var messageType = response[0].type === 'success' ? 'success' : 'error';
+                    showPageFlashMessage(response[0].message, messageType);
+                } else {
+                    showPageFlashMessage('Unknown error occurred', 'error');
+                }
+            },
+            error: function() {
+                showPageFlashMessage('Error sending email', 'error');
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
             }
         });
     });

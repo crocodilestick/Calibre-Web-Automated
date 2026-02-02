@@ -211,6 +211,18 @@
         <label for="kindle_mail_subject">{{_('Send to eReader Subject')}}</label>
         <input type="text" class="form-control" name="kindle_mail_subject" id="kindle_mail_subject" value="{{ content.kindle_mail_subject if content.kindle_mail_subject != None }}">
       </div>
+
+      {% if not content.role_anonymous() %}
+      <div style="margin-top: 20px;">
+        <input type="checkbox" id="allow_additional_ereader_emails" name="allow_additional_ereader_emails" {% if content.allow_additional_ereader_emails %}checked{% endif %} style="accent-color: var(--color-secondary);">
+        <label for="allow_additional_ereader_emails">{{_('Enable Send-to-eReader Pop-up Modal')}}</label>
+        <p class="cwa-settings-tip">
+          {{_('Enables or disables the Send-to-eReader Pop-up Modal that allows users to enter extra email addresses and only send to a selection of saved addresses when sending to eReader.')}}
+          <br><br>
+          {{_('When disabled, emails will be sent to all configured eReader addresses without prompting.')}}
+        </p>
+      </div>
+      {% endif %}
       
       {% if not content.role_anonymous() %}
       <div style="margin-top: 20px;">

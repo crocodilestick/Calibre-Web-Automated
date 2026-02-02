@@ -1999,13 +1999,30 @@ def send_to_selected_ereaders(book_id):
         response = [{'type': "danger", 'message': _("Please configure the SMTP mail settings first...")}]
         return Response(json.dumps(response), mimetype='application/json')
 
-    selected_emails = request.form.get('selected_emails', '')
+    selected_emails_raw = request.form.get('selected_emails', '')
     book_format = request.form.get('book_format', '')
     convert = request.form.get('convert', '0')
+
+    if not selected_emails_raw:
+        response = [{'type': "danger", 'message': _("No email addresses selected")}]
+        return Response(json.dumps(response), mimetype='application/json')
+
+    try:
+        selected_emails = valid_email(selected_emails_raw)
+    except Exception as ex:
+        response = [{'type': "danger", 'message': str(ex)}]
+        return Response(json.dumps(response), mimetype='application/json')
 
     if not selected_emails:
         response = [{'type': "danger", 'message': _("No email addresses selected")}]
         return Response(json.dumps(response), mimetype='application/json')
+
+    if not getattr(current_user, 'allow_additional_ereader_emails', True):
+        allowed = [email.strip().lower() for email in (current_user.kindle_mail or "").split(',') if email.strip()]
+        selected_list = [email.strip().lower() for email in selected_emails.split(',') if email.strip()]
+        if any(email not in allowed for email in selected_list):
+            response = [{'type': "danger", 'message': _("Additional email addresses are disabled for your account.")}]
+            return Response(json.dumps(response), mimetype='application/json')
 
     result = send_mail(book_id, book_format, int(convert), selected_emails, config.get_book_path(), current_user.name, current_user.kindle_mail_subject)
 
@@ -2414,6 +2431,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         # Auto-send and metadata fetch settings
         current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
         current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+        current_user.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
         
         # Handle hidden magic shelf templates and custom shelves
         from . import magic_shelf

@@ -285,6 +285,8 @@ class User(UserBase, Base):
     theme = Column(Integer, default=1)
     # Auto-send settings for new books
     auto_send_enabled = Column(Boolean, default=False)
+    # Allow entering additional email addresses on send-to-eReader
+    allow_additional_ereader_emails = Column(Boolean, default=True)
 
 
 if oauth_support:
@@ -862,6 +864,23 @@ def migrate_user_table(engine, _session):
             db_hint = app_DB_path or str(engine.url)
             log.error(
                 "Failed to add auto_send_enabled column to user table in app.db (%s). "
+                "Check file permissions, locks, and CALIBRE_DBPATH mapping. Error: %s",
+                db_hint,
+                e,
+            )
+
+    # Migration for per-user additional eReader email address permission
+    try:
+        _session.query(exists().where(User.allow_additional_ereader_emails)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "user.allow_additional_ereader_emails")
+        try:
+            _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'allow_additional_ereader_emails' Boolean DEFAULT 1")
+        except Exception as e:
+            db_hint = app_DB_path or str(engine.url)
+            log.error(
+                "Failed to add allow_additional_ereader_emails column to user table in app.db (%s). "
                 "Check file permissions, locks, and CALIBRE_DBPATH mapping. Error: %s",
                 db_hint,
                 e,

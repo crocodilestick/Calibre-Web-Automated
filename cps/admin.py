@@ -2710,6 +2710,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             if to_save.get("name") == "Guest":
                 raise Exception(_("Guest Name can't be changed"))
             content.name = check_username(to_save["name"])
+        if "allow_additional_ereader_emails" in to_save:
+            content.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
+        else:
+            content.allow_additional_ereader_emails = False
         if to_save.get("kindle_mail") != content.kindle_mail:
             content.kindle_mail = valid_email(to_save["kindle_mail"]) if to_save["kindle_mail"] else ""
         if to_save.get("kindle_mail_subject") is not None:

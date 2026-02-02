@@ -512,9 +512,15 @@
                                         {% endif %}
 
                                     {% if current_user.kindle_mail and entry.email_share_list %}
-                                        <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send to eReader') }}" aria-label="{{ _('Send to eReader') }}">
-                                            <span class="glyphicon glyphicon-send"></span>
-                                        </button>
+                                        {% if current_user.allow_additional_ereader_emails %}
+                                            <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send to eReader') }}" aria-label="{{ _('Send to eReader') }}">
+                                                <span class="glyphicon glyphicon-send"></span>
+                                            </button>
+                                        {% else %}
+                                            <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-direct-send="true" data-book-id="{{ entry.id }}" data-book-format="{{ entry.email_share_list[0]['format'] }}" data-convert="{{ entry.email_share_list[0]['convert'] }}" data-selected-emails="{{ current_user.kindle_mail }}" title="{{ _('Send to eReader') }}" aria-label="{{ _('Send to eReader') }}">
+                                                <span class="glyphicon glyphicon-send"></span>
+                                            </button>
+                                        {% endif %}
                                     {% endif %}
                                     {% endif %}
                                     {% if entry.reader_list and current_user.role_viewer() %}
@@ -862,8 +868,8 @@
             </div>
         </div>
         <div id="action-toast" class="action-toast" role="status" aria-live="polite"></div>
-        {% if current_user.kindle_mail and entry.email_share_list %}
-            <div class="modal fade" id="emailSelectModal" tabindex="-1" role="dialog" aria-labelledby="emailSelectModalLabel" style="animation: auto ease-in-out 0s 1 normal none running none;">
+        {% if current_user.kindle_mail and entry.email_share_list and current_user.allow_additional_ereader_emails %}
+            <div class="modal fade" id="emailSelectModal" data-book-id="{{ entry.id }}" tabindex="-1" role="dialog" aria-labelledby="emailSelectModalLabel" style="animation: auto ease-in-out 0s 1 normal none running none;">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content" style="border-radius: 1rem; padding: 1px;">
                         <div class="modal-card">
@@ -905,6 +911,7 @@
                                     </fieldset>
                                 </div>
                                 {% endif %}
+                                {% if current_user.allow_additional_ereader_emails %}
                                 <div class="form-group">
                                     <fieldset>
                                         <legend style="color: whitesmoke !important;">{{ _('Additional email addresses:') }}</legend>
@@ -913,6 +920,7 @@
                                         <small class="help-block">{{ _('Enter one or more email addresses separated by commas') }}</small>
                                     </fieldset>
                                 </div>
+                                {% endif %}
                                 <div class="form-group">
                                     <label for="format_selection">{{ _('Select format:') }}</label>
                                     <select id="format_selection" name="format_selection" class="form-control">

@@ -153,6 +153,11 @@ jobs:
           tags: crocodilestick/calibre-web-automated:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Set test UID/GID
+        run: |
+          echo "CWA_TEST_PUID=$(id -u)" >> $GITHUB_ENV
+          echo "CWA_TEST_PGID=$(id -g)" >> $GITHUB_ENV
       
       - name: Run Docker integration tests
         run: |

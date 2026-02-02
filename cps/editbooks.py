@@ -7,6 +7,7 @@
 
 import os
 import sys
+import time
 from datetime import datetime, timezone
 import json
 from shutil import copyfile
@@ -825,6 +826,8 @@ def table_xchange_author_title():
 
 
 def do_edit_book(book_id, upload_formats=None):
+    request_start = time.monotonic()
+    log.debug("[edit_book] start book_id=%s user=%s upload_formats=%s", book_id, getattr(current_user, "name", "unknown"), bool(upload_formats))
     modify_date = False
     edit_error = False
 
@@ -870,13 +873,16 @@ def do_edit_book(book_id, upload_formats=None):
             elif to_save["cover_url"].endswith('/static/generic_cover.svg'):
                 book.has_cover = 0
             else:
+                cover_start = time.monotonic()
                 result, error = helper.save_cover_from_url(to_save["cover_url"].strip(), book.path)
                 if result:
                     book.has_cover = 1
                     modify_date = True
                     # Force thumbnail regeneration after successful cover fetch
                     helper.replace_cover_thumbnail_cache(book.id)
+                    log.debug("[edit_book] cover saved book_id=%s duration=%.3fs", book.id, time.monotonic() - cover_start)
                 else:
+                    log.warning("[edit_book] cover save failed book_id=%s duration=%.3fs error=%s", book.id, time.monotonic() - cover_start, error)
                     edit_error = True
                     flash(error, category="error")
 
@@ -937,6 +943,7 @@ def do_edit_book(book_id, upload_formats=None):
         try:
             calibre_db.session.merge(book)
             calibre_db.session.commit()
+            log.debug("[edit_book] db commit ok book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
         except InvalidRequestError as e:
             # Recover from closed/invalid transaction by recreating the session and retrying once
             log.warning("Edit book transaction invalid, retrying commit: %s", e)
@@ -952,6 +959,7 @@ def do_edit_book(book_id, upload_formats=None):
             calibre_db.ensure_session()
             calibre_db.session.merge(book)
             calibre_db.session.commit()
+            log.debug("[edit_book] db commit retry ok book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
 
         # CWA: Export of changed Metadata after commit, to avoid race conditions with folder renames
         # Only create log if there were actual meaningful metadata changes

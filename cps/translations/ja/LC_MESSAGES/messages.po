@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:07+0100\n"
+"POT-Creation-Date: 2026-02-02 12:22+0100\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -196,7 +196,7 @@ msgstr "有効な言語設定がありません"
 msgid "No Valid Book Language Given"
 msgstr "有効な本の言語がありません"
 
-#: cps/admin.py:850 cps/editbooks.py:586
+#: cps/admin.py:850 cps/editbooks.py:587
 msgid "Parameter not found"
 msgstr "パラメータが見つかりません"
 
@@ -376,8 +376,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "成功！Gmailアカウントが確認されました。"
 
 #: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
-#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1025
-#: cps/editbooks.py:1791 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1033
+#: cps/editbooks.py:1799 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
 #, python-format
@@ -1124,94 +1124,94 @@ msgstr ""
 msgid "Invalid resolution strategy"
 msgstr "無効なロール"
 
-#: cps/editbooks.py:102 cps/editbooks.py:159
+#: cps/editbooks.py:103 cps/editbooks.py:160
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
 
-#: cps/editbooks.py:111
+#: cps/editbooks.py:112
 msgid "Missing or invalid book id for format upload"
 msgstr "フォーマットアップロード用の書籍IDがないか無効です"
 
-#: cps/editbooks.py:117
+#: cps/editbooks.py:118
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:142 cps/editbooks.py:169 cps/templates/book_edit.html:52
+#: cps/editbooks.py:143 cps/editbooks.py:170 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:151
 msgid "Upload done, processing, please wait..."
 msgstr "アップロード完了。現在処理中ですのでお待ち下さい..."
 
-#: cps/editbooks.py:147 cps/editbooks.py:173
+#: cps/editbooks.py:148 cps/editbooks.py:174
 msgid "Failed to queue upload for processing"
 msgstr "アップロードの処理キューへの追加に失敗しました"
 
-#: cps/editbooks.py:189
+#: cps/editbooks.py:190
 msgid "Source or destination format for conversion missing"
 msgstr "変換元の形式または変換後の形式が指定されていません"
 
-#: cps/editbooks.py:197
+#: cps/editbooks.py:198
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr "本の %(book_format)s への変換がキューに追加されました"
 
-#: cps/editbooks.py:201
+#: cps/editbooks.py:202
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "この本の変換中にエラーが発生しました: %(res)s"
 
-#: cps/editbooks.py:357 cps/editbooks.py:1228 cps/editbooks.py:1737
+#: cps/editbooks.py:358 cps/editbooks.py:1236 cps/editbooks.py:1745
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr ""
 "このファイル形式はこのサーバーへのアップロードが許可されていませんファイル拡"
 "張子 '%(ext)s' をこのサーバーにアップロードすることは許可されていません"
 
-#: cps/editbooks.py:362 cps/editbooks.py:1234 cps/editbooks.py:1748
+#: cps/editbooks.py:363 cps/editbooks.py:1242 cps/editbooks.py:1756
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr ""
 "ファイル拡張子 '%(ext)s' をこのサーバーにアップロードすることは許可されていま"
 "せん"
 
-#: cps/editbooks.py:366 cps/editbooks.py:1238 cps/editbooks.py:1753
+#: cps/editbooks.py:367 cps/editbooks.py:1246 cps/editbooks.py:1761
 msgid "File to be uploaded must have an extension"
 msgstr "アップロードするファイルには拡張子が必要です"
 
-#: cps/editbooks.py:837 cps/editbooks.py:1414 cps/web.py:612 cps/web.py:2694
+#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2694
 #: cps/web.py:2785 cps/web.py:2870
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "選択した本は利用できません。ファイルが存在しないか、アクセスできません"
 
-#: cps/editbooks.py:869 cps/editbooks.py:1821
+#: cps/editbooks.py:872 cps/editbooks.py:1829
 msgid "User has no rights to upload cover"
 msgstr "ユーザーは表紙をアップロードする権限がありません"
 
-#: cps/editbooks.py:889 cps/editbooks.py:1216
+#: cps/editbooks.py:895 cps/editbooks.py:1224
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "IDは大文字小文字を区別しません。元のIDを上書きします"
 
-#: cps/editbooks.py:901 cps/editbooks.py:1190 cps/editbooks.py:1548
+#: cps/editbooks.py:907 cps/editbooks.py:1198 cps/editbooks.py:1556
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' は有効な言語ではありません"
 
-#: cps/editbooks.py:1012
+#: cps/editbooks.py:1020
 msgid "Metadata successfully updated"
 msgstr "メタデータを更新しました"
 
-#: cps/editbooks.py:1030
+#: cps/editbooks.py:1038
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "本編集中のエラー: {}"
 
-#: cps/editbooks.py:1085 cps/editbooks.py:1130 cps/editbooks.py:1839
+#: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "不明"
 
-#: cps/editbooks.py:1134
+#: cps/editbooks.py:1142
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1220,53 +1220,53 @@ msgstr ""
 "アップロードする前に変更を検討してください：アップロードした本はすでにライブ"
 "ラリに存在します。新しくアップロードする前に変更を加えてください: "
 
-#: cps/editbooks.py:1246
+#: cps/editbooks.py:1254
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "ファイル %(filename)s は一時フォルダに保存できませんでした"
 
-#: cps/editbooks.py:1266
+#: cps/editbooks.py:1274
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "表紙ファイル %(file)s の移動に失敗しました: %(error)s"
 
-#: cps/editbooks.py:1324 cps/editbooks.py:1326
+#: cps/editbooks.py:1332 cps/editbooks.py:1334
 msgid "Book Format Successfully Deleted"
 msgstr "本の形式を削除しました"
 
-#: cps/editbooks.py:1333 cps/editbooks.py:1335
+#: cps/editbooks.py:1341 cps/editbooks.py:1343
 msgid "Book Successfully Deleted"
 msgstr "本を削除しました"
 
-#: cps/editbooks.py:1399
+#: cps/editbooks.py:1407
 msgid "You are missing permissions to delete books"
 msgstr "本を削除する権限がありません"
 
-#: cps/editbooks.py:1453
+#: cps/editbooks.py:1461
 msgid "edit metadata"
 msgstr "メタデータを編集"
 
-#: cps/editbooks.py:1507
+#: cps/editbooks.py:1515
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 "シリーズ番号: %(seriesindex)s は有効な数字ではありません。スキップします"
 
-#: cps/editbooks.py:1742
+#: cps/editbooks.py:1750
 msgid "User has no rights to upload additional file formats"
 msgstr "新たなファイル形式をアップロードする権限がありません"
 
-#: cps/editbooks.py:1766
+#: cps/editbooks.py:1774
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "%(path)s の作成に失敗しました (Permission denied)。"
 
-#: cps/editbooks.py:1773
+#: cps/editbooks.py:1781
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "ファイル %(file)s を保存できません。"
 
-#: cps/editbooks.py:1798
+#: cps/editbooks.py:1806
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "ファイル形式 %(ext)s が %(book)s に追加されました"
@@ -1289,73 +1289,73 @@ msgstr ""
 "確認する手順に従ってくださいコールバックドメインが認証されていません。Google "
 "Developer Consoleでドメインを認証してください"
 
-#: cps/helper.py:83
+#: cps/helper.py:84
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "ID: %(book)d の本に %(format)s フォーマットはありません"
 
-#: cps/helper.py:89 cps/tasks/convert.py:77
+#: cps/helper.py:90 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "Googleドライブ: %(fn)s に %(format)s はありません"
 
-#: cps/helper.py:94
+#: cps/helper.py:95
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s がありません: %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:515
+#: cps/helper.py:102 cps/helper.py:226 cps/templates/detail.html:515
 msgid "Send to eReader"
 msgstr "E-Readerに送信"
 
-#: cps/helper.py:103 cps/helper.py:123 cps/helper.py:236
+#: cps/helper.py:104 cps/helper.py:124 cps/helper.py:237
 msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "このメールはCalibre-Web Automatedから送信されました。"
 
-#: cps/helper.py:121
+#: cps/helper.py:122
 msgid "Calibre-Web Automated Test Email"
 msgstr "Calibre-Web Automated テストメール"
 
-#: cps/helper.py:122
+#: cps/helper.py:123
 msgid "Test Email"
 msgstr "テストメール"
 
-#: cps/helper.py:139
+#: cps/helper.py:140
 msgid "Get Started with Calibre-Web Automated"
 msgstr "Calibre-Web Automatedを始める"
 
-#: cps/helper.py:144
+#: cps/helper.py:145
 #, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "ユーザー: %(name)s の登録メール"
 
-#: cps/helper.py:155 cps/helper.py:161
+#: cps/helper.py:156 cps/helper.py:162
 #, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "%(orig)s を %(format)s に変換して電子書籍リーダーに送信"
 
-#: cps/helper.py:180 cps/helper.py:184 cps/helper.py:188
+#: cps/helper.py:181 cps/helper.py:185 cps/helper.py:189
 #, python-format
 msgid "Send %(format)s to eReader"
 msgstr "%(format)s を電子書籍リーダーに送信"
 
-#: cps/helper.py:231
+#: cps/helper.py:232
 #, python-format
 msgid "%(book)s send to eReader"
 msgstr "%(book)s を電子書籍リーダーに送信"
 
-#: cps/helper.py:238
+#: cps/helper.py:239
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr ""
 "要求されたファイルを読み込めませんでした。権限設定が正しいか確認してくださ"
 "い。"
 
-#: cps/helper.py:384
+#: cps/helper.py:385
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "読み込みステータスを設定できません: {}"
 
-#: cps/helper.py:407
+#: cps/helper.py:408
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
@@ -1364,12 +1364,12 @@ msgstr ""
 "%(path)s%(id)s の本フォルダの削除に失敗しました。そこにはサブフォルダがありま"
 "す: %(path)s"
 
-#: cps/helper.py:413
+#: cps/helper.py:414
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "本 %(id)s の削除に失敗しました: %(message)s"
 
-#: cps/helper.py:424
+#: cps/helper.py:425
 #, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
@@ -1379,7 +1379,7 @@ msgstr ""
 "です：%(path)s本 %(id)s はDBのみから削除されます。DB内の本のパスが有効ではあ"
 "りません: %(path)s"
 
-#: cps/helper.py:513
+#: cps/helper.py:514
 #, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
@@ -1388,40 +1388,40 @@ msgstr ""
 "エラー: %(error)s により、著者名を %(src)s から %(dest)s に変更できませんでし"
 "た"
 
-#: cps/helper.py:582 cps/helper.py:591
+#: cps/helper.py:583 cps/helper.py:592
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "ファイル %(file)s はGoogleドライブ上にありません"
 
-#: cps/helper.py:669
+#: cps/helper.py:670
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "エラー: %(error)s により、タイトルを %(src)s から %(dest)s に変更できませんで"
 "した"
 
-#: cps/helper.py:708
+#: cps/helper.py:709
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "本のパス %(path)s はGoogleドライブ上にありません"
 
-#: cps/helper.py:768
+#: cps/helper.py:769
 msgid "Found an existing account for this Email address"
 msgstr "このメールアドレスで既存のアカウントが見つかりました"
 
-#: cps/helper.py:776
+#: cps/helper.py:777
 msgid "This username is already taken"
 msgstr "このユーザー名はすでに使われています"
 
-#: cps/helper.py:790
+#: cps/helper.py:791
 msgid "Invalid Email address format"
 msgstr "メールアドレスの形式が無効です"
 
-#: cps/helper.py:812
+#: cps/helper.py:813
 msgid "Password doesn't comply with password validation rules"
 msgstr "パスワードがパスワード検証ルールに準拠していません"
 
-#: cps/helper.py:1046
+#: cps/helper.py:1048
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
@@ -1429,20 +1429,20 @@ msgstr ""
 "ドに必要です表紙のアップロードに必要なPythonモジュール 'advocate' がインス"
 "トールされていません"
 
-#: cps/helper.py:1051 cps/helper.py:1059
+#: cps/helper.py:1053 cps/helper.py:1061
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1070
+#: cps/helper.py:1072
 msgid "Error Downloading Cover"
 msgstr "表紙のダウンロードに失敗しました"
 
-#: cps/helper.py:1073
+#: cps/helper.py:1075
 msgid "Cover Format Error"
 msgstr "表紙形式エラー"
 
-#: cps/helper.py:1076
+#: cps/helper.py:1078
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
@@ -1451,72 +1451,72 @@ msgstr ""
 "とは許可されていません表紙アップロードのためにlocalhostやローカルネットワーク"
 "にアクセスすることは許可されていません"
 
-#: cps/helper.py:1092
+#: cps/helper.py:1094
 msgid "Failed to create path for cover"
 msgstr "表紙ファイルの作成に失敗しました"
 
-#: cps/helper.py:1108
+#: cps/helper.py:1110
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "表紙ファイルが有効な画像ファイルでないか、または保存できませんでした"
 
-#: cps/helper.py:1125
+#: cps/helper.py:1127
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "表紙ファイルは jpg/jpeg/png/webp/bmp のみ対応しています"
 
-#: cps/helper.py:1137
+#: cps/helper.py:1141
 msgid "Invalid cover file content"
 msgstr "表紙ファイルの内容が無効です"
 
-#: cps/helper.py:1141
+#: cps/helper.py:1145
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "表紙ファイルは jpg/jpeg のみ対応しています"
 
-#: cps/helper.py:1300 cps/helper.py:1531
+#: cps/helper.py:1304 cps/helper.py:1535
 msgid "Cover"
 msgstr "表紙"
 
-#: cps/helper.py:1317
+#: cps/helper.py:1321
 msgid "UnRar binary file not found"
 msgstr "UnRarのバイナリファイルが見つかりません"
 
-#: cps/helper.py:1328
+#: cps/helper.py:1332
 msgid "Error executing UnRar"
 msgstr "UnRarの実行中にエラーが発生しました"
 
-#: cps/helper.py:1334
+#: cps/helper.py:1338
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1343
+#: cps/helper.py:1347
 msgid "Could not find the specified directory"
 msgstr "指定されたディレクトリが見つかりませんでした"
 
-#: cps/helper.py:1346
+#: cps/helper.py:1350
 msgid "Please specify a directory, not a file"
 msgstr "ファイルではなくディレクトリを指定してください"
 
-#: cps/helper.py:1360
+#: cps/helper.py:1364
 msgid "Calibre binaries not viable"
 msgstr "Calibreバイナリが使用できません"
 
-#: cps/helper.py:1369
+#: cps/helper.py:1373
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Calibreバイナリがありません：%(missing)s"
 
-#: cps/helper.py:1371
+#: cps/helper.py:1375
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "実行権限がありません: %(missing)s"
 
-#: cps/helper.py:1376
+#: cps/helper.py:1380
 msgid "Error executing Calibre"
 msgstr "Calibreの実行中にエラーが発生しました"
 
-#: cps/helper.py:1533 cps/templates/admin.html:240
+#: cps/helper.py:1537 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "すべての書籍をメタデータバックアップのキューに追加"
 

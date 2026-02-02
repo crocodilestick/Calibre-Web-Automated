@@ -9,6 +9,7 @@ import os
 import random
 import io
 import mimetypes
+import time
 import re
 import regex
 import shutil
@@ -1036,6 +1037,7 @@ def _get_cover_download_limit():
 def save_cover_from_url(url, book_path):
     max_cover_bytes, max_cover_mb = _get_cover_download_limit()
     img = None
+    download_start = time.monotonic()
     try:
         if cli_param.allow_localhost:
             img = requests.get(url, timeout=(10, 30), allow_redirects=False, stream=True)  # ToDo: Error Handling
@@ -1058,7 +1060,7 @@ def save_cover_from_url(url, book_path):
             if len(content) > max_cover_bytes:
                 return False, _("Cover image exceeds maximum size of %(size)s MB", size=max_cover_mb)
         img._content = bytes(content)
-
+        log.debug("Cover download ok: %s bytes in %.3fs", len(img._content), time.monotonic() - download_start)
         return save_cover(img, book_path)
     except (socket.gaierror,
             requests.exceptions.HTTPError,
@@ -1123,18 +1125,20 @@ def save_cover(img, book_path):
         if content_type not in ('image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp'):
             log.error("Only jpg/jpeg/png/webp/bmp files are supported as coverfile")
             return False, _("Only jpg/jpeg/png/webp/bmp files are supported as coverfile")
-        # convert to jpg because calibre only supports jpg
-        try:
-            if hasattr(img, 'stream'):
-                imgc = Image(blob=img.stream)
-            else:
-                imgc = Image(blob=io.BytesIO(img.content))
-            imgc.format = 'jpeg'
-            imgc.transform_colorspace("srgb")
-            img = imgc
-        except (BlobError, MissingDelegateError):
-            log.error("Invalid cover file content")
-            return False, _("Invalid cover file content")
+        # Skip conversion for JPEG to avoid unnecessary ImageMagick work
+        if content_type not in ('image/jpeg', 'image/jpg'):
+            # convert to jpg because calibre only supports jpg
+            try:
+                if hasattr(img, 'stream'):
+                    imgc = Image(blob=img.stream)
+                else:
+                    imgc = Image(blob=io.BytesIO(img.content))
+                imgc.format = 'jpeg'
+                imgc.transform_colorspace("srgb")
+                img = imgc
+            except (BlobError, MissingDelegateError):
+                log.error("Invalid cover file content")
+                return False, _("Invalid cover file content")
     else:
         if content_type not in ['image/jpeg', 'image/jpg']:
             log.error("Only jpg/jpeg files are supported as coverfile")

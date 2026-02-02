@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:07+0100\n"
+"POT-Creation-Date: 2026-02-02 12:22+0100\n"
 "PO-Revision-Date: 2025-06-07 14:44+0300\n"
 "Last-Translator: UsamaFoad <usamafoad@gmail.com>\n"
 "Language-Team: \n"
@@ -195,7 +195,7 @@ msgstr "لم يتم تحديد موقع صالح"
 msgid "No Valid Book Language Given"
 msgstr "لم يتم تقديم لغة الكتاب الصالحة"
 
-#: cps/admin.py:850 cps/editbooks.py:586
+#: cps/admin.py:850 cps/editbooks.py:587
 msgid "Parameter not found"
 msgstr "لم يتم العثور على المُتغير"
 
@@ -386,8 +386,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "تم التحقق بنجاح! تم التحقق من حساب Gmail."
 
 #: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
-#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1025
-#: cps/editbooks.py:1791 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2514 cps/admin.py:2746 cps/editbooks.py:1033
+#: cps/editbooks.py:1799 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2605
 #, python-format
@@ -1147,91 +1147,91 @@ msgstr ""
 msgid "Invalid resolution strategy"
 msgstr "دور غير صالح"
 
-#: cps/editbooks.py:102 cps/editbooks.py:159
+#: cps/editbooks.py:103 cps/editbooks.py:160
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
 
-#: cps/editbooks.py:111
+#: cps/editbooks.py:112
 msgid "Missing or invalid book id for format upload"
 msgstr ""
 
-#: cps/editbooks.py:117
+#: cps/editbooks.py:118
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:142 cps/editbooks.py:169 cps/templates/book_edit.html:52
+#: cps/editbooks.py:143 cps/editbooks.py:170 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:151
 msgid "Upload done, processing, please wait..."
 msgstr "تم التحميل، جاري المعالجة، يرجى الانتظار..."
 
-#: cps/editbooks.py:147 cps/editbooks.py:173
+#: cps/editbooks.py:148 cps/editbooks.py:174
 #, fuzzy
 msgid "Failed to queue upload for processing"
 msgstr "فشل في إنشاء مسار الغلاف"
 
-#: cps/editbooks.py:189
+#: cps/editbooks.py:190
 msgid "Source or destination format for conversion missing"
 msgstr "تنسيق المصدر أو الوجهة للتحويل مفقود"
 
-#: cps/editbooks.py:197
+#: cps/editbooks.py:198
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr "تم وضع الكتاب في قائمة الانتظار بنجاح للتحويل إلى %(book_format)s"
 
-#: cps/editbooks.py:201
+#: cps/editbooks.py:202
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "حدث خطأ أثناء تحويل هذا الكتاب: %(res)s"
 
-#: cps/editbooks.py:357 cps/editbooks.py:1228 cps/editbooks.py:1737
+#: cps/editbooks.py:358 cps/editbooks.py:1236 cps/editbooks.py:1745
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "لا يُسمح بتحميل نوع الملف إلى هذا الخادم"
 
-#: cps/editbooks.py:362 cps/editbooks.py:1234 cps/editbooks.py:1748
+#: cps/editbooks.py:363 cps/editbooks.py:1242 cps/editbooks.py:1756
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "لا يُسمح بتحميل ملحق الملف '%(ext)s' إلى هذا الخادم"
 
-#: cps/editbooks.py:366 cps/editbooks.py:1238 cps/editbooks.py:1753
+#: cps/editbooks.py:367 cps/editbooks.py:1246 cps/editbooks.py:1761
 msgid "File to be uploaded must have an extension"
 msgstr "يجب أن يكون للملف المراد تحميله امتداد"
 
-#: cps/editbooks.py:837 cps/editbooks.py:1414 cps/web.py:612 cps/web.py:2694
+#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2694
 #: cps/web.py:2785 cps/web.py:2870
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "عفواً! الكتاب المحدد غير متوفر. الملف غير موجود أو غير قابل للوصول"
 
-#: cps/editbooks.py:869 cps/editbooks.py:1821
+#: cps/editbooks.py:872 cps/editbooks.py:1829
 msgid "User has no rights to upload cover"
 msgstr "ليس لدى المستخدم الحق في تحميل الغلاف"
 
-#: cps/editbooks.py:889 cps/editbooks.py:1216
+#: cps/editbooks.py:895 cps/editbooks.py:1224
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "المعرفات ليست حساسة لحالة الأحرف، مما يؤدي إلى استبدال المعرف القديم"
 
-#: cps/editbooks.py:901 cps/editbooks.py:1190 cps/editbooks.py:1548
+#: cps/editbooks.py:907 cps/editbooks.py:1198 cps/editbooks.py:1556
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' ليست لغة صالحة"
 
-#: cps/editbooks.py:1012
+#: cps/editbooks.py:1020
 msgid "Metadata successfully updated"
 msgstr "تم تحديث البيانات الوصفية بنجاح"
 
-#: cps/editbooks.py:1030
+#: cps/editbooks.py:1038
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "خطأ في تحرير الكتاب: {}"
 
-#: cps/editbooks.py:1085 cps/editbooks.py:1130 cps/editbooks.py:1839
+#: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
 #: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "غير معروف"
 
-#: cps/editbooks.py:1134
+#: cps/editbooks.py:1142
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1239,52 +1239,52 @@ msgstr ""
 "من المحتمل أن يكون الكتاب الذي تم تحميله موجودًا في المكتبة، لذا فكر في "
 "التغيير قبل تحميل كتاب جديد: "
 
-#: cps/editbooks.py:1246
+#: cps/editbooks.py:1254
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "لم يتم حفظ الملف %(filename)s في الدليل المؤقت"
 
-#: cps/editbooks.py:1266
+#: cps/editbooks.py:1274
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "فشل نقل ملف الغلاف %(file)s: %(error)s"
 
-#: cps/editbooks.py:1324 cps/editbooks.py:1326
+#: cps/editbooks.py:1332 cps/editbooks.py:1334
 msgid "Book Format Successfully Deleted"
 msgstr "تم حذف تنسيق الكتاب بنجاح"
 
-#: cps/editbooks.py:1333 cps/editbooks.py:1335
+#: cps/editbooks.py:1341 cps/editbooks.py:1343
 msgid "Book Successfully Deleted"
 msgstr "تم حذف الكتاب بنجاح"
 
-#: cps/editbooks.py:1399
+#: cps/editbooks.py:1407
 msgid "You are missing permissions to delete books"
 msgstr "أنت تفتقد الأذونات اللازمة لحذف الكتب"
 
-#: cps/editbooks.py:1453
+#: cps/editbooks.py:1461
 msgid "edit metadata"
 msgstr "تحرير البيانات الوصفية"
 
-#: cps/editbooks.py:1507
+#: cps/editbooks.py:1515
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "مؤشر السلسلة: %(seriesindex)s ليس رقمًا صالحًا، تخطي"
 
-#: cps/editbooks.py:1742
+#: cps/editbooks.py:1750
 msgid "User has no rights to upload additional file formats"
 msgstr "ليس للمستخدم الحق في تحميل تنسيقات ملفات إضافية"
 
-#: cps/editbooks.py:1766
+#: cps/editbooks.py:1774
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "فشل إنشاء المسار %(path)s (تم رفض الإذن)."
 
-#: cps/editbooks.py:1773
+#: cps/editbooks.py:1781
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "فشل تخزين الملف %(file)s."
 
-#: cps/editbooks.py:1798
+#: cps/editbooks.py:1806
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "تمت إضافة تنسيق الملف %(ext)s إلى %(book)s"
@@ -1304,86 +1304,86 @@ msgstr ""
 "لم يتم التحقق من نطاق الاتصال، يرجى اتباع الخطوات للتحقق من النطاق في وحدة "
 "تحكم مطوري Google"
 
-#: cps/helper.py:83
+#: cps/helper.py:84
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "لم يتم العثور على تنسيق %(format)s لمعرف الكتاب: %(book)d"
 
-#: cps/helper.py:89 cps/tasks/convert.py:77
+#: cps/helper.py:90 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "لم يتم العثور على %(format)s على Google Drive: %(fn)s"
 
-#: cps/helper.py:94
+#: cps/helper.py:95
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "لم يتم العثور على %(format)s: %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:225 cps/templates/detail.html:515
+#: cps/helper.py:102 cps/helper.py:226 cps/templates/detail.html:515
 msgid "Send to eReader"
 msgstr "إرسال إلى القارئ الإلكتروني"
 
-#: cps/helper.py:103 cps/helper.py:123 cps/helper.py:236
+#: cps/helper.py:104 cps/helper.py:124 cps/helper.py:237
 #, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "تم إرسال هذا البريد الإلكتروني عبر Calibre-Web."
 
-#: cps/helper.py:121
+#: cps/helper.py:122
 #, fuzzy
 msgid "Calibre-Web Automated Test Email"
 msgstr "بريد إلكتروني اختباري من Calibre-Web"
 
-#: cps/helper.py:122
+#: cps/helper.py:123
 msgid "Test Email"
 msgstr "اختبار البريد الإلكتروني"
 
-#: cps/helper.py:139
+#: cps/helper.py:140
 #, fuzzy
 msgid "Get Started with Calibre-Web Automated"
 msgstr "ابدأ مع Calibre-Web"
 
-#: cps/helper.py:144
+#: cps/helper.py:145
 #, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "البريد الإلكتروني للتسجيل للمستخدم: %(name)s"
 
-#: cps/helper.py:155 cps/helper.py:161
+#: cps/helper.py:156 cps/helper.py:162
 #, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "تحويل %(orig)s إلى %(format)s وإرساله إلى القارئ الإلكتروني"
 
-#: cps/helper.py:180 cps/helper.py:184 cps/helper.py:188
+#: cps/helper.py:181 cps/helper.py:185 cps/helper.py:189
 #, python-format
 msgid "Send %(format)s to eReader"
 msgstr "إرسال %(format)s إلى القارئ الإلكتروني"
 
-#: cps/helper.py:231
+#: cps/helper.py:232
 #, python-format
 msgid "%(book)s send to eReader"
 msgstr "%(book)s إرسال إلى القارئ الإلكتروني"
 
-#: cps/helper.py:238
+#: cps/helper.py:239
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "لم تتم قراءة الملف المطلوب. ربما الأذونات خاطئة؟"
 
-#: cps/helper.py:384
+#: cps/helper.py:385
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "لم يتم ضبط حالة القراءة: {}"
 
-#: cps/helper.py:407
+#: cps/helper.py:408
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr ""
 "فشلت عملية حذف مجلد الكتاب %(id)s، المسار يحتوي على مجلدات فرعية: %(path)s"
 
-#: cps/helper.py:413
+#: cps/helper.py:414
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "حذف الكتاب  %(id)s فشل %(message)s"
 
-#: cps/helper.py:424
+#: cps/helper.py:425
 #, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
@@ -1392,7 +1392,7 @@ msgstr ""
 "حذف الكتاب %(id)s من قاعدة البيانات فقط، مسار الكتاب في قاعدة البيانات غير "
 "صالح: %(path)s"
 
-#: cps/helper.py:513
+#: cps/helper.py:514
 #, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
@@ -1400,129 +1400,129 @@ msgstr ""
 "فشلت عملية إعادة تسمية المؤلف من: '%(src)s' إلى '%(dest)s' مع الخطأ: "
 "%(error)s"
 
-#: cps/helper.py:582 cps/helper.py:591
+#: cps/helper.py:583 cps/helper.py:592
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "لم يتم العثور على الملف %(file)s على Google Drive"
 
-#: cps/helper.py:669
+#: cps/helper.py:670
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "فشلت عملية إعادة تسمية العنوان من: '%(src)s' إلى '%(dest)s' مع الخطأ: "
 "%(error)s"
 
-#: cps/helper.py:708
+#: cps/helper.py:709
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "لم يتم العثور على مسار الكتاب %(path)s على Google Drive"
 
-#: cps/helper.py:768
+#: cps/helper.py:769
 msgid "Found an existing account for this Email address"
 msgstr "تم العثور على حساب موجود لعنوان البريد الإلكتروني هذا"
 
-#: cps/helper.py:776
+#: cps/helper.py:777
 msgid "This username is already taken"
 msgstr "اسم المستخدم هذا مستخدم بالفعل"
 
-#: cps/helper.py:790
+#: cps/helper.py:791
 msgid "Invalid Email address format"
 msgstr "تنسيق عنوان البريد الإلكتروني غير صالح"
 
-#: cps/helper.py:812
+#: cps/helper.py:813
 msgid "Password doesn't comply with password validation rules"
 msgstr "كلمة المرور لا تتوافق مع قواعد التحقق من صحة كلمة المرور"
 
-#: cps/helper.py:1046
+#: cps/helper.py:1048
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr "لم يتم تثبيت وحدة Python 'advocate' ولكنها ضرورية لتحميلات الغلاف"
 
-#: cps/helper.py:1051 cps/helper.py:1059
+#: cps/helper.py:1053 cps/helper.py:1061
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1070
+#: cps/helper.py:1072
 msgid "Error Downloading Cover"
 msgstr "خطأ في تنزيل الغلاف"
 
-#: cps/helper.py:1073
+#: cps/helper.py:1075
 msgid "Cover Format Error"
 msgstr "خطأ في تنسيق الغلاف"
 
-#: cps/helper.py:1076
+#: cps/helper.py:1078
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr "لا يُسمح لك بالوصول إلى localhost أو الشبكة المحلية لتحميل الغلاف"
 
-#: cps/helper.py:1092
+#: cps/helper.py:1094
 msgid "Failed to create path for cover"
 msgstr "فشل في إنشاء مسار الغلاف"
 
-#: cps/helper.py:1108
+#: cps/helper.py:1110
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "ملف الغلاف ليس ملف صورة صالحًا، أو لا يمكن تخزينه"
 
-#: cps/helper.py:1125
+#: cps/helper.py:1127
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "ملفات jpg/jpeg/png/webp/bmp فقط مدعومة كملفات غلاف"
 
-#: cps/helper.py:1137
+#: cps/helper.py:1141
 msgid "Invalid cover file content"
 msgstr "محتوى ملف الغلاف غير صالح"
 
-#: cps/helper.py:1141
+#: cps/helper.py:1145
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "ملفات jpg/jpeg فقط مدعومة كملفات غلاف"
 
-#: cps/helper.py:1300 cps/helper.py:1531
+#: cps/helper.py:1304 cps/helper.py:1535
 msgid "Cover"
 msgstr "الغلاف"
 
-#: cps/helper.py:1317
+#: cps/helper.py:1321
 msgid "UnRar binary file not found"
 msgstr "ملف UnRar الثنائي غير موجود"
 
-#: cps/helper.py:1328
+#: cps/helper.py:1332
 msgid "Error executing UnRar"
 msgstr "خطأ في تنفيذ UnRar"
 
-#: cps/helper.py:1334
+#: cps/helper.py:1338
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1343
+#: cps/helper.py:1347
 msgid "Could not find the specified directory"
 msgstr "تعذر العثور على الدليل المحدد"
 
-#: cps/helper.py:1346
+#: cps/helper.py:1350
 msgid "Please specify a directory, not a file"
 msgstr "الرجاء تحديد دليل، وليس ملف"
 
-#: cps/helper.py:1360
+#: cps/helper.py:1364
 msgid "Calibre binaries not viable"
 msgstr "ملفات Calibre الثنائية غير قابلة للاستخدام"
 
-#: cps/helper.py:1369
+#: cps/helper.py:1373
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "ملفات Calibre الثنائية مفقودة: %(missing)s"
 
-#: cps/helper.py:1371
+#: cps/helper.py:1375
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "أذونات التنفيذ مفقودة: %(missing)s"
 
-#: cps/helper.py:1376
+#: cps/helper.py:1380
 msgid "Error executing Calibre"
 msgstr "خطأ في تنفيذ Calibre"
 
-#: cps/helper.py:1533 cps/templates/admin.html:240
+#: cps/helper.py:1537 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "وضع جميع الكتب في قائمة الانتظار لنسخ البيانات الوصفية احتياطيًا"
 

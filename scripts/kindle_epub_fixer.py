@@ -466,6 +466,7 @@ class EPUBFixer:
             if ext not in ['xhtml', 'xml', 'opf', 'ncx', 'svg']:
                 continue
 
+            # v4.0.5 onwards: fix XML declaration contributed by DendyA
             new_decl = f'<?xml version="1.0" encoding="{declared_encoding}"?>'
             decl_match = xml_decl_encoding_pattern.match(content)
             if decl_match:

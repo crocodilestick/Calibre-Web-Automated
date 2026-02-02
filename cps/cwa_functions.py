@@ -619,7 +619,7 @@ def set_cwa_settings():
     boolean_settings = []
     string_settings = []
     list_settings = []
-    integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'duplicate_auto_resolve_cooldown_minutes', 'archived_cleanup_schedule_hour']  # Special handling for integer settings
+    integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'duplicate_auto_resolve_cooldown_minutes', 'archived_cleanup_schedule_hour', 'cover_download_max_mb']  # Special handling for integer settings
     float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']  # Special handling for float settings
     json_settings = ['metadata_provider_hierarchy', 'metadata_providers_enabled', 'duplicate_format_priority']  # Special handling for JSON settings
     skip_settings = ['auto_convert_ignored_formats', 'auto_ingest_ignored_formats', 'auto_convert_retained_formats']  # Handled through individual format checkboxes
@@ -723,6 +723,8 @@ def set_cwa_settings():
                             int_value = max(500, min(50000, int_value))
                         elif setting == 'duplicate_scan_debounce_seconds':
                             int_value = max(5, min(600, int_value))
+                        elif setting == 'cover_download_max_mb':
+                            int_value = max(1, min(200, int_value))
                         result[setting] = int_value
                     except (ValueError, TypeError):
                         # Use current value if conversion fails
@@ -742,6 +744,8 @@ def set_cwa_settings():
                             result[setting] = cwa_db.cwa_settings.get(setting, 3)  # Default to 3 AM
                         elif setting == 'duplicate_scan_debounce_seconds':
                             result[setting] = cwa_db.cwa_settings.get(setting, 30)
+                        elif setting == 'cover_download_max_mb':
+                            result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 MB
                 else:
                     if setting == 'ingest_timeout_minutes':
                         result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 minutes
@@ -759,6 +763,8 @@ def set_cwa_settings():
                         result[setting] = cwa_db.cwa_settings.get(setting, 3)  # Default to 3 AM
                     elif setting == 'duplicate_scan_debounce_seconds':
                         result[setting] = cwa_db.cwa_settings.get(setting, 30)
+                    elif setting == 'cover_download_max_mb':
+                        result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 MB
 
             # Handle float settings
             for setting in float_settings:

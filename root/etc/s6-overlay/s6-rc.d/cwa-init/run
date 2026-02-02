@@ -196,7 +196,26 @@ fi
 #  Set required permissions
 #------------------------------------------------------------------------------------------------------------------------
 
-declare -a requiredDirs=("/config" "/calibre-library" "/app/calibre-web-automated")
+# In addition to /config and /app/calibre-web-automated, parse required dirs from dirs.json
+declare -a requiredDirs=("/config" "/app/calibre-web-automated" "/calibre-library")
+if [ -f /app/calibre-web-automated/dirs.json ]; then
+  while IFS= read -r dir; do
+    [ -n "$dir" ] && requiredDirs+=("$dir")
+  done < <(
+    python3 - <<'PY'
+import json
+try:
+    with open('/app/calibre-web-automated/dirs.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    if isinstance(data, dict):
+        for value in data.values():
+            if isinstance(value, str):
+                print(value)
+except Exception:
+    pass
+PY
+  )
+fi
 
 dirs=$(printf ", %s" "${requiredDirs[@]}")
 dirs=${dirs:1}

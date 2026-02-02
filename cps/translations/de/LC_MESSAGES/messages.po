@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 12:22+0100\n"
+"POT-Creation-Date: 2026-02-02 11:42+0000\n"
 "PO-Revision-Date: 2025-09-09 20:18+0200\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
@@ -1059,7 +1059,7 @@ msgstr "Ein Fehler ist aufgetreten"
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Bibliothek konvertieren"
 
-#: cps/cwa_functions.py:1918 cps/cwa_functions.py:1942
+#: cps/cwa_functions.py:1924 cps/cwa_functions.py:1948
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Calibre-Web Automated - EPUB-Fixer-Dienst"
 
@@ -1067,23 +1067,23 @@ msgstr "Calibre-Web Automated - EPUB-Fixer-Dienst"
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2003
+#: cps/cwa_functions.py:2009
 msgid "Invalid book selection."
 msgstr "Ungültige Buchauswahl."
 
-#: cps/cwa_functions.py:2009
+#: cps/cwa_functions.py:2015
 msgid "Book not found."
 msgstr "Buch wurde nicht gefunden."
 
-#: cps/cwa_functions.py:2015
+#: cps/cwa_functions.py:2021
 msgid "Selected book has no EPUB format."
 msgstr "Das ausgewählte Buch hat kein EPUB-Format."
 
-#: cps/cwa_functions.py:2019
+#: cps/cwa_functions.py:2025
 msgid "EPUB file not found on disk."
 msgstr "EPUB-Datei wurde nicht auf dem Datenträger gefunden."
 
-#: cps/cwa_functions.py:2034
+#: cps/cwa_functions.py:2040
 msgid "EPUB Fixer started for selected book."
 msgstr "EPUB-Fixer für das ausgewählte Buch gestartet."
 
@@ -5615,7 +5615,7 @@ msgstr "Tag hinzufügen"
 msgid "Published"
 msgstr "Herausgabedatum"
 
-#: cps/templates/detail.html:727
+#: cps/templates/detail.html:787
 msgid "KOReader Progress"
 msgstr "KOReader-Fortschritt"
 

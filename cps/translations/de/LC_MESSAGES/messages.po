@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-02-02 13:59+0100\n"
-"PO-Revision-Date: 2025-09-09 20:18+0200\n"
+"PO-Revision-Date: 2026-02-02 19:16+0100\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Loco-Source-Locale: de_DE\n"
 "Generated-By: Babel 2.15.0\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
 #: cps/about.py:65
 msgid "Statistics"
@@ -701,7 +701,7 @@ msgid ""
 "endpoint."
 msgstr ""
 "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort. Dies ist "
-"möglicherweise kein OIDC"
+"möglicherweise kein OIDC."
 
 #: cps/admin.py:2823
 #, python-format
@@ -928,7 +928,7 @@ msgstr ""
 #: cps/cwa_functions.py:848
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
-"Ungültiger Cron-Ausdruck für Dubletten-Scans. Änderungen wurden nicht "
+"Ungültiger Cron-Ausdruck für Duplikate Scans. Änderungen wurden nicht "
 "gespeichert."
 
 #: cps/cwa_functions.py:884
@@ -1066,6 +1066,8 @@ msgstr "Calibre-Web Automated - EPUB-Fixer-Dienst"
 #: cps/cwa_functions.py:2002
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
+"Der EPUB-Fixer ist für einzelne Bücher nicht mit Google Drive-Bibliotheken "
+"kompatibel."
 
 #: cps/cwa_functions.py:2009
 msgid "Invalid book selection."
@@ -1090,6 +1092,8 @@ msgstr "EPUB-Fixer für das ausgewählte Buch gestartet."
 #: cps/cwa_functions.py:2043
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
+"Ein Fehler ist aufgetreten beim starten von EPUB Fixer für das ausgewählte "
+"Buch."
 
 #: cps/cwa_functions.py:2090
 msgid "You must be an admin to access this page."
@@ -1146,7 +1150,7 @@ msgstr "Bücherduplikate"
 
 #: cps/duplicates.py:1117
 msgid "Duplicate group already dismissed"
-msgstr "Dublettengruppe bereits verworfen"
+msgstr "Duplikatgruppe bereits verworfen"
 
 #: cps/duplicates.py:1137
 msgid "Duplicate group dismissed"
@@ -1158,7 +1162,7 @@ msgstr "Duplikatgruppe wiederhergestellt"
 
 #: cps/duplicates.py:1176
 msgid "Duplicate group was not dismissed"
-msgstr "Dublettengruppe wurde nicht verworfen"
+msgstr "Duplikatgruppe wurde nicht verworfen"
 
 #: cps/duplicates.py:1238
 msgid "Duplicate scan queued"
@@ -1166,7 +1170,7 @@ msgstr "Duplikat-Scan in Warteschlange eingereiht"
 
 #: cps/duplicates.py:1296
 msgid "Duplicate scan completed (fallback)"
-msgstr "Dubletten-Scan abgeschlossen (Fallback)"
+msgstr "Duplikaten Scan abgeschlossen (Fallback)"
 
 #: cps/duplicates.py:1424
 msgid "Invalid resolution strategy"
@@ -1177,6 +1181,8 @@ msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
+"Der Ingest-Ordner ist nicht beschreibbar. Überprüfen Sie die Berechtigungen "
+"für Ihr /cwa-book-ingest Laufwerk."
 
 #: cps/editbooks.py:112
 msgid "Missing or invalid book id for format upload"
@@ -1477,7 +1483,7 @@ msgstr ""
 #: cps/helper.py:1053 cps/helper.py:1061
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
-msgstr ""
+msgstr "Das Titelbild überschreitet die maximale Größe von %(size)s MB."
 
 #: cps/helper.py:1072
 msgid "Error Downloading Cover"
@@ -1545,7 +1551,7 @@ msgstr "Bitte keine Datei sondern einen Ordner angeben"
 
 #: cps/helper.py:1364
 msgid "Calibre binaries not viable"
-msgstr "Die Calibre Programmdaten sind nicht verwendbar."
+msgstr "Die Calibre Programmdaten sind nicht verwendbar"
 
 #: cps/helper.py:1373
 #, python-format
@@ -2360,9 +2366,8 @@ msgid "No email addresses selected"
 msgstr "Keine E-Mail-Adresse ausgewählt"
 
 #: cps/web.py:2024
-#, fuzzy
 msgid "Additional email addresses are disabled for your account."
-msgstr "Zusätzliche E-Mail-Adressen eingeben (durch Kommas getrennt):"
+msgstr "Zusätzliche E-Mail-Adressen sind für Ihr Konto deaktiviert."
 
 #: cps/web.py:2046
 msgid "Success! Book queued for sending to the selected address(es)!"
@@ -2609,17 +2614,17 @@ msgstr "Suche nach Duplikaten"
 #: cps/tasks/duplicate_scan.py:133 cps/tasks/duplicate_scan.py:311
 #, python-format
 msgid "Duplicate scan completed: %(count)s groups"
-msgstr "Dubletten-Scan abgeschlossen: %(count)s Gruppen"
+msgstr "Duplikaten Scan abgeschlossen: %(count)s Gruppen"
 
 #: cps/tasks/duplicate_scan.py:203 cps/tasks/duplicate_scan.py:402
 #, python-format
 msgid "Duplicate scan completed: %(count)s groups auto-resolved"
-msgstr "Dubletten-Scan abgeschlossen: %(count)s Gruppen automatisch bereinigt"
+msgstr "Duplikaten Scan abgeschlossen: %(count)s Gruppen automatisch bereinigt"
 
 #: cps/tasks/duplicate_scan.py:313
 #, python-format
 msgid "Duplicate scan completed: %(count)s new groups"
-msgstr "Dubletten-Scan abgeschlossen: %(count)s neue Gruppen"
+msgstr "Duplikaten Scan abgeschlossen: %(count)s neue Gruppen"
 
 #: cps/tasks/mail.py:275
 msgid "E-mail"
@@ -3690,7 +3695,7 @@ msgstr "Synchronisation mit Kobo aktivieren"
 
 #: cps/templates/config_edit.html:208
 msgid "Proxy unknown requests to Kobo Store"
-msgstr "unbekannte Anfragen an den Kobo Store weiterleiten"
+msgstr "Unbekannte Anfragen an den Kobo Store weiterleiten"
 
 #: cps/templates/config_edit.html:211
 msgid "Server External Port (for port forwarded API calls)"
@@ -4381,11 +4386,11 @@ msgstr "Fehler beim Planen der Bibliothekskonvertierung"
 
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
-msgstr ""
+msgstr "Auf einem einzigen Buch ausführen"
 
 #: cps/templates/cwa_epub_fixer.html:24
 msgid "Search by title/author"
-msgstr ""
+msgstr "Suche nach Titel/Autor"
 
 #: cps/templates/cwa_epub_fixer.html:29
 msgid "Run on selected book"
@@ -4712,18 +4717,20 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:392
 msgid "Cover File Max Size (MB):"
-msgstr ""
+msgstr "Maximale Größe der Coverdatei (MB):"
 
 #: cps/templates/cwa_settings.html:405
-#, fuzzy
 msgid "Range: 1-200 MB (default: 15)"
-msgstr "Bereich: 5-120 Minuten (Standard: 15)"
+msgstr "Bereich: 1–200 MB (Standard: 15)"
 
 #: cps/templates/cwa_settings.html:408
 msgid ""
 "Limits the maximum size of cover images downloaded from metadata providers "
 "or URLs to prevent slow or stalled saves."
 msgstr ""
+"Begrenzt die maximale Größe von Cover Bildern, die von Metadaten-Anbieter "
+"oder URLs heruntergeladen werden, um langsame oder stockende "
+"Speichervorgänge zu vermeiden."
 
 #: cps/templates/cwa_settings.html:417
 msgid "Ingest Processing Timeout"
@@ -4964,7 +4971,7 @@ msgid ""
 "of CWA is released"
 msgstr ""
 "Wenn aktiv, erscheint in der Web-Benutzeroberfläche eine Benachrichtigung, "
-"sobald eine neue Version von CWA veröffentlicht wird."
+"sobald eine neue Version von CWA veröffentlicht wird"
 
 #: cps/templates/cwa_settings.html:744
 msgid "Enable Contribute Translations Notifications"
@@ -5089,7 +5096,7 @@ msgid ""
 msgstr ""
 "Hinweis: Der Metadatenerzwingungsdienst von CWA unterstützt derzeit nur "
 "Dateien im EPUB- oder AZW3-Format. Dateien in anderen Formaten werden vom "
-"Dienst einfach ignoriert."
+"Dienst einfach ignoriert"
 
 #: cps/templates/cwa_settings.html:840
 msgid "CWA Auto-Convert - Ignored Formats"
@@ -5178,8 +5185,8 @@ msgid ""
 "Enable or disable the duplicate detection system. When disabled, duplicate "
 "scanning will not run and no notifications will be shown."
 msgstr ""
-"Aktivieren oder deaktivieren des Systems zur Dublettenerkennung. Wenn "
-"deaktiviert, wird kein Scan nach Dubletten ausgeführt und es werden keine "
+"Aktivieren oder deaktivieren des Systems zur Duplikatenerkennung. Wenn "
+"deaktiviert, wird kein Scan nach Duplikaten ausgeführt und es werden keine "
 "Benachrichtigungen angezeigt."
 
 #: cps/templates/cwa_settings.html:967
@@ -5188,11 +5195,11 @@ msgstr "Duplikaterkennung aktivieren"
 
 #: cps/templates/cwa_settings.html:971
 msgid "When enabled, CWA will scan for duplicate books after each import"
-msgstr "Wenn aktiviert, scannt CWA nach jedem Import nach Dubletten."
+msgstr "Wenn aktiviert, scannt CWA nach jedem Import nach Duplikate"
 
 #: cps/templates/cwa_settings.html:979
 msgid "Duplicate Detection Method"
-msgstr "Methode zur Dublettenerkennung"
+msgstr "Methode zur Duplikatenerkennung"
 
 #: cps/templates/cwa_settings.html:982
 msgid "Hybrid (SQL prefilter + Python validation)"
@@ -5224,12 +5231,12 @@ msgid ""
 "Configure background duplicate scans. These run automatically without "
 "blocking the UI."
 msgstr ""
-"Konfigurieren Sie Dubletten-Scans im Hintergrund. Diese werden automatisch "
+"Konfigurieren Sie Duplikaten Scans im Hintergrund. Diese werden automatisch "
 "ausgeführt, ohne die Benutzeroberfläche zu blockieren."
 
 #: cps/templates/cwa_settings.html:1011
 msgid "Enable automatic duplicate scans"
-msgstr "Automatische Dubletten-Scans aktivieren"
+msgstr "Automatische Duplikaten Scans aktivieren"
 
 #: cps/templates/cwa_settings.html:1015
 msgid "After import scans"
@@ -5287,28 +5294,28 @@ msgid ""
 "duplicates."
 msgstr ""
 "Konfigurieren Sie, welche Metadatenfelder verwendet werden, um zu bestimmen, "
-"ob Bücher Dubletten sind. Bücher müssen ALLE ausgewählten Kriterien "
-"erfüllen, um als Dubletten eingestuft zu werden."
+"ob Bücher Duplikate sind. Bücher müssen ALLE ausgewählten Kriterien "
+"erfüllen, um als Duplikate eingestuft zu werden."
 
 #: cps/templates/cwa_settings.html:1075
 msgid "Consider book titles when detecting duplicates"
-msgstr "Buchtitel bei der Dublettenerkennung berücksichtigen"
+msgstr "Buchtitel bei der Duplikatenerkennung berücksichtigen"
 
 #: cps/templates/cwa_settings.html:1081
 msgid "Consider book authors when detecting duplicates"
-msgstr "Buchautoren bei der Dublettenerkennung berücksichtigen"
+msgstr "Buchautoren bei der Duplikatenerkennung berücksichtigen"
 
 #: cps/templates/cwa_settings.html:1087
 msgid "Consider book language when detecting duplicates"
-msgstr "Buchsprache bei der Dublettenerkennung berücksichtigen"
+msgstr "Buchsprache bei der Duplikatenerkennung berücksichtigen"
 
 #: cps/templates/cwa_settings.html:1093
 msgid "Consider book series when detecting duplicates"
-msgstr "Buchreihen bei der Dublettenerkennung berücksichtigen"
+msgstr "Buchreihen bei der Duplikatenerkennung berücksichtigen"
 
 #: cps/templates/cwa_settings.html:1099
 msgid "Consider book publisher when detecting duplicates"
-msgstr "Buchverlag bei der Dublettenerkennung berücksichtigen"
+msgstr "Buchverlag bei der Duplikatenerkennung berücksichtigen"
 
 #: cps/templates/cwa_settings.html:1104
 msgid "Format"
@@ -5316,7 +5323,7 @@ msgstr "Zielformat"
 
 #: cps/templates/cwa_settings.html:1105
 msgid "Consider file format when detecting duplicates"
-msgstr "Dateiformat bei der Dublettenerkennung berücksichtigen"
+msgstr "Dateiformat bei der Duplikatenerkennung berücksichtigen"
 
 #: cps/templates/cwa_settings.html:1111 cps/templates/cwa_settings.html:1197
 msgid "Note:"
@@ -5332,7 +5339,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1117
 msgid "Duplicate Format Priority Ranking"
-msgstr "Prioritätsrangfolge für Dubletten-Formate"
+msgstr "Prioritätsrangfolge für Duplikaten Formate"
 
 #: cps/templates/cwa_settings.html:1120
 msgid ""
@@ -5355,20 +5362,20 @@ msgid ""
 "with higher-ranked formats will be kept. Lower priority formats will be "
 "deleted."
 msgstr ""
-"Beim Auflösen von Dubletten mit der Strategie „Format mit höchster Qualität“ "
+"Beim Auflösen von Duplikate mit der Strategie „Format mit höchster Qualität“ "
 "werden Bücher mit höher eingestuften Formaten beibehalten. Formate mit "
 "niedrigerer Priorität werden gelöscht."
 
 #: cps/templates/cwa_settings.html:1141
 msgid "Duplicate Notifications & Auto-Resolution"
-msgstr "Dubletten-Benachrichtigungen & automatische Lösung"
+msgstr "Duplikaten Benachrichtigungen & automatische Lösung"
 
 #: cps/templates/cwa_settings.html:1144
 msgid ""
 "Configure how you are notified about duplicate books and optionally enable "
 "automatic resolution."
 msgstr ""
-"Konfigurieren Sie, wie Sie über Buchdubletten benachrichtigt werden, und "
+"Konfigurieren Sie, wie Sie über Buchduplikate benachrichtigt werden, und "
 "aktivieren Sie optional die automatische Auflösung."
 
 #: cps/templates/cwa_settings.html:1149
@@ -5381,9 +5388,9 @@ msgid ""
 "users with edit rights will see a badge on the Duplicates sidebar button and "
 "a notification popup when they login."
 msgstr ""
-"Popup-Benachrichtigungen anzeigen, wenn ungelöste Dubletten erkannt werden. "
+"Popup-Benachrichtigungen anzeigen, wenn ungelöste Duplikate erkannt werden. "
 "Administratoren und Benutzer mit Bearbeitungsrechten sehen ein Badge an der "
-"Schaltfläche „Dubletten“ in der Seitenleiste sowie ein Benachrichtigungs-"
+"Schaltfläche „Duplikate“ in der Seitenleiste sowie ein Benachrichtigungs-"
 "Popup beim Login."
 
 #: cps/templates/cwa_settings.html:1155
@@ -5437,7 +5444,7 @@ msgstr "Format mit höchster Qualität behalten"
 #: cps/templates/cwa_settings.html:1174
 msgid "Prefer formats based on your Duplicate Format Priority Ranking"
 msgstr ""
-"Bevorzugt Formate basierend auf Ihrer Prioritätsrangfolge für Dubletten-"
+"Bevorzugt Formate basierend auf Ihrer Prioritätsrangfolge für Duplikaten "
 "Formate"
 
 #: cps/templates/cwa_settings.html:1177
@@ -5459,7 +5466,7 @@ msgstr "Das Buch mit der größten Gesamtdateigröße behalten"
 #: cps/templates/cwa_settings.html:1183
 msgid "Choose which book to keep when duplicates are automatically resolved."
 msgstr ""
-"Auswählen, welches Buch behalten werden soll, wenn Dubletten automatisch "
+"Auswählen, welches Buch behalten werden soll, wenn Duplikate automatisch "
 "aufgelöst werden."
 
 #: cps/templates/cwa_settings.html:1187
@@ -5483,8 +5490,8 @@ msgid ""
 "Auto-resolution runs after duplicate scans detect new duplicates. Dismissed "
 "duplicate groups are never auto-resolved."
 msgstr ""
-"Die automatische Auflösung erfolgt, nachdem der Dubletten-Scan neue "
-"Dubletten erkannt hat. Ignorierte Dubletten-Gruppen werden niemals "
+"Die automatische Auflösung erfolgt, nachdem der Duplikaten Scan neue "
+"Duplikate erkannt hat. Ignorierte Duplikatengruppen werden niemals "
 "automatisch aufgelöst."
 
 #: cps/templates/cwa_stats.html:66 cps/templates/cwa_stats_system.html:58
@@ -5670,9 +5677,8 @@ msgid "Failed to update tags"
 msgstr "Aktualisierung der Tags fehlgeschlagen"
 
 #: cps/templates/detail.html:1252
-#, fuzzy
 msgid "Failed to update shelves"
-msgstr "Aktualisierung der Tags fehlgeschlagen"
+msgstr "Aktualisierung der Bücherregale fehlgeschlagen"
 
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
@@ -5715,7 +5721,7 @@ msgid ""
 "Automatically resolve all duplicate groups by keeping one book and deleting "
 "others based on a strategy."
 msgstr ""
-"Alle Dubletten-Gruppen automatisch auflösen, indem ein Buch behalten und "
+"Alle Duplikatengruppen automatisch auflösen, indem ein Buch behalten und "
 "andere basierend auf einer Strategie gelöscht werden."
 
 #: cps/templates/duplicates.html:417
@@ -5776,7 +5782,7 @@ msgstr "Ausgewählte zusammenführen"
 
 #: cps/templates/duplicates.html:460
 msgid "Dismiss this duplicate group"
-msgstr "Diese Dubletten-Gruppe ignorieren"
+msgstr "Diese Duplikatengruppe ignorieren"
 
 #: cps/templates/duplicates.html:462
 msgid "Dismiss"
@@ -6253,7 +6259,7 @@ msgstr "Bücherduplikate erkannt"
 
 #: cps/templates/layout.html:427
 msgid "You have unresolved duplicate books in your library"
-msgstr "Nicht aufgelöste Buch-Dubletten in der Bibliothek"
+msgstr "Nicht aufgelöste Buch Duplikate in der Bibliothek"
 
 #: cps/templates/layout.html:432
 msgid "Duplicate Groups Found"
@@ -6980,7 +6986,7 @@ msgstr ""
 
 #: cps/templates/user_edit.html:218
 msgid "Enable Send-to-eReader Pop-up Modal"
-msgstr ""
+msgstr "Popup Fenster „An E-Reader senden“ aktivieren"
 
 #: cps/templates/user_edit.html:220
 msgid ""
@@ -6988,15 +6994,17 @@ msgid ""
 "enter extra email addresses and only send to a selection of saved addresses "
 "when sending to eReader."
 msgstr ""
+"Aktiviert oder deaktiviert das „An E-Reader senden“-Popup-Fenster, mit dem "
+"Nutzer, zusätzliche E-Mail-Adressen eingeben können und nur eine Auswahl von "
+"gespeicherten Adressen, beim Senden an den E-Reader verwenden können."
 
 #: cps/templates/user_edit.html:222
-#, fuzzy
 msgid ""
 "When disabled, emails will be sent to all configured eReader addresses "
 "without prompting."
 msgstr ""
-"Wenn aktiviert, werden neu hinzugefügte Bücher automatisch an alle oben "
-"konfigurierten E-Mail-Adressen für eReader gesendet."
+"Wenn diese Option deaktiviert ist, werden E-Mails ohne Rückfrage an alle "
+"konfigurierten E-Reader-Adressen gesendet."
 
 #: cps/templates/user_edit.html:230
 msgid "Automatically send new books to my eReader(s)"

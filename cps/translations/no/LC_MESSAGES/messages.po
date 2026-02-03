@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 13:59+0100\n"
+"POT-Creation-Date: 2026-02-03 11:53+0100\n"
 "PO-Revision-Date: 2023-01-06 11:00+0000\n"
 "Last-Translator: Vegard Fladby <vegard.fladby@gmail.com>\n"
 "Language-Team: \n"
@@ -500,19 +500,19 @@ msgstr "Oppdatering fullført, vennligst trykk OK og last inn siden på nytt"
 msgid "Update failed:"
 msgstr "Oppdatering mislyktes:"
 
-#: cps/admin.py:2010 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
+#: cps/admin.py:2010 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "HTTP-feil"
 
-#: cps/admin.py:2011 cps/updater.py:390 cps/updater.py:627
+#: cps/admin.py:2011 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "Tilkoblingsfeil"
 
-#: cps/admin.py:2012 cps/updater.py:392 cps/updater.py:629
+#: cps/admin.py:2012 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "Tidsavbrudd under etablering av tilkobling"
 
-#: cps/admin.py:2013 cps/updater.py:394 cps/updater.py:631
+#: cps/admin.py:2013 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "Generell feil"
 
@@ -1240,7 +1240,7 @@ msgid "Error editing book: {}"
 msgstr "Feil ved redigering av bok: {}"
 
 #: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
-#: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
+#: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Ukjent"
 
@@ -2088,17 +2088,17 @@ msgstr "avbrutt"
 msgid "Unknown Status"
 msgstr "Ukjent status"
 
-#: cps/updater.py:430 cps/updater.py:441 cps/updater.py:542 cps/updater.py:557
+#: cps/updater.py:436 cps/updater.py:447 cps/updater.py:548 cps/updater.py:563
 msgid "Unexpected data while reading update information"
 msgstr "Uventede data under lesing av oppdateringsinformasjon"
 
-#: cps/updater.py:437 cps/updater.py:549
+#: cps/updater.py:443 cps/updater.py:555
 msgid "No update available. You already have the latest version installed"
 msgstr ""
 "Ingen oppdatering tilgjengelig. Du har allerede den nyeste versjonen "
 "installert"
 
-#: cps/updater.py:456
+#: cps/updater.py:462
 msgid ""
 "A new update is available. Click on the button below to update to the latest "
 "version."
@@ -2106,15 +2106,15 @@ msgstr ""
 "En ny oppdatering er tilgjengelig. Klikk på knappen nedenfor for å oppdatere "
 "til siste versjon."
 
-#: cps/updater.py:473
+#: cps/updater.py:479
 msgid "Could not fetch update information"
 msgstr "Kunne ikke hente oppdateringsinformasjon"
 
-#: cps/updater.py:484
+#: cps/updater.py:490
 msgid "Click on the button below to update to the latest stable version."
 msgstr "Klikk på knappen nedenfor for å oppdatere til siste stabile versjon."
 
-#: cps/updater.py:492 cps/updater.py:506 cps/updater.py:517
+#: cps/updater.py:498 cps/updater.py:512 cps/updater.py:523
 #, python-format
 msgid ""
 "A new update is available. Click on the button below to update to version: "
@@ -2123,7 +2123,7 @@ msgstr ""
 "En ny oppdatering er tilgjengelig. Klikk på knappen nedenfor for å oppdatere "
 "til versjon: %(version)s"
 
-#: cps/updater.py:535
+#: cps/updater.py:541
 msgid "No release information available"
 msgstr "Ingen utgivelsesinformasjon tilgjengelig"
 

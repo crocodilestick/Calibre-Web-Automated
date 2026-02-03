@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 13:59+0100\n"
+"POT-Creation-Date: 2026-02-03 11:53+0100\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -478,19 +478,19 @@ msgstr "업데이트가 완료되었습니다. 확인을 누르고 페이지를 
 msgid "Update failed:"
 msgstr "업데이트 실패: "
 
-#: cps/admin.py:2010 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
+#: cps/admin.py:2010 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "HTTP 오류가 발생했습니다."
 
-#: cps/admin.py:2011 cps/updater.py:390 cps/updater.py:627
+#: cps/admin.py:2011 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "연결 오류가 발생했습니다."
 
-#: cps/admin.py:2012 cps/updater.py:392 cps/updater.py:629
+#: cps/admin.py:2012 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "연결 시도 중 시간이 초과되었습니다."
 
-#: cps/admin.py:2013 cps/updater.py:394 cps/updater.py:631
+#: cps/admin.py:2013 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "일반 오류가 발생했습니다."
 
@@ -1203,7 +1203,7 @@ msgid "Error editing book: {}"
 msgstr "책 편집 중 오류가 발생했습니다: {}"
 
 #: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
-#: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
+#: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "알 수 없음"
 
@@ -2023,30 +2023,30 @@ msgstr "취소됨"
 msgid "Unknown Status"
 msgstr "알 수 없는 상태"
 
-#: cps/updater.py:430 cps/updater.py:441 cps/updater.py:542 cps/updater.py:557
+#: cps/updater.py:436 cps/updater.py:447 cps/updater.py:548 cps/updater.py:563
 msgid "Unexpected data while reading update information"
 msgstr "업데이트 정보를 읽는 중 알 수 없는 문제가 발생했습니다."
 
-#: cps/updater.py:437 cps/updater.py:549
+#: cps/updater.py:443 cps/updater.py:555
 msgid "No update available. You already have the latest version installed"
 msgstr "업데이트가 없습니다. 최신 버전이 설치되어 있습니다."
 
-#: cps/updater.py:456
+#: cps/updater.py:462
 msgid ""
 "A new update is available. Click on the button below to update to the latest "
 "version."
 msgstr ""
 "새로운 업데이트가 있습니다. 아래 버튼을 클릭해 최신 버전으로 업데이트하세요."
 
-#: cps/updater.py:473
+#: cps/updater.py:479
 msgid "Could not fetch update information"
 msgstr "업데이트 정보를 가져올 수 없습니다."
 
-#: cps/updater.py:484
+#: cps/updater.py:490
 msgid "Click on the button below to update to the latest stable version."
 msgstr "아래 버튼을 클릭해 최신 버전으로 업데이트하세요."
 
-#: cps/updater.py:492 cps/updater.py:506 cps/updater.py:517
+#: cps/updater.py:498 cps/updater.py:512 cps/updater.py:523
 #, python-format
 msgid ""
 "A new update is available. Click on the button below to update to version: "
@@ -2055,7 +2055,7 @@ msgstr ""
 "새로운 업데이트가 있습니다. %(version)s으로 업데이트하려면 아래 버튼을 클릭하"
 "세요."
 
-#: cps/updater.py:535
+#: cps/updater.py:541
 msgid "No release information available"
 msgstr "업데이트 정보가 없습니다."
 

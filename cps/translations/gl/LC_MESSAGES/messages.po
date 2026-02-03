@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 13:59+0100\n"
+"POT-Creation-Date: 2026-02-03 11:53+0100\n"
 "PO-Revision-Date: 2022-08-11 16:46+0200\n"
 "Last-Translator: pollitor <pollitor@gmx.com>\n"
 "Language-Team: gl\n"
@@ -507,19 +507,19 @@ msgstr "Actualización finalizada. Por favor, prema OK e recargue a páxina"
 msgid "Update failed:"
 msgstr "A actualización fallou:"
 
-#: cps/admin.py:2010 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
+#: cps/admin.py:2010 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "Erro HTTP"
 
-#: cps/admin.py:2011 cps/updater.py:390 cps/updater.py:627
+#: cps/admin.py:2011 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "Erro de conexión"
 
-#: cps/admin.py:2012 cps/updater.py:392 cps/updater.py:629
+#: cps/admin.py:2012 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "Tempo esgotado mentras se trataba de establecer a conexión"
 
-#: cps/admin.py:2013 cps/updater.py:394 cps/updater.py:631
+#: cps/admin.py:2013 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "Erro xeral"
 
@@ -1250,7 +1250,7 @@ msgid "Error editing book: {}"
 msgstr "Erro editando libro: {}"
 
 #: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
-#: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
+#: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Descoñecido"
 
@@ -2101,15 +2101,15 @@ msgstr "Cancelado"
 msgid "Unknown Status"
 msgstr "Estado descoñecido"
 
-#: cps/updater.py:430 cps/updater.py:441 cps/updater.py:542 cps/updater.py:557
+#: cps/updater.py:436 cps/updater.py:447 cps/updater.py:548 cps/updater.py:563
 msgid "Unexpected data while reading update information"
 msgstr "Dato inesperado mentres líase a información de actualización"
 
-#: cps/updater.py:437 cps/updater.py:549
+#: cps/updater.py:443 cps/updater.py:555
 msgid "No update available. You already have the latest version installed"
 msgstr "Actualización non dispoñiible. Xa tes instalada a versión máis recente"
 
-#: cps/updater.py:456
+#: cps/updater.py:462
 msgid ""
 "A new update is available. Click on the button below to update to the latest "
 "version."
@@ -2117,15 +2117,15 @@ msgstr ""
 "Unha nova actualización está dispoñible. Preme no botón inferior para "
 "actualizar á versión máis reciente."
 
-#: cps/updater.py:473
+#: cps/updater.py:479
 msgid "Could not fetch update information"
 msgstr "Non se pode conseguir información sobre a actualización"
 
-#: cps/updater.py:484
+#: cps/updater.py:490
 msgid "Click on the button below to update to the latest stable version."
 msgstr "Preme no botón de abaixo para actualizar á última versión estable."
 
-#: cps/updater.py:492 cps/updater.py:506 cps/updater.py:517
+#: cps/updater.py:498 cps/updater.py:512 cps/updater.py:523
 #, python-format
 msgid ""
 "A new update is available. Click on the button below to update to version: "
@@ -2134,7 +2134,7 @@ msgstr ""
 "Hai unha nova actualización dispoñible. Preme no botón de abaixo para "
 "actualizar á versión: %(version)s"
 
-#: cps/updater.py:535
+#: cps/updater.py:541
 msgid "No release information available"
 msgstr "Non hai información do lanzamento dispoñible"
 

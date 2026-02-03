@@ -29,10 +29,36 @@ import os
 import sqlite3
 import sys
 from pathlib import Path
+from datetime import datetime, timezone
 
 # Import the centralized partial MD5 calculation function
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
+from cps.progress_syncing.checksums import calculate_koreader_partial_md5, CHECKSUM_VERSION
+from cps.progress_syncing.settings import is_koreader_sync_enabled
+
+
+def _flush_batch(metadata_db: str, batch_rows):
+    if not batch_rows:
+        return
+    try:
+        conn = sqlite3.connect(metadata_db, timeout=30)
+        cur = conn.cursor()
+        cur.executemany(
+            '''
+            INSERT INTO book_format_checksums (book, format, checksum, version, created)
+            SELECT ?, ?, ?, ?, ?
+            WHERE NOT EXISTS (
+                SELECT 1 FROM book_format_checksums
+                WHERE book = ? AND format = ? AND checksum = ?
+            )
+            ''',
+            batch_rows
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
 def generate_checksums(library_path: str, books_path: str = None, force: bool = False, batch_size: int = 100):
     """Generate checksums for all books in the library
 
@@ -42,6 +68,9 @@ def generate_checksums(library_path: str, books_path: str = None, force: bool = 
         force: If True, regenerate checksums even if they exist
         batch_size: Number of books to process before committing
     """
+    if not is_koreader_sync_enabled():
+        print("KOReader sync is disabled; skipping checksum generation.")
+        return
     metadata_db = os.path.join(library_path, 'metadata.db')
 
     if not os.path.exists(metadata_db):
@@ -62,12 +91,11 @@ def generate_checksums(library_path: str, books_path: str = None, force: bool = 
     print()
 
     try:
+        # Read missing formats without holding the DB open during checksum computation
         conn = sqlite3.connect(metadata_db, timeout=30)
         cur = conn.cursor()
 
-        # Get all book formats
         if force:
-            # Get all formats
             query = '''
                 SELECT b.id, b.path, b.title, d.format, d.name
                 FROM books b
@@ -76,7 +104,6 @@ def generate_checksums(library_path: str, books_path: str = None, force: bool = 
             '''
             formats = cur.execute(query).fetchall()
         else:
-            # Only get formats without checksums
             query = '''
                 SELECT b.id, b.path, b.title, d.format, d.name
                 FROM books b
@@ -89,76 +116,63 @@ def generate_checksums(library_path: str, books_path: str = None, force: bool = 
                 ORDER BY b.id
             '''
             formats = cur.execute(query).fetchall()
-
-        total = len(formats)
-
-        if total == 0:
-            print("✓ All books already have checksums!")
-            return
-
-        print(f"Found {total} book format(s) to process\n")
-
-        processed = 0
-        success = 0
-        failed = 0
-        skipped = 0
-
-        for book_id, book_path, title, format_ext, format_name in formats:
-            processed += 1
-
-            # Construct full file path
-            file_path = os.path.join(base_path, book_path, f"{format_name}.{format_ext.lower()}")
-
-            if not os.path.exists(file_path):
-                print(f"[{processed}/{total}] SKIP: File not found - {title} ({format_ext})")
-                skipped += 1
-                continue
-
-            # Generate checksum
-            checksum = calculate_koreader_partial_md5(file_path)
-
-            if checksum:
-                # Store in database using centralized manager function
-                success_stored = store_checksum(
-                    book_id=book_id,
-                    book_format=format_ext.upper(),
-                    checksum=checksum,
-                    version=CHECKSUM_VERSION,
-                    db_connection=conn
-                )
-
-                if success_stored:
-                    print(f"[{processed}/{total}] ✓ {title} ({format_ext}): {checksum} (v{CHECKSUM_VERSION})")
-                    success += 1
-
-                    # Commit periodically
-                    if success % batch_size == 0:
-                        conn.commit()
-                        print(f"  → Committed {success} checksums to database")
-                else:
-                    print(f"[{processed}/{total}] ERROR: Failed to store checksum for {title} ({format_ext})")
-                    failed += 1
-            else:
-                print(f"[{processed}/{total}] FAIL: Could not generate checksum - {title} ({format_ext})")
-                failed += 1
-
-        # Final commit
-        conn.commit()
-
-        print()
-        print("=" * 60)
-        print("Summary:")
-        print(f"  Total processed: {processed}")
-        print(f"  Success:         {success}")
-        print(f"  Failed:          {failed}")
-        print(f"  Skipped:         {skipped}")
-        print("=" * 60)
-
     except sqlite3.Error as e:
         print(f"ERROR: Database error: {e}")
         sys.exit(1)
     finally:
         conn.close()
+
+    total = len(formats)
+
+    if total == 0:
+        print("✓ All books already have checksums!")
+        return
+
+    print(f"Found {total} book format(s) to process\n")
+
+    processed = 0
+    queued = 0
+    failed = 0
+    skipped = 0
+    batch_rows = []
+
+    for book_id, book_path, title, format_ext, format_name in formats:
+        processed += 1
+
+        file_path = os.path.join(base_path, book_path, f"{format_name}.{format_ext.lower()}")
+
+        if not os.path.exists(file_path):
+            print(f"[{processed}/{total}] SKIP: File not found - {title} ({format_ext})")
+            skipped += 1
+            continue
+
+        checksum = calculate_koreader_partial_md5(file_path)
+
+        if checksum:
+            created = datetime.now(timezone.utc).isoformat()
+            fmt = format_ext.upper()
+            batch_rows.append((book_id, fmt, checksum, CHECKSUM_VERSION, created, book_id, fmt, checksum))
+            queued += 1
+
+            if queued % batch_size == 0:
+                _flush_batch(metadata_db, batch_rows)
+                batch_rows = []
+                print(f"  → Committed {queued} checksums to database")
+        else:
+            print(f"[{processed}/{total}] FAIL: Could not generate checksum - {title} ({format_ext})")
+            failed += 1
+
+    if batch_rows:
+        _flush_batch(metadata_db, batch_rows)
+
+    print()
+    print("=" * 60)
+    print("Summary:")
+    print(f"  Total processed: {processed}")
+    print(f"  Queued:          {queued}")
+    print(f"  Failed:          {failed}")
+    print(f"  Skipped:         {skipped}")
+    print("=" * 60)
 
 
 def get_books_path():

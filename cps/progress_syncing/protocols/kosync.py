@@ -49,6 +49,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from ... import logger, ub, csrf, config, constants, services, usermanagement
 from ...render_template import render_title_template
 from ..models import KOSyncProgress
+from ..settings import is_koreader_sync_enabled
 
 log = logger.create()
 
@@ -75,6 +76,15 @@ MAX_DOCUMENT_LENGTH = 255  # Maximum document identifier length
 MAX_PROGRESS_LENGTH = 255  # Maximum progress string length
 MAX_DEVICE_LENGTH = 100    # Maximum device name length
 MAX_DEVICE_ID_LENGTH = 100 # Maximum device ID length
+
+
+def _require_kosync_enabled():
+    if not is_koreader_sync_enabled():
+        return create_sync_response({
+            "error": ERROR_NO_STORAGE,
+            "message": "KOReader sync is disabled"
+        }, 503)
+    return None
 
 
 class KOSyncError(Exception):
@@ -442,7 +452,8 @@ def kosync_plugin_page():
     return render_title_template(
         "kosync_plugin.html",
         title=_("KOReader Sync Plugin"),
-        page="cwa-kosync"
+        page="cwa-kosync",
+        kosync_enabled=is_koreader_sync_enabled()
     )
 
 
@@ -463,6 +474,10 @@ def auth_user():
         Rate limiting should be applied at reverse proxy level to prevent
         brute force attacks (suggested: 10 requests per minute per IP).
     """
+    blocked = _require_kosync_enabled()
+    if blocked:
+        return blocked
+
     user = authenticate_user()
     if user:
         return create_sync_response({"authorized": "OK"})
@@ -508,6 +523,10 @@ def get_progress(document: str):
         Internally stored as percentage (0-100) in database.
     """
     try:
+        blocked = _require_kosync_enabled()
+        if blocked:
+            return blocked
+
         user = authenticate_user()
         if not user:
             raise KOSyncError(ERROR_UNAUTHORIZED_USER, "Unauthorized")
@@ -598,6 +617,10 @@ def update_progress():
         Percentage is converted from decimal (0.9411 = 94.11%) to percentage (94.11).
     """
     try:
+        blocked = _require_kosync_enabled()
+        if blocked:
+            return blocked
+
         user = authenticate_user()
         if not user:
             raise KOSyncError(ERROR_UNAUTHORIZED_USER, "Unauthorized")

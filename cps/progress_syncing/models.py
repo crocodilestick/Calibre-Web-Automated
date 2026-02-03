@@ -15,6 +15,7 @@ Handles database tables for progress syncing functionality:
 """
 
 from datetime import datetime, timezone
+import time
 from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, Float, text
 
 from .. import logger
@@ -22,6 +23,32 @@ from ..db import Base as CalibreBase  # For metadata.db tables (books)
 from ..ub import Base as AppBase  # For app.db tables (users)
 
 log = logger.create()
+
+
+def _execute_sql_with_retry(conn, sql, is_sqlalchemy, retries=5, base_delay=0.25):
+    last_error = None
+    for attempt in range(retries):
+        try:
+            if is_sqlalchemy:
+                conn.execute(text("PRAGMA busy_timeout=5000"))
+                return conn.execute(text(sql))
+            conn.execute("PRAGMA busy_timeout=5000")
+            return conn.execute(sql)
+        except Exception as e:
+            last_error = e
+            if "database is locked" in str(e).lower() and attempt < retries - 1:
+                if attempt == 0:
+                    log.warning(
+                        "Database is locked while initializing KOReader sync tables. "
+                        "Retrying with busy_timeout; this can happen during startup/backfill or other writers. "
+                        "To stop KOReader checksum backfill, disable it in CWA Settings and restart the container."
+                    )
+                time.sleep(base_delay * (2 ** attempt))
+                continue
+            raise
+    if last_error:
+        raise last_error
+    return None
 
 
 def check_cascade_delete_on_fk(conn, table_name, expected_cascades, db_name=None):
@@ -138,11 +165,8 @@ def ensure_checksum_table(conn):
         is_sqlalchemy = hasattr(conn, 'execute') and hasattr(conn.execute.__self__, 'dialect')
 
         def execute_sql(sql):
-            """Execute SQL with appropriate wrapper based on connection type."""
-            if is_sqlalchemy:
-                return conn.execute(text(sql))
-            else:
-                return conn.execute(sql)
+            """Execute SQL with retries on database locks."""
+            return _execute_sql_with_retry(conn, sql, is_sqlalchemy)
 
         # Check if 'calibre' database is attached (Calibre-Web architecture)
         is_calibre_attached = False
@@ -252,6 +276,12 @@ def ensure_checksum_table(conn):
 
     except Exception as e:
         log.error(f"Could not create book_format_checksums table: {e}")
+        if "database is locked" in str(e).lower():
+            log.warning(
+                "metadata.db is locked while creating KOReader checksum tables. "
+                "If KOReader sync is enabled, startup checksum backfill may be running (or another writer holds the lock). "
+                "To stop KOReader checksum backfill, disable it in CWA Settings and restart the container."
+            )
         import traceback
         log.error(traceback.format_exc())
 
@@ -274,11 +304,8 @@ def ensure_kosync_progress_table(conn):
         is_sqlalchemy = hasattr(conn, 'execute') and hasattr(conn.execute.__self__, 'dialect')
 
         def execute_sql(sql):
-            """Execute SQL with appropriate wrapper based on connection type."""
-            if is_sqlalchemy:
-                return conn.execute(text(sql))
-            else:
-                return conn.execute(sql)
+            """Execute SQL with retries on database locks."""
+            return _execute_sql_with_retry(conn, sql, is_sqlalchemy)
 
         # Check if table exists
         result = execute_sql("SELECT name FROM sqlite_master WHERE type='table' AND name='kosync_progress'")
@@ -366,6 +393,11 @@ def ensure_kosync_progress_table(conn):
 
     except Exception as e:
         log.error(f"Could not create kosync_progress table: {e}")
+        if "database is locked" in str(e).lower():
+            log.warning(
+                "app.db is locked while creating KOReader progress tables. "
+                "A restart may be required if another writer is holding a lock."
+            )
         import traceback
         log.error(traceback.format_exc())
 

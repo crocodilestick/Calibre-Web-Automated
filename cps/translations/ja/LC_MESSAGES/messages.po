@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-03 13:41+0100\n"
+"POT-Creation-Date: 2026-02-03 15:19+0100\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -27,243 +27,243 @@ msgstr "統計"
 msgid "Calibre database unavailable. Please reconfigure the library path."
 msgstr ""
 
-#: cps/admin.py:179
+#: cps/admin.py:180
 msgid "Server restarted, please reload page."
 msgstr "サーバーを再起動しました。ページを再読み込みしてください。"
 
-#: cps/admin.py:181
+#: cps/admin.py:182
 msgid "Performing Server shutdown, please close window."
 msgstr "サーバーをシャットダウンしています。ウィンドウを閉じてください。"
 
-#: cps/admin.py:189
+#: cps/admin.py:190
 msgid "Success! Database Reconnected"
 msgstr "成功！データベースに再接続しました"
 
-#: cps/admin.py:192
+#: cps/admin.py:193
 msgid "Unknown command"
 msgstr "不明なコマンド"
 
-#: cps/admin.py:203
+#: cps/admin.py:204
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
 "成功！書籍がメタデータバックアップのキューに追加されました。結果はタスクを確"
 "認してください"
 
-#: cps/admin.py:223
+#: cps/admin.py:224
 msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
 msgstr ""
 
-#: cps/admin.py:251
+#: cps/admin.py:252
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
 msgstr ""
 
-#: cps/admin.py:256
+#: cps/admin.py:257
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
 msgstr ""
 
-#: cps/admin.py:295 cps/templates/admin.html:223
+#: cps/admin.py:296 cps/templates/admin.html:223
 msgid "Review Hardcover Matches"
 msgstr ""
 
-#: cps/admin.py:302
+#: cps/admin.py:303
 #, python-format
 msgid "Error loading review queue: %(error)s"
 msgstr ""
 
-#: cps/admin.py:383
+#: cps/admin.py:384
 #, fuzzy
 msgid "Hardcover ID applied successfully"
 msgstr "{}人のユーザーが削除されました"
 
-#: cps/admin.py:400
+#: cps/admin.py:401
 #, python-format
 msgid "Match %(action)s"
 msgstr ""
 
-#: cps/admin.py:438
+#: cps/admin.py:439
 msgid "No pending matches to reject"
 msgstr ""
 
-#: cps/admin.py:444
+#: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
 msgstr ""
 
-#: cps/admin.py:481
+#: cps/admin.py:482
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
 msgstr ""
 
-#: cps/admin.py:483
+#: cps/admin.py:484
 msgid "No books with covers found to process."
 msgstr ""
 
-#: cps/admin.py:495
+#: cps/admin.py:496
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
 msgstr ""
 
-#: cps/admin.py:537
+#: cps/admin.py:538
 msgid "Admin page"
 msgstr "管理者ページ"
 
-#: cps/admin.py:557
+#: cps/admin.py:558
 msgid "Basic Configuration"
 msgstr "基本設定"
 
-#: cps/admin.py:595
+#: cps/admin.py:596
 msgid "UI Configuration"
 msgstr "UI設定"
 
-#: cps/admin.py:619 cps/admin.py:1301 cps/db.py:967 cps/search.py:153
+#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:967 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "カスタムカラムの%(column)d列目がcalibreのDBに存在しません"
 
-#: cps/admin.py:637 cps/templates/admin.html:55
+#: cps/admin.py:638 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "ユーザーを編集"
 
-#: cps/admin.py:681 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "全て"
 
-#: cps/admin.py:708 cps/admin.py:1856
+#: cps/admin.py:709 cps/admin.py:1893
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
 
-#: cps/admin.py:722
+#: cps/admin.py:723
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{}人のユーザーが削除されました"
 
-#: cps/admin.py:745 cps/templates/config_view_edit.html:170
-#: cps/templates/user_edit.html:253 cps/templates/user_edit.html:276
+#: cps/admin.py:746 cps/templates/config_view_edit.html:169
+#: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "全て表示"
 
-#: cps/admin.py:766 cps/admin.py:772
+#: cps/admin.py:767 cps/admin.py:773
 msgid "Malformed request"
 msgstr "不正なリクエスト"
 
-#: cps/admin.py:784 cps/admin.py:2711
+#: cps/admin.py:785 cps/admin.py:2786
 msgid "Guest Name can't be changed"
 msgstr "ゲストユーザーの名前は変更できません"
 
-#: cps/admin.py:798
+#: cps/admin.py:799
 msgid "Guest can't have this role"
 msgstr "ゲストユーザーはこのロールを持つことができません"
 
-#: cps/admin.py:810 cps/admin.py:2569
+#: cps/admin.py:811 cps/admin.py:2611
 msgid "No admin user remaining, can't remove admin role"
 msgstr "管理者ユーザーが残っておらず、管理者ロールを削除できません"
 
-#: cps/admin.py:814 cps/admin.py:828
+#: cps/admin.py:815 cps/admin.py:829
 msgid "Value has to be true or false"
 msgstr "値はtrueかfalseのどちらかでなければなりません"
 
-#: cps/admin.py:816
+#: cps/admin.py:817
 msgid "Invalid role"
 msgstr "無効なロール"
 
-#: cps/admin.py:820
+#: cps/admin.py:821
 msgid "Guest can't have this view"
 msgstr "ゲストユーザーはこの画面を表示できません"
 
-#: cps/admin.py:830
+#: cps/admin.py:831
 msgid "Invalid view"
 msgstr "無効な表示"
 
-#: cps/admin.py:833
+#: cps/admin.py:834
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr ""
 "ゲストユーザーの言語設定は自動的に決定されるため、固定することはできません"
 
-#: cps/admin.py:837
+#: cps/admin.py:838
 msgid "No Valid Locale Given"
 msgstr "有効な言語設定がありません"
 
-#: cps/admin.py:848
+#: cps/admin.py:849
 msgid "No Valid Book Language Given"
 msgstr "有効な本の言語がありません"
 
-#: cps/admin.py:850 cps/editbooks.py:587
+#: cps/admin.py:851 cps/editbooks.py:587
 msgid "Parameter not found"
 msgstr "パラメータが見つかりません"
 
-#: cps/admin.py:887
+#: cps/admin.py:888
 msgid "Invalid Read Column"
 msgstr "無効な読み取り列"
 
-#: cps/admin.py:893
+#: cps/admin.py:894
 msgid "Invalid Restricted Column"
 msgstr "無効な制限列"
 
-#: cps/admin.py:913 cps/admin.py:2418
+#: cps/admin.py:914 cps/admin.py:2459
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Calibre-Web Automatedの設定を更新しました"
 
-#: cps/admin.py:925
+#: cps/admin.py:926
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Koboのトークンを削除してもよろしいですか？"
 
-#: cps/admin.py:927
+#: cps/admin.py:928
 msgid "Do you really want to delete this domain?"
 msgstr "このドメインを削除してもよろしいですか？"
 
-#: cps/admin.py:929
+#: cps/admin.py:930
 msgid "Do you really want to delete this user?"
 msgstr "このユーザーを削除してもよろしいですか？"
 
-#: cps/admin.py:931
+#: cps/admin.py:932
 msgid "Are you sure you want to delete this shelf?"
 msgstr "この本棚を削除してもよろしいですか？"
 
-#: cps/admin.py:933
+#: cps/admin.py:934
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr "選択したユーザーの言語設定を変更してもよろしいですか？"
 
-#: cps/admin.py:935
+#: cps/admin.py:936
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr "選択したユーザーが表示できる本の言語を変更してもよろしいですか？"
 
-#: cps/admin.py:937
+#: cps/admin.py:938
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr "選択したユーザーの選択したロールを変更してもよろしいですか？"
 
-#: cps/admin.py:939
+#: cps/admin.py:940
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
 msgstr "選択したユーザーの選択した制限を変更してもよろしいですか？"
 
-#: cps/admin.py:941
+#: cps/admin.py:942
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
 msgstr "選択したユーザーの選択した表示制限を変更してもよろしいですか？"
 
-#: cps/admin.py:944
+#: cps/admin.py:945
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr "選択したユーザーの本棚同期の動作を変更してもよろしいですか？"
 
-#: cps/admin.py:946
+#: cps/admin.py:947
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Calibreライブラリのパスを変更してもよろしいですか？"
 
-#: cps/admin.py:948
+#: cps/admin.py:949
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
@@ -271,7 +271,7 @@ msgstr ""
 "Calibre-Web Automatedは更新されたカバーを検索し、カバーサムネイルを更新しま"
 "す。しばらくお待ちください。"
 
-#: cps/admin.py:951
+#: cps/admin.py:952
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
@@ -279,83 +279,83 @@ msgstr ""
 "Calibre-Web Automatedの同期データベースを削除してKoboリーダーとの完全同期を強"
 "制しますか？"
 
-#: cps/admin.py:1190 cps/admin.py:1196 cps/admin.py:1206 cps/admin.py:1216
+#: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "拒否"
 
-#: cps/admin.py:1192 cps/admin.py:1198 cps/admin.py:1208 cps/admin.py:1218
+#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "許可"
 
-#: cps/admin.py:1251
+#: cps/admin.py:1252
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{}件の同期項目を削除しました"
 
-#: cps/admin.py:1292
+#: cps/admin.py:1293
 msgid "Tag not found"
 msgstr "タグが見つかりません"
 
-#: cps/admin.py:1310
+#: cps/admin.py:1311
 msgid "Invalid Action"
 msgstr "無効なアクションです"
 
-#: cps/admin.py:1437
+#: cps/admin.py:1438
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.jsonがWebアプリケーション用に設定されていません"
 
-#: cps/admin.py:1576
+#: cps/admin.py:1577
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "ログファイルの場所が無効です。正しいパスを入力してください"
 
-#: cps/admin.py:1582
+#: cps/admin.py:1583
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "アクセスログファイルの場所が無効です。正しいパスを入力してください"
 
-#: cps/admin.py:1617
+#: cps/admin.py:1618
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "LDAPのプロバイダ、ポート番号、DN、ユーザーIDを入力してください"
 
-#: cps/admin.py:1623
+#: cps/admin.py:1624
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "LDAPのサービスアカウント名とパスワードを入力してください"
 
-#: cps/admin.py:1626
+#: cps/admin.py:1627
 msgid "Please Enter a LDAP Service Account"
 msgstr "LDAPのサービスアカウント名を入力してください"
 
-#: cps/admin.py:1631
+#: cps/admin.py:1632
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAPのグループフィルタには \"%s\" というフォーマットのIDが一つ必要です"
 
-#: cps/admin.py:1633
+#: cps/admin.py:1634
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAPのグループフィルタ内の括弧が一致しません"
 
-#: cps/admin.py:1637
+#: cps/admin.py:1638
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAPのユーザーフィルタには \"%s\" というフォーマットのIDが一つ必要です"
 
-#: cps/admin.py:1639
+#: cps/admin.py:1640
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAPのユーザーフィルタ内の括弧が一致しません"
 
-#: cps/admin.py:1646
+#: cps/admin.py:1647
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAPのメンバーフィルタには \"%s\" というフォーマットのIDが一つ必要です"
 
-#: cps/admin.py:1648
+#: cps/admin.py:1649
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "LDAPのメンバーフィルタ内の括弧が一致しません"
 
-#: cps/admin.py:1655
+#: cps/admin.py:1656
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -363,28 +363,28 @@ msgstr ""
 "LDAP CA証明書、証明書、またはキーの場所が無効です。正しいパスを入力してくださ"
 "いLDAPのCA証明書、証明書、キーの場所が無効です。正しいパスを入力してください"
 
-#: cps/admin.py:1687 cps/templates/admin.html:57
+#: cps/admin.py:1689 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "新規ユーザーを追加"
 
-#: cps/admin.py:1699 cps/templates/admin.html:105
+#: cps/admin.py:1704 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "メールサーバー設定を編集"
 
-#: cps/admin.py:1718
+#: cps/admin.py:1723
 msgid "Success! Gmail Account Verified."
 msgstr "成功！Gmailアカウントが確認されました。"
 
-#: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
-#: cps/admin.py:2514 cps/admin.py:2750 cps/editbooks.py:1033
+#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1033
 #: cps/editbooks.py:1799 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
-#: cps/tasks/convert.py:145 cps/web.py:2623
+#: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "DBエラー: %(error)s"
 
-#: cps/admin.py:1748
+#: cps/admin.py:1753
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
@@ -393,358 +393,358 @@ msgstr ""
 "てください%(email)s へのテストメール送信がキューに追加されました。結果を見る"
 "にはタスクを確認してください"
 
-#: cps/admin.py:1751
+#: cps/admin.py:1756
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "%(res)s へのテストメール送信中にエラーが発生しました"
 
-#: cps/admin.py:1753
+#: cps/admin.py:1758
 msgid "Please configure your e-mail address first..."
 msgstr "初めにメールアドレスを設定してください"
 
-#: cps/admin.py:1755
+#: cps/admin.py:1760
 msgid "Email Server Settings updated"
 msgstr "メールサーバーの設定を更新しました"
 
-#: cps/admin.py:1778 cps/templates/admin.html:201
+#: cps/admin.py:1783 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "スケジュールタスク設定を編集"
 
-#: cps/admin.py:1790
+#: cps/admin.py:1795
 msgid "Invalid start time for task specified"
 msgstr "指定したタスクの開始時刻が無効です"
 
-#: cps/admin.py:1795
+#: cps/admin.py:1800
 msgid "Invalid duration for task specified"
 msgstr "指定したタスクの期間が無効です"
 
-#: cps/admin.py:1805
+#: cps/admin.py:1810
 msgid "Scheduled tasks settings updated"
 msgstr "スケジュールタスクの設定を更新しました"
 
-#: cps/admin.py:1815 cps/admin.py:1923 cps/admin.py:2746 cps/web.py:2109
+#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "不明なエラーが発生しました。あとで再試行してください。"
 
-#: cps/admin.py:1819
+#: cps/admin.py:1824
 msgid "Settings DB is not Writeable"
 msgstr "設定DBが書き込みできません"
 
-#: cps/admin.py:1838 cps/opds.py:199 cps/web.py:2572 cps/web.py:2674
+#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
 #, fuzzy
 msgid "title"
 msgstr "タイトル"
 
-#: cps/admin.py:1908 cps/admin.py:2738
+#: cps/admin.py:1949 cps/admin.py:2817
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "ユーザー %(nick)s を編集"
 
-#: cps/admin.py:1920
+#: cps/admin.py:1961
 #, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "成功！ユーザー %(user)s のパスワードをリセットしました"
 
-#: cps/admin.py:1926
+#: cps/admin.py:1967
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "SMTPメール設定を行ってください。"
 
-#: cps/admin.py:1937
+#: cps/admin.py:1978
 msgid "Logfile viewer"
 msgstr "ログファイルビューア"
 
-#: cps/admin.py:2003
+#: cps/admin.py:2044
 msgid "Requesting update package"
 msgstr "更新データを要求中"
 
-#: cps/admin.py:2004
+#: cps/admin.py:2045
 msgid "Downloading update package"
 msgstr "更新データをダウンロード中"
 
-#: cps/admin.py:2005
+#: cps/admin.py:2046
 msgid "Unzipping update package"
 msgstr "更新データを展開中"
 
-#: cps/admin.py:2006
+#: cps/admin.py:2047
 msgid "Replacing files"
 msgstr "ファイルを置換中"
 
-#: cps/admin.py:2007
+#: cps/admin.py:2048
 msgid "Database connections are closed"
 msgstr "DB接続を切断"
 
-#: cps/admin.py:2008
+#: cps/admin.py:2049
 msgid "Stopping server"
 msgstr "サーバー停止中"
 
-#: cps/admin.py:2009
+#: cps/admin.py:2050
 msgid "Update finished, please press okay and reload page"
 msgstr "アップデート完了、OKを押してページを再読み込みしてください"
 
-#: cps/admin.py:2010 cps/admin.py:2011 cps/admin.py:2012 cps/admin.py:2013
-#: cps/admin.py:2014 cps/admin.py:2015
+#: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
+#: cps/admin.py:2055 cps/admin.py:2056
 msgid "Update failed:"
 msgstr "アップデート失敗:"
 
-#: cps/admin.py:2010 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
+#: cps/admin.py:2051 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "HTTPエラー"
 
-#: cps/admin.py:2011 cps/updater.py:396 cps/updater.py:633
+#: cps/admin.py:2052 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "接続エラー"
 
-#: cps/admin.py:2012 cps/updater.py:398 cps/updater.py:635
+#: cps/admin.py:2053 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "接続確立中にタイムアウトしました"
 
-#: cps/admin.py:2013 cps/updater.py:400 cps/updater.py:637
+#: cps/admin.py:2054 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "エラー発生"
 
-#: cps/admin.py:2014
+#: cps/admin.py:2055
 msgid "Update file could not be saved in temp dir"
 msgstr "更新データを一時フォルダに保存できませんでした"
 
-#: cps/admin.py:2015
+#: cps/admin.py:2056
 msgid "Files could not be replaced during update"
 msgstr "更新中にファイルを置換できませんでした"
 
-#: cps/admin.py:2039
+#: cps/admin.py:2080
 msgid "Failed to extract at least One LDAP User"
 msgstr "少なくとも1人のLDAPユーザーの抽出に失敗しました"
 
-#: cps/admin.py:2084
+#: cps/admin.py:2125
 msgid "Failed to Create at Least One LDAP User"
 msgstr "少なくとも1人のLDAPユーザーの作成に失敗しました"
 
-#: cps/admin.py:2097
+#: cps/admin.py:2138
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "エラー: %(ldaperror)s"
 
-#: cps/admin.py:2101
+#: cps/admin.py:2142
 msgid "Error: No user returned in response of LDAP server"
 msgstr "エラー: LDAPサーバーのレスポンスでユーザーが返されません"
 
-#: cps/admin.py:2137
+#: cps/admin.py:2178
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "DB内にLDAPユーザーが1人も見つかりません"
 
-#: cps/admin.py:2139
+#: cps/admin.py:2180
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{}人のユーザーをインポートしました"
 
-#: cps/admin.py:2203
+#: cps/admin.py:2244
 msgid "Books path not valid"
 msgstr "書籍パスが無効です"
 
-#: cps/admin.py:2210
+#: cps/admin.py:2251
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "DBの場所が無効です。正しいパスを入力してください"
 
-#: cps/admin.py:2238
+#: cps/admin.py:2279
 msgid "DB is not Writeable"
 msgstr "DBへの書き込みができません"
 
-#: cps/admin.py:2251
+#: cps/admin.py:2292
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "キーファイルの場所が無効です。正しいパスを入力してください"
 
-#: cps/admin.py:2255
+#: cps/admin.py:2296
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "証明書ファイルの場所が無効です。正しいパスを入力してください"
 
-#: cps/admin.py:2324
+#: cps/admin.py:2365
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
 
-#: cps/admin.py:2327
+#: cps/admin.py:2368
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 
-#: cps/admin.py:2346 cps/admin.py:2353
+#: cps/admin.py:2387 cps/admin.py:2394
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2350
+#: cps/admin.py:2391
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2385
+#: cps/admin.py:2426
 msgid "Password length has to be between 1 and 40"
 msgstr "パスワードの長さは1〜40文字である必要があります"
 
-#: cps/admin.py:2445
+#: cps/admin.py:2486
 msgid "Database Settings updated"
 msgstr "DB設定を更新しました"
 
-#: cps/admin.py:2453
+#: cps/admin.py:2494
 msgid "Database Configuration"
 msgstr "DB設定"
 
-#: cps/admin.py:2474 cps/web.py:2078
+#: cps/admin.py:2514 cps/web.py:2078
 msgid "Oops! Please complete all fields."
 msgstr "全ての項目を入力してください"
 
-#: cps/admin.py:2483
+#: cps/admin.py:2523
 msgid "E-mail is not from valid domain"
 msgstr "このメールは有効なドメインからのものではありません"
 
-#: cps/admin.py:2490
+#: cps/admin.py:2531
 msgid "Add new user"
 msgstr "新規ユーザー追加"
 
-#: cps/admin.py:2504
+#: cps/admin.py:2548
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "ユーザー '%(user)s' を作成しました"
 
-#: cps/admin.py:2510
+#: cps/admin.py:2554
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
 "このメールアドレスかニックネームで登録されたアカウントがすでに存在します。"
 
-#: cps/admin.py:2540
+#: cps/admin.py:2584
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "ユーザー '%(nick)s' を削除しました"
 
-#: cps/admin.py:2543
+#: cps/admin.py:2587
 msgid "Can't delete Guest User"
 msgstr "ゲストユーザーは削除できません"
 
-#: cps/admin.py:2546
+#: cps/admin.py:2590
 msgid "No admin user remaining, can't delete user"
 msgstr "管理者ユーザーが残っておらず、ユーザーを削除できません"
 
-#: cps/admin.py:2705 cps/web.py:2413
+#: cps/admin.py:2780 cps/web.py:2413
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "メールアドレスは空欄にできず、有効なメールアドレスである必要があります"
 
-#: cps/admin.py:2742
+#: cps/admin.py:2821
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "ユーザー '%(nick)s' を更新しました"
 
-#: cps/admin.py:2807
+#: cps/admin.py:2886
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2812
+#: cps/admin.py:2891
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2814 cps/admin.py:2871
+#: cps/admin.py:2893 cps/admin.py:2950
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "接続失敗：サーバーがステータスコード %(code)s を返しました"
 
-#: cps/admin.py:2816
+#: cps/admin.py:2895
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr ""
 
-#: cps/admin.py:2818
+#: cps/admin.py:2897
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 
-#: cps/admin.py:2820
+#: cps/admin.py:2899
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr ""
 
-#: cps/admin.py:2823
+#: cps/admin.py:2902
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "接続エラー"
 
-#: cps/admin.py:2849
+#: cps/admin.py:2928
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr ""
 
-#: cps/admin.py:2860
+#: cps/admin.py:2939
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 
-#: cps/admin.py:2862
+#: cps/admin.py:2941
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "リリース情報がありません"
 
-#: cps/admin.py:2864
+#: cps/admin.py:2943
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2869
+#: cps/admin.py:2948
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:2873
+#: cps/admin.py:2952
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr ""
 
-#: cps/admin.py:2875
+#: cps/admin.py:2954
 msgid "Connection failed: Request timed out."
 msgstr "接続失敗：リクエストがタイムアウトしました。"
 
-#: cps/admin.py:2877
+#: cps/admin.py:2956
 msgid "Connection failed: Invalid JSON in response."
 msgstr "接続失敗：レスポンスに無効なJSONが含まれています。"
 
-#: cps/admin.py:2880
+#: cps/admin.py:2959
 msgid "An unknown error occurred."
 msgstr "不明なエラーが発生しました。"
 
-#: cps/admin.py:2892
+#: cps/admin.py:2971
 msgid "Restore already in progress."
 msgstr ""
 
-#: cps/admin.py:2896
+#: cps/admin.py:2975
 msgid "Restore failed: Calibre library path is not configured."
 msgstr ""
 
-#: cps/admin.py:2901
+#: cps/admin.py:2980
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:2906
+#: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:2978 cps/admin.py:3018
+#: cps/admin.py:3057 cps/admin.py:3097
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr ""
 
-#: cps/admin.py:2995
+#: cps/admin.py:3074
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 
-#: cps/admin.py:3014
+#: cps/admin.py:3093
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1080,8 +1080,8 @@ msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA プロフィール画像管理（開発中）"
 
 #: cps/db.py:1240 cps/templates/config_edit.html:294
-#: cps/templates/config_view_edit.html:80
-#: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
+#: cps/templates/config_view_edit.html:79
+#: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
 #: cps/web.py:1599 cps/web.py:1636 cps/web.py:1687 cps/web.py:1719
 #: cps/web.py:1758
@@ -1178,8 +1178,8 @@ msgstr ""
 msgid "File to be uploaded must have an extension"
 msgstr "アップロードするファイルには拡張子が必要です"
 
-#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2712
-#: cps/web.py:2803 cps/web.py:2888
+#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2790
+#: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "選択した本は利用できません。ファイルが存在しないか、アクセスできません"
@@ -1570,26 +1570,26 @@ msgid ""
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:316 cps/oauth_bb.py:563
+#: cps/oauth_bb.py:316 cps/oauth_bb.py:560
 msgid "Failed to link OAuth account. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:534
+#: cps/oauth_bb.py:531
 msgid ""
 "OAuth error: Provider returned invalid user information. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:547 cps/remotelogin.py:149
+#: cps/oauth_bb.py:544 cps/remotelogin.py:149
 #, python-format
 msgid "Success! You are now logged in as: %(nickname)s"
 msgstr "%(nickname)s としてログイン中"
 
-#: cps/oauth_bb.py:557
+#: cps/oauth_bb.py:554
 #, python-format
 msgid "Link to %(oauth)s Succeeded"
 msgstr "%(oauth)s との連携に成功しました"
 
-#: cps/oauth_bb.py:565
+#: cps/oauth_bb.py:562
 #, python-format
 msgid ""
 "Login failed: No user account is linked to your %(provider)s account. Please "
@@ -1597,86 +1597,86 @@ msgid ""
 "account."
 msgstr ""
 
-#: cps/oauth_bb.py:573
+#: cps/oauth_bb.py:570
 msgid "OAuth authentication failed. Please try again or contact administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:577
+#: cps/oauth_bb.py:574
 #, fuzzy
 msgid "OAuth system error. Please contact administrator."
 msgstr "メールサーバーが設定されていません。管理者に連絡してください"
 
-#: cps/oauth_bb.py:610
+#: cps/oauth_bb.py:607
 #, python-format
 msgid "Unlink to %(oauth)s Succeeded"
 msgstr "%(oauth)s との連携解除に成功しました"
 
-#: cps/oauth_bb.py:615
+#: cps/oauth_bb.py:612
 #, python-format
 msgid "Unlink to %(oauth)s Failed"
 msgstr "%(oauth)s との連携解除に失敗しました"
 
-#: cps/oauth_bb.py:618
+#: cps/oauth_bb.py:615
 #, python-format
 msgid "Not Linked to %(oauth)s"
 msgstr "%(oauth)s と連携していません"
 
-#: cps/oauth_bb.py:823
+#: cps/oauth_bb.py:820
 msgid "Failed to log in with GitHub."
 msgstr "GitHubアカウントでのログインに失敗しました。"
 
-#: cps/oauth_bb.py:829
+#: cps/oauth_bb.py:826
 msgid "Failed to fetch user info from GitHub."
 msgstr "GitHubからのユーザー情報取得に失敗しました。"
 
-#: cps/oauth_bb.py:850
+#: cps/oauth_bb.py:847
 msgid "Failed to log in with Google."
 msgstr "Googleアカウントでのログインに失敗しました。"
 
-#: cps/oauth_bb.py:859
+#: cps/oauth_bb.py:856
 msgid "Failed to fetch user info from Google."
 msgstr "Googleからのユーザー情報取得に失敗しました。"
 
-#: cps/oauth_bb.py:884
+#: cps/oauth_bb.py:881
 msgid "Failed to log in with Generic OAuth."
 msgstr "汎用OAuthでのログインに失敗しました。"
 
-#: cps/oauth_bb.py:900
+#: cps/oauth_bb.py:897
 msgid "OAuth authentication failed: Token validation error. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:904
+#: cps/oauth_bb.py:901
 msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:912 cps/oauth_bb.py:930 cps/oauth_bb.py:948
+#: cps/oauth_bb.py:909 cps/oauth_bb.py:927 cps/oauth_bb.py:945
 msgid ""
 "OAuth error: Invalid redirect URI. If you're experiencing this error "
 "repeatedly, please configure the 'OAuth Redirect Host' setting in Admin > "
 "Basic Configuration > OAuth."
 msgstr ""
 
-#: cps/oauth_bb.py:984
+#: cps/oauth_bb.py:981
 msgid "GitHub Oauth error, please retry later."
 msgstr "GitHub OAuth エラー、再度お試しください。"
 
-#: cps/oauth_bb.py:991
+#: cps/oauth_bb.py:988
 #, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "GitHub OAuth エラー: {}"
 
-#: cps/oauth_bb.py:1041
+#: cps/oauth_bb.py:1038
 msgid "Google Oauth error, please retry later."
 msgstr "Google OAuth エラー、再度お試しください。"
 
-#: cps/oauth_bb.py:1048
+#: cps/oauth_bb.py:1045
 #, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Google OAuth エラー: {}"
 
-#: cps/oauth_bb.py:1084 cps/oauth_bb.py:1092
+#: cps/oauth_bb.py:1081 cps/oauth_bb.py:1089
 #, python-brace-format
 msgid "OAuth error: {}"
 msgstr "OAuthエラー: {}"
@@ -2414,15 +2414,15 @@ msgstr "パスワードをリセットするには有効なユーザー名を入
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "'%(nickname)s' としてログインしました"
 
-#: cps/web.py:2612
+#: cps/web.py:2667
 msgid "Success! Profile Updated"
 msgstr "成功！プロフィールを更新しました"
 
-#: cps/web.py:2618
+#: cps/web.py:2673
 msgid "Oops! An account already exists for this Email."
 msgstr "このメールアドレスで登録されたアカウントがすでに存在します"
 
-#: cps/web.py:2816
+#: cps/web.py:2894
 msgid "Invalid book ID."
 msgstr "無効な書籍IDです。"
 
@@ -2597,12 +2597,12 @@ msgstr "ユーザー&nbsp;&nbsp;👤"
 
 #: cps/templates/admin.html:14 cps/templates/login.html:17
 #: cps/templates/login.html:19 cps/templates/register.html:9
-#: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
+#: cps/templates/user_edit.html:185 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "ユーザー名"
 
 #: cps/templates/admin.html:15 cps/templates/register.html:14
-#: cps/templates/user_edit.html:183 cps/templates/user_table.html:135
+#: cps/templates/user_edit.html:193 cps/templates/user_table.html:135
 msgid "Email"
 msgstr "メールアドレス"
 
@@ -2610,7 +2610,7 @@ msgstr "メールアドレス"
 msgid "Send to eReader Email"
 msgstr "E-Readerメールアドレス"
 
-#: cps/templates/admin.html:17 cps/templates/user_edit.html:211
+#: cps/templates/admin.html:17 cps/templates/user_edit.html:221
 #, fuzzy
 msgid "Send to eReader Subject"
 msgstr "E-Readerに送信"
@@ -2621,7 +2621,7 @@ msgid "Admin"
 msgstr "管理者"
 
 #: cps/templates/admin.html:20 cps/templates/login.html:22
-#: cps/templates/login.html:23 cps/templates/user_edit.html:194
+#: cps/templates/login.html:23 cps/templates/user_edit.html:204
 msgid "Password"
 msgstr "パスワード"
 
@@ -2645,7 +2645,7 @@ msgstr "編集"
 #: cps/templates/book_table.html:62 cps/templates/book_table.html:141
 #: cps/templates/book_table.html:190 cps/templates/duplicates.html:539
 #: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
-#: cps/templates/user_edit.html:317 cps/templates/user_table.html:150
+#: cps/templates/user_edit.html:326 cps/templates/user_table.html:150
 msgid "Delete"
 msgstr "削除"
 
@@ -2894,7 +2894,7 @@ msgstr "OK"
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
+#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
@@ -2902,7 +2902,7 @@ msgstr "OK"
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
 #: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
 #: cps/templates/tasks.html:94 cps/templates/tasks.html:166
-#: cps/templates/tasks.html:173 cps/templates/user_edit.html:514
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:555
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -3000,7 +3000,7 @@ msgstr "アップロード中..."
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:532
+#: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "閉じる"
 
@@ -3124,10 +3124,10 @@ msgid "Fetch Metadata"
 msgstr "メタデータを取得"
 
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:215
+#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
-#: cps/templates/user_edit.html:512
+#: cps/templates/user_edit.html:553
 msgid "Save"
 msgstr "保存"
 
@@ -4064,14 +4064,10 @@ msgid "Default Theme"
 msgstr "削除"
 
 #: cps/templates/config_view_edit.html:65
-msgid "Standard Theme"
-msgstr "通常テーマ"
-
-#: cps/templates/config_view_edit.html:66
 msgid "caliBlur! Dark Theme"
 msgstr "caliBlur! ダークテーマ"
 
-#: cps/templates/config_view_edit.html:68
+#: cps/templates/config_view_edit.html:67
 msgid ""
 "Default theme for new users and anonymous browsing. Users can select their "
 "own preferred theme in their profile."
@@ -4079,128 +4075,128 @@ msgstr ""
 "ユーザーごとのテーマ切り替えが有効です。このグローバルデフォルトは新規ユー"
 "ザーとゲストにのみ影響します"
 
-#: cps/templates/config_view_edit.html:72
+#: cps/templates/config_view_edit.html:71
 msgid "Regular Expression for Ignoring Columns"
 msgstr "無視するカラムの正規表現"
 
-#: cps/templates/config_view_edit.html:74
+#: cps/templates/config_view_edit.html:73
 msgid "Regex pattern to hide custom columns from being displayed in the UI."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:78
+#: cps/templates/config_view_edit.html:77
 msgid "Link Read/Unread Status to Calibre Column"
 msgstr "既読/未読をリンクするCalibreのカラム"
 
-#: cps/templates/config_view_edit.html:85
+#: cps/templates/config_view_edit.html:84
 #, fuzzy
 msgid "Sync read/unread status with a Calibre boolean custom column."
 msgstr "既読/未読をリンクするCalibreのカラム"
 
-#: cps/templates/config_view_edit.html:89
+#: cps/templates/config_view_edit.html:88
 msgid "View Restrictions based on Calibre column"
 msgstr "表示制限をリンクするCalibreのカラム"
 
-#: cps/templates/config_view_edit.html:96
+#: cps/templates/config_view_edit.html:95
 msgid ""
 "Restrict book visibility based on values in a Calibre text custom column."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:100
+#: cps/templates/config_view_edit.html:99
 msgid "Regular Expression for Title Sorting"
 msgstr "タイトルをソートするための正規表現"
 
-#: cps/templates/config_view_edit.html:102
+#: cps/templates/config_view_edit.html:101
 msgid ""
 "Regex to strip prefixes from titles for proper sorting (e.g., \"The\", "
 "\"A\", \"An\")."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:108
+#: cps/templates/config_view_edit.html:107
 msgid "Default Settings for New Users"
 msgstr "新規ユーザーのデフォルト設定"
 
-#: cps/templates/config_view_edit.html:109
+#: cps/templates/config_view_edit.html:108
 msgid "These settings will be applied to all newly created user accounts."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:111
+#: cps/templates/config_view_edit.html:110
 #, fuzzy
 msgid "Permissions"
 msgstr "バージョン"
 
-#: cps/templates/config_view_edit.html:115 cps/templates/user_edit.html:396
+#: cps/templates/config_view_edit.html:114 cps/templates/user_edit.html:405
 msgid "Admin User"
 msgstr "管理者ユーザー"
 
-#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:402
+#: cps/templates/config_view_edit.html:119 cps/templates/user_edit.html:411
 msgid "Allow Downloads"
 msgstr "ダウンロードを許可"
 
-#: cps/templates/config_view_edit.html:125 cps/templates/user_edit.html:407
+#: cps/templates/config_view_edit.html:124 cps/templates/user_edit.html:416
 msgid "Allow eBook Viewer"
 msgstr "本のビューアを許可"
 
-#: cps/templates/config_view_edit.html:131 cps/templates/user_edit.html:413
+#: cps/templates/config_view_edit.html:130 cps/templates/user_edit.html:422
 msgid "Allow Uploads"
 msgstr "アップロードを許可"
 
-#: cps/templates/config_view_edit.html:137 cps/templates/user_edit.html:419
+#: cps/templates/config_view_edit.html:136 cps/templates/user_edit.html:428
 msgid "Allow Edit"
 msgstr "編集を許可"
 
-#: cps/templates/config_view_edit.html:142 cps/templates/user_edit.html:424
+#: cps/templates/config_view_edit.html:141 cps/templates/user_edit.html:433
 msgid "Allow Delete Books"
 msgstr "本の削除を許可"
 
-#: cps/templates/config_view_edit.html:147 cps/templates/user_edit.html:430
+#: cps/templates/config_view_edit.html:146 cps/templates/user_edit.html:439
 msgid "Allow Changing Password"
 msgstr "パスワード変更を許可"
 
-#: cps/templates/config_view_edit.html:152 cps/templates/user_edit.html:435
+#: cps/templates/config_view_edit.html:151 cps/templates/user_edit.html:444
 msgid "Allow Editing Public Shelves"
 msgstr "みんなの本棚の編集を許可"
 
-#: cps/templates/config_view_edit.html:156
+#: cps/templates/config_view_edit.html:155
 #, fuzzy
 msgid "Language & Display"
 msgstr "管理者ページ"
 
-#: cps/templates/config_view_edit.html:158
+#: cps/templates/config_view_edit.html:157
 msgid "Default Language"
 msgstr "言語設定のデフォルト"
 
-#: cps/templates/config_view_edit.html:164
+#: cps/templates/config_view_edit.html:163
 #, fuzzy
 msgid "Default interface language for new users."
 msgstr "新規ユーザーのデフォルト設定"
 
-#: cps/templates/config_view_edit.html:168
+#: cps/templates/config_view_edit.html:167
 msgid "Default Visible Language of Books"
 msgstr "表示する本の言語設定のデフォルト"
 
-#: cps/templates/config_view_edit.html:175
+#: cps/templates/config_view_edit.html:174
 #, fuzzy
 msgid "Default book language filter for new users."
 msgstr "新規ユーザーのデフォルト表示設定"
 
-#: cps/templates/config_view_edit.html:181
+#: cps/templates/config_view_edit.html:180
 msgid "Default Visibilities for New Users"
 msgstr "新規ユーザーのデフォルト表示設定"
 
-#: cps/templates/config_view_edit.html:182
+#: cps/templates/config_view_edit.html:181
 msgid "Choose which sidebar sections are visible by default for new users."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:195 cps/templates/user_edit.html:356
+#: cps/templates/config_view_edit.html:194 cps/templates/user_edit.html:365
 #: cps/templates/user_table.html:155
 msgid "Show Random Books in Detail View"
 msgstr "詳細画面でランダムに本を表示"
 
-#: cps/templates/config_view_edit.html:201 cps/templates/user_edit.html:362
+#: cps/templates/config_view_edit.html:200 cps/templates/user_edit.html:371
 msgid "Add Allowed/Denied Tags"
 msgstr "許可/拒否タグを追加"
 
-#: cps/templates/config_view_edit.html:202
+#: cps/templates/config_view_edit.html:201
 msgid "Add Allowed/Denied custom column values"
 msgstr "許可/拒否カスタムカラムを追加"
 
@@ -4553,7 +4549,7 @@ msgstr "見つける"
 
 #: cps/templates/cwa_settings.html:398 cps/templates/cwa_settings.html:419
 #: cps/templates/cwa_settings.html:526 cps/templates/cwa_settings.html:731
-#: cps/templates/user_edit.html:380
+#: cps/templates/user_edit.html:389 cps/templates/user_edit.html:480
 msgid "Tip"
 msgstr ""
 
@@ -5966,7 +5962,7 @@ msgid "Search Library"
 msgstr "ライブラリ内を検索"
 
 #: cps/templates/layout.html:132 cps/templates/layout.html:169
-#: cps/templates/user_edit.html:296 cps/templates/user_edit.html:298
+#: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "アカウント"
 
@@ -6335,7 +6331,7 @@ msgstr "左に回転する"
 msgid "Flip Image"
 msgstr "画像を反転する"
 
-#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:262
+#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:272
 msgid "Theme"
 msgstr "テーマ"
 
@@ -6711,215 +6707,269 @@ msgstr "{}人のユーザーが削除されました"
 msgid "Error cancelling scheduled item"
 msgstr ""
 
-#: cps/templates/user_edit.html:163
+#: cps/templates/user_edit.html:173
 #, fuzzy
 msgid "Your Profile"
 msgstr "メールアドレス"
 
-#: cps/templates/user_edit.html:163
+#: cps/templates/user_edit.html:173
 #, fuzzy
 msgid "User Settings"
 msgstr "設定"
 
-#: cps/templates/user_edit.html:171
+#: cps/templates/user_edit.html:181
 msgid "Account Information"
 msgstr ""
 
-#: cps/templates/user_edit.html:180
+#: cps/templates/user_edit.html:190
 msgid ""
 "If you need to change your email address or password, you can do so here."
 msgstr ""
 
-#: cps/templates/user_edit.html:190
+#: cps/templates/user_edit.html:200
 msgid "Reset user Password"
 msgstr "パスワードをリセット"
 
-#: cps/templates/user_edit.html:202
+#: cps/templates/user_edit.html:212
 #, fuzzy
 msgid "eReader Configuration"
 msgstr "サーバー設定"
 
-#: cps/templates/user_edit.html:205
+#: cps/templates/user_edit.html:215
 #, fuzzy
 msgid "Send to eReader Email Address"
 msgstr "E-Readerメールアドレス"
 
-#: cps/templates/user_edit.html:206
+#: cps/templates/user_edit.html:216
 msgid "Use comma to separate multiple addresses"
 msgstr ""
 "電子書籍リーダーのメールアドレスに送信。複数のリーダーには、カンマで区切って"
 "ください"
 
-#: cps/templates/user_edit.html:207
+#: cps/templates/user_edit.html:217
 msgid ""
 "Email address(es) for your eReader devices. Separate multiple addresses with "
 "commas."
 msgstr ""
 
-#: cps/templates/user_edit.html:218
+#: cps/templates/user_edit.html:228
 msgid "Enable Send-to-eReader Pop-up Modal"
 msgstr ""
 
-#: cps/templates/user_edit.html:220
+#: cps/templates/user_edit.html:230
 msgid ""
 "Enables or disables the Send-to-eReader Pop-up Modal that allows users to "
 "enter extra email addresses and only send to a selection of saved addresses "
 "when sending to eReader."
 msgstr ""
 
-#: cps/templates/user_edit.html:222
+#: cps/templates/user_edit.html:232
 msgid ""
 "When disabled, emails will be sent to all configured eReader addresses "
 "without prompting."
 msgstr ""
 
-#: cps/templates/user_edit.html:230
+#: cps/templates/user_edit.html:240
 msgid "Automatically send new books to my eReader(s)"
 msgstr ""
 
-#: cps/templates/user_edit.html:231
+#: cps/templates/user_edit.html:241
 msgid ""
 "When enabled, newly ingested books will be automatically sent to all "
 "configured eReader email addresses above."
 msgstr ""
 
-#: cps/templates/user_edit.html:239
+#: cps/templates/user_edit.html:249
 msgid "Language & Theme Preferences"
 msgstr ""
 
-#: cps/templates/user_edit.html:242
+#: cps/templates/user_edit.html:252
 #, fuzzy
 msgid "Interface Language"
 msgstr "言語を入力"
 
-#: cps/templates/user_edit.html:251 cps/templates/user_edit.html:274
+#: cps/templates/user_edit.html:261 cps/templates/user_edit.html:283
 msgid "Language of Books"
 msgstr "本の言語"
 
-#: cps/templates/user_edit.html:258 cps/templates/user_edit.html:281
+#: cps/templates/user_edit.html:268 cps/templates/user_edit.html:290
 msgid "Filter the library to only show books in a specific language."
 msgstr ""
 
-#: cps/templates/user_edit.html:271
+#: cps/templates/user_edit.html:280
 #, fuzzy
 msgid "Book Language Filter"
 msgstr "有効な本の言語がありません"
 
-#: cps/templates/user_edit.html:289
+#: cps/templates/user_edit.html:298
 msgid "OAuth & API Integrations"
 msgstr ""
 
-#: cps/templates/user_edit.html:294
+#: cps/templates/user_edit.html:303
 msgid "OAuth Settings"
 msgstr "OAuth設定"
 
-#: cps/templates/user_edit.html:296
+#: cps/templates/user_edit.html:305
 msgid "Link"
 msgstr "リンク"
 
-#: cps/templates/user_edit.html:298
+#: cps/templates/user_edit.html:307
 msgid "Unlink"
 msgstr "リンク解除"
 
-#: cps/templates/user_edit.html:306
+#: cps/templates/user_edit.html:315
 msgid "Hardcover API Token"
 msgstr "Hardcover APIトークン"
 
-#: cps/templates/user_edit.html:308
+#: cps/templates/user_edit.html:317
 msgid "API token for Hardcover metadata provider integration."
 msgstr ""
 
-#: cps/templates/user_edit.html:314
+#: cps/templates/user_edit.html:323
 msgid "Kobo Sync Token"
 msgstr "Kobo同期トークン"
 
-#: cps/templates/user_edit.html:316
+#: cps/templates/user_edit.html:325
 msgid "Create/View"
 msgstr "作成/表示"
 
-#: cps/templates/user_edit.html:320
+#: cps/templates/user_edit.html:329
 msgid "Force full kobo sync"
 msgstr "強制的にKoboと完全同期"
 
-#: cps/templates/user_edit.html:327
+#: cps/templates/user_edit.html:336
 msgid "Sync only books in selected shelves with Kobo"
 msgstr "選択した本棚内の本のみKoboと同期"
 
-#: cps/templates/user_edit.html:337
+#: cps/templates/user_edit.html:346
 #, fuzzy
 msgid "Sidebar Display Settings"
 msgstr "OAuth設定"
 
-#: cps/templates/user_edit.html:338
+#: cps/templates/user_edit.html:347
 msgid "Choose which sections to display in your sidebar navigation."
 msgstr ""
 
-#: cps/templates/user_edit.html:363
+#: cps/templates/user_edit.html:372
 msgid "Add allowed/Denied Custom Column Values"
 msgstr "許可/拒否カスタムカラムを追加"
 
-#: cps/templates/user_edit.html:371
+#: cps/templates/user_edit.html:380
 msgid "OPDS Catalog Order"
 msgstr ""
 
-#: cps/templates/user_edit.html:372
+#: cps/templates/user_edit.html:381
 msgid ""
 "Reorder the OPDS root catalog by listing entry IDs in the order you want. "
 "Unknown IDs are ignored and missing entries are appended automatically."
 msgstr ""
 
-#: cps/templates/user_edit.html:380
+#: cps/templates/user_edit.html:389
 msgid ""
 "Drag to reorder OPDS root entries. Missing entries are appended "
 "automatically."
 msgstr ""
 
-#: cps/templates/user_edit.html:389
+#: cps/templates/user_edit.html:398
 msgid "User Permissions"
 msgstr ""
 
-#: cps/templates/user_edit.html:390
+#: cps/templates/user_edit.html:399
 msgid "Configure what actions this user is allowed to perform."
 msgstr ""
 
-#: cps/templates/user_edit.html:445
+#: cps/templates/user_edit.html:454
+#, fuzzy
+msgid "Magic Shelves Order"
+msgstr "選択した本棚をKoboと同期"
+
+#: cps/templates/user_edit.html:455
+msgid "Choose how your magic shelves are ordered in the sidebar."
+msgstr ""
+
+#: cps/templates/user_edit.html:459
+msgid "Order Mode"
+msgstr ""
+
+#: cps/templates/user_edit.html:461
+msgid "Manual (drag to reorder)"
+msgstr ""
+
+#: cps/templates/user_edit.html:462
+msgid "Name (A-Z)"
+msgstr ""
+
+#: cps/templates/user_edit.html:463
+msgid "Name (Z-A)"
+msgstr ""
+
+#: cps/templates/user_edit.html:464
+msgid "Book count (high to low)"
+msgstr ""
+
+#: cps/templates/user_edit.html:465
+msgid "Book count (low to high)"
+msgstr ""
+
+#: cps/templates/user_edit.html:466
+msgid "Created (newest first)"
+msgstr ""
+
+#: cps/templates/user_edit.html:467
+msgid "Created (oldest first)"
+msgstr ""
+
+#: cps/templates/user_edit.html:468
+#, fuzzy
+msgid "Recently modified"
+msgstr "最近追加された本"
+
+#: cps/templates/user_edit.html:469
+msgid "Least recently modified"
+msgstr ""
+
+#: cps/templates/user_edit.html:480
+msgid "Manual order is used only when the order mode is set to Manual."
+msgstr ""
+
+#: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"
 msgstr ""
 
-#: cps/templates/user_edit.html:446
+#: cps/templates/user_edit.html:487
 msgid ""
 "Uncheck shelves you want to hide from your sidebar. System shelves cannot be "
 "deleted, only hidden. Public shelves from other users can also be hidden."
 msgstr ""
 
-#: cps/templates/user_edit.html:450
+#: cps/templates/user_edit.html:491
 msgid "Default System Shelves:"
 msgstr ""
 
-#: cps/templates/user_edit.html:474
+#: cps/templates/user_edit.html:515
 #, fuzzy
 msgid "Public Shelves:"
 msgstr "みんなの本棚を編集"
 
-#: cps/templates/user_edit.html:499
+#: cps/templates/user_edit.html:540
 #, python-format
 msgid "%(visible)s of %(total)s default shelves visible"
 msgstr ""
 
-#: cps/templates/user_edit.html:503
+#: cps/templates/user_edit.html:544
 #, python-format
 msgid "%(visible)s of %(total)s public shelves visible"
 msgstr ""
 
-#: cps/templates/user_edit.html:517 cps/templates/user_table.html:170
+#: cps/templates/user_edit.html:558 cps/templates/user_table.html:170
 msgid "Delete User"
 msgstr "ユーザーを削除"
 
-#: cps/templates/user_edit.html:528
+#: cps/templates/user_edit.html:569
 msgid "Generate Kobo Auth URL"
 msgstr "Koboの認証URLを生成"
 
-#: cps/templates/user_edit.html:587
+#: cps/templates/user_edit.html:631
 msgid "Visible"
 msgstr ""
 
@@ -7021,6 +7071,9 @@ msgstr "選択した本棚をKoboと同期"
 msgid "Show Read/Unread Section"
 msgstr "既読/未読セクションを表示"
 
+#~ msgid "Standard Theme"
+#~ msgstr "通常テーマ"
+
 #~ msgid "Location and name of logfile (calibre-web.log for no entry)"
 #~ msgstr "ログファイル名 (空欄の場合はcalibre-web.log)"
 
@@ -7038,9 +7091,6 @@ msgstr "既読/未読セクションを表示"
 
 #~ msgid "Popular publications from this catalog based on Rating."
 #~ msgstr "評価に基づいた、この出版社が出している有名な本"
-
-#~ msgid "Recently added Books"
-#~ msgstr "最近追加された本"
 
 #~ msgid "The latest Books"
 #~ msgstr "最新の本"

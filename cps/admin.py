@@ -138,13 +138,14 @@ def before_request():
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
-    # Use per-user theme if available; fallback to global config.config_theme for legacy/anonymous
+    # Theme enforcement: light theme fully deprecated, force caliBlur (dark) in runtime
     try:
         g.current_theme = getattr(current_user, 'theme', config.config_theme)
         if current_user.is_anonymous and not hasattr(current_user, 'theme'):
             g.current_theme = config.config_theme
     except Exception:
         g.current_theme = getattr(config, 'config_theme', 1)
+    g.current_theme = 1
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',
@@ -1682,13 +1683,17 @@ def new_user():
         content.locale = config.config_default_locale
         content.default_language = config.config_default_language
     opds_context = _build_opds_context(content)
+    magic_shelf_context = _build_magic_shelf_order_context(content)
     return render_title_template("user_edit.html", new_user=1, content=content,
                                  config=config, translations=translations,
                                  languages=languages, title=_("Add New User"), page="newuser",
                                  kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check,
                                  opds_root_order_string=opds_context["opds_root_order_string"],
                                  opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
-                                 opds_root_labels=opds_context["opds_root_labels"])
+                                 opds_root_labels=opds_context["opds_root_labels"],
+                                 magic_shelf_order_string=magic_shelf_context["magic_shelf_order_string"],
+                                 magic_shelf_order_labels=magic_shelf_context["magic_shelf_order_labels"],
+                                 magic_shelf_order_mode=magic_shelf_context["magic_shelf_order_mode"])
 
 
 @admi.route("/admin/mailsettings", methods=["GET"])
@@ -1847,6 +1852,38 @@ def _build_opds_context(user):
     }
 
 
+def _build_magic_shelf_order_context(user):
+    from . import magic_shelf
+    if not user or not getattr(user, 'id', None):
+        return {
+            "magic_shelf_order_string": "",
+            "magic_shelf_order_labels": [],
+            "magic_shelf_order_mode": magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE,
+        }
+
+    shelves = magic_shelf.get_visible_magic_shelves_for_user(user.id)
+    magic_shelf_order_labels = [
+        {
+            "key": str(shelf.id),
+            "label": shelf.name,
+            "icon": shelf.icon,
+        }
+        for shelf in shelves
+    ]
+    settings = (user.view_settings or {}).get('magic_shelves', {})
+    order_mode = settings.get('order_mode', magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE)
+    if order_mode not in magic_shelf.MAGIC_SHELF_ORDER_MODES:
+        order_mode = magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE
+    available_ids = [shelf.id for shelf in shelves]
+    normalized = magic_shelf.normalize_magic_shelf_order(settings.get('order', []), available_ids)
+    order_string = ",".join(str(sid) for sid in normalized)
+    return {
+        "magic_shelf_order_string": order_string,
+        "magic_shelf_order_labels": magic_shelf_order_labels,
+        "magic_shelf_order_mode": order_mode,
+    }
+
+
 @admi.route("/admin/user/<int:user_id>", methods=["GET", "POST"])
 @user_login_required
 @admin_required
@@ -1888,6 +1925,7 @@ def edit_user(user_id):
         if resp:
             return resp
     opds_context = _build_opds_context(content)
+    magic_shelf_context = _build_magic_shelf_order_context(content)
     return render_title_template("user_edit.html",
                                  translations=translations,
                                  languages=languages,
@@ -1905,6 +1943,9 @@ def edit_user(user_id):
                                  opds_root_order_string=opds_context["opds_root_order_string"],
                                  opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
                                  opds_root_labels=opds_context["opds_root_labels"],
+                                 magic_shelf_order_string=magic_shelf_context["magic_shelf_order_string"],
+                                 magic_shelf_order_labels=magic_shelf_context["magic_shelf_order_labels"],
+                                 magic_shelf_order_mode=magic_shelf_context["magic_shelf_order_mode"],
                                  title=_("Edit User %(nick)s", nick=content.name),
                                  page="edituser")
 
@@ -2462,10 +2503,9 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.sidebar_view |= constants.DETAIL_RANDOM
 
     content.role = constants.selected_roles(to_save)
-    # Set default theme (caliBlur = 1) for new users
+    # Force dark theme (caliBlur = 1) for new users
     try:
-        # Use global default theme config (acts as default for new users)
-        content.theme = getattr(config, 'config_theme', 1)
+        content.theme = 1
     except Exception:
         pass
     try:
@@ -2484,6 +2524,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
     except Exception as ex:
         flash(str(ex), category="error")
         opds_context = _build_opds_context(content)
+        magic_shelf_context = _build_magic_shelf_order_context(content)
         return render_title_template("user_edit.html", new_user=1, content=content,
                                      config=config,
                                      translations=translations,
@@ -2491,7 +2532,10 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
                                      kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check,
                                      opds_root_order_string=opds_context["opds_root_order_string"],
                                      opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
-                                     opds_root_labels=opds_context["opds_root_labels"])
+                                     opds_root_labels=opds_context["opds_root_labels"],
+                                     magic_shelf_order_string=magic_shelf_context["magic_shelf_order_string"],
+                                     magic_shelf_order_labels=magic_shelf_context["magic_shelf_order_labels"],
+                                     magic_shelf_order_mode=magic_shelf_context["magic_shelf_order_mode"])
     try:
         content.allowed_tags = config.config_allowed_tags
         content.denied_tags = config.config_denied_tags
@@ -2554,12 +2598,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             log.error(ex)
             flash(str(ex), category="error")
         return redirect(url_for('admin.admin'))
-    # Theme update for admin editing user
+    # Theme update for admin editing user (force dark)
     if 'theme' in to_save:
         try:
-            theme_val = int(to_save.get('theme'))
-            if theme_val in (0,1):
-                content.theme = theme_val
+            content.theme = 1
         except Exception:
             pass
     # Proceed with remaining updates (previously skipped when 'theme' in to_save)
@@ -2627,9 +2669,42 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             if not content.view_settings['opds']:
                 content.view_settings.pop('opds', None)
             flag_modified(content, "view_settings")
+
+    # Magic shelf order settings
+    from . import magic_shelf
+    magic_shelf_order_raw = to_save.get("magic_shelf_order", "").strip()
+    magic_shelf_order_mode = to_save.get("magic_shelf_order_mode", magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE)
+    if magic_shelf_order_mode not in magic_shelf.MAGIC_SHELF_ORDER_MODES:
+        magic_shelf_order_mode = magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE
+
+    accessible_shelves = ub.session.query(ub.MagicShelf).filter(
+        or_(
+            ub.MagicShelf.is_public == 1,
+            ub.MagicShelf.user_id == content.id
+        )
+    ).all()
+    accessible_ids = {s.id for s in accessible_shelves}
+    magic_shelf_order_list = []
+    if magic_shelf_order_raw:
+        for item in [item.strip() for item in magic_shelf_order_raw.split(',') if item.strip()]:
+            try:
+                shelf_id = int(item)
+            except ValueError:
+                continue
+            if shelf_id in accessible_ids and shelf_id not in magic_shelf_order_list:
+                magic_shelf_order_list.append(shelf_id)
+
+    if content.view_settings is None:
+        content.view_settings = {}
+    magic_shelf_settings = content.view_settings.setdefault('magic_shelves', {})
+    magic_shelf_settings['order_mode'] = magic_shelf_order_mode
+    if magic_shelf_order_list:
+        magic_shelf_settings['order'] = magic_shelf_order_list
+    else:
+        magic_shelf_settings.pop('order', None)
+    flag_modified(content, "view_settings")
     
     # Handle hidden magic shelf templates and custom shelves
-    from . import magic_shelf
     if not content.is_anonymous:
         # Get all system template keys
         all_template_keys = set(magic_shelf.SYSTEM_SHELF_TEMPLATES.keys())
@@ -2723,6 +2798,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
         log.error(ex)
         flash(str(ex), category="error")
         opds_context = _build_opds_context(content)
+        magic_shelf_context = _build_magic_shelf_order_context(content)
         return render_title_template("user_edit.html",
                                      translations=translations,
                                      languages=languages,
@@ -2735,6 +2811,9 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
                                      opds_root_order_string=opds_context["opds_root_order_string"],
                                      opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
                                      opds_root_labels=opds_context["opds_root_labels"],
+                                     magic_shelf_order_string=magic_shelf_context["magic_shelf_order_string"],
+                                     magic_shelf_order_labels=magic_shelf_context["magic_shelf_order_labels"],
+                                     magic_shelf_order_mode=magic_shelf_context["magic_shelf_order_mode"],
                                      title=_("Edit User %(nick)s", nick=content.name),
                                      page="edituser")
     try:

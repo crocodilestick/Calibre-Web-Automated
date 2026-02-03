@@ -183,6 +183,43 @@ then
     echo "[cwa-init] Service could not successfully set binary paths for '/config/app.db' (see errors above)."
 fi
 
+#------------------------------------------------------------------------------------------------------------------------
+#  One-time theme migration (force dark theme in app.db)
+#------------------------------------------------------------------------------------------------------------------------
+
+echo "[cwa-init] Enforcing dark theme in app.db (one-time migration)..."
+
+python3 - <<'PY'
+import sqlite3
+
+db_path = "/config/app.db"
+try:
+  conn = sqlite3.connect(db_path)
+  cur = conn.cursor()
+  # Force global default theme to dark
+  try:
+    cur.execute("UPDATE settings SET config_theme = 1")
+  except Exception:
+    pass
+  # Force all users to dark if theme column exists
+  try:
+    cur.execute("PRAGMA table_info(user)")
+    cols = {row[1] for row in cur.fetchall()}
+    if "theme" in cols:
+      cur.execute("UPDATE user SET theme = 1 WHERE theme IS NULL OR theme != 1")
+  except Exception:
+    pass
+  conn.commit()
+  print("[cwa-init] Dark theme enforcement completed.")
+except Exception as e:
+  print(f"[cwa-init] Theme migration skipped due to error: {e}")
+finally:
+  try:
+    conn.close()
+  except Exception:
+    pass
+PY
+
 
 echo "[cwa-init] CWA-init complete! Service exiting now..."
 

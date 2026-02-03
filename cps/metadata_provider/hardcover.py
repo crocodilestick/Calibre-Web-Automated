@@ -13,8 +13,8 @@
 from typing import Dict, List, Optional, Union
 
 import requests
-from os import getenv
 
+from cps import helper
 # Import text similarity utilities
 try:
     from cps.utils.text_similarity import (
@@ -157,7 +157,7 @@ class Hardcover(Metadata):
         token = (
             getattr(current_user, "hardcover_token", None)
             or getattr(config, "config_hardcover_token", None)
-            or getenv("HARDCOVER_TOKEN")
+            or helper.get_secret("HARDCOVER_TOKEN")
         )
         if not token:
             log.warning("Hardcover token missing; set a user token or global token to enable results.")
@@ -524,7 +524,7 @@ if __name__ == "__main__":
     parser.add_argument("--cover", dest="generic_cover", default="", help="Generic cover URL fallback")
     args = parser.parse_args()
 
-    token = args.token or getenv("HARDCOVER_TOKEN")
+    token = args.token or helper.get_secret("HARDCOVER_TOKEN")
     if token:
         try:
             setattr(config, "config_hardcover_token", token)

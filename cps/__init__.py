@@ -18,6 +18,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from . import logger
 from . import constants
+from . import helper
 from .cli import CliParameter
 from .reverseproxy import ReverseProxied
 from .server import WebServer
@@ -197,7 +198,7 @@ def create_app():
     log.info('Starting Calibre Web...')
     Principal(app)
     lm.init_app(app)
-    app.secret_key = os.getenv('SECRET_KEY', config_sql.get_flask_session_key(ub.session))
+    app.secret_key = helper.get_secret('SECRET_KEY', config_sql.get_flask_session_key(ub.session))
 
     web_server.init_app(app, config)
     from .cw_babel import babel, get_locale

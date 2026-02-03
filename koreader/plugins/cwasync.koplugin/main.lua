@@ -15,6 +15,7 @@ local time = require("ui/time")
 local util = require("util")
 local T = require("ffi/util").template
 local _ = require("gettext")
+local bit = require("bit")
 
 if G_reader_settings:hasNot("device_id") then
     G_reader_settings:saveSetting("device_id", random.uuid())
@@ -537,7 +538,67 @@ function CWASync:getLastProgress()
 end
 
 function CWASync:getDocumentDigest()
-    return self.ui.doc_settings:readSetting("partial_md5_checksum")
+    local digest = nil
+    if self.ui and self.ui.doc_settings and self.ui.doc_settings.readSetting then
+        digest = self.ui.doc_settings:readSetting("partial_md5_checksum")
+    end
+
+    if digest and digest ~= "" then
+        return digest
+    end
+
+    local file_path = nil
+    if self.view and self.view.document and self.view.document.file then
+        file_path = self.view.document.file
+    elseif self.ui and self.ui.document and self.ui.document.file then
+        file_path = self.ui.document.file
+    end
+
+    if util.partialMD5 and file_path then
+        local ok, result = pcall(util.partialMD5, file_path)
+        if ok and result and result ~= "" then
+            return result
+        end
+    end
+
+    if file_path then
+        local ok, result = pcall(function(path)
+            local f = io.open(path, "rb")
+            if not f then
+                return nil
+            end
+
+            local step = 1024
+            local sample_size = 1024
+            local chunks = {}
+            for i = -1, 10 do
+                local position = bit.lshift(step, 2 * i)
+                local ok_seek = f:seek("set", position)
+                if not ok_seek then
+                    break
+                end
+
+                local sample = f:read(sample_size)
+                if not sample or #sample == 0 then
+                    break
+                end
+                chunks[#chunks + 1] = sample
+            end
+            f:close()
+
+            if #chunks == 0 then
+                return nil
+            end
+
+            return md5(table.concat(chunks))
+        end, file_path)
+
+        if ok and result and result ~= "" then
+            return result
+        end
+    end
+
+    return nil
 end
 
 function CWASync:syncToProgress(progress)
@@ -577,6 +638,16 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
         service_spec = self.path .. "/api.json"
     }
     local doc_digest = self:getDocumentDigest()
+    if not doc_digest then
+        logger.warn("CWASync: Unable to compute document digest for", self.view and self.view.document and self.view.document.file)
+        if interactive then
+            UIManager:show(InfoMessage:new{
+                text = _("Unable to compute document checksum for this book."),
+                timeout = 3,
+            })
+        end
+        return
+    end
     local progress = self:getLastProgress()
     local percentage = self:getLastPercent()
     local ok, err = pcall(client.update_progress,
@@ -660,6 +731,16 @@ function CWASync:getProgress(ensure_networking, interactive)
         service_spec = self.path .. "/api.json"
     }
     local doc_digest = self:getDocumentDigest()
+    if not doc_digest then
+        logger.warn("CWASync: Unable to compute document digest for", self.view and self.view.document and self.view.document.file)
+        if interactive then
+            UIManager:show(InfoMessage:new{
+                text = _("Unable to compute document checksum for this book."),
+                timeout = 3,
+            })
+        end
+        return
+    end
     local ok, err = pcall(client.get_progress,
         client,
         self.settings.username,

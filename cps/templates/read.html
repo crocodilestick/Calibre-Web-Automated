@@ -62,7 +62,7 @@
 	        <div id="title-controls">
 	            <a id="bookmark" class="icon-bookmark-empty">Bookmark</a>
 	            <a id="setting" class="icon-cog">Settings</a>
-	            <a id="fullscreen" class="icon-resize-full">Fullscreen</a>            
+	            <a id="fullscreen" class="icon-resize-full">Fullscreen</a>
 	        </div>
 	    </div>
 
@@ -99,11 +99,11 @@
                 <div class="slider">
                     <label for="fader">{{ _('Font Sizes') }}</label>
                     <input type="range" min="75" max="200" value="100" id="fontSizeFader" step="25">
-                </div>            
+                </div>
             </div>
               <div class="font" id="font">
                 <label class="item">{{_('Font')}}:</label>
-                <button type="button" id="default" onclick="selectFont(this.id)"><span>✓</span>{{_('Default')}}</button> 
+                <button type="button" id="default" onclick="selectFont(this.id)"><span>✓</span>{{_('Default')}}</button>
                 <button type="button" id="Yahei" onclick="selectFont(this.id)"><span></span>{{_('Yahei')}}</button>
                 <button type="button" id="SimSun" onclick="selectFont(this.id)"><span></span>{{_('SimSun')}}</button>
                 <button type="button" id="KaiTi" onclick="selectFont(this.id)"><span></span>{{_('KaiTi')}}</button>
@@ -113,7 +113,7 @@
                 <label class="item">{{ _('Spread') }}:</label>
                 <button type="button" id="spread" onclick="spread(this.id)"><span>✓</span>{{_('Two columns')}}</button>
                 <button type="button" id="nonespread" onclick="spread(this.id)"><span></span>{{_('One column')}}</button>
-              </div>            
+              </div>
             <div class="closer icon-cancel-circled"></div>
         </div>
     </div>
@@ -168,7 +168,7 @@
             localStorage.setItem("calibre.reader.theme", id);
             // Apply theme to epubjs iframe
             reader.rendition.themes.select(id);
-            // Apply theme to rest of the page. 
+            // Apply theme to rest of the page.
             document.getElementById("main").style.backgroundColor = themes[id]["bgColor"];
             document.getElementById("titlebar").style.color = themes[id]["title-color"] || "#fff";
           }
@@ -236,6 +236,6 @@
       <script src="{{ url_for('static', filename='js/libs/screenfull.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/libs/reader.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/reading/epub.js') }}"></script>
-      <script src="{{ url_for('static', filename='js/reading/epub-progress.js') }}"></script>      
+      <script src="{{ url_for('static', filename='js/reading/epub-progress.js') }}"></script>
     </body>
 </html>

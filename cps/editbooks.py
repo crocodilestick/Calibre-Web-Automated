@@ -94,6 +94,15 @@ def edit_book(book_id):
 @login_required_if_no_ano
 @upload_required
 def upload():
+    try:
+        log.info(
+            "Upload request received: user_agent=%s content_length=%s file_fields=%s",
+            request.headers.get("User-Agent", ""),
+            request.content_length,
+            list(request.files.keys())
+        )
+    except Exception as e:
+        log.debug("Failed to log upload request details: %s", e)
     # Upload a new format to an existing book via ingest sidecar manifest
     if len(request.files.getlist("btn-upload-format")):
         try:

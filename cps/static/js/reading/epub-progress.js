@@ -67,29 +67,21 @@ qFinished(()=>{
         return;
     }
     epub.locations.generate().then(()=> {
-        // Restore progress from localStorage if available
+        // Restore progress from localStorage if available, using kosync
+        // progress as a fallback.
         if (window.calibre && window.calibre.bookUrl && reader && reader.rendition) {
             let bookKey = window.calibre.bookUrl;
-            let savedProgress = localStorage.getItem("calibre.reader.progress." + bookKey);
-            let hasBookmark = window.calibre.bookmark && window.calibre.bookmark.length > 0;
-            if (savedProgress) {
-                // Try to jump to the saved progress (percentage)
-                let percentage = parseInt(savedProgress, 10) / 100;
-                let cfi = epub.locations.cfiFromPercentage(percentage);
-                if (cfi) {
-                    reader.rendition.display(cfi);
-                }
-            } else if (!hasBookmark && window.calibre.kosyncPercent !== null && window.calibre.kosyncPercent !== undefined) {
-                let kosyncPercent = parseFloat(window.calibre.kosyncPercent);
-                if (!isNaN(kosyncPercent) && kosyncPercent > 0) {
-                    let percentage = kosyncPercent / 100;
-                    let cfi = epub.locations.cfiFromPercentage(percentage);
-                    if (cfi) {
-                        reader.rendition.display(cfi);
-                    }
-                }
+            let savedProgress = parseInt(localStorage.getItem("calibre.reader.progress." + bookKey))
+            let kosyncProgress = parseFloat(window.calibre.kosyncPercent);
+            let progress = savedProgress || kosyncProgress
+            let percentage = progress && (parseInt(progress, 10) / 100);
+            let percentageCfi = epub.locations.cfiFromPercentage(percentage);
+            // Default to bookmark if progress cannot be otherwise determined.
+            let cfi = (percentageCfi !== -1 && percentageCfi) || window.calibre.bookmark;
+            if (cfi && cfi.length > 0) {
+                reader.rendition.display(cfi);
+                window.dispatchEvent(new Event('locationchange'))
             }
         }
-        window.dispatchEvent(new Event('locationchange'))
     });
 })

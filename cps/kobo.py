@@ -40,6 +40,7 @@ from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_
 from . import isoLanguages
 from .epub import get_epub_layout
 from .constants import COVER_THUMBNAIL_SMALL, COVER_THUMBNAIL_MEDIUM, COVER_THUMBNAIL_LARGE
+from .kobo_cover_cache import build_cover_image_id, normalize_cover_uuid
 from .helper import get_download_link
 from .services import SyncToken as SyncToken, hardcover
 from .web import download_required
@@ -557,6 +558,27 @@ def get_language(book):
     return isoLanguages.get(part3=book.languages[0].lang_code).part1
 
 
+def _normalize_cover_uuid(image_id):
+    return normalize_cover_uuid(image_id)
+
+
+def _get_cover_image_id(book):
+    base_id = str(book.uuid)
+    try:
+        cover_path = None
+        if not config.config_use_google_drive:
+            cover_path = os.path.join(config.get_book_path(), book.path, "cover.jpg")
+        return build_cover_image_id(
+            base_id,
+            use_google_drive=config.config_use_google_drive,
+            last_modified=book.last_modified,
+            cover_path=cover_path,
+        )
+    except Exception as exc:
+        log.debug("Kobo Sync: failed to build cover image id for book %s: %s", book.id, exc)
+        return base_id
+
+
 def get_metadata(book):
     download_urls = []
     kepub = [data for data in book.data if data.format == 'KEPUB']
@@ -583,10 +605,13 @@ def get_metadata(book):
                 log.error(e)
 
     book_uuid = book.uuid
+    cover_image_id = _get_cover_image_id(book)
+    if cover_image_id != str(book_uuid):
+        log.debug("Kobo Sync: cache-busting cover id for book %s: %s", book.id, cover_image_id)
     metadata = {
         "Categories": ["00000000-0000-0000-0000-000000000001", ],
         # "Contributors": get_author(book),
-        "CoverImageId": book_uuid,
+        "CoverImageId": cover_image_id,
         "CrossRevisionId": book_uuid,
         "CurrentDisplayPrice": {"CurrencyCode": "USD", "TotalAmount": 0},
         "CurrentLoveDisplayPrice": {"TotalAmount": 0},
@@ -1088,6 +1113,7 @@ def get_current_bookmark_response(current_bookmark):
 @kobo.route("/<book_uuid>/<width>/<height>/<Quality>/<isGreyscale>/image.jpg")
 @requires_kobo_auth
 def HandleCoverImageRequest(book_uuid, width, height, Quality, isGreyscale):
+    book_uuid = _normalize_cover_uuid(book_uuid)
     try:
         if int(height) > 1000:
             resolution = COVER_THUMBNAIL_LARGE

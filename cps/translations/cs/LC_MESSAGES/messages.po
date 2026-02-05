@@ -171,7 +171,7 @@ msgstr "Není zadáno platné národní prostředí"
 msgid "No Valid Book Language Given"
 msgstr "Není zadán platný jazyk knihy"
 
-#: cps/admin.py:851 cps/editbooks.py:587
+#: cps/admin.py:851 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr "Parametr nenalezen"
 
@@ -328,8 +328,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Úspěšně! Účet Gmail ověřen."
 
 #: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1033
-#: cps/editbooks.py:1799 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
+#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 msgid "Oops! Database Error: %(error)s."
@@ -1017,15 +1017,15 @@ msgstr "Neplatná strategie řešení"
 msgid "Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."
 msgstr "Do složky Ingest nelze zapisovat. Zkontrolujte oprávnění svazku /cwa-book-ingest."
 
-#: cps/editbooks.py:112
+#: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
 msgstr "Chybějící nebo neplatné ID knihy pro nahrání formátu"
 
-#: cps/editbooks.py:118
+#: cps/editbooks.py:127
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr "Nelze nahrát formát: Kniha již v knihovně neexistuje"
 
-#: cps/editbooks.py:143 cps/editbooks.py:170 cps/templates/book_edit.html:52
+#: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:151
 msgid "Upload done, processing, please wait..."
 msgstr "Nahrávání hotovo, zpracovávám, čekejte prosím..."
@@ -1034,7 +1034,7 @@ msgstr "Nahrávání hotovo, zpracovávám, čekejte prosím..."
 msgid "Failed to queue upload for processing"
 msgstr "Zařazení nahrávání do fronty ke zpracování se nepodařilo"
 
-#: cps/editbooks.py:190
+#: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
 msgstr "Chybí zdrojový nebo cílový formát pro převod"
 
@@ -1054,20 +1054,20 @@ msgstr "Typ souboru není povolen k nahrání na tento server"
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Soubor s příponou '%(ext)s' nelze odeslat na tento server"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1246 cps/editbooks.py:1761
+#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
 msgid "File to be uploaded must have an extension"
 msgstr "Soubor, který má být odeslán musí mít příponu"
 
-#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2881 cps/web.py:2966
 msgid "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Jejda! Vybraná kniha není k dispozici. Soubor neexistuje nebo není přístupný"
 
-#: cps/editbooks.py:872 cps/editbooks.py:1829
+#: cps/editbooks.py:881 cps/editbooks.py:1838
 msgid "User has no rights to upload cover"
 msgstr "Uživatel nemá práva k nahrávání obalu"
 
-#: cps/editbooks.py:895 cps/editbooks.py:1224
+#: cps/editbooks.py:904 cps/editbooks.py:1233
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "Identifikátory nerozlišují velká a malá písmena, přepisují staré identifikátory"
 
@@ -1075,7 +1075,7 @@ msgstr "Identifikátory nerozlišují velká a malá písmena, přepisují star�
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s není platným jazykem"
 
-#: cps/editbooks.py:1020
+#: cps/editbooks.py:1029
 msgid "Metadata successfully updated"
 msgstr "Metadata úspěšně aktualizována"
 
@@ -1083,7 +1083,7 @@ msgstr "Metadata úspěšně aktualizována"
 msgid "Error editing book: {}"
 msgstr "Chyba při úpravě knihy: {}"
 
-#: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
+#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Neznámý"
@@ -1100,19 +1100,19 @@ msgstr "Soubor %(filename)s nemohl být uložen do dočasného adresáře"
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Nepodařilo se přesunout soubor obalu %(file)s: %(error)s"
 
-#: cps/editbooks.py:1332 cps/editbooks.py:1334
+#: cps/editbooks.py:1341 cps/editbooks.py:1343
 msgid "Book Format Successfully Deleted"
 msgstr "Formát knihy úspěšně smazán"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1350 cps/editbooks.py:1352
 msgid "Book Successfully Deleted"
 msgstr "Kniha úspěšně smazána"
 
-#: cps/editbooks.py:1407
+#: cps/editbooks.py:1416
 msgid "You are missing permissions to delete books"
 msgstr "Chybí vám oprávnění k mazání knih"
 
-#: cps/editbooks.py:1461
+#: cps/editbooks.py:1470
 msgid "edit metadata"
 msgstr "upravit metadata"
 
@@ -1120,7 +1120,7 @@ msgstr "upravit metadata"
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "Index série: %(seriesindex)s není platné číslo, přeskakuji"
 
-#: cps/editbooks.py:1750
+#: cps/editbooks.py:1759
 msgid "User has no rights to upload additional file formats"
 msgstr "Uživatel nemá práva nahrávat další formáty souborů"
 

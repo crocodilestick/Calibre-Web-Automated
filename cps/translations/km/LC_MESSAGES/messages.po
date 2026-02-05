@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-03 15:19+0100\n"
+"POT-Creation-Date: 2026-02-05 00:15+0100\n"
 "PO-Revision-Date: 2018-08-27 17:06+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -197,7 +197,7 @@ msgstr ""
 msgid "No Valid Book Language Given"
 msgstr ""
 
-#: cps/admin.py:851 cps/editbooks.py:587
+#: cps/admin.py:851 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr ""
 
@@ -376,8 +376,8 @@ msgid "Success! Gmail Account Verified."
 msgstr ""
 
 #: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1033
-#: cps/editbooks.py:1799 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
+#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
@@ -1127,142 +1127,142 @@ msgstr ""
 msgid "Invalid resolution strategy"
 msgstr ""
 
-#: cps/editbooks.py:103 cps/editbooks.py:160
+#: cps/editbooks.py:112 cps/editbooks.py:169
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
 
-#: cps/editbooks.py:112
+#: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
 msgstr ""
 
-#: cps/editbooks.py:118
+#: cps/editbooks.py:127
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:143 cps/editbooks.py:170 cps/templates/book_edit.html:52
+#: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:151
 msgid "Upload done, processing, please wait..."
 msgstr ""
 
-#: cps/editbooks.py:148 cps/editbooks.py:174
+#: cps/editbooks.py:157 cps/editbooks.py:183
 msgid "Failed to queue upload for processing"
 msgstr ""
 
-#: cps/editbooks.py:190
+#: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
 msgstr ""
 
-#: cps/editbooks.py:198
+#: cps/editbooks.py:207
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr ""
 
-#: cps/editbooks.py:202
+#: cps/editbooks.py:211
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr ""
 
-#: cps/editbooks.py:358 cps/editbooks.py:1236 cps/editbooks.py:1745
+#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "ឯកសារប្រភេទ '%(ext)s' មិនត្រូវបានអនុញ្ញាតឲអាប់ឡូដទៅម៉ាស៊ីន server នេះទេ"
 
-#: cps/editbooks.py:363 cps/editbooks.py:1242 cps/editbooks.py:1756
+#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "ឯកសារប្រភេទ '%(ext)s' មិនត្រូវបានអនុញ្ញាតឲអាប់ឡូដទៅម៉ាស៊ីន server នេះទេ"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1246 cps/editbooks.py:1761
+#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
 msgid "File to be uploaded must have an extension"
 msgstr "ឯកសារដែលត្រូវអាប់ឡូដត្រូវមានកន្ទុយឯកសារ"
 
-#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
 
-#: cps/editbooks.py:872 cps/editbooks.py:1829
+#: cps/editbooks.py:881 cps/editbooks.py:1838
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:895 cps/editbooks.py:1224
+#: cps/editbooks.py:904 cps/editbooks.py:1233
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 
-#: cps/editbooks.py:907 cps/editbooks.py:1198 cps/editbooks.py:1556
+#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr ""
 
-#: cps/editbooks.py:1020
+#: cps/editbooks.py:1029
 msgid "Metadata successfully updated"
 msgstr ""
 
-#: cps/editbooks.py:1038
+#: cps/editbooks.py:1047
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
+#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "មិនដឹង"
 
-#: cps/editbooks.py:1142
+#: cps/editbooks.py:1151
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr ""
 
-#: cps/editbooks.py:1254
+#: cps/editbooks.py:1263
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr ""
 
-#: cps/editbooks.py:1274
+#: cps/editbooks.py:1283
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr ""
 
-#: cps/editbooks.py:1332 cps/editbooks.py:1334
+#: cps/editbooks.py:1341 cps/editbooks.py:1343
 msgid "Book Format Successfully Deleted"
 msgstr ""
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1350 cps/editbooks.py:1352
 msgid "Book Successfully Deleted"
 msgstr ""
 
-#: cps/editbooks.py:1407
+#: cps/editbooks.py:1416
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1461
+#: cps/editbooks.py:1470
 msgid "edit metadata"
 msgstr "កែប្រែទិន្នន័យមេតា"
 
-#: cps/editbooks.py:1515
+#: cps/editbooks.py:1524
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 
-#: cps/editbooks.py:1750
+#: cps/editbooks.py:1759
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1774
+#: cps/editbooks.py:1783
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "មិនអាចបង្កើតទីតាំង %(path)s (ពុំមានសិទ្ធិ)។"
 
-#: cps/editbooks.py:1781
+#: cps/editbooks.py:1790
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "មិនអាចរក្សាទុកឯកសារ %(file)s ។"
 
-#: cps/editbooks.py:1806
+#: cps/editbooks.py:1815
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "ឯកសារទម្រង់ %(ext)s ត្រូវបានបន្ថែមទៅ %(book)s"
@@ -6775,17 +6775,17 @@ msgid "Interface Language"
 msgstr "លើកលែងភាសា"
 
 #: cps/templates/user_edit.html:261 cps/templates/user_edit.html:283
+#, fuzzy
 msgid "Language of Books"
-msgstr "បង្ហាញសៀវភៅដែលមានភាសា"
+msgstr "ភាសានានា"
 
 #: cps/templates/user_edit.html:268 cps/templates/user_edit.html:290
 msgid "Filter the library to only show books in a specific language."
 msgstr ""
 
 #: cps/templates/user_edit.html:280
-#, fuzzy
 msgid "Book Language Filter"
-msgstr "បង្ហាញសៀវភៅដែលមានភាសា"
+msgstr ""
 
 #: cps/templates/user_edit.html:298
 msgid "OAuth & API Integrations"
@@ -6817,8 +6817,9 @@ msgid "Kobo Sync Token"
 msgstr ""
 
 #: cps/templates/user_edit.html:325
+#, fuzzy
 msgid "Create/View"
-msgstr ""
+msgstr "បង្កើតធ្នើ"
 
 #: cps/templates/user_edit.html:329
 msgid "Force full kobo sync"
@@ -6858,8 +6859,9 @@ msgid ""
 msgstr ""
 
 #: cps/templates/user_edit.html:398
+#, fuzzy
 msgid "User Permissions"
-msgstr ""
+msgstr "ការកំណត់"
 
 #: cps/templates/user_edit.html:399
 msgid "Configure what actions this user is allowed to perform."
@@ -6906,9 +6908,8 @@ msgid "Created (oldest first)"
 msgstr ""
 
 #: cps/templates/user_edit.html:468
-#, fuzzy
 msgid "Recently modified"
-msgstr "សៀវភៅដែលបានអានរួច"
+msgstr ""
 
 #: cps/templates/user_edit.html:469
 msgid "Least recently modified"
@@ -6929,8 +6930,9 @@ msgid ""
 msgstr ""
 
 #: cps/templates/user_edit.html:491
+#, fuzzy
 msgid "Default System Shelves:"
-msgstr ""
+msgstr "លុប"
 
 #: cps/templates/user_edit.html:515
 #, fuzzy
@@ -6948,8 +6950,9 @@ msgid "%(visible)s of %(total)s public shelves visible"
 msgstr ""
 
 #: cps/templates/user_edit.html:558 cps/templates/user_table.html:170
+#, fuzzy
 msgid "Delete User"
-msgstr "លុបអ្នកប្រើប្រាស់នេះ"
+msgstr "លុប"
 
 #: cps/templates/user_edit.html:569
 msgid "Generate Kobo Auth URL"
@@ -6960,8 +6963,9 @@ msgid "Visible"
 msgstr ""
 
 #: cps/templates/user_table.html:80 cps/templates/user_table.html:103
+#, fuzzy
 msgid "Select..."
-msgstr ""
+msgstr "បង្កើតធ្នើ"
 
 #: cps/templates/user_table.html:124
 msgid "Remove Selections"
@@ -6975,7 +6979,7 @@ msgstr "អ្នកប្រើប្រាស់រដ្ឋបាល"
 #: cps/templates/user_table.html:134
 #, fuzzy
 msgid "Enter Username"
-msgstr "ជ្រើសរើសឈ្មោះអ្នកប្រើប្រាស់"
+msgstr "ឈ្មោះហៅក្រៅ"
 
 #: cps/templates/user_table.html:135
 #, fuzzy
@@ -6995,12 +6999,12 @@ msgstr "ឧបករណ៍ Kindle"
 #: cps/templates/user_table.html:137
 #, fuzzy
 msgid "Enter eReader Email Subject"
-msgstr "ឧបករណ៍ Kindle"
+msgstr "ផ្ញើទៅ Kindle"
 
 #: cps/templates/user_table.html:137
 #, fuzzy
 msgid "eReader Email Subject"
-msgstr "ឧបករណ៍ Kindle"
+msgstr "ផ្ញើទៅ Kindle"
 
 #: cps/templates/user_table.html:138
 msgid "Locale"
@@ -7025,8 +7029,9 @@ msgid "Edit Denied Tags"
 msgstr ""
 
 #: cps/templates/user_table.html:141
+#, fuzzy
 msgid "Denied Tags"
-msgstr ""
+msgstr "ចុះឈ្មោះ"
 
 #: cps/templates/user_table.html:142
 msgid "Edit Allowed Column Values"
@@ -7056,7 +7061,7 @@ msgstr ""
 #: cps/templates/user_table.html:151
 #, fuzzy
 msgid "Edit Public Shelves"
-msgstr "កែប្រែធ្នើ"
+msgstr "អនុញ្ញាតឲកែប្រែធ្នើសាធារណៈ"
 
 #: cps/templates/user_table.html:153
 msgid "Sync selected Shelves with Kobo"
@@ -7066,75 +7071,3 @@ msgstr ""
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "បង្ហាញជម្រើសស៊េរី"
-
-#~ msgid "Standard Theme"
-#~ msgstr "ការតុបតែងសម្រាប់ប្រើ"
-
-#~ msgid "Location and name of logfile (calibre-web.log for no entry)"
-#~ msgstr "ទីតាំង និងឈ្មោះ logfile (calibre-web.log ប្រសិនបើទទេ)"
-
-#, fuzzy
-#~ msgid "Listen in Browser"
-#~ msgstr "អានក្នុងកម្មវិធី browser"
-
-#~ msgid "Popular publications from this catalog based on Downloads."
-#~ msgstr "ការបោះពុម្ភផ្សាយដែលមានប្រជាប្រិយភាពពីកាតាឡុកនេះផ្អែកលើការទាញយក"
-
-#~ msgid "Popular publications from this catalog based on Rating."
-#~ msgstr "ការបោះពុម្ភផ្សាយដែលមានប្រជាប្រិយភាពពីកាតាឡុកនេះផ្អែកលើការវាយតម្លៃ"
-
-#~ msgid "The latest Books"
-#~ msgstr "សៀវភៅចុងក្រោយគេ"
-
-#~ msgid "Random Books"
-#~ msgstr "សៀវភៅចៃដន្យ"
-
-#~ msgid "Books ordered by Author"
-#~ msgstr "សៀវភៅរៀបតាមលំដាប់អ្នកនិពន្ធ"
-
-#, fuzzy
-#~ msgid "Books ordered by publisher"
-#~ msgstr "សៀវភៅរៀបតាមលំដាប់អ្នកនិពន្ធ"
-
-#~ msgid "Books ordered by category"
-#~ msgstr "សៀវភៅរៀបតាមលំដាប់ប្រភេទ"
-
-#~ msgid "Books ordered by series"
-#~ msgstr "សៀវភៅរៀបតាមលំដាប់ស៊េរី"
-
-#, fuzzy
-#~ msgid "Books ordered by Languages"
-#~ msgstr "សៀវភៅរៀបតាមលំដាប់ស៊េរី"
-
-#, fuzzy
-#~ msgid "Books ordered by Rating"
-#~ msgstr "សៀវភៅរៀបតាមលំដាប់ប្រភេទ"
-
-#, fuzzy
-#~ msgid "Books ordered by file formats"
-#~ msgstr "សៀវភៅរៀបតាមលំដាប់ស៊េរី"
-
-#, fuzzy
-#~ msgid "Books organized in shelves"
-#~ msgstr "សៀវភៅរៀបតាមលំដាប់ស៊េរី"
-
-#, python-format
-#~ msgid "%(name)s's Profile"
-#~ msgstr "ព័ត៌មានសង្ខេបរបស់ %(name)s"
-
-#, fuzzy
-#~ msgid "Downloads per User"
-#~ msgstr "ឯកសារ DLS"
-
-#, fuzzy
-#~ msgid "Repeat for confirmation"
-#~ msgstr "ការកំណត់មុខងារ"
-
-#~ msgid "Users"
-#~ msgstr "បញ្ជីអ្នកប្រើប្រាស់"
-
-#~ msgid "Configuration"
-#~ msgstr "ការកំណត់"
-
-#~ msgid "Click the cover to load metadata to the form"
-#~ msgstr "ចុចលើគម្របដើម្បីបញ្ចូលទិន្នន័យមេតាទៅក្នុង form"

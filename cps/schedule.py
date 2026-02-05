@@ -7,7 +7,7 @@
 
 import datetime
 
-from . import config, constants
+from . import config, constants, helper
 from .services.background_scheduler import BackgroundScheduler, CronTrigger, IntervalTrigger, use_APScheduler, DateTrigger
 from .tasks.database import TaskReconnectDatabase, TaskCleanArchivedBooks
 from .tasks.clean import TaskClean
@@ -243,7 +243,6 @@ def _schedule_hardcover_auto_fetch(scheduler, timezone_info):
             _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
         from cwa_db import CWA_DB
         from .tasks.auto_hardcover_id import TaskAutoHardcoverID
-        from os import getenv
 
         db = CWA_DB()
         cwa_settings = db.get_cwa_settings()
@@ -251,8 +250,8 @@ def _schedule_hardcover_auto_fetch(scheduler, timezone_info):
         # Check if enabled and token available
         enabled = bool(cwa_settings.get('hardcover_auto_fetch_enabled', False))
         token_available = bool(
-            getattr(config, "config_hardcover_token", None) or 
-            getenv("HARDCOVER_TOKEN")
+            getattr(config, "config_hardcover_token", None) or
+            helper.get_secret("HARDCOVER_TOKEN")
         )
         
         if not enabled or not token_available:

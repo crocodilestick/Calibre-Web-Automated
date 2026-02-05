@@ -66,6 +66,39 @@ from .embed_helper import do_calibre_export
 
 log = logger.create()
 
+
+def get_secret(var_name, default_value=None):
+    """
+    Gets a secret from an environment variable or a file.
+    - First, it checks for an environment variable `var_name`.
+    - If not found, it checks for an environment variable `var_name_FILE`.
+      If this variable is set, it's treated as a path to a file containing the secret.
+    - If neither is found, it checks for a file at `/run/secrets/{var_name}`.
+    """
+    value = os.getenv(var_name)
+    if value:
+        return value
+
+    file_var = f"{var_name}_FILE"
+    file_path = os.getenv(file_var)
+    if file_path:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read().strip()
+        except (FileNotFoundError, UnicodeDecodeError) as e:
+            log.warning("Could not read secret from file %s: %s", file_path, e)
+
+    secret_path = f"/run/secrets/{var_name}"
+    if os.path.exists(secret_path):
+        try:
+            with open(secret_path, 'r', encoding='utf-8') as f:
+                return f.read().strip()
+        except (FileNotFoundError, UnicodeDecodeError) as e:
+            log.warning("Could not read secret from file %s: %s", secret_path, e)
+
+    return default_value
+
+
 try:
     from wand.image import Image
     from wand.exceptions import MissingDelegateError, BlobError

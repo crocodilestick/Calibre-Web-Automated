@@ -901,10 +901,9 @@ def set_cwa_settings():
         cwa_settings = cwa_db.get_cwa_settings()
 
     # Check if Hardcover token is available
-    from os import getenv
     hardcover_token_available = bool(
-        getattr(config, "config_hardcover_token", None) or 
-        getenv("HARDCOVER_TOKEN")
+        getattr(config, "config_hardcover_token", None) or
+        helper.get_secret("HARDCOVER_TOKEN")
     )
 
 

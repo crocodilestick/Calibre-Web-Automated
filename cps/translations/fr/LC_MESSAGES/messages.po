@@ -2906,8 +2906,8 @@ msgid "Reverse Proxy Header Name"
 msgstr "Nom de l'en-tête du Reverse Proxy"
 
 #: cps/templates/admin.html:164
-msgid "CWA Settings"
-msgstr "Paramètres de CWA"
+msgid "Edit Calibre Database Configuration"
+msgstr "Éditer la configuration de la base de données Calibre"
 
 #: cps/templates/admin.html:165
 msgid "Edit Basic Configuration"
@@ -2976,8 +2976,7 @@ msgid "CWA Library Conversion Service"
 msgstr "CWA Service de Conversion de Librairie"
 
 #: cps/templates/admin.html:215
-#, fuzzy
-msgid "CWA EPUB Fixer Service"
+msgid "CWA Send-to-Kindle EPUB Fixer Service"
 msgstr "CWA Send-to-Kindle Service de correction EPUB"
 
 #: cps/templates/admin.html:218
@@ -2990,7 +2989,7 @@ msgstr "Serveur Discord CWA"
 
 #: cps/templates/admin.html:222
 msgid "Run Hardcover Auto-Fetch"
-msgstr "Exécuter la récupération automatique des livres reliés"
+msgstr "Exécuter la récupération automatique Hardcover"
 
 #: cps/templates/admin.html:227
 msgid "Administration&nbsp;&nbsp;🚀"
@@ -3268,7 +3267,7 @@ msgstr "Non"
 
 #: cps/templates/book_edit.html:228
 msgid "Hardcover Sync Blacklist"
-msgstr "Livre relié Sync Liste noire"
+msgstr "Hardcover Sync Liste noire"
 
 #: cps/templates/book_edit.html:232
 msgid "Blacklist annotations from syncing to Hardcover"
@@ -3347,7 +3346,7 @@ msgstr "Désarchiver"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
 msgid "Mark as read"
-msgstr "Marquer comme non lu"
+msgstr "Marquer comme lu"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
 msgid "Mark as unread"
@@ -3725,10 +3724,8 @@ msgid "Logfile Configuration"
 msgstr "Configuration du fichier journal"
 
 #: cps/templates/config_edit.html:149
-#, fuzzy
 msgid "Location and name of logfile (/dev/stdout for no entry)"
-msgstr ""
-"Emplacement et nom du fichier journal d’accès (access.log pour aucune entrée)"
+msgstr "Emplacement et nom du fichier journal (/dev/stdout si vide)"
 
 #: cps/templates/config_edit.html:154
 msgid "Enable Access Log"

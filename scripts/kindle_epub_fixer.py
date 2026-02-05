@@ -557,13 +557,32 @@ class EPUBFixer:
         # We normalize region codes (de-DE → de) to match Amazon's behavior.
         allowed_languages = [
             # ISO 639-1 (2-character codes - what Amazon actually uses)
-            'af', 'gsw', 'ar', 'eu', 'nb', 'br', 'ca', 'zh', 'kw', 'co', 'da', 'nl', 'stq', 'en', 'fi', 'fr', 'fy', 'gl',
-            'de', 'gu', 'hi', 'is', 'ga', 'it', 'ja', 'lb', 'mr', 'ml', 'gv', 'frr', 'nn', 'pl', 'pt', 'oc', 'rm',
-            'sco', 'gd', 'es', 'sv', 'ta', 'cy',
+            'aa', 'ab', 'ae', 'af', 'ak', 'am', 'an', 'ar', 'as', 'av', 'ay', 'az', 'ba', 'be', 'bg', 'bi', 'bm',
+            'bn', 'bo', 'br', 'bs', 'ca', 'ce', 'ch', 'co', 'cr', 'cs', 'cu', 'cv', 'cy', 'da', 'de', 'dv', 'dz',
+            'ee', 'el', 'en', 'eo', 'es', 'et', 'eu', 'fa', 'ff', 'fi', 'fj', 'fo', 'fr', 'fy', 'ga', 'gd', 'gl',
+            'gn', 'gu', 'gv', 'ha', 'he', 'hi', 'ho', 'hr', 'ht', 'hu', 'hy', 'hz', 'ia', 'id', 'ie', 'ig', 'ii',
+            'ik', 'in', 'io', 'is', 'it', 'iu', 'iw', 'ja', 'ji', 'jv', 'ka', 'kg', 'ki', 'kj', 'kk', 'kl', 'km',
+            'kn', 'ko', 'kr',
+            'ks', 'ku', 'kv', 'kw', 'ky', 'la', 'lb', 'lg', 'li', 'ln', 'lo', 'lt', 'lu', 'lv', 'mg', 'mh', 'mi',
+            'mk', 'ml', 'mn', 'mr', 'ms', 'mt', 'my', 'na', 'nb', 'nd', 'ne', 'ng', 'nl', 'nn', 'no', 'nr', 'nv',
+            'ny', 'oc', 'oj', 'om', 'or', 'os', 'pa', 'pi', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 'ro', 'ru', 'rw',
+            'sa', 'sc', 'sd', 'se', 'sg', 'si', 'sk', 'sl', 'sm', 'sn', 'so', 'sq', 'sr', 'ss', 'st', 'su', 'sv',
+            'sw', 'ta', 'te', 'tg', 'th', 'ti', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ty', 'ug', 'uk',
+            'ur', 'uz', 've', 'vi', 'vo', 'wa', 'wo', 'xh', 'yi', 'yo', 'za', 'zh', 'zu',
             # ISO 639-2 (3-character codes - also supported)
-            'afr', 'ara', 'eus', 'baq', 'nob', 'bre', 'cat', 'zho', 'chi', 'cor', 'cos', 'dan', 'nld', 'dut', 'eng', 'fin',
-            'fra', 'fre', 'fry', 'glg', 'deu', 'ger', 'guj', 'hin', 'isl', 'ice', 'gle', 'ita', 'jpn', 'ltz', 'mar', 'mal',
-            'glv', 'nor', 'nno', 'por', 'oci', 'roh', 'gla', 'spa', 'swe', 'tam', 'cym', 'wel',
+            'aar', 'abk', 'ave', 'afr', 'aka', 'amh', 'arg', 'ara', 'asm', 'ava', 'aym', 'aze', 'bak', 'bel', 'bul',
+            'bih', 'bis', 'bam', 'ben', 'tib', 'bre', 'bos', 'cat', 'che', 'cha', 'cos', 'cre', 'cze', 'chu', 'chv',
+            'wel', 'dan', 'ger', 'div', 'dzo', 'ewe', 'gre', 'eng', 'epo', 'spa', 'est', 'baq', 'per', 'ful', 'fin',
+            'fij', 'fao', 'fre', 'fry', 'gle', 'gla', 'glg', 'grn', 'guj', 'glv', 'hau', 'heb', 'hin', 'hmo', 'hrv',
+            'hat', 'hun', 'arm', 'her', 'ina', 'ind', 'ile', 'ibo', 'iii', 'ipk', 'ido', 'ice', 'ita', 'iku', 'jpn',
+            'jav', 'geo', 'kon', 'kik', 'kua', 'kaz', 'kal', 'khm', 'kan', 'kor', 'kau', 'kas', 'kur', 'kom', 'cor',
+            'kir', 'lat', 'ltz', 'lug', 'lim', 'lin', 'lao', 'lit', 'lub', 'lav', 'mlg', 'mah', 'mao', 'mac', 'mal',
+            'mon', 'mar', 'may', 'mlt', 'bur', 'nau', 'nob', 'nde', 'nep', 'ndo', 'dut', 'nno', 'nor', 'nbl', 'nav',
+            'nya', 'oci', 'oji', 'orm', 'ori', 'oss', 'pan', 'pli', 'pol', 'pus', 'por', 'que', 'roh', 'run', 'rum',
+            'rus', 'kin', 'san', 'srd', 'snd', 'sme', 'sag', 'sin', 'slo', 'slv', 'smo', 'sna', 'som', 'alb', 'srp',
+            'ssw', 'sot', 'sun', 'swe', 'swa', 'tam', 'tel', 'tgk', 'tha', 'tir', 'tuk', 'tgl', 'tsn', 'ton', 'tur',
+            'tso', 'tat', 'twi', 'tah', 'uig', 'ukr', 'urd', 'uzb', 'ven', 'vie', 'vol', 'wln', 'wol', 'xho', 'yid',
+            'yor', 'zha', 'chi', 'zul',
         ]
 
         try:
@@ -622,14 +641,21 @@ class EPUBFixer:
                         elif original_language != language:
                             self.fixed_problems.append(f"Normalized language from {original_language} to {language} (case standardization)")
                     else:
-                        # Looks like a language tag but not in Amazon's allowed list
-                        detected = self._detect_language_from_metadata(epub_path)
-                        if detected:
-                            language = detected
-                            self.fixed_problems.append(f"Unsupported language '{original_language}'. Detected from metadata: {language}")
+                        # Looks like a valid language tag but is not in Amazon's supported list.
+                        # Preserve the metadata instead of replacing it with a default.
+                        language = simplified_lang
+                        if original_language.lower() != language and '-' in original_language:
+                            self.fixed_problems.append(
+                                f"Preserved language {original_language} as {language} (not in Amazon list; normalized base code)"
+                            )
+                        elif original_language != language:
+                            self.fixed_problems.append(
+                                f"Preserved language {original_language} as {language} (not in Amazon list; case standardization)"
+                            )
                         else:
-                            language = default_language
-                            self.fixed_problems.append(f"Unsupported language '{original_language}'. Using default: {language}")
+                            self.fixed_problems.append(
+                                f"Preserved language '{original_language}' (not in Amazon list)"
+                            )
                 else:
                     # Doesn't look like a language tag at all (e.g., "Unknown", "garbage")
                     detected = self._detect_language_from_metadata(epub_path)
@@ -753,7 +779,7 @@ class EPUBFixer:
                         self.files[filename] = dom.toxml()
                 else:
                     no_src_pattern = re.compile(r'<img\b(?![^>]*\bsrc\s*=)[^>]*>', re.IGNORECASE)
-                    empty_src_pattern = re.compile(r'<img\b[^>]*\bsrc\s*=\s*["\']?\s*["\'][^>]*>', re.IGNORECASE)
+                    empty_src_pattern = re.compile(r'<img\b[^>]*\bsrc\s*=\s*(?:"\s*"|\'\s*\')[^>]*>', re.IGNORECASE)
 
                     updated = empty_src_pattern.sub('', content)
                     updated = no_src_pattern.sub('', updated)

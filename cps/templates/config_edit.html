@@ -145,8 +145,8 @@
                     <option value="40" {% if config.config_log_level == 40 %}selected{% endif %}>ERROR</option>
             </select>
         </div>
-        <div class="form-group">
-          <label for="config_logfile">{{_('Location and name of logfile (calibre-web.log for no entry)')}}</label>
+        <div class="form-group" style="display: none;">
+          <label for="config_logfile">{{_('Location and name of logfile (/dev/stdout for no entry)')}}</label>
            <input type="text" class="form-control" name="config_logfile" id="config_logfile" value="{% if config.config_logfile != None %}{{ config.config_logfile }}{% endif %}" autocomplete="off">
         </div>
       <div class="form-group">

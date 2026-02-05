@@ -26,6 +26,12 @@ sys.path.insert(0, str(scripts_dir))
 from cps.progress_syncing.checksums import calculate_koreader_partial_md5
 
 
+def _skip_if_koreader_disabled(result):
+    stdout = result.stdout if isinstance(result.stdout, str) else (result.stdout or b"").decode(errors="ignore")
+    if "koreader sync is disabled" in stdout.lower():
+        pytest.skip("KOReader sync disabled in test environment")
+
+
 def create_minimal_calibre_library(library_path: Path):
     """Create a minimal Calibre library with test books."""
     library_path.mkdir(exist_ok=True)
@@ -151,6 +157,34 @@ class TestChecksumGenerationScript:
         assert result.returncode == 0
         assert "usage:" in result.stdout.lower() or "Generate" in result.stdout
 
+    def test_reports_disabled_and_no_writes_when_koreader_off(self, tmp_path):
+        """Verify script reports disabled state and does not write checksums when KOReader sync is off."""
+        library_path = tmp_path / "test_library"
+        create_minimal_calibre_library(library_path)
+
+        # Add a book so there would be work if enabled
+        add_book_to_library(library_path, "Disabled Mode Book", ["EPUB"])
+
+        script_path = scripts_dir / "generate_book_checksums.py"
+        result = subprocess.run(
+            [sys.executable, str(script_path), "--library-path", str(library_path)],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        assert result.returncode == 0
+
+        if "koreader sync is disabled" in result.stdout.lower():
+            db_path = library_path / "metadata.db"
+            conn = sqlite3.connect(db_path)
+            cur = conn.cursor()
+            count = cur.execute("SELECT COUNT(*) FROM book_format_checksums").fetchone()[0]
+            conn.close()
+            assert count == 0
+        else:
+            pytest.skip("KOReader sync enabled in test environment")
+
     def test_generates_checksums_for_new_library(self, tmp_path):
         """Test generating checksums for a library without any checksums."""
         library_path = tmp_path / "test_library"
@@ -170,6 +204,7 @@ class TestChecksumGenerationScript:
         )
 
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
 
         # Verify checksums were created
         db_path = library_path / "metadata.db"
@@ -211,6 +246,8 @@ class TestChecksumGenerationScript:
             text=True,
             timeout=30
         )
+
+        _skip_if_koreader_disabled(result)
 
         # Verify original checksum is unchanged
         conn = sqlite3.connect(db_path)
@@ -259,6 +296,7 @@ class TestChecksumGenerationScript:
         )
 
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
 
         # Verify checksum was regenerated
         conn = sqlite3.connect(db_path)
@@ -314,6 +352,7 @@ class TestChecksumGenerationScript:
 
         # Script should complete (may skip the missing file)
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
         assert "SKIP" in result.stdout or "not found" in result.stdout.lower()
 
     def test_split_library_with_separate_paths(self, tmp_path):
@@ -364,6 +403,7 @@ class TestChecksumGenerationScript:
         )
         
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
         assert "Split Library Book" in result.stdout
         assert "✓" in result.stdout
         assert "split library mode" in result.stdout.lower()
@@ -399,6 +439,7 @@ class TestChecksumGenerationScript:
         
         # Should succeed by falling back to library_path
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
         assert "Fallback Test Book" in result.stdout
         assert "✓" in result.stdout
 
@@ -420,6 +461,7 @@ class TestChecksumGenerationScript:
         
         # Should succeed using library_path for books
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
         assert "Normal Mode Book" in result.stdout
         assert "✓" in result.stdout
         # Should NOT show split library mode message
@@ -475,6 +517,7 @@ class TestChecksumGenerationScript:
         )
         
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
         
         # Verify all three formats got checksums
         conn = sqlite3.connect(db_path)
@@ -514,6 +557,7 @@ class TestChecksumGenerationScript:
         )
 
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
 
         # Verify all checksums were created
         db_path = library_path / "metadata.db"
@@ -565,6 +609,7 @@ class TestChecksumGenerationAccuracy:
         )
 
         assert result.returncode == 0
+        _skip_if_koreader_disabled(result)
 
         # Check checksum format
         db_path = library_path / "metadata.db"
@@ -592,11 +637,13 @@ class TestChecksumGenerationAccuracy:
         script_path = scripts_dir / "generate_book_checksums.py"
 
         # Run once
-        subprocess.run(
+        first_run = subprocess.run(
             [sys.executable, str(script_path), "--library-path", str(library_path)],
             capture_output=True,
+            text=True,
             timeout=30
         )
+        _skip_if_koreader_disabled(first_run)
 
         db_path = library_path / "metadata.db"
         conn = sqlite3.connect(db_path)
@@ -609,13 +656,15 @@ class TestChecksumGenerationAccuracy:
         conn.close()
 
         # Run again with --force
-        subprocess.run(
+        second_run = subprocess.run(
             [sys.executable, str(script_path),
              "--library-path", str(library_path),
              "--force"],
             capture_output=True,
+            text=True,
             timeout=30
         )
+        _skip_if_koreader_disabled(second_run)
 
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
@@ -644,11 +693,13 @@ class TestChecksumGenerationAccuracy:
 
         # Run script
         script_path = scripts_dir / "generate_book_checksums.py"
-        subprocess.run(
+        result = subprocess.run(
             [sys.executable, str(script_path), "--library-path", str(library_path)],
             capture_output=True,
+            text=True,
             timeout=30
         )
+        _skip_if_koreader_disabled(result)
 
         # Get script-generated checksum
         db_path = library_path / "metadata.db"

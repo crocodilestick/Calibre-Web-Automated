@@ -2438,7 +2438,8 @@ body > div.row-fluid {
     top: auto;
     bottom: 20px;
     left: 50%;
-    width: 50%;
+    width: 90vw;
+    max-width: 60rem;
     margin: 0;
     -webkit-transform: translate(-50%);
     -ms-transform: translate(-50%);
@@ -2457,11 +2458,11 @@ body > div.row-fluid {
     height: auto;
     line-height: normal !important;
     overflow: visible;
-    white-space: nowrap;
-    -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     font-size: 14px;
-    padding: 5px 0;
+    padding: 8px 12px;
     z-index: 99999;
     -webkit-animation: cssAnimation 0s ease-in 10s forwards;
     animation: cssAnimation 0s ease-in 10s forwards;
@@ -2472,13 +2473,12 @@ body > div.row-fluid {
 .alert-danger {
     background-color: rgba(255, 85, 51, .3);
     color: #fff;
-    width: fit-content !important;
-    width: max-content !important;
+    width: 90vw !important;
+    max-width: 60rem;
     height: auto !important;
     padding: 2rem;
-    max-width: 80vw;
-    text-overflow: ellipsis;
-    overflow-x: clip !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .table > thead > tr > th {

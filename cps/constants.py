@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+import multiprocessing
 import sys
 import os
 from collections import namedtuple
@@ -44,6 +45,8 @@ else:
     if getattr(sys, 'frozen', False):
         CONFIG_DIR = os.path.abspath(os.path.join(CONFIG_DIR, os.pardir))
 
+# DEFAULT_LOCALE - If no locale is available some other way, fall back to this
+DEFAULT_LOCALE = 'en'
 
 DEFAULT_SETTINGS_FILE = "app.db"
 DEFAULT_GDRIVE_FILE = "gdrive.db"
@@ -181,6 +184,9 @@ STABLE_VERSION = os.environ.get("CWA_STABLE_VERSION") or _read_text("/app/CWA_ST
 
 USER_AGENT = f"Calibre-Web-Automated/{INSTALLED_VERSION}"
 
+# Sometimes we want to mimic a real browser user agent
+BROWSER_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
+
 NIGHTLY_VERSION = dict()
 NIGHTLY_VERSION[0] = '0af52f205358b0147ee3430f9e6c8fe007c0ea77'
 NIGHTLY_VERSION[1] = '2024-11-16T07:21:28+01:00'
@@ -232,3 +238,12 @@ LANGUAGE_NAMES = {
     "zh_Hans_CN": _("Chinese (Simplified, China)"),
     "zh_Hant_TW": _("Chinese (Traditional, Taiwan)"),
 }
+
+# If too many thread pools end up being created throughout the app we may want to consider setting this lower
+MAX_THREADS = max(
+    1, multiprocessing.cpu_count() - 1
+)
+
+# NOTE: Keep "com" as the first entry, whichever region is first is the default region until one is chosen by the admin
+# or the user. All other regions should be kept in alphabetical order.
+AMAZON_REGIONS = ["com", "ca", "co.jp", "co.uk", "com.au", "com.mx", "de", "es", "fr", "ie", "in", "it"]

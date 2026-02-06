@@ -137,61 +137,55 @@ def verify_password(username, password):
     log.warning('OPDS Login failed for user "%s" IP-address: %s', username, ip_address)
     return None
 
+def get_basic_auth_error():
+    try:
+        return auth.auth_error_callback(status)
+    except TypeError:
+        return auth.auth_error_callback()
+    
+def using_basic_auth(allow_anonymous: bool, unauthorized_hanlder):
+    def wrapper(f):
+        @wraps(f)
+        def decorator(*args, **kwargs):
+            authorisation = auth.get_auth()
+            status = None
+            user = None
+            if config.config_allow_reverse_proxy_header_login and not authorisation:
+                user = load_user_from_reverse_proxy_header(request)
+            if allow_anonymous and config.config_anonbrowse == 1 and not authorisation:
+                authorisation = Authorization(
+                    b"Basic", {'username': "Guest", 'password': ""})
+            if not user:
+                user = auth.authenticate(authorisation, "")
+            if user in (False, None):
+                status = 401
+            if status:
+                return unauthorized_hanlder()
+            g.flask_httpauth_user = user if user is not True \
+                else auth.username if auth else None
+            return auth.ensure_sync(f)(*args, **kwargs)
+        return decorator
+    return wrapper
+basic_auth_or_anonymous = using_basic_auth(True, get_basic_auth_error)
+basic_auth_required = using_basic_auth(False, get_basic_auth_error)
 
-def requires_basic_auth_if_no_ano(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        authorisation = auth.get_auth()
-        status = None
-        user = None
-        if config.config_allow_reverse_proxy_header_login and not authorisation:
-            user = load_user_from_reverse_proxy_header(request)
-        if config.config_anonbrowse == 1 and not authorisation:
-            authorisation = Authorization(
-                b"Basic", {'username': "Guest", 'password': ""})
-        if not user:
-            user = auth.authenticate(authorisation, "")
-        if user in (False, None):
-            status = 401
-        if status:
-            try:
-                return auth.auth_error_callback(status)
-            except TypeError:
-                return auth.auth_error_callback()
-        g.flask_httpauth_user = user if user is not True \
-            else auth.username if auth else None
-        return auth.ensure_sync(f)(*args, **kwargs)
-    return decorated
-
-
-def login_required_if_no_ano(func):
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        if config.config_allow_reverse_proxy_header_login:
-            user = load_user_from_reverse_proxy_header(request)
-            if user:
-                g.flask_httpauth_user = user
-                return func(*args, **kwargs)
-            g.flask_httpauth_user = None
-        if config.config_anonbrowse == 1:
-            return func(*args, **kwargs)
-        return login_required(func)(*args, **kwargs)
-
-    return decorated_view
-
-
-def user_login_required(func):
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        if config.config_allow_reverse_proxy_header_login:
-            user = load_user_from_reverse_proxy_header(request)
-            if user:
-                g.flask_httpauth_user = user
-                return func(*args, **kwargs)
-            g.flask_httpauth_user = None
-        return login_required(func)(*args, **kwargs)
-
-    return decorated_view
+def using_user_login(allow_anonymous: bool):
+    def wrapper(f):
+        @wraps(f)
+        def decorator(*args, **kwargs):
+            if config.config_allow_reverse_proxy_header_login:
+                user = load_user_from_reverse_proxy_header(request)
+                if user:
+                    g.flask_httpauth_user = user
+                    return f(*args, **kwargs)
+                g.flask_httpauth_user = None
+            if allow_anonymous and config.config_anonbrowse == 1:
+                return f(*args, **kwargs)
+            return login_required(f)(*args, **kwargs)
+        return decorator
+    return wrapper
+user_login_or_anonymous = using_user_login(True)
+user_login_required = using_user_login(False)
 
 
 def load_user_from_reverse_proxy_header(req):

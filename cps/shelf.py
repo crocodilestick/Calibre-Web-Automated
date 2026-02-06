@@ -16,7 +16,7 @@ from sqlalchemy.sql.expression import func, true
 
 from . import calibre_db, config, db, logger, ub
 from .render_template import render_title_template
-from .usermanagement import login_required_if_no_ano, user_login_required
+from .usermanagement import user_login_or_anonymous, user_login_required
 from .services import hardcover
 log = logger.create()
 
@@ -280,7 +280,7 @@ def delete_shelf(shelf_id):
 
 
 @shelf.route("/simpleshelf/<int:shelf_id>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def show_simpleshelf(shelf_id):
     return render_show_shelf(2, shelf_id, 1, None)
 
@@ -288,7 +288,7 @@ def show_simpleshelf(shelf_id):
 @shelf.route("/shelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
 @shelf.route("/shelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
 @shelf.route("/shelf/<int:shelf_id>/<sort_param>/<int:page>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def show_shelf(shelf_id, sort_param, page):
     return render_show_shelf(1, shelf_id, page, sort_param)
 

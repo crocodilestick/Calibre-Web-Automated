@@ -19,7 +19,7 @@ from shutil import copyfile
 from . import db, calibre_db, logger, ub, csrf, config, helper
 from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED
 from .admin import admin_required  
-from .usermanagement import login_required_if_no_ano
+from .usermanagement import user_login_or_anonymous
 from .render_template import render_title_template
 from .cw_login import current_user
 
@@ -274,7 +274,7 @@ def filter_dismissed_groups(duplicate_groups, user_id=None):
 
 
 @duplicates.route("/duplicates")
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_or_edit_required
 def show_duplicates():
     """Display books with duplicate titles and authors"""
@@ -1005,7 +1005,7 @@ def get_common_filters(user_id=None, allow_show_archived=False, return_all_langu
 
 
 @duplicates.route("/duplicates/status")
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_or_edit_required
 def get_duplicate_status():
     """API endpoint to get unresolved duplicate count and sample groups
@@ -1093,7 +1093,7 @@ def get_duplicate_status():
 
 
 @duplicates.route("/duplicates/dismiss/<group_hash>", methods=['POST'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_or_edit_required
 def dismiss_duplicate_group(group_hash):
     """API endpoint to dismiss a duplicate group
@@ -1148,7 +1148,7 @@ def dismiss_duplicate_group(group_hash):
 
 
 @duplicates.route("/duplicates/undismiss/<group_hash>", methods=['POST'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_or_edit_required
 def undismiss_duplicate_group(group_hash):
     """API endpoint to un-dismiss a duplicate group
@@ -1214,7 +1214,7 @@ def invalidate_cache():
 
 @duplicates.route("/duplicates/trigger-scan", methods=['POST'])
 @csrf.exempt
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_or_edit_required
 def trigger_scan():
     """Manually trigger a duplicate scan"""
@@ -1309,7 +1309,7 @@ def trigger_scan():
 
 
 @duplicates.route("/duplicates/scan-progress/<task_id>", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_or_edit_required
 def scan_progress(task_id):
     """Get progress for a queued duplicate scan task"""
@@ -1351,7 +1351,7 @@ def scan_progress(task_id):
 
 @duplicates.route("/duplicates/cancel-scan/<task_id>", methods=['POST'])
 @csrf.exempt
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_or_edit_required
 def cancel_scan(task_id):
     """Cancel a running or queued duplicate scan task."""
@@ -1365,7 +1365,7 @@ def cancel_scan(task_id):
 
 
 @duplicates.route("/duplicates/preview-resolution", methods=["POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def preview_resolution():
     """Preview auto-resolution without executing"""
@@ -1410,7 +1410,7 @@ def preview_resolution():
 
 
 @duplicates.route("/duplicates/execute-resolution", methods=["POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def execute_resolution():
     """Execute auto-resolution"""

@@ -18,7 +18,7 @@ from sqlalchemy.sql.expression import func, text, or_, and_, true
 from sqlalchemy.exc import InvalidRequestError, OperationalError
 
 from . import logger, config, db, calibre_db, ub, isoLanguages, constants, magic_shelf
-from .usermanagement import requires_basic_auth_if_no_ano, auth
+from .usermanagement import basic_auth_or_anonymous, auth
 from .helper import get_download_link, get_book_cover
 from .pagination import Pagination
 from .web import render_read_books
@@ -202,7 +202,6 @@ def get_opds_root_entries(user, allow_anonymous):
         })
     return entries
 
-
 @opds.before_request
 def track_opds_access():
     """Track OPDS feed access for analytics"""
@@ -229,21 +228,21 @@ def track_opds_access():
 
 @opds.route("/opds/")
 @opds.route("/opds")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_index():
     entries = get_opds_root_entries(auth.current_user(), g.allow_anonymous)
     return render_xml_template('index.xml', entries=entries)
 
 
 @opds.route("/opds/osd")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_osd():
     return render_xml_template('osd.xml', lang='en-EN')
 
 
 # @opds.route("/opds/search", defaults={'query': ""})
 @opds.route("/opds/search/<path:query>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_cc_search(query):
     # Handle strange query from Libera Reader with + instead of spaces
     plus_query = unquote_plus(request.environ['RAW_URI'].split('/opds/search/')[1]).strip()
@@ -251,19 +250,19 @@ def feed_cc_search(query):
 
 
 @opds.route("/opds/search", methods=["GET"])
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_normal_search():
     return feed_search(request.args.get("query", "").strip())
 
 
 @opds.route("/opds/books")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_booksindex():
     return render_element_index(db.Books.sort, None, 'opds.feed_letter_books')
 
 
 @opds.route("/opds/books/letter/<book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_letter_books(book_id):
     off = request.args.get("offset") or 0
     letter = true() if book_id == "00" else func.upper(db.Books.sort).startswith(book_id)
@@ -277,7 +276,7 @@ def feed_letter_books(book_id):
 
 
 @opds.route("/opds/new")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_new():
     if not auth.current_user().check_visibility(constants.SIDEBAR_RECENT):
         abort(404)
@@ -289,7 +288,7 @@ def feed_new():
 
 
 @opds.route("/opds/discover")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_discover():
     if not auth.current_user().check_visibility(constants.SIDEBAR_RANDOM):
         abort(404)
@@ -300,7 +299,7 @@ def feed_discover():
 
 
 @opds.route("/opds/rated")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_best_rated():
     if not auth.current_user().check_visibility(constants.SIDEBAR_BEST_RATED):
         abort(404)
@@ -313,7 +312,7 @@ def feed_best_rated():
 
 
 @opds.route("/opds/hot")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_hot():
     if not auth.current_user().check_visibility(constants.SIDEBAR_HOT):
         abort(404)
@@ -337,7 +336,7 @@ def feed_hot():
 
 
 @opds.route("/opds/author")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_authorindex():
     if not auth.current_user().check_visibility(constants.SIDEBAR_AUTHOR):
         abort(404)
@@ -345,7 +344,7 @@ def feed_authorindex():
 
 
 @opds.route("/opds/author/letter/<book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_letter_author(book_id):
     if not auth.current_user().check_visibility(constants.SIDEBAR_AUTHOR):
         abort(404)
@@ -362,13 +361,13 @@ def feed_letter_author(book_id):
 
 
 @opds.route("/opds/author/<int:book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_author(book_id):
     return render_xml_dataset(db.Authors, book_id)
 
 
 @opds.route("/opds/publisher")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_publisherindex():
     if not auth.current_user().check_visibility(constants.SIDEBAR_PUBLISHER):
         abort(404)
@@ -385,13 +384,13 @@ def feed_publisherindex():
 
 
 @opds.route("/opds/publisher/<int:book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_publisher(book_id):
     return render_xml_dataset(db.Publishers, book_id)
 
 
 @opds.route("/opds/category")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_categoryindex():
     if not auth.current_user().check_visibility(constants.SIDEBAR_CATEGORY):
         abort(404)
@@ -399,7 +398,7 @@ def feed_categoryindex():
 
 
 @opds.route("/opds/category/letter/<book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_letter_category(book_id):
     if not auth.current_user().check_visibility(constants.SIDEBAR_CATEGORY):
         abort(404)
@@ -418,13 +417,13 @@ def feed_letter_category(book_id):
 
 
 @opds.route("/opds/category/<int:book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_category(book_id):
     return render_xml_dataset(db.Tags, book_id)
 
 
 @opds.route("/opds/series")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_seriesindex():
     if not auth.current_user().check_visibility(constants.SIDEBAR_SERIES):
         abort(404)
@@ -432,7 +431,7 @@ def feed_seriesindex():
 
 
 @opds.route("/opds/series/letter/<book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_letter_series(book_id):
     if not auth.current_user().check_visibility(constants.SIDEBAR_SERIES):
         abort(404)
@@ -451,7 +450,7 @@ def feed_letter_series(book_id):
 
 
 @opds.route("/opds/series/<int:book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_series(book_id):
     off = request.args.get("offset") or 0
     entries, __, pagination = calibre_db.fill_indexpage((int(off) / (int(config.config_books_per_page)) + 1), 0,
@@ -463,7 +462,7 @@ def feed_series(book_id):
 
 
 @opds.route("/opds/ratings")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_ratingindex():
     if not auth.current_user().check_visibility(constants.SIDEBAR_RATING):
         abort(404)
@@ -485,13 +484,13 @@ def feed_ratingindex():
 
 
 @opds.route("/opds/ratings/<book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_ratings(book_id):
     return render_xml_dataset(db.Ratings, book_id)
 
 
 @opds.route("/opds/formats")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_formatindex():
     if not auth.current_user().check_visibility(constants.SIDEBAR_FORMAT):
         abort(404)
@@ -509,7 +508,7 @@ def feed_formatindex():
 
 
 @opds.route("/opds/formats/<book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_format(book_id):
     off = request.args.get("offset") or 0
     entries, __, pagination = calibre_db.fill_indexpage((int(off) / (int(config.config_books_per_page)) + 1), 0,
@@ -522,7 +521,7 @@ def feed_format(book_id):
 
 @opds.route("/opds/language")
 @opds.route("/opds/language/")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_languagesindex():
     if not auth.current_user().check_visibility(constants.SIDEBAR_LANGUAGE):
         abort(404)
@@ -539,7 +538,7 @@ def feed_languagesindex():
 
 
 @opds.route("/opds/language/<int:book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_languages(book_id):
     off = request.args.get("offset") or 0
     entries, __, pagination = calibre_db.fill_indexpage((int(off) / (int(config.config_books_per_page)) + 1), 0,
@@ -551,7 +550,7 @@ def feed_languages(book_id):
 
 
 @opds.route("/opds/shelfindex")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_shelfindex():
     if not (auth.current_user().is_authenticated or g.allow_anonymous):
         abort(404)
@@ -568,7 +567,7 @@ def feed_shelfindex():
 
 
 @opds.route("/opds/magicshelfindex")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_magic_shelfindex():
     if not (auth.current_user().is_authenticated or g.allow_anonymous):
         abort(404)
@@ -599,7 +598,7 @@ def feed_magic_shelfindex():
 
 
 @opds.route("/opds/shelf/<int:book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_shelf(book_id):
     if not (auth.current_user().is_authenticated or g.allow_anonymous):
         abort(404)
@@ -639,7 +638,7 @@ def feed_shelf(book_id):
 
 
 @opds.route("/opds/magicshelf/<int:shelf_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_magic_shelf(shelf_id):
     if not (auth.current_user().is_authenticated or g.allow_anonymous):
         abort(404)
@@ -679,7 +678,7 @@ def feed_magic_shelf(shelf_id):
 
 
 @opds.route("/opds/download/<book_id>/<book_format>/")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def opds_download_link(book_id, book_format):
     if not auth.current_user().role_download():
         return abort(401)
@@ -689,7 +688,7 @@ def opds_download_link(book_id, book_format):
 
 @opds.route("/ajax/book/<string:uuid>/<library>")
 @opds.route("/ajax/book/<string:uuid>", defaults={'library': ""})
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def get_metadata_calibre_companion(uuid, library):
     entry = calibre_db.session.query(db.Books).filter(db.Books.uuid.like("%" + uuid + "%")).first()
     if entry is not None:
@@ -702,7 +701,7 @@ def get_metadata_calibre_companion(uuid, library):
 
 
 @opds.route("/opds/stats")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def get_database_stats():
     stat = dict()
     stat['books'] = calibre_db.session.query(db.Books).count()
@@ -716,13 +715,13 @@ def get_database_stats():
 @opds.route("/opds/cover_240_240/<book_id>")
 @opds.route("/opds/cover_90_90/<book_id>")
 @opds.route("/opds/cover/<book_id>")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_get_cover(book_id):
     return get_book_cover(book_id)
 
 
 @opds.route("/opds/readbooks")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_read_books():
     if not (auth.current_user().check_visibility(constants.SIDEBAR_READ_AND_UNREAD) and not auth.current_user().is_anonymous):
         return abort(403)
@@ -732,7 +731,7 @@ def feed_read_books():
 
 
 @opds.route("/opds/unreadbooks")
-@requires_basic_auth_if_no_ano
+@basic_auth_or_anonymous
 def feed_unread_books():
     if not (auth.current_user().check_visibility(constants.SIDEBAR_READ_AND_UNREAD) and not auth.current_user().is_anonymous):
         return abort(403)

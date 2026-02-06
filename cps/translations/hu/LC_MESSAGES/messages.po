@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-02-05 00:15+0100\n"
-"PO-Revision-Date: 2026-02-06 02:30+0100\n"
+"PO-Revision-Date: 2026-02-06 02:46+0100\n"
 "Last-Translator: Kónya Márton <konyamarci52@proton.me>\n"
 "Language-Team: \n"
 "Language: hu\n"
@@ -34,7 +34,7 @@ msgstr "A kiszolgáló újraindult, töltse be újra az oldalt!"
 
 #: cps/admin.py:182
 msgid "Performing Server shutdown, please close window."
-msgstr "A kiszolgáló leállítása folyamatban, zárja be ezt az ablakot"
+msgstr "A kiszolgáló leállítása folyamatban, zárja be ezt az ablakot!"
 
 #: cps/admin.py:190
 msgid "Success! Database Reconnected"
@@ -315,7 +315,7 @@ msgstr "Érvénytelen művelet"
 
 #: cps/admin.py:1438
 msgid "client_secrets.json Is Not Configured For Web Application"
-msgstr "A client_secrets.json fájl nincs beállítva a webalkalmazáshoz"
+msgstr "client_secrets.json fájl nincs beállítva a webalkalmazáshoz"
 
 #: cps/admin.py:1577
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -401,7 +401,7 @@ msgstr "Siker! A Gmail-fiók hitelesítve."
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
 msgid "Oops! Database Error: %(error)s."
-msgstr "Hoppá! Adatbázis hiba: %(error)s"
+msgstr "Hoppá! Adatbázis hiba: %(error)s."
 
 #: cps/admin.py:1753
 #, python-format
@@ -455,7 +455,7 @@ msgstr "cím"
 #: cps/admin.py:1949 cps/admin.py:2817
 #, python-format
 msgid "Edit User %(nick)s"
-msgstr " A felhasználó szerkesztése: %(nick)s"
+msgstr "A felhasználó szerkesztése: %(nick)s"
 
 #: cps/admin.py:1961
 #, python-format
@@ -1088,7 +1088,7 @@ msgstr ""
 
 #: cps/cwa_functions.py:2170
 msgid "Invalid image data format."
-msgstr "Érvénytelen kép formátum"
+msgstr "Érvénytelen kép formátum."
 
 #: cps/cwa_functions.py:2175
 msgid "Error validating image data."
@@ -1168,7 +1168,7 @@ msgstr "A feltöltés feldolgozásra való sorba állítása nem sikerült"
 
 #: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
-msgstr "Az átalakításhoz hiányzik a forrás- vagy a célformátum!"
+msgstr "Az átalakításhoz hiányzik a forrás- vagy célformátum!"
 
 #: cps/editbooks.py:207
 #, python-format
@@ -1191,7 +1191,7 @@ msgstr "A fájlformátum feltöltése nem engedélyezett ezen a szerveren"
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr ""
 "A(z) \"%(ext)s\" kiterjesztésű fájlok feltöltése nincs engedélyezve ezen a "
-"szerveren."
+"szerveren"
 
 #: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
 msgid "File to be uploaded must have an extension"
@@ -1202,7 +1202,7 @@ msgstr "A feltöltendő fájlnak kiterjesztéssel kell rendelkeznie!"
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
-"Hiba történt az e-könyv megnyitásakor. A fájl nem létezik vagy nem érhető el:"
+"Hiba történt az e-könyv megnyitásakor. A fájl nem létezik vagy nem érhető el"
 
 #: cps/editbooks.py:881 cps/editbooks.py:1838
 msgid "User has no rights to upload cover"
@@ -1239,7 +1239,7 @@ msgid ""
 "upload new: "
 msgstr ""
 "A feltöltött könyv valószínűleg már megtalálható a könyvtárban. Fontolja meg "
-"módosítását, mielőtt újat tölt fel:"
+"módosítását, mielőtt újat tölt fel: "
 
 #: cps/editbooks.py:1263
 #, python-format
@@ -1290,7 +1290,7 @@ msgstr "Nem sikerült elmenteni a %(file)s fájlt."
 #: cps/editbooks.py:1815
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
-msgstr "A(z) %(ext)s fájlformátum hozzáadva a könyvhez: %(book)s."
+msgstr "A(z) %(ext)s fájlformátum hozzáadva a könyvhöz: %(book)s"
 
 #: cps/gdrive.py:43
 msgid ""
@@ -1616,7 +1616,7 @@ msgstr ""
 
 #: cps/oauth_bb.py:574
 msgid "OAuth system error. Please contact administrator."
-msgstr "OAuth rendszerhiba. Kérjük, forduljon a rendszergazdához"
+msgstr "OAuth rendszerhiba. Kérjük, forduljon a rendszergazdához!"
 
 #: cps/oauth_bb.py:607
 #, python-format
@@ -1714,11 +1714,11 @@ msgstr "A token nem található."
 
 #: cps/remotelogin.py:102 cps/remotelogin.py:135
 msgid "Token has expired"
-msgstr "A token érvényessége lejárt."
+msgstr "A token érvényessége lejárt"
 
 #: cps/remotelogin.py:111
 msgid "Success! Please return to your device"
-msgstr "Sikerült! Újra használható az eszköz."
+msgstr "Sikerült! Újra használható az eszköz"
 
 #: cps/render_template.py:40
 msgid "Books"
@@ -2024,7 +2024,7 @@ msgstr "Polc: '%(name)s'"
 
 #: cps/shelf.py:522
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
-msgstr "Hiba a polc megnyitásakor. A polc nem létezik vagy nem elérhető."
+msgstr "Hiba a polc megnyitásakor. A polc nem létezik vagy nem elérhető"
 
 #: cps/tasks_status.py:37 cps/templates/layout.html:162
 #: cps/templates/tasks.html:7
@@ -2065,7 +2065,7 @@ msgstr "Ismeretlen adat a frissítési információk olvasásakor"
 
 #: cps/updater.py:443 cps/updater.py:555
 msgid "No update available. You already have the latest version installed"
-msgstr "Nem érhető el újabb frissítés. Már a legújabb verzió van telepítve."
+msgstr "Nem érhető el újabb frissítés. Már a legújabb verzió van telepítve"
 
 #: cps/updater.py:462
 msgid ""
@@ -2073,7 +2073,7 @@ msgid ""
 "version."
 msgstr ""
 "Egy új frissítés érhető el. Kattintson a lenti gombra a legújabb verzióra "
-"frissítéshez"
+"frissítéshez."
 
 #: cps/updater.py:479
 msgid "Could not fetch update information"
@@ -2313,11 +2313,12 @@ msgstr ""
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr ""
-"Hoppá! A mailszerver nincs beállítva. Kérjük, forduljon a rendszergazdához"
+"Hoppá! Az e-mail szerver nincs beállítva. Kérjük, forduljon a "
+"rendszergazdához!"
 
 #: cps/web.py:2112
 msgid "Oops! Your Email is not allowed."
-msgstr "Nem engedélyezett a megadott e-mail cím bejegyzése"
+msgstr "Nem engedélyezett a megadott e-mail cím bejegyzése."
 
 #: cps/web.py:2115
 msgid "Success! Confirmation Email has been sent."
@@ -2388,8 +2389,8 @@ msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
 "known"
 msgstr ""
-"Tartalék bejelentkezés '%(nickname)s' néven. Az LDAP szerver nem elérhető, "
-"vagy a felhasználó nem található."
+"Tartalék bejelentkezés \"%(nickname)s\" néven. Az LDAP szerver nem elérhető, "
+"vagy a felhasználó nem található"
 
 #: cps/web.py:2305
 #, python-format
@@ -2427,7 +2428,7 @@ msgstr "Már létezik felhasználó ehhez az e-mail címhez."
 
 #: cps/web.py:2894
 msgid "Invalid book ID."
-msgstr "Érvénytelen könyv azonosító"
+msgstr "Érvénytelen könyv azonosító."
 
 #: cps/progress_syncing/protocols/kosync.py:454
 msgid "KOReader Sync Plugin"
@@ -2699,15 +2700,15 @@ msgstr "Beállítás&nbsp;&nbsp;⚙️"
 
 #: cps/templates/admin.html:114
 msgid "Calibre Database Directory"
-msgstr "Calibre adatbázis mappája:"
+msgstr "Calibre adatbázis mappa"
 
 #: cps/templates/admin.html:118 cps/templates/config_edit.html:140
 msgid "Log Level"
-msgstr "Naplózás szintje:"
+msgstr "Naplózási szint"
 
 #: cps/templates/admin.html:122
 msgid "Port"
-msgstr "Port:"
+msgstr "Port"
 
 #: cps/templates/admin.html:127
 msgid "External Port"
@@ -2715,7 +2716,7 @@ msgstr "Külső port"
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
-msgstr "Könyvek oldalanként:"
+msgstr "Könyvek oldalanként"
 
 #: cps/templates/admin.html:138
 msgid "Uploads"
@@ -2727,11 +2728,11 @@ msgstr "Böngészés bejelentkezés nélkül"
 
 #: cps/templates/admin.html:146
 msgid "Public Registration"
-msgstr "Nyílvános regisztráció:"
+msgstr "Nyilvános regisztráció"
 
 #: cps/templates/admin.html:150
 msgid "Magic Link Remote Login"
-msgstr "Távoli belépés:"
+msgstr "Varászhivatkozás távoli belépés"
 
 #: cps/templates/admin.html:154
 msgid "Reverse Proxy Login"
@@ -2957,7 +2958,7 @@ msgstr "csökkentsd"
 
 #: cps/templates/author.html:102
 msgid "More by"
-msgstr "Több eszerint:"
+msgstr "Több tőle:"
 
 #: cps/templates/book_edit.html:11 cps/templates/detail.html:563
 #: cps/templates/detail.html:565
@@ -3281,7 +3282,7 @@ msgstr "Olvasva?"
 #: cps/templates/book_table.html:129 cps/templates/book_table.html:131
 #: cps/templates/book_table.html:135
 msgid "Enter "
-msgstr "Bevitel"
+msgstr "Bevitel "
 
 #: cps/templates/book_table.html:158 cps/templates/book_table.html:182
 #: cps/templates/book_table.html:202 cps/templates/book_table.html:222
@@ -3444,7 +3445,7 @@ msgstr ""
 
 #: cps/templates/config_db.html:121
 msgid "Are you sure? This cannot be undone."
-msgstr "Biztos benne? A művelet nem visszavonható!"
+msgstr "Biztos benne? A művelet nem visszavonható."
 
 #: cps/templates/config_db.html:121
 msgid "Restore Calibre Database (Last Resort)"
@@ -4131,7 +4132,7 @@ msgstr "Látható könyvek alapértelmezett nyelve"
 
 #: cps/templates/config_view_edit.html:174
 msgid "Default book language filter for new users."
-msgstr "Alapértelmezett könyv nyelv szűrő új felhasználóknak"
+msgstr "Alapértelmezett könyv nyelv szűrő új felhasználóknak."
 
 #: cps/templates/config_view_edit.html:180
 msgid "Default Visibilities for New Users"
@@ -5945,7 +5946,7 @@ msgstr ""
 
 #: cps/templates/logviewer.html:8
 msgid "Calibre-Web Log: "
-msgstr "Calibre-Web napló:"
+msgstr "Calibre-Web napló: "
 
 #: cps/templates/logviewer.html:8
 msgid "Stream output, can't be displayed"
@@ -6054,7 +6055,7 @@ msgstr ""
 
 #: cps/templates/modal_dialogs.html:134 cps/templates/tasks.html:93
 msgid "Ok"
-msgstr " Ok"
+msgstr "Ok"
 
 #: cps/templates/osd.xml:5
 msgid "Calibre-Web Automated eBook Catalog"
@@ -6082,7 +6083,7 @@ msgstr "Fekete"
 
 #: cps/templates/read.html:95
 msgid "Reflow text when sidebars are open."
-msgstr "Szöveg újratördelése amikor az oldalsávok nyitva vannak"
+msgstr "Szöveg újratördelése amikor az oldalsávok nyitva vannak."
 
 #: cps/templates/read.html:100
 msgid "Font Sizes"

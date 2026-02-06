@@ -36,6 +36,8 @@ Based on the reference implementation from koreader-sync-server
 Reference: https://github.com/koreader/koreader-sync-server
 """
 
+from functools import wraps
+
 import base64
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any, Tuple
@@ -46,7 +48,8 @@ from werkzeug.security import check_password_hash
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 
-from ... import logger, ub, csrf, config, constants, services, usermanagement
+from ... import logger, ub, csrf, config, constants, services
+from ...usermanagement import using_basic_auth, auth
 from ...render_template import render_title_template
 from ..models import KOSyncProgress
 from ..settings import is_koreader_sync_enabled
@@ -78,22 +81,9 @@ MAX_DEVICE_LENGTH = 100    # Maximum device name length
 MAX_DEVICE_ID_LENGTH = 100 # Maximum device ID length
 
 
-def _require_kosync_enabled():
-    if not is_koreader_sync_enabled():
-        return create_sync_response({
-            "error": ERROR_NO_STORAGE,
-            "message": "KOReader sync is disabled"
-        }, 503)
-    return None
-
-
-class KOSyncError(Exception):
-    """Custom exception for KOSync protocol errors"""
-    def __init__(self, error_code: int, message: str):
-        self.error_code = error_code
-        self.message = message
-        super().__init__(message)
-
+################################################################################
+# Utils
+################################################################################
 
 def is_valid_field(field: Any) -> bool:
     """
@@ -125,87 +115,6 @@ def is_valid_key_field(field: Any, max_length: int = MAX_DOCUMENT_LENGTH) -> boo
     return is_valid_field(field) and ":" not in field and len(field) <= max_length
 
 
-def authenticate_user() -> Optional[ub.User]:
-    """
-    Authenticate user using HTTP Basic Authentication (RFC 7617).
-
-    Expects Authorization header with format: 'Basic <base64(username:password)>'
-
-    Security considerations:
-        - Uses constant-time password comparison via check_password_hash
-        - Case-insensitive username lookup for consistency with Calibre-Web
-        - Validates credential format before database lookup
-
-    Returns:
-        User object if authentication succeeds, None otherwise
-    """
-    if config.config_allow_reverse_proxy_header_login:
-        if user := usermanagement.load_user_from_reverse_proxy_header(request):
-            return user
-
-    auth_header = request.headers.get('Authorization')
-
-    if not auth_header or not auth_header.startswith('Basic '):
-        log.debug("Missing or invalid Authorization header")
-        return None
-
-    try:
-        # Extract and decode the base64 encoded credentials
-        encoded_credentials = auth_header[6:]  # Remove 'Basic ' prefix
-        decoded_credentials = base64.b64decode(encoded_credentials).decode('utf-8')
-
-        # Split username and password (allow colons in password)
-        if ':' not in decoded_credentials:
-            log.debug("Invalid credential format (missing colon separator)")
-            return None
-
-        username, password = decoded_credentials.split(':', 1)
-
-    except (ValueError, UnicodeDecodeError) as e:
-        log.warning(f"Failed to decode credentials: {str(e)}")
-        return None
-
-    # Validate field formats before database lookup
-    if not is_valid_field(password) or not is_valid_key_field(username, max_length=MAX_DEVICE_LENGTH):
-        log.debug(f"Invalid username or password format")
-        return None
-
-    # Find user by username (case-insensitive for Calibre-Web compatibility)
-    try:
-        user = ub.session.query(ub.User).filter(
-            func.lower(ub.User.name) == username.lower()
-        ).first()
-    except SQLAlchemyError as e:
-        log.error(f"Database error during user lookup: {e}")
-        return None
-
-    if not user:
-        log.debug(f"User not found: {username}")
-        return None
-
-    # Check if LDAP authentication is enabled
-    if config.config_login_type == constants.LOGIN_LDAP and services.ldap:
-        # Try LDAP authentication
-        login_result, error = services.ldap.bind_user(user.name, password)
-        if login_result:
-            log.info(f"authenticate_user: Successfully authenticated user via LDAP: {user.name}")
-            return user
-        
-        # Log LDAP failure but continue to local check (fallback)
-        # We use debug level here because failure is expected if the user is using a local password
-        if error:
-            log.debug(f"authenticate_user: LDAP authentication failed for {user.name} (attempting local fallback): {error}")
-
-    # Verify password using constant-time comparison
-    # Check if user has a local password set before attempting verification
-    if user.password and check_password_hash(str(user.password), password):
-        log.info(f"User authenticated successfully: {username}")
-        return user
-
-    log.debug(f"Invalid password for user: {username}")
-    return None
-
-
 def create_sync_response(data: Dict[str, Any], status_code: int = 200) -> tuple:
     """
     Create a standardized JSON sync response.
@@ -218,23 +127,6 @@ def create_sync_response(data: Dict[str, Any], status_code: int = 200) -> tuple:
         Tuple of (response, status_code) for Flask
     """
     return jsonify(data), status_code
-
-
-def handle_sync_error(error: KOSyncError) -> tuple:
-    """
-    Handle sync errors and return appropriate response.
-
-    Args:
-        error: KOSyncError with error code and message
-
-    Returns:
-        JSON error response with 400 status code
-    """
-    log.error(f"KOSync Error {error.error_code}: {error.message}")
-    return create_sync_response({
-        "error": error.error_code,
-        "message": error.message
-    }, 400)
 
 
 def get_book_by_checksum(document_checksum: str, version: str = None):
@@ -430,6 +322,28 @@ def update_book_read_status(user_id: int, book_id: int, percentage: float) -> No
     # Merge the record (caller commits)
     ub.session.merge(book_read)
 
+################################################################################
+# API endpoints decorators
+################################################################################
+
+def _get_kosync_unauthorized_error() -> tuple:
+    return handle_unauthorized(None)
+
+# Basic auth decorator with custom KOSync unauthorized error handling
+kosync_basic_auth = using_basic_auth(False, _get_kosync_unauthorized_error)
+
+
+def require_kosync_enabled(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        if not is_koreader_sync_enabled():
+            return create_sync_response({
+                "error": ERROR_NO_STORAGE,
+                "message": "KOReader sync is disabled"
+            }, 503)
+        return f(*args, **kwargs)
+    return decorator
+
 
 ################################################################################
 # API Endpoints
@@ -459,36 +373,29 @@ def kosync_plugin_page():
 
 @csrf.exempt
 @kosync.route("/kosync/users/auth", methods=["GET"])
+@kosync_basic_auth
+@require_kosync_enabled
 def auth_user():
     """
     Authenticate user endpoint (KOSync protocol).
 
-    This endpoint verifies user credentials and is typically called once
+    This endpoint act as a ping with credentials
     during KOReader sync setup to validate the connection.
 
     Returns:
         200: {"authorized": "OK"} if authentication succeeds
-        401: {"error": 2001, "message": "Unauthorized"} if authentication fails
+        401: {"error": 2001, "message": "Unauthorized"} if authentication fails (handled by the @kosync_basic_auth decorator)
 
     Note:
         Rate limiting should be applied at reverse proxy level to prevent
         brute force attacks (suggested: 10 requests per minute per IP).
     """
-    blocked = _require_kosync_enabled()
-    if blocked:
-        return blocked
-
-    user = authenticate_user()
-    if user:
-        return create_sync_response({"authorized": "OK"})
-    else:
-        return create_sync_response({
-            "error": ERROR_UNAUTHORIZED_USER,
-            "message": "Unauthorized"
-        }, 401)
+    return create_sync_response({"authorized": "OK"})
 
 @csrf.exempt
 @kosync.route("/kosync/syncs/progress/<document>", methods=["GET"])
+@kosync_basic_auth
+@require_kosync_enabled
 def get_progress(document: str):
     """
     Get reading progress for a document (KOSync protocol).
@@ -523,13 +430,7 @@ def get_progress(document: str):
         Internally stored as percentage (0-100) in database.
     """
     try:
-        blocked = _require_kosync_enabled()
-        if blocked:
-            return blocked
-
-        user = authenticate_user()
-        if not user:
-            raise KOSyncError(ERROR_UNAUTHORIZED_USER, "Unauthorized")
+        user = auth.current_user()
 
         if not is_valid_key_field(document):
             raise KOSyncError(ERROR_DOCUMENT_FIELD_MISSING, "Invalid document field")
@@ -576,6 +477,8 @@ def get_progress(document: str):
 
 @csrf.exempt
 @kosync.route("/kosync/syncs/progress", methods=["PUT"])
+@kosync_basic_auth
+@require_kosync_enabled
 def update_progress():
     """
     Update reading progress for a document (KOSync protocol).
@@ -617,13 +520,7 @@ def update_progress():
         Percentage is converted from decimal (0.9411 = 94.11%) to percentage (94.11).
     """
     try:
-        blocked = _require_kosync_enabled()
-        if blocked:
-            return blocked
-
-        user = authenticate_user()
-        if not user:
-            raise KOSyncError(ERROR_UNAUTHORIZED_USER, "Unauthorized")
+        user = auth.current_user()
 
         data = request.get_json()
         if not data:
@@ -747,6 +644,29 @@ def update_progress():
 ################################################################################
 # Error Handlers
 ################################################################################
+
+class KOSyncError(Exception):
+    """Custom exception for KOSync protocol errors"""
+    def __init__(self, error_code: int, message: str):
+        self.error_code = error_code
+        self.message = message
+        super().__init__(message)
+
+def handle_sync_error(error: KOSyncError) -> tuple:
+    """
+    Handle sync errors and return appropriate response.
+
+    Args:
+        error: KOSyncError with error code and message
+
+    Returns:
+        JSON error response with 400 status code
+    """
+    log.error(f"KOSync Error {error.error_code}: {error.message}")
+    return create_sync_response({
+        "error": error.error_code,
+        "message": error.message
+    }, 400)
 
 @kosync.errorhandler(400)
 def handle_bad_request(error):

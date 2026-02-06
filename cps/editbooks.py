@@ -34,7 +34,7 @@ from .kobo_sync_status import change_archived_books
 from .redirect import get_redirect_location
 from .file_helper import validate_mime_type
 from .cwa_functions import get_ingest_dir
-from .usermanagement import user_login_required, login_required_if_no_ano
+from .usermanagement import user_login_required, user_login_or_anonymous
 from .string_helper import strip_whitespaces
 from werkzeug.utils import secure_filename
 import uuid
@@ -77,21 +77,21 @@ def delete_book_ajax(book_id, book_format):
 
 
 @editbook.route("/admin/book/<int:book_id>", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @edit_required
 def show_edit_book(book_id):
     return render_edit_book(book_id)
 
 
 @editbook.route("/admin/book/<int:book_id>", methods=['POST'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @edit_required
 def edit_book(book_id):
     return do_edit_book(book_id)
 
 
 @editbook.route("/upload", methods=["POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @upload_required
 def upload():
     try:
@@ -188,7 +188,7 @@ def upload():
 
 
 @editbook.route("/admin/book/convert/<int:book_id>", methods=['POST'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @edit_required
 def convert_bookformat(book_id):
     # check to see if we have form fields to work with -  if not send user back
@@ -226,14 +226,14 @@ def table_get_custom_enum(c_id):
 
 
 @editbook.route("/ajax/editbooks/<param>", methods=['POST'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @edit_required
 def edit_list_book(param):
     vals = request.form.to_dict()
     return edit_book_param(param, vals)
 
 @editbook.route("/ajax/editselectedbooks", methods=['POST'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @edit_required
 def edit_selected_books():
     d = request.get_json()
@@ -462,7 +462,7 @@ def _ensure_ingest_dir_writable(ingest_dir=None, allow_create=False, check_write
 #       'checkT': "Optional. Used to check if autotitle author is enabled. Assumed as true if not passed"
 #   }
 #
-@login_required_if_no_ano
+@user_login_or_anonymous
 @edit_required
 def edit_book_param(param, vals):
     book = calibre_db.get_book(vals['pk'])
@@ -679,7 +679,7 @@ def display_selected_books():
     return ""
 
 @editbook.route("/ajax/archiveselectedbooks", methods=['POST'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @edit_required
 def archive_selected_books():
     vals = request.get_json().get('selections')

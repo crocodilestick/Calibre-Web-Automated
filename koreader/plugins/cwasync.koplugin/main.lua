@@ -251,6 +251,9 @@ function CWASync:addToMainMenu(menu_items)
 
                     self.settings.auto_sync = not self.settings.auto_sync
                     self:registerEvents()
+                    if not(self:hasActiveDocument()) then
+                        return
+                    end
                     if self.settings.auto_sync then
                         -- Since we will update the progress when closing the document,
                         -- pull the current progress now so as not to silently overwrite it.
@@ -368,18 +371,18 @@ If set to 0, updating progress based on page turns will be disabled.]]),
                 separator = true,
             },
             {
-                text = _("Push progress from this device now"),
+                text = _("Push progress from this device now") .. self:statusTextIfActionUnavailable(),
                 enabled_func = function()
-                    return self.settings.password ~= nil
+                    return self.settings.password ~= nil and self:hasActiveDocument()
                 end,
                 callback = function()
                     self:updateProgress(true, true)
                 end,
             },
             {
-                text = _("Pull progress from other devices now"),
+                text = _("Pull progress from other devices now") .. self:statusTextIfActionUnavailable(),
                 enabled_func = function()
-                    return self.settings.password ~= nil
+                    return self.settings.password ~= nil and self:hasActiveDocument()
                 end,
                 callback = function()
                     self:getProgress(true, true)
@@ -397,6 +400,16 @@ If set to 0, updating progress based on page turns will be disabled.]]),
             },
         }
     }
+end
+
+function CWASync:hasActiveDocument()
+    return (self.ui and self.ui.document) ~= nil
+end
+
+function CWASync:statusTextIfActionUnavailable()
+    local missingPasswordNotice = not(self.settings.password ~= nil) and _(" (Password Not Set)")
+    local inactiveDocumentNotice = not(self:hasActiveDocument()) and _(" (No Active Document)")
+    return missingPasswordNotice or inactiveDocumentNotice or ""
 end
 
 function CWASync:setPagesBeforeUpdate(pages_before_update)

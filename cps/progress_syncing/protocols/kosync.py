@@ -36,6 +36,8 @@ Based on the reference implementation from koreader-sync-server
 Reference: https://github.com/koreader/koreader-sync-server
 """
 
+from functools import wraps
+
 import base64
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any, Tuple
@@ -79,27 +81,9 @@ MAX_DEVICE_LENGTH = 100    # Maximum device name length
 MAX_DEVICE_ID_LENGTH = 100 # Maximum device ID length
 
 
-def _require_kosync_enabled():
-    if not is_koreader_sync_enabled():
-        return create_sync_response({
-            "error": ERROR_NO_STORAGE,
-            "message": "KOReader sync is disabled"
-        }, 503)
-    return None
-
-
-class KOSyncError(Exception):
-    """Custom exception for KOSync protocol errors"""
-    def __init__(self, error_code: int, message: str):
-        self.error_code = error_code
-        self.message = message
-        super().__init__(message)
-        
-def get_kosync_unauthorized_error() -> tuple:
-    return handle_unauthorized(None)
-        
-# Basic auth decorator with custom KOSync unauthorized error handling
-kosync_basic_auth = using_basic_auth(False, get_kosync_unauthorized_error)
+################################################################################
+# Utils
+################################################################################
 
 def is_valid_field(field: Any) -> bool:
     """
@@ -143,23 +127,6 @@ def create_sync_response(data: Dict[str, Any], status_code: int = 200) -> tuple:
         Tuple of (response, status_code) for Flask
     """
     return jsonify(data), status_code
-
-
-def handle_sync_error(error: KOSyncError) -> tuple:
-    """
-    Handle sync errors and return appropriate response.
-
-    Args:
-        error: KOSyncError with error code and message
-
-    Returns:
-        JSON error response with 400 status code
-    """
-    log.error(f"KOSync Error {error.error_code}: {error.message}")
-    return create_sync_response({
-        "error": error.error_code,
-        "message": error.message
-    }, 400)
 
 
 def get_book_by_checksum(document_checksum: str, version: str = None):
@@ -355,6 +322,28 @@ def update_book_read_status(user_id: int, book_id: int, percentage: float) -> No
     # Merge the record (caller commits)
     ub.session.merge(book_read)
 
+################################################################################
+# API endpoints decorators
+################################################################################
+
+def _get_kosync_unauthorized_error() -> tuple:
+    return handle_unauthorized(None)
+
+# Basic auth decorator with custom KOSync unauthorized error handling
+kosync_basic_auth = using_basic_auth(False, _get_kosync_unauthorized_error)
+
+
+def require_kosync_enabled(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        if not is_koreader_sync_enabled():
+            return create_sync_response({
+                "error": ERROR_NO_STORAGE,
+                "message": "KOReader sync is disabled"
+            }, 503)
+        return f(*args, **kwargs)
+    return decorator
+
 
 ################################################################################
 # API Endpoints
@@ -385,6 +374,7 @@ def kosync_plugin_page():
 @csrf.exempt
 @kosync.route("/kosync/users/auth", methods=["GET"])
 @kosync_basic_auth
+@require_kosync_enabled
 def auth_user():
     """
     Authenticate user endpoint (KOSync protocol).
@@ -400,15 +390,12 @@ def auth_user():
         Rate limiting should be applied at reverse proxy level to prevent
         brute force attacks (suggested: 10 requests per minute per IP).
     """
-    blocked = _require_kosync_enabled()
-    if blocked:
-        return blocked
-
     return create_sync_response({"authorized": "OK"})
 
 @csrf.exempt
 @kosync.route("/kosync/syncs/progress/<document>", methods=["GET"])
 @kosync_basic_auth
+@require_kosync_enabled
 def get_progress(document: str):
     """
     Get reading progress for a document (KOSync protocol).
@@ -443,10 +430,6 @@ def get_progress(document: str):
         Internally stored as percentage (0-100) in database.
     """
     try:
-        blocked = _require_kosync_enabled()
-        if blocked:
-            return blocked
-
         user = auth.current_user()
 
         if not is_valid_key_field(document):
@@ -495,6 +478,7 @@ def get_progress(document: str):
 @csrf.exempt
 @kosync.route("/kosync/syncs/progress", methods=["PUT"])
 @kosync_basic_auth
+@require_kosync_enabled
 def update_progress():
     """
     Update reading progress for a document (KOSync protocol).
@@ -536,11 +520,7 @@ def update_progress():
         Percentage is converted from decimal (0.9411 = 94.11%) to percentage (94.11).
     """
     try:
-        blocked = _require_kosync_enabled()
-        if blocked:
-            return blocked
-
-            user = auth.current_user()
+        user = auth.current_user()
 
         data = request.get_json()
         if not data:
@@ -664,6 +644,29 @@ def update_progress():
 ################################################################################
 # Error Handlers
 ################################################################################
+
+class KOSyncError(Exception):
+    """Custom exception for KOSync protocol errors"""
+    def __init__(self, error_code: int, message: str):
+        self.error_code = error_code
+        self.message = message
+        super().__init__(message)
+
+def handle_sync_error(error: KOSyncError) -> tuple:
+    """
+    Handle sync errors and return appropriate response.
+
+    Args:
+        error: KOSyncError with error code and message
+
+    Returns:
+        JSON error response with 400 status code
+    """
+    log.error(f"KOSync Error {error.error_code}: {error.message}")
+    return create_sync_response({
+        "error": error.error_code,
+        "message": error.message
+    }, 400)
 
 @kosync.errorhandler(400)
 def handle_bad_request(error):

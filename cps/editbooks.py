@@ -700,8 +700,19 @@ def delete_selected_books():
     vals = request.get_json().get('selections')
     if vals:
         for book_id in vals:
-            delete_book_from_table(book_id, "", True)
-        _queue_duplicate_scan_after_change()
+            delete_book_from_table(book_id, "", True, skip_cache_invalidation=True)
+        
+        # Invalidate duplicate cache once after all deletions
+        try:
+            import sys
+            sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+            from cwa_db import CWA_DB
+            cwa_db = CWA_DB()
+            cwa_db.invalidate_duplicate_cache()
+        except Exception as e:
+            log.error("Failed to invalidate duplicate cache after batch deletion: %s", str(e))
+        
+        # Note: Not queuing duplicate scan here since page reload will trigger fresh scan
         return json.dumps({'success': True})
     return ""
 
@@ -761,9 +772,20 @@ def merge_list_book():
                                                         element.uncompressed_size,
                                                         to_name))
                             to_file.append(element.format)
-                    delete_book_from_table(from_book.id, "", True)
+                    delete_book_from_table(from_book.id, "", True, skip_cache_invalidation=True)
             calibre_db.session.commit()
-            _queue_duplicate_scan_after_change()
+            
+            # Invalidate duplicate cache once after all merges
+            try:
+                import sys
+                sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+                from cwa_db import CWA_DB
+                cwa_db = CWA_DB()
+                cwa_db.invalidate_duplicate_cache()
+            except Exception as e:
+                log.error("Failed to invalidate duplicate cache after merge: %s", str(e))
+            
+            # Note: Not queuing duplicate scan here since page reload will trigger fresh scan
             return json.dumps({'success': True})
     return ""
 
@@ -1353,7 +1375,7 @@ def render_delete_book_result(book_format, json_response, warning, book_id, loca
             return redirect(get_redirect_location(location, "web.index"))
 
 
-def delete_book_from_table(book_id, book_format, json_response, location=""):
+def delete_book_from_table(book_id, book_format, json_response, location="", skip_cache_invalidation=False):
     warning = {}
     if current_user.role_delete_books():
         book = calibre_db.get_book(book_id)
@@ -1386,16 +1408,16 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()
                 
-                # Invalidate duplicate cache after book deletion
-                try:
-                    import sys
-                    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-                    from cwa_db import CWA_DB
-                    cwa_db = CWA_DB()
-                    cwa_db.invalidate_duplicate_cache()
-                    cwa_db.close()
-                except Exception as e:
-                    log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
+                # Invalidate duplicate cache after book deletion (unless batching)
+                if not skip_cache_invalidation:
+                    try:
+                        import sys
+                        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+                        from cwa_db import CWA_DB
+                        cwa_db = CWA_DB()
+                        cwa_db.invalidate_duplicate_cache()
+                    except Exception as e:
+                        log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
                 
             except Exception as ex:
                 log.error_or_exception(ex)

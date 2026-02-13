@@ -127,9 +127,11 @@
             filePath: "{{ url_for('static', filename='js/libs/') }}",
             cssPath: "{{ url_for('static', filename='css/') }}",
             bookmarkUrl: "{{ url_for('web.set_bookmark', book_id=bookid, book_format='EPUB') }}",
+            bookId: "{{ bookid }}",
             bookUrl: "{{ url_for('web.serve_book', book_id=bookid, book_format='epub', anyname='file.epub') }}",
             bookmark: "{{ bookmark.bookmark_key if bookmark != None }}",
-            useBookmarks: "{{ current_user.is_authenticated | tojson }}"
+            useBookmarks: "{{ current_user.is_authenticated | tojson }}",
+            kosyncPercent: {{ kosync_progress | tojson if kosync_progress is not none else 'null' }}
         };
 
         window.themes = {
@@ -170,6 +172,7 @@
             // Apply theme to rest of the page. 
             document.getElementById("main").style.backgroundColor = themes[id]["bgColor"];
             document.getElementById("titlebar").style.color = themes[id]["title-color"] || "#fff";
+            document.getElementById("progress").style.color = themes[id]["title-color"] || "#fff";
           }
 
         // Font size and font logic (wait for reader to be ready)

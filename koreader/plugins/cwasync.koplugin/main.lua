@@ -15,6 +15,7 @@ local time = require("ui/time")
 local util = require("util")
 local T = require("ffi/util").template
 local _ = require("gettext")
+local bit = require("bit")
 
 if G_reader_settings:hasNot("device_id") then
     G_reader_settings:saveSetting("device_id", random.uuid())
@@ -22,8 +23,8 @@ end
 
 local CWASync = WidgetContainer:extend{
     name = "cwasync",
-    is_doc_only = true,
     title = _("Login to CWA Server"),
+    version = "1.0.2",  -- Plugin version
 
     push_timestamp = nil,
     pull_timestamp = nil,
@@ -131,6 +132,27 @@ local function showSyncError()
     })
 end
 
+local function getBodyMessage(body, fallback)
+    if type(body) == "table" then
+        return body.message or fallback
+    end
+    if type(body) == "string" and body ~= "" then
+        return body
+    end
+    return fallback
+end
+
+local function ensureServerConfigured(server)
+    if server and server ~= "" then
+        return true
+    end
+    UIManager:show(InfoMessage:new{
+        text = _("Please set the CWA Server address first."),
+        timeout = 3,
+    })
+    return false
+end
+
 local function validate(entry)
     if not entry then return false end
     if type(entry) == "string" then
@@ -179,7 +201,7 @@ function CWASync:onReaderReady()
 end
 
 function CWASync:addToMainMenu(menu_items)
-    menu_items.progress_sync = {
+    menu_items.cwa_progress_sync = {
         text = _("CWA Progress Sync"),
         sub_item_table = {
             {
@@ -363,6 +385,15 @@ If set to 0, updating progress based on page turns will be disabled.]]),
                 end,
                 separator = true,
             },
+            {
+                text = T(_("Plugin version: %1"), self.version),
+                keep_menu_open = true,
+                callback = function()
+                    UIManager:show(InfoMessage:new{
+                        text = T(_("CWA Progress Sync Plugin\nVersion: %1\n\nThis plugin syncs your reading progress to Calibre-Web Automated."), self.version),
+                    })
+                end,
+            },
         }
     }
 end
@@ -442,6 +473,9 @@ function CWASync:login(menu)
 end
 
 function CWASync:doLogin(username, password, menu)
+    if not ensureServerConfigured(self.settings.server) then
+        return
+    end
     local CWASyncClient = require("CWASyncClient")
     local client = CWASyncClient:new{
         service_url = self.settings.server .. "/kosync",
@@ -473,7 +507,7 @@ function CWASync:doLogin(username, password, menu)
         })
     else
         UIManager:show(InfoMessage:new{
-            text = body and body.message or _("Unknown server error"),
+            text = getBodyMessage(body, _("Unknown server error")),
         })
     end
     Device:setIgnoreInput(false)
@@ -504,7 +538,67 @@ function CWASync:getLastProgress()
 end
 
 function CWASync:getDocumentDigest()
-    return self.ui.doc_settings:readSetting("partial_md5_checksum")
+    local digest = nil
+    if self.ui and self.ui.doc_settings and self.ui.doc_settings.readSetting then
+        digest = self.ui.doc_settings:readSetting("partial_md5_checksum")
+    end
+
+    if digest and digest ~= "" then
+        return digest
+    end
+
+    local file_path = nil
+    if self.view and self.view.document and self.view.document.file then
+        file_path = self.view.document.file
+    elseif self.ui and self.ui.document and self.ui.document.file then
+        file_path = self.ui.document.file
+    end
+
+    if util.partialMD5 and file_path then
+        local ok, result = pcall(util.partialMD5, file_path)
+        if ok and result and result ~= "" then
+            return result
+        end
+    end
+
+    if file_path then
+        local ok, result = pcall(function(path)
+            local f = io.open(path, "rb")
+            if not f then
+                return nil
+            end
+
+            local step = 1024
+            local sample_size = 1024
+            local chunks = {}
+            for i = -1, 10 do
+                local position = bit.lshift(step, 2 * i)
+                local ok_seek = f:seek("set", position)
+                if not ok_seek then
+                    break
+                end
+
+                local sample = f:read(sample_size)
+                if not sample or #sample == 0 then
+                    break
+                end
+                chunks[#chunks + 1] = sample
+            end
+            f:close()
+
+            if #chunks == 0 then
+                return nil
+            end
+
+            return md5(table.concat(chunks))
+        end, file_path)
+
+        if ok and result and result ~= "" then
+            return result
+        end
+    end
+
+    return nil
 end
 
 function CWASync:syncToProgress(progress)
@@ -524,6 +618,10 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
         return
     end
 
+    if not ensureServerConfigured(self.settings.server) then
+        return
+    end
+
     local now = UIManager:getElapsedTimeSinceBoot()
     if not interactive and now - self.push_timestamp <= API_CALL_DEBOUNCE_DELAY then
         logger.dbg("CWASync: We've already pushed progress less than 25s ago!")
@@ -540,6 +638,16 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
         service_spec = self.path .. "/api.json"
     }
     local doc_digest = self:getDocumentDigest()
+    if not doc_digest then
+        logger.warn("CWASync: Unable to compute document digest for", self.view and self.view.document and self.view.document.file)
+        if interactive then
+            UIManager:show(InfoMessage:new{
+                text = _("Unable to compute document checksum for this book."),
+                timeout = 3,
+            })
+        end
+        return
+    end
     local progress = self:getLastProgress()
     local percentage = self:getLastPercent()
     local ok, err = pcall(client.update_progress,
@@ -603,6 +711,10 @@ function CWASync:getProgress(ensure_networking, interactive)
         return
     end
 
+    if not ensureServerConfigured(self.settings.server) then
+        return
+    end
+
     local now = UIManager:getElapsedTimeSinceBoot()
     if not interactive and now - self.pull_timestamp <= API_CALL_DEBOUNCE_DELAY then
         logger.dbg("CWASync: We've already pulled progress less than 25s ago!")
@@ -619,6 +731,16 @@ function CWASync:getProgress(ensure_networking, interactive)
         service_spec = self.path .. "/api.json"
     }
     local doc_digest = self:getDocumentDigest()
+    if not doc_digest then
+        logger.warn("CWASync: Unable to compute document digest for", self.view and self.view.document and self.view.document.file)
+        if interactive then
+            UIManager:show(InfoMessage:new{
+                text = _("Unable to compute document checksum for this book."),
+                timeout = 3,
+            })
+        end
+        return
+    end
     local ok, err = pcall(client.get_progress,
         client,
         self.settings.username,
@@ -628,6 +750,13 @@ function CWASync:getProgress(ensure_networking, interactive)
             logger.dbg("CWASync: [Pull] progress for", self.view.document.file)
             logger.dbg("CWASync: ok:", ok, "body:", body)
             if not ok or not body then
+                if interactive then
+                    showSyncError()
+                end
+                return
+            end
+
+            if type(body) ~= "table" then
                 if interactive then
                     showSyncError()
                 end
@@ -644,6 +773,13 @@ function CWASync:getProgress(ensure_networking, interactive)
                 return
             end
 
+            if body.progress == nil then
+                if interactive then
+                    showSyncError()
+                end
+                return
+            end
+
             if body.device == Device.model
             and body.device_id == self.device_id then
                 if interactive then
@@ -655,7 +791,7 @@ function CWASync:getProgress(ensure_networking, interactive)
                 return
             end
 
-            body.percentage = Math.roundPercent(body.percentage)
+            body.percentage = Math.roundPercent(tonumber(body.percentage) or 0)
             local progress = self:getLastProgress()
             local percentage = self:getLastPercent()
             logger.dbg("CWASync: Current progress:", percentage * 100, "% =>", progress)

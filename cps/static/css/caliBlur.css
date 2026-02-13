@@ -249,8 +249,17 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.c
 }
 
 body.blur .row-fluid .col-sm-10 {
-    -webkit-animation: fadeIn 1s linear 1;
-    animation: fadeIn 1s linear 1
+    -webkit-animation: fadeIn 0.5s linear 1;
+    animation: fadeIn 0.5s linear 1
+}
+
+/* Fix layout shift during discover page load by stabilizing isotope container positioning */
+body.blur .discover .isotope,
+body.blur .discover .row {
+    transform: translateZ(0) !important;
+    will-change: auto !important;
+    margin: 0 auto !important;
+    justify-content: center !important;
 }
 
 .col-sm-10 .book-meta > div.btn-toolbar:after {
@@ -673,10 +682,11 @@ div[aria-label="Edit/Delete book"] > .btn > span:hover {
     -webkit-animation: spin .5s linear infinite;
     animation: spin .5s linear infinite;
     display: block;
-    margin: 20px auto;
     position: fixed;
-    top: calc(50% - 12px);
-    left: calc(50% - 12px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
     z-index: 999999
 }
 
@@ -824,7 +834,7 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.home-btn > a:hove
 }
 
 body:not(.read-frame) {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
     background-repeat: repeat, no-repeat !important;
     background-attachment: fixed, fixed !important;
     background-position: center center, center center !important;
@@ -833,7 +843,7 @@ body:not(.read-frame) {
     -moz-background-size: auto, cover !important;
     -o-background-size: auto, cover !important;
     line-height: 1.71428571;
-    background: url(images/caliblur/blur-noise.png), var(--color-background);
+    background: url(images/caliblur/blur-noise.webp), var(--color-background);
     color: whitesmoke;
     font-family: Open Sans Semibold, Helvetica Neue, Helvetica, Arial, sans-serif;
     font-weight: 400;
@@ -1093,12 +1103,12 @@ span.hidden-sm.top_admin {
     outline: 0;
     -webkit-box-shadow: none;
     box-shadow: none;
-    background: #1e2b34 !important;
+    background: #1e2b3469 !important;
     color: whitesmoke;
 }
 
 .form-control.tt-hint {
-    background: hsla(0, 0%, 100%, 0.90) !important
+background: hsla(0, 0%, 100%, .08) !important;
 }
 
 body > div.navbar.navbar-default.navbar-static-top > div > form > div > span > button:before {
@@ -1216,7 +1226,9 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.c
 body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a {
     height: 60px;
     padding: 20px 10px;
-    color: hsla(0, 0%, 100%, .7)
+    color: hsla(0, 0%, 100%, .7);
+    display: flex;
+    align-items: center;
 }
 
 body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > #top_admin > .glyphicon-dashboard::before {
@@ -1312,6 +1324,9 @@ body > div.container-fluid > div > div.col-sm-10 > div > form > a:hover {
 
 button#btn-book-convert {
     margin-bottom: 15px;
+    padding: 1rem;
+    padding-inline: 2.3rem;
+    margin-top: 1.3rem;
 }
 
 .btn-primary:hover {
@@ -1503,7 +1518,7 @@ button#btn-book-convert {
     height: 100%
 }
 
-#books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:before {
+#books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:before, #books .cover > a:before, #books_rand .cover > a:before {
     content: "\e352";
     font-family: Glyphicons Regular, serif;
     background: var(--color-secondary);
@@ -1530,14 +1545,14 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form
     zoom: .8
 }
 
-#books > .cover > a:hover:before, #books_rand > .cover > a:hover:before, .book.isotope-item > .cover > a:hover:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:before {
-    -o-transition: opacity .2s;
-    transition: opacity .2s;
-    -webkit-transition: opacity .2s;
-    opacity: 1
+#books > .cover > a:hover:before, #books_rand > .cover > a:hover:before, .book.isotope-item > .cover > a:hover:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:before, #books .cover > a:hover:before, #books_rand .cover > a:hover:before {
+    -o-transition: all .2s;
+    transition: all .2s;
+    -webkit-transition: all .2s;
+    opacity: 1;
 }
 
-#books > .cover > a:hover, #books_rand > .cover > a:hover, .book.isotope-item > .cover > a:hover, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover {
+#books > .cover > a:hover, #books_rand > .cover > a:hover, .book.isotope-item > .cover > a:hover, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover, #books .cover > a:hover, #books_rand .cover > a:hover {
     /* outline: solid var(--color-secondary); */
     font-size: 50px;
     -o-transition: outline 0s;
@@ -1545,7 +1560,7 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form
     -webkit-transition: outline 0s
 }
 
-#books > .cover > a:after, #books_rand > .cover > a:after, .book.isotope-item > .cover > a:after {
+#books > .cover > a:after, #books_rand > .cover > a:after, .book.isotope-item > .cover > a:after, #books .cover > a:after, #books_rand .cover > a:after {
     position: absolute;
     content: '';
     width: 100%;
@@ -1598,7 +1613,7 @@ body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form
     background: radial-gradient(farthest-corner at 50% 50%, rgba(50, 50, 50, .5) 50%, #323232 100%)
 }
 
-#books > .cover > a:hover:after, #books_rand > .cover > a:hover:after, .book.isotope-item > .cover > a:hover:after, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:after {
+#books > .cover > a:hover:after, #books_rand > .cover > a:hover:after, .book.isotope-item > .cover > a:hover:after, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:hover:after, #books .cover > a:hover:after, #books_rand .cover > a:hover:after {
     opacity: 1;
     -o-transition: opacity .1s;
     transition: opacity .1s;
@@ -1791,12 +1806,13 @@ body > div.container-fluid > div > div.col-sm-10 > div.discover > div.isotope {
     display: grid !important;
     overflow: hidden !important;
     height: auto !important;
-    width: 100%;
-    margin: 0;
-    -webkit-box-pack: start;
-    -ms-flex-pack: start;
-    justify-content: start;
+    width: 100% !important;
+    margin: 0 auto !important;
+    -webkit-box-pack: center !important;
+    -ms-flex-pack: center !important;
+    justify-content: center !important;
     grid-gap: 10px 0;
+    position: relative !important;
     grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)) !important
 }
 
@@ -1811,7 +1827,7 @@ body > div.container-fluid > div > div.col-sm-10 > div.single {
     height: auto;
     width: calc(100vw - 254px);
     margin: 0 !important;
-    padding: 60px 15px !important
+    padding: 60px 15px;
 }
 
 body > div.container-fluid > div > div.col-sm-10 > div.discover {
@@ -2297,7 +2313,8 @@ body.advsearch > div.container-fluid > div > div.col-sm-10 > div.col-md-10.col-l
 }
 
 body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
-    content: "My Profile"
+    content: "My Profile";
+    padding-left: 0px;
 }
 
 .well {
@@ -2335,7 +2352,7 @@ body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before {
 .well > form > .btn {
     display: inline-block;
     overflow: hidden;
-    border-radius: 4px;
+    border-radius: 4rem;
     color: #fff;
     text-align: center;
     text-transform: uppercase;
@@ -2388,7 +2405,10 @@ body > div.row-fluid {
     animation: none
 }
 
-.alert-info.refresh-cwa {
+.alert-info.refresh-cwa,
+.alert-success.refresh-cwa,
+.alert-warning.refresh-cwa,
+.alert-danger.refresh-cwa {
     position: fixed;
     top: auto;
     bottom: 20px;
@@ -2418,7 +2438,8 @@ body > div.row-fluid {
     top: auto;
     bottom: 20px;
     left: 50%;
-    width: 50%;
+    width: 90vw;
+    max-width: 60rem;
     margin: 0;
     -webkit-transform: translate(-50%);
     -ms-transform: translate(-50%);
@@ -2426,7 +2447,7 @@ body > div.row-fluid {
     opacity: 1 !important;
     right: 0;
     border-radius: 10px;
-    background-color: #000;
+    background-color: #00000082;
     color: #eee;
     border: 0;
     -webkit-box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
@@ -2437,11 +2458,11 @@ body > div.row-fluid {
     height: auto;
     line-height: normal !important;
     overflow: visible;
-    white-space: nowrap;
-    -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     font-size: 14px;
-    padding: 5px 0;
+    padding: 8px 12px;
     z-index: 99999;
     -webkit-animation: cssAnimation 0s ease-in 10s forwards;
     animation: cssAnimation 0s ease-in 10s forwards;
@@ -2451,7 +2472,13 @@ body > div.row-fluid {
 
 .alert-danger {
     background-color: rgba(255, 85, 51, .3);
-    color: #fff
+    color: #fff;
+    width: 90vw !important;
+    max-width: 60rem;
+    height: auto !important;
+    padding: 2rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .table > thead > tr > th {
@@ -2488,8 +2515,9 @@ body > div.row-fluid {
     display: block;
     width: 100%;
     height: auto;
-    max-width: 195px;
-    margin: auto
+    max-width: 26rem;
+    margin: auto;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
 }
 
 #bookDetailsModal .modal-footer, #bookDetailsModal .modal-header > .close, .modal-backdrop.in {
@@ -2534,7 +2562,8 @@ body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-9.col-
 }
 
 label {
-    font-weight: 400
+    font-weight: 700;
+    display: inline !important;
 }
 
 body > div.container-fluid > div > div.col-sm-10 > div.col-sm-8 {
@@ -2952,7 +2981,8 @@ body.advanced_search > div.container-fluid > div > div.col-sm-10 > div.col-sm-8:
 
 a:focus {
     outline: 0;
-    outline-offset: 0
+    outline-offset: 0;
+    color: rgb(255 255 255 / 50%);
 }
 
 #bookDetailsModal {
@@ -2962,7 +2992,7 @@ a:focus {
     position: fixed;
     top: 60px;
     left: 240px;
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png);
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp);
     background-repeat: repeat, no-repeat;
     background-attachment: fixed, fixed;
     background-position: center center, center center;
@@ -3135,9 +3165,6 @@ body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-
 body.book .author {
     font-size: 15px;
     line-height: 30px;
-    margin-top: -5px;
-    max-width: calc(100% - 176px);
-    margin-left: 76px
 }
 
 .book-meta > p {
@@ -3237,7 +3264,7 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
     float: left
 }
 
-#add-to-shelf, #btnGroupDrop1, #readbtn,  #sendbtn, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type, .book-meta .btn-toolbar > .btn-group > .btn-warning, .btn-toolbar > .btn-group > #btnGroupDrop2, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2 {
+#add-to-shelf, #btnGroupDrop1, #readbtn,  #sendbtn, #sendToEReaderBtn, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type, .book-meta .btn-toolbar > .btn-group > .btn-warning, .btn-toolbar > .btn-group > #btnGroupDrop2, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2 {
     background: 0 0;
     color: transparent;
     width: 50px;
@@ -3251,11 +3278,11 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
     padding-bottom: 5px
 }
 
-#add-to-shelf > span, #btnGroupDrop1 > span, #readbtn > span, #sendbtn > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type > span, .book-meta .btn-toolbar > .btn-group > .btn-warning > span, .btn-toolbar > .btn-group > #btnGroupDrop2 > span, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2 > span {
+#add-to-shelf > span, #btnGroupDrop1 > span, #readbtn > span, #sendbtn, #sendToEReaderBtn > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type > span, .book-meta .btn-toolbar > .btn-group > .btn-warning > span, .btn-toolbar > .btn-group > #btnGroupDrop2 > span, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2 > span {
     color: hsla(0, 0%, 100%, .7)
 }
 
-#add-to-shelf:hover span, #btnGroupDrop1:hover > span, #readbtn:hover > span, #sendbtn:hover > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type:hover > span, .book-meta .btn-toolbar > .btn-group > .btn-warning:hover > span, .btn-toolbar > .btn-group > #btnGroupDrop2:hover > span, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2:hover > span {
+#add-to-shelf:hover span, #btnGroupDrop1:hover > span, #readbtn:hover > span, #sendbtn:hover, #sendToEReaderBtn:hover > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type:hover > span, .book-meta .btn-toolbar > .btn-group > .btn-warning:hover > span, .btn-toolbar > .btn-group > #btnGroupDrop2:hover > span, .btn-toolbar > .btn-group > .btn-group > #btnGroupDrop2:hover > span {
     color: #fff
 }
 
@@ -3265,7 +3292,7 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
     font-size: 18px
 }
 
-#sendbtn > span, #readbtn > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type > span, .book-meta .btn-toolbar > .btn-group > .btn-warning > span.glyphicon-edit {
+#sendbtn, #sendToEReaderBtn > span, #readbtn > span, .book-meta .btn-toolbar > .btn-group > .btn-group:nth-child(1) > a:first-of-type > span, .book-meta .btn-toolbar > .btn-group > .btn-warning > span.glyphicon-edit {
     font-size: 16px;
     line-height: 54px;
     width: 100%
@@ -3369,8 +3396,8 @@ div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] > div.
 }
 
 .dropdown-menu.offscreen {
-    right: 0;
-    left: auto !important
+    /* right: 0; */
+    left: auto !important;
 }
 
 div.btn-group[role=group][aria-label="Download, send to Kindle, reading"] .dropdown-menu.offscreen {
@@ -3734,7 +3761,7 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a
     position: fixed;
     top: 0;
     left: 0;
-    background-image: url(images/caliblur/blur-noise.png) !important;
+    background-image: url(images/caliblur/blur-noise.webp) !important;
     background-repeat: repeat !important;
     background-attachment: fixed !important;
     background-position: center center !important;
@@ -3749,9 +3776,9 @@ body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a
     bottom: 0;
     left: 0;
     background-color: #3f4245;
-    -o-transition: background-color 1s ease-in;
-    transition: background-color 1s ease-in;
-    -webkit-transition: background-color 1s ease-in;
+    -o-transition: background-color 0.3s ease-in;
+    transition: background-color 0.3s ease-in;
+    -webkit-transition: background-color 0.3s ease-in;
     z-index: -9
 }
 
@@ -3913,7 +3940,9 @@ body.login > .container-fluid {
 body.login > div.container-fluid > div.row-fluid > div.col-sm-10 {
     width: 100%;
     height: 100%;
-    overflow-y: visible !important
+    overflow-y: visible !important;
+    display: flex;
+    justify-content: center;
 }
 
 body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse {
@@ -3925,7 +3954,7 @@ body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-coll
 }
 
 body.login:not(.read-frame), body.shelfcreate, body.shelfedit {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-dark.png) !important
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-dark.webp) !important
 }
 
 body.author .undefined-img, body.shelfcreate, body.shelfedit {
@@ -4027,13 +4056,13 @@ body.shelfcreate, body.shelfedit {
     -webkit-background-size: auto, cover !important;
     -moz-background-size: auto, cover !important;
     -o-background-size: auto, cover !important;
-    -webkit-transition: background-image 2s ease-in;
-    -o-transition: background-image 2s ease-in;
-    transition: background-image 2s ease-in
+    -webkit-transition: background-image 0.3s ease-in;
+    -o-transition: background-image 0.3s ease-in;
+    transition: background-image 0.3s ease-in
 }
 
 body.author .undefined-img {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
     background-size: auto, cover !important;
     -webkit-background-size: auto, cover !important;
     -moz-background-size: auto, cover !important;
@@ -4790,7 +4819,7 @@ body.config.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.di
 }
 
 body.admin {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-dark.png) !important
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-dark.webp) !important
 }
 
 body.admin td {
@@ -4812,7 +4841,7 @@ body.admin.config > div.container-fluid > div > div.col-sm-10 > div.discover > h
     background: rgba(0, 0, 0, .15);
     color: hsla(0, 0%, 100%, .7);
     font-family: "Open Sans Semibold", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 15px;
+    font-size: 16px !important;
     line-height: 60px;
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
@@ -4863,10 +4892,10 @@ body:not(.blur) #scnd-nav > li > a > .glyphicon-book, body:not(.blur) #scnd-nav 
 }
 
 body:not(.blur):not(.login):not(.me):not(.author):not(.editbook):not(.upload):not(.shelfedit):not(.langlist):not(.authorlist):not(.serieslist):not(.catlist):not(.shelforder):not(.admin):not(.modal-open) > div.container-fluid > div.row-fluid > div.col-sm-10:after {
-    background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, .15)), to(rgba(0, 0, 0, .15))), url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
-    background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
-    background: -o-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
-    background: linear-gradient(0deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), url(images/caliblur/blur-light.png) !important;
+    background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, .15)), to(rgba(0, 0, 0, .15))), url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
+    background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
+    background: -o-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
+    background: linear-gradient(0deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-light.webp) !important;
     background-repeat: no-reapeat, repeat, no-repeat !important;
     background-attachment: fixed, fixed, fixed !important;
     background-position: center center, center center, center center !important;
@@ -4885,7 +4914,7 @@ body:not(.blur):not(.login):not(.me):not(.author):not(.editbook):not(.upload):no
 }
 
 body.advsearch:not(.blur) > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-8:before, body.book:not(.blur) > div.container-fluid > div.row-fluid > div.col-sm-10 > div.single:before, body.stat:not(.blur) > div.container-fluid > div.row-fluid > div.col-sm-10:before, body:not(.blur):not(.me):not(.author):not(.editbook):not(.upload):not(.shelfedit):not(.admin):not(.modal-open) > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover:first-of-type:before {
-    background: url(images/caliblur/blur-noise.png) center center fixed, url(images/caliblur/blur-light.png) center center no-repeat fixed !important;
+    background: url(images/caliblur/blur-noise.webp) center center fixed, url(images/caliblur/blur-light.webp) center center no-repeat fixed !important;
     background-size: auto, cover !important;
     -webkit-background-size: auto, cover !important;
     -moz-background-size: auto, cover !important;
@@ -4983,7 +5012,7 @@ body.read:not(.blur) a[href*=readbooks] {
     margin-top: -16px !important
 }
 
-#sendbtn > span {
+#sendbtn, #sendToEReaderBtn > span {
     height: 60px
 }
 
@@ -5024,8 +5053,8 @@ body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div
 }
 
 body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 {
-    margin-left: 25% !important;
-    width: 75%
+    /* margin-left: 25% !important; */
+    width: 75%;
 }
 
 body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-3 > div.text-center > #delete, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-3 > div.text-center > #delete {
@@ -5581,7 +5610,7 @@ body.admin.modal-open .navbar {
     font-weight: 400;
     position: absolute;
     left: calc(50% + 185px);
-    top: 88px;
+    top: 120px;
     font-size: 16px;
     color: #eee;
     opacity: .5;
@@ -5874,7 +5903,7 @@ body.authorlist .blur-wrapper:after {
 }
 
 #loader {
-    background-image: url(images/caliblur/blur-noise.png), url(images/caliblur/blur-dark.png) !important;
+    background-image: url(images/caliblur/blur-noise.webp), url(images/caliblur/blur-dark.webp) !important;
     background-repeat: repeat, no-repeat !important;
     background-attachment: fixed, fixed !important;
     background-position: center center, center center !important;
@@ -6567,7 +6596,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         text-overflow: ellipsis;
         white-space: nowrap;
         background: rgba(0, 0, 0, .15);
-        font-size: 16px;
+        font-size: 16px !important;
     }
 
     body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1, body.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1 {
@@ -6628,7 +6657,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         width: 150px !important
     }
 
-    #books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before {
+    #books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before, #books .cover > a:before, #books_rand .cover > a:before {
         line-height: 40px;
         width: 40px;
         height: 40px;
@@ -6685,7 +6714,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .form-group > label {
-        font-size: 12px
+        font-size: 12px;
     }
 
     body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 {
@@ -6896,7 +6925,6 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     body.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row > div.col > h2, body.admin > div.container-fluid > div > div.col-sm-10 > div.discover > h2 {
         font-size: 14px;
-        text-transform: uppercase
     }
 
     .me .dropdown-menu > li > #top_user:hover {
@@ -6904,10 +6932,10 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body:not(.blur):not(.login):not(.me):not(.author):not(.editbook):not(.upload):not(.shelfedit):not(.langlist):not(.authorlist):not(.serieslist):not(.catlist):not(.shelforder):not(.admin):not(.modal-open) > div.container-fluid > div.row-fluid > div.col-sm-10:after {
-        background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, .15)), to(rgba(0, 0, 0, .15))), url(images/caliblur/blur-noise.png), var(--color-background-mobile) !important;
-        background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), var(--color-background-mobile) !important;
-        background: -o-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), var(--color-background-mobile) !important;
-        background: linear-gradient(0deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.png), var(--color-background-mobile) !important;
+        background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, .15)), to(rgba(0, 0, 0, .15))), url(images/caliblur/blur-noise.webp), var(--color-background-mobile) !important;
+        background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), var(--color-background-mobile) !important;
+        background: -o-linear-gradient(bottom, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), var(--color-background-mobile) !important;
+        background: linear-gradient(0deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .15)), url(images/caliblur/blur-noise.webp), var(--color-background-mobile) !important;
         width: 100%;
         height: 42px;
         display: block;
@@ -7034,8 +7062,8 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
 
     body > div.container-fluid > div > div.col-sm-10 > div.single {
         width: 100%;
-        padding-left: 40px !important;
-        padding-right: 40px !important;
+        padding-left: 40px;
+        padding-right: 40px;
         padding-top: 20px !important;
     }
 
@@ -7071,7 +7099,6 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     .book-meta > .bookinfo > p:first-of-type, body.book .author {
-        margin-left: 220px;
         line-height: 1
     }
 
@@ -7281,17 +7308,20 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-3, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm-3 {
-        position: relative;
-        max-width: unset;
-        width: 100%;
-        height: unset;
+        position: relative !important;
+        max-width: unset !important;
+        width: 100% !important;
+        height: unset !important;
         padding: 15px;
+        margin-left: 0px !important;
     }
 
     body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 {
         padding: 15px;
-        margin: 0 !important;
-        width: 100%
+        margin-right: 2rem !important;
+        width: -webkit-fill-available !important;
+        margin-left: 2rem !important;
+        margin-top: 0px !important;
     }
 
     /* body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(1), body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(2), body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(1), body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > .form-group:nth-child(2) {
@@ -7809,7 +7839,7 @@ body.publisherlist > div.container-fluid > div > div.col-sm-10 > div.container >
 
 @media only screen and (min-width: 768px) {
     body.author:not(.authorlist) .undefined-img {
-        background-image: url(images/caliblur/blur-light.png) !important;
+        background-image: url(images/caliblur/blur-light.webp) !important;
         background-size: cover !important;
         -webkit-background-size: cover !important;
         -moz-background-size: cover !important;
@@ -8411,9 +8441,13 @@ p.cwa-settings-disclaimer {
 select.cwa-settings-select {
     color: #e9e9e9;
     text-align: center;
-    border-radius: 6px;
-    width: 8rem;
-    background-color: #151e26 !important;
+    border-radius: 4px;
+    width: fit-content;
+    background-color: #151e2680 !important;
+    border: 1px transparent;
+    padding: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .progress-container {
@@ -8443,6 +8477,7 @@ select.cwa-settings-select {
     max-width: 900px;
     justify-self: anchor-center;
     margin-left: 2rem;
+    width: -webkit-fill-available;
 }
 
 .settings-section-header {
@@ -8539,10 +8574,11 @@ select.cwa-settings-select {
 a#remote_login {
     width: -webkit-fill-available;
     text-align: center;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     padding: 6px 30px 5px;
     border: transparent solid 1px;
-    border-radius: 4px;
+    border-radius: 4rem;
+    font-size: 15px;
 }
 
 .login .well > form {
@@ -8566,4 +8602,207 @@ code {
     background-color: #202c35;
     border-radius: 4px;
     font-weight: bold;
+}
+
+button.close {
+    margin-left: 1rem;
+}
+
+/* Disable direct reading functionality on mobile/touch devices */
+@media (max-width: 767px), (hover: none) {
+    #books > .cover > a:before, 
+    #books_rand > .cover > a:before, 
+    .book.isotope-item > .cover > a:before, 
+    #books .cover > a:before, 
+    #books_rand .cover > a:before,
+    .read-toggle-btn,
+    .edit-metadata-btn,
+    .send-ereader-btn {
+        display: none !important;
+    }
+    
+    #books > .cover > a:hover:before, 
+    #books_rand > .cover > a:hover:before, 
+    .book.isotope-item > .cover > a:hover:before, 
+    #books .cover > a:hover:before, 
+    #books_rand .cover > a:hover:before {
+        display: none !important;
+    }
+}
+
+/* Enhanced visual feedback for direct reading pseudo-element */
+.book-cover-link.hovering-read-icon:before {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--color-secondary) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Read status toggle element - positioned bottom-left behind existing read badge */
+.read-toggle-btn {
+    background: rgb(19 28 36 / 71%);
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 35px;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    opacity: 0;
+    z-index: 8;
+    color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Allow hover to pass through when not visible */
+}
+
+.read-toggle-btn .glyphicon {
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: -2px;
+}
+
+/* Edit metadata element - positioned center-bottom */
+.edit-metadata-btn {
+    background: rgb(19 28 36 / 71%);
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 35px;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    position: absolute;
+    bottom: 8px;
+    left: calc(50% - 17.5px);
+    opacity: 0;
+    z-index: 8;
+    color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Allow hover to pass through when not visible */
+}
+
+.edit-metadata-btn .glyphicon {
+    font-size: 14px;
+    color: #fff;
+}
+
+/* Send to eReader element - positioned bottom-right */
+.send-ereader-btn {
+    background: rgb(19 28 36 / 71%);
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 35px;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    opacity: 0;
+    z-index: 9;
+    color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Allow hover to pass through when not visible */
+}
+
+.send-ereader-btn .glyphicon {
+    font-size: 14px;
+    color: #fff;
+    margin-left: -4px;
+    margin-bottom: -2px;
+}
+
+/* Show additional elements on cover hover - buttons are now inside the link */
+#books > .cover > a:hover .read-toggle-btn,
+#books > .cover > a:hover .edit-metadata-btn,
+#books > .cover > a:hover .send-ereader-btn,
+#books_rand > .cover > a:hover .read-toggle-btn,
+#books_rand > .cover > a:hover .edit-metadata-btn,
+#books_rand > .cover > a:hover .send-ereader-btn,
+.book.isotope-item > .cover > a:hover .read-toggle-btn,
+.book.isotope-item > .cover > a:hover .edit-metadata-btn,
+.book.isotope-item > .cover > a:hover .send-ereader-btn,
+#books .cover > a:hover .read-toggle-btn,
+#books .cover > a:hover .edit-metadata-btn,
+#books .cover > a:hover .send-ereader-btn,
+.cover:hover .read-toggle-btn,
+.cover:hover .edit-metadata-btn,
+.cover:hover .send-ereader-btn {
+    opacity: 1;
+    pointer-events: auto; /* Enable pointer events when visible */
+}
+
+/* Enhanced visual feedback for hovering over specific action areas */
+.read-toggle-btn.hovering {
+    background: rgba(200, 152, 94, 0.9) !important;
+    transform: scale(1.1) !important;
+}
+
+.edit-metadata-btn.hovering {
+    background: rgba(200, 152, 94, 0.9) !important;
+    transform: scale(1.1) !important;
+}
+
+.send-ereader-btn.hovering {
+    background: rgba(200, 152, 94, 0.9) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Loading state for action buttons */
+.read-toggle-btn.loading,
+.edit-metadata-btn.loading,
+.send-ereader-btn.loading {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: rgba(255, 165, 0, 0.9) !important;
+    animation: pulse 1s infinite;
+}
+
+.read-toggle-btn.loading .glyphicon,
+.edit-metadata-btn.loading .glyphicon,
+.send-ereader-btn.loading .glyphicon {
+    animation: spin 1s linear infinite;
+}
+
+/* Success state for action buttons */
+.read-toggle-btn.success,
+.edit-metadata-btn.success,
+.send-ereader-btn.success {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: rgba(0, 200, 0, 0.9) !important;
+    transform: scale(1.1);
+}
+
+/* Error state for action buttons */
+.read-toggle-btn.error,
+.edit-metadata-btn.error,
+.send-ereader-btn.error {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: rgba(200, 0, 0, 0.9) !important;
+    transform: scale(1.1);
+}
+
+/* Animations for loading and feedback states */
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

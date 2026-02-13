@@ -28,7 +28,7 @@ class MetaRecord:
     authors: List[str]
     url: str
     source: MetaSourceInfo
-    cover: str = os.path.join(constants.STATIC_DIR, 'generic_cover.jpg')
+    cover: str = os.path.join(constants.STATIC_DIR, 'generic_cover.svg')
     description: Optional[str] = ""
     series: Optional[str] = None
     series_index: Optional[Union[int, float]] = 0
@@ -39,6 +39,8 @@ class MetaRecord:
     languages: Optional[List[str]] = dataclasses.field(default_factory=list)
     tags: Optional[List[str]] = dataclasses.field(default_factory=list)
     format: Optional[str] = None
+    confidence_score: Optional[float] = None
+    match_reason: Optional[str] = ""
 
 
 class Metadata:

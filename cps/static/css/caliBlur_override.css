@@ -2,8 +2,8 @@ body.serieslist.grid-view div.container-fluid > div > div.col-sm-10::before {
   display: none;
 }
 
-/* Make checkboxes white */
-input[type=checkbox] {accent-color: #ffffff;}
+/* Make checkboxes orange */
+input[type=checkbox] {accent-color: #cc7b19;}
 
 .cover .badge {
   position: absolute !important;
@@ -17,9 +17,9 @@ input[type=checkbox] {accent-color: #ffffff;}
   margin-top: 4px;
 }
 
-.cover {
+/* .cover {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
-}
+} */
 
 .cover .read {
   line-height: 15px;
@@ -101,134 +101,6 @@ div#Downloads_list {
     }
 }
 
-/* Fixing mobile book view */
-@media only screen and (max-width: 767px) {
-    .identifiers {
-        margin-left: 220px !important;
-        max-height: 26px;
-        overflow: auto;
-    }
-    .publishers {
-        margin-left: 220px !important;
-    }
-    .publishing-date {
-        margin-left: 220px !important;
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .more-stuff {
-        margin-left: 220px !important;
-    }
-    .languages {
-        margin-left: 220px !important;
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .book-meta > .bookinfo > .comments, .book-meta > .description {
-        font-size: 13px;
-        min-height: 350px !important;
-        margin-top: 60px;
-    }
-    #bookDetailsModal > .modal-dialog.modal-lg > .modal-content > .modal-body > div > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover, body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 > div.cover {
-        width: 100%;
-        max-width: 200px;
-    }
-    .tags {
-        position: absolute !important;
-        left: 220px;
-        top: 190px;
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        max-height: 32px;
-        overflow: auto;
-    }
-}
-
-@media only screen and (max-width: 470px) {
-    .book-meta > h2 {
-        position: absolute !important;
-        top: 380px;
-        left: -220px;
-    }
-    .book h2#title {
-        max-width: 70vw;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    body.book .author {
-        position: absolute !important;
-        top: 440px;
-        left: -220px;
-        width: 100% !important;
-        max-width: none;
-    }
-    .book-meta > .bookinfo > .comments, .book-meta > .description {
-        margin-top: 40rem;
-    }
-    .publishers {
-        position: absolute !important;
-        top: 465px;
-        left: -220px !important;
-        margin-top: 0 !important;
-        max-width: 115px;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-    }
-    .publishing-date {
-        position: absolute !important;
-        top: 465px;
-        left: -80px !important;
-        margin-top: 0 !important;
-    }
-    .more-stuff {
-        display: none;
-    }
-    .editbook .more-stuff {
-        display: inherit;
-    }
-    .languages {
-        position: absolute !important;
-        top: 465px;
-        left: 36px !important;
-        margin-top: 0 !important;
-    }
-    .identifiers {
-        display: none;
-    }
-    body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-3.col-lg-3.col-xs-5 {
-        justify-self: center;
-    }
-    .tags {
-        position: absolute !important;
-        top: 408px;
-        left: 220px;
-        display: flex;
-        flex-wrap: nowrap;
-        flex-direction: column;
-        overflow-y: auto;
-        max-height: 26px;
-        max-width: 130px;
-        overflow-x: clip;
-        flex-wrap: nowrap;
-    }
-    .tags a.btn.btn-xs.btn-info {
-        position: sticky;
-    }
-    .bookinfo p#book_of {
-        position: absolute !important;
-        top: 535px;
-        padding: 0;
-        margin: 0;
-        max-width: 400px;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-height: 20px;
-        height: 100%;
-    }
-}
 
 @media only screen and (max-width: 445px) {
     .btn-group {
@@ -237,73 +109,9 @@ div#Downloads_list {
     }
 }
 
-/* Fix metadata fetch screen */
-.editbook .modal-dialog.modal-lg {
-    transform: translate(0px, -20px) !important;
-}
-@media only screen and (max-width: 767px) {
-    .editbook .more-stuff {
-        margin: 0 !important;
-    }
-}
-/* Fix login screen */
-.login .well {
-    max-height: 520px;
-    height: auto;
-    border: none;
-    border-radius: 0;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    min-width: 600px;
-    max-width: 700px;
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0 auto;
-    padding: 60px;
-    justify-items: anchor-center;
-    text-align: left;
-    background: none;
-}
-
-.login .well {
-    padding: 60px 10px !important;
-    max-width: none !important;
-    min-width: 0 !important;
-}
-
-.login .well > form {
-    background: rgba(0, 0, 0, .4);
-    color: hsla(0, 0%, 100%, .45);
-    padding: 60px;
-    margin-top: 60px !important;
-    display: flow-root;
-    min-width: 480px;
-}
-
-body.login > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a:hover {
-    color: #ccc !important;
-    background: none !important;
-}
-
-.login .navbar > .container-fluid > .navbar-header {
-    margin: 0;
-    background: none;
-}
-
-/* Fixes edit users page */
-h2.usertable {
-    padding-left: 30px;
-    margin-bottom: 3rem;
-    margin-top: 3rem;
-}
-
 .usertable .bootstrap-table.bootstrap3 {
     padding: 40px;
 }
-
 .usertable .errorlink {
     padding-left: 40px;
 }
@@ -354,4 +162,66 @@ form#archived_form > label.block-label::before {
     top: 14px !important;
     left: 69px;
     z-index: -1 !important;
+}
+
+/* Fixes Create Magic Shelf spacing in sidebar */
+li#nav_createmagicshelf {
+    margin-left: 1rem !important;
+}
+
+/* Fixes close buttons colour */
+button.close > span {
+    color: whitesmoke;
+}
+
+/* Fixes ill-aligned sort element in first column of book list table */
+.bs-checkbox > .th-inner.sortable {
+    position: relative;
+    right: 8px;
+    bottom: 10px;
+}
+
+.editbook-cover-section {
+    padding: 4rem !important;
+    margin-left: 2rem !important;
+    padding-top: 4rem !important;
+    max-width: none !important;
+    width: 36rem !important;
+}
+
+div#GeneralChangeModal > div > div.modal-content {
+    top: 200px;
+    width: max-content;
+    max-width: 400px;
+    padding: 2rem;
+    justify-self: center;
+}
+
+.modal-content > .modal-header.bg-info.text-center {
+    display: none;
+}
+
+a#advanced_search > span.hidden-sm {
+    margin-left: 4px;
+}
+
+.btn-primary[disabled] {
+    background-color: var(--color-secondary);
+}
+/* Fix for disabled theme switcher tooltip text overflow */
+.tooltip.cwa-tooltip-wrap .tooltip-inner {
+    white-space: normal !important;
+    max-width: 250px !important;
+    width: auto !important;
+    text-align: center;
+}
+
+.cwa-settings-tip {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+    border-radius: 0.25rem;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
 }

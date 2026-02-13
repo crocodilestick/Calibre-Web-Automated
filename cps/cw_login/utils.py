@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -20,6 +20,10 @@ from flask import request
 from flask import session
 from flask import url_for
 from werkzeug.local import LocalProxy
+
+import sys
+sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+from cwa_db import CWA_DB
 
 from .config import COOKIE_NAME
 from .config import EXEMPT_METHODS
@@ -195,6 +199,7 @@ def login_user(user, remember=False, duration=None, force=False, fresh=True):
 
     if remember:
         session["_remember"] = "set"
+        session["_permanent"] = True
         if duration is not None:
             try:
                 # equal to timedelta.total_seconds() but works with Python 2.6
@@ -206,6 +211,17 @@ def login_user(user, remember=False, duration=None, force=False, fresh=True):
                 raise Exception(
                     f"duration must be a datetime.timedelta, instead got: {duration}"
                 ) from e
+
+    # CWA Stats Logging
+    try:
+        cwa_db = CWA_DB()
+        cwa_db.log_activity(
+            user_id=user_id,
+            user_name=getattr(user, 'nickname', 'Unknown'),
+            event_type="LOGIN"
+        )
+    except Exception as e:
+        print(f"Failed to log login stats: {e}")
 
     current_app.login_manager._update_request_context_with_user(user)
     user_logged_in.send(current_app._get_current_object(), user=_get_user())
@@ -396,11 +412,12 @@ def _cookie_digest(payload, key=None):
 
 
 def _get_remote_addr():
-    address = request.headers.get("X-Forwarded-For", request.remote_addr)
+    # Use request.remote_addr which has already been corrected by ProxyFix middleware
+    # ProxyFix properly handles X-Forwarded-For headers with trust-level validation
+    # This ensures consistent IP detection behind reverse proxies (fixes issue #141)
+    address = request.remote_addr
     if address is not None:
-        # An 'X-Forwarded-For' header includes a comma separated list of the
-        # addresses, the first address being the actual remote address.
-        address = address.encode("utf-8").split(b",")[0].strip()
+        address = address.encode("utf-8")
     return address
 
 

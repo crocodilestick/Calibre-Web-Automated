@@ -12,12 +12,17 @@ import operator
 import time
 import sys
 import string
+import requests
 from datetime import datetime, timedelta
 from datetime import time as datetime_time
 from functools import wraps
 from urllib.parse import urlparse
+import shutil
+import subprocess
+import tempfile
+import fcntl
 
-from flask import Blueprint, flash, redirect, url_for, abort, request, make_response, send_from_directory, g, Response
+from flask import Blueprint, flash, redirect, url_for, abort, request, make_response, send_from_directory, g, Response, jsonify
 from markupsafe import Markup
 from .cw_login import current_user
 from flask_babel import gettext as _
@@ -62,14 +67,17 @@ except (ImportError, SyntaxError):
     feature_support['rar'] = False
 
 try:
-    from .oauth_bb import oauth_check, oauthblueprints
+    from . import oauth_bb
 
     feature_support['oauth'] = True
 except ImportError as err:
     log.debug('Cannot import Flask-Dance, login with Oauth will not work: %s', err)
     feature_support['oauth'] = False
-    oauthblueprints = []
-    oauth_check = {}
+    # Create a mock oauth_bb module with empty lists for when OAuth is not available
+    class MockOAuth:
+        oauthblueprints = []
+        oauth_check = {}
+    oauth_bb = MockOAuth()
 
 admi = Blueprint('admin', __name__)
 
@@ -108,6 +116,16 @@ def before_request():
                 _db.CalibreDB.setup_db(config.config_calibre_dir, _cli_param.settings_path)
         except Exception as e:
             log.error('Autoconfig safety net error: %s', e)
+    # If config says DB is configured but session is unavailable, try to recover and force reconfig on failure
+    if config.db_configured:
+        try:
+            calibre_db.ensure_session()
+        except Exception as e:
+            log.error("ensure_session failed in before_request: %s", e)
+        if calibre_db.session is None:
+            log.error("Calibre DB session unavailable; redirecting to DB configuration")
+            config.db_configured = False
+            flash(_("Calibre database unavailable. Please reconfigure the library path."), category="error")
     #try:
         #if not ub.check_user_session(current_user.id,
         #                             flask_session.get('_id')) and 'opds' not in request.path \
@@ -120,13 +138,14 @@ def before_request():
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
-    # Use per-user theme if available; fallback to global config.config_theme for legacy/anonymous
+    # Theme enforcement: light theme fully deprecated, force caliBlur (dark) in runtime
     try:
         g.current_theme = getattr(current_user, 'theme', config.config_theme)
         if current_user.is_anonymous and not hasattr(current_user, 'theme'):
             g.current_theme = config.config_theme
     except Exception:
-        g.current_theme = getattr(config, 'config_theme', 0)
+        g.current_theme = getattr(config, 'config_theme', 1)
+    g.current_theme = 1
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',
@@ -186,6 +205,252 @@ def queue_metadata_backup():
     return json.dumps(show_text)
 
 
+@admi.route("/hardcover_auto_fetch", methods=["POST"])
+@user_login_required
+@admin_required
+def trigger_hardcover_auto_fetch():
+    """Manually trigger Hardcover auto-fetch task"""
+    show_text = {}
+    
+    try:
+        # Check if token is available
+        from os import getenv
+        token_available = bool(
+            getattr(config, "config_hardcover_token", None) or 
+            getenv("HARDCOVER_TOKEN")
+        )
+        
+        if not token_available:
+            show_text['text'] = _('Error: No Hardcover token available. Set HARDCOVER_TOKEN environment variable or configure in Basic Configuration.')
+            return json.dumps(show_text), 400
+        
+        # Get settings
+        import sys as _sys
+        if '/app/calibre-web-automated/scripts/' not in _sys.path:
+            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+        from cps.tasks.auto_hardcover_id import TaskAutoHardcoverID
+        from cps.services.worker import WorkerThread
+        
+        cwa_db = CWA_DB()
+        cwa_settings = cwa_db.get_cwa_settings()
+        
+        min_confidence = float(cwa_settings.get('hardcover_auto_fetch_min_confidence', 0.85))
+        batch_size = int(cwa_settings.get('hardcover_auto_fetch_batch_size', 50))
+        rate_limit = float(cwa_settings.get('hardcover_auto_fetch_rate_limit', 5.0))
+        
+        # Create and enqueue task
+        task = TaskAutoHardcoverID(
+            min_confidence=min_confidence,
+            batch_size=batch_size,
+            rate_limit_delay=rate_limit
+        )
+        
+        WorkerThread.add(current_user.name, task, hidden=False)
+        
+        log.info(f"Hardcover auto-fetch task manually triggered by {current_user.name}")
+        show_text['text'] = _('Success! Hardcover auto-fetch task started. Check Tasks panel for progress.')
+        return json.dumps(show_text)
+        
+    except Exception as e:
+        log.error(f"Error triggering Hardcover auto-fetch: {e}")
+        show_text['text'] = _('Error starting Hardcover auto-fetch task: %(error)s', error=str(e))
+        return json.dumps(show_text), 500
+
+
+@admi.route("/admin/hardcover/review-matches")
+@user_login_required
+@admin_required
+def hardcover_review_matches():
+    """Display queue of Hardcover matches needing manual review"""
+    try:
+        # Get pending matches from database
+        pending_matches = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 0
+        ).order_by(ub.HardcoverMatchQueue.created_at.desc()).all()
+        
+        # Parse JSON data for each match
+        matches_data = []
+        for match in pending_matches:
+            import json
+            try:
+                results = json.loads(match.hardcover_results)
+                scores = json.loads(match.confidence_scores)
+                
+                matches_data.append({
+                    'id': match.id,
+                    'book_id': match.book_id,
+                    'book_title': match.book_title,
+                    'book_authors': match.book_authors,
+                    'search_query': match.search_query,
+                    'results': results,
+                    'scores': scores,
+                    'created_at': match.created_at
+                })
+            except Exception as e:
+                log.error(f"Error parsing match queue entry {match.id}: {e}")
+                continue
+        
+        return render_title_template(
+            "hardcover_review_matches.html",
+            title=_("Review Hardcover Matches"),
+            page="hardcover-review",
+            matches=matches_data
+        )
+        
+    except Exception as e:
+        log.error(f"Error loading Hardcover review queue: {e}")
+        flash(_("Error loading review queue: %(error)s", error=str(e)), category="error")
+        return redirect(url_for('admin.admin'))
+
+
+@admi.route("/admin/hardcover/review-action", methods=["POST"])
+@user_login_required
+@admin_required
+def hardcover_review_action():
+    """Process review action (accept/reject/skip) for a queued match"""
+    try:
+        data = request.get_json(silent=True) or request.form
+        if not data:
+            return json.dumps({'success': False, 'error': 'Missing request data'}), 400
+
+        queue_id_value = data.get('queue_id')
+        if queue_id_value is None:
+            return json.dumps({'success': False, 'error': 'Missing queue_id'}), 400
+
+        try:
+            queue_id = int(queue_id_value)
+        except (TypeError, ValueError):
+            return json.dumps({'success': False, 'error': 'Invalid queue_id'}), 400
+
+        action = data.get('action')  # 'accept', 'reject', 'skip'
+        selected_result_id = data.get('selected_result_id')
+        
+        # Get queue entry
+        match = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.id == queue_id
+        ).first()
+        
+        if not match:
+            return json.dumps({'success': False, 'error': 'Match not found'}), 404
+        
+        if action == 'accept' and selected_result_id:
+            # Apply the selected Hardcover ID to the book
+            results = json.loads(match.hardcover_results)
+            selected_result = next((r for r in results if str(r['id']) == str(selected_result_id)), None)
+            
+            if not selected_result:
+                return json.dumps({'success': False, 'error': 'Selected result not found'}), 400
+            
+            # Get the book
+            book = calibre_db.session.query(db.Books).filter(
+                db.Books.id == match.book_id
+            ).first()
+            
+            if not book:
+                return json.dumps({'success': False, 'error': 'Book not found'}), 404
+            
+            # Add identifiers
+            try:
+                identifiers_to_add = selected_result.get('identifiers', {})
+                for id_type, id_value in identifiers_to_add.items():
+                    id_value_str = str(id_value).strip() if id_value is not None else ""
+                    if not id_type or not id_value_str:
+                        continue
+                    # Check if identifier already exists
+                    existing = calibre_db.session.query(db.Identifiers).filter(
+                        db.Identifiers.book == match.book_id,
+                        db.Identifiers.type == id_type
+                    ).first()
+                    
+                    if existing:
+                        if existing.val != id_value_str:
+                            existing.val = id_value_str
+                    else:
+                        new_identifier = db.Identifiers(id_value_str, id_type, match.book_id)
+                        calibre_db.session.add(new_identifier)
+                
+                calibre_db.session.commit()
+                
+                # Mark as reviewed
+                match.reviewed = 1
+                match.selected_result_id = str(selected_result_id)
+                match.review_action = 'accept'
+                match.reviewed_at = datetime.utcnow().isoformat()
+                match.reviewed_by = current_user.name
+                ub.session.commit()
+                
+                log.info(f"User {current_user.name} accepted Hardcover match for book {match.book_id}")
+                return json.dumps({'success': True, 'message': _('Hardcover ID applied successfully')})
+                
+            except Exception as e:
+                calibre_db.session.rollback()
+                ub.session.rollback()
+                log.error(f"Error applying Hardcover ID: {e}")
+                return json.dumps({'success': False, 'error': str(e)}), 500
+        
+        elif action in ['reject', 'skip']:
+            # Mark as reviewed with appropriate action
+            match.reviewed = 1
+            match.review_action = action
+            match.reviewed_at = datetime.utcnow().isoformat()
+            match.reviewed_by = current_user.name
+            ub.session.commit()
+            
+            log.info(f"User {current_user.name} {action}ed Hardcover match for book {match.book_id}")
+            return json.dumps({'success': True, 'message': _('Match %(action)s', action=action)})
+        
+        else:
+            return json.dumps({'success': False, 'error': 'Invalid action'}), 400
+            
+    except Exception as e:
+        log.error(f"Error processing review action: {e}")
+        return json.dumps({'success': False, 'error': str(e)}), 500
+
+
+@admi.route("/admin/hardcover/review-reject-all", methods=["POST"])
+@user_login_required
+@admin_required
+def hardcover_review_reject_all():
+    """Reject all pending Hardcover matches"""
+    try:
+        reviewed_at = datetime.utcnow().isoformat()
+        updated_count = ub.session.query(ub.HardcoverMatchQueue).filter(
+            ub.HardcoverMatchQueue.reviewed == 0
+        ).update(
+            {
+                ub.HardcoverMatchQueue.reviewed: 1,
+                ub.HardcoverMatchQueue.review_action: 'reject',
+                ub.HardcoverMatchQueue.reviewed_at: reviewed_at,
+                ub.HardcoverMatchQueue.reviewed_by: current_user.name
+            },
+            synchronize_session=False
+        )
+        ub.session.commit()
+
+        log.info(
+            f"User {current_user.name} rejected all pending Hardcover matches "
+            f"({updated_count})"
+        )
+
+        if updated_count == 0:
+            return json.dumps({
+                'success': True,
+                'message': _('No pending matches to reject'),
+                'count': 0
+            })
+
+        return json.dumps({
+            'success': True,
+            'message': _('Rejected %(count)s match(es)', count=updated_count),
+            'count': updated_count
+        })
+    except Exception as e:
+        ub.session.rollback()
+        log.error(f"Error rejecting all pending matches: {e}")
+        return json.dumps({'success': False, 'error': str(e)}), 500
+
+
 # method is available without login and not protected by CSRF to make it easy reachable, is per default switched off
 # needed for docker applications, as changes on metadata.db from host are not visible to application
 @admi.route("/reconnect", methods=['GET'])
@@ -202,11 +467,34 @@ def reconnect():
 @user_login_required
 @admin_required
 def update_thumbnails():
-    content = config.get_scheduled_task_settings()
-    if content['schedule_generate_book_covers']:
-        log.info("Update of Cover cache requested")
-        helper.update_thumbnail_cache()
-    return ""
+    # Always allow manual thumbnail cache updates
+    log.info("Update of Cover cache requested")
+
+    try:
+        from .tasks.thumbnail import TaskGenerateCoverThumbnails
+        task_id = helper.update_thumbnail_cache()
+
+        # Check if there are any books to process
+        books_with_covers = TaskGenerateCoverThumbnails.get_books_with_covers()
+        book_count = len(books_with_covers)
+
+        if book_count > 0:
+            message = _('Thumbnail cache refresh started for {} book(s). This may take a few minutes.').format(book_count)
+        else:
+            message = _('No books with covers found to process.')
+
+        return jsonify({
+            'success': True,
+            'message': message,
+            'book_count': book_count,
+            'task_id': str(task_id) if task_id else None
+        })
+    except Exception as e:
+        log.error(f"Error starting thumbnail refresh: {e}")
+        return jsonify({
+            'success': False,
+            'message': _('Failed to start thumbnail refresh: {}').format(str(e))
+        })
 
 
 def cwa_get_package_versions() -> tuple[str, str, str, str]:
@@ -235,24 +523,7 @@ def cwa_get_package_versions() -> tuple[str, str, str, str]:
 @user_login_required
 @admin_required
 def admin():
-    version = updater_thread.get_current_version_info()
     cwa_version, kepubify_version, calibre_version = cwa_get_package_versions()
-    if version is False:
-        commit = _('Unknown')
-    else:
-        if 'datetime' in version:
-            commit = version['datetime']
-
-            tz = timedelta(seconds=time.timezone if (time.localtime().tm_isdst == 0) else time.altzone)
-            form_date = datetime.strptime(commit[:19], "%Y-%m-%dT%H:%M:%S")
-            if len(commit) > 19:  # check if string has timezone
-                if commit[19] == '+':
-                    form_date -= timedelta(hours=int(commit[20:22]), minutes=int(commit[23:]))
-                elif commit[19] == '-':
-                    form_date += timedelta(hours=int(commit[20:22]), minutes=int(commit[23:]))
-            commit = format_datetime(form_date - tz, format='short')
-        else:
-            commit = version['version'].replace("b", " Beta")
 
     all_user = ub.session.query(ub.User).all()
     # email_settings = mail_config.get_mail_settings()
@@ -260,7 +531,7 @@ def admin():
     t = timedelta(hours=config.schedule_duration // 60, minutes=config.schedule_duration % 60)
     schedule_duration = format_timedelta(t, threshold=.99)
 
-    return render_title_template("admin.html", allUser=all_user, config=config, commit=commit,
+    return render_title_template("admin.html", allUser=all_user, config=config,
                                  cwa_version=cwa_version, kepubify_version=kepubify_version,
                                  calibre_version=calibre_version, feature_support=feature_support,
                                  schedule_time=schedule_time, schedule_duration=schedule_duration,
@@ -282,7 +553,7 @@ def db_configuration():
 def configuration():
     return render_title_template("config_edit.html",
                                  config=config,
-                                 provider=oauthblueprints,
+                                 provider=oauth_bb.oauthblueprints,
                                  feature_support=feature_support,
                                  title=_("Basic Configuration"), page="config")
 
@@ -519,6 +790,8 @@ def edit_list_user(param):
                     user.kobo_only_shelves_sync = int(vals['value'] == 'true')
                 elif param == 'kindle_mail':
                     user.kindle_mail = valid_email(vals['value']) if vals['value'] else ""
+                elif param == 'kindle_mail_subject':
+                    user.kindle_mail_subject = vals['value']
                 elif param.endswith('role'):
                     value = int(vals['field_index'])
                     if user.name == "Guest" and value in \
@@ -547,7 +820,7 @@ def edit_list_user(param):
                     if user.name == "Guest" and value == constants.SIDEBAR_READ_AND_UNREAD:
                         raise Exception(_("Guest can't have this view"))
                     # check for valid value, last on checks for power of 2 value
-                    if value > 0 and value <= constants.SIDEBAR_LIST and (value & value - 1 == 0 or value == 1):
+                    if value > 0 and value <= constants.SIDEBAR_DUPLICATES and (value & value - 1 == 0 or value == 1):
                         if vals['value'] == 'true':
                             user.sidebar_view |= value
                         elif vals['value'] == 'false':
@@ -633,7 +906,7 @@ def update_view_configuration():
     config.config_default_role = constants.selected_roles(to_save)
     config.config_default_role &= ~constants.ROLE_ANONYMOUS
 
-    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith('show_'))
+    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith('show_') and not k.startswith('show_magic_shelf_') and not k.startswith('show_custom_shelf_'))
     if "Show_detail_random" in to_save:
         config.config_default_show |= constants.DETAIL_RANDOM
 
@@ -1180,25 +1453,119 @@ def _configuration_gdrive_helper(to_save):
 
 
 def _configuration_oauth_helper(to_save):
-    active_oauths = 0
     reboot_required = False
-    for element in oauthblueprints:
-        if to_save["config_" + str(element['id']) + "_oauth_client_id"] != element['oauth_client_id'] \
-          or to_save["config_" + str(element['id']) + "_oauth_client_secret"] != element['oauth_client_secret']:
-            reboot_required = True
-            element['oauth_client_id'] = to_save["config_" + str(element['id']) + "_oauth_client_id"]
-            element['oauth_client_secret'] = to_save["config_" + str(element['id']) + "_oauth_client_secret"]
-        if to_save["config_" + str(element['id']) + "_oauth_client_id"] \
-          and to_save["config_" + str(element['id']) + "_oauth_client_secret"]:
-            active_oauths += 1
-            element["active"] = 1
+
+    for element in oauth_bb.oauthblueprints:
+        update = {}
+        if element["provider_name"] == "generic":
+            if to_save["config_generic_oauth_client_id"] != element["oauth_client_id"]:
+                reboot_required = True
+                update["oauth_client_id"] = to_save["config_generic_oauth_client_id"]
+            if to_save["config_generic_oauth_client_secret"] != element["oauth_client_secret"]:
+                reboot_required = True
+                update["oauth_client_secret"] = to_save["config_generic_oauth_client_secret"]
+
+            # Handle metadata URL (takes precedence over manual configuration)
+            metadata_url = to_save.get("config_generic_oauth_metadata_url", "")
+            if metadata_url != element.get("metadata_url", ""):
+                reboot_required = True
+                update["metadata_url"] = metadata_url
+
+                # If metadata URL is provided, try to fetch endpoints
+                if metadata_url:
+                    try:
+                        resp = requests.get(metadata_url, timeout=3, verify=constants.OAUTH_SSL_STRICT)
+                        if resp.status_code == 200:
+                            data = resp.json()
+                            update["oauth_base_url"] = data.get("issuer", "")
+                            update["oauth_authorize_url"] = data.get("authorization_endpoint", "")
+                            update["oauth_token_url"] = data.get("token_endpoint", "")
+                            update["oauth_userinfo_url"] = data.get("userinfo_endpoint", "")
+                        else:
+                            log.warning(f"Failed to fetch OAuth metadata: HTTP {resp.status_code}")
+                    except requests.exceptions.Timeout:
+                        log.warning("OAuth metadata fetch timed out - configuration saved but endpoints not auto-discovered")
+                    except requests.exceptions.RequestException as ex:
+                        log.warning(f"Failed to fetch OAuth metadata: {ex}")
+                    except Exception as ex:
+                        log.error(f"Unexpected error fetching OAuth metadata: {ex}")
+
+            # Handle manual server URL (fallback or override)
+            elif to_save["config_generic_oauth_server_url"] != element["oauth_base_url"]:
+                reboot_required = True
+                update["oauth_base_url"] = to_save["config_generic_oauth_server_url"]
+                try:
+                    resp = requests.get(
+                        os.path.join(update["oauth_base_url"], ".well-known/openid-configuration"),
+                        timeout=3,
+                        verify=constants.OAUTH_SSL_STRICT
+                    )
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        update["oauth_authorize_url"] = data.get("authorization_endpoint", "")
+                        update["oauth_token_url"] = data.get("token_endpoint", "")
+                        update["oauth_userinfo_url"] = data.get("userinfo_endpoint", "")
+                    else:
+                        log.warning(f"Failed to fetch OIDC configuration: HTTP {resp.status_code}")
+                except requests.exceptions.Timeout:
+                    log.warning("OIDC configuration fetch timed out - configuration saved but endpoints not auto-discovered")
+                except requests.exceptions.RequestException as ex:
+                    log.warning(f"Failed to fetch OIDC configuration: {ex}")
+                except Exception as ex:
+                    log.error(f"Unexpected error fetching OIDC configuration: {ex}")
+
+            # Handle manual endpoint URLs if metadata URL is not used
+            if not metadata_url:
+                # Map form field names to database field names
+                endpoint_mappings = {
+                    "config_generic_oauth_auth_url": "oauth_authorize_url",
+                    "config_generic_oauth_token_url": "oauth_token_url",
+                    "config_generic_oauth_userinfo_url": "oauth_userinfo_url"
+                }
+
+                for form_field, db_field in endpoint_mappings.items():
+                    if form_field in to_save and to_save[form_field] != element.get(db_field, ""):
+                        reboot_required = True
+                        update[db_field] = to_save[form_field]
+
+            # Handle scope
+            if to_save.get("config_generic_oauth_scope", "") != element.get("scope", ""):
+                reboot_required = True
+                update["scope"] = to_save.get("config_generic_oauth_scope", "")
+
+            # Handle username mapper
+            if to_save.get("config_generic_oauth_username_mapper", "") != element.get("username_mapper", ""):
+                reboot_required = True
+                update["username_mapper"] = to_save.get("config_generic_oauth_username_mapper", "")
+
+            # Handle email mapper
+            if to_save.get("config_generic_oauth_email_mapper", "") != element.get("email_mapper", ""):
+                reboot_required = True
+                update["email_mapper"] = to_save.get("config_generic_oauth_email_mapper", "")
+
+            # Handle login button text
+            if to_save.get("config_generic_oauth_login_button", "") != element.get("login_button", ""):
+                reboot_required = True
+                update["login_button"] = to_save.get("config_generic_oauth_login_button", "")
+
+            if to_save["config_generic_oauth_admin_group"] != element["oauth_admin_group"]:
+                reboot_required = True
+                update["oauth_admin_group"] = to_save["config_generic_oauth_admin_group"]
         else:
-            element["active"] = 0
-        ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.id == element['id']).update(
-            {"oauth_client_id": to_save["config_" + str(element['id']) + "_oauth_client_id"],
-             "oauth_client_secret": to_save["config_" + str(element['id']) + "_oauth_client_secret"],
-             "active": element["active"]})
-    return reboot_required
+            if to_save["config_" + str(element['id']) + "_oauth_client_id"] != element["oauth_client_id"]:
+                reboot_required = True
+                update["oauth_client_id"] = to_save["config_" + str(element['id']) + "_oauth_client_id"]
+            if to_save["config_" + str(element['id']) + "_oauth_client_secret"] != element["oauth_client_secret"]:
+                reboot_required = True
+                update["oauth_client_secret"] = to_save["config_" + str(element['id']) + "_oauth_client_secret"]
+
+        oauth_client_id = update.get("oauth_client_id", element["oauth_client_id"])
+        oauth_client_secret = update.get("oauth_client_secret", element["oauth_client_secret"])
+        update["active"] = 1 if oauth_client_id and oauth_client_secret else 0
+
+        ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.id == element['id']).update(update)
+
+    return reboot_required, None
 
 
 def _configuration_logfile_helper(to_save):
@@ -1228,6 +1595,7 @@ def _configuration_ldap_helper(to_save):
     reboot_required |= _config_string(to_save, "config_ldap_group_members_field")
     reboot_required |= _config_string(to_save, "config_ldap_member_user_object")
     reboot_required |= _config_checkbox(to_save, "config_ldap_openldap")
+    _config_checkbox(to_save, "config_ldap_auto_create_users")
     reboot_required |= _config_int(to_save, "config_ldap_encryption")
     reboot_required |= _config_string(to_save, "config_ldap_cacert_path")
     reboot_required |= _config_string(to_save, "config_ldap_cert_path")
@@ -1314,10 +1682,18 @@ def new_user():
         content.sidebar_view = config.config_default_show
         content.locale = config.config_default_locale
         content.default_language = config.config_default_language
+    opds_context = _build_opds_context(content)
+    magic_shelf_context = _build_magic_shelf_order_context(content)
     return render_title_template("user_edit.html", new_user=1, content=content,
                                  config=config, translations=translations,
                                  languages=languages, title=_("Add New User"), page="newuser",
-                                 kobo_support=kobo_support, registered_oauth=oauth_check)
+                                 kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check,
+                                 opds_root_order_string=opds_context["opds_root_order_string"],
+                                 opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
+                                 opds_root_labels=opds_context["opds_root_labels"],
+                                 magic_shelf_order_string=magic_shelf_context["magic_shelf_order_string"],
+                                 magic_shelf_order_labels=magic_shelf_context["magic_shelf_order_labels"],
+                                 magic_shelf_order_mode=magic_shelf_context["magic_shelf_order_mode"])
 
 
 @admi.route("/admin/mailsettings", methods=["GET"])
@@ -1450,6 +1826,64 @@ def update_scheduledtasks():
     return edit_scheduledtasks()
 
 
+def _build_opds_context(user):
+    from .opds import (
+        get_opds_root_order_for_user,
+        get_opds_hidden_entries_for_user,
+        OPDS_ROOT_ENTRY_DEFS,
+        OPDS_ROOT_ORDER_DEFAULT,
+    )
+    opds_root_order = get_opds_root_order_for_user(user)
+    opds_root_order_string = ",".join(opds_root_order)
+    opds_hidden_entries = list(get_opds_hidden_entries_for_user(user))
+    opds_hidden_entries_string = ",".join(opds_hidden_entries)
+    opds_root_labels = [
+        {
+            "key": key,
+            "label": _(OPDS_ROOT_ENTRY_DEFS[key]['title']),
+        }
+        for key in OPDS_ROOT_ORDER_DEFAULT
+        if key in OPDS_ROOT_ENTRY_DEFS
+    ]
+    return {
+        "opds_root_order_string": opds_root_order_string,
+        "opds_hidden_entries_string": opds_hidden_entries_string,
+        "opds_root_labels": opds_root_labels,
+    }
+
+
+def _build_magic_shelf_order_context(user):
+    from . import magic_shelf
+    if not user or not getattr(user, 'id', None):
+        return {
+            "magic_shelf_order_string": "",
+            "magic_shelf_order_labels": [],
+            "magic_shelf_order_mode": magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE,
+        }
+
+    shelves = magic_shelf.get_visible_magic_shelves_for_user(user.id)
+    magic_shelf_order_labels = [
+        {
+            "key": str(shelf.id),
+            "label": shelf.name,
+            "icon": shelf.icon,
+        }
+        for shelf in shelves
+    ]
+    settings = (user.view_settings or {}).get('magic_shelves', {})
+    order_mode = settings.get('order_mode', magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE)
+    if order_mode not in magic_shelf.MAGIC_SHELF_ORDER_MODES:
+        order_mode = magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE
+    available_ids = [shelf.id for shelf in shelves]
+    normalized = magic_shelf.normalize_magic_shelf_order(settings.get('order', []), available_ids)
+    order_string = ",".join(str(sid) for sid in normalized)
+    return {
+        "magic_shelf_order_string": order_string,
+        "magic_shelf_order_labels": magic_shelf_order_labels,
+        "magic_shelf_order_mode": order_mode,
+    }
+
+
 @admi.route("/admin/user/<int:user_id>", methods=["GET", "POST"])
 @user_login_required
 @admin_required
@@ -1461,20 +1895,57 @@ def edit_user(user_id):
     languages = calibre_db.speaking_language(return_all_languages=True)
     translations = get_available_locale()
     kobo_support = feature_support['kobo'] and config.config_kobo_sync
+    
+    # Get system shelf templates and hidden templates for this user
+    from . import magic_shelf
+    system_shelf_templates = magic_shelf.SYSTEM_SHELF_TEMPLATES
+    hidden_items = ub.session.query(
+        ub.HiddenMagicShelfTemplate.template_key,
+        ub.HiddenMagicShelfTemplate.shelf_id
+    ).filter(
+        ub.HiddenMagicShelfTemplate.user_id == content.id
+    ).all()
+    hidden_shelf_templates = {item.template_key for item in hidden_items if item.template_key}
+    hidden_custom_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+    
+    # Get ALL public custom shelves that user doesn't own (both hidden and visible)
+    all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+        ub.MagicShelf.is_public == 1,
+        ub.MagicShelf.user_id != content.id,
+        ub.MagicShelf.is_system == False
+    ).all()
+    
+    # Separate into hidden and visible
+    hidden_custom_shelves = [s for s in all_public_shelves if s.id in hidden_custom_shelf_ids]
+    visible_public_shelves = [s for s in all_public_shelves if s.id not in hidden_custom_shelf_ids]
+    
     if request.method == "POST":
         to_save = request.form.to_dict()
         resp = _handle_edit_user(to_save, content, languages, translations, kobo_support)
         if resp:
             return resp
+    opds_context = _build_opds_context(content)
+    magic_shelf_context = _build_magic_shelf_order_context(content)
     return render_title_template("user_edit.html",
                                  translations=translations,
                                  languages=languages,
                                  new_user=0,
                                  content=content,
                                  config=config,
-                                 registered_oauth=oauth_check,
+                                 registered_oauth=oauth_bb.oauth_check,
                                  mail_configured=config.get_mail_server_configured(),
                                  kobo_support=kobo_support,
+                                 system_shelf_templates=system_shelf_templates,
+                                 hidden_shelf_templates=hidden_shelf_templates,
+                                 hidden_custom_shelf_ids=hidden_custom_shelf_ids,
+                                 hidden_custom_shelves=hidden_custom_shelves,
+                                 visible_public_shelves=visible_public_shelves,
+                                 opds_root_order_string=opds_context["opds_root_order_string"],
+                                 opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
+                                 opds_root_labels=opds_context["opds_root_labels"],
+                                 magic_shelf_order_string=magic_shelf_context["magic_shelf_order_string"],
+                                 magic_shelf_order_labels=magic_shelf_context["magic_shelf_order_labels"],
+                                 magic_shelf_order_mode=magic_shelf_context["magic_shelf_order_mode"],
                                  title=_("Edit User %(nick)s", nick=content.name),
                                  page="edituser")
 
@@ -1741,7 +2212,10 @@ def _db_configuration_update_helper():
     to_save = request.form.to_dict()
     gdrive_error = None
 
-    incoming = to_save.get('config_calibre_dir', config.config_calibre_dir or '')
+    incoming = to_save.get('config_calibre_dir')
+    if incoming is None:
+        log.warning("DB config update missing config_calibre_dir; using current config value")
+        incoming = config.config_calibre_dir or ''
     incoming = re.sub(r'[\\/]metadata\.db$', '', incoming, flags=re.IGNORECASE)
     if not incoming and os.path.isfile('/calibre-library/metadata.db'):
         incoming = '/calibre-library'
@@ -1757,7 +2231,7 @@ def _db_configuration_update_helper():
         log.error_or_exception("Settings Database error: {}".format(e))
         _db_configuration_result(_("Oops! Database Error: %(error)s.", error=e.orig), gdrive_error)
     try:
-        metadata_db = os.path.join(to_save['config_calibre_dir'], "metadata.db")
+        metadata_db = os.path.join(to_save.get('config_calibre_dir', ''), "metadata.db")
         if config.config_use_google_drive and is_gdrive_ready() and not os.path.exists(metadata_db):
             gdriveutils.downloadFile(None, "metadata.db", metadata_db)
             db_change = True
@@ -1765,8 +2239,8 @@ def _db_configuration_update_helper():
         return _db_configuration_result('{}'.format(ex), gdrive_error)
     config.config_calibre_split = to_save.get('config_calibre_split', 0) == "on"
     if config.config_calibre_split:
-        split_dir = to_save.get("config_calibre_split_dir")
-        if not os.path.exists(split_dir):
+        split_dir = to_save.get("config_calibre_split_dir") or ""
+        if not split_dir or not os.path.exists(split_dir):
             return _db_configuration_result(_("Books path not valid"), gdrive_error)
         else:
             _config_string(to_save, "config_calibre_split_dir")
@@ -1842,9 +2316,13 @@ def _configuration_update_helper():
         _config_string(to_save, "config_calibre")
         _config_string(to_save, "config_binariesdir")
         _config_string(to_save, "config_kepubifypath")
+        arch_warning = None
         if "config_binariesdir" in to_save:
             calibre_status = helper.check_calibre(config.config_binariesdir)
+            arch_warning = helper.check_architecture()
             if calibre_status:
+                if arch_warning:
+                    calibre_status += " " + arch_warning
                 return _configuration_result(calibre_status)
             to_save["config_converterpath"] = get_calibre_binarypath("ebook-convert")
             _config_string(to_save, "config_converterpath")
@@ -1872,17 +2350,59 @@ def _configuration_update_helper():
 
         # Hardcover configuration
         _config_checkbox(to_save, "config_hardcover_sync")
+        _config_checkbox(to_save, "config_hardcover_annotations_sync")
         _config_string(to_save, "config_hardcover_token")
-            
+
         _config_int(to_save, "config_updatechannel")
 
         # Reverse proxy login configuration
         _config_checkbox(to_save, "config_allow_reverse_proxy_header_login")
         _config_string(to_save, "config_reverse_proxy_login_header_name")
+        _config_checkbox(to_save, "config_reverse_proxy_auto_create_users")
+
+        # Validate reverse proxy configuration
+        if config.config_reverse_proxy_auto_create_users and not config.config_allow_reverse_proxy_header_login:
+            return _configuration_result(_('Auto-create users cannot be enabled without enabling reverse proxy authentication'))
+
+        if config.config_reverse_proxy_auto_create_users and not config.config_reverse_proxy_login_header_name:
+            return _configuration_result(_('Auto-create users requires a valid reverse proxy header name'))
 
         # OAuth configuration
+        oauth_redirect_host_changed = False
+        if "config_oauth_redirect_host" in to_save:
+            old_host = getattr(config, 'config_oauth_redirect_host', '')
+            new_host = to_save["config_oauth_redirect_host"].strip()
+
+            # Validate OAuth redirect host format if provided
+            if new_host:
+                try:
+                    # Add https:// if no scheme is provided
+                    if not new_host.startswith(('http://', 'https://')):
+                        new_host = f"https://{new_host}"
+                        to_save["config_oauth_redirect_host"] = new_host
+
+                    # Parse the URL to validate it
+                    parsed = urlparse(new_host)
+                    if not parsed.netloc:
+                        return _configuration_result(_('Invalid OAuth Redirect Host format. Please include the full URL with protocol (e.g., https://your-domain.com)'))
+
+                    # Warn if URL contains a path (could cause redirect URI issues)
+                    if parsed.path and parsed.path != '/':
+                        return _configuration_result(_('OAuth Redirect Host should not include a path. Use only the base URL (e.g., https://your-domain.com)'))
+
+                except Exception:
+                    return _configuration_result(_('Invalid OAuth Redirect Host format. Please include the full URL with protocol (e.g., https://your-domain.com)'))
+
+            if old_host != new_host:
+                oauth_redirect_host_changed = True
+
+        _config_string(to_save, "config_oauth_redirect_host")
+
         if config.config_login_type == constants.LOGIN_OAUTH:
-            reboot_required |= _configuration_oauth_helper(to_save)
+            reboot, message = _configuration_oauth_helper(to_save)
+            if message:
+                return message
+            reboot_required |= reboot or oauth_redirect_host_changed
 
         # logfile configuration
         reboot, message = _configuration_logfile_helper(to_save)
@@ -1891,6 +2411,8 @@ def _configuration_update_helper():
         reboot_required |= reboot
 
         # security configuration
+        _config_checkbox(to_save, "config_disable_standard_login")
+        _config_checkbox(to_save, "config_enable_oauth_group_admin_management")
         _config_checkbox(to_save, "config_check_extensions")
         _config_checkbox(to_save, "config_password_policy")
         _config_checkbox(to_save, "config_password_number")
@@ -1909,10 +2431,12 @@ def _configuration_update_helper():
 
         # Rarfile Content configuration
         _config_string(to_save, "config_rarfile_location")
+        unrar_warning = None
         if "config_rarfile_location" in to_save:
             unrar_status = helper.check_unrar(config.config_rarfile_location)
             if unrar_status:
-                return _configuration_result(unrar_status)
+                # Store warning but don't prevent saving other settings
+                unrar_warning = unrar_status
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
@@ -1922,10 +2446,10 @@ def _configuration_update_helper():
     if reboot_required:
         web_server.stop(True)
 
-    return _configuration_result(None, reboot_required)
+    return _configuration_result(None, reboot_required, " ".join(filter(None, [unrar_warning, arch_warning])))
 
 
-def _configuration_result(error_flash=None, reboot=False):
+def _configuration_result(error_flash=None, reboot=False, warning_flash=None):
     resp = {}
     if error_flash:
         log.error(error_flash)
@@ -1933,6 +2457,10 @@ def _configuration_result(error_flash=None, reboot=False):
         resp['result'] = [{'type': "danger", 'message': error_flash}]
     else:
         resp['result'] = [{'type': "success", 'message': _("Calibre-Web Automated configuration updated")}]
+        # Add warning message if present (configuration was saved, but with a warning)
+        if warning_flash:
+            log.warning(warning_flash)
+            resp['result'].append({'type': "warning", 'message': warning_flash})
     resp['reboot'] = reboot
     resp['config_upload'] = config.config_upload_formats
     return Response(json.dumps(resp), mimetype='application/json')
@@ -1975,10 +2503,9 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.sidebar_view |= constants.DETAIL_RANDOM
 
     content.role = constants.selected_roles(to_save)
-    # Set default theme (caliBlur = 1) for new users
+    # Force dark theme (caliBlur = 1) for new users
     try:
-        # Use global default theme config (acts as default for new users)
-        content.theme = getattr(config, 'config_theme', 1)
+        content.theme = 1
     except Exception:
         pass
     try:
@@ -1996,11 +2523,19 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
             raise Exception(_("E-mail is not from valid domain"))
     except Exception as ex:
         flash(str(ex), category="error")
+        opds_context = _build_opds_context(content)
+        magic_shelf_context = _build_magic_shelf_order_context(content)
         return render_title_template("user_edit.html", new_user=1, content=content,
                                      config=config,
                                      translations=translations,
                                      languages=languages, title=_("Add new user"), page="newuser",
-                                     kobo_support=kobo_support, registered_oauth=oauth_check)
+                                     kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check,
+                                     opds_root_order_string=opds_context["opds_root_order_string"],
+                                     opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
+                                     opds_root_labels=opds_context["opds_root_labels"],
+                                     magic_shelf_order_string=magic_shelf_context["magic_shelf_order_string"],
+                                     magic_shelf_order_labels=magic_shelf_context["magic_shelf_order_labels"],
+                                     magic_shelf_order_mode=magic_shelf_context["magic_shelf_order_mode"])
     try:
         content.allowed_tags = config.config_allowed_tags
         content.denied_tags = config.config_denied_tags
@@ -2063,12 +2598,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             log.error(ex)
             flash(str(ex), category="error")
         return redirect(url_for('admin.admin'))
-    # Theme update for admin editing user
+    # Theme update for admin editing user (force dark)
     if 'theme' in to_save:
         try:
-            theme_val = int(to_save.get('theme'))
-            if theme_val in (0,1):
-                content.theme = theme_val
+            content.theme = 1
         except Exception:
             pass
     # Proceed with remaining updates (previously skipped when 'theme' in to_save)
@@ -2078,7 +2611,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
         flash(_("No admin user remaining, can't remove admin role"), category="error")
         return redirect(url_for('admin.admin'))
 
-    val = [int(k[5:]) for k in to_save if k.startswith('show_')]
+    val = [int(k[5:]) for k in to_save if k.startswith('show_') and not k.startswith('show_magic_shelf_') and not k.startswith('show_custom_shelf_')]
     sidebar, __ = get_sidebar_config()
     for element in sidebar:
         value = element['visibility']
@@ -2099,6 +2632,135 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     # which don't have to be synced have to be removed (added to Shelf archive)
     if old_state == 0 and content.kobo_only_shelves_sync == 1:
         kobo_sync_status.update_on_sync_shelfs(content.id)
+    # Auto-send and metadata fetch settings
+    content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
+    content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+
+    # OPDS root order
+    opds_order_raw = to_save.get("opds_root_order", "").strip()
+    if opds_order_raw:
+        from .opds import normalize_opds_root_order
+        opds_order_list = [item.strip() for item in opds_order_raw.split(',') if item.strip()]
+        normalized_order = normalize_opds_root_order(opds_order_list)
+        if content.view_settings is None:
+            content.view_settings = {}
+        content.view_settings.setdefault('opds', {})['root_order'] = normalized_order
+        flag_modified(content, "view_settings")
+    else:
+        if content.view_settings and content.view_settings.get('opds', {}).get('root_order'):
+            content.view_settings['opds'].pop('root_order', None)
+            if not content.view_settings['opds']:
+                content.view_settings.pop('opds', None)
+            flag_modified(content, "view_settings")
+
+    # OPDS hidden entries
+    opds_hidden_raw = to_save.get("opds_hidden_entries", "").strip()
+    if opds_hidden_raw:
+        from .opds import OPDS_ROOT_ENTRY_DEFS
+        hidden_entries = [item.strip() for item in opds_hidden_raw.split(',') if item.strip()]
+        hidden_entries = [key for key in hidden_entries if key in OPDS_ROOT_ENTRY_DEFS]
+        if content.view_settings is None:
+            content.view_settings = {}
+        content.view_settings.setdefault('opds', {})['hidden_entries'] = hidden_entries
+        flag_modified(content, "view_settings")
+    else:
+        if content.view_settings and content.view_settings.get('opds', {}).get('hidden_entries'):
+            content.view_settings['opds'].pop('hidden_entries', None)
+            if not content.view_settings['opds']:
+                content.view_settings.pop('opds', None)
+            flag_modified(content, "view_settings")
+
+    # Magic shelf order settings
+    from . import magic_shelf
+    magic_shelf_order_raw = to_save.get("magic_shelf_order", "").strip()
+    magic_shelf_order_mode = to_save.get("magic_shelf_order_mode", magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE)
+    if magic_shelf_order_mode not in magic_shelf.MAGIC_SHELF_ORDER_MODES:
+        magic_shelf_order_mode = magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE
+
+    accessible_shelves = ub.session.query(ub.MagicShelf).filter(
+        or_(
+            ub.MagicShelf.is_public == 1,
+            ub.MagicShelf.user_id == content.id
+        )
+    ).all()
+    accessible_ids = {s.id for s in accessible_shelves}
+    magic_shelf_order_list = []
+    if magic_shelf_order_raw:
+        for item in [item.strip() for item in magic_shelf_order_raw.split(',') if item.strip()]:
+            try:
+                shelf_id = int(item)
+            except ValueError:
+                continue
+            if shelf_id in accessible_ids and shelf_id not in magic_shelf_order_list:
+                magic_shelf_order_list.append(shelf_id)
+
+    if content.view_settings is None:
+        content.view_settings = {}
+    magic_shelf_settings = content.view_settings.setdefault('magic_shelves', {})
+    magic_shelf_settings['order_mode'] = magic_shelf_order_mode
+    if magic_shelf_order_list:
+        magic_shelf_settings['order'] = magic_shelf_order_list
+    else:
+        magic_shelf_settings.pop('order', None)
+    flag_modified(content, "view_settings")
+    
+    # Handle hidden magic shelf templates and custom shelves
+    if not content.is_anonymous:
+        # Get all system template keys
+        all_template_keys = set(magic_shelf.SYSTEM_SHELF_TEMPLATES.keys())
+        # Get currently hidden items for this user
+        current_hidden = ub.session.query(ub.HiddenMagicShelfTemplate).filter(
+            ub.HiddenMagicShelfTemplate.user_id == content.id
+        ).all()
+        current_hidden_template_keys = {h.template_key for h in current_hidden if h.template_key}
+        current_hidden_shelf_ids = {h.shelf_id for h in current_hidden if h.shelf_id}
+        
+        # Handle system templates
+        visible_template_keys = {key for key in all_template_keys if to_save.get(f"show_magic_shelf_{key}") == "on"}
+        should_be_hidden_templates = all_template_keys - visible_template_keys
+        
+        # Add newly hidden templates
+        for key in should_be_hidden_templates:
+            if key not in current_hidden_template_keys:
+                new_hidden = ub.HiddenMagicShelfTemplate(
+                    user_id=content.id,
+                    template_key=key
+                )
+                ub.session.add(new_hidden)
+                log.info(f"User {content.id} hid system shelf template '{key}'")
+        
+        # Remove templates that should no longer be hidden
+        for hidden in current_hidden:
+            if hidden.template_key and hidden.template_key in visible_template_keys:
+                ub.session.delete(hidden)
+                log.info(f"User {content.id} unhid system shelf template '{hidden.template_key}'")
+        
+        # Handle custom public shelves - get all available ones
+        all_public_shelves = ub.session.query(ub.MagicShelf).filter(
+            ub.MagicShelf.is_public == 1,
+            ub.MagicShelf.user_id != content.id,
+            ub.MagicShelf.is_system == False
+        ).all()
+        
+        # Check which ones should be visible (checked)
+        visible_shelf_ids = {s.id for s in all_public_shelves if to_save.get(f"show_custom_shelf_{s.id}") == "on"}
+        
+        # Hide shelves that are unchecked but not currently hidden
+        for shelf in all_public_shelves:
+            if shelf.id not in visible_shelf_ids and shelf.id not in current_hidden_shelf_ids:
+                new_hidden = ub.HiddenMagicShelfTemplate(
+                    user_id=content.id,
+                    shelf_id=shelf.id
+                )
+                ub.session.add(new_hidden)
+                log.info(f"User {content.id} hid custom shelf {shelf.id}")
+        
+        # Unhide shelves that are checked but currently hidden
+        for hidden in current_hidden:
+            if hidden.shelf_id and hidden.shelf_id in visible_shelf_ids:
+                ub.session.delete(hidden)
+                log.info(f"User {content.id} unhid custom shelf {hidden.shelf_id}")
+    
     if to_save.get("default_language"):
         content.default_language = to_save["default_language"]
     if to_save.get("locale"):
@@ -2123,11 +2785,20 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             if to_save.get("name") == "Guest":
                 raise Exception(_("Guest Name can't be changed"))
             content.name = check_username(to_save["name"])
+        if "allow_additional_ereader_emails" in to_save:
+            content.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
+        else:
+            content.allow_additional_ereader_emails = False
         if to_save.get("kindle_mail") != content.kindle_mail:
             content.kindle_mail = valid_email(to_save["kindle_mail"]) if to_save["kindle_mail"] else ""
+        if to_save.get("kindle_mail_subject") is not None:
+            content.kindle_mail_subject = (to_save.get("kindle_mail_subject", "") or "").strip()
+
     except Exception as ex:
         log.error(ex)
         flash(str(ex), category="error")
+        opds_context = _build_opds_context(content)
+        magic_shelf_context = _build_magic_shelf_order_context(content)
         return render_title_template("user_edit.html",
                                      translations=translations,
                                      languages=languages,
@@ -2136,7 +2807,13 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
                                      new_user=0,
                                      content=content,
                                      config=config,
-                                     registered_oauth=oauth_check,
+                                     registered_oauth=oauth_bb.oauth_check,
+                                     opds_root_order_string=opds_context["opds_root_order_string"],
+                                     opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
+                                     opds_root_labels=opds_context["opds_root_labels"],
+                                     magic_shelf_order_string=magic_shelf_context["magic_shelf_order_string"],
+                                     magic_shelf_order_labels=magic_shelf_context["magic_shelf_order_labels"],
+                                     magic_shelf_order_mode=magic_shelf_context["magic_shelf_order_mode"],
                                      title=_("Edit User %(nick)s", nick=content.name),
                                      page="edituser")
     try:
@@ -2154,7 +2831,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
 
 
 def extract_user_data_from_field(user, field):
-    match = re.search(field + r"=(.*?)($|(?<!\\),)", user, re.IGNORECASE | re.UNICODE)    
+    match = re.search(field + r"=(.*?)($|(?<!\\),)", user, re.IGNORECASE | re.UNICODE)
     if match:
         return match.group(1)
     else:
@@ -2172,3 +2849,268 @@ def extract_dynamic_field_from_filter(user, filtr):
 def extract_user_identifier(user, filtr):
     dynamic_field = extract_dynamic_field_from_filter(user, filtr)
     return extract_user_data_from_field(user, dynamic_field)
+
+
+@admi.route("/admin/test_oidc", methods=["POST"])
+@user_login_required
+@admin_required
+def test_oidc():
+    url = request.get_json().get('url')
+    if not url:
+        return json.dumps({'success': False, 'message': 'URL is required.'}), 400
+
+    if not url.startswith('http'):
+        url = 'https://' + url
+
+    discovery_url = url.rstrip('/') + '/.well-known/openid-configuration'
+
+    try:
+        response = requests.get(discovery_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
+        response.raise_for_status()
+        # Try to parse the JSON and extract useful information
+        oidc_config = response.json()
+
+        # Extract key endpoints for validation
+        endpoints = []
+        if 'authorization_endpoint' in oidc_config:
+            endpoints.append('authorization')
+        if 'token_endpoint' in oidc_config:
+            endpoints.append('token')
+        if 'userinfo_endpoint' in oidc_config:
+            endpoints.append('userinfo')
+
+        endpoint_info = " Found endpoints: " + ', '.join(endpoints) + "." if endpoints else ""
+
+        return json.dumps({
+            'success': True,
+            'message': _('Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s',
+                        endpoints=endpoint_info)
+        })
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            return json.dumps({'success': False, 'message': _('Connection failed: OIDC discovery endpoint not found (404). Check if the base URL is correct.')}), 200
+        else:
+            return json.dumps({'success': False, 'message': _('Connection failed: Server returned status code %(code)s', code=e.response.status_code)}), 200
+    except requests.exceptions.ConnectionError:
+        return json.dumps({'success': False, 'message': _('Connection failed: Could not connect to server. Check the URL and network connectivity.')}), 200
+    except requests.exceptions.Timeout:
+        return json.dumps({'success': False, 'message': _('Connection failed: Request timed out. The server may be slow or unreachable.')}), 200
+    except ValueError:
+        return json.dumps({'success': False, 'message': _('Connection failed: Server returned invalid JSON. This may not be an OIDC endpoint.')}), 200
+    except Exception as e:
+        log.error("OIDC test connection failed: %s", e)
+        return json.dumps({'success': False, 'message': _('Connection failed: %(error)s', error=str(e))}), 200
+
+
+@admi.route("/admin/test_metadata", methods=["POST"])
+@user_login_required
+@admin_required
+def test_metadata():
+    metadata_url = request.get_json().get('url')
+    if not metadata_url:
+        return json.dumps({'success': False, 'message': 'Metadata URL is required.'}), 400
+
+    if not metadata_url.startswith('http'):
+        metadata_url = 'https://' + metadata_url
+
+    try:
+        response = requests.get(metadata_url, timeout=5, verify=constants.OAUTH_SSL_STRICT)
+        response.raise_for_status()
+        data = response.json()
+
+        # Validate that it contains required OIDC fields
+        required_fields = ['issuer', 'authorization_endpoint', 'token_endpoint']
+        missing_fields = [field for field in required_fields if not data.get(field)]
+
+        if missing_fields:
+            return json.dumps({
+                'success': False,
+                'message': _('Metadata is missing required OIDC fields: %(fields)s. This may not be a valid OIDC metadata endpoint.',
+                            fields=', '.join(missing_fields))
+            }), 200
+
+        # Count available OAuth endpoints for user feedback
+        oauth_endpoints = ['authorization_endpoint', 'token_endpoint', 'userinfo_endpoint',
+                          'end_session_endpoint', 'introspection_endpoint', 'revocation_endpoint']
+        found_endpoints = [ep for ep in oauth_endpoints if ep in data]
+        endpoint_count = len(found_endpoints)
+        has_userinfo = 'userinfo_endpoint' in data
+
+        message = _('Metadata URL is valid! Found %(count)s OAuth endpoints.', count=endpoint_count)
+        if has_userinfo:
+            message += _(' User info endpoint is available.')
+        else:
+            message += _(' Note: User info endpoint not found - this may cause authentication issues.')
+
+        return json.dumps({'success': True, 'message': message})
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            return json.dumps({'success': False, 'message': _('Metadata URL not found (404). Please check the URL is correct.')}), 200
+        else:
+            return json.dumps({'success': False, 'message': _('Connection failed: Server returned status code %(code)s', code=e.response.status_code)}), 200
+    except requests.exceptions.ConnectionError:
+        return json.dumps({'success': False, 'message': _('Connection failed: Could not connect to metadata URL. Check the URL and network connectivity.')}), 200
+    except requests.exceptions.Timeout:
+        return json.dumps({'success': False, 'message': _('Connection failed: Request timed out.')}), 200
+    except ValueError:
+        return json.dumps({'success': False, 'message': _('Connection failed: Invalid JSON in response.')}), 200
+    except Exception as e:
+        log.error("Metadata test failed: %s", e)
+        return json.dumps({'success': False, 'message': _('An unknown error occurred.')}), 200
+
+# --- Last Resort Calibre DB Restore ---
+@admi.route("/admin/restore_calibre_db", methods=["POST"])
+@user_login_required
+@admin_required
+def restore_calibre_db():
+    """Restore Calibre metadata.db and clean app.db book-linked tables (last resort recovery)."""
+    lock_path = "/tmp/restore_calibre_db.lock"
+    service_lock_handles = []
+    try:
+        if os.path.exists(lock_path):
+            flash(_("Restore already in progress."), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        if not config.config_calibre_dir:
+            flash(_("Restore failed: Calibre library path is not configured."), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        metadata_path = os.path.join(config.config_calibre_dir, "metadata.db")
+        if not os.path.exists(metadata_path):
+            flash(_("Restore failed: metadata.db not found at %(path)s", path=metadata_path), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        app_db_path = ub.app_DB_path or cli_param.settings_path or "/config/app.db"
+        if not os.path.exists(app_db_path):
+            flash(_("Restore failed: app.db not found at %(path)s", path=app_db_path), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        # Create lock file
+        with open(lock_path, "w", encoding="utf-8") as lock_file:
+            lock_file.write(str(os.getpid()))
+
+        # 1. Backup both DBs
+        backup_dir = f"/config/backup/restore_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        os.makedirs(backup_dir, exist_ok=True)
+        shutil.copy2(metadata_path, os.path.join(backup_dir, "metadata.db.bak"))
+        shutil.copy2(app_db_path, os.path.join(backup_dir, "app.db.bak"))
+
+        log_path = os.path.join(backup_dir, "restore.log")
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write(f"Restore started at {datetime.now().isoformat()}\n")
+
+        # Pause background services and close active sessions to reduce lock contention
+        try:
+            ingest_lock_path = os.path.join(tempfile.gettempdir(), "ingest_processor.lock")
+            ingest_lock = open(ingest_lock_path, "w")
+            fcntl.flock(ingest_lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            ingest_lock.write("restore_calibre_db")
+            ingest_lock.flush()
+            service_lock_handles.append(ingest_lock)
+        except Exception as e:
+            log.warning("Failed to lock ingest processor: %s", e)
+
+        try:
+            cover_lock_path = os.path.join(tempfile.gettempdir(), "cover_enforcer.lock")
+            cover_lock = open(cover_lock_path, "w")
+            fcntl.flock(cover_lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            cover_lock.write("restore_calibre_db")
+            cover_lock.flush()
+            service_lock_handles.append(cover_lock)
+        except Exception as e:
+            log.warning("Failed to lock cover enforcer: %s", e)
+
+        # Close active sessions to reduce lock contention
+        try:
+            calibre_db.dispose()
+        except Exception as e:
+            log.warning("Failed to dispose sessions before restore: %s", e)
+
+        # 2. Run calibredb check_library (pre)
+        calibredb_binary = get_calibre_binarypath("calibredb") or "/app/calibre/calibredb"
+        check_cmd = [
+            calibredb_binary, "check_library",
+            "--with-library", config.config_calibre_dir
+        ]
+        check_result = subprocess.run(check_cmd, capture_output=True, text=True, timeout=300)
+        log.info("calibredb check_library (pre) output: %s\n%s", check_result.stdout, check_result.stderr)
+        if check_result.returncode != 0:
+            log.warning("calibredb check_library (pre) returned code %s", check_result.returncode)
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write("\n[check_library pre]\n")
+            log_file.write(check_result.stdout or "")
+            log_file.write(check_result.stderr or "")
+
+        # 3. Run calibredb restore_database
+        restore_cmd = [
+            calibredb_binary, "restore_database",
+            "--with-library", config.config_calibre_dir,
+            "--really-do-it"
+        ]
+        result = subprocess.run(restore_cmd, capture_output=True, text=True, timeout=1200)
+        log.info("calibredb restore_database output: %s\n%s", result.stdout, result.stderr)
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write("\n[restore_database]\n")
+            log_file.write(result.stdout or "")
+            log_file.write(result.stderr or "")
+        if result.returncode != 0:
+            flash(_("Restore failed: %(err)s", err=result.stderr), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        # 4. Wipe all book-linked tables in app.db
+        from sqlalchemy import text as sql_text
+        book_tables = [
+            "book_shelf_link", "book_read_link", "bookmark", "archived_book", "kobo_synced_books",
+            "kobo_reading_state", "kobo_bookmark", "kobo_statistics", "kobo_annotation_sync",
+            "hardcover_book_blacklist", "hardcover_match_queue", "downloads", "magic_shelf_cache"
+        ]
+        try:
+            for table in book_tables:
+                ub.session.execute(sql_text(f"DELETE FROM {table}"))
+            ub.session.commit()
+        except Exception as e:
+            log.error("Failed to wipe book-linked tables: %s", e)
+            ub.session.rollback()
+            flash(_("Restore completed but app.db cleanup failed. See logs for details."), category="error")
+            return redirect(url_for("admin.db_configuration"))
+
+        # 5. Run calibredb check_library (post)
+        check_result_post = subprocess.run(check_cmd, capture_output=True, text=True, timeout=300)
+        log.info("calibredb check_library (post) output: %s\n%s", check_result_post.stdout, check_result_post.stderr)
+        if check_result_post.returncode != 0:
+            log.warning("calibredb check_library (post) returned code %s", check_result_post.returncode)
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write("\n[check_library post]\n")
+            log_file.write(check_result_post.stdout or "")
+            log_file.write(check_result_post.stderr or "")
+
+        # 6. Reconnect CalibreDB to clear stale sessions
+        try:
+            calibre_db.reconnect_db(config, ub.app_DB_path)
+        except Exception as e:
+            log.error("Failed to reconnect CalibreDB after restore: %s", e)
+
+        flash(_("Restore complete. Backups and restore log saved to %(dir)s. All book-linked data was reset.", dir=backup_dir), category="success")
+        return redirect(url_for("admin.db_configuration"))
+    except Exception as e:
+        log.error(f"Restore failed: {e}")
+        flash(_("Restore failed: %(err)s", err=str(e)), category="error")
+        return redirect(url_for("admin.db_configuration"))
+    finally:
+        try:
+            if os.path.exists(lock_path):
+                os.remove(lock_path)
+        except Exception:
+            pass
+        try:
+            for handle in service_lock_handles:
+                try:
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+                except Exception:
+                    pass
+                try:
+                    handle.close()
+                except Exception:
+                    pass
+        except Exception:
+            pass

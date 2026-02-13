@@ -7,7 +7,16 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/crocodilestick/calibre-web-automated)
 ![GitHub Release](https://img.shields.io/github/v/release/crocodilestick/calibre-web-automated)
 ![GitHub commits since latest release](https://img.shields.io/github/commits-since/crocodilestick/calibre-web-automated/latest)
+![OAuth 2.0 + OIDC](https://img.shields.io/badge/OAuth-2.0%20%2B%20OIDC-blue?style=flat&logo=oauth)
 
+# Supporting the Project ❤️
+
+CWA is and always will be free and open source. If it makes your library life easier and you're able to support development, contributions go directly to:
+- Testing hardware (ereader devices & tablets ect.)
+- Development tools and infrastructure
+- Coffee ☕ (lots of coffee)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/crocodilestick)
 
 ## _Quick Access_
 
@@ -23,9 +32,9 @@
 - [Usage](#usage-) 🔧
   - [Adding Books to Your Library](#adding-books-to-your-library)
   - [KOReader Syncing (KOSync)](#koreader-syncing-kosync-) 📖⚡
+  - [OAuth Authentication Setup](#enhanced-oauth-20oidc-authentication-) 🔐
 - [For Developers](#for-developers---building-custom-docker-image) 🚀
 - [Further Development](#further-development-️) 🏗️
-- [Support / Buy me a Coffee](https://ko-fi.com/crocodilestick) ☕
 
 ## Why does it exist? 🔓
 
@@ -39,16 +48,20 @@ However, when compared to full-fat Calibre, it unfortunately lacks a few core fe
 
 Calibre-Web Automated aims to be an all-in-one solution, combining the modern lightweight web UI from Calibre-Web with the robust, versatile feature set of Calibre, with a slew of extra features and automations thrown in on top.
 
-![Calibre-Web Automated Example Homepage](README_images/CWA-Homepage.png)
+![Calibre-Web Automated Example Homepage](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/CWA-Homepage.png?raw=true)
+![Calibre-Web Automated Example Book Page](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/new-book-details-page.png?raw=true)
 <p style="text-align:center;"><i>CWA allows you to keep your ebook library accessible & organised and looks good while doing it</i> 😎🦚</p>
 
 ## _Affiliated Projects_ 👬
 
-### Calibre-Web Automated Book Downloader
+### Shelfmark: Book Downloader
 
 - An intuitive web interface for searching and requesting book downloads, designed to work seamlessly with Calibre-Web-Automated. This project streamlines the process of downloading books and preparing them for integration into your Calibre library
 
-[<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png" alt="Get it on GitHub" height="80">](https://github.com/calibrain/calibre-web-automated-book-downloader)
+> [!IMPORTANT]  
+> CWA does not approve of or support piracy of copyrighted materials and is not responsible for user behaviour
+
+[<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png" alt="Get it on GitHub" height="80">](https://github.com/calibrain/shelfmark)
 
 ___
 
@@ -71,15 +84,15 @@ ___
     \
     [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
 
-- Or alternativly make your own companion project, come hang out and or come get help if you're facing issues :)
+- Or alternatively make your own companion project, come hang out and or come get help if you're facing issues :)
 
-## 🚨 To users planning to deploy via Network Shares (particularly NFS) 🚨
+## 🚨 Deploying on Network Shares (NFS/SMB) 🚨
 
-- Calibre, Calibre-Web and CWA are all SQLite3 based applications and as a result **don't like being run over network shares (especially NFS)**
-    - SQLite is designed as a lightweight, file-based database system, and it assumes the underlying file system supports certain guarantees about **file locking, atomic writes, and consistency**
-    - **Network file systems (e.g., NFS, SMB/CIFS, etc.) often do not meet these assumptions, which can lead to issues.**
-  - Some users are successful in deploying CWA across NFS shares however doing so **can produce a lot of hard to diagnose issues** that take time away from users with actual issues
-  - **Therefore as of V3.0.0, deployments over NFS shares are "unsupported"**, meaning **you are free to do so**, but **support will not be provided for users facing issues**
+- CWA now supports network-share deployments via `NETWORK_SHARE_MODE=true`
+  - This disables SQLite WAL on `metadata.db` and `app.db` to prevent locking issues
+  - Skips recursive ownership changes that often fail on NFS/SMB
+  - Switches ingest/metadata watchers to a polling-based watcher for reliability
+- Network shares are still slower than local disks, but are now fully supported with this mode enabled
 
 ### Network shares and SQLite WAL mode
 
@@ -98,6 +111,16 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - On Docker Desktop (Windows/macOS), the container runs on a LinuxKit/WSL2 VM and host-mounted paths may not propagate `inotify` events reliably. CWA auto-detects Docker Desktop at startup and prefers the same polling watcher for reliability.
 - Advanced: You can also force polling regardless of share mode by setting `CWA_WATCH_MODE=poll`.
 
+### Running behind multiple proxies (Cloudflare Tunnel, reverse proxy)
+
+- CWA uses Werkzeug's ProxyFix middleware to properly handle `X-Forwarded-For`, `X-Forwarded-Proto`, and other proxy headers.
+- By default, it trusts **1 proxy** in the chain. If you have multiple proxies (e.g., Cloudflare Tunnel → nginx → CWA), set:
+
+  - `TRUSTED_PROXY_COUNT=2` (or the total number of proxies in your chain)
+
+- **Why this matters**: Session protection validates requests based on the client's IP address. If ProxyFix doesn't trust enough proxies, it may see different IPs between requests, causing "Session protection triggered" warnings and forcing re-login.
+- **Troubleshooting**: If you see frequent session protection warnings in logs, check your proxy chain depth and adjust this variable accordingly.
+
 ## **_Features:_**
 
 ### CWA supports all Stock CW Features:
@@ -107,7 +130,7 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 | eBook metadata editing and deletion support | Metadata download from various sources (extensible via plugins) | eBook download restriction to logged-in users |
 | Public user registration support | Send eBooks to E-Readers with a single click | Sync Kobo devices with your Calibre library |
 | In-browser eBook reading support for multiple formats | Content hiding based on categories and Custom Column content per user | "Magic Link" login for easy access on eReaders |
-| LDAP, Google/GitHub OAuth, and proxy authentication support | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
+| Enhanced OAuth 2.0/OIDC authentication with auto-discovery | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
 
 ## Plus these _**CWA Specific Features**_ on top:
 
@@ -118,19 +141,18 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 | [Automatic Ingest Service ✨](#automatic-ingest-service-) | [Automatic Conversion Service 🔃](#automatic-conversion-service-) | [Automatic Enforcement of Covers & Metadata 👀📔](#automatic-enforcement-of-changes-made-to-covers--metadata-through-the-calibre-web-ui-) |
 | [Batch Editing & Deletion 🗂️](#batch-editing--deletion-️️) | [Automated Back Up Service 🔒](#automated-back-up-service-) | [Automated Setup Experience for New Users 🦮](#library-auto-detect-️) |
 | [Automatic EPUB Fixer Service 🔨](#automatic-epub-fixer-service-) | [Multi-Format Conversion Service 🌌](#simple-to-use-multi-format-conversion-service-) | [Library Auto-Detect 📚🕵️](#library-auto-detect-️) |
-| [Server Stats Tracking Page 📍](#server-stats-tracking-page-) | [Server Stats Tracking 📊](#server-stats-tracking-page-) | [Easy Dark/ Light Mode Switching ☀️🌙](#easy-dark-light-mode-switching-️) |
+| [Smart Duplicate Detection & Management 🔍](#smart-duplicate-detection--management-) | [Magic Shelves 🪄📚](#magic-shelves-) | [Auto-Send to eReader 📧⚡](#auto-send-to-ereader-) |
+| [Automatic Metadata Fetch on Ingest 🏷️🤖](#automatic-metadata-fetch-on-ingest-) | [Deep Stats & Analytics 📊✨](#deep-stats--analytics-) | [Easy Dark/ Light Mode Switching ☀️🌙](#easy-dark-light-mode-switching-️) |
 | [Internal Update Notification System 🛎️](#internal-update-notification-system-️) | [Auto-Compression of Backed Up Files 🤐](#auto-compression-of-backed-up-files-) | [Additional Metadata Providers 🗃️](#additional-metadata-providers-️) |
-| [KOReader Syncing (KOSync) 📖⚡](#koreader-syncing-kosync-) | | |
+| [KOReader Syncing (KOSync) 📖⚡](#koreader-syncing-kosync-) | [Enhanced OAuth 2.0/OIDC Authentication 🔐](#enhanced-oauth-20oidc-authentication-) | [EPUB Fixer 2.0 📧✅](#epub-fixer-20-) |
+| [Automatic Hardcover ID Fetch 💜🤖](#automatic-hardcover-id-fetch-) | [Server Stats Tracking Page 📍](#server-stats-tracking-page-) | [Enhanced Send-to-eReader Modal ✉️](#enhanced-send-to-ereader-modal-) |
 
 #### **Automatic Ingest Service** ✨
 - CWA currently supports automatic ingest of 27 different popular ebook formats
 - Users can configure the services behavior to ignore and/or have certain formats automatically converted to other formats in the Admin Panel
 
-<!-- - A **Weighted Conversion Algorithm:** ⚖️
-  - Using the information provided in the Calibre eBook-converter documentation on which formats convert best into epubs, CWA is able to determine from downloads containing multiple eBook formats, which format will convert most optimally, ignoring the other formats to ensure the **best possible quality** and no **duplicate imports** -->
-
 #### **Automatic Conversion Service** 🔃
-- On by default though can be toggled of in the CWA Settings page, with EPUB as the default target format
+- On by default though can be toggled off in the CWA Settings page, with EPUB as the default target format
   - _Available target formats include:_ **EPUB**, **MOBI**, **AZW3**, **KEPUB** & **PDF**
 - Upon detecting new files in the Ingest Directory, if any of the files are in formats the user has configured CWA to auto-convert to the current target format,
 - The following **28 file types are currently supported:**
@@ -142,20 +164,53 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 - This results in a frustrating situation for many CW users who utilise CW's Send-To-Kindle function, and are disappointed to find that the High-Quality Covers they picked out and carefully chosen Metadata they sourced are completely absent on all their other devices! UGH!
 - CWA's **Automatic Cover & Metadata Enforcement Feature** makes it so that **WHATEVER** you changes you make to **YOUR** books, **_are made to the books themselves_**, as well as in the Web UI, **making what you see, what you get.**
 
-![Cover Enforcement CWA](README_images/cwa-enforcer-diagram.png "CWA 1.2.0 Cover Enforcement Diagram")
-
-#### **Batch Editing & Deletion!** 🗂️🗄️
-- Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
-- To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
-- _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
-
-![](/README_images/cwa-bulk-editting-diagram.png)
-
 #### **Automated Back Up Service** 🔒
 - Worried what will happen if something goes wrong during one of CWA's automated functions? Don't be!
 - By default, the originals all files processed by CWA are stored in `/config/processed_books` though this can be toggled in the CWA Settings panel
 
-#### **Automatic EPUB Fixer Service** 🔨
+#### **Smart Duplicate Detection System & Management** 🔍
+- Hybrid SQL + fuzzy matching detects duplicates missed by traditional scans
+- Post-ingest checks and scheduled incremental scans
+- One-click merge, batch operations, and optional auto-resolution
+- Configurable matching rules, thresholds, and format awareness
+
+![](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/duplicate-detection-system.gif?raw=true)
+
+#### **Magic Shelves** 🪄📚
+- Dynamic, rules-based shelves with rich filters and AND/OR logic
+- Pre-built templates (Recent, Highly Rated, No Cover, Incomplete Series, etc.)
+- Real-time updates with cached counts and tooltips
+- Kobo sync support and optional tag-based syncing
+
+![](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/magic-shelf-showcase.gif?raw=true)
+
+#### **Auto-Send to eReader** 📧⚡
+- Automatically email new books after ingest
+- Configurable delay to allow metadata/enforcement/EPUB fixes first
+- Format selection and multi-recipient sending
+- Works with per-user settings and optional custom email subjects
+
+#### **Automatic Metadata Fetch on Ingest** 🏷️🤖
+- Optionally fetch and apply metadata automatically during ingest
+- Provider hierarchy is respected with smart fallback
+- Choose whether to overwrite existing fields or only fill missing data
+- Works seamlessly with Auto-Send and EPUB Fixer workflows
+
+#### **Deep Stats & Analytics** 📊✨
+- Full analytics center with user activity, library, API usage, and time-based insights
+- Export sections to CSV for offline analysis
+- User-specific filtering and custom date ranges
+- Interactive charts with dark-mode styling
+
+![](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/cwa-stats-showcse.gif?raw=true)
+
+#### **Enhanced Send-to-eReader Modal** ✉️
+- Send to multiple devices at once
+- Ad-hoc email addresses supported for sharing with friends, family or even temporary devices
+
+![](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/new-send-to-ereader-modal.png?raw=true)
+
+#### **Automatic EPUB Fixer Service** 📧✅
 - Ever had it where you're super excited to start reading your next book but for some reason, Amazon's Send-to-Kindle service just keeps rejecting it? Well no more!
 
 - Originally developed by [innocenat](https://github.com/innocenat/kindle-epub-fix), this tool corrects the following potential issues for every EPUB processed by CWA:
@@ -164,36 +219,44 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
   - Detect invalid and/or missing language tag in metadata, and prompt user to select new language.
   - Remove stray `<img>` tags with no source field.
   - Resolves several EPUB compatibility issues, such as UTF-8 encoding, hyperlink problems, invalid/missing language tags, and stray image tags.
+  - Repairs malformed language tags, XML declarations, and UTF-8 headers
+  - Cleans invalid NCX links, broken CSS/fonts, and stray image tags
 - This **ensures maximum comparability** for each EPUB file with the Amazon **Send-to-Kindle** service and for those who don't use Amazon devices, has the side benefit of cleaning up your lower quality files!
-- Enabled by default but can be toggled in settings.
-- Files processed by the EPUB-Fixer service are by default automatically backed up to `/config/processed_books` however this can also be toggled in the settings.
+- Enabled by default, with per-run backups in `/config/processed_books`
 - Bulk processing of whole library with progress tracking available in the Admin Panel
-- Available via both the Web UI and CLI
+
+![CWA EPUB Fixer Service Web UI](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/README_images/CWA-new-process-ui.gif?raw=true)
 
 #### **Simple to use Multi-Format Conversion Service** 🌌
 - This utility gives the user the option to either keep a copy of the original of all converted files in `/config/processed_books` or to trust the process and have CWA simply convert and replace those files (not recommended)
 - Full usage details can be found [here](#the-convert-library-tool)
 
-![CWA Convert Library Web UI](/README_images/CWA-new-process-ui.gif)
-
 #### **Additional Metadata Providers** 🗃️
 - Users can now make use of [isbndb.com](https://isbndb.com/)'s huge database when fetching metadata for the books in their library!
 - Access is being provided via [ibdb.dev](https://ibdb.dev/) thanks to a generous donation to the community by [@chad3814](https://www.github.com/chad3814)
-- [Hardcover](https://hardcover.app/) is also currently in the process of being added to CWA as a Metadata Provider
+- [Hardcover](https://hardcover.app/) and Kobo metadata providers are supported, alongside new LitRes support
 
 #### **KOReader Syncing (KOSync)** 📖⚡
-- CWA now includes built-in KOReader syncing functionality, providing a modern alternative to traditional KOReader sync servers
-- **Universal KOReader Syncer:** Works across all KOReader-compatible devices, storing sync data in a readable format for future CWA features
-- **Modern Authentication:** Uses RFC 7617 compliant header-based authentication instead of legacy MD5 hashing for enhanced security
-- **CWA Integration:** Leverages your existing CWA user accounts and permissions - no additional server setup required
-- **Easy Installation:** Plugin and setup instructions are available directly from your CWA instance at `/kosync`
+Built-in KOReader progress sync with automatic book identification:
+- **Book Identification:** Auto-generates KOReader-compatible partial MD5 checksums for all books
+- **Unified Progress:** Syncs KOReader → CWA reading status → Kobo devices
+- **Zero Config:** Checksums generated on startup and import, no manual setup
+- **Modern Auth:** RFC 7617 HTTP Basic Auth with existing CWA accounts
+- **Plugin Available:** Download from `/kosync` endpoint on your CWA instance
 
-#### **Server Stats Tracking Page** 📍📊
-  - Ever wondered how many times CWA has been there for you in the background? Check out the CWA Stats page to see a fun list of statistics showing how many times CWA has been there to make your life just that little bit easier
-- A database also exists to keep track of any and all enforcements, imports, conversions & fixes both for peace of mind and to make the checking of any bugs or weird behaviour easier
-  <!-- - Full documentation can be found below [here](#checking-the-cover-enforcement-logs) -->
+#### **Enhanced OAuth 2.0/OIDC Authentication** 🔐
+- **Auto-Discovery:** Automatic endpoint configuration via OIDC metadata URLs for seamless setup with providers like Keycloak, Authentik, Google, and Azure AD
+- **Manual Override:** Full manual control over OAuth endpoints when auto-discovery isn't available
+- **Field Mapping:** Configurable JWT field extraction for usernames and emails to work with any provider's token structure
+- **Group-Based Roles:** Automatic admin role assignment based on OAuth provider groups
+- **Testing Tools:** Built-in connection testing and validation to ensure your configuration works before going live
+- **Enterprise Ready:** Support for custom scopes, multiple authentication methods, and comprehensive troubleshooting
+- **📖 [Full OAuth Configuration Guide](https://github.com/crocodilestick/Calibre-Web-Automated/wiki/OAuth-Configuration)** for detailed setup instructions
 
-![CWA Server Stats Page](/README_images/cwa-server-stats-page.png)
+#### **Automatic Hardcover ID Fetch** 💜🤖
+- Background task auto-populates missing Hardcover IDs
+- Configurable scheduling with progress tracking in Tasks
+- Graceful handling of invalid tokens
 
 #### **Library Auto-Detect** 📚🕵️
   - Made to **MASSIVELY** simplify the setup process for both **new and existing users** alike
@@ -206,9 +269,9 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
       - _CWA supports only one library per instance though support for multiple libraries is being investigated for future releases_
       - _In the meantime, users with multiple libraries who don't want to consolidate them are advised to run multiple, parallel instances_
 
-#### **Easy Dark/ Light Mode Switching** ☀️🌙
+<!-- #### **Easy Dark/ Light Mode Switching** ☀️🌙
   - **Switch between Light & Dark Modes in just one click from anywhere in the Web UI!**
-  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure
+  - Simply click/tap the 🕶️ icon on the  Web UI's navbar and switch between themes at your leisure -->
 
 #### **Internal Update Notification System** 🛎️
   - Users will now be automatically notified of the availability of new updates from within the Web UI
@@ -224,23 +287,28 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
   - Minimises disk space usage and helps keep back up files as organised as possible
   - __Enabled by default but can be disabled in the CWA Settings page in the Admin panel__
 
-![Calibre-Web Automated](README_images/cwa-bulk-editting-diagram.png "Calibre-Web Automated Bulk Editing & Bulk Deletion")
+#### **Batch Editing & Deletion!** 🗂️🗄️
+- Say goodbye to clicking that edit button again, and again, and again just to remove or edit a single series!
+- To use, simply navigate to the `Books List`page on the left hand side of the Web UI, select the books you wish to edit/ delete and use the buttons either above the table or within the headers to do whatever you need!
+- _Courtesy of [@jmarmstrong1207](https://github.com/jmarmstrong1207)_
+
+![](/README_images/cwa-bulk-editting-diagram.png)
 
 # Features Currently Under Active Development and on our Roadmap 🏗️🛣️
 
 #### High Priority 🚨
 
-- Integration of CWA with [Hardcover](https://hardcover.app/) 📚
-  - Ability to use Hardcover as a Metadata Provider
-  - Ability to sync read progress with your Hardcover account! (Kobo users only)
-- A companion project to integrate CWA with the Friendliest & Warmest Place on the Internet 🐭🧀
-- Support for Calibre Plugins e.g. deDRM 🔌
-- Split Libraries (having your Calibre Library and books in separate locations)
+- New Svelte-based frontend for a modern, faster UI
+- New web reader (successor to epub.js) with better performance and features
+- More robust, cross-device progress syncing (single source of truth)
+- Full Text Search across the library
+- Support for Calibre plugins (e.g., DeDRM)
+- Split Libraries (metadata and books on separate paths)
+- Integration with the Friendliest & Warmest Place on the Internet 🐭🧀
 
 #### Lower Priority 🌱
 
-- Notification system integrations e.g. Telegram, Gotify, ntfy ect. 📧
-- Possible Prowlarr Integration 🐯
+- Notification system integrations (Telegram, Gotify, ntfy)
 
 Please suggest any ideas or wishes you might have! we're open to anything!
 
@@ -293,13 +361,13 @@ services:
       - CWA_PORT_OVERRIDE=8083
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
-      - /path/to/config/folder:/config 
+      - /path/to/config/folder:/config
       # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
       - /path/to/the/folder/you/want/to/use/for/book/ingest:/cwa-book-ingest
       # If you don't have an existing library, CWA will automatically create one at the bind provided here
       - /path/to/your/calibre/library:/calibre-library
       # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to its workflow (WIP)
-      # If you are starting with a fresh install, you also need to copy plugins\..\customize.py.json to the corresponding docker location (the config path above + .config/calibre/customize.py.json)
+      # If you are starting with a fresh install, you also need to copy customize.py.json to the Calibre config volume above, in /path/to/config/folder/.config/calibre/customize.py.json, see the note below for more info
       - /path/to/your/calibre/plugins/folder:/config/.config/calibre/plugins
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second
@@ -311,18 +379,29 @@ services:
 ~~~
 
 ### Explanation of the Container Bindings:
-  - Make sure all 3 of the main bindings are separate directories, errors can occur when binds are made within other binds
-  - `/config` - This is used to store logs and other miscellaneous files that keep CWA running
-    -  **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
-    -  **Existing/ CW Users** - Those with existing Calibre-Web setups, map this to your existing `/config` directory containing `app.db` to ensure settings and users are pulled in
-  - `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
-  - `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` & book(s) files reside.
-    - **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
-    - **Existing/ CW Users** - If there are multiple libraries in the mounted directory, CWA will automatically find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
-  - `/config/.config/calibre/plugins` - This should be bound to a directory containing a copy of your existing Calibre plugins. Configuration will be retained. (There is currently no way to configure plugins via CWA.)
-    - You must also copy the customize.py.json file from the Calibre plugins' parent directory to the corresponding location (i.e. /path/to/config/folder/.config/calibre/customize.py.json)
-  <!-- - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient -->
-  - `/app/calibre-web-automated/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
+
+Please make sure all 3 of the main volume bindings are separate directories, errors can occur when binds are made within other binds.
+
+- `/config` - This is used to store logs and other miscellaneous files that keep CWA running
+  -  **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
+  -  **Existing/ CW Users** - Those with existing Calibre-Web setups, map this to your existing `/config` directory containing `app.db` to ensure settings and users are pulled in
+- `/cwa-book-ingest` - **ATTENTION** ⚠️ - All files within this folder will be **DELETED** after being processed. This folder should only be used to dump new books into for import and automatic conversion
+- `/calibre-library` - This should be bound to your Calibre library folder where the `metadata.db` & book(s) files reside.
+  - **New Users** - Use any empty folder (if you run into any issues, make sure the ownership of said folder isn't `root:root` in your main os)
+  - **Existing/ CW Users** - If there are multiple libraries in the mounted directory, CWA will automatically find and mount the largest one - check the logs for more details on which `metadata.db` was utilised
+- `/config/.config/calibre/plugins` - This should be bound to a directory containing a copy of your existing Calibre plugins. Configuration will be retained. (There is currently no way to configure plugins via CWA.)
+  - In order for plugins to be registered and work, you must also copy the `customize.py.json` file from the Calibre plugins' parent directory to the correct config folder above, e.g. `/path/to/config/folder/.config/calibre/customize.py.json`. See the section below if you don't know where to find this file.
+<!-- - `/books` _(Optional)_ Utilise if you have a separate collection of book files somewhere and want to be able to access within the container. For the majority of users, this is not required and mounting`/calibre-library' is sufficient -->
+- `/app/calibre-web-automated/gmail.json` _(Optional)_ - This is used to setup Calibre-Web and/or CWA with your gmail account for sending books via email. Follow the guide [here](https://github.com/janeczku/calibre-web/wiki/Setup-Mailserver#gmail) if this is something you're interested in but be warned it can be a very fiddly process, I would personally recommend a simple SMTP Server
+
+### Where can I find `customize.py.json`:
+
+- On macOS, this file is typically found at `~/Library/Preferences/calibre/customize.py.json`.
+- On Linux, it is usually located at `~/.config/calibre/customize.py.json`.
+- On Windows, it is usually located at `%APPDATA%\calibre\customize.py.json` (typically `C:\Users\<YourUsername>\AppData\Roaming\calibre\customize.py.json`). Older installations might have it in `C:\Program Files\Calibre\customize.py.json` or `C:\Program Files\Calibre2\customize.py.json`.
+
+**Note:** If you can't find this file, it means you haven't configured any Calibre plugins yet. You can skip the plugins volume binding if you don't use Calibre plugins.
+
 
 And just like that, Calibre-Web Automated should be up and running! **HOWEVER** to avoid potential problems and ensure maximum functionality,we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
@@ -343,7 +422,7 @@ And just like that, Calibre-Web Automated should be up and running! **HOWEVER** 
 1. Open your browser and navigate to http://localhost:8083 or http://localhost:8083/opds for the OPDS catalog
 2. Log in with the default admin credentials (_below_)
 3. Configure your Calibre-Web Automated instance via the Admin Page
-  - A guide to what all of the stock CW Settings do can be found [here](https://github.com/janeczku/calibre-web/wiki/Configuration#basic-configuration)
+  - If you need help with any of the settings, consult the CWA Wiki [here](https://github.com/crocodilestick/Calibre-Web-Automated/wiki)
   - Make sure `Enable Uploads` is enabled in `Settings -> Basic Configuration -> Feature Configuration`
 4. Configure CWA to behave as you would like it to in the CWA Settings panel
   - Here you can turn certain features on and off, set your Target Format, which file formats should be ignored and which should be auto-converted ect.
@@ -373,23 +452,23 @@ CWA now includes built-in KOReader syncing functionality, allowing you to sync y
 
 ## Local Development Setup
 
-1. **Build the image**  
+1. **Build the image**
    Edit and run [`build.sh`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/build.sh) to build a local Docker image of Calibre-Web-Automated.  See the script itself for usage details.
 
-2. **Edit [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**  
-   Update at minimum:  
-   - `image:` → your image tag from step 1  
-   - `volumes mounts` → paths for config, ingest, library, plugins  
-  
+2. **Edit [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)**
+   Update at minimum:
+   - `image:` → your image tag from step 1
+   - `volumes mounts` → paths for config, ingest, library, plugins
+
  To have the app refresh dynamically in response to code changes, see comments in the  [`docker-compose.yml.dev`](https://github.com/crocodilestick/Calibre-Web-Automated/blob/main/docker-compose.yml.dev)** for details and examples on "live-edit" mounts.
 
-3. **Start the service**  
+3. **Start the service**
 ```
 $ docker compose -f docker-compose.yml.dev up -d
 ```
 
-4. **Log in & configure**  
-   - Sign in with the [default admin login](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)  
+4. **Log in & configure**
+   - Sign in with the [default admin login](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#default-admin-login)
    - Optionally follow [Post-Install Tasks](https://github.com/crocodilestick/Calibre-Web-Automated?tab=readme-ov-file#post-install-tasks)-
 
 ---
@@ -399,3 +478,12 @@ $ docker compose -f docker-compose.yml.dev up -d
 - CWA is really lucky to have a very passionate and active community of people that really help shape CWA into what it is today
 - If you have any ideas or want to contribute to the project, you're more than welcome to! We accept anyone regardless of skill level of expertise!
 - If you've got a good idea or want to simply suggest improvements, simply get in touch with us on the Discord Server [here](https://discord.gg/EjgSeek94R)!
+
+# Supporting the Project ❤️
+
+CWA is and always will be free and open source. If it makes your library life easier and you're able to support development, contributions go directly to:
+- Testing hardware (ereader devices & tablets ect.)
+- Development tools and infrastructure
+- Coffee ☕ (lots of coffee)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/crocodilestick)

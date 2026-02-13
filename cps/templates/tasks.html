@@ -3,8 +3,9 @@
 <link href="{{ url_for('static', filename='css/libs/bootstrap-table.min.css') }}" rel="stylesheet">
 {% endblock %}
 {% block body %}
-<div class="discover">
+<div class="discover" style="padding-inline: 2rem !important;">
     <h2>{{_('Tasks')}}</h2>
+    <h3>{{ _('Background Tasks Overview') }}</h3>
     <table class="table table-no-bordered" id="tasktable" data-url="{{  url_for('tasks.get_email_status_json') }}"  data-sort-name="starttime" data-sort-order="asc" data-locale="{{ current_user.locale }}" data-classes="table table-no-bordered table-hover">
       <thead>
         <tr>
@@ -26,6 +27,52 @@
       </thead>
     </table>
 </div>
+
+{% if current_user.role_admin() %}
+<div class="discover" style="padding-inline: 2rem !important;">
+  <h3>{{ _('Upcoming scheduled sends') }}</h3>
+  <table class="table table-no-bordered" id="upcomingtable"
+       data-url="{{ url_for('cwa_stats.cwa_scheduled_upcoming') }}"
+       data-response-handler="upcomingResponse"
+       data-locale="{{ current_user.locale }}"
+       data-classes="table table-no-bordered table-hover">
+    <thead>
+    <tr>
+      <th data-halign="right" data-align="right" data-field="title" data-sortable="true">{{ _('Title') }}</th>
+      <th data-halign="right" data-align="right" data-field="username" data-sortable="true">{{ _('User') }}</th>
+      <th data-halign="right" data-align="right" data-field="book_id" data-sortable="true">{{ _('Book ID') }}</th>
+      <th data-halign="right" data-align="right" data-field="run_at_utc" data-formatter="utcToLocal" data-sortable="true">{{ _('Scheduled Time') }}</th>
+      <th data-halign="right" data-align="right" data-field="state" data-sortable="true">{{ _('State') }}</th>
+      <th data-halign="right" data-align="right" data-formatter="UpcomingActions" data-switchable="false">{{ _('Actions') }}</th>
+    </tr>
+    </thead>
+  </table>
+  <p class="text-muted" style="margin-top: .5rem;">{{ _('Upcoming sends are persisted and will enqueue as tasks at the scheduled time. You can cancel a pending send before it runs.') }}</p>
+    
+</div>
+
+<div class="discover" style="padding-inline: 2rem !important;">
+  <h3>{{ _('Upcoming scheduled operations') }}</h3>
+  <table class="table table-no-bordered" id="upcomingopstable"
+       data-url="{{ url_for('cwa_stats.cwa_scheduled_upcoming_ops') }}"
+       data-response-handler="upcomingOpsResponse"
+       data-locale="{{ current_user.locale }}"
+       data-classes="table table-no-bordered table-hover">
+    <thead>
+    <tr>
+      <th data-halign="right" data-align="right" data-field="job_type" data-sortable="true">{{ _('Type') }}</th>
+      <th data-halign="right" data-align="right" data-field="title" data-sortable="true">{{ _('Title') }}</th>
+      <th data-halign="right" data-align="right" data-field="username" data-sortable="true">{{ _('User') }}</th>
+      <th data-halign="right" data-align="right" data-field="run_at_utc" data-formatter="utcToLocal" data-sortable="true">{{ _('Scheduled Time') }}</th>
+      <th data-halign="right" data-align="right" data-field="state" data-sortable="true">{{ _('State') }}</th>
+      <th data-halign="right" data-align="right" data-formatter="UpcomingOpsActions" data-switchable="false">{{ _('Actions') }}</th>
+    </tr>
+    </thead>
+  </table>
+  <p class="text-muted" style="margin-top: .5rem;">{{ _('Convert Library and EPUB Fixer runs scheduled here will persist across restarts. Cancel to prevent them from triggering.') }}</p>
+    
+</div>
+{% endif %}
 {% endblock %}
 {% block modal %}
 {{ delete_book(current_user.role_delete_books()) }}
@@ -55,5 +102,105 @@
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-locale-all.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/table.js') }}"></script>
+
+{% if current_user.role_admin() %}
+<script>
+  // Notification helper - creates a dismissible Bootstrap alert
+  function showNotification(message, type) {
+    type = type || 'info'; // info, success, warning, danger
+    const alertDiv = $('<div>')
+      .addClass(`alert alert-${type} alert-dismissible fade in`)
+      .attr('role', 'alert')
+      .css({
+        'position': 'fixed',
+        'top': '70px',
+        'right': '20px',
+        'z-index': '9999',
+        'min-width': '300px',
+        'max-width': '500px',
+        'height': 'fit-content',
+        'overflow': 'auto',
+        'padding': '15px',
+        'margin-bottom': '20px',
+        'border': '1px solid transparent',
+        'border-radius': '4px',
+        'box-shadow': '0 4px 8px rgba(0,0,0,0.2)',
+        'background-color': type === 'success' ? '#dff0d8' : type === 'danger' ? '#f2dede' : type === 'warning' ? '#fcf8e3' : '#d9edf7',
+        'border-color': type === 'success' ? '#d6e9c6' : type === 'danger' ? '#ebccd1' : type === 'warning' ? '#faebcc' : '#bce8f1',
+        'color': type === 'success' ? '#3c763d' : type === 'danger' ? '#a94442' : type === 'warning' ? '#8a6d3b' : '#31708f'
+      })
+      .html(`
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="position: relative; top: -2px; right: -21px; color: inherit; opacity: 0.5;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        ${message}
+      `);
+    
+    $('body').append(alertDiv);
+    
+    // Auto-dismiss after 4 seconds
+    setTimeout(function() {
+      alertDiv.alert('close');
+    }, 4000);
+  }
+
+  function upcomingResponse(res) {
+    try { return res.items || []; } catch (e) { return []; }
+  }
+  function upcomingOpsResponse(res) {
+    try { return res.items || []; } catch (e) { return []; }
+  }
+  function utcToLocal(value) {
+    if (!value) return '';
+    try {
+      // Accept both Z and +/- offset ISO strings
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return value;
+      return d.toLocaleString();
+    } catch (e) { return value; }
+  }
+  function UpcomingActions(value, row) {
+    if (!row || row.state !== 'scheduled') return '';
+    const id = row.id;
+    return `
+      <button class="btn btn-xs btn-danger" onclick="cancelScheduled(${id})">{{ _("Cancel") }}</button>
+    `;
+  }
+  function UpcomingOpsActions(value, row) {
+    if (!row || row.state !== 'scheduled') return '';
+    const id = row.id;
+    return `
+      <button class="btn btn-xs btn-danger" onclick="cancelScheduled(${id})">{{ _("Cancel") }}</button>
+    `;
+  }
+  function cancelScheduled(id) {
+    if (!id) return;
+    fetch('{{ url_for("cwa_stats.cwa_scheduled_cancel") }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id })
+    })
+    .then(r => {
+      if (!r.ok) {
+        return r.json().then(err => {
+          throw new Error(err.error || 'Failed to cancel');
+        });
+      }
+      return r.json();
+    })
+    .then(data => {
+      showNotification('{{ _("Scheduled item cancelled successfully") }}', 'success');
+      $('#upcomingtable').bootstrapTable('refresh');
+      $('#upcomingopstable').bootstrapTable('refresh');
+    })
+    .catch(err => {
+      showNotification('{{ _("Error cancelling scheduled item") }}: ' + err.message, 'danger');
+      // Refresh anyway to sync state
+      $('#upcomingtable').bootstrapTable('refresh');
+      $('#upcomingopstable').bootstrapTable('refresh');
+    });
+  }
+</script>
+{% endif %}
 
 {% endblock %}

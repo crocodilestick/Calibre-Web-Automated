@@ -45,3 +45,13 @@
     margin-right: 1%;
     font-size: 16px;
 }
+
+.reader-error {
+    padding: 24px;
+    margin: 24px;
+    border-radius: 8px;
+    background: #2b2b2b;
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+}

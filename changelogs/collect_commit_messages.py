@@ -18,10 +18,10 @@ Contract / behavior:
     - --max-depth: Maximum directory depth to search (default=6) to avoid huge traversals.
     - --output: Optional output file (UTF-8). If omitted, prints to stdout.
     - --aggregate: If set, all commits across repos are merged chronologically instead of grouped by repo.
-    - --include-merges: Include merge commits (default: False).
-    - --body: Include body lines (default: subjects only).
+    - --include-merges: Include merge commits (default: True).
+    - --body: Include body lines (default: True).
     - --subjects-only: Output ONLY the commit subject lines (suppresses repo/hash/date/body formatting). Overrides --body.
-    - --markdown-list: Render output as a Markdown bullet list (commit lines become "- <text>"). Headings (### repo) preserved.
+    - --markdown-list: Render output as a Markdown bullet list (commit lines become "- <text>"). Headings (### repo) preserved. (Default: True)
     - --no-strip-newlines: Preserve blank lines inside commit bodies (default: bodies are compacted to single line).
     - --since-date / --until-date: Additional date filters applied per repo (optional, ISO format or anything git understands).
     - --reverse: Output from oldest to newest (default newest to oldest within each grouping / aggregated list).
@@ -164,10 +164,18 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     p.add_argument("--max-depth", type=int, default=6, help="Maximum directory depth for repo discovery (default: 6)")
     p.add_argument("--output", help="Optional output file (UTF-8). If omitted, prints to stdout")
     p.add_argument("--aggregate", action="store_true", help="Aggregate commits from all repos into a single chronological list")
-    p.add_argument("--include-merges", action="store_true", help="Include merge commits (default: exclude)")
-    p.add_argument("--body", action="store_true", help="Include commit body text")
+    p.add_argument("--include-merges", action="store_true", default=True, help="Include merge commits (default: True)")
+    p.add_argument(
+        "--no-include-merges",
+        dest="include_merges",
+        action="store_false",
+        help="Exclude merge commits",
+    )
+    p.add_argument("--body", action="store_true", default=True, help="Include commit body text (default: True)")
+    p.add_argument("--no-body", dest="body", action="store_false", help="Exclude commit body text")
     p.add_argument("--subjects-only", action="store_true", help="Output only commit subjects (one per line); overrides other formatting flags")
-    p.add_argument("--markdown-list", action="store_true", help="Render output as a Markdown bullet list")
+    p.add_argument("--markdown-list", action="store_true", default=True, help="Render output as a Markdown bullet list (default: True)")
+    p.add_argument("--no-markdown-list", dest="markdown_list", action="store_false", help="Disable Markdown bullet list output")
     p.add_argument("--no-strip-newlines", action="store_true", help="Preserve newlines inside commit body (default flattens)")
     p.add_argument("--since-date", help="Optional additional since date filter (git understands many formats)")
     p.add_argument("--until-date", help="Optional until date filter")

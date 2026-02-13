@@ -1,6 +1,6 @@
 # Calibre-Web Automated – fork of Calibre-Web
-# Copyright (C) 2018-2025 Calibre-Web contributors
-# Copyright (C) 2024-2025 Calibre-Web Automated contributors
+# Copyright (C) 2018-2026 Calibre-Web contributors
+# Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
@@ -116,10 +116,10 @@ class Book:
 
         self.log_info = None
 
-    
+
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect("/config/app.db", timeout=60)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -134,7 +134,7 @@ class Book:
         else:
             con.close()
             return None
-    
+
     def get_calibre_library(self) -> str:
         """Gets Calibre-Library location from dirs.json"""
         with open(dirs_json, 'r') as f:
@@ -157,9 +157,44 @@ class Book:
 
     def get_new_metadata_path(self) -> str:
         """Uses the export function of the calibredb utility to export any new metadata for the given book to metadata_temp, and returns the path to the new metadata.opf"""
-        subprocess.run(["calibredb", "export", "--with-library", self.calibre_library, "--to-dir", metadata_temp_dir, self.book_id], env=self.calibre_env, check=True)
-        temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
-        return [f for f in temp_files if f.endswith('.opf')][0]
+        # Add retry logic with exponential backoff to handle database locks
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # Add small delay before first attempt to allow other operations to complete
+                if attempt > 0:
+                    delay = 2 ** attempt  # Exponential backoff: 2s, 4s
+                    print(f"[cover-metadata-enforcer] Retrying calibredb export (attempt {attempt + 1}/{max_retries}) after {delay}s delay...", flush=True)
+                    time.sleep(delay)
+                else:
+                    # Small initial delay to ensure database writes are flushed
+                    time.sleep(0.5)
+                
+                result = subprocess.run(
+                    ["calibredb", "export", "--with-library", self.calibre_library, "--to-dir", metadata_temp_dir, self.book_id],
+                    env=self.calibre_env, check=False, capture_output=True, text=True, timeout=60
+                )
+                
+                if result.returncode == 0:
+                    temp_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(metadata_temp_dir) for f in filenames]
+                    opf_files = [f for f in temp_files if f.endswith('.opf')]
+                    if opf_files:
+                        return opf_files[0]
+                    else:
+                        raise FileNotFoundError("No .opf file found after calibredb export")
+                else:
+                    if attempt < max_retries - 1 and "database is locked" in result.stderr.lower():
+                        continue  # Retry on database lock
+                    else:
+                        raise subprocess.CalledProcessError(result.returncode, result.args, result.stdout, result.stderr)
+            except subprocess.TimeoutExpired:
+                if attempt < max_retries - 1:
+                    continue
+                else:
+                    raise
+        
+        # If all retries failed
+        raise RuntimeError(f"Failed to export metadata for book {self.book_id} after {max_retries} attempts")
 
 
     def export_as_dict(self) -> dict[str,str | None]:
@@ -203,7 +238,7 @@ class Enforcer:
 
         # Read Calibre-Web setting: config_unicode_filename (True -> transliterate non-English in filenames)
         try:
-            with sqlite3.connect("/config/app.db", timeout=30) as con:
+            with sqlite3.connect("/config/app.db", timeout=60) as con:
                 cur = con.cursor()
                 self.unicode_filename = bool(cur.execute('SELECT config_unicode_filename FROM settings;').fetchone()[0])
         except Exception:
@@ -218,11 +253,11 @@ class Enforcer:
             return unidecode(s)
         # Fallback transliteration
         return unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
-            
-    
+
+
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect("/config/app.db", timeout=60)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -245,31 +280,116 @@ class Enforcer:
         return dirs['calibre_library_dir'] # Returns without / on the end
 
 
+    def _recalculate_checksum_after_modification(self, book_id: str, file_format: str, file_path: str) -> None:
+        """Calculate and store new checksum after modifying a book file."""
+        try:
+            # Import the checksum calculation function
+            import sys
+            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            if project_root not in sys.path:
+                sys.path.insert(0, project_root)
+
+            from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
+
+            # Calculate new checksum
+            checksum = calculate_koreader_partial_md5(file_path)
+            if not checksum:
+                print(f"[cover-metadata-enforcer] Warning: Failed to calculate checksum for {file_path}", flush=True)
+                return
+
+            # Store in database using centralized manager function
+            metadb_path = os.path.join(
+                (self.split_library or {}).get("db_path", self.calibre_library),
+                "metadata.db"
+            )
+
+            con = sqlite3.connect(metadb_path, timeout=60)
+
+            try:
+                success = store_checksum(
+                    book_id=int(book_id),
+                    book_format=file_format.upper(),
+                    checksum=checksum,
+                    version=CHECKSUM_VERSION,
+                    db_connection=con
+                )
+
+                if success:
+                    print(f"[cover-metadata-enforcer] Stored checksum {checksum[:8]}... for book {book_id} format {file_format} ({CHECKSUM_VERSION})", flush=True)
+                else:
+                    print(f"[cover-metadata-enforcer] Warning: Failed to store checksum for book {book_id}", flush=True)
+            finally:
+                con.close()
+        except Exception as e:
+            print(f"[cover-metadata-enforcer] Warning: Failed to recalculate checksum: {e}", flush=True)
+            import traceback
+            print(traceback.format_exc(), flush=True)
+
+
     def read_log(self, auto=True, log_path: str = "None") -> dict:
-        """Reads pertinent information from the given log file, adds the book_id from the log name and returns the info as a dict"""
+        """Reads pertinent information from the given log file, adds the book_id from the log name and returns the info as a dict.
+        Returns None if the file doesn't exist after retries (handles race conditions)."""
         if auto:
+            file_path = f'{change_logs_dir}/{self.args.log}'
             book_id = (self.args.log.split('-')[1]).split('.')[0]
             timestamp_raw = self.args.log.split('-')[0]
-            timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
-
-            log_info = {}
-            with open(f'{change_logs_dir}/{self.args.log}', 'r', encoding='utf-8') as f:
-                log_info = json.load(f)
-            log_info['book_id'] = book_id
-            log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
         else:
+            file_path = log_path
             log_name = os.path.basename(log_path)
             book_id = (log_name.split('-')[1]).split('.')[0]
             timestamp_raw = log_name.split('-')[0]
+        
+        try:
             timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
+        except ValueError as e:
+            print(f"[cover-metadata-enforcer] ERROR: Invalid timestamp format in log filename: {e}", flush=True)
+            return None
 
-            log_info = {}
-            with open(log_path, 'r', encoding='utf-8') as f:
-                log_info = json.load(f)
-            log_info['book_id'] = book_id
-            log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-
-        return log_info
+        # Retry logic to handle race conditions where file is detected but not yet fully written
+        max_retries = 3
+        retry_delay = 0.5  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                # Check if file exists first
+                if not os.path.exists(file_path):
+                    if attempt < max_retries - 1:
+                        time.sleep(retry_delay)
+                        continue
+                    else:
+                        print(f"[cover-metadata-enforcer] WARNING: Log file '{os.path.basename(file_path)}' not found after {max_retries} attempts. "
+                              f"This may be due to a race condition or the file was already processed and deleted.", flush=True)
+                        return None
+                
+                # Try to read the file
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    log_info = json.load(f)
+                
+                log_info['book_id'] = book_id
+                log_info['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                return log_info
+                
+            except FileNotFoundError:
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    continue
+                else:
+                    print(f"[cover-metadata-enforcer] WARNING: Log file '{os.path.basename(file_path)}' not found after {max_retries} attempts. "
+                          f"This may be due to a race condition or the file was already processed and deleted.", flush=True)
+                    return None
+            except json.JSONDecodeError as e:
+                if attempt < max_retries - 1:
+                    # File might still be being written
+                    time.sleep(retry_delay)
+                    continue
+                else:
+                    print(f"[cover-metadata-enforcer] ERROR: Failed to parse log file '{os.path.basename(file_path)}': {e}", flush=True)
+                    return None
+            except Exception as e:
+                print(f"[cover-metadata-enforcer] ERROR: Unexpected error reading log file '{os.path.basename(file_path)}': {e}", flush=True)
+                return None
+        
+        return None
 
 
     def get_book_dir_from_log(self, log_info: dict) -> str:
@@ -287,9 +407,12 @@ class Enforcer:
                 (self.split_library or {}).get("db_path", self.calibre_library),
                 "metadata.db",
             )
-            with sqlite3.connect(metadb_path, timeout=30) as con:
+            con = sqlite3.connect(metadb_path, timeout=60)
+            try:
                 cur = con.cursor()
                 row = cur.execute('SELECT path FROM books WHERE id = ?', (book_id,)).fetchone()
+            finally:
+                con.close()
             if row and row[0]:
                 resolved = os.path.join(self.calibre_library, row[0])
                 resolved = resolved if resolved.endswith(os.sep) else resolved + os.sep
@@ -324,10 +447,24 @@ class Enforcer:
         raw_author = raw_author_full.split(', ')[0] if ', ' in raw_author_full else raw_author_full
 
         # Build both transliterated and non-transliterated variants using shared sanitizer
-        title_ascii = get_valid_filename_shared(raw_title, chars=96, unicode_filename=True)
-        author_ascii = get_valid_filename_shared(raw_author, chars=96, unicode_filename=True)
-        title_raw = get_valid_filename_shared(raw_title, chars=96, unicode_filename=False)
-        author_raw = get_valid_filename_shared(raw_author, chars=96, unicode_filename=False)
+        # Guard against empty/invalid values to avoid crashing on fresh/partial metadata
+        try:
+            title_ascii = get_valid_filename_shared(raw_title, chars=96, unicode_filename=True)
+        except Exception:
+            # Fallback: minimal safe title using book id
+            title_ascii = f"book_{book_id}"
+        try:
+            author_ascii = get_valid_filename_shared(raw_author, chars=96, unicode_filename=True)
+        except Exception:
+            author_ascii = "Unknown Author"
+        try:
+            title_raw = get_valid_filename_shared(raw_title, chars=96, unicode_filename=False)
+        except Exception:
+            title_raw = f"book_{book_id}"
+        try:
+            author_raw = get_valid_filename_shared(raw_author, chars=96, unicode_filename=False)
+        except Exception:
+            author_raw = "Unknown Author"
 
         reconstructed_ascii = os.path.join(self.calibre_library, author_ascii, f"{title_ascii} ({book_id})")
         reconstructed_raw = os.path.join(self.calibre_library, author_raw, f"{title_raw} ({book_id})")
@@ -391,7 +528,7 @@ class Enforcer:
     def get_supported_files_from_dir(self, dir: str) -> list[str]:
         """ Returns a list if the book dir given contains files of one or more of the supported formats"""
         library_files = [os.path.join(dirpath, f) for (dirpath, dirnames, filenames) in os.walk(dir) for f in filenames]
-        
+
         supported_files = []
         for format in self.supported_formats:
             supported_files += [f for f in library_files if f.lower().endswith(f'.{format}')]
@@ -408,9 +545,38 @@ class Enforcer:
             for file in supported_files:
                 book = Book(book_dir, file)
                 self.replace_old_metadata(book.old_metadata_path, book.new_metadata_path)
-                os.system(f'ebook-polish -c "{book.cover_path}" -o "{book.new_metadata_path}" -U "{file}" "{file}"')
+                
+                # Use subprocess instead of os.system for better error handling
+                # Add small delay to ensure any file locks are released
+                time.sleep(0.5)
+                
+                try:
+                    if Path(book.cover_path).exists():
+                        result = subprocess.run(
+                            ['ebook-polish', '-c', book.cover_path, '-o', book.new_metadata_path, '-U', file, file],
+                            capture_output=True, text=True, timeout=120, check=False
+                        )
+                    else:
+                        result = subprocess.run(
+                            ['ebook-polish', '-o', book.new_metadata_path, '-U', file, file],
+                            capture_output=True, text=True, timeout=120, check=False
+                        )
+                    
+                    if result.returncode != 0:
+                        print(f"[cover-metadata-enforcer] Warning: ebook-polish returned {result.returncode} for {file}", flush=True)
+                        if result.stderr:
+                            print(f"[cover-metadata-enforcer] Error output: {result.stderr.strip()}", flush=True)
+                except subprocess.TimeoutExpired:
+                    print(f"[cover-metadata-enforcer] Error: ebook-polish timed out for {file}", flush=True)
+                except Exception as e:
+                    print(f"[cover-metadata-enforcer] Error running ebook-polish for {file}: {e}", flush=True)
+                
                 self.empty_metadata_temp()
                 print(f"[cover-metadata-enforcer]: DONE: '{book.title_author}.{book.file_format}': Cover & Metadata updated", flush=True)
+
+                # Calculate and store new checksum after modification
+                self._recalculate_checksum_after_modification(book.book_id, book.file_format, file)
+
                 book_objects.append(book)
 
             return book_objects
@@ -468,11 +634,62 @@ class Enforcer:
 
     def delete_log(self, auto=True, log_path="None"):
         """Deletes the log file"""
-        if auto:
-            log = os.path.join(change_logs_dir, self.args.log)
-            os.remove(log)
-        else:
-            os.remove(log_path)
+        try:
+            if auto:
+                log = os.path.join(change_logs_dir, self.args.log)
+                os.remove(log)
+            else:
+                os.remove(log_path)
+        except FileNotFoundError:
+            # Log may already be removed by another process or cleanup path
+            return
+
+
+    def _parse_log_filename(self, log_path: str):
+        """Return (book_id, timestamp) from a log filename, or (None, None) if invalid."""
+        log_name = os.path.basename(log_path)
+        try:
+            timestamp_raw = log_name.split('-')[0]
+            book_id = (log_name.split('-')[1]).split('.')[0]
+            timestamp = datetime.strptime(timestamp_raw, '%Y%m%d%H%M%S')
+            return book_id, timestamp
+        except Exception:
+            return None, None
+
+
+    def select_latest_log_for_book(self, book_id: str, current_log_path: str | None = None) -> str | None:
+        """Select the latest log file for a given book_id; optionally prefer current_log_path if newest."""
+        log_files = [os.path.join(dirpath, f)
+                     for (dirpath, _, filenames) in os.walk(change_logs_dir)
+                     for f in filenames if f.endswith('.json')]
+        latest_path = None
+        latest_ts = None
+        for log in log_files:
+            parsed_book_id, ts = self._parse_log_filename(log)
+            if parsed_book_id != str(book_id) or ts is None:
+                continue
+            if latest_ts is None or ts > latest_ts:
+                latest_ts = ts
+                latest_path = log
+        if latest_path is None:
+            return current_log_path
+        if current_log_path and os.path.abspath(current_log_path) == os.path.abspath(latest_path):
+            return current_log_path
+        return latest_path
+
+
+    def record_failed_enforcement(self, log_info: dict, error: Exception | str) -> None:
+        """Record a failed enforcement attempt so admins can see it in stats."""
+        try:
+            # Ensure file_path exists for DB insert
+            if not log_info.get('file_path'):
+                log_info['file_path'] = "unknown"
+            self.db.enforce_add_entry_from_log(log_info, trigger_type="auto -log (failed)")
+        except Exception as e:
+            print(f"[cover-metadata-enforcer] WARNING: Unable to record failed enforcement: {e}", flush=True)
+
+        # Always surface the failure to logs
+        print(f"[cover-metadata-enforcer] ERROR: Failed to enforce metadata for '{log_info.get('title', 'Unknown')}' (book_id={log_info.get('book_id', 'unknown')}): {error}", flush=True)
 
 
     def empty_metadata_temp(self):
@@ -480,21 +697,56 @@ class Enforcer:
         os.system(f"rm -r {metadata_temp_dir}/*")
 
 
-    def check_for_other_logs(self):
-        log_files = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(change_logs_dir) for f in filenames]
+    def check_for_other_logs(self, processed_book_ids: set | None = None):
+        processed_book_ids = processed_book_ids or set()
+        log_files = [os.path.join(dirpath, f)
+                     for (dirpath, _, filenames) in os.walk(change_logs_dir)
+                     for f in filenames if f.endswith('.json')]
+
         if len(log_files) > 0:
             print(f"[cover-metadata-enforcer] {len(log_files)} Additional metadata changes detected, processing now..", flush=True)
+
+            # Coalesce logs per book to the newest entry
+            latest_by_book: dict[str, tuple[str, datetime]] = {}
             for log in log_files:
-                if log.endswith('.json'):
-                    log_info = self.read_log(auto=False, log_path=log)
-                    book_dir = self.get_book_dir_from_log(log_info)
+                book_id, ts = self._parse_log_filename(log)
+                if book_id is None or ts is None:
+                    continue
+                if book_id not in latest_by_book or ts > latest_by_book[book_id][1]:
+                    latest_by_book[book_id] = (log, ts)
+
+            # Delete any older logs for the same book
+            latest_paths = {entry[0] for entry in latest_by_book.values()}
+            for log in log_files:
+                if log not in latest_paths:
+                    self.delete_log(auto=False, log_path=log)
+
+            for log_path, _ in latest_by_book.values():
+                log_info = self.read_log(auto=False, log_path=log_path)
+                # Skip if log_info is None (file was deleted or invalid)
+                if log_info is None:
+                    continue
+
+                book_id = str(log_info.get('book_id', '')).strip()
+                if book_id in processed_book_ids:
+                    self.delete_log(auto=False, log_path=log_path)
+                    continue
+
+                book_dir = self.get_book_dir_from_log(log_info)
+                try:
                     book_objects = self.enforce_cover(book_dir)
                     if book_objects:
                         for book in book_objects:
                             book.log_info = log_info
                             book.log_info['file_path'] = book.file_path
                             self.db.enforce_add_entry_from_log(book.log_info)
-                    self.delete_log(auto=False, log_path=log)
+                    else:
+                        self.record_failed_enforcement(log_info, "No supported files or enforcement failed")
+                except Exception as e:
+                    self.record_failed_enforcement(log_info, e)
+                finally:
+                    processed_book_ids.add(book_id)
+                    self.delete_log(auto=False, log_path=log_path)
 
 
 def main():
@@ -559,18 +811,42 @@ def main():
     elif args.log is not None and args.dir is None and args.all is False and args.list is False and args.history is False:
         ### log passed: (args.log), no dir
         log_info = enforcer.read_log()
+        
+        # Handle case where log file doesn't exist (race condition)
+        if log_info is None:
+            print(f"[cover-metadata-enforcer] Skipping processing due to missing or invalid log file. This is normal if the file was already processed.")
+            sys.exit(0)
+
+        # If multiple logs exist for the same book, prefer the newest one
+        current_log_path = os.path.join(change_logs_dir, args.log)
+        latest_log_path = enforcer.select_latest_log_for_book(log_info.get('book_id'), current_log_path=current_log_path)
+        if latest_log_path and os.path.abspath(latest_log_path) != os.path.abspath(current_log_path):
+            # Switch to the latest log and delete the older one
+            enforcer.delete_log(auto=False, log_path=current_log_path)
+            log_info = enforcer.read_log(auto=False, log_path=latest_log_path)
+            if log_info is None:
+                print(f"[cover-metadata-enforcer] Skipping processing due to missing or invalid log file. This is normal if the file was already processed.")
+                sys.exit(0)
+        
         book_dir = enforcer.get_book_dir_from_log(log_info)
         if enforcer.enforcer_on:
-            book_objects = enforcer.enforce_cover(book_dir)
-            if not book_objects:
-                print(f"[cover-metadata-enforcer] Metadata for '{log_info['title']}' not successfully enforced")
+            try:
+                book_objects = enforcer.enforce_cover(book_dir)
+                if not book_objects:
+                    print(f"[cover-metadata-enforcer] Metadata for '{log_info['title']}' not successfully enforced")
+                    enforcer.record_failed_enforcement(log_info, "No supported files or enforcement failed")
+                    enforcer.delete_log()
+                    sys.exit(1)
+                for book in book_objects:
+                    book.log_info = log_info
+                    book.log_info['file_path'] = book.file_path
+                    enforcer.db.enforce_add_entry_from_log(book.log_info)
+                enforcer.delete_log()
+                enforcer.check_for_other_logs(processed_book_ids={str(log_info.get('book_id', '')).strip()})
+            except Exception as e:
+                enforcer.record_failed_enforcement(log_info, e)
+                enforcer.delete_log()
                 sys.exit(1)
-            for book in book_objects:
-                book.log_info = log_info
-                book.log_info['file_path'] = book.file_path
-                enforcer.db.enforce_add_entry_from_log(book.log_info)
-            enforcer.delete_log()
-            enforcer.check_for_other_logs()
         else: # Enforcer has been disabled in the CWA Settings
             print(f"[cover-metadata-enforcer] The CWA Automatic Metadata enforcement service is currently disabled in the settings. Therefore the metadata changes for {log_info['title'].replace(':', '_')} won't be enforced.\n\nThis means that the changes made will appear in the Web UI, but not be stored in the ebook files themselves.")
             enforcer.delete_log()

@@ -1,0 +1,77 @@
+#!/usr/bin/with-contenv bash
+
+echo "[calibre-binaries-setup] Starting Calibre binaries setup..."
+
+if [[ ! -f /usr/bin/apt ]]; then
+cat <<-EOF
+    ********************************************************
+    ********************************************************
+    *                                                      *
+    *                         !!!!                         *
+    *   calibre binaries are only supported on images      *
+    *             using an Ubuntu base image.              *
+    *                                                      *
+    ********************************************************
+    ********************************************************
+EOF
+echo "[calibre-binaries-setup] Non-Ubuntu base detected, exiting..."
+exit 0
+fi
+
+export DEBIAN_FRONTEND="noninteractive"
+
+echo "[calibre-binaries-setup] Checking if Calibre is already installed..."
+
+# Add timeout protection for calibredb check
+CALIBRE_INSTALLED_TEST=""
+if timeout 10 calibredb --version >/dev/null 2>&1; then
+    CALIBRE_INSTALLED_TEST="$(timeout 10 calibredb --version 2>/dev/null || echo '')"
+    echo "[calibre-binaries-setup] Calibre version check result: $CALIBRE_INSTALLED_TEST"
+else
+    echo "[calibre-binaries-setup] Calibre version check timed out or failed, assuming not installed"
+    CALIBRE_INSTALLED_TEST=""
+fi
+
+if [[ ! "$CALIBRE_INSTALLED_TEST" =~ calibredb.*calibre\ [0-9]+\.[0-9]+ ]]; then
+    echo "[calibre-binaries-setup] USER NOTE: 'Ignore calibredb: command not found' above, nothing is wrong, this just indicates to CWA that Calibre still needs to be installed"
+    
+    # Check if calibre_postinstall exists and is executable
+    if [[ ! -f /app/calibre/calibre_postinstall ]]; then
+        echo "[calibre-binaries-setup] ERROR: calibre_postinstall script not found at /app/calibre/calibre_postinstall"
+        echo "[calibre-binaries-setup] This may indicate a problem with the container image. Exiting with error..."
+        exit 1
+    fi
+    
+    if [[ ! -x /app/calibre/calibre_postinstall ]]; then
+        echo "[calibre-binaries-setup] WARNING: calibre_postinstall is not executable, attempting to fix..."
+        chmod +x /app/calibre/calibre_postinstall || {
+            echo "[calibre-binaries-setup] ERROR: Could not make calibre_postinstall executable"
+            exit 1
+        }
+    fi
+    
+    echo "[calibre-binaries-setup] Installing Calibre version $(cat /CALIBRE_RELEASE 2>/dev/null || echo 'unknown')..."
+    echo "[calibre-binaries-setup] This may take several minutes, please wait..."
+    
+    # Add timeout protection for the installation
+    if timeout 300 /app/calibre/calibre_postinstall; then
+        echo "[calibre-binaries-setup] Calibre setup completed successfully!"
+        
+        # Verify installation worked
+        if timeout 10 calibredb --version >/dev/null 2>&1; then
+            VERIFY_VERSION="$(timeout 10 calibredb --version 2>/dev/null || echo 'verification failed')"
+            echo "[calibre-binaries-setup] Installation verified: $VERIFY_VERSION"
+        else
+            echo "[calibre-binaries-setup] WARNING: Calibre installation may have issues (verification failed)"
+        fi
+    else
+        echo "[calibre-binaries-setup] ERROR: Calibre setup was unsuccessful or timed out after 5 minutes"
+        echo "[calibre-binaries-setup] This may indicate a system compatibility issue or resource constraint"
+        echo "[calibre-binaries-setup] Check system logs for more details. Exiting with error..."
+        exit 1
+    fi
+else
+    echo "[calibre-binaries-setup] Skipping setup, Calibre already installed: $CALIBRE_INSTALLED_TEST"
+fi
+
+echo "[calibre-binaries-setup] Service completed successfully, exiting..."

@@ -27,7 +27,9 @@ def get_mimetype(ext):
     # overwrite some mimetypes for proper file detection
     mimes = {".cbz": "application/zip",
              ".cbr": "application/x-rar",
-             ".cbt": "application/x-tar"
+             ".cbt": "application/x-tar",
+             ".kfx": "application/octet-stream",
+             ".kfx-zip": "application/zip",
              }
     return mimes.get(ext, mimetypes.types_map[ext])
 

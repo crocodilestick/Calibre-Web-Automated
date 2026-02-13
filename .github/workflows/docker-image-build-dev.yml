@@ -104,7 +104,7 @@ jobs:
             type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
             BUILD_DATE=${{ github.event.repository.updated_at }}
-            VERSION=${{ vars.CURRENT_DEV_VERSION }}-DEV_BUILD-${{ env.IMAGE_TAG }}-${{ vars.CURRENT_DEV_BUILD_NUM }}
+            VERSION=DEV_BUILD-${{ env.IMAGE_TAG }}-${{ vars.CURRENT_DEV_BUILD_NUM }}
 
       # --- 4. Export Digest for Merge Job ---
       - name: Export digest
@@ -200,7 +200,7 @@ jobs:
             type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
             BUILD_DATE=${{ github.event.repository.updated_at }}
-            VERSION=${{ vars.CURRENT_DEV_VERSION }}-DEV_BUILD-${{ env.IMAGE_TAG }}-${{ vars.CURRENT_DEV_BUILD_NUM }}
+            VERSION=DEV_BUILD-${{ env.IMAGE_TAG }}-${{ vars.CURRENT_DEV_BUILD_NUM }}
 
       # --- 4. Rotate Cache (Prevent Infinite Growth) ---
       - name: Move cache

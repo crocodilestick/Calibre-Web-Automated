@@ -344,26 +344,40 @@ def get_internal_api_headers():
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
+        def _normalize_format(value: str) -> str:
+            if value is None:
+                return ""
+            value = str(value).strip()
+            if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+                value = value[1:-1]
+            return value.strip().lower()
+
+        def _normalize_format_list(values):
+            if values is None:
+                return []
+            if isinstance(values, str):
+                values = values.split(',') if values else []
+            return [
+                _normalize_format(v) for v in values
+                if v is not None and str(v).strip() != ""
+            ]
+
         # Settings / DB
         self.db = CWA_DB()
         self.cwa_settings = self.db.cwa_settings
 
         # Core ingest settings
         self.auto_convert_on = self.cwa_settings['auto_convert']
-        self.target_format = self.cwa_settings['auto_convert_target_format']
-        self.ingest_ignored_formats = self.cwa_settings['auto_ingest_ignored_formats']
-        if isinstance(self.ingest_ignored_formats, str):
-            self.ingest_ignored_formats = [self.ingest_ignored_formats]
+        self.target_format = _normalize_format(self.cwa_settings['auto_convert_target_format'])
+        self.ingest_ignored_formats = _normalize_format_list(self.cwa_settings['auto_ingest_ignored_formats'])
 
         # Add known temporary / partial extensions
         for tmp_ext in ("crdownload", "download", "part", "uploading", "temp"):
             if tmp_ext not in self.ingest_ignored_formats:
                 self.ingest_ignored_formats.append(tmp_ext)
 
-        self.convert_ignored_formats = self.cwa_settings['auto_convert_ignored_formats']
-        self.convert_retained_formats = self.cwa_settings.get('auto_convert_retained_formats', [])
-        if isinstance(self.convert_retained_formats, str):
-            self.convert_retained_formats = self.convert_retained_formats.split(',') if self.convert_retained_formats else []
+        self.convert_ignored_formats = _normalize_format_list(self.cwa_settings['auto_convert_ignored_formats'])
+        self.convert_retained_formats = _normalize_format_list(self.cwa_settings.get('auto_convert_retained_formats', []))
         self.is_kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
 
         # Formats

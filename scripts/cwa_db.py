@@ -126,10 +126,11 @@ class CWA_DB:
             remainder = line[default_start:].strip()
             
             # Handle different value types
-            if remainder.startswith("'"):
-                # String value with single quotes - could be '', or 'value', or JSON
+            if remainder.startswith("'") or remainder.startswith('"'):
+                # String value with quotes - could be '', "value", or JSON
+                quote_char = remainder[0]
                 # Find the matching closing quote
-                end_quote = remainder.index("'", 1)
+                end_quote = remainder.index(quote_char, 1)
                 setting_value = remainder[1:end_quote]  # Extract content between quotes
             elif ' ' in remainder:
                 # Value followed by other keywords (like NOT NULL)
@@ -224,13 +225,35 @@ class CWA_DB:
         This migration fixes existing databases with malformed values.
         """
         try:
-            self.cur.execute("SELECT duplicate_scan_cron, duplicate_format_priority FROM cwa_settings")
+            self.cur.execute(
+                "SELECT duplicate_scan_cron, duplicate_format_priority, "
+                "auto_convert_target_format, auto_convert_retained_formats, "
+                "auto_convert_ignored_formats, auto_ingest_ignored_formats, "
+                "auto_ingest_automerge "
+                "FROM cwa_settings"
+            )
             row = self.cur.fetchone()
             if not row:
                 return
-            
-            cron_value, format_priority = row
+
+            cron_value, format_priority, target_format, retained_formats, convert_ignored, ingest_ignored, automerge_value = row
             fixes_made = []
+
+            def _strip_quotes(value: str | None) -> str | None:
+                if value is None:
+                    return None
+                value = str(value).strip()
+                if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+                    value = value[1:-1]
+                return value.strip()
+
+            def _normalize_format_list(value: str | None) -> str | None:
+                if value is None:
+                    return None
+                parts = [p for p in str(value).split(',')]
+                cleaned = [(_strip_quotes(p) or "").strip().lower() for p in parts]
+                cleaned = [p for p in cleaned if p]
+                return ",".join(cleaned)
             
             # Fix duplicate_scan_cron if it's the literal string "''"
             if cron_value == "''":
@@ -250,6 +273,62 @@ class CWA_DB:
                     default_json = self.cwa_default_settings.get('duplicate_format_priority', '{}')
                     self.cur.execute("UPDATE cwa_settings SET duplicate_format_priority = ?", (default_json,))
                     fixes_made.append("duplicate_format_priority: reset to default due to malformed JSON")
+
+            # Generic cleanup: strip wrapped quotes for TEXT settings and normalize
+            # format/automerge-like values without hardcoding each column.
+            try:
+                self.cur.execute("SELECT * FROM cwa_settings")
+                headers = [header[0] for header in self.cur.description]
+                values = self.cur.fetchone()
+                if values:
+                    current_settings = dict(zip(headers, values))
+
+                    self.cur.execute("PRAGMA table_info(cwa_settings)")
+                    columns = self.cur.fetchall()
+                    text_columns = {
+                        col[1] for col in columns
+                        if isinstance(col[2], str) and col[2].upper().startswith("TEXT")
+                    }
+
+                    json_settings = {
+                        'metadata_provider_hierarchy',
+                        'metadata_providers_enabled',
+                        'duplicate_format_priority',
+                    }
+
+                    for column_name in text_columns:
+                        if column_name not in current_settings:
+                            continue
+                        raw_value = current_settings[column_name]
+                        if raw_value is None or not isinstance(raw_value, str):
+                            continue
+
+                        cleaned_value = _strip_quotes(raw_value)
+                        if cleaned_value is None:
+                            continue
+
+                        normalized_value = cleaned_value
+
+                        # Normalize format/automerge-like values for consistency
+                        if column_name not in json_settings:
+                            column_lower = column_name.lower()
+                            if ',' in cleaned_value and 'format' in column_lower:
+                                parts = [p.strip() for p in cleaned_value.split(',')]
+                                parts = [(_strip_quotes(p) or '').strip() for p in parts]
+                                parts = [p for p in parts if p]
+                                parts = [p.lower() for p in parts]
+                                normalized_value = ','.join(parts)
+                            elif 'format' in column_lower or 'automerge' in column_lower:
+                                normalized_value = cleaned_value.strip().lower()
+
+                        if normalized_value != raw_value:
+                            self.cur.execute(
+                                f"UPDATE cwa_settings SET {column_name} = ?",
+                                (normalized_value,)
+                            )
+                            fixes_made.append(f"{column_name}: stripped quotes/normalized")
+            except Exception as e:
+                print(f"[cwa-db] Warning: Generic settings normalization failed: {e}")
             
             if fixes_made:
                 self.con.commit()

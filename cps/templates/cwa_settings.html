@@ -173,6 +173,17 @@
       <div class="cwa-settings-tip">
         <small>{{_('This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/innocenat\">innocenat</a>.') | safe }}</small>
       </div>
+      {% if cwa_settings.get('koreader_sync_enabled') %}
+      <input type="checkbox" id="koreader_sync_enabled" name="koreader_sync_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
+      {% else %}
+      <input type="checkbox" id="koreader_sync_enabled" name="koreader_sync_enabled" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
+      {% endif %}
+      <label for="koreader_sync_enabled" style="padding-left: 10px;">{{_('Enable KOReader Sync (CWA Plugin)')}}</label><br>
+      <p class="cwa-settings-tooltip">
+        {{_('When enabled, CWA exposes the /kosync endpoints and stores KOReader-compatible checksums in metadata.db for progress syncing. Requires the KOReader plugin on your device.')}}
+        <br>
+        {{_('Note: Enabling this starts a checksum backfill service at startup which can temporarily lock metadata.db. To stop a running backfill, restart the container after disabling.') }}
+      </p>
       {% if cwa_settings.get('kindle_epub_fixer_aggressive') %}
       <input type="checkbox" id="kindle_epub_fixer_aggressive" name="kindle_epub_fixer_aggressive" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Riskier transformations; use only if safe mode fails">
       {% else %}

@@ -62,8 +62,7 @@
       <div class="form-group">
         <label for="config_theme">{{_('Default Theme')}}</label>
         <select name="config_theme" id="config_theme" class="form-control">
-          <option value="0" {% if conf.config_theme == 0 %}selected{% endif %}>{{ _("Standard Theme") }}</option>
-          <option value="1" {% if conf.config_theme == 1 %}selected{% endif %}>{{ _("caliBlur! Dark Theme") }}</option>
+          <option value="1" selected>{{ _("caliBlur! Dark Theme") }}</option>
         </select>
         <p class="settings-explanation">{{_('Default theme for new users and anonymous browsing. Users can select their own preferred theme in their profile.')}}</p>
       </div>

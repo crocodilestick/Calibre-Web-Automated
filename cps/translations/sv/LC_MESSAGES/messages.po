@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 13:59+0100\n"
+"POT-Creation-Date: 2026-02-05 00:15+0100\n"
 "PO-Revision-Date: 2021-05-13 11:00+0000\n"
 "Last-Translator: Jonatan Nyberg <jonatan.nyberg.karl@gmail.com>\n"
 "Language-Team: \n"
@@ -27,25 +27,25 @@ msgstr "Statistik"
 msgid "Calibre database unavailable. Please reconfigure the library path."
 msgstr ""
 
-#: cps/admin.py:179
+#: cps/admin.py:180
 #, fuzzy
 msgid "Server restarted, please reload page."
 msgstr "Server startas om, vänligen uppdatera sidan"
 
-#: cps/admin.py:181
+#: cps/admin.py:182
 #, fuzzy
 msgid "Performing Server shutdown, please close window."
 msgstr "Stänger servern, vänligen stäng fönstret"
 
-#: cps/admin.py:189
+#: cps/admin.py:190
 msgid "Success! Database Reconnected"
 msgstr ""
 
-#: cps/admin.py:192
+#: cps/admin.py:193
 msgid "Unknown command"
 msgstr "Okänt kommando"
 
-#: cps/admin.py:203
+#: cps/admin.py:204
 #, fuzzy
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
@@ -53,202 +53,202 @@ msgstr ""
 "Testa e-post i kö för att skicka till %(email)s, vänligen kontrollera "
 "Uppgifter för resultat"
 
-#: cps/admin.py:223
+#: cps/admin.py:224
 msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
 msgstr ""
 
-#: cps/admin.py:251
+#: cps/admin.py:252
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
 msgstr ""
 
-#: cps/admin.py:256
+#: cps/admin.py:257
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
 msgstr ""
 
-#: cps/admin.py:295 cps/templates/admin.html:223
+#: cps/admin.py:296 cps/templates/admin.html:223
 msgid "Review Hardcover Matches"
 msgstr ""
 
-#: cps/admin.py:302
+#: cps/admin.py:303
 #, python-format
 msgid "Error loading review queue: %(error)s"
 msgstr ""
 
-#: cps/admin.py:383
+#: cps/admin.py:384
 #, fuzzy
 msgid "Hardcover ID applied successfully"
 msgstr "{} användare har tagits bort"
 
-#: cps/admin.py:400
+#: cps/admin.py:401
 #, python-format
 msgid "Match %(action)s"
 msgstr ""
 
-#: cps/admin.py:438
+#: cps/admin.py:439
 msgid "No pending matches to reject"
 msgstr ""
 
-#: cps/admin.py:444
+#: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
 msgstr ""
 
-#: cps/admin.py:481
+#: cps/admin.py:482
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
 msgstr ""
 
-#: cps/admin.py:483
+#: cps/admin.py:484
 msgid "No books with covers found to process."
 msgstr ""
 
-#: cps/admin.py:495
+#: cps/admin.py:496
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
 msgstr ""
 
-#: cps/admin.py:537
+#: cps/admin.py:538
 msgid "Admin page"
 msgstr "Administrationssida"
 
-#: cps/admin.py:557
+#: cps/admin.py:558
 msgid "Basic Configuration"
 msgstr "Grundläggande konfiguration"
 
-#: cps/admin.py:595
+#: cps/admin.py:596
 msgid "UI Configuration"
 msgstr "Användargränssnitt konfiguration"
 
-#: cps/admin.py:619 cps/admin.py:1301 cps/db.py:959 cps/search.py:153
+#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:967 cps/search.py:153
 #: cps/web.py:832
 #, fuzzy, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Anpassad kolumn n.%(column)d finns inte i calibre-databasen"
 
-#: cps/admin.py:637 cps/templates/admin.html:55
+#: cps/admin.py:638 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Redigera användare"
 
-#: cps/admin.py:681 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Alla"
 
-#: cps/admin.py:708 cps/admin.py:1856
+#: cps/admin.py:709 cps/admin.py:1893
 msgid "User not found"
 msgstr "Användaren hittades inte"
 
-#: cps/admin.py:722
+#: cps/admin.py:723
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} användare har tagits bort"
 
-#: cps/admin.py:745 cps/templates/config_view_edit.html:170
-#: cps/templates/user_edit.html:253 cps/templates/user_edit.html:276
+#: cps/admin.py:746 cps/templates/config_view_edit.html:169
+#: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Visa alla"
 
-#: cps/admin.py:766 cps/admin.py:772
+#: cps/admin.py:767 cps/admin.py:773
 msgid "Malformed request"
 msgstr "Felaktig begäran"
 
-#: cps/admin.py:784 cps/admin.py:2711
+#: cps/admin.py:785 cps/admin.py:2786
 msgid "Guest Name can't be changed"
 msgstr "Gästnamn kan inte ändras"
 
-#: cps/admin.py:798
+#: cps/admin.py:799
 msgid "Guest can't have this role"
 msgstr "Gäst kan inte ha den här rollen"
 
-#: cps/admin.py:810 cps/admin.py:2569
+#: cps/admin.py:811 cps/admin.py:2611
 msgid "No admin user remaining, can't remove admin role"
 msgstr ""
 "Ingen administratörsanvändare kvar, kan inte ta bort administratörsrollen"
 
-#: cps/admin.py:814 cps/admin.py:828
+#: cps/admin.py:815 cps/admin.py:829
 msgid "Value has to be true or false"
 msgstr "Värdet måste vara sant eller falskt"
 
-#: cps/admin.py:816
+#: cps/admin.py:817
 msgid "Invalid role"
 msgstr "Ogiltig roll"
 
-#: cps/admin.py:820
+#: cps/admin.py:821
 msgid "Guest can't have this view"
 msgstr "Gästen kan inte ha den här vyn"
 
-#: cps/admin.py:830
+#: cps/admin.py:831
 msgid "Invalid view"
 msgstr "Ogiltig vy"
 
-#: cps/admin.py:833
+#: cps/admin.py:834
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "Gästens språk bestäms automatiskt och kan inte ställas in"
 
-#: cps/admin.py:837
+#: cps/admin.py:838
 msgid "No Valid Locale Given"
 msgstr "Inget giltigt språk anges"
 
-#: cps/admin.py:848
+#: cps/admin.py:849
 msgid "No Valid Book Language Given"
 msgstr "Inget giltigt bokspråk anges"
 
-#: cps/admin.py:850 cps/editbooks.py:587
+#: cps/admin.py:851 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr "Parameter hittades inte"
 
-#: cps/admin.py:887
+#: cps/admin.py:888
 #, fuzzy
 msgid "Invalid Read Column"
 msgstr "Ogiltig roll"
 
-#: cps/admin.py:893
+#: cps/admin.py:894
 msgid "Invalid Restricted Column"
 msgstr ""
 
-#: cps/admin.py:913 cps/admin.py:2418
+#: cps/admin.py:914 cps/admin.py:2459
 #, fuzzy
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Calibre-Web konfiguration uppdaterad"
 
-#: cps/admin.py:925
+#: cps/admin.py:926
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Vill du verkligen ta bort Kobo-token?"
 
-#: cps/admin.py:927
+#: cps/admin.py:928
 msgid "Do you really want to delete this domain?"
 msgstr "Vill du verkligen ta bort den här domänen?"
 
-#: cps/admin.py:929
+#: cps/admin.py:930
 msgid "Do you really want to delete this user?"
 msgstr "Vill du verkligen ta bort den här användaren?"
 
-#: cps/admin.py:931
+#: cps/admin.py:932
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Är du säker på att du vill ta bort hyllan?"
 
-#: cps/admin.py:933
+#: cps/admin.py:934
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr "Är du säker på att du vill ändra språk för valda användare?"
 
-#: cps/admin.py:935
+#: cps/admin.py:936
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr "Är du säker på att du vill ändra synliga bokspråk för valda användare?"
 
-#: cps/admin.py:937
+#: cps/admin.py:938
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
 "Är du säker på att du vill ändra den valda rollen för de valda användarna?"
 
-#: cps/admin.py:939
+#: cps/admin.py:940
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -256,7 +256,7 @@ msgstr ""
 "Är du säker på att du vill ändra de valda begränsningarna för de valda "
 "användarna?"
 
-#: cps/admin.py:941
+#: cps/admin.py:942
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -264,110 +264,110 @@ msgstr ""
 "Är du säker på att du vill ändra de valda synlighetsbegränsningarna för de "
 "valda användarna?"
 
-#: cps/admin.py:944
+#: cps/admin.py:945
 #, fuzzy
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
 "Är du säker på att du vill ändra den valda rollen för de valda användarna?"
 
-#: cps/admin.py:946
+#: cps/admin.py:947
 #, fuzzy
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Är du säker på att du vill stoppa Calibre-Web?"
 
-#: cps/admin.py:948
+#: cps/admin.py:949
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
 msgstr ""
 
-#: cps/admin.py:951
+#: cps/admin.py:952
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
 msgstr ""
 
-#: cps/admin.py:1190 cps/admin.py:1196 cps/admin.py:1206 cps/admin.py:1216
+#: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Förneka"
 
-#: cps/admin.py:1192 cps/admin.py:1198 cps/admin.py:1208 cps/admin.py:1218
+#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Tillåt"
 
-#: cps/admin.py:1251
+#: cps/admin.py:1252
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr ""
 
-#: cps/admin.py:1292
+#: cps/admin.py:1293
 msgid "Tag not found"
 msgstr "Taggen hittades inte"
 
-#: cps/admin.py:1310
+#: cps/admin.py:1311
 msgid "Invalid Action"
 msgstr "Ogiltig åtgärd"
 
-#: cps/admin.py:1437
+#: cps/admin.py:1438
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json är inte konfigurerad för webbapplikation"
 
-#: cps/admin.py:1576
+#: cps/admin.py:1577
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Loggfilens plats är inte giltig, vänligen ange rätt sökväg"
 
-#: cps/admin.py:1582
+#: cps/admin.py:1583
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Åtkomstloggplatsens plats är inte giltig, vänligen ange rätt sökväg"
 
-#: cps/admin.py:1617
+#: cps/admin.py:1618
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr ""
 "Vänligen ange en LDAP-leverantör, port, DN och användarobjektidentifierare"
 
-#: cps/admin.py:1623
+#: cps/admin.py:1624
 #, fuzzy
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Ange giltigt användarnamn för att återställa lösenordet"
 
-#: cps/admin.py:1626
+#: cps/admin.py:1627
 msgid "Please Enter a LDAP Service Account"
 msgstr ""
 
-#: cps/admin.py:1631
+#: cps/admin.py:1632
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-gruppobjektfilter måste ha en \"%s\"-formatidentifierare"
 
-#: cps/admin.py:1633
+#: cps/admin.py:1634
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-gruppobjektfilter har omatchande parentes"
 
-#: cps/admin.py:1637
+#: cps/admin.py:1638
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-användarobjektfilter måste ha en \"%s\"-formatidentifierare"
 
-#: cps/admin.py:1639
+#: cps/admin.py:1640
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-användarobjektfilter har omatchad parentes"
 
-#: cps/admin.py:1646
+#: cps/admin.py:1647
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Användarfilter för LDAP-medlemmar måste ha en \"%s\"-formatidentifierare"
 
-#: cps/admin.py:1648
+#: cps/admin.py:1649
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "Användarfilter för LDAP-medlemmar har omatchad parentes"
 
-#: cps/admin.py:1655
+#: cps/admin.py:1656
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -375,28 +375,28 @@ msgstr ""
 "LDAP-certifikat, certifikat eller nyckelplats är inte giltigt, vänligen ange "
 "rätt sökväg"
 
-#: cps/admin.py:1687 cps/templates/admin.html:57
+#: cps/admin.py:1689 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Lägg till ny användare"
 
-#: cps/admin.py:1699 cps/templates/admin.html:105
+#: cps/admin.py:1704 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "Ändra SMTP-inställningar"
 
-#: cps/admin.py:1718
+#: cps/admin.py:1723
 msgid "Success! Gmail Account Verified."
 msgstr ""
 
-#: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
-#: cps/admin.py:2514 cps/admin.py:2750 cps/editbooks.py:1033
-#: cps/editbooks.py:1799 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
+#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
-#: cps/tasks/convert.py:145 cps/web.py:2623
+#: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Databasfel: %(error)s."
 
-#: cps/admin.py:1748
+#: cps/admin.py:1753
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
@@ -404,364 +404,364 @@ msgstr ""
 "Testa e-post i kö för att skicka till %(email)s, vänligen kontrollera "
 "Uppgifter för resultat"
 
-#: cps/admin.py:1751
+#: cps/admin.py:1756
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Det gick inte att skicka Testmeddelandet: %(res)s"
 
-#: cps/admin.py:1753
+#: cps/admin.py:1758
 msgid "Please configure your e-mail address first..."
 msgstr "Vänligen konfigurera din e-postadress först..."
 
-#: cps/admin.py:1755
+#: cps/admin.py:1760
 msgid "Email Server Settings updated"
 msgstr "E-postserverinställningar uppdaterade"
 
-#: cps/admin.py:1778 cps/templates/admin.html:201
+#: cps/admin.py:1783 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr ""
 
-#: cps/admin.py:1790
+#: cps/admin.py:1795
 msgid "Invalid start time for task specified"
 msgstr ""
 
-#: cps/admin.py:1795
+#: cps/admin.py:1800
 msgid "Invalid duration for task specified"
 msgstr ""
 
-#: cps/admin.py:1805
+#: cps/admin.py:1810
 msgid "Scheduled tasks settings updated"
 msgstr ""
 
-#: cps/admin.py:1815 cps/admin.py:1923 cps/admin.py:2746 cps/web.py:2109
+#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Ett okänt fel uppstod. Försök igen senare."
 
-#: cps/admin.py:1819
+#: cps/admin.py:1824
 msgid "Settings DB is not Writeable"
 msgstr ""
 
-#: cps/admin.py:1838 cps/opds.py:199 cps/web.py:2572 cps/web.py:2674
+#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
 #, fuzzy
 msgid "title"
 msgstr "Titel"
 
-#: cps/admin.py:1908 cps/admin.py:2738
+#: cps/admin.py:1949 cps/admin.py:2817
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Redigera användaren %(nick)s"
 
-#: cps/admin.py:1920
+#: cps/admin.py:1961
 #, fuzzy, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Lösenord för användaren %(user)s återställd"
 
-#: cps/admin.py:1926
+#: cps/admin.py:1967
 #, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Konfigurera SMTP-postinställningarna först..."
 
-#: cps/admin.py:1937
+#: cps/admin.py:1978
 msgid "Logfile viewer"
 msgstr "Visaren för loggfil"
 
-#: cps/admin.py:2003
+#: cps/admin.py:2044
 msgid "Requesting update package"
 msgstr "Begär uppdateringspaketet"
 
-#: cps/admin.py:2004
+#: cps/admin.py:2045
 msgid "Downloading update package"
 msgstr "Hämtar uppdateringspaketet"
 
-#: cps/admin.py:2005
+#: cps/admin.py:2046
 msgid "Unzipping update package"
 msgstr "Packar upp uppdateringspaketet"
 
-#: cps/admin.py:2006
+#: cps/admin.py:2047
 msgid "Replacing files"
 msgstr "Ersätta filer"
 
-#: cps/admin.py:2007
+#: cps/admin.py:2048
 msgid "Database connections are closed"
 msgstr "Databasanslutningarna är stängda"
 
-#: cps/admin.py:2008
+#: cps/admin.py:2049
 msgid "Stopping server"
 msgstr "Stoppar server"
 
-#: cps/admin.py:2009
+#: cps/admin.py:2050
 msgid "Update finished, please press okay and reload page"
 msgstr "Uppdatering klar, tryck på okej och uppdatera sidan"
 
-#: cps/admin.py:2010 cps/admin.py:2011 cps/admin.py:2012 cps/admin.py:2013
-#: cps/admin.py:2014 cps/admin.py:2015
+#: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
+#: cps/admin.py:2055 cps/admin.py:2056
 msgid "Update failed:"
 msgstr "Uppdateringen misslyckades:"
 
-#: cps/admin.py:2010 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
+#: cps/admin.py:2051 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "HTTP-fel"
 
-#: cps/admin.py:2011 cps/updater.py:390 cps/updater.py:627
+#: cps/admin.py:2052 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "Anslutningsfel"
 
-#: cps/admin.py:2012 cps/updater.py:392 cps/updater.py:629
+#: cps/admin.py:2053 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "Tiden ute när du etablerade anslutning"
 
-#: cps/admin.py:2013 cps/updater.py:394 cps/updater.py:631
+#: cps/admin.py:2054 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "Allmänt fel"
 
-#: cps/admin.py:2014
+#: cps/admin.py:2055
 #, fuzzy
 msgid "Update file could not be saved in temp dir"
 msgstr "Uppdateringsfilen kunde inte sparas i Temp Dir"
 
-#: cps/admin.py:2015
+#: cps/admin.py:2056
 msgid "Files could not be replaced during update"
 msgstr ""
 
-#: cps/admin.py:2039
+#: cps/admin.py:2080
 #, fuzzy
 msgid "Failed to extract at least One LDAP User"
 msgstr "Det gick inte att skapa minst en LDAP-användare"
 
-#: cps/admin.py:2084
+#: cps/admin.py:2125
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Det gick inte att skapa minst en LDAP-användare"
 
-#: cps/admin.py:2097
+#: cps/admin.py:2138
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Fel: %(ldaperror)s"
 
-#: cps/admin.py:2101
+#: cps/admin.py:2142
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Fel: Ingen användare återges som svar på LDAP-servern"
 
-#: cps/admin.py:2137
+#: cps/admin.py:2178
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Minst en LDAP-användare hittades inte i databasen"
 
-#: cps/admin.py:2139
+#: cps/admin.py:2180
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} användare har importerats"
 
-#: cps/admin.py:2203
+#: cps/admin.py:2244
 msgid "Books path not valid"
 msgstr ""
 
-#: cps/admin.py:2210
+#: cps/admin.py:2251
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "DB-plats är inte giltig, vänligen ange rätt sökväg"
 
-#: cps/admin.py:2238
+#: cps/admin.py:2279
 msgid "DB is not Writeable"
 msgstr "DB är inte skrivbar"
 
-#: cps/admin.py:2251
+#: cps/admin.py:2292
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Keyfile-platsen är inte giltig, vänligen ange rätt sökväg"
 
-#: cps/admin.py:2255
+#: cps/admin.py:2296
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "Certfile-platsen är inte giltig, vänligen ange rätt sökväg"
 
-#: cps/admin.py:2324
+#: cps/admin.py:2365
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
 
-#: cps/admin.py:2327
+#: cps/admin.py:2368
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 
-#: cps/admin.py:2346 cps/admin.py:2353
+#: cps/admin.py:2387 cps/admin.py:2394
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2350
+#: cps/admin.py:2391
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2385
+#: cps/admin.py:2426
 msgid "Password length has to be between 1 and 40"
 msgstr ""
 
-#: cps/admin.py:2445
+#: cps/admin.py:2486
 #, fuzzy
 msgid "Database Settings updated"
 msgstr "E-postserverinställningar uppdaterade"
 
-#: cps/admin.py:2453
+#: cps/admin.py:2494
 #, fuzzy
 msgid "Database Configuration"
 msgstr "Funktion konfiguration"
 
-#: cps/admin.py:2474 cps/web.py:2078
+#: cps/admin.py:2514 cps/web.py:2078
 msgid "Oops! Please complete all fields."
 msgstr "Fyll i alla fält!"
 
-#: cps/admin.py:2483
+#: cps/admin.py:2523
 msgid "E-mail is not from valid domain"
 msgstr "E-posten är inte från giltig domän"
 
-#: cps/admin.py:2490
+#: cps/admin.py:2531
 msgid "Add new user"
 msgstr "Lägg till ny användare"
 
-#: cps/admin.py:2504
+#: cps/admin.py:2548
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Användaren '%(user)s' skapad"
 
-#: cps/admin.py:2510
+#: cps/admin.py:2554
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "Hittade ett befintligt konto för den här e-postadressen eller namnet."
 
-#: cps/admin.py:2540
+#: cps/admin.py:2584
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Användaren '%(nick)s' borttagen"
 
-#: cps/admin.py:2543
+#: cps/admin.py:2587
 msgid "Can't delete Guest User"
 msgstr "Det går inte att ta bort gästanvändaren"
 
-#: cps/admin.py:2546
+#: cps/admin.py:2590
 msgid "No admin user remaining, can't delete user"
 msgstr "Ingen adminstratörsanvändare kvar, kan inte ta bort användaren"
 
-#: cps/admin.py:2705 cps/web.py:2413
+#: cps/admin.py:2780 cps/web.py:2413
 msgid "Email can't be empty and has to be a valid Email"
 msgstr ""
 
-#: cps/admin.py:2742
+#: cps/admin.py:2821
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Användaren '%(nick)s' uppdaterad"
 
-#: cps/admin.py:2807
+#: cps/admin.py:2886
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2812
+#: cps/admin.py:2891
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2814 cps/admin.py:2871
+#: cps/admin.py:2893 cps/admin.py:2950
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr ""
 
-#: cps/admin.py:2816
+#: cps/admin.py:2895
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr ""
 
-#: cps/admin.py:2818
+#: cps/admin.py:2897
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 
-#: cps/admin.py:2820
+#: cps/admin.py:2899
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr ""
 
-#: cps/admin.py:2823
+#: cps/admin.py:2902
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Anslutningsfel"
 
-#: cps/admin.py:2849
+#: cps/admin.py:2928
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr ""
 
-#: cps/admin.py:2860
+#: cps/admin.py:2939
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 
-#: cps/admin.py:2862
+#: cps/admin.py:2941
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "Ingen versionsinformation tillgänglig"
 
-#: cps/admin.py:2864
+#: cps/admin.py:2943
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2869
+#: cps/admin.py:2948
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:2873
+#: cps/admin.py:2952
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr ""
 
-#: cps/admin.py:2875
+#: cps/admin.py:2954
 msgid "Connection failed: Request timed out."
 msgstr ""
 
-#: cps/admin.py:2877
+#: cps/admin.py:2956
 msgid "Connection failed: Invalid JSON in response."
 msgstr ""
 
-#: cps/admin.py:2880
+#: cps/admin.py:2959
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "Ett okänt fel uppstod. Försök igen senare."
 
-#: cps/admin.py:2892
+#: cps/admin.py:2971
 #, fuzzy
 msgid "Restore already in progress."
 msgstr "Anslutningsfel"
 
-#: cps/admin.py:2896
+#: cps/admin.py:2975
 msgid "Restore failed: Calibre library path is not configured."
 msgstr ""
 
-#: cps/admin.py:2901
+#: cps/admin.py:2980
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:2906
+#: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:2978 cps/admin.py:3018
+#: cps/admin.py:3057 cps/admin.py:3097
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Anslutningsfel"
 
-#: cps/admin.py:2995
+#: cps/admin.py:3074
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 
-#: cps/admin.py:3014
+#: cps/admin.py:3093
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -896,220 +896,220 @@ msgid ""
 "wait..."
 msgstr ""
 
-#: cps/cwa_functions.py:848
+#: cps/cwa_functions.py:849
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 
-#: cps/cwa_functions.py:884
+#: cps/cwa_functions.py:913
 #, fuzzy
 msgid "Calibre-Web Automated User Settings"
 msgstr "Inställningar för calibre e-bokkonverterare"
 
-#: cps/cwa_functions.py:930 cps/cwa_functions.py:932 cps/cwa_functions.py:936
-#: cps/cwa_functions.py:938 cps/cwa_functions.py:941 cps/cwa_functions.py:943
+#: cps/cwa_functions.py:959 cps/cwa_functions.py:961 cps/cwa_functions.py:965
+#: cps/cwa_functions.py:967 cps/cwa_functions.py:970 cps/cwa_functions.py:972
 msgid "Timestamp"
 msgstr ""
 
-#: cps/cwa_functions.py:930 cps/cwa_functions.py:932
+#: cps/cwa_functions.py:959 cps/cwa_functions.py:961
 #: cps/templates/tasks.html:43
 #, fuzzy
 msgid "Book ID"
 msgstr "Böcker"
 
-#: cps/cwa_functions.py:930 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:959 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Boktitel"
 
-#: cps/cwa_functions.py:930
+#: cps/cwa_functions.py:959
 #, fuzzy
 msgid "Book Author"
 msgstr "Författare"
 
-#: cps/cwa_functions.py:930
+#: cps/cwa_functions.py:959
 msgid "Trigger Type"
 msgstr ""
 
-#: cps/cwa_functions.py:932 cps/cwa_functions.py:938
+#: cps/cwa_functions.py:961 cps/cwa_functions.py:967
 #, fuzzy
 msgid "Filepath"
 msgstr "Filformat"
 
-#: cps/cwa_functions.py:936 cps/cwa_functions.py:938 cps/cwa_functions.py:941
-#: cps/cwa_functions.py:943
+#: cps/cwa_functions.py:965 cps/cwa_functions.py:967 cps/cwa_functions.py:970
+#: cps/cwa_functions.py:972
 #, fuzzy
 msgid "Filename"
 msgstr "namn"
 
-#: cps/cwa_functions.py:936
+#: cps/cwa_functions.py:965
 msgid "Manual?"
 msgstr ""
 
-#: cps/cwa_functions.py:936
+#: cps/cwa_functions.py:965
 msgid "No. Fixes"
 msgstr ""
 
-#: cps/cwa_functions.py:936 cps/cwa_functions.py:941 cps/cwa_functions.py:943
+#: cps/cwa_functions.py:965 cps/cwa_functions.py:970 cps/cwa_functions.py:972
 msgid "Original Backed Up?"
 msgstr ""
 
-#: cps/cwa_functions.py:938
+#: cps/cwa_functions.py:967
 msgid "Fixes Applied"
 msgstr ""
 
-#: cps/cwa_functions.py:943
+#: cps/cwa_functions.py:972
 msgid "Original Format"
 msgstr ""
 
-#: cps/cwa_functions.py:943
+#: cps/cwa_functions.py:972
 #, fuzzy
 msgid "End Format"
 msgstr "Ladda upp format"
 
-#: cps/cwa_functions.py:1019 cps/cwa_functions.py:1048
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1077
 #, fuzzy
 msgid "Unknown User"
 msgstr "Okänd"
 
-#: cps/cwa_functions.py:1156
+#: cps/cwa_functions.py:1185
 #, fuzzy
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Calibre-Web test e-post"
 
-#: cps/cwa_functions.py:1540
+#: cps/cwa_functions.py:1569
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr ""
 
-#: cps/cwa_functions.py:1549
+#: cps/cwa_functions.py:1578
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr ""
 
-#: cps/cwa_functions.py:1558
+#: cps/cwa_functions.py:1587
 msgid "Calibre-Web Automated - Full Import History"
 msgstr ""
 
-#: cps/cwa_functions.py:1567
+#: cps/cwa_functions.py:1596
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr ""
 
-#: cps/cwa_functions.py:1576
+#: cps/cwa_functions.py:1605
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1585
+#: cps/cwa_functions.py:1614
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1603
+#: cps/cwa_functions.py:1632
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr ""
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1634
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
 
-#: cps/cwa_functions.py:1607
+#: cps/cwa_functions.py:1636
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 
-#: cps/cwa_functions.py:1609
+#: cps/cwa_functions.py:1638
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 
-#: cps/cwa_functions.py:1611
+#: cps/cwa_functions.py:1640
 msgid "An Error has occurred"
 msgstr ""
 
-#: cps/cwa_functions.py:1782 cps/cwa_functions.py:1808
+#: cps/cwa_functions.py:1811 cps/cwa_functions.py:1837
 msgid "Calibre-Web Automated - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:1924 cps/cwa_functions.py:1948
+#: cps/cwa_functions.py:1953 cps/cwa_functions.py:1977
 #, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Inställningar för calibre e-bokkonverterare"
 
-#: cps/cwa_functions.py:2002
+#: cps/cwa_functions.py:2031
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2009
+#: cps/cwa_functions.py:2038
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "Ogiltig roll"
 
-#: cps/cwa_functions.py:2015
+#: cps/cwa_functions.py:2044
 #, fuzzy
 msgid "Book not found."
 msgstr "Token hittades inte"
 
-#: cps/cwa_functions.py:2021
+#: cps/cwa_functions.py:2050
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "Slå ihop utvalda böcker"
 
-#: cps/cwa_functions.py:2025
+#: cps/cwa_functions.py:2054
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s-format hittades inte på disken"
 
-#: cps/cwa_functions.py:2040
+#: cps/cwa_functions.py:2069
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "Slå ihop utvalda böcker"
 
-#: cps/cwa_functions.py:2043
+#: cps/cwa_functions.py:2072
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2090
+#: cps/cwa_functions.py:2119
 msgid "You must be an admin to access this page."
 msgstr ""
 
-#: cps/cwa_functions.py:2105
+#: cps/cwa_functions.py:2134
 msgid "Both username and image data are required."
 msgstr ""
 
-#: cps/cwa_functions.py:2113
+#: cps/cwa_functions.py:2142
 msgid "Invalid image data format. Must be a valid image."
 msgstr ""
 
-#: cps/cwa_functions.py:2121
+#: cps/cwa_functions.py:2150
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr ""
 
-#: cps/cwa_functions.py:2133
+#: cps/cwa_functions.py:2162
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr ""
 
-#: cps/cwa_functions.py:2137
+#: cps/cwa_functions.py:2166
 msgid "Invalid Base64 image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2141
+#: cps/cwa_functions.py:2170
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "Ogiltigt e-postadressformat"
 
-#: cps/cwa_functions.py:2146
+#: cps/cwa_functions.py:2175
 msgid "Error validating image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2164
+#: cps/cwa_functions.py:2193
 #, fuzzy
 msgid "Profile picture updated successfully."
 msgstr "{} användare har tagits bort"
 
-#: cps/cwa_functions.py:2177
+#: cps/cwa_functions.py:2206
 msgid "CWA Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1232 cps/templates/config_edit.html:294
-#: cps/templates/config_view_edit.html:80
-#: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
+#: cps/db.py:1240 cps/templates/config_edit.html:294
+#: cps/templates/config_view_edit.html:79
+#: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
 #: cps/web.py:1599 cps/web.py:1636 cps/web.py:1687 cps/web.py:1719
 #: cps/web.py:1758
@@ -1153,95 +1153,95 @@ msgstr ""
 msgid "Invalid resolution strategy"
 msgstr "Ogiltig roll"
 
-#: cps/editbooks.py:103 cps/editbooks.py:160
+#: cps/editbooks.py:112 cps/editbooks.py:169
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
 
-#: cps/editbooks.py:112
+#: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
 msgstr ""
 
-#: cps/editbooks.py:118
+#: cps/editbooks.py:127
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:143 cps/editbooks.py:170 cps/templates/book_edit.html:52
+#: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:151
 msgid "Upload done, processing, please wait..."
 msgstr "Uppladdning klar, bearbetning, vänligen vänta ..."
 
-#: cps/editbooks.py:148 cps/editbooks.py:174
+#: cps/editbooks.py:157 cps/editbooks.py:183
 #, fuzzy
 msgid "Failed to queue upload for processing"
 msgstr "Det gick inte att skapa sökväg för omslag"
 
-#: cps/editbooks.py:190
+#: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
 msgstr "Källa eller målformat för konvertering saknas"
 
-#: cps/editbooks.py:198
+#: cps/editbooks.py:207
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr "Boken är i kö för konvertering till %(book_format)s"
 
-#: cps/editbooks.py:202
+#: cps/editbooks.py:211
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "Det gick inte att konvertera den här boken: %(res)s"
 
-#: cps/editbooks.py:358 cps/editbooks.py:1236 cps/editbooks.py:1745
+#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Filändelsen '%(ext)s' får inte laddas upp till den här servern"
 
-#: cps/editbooks.py:363 cps/editbooks.py:1242 cps/editbooks.py:1756
+#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Filändelsen '%(ext)s' får inte laddas upp till den här servern"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1246 cps/editbooks.py:1761
+#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
 msgid "File to be uploaded must have an extension"
 msgstr "Filen som ska laddas upp måste ha en ändelse"
 
-#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2712
-#: cps/web.py:2803 cps/web.py:2888
+#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
+#: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
 "Hoppsan! Vald boktitel är inte tillgänglig. Filen finns inte eller är inte "
 "tillgänglig"
 
-#: cps/editbooks.py:872 cps/editbooks.py:1829
+#: cps/editbooks.py:881 cps/editbooks.py:1838
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:895 cps/editbooks.py:1224
+#: cps/editbooks.py:904 cps/editbooks.py:1233
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Identifierare är inte skiftlägeskänsliga, skriver över gammal identifierare"
 
-#: cps/editbooks.py:907 cps/editbooks.py:1198 cps/editbooks.py:1556
+#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s är inte ett giltigt språk"
 
-#: cps/editbooks.py:1020
+#: cps/editbooks.py:1029
 msgid "Metadata successfully updated"
 msgstr "Metadata uppdaterades"
 
-#: cps/editbooks.py:1038
+#: cps/editbooks.py:1047
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
-#: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
+#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
+#: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Okänd"
 
-#: cps/editbooks.py:1142
+#: cps/editbooks.py:1151
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1249,52 +1249,52 @@ msgstr ""
 "Uppladdad bok finns förmodligen i biblioteket, överväg att ändra innan du "
 "laddar upp nya: "
 
-#: cps/editbooks.py:1254
+#: cps/editbooks.py:1263
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Filen %(filename)s kunde inte sparas i temp dir"
 
-#: cps/editbooks.py:1274
+#: cps/editbooks.py:1283
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Det gick inte att flytta omslagsfil %(file)s: %(error)s"
 
-#: cps/editbooks.py:1332 cps/editbooks.py:1334
+#: cps/editbooks.py:1341 cps/editbooks.py:1343
 msgid "Book Format Successfully Deleted"
 msgstr "Bokformat har tagits bort"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1350 cps/editbooks.py:1352
 msgid "Book Successfully Deleted"
 msgstr "Boken har tagits bort"
 
-#: cps/editbooks.py:1407
+#: cps/editbooks.py:1416
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1461
+#: cps/editbooks.py:1470
 msgid "edit metadata"
 msgstr "redigera metadata"
 
-#: cps/editbooks.py:1515
+#: cps/editbooks.py:1524
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 
-#: cps/editbooks.py:1750
+#: cps/editbooks.py:1759
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1774
+#: cps/editbooks.py:1783
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Det gick inte att skapa sökväg %(path)s (behörighet nekad)."
 
-#: cps/editbooks.py:1781
+#: cps/editbooks.py:1790
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Det gick inte att lagra filen %(file)s."
 
-#: cps/editbooks.py:1806
+#: cps/editbooks.py:1815
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Filformatet %(ext)s lades till %(book)s"
@@ -1594,26 +1594,26 @@ msgid ""
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:316 cps/oauth_bb.py:563
+#: cps/oauth_bb.py:316 cps/oauth_bb.py:560
 msgid "Failed to link OAuth account. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:534
+#: cps/oauth_bb.py:531
 msgid ""
 "OAuth error: Provider returned invalid user information. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:547 cps/remotelogin.py:149
+#: cps/oauth_bb.py:544 cps/remotelogin.py:149
 #, python-format
 msgid "Success! You are now logged in as: %(nickname)s"
 msgstr "du är nu inloggad som: \"%(nickname)s\""
 
-#: cps/oauth_bb.py:557
+#: cps/oauth_bb.py:554
 #, python-format
 msgid "Link to %(oauth)s Succeeded"
 msgstr "Länk till %(oauth)s lyckades"
 
-#: cps/oauth_bb.py:565
+#: cps/oauth_bb.py:562
 #, python-format
 msgid ""
 "Login failed: No user account is linked to your %(provider)s account. Please "
@@ -1621,87 +1621,87 @@ msgid ""
 "account."
 msgstr ""
 
-#: cps/oauth_bb.py:573
+#: cps/oauth_bb.py:570
 msgid "OAuth authentication failed. Please try again or contact administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:577
+#: cps/oauth_bb.py:574
 #, fuzzy
 msgid "OAuth system error. Please contact administrator."
 msgstr "E-postservern är inte konfigurerad, kontakta din administratör!"
 
-#: cps/oauth_bb.py:610
+#: cps/oauth_bb.py:607
 #, python-format
 msgid "Unlink to %(oauth)s Succeeded"
 msgstr "Sluta länka till %(oauth)s lyckades"
 
-#: cps/oauth_bb.py:615
+#: cps/oauth_bb.py:612
 #, python-format
 msgid "Unlink to %(oauth)s Failed"
 msgstr "Sluta länka till %(oauth)s misslyckades"
 
-#: cps/oauth_bb.py:618
+#: cps/oauth_bb.py:615
 #, python-format
 msgid "Not Linked to %(oauth)s"
 msgstr "Inte länkad till %(oauth)s"
 
-#: cps/oauth_bb.py:823
+#: cps/oauth_bb.py:820
 msgid "Failed to log in with GitHub."
 msgstr "Det gick inte att logga in med GitHub."
 
-#: cps/oauth_bb.py:829
+#: cps/oauth_bb.py:826
 msgid "Failed to fetch user info from GitHub."
 msgstr "Det gick inte att hämta användarinformation från GitHub."
 
-#: cps/oauth_bb.py:850
+#: cps/oauth_bb.py:847
 msgid "Failed to log in with Google."
 msgstr "Det gick inte att logga in med Google."
 
-#: cps/oauth_bb.py:859
+#: cps/oauth_bb.py:856
 msgid "Failed to fetch user info from Google."
 msgstr "Det gick inte att hämta användarinformation från Google."
 
-#: cps/oauth_bb.py:884
+#: cps/oauth_bb.py:881
 #, fuzzy
 msgid "Failed to log in with Generic OAuth."
 msgstr "Det gick inte att logga in med GitHub."
 
-#: cps/oauth_bb.py:900
+#: cps/oauth_bb.py:897
 msgid "OAuth authentication failed: Token validation error. Please try again."
 msgstr ""
 
-#: cps/oauth_bb.py:904
+#: cps/oauth_bb.py:901
 msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
 msgstr ""
 
-#: cps/oauth_bb.py:912 cps/oauth_bb.py:930 cps/oauth_bb.py:948
+#: cps/oauth_bb.py:909 cps/oauth_bb.py:927 cps/oauth_bb.py:945
 msgid ""
 "OAuth error: Invalid redirect URI. If you're experiencing this error "
 "repeatedly, please configure the 'OAuth Redirect Host' setting in Admin > "
 "Basic Configuration > OAuth."
 msgstr ""
 
-#: cps/oauth_bb.py:984
+#: cps/oauth_bb.py:981
 msgid "GitHub Oauth error, please retry later."
 msgstr "GitHub Oauth-fel, försök igen senare."
 
-#: cps/oauth_bb.py:991
+#: cps/oauth_bb.py:988
 #, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "GitHub Oauth-fel: {}"
 
-#: cps/oauth_bb.py:1041
+#: cps/oauth_bb.py:1038
 msgid "Google Oauth error, please retry later."
 msgstr "Google Oauth-fel, försök igen senare."
 
-#: cps/oauth_bb.py:1048
+#: cps/oauth_bb.py:1045
 #, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Google Oauth-fel: {}"
 
-#: cps/oauth_bb.py:1084 cps/oauth_bb.py:1092
+#: cps/oauth_bb.py:1081 cps/oauth_bb.py:1089
 #, fuzzy, python-brace-format
 msgid "OAuth error: {}"
 msgstr "GitHub Oauth-fel: {}"
@@ -1803,8 +1803,8 @@ msgid "Show Category Section"
 msgstr "Visa kategorival"
 
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
-#: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:351
-#: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1092
+#: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
+#: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
 #: cps/templates/search_form.html:70 cps/web.py:1642 cps/web.py:1654
 msgid "Series"
@@ -1816,7 +1816,7 @@ msgid "Show Series Section"
 msgstr "Visa serieval"
 
 #: cps/render_template.py:76 cps/templates/book_table.html:105
-#: cps/templates/cwa_settings.html:323 cps/templates/cwa_settings.html:325
+#: cps/templates/cwa_settings.html:334 cps/templates/cwa_settings.html:336
 #: cps/templates/hardcover_review_matches.html:134
 msgid "Authors"
 msgstr "Författare"
@@ -2084,16 +2084,16 @@ msgstr ""
 msgid "Unknown Status"
 msgstr "Okänd status"
 
-#: cps/updater.py:430 cps/updater.py:441 cps/updater.py:542 cps/updater.py:557
+#: cps/updater.py:436 cps/updater.py:447 cps/updater.py:548 cps/updater.py:563
 msgid "Unexpected data while reading update information"
 msgstr "Oväntade data vid läsning av uppdateringsinformation"
 
-#: cps/updater.py:437 cps/updater.py:549
+#: cps/updater.py:443 cps/updater.py:555
 msgid "No update available. You already have the latest version installed"
 msgstr ""
 "Ingen uppdatering tillgänglig. Du har redan den senaste versionen installerad"
 
-#: cps/updater.py:456
+#: cps/updater.py:462
 msgid ""
 "A new update is available. Click on the button below to update to the latest "
 "version."
@@ -2101,16 +2101,16 @@ msgstr ""
 "En ny uppdatering är tillgänglig. Klicka på knappen nedan för att uppdatera "
 "till den senaste versionen."
 
-#: cps/updater.py:473
+#: cps/updater.py:479
 msgid "Could not fetch update information"
 msgstr "Kunde inte hämta uppdateringsinformation"
 
-#: cps/updater.py:484
+#: cps/updater.py:490
 msgid "Click on the button below to update to the latest stable version."
 msgstr ""
 "Klicka på knappen nedan för att uppdatera till den senaste stabila versionen."
 
-#: cps/updater.py:492 cps/updater.py:506 cps/updater.py:517
+#: cps/updater.py:498 cps/updater.py:512 cps/updater.py:523
 #, python-format
 msgid ""
 "A new update is available. Click on the button below to update to version: "
@@ -2119,7 +2119,7 @@ msgstr ""
 "En ny uppdatering är tillgänglig. Klicka på knappen nedan för att uppdatera "
 "till version: %(version)s"
 
-#: cps/updater.py:535
+#: cps/updater.py:541
 msgid "No release information available"
 msgstr "Ingen versionsinformation tillgänglig"
 
@@ -2456,21 +2456,21 @@ msgstr "Ange giltigt användarnamn för att återställa lösenordet"
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "du är nu inloggad som: \"%(nickname)s\""
 
-#: cps/web.py:2612
+#: cps/web.py:2667
 #, fuzzy
 msgid "Success! Profile Updated"
 msgstr "Profilen uppdaterad"
 
-#: cps/web.py:2618
+#: cps/web.py:2673
 msgid "Oops! An account already exists for this Email."
 msgstr "Hittade ett befintligt konto för den här e-postadressen"
 
-#: cps/web.py:2816
+#: cps/web.py:2894
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "Ogiltig roll"
 
-#: cps/progress_syncing/protocols/kosync.py:444
+#: cps/progress_syncing/protocols/kosync.py:454
 msgid "KOReader Sync Plugin"
 msgstr ""
 
@@ -2643,12 +2643,12 @@ msgstr ""
 
 #: cps/templates/admin.html:14 cps/templates/login.html:17
 #: cps/templates/login.html:19 cps/templates/register.html:9
-#: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
+#: cps/templates/user_edit.html:185 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Smeknamn"
 
 #: cps/templates/admin.html:15 cps/templates/register.html:14
-#: cps/templates/user_edit.html:183 cps/templates/user_table.html:135
+#: cps/templates/user_edit.html:193 cps/templates/user_table.html:135
 msgid "Email"
 msgstr "E-post"
 
@@ -2657,7 +2657,7 @@ msgstr "E-post"
 msgid "Send to eReader Email"
 msgstr "Kindle"
 
-#: cps/templates/admin.html:17 cps/templates/user_edit.html:211
+#: cps/templates/admin.html:17 cps/templates/user_edit.html:221
 #, fuzzy
 msgid "Send to eReader Subject"
 msgstr "Skicka till Kindle"
@@ -2668,7 +2668,7 @@ msgid "Admin"
 msgstr "Administratör"
 
 #: cps/templates/admin.html:20 cps/templates/login.html:22
-#: cps/templates/login.html:23 cps/templates/user_edit.html:194
+#: cps/templates/login.html:23 cps/templates/user_edit.html:204
 msgid "Password"
 msgstr "Lösenord"
 
@@ -2692,7 +2692,7 @@ msgstr "Redigera"
 #: cps/templates/book_table.html:62 cps/templates/book_table.html:141
 #: cps/templates/book_table.html:190 cps/templates/duplicates.html:539
 #: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
-#: cps/templates/user_edit.html:317 cps/templates/user_table.html:150
+#: cps/templates/user_edit.html:326 cps/templates/user_table.html:150
 msgid "Delete"
 msgstr "Ta bort"
 
@@ -2950,7 +2950,7 @@ msgstr "Ok"
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
+#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
@@ -2958,7 +2958,7 @@ msgstr "Ok"
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
 #: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
 #: cps/templates/tasks.html:94 cps/templates/tasks.html:166
-#: cps/templates/tasks.html:173 cps/templates/user_edit.html:514
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:555
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -3057,7 +3057,7 @@ msgstr "Laddar upp..."
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:532
+#: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Stäng"
 
@@ -3079,7 +3079,7 @@ msgid "Upload Format"
 msgstr "Ladda upp format"
 
 #: cps/templates/book_edit.html:90 cps/templates/book_edit.html:371
-#: cps/templates/cwa_settings.html:1080 cps/templates/search_form.html:12
+#: cps/templates/cwa_settings.html:1091 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Författare"
 
@@ -3096,25 +3096,25 @@ msgid "Published Date"
 msgstr "Publiceringsdatum"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
-#: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1098 cps/templates/detail.html:781
+#: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
+#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:781
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Förlag"
 
-#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1086
+#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1097
 #: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "Språk"
 
-#: cps/templates/book_edit.html:122 cps/templates/cwa_settings.html:358
-#: cps/templates/cwa_settings.html:360
+#: cps/templates/book_edit.html:122 cps/templates/cwa_settings.html:369
+#: cps/templates/cwa_settings.html:371
 msgid "Rating"
 msgstr "Betyg"
 
 #: cps/templates/book_edit.html:126 cps/templates/book_edit.html:373
-#: cps/templates/cwa_settings.html:330 cps/templates/cwa_settings.html:332
+#: cps/templates/cwa_settings.html:341 cps/templates/cwa_settings.html:343
 #: cps/templates/search_form.html:154
 msgid "Description"
 msgstr "Beskrivning"
@@ -3183,10 +3183,10 @@ msgid "Fetch Metadata"
 msgstr "Hämta metadata"
 
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:215
+#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
-#: cps/templates/user_edit.html:512
+#: cps/templates/user_edit.html:553
 msgid "Save"
 msgstr "Spara"
 
@@ -3283,8 +3283,8 @@ msgid "Enter Title"
 msgstr "Ange titel"
 
 #: cps/templates/book_table.html:102 cps/templates/config_view_edit.html:39
-#: cps/templates/cwa_settings.html:316 cps/templates/cwa_settings.html:318
-#: cps/templates/cwa_settings.html:1074 cps/templates/shelf_edit.html:8
+#: cps/templates/cwa_settings.html:327 cps/templates/cwa_settings.html:329
+#: cps/templates/cwa_settings.html:1085 cps/templates/shelf_edit.html:8
 #: cps/templates/tasks.html:41 cps/templates/tasks.html:64
 msgid "Title"
 msgstr "Titel"
@@ -3583,8 +3583,9 @@ msgid "Logfile Configuration"
 msgstr "Loggfil konfiguration"
 
 #: cps/templates/config_edit.html:149
-msgid "Location and name of logfile (calibre-web.log for no entry)"
-msgstr "Plats och namn på loggfilen (calibre-web.log för ingen post)"
+#, fuzzy
+msgid "Location and name of logfile (/dev/stdout for no entry)"
+msgstr "Plats och namn på åtkomstloggfil (access.log för ingen post)"
 
 #: cps/templates/config_edit.html:154
 msgid "Enable Access Log"
@@ -4127,143 +4128,139 @@ msgid "Default Theme"
 msgstr "Ta bort"
 
 #: cps/templates/config_view_edit.html:65
-msgid "Standard Theme"
-msgstr "Standard tema"
-
-#: cps/templates/config_view_edit.html:66
 msgid "caliBlur! Dark Theme"
 msgstr "caliBlur! Mörkt tema"
 
-#: cps/templates/config_view_edit.html:68
+#: cps/templates/config_view_edit.html:67
 msgid ""
 "Default theme for new users and anonymous browsing. Users can select their "
 "own preferred theme in their profile."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:72
+#: cps/templates/config_view_edit.html:71
 msgid "Regular Expression for Ignoring Columns"
 msgstr "Reguljärt uttryck för att ignorera kolumner"
 
-#: cps/templates/config_view_edit.html:74
+#: cps/templates/config_view_edit.html:73
 msgid "Regex pattern to hide custom columns from being displayed in the UI."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:78
+#: cps/templates/config_view_edit.html:77
 msgid "Link Read/Unread Status to Calibre Column"
 msgstr "Länka läst/oläst-status till Calibre-kolumn"
 
-#: cps/templates/config_view_edit.html:85
+#: cps/templates/config_view_edit.html:84
 #, fuzzy
 msgid "Sync read/unread status with a Calibre boolean custom column."
 msgstr "Länka läst/oläst-status till Calibre-kolumn"
 
-#: cps/templates/config_view_edit.html:89
+#: cps/templates/config_view_edit.html:88
 msgid "View Restrictions based on Calibre column"
 msgstr "Visa begränsningar baserade på calibre-kolumnen"
 
-#: cps/templates/config_view_edit.html:96
+#: cps/templates/config_view_edit.html:95
 msgid ""
 "Restrict book visibility based on values in a Calibre text custom column."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:100
+#: cps/templates/config_view_edit.html:99
 msgid "Regular Expression for Title Sorting"
 msgstr "Reguljärt uttryck för titelsortering"
 
-#: cps/templates/config_view_edit.html:102
+#: cps/templates/config_view_edit.html:101
 msgid ""
 "Regex to strip prefixes from titles for proper sorting (e.g., \"The\", "
 "\"A\", \"An\")."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:108
+#: cps/templates/config_view_edit.html:107
 msgid "Default Settings for New Users"
 msgstr "Standardinställningar för nya användare"
 
-#: cps/templates/config_view_edit.html:109
+#: cps/templates/config_view_edit.html:108
 msgid "These settings will be applied to all newly created user accounts."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:111
+#: cps/templates/config_view_edit.html:110
 #, fuzzy
 msgid "Permissions"
 msgstr "Version"
 
-#: cps/templates/config_view_edit.html:115 cps/templates/user_edit.html:396
+#: cps/templates/config_view_edit.html:114 cps/templates/user_edit.html:405
 msgid "Admin User"
 msgstr "Adminstratör användare"
 
-#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:402
+#: cps/templates/config_view_edit.html:119 cps/templates/user_edit.html:411
 msgid "Allow Downloads"
 msgstr "Tillåt Hämtningar"
 
-#: cps/templates/config_view_edit.html:125 cps/templates/user_edit.html:407
+#: cps/templates/config_view_edit.html:124 cps/templates/user_edit.html:416
 msgid "Allow eBook Viewer"
 msgstr "Tillåt bokvisare"
 
-#: cps/templates/config_view_edit.html:131 cps/templates/user_edit.html:413
+#: cps/templates/config_view_edit.html:130 cps/templates/user_edit.html:422
 msgid "Allow Uploads"
 msgstr "Tillåt Uppladdningar"
 
-#: cps/templates/config_view_edit.html:137 cps/templates/user_edit.html:419
+#: cps/templates/config_view_edit.html:136 cps/templates/user_edit.html:428
 msgid "Allow Edit"
 msgstr "Tillåt Redigera"
 
-#: cps/templates/config_view_edit.html:142 cps/templates/user_edit.html:424
+#: cps/templates/config_view_edit.html:141 cps/templates/user_edit.html:433
 msgid "Allow Delete Books"
 msgstr "Tillåt borttagning av böcker"
 
-#: cps/templates/config_view_edit.html:147 cps/templates/user_edit.html:430
+#: cps/templates/config_view_edit.html:146 cps/templates/user_edit.html:439
 msgid "Allow Changing Password"
 msgstr "Tillåt Ändra lösenord"
 
-#: cps/templates/config_view_edit.html:152 cps/templates/user_edit.html:435
+#: cps/templates/config_view_edit.html:151 cps/templates/user_edit.html:444
 msgid "Allow Editing Public Shelves"
 msgstr "Tillåt Redigering av offentliga hyllor"
 
-#: cps/templates/config_view_edit.html:156
+#: cps/templates/config_view_edit.html:155
 #, fuzzy
 msgid "Language & Display"
 msgstr "Administrationssida"
 
-#: cps/templates/config_view_edit.html:158
+#: cps/templates/config_view_edit.html:157
 #, fuzzy
 msgid "Default Language"
 msgstr "Uteslut språk"
 
-#: cps/templates/config_view_edit.html:164
+#: cps/templates/config_view_edit.html:163
 #, fuzzy
 msgid "Default interface language for new users."
 msgstr "Standardinställningar för nya användare"
 
-#: cps/templates/config_view_edit.html:168
+#: cps/templates/config_view_edit.html:167
 #, fuzzy
 msgid "Default Visible Language of Books"
 msgstr "Visa böcker med språk"
 
-#: cps/templates/config_view_edit.html:175
+#: cps/templates/config_view_edit.html:174
 #, fuzzy
 msgid "Default book language filter for new users."
 msgstr "Standardvisibiliteter för nya användare"
 
-#: cps/templates/config_view_edit.html:181
+#: cps/templates/config_view_edit.html:180
 msgid "Default Visibilities for New Users"
 msgstr "Standardvisibiliteter för nya användare"
 
-#: cps/templates/config_view_edit.html:182
+#: cps/templates/config_view_edit.html:181
 msgid "Choose which sidebar sections are visible by default for new users."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:195 cps/templates/user_edit.html:356
+#: cps/templates/config_view_edit.html:194 cps/templates/user_edit.html:365
 #: cps/templates/user_table.html:155
 msgid "Show Random Books in Detail View"
 msgstr "Visa slumpmässiga böcker i detaljvyn"
 
-#: cps/templates/config_view_edit.html:201 cps/templates/user_edit.html:362
+#: cps/templates/config_view_edit.html:200 cps/templates/user_edit.html:371
 msgid "Add Allowed/Denied Tags"
 msgstr "Lägg till tillåtna/avvisade taggar"
 
-#: cps/templates/config_view_edit.html:202
+#: cps/templates/config_view_edit.html:201
 msgid "Add Allowed/Denied custom column values"
 msgstr "Lägg till tillåtna/avvisade anpassade kolumnvärden"
 
@@ -4408,136 +4405,154 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:181
-msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
+msgid "Enable KOReader Sync (CWA Plugin)"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:183
+msgid ""
+"When enabled, CWA exposes the /kosync endpoints and stores KOReader-"
+"compatible checksums in metadata.db for progress syncing. Requires the "
+"KOReader plugin on your device."
+msgstr ""
+
+#: cps/templates/cwa_settings.html:185
+msgid ""
+"Note: Enabling this starts a checksum backfill service at startup which can "
+"temporarily lock metadata.db. To stop a running backfill, restart the "
+"container after disabling."
+msgstr ""
+
+#: cps/templates/cwa_settings.html:192
+msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
+msgstr ""
+
+#: cps/templates/cwa_settings.html:194
 msgid ""
 "Aggressive mode applies more invasive fixes and will attempt lower-"
 "confidence encoding conversions. Safe mode is recommended for most libraries."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:191
+#: cps/templates/cwa_settings.html:202
 #, fuzzy
 msgid "Enable Archived Book Cleanup"
 msgstr "Arkiverade böcker"
 
-#: cps/templates/cwa_settings.html:193
+#: cps/templates/cwa_settings.html:204
 msgid ""
 "Removes stale archived book references in app.db when the book no longer "
 "exists in the Calibre library. Helps keep archived counts accurate."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:197
+#: cps/templates/cwa_settings.html:208
 msgid "Cleanup Schedule:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:202 cps/templates/cwa_settings.html:571
+#: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:582
 msgid "Frequent Intervals"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:203 cps/templates/cwa_settings.html:572
+#: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:583
 msgid "Every 15 Minutes"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:204 cps/templates/cwa_settings.html:573
+#: cps/templates/cwa_settings.html:215 cps/templates/cwa_settings.html:584
 msgid "Every 30 Minutes"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:205 cps/templates/cwa_settings.html:574
+#: cps/templates/cwa_settings.html:216 cps/templates/cwa_settings.html:585
 msgid "Every Hour"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:206 cps/templates/cwa_settings.html:575
+#: cps/templates/cwa_settings.html:217 cps/templates/cwa_settings.html:586
 msgid "Every 2 Hours"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:207 cps/templates/cwa_settings.html:576
+#: cps/templates/cwa_settings.html:218 cps/templates/cwa_settings.html:587
 msgid "Every 4 Hours"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:208 cps/templates/cwa_settings.html:577
+#: cps/templates/cwa_settings.html:219 cps/templates/cwa_settings.html:588
 msgid "Every 6 Hours"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:209 cps/templates/cwa_settings.html:578
+#: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:589
 msgid "Every 12 Hours"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:211 cps/templates/cwa_settings.html:580
+#: cps/templates/cwa_settings.html:222 cps/templates/cwa_settings.html:591
 msgid "Daily/Weekly/Monthly"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:212 cps/templates/cwa_settings.html:581
+#: cps/templates/cwa_settings.html:223 cps/templates/cwa_settings.html:592
 msgid "Daily at Specific Time"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:582
+#: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:593
 msgid "Weekly on Specific Day"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:583
+#: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:594
 msgid "Monthly on Specific Day"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:217
+#: cps/templates/cwa_settings.html:228
 msgid "Default: daily at 03:00"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:590
+#: cps/templates/cwa_settings.html:231 cps/templates/cwa_settings.html:601
 msgid "Day of Week:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:595
+#: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:606
 msgid "Monday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:596
+#: cps/templates/cwa_settings.html:236 cps/templates/cwa_settings.html:607
 msgid "Tuesday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:226 cps/templates/cwa_settings.html:597
+#: cps/templates/cwa_settings.html:237 cps/templates/cwa_settings.html:608
 msgid "Wednesday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:227 cps/templates/cwa_settings.html:598
+#: cps/templates/cwa_settings.html:238 cps/templates/cwa_settings.html:609
 msgid "Thursday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:228 cps/templates/cwa_settings.html:599
+#: cps/templates/cwa_settings.html:239 cps/templates/cwa_settings.html:610
 msgid "Friday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:229 cps/templates/cwa_settings.html:600
+#: cps/templates/cwa_settings.html:240 cps/templates/cwa_settings.html:611
 msgid "Saturday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:230 cps/templates/cwa_settings.html:601
+#: cps/templates/cwa_settings.html:241 cps/templates/cwa_settings.html:612
 msgid "Sunday"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:607
+#: cps/templates/cwa_settings.html:246 cps/templates/cwa_settings.html:618
 msgid "Day of Month:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:243 cps/templates/cwa_settings.html:616
+#: cps/templates/cwa_settings.html:254 cps/templates/cwa_settings.html:627
 msgid "(1-28)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:247 cps/templates/cwa_settings.html:621
+#: cps/templates/cwa_settings.html:258 cps/templates/cwa_settings.html:632
 msgid "Time of Day:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:255 cps/templates/cwa_settings.html:630
+#: cps/templates/cwa_settings.html:266 cps/templates/cwa_settings.html:641
 #, python-format
 msgid "(Server timezone: %(tz)s)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:291
+#: cps/templates/cwa_settings.html:302
 msgid "Enable Automatic Metadata Fetching for New Books"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:293
+#: cps/templates/cwa_settings.html:304
 msgid ""
 "When active, CWA will automatically attempt to fetch and apply metadata "
 "(title, author, description, cover, etc.) for newly ingested books using the "
@@ -4545,11 +4560,11 @@ msgid ""
 "book information, especially for books with poor or missing metadata."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:301
+#: cps/templates/cwa_settings.html:312
 msgid "Enable Smart Metadata Application"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:303
+#: cps/templates/cwa_settings.html:314
 msgid ""
 "When enabled, fetched metadata will only replace existing data if it appears "
 "to be better quality (e.g., longer descriptions, higher resolution covers). "
@@ -4557,115 +4572,115 @@ msgid ""
 "preferred provider."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:308
+#: cps/templates/cwa_settings.html:319
 #, fuzzy
 msgid "Metadata Fields to Update"
 msgstr "Metadata uppdaterades"
 
-#: cps/templates/cwa_settings.html:310
+#: cps/templates/cwa_settings.html:321
 msgid ""
 "Select which metadata fields should be updated when auto-fetching. Unchecked "
 "fields will never be modified during automatic metadata fetching, preserving "
 "your existing data."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:344 cps/templates/cwa_settings.html:346
+#: cps/templates/cwa_settings.html:355 cps/templates/cwa_settings.html:357
 msgid "Tags/Genres"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:365 cps/templates/cwa_settings.html:367
+#: cps/templates/cwa_settings.html:376 cps/templates/cwa_settings.html:378
 #, fuzzy
 msgid "Publication Date"
 msgstr "Publiceringsdatum"
 
-#: cps/templates/cwa_settings.html:372 cps/templates/cwa_settings.html:374
+#: cps/templates/cwa_settings.html:383 cps/templates/cwa_settings.html:385
 #, fuzzy
 msgid "Identifiers (ISBN, etc.)"
 msgstr "Identifierare"
 
-#: cps/templates/cwa_settings.html:379 cps/templates/cwa_settings.html:381
+#: cps/templates/cwa_settings.html:390 cps/templates/cwa_settings.html:392
 #, fuzzy
 msgid "Cover Image"
 msgstr "Upptäck"
 
-#: cps/templates/cwa_settings.html:387 cps/templates/cwa_settings.html:408
-#: cps/templates/cwa_settings.html:515 cps/templates/cwa_settings.html:720
-#: cps/templates/user_edit.html:380
+#: cps/templates/cwa_settings.html:398 cps/templates/cwa_settings.html:419
+#: cps/templates/cwa_settings.html:526 cps/templates/cwa_settings.html:731
+#: cps/templates/user_edit.html:389 cps/templates/user_edit.html:480
 msgid "Tip"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:387
+#: cps/templates/cwa_settings.html:398
 msgid ""
 "These field selections apply to both Smart and Direct replacement modes. "
 "Smart mode will additionally apply quality criteria to selected fields, "
 "while Direct mode will replace all selected fields with provider data."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:392
+#: cps/templates/cwa_settings.html:403
 msgid "Cover File Max Size (MB):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:405
+#: cps/templates/cwa_settings.html:416
 msgid "Range: 1-200 MB (default: 15)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:408
+#: cps/templates/cwa_settings.html:419
 msgid ""
 "Limits the maximum size of cover images downloaded from metadata providers "
 "or URLs to prevent slow or stalled saves."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:417
+#: cps/templates/cwa_settings.html:428
 msgid "Ingest Processing Timeout"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:419
+#: cps/templates/cwa_settings.html:430
 msgid ""
 "Maximum time (in minutes) to allow for processing a single book before "
 "timing out. Files that timeout are moved to the failed backup folder for "
 "investigation."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:421
+#: cps/templates/cwa_settings.html:432
 msgid "Timeout (minutes):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:433
+#: cps/templates/cwa_settings.html:444
 msgid "Range: 5-120 minutes (default: 15)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:437
+#: cps/templates/cwa_settings.html:448
 msgid "Stale temp cleanup"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:438
+#: cps/templates/cwa_settings.html:449
 msgid ""
 "Ignored temporary upload files (.uploading, .part, etc.) can be cleaned "
 "after a set age. Setting either value to 0 disables cleanup. Changes apply "
 "on the next cleanup cycle."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:443
+#: cps/templates/cwa_settings.html:454
 msgid "Stale temp age (minutes):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:456
+#: cps/templates/cwa_settings.html:467
 msgid "Range: 0-10080 minutes (default: 120)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:460
+#: cps/templates/cwa_settings.html:471
 msgid "Stale temp cleanup interval (seconds):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:473
+#: cps/templates/cwa_settings.html:484
 msgid "Range: 0-86400 seconds (default: 600)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:479
+#: cps/templates/cwa_settings.html:490
 msgid "Auto-Send Delay for New Books"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:481
+#: cps/templates/cwa_settings.html:492
 msgid ""
 "Delay (in minutes) before automatically sending newly ingested books to "
 "eReaders. This allows time for metadata fetching and other processing to "
@@ -4673,216 +4688,216 @@ msgid ""
 "their profile."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:483
+#: cps/templates/cwa_settings.html:494
 msgid "Delay (minutes):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:495
+#: cps/templates/cwa_settings.html:506
 msgid "Range: 1-60 minutes (default: 5)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:500
+#: cps/templates/cwa_settings.html:511
 msgid "Auto Metadata Fetch Provider Hierarchy"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:502
+#: cps/templates/cwa_settings.html:513
 msgid ""
 "Configure the order in which metadata providers are searched when "
 "automatically fetching metadata for new books. Drag and drop to reorder "
 "providers. Only enabled providers will be used."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:515
+#: cps/templates/cwa_settings.html:526
 msgid "Providers are tried in order from top to bottom. Drag to reorder."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:524
+#: cps/templates/cwa_settings.html:535
 msgid "Enabled Metadata Providers"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:526
+#: cps/templates/cwa_settings.html:537
 msgid "Unchecked providers are disabled globally."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:539
+#: cps/templates/cwa_settings.html:550
 #, fuzzy
 msgid "Hardcover Auto-Fetch Settings"
 msgstr "OAuth-inställningar"
 
-#: cps/templates/cwa_settings.html:541
+#: cps/templates/cwa_settings.html:552
 msgid ""
 "Automatically fetch and assign Hardcover IDs to books in your library. "
 "Hardcover IDs enable reading progress sync and annotation sync with "
 "Hardcover.app when using compatible eReaders."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:546
+#: cps/templates/cwa_settings.html:557
 msgid "Hardcover Token Required"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:547
+#: cps/templates/cwa_settings.html:558
 msgid ""
 "To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in your "
 "docker-compose environment variables or configure a global token in Basic "
 "Configuration. Without a valid token, this feature will remain disabled."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:558
+#: cps/templates/cwa_settings.html:569
 #, fuzzy
 msgid "Enable Hardcover Auto-Fetch"
 msgstr "Aktivera Kobo sync"
 
-#: cps/templates/cwa_settings.html:560
+#: cps/templates/cwa_settings.html:571
 msgid ""
 "Automatically search Hardcover for books without Hardcover IDs. High-"
 "confidence matches are applied automatically; low-confidence matches are "
 "queued for manual review."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:565
+#: cps/templates/cwa_settings.html:576
 msgid "Run Schedule:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:586
+#: cps/templates/cwa_settings.html:597
 msgid "How often to automatically run the Hardcover ID fetch task"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:666
+#: cps/templates/cwa_settings.html:677
 msgid "Minimum Confidence Threshold:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:676
+#: cps/templates/cwa_settings.html:687
 msgid "Range: 0.50-1.00 (default: 0.85)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:678
+#: cps/templates/cwa_settings.html:689
 msgid ""
 "Matches with confidence scores above this threshold are automatically "
 "applied. Lower scores are queued for manual review. Higher values = fewer "
 "auto-matches but higher accuracy."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:684
+#: cps/templates/cwa_settings.html:695
 msgid "Batch Size:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:694
+#: cps/templates/cwa_settings.html:705
 msgid "Range: 10-200 books per run (default: 50)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:696
+#: cps/templates/cwa_settings.html:707
 msgid ""
 "Number of books to process in each scheduled run. Smaller batches reduce API "
 "load; larger batches process your library faster."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:702
+#: cps/templates/cwa_settings.html:713
 msgid "Rate Limit Delay (seconds):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:712
+#: cps/templates/cwa_settings.html:723
 msgid "Range: 0-60 seconds (default: 5.0)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:714
+#: cps/templates/cwa_settings.html:725
 msgid ""
 "Delay between API requests to Hardcover. Prevents rate limiting and protects "
 "your API key. Uses exponential backoff on errors."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:720
+#: cps/templates/cwa_settings.html:731
 msgid ""
 "You can manually trigger the Hardcover auto-fetch task from the Admin panel "
 "at any time. Check the CWA Stats page to see progress and review queued "
 "matches that need manual approval."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:727
+#: cps/templates/cwa_settings.html:738
 #, fuzzy
 msgid "Web UI Settings"
 msgstr "Inställningar"
 
-#: cps/templates/cwa_settings.html:734
+#: cps/templates/cwa_settings.html:745
 msgid "Enable CWA Update Notifications"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:736
+#: cps/templates/cwa_settings.html:747
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:744
+#: cps/templates/cwa_settings.html:755
 msgid "Enable Contribute Translations Notifications"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:746
+#: cps/templates/cwa_settings.html:757
 msgid ""
 "When disabled, you will no longer receive notifications in the Web UI when "
 "using a language other than English if the translations for your chosen "
 "language are not complete."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:754
+#: cps/templates/cwa_settings.html:765
 msgid "Sync Magic Shelves to Kobo"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:756
+#: cps/templates/cwa_settings.html:767
 msgid ""
 "When active, your Magic Shelves will be synced to your Kobo device as "
 "collections. Note: You must also enable Kobo Sync in Basic Configuration."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:764
+#: cps/templates/cwa_settings.html:775
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:766
+#: cps/templates/cwa_settings.html:777
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:771
+#: cps/templates/cwa_settings.html:782
 #, fuzzy
 msgid "Automatic Backup Settings"
 msgstr "OAuth-inställningar"
 
-#: cps/templates/cwa_settings.html:778
+#: cps/templates/cwa_settings.html:789
 msgid "Enable CWA Import Auto-Backup"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:780
+#: cps/templates/cwa_settings.html:791
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:788
+#: cps/templates/cwa_settings.html:799
 msgid "Enable CWA Conversion Auto-Backup"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:790
+#: cps/templates/cwa_settings.html:801
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:798
+#: cps/templates/cwa_settings.html:809
 msgid "Enable CWA EPUB Fixer Auto-Backup"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:800
+#: cps/templates/cwa_settings.html:811
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:810
+#: cps/templates/cwa_settings.html:821
 msgid "Enable CWA Auto-Zip Backups"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:812
+#: cps/templates/cwa_settings.html:823
 msgid ""
 "When active, just before midnight each day, the cwa-auto-zipper service will "
 "make zip archives of all the backed up converted, imported and failed files "
@@ -4890,44 +4905,44 @@ msgid ""
 "processed_books organised and to minimise disk space usage."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:817
+#: cps/templates/cwa_settings.html:828
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:820
+#: cps/templates/cwa_settings.html:831
 msgid ""
 "When the Auto-Convert feature is active, all ingested books will be "
 "automatically converted to the format chosen here (except those formats "
 "selected in the ignore list below)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:822
+#: cps/templates/cwa_settings.html:833
 #, fuzzy
 msgid "Choose a target format:"
 msgstr "Konvertera bokformat:"
 
-#: cps/templates/cwa_settings.html:834
+#: cps/templates/cwa_settings.html:845
 msgid ""
 "Note: CWA's Metadata Enforcement service can currently only support file in "
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
 "by the service"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:840
+#: cps/templates/cwa_settings.html:851
 msgid "CWA Auto-Convert - Ignored Formats"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:842
+#: cps/templates/cwa_settings.html:853
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:867
+#: cps/templates/cwa_settings.html:878
 msgid "CWA Auto-Convert - Retained Formats"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:869
+#: cps/templates/cwa_settings.html:880
 msgid ""
 "The formats selected here will always be added to the library, even after "
 "they have been converted to the target format. However, if the format is in "
@@ -4935,326 +4950,326 @@ msgid ""
 "Note that the target format is always retained."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:896
+#: cps/templates/cwa_settings.html:907
 msgid "CWA Auto-Ingest Automerge"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:899
+#: cps/templates/cwa_settings.html:910
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:899
+#: cps/templates/cwa_settings.html:910
 msgid "automerge"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:900
+#: cps/templates/cwa_settings.html:911
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:918
+#: cps/templates/cwa_settings.html:929
 msgid "Discards duplicate import, keeps library copy"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:922
+#: cps/templates/cwa_settings.html:933
 msgid "Overwrites library copy with newly imported file"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:926
+#: cps/templates/cwa_settings.html:937
 msgid "Creates a duplicate record, keeping both copies"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:932
+#: cps/templates/cwa_settings.html:943
 msgid "CWA Auto-Ingest - Ignored Formats"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:934
+#: cps/templates/cwa_settings.html:945
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Ingest feature, "
 "meaning files in these formats won't be added to the library by CWA during "
 "the ingest process"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:959
+#: cps/templates/cwa_settings.html:970
 msgid "CWA Duplicate Detection System"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:962
+#: cps/templates/cwa_settings.html:973
 msgid ""
 "Enable or disable the duplicate detection system. When disabled, duplicate "
 "scanning will not run and no notifications will be shown."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:967
+#: cps/templates/cwa_settings.html:978
 #, fuzzy
 msgid "Enable Duplicate Detection"
 msgstr "Aktivera offentlig registrering"
 
-#: cps/templates/cwa_settings.html:971
+#: cps/templates/cwa_settings.html:982
 msgid "When enabled, CWA will scan for duplicate books after each import"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:979
+#: cps/templates/cwa_settings.html:990
 msgid "Duplicate Detection Method"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:982
+#: cps/templates/cwa_settings.html:993
 msgid "Hybrid (SQL prefilter + Python validation)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:985
+#: cps/templates/cwa_settings.html:996
 msgid "Python only (slowest, most robust)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:988
+#: cps/templates/cwa_settings.html:999
 msgid "Legacy SQL only (experimental)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:994
+#: cps/templates/cwa_settings.html:1005
 msgid ""
 "Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies "
 "the robust Python logic for final results."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1003
+#: cps/templates/cwa_settings.html:1014
 #, fuzzy
 msgid "Automatic Duplicate Scanning"
 msgstr "OAuth-inställningar"
 
-#: cps/templates/cwa_settings.html:1006
+#: cps/templates/cwa_settings.html:1017
 msgid ""
 "Configure background duplicate scans. These run automatically without "
 "blocking the UI."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1011
+#: cps/templates/cwa_settings.html:1022
 msgid "Enable automatic duplicate scans"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1015
+#: cps/templates/cwa_settings.html:1026
 msgid "After import scans"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1018
+#: cps/templates/cwa_settings.html:1029
 msgid "Run after each import (debounced)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1021
+#: cps/templates/cwa_settings.html:1032
 msgid "Manual only"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1027
+#: cps/templates/cwa_settings.html:1038
 msgid "After import debounce (seconds)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1035
+#: cps/templates/cwa_settings.html:1046
 msgid ""
 "Wait this many seconds after the last import before starting a background "
 "scan."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1040
+#: cps/templates/cwa_settings.html:1051
 msgid "Scheduled scans (cron expression)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1046
+#: cps/templates/cwa_settings.html:1057
 msgid "Leave blank to disable scheduled scans. Example:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1051
+#: cps/templates/cwa_settings.html:1062
 msgid ""
 "If enabled, after-import scans and cron scans can both run. Use “Manual "
 "only” to disable after-import scans while keeping cron schedules."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1058 cps/templates/duplicates.html:398
+#: cps/templates/cwa_settings.html:1069 cps/templates/duplicates.html:398
 msgid "Next scheduled scan:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1065
+#: cps/templates/cwa_settings.html:1076
 msgid "CWA Duplicate Detection Criteria"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1068
+#: cps/templates/cwa_settings.html:1079
 msgid ""
 "Configure which metadata fields are used to determine if books are "
 "duplicates. Books must match ALL selected criteria to be considered "
 "duplicates."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1075
+#: cps/templates/cwa_settings.html:1086
 msgid "Consider book titles when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1081
+#: cps/templates/cwa_settings.html:1092
 msgid "Consider book authors when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1087
+#: cps/templates/cwa_settings.html:1098
 msgid "Consider book language when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1093
+#: cps/templates/cwa_settings.html:1104
 msgid "Consider book series when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1099
+#: cps/templates/cwa_settings.html:1110
 msgid "Consider book publisher when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1104
+#: cps/templates/cwa_settings.html:1115
 #, fuzzy
 msgid "Format"
 msgstr "Ladda upp format"
 
-#: cps/templates/cwa_settings.html:1105
+#: cps/templates/cwa_settings.html:1116
 msgid "Consider file format when detecting duplicates"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1111 cps/templates/cwa_settings.html:1197
+#: cps/templates/cwa_settings.html:1122 cps/templates/cwa_settings.html:1208
 msgid "Note:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1111
+#: cps/templates/cwa_settings.html:1122
 msgid ""
 "At least one criterion must be selected. Title and Author are recommended as "
 "core criteria."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1117
+#: cps/templates/cwa_settings.html:1128
 msgid "Duplicate Format Priority Ranking"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1120
+#: cps/templates/cwa_settings.html:1131
 msgid ""
 "Configure which file formats are preferred when using the \"Highest Quality "
 "Format\" auto-resolution strategy. Drag and drop to reorder formats by "
 "priority (higher = better)."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1133
+#: cps/templates/cwa_settings.html:1144
 msgid "Tip:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1133
+#: cps/templates/cwa_settings.html:1144
 msgid ""
 "When resolving duplicates with \"Highest Quality Format\" strategy, books "
 "with higher-ranked formats will be kept. Lower priority formats will be "
 "deleted."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1141
+#: cps/templates/cwa_settings.html:1152
 msgid "Duplicate Notifications & Auto-Resolution"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1144
+#: cps/templates/cwa_settings.html:1155
 msgid ""
 "Configure how you are notified about duplicate books and optionally enable "
 "automatic resolution."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1149
+#: cps/templates/cwa_settings.html:1160
 #, fuzzy
 msgid "Enable Duplicate Notifications"
 msgstr "Aktivera offentlig registrering"
 
-#: cps/templates/cwa_settings.html:1151
+#: cps/templates/cwa_settings.html:1162
 msgid ""
 "Show popup notifications when unresolved duplicates are detected. Admins and "
 "users with edit rights will see a badge on the Duplicates sidebar button and "
 "a notification popup when they login."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1155
+#: cps/templates/cwa_settings.html:1166
 #, fuzzy
 msgid "Enable Automatic Duplicate Resolution"
 msgstr "Aktivera offentlig registrering"
 
-#: cps/templates/cwa_settings.html:1158 cps/templates/duplicates.html:437
+#: cps/templates/cwa_settings.html:1169 cps/templates/duplicates.html:437
 msgid "Warning:"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1158
+#: cps/templates/cwa_settings.html:1169
 msgid ""
 "This will automatically delete books based on the strategy below. Original "
 "files will be backed up to"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1162
+#: cps/templates/cwa_settings.html:1173
 msgid "Auto-Resolution Strategy"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1165
+#: cps/templates/cwa_settings.html:1176
 msgid "Keep Newest"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1165
+#: cps/templates/cwa_settings.html:1176
 msgid "Delete older copies, keep the most recently added book"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1168
+#: cps/templates/cwa_settings.html:1179
 msgid "Keep Oldest"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1168
+#: cps/templates/cwa_settings.html:1179
 msgid "Delete newer copies, keep the earliest added"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1171
+#: cps/templates/cwa_settings.html:1182
 #, fuzzy
 msgid "Merge Formats"
 msgstr "Ta bort format:"
 
-#: cps/templates/cwa_settings.html:1171
+#: cps/templates/cwa_settings.html:1182
 msgid "Merge formats into the newest book, delete the rest"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1174
+#: cps/templates/cwa_settings.html:1185
 msgid "Keep Highest Quality Format"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1174
+#: cps/templates/cwa_settings.html:1185
 msgid "Prefer formats based on your Duplicate Format Priority Ranking"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1177
+#: cps/templates/cwa_settings.html:1188
 #, fuzzy
 msgid "Keep Most Metadata"
 msgstr "Hämta metadata"
 
-#: cps/templates/cwa_settings.html:1177
+#: cps/templates/cwa_settings.html:1188
 msgid "Keep book with most complete information"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1180
+#: cps/templates/cwa_settings.html:1191
 msgid "Keep Largest File Size"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1180
+#: cps/templates/cwa_settings.html:1191
 msgid "Keep book with largest total file size"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1183
+#: cps/templates/cwa_settings.html:1194
 msgid "Choose which book to keep when duplicates are automatically resolved."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1187
+#: cps/templates/cwa_settings.html:1198
 #, fuzzy
 msgid "Rate Limiting"
 msgstr "Betyg"
 
-#: cps/templates/cwa_settings.html:1188
+#: cps/templates/cwa_settings.html:1199
 msgid "Cooldown Period (minutes)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1192
+#: cps/templates/cwa_settings.html:1203
 msgid ""
 "Minimum time between automatic resolutions (0 to disable). Prevents rapid-"
 "fire deletions during batch imports."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1197
+#: cps/templates/cwa_settings.html:1208
 msgid ""
 "Auto-resolution runs after duplicate scans detect new duplicates. Dismissed "
 "duplicate groups are never auto-resolved."
@@ -5961,6 +5976,25 @@ msgstr "Sortera stigande enligt serieindex"
 msgid "Sort descending according to series index"
 msgstr "Sortera fallande enligt serieindex"
 
+#: cps/templates/kosync_plugin.html:112
+msgid "KOReader Sync is disabled."
+msgstr ""
+
+#: cps/templates/kosync_plugin.html:113
+msgid ""
+"Enable it in CWA Settings to activate the /kosync endpoints and checksum "
+"generation."
+msgstr ""
+
+#: cps/templates/kosync_plugin.html:115
+#, fuzzy
+msgid "Open CWA Settings"
+msgstr "Inställningar"
+
+#: cps/templates/kosync_plugin.html:139
+msgid "Download is available after enabling KOReader Sync in CWA Settings."
+msgstr ""
+
 #: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
 msgstr "Hem"
@@ -5974,7 +6008,7 @@ msgid "Search Library"
 msgstr "Sök i bibliotek"
 
 #: cps/templates/layout.html:132 cps/templates/layout.html:169
-#: cps/templates/user_edit.html:296 cps/templates/user_edit.html:298
+#: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "Konto"
 
@@ -6357,7 +6391,7 @@ msgstr "Rotera åt vänster"
 msgid "Flip Image"
 msgstr "Vänd bilden"
 
-#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:262
+#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:272
 msgid "Theme"
 msgstr "Tema"
 
@@ -6740,213 +6774,266 @@ msgstr "{} användare har tagits bort"
 msgid "Error cancelling scheduled item"
 msgstr ""
 
-#: cps/templates/user_edit.html:163
+#: cps/templates/user_edit.html:173
 #, fuzzy
 msgid "Your Profile"
 msgstr "Din e-postadress"
 
-#: cps/templates/user_edit.html:163
+#: cps/templates/user_edit.html:173
 #, fuzzy
 msgid "User Settings"
 msgstr "Inställningar"
 
-#: cps/templates/user_edit.html:171
+#: cps/templates/user_edit.html:181
 msgid "Account Information"
 msgstr ""
 
-#: cps/templates/user_edit.html:180
+#: cps/templates/user_edit.html:190
 msgid ""
 "If you need to change your email address or password, you can do so here."
 msgstr ""
 
-#: cps/templates/user_edit.html:190
+#: cps/templates/user_edit.html:200
 msgid "Reset user Password"
 msgstr "Återställ användarlösenordet"
 
-#: cps/templates/user_edit.html:202
+#: cps/templates/user_edit.html:212
 #, fuzzy
 msgid "eReader Configuration"
 msgstr "Serverkonfiguration"
 
-#: cps/templates/user_edit.html:205
+#: cps/templates/user_edit.html:215
 #, fuzzy
 msgid "Send to eReader Email Address"
 msgstr "Kindle"
 
-#: cps/templates/user_edit.html:206
+#: cps/templates/user_edit.html:216
 msgid "Use comma to separate multiple addresses"
 msgstr ""
 
-#: cps/templates/user_edit.html:207
+#: cps/templates/user_edit.html:217
 msgid ""
 "Email address(es) for your eReader devices. Separate multiple addresses with "
 "commas."
 msgstr ""
 
-#: cps/templates/user_edit.html:218
+#: cps/templates/user_edit.html:228
 msgid "Enable Send-to-eReader Pop-up Modal"
 msgstr ""
 
-#: cps/templates/user_edit.html:220
+#: cps/templates/user_edit.html:230
 msgid ""
 "Enables or disables the Send-to-eReader Pop-up Modal that allows users to "
 "enter extra email addresses and only send to a selection of saved addresses "
 "when sending to eReader."
 msgstr ""
 
-#: cps/templates/user_edit.html:222
+#: cps/templates/user_edit.html:232
 msgid ""
 "When disabled, emails will be sent to all configured eReader addresses "
 "without prompting."
 msgstr ""
 
-#: cps/templates/user_edit.html:230
+#: cps/templates/user_edit.html:240
 msgid "Automatically send new books to my eReader(s)"
 msgstr ""
 
-#: cps/templates/user_edit.html:231
+#: cps/templates/user_edit.html:241
 msgid ""
 "When enabled, newly ingested books will be automatically sent to all "
 "configured eReader email addresses above."
 msgstr ""
 
-#: cps/templates/user_edit.html:239
+#: cps/templates/user_edit.html:249
 msgid "Language & Theme Preferences"
 msgstr ""
 
-#: cps/templates/user_edit.html:242
+#: cps/templates/user_edit.html:252
 #, fuzzy
 msgid "Interface Language"
 msgstr "Ange språk"
 
-#: cps/templates/user_edit.html:251 cps/templates/user_edit.html:274
+#: cps/templates/user_edit.html:261 cps/templates/user_edit.html:283
 msgid "Language of Books"
 msgstr "Visa böcker med språk"
 
-#: cps/templates/user_edit.html:258 cps/templates/user_edit.html:281
+#: cps/templates/user_edit.html:268 cps/templates/user_edit.html:290
 msgid "Filter the library to only show books in a specific language."
 msgstr ""
 
-#: cps/templates/user_edit.html:271
+#: cps/templates/user_edit.html:280
 #, fuzzy
 msgid "Book Language Filter"
 msgstr "Inget giltigt bokspråk anges"
 
-#: cps/templates/user_edit.html:289
+#: cps/templates/user_edit.html:298
 msgid "OAuth & API Integrations"
 msgstr ""
 
-#: cps/templates/user_edit.html:294
+#: cps/templates/user_edit.html:303
 msgid "OAuth Settings"
 msgstr "OAuth-inställningar"
 
-#: cps/templates/user_edit.html:296
+#: cps/templates/user_edit.html:305
 msgid "Link"
 msgstr "Koppla"
 
-#: cps/templates/user_edit.html:298
+#: cps/templates/user_edit.html:307
 msgid "Unlink"
 msgstr "Koppla bort"
 
-#: cps/templates/user_edit.html:306
+#: cps/templates/user_edit.html:315
 msgid "Hardcover API Token"
 msgstr ""
 
-#: cps/templates/user_edit.html:308
+#: cps/templates/user_edit.html:317
 msgid "API token for Hardcover metadata provider integration."
 msgstr ""
 
-#: cps/templates/user_edit.html:314
+#: cps/templates/user_edit.html:323
 msgid "Kobo Sync Token"
 msgstr "Kobo Sync Token"
 
-#: cps/templates/user_edit.html:316
+#: cps/templates/user_edit.html:325
 msgid "Create/View"
 msgstr "Skapa/Visa"
 
-#: cps/templates/user_edit.html:320
+#: cps/templates/user_edit.html:329
 msgid "Force full kobo sync"
 msgstr ""
 
-#: cps/templates/user_edit.html:327
+#: cps/templates/user_edit.html:336
 msgid "Sync only books in selected shelves with Kobo"
 msgstr ""
 
-#: cps/templates/user_edit.html:337
+#: cps/templates/user_edit.html:346
 #, fuzzy
 msgid "Sidebar Display Settings"
 msgstr "OAuth-inställningar"
 
-#: cps/templates/user_edit.html:338
+#: cps/templates/user_edit.html:347
 msgid "Choose which sections to display in your sidebar navigation."
 msgstr ""
 
-#: cps/templates/user_edit.html:363
+#: cps/templates/user_edit.html:372
 msgid "Add allowed/Denied Custom Column Values"
 msgstr "Lägg till tillåtna/avvisade anpassade kolumnvärden"
 
-#: cps/templates/user_edit.html:371
+#: cps/templates/user_edit.html:380
 msgid "OPDS Catalog Order"
 msgstr ""
 
-#: cps/templates/user_edit.html:372
+#: cps/templates/user_edit.html:381
 msgid ""
 "Reorder the OPDS root catalog by listing entry IDs in the order you want. "
 "Unknown IDs are ignored and missing entries are appended automatically."
 msgstr ""
 
-#: cps/templates/user_edit.html:380
+#: cps/templates/user_edit.html:389
 msgid ""
 "Drag to reorder OPDS root entries. Missing entries are appended "
 "automatically."
 msgstr ""
 
-#: cps/templates/user_edit.html:389
+#: cps/templates/user_edit.html:398
 msgid "User Permissions"
 msgstr ""
 
-#: cps/templates/user_edit.html:390
+#: cps/templates/user_edit.html:399
 msgid "Configure what actions this user is allowed to perform."
 msgstr ""
 
-#: cps/templates/user_edit.html:445
+#: cps/templates/user_edit.html:454
+msgid "Magic Shelves Order"
+msgstr ""
+
+#: cps/templates/user_edit.html:455
+msgid "Choose how your magic shelves are ordered in the sidebar."
+msgstr ""
+
+#: cps/templates/user_edit.html:459
+msgid "Order Mode"
+msgstr ""
+
+#: cps/templates/user_edit.html:461
+msgid "Manual (drag to reorder)"
+msgstr ""
+
+#: cps/templates/user_edit.html:462
+msgid "Name (A-Z)"
+msgstr ""
+
+#: cps/templates/user_edit.html:463
+msgid "Name (Z-A)"
+msgstr ""
+
+#: cps/templates/user_edit.html:464
+msgid "Book count (high to low)"
+msgstr ""
+
+#: cps/templates/user_edit.html:465
+msgid "Book count (low to high)"
+msgstr ""
+
+#: cps/templates/user_edit.html:466
+msgid "Created (newest first)"
+msgstr ""
+
+#: cps/templates/user_edit.html:467
+msgid "Created (oldest first)"
+msgstr ""
+
+#: cps/templates/user_edit.html:468
+#, fuzzy
+msgid "Recently modified"
+msgstr "Senaste tillagda böcker"
+
+#: cps/templates/user_edit.html:469
+msgid "Least recently modified"
+msgstr ""
+
+#: cps/templates/user_edit.html:480
+msgid "Manual order is used only when the order mode is set to Manual."
+msgstr ""
+
+#: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"
 msgstr ""
 
-#: cps/templates/user_edit.html:446
+#: cps/templates/user_edit.html:487
 msgid ""
 "Uncheck shelves you want to hide from your sidebar. System shelves cannot be "
 "deleted, only hidden. Public shelves from other users can also be hidden."
 msgstr ""
 
-#: cps/templates/user_edit.html:450
+#: cps/templates/user_edit.html:491
 msgid "Default System Shelves:"
 msgstr ""
 
-#: cps/templates/user_edit.html:474
+#: cps/templates/user_edit.html:515
 #, fuzzy
 msgid "Public Shelves:"
 msgstr "Redigera publika hyllor"
 
-#: cps/templates/user_edit.html:499
+#: cps/templates/user_edit.html:540
 #, python-format
 msgid "%(visible)s of %(total)s default shelves visible"
 msgstr ""
 
-#: cps/templates/user_edit.html:503
+#: cps/templates/user_edit.html:544
 #, python-format
 msgid "%(visible)s of %(total)s public shelves visible"
 msgstr ""
 
-#: cps/templates/user_edit.html:517 cps/templates/user_table.html:170
+#: cps/templates/user_edit.html:558 cps/templates/user_table.html:170
 msgid "Delete User"
 msgstr "Ta bort den här användaren"
 
-#: cps/templates/user_edit.html:528
+#: cps/templates/user_edit.html:569
 msgid "Generate Kobo Auth URL"
 msgstr "Skapa Kobo Auth URL"
 
-#: cps/templates/user_edit.html:587
+#: cps/templates/user_edit.html:631
 msgid "Visible"
 msgstr ""
 
@@ -7054,6 +7141,12 @@ msgstr ""
 msgid "Show Read/Unread Section"
 msgstr "Visa läst/oläst val"
 
+#~ msgid "Standard Theme"
+#~ msgstr "Standard tema"
+
+#~ msgid "Location and name of logfile (calibre-web.log for no entry)"
+#~ msgstr "Plats och namn på loggfilen (calibre-web.log för ingen post)"
+
 #~ msgid "Listen in Browser"
 #~ msgstr "Lyssna i webbläsaren"
 
@@ -7069,9 +7162,6 @@ msgstr "Visa läst/oläst val"
 
 #~ msgid "Popular publications from this catalog based on Rating."
 #~ msgstr "Populära publikationer från den här katalogen baserad på betyg."
-
-#~ msgid "Recently added Books"
-#~ msgstr "Senaste tillagda böcker"
 
 #~ msgid "The latest Books"
 #~ msgstr "De senaste böckerna"

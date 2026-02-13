@@ -94,6 +94,15 @@ def edit_book(book_id):
 @login_required_if_no_ano
 @upload_required
 def upload():
+    try:
+        log.info(
+            "Upload request received: user_agent=%s content_length=%s file_fields=%s",
+            request.headers.get("User-Agent", ""),
+            request.content_length,
+            list(request.files.keys())
+        )
+    except Exception as e:
+        log.debug("Failed to log upload request details: %s", e)
     # Upload a new format to an existing book via ingest sidecar manifest
     if len(request.files.getlist("btn-upload-format")):
         try:
@@ -379,7 +388,7 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
     # Ensure proper ownership of ingest directory (fix for issue #603)
     try:
         nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
-        if not nsm:
+        if not (nsm and ingest_dir == "/cwa-book-ingest"):
             # Set ownership to abc:abc (uid=1000, gid=1000)
             os.chown(ingest_dir, 1000, 1000)
     except (OSError, PermissionError) as e:

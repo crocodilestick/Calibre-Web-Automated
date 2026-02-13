@@ -14,6 +14,142 @@ from datetime import datetime, timedelta, timezone
 
 log = logger.create()
 
+MAGIC_SHELF_ORDER_MODES = {
+    'manual',
+    'name_asc',
+    'name_desc',
+    'book_count_desc',
+    'book_count_asc',
+    'created_desc',
+    'created_asc',
+    'modified_desc',
+    'modified_asc',
+}
+
+DEFAULT_MAGIC_SHELF_ORDER_MODE = 'name_asc'
+
+
+def normalize_magic_shelf_order(order_list, available_ids):
+    """Normalize a magic shelf order list, appending missing IDs.
+
+    Args:
+        order_list: Iterable of shelf IDs (int/str).
+        available_ids: Iterable of available shelf IDs (int).
+
+    Returns:
+        list[int]: Ordered IDs containing all available IDs exactly once.
+    """
+    normalized = []
+    seen = set()
+    available_set = set(available_ids or [])
+
+    for item in order_list or []:
+        try:
+            shelf_id = int(item)
+        except (TypeError, ValueError):
+            continue
+        if shelf_id in available_set and shelf_id not in seen:
+            normalized.append(shelf_id)
+            seen.add(shelf_id)
+
+    for shelf_id in available_ids or []:
+        if shelf_id not in seen:
+            normalized.append(shelf_id)
+            seen.add(shelf_id)
+
+    return normalized
+
+
+def sort_magic_shelves_for_user(shelves, user):
+    """Sort magic shelves for a user based on view settings."""
+    settings = (getattr(user, 'view_settings', None) or {}).get('magic_shelves', {})
+    order_mode = settings.get('order_mode', DEFAULT_MAGIC_SHELF_ORDER_MODE)
+    if order_mode not in MAGIC_SHELF_ORDER_MODES:
+        order_mode = DEFAULT_MAGIC_SHELF_ORDER_MODE
+
+    if order_mode == 'manual':
+        available_ids = [s.id for s in shelves]
+        order_list = settings.get('order', [])
+        normalized = normalize_magic_shelf_order(order_list, available_ids)
+        index = {shelf_id: idx for idx, shelf_id in enumerate(normalized)}
+        shelves.sort(key=lambda s: index.get(s.id, len(index)))
+        return
+
+    if order_mode == 'name_desc':
+        shelves.sort(key=lambda s: (s.name or "").casefold(), reverse=True)
+        return
+
+    if order_mode == 'book_count_desc':
+        shelves.sort(key=lambda s: int(getattr(s, 'book_count', 0) or 0), reverse=True)
+        return
+
+    if order_mode == 'book_count_asc':
+        shelves.sort(key=lambda s: int(getattr(s, 'book_count', 0) or 0))
+        return
+
+    if order_mode == 'created_desc':
+        min_date = datetime.min.replace(tzinfo=timezone.utc)
+        shelves.sort(key=lambda s: s.created or min_date, reverse=True)
+        return
+
+    if order_mode == 'created_asc':
+        max_date = datetime.max.replace(tzinfo=timezone.utc)
+        shelves.sort(key=lambda s: s.created or max_date)
+        return
+
+    if order_mode == 'modified_desc':
+        min_date = datetime.min.replace(tzinfo=timezone.utc)
+        shelves.sort(key=lambda s: s.last_modified or min_date, reverse=True)
+        return
+
+    if order_mode == 'modified_asc':
+        max_date = datetime.max.replace(tzinfo=timezone.utc)
+        shelves.sort(key=lambda s: s.last_modified or max_date)
+        return
+
+    # Default: name ascending
+    shelves.sort(key=lambda s: (s.name or "").casefold())
+
+
+def get_visible_magic_shelves_for_user(user_id):
+    """Return visible magic shelves for a given user ID."""
+    hidden_items = ub.session.query(
+        ub.HiddenMagicShelfTemplate.template_key,
+        ub.HiddenMagicShelfTemplate.shelf_id
+    ).filter(
+        ub.HiddenMagicShelfTemplate.user_id == user_id
+    ).all()
+
+    hidden_template_keys = {item.template_key for item in hidden_items if item.template_key}
+    hidden_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
+
+    shelves = ub.session.query(ub.MagicShelf).filter(
+        or_(
+            ub.MagicShelf.is_public == 1,
+            ub.MagicShelf.user_id == user_id
+        )
+    ).all()
+
+    filtered_shelves = []
+    for shelf in shelves:
+        if shelf.is_system and shelf.user_id == user_id:
+            template_key = None
+            for key, template in SYSTEM_SHELF_TEMPLATES.items():
+                if template['name'] == shelf.name:
+                    template_key = key
+                    break
+
+            if template_key is not None and template_key in hidden_template_keys:
+                continue
+
+        if shelf.is_public == 1 and shelf.user_id != user_id:
+            if shelf.id in hidden_shelf_ids:
+                continue
+
+        filtered_shelves.append(shelf)
+
+    return filtered_shelves
+
 # System Magic Shelf Templates
 # These are pre-built shelves that can be created for users as examples/templates
 SYSTEM_SHELF_TEMPLATES = {

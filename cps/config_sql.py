@@ -77,7 +77,7 @@ class _Settings(_Base):
     config_theme = Column(Integer, default=1)
 
     config_log_level = Column(SmallInteger, default=logger.DEFAULT_LOG_LEVEL)
-    config_logfile = Column(String, default=logger.DEFAULT_LOG_FILE)
+    config_logfile = Column(String, default=logger.LOG_TO_STDOUT)
     config_access_log = Column(SmallInteger, default=0)
     config_access_logfile = Column(String, default=logger.DEFAULT_ACCESS_LOG)
 
@@ -371,6 +371,17 @@ class ConfigSQL(object):
                         setattr(self, k, "")
                 else:
                     setattr(self, k, v)
+
+        # Enforce unified logging to stdout for Docker deployments
+        if self.config_logfile not in (logger.LOG_TO_STDOUT, logger.LOG_TO_STDERR):
+            self.config_logfile = logger.LOG_TO_STDOUT
+            s.config_logfile = logger.LOG_TO_STDOUT
+            try:
+                self._session.merge(s)
+                self._session.commit()
+            except OperationalError as e:
+                log.error('Database error: %s', e)
+                self._session.rollback()
 
         have_metadata_db = bool(self.config_calibre_dir)
         if have_metadata_db:

@@ -1068,7 +1068,9 @@ def migrate_Database(_session):
 
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables
-    ensure_app_db_tables(engine.raw_connection())
+    from .progress_syncing.settings import is_koreader_sync_enabled
+    if is_koreader_sync_enabled():
+        ensure_app_db_tables(engine.raw_connection())
     
     # Migrate system magic shelves for existing users
     try:

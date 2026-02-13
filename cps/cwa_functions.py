@@ -603,6 +603,7 @@ def set_cwa_settings():
     cwa_db = CWA_DB()
     cwa_default_settings = cwa_db.cwa_default_settings
     cwa_settings = cwa_db.cwa_settings
+    previous_koreader_enabled = bool(cwa_settings.get('koreader_sync_enabled', 0))
 
     ignorable_formats = ['acsm', 'azw', 'azw3', 'azw4', 'cbz',
                         'cbr', 'cb7', 'cbc', 'chm',
@@ -861,6 +862,34 @@ def set_cwa_settings():
 
             cwa_db.update_cwa_settings(result)
             cwa_settings = cwa_db.get_cwa_settings()
+
+            # If KOReader sync was just enabled, ensure required tables exist
+            if not previous_koreader_enabled and bool(cwa_settings.get('koreader_sync_enabled', 0)):
+                log.warning(
+                    "KOReader sync enabled: checksum backfill runs at startup and may temporarily lock metadata.db. "
+                    "Disable and restart the container to stop a running backfill."
+                )
+                try:
+                    from .progress_syncing.models import ensure_calibre_db_tables, ensure_app_db_tables
+                    from .progress_syncing.settings import is_koreader_sync_enabled
+                    if is_koreader_sync_enabled():
+                        try:
+                            with calibre_db.engine.connect() as conn:
+                                ensure_calibre_db_tables(conn)
+                        except Exception as e:
+                            log.error(f"Failed to initialize KOReader checksum tables: {e}")
+
+                        try:
+                            if ub.session and ub.session.bind is not None:
+                                ensure_app_db_tables(ub.session.bind.raw_connection())
+                        except Exception as e:
+                            log.error(f"Failed to initialize KOReader progress tables: {e}")
+                except Exception as e:
+                    log.error(f"Failed to enable KOReader sync tables: {e}")
+            elif previous_koreader_enabled and not bool(cwa_settings.get('koreader_sync_enabled', 0)):
+                log.warning(
+                    "KOReader sync disabled: checksum backfill will stop after container restart."
+                )
 
         elif request.form['submit_button'] == "Apply Default Settings":
             cwa_db = CWA_DB()

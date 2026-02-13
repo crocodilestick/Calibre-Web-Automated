@@ -15,7 +15,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 from flask import Blueprint, jsonify
-from flask import request, redirect, send_from_directory, send_file, make_response, flash, abort, url_for, Response
+from flask import request, redirect, send_from_directory, send_file, make_response, flash, abort, url_for, Response, g
 from flask import session as flask_session
 from flask_babel import gettext as _
 from flask_babel import get_locale
@@ -2491,12 +2491,10 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                     ub.session.delete(hidden)
                     log.info(f"User {current_user.id} unhid custom shelf {hidden.shelf_id}")
         
-        # Theme change
+        # Theme change (force dark)
         if 'theme' in to_save:
             try:
-                new_theme = int(to_save.get('theme'))
-                if new_theme in (0,1):
-                    current_user.theme = new_theme
+                current_user.theme = 1
             except Exception:
                 pass
 
@@ -2533,6 +2531,40 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                 if not current_user.view_settings['opds']:
                     current_user.view_settings.pop('opds', None)
                 flag_modified(current_user, "view_settings")
+
+        # Magic shelf order settings
+        magic_shelf_order_raw = to_save.get("magic_shelf_order", "").strip()
+        magic_shelf_order_mode = to_save.get("magic_shelf_order_mode", magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE)
+        if magic_shelf_order_mode not in magic_shelf.MAGIC_SHELF_ORDER_MODES:
+            magic_shelf_order_mode = magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE
+
+        # Validate order list against accessible shelf IDs
+        accessible_shelves = ub.session.query(ub.MagicShelf).filter(
+            or_(
+                ub.MagicShelf.is_public == 1,
+                ub.MagicShelf.user_id == current_user.id
+            )
+        ).all()
+        accessible_ids = {s.id for s in accessible_shelves}
+        magic_shelf_order_list = []
+        if magic_shelf_order_raw:
+            for item in [item.strip() for item in magic_shelf_order_raw.split(',') if item.strip()]:
+                try:
+                    shelf_id = int(item)
+                except ValueError:
+                    continue
+                if shelf_id in accessible_ids and shelf_id not in magic_shelf_order_list:
+                    magic_shelf_order_list.append(shelf_id)
+
+        if current_user.view_settings is None:
+            current_user.view_settings = {}
+        magic_shelf_settings = current_user.view_settings.setdefault('magic_shelves', {})
+        magic_shelf_settings['order_mode'] = magic_shelf_order_mode
+        if magic_shelf_order_list:
+            magic_shelf_settings['order'] = magic_shelf_order_list
+        else:
+            magic_shelf_settings.pop('order', None)
+        flag_modified(current_user, "view_settings")
 
     except Exception as ex:
         flash(str(ex), category="error")
@@ -2574,6 +2606,26 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
             for key in OPDS_ROOT_ORDER_DEFAULT
             if key in OPDS_ROOT_ENTRY_DEFS
         ]
+
+        magic_shelves_for_order = list(getattr(g, 'magic_shelves_access', []) or [])
+        magic_shelf_order_labels = [
+            {
+                "key": str(shelf.id),
+                "label": shelf.name,
+                "icon": shelf.icon,
+            }
+            for shelf in magic_shelves_for_order
+        ]
+        magic_shelf_order_settings = (current_user.view_settings or {}).get('magic_shelves', {})
+        magic_shelf_order_mode = magic_shelf_order_settings.get('order_mode', magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE)
+        if magic_shelf_order_mode not in magic_shelf.MAGIC_SHELF_ORDER_MODES:
+            magic_shelf_order_mode = magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE
+        available_ids = [shelf.id for shelf in magic_shelves_for_order]
+        magic_shelf_order_normalized = magic_shelf.normalize_magic_shelf_order(
+            magic_shelf_order_settings.get('order', []),
+            available_ids
+        )
+        magic_shelf_order_string = ",".join(str(sid) for sid in magic_shelf_order_normalized)
         return render_title_template("user_edit.html",
                                      content=current_user,
                                      config=config,
@@ -2588,6 +2640,9 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                                      opds_root_order_string=opds_root_order_string,
                                      opds_hidden_entries_string=opds_hidden_entries_string,
                                      opds_root_labels=opds_root_labels,
+                                     magic_shelf_order_string=magic_shelf_order_string,
+                                     magic_shelf_order_labels=magic_shelf_order_labels,
+                                     magic_shelf_order_mode=magic_shelf_order_mode,
                                      title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                      page="me",
                                      kobo_support=kobo_support,
@@ -2677,6 +2732,26 @@ def profile():
         if key in OPDS_ROOT_ENTRY_DEFS
     ]
 
+    magic_shelves_for_order = list(getattr(g, 'magic_shelves_access', []) or [])
+    magic_shelf_order_labels = [
+        {
+            "key": str(shelf.id),
+            "label": shelf.name,
+            "icon": shelf.icon,
+        }
+        for shelf in magic_shelves_for_order
+    ]
+    magic_shelf_order_settings = (current_user.view_settings or {}).get('magic_shelves', {})
+    magic_shelf_order_mode = magic_shelf_order_settings.get('order_mode', magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE)
+    if magic_shelf_order_mode not in magic_shelf.MAGIC_SHELF_ORDER_MODES:
+        magic_shelf_order_mode = magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE
+    available_ids = [shelf.id for shelf in magic_shelves_for_order]
+    magic_shelf_order_normalized = magic_shelf.normalize_magic_shelf_order(
+        magic_shelf_order_settings.get('order', []),
+        available_ids
+    )
+    magic_shelf_order_string = ",".join(str(sid) for sid in magic_shelf_order_normalized)
+
     return render_title_template("user_edit.html",
                                  translations=translations,
                                  profile=1,
@@ -2693,6 +2768,9 @@ def profile():
                                  opds_root_order_string=opds_root_order_string,
                                  opds_hidden_entries_string=opds_hidden_entries_string,
                                  opds_root_labels=opds_root_labels,
+                                 magic_shelf_order_string=magic_shelf_order_string,
+                                 magic_shelf_order_labels=magic_shelf_order_labels,
+                                 magic_shelf_order_mode=magic_shelf_order_mode,
                                  title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                  page="me",
                                  registered_oauth=local_oauth_check,

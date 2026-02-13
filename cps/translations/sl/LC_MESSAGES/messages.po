@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-02 13:59+0100\n"
+"POT-Creation-Date: 2026-02-05 00:15+0100\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -32,30 +32,30 @@ msgid "Calibre database unavailable. Please reconfigure the library path."
 msgstr ""
 "Zbirka podatkov Calibre ni na voljo. Ponovno konfigurirajte pot do knjižnice."
 
-#: cps/admin.py:179
+#: cps/admin.py:180
 msgid "Server restarted, please reload page."
 msgstr "Strežnik se je znova zagnal, prosimo, ponovno naložite stran."
 
-#: cps/admin.py:181
+#: cps/admin.py:182
 msgid "Performing Server shutdown, please close window."
 msgstr "Izvajanje zaustavitve strežnika, prosim zaprite okno."
 
-#: cps/admin.py:189
+#: cps/admin.py:190
 msgid "Success! Database Reconnected"
 msgstr "Podatkovna baza je uspešno ponovno povezana"
 
-#: cps/admin.py:192
+#: cps/admin.py:193
 msgid "Unknown command"
 msgstr "Neznan ukaz"
 
-#: cps/admin.py:203
+#: cps/admin.py:204
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
 "Uspeh! Knjige so v čakalni vrsti za varnostno kopiranje metapodatkov, za "
 "rezultat preverite opravila"
 
-#: cps/admin.py:223
+#: cps/admin.py:224
 msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
@@ -63,48 +63,48 @@ msgstr ""
 "Napaka: Žeton Hardcover ni na voljo. Nastavite okoljsko spremenljivko "
 "HARDCOVER_TOKEN ali jo konfigurirajte v Osnovnih nastavitvah."
 
-#: cps/admin.py:251
+#: cps/admin.py:252
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
 msgstr ""
 "Uspeh! Opravilo samodejnega pridobivanja Hardcover se je začelo. Napredek "
 "preverite na plošči Opravila."
 
-#: cps/admin.py:256
+#: cps/admin.py:257
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
 msgstr ""
 "Napaka pri zagonu opravila samodejnega pridobivanja Hardcover: %(error)s"
 
-#: cps/admin.py:295 cps/templates/admin.html:223
+#: cps/admin.py:296 cps/templates/admin.html:223
 msgid "Review Hardcover Matches"
 msgstr "Preglejte ujemajoče Hardcover zadetke"
 
-#: cps/admin.py:302
+#: cps/admin.py:303
 #, python-format
 msgid "Error loading review queue: %(error)s"
 msgstr "Napaka pri nalaganju čakalne vrste za pregled: %(error)s"
 
-#: cps/admin.py:383
+#: cps/admin.py:384
 #, fuzzy
 msgid "Hardcover ID applied successfully"
 msgstr "{} uporabnikov uspešno izbrisanih"
 
-#: cps/admin.py:400
+#: cps/admin.py:401
 #, python-format
 msgid "Match %(action)s"
 msgstr "Ujemanje %(action)s"
 
-#: cps/admin.py:438
+#: cps/admin.py:439
 msgid "No pending matches to reject"
 msgstr "Ni ujemanj na čakanju za zavrnitev"
 
-#: cps/admin.py:444
+#: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
 msgstr "Zavrnjenih %(count)s ujemanj"
 
-#: cps/admin.py:481
+#: cps/admin.py:482
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
@@ -112,154 +112,154 @@ msgstr ""
 "Osveževanje predpomnilnika sličic se je začelo za {} knjig. To lahko traja "
 "nekaj minut."
 
-#: cps/admin.py:483
+#: cps/admin.py:484
 msgid "No books with covers found to process."
 msgstr "Ni bilo najdenih knjig z ovitki za obdelavo."
 
-#: cps/admin.py:495
+#: cps/admin.py:496
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
 msgstr "Napaka pri zagonu osveževanja sličic: {}"
 
-#: cps/admin.py:537
+#: cps/admin.py:538
 msgid "Admin page"
 msgstr "Administrativna stran"
 
-#: cps/admin.py:557
+#: cps/admin.py:558
 msgid "Basic Configuration"
 msgstr "Osnovne nastavitve"
 
-#: cps/admin.py:595
+#: cps/admin.py:596
 msgid "UI Configuration"
 msgstr "Nastavitve uporabniškega vmesnika"
 
-#: cps/admin.py:619 cps/admin.py:1301 cps/db.py:959 cps/search.py:153
+#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:967 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Stolpec po meri št. %(column)d ne obstaja v zbirki podatkov Calibre"
 
-#: cps/admin.py:637 cps/templates/admin.html:55
+#: cps/admin.py:638 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Urejanje uporabnikov"
 
-#: cps/admin.py:681 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Vse"
 
-#: cps/admin.py:708 cps/admin.py:1856
+#: cps/admin.py:709 cps/admin.py:1893
 msgid "User not found"
 msgstr "Ne najdem uporabnika"
 
-#: cps/admin.py:722
+#: cps/admin.py:723
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} uporabnikov uspešno izbrisanih"
 
-#: cps/admin.py:745 cps/templates/config_view_edit.html:170
-#: cps/templates/user_edit.html:253 cps/templates/user_edit.html:276
+#: cps/admin.py:746 cps/templates/config_view_edit.html:169
+#: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Pokaži vse"
 
-#: cps/admin.py:766 cps/admin.py:772
+#: cps/admin.py:767 cps/admin.py:773
 msgid "Malformed request"
 msgstr "Napačno oblikovana zahteva"
 
-#: cps/admin.py:784 cps/admin.py:2711
+#: cps/admin.py:785 cps/admin.py:2786
 msgid "Guest Name can't be changed"
 msgstr "Imena gosta ni mogoče spremeniti"
 
-#: cps/admin.py:798
+#: cps/admin.py:799
 msgid "Guest can't have this role"
 msgstr "Gost ne more imeti te vloge"
 
-#: cps/admin.py:810 cps/admin.py:2569
+#: cps/admin.py:811 cps/admin.py:2611
 msgid "No admin user remaining, can't remove admin role"
 msgstr "Ni več nobenega admin uporabnika, ne morem odstraniti vloge admin"
 
-#: cps/admin.py:814 cps/admin.py:828
+#: cps/admin.py:815 cps/admin.py:829
 msgid "Value has to be true or false"
 msgstr "Vrednost mora biti true ali false"
 
-#: cps/admin.py:816
+#: cps/admin.py:817
 msgid "Invalid role"
 msgstr "Neveljavna vloga"
 
-#: cps/admin.py:820
+#: cps/admin.py:821
 msgid "Guest can't have this view"
 msgstr "Gost ne more imeti tega pogleda"
 
-#: cps/admin.py:830
+#: cps/admin.py:831
 msgid "Invalid view"
 msgstr "Nepravilen pogled"
 
-#: cps/admin.py:833
+#: cps/admin.py:834
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "Lokalni jezik gosta se določi samodejno in ga ni mogoče nastaviti."
 
-#: cps/admin.py:837
+#: cps/admin.py:838
 msgid "No Valid Locale Given"
 msgstr "Ni navedenega veljavnega lokalnega jezika"
 
-#: cps/admin.py:848
+#: cps/admin.py:849
 msgid "No Valid Book Language Given"
 msgstr "Ni navedenega veljavnega jezika knjige"
 
-#: cps/admin.py:850 cps/editbooks.py:587
+#: cps/admin.py:851 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr "Parameter ni najden"
 
-#: cps/admin.py:887
+#: cps/admin.py:888
 msgid "Invalid Read Column"
 msgstr "Nepravilen stolpec za branje"
 
-#: cps/admin.py:893
+#: cps/admin.py:894
 msgid "Invalid Restricted Column"
 msgstr "Neveljavni stolpec za omejitev"
 
-#: cps/admin.py:913 cps/admin.py:2418
+#: cps/admin.py:914 cps/admin.py:2459
 #, fuzzy
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Posodobljena nastavitev Calibre-Web"
 
-#: cps/admin.py:925
+#: cps/admin.py:926
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Ali res želite izbrisati žeton Kobo?"
 
-#: cps/admin.py:927
+#: cps/admin.py:928
 msgid "Do you really want to delete this domain?"
 msgstr "Ali res želite izbrisati to domeno?"
 
-#: cps/admin.py:929
+#: cps/admin.py:930
 msgid "Do you really want to delete this user?"
 msgstr "Ali res želite izbrisati tega uporabnika?"
 
-#: cps/admin.py:931
+#: cps/admin.py:932
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Ste prepričani, da želite izbrisati to polico?"
 
-#: cps/admin.py:933
+#: cps/admin.py:934
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr ""
 "Ali ste prepričani, da želite spremeniti lokalne jezike izbranih uporabnikov?"
 
-#: cps/admin.py:935
+#: cps/admin.py:936
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr ""
 "Ste prepričani, da želite spremeniti vidne jezike knjig za izbrane "
 "uporabnike?"
 
-#: cps/admin.py:937
+#: cps/admin.py:938
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
 "Ali ste prepričani, da želite spremeniti izbrano vlogo za izbranega(-e) "
 "uporabnika(-e)?"
 
-#: cps/admin.py:939
+#: cps/admin.py:940
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -267,7 +267,7 @@ msgstr ""
 "Ali ste prepričani, da želite spremeniti izbrane omejitve za izbranega(-e) "
 "uporabnika(-e)?"
 
-#: cps/admin.py:941
+#: cps/admin.py:942
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -275,18 +275,18 @@ msgstr ""
 "Ali ste prepričani, da želite spremeniti izbrane omejitve vidljivosti za "
 "izbranega(-e) uporabnika(-e)?"
 
-#: cps/admin.py:944
+#: cps/admin.py:945
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
 "Ali ste prepričani, da želite spremeniti obnašanje sinhronizacije police za "
 "izbranega(-e) uporabnika(-e)?"
 
-#: cps/admin.py:946
+#: cps/admin.py:947
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Ste prepričani, da želite spremeniti lokacijo knjižnice Calibre?"
 
-#: cps/admin.py:948
+#: cps/admin.py:949
 #, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
@@ -295,7 +295,7 @@ msgstr ""
 "Calibre-Web bo poiskal posodobljene naslovnice in posodobil sličice "
 "naslovnic, kar lahko traja nekaj časa."
 
-#: cps/admin.py:951
+#: cps/admin.py:952
 #, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
@@ -304,86 +304,86 @@ msgstr ""
 "Ali ste prepričani, da želite izbrisati sinhronizacijsko podatkovno bazo "
 "Calibre-Web, da bi vsilili popolno sinhronizacijo z bralnikom Kobo?"
 
-#: cps/admin.py:1190 cps/admin.py:1196 cps/admin.py:1206 cps/admin.py:1216
+#: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Onemogoči"
 
-#: cps/admin.py:1192 cps/admin.py:1198 cps/admin.py:1208 cps/admin.py:1218
+#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Omogoči"
 
-#: cps/admin.py:1251
+#: cps/admin.py:1252
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} izbrisanih vnosov za sinhronizacijo"
 
-#: cps/admin.py:1292
+#: cps/admin.py:1293
 msgid "Tag not found"
 msgstr "Oznaka ni bila najdena"
 
-#: cps/admin.py:1310
+#: cps/admin.py:1311
 msgid "Invalid Action"
 msgstr "Neveljavno dejanje"
 
-#: cps/admin.py:1437
+#: cps/admin.py:1438
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "Client_secrets.json ni nastavljen za spletno aplikacijo"
 
-#: cps/admin.py:1576
+#: cps/admin.py:1577
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija dnevniške datoteke ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:1582
+#: cps/admin.py:1583
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija dnevniške datoteke dostopa ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:1617
+#: cps/admin.py:1618
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "Vnesite ponudnika LDAP, vrata, DN in identifikator objekta uporabnika"
 
-#: cps/admin.py:1623
+#: cps/admin.py:1624
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Vnesite račun in geslo storitve LDAP"
 
-#: cps/admin.py:1626
+#: cps/admin.py:1627
 msgid "Please Enter a LDAP Service Account"
 msgstr "Vnesite račun storitve LDAP"
 
-#: cps/admin.py:1631
+#: cps/admin.py:1632
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter predmetov skupine LDAP mora imeti en identifikator oblike \"%s\""
 
-#: cps/admin.py:1633
+#: cps/admin.py:1634
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "Filter predmeta skupine LDAP ima neusklajene oklepaje"
 
-#: cps/admin.py:1637
+#: cps/admin.py:1638
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter uporabniškega objekta LDAP mora imeti en identifikator oblike \"%s\""
 
-#: cps/admin.py:1639
+#: cps/admin.py:1640
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "Filter objekta uporabnika LDAP ima neusklajene oklepaje"
 
-#: cps/admin.py:1646
+#: cps/admin.py:1647
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter za uporabnike članov LDAP mora imeti en identifikator oblike \"%s\""
 
-#: cps/admin.py:1648
+#: cps/admin.py:1649
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "Filter uporabnika člana LDAP ima neusklajene oklepaje"
 
-#: cps/admin.py:1655
+#: cps/admin.py:1656
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -391,28 +391,28 @@ msgstr ""
 "LDAP CACcertifikat, lokacija certifikata ali ključa ni veljavna, vnesite "
 "pravilno pot"
 
-#: cps/admin.py:1687 cps/templates/admin.html:57
+#: cps/admin.py:1689 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Dodajanje novega uporabnika"
 
-#: cps/admin.py:1699 cps/templates/admin.html:105
+#: cps/admin.py:1704 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "Urejanje nastavitev e-poštnega strežnika"
 
-#: cps/admin.py:1718
+#: cps/admin.py:1723
 msgid "Success! Gmail Account Verified."
 msgstr "Uspeh! Račun Gmail je potrjen."
 
-#: cps/admin.py:1738 cps/admin.py:1741 cps/admin.py:2191 cps/admin.py:2402
-#: cps/admin.py:2514 cps/admin.py:2750 cps/editbooks.py:1033
-#: cps/editbooks.py:1799 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
+#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
-#: cps/tasks/convert.py:145 cps/web.py:2623
+#: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Ups! Napaka podatkovne baze: %(error)s."
 
-#: cps/admin.py:1748
+#: cps/admin.py:1753
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
@@ -420,171 +420,171 @@ msgstr ""
 "Testno e-poštno sporočilo je v čakalni vrsti za pošiljanje na %(email)s "
 "naslovov, za rezultat preverite opravila"
 
-#: cps/admin.py:1751
+#: cps/admin.py:1756
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr ""
 "Pri pošiljanju testnega e-poštnega sporočila je prišlo do napake: %(res)s"
 
-#: cps/admin.py:1753
+#: cps/admin.py:1758
 msgid "Please configure your e-mail address first..."
 msgstr "Najprej nastavite vaš e-poštni naslov..."
 
-#: cps/admin.py:1755
+#: cps/admin.py:1760
 msgid "Email Server Settings updated"
 msgstr "Posodobljene nastavitve e-poštnega strežnika"
 
-#: cps/admin.py:1778 cps/templates/admin.html:201
+#: cps/admin.py:1783 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Urejanje nastavitev načrtovanih opravil"
 
-#: cps/admin.py:1790
+#: cps/admin.py:1795
 msgid "Invalid start time for task specified"
 msgstr "Nepravilen začetni čas za določeno nalogo"
 
-#: cps/admin.py:1795
+#: cps/admin.py:1800
 msgid "Invalid duration for task specified"
 msgstr "Nepravilno trajanje za določeno nalogo"
 
-#: cps/admin.py:1805
+#: cps/admin.py:1810
 msgid "Scheduled tasks settings updated"
 msgstr "Posodobljene nastavitve načrtovanih opravil"
 
-#: cps/admin.py:1815 cps/admin.py:1923 cps/admin.py:2746 cps/web.py:2109
+#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Ups! Zgodila se je neznana napaka. Prosimo, poskusite znova pozneje."
 
-#: cps/admin.py:1819
+#: cps/admin.py:1824
 msgid "Settings DB is not Writeable"
 msgstr "DB nastavitev ni mogoče zapisati"
 
-#: cps/admin.py:1838 cps/opds.py:199 cps/web.py:2572 cps/web.py:2674
+#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
 #, fuzzy
 msgid "title"
 msgstr "Naslov"
 
-#: cps/admin.py:1908 cps/admin.py:2738
+#: cps/admin.py:1949 cps/admin.py:2817
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Urejanje uporabnika %(nick)s"
 
-#: cps/admin.py:1920
+#: cps/admin.py:1961
 #, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Uspeh! Ponastavitev gesla za uporabnika %(user)s"
 
-#: cps/admin.py:1926
+#: cps/admin.py:1967
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Ups! Nastavite nastavitve pošte SMTP."
 
-#: cps/admin.py:1937
+#: cps/admin.py:1978
 msgid "Logfile viewer"
 msgstr "Pregledovalnik dnevniške datoteke"
 
-#: cps/admin.py:2003
+#: cps/admin.py:2044
 msgid "Requesting update package"
 msgstr "Zahteva za paket posodobitev"
 
-#: cps/admin.py:2004
+#: cps/admin.py:2045
 msgid "Downloading update package"
 msgstr "Prenos paketa posodobitev"
 
-#: cps/admin.py:2005
+#: cps/admin.py:2046
 msgid "Unzipping update package"
 msgstr "Razpakiranje paketa posodobitev"
 
-#: cps/admin.py:2006
+#: cps/admin.py:2047
 msgid "Replacing files"
 msgstr "Zamenjava datotek"
 
-#: cps/admin.py:2007
+#: cps/admin.py:2048
 msgid "Database connections are closed"
 msgstr "Povezave do zbirke podatkov so zaprte"
 
-#: cps/admin.py:2008
+#: cps/admin.py:2049
 msgid "Stopping server"
 msgstr "Ustavitev strežnika"
 
-#: cps/admin.py:2009
+#: cps/admin.py:2050
 msgid "Update finished, please press okay and reload page"
 msgstr "Posodobitev je končana, pritisnite OK in ponovno naložite stran"
 
-#: cps/admin.py:2010 cps/admin.py:2011 cps/admin.py:2012 cps/admin.py:2013
-#: cps/admin.py:2014 cps/admin.py:2015
+#: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
+#: cps/admin.py:2055 cps/admin.py:2056
 msgid "Update failed:"
 msgstr "Posodobitev ni uspela:"
 
-#: cps/admin.py:2010 cps/updater.py:388 cps/updater.py:623 cps/updater.py:625
+#: cps/admin.py:2051 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "Napaka HTTP"
 
-#: cps/admin.py:2011 cps/updater.py:390 cps/updater.py:627
+#: cps/admin.py:2052 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "Napaka povezave"
 
-#: cps/admin.py:2012 cps/updater.py:392 cps/updater.py:629
+#: cps/admin.py:2053 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "Potek časa pri vzpostavljanju povezave"
 
-#: cps/admin.py:2013 cps/updater.py:394 cps/updater.py:631
+#: cps/admin.py:2054 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "Splošna napaka"
 
-#: cps/admin.py:2014
+#: cps/admin.py:2055
 msgid "Update file could not be saved in temp dir"
 msgstr "Datoteke posodobitve ni bilo mogoče shraniti v začasno mapo"
 
-#: cps/admin.py:2015
+#: cps/admin.py:2056
 msgid "Files could not be replaced during update"
 msgstr "Datotek med posodabljanjem ni bilo mogoče zamenjati"
 
-#: cps/admin.py:2039
+#: cps/admin.py:2080
 msgid "Failed to extract at least One LDAP User"
 msgstr "Nisem uspel izpisati vsaj enega uporabnika LDAP"
 
-#: cps/admin.py:2084
+#: cps/admin.py:2125
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Nisem uspel ustvariti vsaj enega uporabnika LDAP"
 
-#: cps/admin.py:2097
+#: cps/admin.py:2138
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Napaka: %(ldaperror)s"
 
-#: cps/admin.py:2101
+#: cps/admin.py:2142
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Napaka: V odzivu strežnika LDAP ni vrnjenega nobenega uporabnika"
 
-#: cps/admin.py:2137
+#: cps/admin.py:2178
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "V podatkovni zbirki ni najden vsaj en uporabnik LDAP"
 
-#: cps/admin.py:2139
+#: cps/admin.py:2180
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Uporabnik je bil uspešno uvožen"
 
-#: cps/admin.py:2203
+#: cps/admin.py:2244
 msgid "Books path not valid"
 msgstr "Pot do knjig ni veljavna"
 
-#: cps/admin.py:2210
+#: cps/admin.py:2251
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija do DB ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:2238
+#: cps/admin.py:2279
 msgid "DB is not Writeable"
 msgstr "V DB ni mogoče zapisati"
 
-#: cps/admin.py:2251
+#: cps/admin.py:2292
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija datoteka Keyfile ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:2255
+#: cps/admin.py:2296
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija datoteke Certfile ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:2324
+#: cps/admin.py:2365
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
@@ -592,13 +592,13 @@ msgstr ""
 "Samodejnega ustvarjanja uporabnikov ni mogoče omogočiti brez omogočene "
 "avtentikacije preko povratnega proksija"
 
-#: cps/admin.py:2327
+#: cps/admin.py:2368
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 "Samodejno ustvarjanje uporabnikov zahteva veljavno ime glave povratnega "
 "proksija"
 
-#: cps/admin.py:2346 cps/admin.py:2353
+#: cps/admin.py:2387 cps/admin.py:2394
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
@@ -606,7 +606,7 @@ msgstr ""
 "Neveljavna oblika gostitelja za preusmeritev OAuth. Vključite celoten URL s "
 "protokolom (npr. https://vasa-domena.si)"
 
-#: cps/admin.py:2350
+#: cps/admin.py:2391
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
@@ -614,69 +614,69 @@ msgstr ""
 "Gostitelj preusmeritve OAuth ne sme vsebovati poti. Uporabite le osnovni URL "
 "(npr. https://vasa-domena.si)"
 
-#: cps/admin.py:2385
+#: cps/admin.py:2426
 msgid "Password length has to be between 1 and 40"
 msgstr "Dolžina gesla mora biti med 1 in 40"
 
-#: cps/admin.py:2445
+#: cps/admin.py:2486
 msgid "Database Settings updated"
 msgstr "Posodobljene nastavitve zbirke podatkov"
 
-#: cps/admin.py:2453
+#: cps/admin.py:2494
 msgid "Database Configuration"
 msgstr "Nastavitev zbirke podatkov"
 
-#: cps/admin.py:2474 cps/web.py:2078
+#: cps/admin.py:2514 cps/web.py:2078
 msgid "Oops! Please complete all fields."
 msgstr "Ups! Izpolnite vsa polja."
 
-#: cps/admin.py:2483
+#: cps/admin.py:2523
 msgid "E-mail is not from valid domain"
 msgstr "E-pošta ni iz veljavne domene"
 
-#: cps/admin.py:2490
+#: cps/admin.py:2531
 msgid "Add new user"
 msgstr "Dodajanje novega uporabnika"
 
-#: cps/admin.py:2504
+#: cps/admin.py:2548
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Ustvarjen uporabnik '%(user)s'"
 
-#: cps/admin.py:2510
+#: cps/admin.py:2554
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "Ups! Za to e-pošto že obstaja račun ali ime."
 
-#: cps/admin.py:2540
+#: cps/admin.py:2584
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Uporabnik '%(nick)s' je izbrisan"
 
-#: cps/admin.py:2543
+#: cps/admin.py:2587
 msgid "Can't delete Guest User"
 msgstr "Ne morem izbrisati uporabnika gosta"
 
-#: cps/admin.py:2546
+#: cps/admin.py:2590
 msgid "No admin user remaining, can't delete user"
 msgstr ""
 "Ni preostalega uporabnika administratorja, uporabnika ni mogoče izbrisati"
 
-#: cps/admin.py:2705 cps/web.py:2413
+#: cps/admin.py:2780 cps/web.py:2413
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-pošta ne sme biti prazna in mora biti veljavna."
 
-#: cps/admin.py:2742
+#: cps/admin.py:2821
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Uporabnik '%(nick)s' je posodobljen"
 
-#: cps/admin.py:2807
+#: cps/admin.py:2886
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr "Povezava uspešna! OIDC odkritna točka je dostopna. %(endpoints)s"
 
-#: cps/admin.py:2812
+#: cps/admin.py:2891
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -684,12 +684,12 @@ msgstr ""
 "Povezava ni uspela: OIDC odkritna točka ni bila najdena (404). Preverite, "
 "ali je osnovni URL pravilen."
 
-#: cps/admin.py:2814 cps/admin.py:2871
+#: cps/admin.py:2893 cps/admin.py:2950
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Povezava ni uspela: Strežnik je vrnil kodo stanja %(code)s"
 
-#: cps/admin.py:2816
+#: cps/admin.py:2895
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
@@ -697,14 +697,14 @@ msgstr ""
 "Povezava ni uspela: Ni se bilo mogoče povezati s strežnikom. Preverite URL "
 "in omrežno povezavo."
 
-#: cps/admin.py:2818
+#: cps/admin.py:2897
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "Povezava ni uspela: Zahteva je potekla. Strežnik je morda počasen ali "
 "nedosegljiv."
 
-#: cps/admin.py:2820
+#: cps/admin.py:2899
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -712,12 +712,12 @@ msgstr ""
 "Povezava ni uspela: Strežnik je vrnil neveljaven JSON. To morda ni končna "
 "točka OIDC."
 
-#: cps/admin.py:2823
+#: cps/admin.py:2902
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Napaka povezave"
 
-#: cps/admin.py:2849
+#: cps/admin.py:2928
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -726,26 +726,26 @@ msgstr ""
 "V metapodatkih manjkajo zahtevana polja OIDC: %(fields)s. To morda ni "
 "veljavna končna točka metapodatkov OIDC."
 
-#: cps/admin.py:2860
+#: cps/admin.py:2939
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "URL metapodatkov je veljaven! Najdenih %(count)s OAuth končnih točk."
 
-#: cps/admin.py:2862
+#: cps/admin.py:2941
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "Informacije o izdaji niso na voljo"
 
-#: cps/admin.py:2864
+#: cps/admin.py:2943
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2869
+#: cps/admin.py:2948
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "URL metapodatkov ni bil najden (404). Preverite, ali je URL pravilen."
 
-#: cps/admin.py:2873
+#: cps/admin.py:2952
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
@@ -753,50 +753,50 @@ msgstr ""
 "Povezava ni uspela: Ni se bilo mogoče povezati z URL-jem metapodatkov. "
 "Preverite URL in omrežno povezavo."
 
-#: cps/admin.py:2875
+#: cps/admin.py:2954
 msgid "Connection failed: Request timed out."
 msgstr "Povezava ni uspela: Čas za zahtevo se je iztekel."
 
-#: cps/admin.py:2877
+#: cps/admin.py:2956
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Povezava ni uspela: Neveljaven JSON v odgovoru."
 
-#: cps/admin.py:2880
+#: cps/admin.py:2959
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "Zgodila se je neznana napaka. Prosimo, poskusite znova pozneje."
 
-#: cps/admin.py:2892
+#: cps/admin.py:2971
 #, fuzzy
 msgid "Restore already in progress."
 msgstr "Napaka povezave"
 
-#: cps/admin.py:2896
+#: cps/admin.py:2975
 msgid "Restore failed: Calibre library path is not configured."
 msgstr "Obnova ni uspela: Pot do knjižnice Calibre ni nastavljena."
 
-#: cps/admin.py:2901
+#: cps/admin.py:2980
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr "Obnova ni uspela: metadata.db ni bil najden na %(path)s"
 
-#: cps/admin.py:2906
+#: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr "Obnova ni uspela: app.db ni bil najden na %(path)s"
 
-#: cps/admin.py:2978 cps/admin.py:3018
+#: cps/admin.py:3057 cps/admin.py:3097
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Napaka povezave"
 
-#: cps/admin.py:2995
+#: cps/admin.py:3074
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 "Obnova končana, vendar čiščenje app.db ni uspelo. Za podrobnosti glejte "
 "dnevnike."
 
-#: cps/admin.py:3014
+#: cps/admin.py:3093
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -935,229 +935,229 @@ msgstr ""
 "Osvežitev knjižnice 🔄 Preverjamo morebitne spregledane knjige, prosimo, "
 "počakajte ..."
 
-#: cps/cwa_functions.py:848
+#: cps/cwa_functions.py:849
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 "Neveljaven cron izraz za iskanje dvojnikov. Spremembe niso bile shranjene."
 
-#: cps/cwa_functions.py:884
+#: cps/cwa_functions.py:913
 #, fuzzy
 msgid "Calibre-Web Automated User Settings"
 msgstr "Nastavitve pretvornika e-knjig Calibre"
 
-#: cps/cwa_functions.py:930 cps/cwa_functions.py:932 cps/cwa_functions.py:936
-#: cps/cwa_functions.py:938 cps/cwa_functions.py:941 cps/cwa_functions.py:943
+#: cps/cwa_functions.py:959 cps/cwa_functions.py:961 cps/cwa_functions.py:965
+#: cps/cwa_functions.py:967 cps/cwa_functions.py:970 cps/cwa_functions.py:972
 msgid "Timestamp"
 msgstr "Časovni žig"
 
-#: cps/cwa_functions.py:930 cps/cwa_functions.py:932
+#: cps/cwa_functions.py:959 cps/cwa_functions.py:961
 #: cps/templates/tasks.html:43
 #, fuzzy
 msgid "Book ID"
 msgstr "Knjige"
 
-#: cps/cwa_functions.py:930 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:959 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Naslov knjige"
 
-#: cps/cwa_functions.py:930
+#: cps/cwa_functions.py:959
 #, fuzzy
 msgid "Book Author"
 msgstr "Avtor"
 
-#: cps/cwa_functions.py:930
+#: cps/cwa_functions.py:959
 msgid "Trigger Type"
 msgstr "Vrsta sprožilca"
 
-#: cps/cwa_functions.py:932 cps/cwa_functions.py:938
+#: cps/cwa_functions.py:961 cps/cwa_functions.py:967
 #, fuzzy
 msgid "Filepath"
 msgstr "Vrste datotek"
 
-#: cps/cwa_functions.py:936 cps/cwa_functions.py:938 cps/cwa_functions.py:941
-#: cps/cwa_functions.py:943
+#: cps/cwa_functions.py:965 cps/cwa_functions.py:967 cps/cwa_functions.py:970
+#: cps/cwa_functions.py:972
 #, fuzzy
 msgid "Filename"
 msgstr "ime"
 
-#: cps/cwa_functions.py:936
+#: cps/cwa_functions.py:965
 msgid "Manual?"
 msgstr "Ročno?"
 
-#: cps/cwa_functions.py:936
+#: cps/cwa_functions.py:965
 msgid "No. Fixes"
 msgstr "Brez sprememb"
 
-#: cps/cwa_functions.py:936 cps/cwa_functions.py:941 cps/cwa_functions.py:943
+#: cps/cwa_functions.py:965 cps/cwa_functions.py:970 cps/cwa_functions.py:972
 msgid "Original Backed Up?"
 msgstr "Izvirnik varnostno kopiran?"
 
-#: cps/cwa_functions.py:938
+#: cps/cwa_functions.py:967
 msgid "Fixes Applied"
 msgstr "Uporabljeni popravki"
 
-#: cps/cwa_functions.py:943
+#: cps/cwa_functions.py:972
 msgid "Original Format"
 msgstr "Izvirna oblika"
 
-#: cps/cwa_functions.py:943
+#: cps/cwa_functions.py:972
 #, fuzzy
 msgid "End Format"
 msgstr "Nalaganje vrsta"
 
-#: cps/cwa_functions.py:1019 cps/cwa_functions.py:1048
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1077
 #, fuzzy
 msgid "Unknown User"
 msgstr "Neznano"
 
-#: cps/cwa_functions.py:1156
+#: cps/cwa_functions.py:1185
 #, fuzzy
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Avtomatizirana statistika in arhiv strežnikov Calibre-Web"
 
-#: cps/cwa_functions.py:1540
+#: cps/cwa_functions.py:1569
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr "Calibre-Web Automated - Celotna zgodovina uveljavljanja"
 
-#: cps/cwa_functions.py:1549
+#: cps/cwa_functions.py:1578
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr "Calibre-Web Automated - Celotna zgodovina uveljavljanja (s potmi)"
 
-#: cps/cwa_functions.py:1558
+#: cps/cwa_functions.py:1587
 msgid "Calibre-Web Automated - Full Import History"
 msgstr "Calibre-Web Automated - Celotna zgodovina uvoza"
 
-#: cps/cwa_functions.py:1567
+#: cps/cwa_functions.py:1596
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr "Calibre-Web Automated - Celotna zgodovina pretvorb"
 
-#: cps/cwa_functions.py:1576
+#: cps/cwa_functions.py:1605
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Celotna zgodovina popravljanja EPUB (brez poti in "
 "popravkov)"
 
-#: cps/cwa_functions.py:1585
+#: cps/cwa_functions.py:1614
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Celotna zgodovina popravljanja EPUB (s potmi in "
 "popravki)"
 
-#: cps/cwa_functions.py:1603
+#: cps/cwa_functions.py:1632
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Vse nadzorne storitve delujejo po načrtih! 👍"
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1634
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 Storitev vnosa se izvaja, detektor sprememb metapodatkov pa ne."
 
-#: cps/cwa_functions.py:1607
+#: cps/cwa_functions.py:1636
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr "🔴 Detektor sprememb metapodatkov deluje, storitev vnosa pa ne."
 
-#: cps/cwa_functions.py:1609
+#: cps/cwa_functions.py:1638
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 "⛔ Niti storitev vnosa niti detektor sprememb metapodatkov se ne izvajata"
 
-#: cps/cwa_functions.py:1611
+#: cps/cwa_functions.py:1640
 msgid "An Error has occurred"
 msgstr "Prišlo je do napake"
 
-#: cps/cwa_functions.py:1782 cps/cwa_functions.py:1808
+#: cps/cwa_functions.py:1811 cps/cwa_functions.py:1837
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Pretvori knjižnico"
 
-#: cps/cwa_functions.py:1924 cps/cwa_functions.py:1948
+#: cps/cwa_functions.py:1953 cps/cwa_functions.py:1977
 #, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr ""
 "Calibre-Web Automated - Storitev za popravljanje datotek EPUB za pošiljanje "
 "v Kindle"
 
-#: cps/cwa_functions.py:2002
+#: cps/cwa_functions.py:2031
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 "Popravljalnik EPUB za posamezno knjigo ni podprt v knjižnicah Google Drive."
 
-#: cps/cwa_functions.py:2009
+#: cps/cwa_functions.py:2038
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "Neveljavna vloga"
 
-#: cps/cwa_functions.py:2015
+#: cps/cwa_functions.py:2044
 #, fuzzy
 msgid "Book not found."
 msgstr "ne najdem žetona"
 
-#: cps/cwa_functions.py:2021
+#: cps/cwa_functions.py:2050
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "Združevanje izbranih knjig"
 
-#: cps/cwa_functions.py:2025
+#: cps/cwa_functions.py:2054
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s vrsta ni najdena na disku"
 
-#: cps/cwa_functions.py:2040
+#: cps/cwa_functions.py:2069
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "Združevanje izbranih knjig"
 
-#: cps/cwa_functions.py:2043
+#: cps/cwa_functions.py:2072
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr "Napaka pri zagonu popravljalnika EPUB za izbrano knjigo."
 
-#: cps/cwa_functions.py:2090
+#: cps/cwa_functions.py:2119
 msgid "You must be an admin to access this page."
 msgstr "Za dostop do te strani morate biti skrbnik."
 
-#: cps/cwa_functions.py:2105
+#: cps/cwa_functions.py:2134
 msgid "Both username and image data are required."
 msgstr "Zahtevani so tako uporabniško ime kot podatki o sliki."
 
-#: cps/cwa_functions.py:2113
+#: cps/cwa_functions.py:2142
 msgid "Invalid image data format. Must be a valid image."
 msgstr "Neveljavna oblika slikovnih podatkov. Izbrati morate veljavno sliko."
 
-#: cps/cwa_functions.py:2121
+#: cps/cwa_functions.py:2150
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "Nepodprta vrsta slike. Dovoljena sta le PNG in JPEG."
 
-#: cps/cwa_functions.py:2133
+#: cps/cwa_functions.py:2162
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "Slika je prevelika. Prosimo, uporabite sliko, manjšo od 500 KB."
 
-#: cps/cwa_functions.py:2137
+#: cps/cwa_functions.py:2166
 msgid "Invalid Base64 image data."
 msgstr "Neveljavni Base64 podatki o sliki."
 
-#: cps/cwa_functions.py:2141
+#: cps/cwa_functions.py:2170
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "Nepravilna oblike e-poštnega naslova"
 
-#: cps/cwa_functions.py:2146
+#: cps/cwa_functions.py:2175
 msgid "Error validating image data."
 msgstr "Napaka pri preverjanju podatkov slike."
 
-#: cps/cwa_functions.py:2164
+#: cps/cwa_functions.py:2193
 #, fuzzy
 msgid "Profile picture updated successfully."
 msgstr "{} uporabnikov uspešno izbrisanih"
 
-#: cps/cwa_functions.py:2177
+#: cps/cwa_functions.py:2206
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA Upravljanje profilnih slik (v teku)"
 
-#: cps/db.py:1232 cps/templates/config_edit.html:294
-#: cps/templates/config_view_edit.html:80
-#: cps/templates/config_view_edit.html:91 cps/templates/email_edit.html:41
+#: cps/db.py:1240 cps/templates/config_edit.html:294
+#: cps/templates/config_view_edit.html:79
+#: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
 #: cps/web.py:1599 cps/web.py:1636 cps/web.py:1687 cps/web.py:1719
 #: cps/web.py:1758
@@ -1201,95 +1201,95 @@ msgstr "Iskanje dvojnikov končano (rezervni način)"
 msgid "Invalid resolution strategy"
 msgstr "Neveljavna vloga"
 
-#: cps/editbooks.py:103 cps/editbooks.py:160
+#: cps/editbooks.py:112 cps/editbooks.py:169
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
 "Mapa za uvoz ni zapisljiva. Preverite dovoljenja za nosilec /cwa-book-ingest."
 
-#: cps/editbooks.py:112
+#: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
 msgstr "Manjkajoč ali neveljaven ID knjige za nalaganje formata"
 
-#: cps/editbooks.py:118
+#: cps/editbooks.py:127
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr "Formata ni mogoče naložiti: Knjiga ne obstaja več v knjižnici"
 
-#: cps/editbooks.py:143 cps/editbooks.py:170 cps/templates/book_edit.html:52
+#: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:151
 msgid "Upload done, processing, please wait..."
 msgstr "Prenos opravljen, obdelujem, prosim počakajte..."
 
-#: cps/editbooks.py:148 cps/editbooks.py:174
+#: cps/editbooks.py:157 cps/editbooks.py:183
 #, fuzzy
 msgid "Failed to queue upload for processing"
 msgstr "Nisem uspel ustvariti poti za naslovnice"
 
-#: cps/editbooks.py:190
+#: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
 msgstr "Manjka izvorni ali ciljni format za pretvorbo"
 
-#: cps/editbooks.py:198
+#: cps/editbooks.py:207
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr ""
 "Knjiga je uspešno dodana v čakalno vrsto za pretvorbo v %(book_format)s"
 
-#: cps/editbooks.py:202
+#: cps/editbooks.py:211
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "Pri pretvorbi te knjige je prišlo do napake: %(res)s"
 
-#: cps/editbooks.py:358 cps/editbooks.py:1236 cps/editbooks.py:1745
+#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Vrsta datoteke ni dovoljena za nalaganje v ta strežnik"
 
-#: cps/editbooks.py:363 cps/editbooks.py:1242 cps/editbooks.py:1756
+#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Datoteke s končnico '%(ext)s' ni dovoljeno naložiti na ta strežnik"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1246 cps/editbooks.py:1761
+#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
 msgid "File to be uploaded must have an extension"
 msgstr "Datoteka, ki jo želite naložiti, mora imeti končnico"
 
-#: cps/editbooks.py:840 cps/editbooks.py:1422 cps/web.py:612 cps/web.py:2712
-#: cps/web.py:2803 cps/web.py:2888
+#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
+#: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Ups! Izbrana knjiga ni na voljo. Datoteka ne obstaja ali ni dostopna"
 
-#: cps/editbooks.py:872 cps/editbooks.py:1829
+#: cps/editbooks.py:881 cps/editbooks.py:1838
 msgid "User has no rights to upload cover"
 msgstr "Uporabnik nima pravice do nalaganja naslovnice"
 
-#: cps/editbooks.py:895 cps/editbooks.py:1224
+#: cps/editbooks.py:904 cps/editbooks.py:1233
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Identifikatorji niso občutljivi na velikost črk, prepisovanje starega "
 "identifikatorja"
 
-#: cps/editbooks.py:907 cps/editbooks.py:1198 cps/editbooks.py:1556
+#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' ni veljaven jezik"
 
-#: cps/editbooks.py:1020
+#: cps/editbooks.py:1029
 msgid "Metadata successfully updated"
 msgstr "Metapodatki so bili uspešno posodobljeni"
 
-#: cps/editbooks.py:1038
+#: cps/editbooks.py:1047
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Napaka pri urejanju knjige: {}"
 
-#: cps/editbooks.py:1093 cps/editbooks.py:1138 cps/editbooks.py:1847
-#: cps/updater.py:612 cps/uploader.py:97 cps/uploader.py:106
+#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
+#: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Neznano"
 
-#: cps/editbooks.py:1142
+#: cps/editbooks.py:1151
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1297,52 +1297,52 @@ msgstr ""
 "Naložena knjiga verjetno obstaja v knjižnici, preden naložite novo, "
 "razmislite o spremembi:"
 
-#: cps/editbooks.py:1254
+#: cps/editbooks.py:1263
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Datoteke %(filename)s ni bilo mogoče shraniti v začasno mapo"
 
-#: cps/editbooks.py:1274
+#: cps/editbooks.py:1283
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Nisem uspel premakniti naslovne datoteke %(file)s: %(error)s"
 
-#: cps/editbooks.py:1332 cps/editbooks.py:1334
+#: cps/editbooks.py:1341 cps/editbooks.py:1343
 msgid "Book Format Successfully Deleted"
 msgstr "Uspešno izbrisana vrsta knjige"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1350 cps/editbooks.py:1352
 msgid "Book Successfully Deleted"
 msgstr "Knjiga je bila uspešno izbrisana"
 
-#: cps/editbooks.py:1407
+#: cps/editbooks.py:1416
 msgid "You are missing permissions to delete books"
 msgstr "Manjkajo vam dovoljenja za brisanje knjig"
 
-#: cps/editbooks.py:1461
+#: cps/editbooks.py:1470
 msgid "edit metadata"
 msgstr "urejanje metapodatkov"
 
-#: cps/editbooks.py:1515
+#: cps/editbooks.py:1524
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "Številka serije: %(seriesindex)s ni veljavno število, preskočim"
 
-#: cps/editbooks.py:1750
+#: cps/editbooks.py:1759
 msgid "User has no rights to upload additional file formats"
 msgstr "Uporabnik nima pravic za nalaganje dodatnih formatov datotek"
 
-#: cps/editbooks.py:1774
+#: cps/editbooks.py:1783
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Nisem uspel ustvariti poti %(path)s (zavrnjeno dovoljenje)."
 
-#: cps/editbooks.py:1781
+#: cps/editbooks.py:1790
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Nisem uspel shraniti datoteke %(file)s."
 
-#: cps/editbooks.py:1806
+#: cps/editbooks.py:1815
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Oblina datotek %(ext)s je dodan v %(book)s"
@@ -1654,28 +1654,28 @@ msgstr ""
 "Prijava ni uspela: Odgovor ponudnika OAuth ne vsebuje zahtevanih polj: "
 "%(fields)s. Preverite nastavitve OAuth ali se obrnite na skrbnika."
 
-#: cps/oauth_bb.py:316 cps/oauth_bb.py:563
+#: cps/oauth_bb.py:316 cps/oauth_bb.py:560
 msgid "Failed to link OAuth account. Please try again."
 msgstr "Povezovanje računa OAuth ni uspelo. Prosimo, poskusite znova."
 
-#: cps/oauth_bb.py:534
+#: cps/oauth_bb.py:531
 msgid ""
 "OAuth error: Provider returned invalid user information. Please try again."
 msgstr ""
 "Napaka OAuth: Ponudnik je vrnil neveljavne podatke o uporabniku. Prosimo, "
 "poskusite znova."
 
-#: cps/oauth_bb.py:547 cps/remotelogin.py:149
+#: cps/oauth_bb.py:544 cps/remotelogin.py:149
 #, python-format
 msgid "Success! You are now logged in as: %(nickname)s"
 msgstr "Uspeh! Prijavljeni ste kot: %(nickname)s"
 
-#: cps/oauth_bb.py:557
+#: cps/oauth_bb.py:554
 #, python-format
 msgid "Link to %(oauth)s Succeeded"
 msgstr "Povezava do %(oauth)s je bila uspešna"
 
-#: cps/oauth_bb.py:565
+#: cps/oauth_bb.py:562
 #, python-format
 msgid ""
 "Login failed: No user account is linked to your %(provider)s account. Please "
@@ -1686,58 +1686,58 @@ msgstr ""
 "%(provider)s. Obrnite se na skrbnika, da vam ustvari račun ali poveže "
 "obstoječega."
 
-#: cps/oauth_bb.py:573
+#: cps/oauth_bb.py:570
 msgid "OAuth authentication failed. Please try again or contact administrator."
 msgstr ""
 "Avtentikacija OAuth ni uspela. Poskusite znova ali se obrnite na skrbnika."
 
-#: cps/oauth_bb.py:577
+#: cps/oauth_bb.py:574
 #, fuzzy
 msgid "OAuth system error. Please contact administrator."
 msgstr "Ups! E-poštni strežnik ni nastavljen, obrnite se na skrbnika."
 
-#: cps/oauth_bb.py:610
+#: cps/oauth_bb.py:607
 #, python-format
 msgid "Unlink to %(oauth)s Succeeded"
 msgstr "Odklop povezave z %(oauth)s je bil uspešen"
 
-#: cps/oauth_bb.py:615
+#: cps/oauth_bb.py:612
 #, python-format
 msgid "Unlink to %(oauth)s Failed"
 msgstr "Odklop povezave z %(oauth)s ni bil uspešen"
 
-#: cps/oauth_bb.py:618
+#: cps/oauth_bb.py:615
 #, python-format
 msgid "Not Linked to %(oauth)s"
 msgstr "Ni povezano z %(oauth)s"
 
-#: cps/oauth_bb.py:823
+#: cps/oauth_bb.py:820
 msgid "Failed to log in with GitHub."
 msgstr "Neuspešna prijava v GitHub."
 
-#: cps/oauth_bb.py:829
+#: cps/oauth_bb.py:826
 msgid "Failed to fetch user info from GitHub."
 msgstr "Neuspešna pridobitev informacij o uporabniku iz storitve GitHub."
 
-#: cps/oauth_bb.py:850
+#: cps/oauth_bb.py:847
 msgid "Failed to log in with Google."
 msgstr "Neuspešna prijava v Google."
 
-#: cps/oauth_bb.py:859
+#: cps/oauth_bb.py:856
 msgid "Failed to fetch user info from Google."
 msgstr "Neuspešna ridobititev informacij o uporabniku iz Googla."
 
-#: cps/oauth_bb.py:884
+#: cps/oauth_bb.py:881
 #, fuzzy
 msgid "Failed to log in with Generic OAuth."
 msgstr "Neuspešna prijava v GitHub."
 
-#: cps/oauth_bb.py:900
+#: cps/oauth_bb.py:897
 msgid "OAuth authentication failed: Token validation error. Please try again."
 msgstr ""
 "Avtentikacija OAuth ni uspela: Napaka pri validaciji žetona. Poskusite znova."
 
-#: cps/oauth_bb.py:904
+#: cps/oauth_bb.py:901
 msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
@@ -1745,7 +1745,7 @@ msgstr ""
 "Avtentikacija OAuth ni uspela zaradi nepričakovane napake. Obrnite se na "
 "skrbnika."
 
-#: cps/oauth_bb.py:912 cps/oauth_bb.py:930 cps/oauth_bb.py:948
+#: cps/oauth_bb.py:909 cps/oauth_bb.py:927 cps/oauth_bb.py:945
 msgid ""
 "OAuth error: Invalid redirect URI. If you're experiencing this error "
 "repeatedly, please configure the 'OAuth Redirect Host' setting in Admin > "
@@ -1755,25 +1755,25 @@ msgstr ""
 "konfigurirajte nastavitev 'OAuth Redirect Host' v Skrbnik > Osnovne "
 "nastavitve > OAuth."
 
-#: cps/oauth_bb.py:984
+#: cps/oauth_bb.py:981
 msgid "GitHub Oauth error, please retry later."
 msgstr "Napaka GitHub Oauth, prosimo, poskusite pozneje."
 
-#: cps/oauth_bb.py:991
+#: cps/oauth_bb.py:988
 #, python-brace-format
 msgid "GitHub Oauth error: {}"
 msgstr "Napaka GitHub Oauth: {}"
 
-#: cps/oauth_bb.py:1041
+#: cps/oauth_bb.py:1038
 msgid "Google Oauth error, please retry later."
 msgstr "Napaka Google Oauth, poskusite pozneje."
 
-#: cps/oauth_bb.py:1048
+#: cps/oauth_bb.py:1045
 #, python-brace-format
 msgid "Google Oauth error: {}"
 msgstr "Napaka Google Oauth: {}"
 
-#: cps/oauth_bb.py:1084 cps/oauth_bb.py:1092
+#: cps/oauth_bb.py:1081 cps/oauth_bb.py:1089
 #, fuzzy, python-brace-format
 msgid "OAuth error: {}"
 msgstr "Napaka GitHub Oauth: {}"
@@ -1873,8 +1873,8 @@ msgid "Show Category Section"
 msgstr "Prikaži oddelek kategorije"
 
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
-#: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:351
-#: cps/templates/cwa_settings.html:353 cps/templates/cwa_settings.html:1092
+#: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
+#: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
 #: cps/templates/search_form.html:70 cps/web.py:1642 cps/web.py:1654
 msgid "Series"
@@ -1885,7 +1885,7 @@ msgid "Show Series Section"
 msgstr "Prikaži razdelek serij"
 
 #: cps/render_template.py:76 cps/templates/book_table.html:105
-#: cps/templates/cwa_settings.html:323 cps/templates/cwa_settings.html:325
+#: cps/templates/cwa_settings.html:334 cps/templates/cwa_settings.html:336
 #: cps/templates/hardcover_review_matches.html:134
 msgid "Authors"
 msgstr "Avtorji"
@@ -2146,15 +2146,15 @@ msgstr "Preklicano"
 msgid "Unknown Status"
 msgstr "Neznani status"
 
-#: cps/updater.py:430 cps/updater.py:441 cps/updater.py:542 cps/updater.py:557
+#: cps/updater.py:436 cps/updater.py:447 cps/updater.py:548 cps/updater.py:563
 msgid "Unexpected data while reading update information"
 msgstr "Nepričakovani podatki med branjem informacij o posodobitvi"
 
-#: cps/updater.py:437 cps/updater.py:549
+#: cps/updater.py:443 cps/updater.py:555
 msgid "No update available. You already have the latest version installed"
 msgstr "Posodobitev ni na voljo. Najnovejšo različico že imate nameščeno"
 
-#: cps/updater.py:456
+#: cps/updater.py:462
 msgid ""
 "A new update is available. Click on the button below to update to the latest "
 "version."
@@ -2162,15 +2162,15 @@ msgstr ""
 "Na voljo je nova posodobitev. Klikni spodnji gumb za posodobitev na "
 "najnovejšo različico."
 
-#: cps/updater.py:473
+#: cps/updater.py:479
 msgid "Could not fetch update information"
 msgstr "Ni bilo mogoče pridobiti informacij o posodobitvi"
 
-#: cps/updater.py:484
+#: cps/updater.py:490
 msgid "Click on the button below to update to the latest stable version."
 msgstr "Klikni spodnji gumb za posodobitev na najnovejšo stabilno različico."
 
-#: cps/updater.py:492 cps/updater.py:506 cps/updater.py:517
+#: cps/updater.py:498 cps/updater.py:512 cps/updater.py:523
 #, python-format
 msgid ""
 "A new update is available. Click on the button below to update to version: "
@@ -2179,7 +2179,7 @@ msgstr ""
 "Na voljo je nova posodobitev. Klikni spodnji gumb za posodobitev na "
 "različico: %(version)s"
 
-#: cps/updater.py:535
+#: cps/updater.py:541
 msgid "No release information available"
 msgstr "Informacije o izdaji niso na voljo"
 
@@ -2518,20 +2518,20 @@ msgstr "Za ponastavitev gesla vnesite veljavno uporabniško ime"
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Prijavljeni ste kot: '%(nickname)s'"
 
-#: cps/web.py:2612
+#: cps/web.py:2667
 msgid "Success! Profile Updated"
 msgstr "Uspeh! Profil posodobljen"
 
-#: cps/web.py:2618
+#: cps/web.py:2673
 msgid "Oops! An account already exists for this Email."
 msgstr "Ups! Račun za to e-pošto že obstaja."
 
-#: cps/web.py:2816
+#: cps/web.py:2894
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "Neveljavna vloga"
 
-#: cps/progress_syncing/protocols/kosync.py:444
+#: cps/progress_syncing/protocols/kosync.py:454
 msgid "KOReader Sync Plugin"
 msgstr "Vtičnik za sinhronizacijo KOReader"
 
@@ -2702,12 +2702,12 @@ msgstr "Uporabniki&nbsp;&nbsp;👤"
 
 #: cps/templates/admin.html:14 cps/templates/login.html:17
 #: cps/templates/login.html:19 cps/templates/register.html:9
-#: cps/templates/user_edit.html:175 cps/templates/user_table.html:134
+#: cps/templates/user_edit.html:185 cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Uporabniško ime"
 
 #: cps/templates/admin.html:15 cps/templates/register.html:14
-#: cps/templates/user_edit.html:183 cps/templates/user_table.html:135
+#: cps/templates/user_edit.html:193 cps/templates/user_table.html:135
 msgid "Email"
 msgstr "E-pošta"
 
@@ -2715,7 +2715,7 @@ msgstr "E-pošta"
 msgid "Send to eReader Email"
 msgstr "Pošlji v e-pošto e-bralnika"
 
-#: cps/templates/admin.html:17 cps/templates/user_edit.html:211
+#: cps/templates/admin.html:17 cps/templates/user_edit.html:221
 #, fuzzy
 msgid "Send to eReader Subject"
 msgstr "Pošlji v e-bralnik"
@@ -2726,7 +2726,7 @@ msgid "Admin"
 msgstr "Administator"
 
 #: cps/templates/admin.html:20 cps/templates/login.html:22
-#: cps/templates/login.html:23 cps/templates/user_edit.html:194
+#: cps/templates/login.html:23 cps/templates/user_edit.html:204
 msgid "Password"
 msgstr "Geslo"
 
@@ -2750,7 +2750,7 @@ msgstr "Uredi"
 #: cps/templates/book_table.html:62 cps/templates/book_table.html:141
 #: cps/templates/book_table.html:190 cps/templates/duplicates.html:539
 #: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
-#: cps/templates/user_edit.html:317 cps/templates/user_table.html:150
+#: cps/templates/user_edit.html:326 cps/templates/user_table.html:150
 msgid "Delete"
 msgstr "Izbriši"
 
@@ -3008,7 +3008,7 @@ msgstr "V redu"
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:216
+#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
@@ -3016,7 +3016,7 @@ msgstr "V redu"
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
 #: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
 #: cps/templates/tasks.html:94 cps/templates/tasks.html:166
-#: cps/templates/tasks.html:173 cps/templates/user_edit.html:514
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:555
 msgid "Cancel"
 msgstr "Prekliči"
 
@@ -3114,7 +3114,7 @@ msgstr "Nalaganje..."
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
 #: cps/templates/layout.html:151 cps/templates/layout.html:360
 #: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:532
+#: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Zapri"
 
@@ -3136,7 +3136,7 @@ msgid "Upload Format"
 msgstr "Nalaganje vrsta"
 
 #: cps/templates/book_edit.html:90 cps/templates/book_edit.html:371
-#: cps/templates/cwa_settings.html:1080 cps/templates/search_form.html:12
+#: cps/templates/cwa_settings.html:1091 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Avtor"
 
@@ -3153,25 +3153,25 @@ msgid "Published Date"
 msgstr "Datum objave"
 
 #: cps/templates/book_edit.html:114 cps/templates/book_edit.html:372
-#: cps/templates/cwa_settings.html:337 cps/templates/cwa_settings.html:339
-#: cps/templates/cwa_settings.html:1098 cps/templates/detail.html:781
+#: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
+#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:781
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Založnik"
 
-#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1086
+#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1097
 #: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "Jezik"
 
-#: cps/templates/book_edit.html:122 cps/templates/cwa_settings.html:358
-#: cps/templates/cwa_settings.html:360
+#: cps/templates/book_edit.html:122 cps/templates/cwa_settings.html:369
+#: cps/templates/cwa_settings.html:371
 msgid "Rating"
 msgstr "Ocena"
 
 #: cps/templates/book_edit.html:126 cps/templates/book_edit.html:373
-#: cps/templates/cwa_settings.html:330 cps/templates/cwa_settings.html:332
+#: cps/templates/cwa_settings.html:341 cps/templates/cwa_settings.html:343
 #: cps/templates/search_form.html:154
 msgid "Description"
 msgstr "Opis"
@@ -3240,10 +3240,10 @@ msgid "Fetch Metadata"
 msgstr "Pridobivanje metapodatkov"
 
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:215
+#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
-#: cps/templates/user_edit.html:512
+#: cps/templates/user_edit.html:553
 msgid "Save"
 msgstr "Shrani"
 
@@ -3339,8 +3339,8 @@ msgid "Enter Title"
 msgstr "Vnesi naslov"
 
 #: cps/templates/book_table.html:102 cps/templates/config_view_edit.html:39
-#: cps/templates/cwa_settings.html:316 cps/templates/cwa_settings.html:318
-#: cps/templates/cwa_settings.html:1074 cps/templates/shelf_edit.html:8
+#: cps/templates/cwa_settings.html:327 cps/templates/cwa_settings.html:329
+#: cps/templates/cwa_settings.html:1085 cps/templates/shelf_edit.html:8
 #: cps/templates/tasks.html:41 cps/templates/tasks.html:64
 msgid "Title"
 msgstr "Naslov"
@@ -3654,8 +3654,9 @@ msgid "Logfile Configuration"
 msgstr "Nastavitev dnevniške datoteke"
 
 #: cps/templates/config_edit.html:149
-msgid "Location and name of logfile (calibre-web.log for no entry)"
-msgstr "Lokacija in ime dnevniške datoteke (calibre-web.log, če ni vneseno)"
+#, fuzzy
+msgid "Location and name of logfile (/dev/stdout for no entry)"
+msgstr "Lokacija in ime dnevniške datoteke dostopa (access.log, če ni vneseno)"
 
 #: cps/templates/config_edit.html:154
 msgid "Enable Access Log"
@@ -4237,14 +4238,10 @@ msgid "Default Theme"
 msgstr "Privzeto"
 
 #: cps/templates/config_view_edit.html:65
-msgid "Standard Theme"
-msgstr "Standardna tema"
-
-#: cps/templates/config_view_edit.html:66
 msgid "caliBlur! Dark Theme"
 msgstr "caliBlur! temna tema"
 
-#: cps/templates/config_view_edit.html:68
+#: cps/templates/config_view_edit.html:67
 msgid ""
 "Default theme for new users and anonymous browsing. Users can select their "
 "own preferred theme in their profile."
@@ -4252,135 +4249,135 @@ msgstr ""
 "Privzeta tema za nove uporabnike in anonimno brskanje. Uporabniki lahko "
 "izberejo svojo želeno temo v svojem profilu."
 
-#: cps/templates/config_view_edit.html:72
+#: cps/templates/config_view_edit.html:71
 msgid "Regular Expression for Ignoring Columns"
 msgstr "Regularni izraz za ignoriranje stolpcev"
 
-#: cps/templates/config_view_edit.html:74
+#: cps/templates/config_view_edit.html:73
 msgid "Regex pattern to hide custom columns from being displayed in the UI."
 msgstr ""
 "Regex vzorec za prikritje po meri nastavljenih stolpcev v uporabniškem "
 "vmesniku."
 
-#: cps/templates/config_view_edit.html:78
+#: cps/templates/config_view_edit.html:77
 msgid "Link Read/Unread Status to Calibre Column"
 msgstr "Poveži stanje prebrano/neprebrano s stolpcem Calibre"
 
-#: cps/templates/config_view_edit.html:85
+#: cps/templates/config_view_edit.html:84
 #, fuzzy
 msgid "Sync read/unread status with a Calibre boolean custom column."
 msgstr "Poveži stanje prebrano/neprebrano s stolpcem Calibre"
 
-#: cps/templates/config_view_edit.html:89
+#: cps/templates/config_view_edit.html:88
 msgid "View Restrictions based on Calibre column"
 msgstr "Prikaz omejitev na podlagi stolpca Calibre"
 
-#: cps/templates/config_view_edit.html:96
+#: cps/templates/config_view_edit.html:95
 msgid ""
 "Restrict book visibility based on values in a Calibre text custom column."
 msgstr ""
 "Omejitev vidnosti knjig na podlagi vrednosti v Calibre tekstovnem stolpcu po "
 "meri."
 
-#: cps/templates/config_view_edit.html:100
+#: cps/templates/config_view_edit.html:99
 msgid "Regular Expression for Title Sorting"
 msgstr "Regularni izraz za razvrščanje naslovov"
 
-#: cps/templates/config_view_edit.html:102
+#: cps/templates/config_view_edit.html:101
 msgid ""
 "Regex to strip prefixes from titles for proper sorting (e.g., \"The\", "
 "\"A\", \"An\")."
 msgstr ""
 
-#: cps/templates/config_view_edit.html:108
+#: cps/templates/config_view_edit.html:107
 msgid "Default Settings for New Users"
 msgstr "Privzete nastavitve za nove uporabnike"
 
-#: cps/templates/config_view_edit.html:109
+#: cps/templates/config_view_edit.html:108
 msgid "These settings will be applied to all newly created user accounts."
 msgstr ""
 "Te nastavitve bodo uporabljene za vse na novo ustvarjene uporabniške račune."
 
-#: cps/templates/config_view_edit.html:111
+#: cps/templates/config_view_edit.html:110
 #, fuzzy
 msgid "Permissions"
 msgstr "Različica"
 
-#: cps/templates/config_view_edit.html:115 cps/templates/user_edit.html:396
+#: cps/templates/config_view_edit.html:114 cps/templates/user_edit.html:405
 msgid "Admin User"
 msgstr "Administratorski uporabnik"
 
-#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:402
+#: cps/templates/config_view_edit.html:119 cps/templates/user_edit.html:411
 msgid "Allow Downloads"
 msgstr "Dovoli prenose"
 
-#: cps/templates/config_view_edit.html:125 cps/templates/user_edit.html:407
+#: cps/templates/config_view_edit.html:124 cps/templates/user_edit.html:416
 msgid "Allow eBook Viewer"
 msgstr "Dovoli pregledovalnik e-knjig"
 
-#: cps/templates/config_view_edit.html:131 cps/templates/user_edit.html:413
+#: cps/templates/config_view_edit.html:130 cps/templates/user_edit.html:422
 msgid "Allow Uploads"
 msgstr "Dovoli nalaganje"
 
-#: cps/templates/config_view_edit.html:137 cps/templates/user_edit.html:419
+#: cps/templates/config_view_edit.html:136 cps/templates/user_edit.html:428
 msgid "Allow Edit"
 msgstr "Omogoči urejanje"
 
-#: cps/templates/config_view_edit.html:142 cps/templates/user_edit.html:424
+#: cps/templates/config_view_edit.html:141 cps/templates/user_edit.html:433
 msgid "Allow Delete Books"
 msgstr "Dovoli izbris knjig"
 
-#: cps/templates/config_view_edit.html:147 cps/templates/user_edit.html:430
+#: cps/templates/config_view_edit.html:146 cps/templates/user_edit.html:439
 msgid "Allow Changing Password"
 msgstr "Dovoli spreminjanje gesla"
 
-#: cps/templates/config_view_edit.html:152 cps/templates/user_edit.html:435
+#: cps/templates/config_view_edit.html:151 cps/templates/user_edit.html:444
 msgid "Allow Editing Public Shelves"
 msgstr "Omogoči urejanje javnih polic"
 
-#: cps/templates/config_view_edit.html:156
+#: cps/templates/config_view_edit.html:155
 #, fuzzy
 msgid "Language & Display"
 msgstr "Prikaz ene strani"
 
-#: cps/templates/config_view_edit.html:158
+#: cps/templates/config_view_edit.html:157
 msgid "Default Language"
 msgstr "Privzeti jezik"
 
-#: cps/templates/config_view_edit.html:164
+#: cps/templates/config_view_edit.html:163
 #, fuzzy
 msgid "Default interface language for new users."
 msgstr "Privzete nastavitve za nove uporabnike"
 
-#: cps/templates/config_view_edit.html:168
+#: cps/templates/config_view_edit.html:167
 msgid "Default Visible Language of Books"
 msgstr "Privzet vidni jezik knjig"
 
-#: cps/templates/config_view_edit.html:175
+#: cps/templates/config_view_edit.html:174
 #, fuzzy
 msgid "Default book language filter for new users."
 msgstr "Privzete vidnosti za nove uporabnike"
 
-#: cps/templates/config_view_edit.html:181
+#: cps/templates/config_view_edit.html:180
 msgid "Default Visibilities for New Users"
 msgstr "Privzete vidnosti za nove uporabnike"
 
-#: cps/templates/config_view_edit.html:182
+#: cps/templates/config_view_edit.html:181
 msgid "Choose which sidebar sections are visible by default for new users."
 msgstr ""
 "Izberite, kateri razdelki stranske vrstice so privzeto vidni za nove "
 "uporabnike."
 
-#: cps/templates/config_view_edit.html:195 cps/templates/user_edit.html:356
+#: cps/templates/config_view_edit.html:194 cps/templates/user_edit.html:365
 #: cps/templates/user_table.html:155
 msgid "Show Random Books in Detail View"
 msgstr "Prikaži naključne knjige v podrobnem pogledu"
 
-#: cps/templates/config_view_edit.html:201 cps/templates/user_edit.html:362
+#: cps/templates/config_view_edit.html:200 cps/templates/user_edit.html:371
 msgid "Add Allowed/Denied Tags"
 msgstr "Dodajanje oznak dovoljeno/zavrnjeno"
 
-#: cps/templates/config_view_edit.html:202
+#: cps/templates/config_view_edit.html:201
 msgid "Add Allowed/Denied custom column values"
 msgstr "Dodajanje vrednosti stolpca dovoljeno/zavrnjeno po meri"
 
@@ -4530,10 +4527,29 @@ msgstr ""
 "href=\"https://github.com/innocenat\">innocenat</a>."
 
 #: cps/templates/cwa_settings.html:181
+#, fuzzy
+msgid "Enable KOReader Sync (CWA Plugin)"
+msgstr "Vtičnik za sinhronizacijo KOReader"
+
+#: cps/templates/cwa_settings.html:183
+msgid ""
+"When enabled, CWA exposes the /kosync endpoints and stores KOReader-"
+"compatible checksums in metadata.db for progress syncing. Requires the "
+"KOReader plugin on your device."
+msgstr ""
+
+#: cps/templates/cwa_settings.html:185
+msgid ""
+"Note: Enabling this starts a checksum backfill service at startup which can "
+"temporarily lock metadata.db. To stop a running backfill, restart the "
+"container after disabling."
+msgstr ""
+
+#: cps/templates/cwa_settings.html:192
 msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
 msgstr "Omogoči agresivni način popravljanja EPUB (tvegano)"
 
-#: cps/templates/cwa_settings.html:183
+#: cps/templates/cwa_settings.html:194
 msgid ""
 "Aggressive mode applies more invasive fixes and will attempt lower-"
 "confidence encoding conversions. Safe mode is recommended for most libraries."
@@ -4542,12 +4558,12 @@ msgstr ""
 "kodiranja z nižjo stopnjo zaupanja. Za večino knjižnic je priporočljiv varni "
 "način."
 
-#: cps/templates/cwa_settings.html:191
+#: cps/templates/cwa_settings.html:202
 #, fuzzy
 msgid "Enable Archived Book Cleanup"
 msgstr "Arhivirane knjige"
 
-#: cps/templates/cwa_settings.html:193
+#: cps/templates/cwa_settings.html:204
 msgid ""
 "Removes stale archived book references in app.db when the book no longer "
 "exists in the Calibre library. Helps keep archived counts accurate."
@@ -4556,116 +4572,116 @@ msgstr ""
 "obstaja več v knjižnici Calibre. Pomaga ohranjati natančno število "
 "arhiviranih elementov."
 
-#: cps/templates/cwa_settings.html:197
+#: cps/templates/cwa_settings.html:208
 msgid "Cleanup Schedule:"
 msgstr "Urnik čiščenja:"
 
-#: cps/templates/cwa_settings.html:202 cps/templates/cwa_settings.html:571
+#: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:582
 msgid "Frequent Intervals"
 msgstr "Pogosti intervali"
 
-#: cps/templates/cwa_settings.html:203 cps/templates/cwa_settings.html:572
+#: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:583
 msgid "Every 15 Minutes"
 msgstr "Vsakih 15 minut"
 
-#: cps/templates/cwa_settings.html:204 cps/templates/cwa_settings.html:573
+#: cps/templates/cwa_settings.html:215 cps/templates/cwa_settings.html:584
 msgid "Every 30 Minutes"
 msgstr "Vsakih 30 minut"
 
-#: cps/templates/cwa_settings.html:205 cps/templates/cwa_settings.html:574
+#: cps/templates/cwa_settings.html:216 cps/templates/cwa_settings.html:585
 msgid "Every Hour"
 msgstr "Vsako uro"
 
-#: cps/templates/cwa_settings.html:206 cps/templates/cwa_settings.html:575
+#: cps/templates/cwa_settings.html:217 cps/templates/cwa_settings.html:586
 msgid "Every 2 Hours"
 msgstr "Vsaki 2 uri"
 
-#: cps/templates/cwa_settings.html:207 cps/templates/cwa_settings.html:576
+#: cps/templates/cwa_settings.html:218 cps/templates/cwa_settings.html:587
 msgid "Every 4 Hours"
 msgstr "Vsake 4 ure"
 
-#: cps/templates/cwa_settings.html:208 cps/templates/cwa_settings.html:577
+#: cps/templates/cwa_settings.html:219 cps/templates/cwa_settings.html:588
 msgid "Every 6 Hours"
 msgstr "Vsakih 6 ur"
 
-#: cps/templates/cwa_settings.html:209 cps/templates/cwa_settings.html:578
+#: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:589
 msgid "Every 12 Hours"
 msgstr "Vsakih 12 ur"
 
-#: cps/templates/cwa_settings.html:211 cps/templates/cwa_settings.html:580
+#: cps/templates/cwa_settings.html:222 cps/templates/cwa_settings.html:591
 msgid "Daily/Weekly/Monthly"
 msgstr "Dnevno/Tedensko/Mesečno"
 
-#: cps/templates/cwa_settings.html:212 cps/templates/cwa_settings.html:581
+#: cps/templates/cwa_settings.html:223 cps/templates/cwa_settings.html:592
 msgid "Daily at Specific Time"
 msgstr "Dnevno ob določenem času"
 
-#: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:582
+#: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:593
 msgid "Weekly on Specific Day"
 msgstr "Tedensko na določen dan"
 
-#: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:583
+#: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:594
 msgid "Monthly on Specific Day"
 msgstr "Mesečno na določen dan"
 
-#: cps/templates/cwa_settings.html:217
+#: cps/templates/cwa_settings.html:228
 msgid "Default: daily at 03:00"
 msgstr "Privzeto: dnevno ob 03:00"
 
-#: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:590
+#: cps/templates/cwa_settings.html:231 cps/templates/cwa_settings.html:601
 msgid "Day of Week:"
 msgstr "Dan v tednu:"
 
-#: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:595
+#: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:606
 msgid "Monday"
 msgstr "Ponedeljek"
 
-#: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:596
+#: cps/templates/cwa_settings.html:236 cps/templates/cwa_settings.html:607
 msgid "Tuesday"
 msgstr "Torek"
 
-#: cps/templates/cwa_settings.html:226 cps/templates/cwa_settings.html:597
+#: cps/templates/cwa_settings.html:237 cps/templates/cwa_settings.html:608
 msgid "Wednesday"
 msgstr "Sreda"
 
-#: cps/templates/cwa_settings.html:227 cps/templates/cwa_settings.html:598
+#: cps/templates/cwa_settings.html:238 cps/templates/cwa_settings.html:609
 msgid "Thursday"
 msgstr "Četrtek"
 
-#: cps/templates/cwa_settings.html:228 cps/templates/cwa_settings.html:599
+#: cps/templates/cwa_settings.html:239 cps/templates/cwa_settings.html:610
 msgid "Friday"
 msgstr "Petek"
 
-#: cps/templates/cwa_settings.html:229 cps/templates/cwa_settings.html:600
+#: cps/templates/cwa_settings.html:240 cps/templates/cwa_settings.html:611
 msgid "Saturday"
 msgstr "Sobota"
 
-#: cps/templates/cwa_settings.html:230 cps/templates/cwa_settings.html:601
+#: cps/templates/cwa_settings.html:241 cps/templates/cwa_settings.html:612
 msgid "Sunday"
 msgstr "Nedelja"
 
-#: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:607
+#: cps/templates/cwa_settings.html:246 cps/templates/cwa_settings.html:618
 msgid "Day of Month:"
 msgstr "Dan v mesecu:"
 
-#: cps/templates/cwa_settings.html:243 cps/templates/cwa_settings.html:616
+#: cps/templates/cwa_settings.html:254 cps/templates/cwa_settings.html:627
 msgid "(1-28)"
 msgstr "(1-28)"
 
-#: cps/templates/cwa_settings.html:247 cps/templates/cwa_settings.html:621
+#: cps/templates/cwa_settings.html:258 cps/templates/cwa_settings.html:632
 msgid "Time of Day:"
 msgstr "Čas dneva:"
 
-#: cps/templates/cwa_settings.html:255 cps/templates/cwa_settings.html:630
+#: cps/templates/cwa_settings.html:266 cps/templates/cwa_settings.html:641
 #, python-format
 msgid "(Server timezone: %(tz)s)"
 msgstr "(Časovni pas strežnika: %(tz)s)"
 
-#: cps/templates/cwa_settings.html:291
+#: cps/templates/cwa_settings.html:302
 msgid "Enable Automatic Metadata Fetching for New Books"
 msgstr "Omogoči samodejno pridobivanje metapodatkov za nove knjige"
 
-#: cps/templates/cwa_settings.html:293
+#: cps/templates/cwa_settings.html:304
 msgid ""
 "When active, CWA will automatically attempt to fetch and apply metadata "
 "(title, author, description, cover, etc.) for newly ingested books using the "
@@ -4676,11 +4692,11 @@ msgstr ""
 "(naslov, avtor, opis, ovitek itd.) za na novo uvožene knjige. To izboljša "
 "kakovost informacij o knjigah, posebej pri tistih s pomanjkljivimi podatki."
 
-#: cps/templates/cwa_settings.html:301
+#: cps/templates/cwa_settings.html:312
 msgid "Enable Smart Metadata Application"
 msgstr "Omogoči pametno uveljavljanje metapodatkov"
 
-#: cps/templates/cwa_settings.html:303
+#: cps/templates/cwa_settings.html:314
 msgid ""
 "When enabled, fetched metadata will only replace existing data if it appears "
 "to be better quality (e.g., longer descriptions, higher resolution covers). "
@@ -4691,12 +4707,12 @@ msgstr ""
 "boljše kakovosti (npr. daljši opisi, višja ločljivost ovitkov). Ko je "
 "onemogočeno, bodo podatki zamenjani neposredno od ponudnika."
 
-#: cps/templates/cwa_settings.html:308
+#: cps/templates/cwa_settings.html:319
 #, fuzzy
 msgid "Metadata Fields to Update"
 msgstr "Metapodatki so bili uspešno posodobljeni"
 
-#: cps/templates/cwa_settings.html:310
+#: cps/templates/cwa_settings.html:321
 msgid ""
 "Select which metadata fields should be updated when auto-fetching. Unchecked "
 "fields will never be modified during automatic metadata fetching, preserving "
@@ -4705,32 +4721,32 @@ msgstr ""
 "Izberite, katera polja metapodatkov naj se posodobijo pri samodejnem "
 "pridobivanju. Neoznačena polja ne bodo nikoli spremenjena."
 
-#: cps/templates/cwa_settings.html:344 cps/templates/cwa_settings.html:346
+#: cps/templates/cwa_settings.html:355 cps/templates/cwa_settings.html:357
 msgid "Tags/Genres"
 msgstr "Oznake/Žanri"
 
-#: cps/templates/cwa_settings.html:365 cps/templates/cwa_settings.html:367
+#: cps/templates/cwa_settings.html:376 cps/templates/cwa_settings.html:378
 #, fuzzy
 msgid "Publication Date"
 msgstr "Datum objave"
 
-#: cps/templates/cwa_settings.html:372 cps/templates/cwa_settings.html:374
+#: cps/templates/cwa_settings.html:383 cps/templates/cwa_settings.html:385
 #, fuzzy
 msgid "Identifiers (ISBN, etc.)"
 msgstr "Identifikatorji"
 
-#: cps/templates/cwa_settings.html:379 cps/templates/cwa_settings.html:381
+#: cps/templates/cwa_settings.html:390 cps/templates/cwa_settings.html:392
 #, fuzzy
 msgid "Cover Image"
 msgstr "Naslovnica"
 
-#: cps/templates/cwa_settings.html:387 cps/templates/cwa_settings.html:408
-#: cps/templates/cwa_settings.html:515 cps/templates/cwa_settings.html:720
-#: cps/templates/user_edit.html:380
+#: cps/templates/cwa_settings.html:398 cps/templates/cwa_settings.html:419
+#: cps/templates/cwa_settings.html:526 cps/templates/cwa_settings.html:731
+#: cps/templates/user_edit.html:389 cps/templates/user_edit.html:480
 msgid "Tip"
 msgstr "Nasvet"
 
-#: cps/templates/cwa_settings.html:387
+#: cps/templates/cwa_settings.html:398
 msgid ""
 "These field selections apply to both Smart and Direct replacement modes. "
 "Smart mode will additionally apply quality criteria to selected fields, "
@@ -4739,25 +4755,25 @@ msgstr ""
 "Te izbire polj veljajo tako za pametni kot neposredni način zamenjave. "
 "Pametni način bo dodatno uporabil kriterije kakovosti."
 
-#: cps/templates/cwa_settings.html:392
+#: cps/templates/cwa_settings.html:403
 msgid "Cover File Max Size (MB):"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:405
+#: cps/templates/cwa_settings.html:416
 msgid "Range: 1-200 MB (default: 15)"
 msgstr ""
 
-#: cps/templates/cwa_settings.html:408
+#: cps/templates/cwa_settings.html:419
 msgid ""
 "Limits the maximum size of cover images downloaded from metadata providers "
 "or URLs to prevent slow or stalled saves."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:417
+#: cps/templates/cwa_settings.html:428
 msgid "Ingest Processing Timeout"
 msgstr "Časovna omejitev obdelave uvoza"
 
-#: cps/templates/cwa_settings.html:419
+#: cps/templates/cwa_settings.html:430
 msgid ""
 "Maximum time (in minutes) to allow for processing a single book before "
 "timing out. Files that timeout are moved to the failed backup folder for "
@@ -4766,19 +4782,19 @@ msgstr ""
 "Najdaljši čas (v minutah) za obdelavo posamezne knjige. Datoteke, ki "
 "prekoračijo ta čas, so premaknjene v mapo za spodletele poskuse."
 
-#: cps/templates/cwa_settings.html:421
+#: cps/templates/cwa_settings.html:432
 msgid "Timeout (minutes):"
 msgstr "Časovna omejitev (minute):"
 
-#: cps/templates/cwa_settings.html:433
+#: cps/templates/cwa_settings.html:444
 msgid "Range: 5-120 minutes (default: 15)"
 msgstr "Razpon: 5-120 minut (privzeto: 15)"
 
-#: cps/templates/cwa_settings.html:437
+#: cps/templates/cwa_settings.html:448
 msgid "Stale temp cleanup"
 msgstr "Čiščenje zastarelih začasnih datotek"
 
-#: cps/templates/cwa_settings.html:438
+#: cps/templates/cwa_settings.html:449
 msgid ""
 "Ignored temporary upload files (.uploading, .part, etc.) can be cleaned "
 "after a set age. Setting either value to 0 disables cleanup. Changes apply "
@@ -4787,27 +4803,27 @@ msgstr ""
 "Prezrte začasne datoteke prenosov (.uploading, .part itd.) se lahko očistijo "
 "po določenem času. Nastavitev na 0 onemogoči čiščenje."
 
-#: cps/templates/cwa_settings.html:443
+#: cps/templates/cwa_settings.html:454
 msgid "Stale temp age (minutes):"
 msgstr "Starost zastarelih datotek (minute):"
 
-#: cps/templates/cwa_settings.html:456
+#: cps/templates/cwa_settings.html:467
 msgid "Range: 0-10080 minutes (default: 120)"
 msgstr "Razpon: 0-10080 minut (privzeto: 120)"
 
-#: cps/templates/cwa_settings.html:460
+#: cps/templates/cwa_settings.html:471
 msgid "Stale temp cleanup interval (seconds):"
 msgstr "Interval čiščenja zastarelih datotek (sekunde):"
 
-#: cps/templates/cwa_settings.html:473
+#: cps/templates/cwa_settings.html:484
 msgid "Range: 0-86400 seconds (default: 600)"
 msgstr "Razpon: 0-86400 sekund (privzeto: 600)"
 
-#: cps/templates/cwa_settings.html:479
+#: cps/templates/cwa_settings.html:490
 msgid "Auto-Send Delay for New Books"
 msgstr "Zakasnitev samodejnega pošiljanja za nove knjige"
 
-#: cps/templates/cwa_settings.html:481
+#: cps/templates/cwa_settings.html:492
 msgid ""
 "Delay (in minutes) before automatically sending newly ingested books to "
 "eReaders. This allows time for metadata fetching and other processing to "
@@ -4819,19 +4835,19 @@ msgstr ""
 "pred pošiljanjem. Velja le za uporabnike, ki so v svojem profilu omogočili "
 "samodejno pošiljanje."
 
-#: cps/templates/cwa_settings.html:483
+#: cps/templates/cwa_settings.html:494
 msgid "Delay (minutes):"
 msgstr "Zakasnitev (minute):"
 
-#: cps/templates/cwa_settings.html:495
+#: cps/templates/cwa_settings.html:506
 msgid "Range: 1-60 minutes (default: 5)"
 msgstr "Razpon: 1-60 minut (privzeto: 5)"
 
-#: cps/templates/cwa_settings.html:500
+#: cps/templates/cwa_settings.html:511
 msgid "Auto Metadata Fetch Provider Hierarchy"
 msgstr "Hierarhija ponudnikov za samodejno pridobivanje metapodatkov"
 
-#: cps/templates/cwa_settings.html:502
+#: cps/templates/cwa_settings.html:513
 msgid ""
 "Configure the order in which metadata providers are searched when "
 "automatically fetching metadata for new books. Drag and drop to reorder "
@@ -4841,26 +4857,26 @@ msgstr ""
 "pridobivanju za nove knjige. Povlecite in spustite za spremembo vrstnega "
 "reda. Uporabljeni bodo le omogočeni ponudniki."
 
-#: cps/templates/cwa_settings.html:515
+#: cps/templates/cwa_settings.html:526
 msgid "Providers are tried in order from top to bottom. Drag to reorder."
 msgstr ""
 "Ponudniki so preizkušeni po vrstnem redu od zgoraj navzdol. Povlecite za "
 "spremembo vrstnega reda."
 
-#: cps/templates/cwa_settings.html:524
+#: cps/templates/cwa_settings.html:535
 msgid "Enabled Metadata Providers"
 msgstr "Omogočeni ponudniki metapodatkov"
 
-#: cps/templates/cwa_settings.html:526
+#: cps/templates/cwa_settings.html:537
 msgid "Unchecked providers are disabled globally."
 msgstr "Neoznačeni ponudniki so onemogočeni na ravni celotnega sistema."
 
-#: cps/templates/cwa_settings.html:539
+#: cps/templates/cwa_settings.html:550
 #, fuzzy
 msgid "Hardcover Auto-Fetch Settings"
 msgstr "Hardcover API žeton"
 
-#: cps/templates/cwa_settings.html:541
+#: cps/templates/cwa_settings.html:552
 msgid ""
 "Automatically fetch and assign Hardcover IDs to books in your library. "
 "Hardcover IDs enable reading progress sync and annotation sync with "
@@ -4870,12 +4886,12 @@ msgstr ""
 "Hardcover omogočajo sinhronizacijo napredka branja in opomb z aplikacijo "
 "Hardcover.app pri uporabi združljivih e-bralnikov."
 
-#: cps/templates/cwa_settings.html:546
+#: cps/templates/cwa_settings.html:557
 #, fuzzy
 msgid "Hardcover Token Required"
 msgstr "Hardcover API žeton"
 
-#: cps/templates/cwa_settings.html:547
+#: cps/templates/cwa_settings.html:558
 msgid ""
 "To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in your "
 "docker-compose environment variables or configure a global token in Basic "
@@ -4886,12 +4902,12 @@ msgstr ""
 "nastaviti splošni žeton v Osnovnih nastavitvah. Brez veljavnega žetona bo ta "
 "funkcija ostala onemogočena."
 
-#: cps/templates/cwa_settings.html:558
+#: cps/templates/cwa_settings.html:569
 #, fuzzy
 msgid "Enable Hardcover Auto-Fetch"
 msgstr "Omogoči sinhronizacijo s Kobo"
 
-#: cps/templates/cwa_settings.html:560
+#: cps/templates/cwa_settings.html:571
 msgid ""
 "Automatically search Hardcover for books without Hardcover IDs. High-"
 "confidence matches are applied automatically; low-confidence matches are "
@@ -4901,24 +4917,24 @@ msgstr ""
 "visoko stopnjo zaupanja se uveljavijo samodejno; ujemanja z nizko stopnjo "
 "zaupanja se uvrstijo v čakalno vrsto za ročni pregled."
 
-#: cps/templates/cwa_settings.html:565
+#: cps/templates/cwa_settings.html:576
 msgid "Run Schedule:"
 msgstr "Urnik zagona:"
 
-#: cps/templates/cwa_settings.html:586
+#: cps/templates/cwa_settings.html:597
 msgid "How often to automatically run the Hardcover ID fetch task"
 msgstr ""
 "Kako pogosto naj se samodejno zažene opravilo pridobivanja Hardcover ID-jev"
 
-#: cps/templates/cwa_settings.html:666
+#: cps/templates/cwa_settings.html:677
 msgid "Minimum Confidence Threshold:"
 msgstr "Prag minimalnega zaupanja:"
 
-#: cps/templates/cwa_settings.html:676
+#: cps/templates/cwa_settings.html:687
 msgid "Range: 0.50-1.00 (default: 0.85)"
 msgstr "Razpon: 0.50-1.00 (privzeto: 0.85)"
 
-#: cps/templates/cwa_settings.html:678
+#: cps/templates/cwa_settings.html:689
 msgid ""
 "Matches with confidence scores above this threshold are automatically "
 "applied. Lower scores are queued for manual review. Higher values = fewer "
@@ -4928,15 +4944,15 @@ msgstr ""
 "ocene se uvrstijo v vrsto za ročni pregled. Višje vrednosti = manj "
 "samodejnih ujemanj, a večja natančnost."
 
-#: cps/templates/cwa_settings.html:684
+#: cps/templates/cwa_settings.html:695
 msgid "Batch Size:"
 msgstr "Velikost serije:"
 
-#: cps/templates/cwa_settings.html:694
+#: cps/templates/cwa_settings.html:705
 msgid "Range: 10-200 books per run (default: 50)"
 msgstr "Razpon: 10-200 knjig na zagon (privzeto: 50)"
 
-#: cps/templates/cwa_settings.html:696
+#: cps/templates/cwa_settings.html:707
 msgid ""
 "Number of books to process in each scheduled run. Smaller batches reduce API "
 "load; larger batches process your library faster."
@@ -4944,15 +4960,15 @@ msgstr ""
 "Število knjig, obdelanih v vsakem načrtovanem zagonu. Manjše serije "
 "zmanjšajo obremenitev API-ja; večje serije hitreje obdelajo vašo knjižnico."
 
-#: cps/templates/cwa_settings.html:702
+#: cps/templates/cwa_settings.html:713
 msgid "Rate Limit Delay (seconds):"
 msgstr "Zakasnitev zaradi omejitve števila zahtev (sekunde):"
 
-#: cps/templates/cwa_settings.html:712
+#: cps/templates/cwa_settings.html:723
 msgid "Range: 0-60 seconds (default: 5.0)"
 msgstr "Razpon: 0-60 sekund (privzeto: 5.0)"
 
-#: cps/templates/cwa_settings.html:714
+#: cps/templates/cwa_settings.html:725
 msgid ""
 "Delay between API requests to Hardcover. Prevents rate limiting and protects "
 "your API key. Uses exponential backoff on errors."
@@ -4960,7 +4976,7 @@ msgstr ""
 "Zakasnitev med API zahtevami na Hardcover. Preprečuje omejevanje zahtev in "
 "ščiti vaš API ključ. Ob napakah uporablja eksponentno podaljševanje časa."
 
-#: cps/templates/cwa_settings.html:720
+#: cps/templates/cwa_settings.html:731
 msgid ""
 "You can manually trigger the Hardcover auto-fetch task from the Admin panel "
 "at any time. Check the CWA Stats page to see progress and review queued "
@@ -4970,16 +4986,16 @@ msgstr ""
 "skrbniški plošči. Na strani Statistika CWA preverite napredek in preglejte "
 "ujemanja, ki čakajo na ročno odobritev."
 
-#: cps/templates/cwa_settings.html:727
+#: cps/templates/cwa_settings.html:738
 #, fuzzy
 msgid "Web UI Settings"
 msgstr "Nastavitve"
 
-#: cps/templates/cwa_settings.html:734
+#: cps/templates/cwa_settings.html:745
 msgid "Enable CWA Update Notifications"
 msgstr "Omogoči obvestila o posodobitvah CWA"
 
-#: cps/templates/cwa_settings.html:736
+#: cps/templates/cwa_settings.html:747
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
@@ -4987,11 +5003,11 @@ msgstr ""
 "Ko je aktivno, boste v spletnem vmesniku prejemali obvestila ob izidu nove "
 "različice CWA"
 
-#: cps/templates/cwa_settings.html:744
+#: cps/templates/cwa_settings.html:755
 msgid "Enable Contribute Translations Notifications"
 msgstr "Omogoči obvestila za prispevanje prevodov"
 
-#: cps/templates/cwa_settings.html:746
+#: cps/templates/cwa_settings.html:757
 msgid ""
 "When disabled, you will no longer receive notifications in the Web UI when "
 "using a language other than English if the translations for your chosen "
@@ -5000,12 +5016,12 @@ msgstr ""
 "Ko je onemogočeno, ne boste več prejemali obvestil v spletnem vmesniku, če "
 "uporabljate jezik, ki ni angleščina, in prevodi za ta jezik niso popolni."
 
-#: cps/templates/cwa_settings.html:754
+#: cps/templates/cwa_settings.html:765
 #, fuzzy
 msgid "Sync Magic Shelves to Kobo"
 msgstr "Usklajevanje izbrane police s Kobo"
 
-#: cps/templates/cwa_settings.html:756
+#: cps/templates/cwa_settings.html:767
 msgid ""
 "When active, your Magic Shelves will be synced to your Kobo device as "
 "collections. Note: You must also enable Kobo Sync in Basic Configuration."
@@ -5013,11 +5029,11 @@ msgstr ""
 "Ko je aktivno, bodo vaše Čarobne police sinhronizirane z vašo napravo Kobo "
 "kot zbirke. Opomba: Omogočiti morate tudi Kobo Sync v Osnovnih nastavitvah."
 
-#: cps/templates/cwa_settings.html:764
+#: cps/templates/cwa_settings.html:775
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
 msgstr "Omogoči zamegljena ozadja na mobilnih napravah (&lt;768px)"
 
-#: cps/templates/cwa_settings.html:766
+#: cps/templates/cwa_settings.html:777
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
@@ -5025,16 +5041,16 @@ msgstr ""
 "Ko je aktivno, se učinek zamegljenega ozadja ovitka izriše tudi na majhnih "
 "zaslonih. Onemogočite, če opazite upočasnitev pri pomikanju ali animacijah."
 
-#: cps/templates/cwa_settings.html:771
+#: cps/templates/cwa_settings.html:782
 #, fuzzy
 msgid "Automatic Backup Settings"
 msgstr "Nastavitve OAuth"
 
-#: cps/templates/cwa_settings.html:778
+#: cps/templates/cwa_settings.html:789
 msgid "Enable CWA Import Auto-Backup"
 msgstr "Omogoči samodejno varnostno kopiranje uvoza CWA"
 
-#: cps/templates/cwa_settings.html:780
+#: cps/templates/cwa_settings.html:791
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
@@ -5042,11 +5058,11 @@ msgstr ""
 "Ko je aktivno, bo kopija vseh uvoženih datotek shranjena v <i>/config/"
 "processed_books/imported</i>"
 
-#: cps/templates/cwa_settings.html:788
+#: cps/templates/cwa_settings.html:799
 msgid "Enable CWA Conversion Auto-Backup"
 msgstr "Omogoči samodejno varnostno kopiranje pretvorb CWA"
 
-#: cps/templates/cwa_settings.html:790
+#: cps/templates/cwa_settings.html:801
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
@@ -5054,11 +5070,11 @@ msgstr ""
 "Ko je aktivno, bodo originali uvoženih datotek, ki so bile pretvorjene, "
 "shranjeni v /config/processed_books/converted"
 
-#: cps/templates/cwa_settings.html:798
+#: cps/templates/cwa_settings.html:809
 msgid "Enable CWA EPUB Fixer Auto-Backup"
 msgstr "Omogoči samodejno varnostno kopiranje CWA EPUB popravljalnika"
 
-#: cps/templates/cwa_settings.html:800
+#: cps/templates/cwa_settings.html:811
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
@@ -5066,11 +5082,11 @@ msgstr ""
 "Ko je aktivno, bodo originali datotek EPUB, obdelanih s storitvijo CWA "
 "Kindle EPUB Fixer, shranjeni v /config/processed_books/fixed_originals"
 
-#: cps/templates/cwa_settings.html:810
+#: cps/templates/cwa_settings.html:821
 msgid "Enable CWA Auto-Zip Backups"
 msgstr "Omogoči samodejno stiskanje (Zip) varnostnih kopij CWA"
 
-#: cps/templates/cwa_settings.html:812
+#: cps/templates/cwa_settings.html:823
 msgid ""
 "When active, just before midnight each day, the cwa-auto-zipper service will "
 "make zip archives of all the backed up converted, imported and failed files "
@@ -5082,11 +5098,11 @@ msgstr ""
 "spodletelih datotek tistega dne. To pomaga ohranjati red v podimenikih /"
 "config/processed_books in zmanjšuje porabo prostora na disku."
 
-#: cps/templates/cwa_settings.html:817
+#: cps/templates/cwa_settings.html:828
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
 msgstr "Cilj samodejne pretvorbe CWA - privzeto EPUB"
 
-#: cps/templates/cwa_settings.html:820
+#: cps/templates/cwa_settings.html:831
 msgid ""
 "When the Auto-Convert feature is active, all ingested books will be "
 "automatically converted to the format chosen here (except those formats "
@@ -5096,12 +5112,12 @@ msgstr ""
 "samodejno pretvorjene v tukaj izbran format (razen formatov na spodnjem "
 "seznamu prezrtih)"
 
-#: cps/templates/cwa_settings.html:822
+#: cps/templates/cwa_settings.html:833
 #, fuzzy
 msgid "Choose a target format:"
 msgstr "Pretvori vrsto knjige:"
 
-#: cps/templates/cwa_settings.html:834
+#: cps/templates/cwa_settings.html:845
 msgid ""
 "Note: CWA's Metadata Enforcement service can currently only support file in "
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
@@ -5111,11 +5127,11 @@ msgstr ""
 "datoteke v formatu EPUB ali AZW3. Datoteke v drugih formatih bo storitev "
 "prezrla."
 
-#: cps/templates/cwa_settings.html:840
+#: cps/templates/cwa_settings.html:851
 msgid "CWA Auto-Convert - Ignored Formats"
 msgstr "Samodejna pretvorba CWA - prezrti formati"
 
-#: cps/templates/cwa_settings.html:842
+#: cps/templates/cwa_settings.html:853
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Conversion feature "
 "when it's active, meaning they will be imported as is."
@@ -5123,11 +5139,11 @@ msgstr ""
 "Formati, izbrani tukaj, bodo prezrti pri funkciji samodejne pretvorbe CWA, "
 "kar pomeni, da bodo uvoženi v izvirni obliki."
 
-#: cps/templates/cwa_settings.html:867
+#: cps/templates/cwa_settings.html:878
 msgid "CWA Auto-Convert - Retained Formats"
 msgstr "Samodejna pretvorba CWA - ohranjeni formati"
 
-#: cps/templates/cwa_settings.html:869
+#: cps/templates/cwa_settings.html:880
 msgid ""
 "The formats selected here will always be added to the library, even after "
 "they have been converted to the target format. However, if the format is in "
@@ -5138,19 +5154,19 @@ msgstr ""
 "ciljni format. Vendar, če je format na seznamu \"Prezrti formati samodejnega "
 "uvoza CWA\", ne bo uvožen. Ciljni format se vedno ohrani."
 
-#: cps/templates/cwa_settings.html:896
+#: cps/templates/cwa_settings.html:907
 msgid "CWA Auto-Ingest Automerge"
 msgstr "Samodejno združevanje pri uvozu CWA"
 
-#: cps/templates/cwa_settings.html:899
+#: cps/templates/cwa_settings.html:910
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
 msgstr "Calibre lahko ob uvozu zazna podvojene naslove knjig in glede na"
 
-#: cps/templates/cwa_settings.html:899
+#: cps/templates/cwa_settings.html:910
 msgid "automerge"
 msgstr "samodejno združevanje"
 
-#: cps/templates/cwa_settings.html:900
+#: cps/templates/cwa_settings.html:911
 msgid ""
 "setting. It can be set to delete either instance of a duplicated book or "
 "keep both (default)."
@@ -5158,23 +5174,23 @@ msgstr ""
 "nastavitev. Nastavi se lahko tako, da izbriše eno od obeh različic podvojene "
 "knjige ali pa ohrani obe (privzeto)."
 
-#: cps/templates/cwa_settings.html:918
+#: cps/templates/cwa_settings.html:929
 msgid "Discards duplicate import, keeps library copy"
 msgstr "Zavrže podvojen uvoz, ohrani kopijo v knjižnici"
 
-#: cps/templates/cwa_settings.html:922
+#: cps/templates/cwa_settings.html:933
 msgid "Overwrites library copy with newly imported file"
 msgstr "Prepiše kopijo v knjižnici z novo uvoženo datoteko"
 
-#: cps/templates/cwa_settings.html:926
+#: cps/templates/cwa_settings.html:937
 msgid "Creates a duplicate record, keeping both copies"
 msgstr "Ustvari podvojen zapis in ohrani obe kopiji"
 
-#: cps/templates/cwa_settings.html:932
+#: cps/templates/cwa_settings.html:943
 msgid "CWA Auto-Ingest - Ignored Formats"
 msgstr "Samodejni uvoz CWA - prezrti formati"
 
-#: cps/templates/cwa_settings.html:934
+#: cps/templates/cwa_settings.html:945
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Ingest feature, "
 "meaning files in these formats won't be added to the library by CWA during "
@@ -5183,11 +5199,11 @@ msgstr ""
 "Formati, izbrani tukaj, bodo pri samodejnem uvozu CWA prezrti, kar pomeni, "
 "da CWA datotek v teh formatih ne bo dodal v knjižnico."
 
-#: cps/templates/cwa_settings.html:959
+#: cps/templates/cwa_settings.html:970
 msgid "CWA Duplicate Detection System"
 msgstr "Sistem CWA za zaznavanje dvojnikov"
 
-#: cps/templates/cwa_settings.html:962
+#: cps/templates/cwa_settings.html:973
 msgid ""
 "Enable or disable the duplicate detection system. When disabled, duplicate "
 "scanning will not run and no notifications will be shown."
@@ -5195,32 +5211,32 @@ msgstr ""
 "Omogočite ali onemogočite sistem za zaznavanje dvojnikov. Ko je onemogočeno, "
 "se iskanje dvojnikov ne bo izvajalo in obvestila ne bodo prikazana."
 
-#: cps/templates/cwa_settings.html:967
+#: cps/templates/cwa_settings.html:978
 #, fuzzy
 msgid "Enable Duplicate Detection"
 msgstr "Omogočanje javne registracije"
 
-#: cps/templates/cwa_settings.html:971
+#: cps/templates/cwa_settings.html:982
 msgid "When enabled, CWA will scan for duplicate books after each import"
 msgstr "Ko je omogočeno, bo CWA po vsakem uvozu poiskal podvojene knjige"
 
-#: cps/templates/cwa_settings.html:979
+#: cps/templates/cwa_settings.html:990
 msgid "Duplicate Detection Method"
 msgstr "Metoda zaznavanja dvojnikov"
 
-#: cps/templates/cwa_settings.html:982
+#: cps/templates/cwa_settings.html:993
 msgid "Hybrid (SQL prefilter + Python validation)"
 msgstr "Hibridno (SQL predfilter + Python validacija)"
 
-#: cps/templates/cwa_settings.html:985
+#: cps/templates/cwa_settings.html:996
 msgid "Python only (slowest, most robust)"
 msgstr "Samo Python (najpočasneje, najzanesljivejše)"
 
-#: cps/templates/cwa_settings.html:988
+#: cps/templates/cwa_settings.html:999
 msgid "Legacy SQL only (experimental)"
 msgstr "Samo zastarel SQL (eksperimentalno)"
 
-#: cps/templates/cwa_settings.html:994
+#: cps/templates/cwa_settings.html:1005
 msgid ""
 "Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies "
 "the robust Python logic for final results."
@@ -5228,12 +5244,12 @@ msgstr ""
 "Hibridni način uporablja hiter SQL predfilter za zožitev kandidatov, nato pa "
 "uporabi zanesljivo Python logiko za končne rezultate."
 
-#: cps/templates/cwa_settings.html:1003
+#: cps/templates/cwa_settings.html:1014
 #, fuzzy
 msgid "Automatic Duplicate Scanning"
 msgstr "Nastavitve OAuth"
 
-#: cps/templates/cwa_settings.html:1006
+#: cps/templates/cwa_settings.html:1017
 msgid ""
 "Configure background duplicate scans. These run automatically without "
 "blocking the UI."
@@ -5241,42 +5257,42 @@ msgstr ""
 "Nastavite iskanje dvojnikov v ozadju. Ta se izvajajo samodejno brez "
 "blokiranja uporabniškega vmesnika."
 
-#: cps/templates/cwa_settings.html:1011
+#: cps/templates/cwa_settings.html:1022
 msgid "Enable automatic duplicate scans"
 msgstr "Omogoči samodejno iskanje dvojnikov"
 
-#: cps/templates/cwa_settings.html:1015
+#: cps/templates/cwa_settings.html:1026
 msgid "After import scans"
 msgstr "Iskanje po uvozu"
 
-#: cps/templates/cwa_settings.html:1018
+#: cps/templates/cwa_settings.html:1029
 msgid "Run after each import (debounced)"
 msgstr "Zaženi po vsakem uvozu (z omejitvijo pogostosti)"
 
-#: cps/templates/cwa_settings.html:1021
+#: cps/templates/cwa_settings.html:1032
 #, fuzzy
 msgid "Manual only"
 msgstr "Ročno?"
 
-#: cps/templates/cwa_settings.html:1027
+#: cps/templates/cwa_settings.html:1038
 msgid "After import debounce (seconds)"
 msgstr "Čas čakanja po uvozu (sekunde)"
 
-#: cps/templates/cwa_settings.html:1035
+#: cps/templates/cwa_settings.html:1046
 msgid ""
 "Wait this many seconds after the last import before starting a background "
 "scan."
 msgstr "Počakaj toliko sekund po zadnjem uvozu pred začetkom iskanja v ozadju."
 
-#: cps/templates/cwa_settings.html:1040
+#: cps/templates/cwa_settings.html:1051
 msgid "Scheduled scans (cron expression)"
 msgstr "Načrtovana iskanja (cron izraz)"
 
-#: cps/templates/cwa_settings.html:1046
+#: cps/templates/cwa_settings.html:1057
 msgid "Leave blank to disable scheduled scans. Example:"
 msgstr "Pustite prazno za onemogočanje načrtovanih iskanj. Primer:"
 
-#: cps/templates/cwa_settings.html:1051
+#: cps/templates/cwa_settings.html:1062
 msgid ""
 "If enabled, after-import scans and cron scans can both run. Use “Manual "
 "only” to disable after-import scans while keeping cron schedules."
@@ -5285,15 +5301,15 @@ msgstr ""
 "iskanje (cron). Uporabite „Samo ročno“, da onemogočite iskanja po uvozu, a "
 "ohranite urnike cron."
 
-#: cps/templates/cwa_settings.html:1058 cps/templates/duplicates.html:398
+#: cps/templates/cwa_settings.html:1069 cps/templates/duplicates.html:398
 msgid "Next scheduled scan:"
 msgstr "Naslednje načrtovano iskanje:"
 
-#: cps/templates/cwa_settings.html:1065
+#: cps/templates/cwa_settings.html:1076
 msgid "CWA Duplicate Detection Criteria"
 msgstr "Kriteriji CWA za zaznavanje dvojnikov"
 
-#: cps/templates/cwa_settings.html:1068
+#: cps/templates/cwa_settings.html:1079
 msgid ""
 "Configure which metadata fields are used to determine if books are "
 "duplicates. Books must match ALL selected criteria to be considered "
@@ -5302,40 +5318,40 @@ msgstr ""
 "Nastavite, katera polja metapodatkov se uporabijo za določanje dvojnikov. "
 "Knjige se morajo ujemati v VSEH izbranih kriterijih, da štejejo za dvojnike."
 
-#: cps/templates/cwa_settings.html:1075
+#: cps/templates/cwa_settings.html:1086
 msgid "Consider book titles when detecting duplicates"
 msgstr "Upoštevaj naslove knjig pri zaznavanju dvojnikov"
 
-#: cps/templates/cwa_settings.html:1081
+#: cps/templates/cwa_settings.html:1092
 msgid "Consider book authors when detecting duplicates"
 msgstr "Upoštevaj avtorje knjig pri zaznavanju dvojnikov"
 
-#: cps/templates/cwa_settings.html:1087
+#: cps/templates/cwa_settings.html:1098
 msgid "Consider book language when detecting duplicates"
 msgstr "Upoštevaj jezik knjig pri zaznavanju dvojnikov"
 
-#: cps/templates/cwa_settings.html:1093
+#: cps/templates/cwa_settings.html:1104
 msgid "Consider book series when detecting duplicates"
 msgstr "Upoštevaj zbirke (serije) knjig pri zaznavanju dvojnikov"
 
-#: cps/templates/cwa_settings.html:1099
+#: cps/templates/cwa_settings.html:1110
 msgid "Consider book publisher when detecting duplicates"
 msgstr "Upoštevaj založnika knjig pri zaznavanju dvojnikov"
 
-#: cps/templates/cwa_settings.html:1104
+#: cps/templates/cwa_settings.html:1115
 #, fuzzy
 msgid "Format"
 msgstr "Nalaganje vrsta"
 
-#: cps/templates/cwa_settings.html:1105
+#: cps/templates/cwa_settings.html:1116
 msgid "Consider file format when detecting duplicates"
 msgstr "Upoštevaj format datoteke pri zaznavanju dvojnikov"
 
-#: cps/templates/cwa_settings.html:1111 cps/templates/cwa_settings.html:1197
+#: cps/templates/cwa_settings.html:1122 cps/templates/cwa_settings.html:1208
 msgid "Note:"
 msgstr "Opomba:"
 
-#: cps/templates/cwa_settings.html:1111
+#: cps/templates/cwa_settings.html:1122
 msgid ""
 "At least one criterion must be selected. Title and Author are recommended as "
 "core criteria."
@@ -5343,11 +5359,11 @@ msgstr ""
 "Izbran mora biti vsaj en kriterij. Kot osnovna kriterija sta priporočena "
 "naslov in avtor."
 
-#: cps/templates/cwa_settings.html:1117
+#: cps/templates/cwa_settings.html:1128
 msgid "Duplicate Format Priority Ranking"
 msgstr "Vrstni red prioritete formatov dvojnikov"
 
-#: cps/templates/cwa_settings.html:1120
+#: cps/templates/cwa_settings.html:1131
 msgid ""
 "Configure which file formats are preferred when using the \"Highest Quality "
 "Format\" auto-resolution strategy. Drag and drop to reorder formats by "
@@ -5357,11 +5373,11 @@ msgstr ""
 "razrešitve „Format najvišje kakovosti“. Povlecite in spustite za razvrščanje "
 "formatov po prioriteti (višje = bolje)."
 
-#: cps/templates/cwa_settings.html:1133
+#: cps/templates/cwa_settings.html:1144
 msgid "Tip:"
 msgstr "Nasvet:"
 
-#: cps/templates/cwa_settings.html:1133
+#: cps/templates/cwa_settings.html:1144
 msgid ""
 "When resolving duplicates with \"Highest Quality Format\" strategy, books "
 "with higher-ranked formats will be kept. Lower priority formats will be "
@@ -5371,11 +5387,11 @@ msgstr ""
 "knjige z višje uvrščenimi formati ohranjene, tiste z nižjo prioriteto pa "
 "izbrisane."
 
-#: cps/templates/cwa_settings.html:1141
+#: cps/templates/cwa_settings.html:1152
 msgid "Duplicate Notifications & Auto-Resolution"
 msgstr "Obvestila o dvojnikih in samodejna razrešitev"
 
-#: cps/templates/cwa_settings.html:1144
+#: cps/templates/cwa_settings.html:1155
 msgid ""
 "Configure how you are notified about duplicate books and optionally enable "
 "automatic resolution."
@@ -5383,12 +5399,12 @@ msgstr ""
 "Nastavite način obveščanja o podvojenih knjigah in po želji omogočite "
 "samodejno razreševanje."
 
-#: cps/templates/cwa_settings.html:1149
+#: cps/templates/cwa_settings.html:1160
 #, fuzzy
 msgid "Enable Duplicate Notifications"
 msgstr "Omogočanje javne registracije"
 
-#: cps/templates/cwa_settings.html:1151
+#: cps/templates/cwa_settings.html:1162
 msgid ""
 "Show popup notifications when unresolved duplicates are detected. Admins and "
 "users with edit rights will see a badge on the Duplicates sidebar button and "
@@ -5398,16 +5414,16 @@ msgstr ""
 "uporabniki s pravico urejanja bodo ob prijavi videli značko na gumbu "
 "Dvojniki v stranski vrstici in pojavno obvestilo."
 
-#: cps/templates/cwa_settings.html:1155
+#: cps/templates/cwa_settings.html:1166
 #, fuzzy
 msgid "Enable Automatic Duplicate Resolution"
 msgstr "Omogočanje javne registracije"
 
-#: cps/templates/cwa_settings.html:1158 cps/templates/duplicates.html:437
+#: cps/templates/cwa_settings.html:1169 cps/templates/duplicates.html:437
 msgid "Warning:"
 msgstr "Opozorilo:"
 
-#: cps/templates/cwa_settings.html:1158
+#: cps/templates/cwa_settings.html:1169
 msgid ""
 "This will automatically delete books based on the strategy below. Original "
 "files will be backed up to"
@@ -5415,77 +5431,77 @@ msgstr ""
 "To bo samodejno izbrisalo knjige na podlagi spodnje strategije. Izvirne "
 "datoteke bodo varnostno kopirane v"
 
-#: cps/templates/cwa_settings.html:1162
+#: cps/templates/cwa_settings.html:1173
 msgid "Auto-Resolution Strategy"
 msgstr "Strategija samodejne razrešitve"
 
-#: cps/templates/cwa_settings.html:1165
+#: cps/templates/cwa_settings.html:1176
 msgid "Keep Newest"
 msgstr "Ohrani najnovejšo"
 
-#: cps/templates/cwa_settings.html:1165
+#: cps/templates/cwa_settings.html:1176
 msgid "Delete older copies, keep the most recently added book"
 msgstr "Izbriši starejše kopije, ohrani nazadnje dodano knjigo"
 
-#: cps/templates/cwa_settings.html:1168
+#: cps/templates/cwa_settings.html:1179
 msgid "Keep Oldest"
 msgstr "Ohrani najstarejšo"
 
-#: cps/templates/cwa_settings.html:1168
+#: cps/templates/cwa_settings.html:1179
 msgid "Delete newer copies, keep the earliest added"
 msgstr "Izbriši novejše kopije, ohrani prvo dodano"
 
-#: cps/templates/cwa_settings.html:1171
+#: cps/templates/cwa_settings.html:1182
 #, fuzzy
 msgid "Merge Formats"
 msgstr "Izvirna oblika"
 
-#: cps/templates/cwa_settings.html:1171
+#: cps/templates/cwa_settings.html:1182
 msgid "Merge formats into the newest book, delete the rest"
 msgstr "Združi formate v najnovejšo knjigo, ostale izbriši"
 
-#: cps/templates/cwa_settings.html:1174
+#: cps/templates/cwa_settings.html:1185
 msgid "Keep Highest Quality Format"
 msgstr "Ohrani format najvišje kakovosti"
 
-#: cps/templates/cwa_settings.html:1174
+#: cps/templates/cwa_settings.html:1185
 msgid "Prefer formats based on your Duplicate Format Priority Ranking"
 msgstr ""
 "Prednost daj formatom na podlagi vašega vrstnega reda prioritete formatov"
 
-#: cps/templates/cwa_settings.html:1177
+#: cps/templates/cwa_settings.html:1188
 #, fuzzy
 msgid "Keep Most Metadata"
 msgstr "Pridobivanje metapodatkov"
 
-#: cps/templates/cwa_settings.html:1177
+#: cps/templates/cwa_settings.html:1188
 msgid "Keep book with most complete information"
 msgstr "Ohrani knjigo z najbolj popolnimi informacijami"
 
-#: cps/templates/cwa_settings.html:1180
+#: cps/templates/cwa_settings.html:1191
 msgid "Keep Largest File Size"
 msgstr "Ohrani največjo datoteko"
 
-#: cps/templates/cwa_settings.html:1180
+#: cps/templates/cwa_settings.html:1191
 msgid "Keep book with largest total file size"
 msgstr "Ohrani knjigo z največjo skupno velikostjo datotek"
 
-#: cps/templates/cwa_settings.html:1183
+#: cps/templates/cwa_settings.html:1194
 msgid "Choose which book to keep when duplicates are automatically resolved."
 msgstr ""
 "Izberite, katero knjigo želite obdržati pri samodejnem razreševanju "
 "dvojnikov."
 
-#: cps/templates/cwa_settings.html:1187
+#: cps/templates/cwa_settings.html:1198
 #, fuzzy
 msgid "Rate Limiting"
 msgstr "Ocena"
 
-#: cps/templates/cwa_settings.html:1188
+#: cps/templates/cwa_settings.html:1199
 msgid "Cooldown Period (minutes)"
 msgstr "Obdobje mirovanja (minute)"
 
-#: cps/templates/cwa_settings.html:1192
+#: cps/templates/cwa_settings.html:1203
 msgid ""
 "Minimum time between automatic resolutions (0 to disable). Prevents rapid-"
 "fire deletions during batch imports."
@@ -5493,7 +5509,7 @@ msgstr ""
 "Najkrajši čas med samodejnimi razrešitvami (0 za onemogočanje). Preprečuje "
 "zaporedne izbrise med množičnim uvozom."
 
-#: cps/templates/cwa_settings.html:1197
+#: cps/templates/cwa_settings.html:1208
 msgid ""
 "Auto-resolution runs after duplicate scans detect new duplicates. Dismissed "
 "duplicate groups are never auto-resolved."
@@ -6217,6 +6233,26 @@ msgstr "Razvrsti naraščajoče glede na indeks serije"
 msgid "Sort descending according to series index"
 msgstr "Razvrsti padajoče glede na indeks serije"
 
+#: cps/templates/kosync_plugin.html:112
+#, fuzzy
+msgid "KOReader Sync is disabled."
+msgstr "Standardna prijava je onemogočena."
+
+#: cps/templates/kosync_plugin.html:113
+msgid ""
+"Enable it in CWA Settings to activate the /kosync endpoints and checksum "
+"generation."
+msgstr ""
+
+#: cps/templates/kosync_plugin.html:115
+#, fuzzy
+msgid "Open CWA Settings"
+msgstr "Nastavitve"
+
+#: cps/templates/kosync_plugin.html:139
+msgid "Download is available after enabling KOReader Sync in CWA Settings."
+msgstr ""
+
 #: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
 msgstr "Domov"
@@ -6230,7 +6266,7 @@ msgid "Search Library"
 msgstr "Iskanje po knjižnici"
 
 #: cps/templates/layout.html:132 cps/templates/layout.html:169
-#: cps/templates/user_edit.html:296 cps/templates/user_edit.html:298
+#: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "Račun"
 
@@ -6608,7 +6644,7 @@ msgstr "Obračanje v levo"
 msgid "Flip Image"
 msgstr "Obrni sliko"
 
-#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:262
+#: cps/templates/readcbr.html:101 cps/templates/user_edit.html:272
 msgid "Theme"
 msgstr "Tema"
 
@@ -6994,62 +7030,62 @@ msgstr "{} uporabnikov uspešno izbrisanih"
 msgid "Error cancelling scheduled item"
 msgstr "Napaka pri preklicu načrtovanega elementa"
 
-#: cps/templates/user_edit.html:163
+#: cps/templates/user_edit.html:173
 #, fuzzy
 msgid "Your Profile"
 msgstr "Vaš e-poštni naslov"
 
-#: cps/templates/user_edit.html:163
+#: cps/templates/user_edit.html:173
 #, fuzzy
 msgid "User Settings"
 msgstr "Nastavitve"
 
-#: cps/templates/user_edit.html:171
+#: cps/templates/user_edit.html:181
 msgid "Account Information"
 msgstr "Podatki o računu"
 
-#: cps/templates/user_edit.html:180
+#: cps/templates/user_edit.html:190
 msgid ""
 "If you need to change your email address or password, you can do so here."
 msgstr ""
 "Če želite spremeniti svoj e-poštni naslov ali geslo, lahko to storite tukaj."
 
-#: cps/templates/user_edit.html:190
+#: cps/templates/user_edit.html:200
 msgid "Reset user Password"
 msgstr "Ponastavitev uporabniškega gesla"
 
-#: cps/templates/user_edit.html:202
+#: cps/templates/user_edit.html:212
 #, fuzzy
 msgid "eReader Configuration"
 msgstr "Nastavitve strežnika"
 
-#: cps/templates/user_edit.html:205
+#: cps/templates/user_edit.html:215
 #, fuzzy
 msgid "Send to eReader Email Address"
 msgstr "Pošlji v e-pošto e-bralnika"
 
-#: cps/templates/user_edit.html:206
+#: cps/templates/user_edit.html:216
 msgid "Use comma to separate multiple addresses"
 msgstr "Uporabite vejico za ločevanje več naslovov"
 
-#: cps/templates/user_edit.html:207
+#: cps/templates/user_edit.html:217
 msgid ""
 "Email address(es) for your eReader devices. Separate multiple addresses with "
 "commas."
 msgstr "E-poštni naslovi za vaše e-bralnike. Več naslovov ločite z vejicami."
 
-#: cps/templates/user_edit.html:218
+#: cps/templates/user_edit.html:228
 msgid "Enable Send-to-eReader Pop-up Modal"
 msgstr ""
 
-#: cps/templates/user_edit.html:220
+#: cps/templates/user_edit.html:230
 msgid ""
 "Enables or disables the Send-to-eReader Pop-up Modal that allows users to "
 "enter extra email addresses and only send to a selection of saved addresses "
 "when sending to eReader."
 msgstr ""
 
-#: cps/templates/user_edit.html:222
+#: cps/templates/user_edit.html:232
 #, fuzzy
 msgid ""
 "When disabled, emails will be sent to all configured eReader addresses "
@@ -7058,11 +7094,11 @@ msgstr ""
 "Ko je omogočeno, bodo na novo uvožene knjige samodejno poslane na vse zgoraj "
 "nastavljene e-poštne naslove e-bralnikov."
 
-#: cps/templates/user_edit.html:230
+#: cps/templates/user_edit.html:240
 msgid "Automatically send new books to my eReader(s)"
 msgstr "Samodejno pošlji nove knjige v moje e-bralnike"
 
-#: cps/templates/user_edit.html:231
+#: cps/templates/user_edit.html:241
 msgid ""
 "When enabled, newly ingested books will be automatically sent to all "
 "configured eReader email addresses above."
@@ -7070,88 +7106,88 @@ msgstr ""
 "Ko je omogočeno, bodo na novo uvožene knjige samodejno poslane na vse zgoraj "
 "nastavljene e-poštne naslove e-bralnikov."
 
-#: cps/templates/user_edit.html:239
+#: cps/templates/user_edit.html:249
 msgid "Language & Theme Preferences"
 msgstr "Nastavitve jezika in teme"
 
-#: cps/templates/user_edit.html:242
+#: cps/templates/user_edit.html:252
 #, fuzzy
 msgid "Interface Language"
 msgstr "Vnesi jezike"
 
-#: cps/templates/user_edit.html:251 cps/templates/user_edit.html:274
+#: cps/templates/user_edit.html:261 cps/templates/user_edit.html:283
 msgid "Language of Books"
 msgstr "Jezik knjig"
 
-#: cps/templates/user_edit.html:258 cps/templates/user_edit.html:281
+#: cps/templates/user_edit.html:268 cps/templates/user_edit.html:290
 msgid "Filter the library to only show books in a specific language."
 msgstr "Filtriraj knjižnico, da bodo prikazane le knjige v določenem jeziku."
 
-#: cps/templates/user_edit.html:271
+#: cps/templates/user_edit.html:280
 #, fuzzy
 msgid "Book Language Filter"
 msgstr "Ni navedenega veljavnega jezika knjige"
 
-#: cps/templates/user_edit.html:289
+#: cps/templates/user_edit.html:298
 msgid "OAuth & API Integrations"
 msgstr "OAuth in API integracije"
 
-#: cps/templates/user_edit.html:294
+#: cps/templates/user_edit.html:303
 msgid "OAuth Settings"
 msgstr "Nastavitve OAuth"
 
-#: cps/templates/user_edit.html:296
+#: cps/templates/user_edit.html:305
 msgid "Link"
 msgstr "Povezava"
 
-#: cps/templates/user_edit.html:298
+#: cps/templates/user_edit.html:307
 msgid "Unlink"
 msgstr "Odklop povezave"
 
-#: cps/templates/user_edit.html:306
+#: cps/templates/user_edit.html:315
 #, fuzzy
 msgid "Hardcover API Token"
 msgstr "Hardcover API žeton"
 
-#: cps/templates/user_edit.html:308
+#: cps/templates/user_edit.html:317
 msgid "API token for Hardcover metadata provider integration."
 msgstr "API žeton za integracijo ponudnika metapodatkov Hardcover."
 
-#: cps/templates/user_edit.html:314
+#: cps/templates/user_edit.html:323
 msgid "Kobo Sync Token"
 msgstr "Žeton za sinhronizacijo Kobo"
 
-#: cps/templates/user_edit.html:316
+#: cps/templates/user_edit.html:325
 msgid "Create/View"
 msgstr "Ustvari/pogled"
 
-#: cps/templates/user_edit.html:320
+#: cps/templates/user_edit.html:329
 msgid "Force full kobo sync"
 msgstr "Vsili popolno sinhronizacijo s Kobo"
 
-#: cps/templates/user_edit.html:327
+#: cps/templates/user_edit.html:336
 msgid "Sync only books in selected shelves with Kobo"
 msgstr "Sinhroniziranje samo knjig na izbranih policah s Kobo"
 
-#: cps/templates/user_edit.html:337
+#: cps/templates/user_edit.html:346
 #, fuzzy
 msgid "Sidebar Display Settings"
 msgstr "Varnostne nastavitve"
 
-#: cps/templates/user_edit.html:338
+#: cps/templates/user_edit.html:347
 msgid "Choose which sections to display in your sidebar navigation."
 msgstr ""
 "Izberite, kateri razdelki naj bodo prikazani v navigaciji stranske vrstice."
 
-#: cps/templates/user_edit.html:363
+#: cps/templates/user_edit.html:372
 msgid "Add allowed/Denied Custom Column Values"
 msgstr "Dodajanje dovoljenih/zavrnjenih vrednosti stolpcev po meri"
 
-#: cps/templates/user_edit.html:371
+#: cps/templates/user_edit.html:380
 msgid "OPDS Catalog Order"
 msgstr "Vrstni red OPDS kataloga"
 
-#: cps/templates/user_edit.html:372
+#: cps/templates/user_edit.html:381
 msgid ""
 "Reorder the OPDS root catalog by listing entry IDs in the order you want. "
 "Unknown IDs are ignored and missing entries are appended automatically."
@@ -7159,7 +7195,7 @@ msgstr ""
 "Prerazvrstite korenski katalog OPDS tako, da navedete ID-je vnosov v želenem "
 "vrstnem redu. Neznani ID-ji so prezrti, manjkajoči vnosi pa dodani samodejno."
 
-#: cps/templates/user_edit.html:380
+#: cps/templates/user_edit.html:389
 msgid ""
 "Drag to reorder OPDS root entries. Missing entries are appended "
 "automatically."
@@ -7167,19 +7203,74 @@ msgstr ""
 "Povlecite za prerazvrstitev korenskih vnosov OPDS. Manjkajoči vnosi bodo "
 "dodani samodejno."
 
-#: cps/templates/user_edit.html:389
+#: cps/templates/user_edit.html:398
 msgid "User Permissions"
 msgstr "Uporabniška dovoljenja"
 
-#: cps/templates/user_edit.html:390
+#: cps/templates/user_edit.html:399
 msgid "Configure what actions this user is allowed to perform."
 msgstr "Nastavite, katera dejanja sme izvajati ta uporabnik."
 
-#: cps/templates/user_edit.html:445
+#: cps/templates/user_edit.html:454
+#, fuzzy
+msgid "Magic Shelves Order"
+msgstr "Čarobne police ✨"
+
+#: cps/templates/user_edit.html:455
+msgid "Choose how your magic shelves are ordered in the sidebar."
+msgstr ""
+
+#: cps/templates/user_edit.html:459
+msgid "Order Mode"
+msgstr ""
+
+#: cps/templates/user_edit.html:461
+msgid "Manual (drag to reorder)"
+msgstr ""
+
+#: cps/templates/user_edit.html:462
+msgid "Name (A-Z)"
+msgstr ""
+
+#: cps/templates/user_edit.html:463
+msgid "Name (Z-A)"
+msgstr ""
+
+#: cps/templates/user_edit.html:464
+msgid "Book count (high to low)"
+msgstr ""
+
+#: cps/templates/user_edit.html:465
+msgid "Book count (low to high)"
+msgstr ""
+
+#: cps/templates/user_edit.html:466
+msgid "Created (newest first)"
+msgstr ""
+
+#: cps/templates/user_edit.html:467
+msgid "Created (oldest first)"
+msgstr ""
+
+#: cps/templates/user_edit.html:468
+#, fuzzy
+msgid "Recently modified"
+msgstr "Zadnjič spremenjeno"
+
+#: cps/templates/user_edit.html:469
+#, fuzzy
+msgid "Least recently modified"
+msgstr "Zadnjič spremenjeno"
+
+#: cps/templates/user_edit.html:480
+msgid "Manual order is used only when the order mode is set to Manual."
+msgstr ""
+
+#: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"
 msgstr "Vidnost čarobnih polic"
 
-#: cps/templates/user_edit.html:446
+#: cps/templates/user_edit.html:487
 msgid ""
 "Uncheck shelves you want to hide from your sidebar. System shelves cannot be "
 "deleted, only hidden. Public shelves from other users can also be hidden."
@@ -7188,34 +7279,34 @@ msgstr ""
 "ni mogoče izbrisati, le skriti. Skrijete lahko tudi javne police drugih "
 "uporabnikov."
 
-#: cps/templates/user_edit.html:450
+#: cps/templates/user_edit.html:491
 msgid "Default System Shelves:"
 msgstr "Privzete sistemske police:"
 
-#: cps/templates/user_edit.html:474
+#: cps/templates/user_edit.html:515
 #, fuzzy
 msgid "Public Shelves:"
 msgstr "Urejanje javnih polic"
 
-#: cps/templates/user_edit.html:499
+#: cps/templates/user_edit.html:540
 #, python-format
 msgid "%(visible)s of %(total)s default shelves visible"
 msgstr "%(visible)s od %(total)s privzetih polic je vidnih"
 
-#: cps/templates/user_edit.html:503
+#: cps/templates/user_edit.html:544
 #, python-format
 msgid "%(visible)s of %(total)s public shelves visible"
 msgstr "%(visible)s od %(total)s javnih polic je vidnih"
 
-#: cps/templates/user_edit.html:517 cps/templates/user_table.html:170
+#: cps/templates/user_edit.html:558 cps/templates/user_table.html:170
 msgid "Delete User"
 msgstr "Izbriši uporabnika"
 
-#: cps/templates/user_edit.html:528
+#: cps/templates/user_edit.html:569
 msgid "Generate Kobo Auth URL"
 msgstr "Ustvarite URL avtentikacije Kobo"
 
-#: cps/templates/user_edit.html:587
+#: cps/templates/user_edit.html:631
 msgid "Visible"
 msgstr "Vidno"
 
@@ -7316,6 +7407,12 @@ msgstr "Usklajevanje izbrane police s Kobo"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "Prikaži razdelek Prebrano/neprebrano"
+
+#~ msgid "Standard Theme"
+#~ msgstr "Standardna tema"
+
+#~ msgid "Location and name of logfile (calibre-web.log for no entry)"
+#~ msgstr "Lokacija in ime dnevniške datoteke (calibre-web.log, če ni vneseno)"
 
 #~ msgid "Listen in Browser"
 #~ msgstr "Poslušaj v brskalniku"

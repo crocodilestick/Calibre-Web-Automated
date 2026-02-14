@@ -2903,7 +2903,11 @@ msgstr "Compte du Reverse Proxy"
 
 #: cps/templates/admin.html:159 cps/templates/config_edit.html:258
 msgid "Reverse Proxy Header Name"
-msgstr "Nom de l'en-tête du Reverse Proxy"
+msgstr "En-tête 'nom d'utilisateur' du Reverse Proxy"
+
+#: cps/templates/admin.html:163 cps/templates/config_edit.html:262
+msgid "Reverse Proxy Header Email"
+msgstr "En-tête 'email' du Reverse Proxy"
 
 #: cps/templates/admin.html:164
 msgid "CWA Settings"

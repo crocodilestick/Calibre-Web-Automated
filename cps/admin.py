@@ -2358,6 +2358,7 @@ def _configuration_update_helper():
         # Reverse proxy login configuration
         _config_checkbox(to_save, "config_allow_reverse_proxy_header_login")
         _config_string(to_save, "config_reverse_proxy_login_header_name")
+        _config_string(to_save, "config_reverse_proxy_login_header_email")
         _config_checkbox(to_save, "config_reverse_proxy_auto_create_users")
 
         # Validate reverse proxy configuration

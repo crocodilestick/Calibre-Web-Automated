@@ -2638,6 +2638,10 @@ msgstr ""
 msgid "Reverse Proxy Header Name"
 msgstr ""
 
+#: cps/templates/admin.html:163 cps/templates/config_edit.html:262
+msgid "Reverse Proxy Header Email"
+msgstr ""
+
 #: cps/templates/admin.html:164
 msgid "CWA Settings"
 msgstr ""

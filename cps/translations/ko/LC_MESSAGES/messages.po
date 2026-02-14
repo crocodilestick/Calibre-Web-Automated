@@ -2719,6 +2719,10 @@ msgstr "리버스 프록시 로그인"
 msgid "Reverse Proxy Header Name"
 msgstr "리버스 프록시 헤더 이름"
 
+#: cps/templates/admin.html:163 cps/templates/config_edit.html:262
+msgid "Reverse Proxy Header Email"
+msgstr ""
+
 #: cps/templates/admin.html:164
 msgid "CWA Settings"
 msgstr "CWA 설정"

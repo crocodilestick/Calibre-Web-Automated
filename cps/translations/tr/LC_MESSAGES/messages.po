@@ -2760,6 +2760,10 @@ msgstr "Ters Proxy Header Adı"
 msgid "Reverse Proxy Header Name"
 msgstr "Ters Proxy Header Adı"
 
+#: cps/templates/admin.html:163 cps/templates/config_edit.html:262
+msgid "Reverse Proxy Header Email"
+msgstr ""
+
 #: cps/templates/admin.html:164
 #, fuzzy
 msgid "CWA Settings"

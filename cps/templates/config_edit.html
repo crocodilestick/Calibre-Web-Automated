@@ -259,6 +259,10 @@
         <input type="text" class="form-control" id="config_reverse_proxy_login_header_name" name="config_reverse_proxy_login_header_name" value="{% if config.config_reverse_proxy_login_header_name != None %}{{ config.config_reverse_proxy_login_header_name }}{% endif %}" autocomplete="off">
       </div>
       <div class="form-group">
+        <label for="config_reverse_proxy_login_header_email">{{_('Reverse Proxy Header Email')}}</label>
+        <input type="text" class="form-control" id="config_reverse_proxy_login_header_email" name="config_reverse_proxy_login_header_email" value="{% if config.config_reverse_proxy_login_header_email != None %}{{ config.config_reverse_proxy_login_header_email }}{% endif %}" autocomplete="off">
+      </div>
+      <div class="form-group">
         <input type="checkbox" id="config_reverse_proxy_auto_create_users" name="config_reverse_proxy_auto_create_users" {% if config.config_reverse_proxy_auto_create_users %}checked{% endif %}>
         <label for="config_reverse_proxy_auto_create_users">{{_('Auto-create users from reverse proxy')}}</label>
         <div class="help-block">{{_('Automatically create user accounts when valid reverse proxy headers are received. Only enable if your reverse proxy authentication is properly secured.')}}</div>

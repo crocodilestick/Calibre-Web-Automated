@@ -208,12 +208,21 @@ def load_user_from_reverse_proxy_header(req):
     rp_header_username = rp_header_username.strip()
     if not rp_header_username:
         return None
-    
+
+    # Retrieve the email address from headers
+    email = None
+    if config.config_reverse_proxy_login_header_email:
+        email = req.headers.get(config.config_reverse_proxy_login_header_email)
+
     # Look for existing user first
     user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == rp_header_username.lower()).first()
     if user:
         [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
         log.debug("Reverse proxy authentication: found existing user '%s'", user.name)
+        if email and user.email != email:
+            user.email = email
+            ub.session.commit()
+            log.debug("Reverse proxy authentication: user '%s' email updated to '%s'", user.name, user.email)
         return user
     
     # If user not found and auto-creation is enabled, create new user
@@ -221,8 +230,7 @@ def load_user_from_reverse_proxy_header(req):
         log.info("Reverse proxy authentication: attempting to create user '%s'", rp_header_username)
         
         # Get additional headers for user info (common reverse proxy headers)
-        email = req.headers.get('Remote-Email') or req.headers.get('X-Remote-Email')
-        
+
         user = create_authenticated_user(rp_header_username, email, "reverse proxy")
         if user:
             [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]

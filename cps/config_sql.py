@@ -150,6 +150,7 @@ class _Settings(_Base):
     config_updatechannel = Column(Integer, default=constants.UPDATE_STABLE)
 
     config_reverse_proxy_login_header_name = Column(String)
+    config_reverse_proxy_login_header_email = Column(String, default='Remote-Email')
     config_allow_reverse_proxy_header_login = Column(Boolean, default=False)
     config_reverse_proxy_auto_create_users = Column(Boolean, default=False)
     config_ldap_auto_create_users = Column(Boolean, default=True)

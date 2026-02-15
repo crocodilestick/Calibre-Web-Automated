@@ -2833,6 +2833,10 @@ msgstr "Reverse proxy belépés"
 msgid "Reverse Proxy Header Name"
 msgstr "Reverse Proxy fejlécnév"
 
+#: cps/templates/admin.html:163 cps/templates/config_edit.html:262
+msgid "Reverse Proxy Header Email"
+msgstr ""
+
 #: cps/templates/admin.html:164
 #, fuzzy
 msgid "CWA Settings"

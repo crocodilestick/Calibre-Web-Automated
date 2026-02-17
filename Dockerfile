@@ -173,10 +173,6 @@ ARG VERSION
 ARG CALIBRE_RELEASE
 ARG KEPUBIFY_RELEASE
 
-LABEL build_version="Version:- ${VERSION}"
-LABEL build_date="${BUILD_DATE}"
-LABEL maintainer="CrocodileStick"
-
 # Set the default shell for the following RUN instructions to bash instead of sh
 SHELL ["/bin/bash", "-c"]
 

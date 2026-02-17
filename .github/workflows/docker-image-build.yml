@@ -1,0 +1,203 @@
+name: Build & Push - Docker
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+    paths:
+      - 'empty_library/**'
+      - 'cps/**'
+      - 'scripts/**'
+      - '**/Dockerfile'
+      - '**/requirements.txt'
+      - '**/optional-requirements.txt'
+      - '**/compile_translations.sh'
+      - 'koreader/**'
+      - '**/cps.py'
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref (branch or SHA) to build'
+        required: false
+        default: ''
+      branch:
+        description: 'Branch name for tagging'
+        required: false
+        default: ''
+
+env:
+  LOWER_REPO_NAME: calibre-web-automated
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.platforms.outputs.matrix }}
+      images: ${{ steps.images.outputs.images }}
+    steps:
+      - name: Set build ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.ref }}" ]; then
+            echo "BUILD_REF=${{ inputs.ref }}" >> "${GITHUB_ENV}"
+          else
+            echo "BUILD_REF=${{ github.ref }}" >> "${GITHUB_ENV}"
+          fi
+
+      - name: Checkout correct ref
+        uses: actions/checkout@v4
+        # with:
+        #   ref: ${{ env.BUILD_REF }}
+
+      - name: set docker registry
+        id: images
+        env:
+          GITHUB_REPOSITORY_OWNER: "${{ github.repository_owner }}"
+          DOCKERHUB_USERNAME: "${{ secrets.DOCKERHUB_USERNAME }}"
+          LOWER_REPO_NAME: "${{ env.LOWER_REPO_NAME }}"
+        run: |
+          if [ "${GITHUB_REPOSITORY_OWNER}" = 'crocodilestick' ]; then
+            echo "images=${DOCKERHUB_USERNAME}/${LOWER_REPO_NAME},ghcr.io/${GITHUB_REPOSITORY_OWNER}/${LOWER_REPO_NAME}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "images=ghcr.io/${GITHUB_REPOSITORY_OWNER}/${LOWER_REPO_NAME}" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Create matrix
+        id: platforms
+        run: |
+          echo "matrix=$(docker buildx bake image-all --print | jq -cr '.target."image-all".platforms')" >> "${GITHUB_OUTPUT}"
+
+      - name: Show matrix
+        run: |
+          echo ${{ steps.platforms.outputs.matrix }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWER_REPO_NAME }},enable=${{ github.repository_owner == 'crocodilestick' }}
+            name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=edge,value=dev,branch={{default_branch}},enable={{is_default_branch}}
+            type=ref,event=branch,prefix=dev-,disable={{is_default_branch}}
+
+      - name: Rename meta bake definition file
+        run: |
+          mv "${{ steps.meta.outputs.bake-file }}" "${{ runner.temp }}/bake-meta.json"
+
+      - name: Upload meta bake definition
+        uses: actions/upload-artifact@v4
+        with:
+          name: bake-meta
+          path: ${{ runner.temp }}/bake-meta.json
+          if-no-files-found: error
+          retention-days: 1
+
+  build:
+    needs:
+      - prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    runs-on: ${{ startsWith(matrix.platform, 'linux/arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    steps:
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> "${GITHUB_ENV}"
+
+      - name: Download meta bake definition
+        uses: actions/download-artifact@v4
+        with:
+          name: bake-meta
+          path: ${{ runner.temp }}
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        if: ${{ github.repository_owner == 'crocodilestick' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PA_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        id: bake
+        uses: docker/bake-action@v6
+        with:
+          files: |
+            ./docker-bake.hcl
+            cwd://${{ runner.temp }}/bake-meta.json
+          targets: image
+          set: |
+            *.tags=${{ needs.prepare.outputs.images }}
+            *.platform=${{ matrix.platform }}
+            *.output=type=image,push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export digest
+        run: |
+          mkdir -p ${{ runner.temp }}/digests
+          digest="${{ fromJSON(steps.bake.outputs.metadata).image['containerimage.digest'] }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Download meta bake definition
+        uses: actions/download-artifact@v4
+        with:
+          name: bake-meta
+          path: ${{ runner.temp }}
+
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        if: ${{ github.repository_owner == 'crocodilestick' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PA_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create manifest list and push
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.target."docker-metadata-action".tags | map(select(startswith("ghcr.io/${{ github.repository_owner }}") or startswith("${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWER_REPO_NAME }}")) | "-t " + .) | join(" ")' ${{ runner.temp }}/bake-meta.json) \
+            $(printf 'ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}@sha256:%s ' *)

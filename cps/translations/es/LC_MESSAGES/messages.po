@@ -1094,7 +1094,7 @@ msgstr ""
 
 #: cps/cwa_functions.py:2031
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
-msgstr ""
+msgstr "El EPUB Fixer de un solo libro no es compatible con las bibliotecas de Google Drive."
 
 #: cps/cwa_functions.py:2038
 #, fuzzy
@@ -1216,6 +1216,8 @@ msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
+"La carpeta de ingesta no es grabable. Revisa los permisos del volumen "
+"/cwa-book-ingest."
 
 #: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
@@ -7343,39 +7345,39 @@ msgstr "Estanterías mágicas ✨"
 
 #: cps/templates/user_edit.html:455
 msgid "Choose how your magic shelves are ordered in the sidebar."
-msgstr ""
+msgstr "Elige cómo se ordenan tus estanterías mágicas en la barra lateral."
 
 #: cps/templates/user_edit.html:459
 msgid "Order Mode"
-msgstr ""
+msgstr "Modo de orden"
 
 #: cps/templates/user_edit.html:461
 msgid "Manual (drag to reorder)"
-msgstr ""
+msgstr "Manual (arrastra para reordenar)"
 
 #: cps/templates/user_edit.html:462
 msgid "Name (A-Z)"
-msgstr ""
+msgstr "Nombre (A-Z)"
 
 #: cps/templates/user_edit.html:463
 msgid "Name (Z-A)"
-msgstr ""
+msgstr "Nombre (Z-A)"
 
 #: cps/templates/user_edit.html:464
 msgid "Book count (high to low)"
-msgstr ""
+msgstr "Número de libros (alto a bajo)"
 
 #: cps/templates/user_edit.html:465
 msgid "Book count (low to high)"
-msgstr ""
+msgstr "Número de libros (bajo a alto)"
 
 #: cps/templates/user_edit.html:466
 msgid "Created (newest first)"
-msgstr ""
+msgstr "Creado (más reciente primero)"
 
 #: cps/templates/user_edit.html:467
 msgid "Created (oldest first)"
-msgstr ""
+msgstr "Creado (más antiguo primero)"
 
 #: cps/templates/user_edit.html:468
 #, fuzzy
@@ -7389,7 +7391,7 @@ msgstr "Última modificación"
 
 #: cps/templates/user_edit.html:480
 msgid "Manual order is used only when the order mode is set to Manual."
-msgstr ""
+msgstr "El orden manual se usa solo cuando el modo de orden está configurado en Manual"
 
 #: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"

@@ -22,7 +22,7 @@ import subprocess
 import tempfile
 import fcntl
 
-from flask import Blueprint, flash, redirect, url_for, abort, request, make_response, send_from_directory, g, Response, jsonify
+from flask import Blueprint, current_app, flash, redirect, url_for, abort, request, make_response, send_from_directory, g, Response, jsonify
 from markupsafe import Markup
 from .cw_login import current_user
 from flask_babel import gettext as _
@@ -535,6 +535,7 @@ def admin():
                                  cwa_version=cwa_version, kepubify_version=kepubify_version,
                                  calibre_version=calibre_version, feature_support=feature_support,
                                  schedule_time=schedule_time, schedule_duration=schedule_duration,
+                                 is_proxied=current_app.wsgi_app.is_proxied,
                                  title=_("Admin page"), page="admin")
 
 
@@ -555,6 +556,7 @@ def configuration():
                                  config=config,
                                  provider=oauth_bb.oauthblueprints,
                                  feature_support=feature_support,
+                                 is_proxied=current_app.wsgi_app.is_proxied,
                                  title=_("Basic Configuration"), page="config")
 
 

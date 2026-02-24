@@ -39,7 +39,7 @@ import requests
 from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_lib, ub, csrf, kobo_sync_status, magic_shelf
 from . import isoLanguages
 from .epub import get_epub_layout
-from .constants import COVER_THUMBNAIL_SMALL, COVER_THUMBNAIL_MEDIUM, COVER_THUMBNAIL_LARGE
+from .constants import COVER_THUMBNAIL_SMALL, COVER_THUMBNAIL_MEDIUM, COVER_THUMBNAIL_LARGE, DEFAULT_PORT
 from .kobo_cover_cache import build_cover_image_id, normalize_cover_uuid
 from .helper import get_download_link
 from .services import SyncToken as SyncToken, hardcover
@@ -483,7 +483,7 @@ def get_download_url_for_book(book_id, book_format):
         return "{url_scheme}://{url_base}:{url_port}/kobo/{auth_token}/download/{book_id}/{book_format}".format(
             url_scheme=request.scheme,
             url_base=host,
-            url_port=config.config_external_port,
+            url_port=config.config_external_port or DEFAULT_PORT,
             auth_token=get_auth_token(),
             book_id=book_id,
             book_format=book_format.lower()
@@ -1348,7 +1348,7 @@ def HandleInitRequest():
         calibre_web_url = "{url_scheme}://{url_base}:{url_port}".format(
             url_scheme=request.scheme,
             url_base=host,
-            url_port=config.config_external_port
+            url_port=config.config_external_port or DEFAULT_PORT
         )
         log.debug('Kobo: Received unproxied request, changed request url to %s', calibre_web_url)
         kobo_resources["image_host"] = calibre_web_url

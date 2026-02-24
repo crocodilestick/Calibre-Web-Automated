@@ -209,7 +209,7 @@
       </div>
       <div class="form-group" style="margin-left:10px;">
         <label for="config_external_port">{{_('Server External Port (for port forwarded API calls)')}}</label>
-        <input type="number" min="1" max="65535" class="form-control" name="config_external_port" id="config_external_port" value="{% if not is_proxied and config.config_external_port %}{{ config.config_external_port }}{% endif %}" autocomplete="off" placeholder="{% if is_proxied %}{{ _('Reverse proxy detected — likely unneeded') }}{% endif %}">
+        <input type="number" min="1" max="65535" class="form-control" name="config_external_port" id="config_external_port" value="{{ config.config_external_port or '' }}" autocomplete="off" placeholder="{% if is_proxied %}{{ _('Reverse proxy detected — likely unneeded') }}{% else %}8083{% endif %}">
       </div>
       <div class="form-group" style="margin-left:10px;">
         <input type="checkbox" id="config_hardcover_sync" name="config_hardcover_sync"  {% if config.config_hardcover_sync %}checked{% endif %}>

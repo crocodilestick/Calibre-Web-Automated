@@ -1272,7 +1272,7 @@ def make_calibre_web_oauth_response():
         "token_type": "Bearer",
         "expires_in": 3600,
         "scope": content.get("scope", ""),
-        "user_id": content.get("user_id", ""),
+        "user_id": str(current_user.id) if current_user and not current_user.is_anonymous else content.get("user_id", ""),
         # Include legacy field names used by some Kobo requests
         "AccessToken": access_token,
         "RefreshToken": refresh_token,
@@ -1294,8 +1294,28 @@ def HandleAuthRequest():
     return make_calibre_web_auth_response()
 
 
+
+@csrf.exempt
+@kobo.route('/oauth/.well-known/openid-configuration', methods=['GET', 'POST'])
+@requires_kobo_auth
+def HandleOidcDiscovery():
+    base_url = url_for("kobo.HandleOauthRequest",
+                       auth_token=get_auth_token(),
+                       _external=True).rsplit("/oauth", 1)[0]
+    payload = {
+        'issuer': base_url,
+        'authorization_endpoint': base_url + '/oauth/authorize',
+        'token_endpoint': base_url + '/oauth/token',
+        'userinfo_endpoint': base_url + '/oauth/userinfo',
+        'response_types_supported': ['code'],
+        'subject_types_supported': ['public'],
+        'id_token_signing_alg_values_supported': ['RS256'],
+    }
+    return make_response(jsonify(payload))
+
 @csrf.exempt
 @kobo.route("/oauth/token", methods=["GET", "POST"])
+@kobo.route("/oauth/authorize", methods=["GET", "POST"])
 @kobo.route("/oauth/refresh", methods=["GET", "POST"])
 @kobo.route("/oauth/<path:subpath>", methods=["GET", "POST"])
 @requires_kobo_auth

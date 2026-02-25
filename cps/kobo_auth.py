@@ -64,6 +64,62 @@ from .usermanagement import user_login_required
 
 log = logger.create()
 
+# In-memory cache of Kobo device ID -> user ID.
+# Populated during kobo auth (URL token), used as fallback for reading services
+# auth when session cookie is expired/missing (e.g. offline annotation sync).
+# Falls back to DB lookup on cache miss (e.g. after server restart).
+_device_user_cache = {}
+
+
+def register_kobo_device(device_id, user_id, auth_token):
+    """Register device-to-user mapping in both cache and database.
+
+    If the device ID for this auth token has changed (e.g. user got a new device),
+    the stored value is updated and the change is logged.
+    """
+    if not device_id:
+        return
+    _device_user_cache[device_id] = user_id
+    try:
+        token_record = ub.session.query(ub.RemoteAuthToken).filter(
+            ub.RemoteAuthToken.auth_token == auth_token,
+            ub.RemoteAuthToken.token_type == 1
+        ).first()
+        if token_record:
+            if token_record.device_id != device_id:
+                if token_record.device_id:
+                    log.info("Kobo device ID changed for user %s: %s -> %s",
+                             user_id, token_record.device_id, device_id)
+                else:
+                    log.debug("Storing Kobo device ID for user %s: %s", user_id, device_id)
+                token_record.device_id = device_id
+                ub.session_commit()
+    except Exception as e:
+        log.error("Failed to persist Kobo device ID mapping: %s", e)
+        ub.session.rollback()
+
+
+def get_user_id_for_device(device_id):
+    """Look up user ID by Kobo device ID. Checks in-memory cache first, then DB."""
+    if not device_id:
+        return None
+    user_id = _device_user_cache.get(device_id)
+    if user_id:
+        return user_id
+    # Cache miss, fetch from the DB and update the cache
+    try:
+        token_record = ub.session.query(ub.RemoteAuthToken).filter(
+            ub.RemoteAuthToken.device_id == device_id,
+            ub.RemoteAuthToken.token_type == 1
+        ).first()
+        if token_record:
+            _device_user_cache[device_id] = token_record.user_id
+            return token_record.user_id
+    except Exception as e:
+        log.error("Failed to look up Kobo device ID mapping from DB: %s", e)
+    return None
+
+
 kobo_auth = Blueprint("kobo_auth", __name__, url_prefix="/kobo_auth")
 
 
@@ -157,6 +213,8 @@ def requires_kobo_auth(f):
             )
             if user is not None:
                 login_user(user)
+                device_id = request.headers.get('X-Kobo-Deviceid')
+                register_kobo_device(device_id, user.id, auth_token)
                 [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
                 return f(*args, **kwargs)
         log.debug("Received Kobo request without a recognizable auth token.")

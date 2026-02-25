@@ -122,15 +122,15 @@ RUN \
 # STEP 4 - Install kepubify
 RUN \
   echo "**** install kepubify ****" && \
-  if [[ $KEPUBIFY_RELEASE == 'newest' ]]; then \
+  if [ "$KEPUBIFY_RELEASE" = 'newest' ]; then \
   KEPUBIFY_RELEASE=$(curl -sX GET "https://api.github.com/repos/pgaskin/kepubify/releases/latest" \
   | awk '/tag_name/{print $4;exit}' FS='[""]'); \
   fi && \
-  if [ "$(uname -m)" == "x86_64" ]; then \
+  if [ "$(uname -m)" = "x86_64" ]; then \
   curl -o \
   /usr/bin/kepubify -L \
   https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit; \
-  elif [ "$(uname -m)" == "aarch64" ]; then \
+  elif [ "$(uname -m)" = "aarch64" ]; then \
   curl -o \
   /usr/bin/kepubify -L \
   https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-arm64; \
@@ -142,11 +142,11 @@ RUN \
   # STEP 5.1 - Make the /app/calibre directory for the installed files
   mkdir -p /app/calibre && \
   # STEP 5.2 - Download the desired version of Calibre, determined by the CALIBRE_RELEASE variable and the architecture of the build environment
-  if [ "$(uname -m)" == "x86_64" ]; then \
+  if [ "$(uname -m)" = "x86_64" ]; then \
   curl -o \
   /calibre.txz -L \
   "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-x86_64.txz"; \
-  elif [ "$(uname -m)" == "aarch64" ]; then \
+  elif [ "$(uname -m)" = "aarch64" ]; then \
   curl -o \
   /calibre.txz -L \
   "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-arm64.txz"; \

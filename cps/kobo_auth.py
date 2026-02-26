@@ -74,10 +74,13 @@ _device_user_cache = {}
 def register_kobo_device(device_id, user_id, auth_token):
     """Register device-to-user mapping in both cache and database.
 
+    Only stores the device ID if config_kobo_device_id_auth is enabled.
     If the device ID for this auth token has changed (e.g. user got a new device),
     the stored value is updated and the change is logged.
     """
     if not device_id:
+        return
+    if not config.config_kobo_device_id_auth:
         return
     _device_user_cache[device_id] = user_id
     try:
@@ -100,8 +103,11 @@ def register_kobo_device(device_id, user_id, auth_token):
 
 
 def get_user_id_for_device(device_id):
-    """Look up user ID by Kobo device ID. Checks in-memory cache first, then DB."""
+    """Look up user ID by Kobo device ID. Checks in-memory cache first, then DB.
+    Returns None if device ID auth is disabled."""
     if not device_id:
+        return None
+    if not config.config_kobo_device_id_auth:
         return None
     user_id = _device_user_cache.get(device_id)
     if user_id:

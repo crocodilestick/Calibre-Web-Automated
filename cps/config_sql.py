@@ -94,6 +94,8 @@ class _Settings(_Base):
     config_hardcover_sync = Column(Boolean, default=False) 
     # Sync annotations to Hardcover
     config_hardcover_annotations_sync = Column(Boolean, default=False)
+    # Use Kobo device ID for auth when session cookie is expired
+    config_kobo_device_id_auth = Column(Boolean, default=False)
 
     config_default_role = Column(SmallInteger, default=0)
     config_default_show = Column(SmallInteger, default=constants.ADMIN_USER_SIDEBAR)

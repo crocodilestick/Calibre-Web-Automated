@@ -9,8 +9,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-02-05 00:15+0100\n"
-"PO-Revision-Date: 2020-09-27 22:18+0800\n"
-"Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
+"PO-Revision-Date: 2026-02-27 03:15+0800\n"
+"Last-Translator: PaleVerge <fnme370679@gmail.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -2743,14 +2743,12 @@ msgid "Show CWA Stats"
 msgstr "显示CWA统计"
 
 #: cps/templates/admin.html:210
-#, fuzzy
 msgid "Check CWA Status"
 msgstr "运行状态检查"
 
 #: cps/templates/admin.html:211
-#, fuzzy
 msgid "Setup KOReader Sync"
-msgstr "epub 阅读器"
+msgstr "配置KOReader同步"
 
 #: cps/templates/admin.html:214
 msgid "CWA Library Conversion Service"
@@ -2769,12 +2767,10 @@ msgid "CWA Discord Server"
 msgstr "CWA Discord服务器"
 
 #: cps/templates/admin.html:222
-#, fuzzy
 msgid "Run Hardcover Auto-Fetch"
 msgstr "开始Hardcover自动抓取"
 
 #: cps/templates/admin.html:227
-#, fuzzy
 msgid "Administration&nbsp;&nbsp;🚀"
 msgstr "管理员&nbsp;&nbsp;🚀"
 
@@ -3116,32 +3112,26 @@ msgstr "合并"
 
 #: cps/templates/book_table.html:50 cps/templates/book_table.html:210
 #: cps/templates/duplicates.html:504
-#, fuzzy
 msgid "Archive"
 msgstr "归档"
 
 #: cps/templates/book_table.html:53 cps/templates/book_table.html:230
-#, fuzzy
 msgid "Unarchive"
-msgstr "归档"
+msgstr "取消归档"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
-#, fuzzy
 msgid "Mark as read"
 msgstr "标为未读"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
-#, fuzzy
 msgid "Mark as unread"
 msgstr "标为未读"
 
 #: cps/templates/book_table.html:65
-#, fuzzy
 msgid "Add to Shelf"
 msgstr "添加到书架"
 
 #: cps/templates/book_table.html:67
-#, fuzzy
 msgid " Exchange author & title"
 msgstr "交换作者和标题"
 
@@ -3224,14 +3214,12 @@ msgid "Comments"
 msgstr "简介"
 
 #: cps/templates/book_table.html:114
-#, fuzzy
 msgid "Archived?"
-msgstr "归档"
+msgstr "归档？"
 
 #: cps/templates/book_table.html:116
-#, fuzzy
 msgid "Read?"
-msgstr "已读"
+msgstr "已读？"
 
 #: cps/templates/book_table.html:119 cps/templates/book_table.html:121
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
@@ -3293,7 +3281,7 @@ msgstr ""
 #: cps/templates/book_table.html:343
 #, fuzzy
 msgid "Select a Shelf"
-msgstr "创建书架"
+msgstr "选择一个书架"
 
 #: cps/templates/book_table.html:346
 msgid "Please select a shelf to add the selected books to:"

@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-02-05 00:15+0100\n"
-"PO-Revision-Date: 2025-09-09 20:18+0200\n"
+"PO-Revision-Date: 2026-02-28 18:18+0100\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Loco-Source-Locale: de_DE\n"
 "Generated-By: Babel 2.15.0\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
 #: cps/about.py:65
 msgid "Statistics"
@@ -701,7 +701,7 @@ msgid ""
 "endpoint."
 msgstr ""
 "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort. Dies ist "
-"möglicherweise kein OIDC"
+"möglicherweise kein OIDC."
 
 #: cps/admin.py:2902
 #, python-format
@@ -1066,6 +1066,8 @@ msgstr "Calibre-Web Automated - EPUB-Fixer-Dienst"
 #: cps/cwa_functions.py:2031
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
+"Der Single-Book-EPUB-Fixer wird von Google Drive-Bibliotheken nicht "
+"unterstützt."
 
 #: cps/cwa_functions.py:2038
 msgid "Invalid book selection."
@@ -1089,7 +1091,7 @@ msgstr "EPUB-Fixer für das ausgewählte Buch gestartet."
 
 #: cps/cwa_functions.py:2072
 msgid "Failed to start EPUB Fixer for selected book."
-msgstr ""
+msgstr "Starten des EPUB Fixer für das ausgewählte Buch nicht möglich"
 
 #: cps/cwa_functions.py:2119
 msgid "You must be an admin to access this page."
@@ -1177,6 +1179,8 @@ msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
+"Der Ingest-Ordner ist nicht beschreibbar. Überprüfen Sie die Berechtigungen "
+"für Ihr /cwa-book-ingest-Volume."
 
 #: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
@@ -1477,7 +1481,7 @@ msgstr ""
 #: cps/helper.py:1053 cps/helper.py:1061
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
-msgstr ""
+msgstr "Das Titelbild überschreitet die maximale Größe von %(size)s MB"
 
 #: cps/helper.py:1072
 msgid "Error Downloading Cover"
@@ -1545,7 +1549,7 @@ msgstr "Bitte keine Datei sondern einen Ordner angeben"
 
 #: cps/helper.py:1364
 msgid "Calibre binaries not viable"
-msgstr "Die Calibre Programmdaten sind nicht verwendbar."
+msgstr "Die Calibre Programmdaten sind nicht verwendbar"
 
 #: cps/helper.py:1373
 #, python-format
@@ -2360,9 +2364,8 @@ msgid "No email addresses selected"
 msgstr "Keine E-Mail-Adresse ausgewählt"
 
 #: cps/web.py:2024
-#, fuzzy
 msgid "Additional email addresses are disabled for your account."
-msgstr "Zusätzliche E-Mail-Adressen eingeben (durch Kommas getrennt):"
+msgstr "Zusätzliche E-Mail-Adressen sind für Ihr Konto deaktiviert."
 
 #: cps/web.py:2046
 msgid "Success! Book queued for sending to the selected address(es)!"
@@ -3626,9 +3629,9 @@ msgid "Logfile Configuration"
 msgstr "Konfiguration der Logdatei"
 
 #: cps/templates/config_edit.html:149
-#, fuzzy
 msgid "Location and name of logfile (/dev/stdout for no entry)"
-msgstr "Pfad und Name der Zugriffs-Logdatei (access.log wenn leergelassen)"
+msgstr ""
+"Speicherort und Name der Protokolldatei (/dev/stdout für keinen Eintrag)"
 
 #: cps/templates/config_edit.html:154
 msgid "Enable Access Log"
@@ -4378,11 +4381,11 @@ msgstr "Fehler beim Planen der Bibliothekskonvertierung"
 
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
-msgstr ""
+msgstr "Auf einem einzigen Buch ausführen"
 
 #: cps/templates/cwa_epub_fixer.html:24
 msgid "Search by title/author"
-msgstr ""
+msgstr "Suche nach Titel/Autor"
 
 #: cps/templates/cwa_epub_fixer.html:29
 msgid "Run on selected book"
@@ -4495,9 +4498,8 @@ msgstr ""
 "github.com/innocenat\">innocenat</a> erstellt wurde."
 
 #: cps/templates/cwa_settings.html:181
-#, fuzzy
 msgid "Enable KOReader Sync (CWA Plugin)"
-msgstr "KOReader Sync-Plugin"
+msgstr "KOReader Sync aktivieren (CWA-Plugin)"
 
 #: cps/templates/cwa_settings.html:183
 msgid ""
@@ -4505,6 +4507,10 @@ msgid ""
 "compatible checksums in metadata.db for progress syncing. Requires the "
 "KOReader plugin on your device."
 msgstr ""
+"Wenn diese Option aktiviert ist, macht CWA die /kosync-Endpunkte verfügbar "
+"und speichert KOReader-kompatible Prüfsummen in metadata.db für die "
+"Fortschrittssynchronisierung. Dazu ist das KOReader-Plugin auf Ihrem Gerät "
+"erforderlich."
 
 #: cps/templates/cwa_settings.html:185
 msgid ""
@@ -4512,6 +4518,10 @@ msgid ""
 "temporarily lock metadata.db. To stop a running backfill, restart the "
 "container after disabling."
 msgstr ""
+"Hinweis: Durch Aktivieren dieser Option wird beim Start ein Checksum-"
+"Backfill-Dienst gestartet, der die Datei „metadata.db“ vorübergehend sperren "
+"kann. Um einen laufenden Backfill zu beenden, starten Sie den Container nach "
+"dem Deaktivieren neu."
 
 #: cps/templates/cwa_settings.html:192
 msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
@@ -4728,18 +4738,20 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:403
 msgid "Cover File Max Size (MB):"
-msgstr ""
+msgstr "Maximale Größe der Deckblattdatei (MB):"
 
 #: cps/templates/cwa_settings.html:416
-#, fuzzy
 msgid "Range: 1-200 MB (default: 15)"
-msgstr "Bereich: 5-120 Minuten (Standard: 15)"
+msgstr "Bereich: 1–200 MB (Standard: 15)"
 
 #: cps/templates/cwa_settings.html:419
 msgid ""
 "Limits the maximum size of cover images downloaded from metadata providers "
 "or URLs to prevent slow or stalled saves."
 msgstr ""
+"Begrenzt die maximale Größe von Cover-Bildern, die von Metadatenanbietern "
+"oder URLs heruntergeladen werden, um langsame oder unterbrochene "
+"Speichervorgänge zu verhindern."
 
 #: cps/templates/cwa_settings.html:428
 msgid "Ingest Processing Timeout"
@@ -5686,9 +5698,8 @@ msgid "Failed to update tags"
 msgstr "Aktualisierung der Tags fehlgeschlagen"
 
 #: cps/templates/detail.html:1252
-#, fuzzy
 msgid "Failed to update shelves"
-msgstr "Aktualisierung der Tags fehlgeschlagen"
+msgstr "Aktualisierung der Regale fehlgeschlagen"
 
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
@@ -6190,24 +6201,26 @@ msgid "Sort descending according to series index"
 msgstr "Sortiere nach Serienindex absteigend"
 
 #: cps/templates/kosync_plugin.html:112
-#, fuzzy
 msgid "KOReader Sync is disabled."
-msgstr "Standard-Login ist deaktiviert."
+msgstr "KOReader Sync ist deaktiviert."
 
 #: cps/templates/kosync_plugin.html:113
 msgid ""
 "Enable it in CWA Settings to activate the /kosync endpoints and checksum "
 "generation."
 msgstr ""
+"Aktivieren Sie diese Option in den CWA-Einstellungen, um die /kosync-"
+"Endpunkte und die Prüfsummengenerierung zu aktivieren."
 
 #: cps/templates/kosync_plugin.html:115
-#, fuzzy
 msgid "Open CWA Settings"
-msgstr "CWA Einstellungen"
+msgstr "CWA-Einstellungen öffnen"
 
 #: cps/templates/kosync_plugin.html:139
 msgid "Download is available after enabling KOReader Sync in CWA Settings."
 msgstr ""
+"Der Download ist verfügbar, nachdem Sie KOReader Sync in den CWA-"
+"Einstellungen aktiviert haben."
 
 #: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
@@ -7016,7 +7029,7 @@ msgstr ""
 
 #: cps/templates/user_edit.html:228
 msgid "Enable Send-to-eReader Pop-up Modal"
-msgstr ""
+msgstr "Modales Popup-Fenster „An eReader senden“ aktivieren"
 
 #: cps/templates/user_edit.html:230
 msgid ""
@@ -7024,15 +7037,17 @@ msgid ""
 "enter extra email addresses and only send to a selection of saved addresses "
 "when sending to eReader."
 msgstr ""
+"Aktiviert oder deaktiviert das Popup-Fenster „An eReader senden“, in dem "
+"Benutzer zusätzliche E-Mail-Adressen eingeben und beim Senden an den eReader "
+"nur an eine Auswahl der gespeicherten Adressen senden können."
 
 #: cps/templates/user_edit.html:232
-#, fuzzy
 msgid ""
 "When disabled, emails will be sent to all configured eReader addresses "
 "without prompting."
 msgstr ""
-"Wenn aktiviert, werden neu hinzugefügte Bücher automatisch an alle oben "
-"konfigurierten E-Mail-Adressen für eReader gesendet."
+"Wenn diese Option deaktiviert ist, werden E-Mails ohne Rückfrage an alle "
+"konfigurierten E-Reader-Adressen gesendet."
 
 #: cps/templates/user_edit.html:240
 msgid "Automatically send new books to my eReader(s)"
@@ -7150,59 +7165,58 @@ msgid "Configure what actions this user is allowed to perform."
 msgstr "Konfigurieren Sie, welche Aktionen dieser Benutzer ausführen darf."
 
 #: cps/templates/user_edit.html:454
-#, fuzzy
 msgid "Magic Shelves Order"
-msgstr "Magische Regale ✨"
+msgstr "Magische Regale Sortierung"
 
 #: cps/templates/user_edit.html:455
 msgid "Choose how your magic shelves are ordered in the sidebar."
-msgstr ""
+msgstr "Wähle aus, wie deine magischen Regale in der Sidebar sortiert werden "
 
 #: cps/templates/user_edit.html:459
 msgid "Order Mode"
-msgstr ""
+msgstr "Sortier-Modus"
 
 #: cps/templates/user_edit.html:461
 msgid "Manual (drag to reorder)"
-msgstr ""
+msgstr "Manuell (zum Neuanordnen ziehe)"
 
 #: cps/templates/user_edit.html:462
 msgid "Name (A-Z)"
-msgstr ""
+msgstr "Name (A-Z)"
 
 #: cps/templates/user_edit.html:463
 msgid "Name (Z-A)"
-msgstr ""
+msgstr "Name (Z-A)"
 
 #: cps/templates/user_edit.html:464
 msgid "Book count (high to low)"
-msgstr ""
+msgstr "Anzahl der Bücher (absteigend)"
 
 #: cps/templates/user_edit.html:465
 msgid "Book count (low to high)"
-msgstr ""
+msgstr "Anzahl der Bücher (aufsteigend)"
 
 #: cps/templates/user_edit.html:466
 msgid "Created (newest first)"
-msgstr ""
+msgstr "Erstellt (neueste zuerst)"
 
 #: cps/templates/user_edit.html:467
 msgid "Created (oldest first)"
-msgstr ""
+msgstr "Erstellt (älteste zuerst)"
 
 #: cps/templates/user_edit.html:468
-#, fuzzy
 msgid "Recently modified"
-msgstr "Zuletzt geändert"
+msgstr "Kürzlich geändert"
 
 #: cps/templates/user_edit.html:469
-#, fuzzy
 msgid "Least recently modified"
-msgstr "Zuletzt geändert"
+msgstr "Zuletzt am wenigsten geändert"
 
 #: cps/templates/user_edit.html:480
 msgid "Manual order is used only when the order mode is set to Manual."
 msgstr ""
+"Der manuelle Sortier-Modus wird nur angewandt, wenn der Sortier-Modus auf "
+"manuell gesetzt ist "
 
 #: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"

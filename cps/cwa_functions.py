@@ -639,6 +639,10 @@ def set_cwa_settings():
     if 'duplicate_scan_cron' not in string_settings:
         string_settings.append('duplicate_scan_cron')
 
+    # Ensure sentinel is treated as a string even if default is empty
+    if 'auto_metadata_ignore_sentinel' not in string_settings:
+        string_settings.append('auto_metadata_ignore_sentinel')
+
     # Ensure archived cleanup schedule fields are treated as strings
     if 'archived_cleanup_schedule' not in string_settings:
         string_settings.append('archived_cleanup_schedule')

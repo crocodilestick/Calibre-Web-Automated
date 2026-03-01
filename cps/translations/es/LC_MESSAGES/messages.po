@@ -36,11 +36,11 @@ msgstr ""
 
 #: cps/admin.py:180
 msgid "Server restarted, please reload page."
-msgstr "Servidor reiniciado. Por favor, recargue la página."
+msgstr "Servidor reiniciado. Por favor, recarga la página."
 
 #: cps/admin.py:182
 msgid "Performing Server shutdown, please close window."
-msgstr "El servidor se está apagando. Por favor, cierre la ventana."
+msgstr "El servidor se está apagando. Por favor, cierra la ventana."
 
 #: cps/admin.py:190
 msgid "Success! Database Reconnected"
@@ -54,7 +54,7 @@ msgstr "Comando desconocido"
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
-"¡Éxito! Libros en cola para la copia de seguridad de metadatos, compruebe "
+"¡Éxito! Libros en cola para la copia de seguridad de metadatos, comprueba "
 "las tareas para ver el resultado"
 
 #: cps/admin.py:224
@@ -63,14 +63,14 @@ msgid ""
 "variable or configure in Basic Configuration."
 msgstr ""
 "Error: No hay token de Hardcover disponible. Define la variable de entorno "
-"HARDCOVER_TOKEN o configúralo en Configuración básica."
+"HARDCOVER_TOKEN o configúralo en configuración básica."
 
 #: cps/admin.py:252
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
 msgstr ""
 "¡Éxito! Se inició la tarea de obtención automática de Hardcover. Revisa el "
-"panel de Tareas para ver el progreso."
+"panel de tareas para ver el progreso."
 
 #: cps/admin.py:257
 #, python-format
@@ -133,7 +133,7 @@ msgstr "Configuración básica"
 
 #: cps/admin.py:596
 msgid "UI Configuration"
-msgstr "Configuración de la Interfaz de Usuario"
+msgstr "Configuración de la interfaz de usuario"
 
 #: cps/admin.py:620 cps/admin.py:1302 cps/db.py:967 cps/search.py:153
 #: cps/web.py:832
@@ -172,11 +172,11 @@ msgstr "Petición mal formulada"
 
 #: cps/admin.py:785 cps/admin.py:2786
 msgid "Guest Name can't be changed"
-msgstr "El Nombre de Invitado no se puede cambiar"
+msgstr "El Nombre de invitado no se puede cambiar"
 
 #: cps/admin.py:799
 msgid "Guest can't have this role"
-msgstr "El Invitado no puede tener ese rol"
+msgstr "El invitado no puede tener ese rol"
 
 #: cps/admin.py:811 cps/admin.py:2611
 msgid "No admin user remaining, can't remove admin role"
@@ -186,7 +186,7 @@ msgstr ""
 
 #: cps/admin.py:815 cps/admin.py:829
 msgid "Value has to be true or false"
-msgstr "Valor tiene que ser verdadero o falso"
+msgstr "El valor tiene que ser verdadero o falso"
 
 #: cps/admin.py:817
 msgid "Invalid role"
@@ -203,12 +203,12 @@ msgstr "Vista no válida"
 #: cps/admin.py:834
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr ""
-"La Configuración Regional del Invitado se determina automáticamente y no se "
+"La configuración regional del invitado se determina automáticamente y no se "
 "puede establecer"
 
 #: cps/admin.py:838
 msgid "No Valid Locale Given"
-msgstr "No se ha especificado una Configuración Regional válida"
+msgstr "No se ha especificado una configuración regional válida"
 
 #: cps/admin.py:849
 msgid "No Valid Book Language Given"
@@ -232,7 +232,7 @@ msgstr "Configuración de Calibre-Web actualizada"
 
 #: cps/admin.py:926
 msgid "Do you really want to delete the Kobo Token?"
-msgstr "¿Realmente quieres borrar el Token de Kobo?"
+msgstr "¿Realmente quieres borrar el token de Kobo?"
 
 #: cps/admin.py:928
 msgid "Do you really want to delete this domain?"
@@ -249,7 +249,7 @@ msgstr "¿Realmente quieres eliminar esta estantería?"
 #: cps/admin.py:934
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr ""
-"¿Realmente quieres cambiar la Configuración Regional de los usuarios "
+"¿Realmente quieres cambiar la configuración regional de los usuarios "
 "seleccionados?"
 
 #: cps/admin.py:936
@@ -6940,15 +6940,15 @@ msgstr "Excluir etiquetas"
 
 #: cps/templates/search_form.html:78
 msgid "Exclude Series"
-msgstr "Excluir Series"
+msgstr "Excluir series"
 
 #: cps/templates/search_form.html:96
 msgid "Exclude Shelves"
-msgstr "Excluir Estanterías"
+msgstr "Excluir estanterías"
 
 #: cps/templates/search_form.html:116
 msgid "Exclude Languages"
-msgstr "Excluir Idiomas"
+msgstr "Excluir idiomas"
 
 #: cps/templates/search_form.html:127
 msgid "Extensions"
@@ -6956,7 +6956,7 @@ msgstr "Extensiones"
 
 #: cps/templates/search_form.html:135
 msgid "Exclude Extensions"
-msgstr "Extensiones Excluidas"
+msgstr "Extensiones excluidas"
 
 #: cps/templates/search_form.html:145
 msgid "Rating Above"
@@ -6978,11 +6978,11 @@ msgstr "Para:"
 
 #: cps/templates/shelf.html:13
 msgid "Delete this Shelf"
-msgstr "Borrar esta Estantería"
+msgstr "Borrar esta estantería"
 
 #: cps/templates/shelf.html:14
 msgid "Edit Shelf Properties"
-msgstr "Editar Propiedades de la Estantería"
+msgstr "Editar propiedades de la estantería"
 
 #: cps/templates/shelf.html:17
 msgid "Arrange books manually"
@@ -7008,7 +7008,7 @@ msgstr ""
 
 #: cps/templates/shelf_edit.html:14
 msgid "Share with Everyone"
-msgstr "Compartir con Todos"
+msgstr "Compartir con todos"
 
 #: cps/templates/shelf_edit.html:21
 msgid "Sync this shelf with Kobo device"
@@ -7016,35 +7016,35 @@ msgstr "Sincronizar esta estantería con el dispositivo Kobo"
 
 #: cps/templates/shelf_order.html:5
 msgid "Drag to Rearrange Order"
-msgstr "Arrastra para Reorganizar"
+msgstr "Arrastra para reorganizar"
 
 #: cps/templates/shelf_order.html:33
 msgid "Hidden Book"
-msgstr "Libro Oculto"
+msgstr "Libro oculto"
 
 #: cps/templates/stats.html:7
 msgid "Library Statistics"
-msgstr "Estadísticas de la Biblioteca"
+msgstr "Estadísticas de la biblioteca"
 
 #: cps/templates/stats.html:12
 msgid "Books in this Library"
-msgstr "Libros en esta Biblioteca"
+msgstr "Libros en esta biblioteca"
 
 #: cps/templates/stats.html:16
 msgid "Authors in this Library"
-msgstr "Autores en esta Biblioteca"
+msgstr "Autores en esta biblioteca"
 
 #: cps/templates/stats.html:20
 msgid "Categories in this Library"
-msgstr "Categorías en esta Biblioteca"
+msgstr "Categorías en esta biblioteca"
 
 #: cps/templates/stats.html:24
 msgid "Series in this Library"
-msgstr "Series en esta Biblioteca"
+msgstr "Series en esta biblioteca"
 
 #: cps/templates/stats.html:29
 msgid "System Statistics"
-msgstr "Estadísticas del Sistema"
+msgstr "Estadísticas del sistema"
 
 #: cps/templates/stats.html:33
 msgid "Program"
@@ -7052,7 +7052,7 @@ msgstr "Programa"
 
 #: cps/templates/stats.html:34
 msgid "Installed Version"
-msgstr "Versión Instalada"
+msgstr "Versión instalada"
 
 #: cps/templates/tasks.html:8
 msgid "Background Tasks Overview"
@@ -7097,9 +7097,8 @@ msgid "Scheduled Time"
 msgstr "Hora programada"
 
 #: cps/templates/tasks.html:45 cps/templates/tasks.html:67
-#, fuzzy
 msgid "State"
-msgstr "Rotar"
+msgstr "Estado"
 
 #: cps/templates/tasks.html:50
 msgid ""
@@ -7337,55 +7336,52 @@ msgid "Configure what actions this user is allowed to perform."
 msgstr "Configura qué acciones puede realizar este usuario."
 
 #: cps/templates/user_edit.html:454
-#, fuzzy
 msgid "Magic Shelves Order"
-msgstr "Estanterías mágicas ✨"
+msgstr "Orden de las estanterías mágicas"
 
 #: cps/templates/user_edit.html:455
 msgid "Choose how your magic shelves are ordered in the sidebar."
-msgstr ""
+msgstr "Escoge como las estanterías mágicas se ordenan en la barra lateral"
 
 #: cps/templates/user_edit.html:459
 msgid "Order Mode"
-msgstr ""
+msgstr "Orden"
 
 #: cps/templates/user_edit.html:461
 msgid "Manual (drag to reorder)"
-msgstr ""
+msgstr "Manual (arrastra para reordenar)"
 
 #: cps/templates/user_edit.html:462
 msgid "Name (A-Z)"
-msgstr ""
+msgstr "Nombre (A-Z)"
 
 #: cps/templates/user_edit.html:463
 msgid "Name (Z-A)"
-msgstr ""
+msgstr "Nombre (Z-A)"
 
 #: cps/templates/user_edit.html:464
 msgid "Book count (high to low)"
-msgstr ""
+msgstr "Recuento de libros (descendente)"
 
 #: cps/templates/user_edit.html:465
 msgid "Book count (low to high)"
-msgstr ""
+msgstr "Recuento de libros (ascendente)"
 
 #: cps/templates/user_edit.html:466
 msgid "Created (newest first)"
-msgstr ""
+msgstr "Creado (más reciente primero)"
 
 #: cps/templates/user_edit.html:467
 msgid "Created (oldest first)"
-msgstr ""
+msgstr "Creado (más antiguo primero)"
 
 #: cps/templates/user_edit.html:468
-#, fuzzy
 msgid "Recently modified"
-msgstr "Última modificación"
+msgstr "Modificado recientemente"
 
 #: cps/templates/user_edit.html:469
-#, fuzzy
 msgid "Least recently modified"
-msgstr "Última modificación"
+msgstr "Modificado anteriormente"
 
 #: cps/templates/user_edit.html:480
 msgid "Manual order is used only when the order mode is set to Manual."
@@ -7487,7 +7483,7 @@ msgstr "Editar etiquetas permitidas"
 
 #: cps/templates/user_table.html:140
 msgid "Allowed Tags"
-msgstr "Etiquetas Permitidas"
+msgstr "Etiquetas permitidas"
 
 #: cps/templates/user_table.html:141
 msgid "Edit Denied Tags"
@@ -7495,7 +7491,7 @@ msgstr "Editar etiquetas denegadas"
 
 #: cps/templates/user_table.html:141
 msgid "Denied Tags"
-msgstr "Etiquetas Denegadas"
+msgstr "Etiquetas denegadas"
 
 #: cps/templates/user_table.html:142
 msgid "Edit Allowed Column Values"

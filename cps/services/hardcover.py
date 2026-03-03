@@ -220,7 +220,7 @@ class HardcoverClient:
         return response.get("update_user_book", {}).get("user_book", {})
 
 
-    def add_journal_entry(self, identifiers, note_text, progress_percent=None, progress_page=None, highlighted_text=None):
+    def add_journal_entry(self, identifiers, note_text, progress_percent=None, progress_page=None, highlighted_text=None, highlight_color=None):
         """
         Add a journal entry (reading note) to Hardcover.
 
@@ -321,6 +321,10 @@ class HardcoverClient:
             ],
             "metadata": metadata if metadata else None
         }
+
+        # Add the highlight color as a tag
+        if highlight_color:
+            variables["tags"].append({"tag": highlight_color, "category": "general", "spoiler": False})
 
         try:
             response = self.execute(query=mutation, variables=variables)

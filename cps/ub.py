@@ -1257,8 +1257,10 @@ def _healthcheck_app_db(app_db_path: str) -> None:
             return
         if not os.access(app_db_path, os.W_OK):
             log.error("app.db is not writable: %s", app_db_path)
-        network_share_mode = os.environ.get("NETWORK_SHARE_MODE", "false").lower() in ("1", "true", "yes")
-        if network_share_mode:
+        nsm_raw = os.environ.get("NETWORK_SHARE_MODE", "false").strip().lower()
+        nsm = nsm_raw in ("1", "true", "yes", "on", "localdb")
+        local_db = nsm_raw == "localdb"
+        if nsm and not local_db:
             log.info("Skipping PRAGMA quick_check for app.db due to NETWORK_SHARE_MODE=true")
             return
         try:

@@ -206,7 +206,7 @@ class Updater(threading.Thread):
         change_permissions = not (sys.platform == "win32" or sys.platform == "darwin")
         # Only skip permission changes for network-share paths
         try:
-            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on", "localdb")
         except Exception:
             nsm = False
 

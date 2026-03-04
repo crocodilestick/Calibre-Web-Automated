@@ -88,21 +88,21 @@ ___
 
 ## 🚨 Deploying on Network Shares (NFS/SMB) 🚨
 
-- CWA now supports network-share deployments via `NETWORK_SHARE_MODE=true`
-  - This disables SQLite WAL on `metadata.db` and `app.db` to prevent locking issues
-  - Skips recursive ownership changes that often fail on NFS/SMB
-  - Switches ingest/metadata watchers to a polling-based watcher for reliability
-- Network shares are still slower than local disks, but are now fully supported with this mode enabled
+- CWA now supports network-share deployments via `NETWORK_SHARE_MODE`:
+  - `true` — Full network share mode: disables SQLite WAL, skips recursive `chown`, uses polling watchers
+  - `localdb` — For setups where your **database is on local storage** but book files are on a network share: keeps WAL enabled for better concurrency, while still skipping `chown` and using polling watchers
+- Network shares are still slower than local disks, but are now fully supported with these modes
 
 ### Network shares and SQLite WAL mode
 
 - CWA optimizes SQLite concurrency by enabling Write-Ahead Logging (WAL) on local disks.
 - Some network filesystems (NFS/SMB) do not fully support WAL or reliable file locking, which can cause intermittent "database is locked" errors or corruption risks.
-- If you are deploying on a network share, set the following environment variable to disable WAL:
+- Choose the right mode for your setup:
 
-  - `NETWORK_SHARE_MODE=true`
+  - `NETWORK_SHARE_MODE=true` — Use when your database (`metadata.db`) is on a network share. Disables WAL to prevent locking issues.
+  - `NETWORK_SHARE_MODE=localdb` — Use when your database is on local storage but your book files are on a network share. Keeps WAL enabled for better performance while still handling NFS/SMB file permission and watching quirks.
 
-This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.db` settings database. It also disables recursive ownership changes (`chown`) performed by init/maintenance scripts to avoid permission issues on network filesystems. Default is `false` (WAL enabled) for better performance on local disks.
+Both modes disable recursive ownership changes (`chown`) on mount paths and switch file watchers to polling. Default is `false` (WAL enabled, chown enabled, inotify watching) for fully local setups.
 
 #### File watching on network shares
 

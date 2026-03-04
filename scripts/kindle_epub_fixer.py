@@ -93,7 +93,7 @@ except KeyError:
 # Set permissions for log file (skip on network shares or if uid/gid not available)
 if uid is not None and gid is not None:
     try:
-        nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+        nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on", "localdb")
         if not nsm:
             subprocess.run(["chown", f"{uid}:{gid}", epub_fixer_log_file], check=True)
         else:

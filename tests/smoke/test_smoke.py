@@ -245,7 +245,7 @@ class TestEnvironmentConfiguration:
         """Verify network share mode can be detected from environment."""
         # This should not crash
         network_mode = os.environ.get('NETWORK_SHARE_MODE', 'false').lower()
-        assert network_mode in ['true', 'false', '0', '1', 'yes', 'no', 'on', 'off'], \
+        assert network_mode in ['true', 'false', '0', '1', 'yes', 'no', 'on', 'off', 'localdb'], \
             f"Invalid NETWORK_SHARE_MODE value: {network_mode}"
 
 

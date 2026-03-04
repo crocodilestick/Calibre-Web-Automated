@@ -13,9 +13,10 @@ services:
       # - CWA_PORT_OVERRIDE=8083
       # Hardcover API Key required for Hardcover as a Metadata Provider, get one here: https://docs.hardcover.app/api/getting-started/
       - HARDCOVER_TOKEN=your_hardcover_api_key_here
-      # If your library is on a network share (e.g., NFS/SMB), disables WAL and chown to reduce locking/permission issues,
-      # and switches file watching to polling (more reliable on network mounts) instead of inotify.
-      # Accepts: true/false (default: false)
+      # If your library is on a network share (e.g., NFS/SMB).
+      # - true: disables WAL, skips chown, uses polling (full network share mode)
+      # - localdb: keeps WAL enabled (DB is local), skips chown, uses polling
+      # - false: default, everything local
       - NETWORK_SHARE_MODE=false
       # If you want to force polling mode regardless of share type, set CWA_WATCH_MODE=poll
       # - CWA_WATCH_MODE=poll

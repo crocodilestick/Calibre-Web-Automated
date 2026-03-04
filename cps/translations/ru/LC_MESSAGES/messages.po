@@ -27,7 +27,7 @@ msgstr "Статистика"
 
 #: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
-msgstr ""
+msgstr "База данных Calibre не доступна. Пожалуйста, перенастройте путь к библиотеке."
 
 #: cps/admin.py:180
 #, fuzzy
@@ -53,13 +53,16 @@ msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
 "Успех! Книги поставлены в очередь резервного копирования метаданных, "
-"проверьте результаты в Заданиях"
+"проверьте результаты в в разделе Задачи"
 
 #: cps/admin.py:224
 msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
 msgstr ""
+"Ошибка: отсутствует токен Hardcover.
+Установите переменную окружения HARDCOVER_TOKEN
+или настройте её в разделе базовой конфигурации."
 
 #: cps/admin.py:252
 msgid ""

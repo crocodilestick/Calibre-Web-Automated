@@ -257,12 +257,12 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
             try:
                 rating_value = float(metadata.rating)
                 if 0 <= rating_value <= 10:  # Calibre uses 0-10 scale
-                    if book.ratings:
-                        book.ratings[0].rating = int(rating_value * 2)  # Convert to Calibre's 0-10 scale
-                    else:
-                        rating = db.Ratings(rating=int(rating_value * 2))
-                        calibre_db_instance.session.add(rating)
-                        book.ratings = [rating]
+                    rating_x2 = int(rating_value * 2)
+                    if not book.ratings or book.ratings[0].rating != rating_x2:
+                        existing_rating = calibre_db_instance.get_rating_by_value(rating_x2)
+                        if not existing_rating:
+                            existing_rating = db.Ratings(rating=rating_x2)
+                        book.ratings = [existing_rating]
                     updated = True
             except (ValueError, TypeError):
                 pass

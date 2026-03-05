@@ -862,24 +862,24 @@ class NewBookProcessor:
                 except Exception as e:
                     print(f"[ingest-processor] WARN: Failed to adjust timestamps after overwrite import: {e}", flush=True)
 
-            # Checkpoint WAL after all writes for this book are complete
-            self.checkpoint_wal()
-
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {staged_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
             self.backup(str(staged_path), backup_type="failed")
         except Exception as e:
             print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
         finally:
+            # Checkpoint WAL after all writes for this book are complete
+            self.checkpoint_wal()
             if staged_path.exists():
                 os.remove(staged_path)
 
     def checkpoint_wal(self):
         """Explicitly checkpoint the WAL to prevent unbounded growth during batch imports."""
         try:
-            with sqlite3.connect(self.metadata_db, timeout=5) as con:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
                 result = con.execute('PRAGMA wal_checkpoint(PASSIVE)').fetchone()
-                print(f"[ingest-processor] WAL checkpoint: busy={result[0]}, log={result[1]}, checkpointed={result[2]}", flush=True)
+                if result[0] != 0:
+                    print(f"[ingest-processor] WAL checkpoint blocked: busy={result[0]}, log={result[1]}, checkpointed={result[2]}", flush=True)
         except Exception as e:
             print(f"[ingest-processor] WARN: WAL checkpoint failed: {e}", flush=True)
 

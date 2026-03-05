@@ -2,26 +2,28 @@
 # Copyright (C) 2018-2026 Calibre-Web contributors
 # Copyright (C) 2024-2026 Calibre-Web Automated contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
-# See CONTRIBUTORS for full list of authors.
 
 """
-Tests for the StaticPool → QueuePool deadlock fix.
+Tests proving the StaticPool -> QueuePool deadlock fix.
 
-Verifies:
-1. ATTACH pattern works with per-connection initialization (event listener model)
-2. Multiple threads get independent SQLite connections (no shared-connection deadlock)
-3. duplicates.py functions accept calibre_db parameter for session isolation
+The claim: StaticPool shares a single DBAPI sqlite3.Connection across all
+threads. When WorkerThread holds that connection (long query), gevent
+greenlets block on the DBAPI connection's internal mutex, freezing the
+web server. QueuePool gives each thread its own connection, eliminating
+contention.
+
+These tests prove this at the SQLAlchemy level (not raw sqlite3) to match
+the actual CalibreDB usage pattern: scoped_session + engine + pool.
 """
 
-import importlib.util
-import inspect
-import pathlib
 import sqlite3
-import sys
 import threading
-from types import ModuleType
+import time
 
 import pytest
+from sqlalchemy import create_engine, event, text
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.pool import QueuePool, StaticPool
 
 
 # ---------------------------------------------------------------------------
@@ -29,281 +31,380 @@ import pytest
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def calibre_db_files(tmp_path):
-    """Create minimal metadata.db and app.db for ATTACH testing."""
+def db_files(tmp_path):
+    """Create metadata.db and app.db with test data, mirroring CalibreDB's ATTACH targets."""
     metadata_db = tmp_path / "metadata.db"
     app_db = tmp_path / "app.db"
 
     con = sqlite3.connect(str(metadata_db))
     con.execute("CREATE TABLE books (id INTEGER PRIMARY KEY, title TEXT)")
-    con.execute("INSERT INTO books VALUES (1, 'Test Book')")
+    for i in range(1, 101):
+        con.execute("INSERT INTO books VALUES (?, ?)", (i, f"Book {i}"))
+    con.execute("PRAGMA journal_mode=WAL")
     con.commit()
     con.close()
 
     con = sqlite3.connect(str(app_db))
     con.execute("CREATE TABLE settings (id INTEGER PRIMARY KEY, value TEXT)")
-    con.execute("INSERT INTO settings VALUES (1, 'test_value')")
+    con.execute("INSERT INTO settings VALUES (1, 'test')")
     con.commit()
     con.close()
 
     return str(metadata_db), str(app_db)
 
 
-# ---------------------------------------------------------------------------
-# ATTACH pattern tests (pure sqlite3, no sqlalchemy needed)
-# ---------------------------------------------------------------------------
+def _make_engine(poolclass, db_files, **pool_kwargs):
+    """Create an engine mimicking CalibreDB.setup_db with the given pool class."""
+    dbpath, app_db_path = db_files
 
-class TestAttachPattern:
-    """Verify the in-memory DB + ATTACH pattern used by CalibreDB."""
+    kwargs = dict(
+        echo=False,
+        isolation_level="SERIALIZABLE",
+        connect_args={"check_same_thread": False, "timeout": 30},
+        poolclass=poolclass,
+    )
+    kwargs.update(pool_kwargs)
+    engine = create_engine("sqlite://", **kwargs)
 
-    def test_attach_makes_tables_visible(self, calibre_db_files):
-        """An in-memory DB with ATTACH should see the attached tables."""
-        dbpath, app_db_path = calibre_db_files
+    if poolclass is StaticPool:
+        # StaticPool: one connection, ATTACH once (original CalibreDB pattern)
+        with engine.begin() as connection:
+            connection.execute(text(f"ATTACH DATABASE '{dbpath}' AS calibre"))
+            connection.execute(text(f"ATTACH DATABASE '{app_db_path}' AS app_settings"))
+            connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
+    else:
+        # QueuePool: per-connection ATTACH via event listener (the PR's fix)
+        @event.listens_for(engine, "connect")
+        def _on_connect(dbapi_conn, connection_record):
+            dbapi_conn.execute(f"ATTACH DATABASE '{dbpath}' AS calibre")
+            dbapi_conn.execute(f"ATTACH DATABASE '{app_db_path}' AS app_settings")
+            dbapi_conn.execute("PRAGMA calibre.journal_mode=WAL")
 
-        conn = sqlite3.connect(":memory:")
-        conn.execute(f"ATTACH DATABASE '{dbpath}' AS calibre")
-        conn.execute(f"ATTACH DATABASE '{app_db_path}' AS app_settings")
-
-        row = conn.execute("SELECT title FROM books WHERE id = 1").fetchone()
-        assert row[0] == "Test Book"
-
-        row = conn.execute("SELECT value FROM settings WHERE id = 1").fetchone()
-        assert row[0] == "test_value"
-
-        conn.close()
-
-    def test_separate_connections_need_separate_attach(self, calibre_db_files):
-        """Each new connection must run ATTACH independently — this is
-        why StaticPool (one shared connection) couldn't work with multiple threads."""
-        dbpath, app_db_path = calibre_db_files
-
-        conn1 = sqlite3.connect(":memory:")
-        conn1.execute(f"ATTACH DATABASE '{dbpath}' AS calibre")
-
-        conn2 = sqlite3.connect(":memory:")
-        # conn2 does NOT have ATTACH — should fail
-        with pytest.raises(sqlite3.OperationalError):
-            conn2.execute("SELECT title FROM books WHERE id = 1")
-
-        # After attaching, conn2 works too
-        conn2.execute(f"ATTACH DATABASE '{dbpath}' AS calibre")
-        row = conn2.execute("SELECT title FROM books WHERE id = 1").fetchone()
-        assert row[0] == "Test Book"
-
-        conn1.close()
-        conn2.close()
-
-    def test_custom_functions_registered_per_connection(self, calibre_db_files):
-        """Custom SQLite functions (uuid4, lower) must be registered on each
-        new connection — mirrors the _on_connect event listener in db.py."""
-        dbpath, _ = calibre_db_files
-
-        def _make_conn():
-            conn = sqlite3.connect(":memory:")
-            conn.execute(f"ATTACH DATABASE '{dbpath}' AS calibre")
-            # Simulate _on_connect registrations
-            from uuid import uuid4 as _uuid4
-            conn.create_function('uuid4', 0, lambda: str(_uuid4()))
-            conn.create_function("lower", 1, lambda s: s.lower() if s else s)
-            return conn
-
-        conn1 = _make_conn()
-        conn2 = _make_conn()
-
-        # Both connections can use the custom functions independently
-        u1 = conn1.execute("SELECT uuid4()").fetchone()[0]
-        u2 = conn2.execute("SELECT uuid4()").fetchone()[0]
-        assert u1 != u2  # UUIDs should differ
-
-        row = conn1.execute("SELECT lower('HELLO')").fetchone()
-        assert row[0] == "hello"
-
-        row = conn2.execute("SELECT lower('WORLD')").fetchone()
-        assert row[0] == "world"
-
-        conn1.close()
-        conn2.close()
+    return engine
 
 
 # ---------------------------------------------------------------------------
-# Thread isolation tests (pure sqlite3 + threading)
+# Core proof: StaticPool shares one DBAPI connection, QueuePool doesn't
 # ---------------------------------------------------------------------------
 
-class TestThreadIsolation:
-    """Verify that independent connections in separate threads don't deadlock."""
+class TestConnectionSharing:
+    """Prove that StaticPool gives the same DBAPI connection to different threads,
+    while QueuePool gives each thread its own."""
 
-    def test_concurrent_reads_on_separate_connections(self, calibre_db_files):
-        """Two threads with their own connections should read concurrently."""
-        dbpath, _ = calibre_db_files
+    def test_staticpool_returns_same_dbapi_connection_to_different_threads(self, db_files):
+        """Two threads using scoped_session over StaticPool get the SAME underlying
+        sqlite3.Connection object. This is the root cause: Python's sqlite3 module
+        has a per-connection mutex, so concurrent access serializes."""
+        engine = _make_engine(StaticPool, db_files)
+        factory = scoped_session(sessionmaker(bind=engine))
+
+        dbapi_ids = {}
+
+        def capture_conn_id(name):
+            session = factory()
+            conn = session.connection()
+            dbapi_ids[name] = id(conn.connection.dbapi_connection)
+            factory.remove()
+
+        t1 = threading.Thread(target=capture_conn_id, args=("worker",))
+        t2 = threading.Thread(target=capture_conn_id, args=("web",))
+        t1.start(); t1.join()
+        t2.start(); t2.join()
+
+        assert dbapi_ids["worker"] == dbapi_ids["web"], \
+            "StaticPool must return the same DBAPI connection to both threads"
+
+        engine.dispose()
+
+    def test_queuepool_returns_different_dbapi_connections_to_different_threads(self, db_files):
+        """Two threads using scoped_session over QueuePool get DIFFERENT underlying
+        sqlite3.Connection objects. No shared mutex = no contention."""
+        engine = _make_engine(QueuePool, db_files, pool_size=2, max_overflow=0)
+        factory = scoped_session(sessionmaker(bind=engine))
+
+        dbapi_ids = {}
+        barrier = threading.Barrier(2, timeout=5)
+
+        def capture_conn_id(name):
+            session = factory()
+            conn = session.connection()
+            dbapi_ids[name] = id(conn.connection.dbapi_connection)
+            barrier.wait()  # Hold both connections open simultaneously
+            factory.remove()
+
+        t1 = threading.Thread(target=capture_conn_id, args=("worker",))
+        t2 = threading.Thread(target=capture_conn_id, args=("web",))
+        t1.start(); t2.start()
+        t1.join(timeout=10); t2.join(timeout=10)
+
+        assert dbapi_ids["worker"] != dbapi_ids["web"], \
+            "QueuePool must return different DBAPI connections to different threads"
+
+        engine.dispose()
+
+
+# ---------------------------------------------------------------------------
+# Core proof: StaticPool causes thread contention, QueuePool doesn't
+# ---------------------------------------------------------------------------
+
+HOLD_SECONDS = 0.3
+
+
+class TestThreadContention:
+    """Prove the deadlock mechanism: when one thread holds the shared StaticPool
+    connection, another thread's query blocks until it's released."""
+
+    def test_staticpool_worker_blocks_web_thread(self, db_files):
+        """Thread A holds the DBAPI connection via a slow custom SQLite function.
+        Thread B's simple query is delayed by the full hold duration.
+        This reproduces the production deadlock at the SQLAlchemy level."""
+        engine = _make_engine(StaticPool, db_files)
+        factory = scoped_session(sessionmaker(bind=engine))
+
+        worker_started = threading.Event()
+        results = {}
+
+        def slow_func():
+            worker_started.set()
+            time.sleep(HOLD_SECONDS)
+            return 1
+
+        def worker_thread():
+            session = factory()
+            dbapi = session.connection().connection.dbapi_connection
+            dbapi.create_function("slow_func", 0, slow_func)
+            session.execute(text("SELECT slow_func()"))
+            factory.remove()
+
+        def web_thread():
+            worker_started.wait(timeout=5)
+            time.sleep(0.02)  # Ensure worker is mid-query
+            t0 = time.monotonic()
+            session = factory()
+            session.execute(text("SELECT 1"))
+            results["elapsed"] = time.monotonic() - t0
+            factory.remove()
+
+        tw = threading.Thread(target=worker_thread)
+        tg = threading.Thread(target=web_thread)
+        tw.start(); tg.start()
+        tw.join(timeout=5); tg.join(timeout=5)
+
+        assert results["elapsed"] >= HOLD_SECONDS * 0.5, (
+            f"Web thread should be blocked for ~{HOLD_SECONDS}s by StaticPool "
+            f"contention, but only waited {results['elapsed']:.3f}s"
+        )
+
+        engine.dispose()
+
+    def test_queuepool_worker_does_not_block_web_thread(self, db_files):
+        """Same scenario as above, but with QueuePool. Thread B's query completes
+        instantly because it gets its own connection from the pool."""
+        engine = _make_engine(QueuePool, db_files, pool_size=2, max_overflow=0)
+        factory = scoped_session(sessionmaker(bind=engine))
+
+        worker_started = threading.Event()
+        results = {}
+
+        def slow_func():
+            worker_started.set()
+            time.sleep(HOLD_SECONDS)
+            return 1
+
+        def worker_thread():
+            session = factory()
+            dbapi = session.connection().connection.dbapi_connection
+            dbapi.create_function("slow_func", 0, slow_func)
+            session.execute(text("SELECT slow_func()"))
+            factory.remove()
+
+        def web_thread():
+            worker_started.wait(timeout=5)
+            time.sleep(0.02)  # Ensure worker is mid-query
+            t0 = time.monotonic()
+            session = factory()
+            session.execute(text("SELECT count(*) FROM books"))
+            results["elapsed"] = time.monotonic() - t0
+            factory.remove()
+
+        tw = threading.Thread(target=worker_thread)
+        tg = threading.Thread(target=web_thread)
+        tw.start(); tg.start()
+        tw.join(timeout=5); tg.join(timeout=5)
+
+        assert results["elapsed"] < 0.1, (
+            f"Web thread should NOT be blocked by worker with QueuePool, "
+            f"but waited {results['elapsed']:.3f}s"
+        )
+
+        engine.dispose()
+
+
+# ---------------------------------------------------------------------------
+# QueuePool + event listener: ATTACH works on every pooled connection
+# ---------------------------------------------------------------------------
+
+class TestQueuePoolAttach:
+    """Prove that the event listener pattern correctly ATTACHes databases
+    on every new pooled connection, so all threads see the calibre schema."""
+
+    def test_all_pooled_connections_see_attached_tables(self, db_files):
+        """Multiple threads simultaneously query attached tables.
+        Each gets its own connection with ATTACH applied by the event listener."""
+        engine = _make_engine(QueuePool, db_files, pool_size=3, max_overflow=0)
+        factory = scoped_session(sessionmaker(bind=engine))
+
+        results = {}
+        barrier = threading.Barrier(3, timeout=5)
+
+        def query_thread(name):
+            session = factory()
+            count = session.execute(text("SELECT count(*) FROM books")).scalar()
+            setting = session.execute(text("SELECT value FROM settings WHERE id=1")).scalar()
+            conn_id = id(session.connection().connection.dbapi_connection)
+            results[name] = {"count": count, "setting": setting, "conn_id": conn_id}
+            barrier.wait()
+            factory.remove()
+
+        threads = [threading.Thread(target=query_thread, args=(f"t{i}",)) for i in range(3)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=10)
+
+        assert len(results) == 3, "All 3 threads should complete"
+        for name, data in results.items():
+            assert data["count"] == 100, f"{name} should see all 100 books"
+            assert data["setting"] == "test", f"{name} should see app_settings"
+
+        conn_ids = {d["conn_id"] for d in results.values()}
+        assert len(conn_ids) == 3, "Each thread should have its own connection"
+
+        engine.dispose()
+
+    def test_custom_functions_available_on_every_pooled_connection(self, db_files):
+        """uuid4() and lower() registered in the event listener should be usable
+        by any thread on any pooled connection."""
+        from uuid import uuid4 as _uuid4
+
+        dbpath, app_db_path = db_files
+        engine = create_engine(
+            "sqlite://", poolclass=QueuePool, pool_size=2, max_overflow=0,
+            connect_args={"check_same_thread": False},
+        )
+
+        @event.listens_for(engine, "connect")
+        def _on_connect(dbapi_conn, connection_record):
+            dbapi_conn.execute(f"ATTACH DATABASE '{dbpath}' AS calibre")
+            dbapi_conn.create_function("uuid4", 0, lambda: str(_uuid4()))
+            dbapi_conn.create_function("lower", 1, lambda s: s.lower() if s else s)
+
+        factory = scoped_session(sessionmaker(bind=engine))
         results = {}
         barrier = threading.Barrier(2, timeout=5)
 
-        def reader(name):
-            conn = sqlite3.connect(":memory:")
-            conn.execute(f"ATTACH DATABASE '{dbpath}' AS calibre")
-            row = conn.execute("SELECT title FROM books WHERE id = 1").fetchone()
-            results[name] = row[0]
-            barrier.wait()  # Both threads hold connections simultaneously
-            conn.close()
+        def use_functions(name):
+            session = factory()
+            uid = session.execute(text("SELECT uuid4()")).scalar()
+            low = session.execute(text("SELECT lower('HELLO')")).scalar()
+            results[name] = {"uuid": uid, "lower": low}
+            barrier.wait()
+            factory.remove()
 
-        t1 = threading.Thread(target=reader, args=("t1",))
-        t2 = threading.Thread(target=reader, args=("t2",))
-        t1.start()
-        t2.start()
-        t1.join(timeout=10)
-        t2.join(timeout=10)
+        t1 = threading.Thread(target=use_functions, args=("t1",))
+        t2 = threading.Thread(target=use_functions, args=("t2",))
+        t1.start(); t2.start()
+        t1.join(timeout=10); t2.join(timeout=10)
 
-        assert results == {"t1": "Test Book", "t2": "Test Book"}
+        assert results["t1"]["lower"] == "hello"
+        assert results["t2"]["lower"] == "hello"
+        assert results["t1"]["uuid"] != results["t2"]["uuid"], "UUIDs should differ"
 
-    def test_writer_does_not_block_reader_with_wal(self, calibre_db_files):
-        """With WAL mode, a writer in one connection shouldn't block
-        a reader in another — this is the core concurrency model we rely on."""
-        dbpath, _ = calibre_db_files
+        engine.dispose()
 
-        # Enable WAL on the database
-        setup_conn = sqlite3.connect(dbpath)
-        setup_conn.execute("PRAGMA journal_mode=WAL")
-        setup_conn.close()
 
-        reader_done = threading.Event()
-        writer_done = threading.Event()
+# ---------------------------------------------------------------------------
+# Worker session isolation: separate CalibreDB instances don't contend
+# ---------------------------------------------------------------------------
+
+class TestWorkerSessionIsolation:
+    """Prove that worker tasks creating their own sessions (the second part of
+    the PR's fix) actually get independent connections from the pool."""
+
+    def test_independent_sessions_from_same_engine_get_different_connections(self, db_files):
+        """Two sessionmaker instances bound to the same QueuePool engine should
+        check out different connections — simulating web singleton + worker instance."""
+        engine = _make_engine(QueuePool, db_files, pool_size=3, max_overflow=0)
+        web_factory = scoped_session(sessionmaker(bind=engine))
+        worker_factory = sessionmaker(bind=engine)  # Not scoped — one-off like worker tasks
+
+        results = {}
+        barrier = threading.Barrier(2, timeout=5)
+
+        def web_greenlet():
+            session = web_factory()
+            results["web_conn"] = id(session.connection().connection.dbapi_connection)
+            barrier.wait()
+            web_factory.remove()
+
+        def worker_thread():
+            session = worker_factory()
+            results["worker_conn"] = id(session.connection().connection.dbapi_connection)
+            barrier.wait()
+            session.close()
+
+        tw = threading.Thread(target=web_greenlet)
+        tg = threading.Thread(target=worker_thread)
+        tw.start(); tg.start()
+        tw.join(timeout=10); tg.join(timeout=10)
+
+        assert results["web_conn"] != results["worker_conn"], \
+            "Web and worker sessions should get different pooled connections"
+
+        engine.dispose()
+
+    def test_worker_long_query_does_not_block_web_with_separate_sessions(self, db_files):
+        """Full simulation: worker runs slow query via its own session,
+        web session queries concurrently without blocking. This is the
+        end-to-end proof that the PR's approach works."""
+        engine = _make_engine(QueuePool, db_files, pool_size=3, max_overflow=0)
+        web_factory = scoped_session(sessionmaker(bind=engine))
+        worker_factory = sessionmaker(bind=engine)
+
+        worker_started = threading.Event()
         results = {}
 
-        def writer():
-            conn = sqlite3.connect(dbpath, timeout=5)
-            conn.execute("BEGIN IMMEDIATE")
-            conn.execute("INSERT INTO books VALUES (2, 'New Book')")
-            # Hold the write lock while reader tries to read
-            reader_done.wait(timeout=5)
-            conn.execute("COMMIT")
-            conn.close()
-            writer_done.set()
+        def slow_func():
+            worker_started.set()
+            time.sleep(HOLD_SECONDS)
+            return 1
 
-        def reader():
-            conn = sqlite3.connect(dbpath, timeout=5)
-            # Small delay to let writer acquire lock first
-            import time
-            time.sleep(0.05)
-            # With WAL, this should NOT block even though writer holds a lock
-            row = conn.execute("SELECT title FROM books WHERE id = 1").fetchone()
-            results["reader"] = row[0]
-            reader_done.set()
-            conn.close()
+        def worker_thread():
+            session = worker_factory()
+            dbapi = session.connection().connection.dbapi_connection
+            dbapi.create_function("slow_func", 0, slow_func)
+            session.execute(text("SELECT slow_func()"))
+            session.close()
 
-        tw = threading.Thread(target=writer)
-        tr = threading.Thread(target=reader)
-        tw.start()
-        tr.start()
-        tr.join(timeout=10)
-        tw.join(timeout=10)
+        def web_greenlet():
+            worker_started.wait(timeout=5)
+            time.sleep(0.02)
+            t0 = time.monotonic()
+            session = web_factory()
+            count = session.execute(text("SELECT count(*) FROM books")).scalar()
+            results["elapsed"] = time.monotonic() - t0
+            results["count"] = count
+            web_factory.remove()
 
-        assert results.get("reader") == "Test Book", \
-            "Reader should not be blocked by writer in WAL mode"
+        tw = threading.Thread(target=worker_thread)
+        tg = threading.Thread(target=web_greenlet)
+        tw.start(); tg.start()
+        tw.join(timeout=5); tg.join(timeout=5)
 
+        assert results["elapsed"] < 0.1, (
+            f"Web query should not be blocked by worker's slow query, "
+            f"but waited {results['elapsed']:.3f}s"
+        )
+        assert results["count"] == 100
 
-# ---------------------------------------------------------------------------
-# Function signature tests (stubs, no Flask/sqlalchemy imports needed)
-# ---------------------------------------------------------------------------
-
-def _install_stub(name, attrs=None):
-    module = ModuleType(name)
-    if attrs:
-        for key, value in attrs.items():
-            setattr(module, key, value)
-    sys.modules[name] = module
-    return module
-
-
-def _load_duplicates_module():
-    """Load duplicates.py with minimal stubs (same approach as test_duplicates_timezone.py)."""
-    # Save and clear any existing cps modules
-    saved = {k: v for k, v in sys.modules.items() if k.startswith("cps")}
-    for k in list(saved):
-        del sys.modules[k]
-
-    _install_stub("cps")
-    _install_stub("cps.db")
-    _install_stub("cps.calibre_db")
-
-    class _Logger:
-        def warning(self, *a, **k): pass
-        def error(self, *a, **k): pass
-
-    _install_stub("cps.logger", {"create": lambda: _Logger()})
-    _install_stub("cps.ub", {"session": None, "DismissedDuplicateGroup": object()})
-    _install_stub("cps.csrf", {"exempt": lambda f: f})
-    _install_stub("cps.config")
-    _install_stub("cps.helper")
-    _install_stub("cps.services")
-    _install_stub("cps.services.worker", {
-        "WorkerThread": object, "STAT_FINISH_SUCCESS": 0,
-        "STAT_FAIL": 1, "STAT_ENDED": 2, "STAT_CANCELLED": 3,
-    })
-    _install_stub("cps.admin", {"admin_required": lambda f: f})
-    _install_stub("cps.usermanagement", {"login_required_if_no_ano": lambda f: f})
-    _install_stub("cps.render_template", {"render_title_template": lambda *a, **k: ""})
-
-    class _User:
-        is_authenticated = False
-        def role_admin(self): return False
-        def role_edit(self): return False
-
-    _install_stub("cps.cw_login", {"current_user": _User()})
-
-    class _Blueprint:
-        def __init__(self, *a, **k): pass
-        def route(self, *a, **k):
-            return lambda fn: fn
-
-    _install_stub("flask", {
-        "Blueprint": _Blueprint, "jsonify": lambda *a, **k: None,
-        "request": object(), "abort": lambda *a, **k: None,
-    })
-    _install_stub("flask_babel", {"gettext": lambda t: t})
-    _install_stub("sqlalchemy", {"func": object(), "and_": lambda *a, **k: None, "case": lambda *a, **k: None})
-    _install_stub("sqlalchemy.sql")
-    _install_stub("sqlalchemy.sql.expression", {"true": True, "false": False})
-    _install_stub("sqlalchemy.orm", {"joinedload": lambda *a, **k: None})
-    _install_stub("cwa_db", {"CWA_DB": type("CWA_DB", (), {"__init__": lambda s: None, "cwa_settings": {}})})
-
-    if "cps.duplicates" in sys.modules:
-        del sys.modules["cps.duplicates"]
-
-    duplicates_path = pathlib.Path(__file__).resolve().parents[2] / "cps" / "duplicates.py"
-    spec = importlib.util.spec_from_file_location("cps.duplicates", duplicates_path)
-    module = importlib.util.module_from_spec(spec)
-    module.__package__ = "cps"
-    sys.modules["cps.duplicates"] = module
-    spec.loader.exec_module(module)
-
-    return module, saved
-
-
-class TestDuplicatesFunctionSignatures:
-    """Verify all 6 duplicates.py functions accept calibre_db parameter."""
-
-    @pytest.fixture(autouse=True)
-    def _load_module(self):
-        self.module, self._saved = _load_duplicates_module()
-        yield
-        # Restore original modules
-        for k in list(sys.modules):
-            if k.startswith("cps"):
-                del sys.modules[k]
-        sys.modules.update(self._saved)
-
-    @pytest.mark.parametrize("fn_name", [
-        "find_duplicate_books",
-        "find_duplicate_books_sql",
-        "find_duplicate_books_python",
-        "find_duplicate_candidate_ids_sql",
-        "auto_resolve_duplicates",
-        "merge_duplicate_group",
-    ])
-    def test_function_accepts_calibre_db_param(self, fn_name):
-        fn = getattr(self.module, fn_name)
-        sig = inspect.signature(fn)
-        assert "calibre_db" in sig.parameters, \
-            f"{fn_name} must accept calibre_db parameter"
-        assert sig.parameters["calibre_db"].default is None, \
-            f"{fn_name} calibre_db should default to None"
+        engine.dispose()

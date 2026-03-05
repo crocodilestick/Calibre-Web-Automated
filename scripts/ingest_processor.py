@@ -862,6 +862,9 @@ class NewBookProcessor:
                 except Exception as e:
                     print(f"[ingest-processor] WARN: Failed to adjust timestamps after overwrite import: {e}", flush=True)
 
+            # Checkpoint WAL after all writes for this book are complete
+            self.checkpoint_wal()
+
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {staged_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
             self.backup(str(staged_path), backup_type="failed")
@@ -870,6 +873,20 @@ class NewBookProcessor:
         finally:
             if staged_path.exists():
                 os.remove(staged_path)
+
+    def checkpoint_wal(self):
+        """Explicitly checkpoint the WAL to prevent unbounded growth during batch imports."""
+        try:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
+                con.execute('PRAGMA busy_timeout=5000')
+                result = con.execute('PRAGMA wal_checkpoint(TRUNCATE)').fetchone()
+                busy, log, checkpointed = result
+                if busy:
+                    print(f"[ingest-processor] WARN: WAL checkpoint returned busy (another connection held a lock): log={log}, checkpointed={checkpointed}", flush=True)
+                else:
+                    print(f"[ingest-processor] WAL checkpoint: busy={busy}, log={log}, checkpointed={checkpointed}", flush=True)
+        except Exception as e:
+            print(f"[ingest-processor] WARN: WAL checkpoint failed: {e}", flush=True)
 
     def _validate_book_exists(self, book_id: int) -> bool:
         """Check if a book with the given ID exists in the Calibre library"""
@@ -1437,6 +1454,11 @@ def main(filepath=None):
                 shutil.rmtree(nbp.tmp_conversion_dir, ignore_errors=True)
             except Exception as e:
                 print(f"[ingest-processor] Error cleaning up temp conversion directory: {e}", flush=True)
+
+            try:
+                nbp.checkpoint_wal()
+            except Exception as e:
+                print(f"[ingest-processor] Error during final WAL checkpoint: {e}", flush=True)
 
             try:
                 del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests

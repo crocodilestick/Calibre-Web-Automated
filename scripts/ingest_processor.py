@@ -871,6 +871,15 @@ class NewBookProcessor:
             if staged_path.exists():
                 os.remove(staged_path)
 
+    def checkpoint_wal(self):
+        """Explicitly checkpoint the WAL to prevent unbounded growth during batch imports."""
+        try:
+            with sqlite3.connect(self.metadata_db, timeout=5) as con:
+                result = con.execute('PRAGMA wal_checkpoint(PASSIVE)').fetchone()
+                print(f"[ingest-processor] WAL checkpoint: busy={result[0]}, log={result[1]}, checkpointed={result[2]}", flush=True)
+        except Exception as e:
+            print(f"[ingest-processor] WARN: WAL checkpoint failed: {e}", flush=True)
+
     def _validate_book_exists(self, book_id: int) -> bool:
         """Check if a book with the given ID exists in the Calibre library"""
         try:

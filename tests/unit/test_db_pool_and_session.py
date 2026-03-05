@@ -93,6 +93,37 @@ class TestAttachPattern:
         conn1.close()
         conn2.close()
 
+    def test_custom_functions_registered_per_connection(self, calibre_db_files):
+        """Custom SQLite functions (uuid4, lower) must be registered on each
+        new connection — mirrors the _on_connect event listener in db.py."""
+        dbpath, _ = calibre_db_files
+
+        def _make_conn():
+            conn = sqlite3.connect(":memory:")
+            conn.execute(f"ATTACH DATABASE '{dbpath}' AS calibre")
+            # Simulate _on_connect registrations
+            from uuid import uuid4 as _uuid4
+            conn.create_function('uuid4', 0, lambda: str(_uuid4()))
+            conn.create_function("lower", 1, lambda s: s.lower() if s else s)
+            return conn
+
+        conn1 = _make_conn()
+        conn2 = _make_conn()
+
+        # Both connections can use the custom functions independently
+        u1 = conn1.execute("SELECT uuid4()").fetchone()[0]
+        u2 = conn2.execute("SELECT uuid4()").fetchone()[0]
+        assert u1 != u2  # UUIDs should differ
+
+        row = conn1.execute("SELECT lower('HELLO')").fetchone()
+        assert row[0] == "hello"
+
+        row = conn2.execute("SELECT lower('WORLD')").fetchone()
+        assert row[0] == "world"
+
+        conn1.close()
+        conn2.close()
+
 
 # ---------------------------------------------------------------------------
 # Thread isolation tests (pure sqlite3 + threading)

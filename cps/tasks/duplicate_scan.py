@@ -47,7 +47,7 @@ class TaskDuplicateScan(CalibreTask):
             pass
 
         # Create a dedicated CalibreDB session for this worker thread
-        # to avoid sharing the web-facing session (deadlock risk with StaticPool/shared session)
+        # to avoid sharing the web-facing session (deadlock risk with shared connection)
         calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
 
         try:

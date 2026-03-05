@@ -793,6 +793,15 @@ class CalibreDB:
                             dbapi_conn.execute("PRAGMA app_settings.journal_mode=WAL")
                     except Exception:
                         pass
+                    # Register config-independent custom functions on every new
+                    # pooled connection so they survive connection recycling.
+                    # title_sort depends on config and is re-registered per-session
+                    # via create_functions().
+                    try:
+                        dbapi_conn.create_function('uuid4', 0, lambda: str(uuid4()))
+                        dbapi_conn.create_function("lower", 1, lcase)
+                    except Exception:
+                        pass
 
                 conn = cls.engine.connect()
             except Exception as ex:
@@ -838,6 +847,7 @@ class CalibreDB:
             ):
                 ensure_calibre_db_tables(conn)
 
+            conn.close()
             cls._init = True
         # End of with cls._reconnect_lock
 

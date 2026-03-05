@@ -263,7 +263,7 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                         if not existing_rating:
                             existing_rating = db.Ratings(rating=rating_x2)
                         book.ratings = [existing_rating]
-                    updated = True
+                        updated = True
             except (ValueError, TypeError):
                 pass
                 

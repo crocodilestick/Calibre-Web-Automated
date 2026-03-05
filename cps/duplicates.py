@@ -346,16 +346,19 @@ def get_next_duplicate_scan_run(settings):
         return None
 
 
-def find_duplicate_books(include_dismissed=False, user_id=None):
+def find_duplicate_books(include_dismissed=False, user_id=None, calibre_db=None):
     """Find books with duplicate combinations based on configurable criteria
-    
+
     Args:
         include_dismissed: If False, filter out dismissed groups for the user
         user_id: User ID for dismissed filtering (defaults to current_user.id)
-    
+        calibre_db: CalibreDB instance to use (defaults to module-level singleton)
+
     Returns:
         List of duplicate group dictionaries
     """
+    if calibre_db is None:
+        from cps import calibre_db
     import time
     start_time = time.perf_counter()
     
@@ -437,29 +440,31 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     if method_to_use == 'sql':
         duplicate_groups = find_duplicate_books_sql(
             use_title, use_author, use_language, use_series, use_publisher,
-            include_dismissed, user_id
+            include_dismissed, user_id, calibre_db=calibre_db
         )
     elif method_to_use == 'hybrid':
         # Use SQL as a prefilter to get candidate book IDs, then Python for robust grouping
-        candidate_ids = find_duplicate_candidate_ids_sql(use_title, use_author, user_id=user_id)
+        candidate_ids = find_duplicate_candidate_ids_sql(use_title, use_author, user_id=user_id,
+                                                         calibre_db=calibre_db)
         if candidate_ids is None:
             print("[cwa-duplicates] Hybrid prefilter unavailable, falling back to full Python scan", flush=True)
             duplicate_groups = find_duplicate_books_python(
                 use_title, use_author, use_language, use_series, use_publisher, use_format,
-                include_dismissed, user_id
+                include_dismissed, user_id, calibre_db=calibre_db
             )
         elif not candidate_ids:
             duplicate_groups = []
         else:
             duplicate_groups = find_duplicate_books_python(
                 use_title, use_author, use_language, use_series, use_publisher, use_format,
-                include_dismissed, user_id, candidate_ids=candidate_ids
+                include_dismissed, user_id, candidate_ids=candidate_ids,
+                calibre_db=calibre_db
             )
         print("[cwa-duplicates] Hybrid prefilter applied (SQL candidates + Python validation)", flush=True)
     else:
         duplicate_groups = find_duplicate_books_python(
             use_title, use_author, use_language, use_series, use_publisher, use_format,
-            include_dismissed, user_id
+            include_dismissed, user_id, calibre_db=calibre_db
         )
     
     duration = time.perf_counter() - start_time
@@ -489,7 +494,7 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     return duplicate_groups
 
 
-def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_book_id=None):
+def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_book_id=None, calibre_db=None):
     """SQL-based candidate prefilter for hybrid mode.
 
     Returns a set of book IDs that are likely part of duplicate groups.
@@ -498,10 +503,13 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_bo
     Args:
         use_title: Whether title criteria is enabled
         use_author: Whether author criteria is enabled
+        calibre_db: CalibreDB instance to use (defaults to module-level singleton)
 
     Returns:
         set of int book IDs, empty set if none, or None if prefilter should be skipped
     """
+    if calibre_db is None:
+        from cps import calibre_db
     # If neither title nor author is enabled, prefilter is too risky -> skip
     if not use_title and not use_author:
         return None
@@ -578,14 +586,14 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_bo
 
 
 def find_duplicate_books_sql(use_title, use_author, use_language, use_series, use_publisher,
-                              include_dismissed=False, user_id=None):
+                              include_dismissed=False, user_id=None, calibre_db=None):
     """SQL-based duplicate detection using GROUP BY - experimental/WIP
-    
+
     NOTE: This is experimental code, disabled by default. Needs refinement:
     - Multi-author books create duplicate rows (handled by DISTINCT but not ideal)
     - Relies on COALESCE for NULL handling which may not match Python behavior exactly
     - Not thoroughly tested across all criteria combinations
-    
+
     Use Python method (default) for production until this is properly tested.
     
     Args:
@@ -596,8 +604,10 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
     Returns:
         List of duplicate group dictionaries
     """
+    if calibre_db is None:
+        from cps import calibre_db
     print("[cwa-duplicates] Using SQL-based duplicate detection", flush=True)
-    
+
     # Build dynamic GROUP BY clause based on criteria
     group_by_fields = []
     select_fields = []
@@ -675,7 +685,7 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
         print(f"[cwa-duplicates] SQL query failed: {str(e)}, falling back to Python method", flush=True)
         return find_duplicate_books_python(
             use_title, use_author, use_language, use_series, use_publisher, False,
-            include_dismissed, user_id
+            include_dismissed, user_id, calibre_db=calibre_db
         )
     
     # Process results into duplicate groups
@@ -767,9 +777,9 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
 
 
 def find_duplicate_books_python(use_title, use_author, use_language, use_series, use_publisher, use_format,
-                                 include_dismissed=False, user_id=None, candidate_ids=None):
+                                 include_dismissed=False, user_id=None, candidate_ids=None, calibre_db=None):
     """Original Python-based duplicate detection - fallback for complex scenarios
-    
+
     Args:
         use_title, use_author, use_language, use_series, use_publisher, use_format: Boolean flags
         include_dismissed: If False, filter out dismissed groups
@@ -778,8 +788,10 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
     Returns:
         List of duplicate group dictionaries
     """
+    if calibre_db is None:
+        from cps import calibre_db
     print("[cwa-duplicates] Using Python-based duplicate detection", flush=True)
-    
+
     # Get all books with proper user filtering - this is much simpler and more reliable
     # than trying to do complex joins for duplicate detection
     books_query = (calibre_db.session.query(db.Books)
@@ -1447,16 +1459,18 @@ def execute_resolution():
         }), 500
 
 
-def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trigger_type='manual', duplicate_groups=None):
+def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trigger_type='manual',
+                            duplicate_groups=None, calibre_db=None):
     """
     Automatically resolve duplicate books by keeping one and deleting others.
-    
+
     Args:
         strategy: Resolution strategy ('newest', 'highest_quality_format', 'most_metadata', 'largest_file_size')
         dry_run: If True, return preview without actually deleting
         user_id: User ID triggering the resolution (for audit), None for system-initiated
         trigger_type: 'manual', 'scheduled', or 'automatic'
         duplicate_groups: Pre-scanned duplicate groups (avoids re-scanning). If None, will scan.
+        calibre_db: CalibreDB instance to use (defaults to module-level singleton)
     
     Returns:
         dict with keys:
@@ -1467,15 +1481,17 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
             'errors': list of error messages
             'preview': list of dicts (if dry_run=True) with 'group', 'kept_book', 'deleted_books'
     """
+    if calibre_db is None:
+        from cps import calibre_db
     try:
         import time
         start_time = time.time()
-        
-        log.info("[cwa-duplicates] Starting auto-resolution (strategy=%s, dry_run=%s, trigger=%s, pre_scanned=%s)", 
+
+        log.info("[cwa-duplicates] Starting auto-resolution (strategy=%s, dry_run=%s, trigger=%s, pre_scanned=%s)",
                  strategy, dry_run, trigger_type, duplicate_groups is not None)
-        print(f"[cwa-duplicates] Auto-resolve starting: strategy={strategy}, dry_run={dry_run}, trigger={trigger_type}, " 
+        print(f"[cwa-duplicates] Auto-resolve starting: strategy={strategy}, dry_run={dry_run}, trigger={trigger_type}, "
               f"pre_scanned={duplicate_groups is not None}", flush=True)
-        
+
         # Initialize database sessions for thread safety
         from cps.ub import init_db_thread
         try:
@@ -1523,7 +1539,7 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
         if duplicate_groups is None:
             log.debug("[cwa-duplicates] No groups provided, scanning for duplicates...")
             print("[cwa-duplicates] auto_resolve received None groups - will scan", flush=True)
-            duplicate_groups = find_duplicate_books(include_dismissed=False)
+            duplicate_groups = find_duplicate_books(include_dismissed=False, calibre_db=calibre_db)
         else:
             log.debug("[cwa-duplicates] Using %d pre-scanned duplicate groups", len(duplicate_groups))
             print(f"[cwa-duplicates] auto_resolve using {len(duplicate_groups)} pre-scanned groups (type: {type(duplicate_groups).__name__})", 
@@ -1617,7 +1633,7 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
 
                 if strategy == 'merge':
                     try:
-                        merge_duplicate_group(book_to_keep, books_to_delete)
+                        merge_duplicate_group(book_to_keep, books_to_delete, calibre_db=calibre_db)
                     except Exception as e:
                         log.error("[cwa-duplicates] Error merging books for group '%s': %s", group.get('title', 'unknown'), e)
                         result['errors'].append(f"Group '{group.get('title', 'unknown')}': merge failed: {str(e)}")
@@ -1746,8 +1762,10 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
             pass
 
 
-def merge_duplicate_group(book_to_keep, books_to_merge):
+def merge_duplicate_group(book_to_keep, books_to_merge, calibre_db=None):
     """Merge formats from duplicate books into the target book."""
+    if calibre_db is None:
+        from cps import calibre_db
     if not book_to_keep or not books_to_merge:
         return
 

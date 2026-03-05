@@ -1451,6 +1451,11 @@ def main(filepath=None):
                 print(f"[ingest-processor] Error cleaning up temp conversion directory: {e}", flush=True)
 
             try:
+                nbp.checkpoint_wal()
+            except Exception as e:
+                print(f"[ingest-processor] Error during final WAL checkpoint: {e}", flush=True)
+
+            try:
                 del nbp # New in Version 2.0.0, should drastically reduce memory usage with large ingests
             except Exception:
                 pass  # Ignore errors in cleanup

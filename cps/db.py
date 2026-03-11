@@ -30,7 +30,8 @@ try:
     from sqlalchemy.orm import declarative_base
 except ImportError:
     from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.pool import StaticPool
+from sqlalchemy import event
+from sqlalchemy.pool import QueuePool, StaticPool
 from sqlalchemy.sql.expression import and_, true, false, text, func, or_
 from sqlalchemy.ext.associationproxy import association_proxy
 from .cw_login import current_user
@@ -773,25 +774,36 @@ class CalibreDB:
                                            echo=False,
                                            isolation_level="SERIALIZABLE",
                                            connect_args={'check_same_thread': False, 'timeout': 30},
-                                           poolclass=StaticPool)
-                with cls.engine.begin() as connection:
-                    connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
-                    connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
-                    # Try enabling WAL to improve concurrency unless running on a network share
-                    # Controlled by env var NETWORK_SHARE_MODE (default False)
+                                           poolclass=QueuePool,
+                                           pool_size=5,
+                                           max_overflow=3)
+
+                # Initialize every new connection with ATTACH + WAL pragmas.
+                # With QueuePool each pooled connection runs this once on creation;
+                # StaticPool only had one connection so ATTACH was effectively global.
+                nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+
+                @event.listens_for(cls.engine, "connect")
+                def _on_connect(dbapi_conn, connection_record):
+                    dbapi_conn.execute("ATTACH DATABASE '{}' AS calibre".format(dbpath))
+                    dbapi_conn.execute("ATTACH DATABASE '{}' AS app_settings".format(app_db_path))
                     try:
-                        nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
                         if not nsm and db_writable:
-                            connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
-                            connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
-                        else:
-                            reason = "NETWORK_SHARE_MODE=true" if nsm else "metadata.db not writable"
-                            log.warning("WAL mode disabled for calibre/app_settings (%s)", reason)
+                            dbapi_conn.execute("PRAGMA calibre.journal_mode=WAL")
+                            dbapi_conn.execute("PRAGMA app_settings.journal_mode=WAL")
+                    except Exception:
+                        pass
+                    # Register config-independent custom functions on every new
+                    # pooled connection so they survive connection recycling.
+                    # title_sort depends on config and is re-registered per-session
+                    # via create_functions().
+                    try:
+                        dbapi_conn.create_function('uuid4', 0, lambda: str(uuid4()))
+                        dbapi_conn.create_function("lower", 1, lcase)
                     except Exception:
                         pass
 
                 conn = cls.engine.connect()
-                # conn.text_factory = lambda b: b.decode(errors = 'ignore') possible fix for #1302
             except Exception as ex:
                 log.error(f"setup_db failed during engine creation: {ex}")
                 if cls.config:
@@ -835,6 +847,7 @@ class CalibreDB:
             ):
                 ensure_calibre_db_tables(conn)
 
+            conn.close()
             cls._init = True
         # End of with cls._reconnect_lock
 

@@ -7,7 +7,7 @@
 
 from flask_babel import lazy_gettext as N_
 
-from cps import config, logger, db, ub, calibre_db
+from cps import config, logger, db, ub
 from cps.services.worker import CalibreTask
 
 
@@ -52,6 +52,9 @@ class TaskCleanArchivedBooks(CalibreTask):
             # Non-fatal; continue
             pass
 
+        # Create a dedicated CalibreDB session for this worker thread
+        # to avoid sharing the web-facing session (deadlock risk with QueuePool)
+        calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
         try:
             calibre_db.ensure_session()
         except Exception as ex:
@@ -100,4 +103,5 @@ class TaskCleanArchivedBooks(CalibreTask):
             self.app_db_session.rollback()
             self._handleError('Failed to clean archived_book rows: ' + str(ex))
         finally:
+            calibre_db.session.close()
             self.app_db_session.remove()

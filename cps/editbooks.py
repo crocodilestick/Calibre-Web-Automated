@@ -387,14 +387,14 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
         raise
     # Ensure proper ownership of ingest directory (fix for issue #603)
     try:
-        nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+        nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on", "localdb")
         if not (nsm and ingest_dir == "/cwa-book-ingest"):
             # Set ownership to abc:abc (uid=1000, gid=1000)
             os.chown(ingest_dir, 1000, 1000)
     except (OSError, PermissionError) as e:
         # Log warning but don't crash the upload process
         log.warning('Failed to set ownership of ingest directory %s: %s', ingest_dir, e)
-        log.warning("If you're using a network share, consider setting NETWORK_SHARE_MODE=true in your environment variables to skip this step.")
+        log.warning("If you're using a network share, consider setting NETWORK_SHARE_MODE=true (or localdb if your DB is local) to skip this step.")
     except Exception as e:
         # Silently ignore any other permission-related errors but log for debugging
         log.debug('Other permission error setting ingest directory ownership: %s', e)

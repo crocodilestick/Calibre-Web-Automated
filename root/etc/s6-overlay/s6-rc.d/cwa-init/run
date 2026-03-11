@@ -56,7 +56,7 @@ fi
 mkdir -p /app/calibre-web-automated/cps/cache
 
 # permissions (skip chown on network shares for bind mounts, but still fix /app)
-if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ] || [ "${NETWORK_SHARE_MODE,,}" = "localdb" ]; then
   echo "[cwa-init] NETWORK_SHARE_MODE=true detected; skipping initial chown of /config"
   chown -R abc:abc /app/calibre-web-automated/cps/cache
 else
@@ -109,7 +109,7 @@ if [ -n "$INGEST_DIR" ]; then
   # Create directory if missing
   install -d -o abc -g abc "$INGEST_DIR" 2>/dev/null || mkdir -p "$INGEST_DIR" 2>/dev/null || true
   # Set ownership unless network share mode (only skip for /cwa-book-ingest)
-  if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+  if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ] || [ "${NETWORK_SHARE_MODE,,}" = "localdb" ]; then
     if [ "$INGEST_DIR" = "/cwa-book-ingest" ]; then
       echo "[cwa-init] NETWORK_SHARE_MODE=true detected; skipping chown of $INGEST_DIR"
     else
@@ -265,7 +265,7 @@ dirs=${dirs:1}
 echo "[cwa-init] Preparing to set ownership of everything in$dirs to abc:abc..."
 
 for d in "${requiredDirs[@]}"; do
-  if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+  if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ] || [ "${NETWORK_SHARE_MODE,,}" = "localdb" ]; then
     case "$d" in
       /config|/config/*|/calibre-library|/calibre-library/*|/cwa-book-ingest|/cwa-book-ingest/*)
         echo "[cwa-init] NETWORK_SHARE_MODE=true detected; skipping chown of $d"

@@ -256,7 +256,7 @@ handle_event() {
         echo "idle" > "$STATUS_FILE"
 }
 
-if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ] || [ "${NETWORK_SHARE_MODE,,}" = "localdb" ]; then
         echo "[cwa-ingest-service] NETWORK_SHARE_MODE=true -> using fallback watcher"
         run_fallback; exit 0
 fi

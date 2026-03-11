@@ -49,7 +49,7 @@ gid = grp.getgrnam(GROUP_NAME).gr_gid
 
 # Set permissions for log file (skip on network shares)
 try:
-    nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+    nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on", "localdb")
     if not nsm:
         subprocess.run(["chown", f"{uid}:{gid}", convert_library_log_file], check=True)
     else:
@@ -547,7 +547,7 @@ class LibraryConverter:
 
     def set_library_permissions(self):
         try:
-            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on", "localdb")
             if not nsm:
                 subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Successfully set ownership of new files in {self.library_dir} to abc:abc.")

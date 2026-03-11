@@ -59,7 +59,7 @@ class AutoLibrary:
             print(f"[cwa-auto-library] No app.db found in {self.config_dir}, copying from /app/calibre-web-automated/empty_library/app.db")
             shutil.copyfile(self.empty_appdb, f"{self.config_dir}/app.db")
             try:
-                nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+                nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on", "localdb")
                 if not nsm:
                     subprocess.run(["chown", "-R", "abc:abc", self.config_dir], check=True)
                 else:
@@ -147,7 +147,7 @@ class AutoLibrary:
         print("[cwa-auto-library]: No existing library found. Creating new library...")
         shutil.copyfile(self.empty_metadb, f"{self.library_dir}/metadata.db")
         try:
-            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on", "localdb")
             if not nsm:
                 subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
             else:

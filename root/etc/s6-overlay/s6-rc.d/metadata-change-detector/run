@@ -41,7 +41,7 @@ is_docker_desktop() {
 }
 
 # Prefer polling when running over network shares to better handle NFS/SMB semantics
-if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ] || [ "${NETWORK_SHARE_MODE,,}" = "localdb" ]; then
         echo "[metadata-change-detector] NETWORK_SHARE_MODE=true detected; using polling watcher instead of inotify"
         run_fallback
         exit 0

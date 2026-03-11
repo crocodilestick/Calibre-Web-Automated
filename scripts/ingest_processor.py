@@ -1246,7 +1246,7 @@ class NewBookProcessor:
 
     def set_library_permissions(self):
         try:
-            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+            nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on", "localdb")
             if not nsm:
                 subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
             else:

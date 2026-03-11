@@ -719,9 +719,12 @@ class CalibreDB:
                 connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
                 # Try enabling WAL to improve concurrency unless running on a network share
                 # Controlled by env var NETWORK_SHARE_MODE (default False)
+                # localdb = DB is local but files on network share, so WAL is safe
                 try:
-                    nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
-                    if not nsm and db_writable:
+                    nsm_raw = os.getenv('NETWORK_SHARE_MODE', 'false').strip().lower()
+                    nsm = nsm_raw in ('1', 'true', 'yes', 'on', 'localdb')
+                    local_db = nsm_raw == 'localdb'
+                    if (not nsm or local_db) and db_writable:
                         connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
                         connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
                     else:
@@ -779,9 +782,14 @@ class CalibreDB:
                     connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
                     # Try enabling WAL to improve concurrency unless running on a network share
                     # Controlled by env var NETWORK_SHARE_MODE (default False)
+                    # localdb = DB is local but files on network share, so WAL is safe
                     try:
-                        nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
-                        if not nsm and db_writable:
+                        nsm_raw = os.getenv('NETWORK_SHARE_MODE', 'false').strip().lower()
+                        nsm = nsm_raw in ('1', 'true', 'yes', 'on', 'localdb')
+                        local_db = nsm_raw == 'localdb'
+                        if local_db:
+                            log.info("NETWORK_SHARE_MODE=localdb: WAL enabled (local DB), chown/polling in network share mode")
+                        if (not nsm or local_db) and db_writable:
                             connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
                             connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
                         else:
@@ -828,9 +836,12 @@ class CalibreDB:
             # Ensure progress syncing tables exist in metadata.db (book checksums)
             from .progress_syncing.models import ensure_calibre_db_tables
             from .progress_syncing.settings import is_koreader_sync_enabled
+            nsm_raw = os.getenv('NETWORK_SHARE_MODE', 'false').strip().lower()
+            nsm = nsm_raw in ('1', 'true', 'yes', 'on', 'localdb')
+            local_db = nsm_raw == 'localdb'
             if (
                 db_writable
-                and not os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+                and (not nsm or local_db)
                 and is_koreader_sync_enabled()
             ):
                 ensure_calibre_db_tables(conn)

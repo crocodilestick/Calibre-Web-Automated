@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-05 00:15+0100\n"
+"POT-Creation-Date: 2026-03-11 17:35+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -1147,7 +1147,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
 #: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:151
+#: cps/templates/layout.html:152
 msgid "Upload done, processing, please wait..."
 msgstr "上傳完成，正在處理中，請稍候..."
 
@@ -1679,8 +1679,8 @@ msgstr "簡介"
 msgid "{} Stars"
 msgstr "{} 星"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/remotelogin.py:76 cps/templates/layout.html:135
+#: cps/templates/layout.html:177 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2187
 msgid "Login"
 msgstr "登入"
@@ -1861,8 +1861,8 @@ msgstr ""
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
-#: cps/templates/index.xml:12 cps/templates/layout.html:113
-#: cps/templates/layout.html:116 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:114
+#: cps/templates/layout.html:117 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "搜尋"
 
@@ -1893,7 +1893,7 @@ msgstr "閱讀狀態 = %(status)s"
 msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr "搜詢自定義欄位時出錯，請重啟 Calibre-Web"
 
-#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:124
+#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:125
 msgid "Advanced Search"
 msgstr "進階搜尋"
 
@@ -2011,7 +2011,7 @@ msgstr "書架：%(name)s"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "打開書架出錯。書架不存在或不可訪問"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:162
+#: cps/tasks_status.py:37 cps/templates/layout.html:163
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "任務列表"
@@ -2170,7 +2170,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "下載封面時出錯"
 
-#: cps/templates/layout.html:313 cps/web.py:1153
+#: cps/templates/layout.html:314 cps/web.py:1153
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "創建書架"
@@ -2292,7 +2292,7 @@ msgstr "書籍已經成功加入 %(eReadermail)s 的發送隊列"
 msgid "Please wait one minute to register next user"
 msgstr ""
 
-#: cps/templates/layout.html:135 cps/templates/layout.html:177
+#: cps/templates/layout.html:136 cps/templates/layout.html:178
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2066
 #: cps/web.py:2070 cps/web.py:2075 cps/web.py:2079 cps/web.py:2085
 #: cps/web.py:2110 cps/web.py:2114 cps/web.py:2127 cps/web.py:2130
@@ -2587,7 +2587,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr ""
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:154 cps/templates/user_table.html:146
+#: cps/templates/layout.html:155 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "上傳書籍"
 
@@ -2616,7 +2616,7 @@ msgstr "接收書籍的Kindle郵箱地址"
 msgid "Send to eReader Subject"
 msgstr "發送到Kindle"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:165
+#: cps/templates/admin.html:19 cps/templates/layout.html:166
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "管理權限"
@@ -3002,14 +3002,14 @@ msgid "Convert book"
 msgstr "轉換書籍"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:151 cps/templates/layout.html:270
+#: cps/templates/layout.html:152 cps/templates/layout.html:271
 msgid "Uploading..."
 msgstr "正在上傳..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
-#: cps/templates/layout.html:151 cps/templates/layout.html:360
-#: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:361
+#: cps/templates/layout.html:426 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "關閉"
@@ -3023,7 +3023,7 @@ msgstr "關閉"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:151
+#: cps/templates/layout.html:152
 msgid "Error"
 msgstr "錯誤"
 
@@ -5292,7 +5292,7 @@ msgstr "添加到書架"
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
 #: cps/templates/detail.html:765 cps/templates/detail.html:1251
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/layout.html:302 cps/templates/layout.html:311
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -5662,7 +5662,7 @@ msgstr "輸入網域名"
 msgid "Denied Domains (Blacklist)"
 msgstr "禁止註冊的網域名（黑名單）"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:344
+#: cps/templates/feed.xml:22 cps/templates/layout.html:345
 msgid "Next"
 msgstr "下一個"
 
@@ -5943,99 +5943,99 @@ msgstr ""
 msgid "Home"
 msgstr "首頁"
 
-#: cps/templates/layout.html:99
+#: cps/templates/layout.html:100
 msgid "Toggle Navigation"
 msgstr "切換導航"
 
-#: cps/templates/layout.html:114
+#: cps/templates/layout.html:115
 msgid "Search Library"
 msgstr "搜索書庫"
 
-#: cps/templates/layout.html:132 cps/templates/layout.html:169
+#: cps/templates/layout.html:133 cps/templates/layout.html:170
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "賬號"
 
-#: cps/templates/layout.html:138 cps/templates/layout.html:171
+#: cps/templates/layout.html:139 cps/templates/layout.html:172
 msgid "Logout"
 msgstr "登出"
 
-#: cps/templates/layout.html:146
+#: cps/templates/layout.html:147
 #, fuzzy
 msgid "Switch Theme"
 msgstr "標準主題"
 
-#: cps/templates/layout.html:165 cps/templates/read.html:78
+#: cps/templates/layout.html:166 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
 msgstr "設置"
 
-#: cps/templates/layout.html:167
+#: cps/templates/layout.html:168
 #, fuzzy
 msgid "Refresh Library"
 msgstr "搜索書庫"
 
-#: cps/templates/layout.html:208
+#: cps/templates/layout.html:209
 msgid "See Changelog"
 msgstr ""
 
-#: cps/templates/layout.html:228
+#: cps/templates/layout.html:229
 msgid "Contribute here!"
 msgstr ""
 
-#: cps/templates/layout.html:271
+#: cps/templates/layout.html:272
 msgid "Please do not refresh the page"
 msgstr "請不要刷新頁面"
 
-#: cps/templates/layout.html:281
+#: cps/templates/layout.html:282
 msgid "Browse"
 msgstr "瀏覽"
 
-#: cps/templates/layout.html:298 cps/templates/search_form.html:88
+#: cps/templates/layout.html:299 cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "書架列表"
 
-#: cps/templates/layout.html:304
+#: cps/templates/layout.html:305
 #, fuzzy
 msgid "Create Shelf"
 msgstr "創建書架"
 
-#: cps/templates/layout.html:308
+#: cps/templates/layout.html:309
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:317 cps/templates/stats.html:3
+#: cps/templates/layout.html:318 cps/templates/stats.html:3
 msgid "About"
 msgstr "關於"
 
-#: cps/templates/layout.html:329
+#: cps/templates/layout.html:330
 msgid "Previous"
 msgstr "上一個"
 
-#: cps/templates/layout.html:356
+#: cps/templates/layout.html:357
 msgid "Book Details"
 msgstr "書籍詳情"
 
-#: cps/templates/layout.html:426
+#: cps/templates/layout.html:427
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "刪除書籍"
 
-#: cps/templates/layout.html:427
+#: cps/templates/layout.html:428
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:432
+#: cps/templates/layout.html:433
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "無搜索結果"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:441
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:443
+#: cps/templates/layout.html:444
 msgid "View & Resolve Duplicates"
 msgstr ""
 

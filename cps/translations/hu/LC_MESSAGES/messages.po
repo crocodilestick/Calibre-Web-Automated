@@ -9,8 +9,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-03-11 17:35+0000\n"
-"PO-Revision-Date: 2019-04-06 23:36+0200\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2026-02-16 03:01+0100\n"
+"Last-Translator: Kónya Márton <konyamarci52@proton.me>\n"
 "Language-Team: \n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
@@ -18,6 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.13.1\n"
+"X-Generator: Poedit 3.8\n"
 
 #: cps/about.py:65
 msgid "Statistics"
@@ -25,17 +26,15 @@ msgstr "Statisztika"
 
 #: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
-msgstr ""
+msgstr "Calibre adatbázis elérhetetlen. Állítsa be újra a könyvtár útvonalát."
 
 #: cps/admin.py:180
-#, fuzzy
 msgid "Server restarted, please reload page."
 msgstr "A kiszolgáló újraindult, töltse be újra az oldalt!"
 
 #: cps/admin.py:182
-#, fuzzy
 msgid "Performing Server shutdown, please close window."
-msgstr "A kiszolgáló leállítása folyamatban, zárja be ezt az ablakot"
+msgstr "A kiszolgáló leállítása folyamatban, zárja be ezt az ablakot!"
 
 #: cps/admin.py:190
 msgid "Success! Database Reconnected"
@@ -46,70 +45,74 @@ msgid "Unknown command"
 msgstr "Ismeretlen parancs"
 
 #: cps/admin.py:204
-msgid ""
-"Success! Books queued for Metadata Backup, please check Tasks for result"
+msgid "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
-"Siker! A könyvek bekerültek a metaadat‑mentési várólistára, kérjük, "
+"Siker! A könyvek bekerültek a metaadat-mentési várólistára, kérjük "
 "ellenőrizze a Feladatok menüpontban az eredményt"
 
 #: cps/admin.py:224
 msgid ""
-"Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
-"variable or configure in Basic Configuration."
+"Error: No Hardcover token available. Set HARDCOVER_TOKEN environment variable "
+"or configure in Basic Configuration."
 msgstr ""
+"Hiba: Hardcover token nem elérhető. Állítsa be HARDCOVER_TOKEN környezeti "
+"változót vagy állítsa be az Alapbeállításokban."
 
 #: cps/admin.py:252
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
 msgstr ""
+"Siker! Hardcover automatikus párosítási feladat elindítva. Az előrehaladást a "
+"Feladatok panelen követheti."
 
 #: cps/admin.py:257
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
-msgstr ""
+msgstr "Hiba a Hardcover automatikus párosítás elindításakor: %(error)s"
 
 #: cps/admin.py:296 cps/templates/admin.html:223
 msgid "Review Hardcover Matches"
-msgstr ""
+msgstr "Hardcover találatok ellenőrzése"
 
 #: cps/admin.py:303
 #, python-format
 msgid "Error loading review queue: %(error)s"
-msgstr ""
+msgstr "Hiba az ellenőrzési lista betöltésekor: %(error)s"
 
 #: cps/admin.py:384
-#, fuzzy
 msgid "Hardcover ID applied successfully"
-msgstr "{} felhasználók sikeresen törölve"
+msgstr "Hardcover ID sikeresen alkalmazva"
 
 #: cps/admin.py:401
 #, python-format
 msgid "Match %(action)s"
-msgstr ""
+msgstr "Találat %(action)s"
 
 #: cps/admin.py:439
 msgid "No pending matches to reject"
-msgstr ""
+msgstr "Nincsenek elutasítható függőben lévő találatok"
 
 #: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
-msgstr ""
+msgstr "Elutasítva %(count)s találat"
 
 #: cps/admin.py:482
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
 msgstr ""
+"Címlapkép gyorsítótár frissítés elindítva {} könyvhöz. Ez eltarthat egy "
+"darabig."
 
 #: cps/admin.py:484
 msgid "No books with covers found to process."
-msgstr ""
+msgstr "Nem található könyv borítóval a feldolgozáshoz."
 
 #: cps/admin.py:496
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
-msgstr ""
+msgstr "Nem sikerült elindítani a címlapkép frissítést: {}"
 
 #: cps/admin.py:538
 msgid "Admin page"
@@ -130,9 +133,8 @@ msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "A %(column)d egyéni oszlop nem létezik a Calibre adatbázisban"
 
 #: cps/admin.py:638 cps/templates/admin.html:55
-#, fuzzy
 msgid "Edit Users"
-msgstr "Felhasználók kezelése"
+msgstr "Felhasználók szerkesztése"
 
 #: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
@@ -188,11 +190,11 @@ msgstr "Érvénytelen nézet"
 
 #: cps/admin.py:834
 msgid "Guest's Locale is determined automatically and can't be set"
-msgstr ""
+msgstr "A Vendég felhasználó nyelvi beállítása automatikus, nem szerkeszthető"
 
 #: cps/admin.py:838
 msgid "No Valid Locale Given"
-msgstr ""
+msgstr "Nincs érvényes nyelv megadva"
 
 #: cps/admin.py:849
 msgid "No Valid Book Language Given"
@@ -204,16 +206,15 @@ msgstr "Paraméter nem található"
 
 #: cps/admin.py:888
 msgid "Invalid Read Column"
-msgstr ""
+msgstr "Érvénytelen olvasva/olvasatlan állapot oszlop"
 
 #: cps/admin.py:894
 msgid "Invalid Restricted Column"
-msgstr ""
+msgstr "Érvénytelen korlátozások oszlop"
 
 #: cps/admin.py:914 cps/admin.py:2459
-#, fuzzy
 msgid "Calibre-Web Automated configuration updated"
-msgstr "A Calibre-Web konfigurációja frissítve"
+msgstr "A Calibre-Web Automated konfigurációja frissítve"
 
 #: cps/admin.py:926
 msgid "Do you really want to delete the Kobo Token?"
@@ -234,6 +235,8 @@ msgstr "Valóban törölni akarja ezt a polcot?"
 #: cps/admin.py:934
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr ""
+"Biztosan meg szeretné változtatni a nyelvi beállításait a kiválasztott "
+"felhasználóknak?"
 
 #: cps/admin.py:936
 msgid ""
@@ -250,7 +253,6 @@ msgstr ""
 "szerepét?"
 
 #: cps/admin.py:940
-#, fuzzy
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -267,7 +269,6 @@ msgstr ""
 "korlátozásait?"
 
 #: cps/admin.py:945
-#, fuzzy
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
@@ -275,7 +276,6 @@ msgstr ""
 "polcszinkronizálási módját?"
 
 #: cps/admin.py:947
-#, fuzzy
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Biztosan meg akarja változtatni a Calibre könyvtár helyét?"
 
@@ -289,8 +289,8 @@ msgstr ""
 
 #: cps/admin.py:952
 msgid ""
-"Are you sure you want delete Calibre-Web Automated's sync database to force "
-"a full sync with your Kobo Reader?"
+"Are you sure you want delete Calibre-Web Automated's sync database to force a "
+"full sync with your Kobo Reader?"
 msgstr ""
 "Biztosan törölni szeretné a Calibre-Web szinkronizálási adatbázisát, hogy "
 "teljes szinkronizálást hajtson végre a Kobo Reader készülékével?"
@@ -322,7 +322,7 @@ msgstr "Érvénytelen művelet"
 
 #: cps/admin.py:1438
 msgid "client_secrets.json Is Not Configured For Web Application"
-msgstr "A client_secrets.json fájl nincs beállítva a webalkalmazáshoz"
+msgstr "client_secrets.json fájl nincs beállítva a webalkalmazáshoz"
 
 #: cps/admin.py:1577
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
@@ -331,8 +331,8 @@ msgstr "A naplófájl helye nem érvényes, kérjük, adja meg a helyes elérés
 #: cps/admin.py:1583
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr ""
-"A hozzáférési naplófájl helye nem érvényes, kérjük, adja meg a helyes "
-"elérési utat"
+"A hozzáférési naplófájl helye nem érvényes, kérjük, adja meg a helyes elérési "
+"utat"
 
 #: cps/admin.py:1618
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
@@ -408,7 +408,7 @@ msgstr "Siker! A Gmail-fiók hitelesítve."
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
 msgid "Oops! Database Error: %(error)s."
-msgstr "Hoppá! Adatbázis hiba: %(error)s"
+msgstr "Hoppá! Adatbázis hiba: %(error)s."
 
 #: cps/admin.py:1753
 #, python-format
@@ -456,24 +456,22 @@ msgid "Settings DB is not Writeable"
 msgstr "A beállítások adatbázisa nem írható"
 
 #: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
-#, fuzzy
 msgid "title"
-msgstr "Cím"
+msgstr "cím"
 
 #: cps/admin.py:1949 cps/admin.py:2817
 #, python-format
 msgid "Edit User %(nick)s"
-msgstr " A felhasználó szerkesztése: %(nick)s"
+msgstr "A felhasználó szerkesztése: %(nick)s"
 
 #: cps/admin.py:1961
-#, fuzzy, python-format
+#, python-format
 msgid "Success! Password for user %(user)s reset"
-msgstr "A(z) %(user)s felhasználó jelszavának alaphelyzetbe állítása"
+msgstr "%(user)s felhasználó jelszava sikeresen alaphelyzetbe állítva"
 
 #: cps/admin.py:1967
-#, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
-msgstr "Először be kell állítani az SMTP levelező beállításokat..."
+msgstr "Hoppá! Kérjük, állítsa be az SMTP levelezési beállításokat."
 
 #: cps/admin.py:1978
 msgid "Logfile viewer"
@@ -568,8 +566,7 @@ msgstr "A könyvek elérési útvonala érvénytelen"
 
 #: cps/admin.py:2251
 msgid "DB Location is not Valid, Please Enter Correct Path"
-msgstr ""
-"Az adatbázis helye nem érvényes, kérjük, adja meg a helyes elérési utat"
+msgstr "Az adatbázis helye nem érvényes, kérjük, adja meg a helyes elérési utat"
 
 #: cps/admin.py:2279
 msgid "DB is not Writeable"
@@ -589,36 +586,42 @@ msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
+"Felhasználók automatikus létrehozása nem engedélyezhető reverse proxy "
+"autentikáció engedélyezése nélkül"
 
 #: cps/admin.py:2368
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
+"Felhasználók automatikus létrehozása érvényes reverse proxy header nevet "
+"igényel"
 
 #: cps/admin.py:2387 cps/admin.py:2394
 msgid ""
-"Invalid OAuth Redirect Host format. Please include the full URL with "
-"protocol (e.g., https://your-domain.com)"
+"Invalid OAuth Redirect Host format. Please include the full URL with protocol "
+"(e.g., https://your-domain.com)"
 msgstr ""
+"Érvénytelen OAuth átirányítási cím formátum. A teljes URL-t adja meg "
+"protokollal együtt (pl.: https://your-domain.com)"
 
 #: cps/admin.py:2391
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
+"OAuth átirányítási cím nem tartalmazhatja az elérési útvonalat. Csak az alap "
+"URL-t adja meg (pl.: https://your-domain.com)"
 
 #: cps/admin.py:2426
 msgid "Password length has to be between 1 and 40"
 msgstr "A jelszó hossza 1 és 40 karakter között kell legyen"
 
 #: cps/admin.py:2486
-#, fuzzy
 msgid "Database Settings updated"
 msgstr "Adatbázis beállítások frissítve"
 
 #: cps/admin.py:2494
-#, fuzzy
 msgid "Database Configuration"
-msgstr "Adatbázis beállítása"
+msgstr "Adatbázis beállítások"
 
 #: cps/admin.py:2514 cps/web.py:2078
 msgid "Oops! Please complete all fields."
@@ -638,7 +641,6 @@ msgid "User '%(user)s' created"
 msgstr "A következő felhasználó létrehozva: %(user)s"
 
 #: cps/admin.py:2554
-#, fuzzy
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
 "Már létezik felhasználó ehhez az e-mail címhez vagy felhasználói névhez."
@@ -669,13 +671,15 @@ msgstr "A felhasználó frissítve: %(nick)s"
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
-msgstr ""
+msgstr "Kapcsolódás sikeres! OIDC felfedezési végpont elérhető.%(endpoints)s"
 
 #: cps/admin.py:2891
 msgid ""
-"Connection failed: OIDC discovery endpoint not found (404). Check if the "
-"base URL is correct."
+"Connection failed: OIDC discovery endpoint not found (404). Check if the base "
+"URL is correct."
 msgstr ""
+"Kapcsolódás sikertelen: OIDC felfedezési végpont nem található (404). "
+"Ellenőrizze az alap URL-t."
 
 #: cps/admin.py:2893 cps/admin.py:2950
 #, python-format
@@ -683,62 +687,69 @@ msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Sikertelen kapcsolódás: a szerver által visszaadott státusz %(code)s"
 
 #: cps/admin.py:2895
-#, fuzzy
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
-msgstr "Sikertelen kapcsolódás: Nem érhető el a szerver."
+msgstr ""
+"Sikertelen kapcsolódás: Nem érhető el a szerver. Ellenőrizze az URL-t és a "
+"hálózati kapcsolatot."
 
 #: cps/admin.py:2897
-#, fuzzy
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
-msgstr "Sikertelen kapcsolódás: Időtúllépés."
+msgstr ""
+"Sikertelen kapcsolódás: Időtúllépés. A szerver lehet túl lassú vagy "
+"elérhetetlen."
 
 #: cps/admin.py:2899
-#, fuzzy
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
-msgstr "Sikertelen kapcsolódás: Érvénytelen JSON a válaszban."
+msgstr ""
+"Sikertelen kapcsolódás: Érvénytelen JSON a válaszban. Lehet, hogy nem OIDC "
+"végpont."
 
 #: cps/admin.py:2902
-#, fuzzy, python-format
+#, python-format
 msgid "Connection failed: %(error)s"
-msgstr "Kapcsolódási hiba"
+msgstr "Sikertelen kapcsolódás: %(error)s"
 
 #: cps/admin.py:2928
-#, fuzzy, python-format
+#, python-format
 msgid ""
-"Metadata is missing required OIDC fields: %(fields)s. This may not be a "
-"valid OIDC metadata endpoint."
-msgstr "Hiányzó metaadat. A hiányzó mezők: %(fields)s"
+"Metadata is missing required OIDC fields: %(fields)s. This may not be a valid "
+"OIDC metadata endpoint."
+msgstr ""
+"Metaadatokból hiányzó OIDC mezők: %(fields)s. Lehet, hogy nem érvényes OIDC "
+"metaadat végpont."
 
 #: cps/admin.py:2939
-#, fuzzy, python-format
+#, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
-msgstr "Érvényes metaadat‑URL. Talált végpontok száma: %(count)s."
+msgstr "Metaadat URL érvényes! %(count)s OAuth végpont található."
 
 #: cps/admin.py:2941
-#, fuzzy
 msgid " User info endpoint is available."
-msgstr "Megjelenési információ nem érhető el"
+msgstr "Felhasználó információ végpont elérhető."
 
 #: cps/admin.py:2943
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
+" Megjegyzés: Felhasználó infó végpont nem található, ami hitelesítési "
+"gondokat okozhat."
 
 #: cps/admin.py:2948
 msgid "Metadata URL not found (404). Please check the URL is correct."
-msgstr ""
+msgstr "Metaadat URL nem található (404). Ellenőrizze az URL helyességét."
 
 #: cps/admin.py:2952
-#, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
-msgstr "Sikertelen kapcsolódás: Nem érhető el a szerver."
+msgstr ""
+"Sikertelen kapcsolódás: Nem lehet kapcsolódni a metaadat URL-hez. Ellenőrizze "
+"a hálózati kapcsolatot."
 
 #: cps/admin.py:2954
 msgid "Connection failed: Request timed out."
@@ -749,37 +760,40 @@ msgid "Connection failed: Invalid JSON in response."
 msgstr "Sikertelen kapcsolódás: Érvénytelen JSON a válaszban."
 
 #: cps/admin.py:2959
-#, fuzzy
 msgid "An unknown error occurred."
 msgstr "Ismeretlen hiba történt."
 
 #: cps/admin.py:2971
-#, fuzzy
 msgid "Restore already in progress."
-msgstr "Kapcsolódási hiba"
+msgstr "Visszaállítás már folyamatban."
 
 #: cps/admin.py:2975
 msgid "Restore failed: Calibre library path is not configured."
-msgstr ""
+msgstr "Visszaállítás sikertelen: Calibre könyvtár útvonal nincs beállítva."
 
 #: cps/admin.py:2980
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
+"Visszaállítás sikertelen: metadadat.db nem található ezen az útvonalon: "
+"%(path)s"
 
 #: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
+"Visszaállítás sikertelen: app.db nem található ezen az útvonalon: %(path)s"
 
 #: cps/admin.py:3057 cps/admin.py:3097
-#, fuzzy, python-format
+#, python-format
 msgid "Restore failed: %(err)s"
-msgstr "Kapcsolódási hiba"
+msgstr "Visszaállítás sikertelen: %(err)s"
 
 #: cps/admin.py:3074
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
+"Visszaállítás sikeres de az app.db tisztítás nem sikerült. Tekintse meg a "
+"naplófájlokat a részletekért."
 
 #: cps/admin.py:3093
 #, python-format
@@ -787,6 +801,8 @@ msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
 "data was reset."
 msgstr ""
+"Visszaállítás sikeres. Biztonsági mentések és naplófájlok elkészültek: "
+"%(dir)s. Minden könyvhöz kapcsolódó adat visszaállítva."
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -805,7 +821,6 @@ msgid "Spanish"
 msgstr "Spanyol"
 
 #: cps/constants.py:211
-#, fuzzy
 msgid "Finnish"
 msgstr "Finn"
 
@@ -850,7 +865,6 @@ msgid "Norwegian"
 msgstr "Norvég"
 
 #: cps/constants.py:222
-#, fuzzy
 msgid "Polish"
 msgstr "Lengyel"
 
@@ -908,7 +922,7 @@ msgstr "Hiányzik a futtatási jogosultság"
 
 #: cps/cwa_functions.py:153
 msgid "Theme switching is temporarily disabled until v5.0.0"
-msgstr ""
+msgstr "Téma váltás ideiglenesen kikapcsolva a v5.0.0 verzióig"
 
 #: cps/cwa_functions.py:252
 msgid ""
@@ -921,6 +935,8 @@ msgstr ""
 #: cps/cwa_functions.py:849
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
+"Érvénytelen cron kifejezés ismétlődő kereséshez. Változtatások nincsenek "
+"elmentve."
 
 #: cps/cwa_functions.py:913
 msgid "Calibre-Web Automated User Settings"
@@ -931,11 +947,9 @@ msgstr "Calibre-Web Automated felhasználói beállítások"
 msgid "Timestamp"
 msgstr "Időbélyeg"
 
-#: cps/cwa_functions.py:959 cps/cwa_functions.py:961
-#: cps/templates/tasks.html:43
-#, fuzzy
+#: cps/cwa_functions.py:959 cps/cwa_functions.py:961 cps/templates/tasks.html:43
 msgid "Book ID"
-msgstr "Könyv azonosítója"
+msgstr "Könyv azonosító"
 
 #: cps/cwa_functions.py:959 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
@@ -943,13 +957,12 @@ msgid "Book Title"
 msgstr "Könyv címe"
 
 #: cps/cwa_functions.py:959
-#, fuzzy
 msgid "Book Author"
-msgstr "Könyv szerzője"
+msgstr "Könyv szerző"
 
 #: cps/cwa_functions.py:959
 msgid "Trigger Type"
-msgstr ""
+msgstr "Kiváltó ok"
 
 #: cps/cwa_functions.py:961 cps/cwa_functions.py:967
 msgid "Filepath"
@@ -957,25 +970,24 @@ msgstr "Elérési útvonal"
 
 #: cps/cwa_functions.py:965 cps/cwa_functions.py:967 cps/cwa_functions.py:970
 #: cps/cwa_functions.py:972
-#, fuzzy
 msgid "Filename"
 msgstr "Fájlnév"
 
 #: cps/cwa_functions.py:965
 msgid "Manual?"
-msgstr ""
+msgstr "Kézi?"
 
 #: cps/cwa_functions.py:965
 msgid "No. Fixes"
-msgstr ""
+msgstr "Javítások száma"
 
 #: cps/cwa_functions.py:965 cps/cwa_functions.py:970 cps/cwa_functions.py:972
 msgid "Original Backed Up?"
-msgstr ""
+msgstr "Eredeti biztonsági mentve?"
 
 #: cps/cwa_functions.py:967
 msgid "Fixes Applied"
-msgstr ""
+msgstr "Elvégzett javítások"
 
 #: cps/cwa_functions.py:972
 msgid "Original Format"
@@ -983,25 +995,23 @@ msgstr "Eredeti formátum"
 
 #: cps/cwa_functions.py:972
 msgid "End Format"
-msgstr ""
+msgstr "Célformátum"
 
 #: cps/cwa_functions.py:1048 cps/cwa_functions.py:1077
-#, fuzzy
 msgid "Unknown User"
-msgstr "Ismeretlen"
+msgstr "Ismeretlen felhasználó"
 
 #: cps/cwa_functions.py:1185
-#, fuzzy
 msgid "Calibre-Web Automated Stats & Activity"
-msgstr "Calibre-Web Automated Szerver Statisztika & Archív"
+msgstr "Calibre-Web Automated Statisztika és Aktivitás"
 
 #: cps/cwa_functions.py:1569
 msgid "Calibre-Web Automated - Full Enforcement History"
-msgstr "Calibre-Web Automated - Biztonság és szabályszegések"
+msgstr "Calibre-Web Automated - Kényszerítési történet"
 
 #: cps/cwa_functions.py:1578
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
-msgstr ""
+msgstr "Calibre-Web Automated - Kényszerítési történet (útvonalakkal)"
 
 #: cps/cwa_functions.py:1587
 msgid "Calibre-Web Automated - Full Import History"
@@ -1009,34 +1019,36 @@ msgstr "Calibre-Web Automated - Teljes import történet"
 
 #: cps/cwa_functions.py:1596
 msgid "Calibre-Web Automated - Full Conversion History"
-msgstr ""
+msgstr "Calibre-Web Automated - Teljes konvertálási történet"
 
 #: cps/cwa_functions.py:1605
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
+"Calibre-Web Automated - Teljes EPUB javító történet (útvonalak és javítások "
+"nélkül)"
 
 #: cps/cwa_functions.py:1614
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
+"Calibre-Web Automated - Teljes EPUB javító történet (útvonalakkal és "
+"javításokkal)"
 
 #: cps/cwa_functions.py:1632
 msgid "✅ All Monitoring Services are running as intended! 👍"
-msgstr ""
+msgstr "✅ Minden monitorozási szolgáltatás megfelelően fut! 👍"
 
 #: cps/cwa_functions.py:1634
-msgid ""
-"🔴 The Ingest Service is running but the Metadata Change Detector is not"
-msgstr ""
+msgid "🔴 The Ingest Service is running but the Metadata Change Detector is not"
+msgstr "⛔ Az Ingest szolgáltatás aktív, de a metaadat-változásfigyelő nem"
 
 #: cps/cwa_functions.py:1636
-msgid ""
-"🔴 The Metadata Change Detector is running but the Ingest Service is not"
-msgstr ""
+msgid "🔴 The Metadata Change Detector is running but the Ingest Service is not"
+msgstr "⛔ A metaadat-változásfigyelő aktív, de az Ingest szolgáltatás nem"
 
 #: cps/cwa_functions.py:1638
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
-msgstr ""
+msgstr "⛔ Sem az Ingest szolgáltatás, sem a metaadat-változásfigyelő nem aktív"
 
 #: cps/cwa_functions.py:1640
 msgid "An Error has occurred"
@@ -1044,44 +1056,40 @@ msgstr "Hiba történt"
 
 #: cps/cwa_functions.py:1811 cps/cwa_functions.py:1837
 msgid "Calibre-Web Automated - Convert Library"
-msgstr "Calibre-Web Automated - Átalakítási könyvtár"
+msgstr "Calibre-Web Automated - Könyvtár könvertálás"
 
 #: cps/cwa_functions.py:1953 cps/cwa_functions.py:1977
-#, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
-msgstr "Calibre-Web Automated - Küldés Kindle-re EPUB javító szolgáltatás"
+msgstr "Calibre-Web Automated - EPUB javító szolgáltatás"
 
 #: cps/cwa_functions.py:2031
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
+"EPUB javító használata egy könyvhöz nem támogatott Google Drive könyvtáraknál."
 
 #: cps/cwa_functions.py:2038
-#, fuzzy
 msgid "Invalid book selection."
-msgstr "Érvénytelen könyv azonosító"
+msgstr "Érvénytelen könyvkijelölés."
 
 #: cps/cwa_functions.py:2044
-#, fuzzy
 msgid "Book not found."
-msgstr "A token nem található."
+msgstr "Könyv nem található."
 
 #: cps/cwa_functions.py:2050
-#, fuzzy
 msgid "Selected book has no EPUB format."
-msgstr "Legyen olvasatlan"
+msgstr "A kijelölt könyv nem elérhető EPUB formátumban."
 
 #: cps/cwa_functions.py:2054
-#, fuzzy
 msgid "EPUB file not found on disk."
-msgstr "A(z) %(format)s formátum nem található a lemezen"
+msgstr "EPUB fájl nem található a lemezen."
 
 #: cps/cwa_functions.py:2069
 msgid "EPUB Fixer started for selected book."
-msgstr ""
+msgstr "EPUB javító elindult a kijelölt könyvekhez."
 
 #: cps/cwa_functions.py:2072
 msgid "Failed to start EPUB Fixer for selected book."
-msgstr ""
+msgstr "Nem sikerült elindítani az EPUB javítót a kijelölt könyvekhez."
 
 #: cps/cwa_functions.py:2119
 msgid "You must be an admin to access this page."
@@ -1093,28 +1101,27 @@ msgstr "A felhasználói név és a kép kötelező."
 
 #: cps/cwa_functions.py:2142
 msgid "Invalid image data format. Must be a valid image."
-msgstr ""
+msgstr "Érvénytelen kép formátum. Érvényes képnek kell lennie."
 
 #: cps/cwa_functions.py:2150
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
-msgstr ""
+msgstr "Nem támogatott kép típus. Csak PNG és JPEG az elfogadott."
 
 #: cps/cwa_functions.py:2162
 msgid "Image is too large. Please use an image smaller than 500KB."
-msgstr ""
+msgstr "A kép túl nagy. 500 KB-nál kisebb képeket használjon."
 
 #: cps/cwa_functions.py:2166
 msgid "Invalid Base64 image data."
-msgstr ""
+msgstr "Érvénytelen Base64 kép adat."
 
 #: cps/cwa_functions.py:2170
-#, fuzzy
 msgid "Invalid image data format."
-msgstr "Érvénytelen e-mail cím formátum"
+msgstr "Érvénytelen kép formátum."
 
 #: cps/cwa_functions.py:2175
 msgid "Error validating image data."
-msgstr ""
+msgstr "Hiba kép adat érvényesítés közben."
 
 #: cps/cwa_functions.py:2193
 msgid "Profile picture updated successfully."
@@ -1125,64 +1132,59 @@ msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA Profilkép Menedzsment (WIP)"
 
 #: cps/db.py:1240 cps/templates/config_edit.html:294
-#: cps/templates/config_view_edit.html:79
-#: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
-#: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
-#: cps/web.py:1599 cps/web.py:1636 cps/web.py:1687 cps/web.py:1719
-#: cps/web.py:1758
+#: cps/templates/config_view_edit.html:79 cps/templates/config_view_edit.html:90
+#: cps/templates/email_edit.html:41 cps/web.py:645 cps/web.py:679 cps/web.py:724
+#: cps/web.py:764 cps/web.py:793 cps/web.py:1599 cps/web.py:1636 cps/web.py:1687
+#: cps/web.py:1719 cps/web.py:1758
 msgid "None"
 msgstr "Nincs"
 
 #: cps/duplicates.py:314 cps/duplicates.py:324
-#, fuzzy
 msgid "Duplicate Books"
-msgstr "Többször szereplő könyvek"
+msgstr "Ismétlődő könyvek"
 
 #: cps/duplicates.py:1117
 msgid "Duplicate group already dismissed"
-msgstr ""
+msgstr "Ismétlődő csoport már elutasítva"
 
 #: cps/duplicates.py:1137
-#, fuzzy
 msgid "Duplicate group dismissed"
-msgstr "Többször szereplő könyvek"
+msgstr "Ismétlődő könyvcsoport elutasítva"
 
 #: cps/duplicates.py:1174
-#, fuzzy
 msgid "Duplicate group restored"
-msgstr "Többször szereplő könyvek"
+msgstr "Ismétlődő könyvcsoport visszaállítva"
 
 #: cps/duplicates.py:1176
 msgid "Duplicate group was not dismissed"
-msgstr ""
+msgstr "Ismétlődő csoport nem lett elutasítva"
 
 #: cps/duplicates.py:1238
-#, fuzzy
 msgid "Duplicate scan queued"
-msgstr "Ismétlődő könyvek"
+msgstr "Ismétlődő könyvek ellenőrzése ütemezve"
 
 #: cps/duplicates.py:1296
 msgid "Duplicate scan completed (fallback)"
-msgstr ""
+msgstr "Ismétlődő keresés befejezve (tartalék mód)"
 
 #: cps/duplicates.py:1424
-#, fuzzy
 msgid "Invalid resolution strategy"
-msgstr "Érvénytelen szerep"
+msgstr "Érvénytelen megoldási stratégia"
 
 #: cps/editbooks.py:112 cps/editbooks.py:169
 msgid ""
-"Ingest folder is not writable. Check your /cwa-book-ingest volume "
-"permissions."
+"Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."
 msgstr ""
+"A könyvbeolvasó mappa nem írható. Ellenőrizze a /cwa-book-ingest mappa "
+"jogosultságait."
 
 #: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
-msgstr ""
+msgstr "Hiányzó vagy érvénytelen könyv azonosító a feltöltendő formátumban"
 
 #: cps/editbooks.py:127
 msgid "Cannot upload format: Book no longer exists in library"
-msgstr ""
+msgstr "Nem tölthető fel a formátum: A könyv már nem létezik a könyvtárban"
 
 #: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:152
@@ -1195,7 +1197,7 @@ msgstr "A feltöltés feldolgozásra való sorba állítása nem sikerült"
 
 #: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
-msgstr "Az átalakításhoz hiányzik a forrás- vagy a célformátum!"
+msgstr "Az átalakításhoz hiányzik a forrás- vagy célformátum!"
 
 #: cps/editbooks.py:207
 #, python-format
@@ -1210,18 +1212,15 @@ msgid "There was an error converting this book: %(res)s"
 msgstr "Hiba történt a könyv átalakításakor: %(res)s"
 
 #: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
-#, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
-msgstr ""
-"A(z) \"%(ext)s\" kiterjesztésű fájlok feltöltése nincs engedélyezve ezen a "
-"szerveren."
+msgstr "A fájlformátum feltöltése nem engedélyezett ezen a szerveren"
 
 #: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr ""
 "A(z) \"%(ext)s\" kiterjesztésű fájlok feltöltése nincs engedélyezve ezen a "
-"szerveren."
+"szerveren"
 
 #: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
 msgid "File to be uploaded must have an extension"
@@ -1232,7 +1231,7 @@ msgstr "A feltöltendő fájlnak kiterjesztéssel kell rendelkeznie!"
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
-"Hiba történt az e-könyv megnyitásakor. A fájl nem létezik vagy nem érhető el:"
+"Hiba történt az e-könyv megnyitásakor. A fájl nem létezik vagy nem érhető el"
 
 #: cps/editbooks.py:881 cps/editbooks.py:1838
 msgid "User has no rights to upload cover"
@@ -1241,13 +1240,13 @@ msgstr "A felhasználónak nincs joga borítót feltölteni"
 #: cps/editbooks.py:904 cps/editbooks.py:1233
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
-"Az azonosítók nem különböztetnek meg a kis- és nagybetűket. A régi "
-"azonosítók felülírása"
+"Az azonosítók nem különböztetnek meg a kis- és nagybetűket. A régi azonosítók "
+"felülírása"
 
 #: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
-#, fuzzy, python-format
+#, python-format
 msgid "'%(langname)s' is not a valid language"
-msgstr "A(z) %(langname)s nem érvényes nyelv"
+msgstr "%(langname)s nem érvényes nyelv"
 
 #: cps/editbooks.py:1029
 msgid "Metadata successfully updated"
@@ -1269,7 +1268,7 @@ msgid ""
 "upload new: "
 msgstr ""
 "A feltöltött könyv valószínűleg már megtalálható a könyvtárban. Fontolja meg "
-"módosítását, mielőtt újat tölt fel:"
+"módosítását, mielőtt újat tölt fel: "
 
 #: cps/editbooks.py:1263
 #, python-format
@@ -1320,15 +1319,15 @@ msgstr "Nem sikerült elmenteni a %(file)s fájlt."
 #: cps/editbooks.py:1815
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
-msgstr "A(z) %(ext)s fájlformátum hozzáadva a könyvhez: %(book)s."
+msgstr "A(z) %(ext)s fájlformátum hozzáadva a könyvhöz: %(book)s"
 
 #: cps/gdrive.py:43
 msgid ""
-"Google Drive setup not completed, try to deactivate and activate Google "
-"Drive again"
+"Google Drive setup not completed, try to deactivate and activate Google Drive "
+"again"
 msgstr ""
-"A Google Drive beállítása nem fejeződött be, próbálja meg kikapcsolni és "
-"újra aktíválni a Google Drive-ot"
+"A Google Drive beállítása nem fejeződött be, próbálja meg kikapcsolni és újra "
+"aktíválni a Google Drive-ot"
 
 #: cps/gdrive.py:81
 msgid ""
@@ -1355,49 +1354,44 @@ msgstr "%(format)s nem található: %(fn)s"
 
 #: cps/helper.py:102 cps/helper.py:226 cps/templates/detail.html:516
 #: cps/templates/detail.html:520
-#, fuzzy
 msgid "Send to eReader"
 msgstr "Küldés e-olvasóra"
 
 #: cps/helper.py:104 cps/helper.py:124 cps/helper.py:237
-#, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
-msgstr "Ez az e-mail a Calibre-Web Automated-en keresztül lett küldve."
+msgstr "Ez az e-mail Calibre-Web Automateden keresztül lett küldve."
 
 #: cps/helper.py:122
-#, fuzzy
 msgid "Calibre-Web Automated Test Email"
 msgstr "Calibre-Web Automated teszt e-mail"
 
 #: cps/helper.py:123
-#, fuzzy
 msgid "Test Email"
 msgstr "Teszt e-mail"
 
 #: cps/helper.py:140
-#, fuzzy
 msgid "Get Started with Calibre-Web Automated"
 msgstr "Kezdő lépések a Calibre-Web Automateddel"
 
 #: cps/helper.py:145
-#, fuzzy, python-format
+#, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Regisztrációs e-mail a következő felhasználóhoz: %(name)s"
 
 #: cps/helper.py:156 cps/helper.py:162
-#, fuzzy, python-format
+#, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
-msgstr "%(orig)s konvertálása %(format)s-ra és küldés e-olvasóra"
+msgstr "%(orig)s konvertálása %(format)s formátumra és küldés e-olvasóra"
 
 #: cps/helper.py:181 cps/helper.py:185 cps/helper.py:189
-#, fuzzy, python-format
+#, python-format
 msgid "Send %(format)s to eReader"
 msgstr "%(format)s küldése e-olvasóra"
 
 #: cps/helper.py:232
-#, fuzzy, python-format
+#, python-format
 msgid "%(book)s send to eReader"
-msgstr "%(book)s küldés e-olvasóra"
+msgstr "%(book)s küldése e-olvasóra"
 
 #: cps/helper.py:239
 msgid "The requested file could not be read. Maybe wrong permissions?"
@@ -1431,12 +1425,11 @@ msgstr ""
 "adatbázisban érvénytelen: %(path)s"
 
 #: cps/helper.py:514
-#, fuzzy, python-format
-msgid ""
-"Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
+#, python-format
+msgid "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
-"A szerző átnevezése '%(src)s'-ról '%(dest)s'-ra nem sikerült a következőhiba "
-"miatt: %(error)s"
+"A szerző átnevezése erről: \"%(src)s\" erre: \"%(dest)s\" nem sikerült a "
+"következőhiba miatt: %(error)s"
 
 #: cps/helper.py:583 cps/helper.py:592
 #, python-format
@@ -1481,7 +1474,7 @@ msgstr ""
 #: cps/helper.py:1053 cps/helper.py:1061
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
-msgstr ""
+msgstr "Borítókép meghaladja a maximum %(size)s MB méretet"
 
 #: cps/helper.py:1072
 msgid "Error Downloading Cover"
@@ -1493,8 +1486,7 @@ msgstr "Borító formátum hiba"
 
 #: cps/helper.py:1078
 msgid ""
-"You are not allowed to access localhost or the local network for cover "
-"uploads"
+"You are not allowed to access localhost or the local network for cover uploads"
 msgstr ""
 "Nem férhet hozzá a localhost-hoz vagy a helyi hálózathoz, hogy borítókat "
 "töltsön fel"
@@ -1520,7 +1512,6 @@ msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Csak jpg/jpeg fájlok támogatottak borítófájlként"
 
 #: cps/helper.py:1304 cps/helper.py:1535
-#, fuzzy
 msgid "Cover"
 msgstr "Borító"
 
@@ -1538,6 +1529,8 @@ msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
+"Nem támogatott architektúra észlelve: %(arch)s. A CWA ezekhez lett "
+"optimalizálva: x86_64 és aarch64 "
 
 #: cps/helper.py:1347
 msgid "Could not find the specified directory"
@@ -1592,41 +1585,50 @@ msgid ""
 "configuration mismatch. Please check your OAuth scopes configuration or "
 "contact your administrator."
 msgstr ""
+"Bejelentkezés sikertelen: OAuth token érvényesítési hiba. Ennek oka a "
+"jogosultsági körök (scope) helytelen beállítása lehet. Ellenőrizze az OAuth "
+"jogosultsági körök beállításait, vagy keresse a rendszergazdát."
 
 #: cps/oauth_bb.py:259
 msgid "Login failed: OAuth token expired. Please try logging in again."
-msgstr ""
+msgstr "Bejelentkezés sikertelen: OAuth token lejárt. Jelentkezzen be újra."
 
 #: cps/oauth_bb.py:263
 msgid ""
 "Login failed: Could not connect to the OAuth provider's user info endpoint. "
 "Please try again or contact your administrator."
 msgstr ""
+"Bejelentkezés sikertelen: Nem sikerült csatlakozni az OAuth szolgáltató "
+"felhasználó infó végpontjához. Próbálja újra vagy keresse a rendszergazdát."
 
 #: cps/oauth_bb.py:268
-#, fuzzy
 msgid ""
 "Login failed: The OAuth provider returned invalid user profile data. Please "
 "contact your administrator."
 msgstr ""
-"Hoppá! A mailszerver nincs beállítva. Kérjük, forduljon a rendszergazdához"
+"Bejelentkezés sikertelen: Az OAuth szolgáltató érvénytelen felhasználó "
+"adatokkal tért vissza. Forduljon a rendszergazdához."
 
 #: cps/oauth_bb.py:290
 #, python-format
 msgid ""
-"Login failed: OAuth provider response is missing required fields: "
-"%(fields)s. Please check your OAuth configuration or contact your "
-"administrator."
+"Login failed: OAuth provider response is missing required fields: %(fields)s. "
+"Please check your OAuth configuration or contact your administrator."
 msgstr ""
+"Bejelentkezés sikertelen: OAuth szolgáltató válaszából hiányoznak szükséges "
+"mezők: %(fields)s. Ellenőrizze az OAuth beállításait vagy keresse a "
+"rendszergazdát."
 
 #: cps/oauth_bb.py:316 cps/oauth_bb.py:560
 msgid "Failed to link OAuth account. Please try again."
-msgstr ""
+msgstr "Nem sikerült összekapcsolni az OAuth fiókot. Próbálja újra."
 
 #: cps/oauth_bb.py:531
 msgid ""
 "OAuth error: Provider returned invalid user information. Please try again."
 msgstr ""
+"OAuth hiba: A szolgáltató érvénytelen felhasználó információval tért vissza. "
+"Próbálja újra."
 
 #: cps/oauth_bb.py:544 cps/remotelogin.py:149
 #, python-format
@@ -1642,19 +1644,19 @@ msgstr "Link %(oauth)s-hoz/hez sikeres"
 #, python-format
 msgid ""
 "Login failed: No user account is linked to your %(provider)s account. Please "
-"contact your administrator to create an account or link your existing "
-"account."
+"contact your administrator to create an account or link your existing account."
 msgstr ""
+"Bejelentkezés sikertelen: Nincs felhasználó kapcsolva a(z) %(provider)s "
+"fiókjához. Keresse a rendszergazdát, hogy létrehozzon egy fiókot, vagy "
+"összekapcsoljon egy létezővel."
 
 #: cps/oauth_bb.py:570
 msgid "OAuth authentication failed. Please try again or contact administrator."
-msgstr ""
+msgstr "OAuth hitelesítési hiba. Próbálja újra vagy keresse a rendszergazdát."
 
 #: cps/oauth_bb.py:574
-#, fuzzy
 msgid "OAuth system error. Please contact administrator."
-msgstr ""
-"Hoppá! A mailszerver nincs beállítva. Kérjük, forduljon a rendszergazdához"
+msgstr "OAuth rendszerhiba. Kérjük, forduljon a rendszergazdához!"
 
 #: cps/oauth_bb.py:607
 #, python-format
@@ -1689,17 +1691,17 @@ msgstr "Nem sikerült lekérni a felhasználói adatokat a Google-tól."
 
 #: cps/oauth_bb.py:881
 msgid "Failed to log in with Generic OAuth."
-msgstr ""
+msgstr "Bejelentkezés általános OAuth segítségével sikertelen."
 
 #: cps/oauth_bb.py:897
 msgid "OAuth authentication failed: Token validation error. Please try again."
-msgstr ""
+msgstr "OAuth hitelesítési hiba: Token érvényesítési hiba. Próbálja újra."
 
 #: cps/oauth_bb.py:901
 msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
-msgstr ""
+msgstr "OAuth hitelesítés váratlan hibába ütközött. Keresse a rendszergazdát."
 
 #: cps/oauth_bb.py:909 cps/oauth_bb.py:927 cps/oauth_bb.py:945
 msgid ""
@@ -1707,6 +1709,9 @@ msgid ""
 "repeatedly, please configure the 'OAuth Redirect Host' setting in Admin > "
 "Basic Configuration > OAuth."
 msgstr ""
+"OAuth hiba: Érvénytelen átirányítási URI. Ha ismétlődően találkozik ezzel a "
+"hibával állítsa be az \"OAuth átirányítási címet\" a Beállítások > "
+"Alapbeállítások szerkesztése > OAuth oldalon."
 
 #: cps/oauth_bb.py:981
 msgid "GitHub Oauth error, please retry later."
@@ -1729,12 +1734,11 @@ msgstr "Google Oauth hiba: {}"
 #: cps/oauth_bb.py:1081 cps/oauth_bb.py:1089
 #, python-brace-format
 msgid "OAuth error: {}"
-msgstr ""
+msgstr "OAuth hiba: {}"
 
 #: cps/opds.py:200
-#, fuzzy
 msgid "description"
-msgstr "Leírás"
+msgstr "leírás"
 
 #: cps/opds.py:483
 #, python-brace-format
@@ -1753,11 +1757,11 @@ msgstr "A token nem található."
 
 #: cps/remotelogin.py:102 cps/remotelogin.py:135
 msgid "Token has expired"
-msgstr "A token érvényessége lejárt."
+msgstr "A token érvényessége lejárt"
 
 #: cps/remotelogin.py:111
 msgid "Success! Please return to your device"
-msgstr "Sikerült! Újra használható az eszköz."
+msgstr "Sikerült! Újra használható az eszköz"
 
 #: cps/render_template.py:40
 msgid "Books"
@@ -1797,9 +1801,8 @@ msgid "Read Books"
 msgstr "Elolvasott könyvek"
 
 #: cps/render_template.py:62
-#, fuzzy
 msgid "Show Read and Unread"
-msgstr "Mutassa az olvasva/olvasatlan állapotot"
+msgstr "Olvasva/olvasatlan mutatása"
 
 #: cps/render_template.py:64 cps/web.py:854
 msgid "Unread Books"
@@ -1823,9 +1826,8 @@ msgid "Categories"
 msgstr "Címkék"
 
 #: cps/render_template.py:72 cps/templates/user_table.html:159
-#, fuzzy
 msgid "Show Category Section"
-msgstr "Címkék megjelenítése"
+msgstr "Címkék mutatása"
 
 #: cps/render_template.py:73 cps/templates/book_edit.html:98
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
@@ -1836,9 +1838,8 @@ msgid "Series"
 msgstr "Sorozatok"
 
 #: cps/render_template.py:75 cps/templates/user_table.html:158
-#, fuzzy
 msgid "Show Series Section"
-msgstr "Sorozatok megjelenítése"
+msgstr "Sorozatok mutatása"
 
 #: cps/render_template.py:76 cps/templates/book_table.html:105
 #: cps/templates/cwa_settings.html:334 cps/templates/cwa_settings.html:336
@@ -1847,18 +1848,16 @@ msgid "Authors"
 msgstr "Szerzők"
 
 #: cps/render_template.py:78 cps/templates/user_table.html:161
-#, fuzzy
 msgid "Show Author Section"
-msgstr "Szerzők megjelenítése"
+msgstr "Szerzők mutatása"
 
 #: cps/render_template.py:80 cps/templates/book_table.html:111 cps/web.py:1610
 msgid "Publishers"
 msgstr "Kiadók"
 
 #: cps/render_template.py:82 cps/templates/user_table.html:164
-#, fuzzy
 msgid "Show Publisher Section"
-msgstr "Kiadói rész megjelenítése"
+msgstr "Kiadók mutatása"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
 #: cps/templates/detail.html:706 cps/templates/search_form.html:108
@@ -1867,36 +1866,32 @@ msgid "Languages"
 msgstr "Nyelvek"
 
 #: cps/render_template.py:86 cps/templates/user_table.html:156
-#, fuzzy
 msgid "Show Language Section"
-msgstr "Nyelvi rész megjelenítése"
+msgstr "Nyelvek mutatása"
 
 #: cps/render_template.py:87 cps/web.py:1694
 msgid "Ratings"
 msgstr "Értékelések"
 
 #: cps/render_template.py:89 cps/templates/user_table.html:165
-#, fuzzy
 msgid "Show Ratings Section"
-msgstr "Értékelések megjelenítése"
+msgstr "Értékelések mutatása"
 
 #: cps/render_template.py:90
 msgid "File formats"
 msgstr "Fájlformátumok"
 
 #: cps/render_template.py:92 cps/templates/user_table.html:166
-#, fuzzy
 msgid "Show File Formats Section"
-msgstr "Fájlformátumok megjelenítése"
+msgstr "Fájlformátumok mutatása"
 
 #: cps/render_template.py:94 cps/web.py:877
 msgid "Archived Books"
 msgstr "Archivált könyvek"
 
 #: cps/render_template.py:96 cps/templates/user_table.html:167
-#, fuzzy
 msgid "Show Archived Books"
-msgstr "Archivált könyvek megjelenítése"
+msgstr "Archivált könyvek mutatása"
 
 #: cps/render_template.py:99 cps/web.py:1430
 msgid "Books List"
@@ -1911,15 +1906,16 @@ msgid "Duplicates"
 msgstr "Ismétlődő könyvek"
 
 #: cps/render_template.py:106
-#, fuzzy
 msgid "Show Duplicate Books"
-msgstr "Ismétlődő könyvek megjelenítése"
+msgstr "Ismétlődő könyvek mutatása"
 
 #: cps/render_template.py:183
 msgid ""
 "ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
 "temporarily disabled while we develop a new frontend for v5.0.0."
 msgstr ""
+"ℹ️ A témája át lett állítva caliBlurra (Sötét). A téma választás ideiglenesen "
+"letiltva ameddig új felhasználói felületet készítünk a v5.0.0 verzióhoz."
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
@@ -1966,11 +1962,8 @@ msgid "Invalid shelf specified"
 msgstr "A megadott polc érvénytelen!"
 
 #: cps/shelf.py:40
-#, fuzzy
 msgid "Sorry you are not allowed to add a book to that shelf"
-msgstr ""
-"Elnézést, de nem jogosult hozzáadni a könyvet a következő polcra: "
-"%(shelfname)s"
+msgstr "Nincs engedélye könyvet hozzáadni ehhez a polchoz"
 
 #: cps/shelf.py:49
 #, python-format
@@ -2021,9 +2014,8 @@ msgid "Create a Shelf"
 msgstr "Polc létrehozása"
 
 #: cps/shelf.py:261
-#, fuzzy
 msgid "Sorry you are not allowed to edit this shelf"
-msgstr "Sajnálom, nincs jogosultsága szerkeszteni ezt a polcot"
+msgstr "Nincs engedélye szerkeszteni ezt a polcot"
 
 #: cps/shelf.py:263
 msgid "Edit a shelf"
@@ -2034,9 +2026,8 @@ msgid "Error deleting Shelf"
 msgstr "Hiba a polc törlése során"
 
 #: cps/shelf.py:274
-#, fuzzy
 msgid "Shelf successfully deleted"
-msgstr "A polc sikeresen törlődött"
+msgstr "Polc sikeresen törölve"
 
 #: cps/shelf.py:324
 #, python-format
@@ -2078,7 +2069,7 @@ msgstr "Polc: '%(name)s'"
 
 #: cps/shelf.py:522
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
-msgstr "Hiba a polc megnyitásakor. A polc nem létezik vagy nem elérhető."
+msgstr "Hiba a polc megnyitásakor. A polc nem létezik vagy nem elérhető"
 
 #: cps/tasks_status.py:37 cps/templates/layout.html:163
 #: cps/templates/tasks.html:7
@@ -2119,7 +2110,7 @@ msgstr "Ismeretlen adat a frissítési információk olvasásakor"
 
 #: cps/updater.py:443 cps/updater.py:555
 msgid "No update available. You already have the latest version installed"
-msgstr "Nem érhető el újabb frissítés. Már a legújabb verzió van telepítve."
+msgstr "Nem érhető el újabb frissítés. Már a legújabb verzió van telepítve"
 
 #: cps/updater.py:462
 msgid ""
@@ -2127,7 +2118,7 @@ msgid ""
 "version."
 msgstr ""
 "Egy új frissítés érhető el. Kattintson a lenti gombra a legújabb verzióra "
-"frissítéshez"
+"frissítéshez."
 
 #: cps/updater.py:479
 msgid "Could not fetch update information"
@@ -2204,123 +2195,110 @@ msgid "Language: %(name)s"
 msgstr "Nyelv: %(name)s"
 
 #: cps/web.py:940
-#, fuzzy
 msgid "Error loading magic shelf"
-msgstr "Hiba a polc törlése során"
+msgstr "Hiba varázspolc betöltése közben"
 
 #: cps/web.py:965
 #, python-format
 msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
-msgstr ""
+msgstr "Varázspolc&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 
 #: cps/web.py:1038
 msgid "No rules provided"
-msgstr ""
+msgstr "Nincs szabály megadva"
 
 #: cps/web.py:1044
-#, fuzzy
 msgid "Invalid rules format"
-msgstr "Érvénytelen e-mail cím formátum"
+msgstr "Érvénytelen szabály formátum"
 
 #: cps/web.py:1066
 msgid "Error processing rules"
-msgstr ""
+msgstr "Hiba a szabályok feldolgozása közben"
 
 #: cps/web.py:1070
-#, fuzzy
 msgid "Invalid request"
-msgstr "Érvénytelen szerep"
+msgstr "Érvénytelen kérés"
 
 #: cps/web.py:1114
-#, fuzzy
 msgid "Name and rules are required"
-msgstr "A felhasználói név és a kép kötelező."
+msgstr "Név és szabályok kötelezőek"
 
 #: cps/web.py:1117 cps/web.py:1214
 msgid "Shelf name too long (max 100 characters)"
-msgstr ""
+msgstr "Polc név túl hosszú (max. 100 karakter)"
 
 #: cps/web.py:1139
-#, fuzzy
 msgid "Error creating shelf"
-msgstr "Hiba a polc törlése során"
+msgstr "Hiba polc létrehozásakor"
 
 #: cps/templates/layout.html:314 cps/web.py:1153
-#, fuzzy
 msgid "Create Magic Shelf"
-msgstr "Polc létrehozása"
+msgstr "Varázspolc létrehozása"
 
 #: cps/web.py:1207
 msgid "Permission denied to change public status"
-msgstr ""
+msgstr "Nincs jogosultsága megváltoztatni a publikus státuszt"
 
 #: cps/web.py:1211
-#, fuzzy
 msgid "Shelf name is required"
-msgstr "Ez a mező kötelező"
+msgstr "Polc név kötelező"
 
 #: cps/web.py:1245
-#, fuzzy
 msgid "Error updating shelf"
-msgstr "Hiba a polc törlése során"
+msgstr "Hiba polc frissítésekor"
 
 #: cps/web.py:1260
-#, fuzzy
 msgid "Edit Magic Shelf"
-msgstr "Polc szerkesztése"
+msgstr "Varázspolc szerkesztése"
 
 #: cps/web.py:1273
-#, fuzzy
 msgid "Shelf not found"
-msgstr "Felhasználó nem található"
+msgstr "Polc nem található"
 
 #: cps/web.py:1278
 msgid "Permission denied"
-msgstr ""
+msgstr "Nincs jogosultsága"
 
 #: cps/web.py:1309
-#, fuzzy
 msgid "Shelf duplicated successfully"
-msgstr "{} felhasználók sikeresen törölve"
+msgstr "Polc sikeresen lemásolva"
 
 #: cps/web.py:1315
-#, fuzzy
 msgid "Error duplicating shelf"
-msgstr "Hiba a polc törlése során"
+msgstr "Hiba polc másolásakor"
 
 #: cps/templates/magic_shelf_edit.html:448 cps/web.py:1342
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
 msgstr ""
+"Rendszer polcok nem törölhetőek. Elrejtheti őket a profil beállításokban."
 
 #: cps/web.py:1359
-#, fuzzy
 msgid "Error deleting shelf"
-msgstr "Hiba a polc törlése során"
+msgstr "Hiba polc törlésekor"
 
 #: cps/web.py:1375
 msgid ""
 "You cannot hide your own shelves. Delete them instead if you don't want them."
 msgstr ""
+"Nem rejtheti el a saját polcait. Törölje őket amennyiben nincs rájuk szükség."
 
 #: cps/web.py:1385
 msgid "Shelf already hidden"
-msgstr ""
+msgstr "A polc már el van rejtve"
 
 #: cps/web.py:1399
-#, fuzzy
 msgid "Error hiding shelf"
-msgstr "Hiba a polc törlése során"
+msgstr "Hiba polc elrejtésekor"
 
 #: cps/web.py:1413
 msgid "Shelf was not hidden"
-msgstr ""
+msgstr "A polc nem lett elrejtve"
 
 #: cps/web.py:1422
-#, fuzzy
 msgid "Error unhiding shelf"
-msgstr "Hiba a polc törlése során"
+msgstr "Hiba polc újra megjelenítésekor"
 
 #: cps/templates/admin.html:18 cps/web.py:1569
 msgid "Downloads"
@@ -2331,14 +2309,12 @@ msgid "File formats list"
 msgstr "Fájlformátum lista"
 
 #: cps/web.py:1961 cps/web.py:1999
-#, fuzzy
 msgid "Please configure the SMTP mail settings first..."
-msgstr "Először be kell állítani az SMTP levelező beállításokat..."
+msgstr "Kérjük, először állítsa be az SMTP levelező beállításokat..."
 
 #: cps/web.py:1965
-#, fuzzy
 msgid "Oops! Please update your profile with a valid eReader Email."
-msgstr "Hoppá! Kérjük frissítse profilját valós e-olvasó emailcímmel."
+msgstr "Hoppá! Kérjük frissítse profilját valós e-olvasó e-mail címmel."
 
 #: cps/web.py:1987
 #, python-format
@@ -2353,17 +2329,15 @@ msgstr "Hiba történt a könyv küldésekor: %(res)s"
 
 #: cps/web.py:2007 cps/web.py:2017
 msgid "No email addresses selected"
-msgstr ""
+msgstr "Nincs e-mail cím kiválasztva"
 
 #: cps/web.py:2024
 msgid "Additional email addresses are disabled for your account."
-msgstr ""
+msgstr "További e-mail címek hozzáadása nincs engedélyezve a fiókjában."
 
 #: cps/web.py:2046
-#, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
-msgstr ""
-"A könyv sikeresen küldésre lett jelölve a következő címre: %(eReadermail)s"
+msgstr "Siker! A könyv a megadott e-mail cím(ek)re hamarosan elküldve!"
 
 #: cps/web.py:2065
 msgid "Please wait one minute to register next user"
@@ -2383,33 +2357,32 @@ msgstr ""
 "rendszergazdához"
 
 #: cps/web.py:2074 cps/web.py:2126
-msgid ""
-"Oops! Email server is not configured, please contact your administrator."
+msgid "Oops! Email server is not configured, please contact your administrator."
 msgstr ""
-"Hoppá! A mailszerver nincs beállítva. Kérjük, forduljon a rendszergazdához"
+"Hoppá! Az e-mail szerver nincs beállítva. Kérjük, forduljon a "
+"rendszergazdához!"
 
 #: cps/web.py:2112
 msgid "Oops! Your Email is not allowed."
-msgstr "Nem engedélyezett a megadott e-mail cím bejegyzése"
+msgstr "Nem engedélyezett a megadott e-mail cím bejegyzése."
 
 #: cps/web.py:2115
 msgid "Success! Confirmation Email has been sent."
 msgstr "Jóváhagyó levél elküldve az email címedre."
 
 #: cps/web.py:2163
-#, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
-msgstr "A Calibre-Web konfigurációja frissítve."
+msgstr ""
+"Hitelesítési hurok észlelve. Bejelentkezési problémák esetén vegye fel a "
+"kapcsolatot a rendszergazdával."
 
 #: cps/web.py:2208
-#, fuzzy
 msgid ""
-"OAuth authentication is not properly configured. Please contact "
-"administrator."
+"OAuth authentication is not properly configured. Please contact administrator."
 msgstr ""
-"Hoppá! A mailszerver nincs beállítva. Kérjük, forduljon a rendszergazdához"
+"OAuth bejelentkezés nincs megfelelően beállítva. Értesítse a rendszergazdát."
 
 #: cps/web.py:2213 cps/web.py:2240
 msgid "Cannot activate LDAP authentication"
@@ -2417,7 +2390,7 @@ msgstr "Az LDAP-hitelesítés nem aktiválható"
 
 #: cps/web.py:2222
 msgid "Standard login is disabled."
-msgstr ""
+msgstr "Alap bejelentkezés letiltva."
 
 #: cps/web.py:2230
 msgid "Please wait one minute before next login"
@@ -2425,32 +2398,37 @@ msgstr "Kérjük várjon egy percet a következő belépéssel"
 
 #: cps/web.py:2248
 msgid "Username cannot be empty"
-msgstr ""
+msgstr "Felhasználónév nem lehet üres"
 
 #: cps/web.py:2260
-#, fuzzy, python-format
+#, python-format
 msgid "you are now logged in as: '%(nickname)s'"
-msgstr "'%(nickname)s'-ként van bejelentkezve"
+msgstr "\"%(nickname)s\" néven van bejelentkezve"
 
 #: cps/web.py:2279
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
-msgstr "Be vagy jelentkezve mint: %(nickname)s"
+msgstr ""
+"Üdvözöljük! Fiókja automatikusan létrejött. Be van jelentkezve mint: "
+"\"%(nickname)s\""
 
 #: cps/web.py:2284 cps/web.py:2287
-#, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
-msgstr "A Calibre-Web konfigurációja frissítve."
+msgstr ""
+"Autentikáció sikeres, de a fiók létrehozás nem sikerült. Keresse a "
+"rendszergazdát."
 
 #: cps/web.py:2291
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
 msgstr ""
+"Hitelesítés sikeres, de nem található lokális fiók. Keresse a rendszergazdát, "
+"hogy létrehozzon egy fiókot."
 
 #: cps/web.py:2299
 #, python-format
@@ -2458,8 +2436,8 @@ msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
 "known"
 msgstr ""
-"Tartalék bejelentkezés '%(nickname)s' néven. Az LDAP szerver nem elérhető, "
-"vagy a felhasználó nem található."
+"Tartalék bejelentkezés \"%(nickname)s\" néven. Az LDAP szerver nem elérhető, "
+"vagy a felhasználó nem található"
 
 #: cps/web.py:2305
 #, python-format
@@ -2467,46 +2445,41 @@ msgid "Could not login: %(message)s"
 msgstr "Nem sikerült bejelentkezni: %(message)s"
 
 #: cps/web.py:2328 cps/web.py:2329 cps/web.py:2372
-#, fuzzy
 msgid "Wrong Username or Password"
-msgstr "Rossz felhasználó név vagy jelszó!"
+msgstr "Rossz felhasználónév vagy jelszó"
 
 #: cps/web.py:2337
 msgid "New Password was sent to your email address"
 msgstr "Az új jelszót elküldtük az emailcímére"
 
 #: cps/web.py:2341
-#, fuzzy
 msgid "An unknown error occurred. Please try again later."
 msgstr "Ismeretlen hiba történt. Próbálja újra később!"
 
 #: cps/web.py:2343
-#, fuzzy
 msgid "Please enter valid username to reset password"
-msgstr "Kérjük, érvényes felhasználónevet adjon meg a jelszó visszaállításához"
+msgstr "Érvényes felhasználónevet adjon meg a jelszó visszaállításához"
 
 #: cps/web.py:2351
-#, fuzzy, python-format
+#, python-format
 msgid "You are now logged in as: '%(nickname)s'"
-msgstr "Be vagy jelentkezve mint: %(nickname)s"
+msgstr "Be van jelentkezve mint: \"%(nickname)s\""
 
 #: cps/web.py:2667
-#, fuzzy
 msgid "Success! Profile Updated"
-msgstr "A profil frissítve."
+msgstr "Siker! Profil frissítve"
 
 #: cps/web.py:2673
-#, fuzzy
 msgid "Oops! An account already exists for this Email."
 msgstr "Már létezik felhasználó ehhez az e-mail címhez."
 
 #: cps/web.py:2894
 msgid "Invalid book ID."
-msgstr "Érvénytelen könyv azonosító"
+msgstr "Érvénytelen könyv azonosító."
 
 #: cps/progress_syncing/protocols/kosync.py:454
 msgid "KOReader Sync Plugin"
-msgstr ""
+msgstr "KOReader szinkronizáció plugin"
 
 #: cps/services/gmail.py:48
 msgid "Found no valid gmail.json file with OAuth information"
@@ -2516,37 +2489,34 @@ msgstr ""
 
 #: cps/tasks/auto_hardcover_id.py:45
 msgid "Auto-fetching Hardcover IDs"
-msgstr ""
+msgstr "Hardcover azonosítók automatikus lekérése"
 
 #: cps/tasks/auto_send.py:34
-#, fuzzy
 msgid "Preparing to send to eReader..."
-msgstr "%(book)s küldés e-olvasóra"
+msgstr "E-olvasóra küldés előkészítése..."
 
 #: cps/tasks/auto_send.py:56
 msgid "Checking available formats..."
-msgstr ""
+msgstr "Elérhető formátumok ellenőrzése..."
 
 #: cps/tasks/auto_send.py:69
-#, fuzzy
 msgid "Sending to eReader..."
-msgstr "Küldés e-olvasóra"
+msgstr "Küldés e-olvasóra..."
 
 #: cps/tasks/auto_send.py:86
-#, fuzzy
 msgid "Auto-send completed successfully"
-msgstr "{} felhasználók sikeresen törölve"
+msgstr "Automatikus küldés sikeresen lezajlott"
 
 #: cps/tasks/auto_send.py:102
 msgid "Auto-Send"
-msgstr ""
+msgstr "Automatikus küldés"
 
 #: cps/tasks/clean.py:18
 msgid "Delete temp folder contents"
 msgstr "Ideiglenes mappa tartalmának törlése"
 
 #: cps/tasks/convert.py:98
-#, fuzzy, python-format
+#, python-format
 msgid "%(book)s send to E-Reader"
 msgstr "%(book)s küldése e-olvasóra"
 
@@ -2561,14 +2531,13 @@ msgid "%(format)s format not found on disk"
 msgstr "A(z) %(format)s formátum nem található a lemezen"
 
 #: cps/tasks/convert.py:200
-#, fuzzy
 msgid "Ebook converter failed with unknown error"
-msgstr "Az e-könyv átalakítás nem sikerült: %(error)s"
+msgstr "Az e-könyv konvertáló ismeretlen hibába ütközött"
 
 #: cps/tasks/convert.py:219
-#, fuzzy, python-format
+#, python-format
 msgid "Kepubify-converter failed: %(error)s"
-msgstr "Kepubify konverter hibával leállt: %(error)s"
+msgstr "Kepubify konvertáló hibába ütközött: %(error)s"
 
 #: cps/tasks/convert.py:244
 #, python-format
@@ -2588,69 +2557,64 @@ msgid "Ebook-converter failed: %(error)s"
 msgstr "Az e-könyv átalakítás nem sikerült: %(error)s"
 
 #: cps/tasks/convert.py:341
-#, fuzzy
 msgid "Convert"
-msgstr "Átalakítás"
+msgstr "Konvertálás"
 
 #: cps/tasks/database.py:15
-#, fuzzy
 msgid "Reconnecting Calibre database"
-msgstr "Újracsatlakozás a Calibre adatbázishoz"
+msgstr "Calibre adatbázis újracsatlakoztatása"
 
 #: cps/tasks/database.py:35
 msgid "Clean archived book references"
-msgstr ""
+msgstr "Archivált könyv referenciák törlése"
 
 #: cps/tasks/duplicate_scan.py:28 cps/tasks/duplicate_scan.py:36
-#, fuzzy
 msgid "Duplicate scan"
-msgstr "Ismétlődő könyvek"
+msgstr "Ismétlődő könyv keresés"
 
 #: cps/tasks/duplicate_scan.py:66
 msgid "Scanning for duplicates"
-msgstr ""
+msgstr "Ismétlődők keresése"
 
 #: cps/tasks/duplicate_scan.py:133 cps/tasks/duplicate_scan.py:311
 #, python-format
 msgid "Duplicate scan completed: %(count)s groups"
-msgstr ""
+msgstr "Ismétlődők keresése befejeződött: %(count)s csoport"
 
 #: cps/tasks/duplicate_scan.py:203 cps/tasks/duplicate_scan.py:402
 #, python-format
 msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
+"Ismétlődők keresése befejeződött: %(count)s csoport automatikusan megszüntetve"
 
 #: cps/tasks/duplicate_scan.py:313
 #, python-format
 msgid "Duplicate scan completed: %(count)s new groups"
-msgstr ""
+msgstr "Ismétlődők keresése befejeződött: %(count)s új csoport"
 
 #: cps/tasks/mail.py:275
-#, fuzzy
 msgid "E-mail"
 msgstr "E-mail"
 
 #: cps/tasks/metadata_backup.py:23
-#, fuzzy
 msgid "Backing up Metadata"
 msgstr "Metaadatok mentése"
 
 #: cps/tasks/ops.py:28
 msgid "Convert Library – full run"
-msgstr ""
+msgstr "Könyvtár konvertálás - teljes futás"
 
 #: cps/tasks/ops.py:84
-#, fuzzy
 msgid "Convert Library"
-msgstr "Könyvtárban"
+msgstr "Könyvtár konvertálás"
 
 #: cps/tasks/ops.py:95
 msgid "EPUB Fixer – full run"
-msgstr ""
+msgstr "EPUB javító - teljes futás"
 
 #: cps/tasks/ops.py:142
 msgid "EPUB Fixer"
-msgstr ""
+msgstr "CWA EPUB javító"
 
 #: cps/tasks/thumbnail.py:86
 #, python-format
@@ -2692,14 +2656,12 @@ msgid "Email"
 msgstr "E-mail"
 
 #: cps/templates/admin.html:16
-#, fuzzy
 msgid "Send to eReader Email"
-msgstr "Küldés az e-olvasó emailjére"
+msgstr "Küldés e-olvasóra e-mail"
 
 #: cps/templates/admin.html:17 cps/templates/user_edit.html:221
-#, fuzzy
 msgid "Send to eReader Subject"
-msgstr "Küldés e-olvasóra"
+msgstr "Küldés e-olvasóra tárgy"
 
 #: cps/templates/admin.html:19 cps/templates/layout.html:166
 #: cps/templates/user_table.html:144
@@ -2717,9 +2679,8 @@ msgid "Download"
 msgstr "Letöltés"
 
 #: cps/templates/admin.html:25
-#, fuzzy
 msgid "View Books"
-msgstr "Könyvek megjelenítése"
+msgstr "Könyvek mutatása"
 
 #: cps/templates/admin.html:26 cps/templates/book_table.html:47
 #: cps/templates/book_table.html:328 cps/templates/duplicates.html:501
@@ -2737,7 +2698,6 @@ msgid "Delete"
 msgstr "Törlés"
 
 #: cps/templates/admin.html:28
-#, fuzzy
 msgid "Public Shelf"
 msgstr "Nyilvános polc"
 
@@ -2750,7 +2710,6 @@ msgid "Import LDAP Users"
 msgstr "LDAP felhasználók importálása"
 
 #: cps/templates/admin.html:67
-#, fuzzy
 msgid "Email Server Settings&nbsp;&nbsp;📬"
 msgstr "E-mail szerver beállításai&nbsp;&nbsp;📬"
 
@@ -2776,9 +2735,8 @@ msgid "From Email"
 msgstr "Küldő e-mail cím"
 
 #: cps/templates/admin.html:95
-#, fuzzy
 msgid "Email Service"
-msgstr "Levelező szolgáltatás"
+msgstr "E-mail szolgáltatás"
 
 #: cps/templates/admin.html:96
 msgid "Gmail via Oauth2"
@@ -2790,24 +2748,23 @@ msgstr "Beállítás&nbsp;&nbsp;⚙️"
 
 #: cps/templates/admin.html:114
 msgid "Calibre Database Directory"
-msgstr "Calibre adatbázis mappája:"
+msgstr "Calibre adatbázis mappa"
 
 #: cps/templates/admin.html:118 cps/templates/config_edit.html:140
 msgid "Log Level"
-msgstr "Naplózás szintje:"
+msgstr "Naplózási szint"
 
 #: cps/templates/admin.html:122
 msgid "Port"
-msgstr "Port:"
+msgstr "Port"
 
 #: cps/templates/admin.html:127
-#, fuzzy
 msgid "External Port"
 msgstr "Külső port"
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
-msgstr "Könyvek oldalanként:"
+msgstr "Könyvek oldalanként"
 
 #: cps/templates/admin.html:138
 msgid "Uploads"
@@ -2819,11 +2776,11 @@ msgstr "Böngészés bejelentkezés nélkül"
 
 #: cps/templates/admin.html:146
 msgid "Public Registration"
-msgstr "Nyílvános regisztráció:"
+msgstr "Nyilvános regisztráció"
 
 #: cps/templates/admin.html:150
 msgid "Magic Link Remote Login"
-msgstr "Távoli belépés:"
+msgstr "Varászhivatkozás távoli belépés"
 
 #: cps/templates/admin.html:154
 msgid "Reverse Proxy Login"
@@ -2834,24 +2791,20 @@ msgid "Reverse Proxy Header Name"
 msgstr "Reverse Proxy fejlécnév"
 
 #: cps/templates/admin.html:164
-#, fuzzy
 msgid "CWA Settings"
 msgstr "CWA beállítások"
 
 #: cps/templates/admin.html:165
-#, fuzzy
 msgid "Edit Basic Configuration"
-msgstr "Alapbeállításk szerkesztése"
+msgstr "Alapbeállítások szerkesztése"
 
 #: cps/templates/admin.html:166
-#, fuzzy
 msgid "Edit UI Configuration"
 msgstr "Felhasználói felület beállításai"
 
 #: cps/templates/admin.html:167
-#, fuzzy
 msgid "Edit Calibre Database Configuration"
-msgstr "CCalibre adatbázis beállításainak szerkesztése"
+msgstr "Calibre adatbázis beállításainak szerkesztése"
 
 #: cps/templates/admin.html:173
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
@@ -2859,7 +2812,6 @@ msgstr "Ütemezett feladatok&nbsp;&nbsp;⌛"
 
 #: cps/templates/admin.html:176 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:19
-#, fuzzy
 msgid "Start Time"
 msgstr "Kezdési idő"
 
@@ -2869,7 +2821,7 @@ msgstr "Maximális időtartam"
 
 #: cps/templates/admin.html:184 cps/templates/schedule_edit.html:29
 msgid "Scheduled Thumbnail Refresh"
-msgstr ""
+msgstr "Ütemezett címlapkép frissítés"
 
 #: cps/templates/admin.html:188
 msgid "Generate series cover thumbnails"
@@ -2877,13 +2829,12 @@ msgstr "Sorozat borítók bélyegképeinek létrehozása"
 
 #: cps/templates/admin.html:192 cps/templates/admin.html:232
 #: cps/templates/schedule_edit.html:38
-#, fuzzy
 msgid "Reconnect Calibre Database"
-msgstr "Újracsatlakozás a Calibre adatbázishoz"
+msgstr "Calibre adatbázis újracsatlakoztatása"
 
 #: cps/templates/admin.html:196 cps/templates/schedule_edit.html:42
 msgid "Generate Metadata Backup Files"
-msgstr "Metaadat mentési fájlok létrehozása"
+msgstr "Metaadat biztonsági mentés létrehozása"
 
 #: cps/templates/admin.html:202
 msgid "Refresh Thumbnail Cache"
@@ -2894,9 +2845,8 @@ msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
 msgstr "CWA Admin Funkciók&nbsp;&nbsp;⚡"
 
 #: cps/templates/admin.html:209
-#, fuzzy
 msgid "Show CWA Stats"
-msgstr "CWA beállítások megjelenítése"
+msgstr "CWA statisztika mutatása"
 
 #: cps/templates/admin.html:210
 msgid "Check CWA Status"
@@ -2911,30 +2861,26 @@ msgid "CWA Library Conversion Service"
 msgstr "CWA Könyvtár konverziós szolgáltatás"
 
 #: cps/templates/admin.html:215
-#, fuzzy
 msgid "CWA EPUB Fixer Service"
-msgstr "CWA Discord szerver"
+msgstr "CWA EPUB javító szolgáltatás"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
 msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
-#, fuzzy
 msgid "CWA Discord Server"
 msgstr "CWA Discord szerver"
 
 #: cps/templates/admin.html:222
 msgid "Run Hardcover Auto-Fetch"
-msgstr ""
+msgstr "Hardcover automatikus azonosító-lekérés futtatása"
 
 #: cps/templates/admin.html:227
-#, fuzzy
 msgid "Administration&nbsp;&nbsp;🚀"
 msgstr "Adminisztráció&nbsp;&nbsp;🚀"
 
 #: cps/templates/admin.html:228
-#, fuzzy
 msgid "Download Debug Package"
 msgstr "Hibakeresési csomag letöltése"
 
@@ -3025,12 +2971,12 @@ msgstr "Könyvtárban"
 #: cps/templates/author.html:27 cps/templates/index.html:173
 #: cps/templates/search.html:31 cps/templates/shelf.html:20
 msgid "Sort according to book date, newest first"
-msgstr ""
+msgstr "Rendezés könyv dátuma szerint, legújabb elöl"
 
 #: cps/templates/author.html:28 cps/templates/index.html:174
 #: cps/templates/search.html:32 cps/templates/shelf.html:21
 msgid "Sort according to book date, oldest first"
-msgstr ""
+msgstr "Rendezés könyv dátuma szerint, legrégebbi elöl"
 
 #: cps/templates/author.html:29 cps/templates/index.html:175
 #: cps/templates/search.html:33 cps/templates/shelf.html:22
@@ -3045,12 +2991,12 @@ msgstr "Rendezés cím szerint, fordított ábécé sorrendben"
 #: cps/templates/author.html:31 cps/templates/index.html:179
 #: cps/templates/search.html:37 cps/templates/shelf.html:26
 msgid "Sort according to publishing date, newest first"
-msgstr ""
+msgstr "Rendezés kiadás dátuma szerint, legújabb elöl"
 
 #: cps/templates/author.html:32 cps/templates/index.html:180
 #: cps/templates/search.html:38 cps/templates/shelf.html:27
 msgid "Sort according to publishing date, oldest first"
-msgstr ""
+msgstr "Rendezés kiadás dátuma szerint, legrégebbi elöl"
 
 #: cps/templates/author.html:61 cps/templates/author.html:118
 #: cps/templates/index.html:76 cps/templates/index.html:217
@@ -3060,7 +3006,7 @@ msgstr "csökkentsd"
 
 #: cps/templates/author.html:102
 msgid "More by"
-msgstr "Több eszerint:"
+msgstr "Több tőle:"
 
 #: cps/templates/book_edit.html:11 cps/templates/detail.html:563
 #: cps/templates/detail.html:565
@@ -3080,9 +3026,8 @@ msgid "Convert from:"
 msgstr "Konvertálás erről:"
 
 #: cps/templates/book_edit.html:32 cps/templates/book_edit.html:39
-#, fuzzy
 msgid "select an option"
-msgstr "Válassz egy lehetőséget"
+msgstr "válassz egy lehetőséget"
 
 #: cps/templates/book_edit.html:37
 msgid "Convert to:"
@@ -3132,9 +3077,8 @@ msgid "Tags"
 msgstr "Címkék"
 
 #: cps/templates/book_edit.html:102 cps/templates/book_table.html:108
-#, fuzzy
 msgid "Series ID"
-msgstr "Sorozat azonosító"
+msgstr "Sorozat sorszám"
 
 #: cps/templates/book_edit.html:105
 msgid "Published Date"
@@ -3170,7 +3114,7 @@ msgstr "Azonosítók"
 
 #: cps/templates/book_edit.html:134 cps/templates/book_edit.html:382
 msgid "Identifier Type"
-msgstr ""
+msgstr "Azonosító típusa"
 
 #: cps/templates/book_edit.html:135 cps/templates/book_edit.html:383
 msgid "Identifier Value"
@@ -3208,15 +3152,15 @@ msgstr "Nem"
 
 #: cps/templates/book_edit.html:228
 msgid "Hardcover Sync Blacklist"
-msgstr ""
+msgstr "Hardcover szinkronizáció tiltólista"
 
 #: cps/templates/book_edit.html:232
 msgid "Blacklist annotations from syncing to Hardcover"
-msgstr ""
+msgstr "Kiemelések Hardcover szinkronizációjának tiltása"
 
 #: cps/templates/book_edit.html:239
 msgid "Blacklist reading progress from syncing to Hardcover"
-msgstr ""
+msgstr "Olvasási állapot Hardcover szinkronizációjának tiltása"
 
 #: cps/templates/book_edit.html:248
 msgid "View Book on Save"
@@ -3239,13 +3183,12 @@ msgid "Keyword"
 msgstr "Kulcsszó"
 
 #: cps/templates/book_edit.html:273
-#, fuzzy
 msgid "Search keyword"
-msgstr " Keresési kulcsszó "
+msgstr "Keresőszó"
 
 #: cps/templates/book_edit.html:282
 msgid "Selected metadata fields were applied to the edit form."
-msgstr ""
+msgstr "A kiválasztott metaadatok bekerültek a szerkesztő űrlapba."
 
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
@@ -3276,27 +3219,22 @@ msgstr "Összevonás"
 
 #: cps/templates/book_table.html:50 cps/templates/book_table.html:210
 #: cps/templates/duplicates.html:504
-#, fuzzy
 msgid "Archive"
 msgstr "Archiválás"
 
 #: cps/templates/book_table.html:53 cps/templates/book_table.html:230
-#, fuzzy
 msgid "Unarchive"
 msgstr "Archiválás visszavonása"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
-#, fuzzy
 msgid "Mark as read"
 msgstr "Legyen olvasott"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
-#, fuzzy
 msgid "Mark as unread"
 msgstr "Legyen olvasatlan"
 
 #: cps/templates/book_table.html:65
-#, fuzzy
 msgid "Add to Shelf"
 msgstr "Hozzáadás polchoz"
 
@@ -3305,7 +3243,6 @@ msgid " Exchange author & title"
 msgstr "Szerző és cím felcserélése"
 
 #: cps/templates/book_table.html:72
-#, fuzzy
 msgid "Select all"
 msgstr "Minden kijelölése"
 
@@ -3315,14 +3252,13 @@ msgstr "Minden törlése"
 
 #: cps/templates/book_table.html:84
 msgid "Update Title Sort automatically  "
-msgstr ""
+msgstr "Cím rendezési formátum automatikus frissítése"
 
 #: cps/templates/book_table.html:88
 msgid "Update Author Sort automatically"
-msgstr ""
+msgstr "Író rendezési formátum automatikus frissítése"
 
 #: cps/templates/book_table.html:102 cps/templates/book_table.html:108
-#, fuzzy
 msgid "Enter Title"
 msgstr "Cím bevitele"
 
@@ -3335,79 +3271,66 @@ msgstr "Cím"
 
 #: cps/templates/book_table.html:103
 msgid "Enter Title Sort"
-msgstr ""
+msgstr "Cím rendezési formátum bevitele"
 
 #: cps/templates/book_table.html:103
-#, fuzzy
 msgid "Title Sort"
-msgstr "Név"
+msgstr "Rendezési cím"
 
 #: cps/templates/book_table.html:104
 msgid "Enter Author Sort"
-msgstr ""
+msgstr "Író rendezési formátum bevitele"
 
 #: cps/templates/book_table.html:104
-#, fuzzy
 msgid "Author Sort"
-msgstr "Szerző"
+msgstr "Szerző rendezési név"
 
 #: cps/templates/book_table.html:105
-#, fuzzy
 msgid "Enter Authors"
-msgstr "Szerzők"
+msgstr "Szerzők bevitele"
 
 #: cps/templates/book_table.html:106
-#, fuzzy
 msgid "Enter Categories"
-msgstr "Címkék"
+msgstr "Címkék bevitele"
 
 #: cps/templates/book_table.html:107
-#, fuzzy
 msgid "Enter Series"
-msgstr "Sorozatok kizárása"
+msgstr "Sorozatok bevitele"
 
 #: cps/templates/book_table.html:109
-#, fuzzy
 msgid "Enter Languages"
-msgstr "Nyelvek kizárása"
+msgstr "Nyelvek bevitele"
 
 #: cps/templates/book_table.html:110
-#, fuzzy
 msgid "Publishing Date"
-msgstr "Kiadás éve"
+msgstr "Kiadás dátuma"
 
 #: cps/templates/book_table.html:111
-#, fuzzy
 msgid "Enter Publishers"
-msgstr "Kiadók"
+msgstr "Kiadók bevitele"
 
 #: cps/templates/book_table.html:112
-#, fuzzy
 msgid "Enter comments"
-msgstr "Tartomány megadása"
+msgstr "Leírás bevitele"
 
 #: cps/templates/book_table.html:112
-#, fuzzy
 msgid "Comments"
-msgstr "Tartomány megadása"
+msgstr "Leírás"
 
 #: cps/templates/book_table.html:114
-#, fuzzy
 msgid "Archived?"
-msgstr "Keresés"
+msgstr "Archiválva?"
 
 #: cps/templates/book_table.html:116
-#, fuzzy
 msgid "Read?"
-msgstr "Olvasva"
+msgstr "Olvasva?"
 
 #: cps/templates/book_table.html:119 cps/templates/book_table.html:121
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
 #: cps/templates/book_table.html:129 cps/templates/book_table.html:131
 #: cps/templates/book_table.html:135
-#, fuzzy
 msgid "Enter "
-msgstr "Regisztrálás"
+msgstr "Bevitel "
 
 #: cps/templates/book_table.html:158 cps/templates/book_table.html:182
 #: cps/templates/book_table.html:202 cps/templates/book_table.html:222
@@ -3419,32 +3342,31 @@ msgstr "Biztosan?"
 
 #: cps/templates/book_table.html:162
 msgid "Books with Title will be merged from:"
-msgstr ""
+msgstr "Ezen című könyvek egyesítve lesznek innen:"
 
 #: cps/templates/book_table.html:166
-#, fuzzy
 msgid "Into Book with Title:"
-msgstr "Könyv címe"
+msgstr "Az alábbi könyvvel:"
 
 #: cps/templates/book_table.html:186
 msgid "The following books will be deleted:"
-msgstr ""
+msgstr "A következő könyvek törlésre kerülnek:"
 
 #: cps/templates/book_table.html:206
 msgid "The following books will be archived:"
-msgstr ""
+msgstr "A következő könyvek archiválva lesznek:"
 
 #: cps/templates/book_table.html:226
 msgid "The following books will be unarchived:"
-msgstr ""
+msgstr "A következő könyvek archiválása vissza lesz vonva:"
 
 #: cps/templates/book_table.html:246
 msgid "The following books will be marked read:"
-msgstr ""
+msgstr "A következő könyvek olvasottra lesznek állítva:"
 
 #: cps/templates/book_table.html:266
 msgid "The following books will be marked unread:"
-msgstr ""
+msgstr "A következő könyvek olvasatlanra lesznek állítva:"
 
 #: cps/templates/book_table.html:282 cps/templates/detail.html:556
 msgid "Edit Metadata"
@@ -3453,25 +3375,27 @@ msgstr "Metaadatok szerkesztése"
 #: cps/templates/book_table.html:285
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
 msgstr ""
+"Módosítsa a kívánt mezőket. Az üres mezők nem kerülnek figyelembevételre:"
 
 #: cps/templates/book_table.html:287
 msgid ""
 "Multiple values are supported for Authors, Tags/Categories, Languages, and "
 "Publishers. Use comma-separated values (e.g., \"Name1, Name2\")."
 msgstr ""
+"Több érték támogatott szerzőkhöz, címkékhez, nyelvekhez és kiadókhoz. "
+"Vesszővel válassza el őket egymástól (pl.: \"Név1, Név2\")"
 
 #: cps/templates/book_table.html:343
-#, fuzzy
 msgid "Select a Shelf"
-msgstr "Polc készítése"
+msgstr "Polc kiválasztása"
 
 #: cps/templates/book_table.html:346
 msgid "Please select a shelf to add the selected books to:"
-msgstr ""
+msgstr "Válasszon egy polcot amire felkerülnek a kiválasztott könyvek:"
 
 #: cps/templates/book_table.html:348
 msgid "-- Select a Shelf --"
-msgstr ""
+msgstr "-- Polc választása --"
 
 #: cps/templates/book_table.html:366 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
@@ -3479,9 +3403,8 @@ msgid "Add"
 msgstr "Hozzáadás"
 
 #: cps/templates/config_db.html:38
-#, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
-msgstr "Calibra adatbázis helye"
+msgstr "Calibra adatbázis helye (metadata.db fájl)"
 
 #: cps/templates/config_db.html:48
 msgid ""
@@ -3497,12 +3420,27 @@ msgid ""
 "        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
 "wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
+"A CWA úgy van konfigurálva, hogy a Calibre adatbázisa (a <code>metadata.db</"
+"code> fájl) mindig a <code>/calibre-library</code> könyvtáron belül "
+"helyezkedjen el. \n"
+"Induláskor a CWA automatikusan átvizsgálja azt a könyvtárat, amelyet a docker-"
+"compose fájlban a <code>/calibre-library</code> útvonalhoz rendelt, és "
+"meglévő Calibre \n"
+"könyvtárakat/metadata.db fájlokat keres. Ha pontosan egy meglévő könyvtárat "
+"talál, azt automatikusan csatolja. Ha többet talál, akkor alapértelmezés "
+"szerint \n"
+"a legnagyobbat csatolja automatikusan. Ha egyet sem talál, akkor "
+"automatikusan létrehoz és csatol egy új könyvtárat. \n"
+"További részletekért <a href=\"https://github.com/crocodilestick/Calibre-Web-"
+"Automated/wiki/Configuration#database-configuration\">lásd itt</a>!"
 
 #: cps/templates/config_db.html:54
 msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
 "CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
 msgstr ""
+"Ezért a CWA docker-compose fájljának konfigurálásakor <b>NE MÓDOSÍTSA A "
+"KETTŐSPONTOK JOBB OLDALÁN SZEREPLŐ ÚTVONALAKAT A VOLUMES SZEKCIÓBAN!</b>"
 
 #: cps/templates/config_db.html:55
 msgid ""
@@ -3511,24 +3449,37 @@ msgid ""
 "        change the paths on the right-hand side.<br><br>If you would like "
 "your <code>metadata.db</code> file in a different location to the rest of "
 "your\n"
-"        library, use the <b>Separate Book Files from Library Option below "
-"and there, enter the path to the rest of the library</b>"
+"        library, use the <b>Separate Book Files from Library Option below and "
+"there, enter the path to the rest of the library</b>"
 msgstr ""
+"Ezek az útvonalak kizárólag a CWA belső használatára szolgálnak. A kettőspont "
+"bal oldalán lévő kötéseket (bindokat) nyugodtan módosíthatja igényei "
+"szerint, \n"
+"azonban a jobb oldalon szereplő útvonalakat nincs értelme megváltoztatni."
+"<br><br>Ha a <code>metadata.db</code> fájlt a könyvtár többi részétől eltérő "
+"helyen szeretné tárolni, \n"
+"használja az alábbi <b>„Könyvfájlok elkülönítése a könyvtártól”</b> opciót, "
+"és ott adja meg a könyvtár többi részének elérési útját."
 
 #: cps/templates/config_db.html:59
 msgid ""
 "E.g. As long as your library's <code>metadata.db</code> file is bound "
 "somewhere within <code>/calibre-library</code>, you could bind the dir\n"
-"        containing the corresponding book files ect. to something like "
-"<code>/books</code> and enter <code>/books</code> in the field that pops up "
-"below\n"
+"        containing the corresponding book files ect. to something like <code>/"
+"books</code> and enter <code>/books</code> in the field that pops up below\n"
 "        once you've checked the <b>Separate Book Files from Library</b> "
 "option."
 msgstr ""
+"Például: amennyiben a könyvtár <code>metadata.db</code> fájlja a <code>/"
+"calibre-library</code> könyvtáron belül van csatolva, a hozzá tartozó \n"
+"könyvfájlokat tartalmazó könyvtárat akár a <code>/books</code> útvonalra is "
+"kötheti, majd a <b>Könyvfájlok elkülönítése a könyvtártól</b> opció "
+"bejelölése \n"
+"után a megjelenő mezőben adja meg a <code>/books</code> útvonalat."
 
 #: cps/templates/config_db.html:63
 msgid "Split Library Functionality"
-msgstr ""
+msgstr "Könyvfájlok elkülönítése a könyvtártól"
 
 #: cps/templates/config_db.html:66
 msgid ""
@@ -3536,6 +3487,9 @@ msgid ""
 "should remain in <code>/calibre-library</code>, however your library files "
 "can be wherever you desire"
 msgstr ""
+"<b>Könyvfájlok elkülönítése a könyvtártól</b> - a <code>metadata.db</code> "
+"fájlnak a <code>/calibre-library</code>-ban kell maradnia, de a könyv fájlok "
+"bárhol lehetnek"
 
 #: cps/templates/config_db.html:79
 msgid "Use Google Drive?"
@@ -3558,14 +3512,13 @@ msgid "Revoke"
 msgstr "Visszavonás"
 
 #: cps/templates/config_db.html:117
-#, fuzzy
 msgid "Last Resort: Restore Calibre Database (experimental)"
-msgstr "Újracsatlakozás a Calibre adatbázishoz"
+msgstr "Végső lehetőség: Calibre adatbázis helyreállítása (kísérleti)"
 
 #: cps/templates/config_db.html:118
 msgid ""
-"If your Calibre library is corrupted and cannot be opened, you can attempt "
-"to restore it from the OPF files in your library. This will <b>erase all per-"
+"If your Calibre library is corrupted and cannot be opened, you can attempt to "
+"restore it from the OPF files in your library. This will <b>erase all per-"
 "book data</b> (reading progress, bookmarks, shelf links, downloads, etc.) in "
 "the app database, but will not affect user accounts or settings. <b>Both "
 "databases will be automatically backed up in /config/backup before any "
@@ -3573,30 +3526,28 @@ msgid ""
 msgstr ""
 
 #: cps/templates/config_db.html:121
-#, fuzzy
 msgid "Are you sure? This cannot be undone."
-msgstr "Valóban le akarja állítani a Calibre-Web Automatedet?"
+msgstr "Biztos benne? A művelet nem visszavonható."
 
 #: cps/templates/config_db.html:121
-#, fuzzy
 msgid "Restore Calibre Database (Last Resort)"
-msgstr "Újracsatlakozás a Calibre adatbázishoz"
+msgstr "Calibra adatbázis helyreállítása (Végső lehetőség)"
 
 #: cps/templates/config_db.html:137
 msgid "New db location is invalid, please enter valid path"
-msgstr ""
+msgstr "Új adatbázis útvonal helytelen, érvényes útvonalat adjon meg"
 
 #: cps/templates/config_edit.html:6 cps/templates/config_edit.html:272
 msgid "Use Standard Authentication"
-msgstr ""
+msgstr "Alap bejelentkezés használata"
 
 #: cps/templates/config_edit.html:8 cps/templates/config_edit.html:274
 msgid "Use LDAP Authentication"
-msgstr ""
+msgstr "LDAP bejelentkezés használata"
 
 #: cps/templates/config_edit.html:11
 msgid "Use OAuth"
-msgstr ""
+msgstr "OAuth használata"
 
 #: cps/templates/config_edit.html:105
 msgid "Server Configuration"
@@ -3628,40 +3579,39 @@ msgstr "Éjszakai"
 
 #: cps/templates/config_edit.html:132
 msgid "Trusted Hosts (Comma Separated)"
-msgstr ""
+msgstr "Megbízható címek (vesszővel elválasztva)"
 
 #: cps/templates/config_edit.html:138
 msgid "Logfile Configuration"
 msgstr "Naplózási beállítások"
 
 #: cps/templates/config_edit.html:149
-#, fuzzy
 msgid "Location and name of logfile (/dev/stdout for no entry)"
-msgstr "Naplófájl helye és neve (üresen hagyva calibre-web.log)"
+msgstr "Naplófájl neve és helye (üresen hagyva: /dev/stdout)"
 
 #: cps/templates/config_edit.html:154
 msgid "Enable Access Log"
-msgstr ""
+msgstr "Elérési napló engedélyezése"
 
 #: cps/templates/config_edit.html:157
-#, fuzzy
 msgid "Location and name of access logfile (access.log for no entry)"
-msgstr "Naplófájl helye és neve (üresen hagyva calibre-web.log)"
+msgstr "Elérési naplófájl helye és neve (üresen hagyva: access.log)"
 
 #: cps/templates/config_edit.html:163
-#, fuzzy
 msgid "Feature Configuration"
-msgstr "Szerver beállítások"
+msgstr "Funkció beállítások"
 
 #: cps/templates/config_edit.html:166
 msgid "Convert non-English characters in title and author while saving to disk"
-msgstr ""
+msgstr "Mentéskor a cím és a szerző nem angol karaktereinek konvertálása"
 
 #: cps/templates/config_edit.html:170
 msgid ""
 "Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/"
 "Kepubify binaries)"
 msgstr ""
+"Metaadatok beágyazása letöltéskor/konvertáláskor/e-mailben küldéskor (Calibre/"
+"Kepubify futtatható állományok szükségesek)"
 
 #: cps/templates/config_edit.html:174
 msgid "Enable Uploads"
@@ -3669,12 +3619,11 @@ msgstr "Feltöltés engedélyezése"
 
 #: cps/templates/config_edit.html:174
 msgid "(Please ensure that users also have upload permissions)"
-msgstr ""
+msgstr "(Győződjön meg róla, hogy a felhasználóknak van feltöltési engedélye)"
 
 #: cps/templates/config_edit.html:178
-#, fuzzy
 msgid "Allowed Upload Fileformats"
-msgstr "Feltöltés formátuma"
+msgstr "Engedélyezett feltöltési formátumok"
 
 #: cps/templates/config_edit.html:184
 msgid "Enable Anonymous Browsing"
@@ -3685,39 +3634,40 @@ msgid "Enable Public Registration"
 msgstr "Nyilvános regisztráció engedélyezése"
 
 #: cps/templates/config_edit.html:193
-#, fuzzy
 msgid "Use Email as Username"
-msgstr "Válassz egy felhasználónevet"
+msgstr "E-mail használata felhasználónévként"
 
 #: cps/templates/config_edit.html:198
 msgid "Enable Magic Link Remote Login"
 msgstr "Távoli belépés engedélyezése (\"varázs-hivatkozás\")"
 
 #: cps/templates/config_edit.html:203
-#, fuzzy
 msgid "Enable Kobo sync"
-msgstr "Feltöltés engedélyezése"
+msgstr "Kobo szinkronizáció engedélyezése"
 
 #: cps/templates/config_edit.html:208
 msgid "Proxy unknown requests to Kobo Store"
-msgstr ""
+msgstr "Az ismeretlen kérések Kobo Áruházba irányítása"
 
 #: cps/templates/config_edit.html:211
 msgid "Server External Port (for port forwarded API calls)"
-msgstr ""
+msgstr "Szerver külső port (port továbbított API hívásokhoz)"
 
 #: cps/templates/config_edit.html:216
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr ""
+"Kobo olvasási állapot szinkronizációja Hardcoverbe (API kulcs "
+"felhasználónként szükséges)"
 
 #: cps/templates/config_edit.html:220
 msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
 msgstr ""
+"Kobo kiemelések szinkronizációja Hardcoverbe (API-kulcs felhasználónként "
+"szükséges)"
 
 #: cps/templates/config_edit.html:227
-#, fuzzy
 msgid "Use Goodreads"
-msgstr "Goodreads API-kulcs"
+msgstr "Goodreads használata"
 
 #: cps/templates/config_edit.html:231
 msgid "Goodreads API Key"
@@ -3725,15 +3675,15 @@ msgstr "Goodreads API-kulcs"
 
 #: cps/templates/config_edit.html:238
 msgid "Enable Hardcover Sync"
-msgstr ""
+msgstr "Hardcover szinkronizáció engedélyezése"
 
 #: cps/templates/config_edit.html:242
 msgid "Hardcover API Key"
-msgstr ""
+msgstr "Hardcover API kulcs"
 
 #: cps/templates/config_edit.html:248
 msgid "Allow Reverse Proxy Authentication"
-msgstr ""
+msgstr "Reverse Proxy hitelesítés engedélyezése"
 
 #: cps/templates/config_edit.html:249
 msgid ""
@@ -3744,7 +3694,7 @@ msgstr ""
 
 #: cps/templates/config_edit.html:253
 msgid "Use via HTTPS"
-msgstr ""
+msgstr "Használat HTTPS-sel"
 
 #: cps/templates/config_edit.html:254
 msgid ""
@@ -3754,7 +3704,7 @@ msgstr ""
 
 #: cps/templates/config_edit.html:263
 msgid "Auto-create users from reverse proxy"
-msgstr ""
+msgstr "Felhasználók automatikus létrehozása reverse proxyból"
 
 #: cps/templates/config_edit.html:264
 msgid ""
@@ -3764,93 +3714,92 @@ msgid ""
 msgstr ""
 
 #: cps/templates/config_edit.html:270
-#, fuzzy
 msgid "Login type"
-msgstr "Belépés"
+msgstr "Bejelentkezési mód"
 
 #: cps/templates/config_edit.html:277
 msgid "Use OAuth (requires HTTPS)"
-msgstr ""
+msgstr "OAuth használata (HTTPS kötelező)"
 
 #: cps/templates/config_edit.html:284
 msgid "LDAP Server Host Name or IP Address"
-msgstr ""
+msgstr "LDAP szerver neve vagy IP címe"
 
 #: cps/templates/config_edit.html:288
-#, fuzzy
 msgid "LDAP Server Port"
-msgstr "Szerver port"
+msgstr "LDAP szerver port"
 
 #: cps/templates/config_edit.html:292
-#, fuzzy
 msgid "LDAP Encryption"
-msgstr "SSL"
+msgstr "LDAP titkosítás"
 
 #: cps/templates/config_edit.html:295
-#, fuzzy
 msgid "TLS"
-msgstr "SSL/TLS"
+msgstr "TLS"
 
 #: cps/templates/config_edit.html:296
-#, fuzzy
 msgid "SSL"
-msgstr "SSL/TLS"
+msgstr "SSL"
 
 #: cps/templates/config_edit.html:300
 msgid ""
 "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
+"LDAP CA-tanúsítvány elérési útja (csak kliensoldali tanúsítványalapú "
+"hitelesítéshez szükséges)"
 
 #: cps/templates/config_edit.html:307
 msgid ""
 "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
+"LDAP tanúsítvány elérési útja (csak kliensoldali tanúsítványalapú "
+"hitelesítéshez szükséges)"
 
 #: cps/templates/config_edit.html:314
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr ""
+"LDAP kulcsfájl elérési útja (csak kliensoldali tanúsítványalapú "
+"hitelesítéshez szükséges)"
 
 #: cps/templates/config_edit.html:323
 msgid "LDAP Authentication"
-msgstr ""
+msgstr "LDAP hitelesítés"
 
 #: cps/templates/config_edit.html:325
-#, fuzzy
 msgid "Anonymous"
-msgstr "Böngészés bejelentkezés nélkül:"
+msgstr "Névtelen"
 
 #: cps/templates/config_edit.html:326
 msgid "Unauthenticated"
-msgstr ""
+msgstr "Hitelesítetlen"
 
 #: cps/templates/config_edit.html:327
 msgid "Simple"
-msgstr ""
+msgstr "Egyszerű"
 
 #: cps/templates/config_edit.html:332
-#, fuzzy
 msgid "LDAP Administrator Username"
-msgstr "Adminisztráció"
+msgstr "LDAP adminisztrátor felhasználónév"
 
 #: cps/templates/config_edit.html:338
 msgid "LDAP Administrator Password"
-msgstr ""
+msgstr "LDAP rendszergazda jelszó"
 
 #: cps/templates/config_edit.html:343
 msgid "LDAP Distinguished Name (DN)"
-msgstr ""
+msgstr "LDAP Distinguished Name (DN)"
 
 #: cps/templates/config_edit.html:347
 msgid "LDAP User Object Filter"
-msgstr ""
+msgstr "LDAP felhasználói objektumszűrő"
 
 #: cps/templates/config_edit.html:352
 msgid "LDAP Server is OpenLDAP?"
-msgstr ""
+msgstr "Az LDAP szerver OpenLDAP?"
 
 #: cps/templates/config_edit.html:356
 msgid "Auto-create users from LDAP"
-msgstr ""
+msgstr "Felhasználók automatikus létrehozása LDAP-ról"
 
 #: cps/templates/config_edit.html:357
 msgid ""
@@ -3860,39 +3809,39 @@ msgstr ""
 
 #: cps/templates/config_edit.html:359
 msgid "Following Settings are Needed For User Import"
-msgstr ""
+msgstr "A következő beállítások szükségesek felhasználó importhoz"
 
 #: cps/templates/config_edit.html:361
 msgid "LDAP Group Object Filter"
-msgstr ""
+msgstr "LDAP csoport objektumszűrő"
 
 #: cps/templates/config_edit.html:365
 msgid "LDAP Group Name"
-msgstr ""
+msgstr "LDAP csoport név"
 
 #: cps/templates/config_edit.html:369
 msgid "LDAP Group Members Field"
-msgstr ""
+msgstr "LDAP csoporttag mező"
 
 #: cps/templates/config_edit.html:373
 msgid "LDAP Member User Filter Detection"
-msgstr ""
+msgstr "LDAP tagsági felhasználói szűrő felismerése"
 
 #: cps/templates/config_edit.html:375
 msgid "Autodetect"
-msgstr ""
+msgstr "Automatikus észlelés"
 
 #: cps/templates/config_edit.html:376
 msgid "Custom Filter"
-msgstr ""
+msgstr "Egyedi szűrő"
 
 #: cps/templates/config_edit.html:381
 msgid "LDAP Member User Filter"
-msgstr ""
+msgstr "LDAP tagsági felhasználói szűrő"
 
 #: cps/templates/config_edit.html:391
 msgid "Important:"
-msgstr ""
+msgstr "Fontos:"
 
 #: cps/templates/config_edit.html:391
 msgid ""
@@ -3902,70 +3851,67 @@ msgstr ""
 
 #: cps/templates/config_edit.html:394
 msgid "Generic OAuth Provider"
-msgstr ""
+msgstr "Általános OAuth szolgáltató"
 
 #: cps/templates/config_edit.html:398
 msgid "OAuth Metadata URL (for auto-discovery)"
-msgstr ""
+msgstr "OAuth metaadat URL (automatikus felfedezéshez)"
 
 #: cps/templates/config_edit.html:402
-#, fuzzy
 msgid "Test Metadata"
-msgstr "Metaadatok beszerzése"
+msgstr "Metaadat tesztelés"
 
 #: cps/templates/config_edit.html:405
 msgid "Leave empty to use manual configuration below"
-msgstr ""
+msgstr "Hagyja üresen a manuális konfiguráció használatához"
 
 #: cps/templates/config_edit.html:411
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
-msgstr ""
+msgstr "Manuális végpont URL használata (felülírja az automatikus felfedezést)"
 
 #: cps/templates/config_edit.html:412
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
 msgstr ""
+"Jelölje be, ha az OAuth egyes végpontjait manuálisan szeretné konfigurálni az "
+"automatikus felfedezés helyett"
 
 #: cps/templates/config_edit.html:417
-#, fuzzy
 msgid "Manual Endpoint Configuration"
-msgstr "Felhasználói felület beállításai"
+msgstr "Kézi végpont beállítás"
 
 #: cps/templates/config_edit.html:420
 msgid "OAuth Base URL"
-msgstr ""
+msgstr "OAuth alap URL"
 
 #: cps/templates/config_edit.html:425
 msgid "Authorization Endpoint"
-msgstr ""
+msgstr "Azonosítási végpont"
 
 #: cps/templates/config_edit.html:430
-#, fuzzy
 msgid "Token Endpoint"
-msgstr "A token nem található."
+msgstr "Token végpont"
 
 #: cps/templates/config_edit.html:435
 msgid "UserInfo Endpoint"
-msgstr ""
+msgstr "UserInfo végpont"
 
 #: cps/templates/config_edit.html:443
-#, fuzzy
 msgid "Test Connection"
-msgstr "Kapcsolódási hiba"
+msgstr "Kapcsolat tesztelése"
 
 #: cps/templates/config_edit.html:452
-#, fuzzy
 msgid "OAuth Scopes"
-msgstr "Beállítások"
+msgstr "OAuth hatókörök"
 
 #: cps/templates/config_edit.html:454
 msgid "Space-separated list of OAuth scopes"
-msgstr ""
+msgstr "OAuth jogosultságok szóközzel felsorolva"
 
 #: cps/templates/config_edit.html:459
 msgid "OAuth Redirect Host"
-msgstr ""
+msgstr "OAuth átirányítási cím"
 
 #: cps/templates/config_edit.html:462
 msgid ""
@@ -3982,38 +3928,35 @@ msgstr ""
 
 #: cps/templates/config_edit.html:469
 msgid "OAuth Client Id"
-msgstr ""
+msgstr "OAuth kliens azonosító"
 
 #: cps/templates/config_edit.html:473
 msgid "OAuth Client Secret"
-msgstr ""
+msgstr "OAuth kliens titok"
 
 #: cps/templates/config_edit.html:478
-#, fuzzy
 msgid "Field Mapping Configuration"
-msgstr "Általános beállítások"
+msgstr "Mező-hozzárendelés beállításai"
 
 #: cps/templates/config_edit.html:480
-#, fuzzy
 msgid "Username Field"
-msgstr "Felhasználói név"
+msgstr "Felhasználónév mező"
 
 #: cps/templates/config_edit.html:482
 msgid "JWT field to extract username from"
-msgstr ""
+msgstr "JWT mező felhasználónév kinyeréséhez"
 
 #: cps/templates/config_edit.html:485
-#, fuzzy
 msgid "Email Field"
-msgstr "SMTP e-mail kiszolgáló beállítások"
+msgstr "E-mail mező"
 
 #: cps/templates/config_edit.html:487
 msgid "JWT field to extract email from"
-msgstr ""
+msgstr "JWT mező e-mail kinyeréséhez"
 
 #: cps/templates/config_edit.html:490
 msgid "OAuth group for Admin"
-msgstr ""
+msgstr "OAuth rendszergazda csoport"
 
 #: cps/templates/config_edit.html:492
 msgid ""
@@ -4024,22 +3967,22 @@ msgstr ""
 
 #: cps/templates/config_edit.html:495
 msgid "Login Button Text"
-msgstr ""
+msgstr "Bejelentkezési gomb felirat"
 
 #: cps/templates/config_edit.html:501
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
-msgstr ""
+msgstr "%(provider)s OAuth hitelesítő adat beszerzése"
 
 #: cps/templates/config_edit.html:504
 #, python-format
 msgid "%(provider)s OAuth Client Id"
-msgstr ""
+msgstr "%(provider)s OAuth kliens azonosító"
 
 #: cps/templates/config_edit.html:508
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
-msgstr ""
+msgstr "%(provider)s OAuth kliens titok"
 
 #: cps/templates/config_edit.html:519
 msgid "External binaries"
@@ -4047,29 +3990,27 @@ msgstr "Külső futtatható fájlok"
 
 #: cps/templates/config_edit.html:520
 msgid "Path to Calibre Binaries"
-msgstr ""
+msgstr "Calibre futtatható fájlok elérési útvonala"
 
 #: cps/templates/config_edit.html:528
 msgid "Calibre E-Book Converter Settings"
-msgstr ""
+msgstr "Calibre e-könyv konvertáló beállításai"
 
 #: cps/templates/config_edit.html:531
 msgid "Path to Kepubify E-Book Converter"
-msgstr ""
+msgstr "Kepubify e-könyv konvertáló elérési útvonala"
 
 #: cps/templates/config_edit.html:539
-#, fuzzy
 msgid "Location of Unrar binary"
-msgstr "Az UnRar futtatási állományának helye"
+msgstr "Unrar elérési útvonala"
 
 #: cps/templates/config_edit.html:550
-#, fuzzy
 msgid "Security Settings"
-msgstr "SMTP e-mail kiszolgáló beállítások"
+msgstr "Biztonsági beállítások"
 
 #: cps/templates/config_edit.html:553
 msgid "Disable Standard Login (Username/Password)"
-msgstr ""
+msgstr "Alap bejelentkezés letiltása (Felhasználónév/Jelszó)"
 
 #: cps/templates/config_edit.html:554
 msgid ""
@@ -4091,61 +4032,59 @@ msgstr ""
 
 #: cps/templates/config_edit.html:563
 msgid "Limit failed login attempts"
-msgstr ""
+msgstr "Bejelentkezési kísérletek korlátozása"
 
 #: cps/templates/config_edit.html:567
 msgid "Configure Backend for Limiter"
-msgstr ""
+msgstr "Limiter backend beállítása"
 
 #: cps/templates/config_edit.html:571
 msgid "Options for Limiter Backend"
-msgstr ""
+msgstr "Limiter backend opciói"
 
 #: cps/templates/config_edit.html:577
 msgid "Check if file extensions matches file content on upload"
-msgstr ""
+msgstr "Ellenőrizze, hogy a fájlformátum passzol-e a tartalomhoz feltöltéskor"
 
 #: cps/templates/config_edit.html:580
-#, fuzzy
 msgid "Session protection"
-msgstr "Válassz egy lehetőséget"
+msgstr "Munkamenet védelem"
 
 #: cps/templates/config_edit.html:582
 msgid "Basic"
-msgstr ""
+msgstr "Alap"
 
 #: cps/templates/config_edit.html:583
 msgid "Strong"
-msgstr ""
+msgstr "Erős"
 
 #: cps/templates/config_edit.html:588
-#, fuzzy
 msgid "User Password policy"
-msgstr "Felhasználó jelszavának alaphelyzetbe állítása"
+msgstr "Jelszó megkötések"
 
 #: cps/templates/config_edit.html:592
 msgid "Minimum password length"
-msgstr ""
+msgstr "Minimum jelszóhossz"
 
 #: cps/templates/config_edit.html:597
 msgid "Enforce number"
-msgstr ""
+msgstr "Szám kötelező"
 
 #: cps/templates/config_edit.html:601
 msgid "Enforce lowercase characters"
-msgstr ""
+msgstr "Kisbetű kötelező"
 
 #: cps/templates/config_edit.html:605
 msgid "Enforce uppercase characters"
-msgstr ""
+msgstr "Nagybetű kötelező"
 
 #: cps/templates/config_edit.html:609
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
-msgstr ""
+msgstr "Karakter kötelező (szükséges kínai/japán/koreai karakterekhez)"
 
 #: cps/templates/config_edit.html:613
 msgid "Enforce special characters"
-msgstr ""
+msgstr "Speciális karakter kötelező"
 
 #: cps/templates/config_view_edit.html:36
 msgid "View Configuration"
@@ -4173,14 +4112,13 @@ msgstr "Mutatott szerzők száma (0=elrejtés kikapcsolása)"
 
 #: cps/templates/config_view_edit.html:59
 msgid ""
-"Maximum number of authors to show in book details before truncating. Set to "
-"0 to disable."
+"Maximum number of authors to show in book details before truncating. Set to 0 "
+"to disable."
 msgstr ""
 
 #: cps/templates/config_view_edit.html:63
-#, fuzzy
 msgid "Default Theme"
-msgstr "Törlés"
+msgstr "Alaptéma"
 
 #: cps/templates/config_view_edit.html:65
 msgid "caliBlur! Dark Theme"
@@ -4191,6 +4129,8 @@ msgid ""
 "Default theme for new users and anonymous browsing. Users can select their "
 "own preferred theme in their profile."
 msgstr ""
+"Alapértelmezett téma új felhasználóknak és névtelen böngészéshez. A "
+"felhasználók választhatnak saját témát a profiljukban."
 
 #: cps/templates/config_view_edit.html:71
 msgid "Regular Expression for Ignoring Columns"
@@ -4205,13 +4145,13 @@ msgid "Link Read/Unread Status to Calibre Column"
 msgstr "Olvasva/olvasatlan állapot hozzárendelése Calibre oszlophoz"
 
 #: cps/templates/config_view_edit.html:84
-#, fuzzy
 msgid "Sync read/unread status with a Calibre boolean custom column."
-msgstr "Olvasva/olvasatlan állapot hozzárendelése Calibre oszlophoz"
+msgstr ""
+"Olvasva/olvasatlan állapot szinkronizálása egy Calibre igen/nem oszloppal."
 
 #: cps/templates/config_view_edit.html:88
 msgid "View Restrictions based on Calibre column"
-msgstr ""
+msgstr "Megtekintési korlátozás Calibre oszlop alapján"
 
 #: cps/templates/config_view_edit.html:95
 msgid ""
@@ -4224,8 +4164,8 @@ msgstr "Reguláris kifejezés címek sorbarendezéséhez"
 
 #: cps/templates/config_view_edit.html:101
 msgid ""
-"Regex to strip prefixes from titles for proper sorting (e.g., \"The\", "
-"\"A\", \"An\")."
+"Regex to strip prefixes from titles for proper sorting (e.g., \"The\", \"A\", "
+"\"An\")."
 msgstr ""
 
 #: cps/templates/config_view_edit.html:107
@@ -4237,9 +4177,8 @@ msgid "These settings will be applied to all newly created user accounts."
 msgstr ""
 
 #: cps/templates/config_view_edit.html:110
-#, fuzzy
 msgid "Permissions"
-msgstr "Verzió"
+msgstr "Engedélyek"
 
 #: cps/templates/config_view_edit.html:114 cps/templates/user_edit.html:405
 msgid "Admin User"
@@ -4251,7 +4190,7 @@ msgstr "Letöltés engedélyezése"
 
 #: cps/templates/config_view_edit.html:124 cps/templates/user_edit.html:416
 msgid "Allow eBook Viewer"
-msgstr ""
+msgstr "E-könyv olvasó engedélyezése"
 
 #: cps/templates/config_view_edit.html:130 cps/templates/user_edit.html:422
 msgid "Allow Uploads"
@@ -4262,9 +4201,8 @@ msgid "Allow Edit"
 msgstr "Szerkesztés engedélyezése"
 
 #: cps/templates/config_view_edit.html:141 cps/templates/user_edit.html:433
-#, fuzzy
 msgid "Allow Delete Books"
-msgstr "Könyv törlése"
+msgstr "Könyv törlés engedélyezése"
 
 #: cps/templates/config_view_edit.html:146 cps/templates/user_edit.html:439
 msgid "Allow Changing Password"
@@ -4275,29 +4213,24 @@ msgid "Allow Editing Public Shelves"
 msgstr "Nyilvános polcok szerkesztésének engedélyezése"
 
 #: cps/templates/config_view_edit.html:155
-#, fuzzy
 msgid "Language & Display"
-msgstr "Rendszergazda oldala"
+msgstr "Nyelv és megjelenés"
 
 #: cps/templates/config_view_edit.html:157
-#, fuzzy
 msgid "Default Language"
-msgstr "Nyelvek kizárása"
+msgstr "Alapnyelv"
 
 #: cps/templates/config_view_edit.html:163
-#, fuzzy
 msgid "Default interface language for new users."
-msgstr "Új felhasználók alapértelmezett beállításai"
+msgstr "Új felhasználók alapértelmezett nyelve."
 
 #: cps/templates/config_view_edit.html:167
-#, fuzzy
 msgid "Default Visible Language of Books"
-msgstr "Mutasd a könyveket a következő nyelvvel"
+msgstr "Látható könyvek alapértelmezett nyelve"
 
 #: cps/templates/config_view_edit.html:174
-#, fuzzy
 msgid "Default book language filter for new users."
-msgstr "Új felhasználók alapértelmezett látható elemei"
+msgstr "Alapértelmezett könyv nyelv szűrő új felhasználóknak."
 
 #: cps/templates/config_view_edit.html:180
 msgid "Default Visibilities for New Users"
@@ -4314,23 +4247,21 @@ msgstr "Mutasson könyveket találomra a részletes nézetben"
 
 #: cps/templates/config_view_edit.html:200 cps/templates/user_edit.html:371
 msgid "Add Allowed/Denied Tags"
-msgstr ""
+msgstr "Engedélyezett/tiltott címkék hozzáadása"
 
 #: cps/templates/config_view_edit.html:201
 msgid "Add Allowed/Denied custom column values"
-msgstr ""
+msgstr "Engedélyezett/tiltott egyedi oszlop értékek megadása"
 
 #: cps/templates/cwa_convert_library.html:10
 #: cps/templates/cwa_epub_fixer.html:34
-#, fuzzy
 msgid "Run Archive"
-msgstr "Keresés"
+msgstr "Korábbi futások"
 
 #: cps/templates/cwa_convert_library.html:11
 #: cps/templates/cwa_epub_fixer.html:35 cps/templates/cwa_read_log.html:9
-#, fuzzy
 msgid "Download Log"
-msgstr "Letöltés"
+msgstr "Napló letöltése"
 
 #: cps/templates/cwa_convert_library.html:24
 #: cps/templates/cwa_epub_fixer.html:39 cps/templates/index.xml:7
@@ -4340,104 +4271,109 @@ msgstr "Kezdés"
 #: cps/templates/cwa_convert_library.html:27
 #: cps/templates/cwa_epub_fixer.html:44
 msgid "Schedule 5m"
-msgstr ""
+msgstr "Időzítés 5p"
 
 #: cps/templates/cwa_convert_library.html:28
 #: cps/templates/cwa_epub_fixer.html:45
 msgid "Schedule 15m"
-msgstr ""
+msgstr "Időzítés 15p"
 
 #: cps/templates/cwa_convert_library.html:100
 msgid "Convert Library scheduled successfully"
-msgstr ""
+msgstr "Könyvtár konverzió sikeresen ütemezve"
 
 #: cps/templates/cwa_convert_library.html:103
 msgid "Error scheduling Convert Library"
-msgstr ""
+msgstr "Hiba könyvtár konverzió ütemezésekor"
 
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
-msgstr ""
+msgstr "Futtatás egy könyvön"
 
 #: cps/templates/cwa_epub_fixer.html:24
 msgid "Search by title/author"
-msgstr ""
+msgstr "Keresés cím/író alapján"
 
 #: cps/templates/cwa_epub_fixer.html:29
 msgid "Run on selected book"
-msgstr ""
+msgstr "Futtatás kiválasztott könyvön"
 
 #: cps/templates/cwa_epub_fixer.html:120
-#, fuzzy
 msgid "EPUB Fixer scheduled successfully"
-msgstr "{} felhasználók sikeresen törölve"
+msgstr "EPUB javító sikeresen beütemezve"
 
 #: cps/templates/cwa_epub_fixer.html:123
 msgid "Error scheduling EPUB Fixer"
-msgstr ""
+msgstr "Hiba EPUB javító ütemezésekor"
 
 #: cps/templates/cwa_epub_fixer.html:132
-#, fuzzy
 msgid "No matches found"
-msgstr "Találatok a következőhöz:"
+msgstr "Nem található egyezés"
 
 #: cps/templates/cwa_epub_fixer.html:167
-#, fuzzy
 msgid "Enter a search term"
-msgstr "Válassz egy felhasználónevet"
+msgstr "Írjon be keresőszót"
 
 #: cps/templates/cwa_epub_fixer.html:175
-#, fuzzy
 msgid "Failed to search library"
-msgstr "Könyvtárban"
+msgstr "Nem sikerült keresni a könyvtárban"
 
 #: cps/templates/cwa_epub_fixer.html:182
-#, fuzzy
 msgid "Select a book first"
-msgstr "Polc készítése"
+msgstr "Először válasszon ki könyvet"
 
 #: cps/templates/cwa_epub_fixer.html:195
 msgid "EPUB Fixer started for selected book"
-msgstr ""
+msgstr "EPUB javító elindult a kijelölt könyvekhez"
 
 #: cps/templates/cwa_epub_fixer.html:200
 msgid "Error starting EPUB Fixer"
-msgstr ""
+msgstr "Hiba EPUB javító indításakor"
 
 #: cps/templates/cwa_settings.html:136
-#, fuzzy
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "A Calibre-Web konfigurációja frissítve."
+msgstr "Calibre-Web Automated szolgáltatások engedélyezése/tiltása"
 
 #: cps/templates/cwa_settings.html:143
 msgid "Enable CWA Auto-Convert"
-msgstr ""
+msgstr "CWA Automatikus konvertálás engedélyezése"
 
 #: cps/templates/cwa_settings.html:145
 msgid ""
-"On by default, when active all ingested books will automatically be "
-"converted to the target format specified below (epub by default) \n"
+"On by default, when active all ingested books will automatically be converted "
+"to the target format specified below (epub by default) \n"
 "        <em>EXCEPT</em> those you have specifically told CWA to ignore below."
 msgstr ""
+"Alapértelmezetten be van kapcsolva. Aktiválás esetén minden beolvasott könyv "
+"automatikusan konvertálásra kerül az alább megadott célformátumra "
+"(alapértelmezetten EPUB),\n"
+"<em>KIVÉVE</em> azokat, amelyeket lentebb kifejezetten kizárt a CWA "
+"feldolgozásából."
 
 #: cps/templates/cwa_settings.html:154
 msgid "Enable CWA Automatic Cover & Metadata Enforcement Service"
 msgstr ""
+"CWA Automatikus borító- és metaadat-kényszerítő szolgáltatás engedélyezése"
 
 #: cps/templates/cwa_settings.html:156
 msgid ""
 "On by default, when active, whenever the Metadata and/or Cover Image is "
 "edited in the Web UI, the CWA Metadata Enforcement service \n"
-"        will then apply those changes the ebook files themselves. Normally "
-"in Stock CW or when this setting is disabled, the changes made \n"
+"        will then apply those changes the ebook files themselves. Normally in "
+"Stock CW or when this setting is disabled, the changes made \n"
 "        are only applied to what you see in the Web UI, not the ebook files "
 "themselves. This feature currently only supports files in EPUB \n"
 "        or AZW3 format."
 msgstr ""
+"Alapértelmezés szerint aktív. Ha engedélyezett, a Web UI-ban módosított "
+"metaadatok és borítók a CWA metaadat-kényszerítő szolgáltatás által "
+"automatikusan a könyvfájlokra is alkalmazásra kerülnek. Ha a beállítás ki van "
+"kapcsolva, vagy sima Calibre-Webet használ, a változtatások csak a Web UI-ban "
+"látszanak. Jelenleg csak EPUB és AZW3 fájlok támogatottak."
 
 #: cps/templates/cwa_settings.html:167
 msgid "Enable CWA Kindle EPUB Fixer"
-msgstr ""
+msgstr "CWA Kindle EPUB javító engedélyezése"
 
 #: cps/templates/cwa_settings.html:169
 msgid ""
@@ -4458,7 +4394,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:181
 msgid "Enable KOReader Sync (CWA Plugin)"
-msgstr ""
+msgstr "KOReader szinkronizáció engedélyezése (CWA plugin)"
 
 #: cps/templates/cwa_settings.html:183
 msgid ""
@@ -4476,18 +4412,17 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:192
 msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
-msgstr ""
+msgstr "Agresszívabb EPUB javító engedélyezése (veszélyesebb)"
 
 #: cps/templates/cwa_settings.html:194
 msgid ""
-"Aggressive mode applies more invasive fixes and will attempt lower-"
-"confidence encoding conversions. Safe mode is recommended for most libraries."
+"Aggressive mode applies more invasive fixes and will attempt lower-confidence "
+"encoding conversions. Safe mode is recommended for most libraries."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:202
-#, fuzzy
 msgid "Enable Archived Book Cleanup"
-msgstr "Archivált könyvek"
+msgstr "Archivált könyvek tisztításának engedélyezése"
 
 #: cps/templates/cwa_settings.html:204
 msgid ""
@@ -4497,112 +4432,112 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:208
 msgid "Cleanup Schedule:"
-msgstr ""
+msgstr "Tisztogatás ütemezés:"
 
 #: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:582
 msgid "Frequent Intervals"
-msgstr ""
+msgstr "Gyakori intervallumok"
 
 #: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:583
 msgid "Every 15 Minutes"
-msgstr ""
+msgstr "Minden 15 percben"
 
 #: cps/templates/cwa_settings.html:215 cps/templates/cwa_settings.html:584
 msgid "Every 30 Minutes"
-msgstr ""
+msgstr "Minden 30 percben"
 
 #: cps/templates/cwa_settings.html:216 cps/templates/cwa_settings.html:585
 msgid "Every Hour"
-msgstr ""
+msgstr "Minden órában"
 
 #: cps/templates/cwa_settings.html:217 cps/templates/cwa_settings.html:586
 msgid "Every 2 Hours"
-msgstr ""
+msgstr "Minden 2 órában"
 
 #: cps/templates/cwa_settings.html:218 cps/templates/cwa_settings.html:587
 msgid "Every 4 Hours"
-msgstr ""
+msgstr "Minden 4 órában"
 
 #: cps/templates/cwa_settings.html:219 cps/templates/cwa_settings.html:588
 msgid "Every 6 Hours"
-msgstr ""
+msgstr "Minden 6 órában"
 
 #: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:589
 msgid "Every 12 Hours"
-msgstr ""
+msgstr "Minden 12 órában"
 
 #: cps/templates/cwa_settings.html:222 cps/templates/cwa_settings.html:591
 msgid "Daily/Weekly/Monthly"
-msgstr ""
+msgstr "Napi/Heti/Havi"
 
 #: cps/templates/cwa_settings.html:223 cps/templates/cwa_settings.html:592
 msgid "Daily at Specific Time"
-msgstr ""
+msgstr "Naponta adott időben"
 
 #: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:593
 msgid "Weekly on Specific Day"
-msgstr ""
+msgstr "Hetente adott napon"
 
 #: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:594
 msgid "Monthly on Specific Day"
-msgstr ""
+msgstr "Havonta adott napon"
 
 #: cps/templates/cwa_settings.html:228
 msgid "Default: daily at 03:00"
-msgstr ""
+msgstr "Alapértelmezetten: naponta 3:00 órakor"
 
 #: cps/templates/cwa_settings.html:231 cps/templates/cwa_settings.html:601
 msgid "Day of Week:"
-msgstr ""
+msgstr "Hét napja:"
 
 #: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:606
 msgid "Monday"
-msgstr ""
+msgstr "Hétfő"
 
 #: cps/templates/cwa_settings.html:236 cps/templates/cwa_settings.html:607
 msgid "Tuesday"
-msgstr ""
+msgstr "Kedd"
 
 #: cps/templates/cwa_settings.html:237 cps/templates/cwa_settings.html:608
 msgid "Wednesday"
-msgstr ""
+msgstr "Szerda"
 
 #: cps/templates/cwa_settings.html:238 cps/templates/cwa_settings.html:609
 msgid "Thursday"
-msgstr ""
+msgstr "Csütörtök"
 
 #: cps/templates/cwa_settings.html:239 cps/templates/cwa_settings.html:610
 msgid "Friday"
-msgstr ""
+msgstr "Péntek"
 
 #: cps/templates/cwa_settings.html:240 cps/templates/cwa_settings.html:611
 msgid "Saturday"
-msgstr ""
+msgstr "Szombat"
 
 #: cps/templates/cwa_settings.html:241 cps/templates/cwa_settings.html:612
 msgid "Sunday"
-msgstr ""
+msgstr "Vasárnap"
 
 #: cps/templates/cwa_settings.html:246 cps/templates/cwa_settings.html:618
 msgid "Day of Month:"
-msgstr ""
+msgstr "Hónap napja"
 
 #: cps/templates/cwa_settings.html:254 cps/templates/cwa_settings.html:627
 msgid "(1-28)"
-msgstr ""
+msgstr "(1-28)"
 
 #: cps/templates/cwa_settings.html:258 cps/templates/cwa_settings.html:632
 msgid "Time of Day:"
-msgstr ""
+msgstr "Időpont:"
 
 #: cps/templates/cwa_settings.html:266 cps/templates/cwa_settings.html:641
 #, python-format
 msgid "(Server timezone: %(tz)s)"
-msgstr ""
+msgstr "(Szerver időzóna: %(tz)s)"
 
 #: cps/templates/cwa_settings.html:302
 msgid "Enable Automatic Metadata Fetching for New Books"
-msgstr ""
+msgstr "Automatikus metaadat letöltés új könyvekhez engedélyezése"
 
 #: cps/templates/cwa_settings.html:304
 msgid ""
@@ -4614,7 +4549,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:312
 msgid "Enable Smart Metadata Application"
-msgstr ""
+msgstr "Okos metaadat hozzárendelés engedélyezése"
 
 #: cps/templates/cwa_settings.html:314
 msgid ""
@@ -4625,9 +4560,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:319
-#, fuzzy
 msgid "Metadata Fields to Update"
-msgstr "A metaadatok sikeresen frissültek"
+msgstr "Frissítendő metaadat mezők"
 
 #: cps/templates/cwa_settings.html:321
 msgid ""
@@ -4638,99 +4572,96 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:355 cps/templates/cwa_settings.html:357
 msgid "Tags/Genres"
-msgstr ""
+msgstr "Címkék"
 
 #: cps/templates/cwa_settings.html:376 cps/templates/cwa_settings.html:378
-#, fuzzy
 msgid "Publication Date"
-msgstr "Kiadás éve"
+msgstr "Kiadási dátum"
 
 #: cps/templates/cwa_settings.html:383 cps/templates/cwa_settings.html:385
-#, fuzzy
 msgid "Identifiers (ISBN, etc.)"
-msgstr "Azonosítók"
+msgstr "Azonosítók (ISBN, stb.)"
 
 #: cps/templates/cwa_settings.html:390 cps/templates/cwa_settings.html:392
-#, fuzzy
 msgid "Cover Image"
-msgstr "Borító"
+msgstr "Borítókép"
 
 #: cps/templates/cwa_settings.html:398 cps/templates/cwa_settings.html:419
 #: cps/templates/cwa_settings.html:526 cps/templates/cwa_settings.html:731
 #: cps/templates/user_edit.html:389 cps/templates/user_edit.html:480
 msgid "Tip"
-msgstr ""
+msgstr "Tipp"
 
 #: cps/templates/cwa_settings.html:398
 msgid ""
 "These field selections apply to both Smart and Direct replacement modes. "
-"Smart mode will additionally apply quality criteria to selected fields, "
-"while Direct mode will replace all selected fields with provider data."
+"Smart mode will additionally apply quality criteria to selected fields, while "
+"Direct mode will replace all selected fields with provider data."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:403
 msgid "Cover File Max Size (MB):"
-msgstr ""
+msgstr "Borítókép maximum méret (MB):"
 
 #: cps/templates/cwa_settings.html:416
 msgid "Range: 1-200 MB (default: 15)"
-msgstr ""
+msgstr "Intervallum: 1-200 MB (alap: 15)"
 
 #: cps/templates/cwa_settings.html:419
 msgid ""
-"Limits the maximum size of cover images downloaded from metadata providers "
-"or URLs to prevent slow or stalled saves."
+"Limits the maximum size of cover images downloaded from metadata providers or "
+"URLs to prevent slow or stalled saves."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:428
 msgid "Ingest Processing Timeout"
-msgstr ""
+msgstr "Beolvasási feldolgozás időkorlát"
 
 #: cps/templates/cwa_settings.html:430
 msgid ""
-"Maximum time (in minutes) to allow for processing a single book before "
-"timing out. Files that timeout are moved to the failed backup folder for "
+"Maximum time (in minutes) to allow for processing a single book before timing "
+"out. Files that timeout are moved to the failed backup folder for "
 "investigation."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:432
 msgid "Timeout (minutes):"
-msgstr ""
+msgstr "Időkorlát (percben)"
 
 #: cps/templates/cwa_settings.html:444
 msgid "Range: 5-120 minutes (default: 15)"
-msgstr ""
+msgstr "Intervallum: 5-120 perc (alap: 15)"
 
 #: cps/templates/cwa_settings.html:448
 msgid "Stale temp cleanup"
-msgstr ""
+msgstr "Elavult ideiglenes fájlok törlése"
 
 #: cps/templates/cwa_settings.html:449
 msgid ""
-"Ignored temporary upload files (.uploading, .part, etc.) can be cleaned "
-"after a set age. Setting either value to 0 disables cleanup. Changes apply "
-"on the next cleanup cycle."
+"Ignored temporary upload files (.uploading, .part, etc.) can be cleaned after "
+"a set age. Setting either value to 0 disables cleanup. Changes apply on the "
+"next cleanup cycle."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:454
 msgid "Stale temp age (minutes):"
-msgstr ""
+msgstr "Ideiglenes fájlok elavulási ideje (percben):"
 
 #: cps/templates/cwa_settings.html:467
 msgid "Range: 0-10080 minutes (default: 120)"
-msgstr ""
+msgstr "Intervallum: 0-10080 perc (alap: 120)"
 
 #: cps/templates/cwa_settings.html:471
 msgid "Stale temp cleanup interval (seconds):"
-msgstr ""
+msgstr "Elavult ideiglenes fájlok törlésének intervalluma (másodperc):"
 
 #: cps/templates/cwa_settings.html:484
 msgid "Range: 0-86400 seconds (default: 600)"
-msgstr ""
+msgstr "Intervallum: 0-86400 másodperc (alap: 600)"
 
 #: cps/templates/cwa_settings.html:490
 msgid "Auto-Send Delay for New Books"
-msgstr ""
+msgstr "Automatikus küldés késleltetése új könyveknél"
 
 #: cps/templates/cwa_settings.html:492
 msgid ""
@@ -4742,15 +4673,15 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:494
 msgid "Delay (minutes):"
-msgstr ""
+msgstr "Késleltetés (percben):"
 
 #: cps/templates/cwa_settings.html:506
 msgid "Range: 1-60 minutes (default: 5)"
-msgstr ""
+msgstr "Intervallum: 1-60 perc (alap: 5)"
 
 #: cps/templates/cwa_settings.html:511
 msgid "Auto Metadata Fetch Provider Hierarchy"
-msgstr ""
+msgstr "Szolgáltatók rangsora automatikus metaadat letöltéshez"
 
 #: cps/templates/cwa_settings.html:513
 msgid ""
@@ -4765,16 +4696,15 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:535
 msgid "Enabled Metadata Providers"
-msgstr ""
+msgstr "Engedélyezett metaadat szolgáltatók"
 
 #: cps/templates/cwa_settings.html:537
 msgid "Unchecked providers are disabled globally."
-msgstr ""
+msgstr "Bepipálatlan szolgáltatók globálisan letiltva."
 
 #: cps/templates/cwa_settings.html:550
-#, fuzzy
 msgid "Hardcover Auto-Fetch Settings"
-msgstr "Beállítások"
+msgstr "Hardcover automatikus azonosító-lekérés beállításai"
 
 #: cps/templates/cwa_settings.html:552
 msgid ""
@@ -4782,10 +4712,13 @@ msgid ""
 "Hardcover IDs enable reading progress sync and annotation sync with "
 "Hardcover.app when using compatible eReaders."
 msgstr ""
+"A Hardcover azonosítók automatikus lekérése és hozzárendelése a könyvtár "
+"könyveihez. Ezek segítségével szinkronizálható az olvasási folyamat és a "
+"jegyzetek a Hardcover.app alkalmazással, kompatibilis e-olvasókon."
 
 #: cps/templates/cwa_settings.html:557
 msgid "Hardcover Token Required"
-msgstr ""
+msgstr "Hardcover token kötelező"
 
 #: cps/templates/cwa_settings.html:558
 msgid ""
@@ -4796,7 +4729,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:569
 msgid "Enable Hardcover Auto-Fetch"
-msgstr ""
+msgstr "Hardcover automatikus azonosító-lekérés engedélyezése"
 
 #: cps/templates/cwa_settings.html:571
 msgid ""
@@ -4807,7 +4740,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:576
 msgid "Run Schedule:"
-msgstr ""
+msgstr "Futási időzítés:"
 
 #: cps/templates/cwa_settings.html:597
 msgid "How often to automatically run the Hardcover ID fetch task"
@@ -4815,11 +4748,11 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:677
 msgid "Minimum Confidence Threshold:"
-msgstr ""
+msgstr "Minimális bizonyossági küszöb:"
 
 #: cps/templates/cwa_settings.html:687
 msgid "Range: 0.50-1.00 (default: 0.85)"
-msgstr ""
+msgstr "Intervallum: 0.50-1.00 (alap: 0.85)"
 
 #: cps/templates/cwa_settings.html:689
 msgid ""
@@ -4830,7 +4763,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:695
 msgid "Batch Size:"
-msgstr ""
+msgstr "Tételmennyiség:"
 
 #: cps/templates/cwa_settings.html:705
 msgid "Range: 10-200 books per run (default: 50)"
@@ -4844,11 +4777,11 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:713
 msgid "Rate Limit Delay (seconds):"
-msgstr ""
+msgstr "Korlátozás miatti késleltetés (másodpercben):"
 
 #: cps/templates/cwa_settings.html:723
 msgid "Range: 0-60 seconds (default: 5.0)"
-msgstr ""
+msgstr "Intervallum: 0-60 másodperc (alap: 5.0)"
 
 #: cps/templates/cwa_settings.html:725
 msgid ""
@@ -4864,23 +4797,24 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:738
-#, fuzzy
 msgid "Web UI Settings"
-msgstr "Beállítások"
+msgstr "Webes felület beállításai"
 
 #: cps/templates/cwa_settings.html:745
 msgid "Enable CWA Update Notifications"
-msgstr ""
+msgstr "CWA Frissítés értesítések engedélyezése"
 
 #: cps/templates/cwa_settings.html:747
 msgid ""
 "When active, you will receive notifications in the Web UI when a new version "
 "of CWA is released"
 msgstr ""
+"Engedélyezés esetén értesítéseket kap a WEB UI-ban amikor új CWA frissítés "
+"érhető el"
 
 #: cps/templates/cwa_settings.html:755
 msgid "Enable Contribute Translations Notifications"
-msgstr ""
+msgstr "Fordításra felhívó értesítés engedélyezése"
 
 #: cps/templates/cwa_settings.html:757
 msgid ""
@@ -4888,10 +4822,12 @@ msgid ""
 "using a language other than English if the translations for your chosen "
 "language are not complete."
 msgstr ""
+"Kikapcsolása esetén nem fog értesítéseket kapni a Web UI-ban ha angoltól "
+"eltérő nyelvet használ, aminek a fordítási állapota nem teljes."
 
 #: cps/templates/cwa_settings.html:765
 msgid "Sync Magic Shelves to Kobo"
-msgstr ""
+msgstr "Kiválasztott varázspolcok szinkronizációja Kobo eszközzel"
 
 #: cps/templates/cwa_settings.html:767
 msgid ""
@@ -4901,52 +4837,59 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:775
 msgid "Enable Blurred Backgrounds on Mobile (&lt;768px)"
-msgstr ""
+msgstr "Homályos háttér engedélyezése mobileszközökön (&lt;768px)"
 
 #: cps/templates/cwa_settings.html:777
 msgid ""
 "When active, the blurred cover background effect is also rendered on small "
 "screens. Disable if you notice scrolling or animation lag."
 msgstr ""
+"Engedélyezés esetén a homályos háttér hatás kis kijelzőkön is megjelenik. "
+"Kapcsolja ki amennyiben görgetési vagy animáció szaggatást észlel,"
 
 #: cps/templates/cwa_settings.html:782
-#, fuzzy
 msgid "Automatic Backup Settings"
-msgstr "Beállítások"
+msgstr "Automatikus biztonsági mentés beállításai"
 
 #: cps/templates/cwa_settings.html:789
 msgid "Enable CWA Import Auto-Backup"
-msgstr ""
+msgstr "CWA import automatikus mentés engedélyezése"
 
 #: cps/templates/cwa_settings.html:791
 msgid ""
 "When active, a copy of all imported files will be stored in <i>/config/"
 "processed_books/imported</i>"
 msgstr ""
+"Engedélyezés esetén egy másolat készül az importált fájlokról a <i>/config/"
+"processed_books/imported</i> mappába"
 
 #: cps/templates/cwa_settings.html:799
 msgid "Enable CWA Conversion Auto-Backup"
-msgstr ""
+msgstr "CWA konvertálás automatikus mentés engedélyezése"
 
 #: cps/templates/cwa_settings.html:801
 msgid ""
 "When active, the originals of ingested files that undergo conversion will be "
 "stored in /config/processed_books/converted"
 msgstr ""
+"Engedélyezés esetén egy másolat készül a beolvasott könyvek eredetijéről "
+"amelyek konvertáláson esnek át a /config/processed_books/converted mappába"
 
 #: cps/templates/cwa_settings.html:809
 msgid "Enable CWA EPUB Fixer Auto-Backup"
-msgstr ""
+msgstr "CWA EPUB javító automatikus mentés engedélyezése"
 
 #: cps/templates/cwa_settings.html:811
 msgid ""
 "When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
 "service will be stored in /config/processed_books/fixed_originals"
 msgstr ""
+"Engedélyezés esetén másolat készül az EPUB javító szolgáltatáson áteső "
+"könyvek eredetijéről a /config/processed_books/fixed_originals mappába"
 
 #: cps/templates/cwa_settings.html:821
 msgid "Enable CWA Auto-Zip Backups"
-msgstr ""
+msgstr "CWA Automatikus mentések ZIP-elésének engedélyezése"
 
 #: cps/templates/cwa_settings.html:823
 msgid ""
@@ -4955,10 +4898,14 @@ msgid ""
 "from that day. This is to help keep the subdirectories of /config/"
 "processed_books organised and to minimise disk space usage."
 msgstr ""
+"Engedélyezés eseten minden este éjfél előtt a cwa-auto-zipper szolgáltatás "
+"egy zip archívumot készít a mentett konvertáláson és importáláson átesett, "
+"illetve sikertelen fájlokról amik aznap jöttek létre. Ezzel rendben tarthatja "
+"a /config/processed_books almappáit és csökkentheti a szükséges tárterületet."
 
 #: cps/templates/cwa_settings.html:828
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
-msgstr ""
+msgstr "CWA Automatikus konvertáló célformátum - Alapértelmezetten EPUB"
 
 #: cps/templates/cwa_settings.html:831
 msgid ""
@@ -4968,20 +4915,19 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:833
-#, fuzzy
 msgid "Choose a target format:"
-msgstr "Könyvformátum átalakítása:"
+msgstr "Válasszon célformátumot:"
 
 #: cps/templates/cwa_settings.html:845
 msgid ""
 "Note: CWA's Metadata Enforcement service can currently only support file in "
-"either EPUB and AZW3 format. Files in other formats will simply be ignored "
-"by the service"
+"either EPUB and AZW3 format. Files in other formats will simply be ignored by "
+"the service"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:851
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr ""
+msgstr "CWA Automatikus konvertáló - Figyelmen kívül hagyott formátumok"
 
 #: cps/templates/cwa_settings.html:853
 msgid ""
@@ -4991,19 +4937,19 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:878
 msgid "CWA Auto-Convert - Retained Formats"
-msgstr ""
+msgstr "CWA Automatikus konvertáló - Meghagyott formátumok"
 
 #: cps/templates/cwa_settings.html:880
 msgid ""
 "The formats selected here will always be added to the library, even after "
 "they have been converted to the target format. However, if the format is in "
-"the \"CWA Auto-Ingest - Ignored Formats\" list, it will not be imported. "
-"Note that the target format is always retained."
+"the \"CWA Auto-Ingest - Ignored Formats\" list, it will not be imported. Note "
+"that the target format is always retained."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:907
 msgid "CWA Auto-Ingest Automerge"
-msgstr ""
+msgstr "CWA automatikus beolvasás automatikus egyesítés"
 
 #: cps/templates/cwa_settings.html:910
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
@@ -5011,12 +4957,12 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:910
 msgid "automerge"
-msgstr ""
+msgstr "automatikus egyesítés"
 
 #: cps/templates/cwa_settings.html:911
 msgid ""
-"setting. It can be set to delete either instance of a duplicated book or "
-"keep both (default)."
+"setting. It can be set to delete either instance of a duplicated book or keep "
+"both (default)."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:929
@@ -5033,7 +4979,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:943
 msgid "CWA Auto-Ingest - Ignored Formats"
-msgstr ""
+msgstr "CWA Automatikus beolvasás - figyelmen kívül hagyott formátumok"
 
 #: cps/templates/cwa_settings.html:945
 msgid ""
@@ -5044,7 +4990,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:970
 msgid "CWA Duplicate Detection System"
-msgstr ""
+msgstr "Ismétlődő könyv felismerő rendszer"
 
 #: cps/templates/cwa_settings.html:973
 msgid ""
@@ -5053,9 +4999,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:978
-#, fuzzy
 msgid "Enable Duplicate Detection"
-msgstr "Nyilvános regisztráció engedélyezése"
+msgstr "Ismétlődő könyvek felismerésének engedélyezése"
 
 #: cps/templates/cwa_settings.html:982
 msgid "When enabled, CWA will scan for duplicate books after each import"
@@ -5063,30 +5008,29 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:990
 msgid "Duplicate Detection Method"
-msgstr ""
+msgstr "Ismétlődő könyvek felismerésének módja"
 
 #: cps/templates/cwa_settings.html:993
 msgid "Hybrid (SQL prefilter + Python validation)"
-msgstr ""
+msgstr "Hibrid (SQL előszűrő + Python validáció)"
 
 #: cps/templates/cwa_settings.html:996
 msgid "Python only (slowest, most robust)"
-msgstr ""
+msgstr "Csak Python (leglassabb, legstabilabb)"
 
 #: cps/templates/cwa_settings.html:999
 msgid "Legacy SQL only (experimental)"
-msgstr ""
+msgstr "Régi csak SQL (kísérleti)"
 
 #: cps/templates/cwa_settings.html:1005
 msgid ""
-"Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies "
-"the robust Python logic for final results."
+"Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies the "
+"robust Python logic for final results."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1014
-#, fuzzy
 msgid "Automatic Duplicate Scanning"
-msgstr "Beállítások"
+msgstr "Automatikus ismétlődő könyv keresés"
 
 #: cps/templates/cwa_settings.html:1017
 msgid ""
@@ -5096,23 +5040,23 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1022
 msgid "Enable automatic duplicate scans"
-msgstr ""
+msgstr "Automatikus ismétlődő könyv kereső engedélyezése"
 
 #: cps/templates/cwa_settings.html:1026
 msgid "After import scans"
-msgstr ""
+msgstr "Import utáni keresés"
 
 #: cps/templates/cwa_settings.html:1029
 msgid "Run after each import (debounced)"
-msgstr ""
+msgstr "Futás minden import után (várakoztatva)"
 
 #: cps/templates/cwa_settings.html:1032
 msgid "Manual only"
-msgstr ""
+msgstr "Csak kézi"
 
 #: cps/templates/cwa_settings.html:1038
 msgid "After import debounce (seconds)"
-msgstr ""
+msgstr "Várakozás importálás után (másodpercben)"
 
 #: cps/templates/cwa_settings.html:1046
 msgid ""
@@ -5122,25 +5066,25 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1051
 msgid "Scheduled scans (cron expression)"
-msgstr ""
+msgstr "Időzített keresések (cron kifejezés)"
 
 #: cps/templates/cwa_settings.html:1057
 msgid "Leave blank to disable scheduled scans. Example:"
-msgstr ""
+msgstr "Hagyja üresen az ütemezett keresés letiltásához. Példa:"
 
 #: cps/templates/cwa_settings.html:1062
 msgid ""
-"If enabled, after-import scans and cron scans can both run. Use “Manual "
-"only” to disable after-import scans while keeping cron schedules."
+"If enabled, after-import scans and cron scans can both run. Use “Manual only” "
+"to disable after-import scans while keeping cron schedules."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1069 cps/templates/duplicates.html:398
 msgid "Next scheduled scan:"
-msgstr ""
+msgstr "Következő időzített keresés:"
 
 #: cps/templates/cwa_settings.html:1076
 msgid "CWA Duplicate Detection Criteria"
-msgstr ""
+msgstr "CWA ismétlődés felismerési kritérium"
 
 #: cps/templates/cwa_settings.html:1079
 msgid ""
@@ -5170,9 +5114,8 @@ msgid "Consider book publisher when detecting duplicates"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1115
-#, fuzzy
 msgid "Format"
-msgstr "Fájlformátumok"
+msgstr "Fájlformátum"
 
 #: cps/templates/cwa_settings.html:1116
 msgid "Consider file format when detecting duplicates"
@@ -5180,7 +5123,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1122 cps/templates/cwa_settings.html:1208
 msgid "Note:"
-msgstr ""
+msgstr "Megjegyzés:"
 
 #: cps/templates/cwa_settings.html:1122
 msgid ""
@@ -5190,7 +5133,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1128
 msgid "Duplicate Format Priority Ranking"
-msgstr ""
+msgstr "Ismétlődő könyvek formátum rangsorolás"
 
 #: cps/templates/cwa_settings.html:1131
 msgid ""
@@ -5201,7 +5144,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1144
 msgid "Tip:"
-msgstr ""
+msgstr "Tipp:"
 
 #: cps/templates/cwa_settings.html:1144
 msgid ""
@@ -5212,7 +5155,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1152
 msgid "Duplicate Notifications & Auto-Resolution"
-msgstr ""
+msgstr "Ismétlődő könyv értesítések és automatikus megszüntetés"
 
 #: cps/templates/cwa_settings.html:1155
 msgid ""
@@ -5221,9 +5164,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1160
-#, fuzzy
 msgid "Enable Duplicate Notifications"
-msgstr "Nyilvános regisztráció engedélyezése"
+msgstr "Ismétlődő könyv értesítések"
 
 #: cps/templates/cwa_settings.html:1162
 msgid ""
@@ -5233,13 +5175,12 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1166
-#, fuzzy
 msgid "Enable Automatic Duplicate Resolution"
-msgstr "Nyilvános regisztráció engedélyezése"
+msgstr "Automatikus ismétlődés megszüntetés engedélyezése"
 
 #: cps/templates/cwa_settings.html:1169 cps/templates/duplicates.html:437
 msgid "Warning:"
-msgstr ""
+msgstr "Figyelmeztetés:"
 
 #: cps/templates/cwa_settings.html:1169
 msgid ""
@@ -5249,11 +5190,11 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1173
 msgid "Auto-Resolution Strategy"
-msgstr ""
+msgstr "Megszüntetési stratégia"
 
 #: cps/templates/cwa_settings.html:1176
 msgid "Keep Newest"
-msgstr ""
+msgstr "Legújabb megtartása"
 
 #: cps/templates/cwa_settings.html:1176
 msgid "Delete older copies, keep the most recently added book"
@@ -5261,16 +5202,15 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1179
 msgid "Keep Oldest"
-msgstr ""
+msgstr "Legrégebbi megtartása"
 
 #: cps/templates/cwa_settings.html:1179
 msgid "Delete newer copies, keep the earliest added"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1182
-#, fuzzy
 msgid "Merge Formats"
-msgstr "Eredeti formátum"
+msgstr "Formátumok egyesítése"
 
 #: cps/templates/cwa_settings.html:1182
 msgid "Merge formats into the newest book, delete the rest"
@@ -5278,41 +5218,39 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:1185
 msgid "Keep Highest Quality Format"
-msgstr ""
+msgstr "Legmagasabb minőségű formátum megtartása"
 
 #: cps/templates/cwa_settings.html:1185
 msgid "Prefer formats based on your Duplicate Format Priority Ranking"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1188
-#, fuzzy
 msgid "Keep Most Metadata"
-msgstr "Metaadatok beszerzése"
+msgstr "Legtöbb metaadat megőrzése"
 
 #: cps/templates/cwa_settings.html:1188
 msgid "Keep book with most complete information"
-msgstr ""
+msgstr "Legtöbb információval rendelkező megtartása"
 
 #: cps/templates/cwa_settings.html:1191
 msgid "Keep Largest File Size"
-msgstr ""
+msgstr "Legnagyobb méretű megtartása"
 
 #: cps/templates/cwa_settings.html:1191
 msgid "Keep book with largest total file size"
-msgstr ""
+msgstr "Legnagyobb méretű fájllal rendelkező könyv megtartása"
 
 #: cps/templates/cwa_settings.html:1194
 msgid "Choose which book to keep when duplicates are automatically resolved."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1198
-#, fuzzy
 msgid "Rate Limiting"
-msgstr "Értékelés"
+msgstr "Korlátozás"
 
 #: cps/templates/cwa_settings.html:1199
 msgid "Cooldown Period (minutes)"
-msgstr ""
+msgstr "Várakozási idő (percben)"
 
 #: cps/templates/cwa_settings.html:1203
 msgid ""
@@ -5329,19 +5267,18 @@ msgstr ""
 #: cps/templates/cwa_stats.html:66 cps/templates/cwa_stats_system.html:58
 #, python-format
 msgid "Review %(count)s Pending Match(es)"
-msgstr ""
+msgstr "%(count)s függő találat ellenőrzése"
 
 #: cps/templates/cwa_stats.html:78 cps/templates/cwa_stats.html:100
 #: cps/templates/cwa_stats.html:122 cps/templates/cwa_stats.html:141
 #: cps/templates/cwa_stats.html:165 cps/templates/cwa_stats.html:184
-#: cps/templates/cwa_stats_system.html:70
-#: cps/templates/cwa_stats_system.html:92
+#: cps/templates/cwa_stats_system.html:70 cps/templates/cwa_stats_system.html:92
 #: cps/templates/cwa_stats_system.html:114
 #: cps/templates/cwa_stats_system.html:133
 #: cps/templates/cwa_stats_system.html:157
 #: cps/templates/cwa_stats_system.html:176
 msgid "Click to See More"
-msgstr ""
+msgstr "Több megjelenítése"
 
 #: cps/templates/detail.html:530
 msgid "Read in Browser"
@@ -5358,35 +5295,30 @@ msgid "Mark As Read"
 msgstr "Legyen olvasott"
 
 #: cps/templates/detail.html:539
-#, fuzzy
 msgid "Marked as read"
-msgstr "Legyen olvasott"
+msgstr "Olvasottnak jelölve"
 
 #: cps/templates/detail.html:540
-#, fuzzy
 msgid "Marked as unread"
-msgstr "Legyen olvasatlan"
+msgstr "Olvasatlannak jelölve"
 
 #: cps/templates/detail.html:545 cps/templates/detail.html:546
 #: cps/templates/detail.html:851 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
-msgstr ""
+msgstr "Archiválás visszavonása"
 
 #: cps/templates/detail.html:545 cps/templates/detail.html:546
 #: cps/templates/detail.html:852 cps/templates/listenmp3.html:166
-#, fuzzy
 msgid "Add to archive"
-msgstr "Hozzáadás polchoz"
+msgstr "Hozzáadás archívumhoz"
 
 #: cps/templates/detail.html:547 cps/templates/listenmp3.html:167
-#, fuzzy
 msgid "Archived"
-msgstr "Keresés"
+msgstr "Archiválva"
 
 #: cps/templates/detail.html:548
-#, fuzzy
 msgid "Restored from archive"
-msgstr "Hozzáadás polchoz"
+msgstr "Archiválás visszavonva"
 
 #: cps/templates/detail.html:579 cps/templates/detail.html:773
 #: cps/templates/detail.html:774 cps/templates/detail.html:1288
@@ -5401,137 +5333,125 @@ msgstr "Hozzáadás polchoz"
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
-msgstr ""
+msgstr "(Nyilvános)"
 
 #: cps/templates/detail.html:602 cps/templates/detail.html:767
-#, fuzzy
 msgid "Remove from shelf"
-msgstr "Hozzáadás polchoz"
+msgstr "Levétel polcról"
 
 #: cps/templates/detail.html:640
-#, fuzzy
 msgid "Rating updated"
-msgstr "Adatbázis beállítások frissítve"
+msgstr "Értékelés frissítve"
 
 #: cps/templates/detail.html:641
-#, fuzzy
 msgid "Rating cleared"
-msgstr "Értékelés nagyob mint"
+msgstr "Értékelés törölve"
 
 #: cps/templates/detail.html:659 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
-msgstr ""
+msgstr "%(index)s. könyv a %(range)s közül"
 
 #: cps/templates/detail.html:664
 msgid "ID"
-msgstr ""
+msgstr "Azonosító"
 
 #: cps/templates/detail.html:669
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 #: cps/templates/detail.html:672
 msgid "UUID copied to clipboard"
-msgstr ""
+msgstr "UUID kimásolva vágólapra"
 
 #: cps/templates/detail.html:673
 msgid "Unable to copy UUID"
-msgstr ""
+msgstr "UUID nem másolható"
 
 #: cps/templates/detail.html:674 cps/templates/detail.html:675
 msgid "Copy UUID"
-msgstr ""
+msgstr "UUID másolása"
 
 #: cps/templates/detail.html:680
 msgid "Date added"
-msgstr ""
+msgstr "Hozzáadás dátuma"
 
 #: cps/templates/detail.html:684
 msgid "Last modified"
-msgstr ""
+msgstr "Utoljára módosítva"
 
 #: cps/templates/detail.html:689
 msgid "File sizes"
-msgstr ""
+msgstr "Fájl mérete"
 
 #: cps/templates/detail.html:733
-#, fuzzy
 msgid "Remove tag"
-msgstr "Eltávolítás"
+msgstr "Címke eltávolítása"
 
 #: cps/templates/detail.html:741 cps/templates/detail.html:742
 #: cps/templates/detail.html:1166
 msgid "Add tag"
-msgstr ""
+msgstr "Címke hozzáadása"
 
 #: cps/templates/detail.html:787 cps/templates/listenmp3.html:111
-#, fuzzy
 msgid "Published"
-msgstr "Kiadó"
+msgstr "Kiadva"
 
 #: cps/templates/detail.html:793
-#, fuzzy
 msgid "KOReader Progress"
-msgstr "Állapot"
+msgstr "KOReader állapot"
 
 #: cps/templates/detail.html:863 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Ismertető:"
 
 #: cps/templates/detail.html:880
-#, fuzzy
 msgid "Select eReader Email Addresses"
-msgstr "Kindle"
+msgstr "E-olvasó e-mail címek kiválasztása"
 
 #: cps/templates/detail.html:893
-#, fuzzy
 msgid "Choose email addresses:"
-msgstr "Kindle"
+msgstr "Válasszon e-mail címeket:"
 
 #: cps/templates/detail.html:898
-#, fuzzy
 msgid "Select All"
-msgstr "Polc készítése"
+msgstr "Mind kiválasztása"
 
 #: cps/templates/detail.html:917
 msgid "Additional email addresses:"
-msgstr ""
+msgstr "További e-mail címek:"
 
 #: cps/templates/detail.html:918
 msgid "Enter additional email addresses (separated by commas):"
-msgstr ""
+msgstr "További e-mail címek megadása (vesszővel elválasztva):"
 
 #: cps/templates/detail.html:919
 msgid "example@domain.com, another@domain.com"
-msgstr ""
+msgstr "pelda@domain.hu, masik@domain.hu"
 
 #: cps/templates/detail.html:920
 msgid "Enter one or more email addresses separated by commas"
-msgstr ""
+msgstr "Adjon meg egy vagy több e-mail címet vesszővel elválasztva"
 
 #: cps/templates/detail.html:925
-#, fuzzy
 msgid "Select format:"
-msgstr "Formátumok törlése:"
+msgstr "Formátum kiválasztása:"
 
 #: cps/templates/detail.html:937
 msgid "Send"
-msgstr ""
+msgstr "Küldés"
 
 #: cps/templates/detail.html:1144
-#, fuzzy
 msgid "Failed to update tags"
-msgstr "A borító útvonalának létrehozása sikertelen"
+msgstr "Címkék frissítése sikertelen"
 
 #: cps/templates/detail.html:1252
-#, fuzzy
 msgid "Failed to update shelves"
-msgstr "A borító útvonalának létrehozása sikertelen"
+msgstr "Polcok frissítése sikertelen"
 
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
-msgstr ""
+msgstr "CWA ismétlődéskezelő"
 
 #: cps/templates/duplicates.html:367
 msgid ""
@@ -5540,33 +5460,28 @@ msgid ""
 msgstr ""
 
 #: cps/templates/duplicates.html:373
-#, fuzzy
 msgid "Scan for Duplicates Now"
-msgstr "Ismétlődő könyvek megjelenítése"
+msgstr "Ismétlődők keresése most"
 
 #: cps/templates/duplicates.html:376
-#, fuzzy
 msgid "Cancel Scan"
-msgstr "Mégsem"
+msgstr "Keresés leállítása"
 
 #: cps/templates/duplicates.html:379
 msgid "Select Duplicates"
-msgstr ""
+msgstr "Ismétlődők kiválasztása"
 
 #: cps/templates/duplicates.html:380
-#, fuzzy
 msgid "Select None"
-msgstr "Polc készítése"
+msgstr "Kijelölés megszüntetése"
 
 #: cps/templates/duplicates.html:381
-#, fuzzy
 msgid "Delete Selected"
-msgstr "Könyv törlése"
+msgstr "Kiválasztottak törlése"
 
 #: cps/templates/duplicates.html:409
-#, fuzzy
 msgid "Auto-Resolve Duplicates"
-msgstr "Ismétlődő könyvek"
+msgstr "Ismétlődések automatikus megszüntetése"
 
 #: cps/templates/duplicates.html:413
 msgid ""
@@ -5576,7 +5491,7 @@ msgstr ""
 
 #: cps/templates/duplicates.html:417
 msgid "Strategy:"
-msgstr ""
+msgstr "Stratégia:"
 
 #: cps/templates/duplicates.html:419
 msgid "Keep Newest - Delete older copies, keep the most recently added"
@@ -5599,56 +5514,51 @@ msgstr ""
 #: cps/templates/duplicates.html:423
 msgid "Keep Most Metadata - Keep book with most complete information"
 msgstr ""
+"Legtöbb metaadat megtartása - Legtöbb metaadattal rendelkező könyv megtartása"
 
 #: cps/templates/duplicates.html:424
 msgid "Keep Largest File Size - Keep book with largest total file size"
 msgstr ""
 
 #: cps/templates/duplicates.html:428
-#, fuzzy
 msgid "Preview"
-msgstr "Előző"
+msgstr "Előnézet"
 
 #: cps/templates/duplicates.html:432
 msgid "Execute Resolution"
-msgstr ""
+msgstr "Megszüntetés végrehajtása"
 
 #: cps/templates/duplicates.html:438
 msgid "This will permanently delete books. Original files will be backed up to"
 msgstr ""
 
 #: cps/templates/duplicates.html:456
-#, fuzzy
 msgid "Merge Selected"
-msgstr "Könyv törlése"
+msgstr "Kijelöltek egyesítése"
 
 #: cps/templates/duplicates.html:460
 msgid "Dismiss this duplicate group"
-msgstr ""
+msgstr "Ismétlődő könyvcsoport elutasítása"
 
 #: cps/templates/duplicates.html:462
 msgid "Dismiss"
-msgstr ""
+msgstr "Elutasít"
 
 #: cps/templates/duplicates.html:473
-#, fuzzy
 msgid "View book details"
 msgstr "Könyv részletei"
 
 #: cps/templates/duplicates.html:500
-#, fuzzy
 msgid "Edit book metadata"
 msgstr "Metaadatok szerkesztése"
 
 #: cps/templates/duplicates.html:503
-#, fuzzy
 msgid "Archive/delete book"
-msgstr "Legutóbbi könyvek mutatása"
+msgstr "Könyv archiválása/törlése"
 
 #: cps/templates/duplicates.html:516
-#, fuzzy
 msgid "No Duplicate Books Found"
-msgstr "Találatok a következőhöz:"
+msgstr "Nem található ismétlődő könyv"
 
 #: cps/templates/duplicates.html:517
 msgid "Your library has no books with duplicate title and author combinations."
@@ -5661,28 +5571,24 @@ msgid ""
 msgstr ""
 
 #: cps/templates/duplicates.html:532
-#, fuzzy
 msgid "The following books will be permanently deleted:"
-msgstr "A könyv törölve lesz a Calibre adatbázisból"
+msgstr "A következő könyvek véglegesen törölve lesznek:"
 
 #: cps/templates/duplicates.html:536
 msgid "This action cannot be undone!"
-msgstr ""
+msgstr "A művelet nem visszavonható!"
 
 #: cps/templates/duplicates.html:551
-#, fuzzy
 msgid "Merge Books"
-msgstr "Olvasatlan könyvek"
+msgstr "Könyvek egyesítése"
 
 #: cps/templates/duplicates.html:555
-#, fuzzy
 msgid "The following book will be kept:"
-msgstr "A könyv törölve lesz a Calibre adatbázisból"
+msgstr "A következő könyvek meg lesznek tartva:"
 
 #: cps/templates/duplicates.html:559
-#, fuzzy
 msgid "The following books will be merged into it (and then deleted):"
-msgstr "A könyv törölve lesz a Calibre adatbázisból"
+msgstr "A következő könyvek egyesítve lesznek vele (és utána törölve)"
 
 #: cps/templates/duplicates.html:563
 msgid "Note: File formats from source books will be added to the target book."
@@ -5690,11 +5596,11 @@ msgstr ""
 
 #: cps/templates/duplicates.html:580
 msgid "Resolution Preview"
-msgstr ""
+msgstr "Megszüntetés előnézete"
 
 #: cps/templates/duplicates.html:598
 msgid "Success"
-msgstr ""
+msgstr "Siker"
 
 #: cps/templates/duplicates.html:605
 msgid "Selected duplicate books have been deleted successfully!"
@@ -5702,31 +5608,27 @@ msgstr ""
 
 #: cps/templates/duplicates.html:627
 msgid "An error occurred while processing your request."
-msgstr ""
+msgstr "Hiba történt a kérés teljesítése közben."
 
 #: cps/templates/email_edit.html:13
-#, fuzzy
 msgid "Email Account Type"
-msgstr "Felhasználói fiók"
+msgstr "E-mail fiók típusa"
 
 #: cps/templates/email_edit.html:15
-#, fuzzy
 msgid "Standard Email Account"
-msgstr "Felhasználói fiók"
+msgstr "Sima e-mail fiók"
 
 #: cps/templates/email_edit.html:16
-#, fuzzy
 msgid "Gmail Account"
-msgstr "Felhasználói fiók"
+msgstr "Gmail fiók"
 
 #: cps/templates/email_edit.html:22
-#, fuzzy
 msgid "Setup Gmail Account"
-msgstr "Felhasználói fiók"
+msgstr "Gmail fiók beállítása"
 
 #: cps/templates/email_edit.html:24
 msgid "Revoke Gmail Access"
-msgstr ""
+msgstr "Gmail elérés visszavonása"
 
 #: cps/templates/email_edit.html:42
 msgid "STARTTLS"
@@ -5742,12 +5644,11 @@ msgstr "SMTP jelszó"
 
 #: cps/templates/email_edit.html:58
 msgid "Attachment Size Limit"
-msgstr ""
+msgstr "Csatolmány méretkorlát"
 
 #: cps/templates/email_edit.html:66
-#, fuzzy
 msgid "Save and Send Test Email"
-msgstr "Beállítások mentése és teszt e-mail küldése"
+msgstr "Mentés és teszt e-mail küldése"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:93
 #: cps/templates/shelf_order.html:42 cps/templates/user_table.html:175
@@ -5767,9 +5668,8 @@ msgid "Enter domainname"
 msgstr "Tartomány megadása"
 
 #: cps/templates/email_edit.html:92
-#, fuzzy
 msgid "Denied Domains (Blacklist)"
-msgstr "Regisztráláshoz engedélyezett tartományok"
+msgstr "Elutasított domainek (tiltólista)"
 
 #: cps/templates/feed.xml:22 cps/templates/layout.html:345
 msgid "Next"
@@ -5777,29 +5677,28 @@ msgstr "Következő"
 
 #: cps/templates/feed.xml:83
 msgid "(Magic)"
-msgstr ""
+msgstr "(Varázs)"
 
 #: cps/templates/generate_kobo_auth_url.html:6
 msgid ""
-"Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or "
-"edit):"
+"Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or edit):"
 msgstr ""
 
 #: cps/templates/generate_kobo_auth_url.html:11
 msgid "Kobo Token:"
-msgstr ""
+msgstr "Kobo token:"
 
 #: cps/templates/grid.html:21
 msgid "List"
-msgstr ""
+msgstr "Lista"
 
 #: cps/templates/hardcover_review_matches.html:51
 msgid "Hardcover Match Review 🔖"
-msgstr ""
+msgstr "Hardcover találatok ellenőrzése 🔖"
 
 #: cps/templates/hardcover_review_matches.html:58
 msgid "All Caught Up!"
-msgstr ""
+msgstr "Minden kész!"
 
 #: cps/templates/hardcover_review_matches.html:59
 msgid ""
@@ -5809,11 +5708,11 @@ msgstr ""
 
 #: cps/templates/hardcover_review_matches.html:61
 msgid "Back to Admin Panel"
-msgstr ""
+msgstr "Vissza a beállítások oldalra"
 
 #: cps/templates/hardcover_review_matches.html:68
 msgid "Review Required"
-msgstr ""
+msgstr "Ellenőrzés szükséges"
 
 #: cps/templates/hardcover_review_matches.html:69
 #, python-format
@@ -5824,7 +5723,7 @@ msgstr ""
 
 #: cps/templates/hardcover_review_matches.html:73
 msgid "Pending Matches"
-msgstr ""
+msgstr "Függő találatok"
 
 #: cps/templates/hardcover_review_matches.html:76
 msgid ""
@@ -5834,140 +5733,127 @@ msgid ""
 msgstr ""
 
 #: cps/templates/hardcover_review_matches.html:81
-#, fuzzy
 msgid "Reject All Pending"
-msgstr "Polc készítése"
+msgstr "Minden függőben lévő elutasítása"
 
 #: cps/templates/hardcover_review_matches.html:94
-#, fuzzy
 msgid "Search Query"
-msgstr "Keresési hiba!"
+msgstr "Keresőkifejezés"
 
 #: cps/templates/hardcover_review_matches.html:98
 msgid "Candidate Matches"
-msgstr ""
+msgstr "Lehetséges találatok"
 
 #: cps/templates/hardcover_review_matches.html:98
 #, python-format
 msgid "Top %(count)s"
-msgstr ""
+msgstr "Legjobb %(count)s"
 
 #: cps/templates/hardcover_review_matches.html:108
 #: cps/templates/hardcover_review_matches.html:110
 #: cps/templates/hardcover_review_matches.html:112
 msgid "Confidence"
-msgstr ""
+msgstr "Bizonyosság"
 
 #: cps/templates/hardcover_review_matches.html:155
 msgid "Match Reason"
-msgstr ""
+msgstr "Találati ok"
 
 #: cps/templates/hardcover_review_matches.html:160
-#, fuzzy
 msgid "View on Hardcover"
-msgstr "Könyv megnézése szerkesztés után"
+msgstr "Megtekintés Hardcoveren"
 
 #: cps/templates/hardcover_review_matches.html:168
 msgid "Select This Match"
-msgstr ""
+msgstr "Találat kiválasztása"
 
 #: cps/templates/hardcover_review_matches.html:180
-#, fuzzy
 msgid "Reject All"
-msgstr "Polc készítése"
+msgstr "Minden elutasítása"
 
 #: cps/templates/hardcover_review_matches.html:185
 msgid "Skip for Now"
-msgstr ""
+msgstr "Átugrás mostanra"
 
 #: cps/templates/hardcover_review_matches.html:258
 #: cps/templates/hardcover_review_matches.html:303
 #: cps/templates/hardcover_review_matches.html:346
 #: cps/templates/hardcover_review_matches.html:380
-#, fuzzy
 msgid "Processing..."
-msgstr "Betöltés..."
+msgstr "Feldolgozás..."
 
 #: cps/templates/hardcover_review_matches.html:280
 #: cps/templates/hardcover_review_matches.html:289
 msgid "✓ Select This Match"
-msgstr ""
+msgstr "✓ Találat kiválasztása"
 
 #: cps/templates/hardcover_review_matches.html:284
 msgid "Failed to apply match"
-msgstr ""
+msgstr "Hiba találat alkalmazása közben"
 
 #: cps/templates/hardcover_review_matches.html:299
-#, fuzzy
 msgid ""
 "Are you sure you want to reject all matches for this book? This cannot be "
 "undone."
 msgstr ""
-"Biztosan meg akarja változtatni a kiválasztott felhasználó(k) kiválasztott "
-"szerepét?"
+"Biztosan el akarja utasítani az összes egyezést ehhez a könyvhöz? A művelet "
+"nem visszavonható."
 
 #: cps/templates/hardcover_review_matches.html:324
 #: cps/templates/hardcover_review_matches.html:333
 msgid "✗ Reject All Matches"
-msgstr ""
+msgstr "✗ Minden találat elutasítása"
 
 #: cps/templates/hardcover_review_matches.html:328
-#, fuzzy
 msgid "Failed to reject match"
-msgstr "A borító útvonalának létrehozása sikertelen"
+msgstr "Elutasítás sikertelen"
 
 #: cps/templates/hardcover_review_matches.html:342
-#, fuzzy
 msgid ""
 "Are you sure you want to reject all pending matches? This cannot be undone."
 msgstr ""
-"Biztosan meg akarja változtatni a kiválasztott felhasználó(k) kiválasztott "
-"szerepét?"
+"Biztosan el akarja utasítani az összes függőben lévő egyezést? A művelet nem "
+"visszavonható."
 
 #: cps/templates/hardcover_review_matches.html:361
 #: cps/templates/hardcover_review_matches.html:370
-#, fuzzy
 msgid "✗ Reject All Pending"
-msgstr "Polc készítése"
+msgstr "✗ Minden függőben lévő elutasítása"
 
 #: cps/templates/hardcover_review_matches.html:365
-#, fuzzy
 msgid "Failed to reject all pending matches"
-msgstr "A borító útvonalának létrehozása sikertelen"
+msgstr "Minden függőben lévő elutasítása sikertelen"
 
 #: cps/templates/hardcover_review_matches.html:401
 #: cps/templates/hardcover_review_matches.html:410
 msgid "→ Skip for Now"
-msgstr ""
+msgstr "→ Átugrás mostanra"
 
 #: cps/templates/hardcover_review_matches.html:405
 msgid "Failed to skip match"
-msgstr ""
+msgstr "Hiba átugrás közben"
 
 #: cps/templates/http_error.html:34
-#, fuzzy
 msgid ""
 "Calibre-Web Automated Instance is unconfigured, please contact your "
 "administrator"
-msgstr "A Calibre-Web konfigurációja frissítve."
+msgstr "Calibre-Web Automated nincs konfigurálva, keresse a rendszergazdát!"
 
 #: cps/templates/http_error.html:44
-#, fuzzy
 msgid "Create Issue"
-msgstr "Polc készítése"
+msgstr "Hibajegy létrehozás"
 
 #: cps/templates/http_error.html:51
 msgid "Return to Home"
 msgstr "Vissza a kezdőlapra"
 
 #: cps/templates/http_error.html:53
-#, fuzzy
 msgid "Logout User"
-msgstr "Kilépés"
+msgstr "Kijelentkezés"
 
 #: cps/templates/index.html:119
 msgid "Mobile Notice"
-msgstr ""
+msgstr "Mobil értesítés"
 
 #: cps/templates/index.html:119
 msgid "Magic shelf editing works best on desktop or tablet devices."
@@ -5975,65 +5861,61 @@ msgstr ""
 
 #: cps/templates/index.html:134
 msgid "Refresh shelf to update with latest changes"
-msgstr ""
+msgstr "Polc frissítése a legújabb változtatásokkal"
 
 #: cps/templates/index.html:135
-#, fuzzy
 msgid "Refresh"
-msgstr "Sorozatok ebben a könyvtárban"
+msgstr "Frissítés"
 
 #: cps/templates/index.html:145
-#, fuzzy
 msgid "Edit shelf rules"
-msgstr "Polc szerkesztése"
+msgstr "Polc szabályok szerkesztése"
 
 #: cps/templates/index.html:159
 msgid "Hide this shelf from your sidebar"
-msgstr ""
+msgstr "Polc elrejtése az oldalsávból"
 
 #: cps/templates/index.html:159
 msgid "Show this shelf in your sidebar"
-msgstr ""
+msgstr "Polc megjelenítése az oldalsávban"
 
 #: cps/templates/index.html:161
-#, fuzzy
 msgid "Show Shelf"
-msgstr "Minden megjelenítése"
+msgstr "Polc mutatása"
 
 #: cps/templates/index.html:161
-#, fuzzy
 msgid "Hide Shelf"
-msgstr "Nyilvános polc"
+msgstr "Polc elrejtése"
 
 #: cps/templates/index.html:170
 msgid "Sort ascending according to download count"
-msgstr ""
+msgstr "Növekvő rendezés letöltés szám alapján"
 
 #: cps/templates/index.html:171
 msgid "Sort descending according to download count"
-msgstr ""
+msgstr "Csökkenő rendezés letöltés szám alapján"
 
 #: cps/templates/index.html:177 cps/templates/search.html:35
 #: cps/templates/shelf.html:24
 msgid "Sort authors in alphabetical order"
-msgstr ""
+msgstr "Szerzők rendezése betűrendben"
 
 #: cps/templates/index.html:178 cps/templates/search.html:36
 #: cps/templates/shelf.html:25
 msgid "Sort authors in reverse alphabetical order"
-msgstr ""
+msgstr "Szerzők rendezése fordított betűrendben"
 
 #: cps/templates/index.html:182
 msgid "Sort ascending according to series index"
-msgstr ""
+msgstr "Növekvő rendezés sorozatszám alapján"
 
 #: cps/templates/index.html:183
 msgid "Sort descending according to series index"
-msgstr ""
+msgstr "Csökkenő rendezés sorozatszám alapján"
 
 #: cps/templates/kosync_plugin.html:112
 msgid "KOReader Sync is disabled."
-msgstr ""
+msgstr "KOReader szinkronizáció letiltva."
 
 #: cps/templates/kosync_plugin.html:113
 msgid ""
@@ -6042,9 +5924,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/kosync_plugin.html:115
-#, fuzzy
 msgid "Open CWA Settings"
-msgstr "CWA beállítások"
+msgstr "CWA beállítások megnyitása"
 
 #: cps/templates/kosync_plugin.html:139
 msgid "Download is available after enabling KOReader Sync in CWA Settings."
@@ -6059,9 +5940,8 @@ msgid "Toggle Navigation"
 msgstr "Navigáció átkapcsolása"
 
 #: cps/templates/layout.html:115
-#, fuzzy
 msgid "Search Library"
-msgstr "Könyvtárban"
+msgstr "Keresés könyvtárban"
 
 #: cps/templates/layout.html:133 cps/templates/layout.html:170
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
@@ -6073,51 +5953,45 @@ msgid "Logout"
 msgstr "Kilépés"
 
 #: cps/templates/layout.html:147
-#, fuzzy
 msgid "Switch Theme"
-msgstr "Alapértelmezett téma"
+msgstr "Téma váltása"
 
 #: cps/templates/layout.html:166 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
-#, fuzzy
 msgid "Settings"
 msgstr "Beállítások"
 
 #: cps/templates/layout.html:168
-#, fuzzy
 msgid "Refresh Library"
-msgstr "Sorozatok ebben a könyvtárban"
+msgstr "Könyvtár frissítése"
 
 #: cps/templates/layout.html:209
 msgid "See Changelog"
-msgstr ""
+msgstr "Változásnapló megtekintése"
 
 #: cps/templates/layout.html:229
 msgid "Contribute here!"
-msgstr ""
+msgstr "Segíts te is!"
 
 #: cps/templates/layout.html:272
-#, fuzzy
 msgid "Please do not refresh the page"
-msgstr "Frissítés folyamatban, ne töltsd újra az oldalt"
+msgstr "Kérjük ne frissítse az oldalt!"
 
 #: cps/templates/layout.html:282
 msgid "Browse"
 msgstr "Böngészés"
 
 #: cps/templates/layout.html:299 cps/templates/search_form.html:88
-#, fuzzy
 msgid "Shelves"
-msgstr "Sorozatok kizárása"
+msgstr "Polcok"
 
 #: cps/templates/layout.html:305
-#, fuzzy
 msgid "Create Shelf"
-msgstr "Polc létrehozása"
+msgstr "Polc készítése"
 
 #: cps/templates/layout.html:309
 msgid "Magic Shelves ✨"
-msgstr ""
+msgstr "Varázspolcok ✨"
 
 #: cps/templates/layout.html:318 cps/templates/stats.html:3
 msgid "About"
@@ -6132,64 +6006,58 @@ msgid "Book Details"
 msgstr "Könyv részletei"
 
 #: cps/templates/layout.html:427
-#, fuzzy
 msgid "Duplicate Books Detected"
-msgstr "Többször szereplő könyvek"
+msgstr "Ismétlődő könyvek találva"
 
 #: cps/templates/layout.html:428
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
 #: cps/templates/layout.html:433
-#, fuzzy
 msgid "Duplicate Groups Found"
-msgstr "Találatok a következőhöz:"
+msgstr "Ismétlődő csoport találva"
 
 #: cps/templates/layout.html:441
 msgid "Remind Me Later"
-msgstr ""
+msgstr "Emlékeztess később"
 
 #: cps/templates/layout.html:444
 msgid "View & Resolve Duplicates"
-msgstr ""
+msgstr "Ismétlődések megtekintése és megszüntetése"
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
 msgid "Filter by initial"
-msgstr ""
+msgstr "Szűrés kezdőbetű alapján"
 
 #: cps/templates/list.html:43
 msgid "Grid"
-msgstr ""
+msgstr "Rács"
 
 #: cps/templates/listenmp3.html:159
 msgid "Read"
 msgstr "Olvasva"
 
 #: cps/templates/login.html:30
-#, fuzzy
 msgid "Show Password"
-msgstr "SMTP jelszó"
+msgstr "Jelszó mutatása"
 
 #: cps/templates/login.html:35
 msgid "Remember Me"
 msgstr "Emlékezz rám"
 
 #: cps/templates/login.html:41
-#, fuzzy
 msgid "Forgot Password?"
-msgstr "Jelszó"
+msgstr "Elfelejtette a jelszavát?"
 
 #: cps/templates/login.html:55
-#, fuzzy
 msgid ""
 "Log in with Magic\n"
 "      Link"
 msgstr "Belépés varázshivatkozással"
 
 #: cps/templates/login.html:95
-#, fuzzy
 msgid "Log in with SSO"
-msgstr "Belépés varázshivatkozással"
+msgstr "Belépés SSO-val"
 
 #: cps/templates/login.html:102
 msgid ""
@@ -6198,42 +6066,39 @@ msgstr ""
 
 #: cps/templates/logviewer.html:6
 msgid "Show Calibre-Web Log: "
-msgstr ""
+msgstr "Calibre-Web napló megtekintése: "
 
 #: cps/templates/logviewer.html:8
-#, fuzzy
 msgid "Calibre-Web Log: "
-msgstr "Calibre-Web teszt e-mail"
+msgstr "Calibre-Web napló: "
 
 #: cps/templates/logviewer.html:8
 msgid "Stream output, can't be displayed"
-msgstr ""
+msgstr "Folyamatos kimenet, nem jeleníthető meg"
 
 #: cps/templates/logviewer.html:12
 msgid "Show Access Log: "
-msgstr ""
+msgstr "Elérési napló megtekintése: "
 
 #: cps/templates/logviewer.html:18
 msgid "Download Calibre-Web Log"
-msgstr ""
+msgstr "Calibre-Web napló letöltése"
 
 #: cps/templates/logviewer.html:21
-#, fuzzy
 msgid "Download Access Log"
-msgstr "Letöltések"
+msgstr "Elárési napló letöltése"
 
 #: cps/templates/magic_shelf_edit.html:332
 msgid "System Template"
-msgstr ""
+msgstr "Rendszer sablon"
 
 #: cps/templates/magic_shelf_edit.html:332
 msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr ""
 
 #: cps/templates/magic_shelf_edit.html:399
-#, fuzzy
 msgid "Share with Everyone (Public)"
-msgstr "Nyilvános polc"
+msgstr "Megosztás mindenkivel (Publikus)"
 
 #: cps/templates/magic_shelf_edit.html:402
 msgid ""
@@ -6243,33 +6108,31 @@ msgstr ""
 
 #: cps/templates/modal_dialogs.html:6
 msgid "Select Allowed/Denied Tags"
-msgstr ""
+msgstr "Engedélyezett/tiltott címkék kiválasztása"
 
 #: cps/templates/modal_dialogs.html:7
 msgid "Select Allowed/Denied Custom Column Values"
-msgstr ""
+msgstr "Engedélyezett/tiltott egyedi oszlop értékek kiválasztása"
 
 #: cps/templates/modal_dialogs.html:8
 msgid "Select Allowed/Denied Tags of User"
-msgstr ""
+msgstr "Fiók engedélyezett/tiltott címkéinek kiválasztása"
 
 #: cps/templates/modal_dialogs.html:9
 msgid "Select Allowed/Denied Custom Column Values of User"
-msgstr ""
+msgstr "Fiók engedélyezett/tiltott egyedi oszlop értékeinek kiválasztása"
 
 #: cps/templates/modal_dialogs.html:15
-#, fuzzy
 msgid "Enter Tag"
-msgstr "Regisztrálás"
+msgstr "Címke bevitele"
 
 #: cps/templates/modal_dialogs.html:24
 msgid "Add View Restriction"
-msgstr ""
+msgstr "Megtekintési korlátozás hozzáadása"
 
 #: cps/templates/modal_dialogs.html:50
-#, fuzzy
 msgid "This book format will be permanently erased from database"
-msgstr "A könyv törölve lesz a Calibre adatbázisból"
+msgstr "Ez a könyv formátum véglegesen törölve lesz az adatbázisból"
 
 #: cps/templates/modal_dialogs.html:51
 msgid "This book will be permanently erased from database"
@@ -6289,48 +6152,44 @@ msgid ""
 "Books must first be archived and the device synced before a book can safely "
 "be deleted."
 msgstr ""
+"A könyvek archiválása és az eszköz szinkronizálása szükséges ahhoz, hogy egy "
+"könyvet biztonságosan törölhessen."
 
 #: cps/templates/modal_dialogs.html:76
-#, fuzzy
 msgid "Choose File Location"
-msgstr "Sorozat választó mutatása"
+msgstr "Fájl kiálasztása"
 
 #: cps/templates/modal_dialogs.html:82
 msgid "type"
-msgstr ""
+msgstr "formátum"
 
 #: cps/templates/modal_dialogs.html:83
-#, fuzzy
 msgid "name"
-msgstr "Felhasználói név"
+msgstr "név"
 
 #: cps/templates/modal_dialogs.html:84
 msgid "size"
-msgstr ""
+msgstr "méret"
 
 #: cps/templates/modal_dialogs.html:90
-#, fuzzy
 msgid "Parent Directory"
-msgstr "Calibre adatbázis mappája:"
+msgstr "Szülőmappa"
 
 #: cps/templates/modal_dialogs.html:98
 msgid "Select"
-msgstr ""
+msgstr "Kiválasztás"
 
 #: cps/templates/modal_dialogs.html:134 cps/templates/tasks.html:93
-#, fuzzy
 msgid "Ok"
-msgstr " "
+msgstr "Ok"
 
 #: cps/templates/osd.xml:5
-#, fuzzy
 msgid "Calibre-Web Automated eBook Catalog"
-msgstr "Calibre-Web e-könyv katalógus"
+msgstr "Calibre-Web Automated e-könyv katalógus"
 
 #: cps/templates/read.html:7
-#, fuzzy
 msgid "epub Reader"
-msgstr "Egyszerű txt olvasó"
+msgstr "EPUB olvasó"
 
 #: cps/templates/read.html:84 cps/templates/readcbr.html:104
 msgid "Light"
@@ -6342,65 +6201,59 @@ msgstr "Sötét"
 
 #: cps/templates/read.html:88
 msgid "Sepia"
-msgstr ""
+msgstr "Szépia"
 
 #: cps/templates/read.html:90
-#, fuzzy
 msgid "Black"
-msgstr "Vissza"
+msgstr "Fekete"
 
 #: cps/templates/read.html:95
 msgid "Reflow text when sidebars are open."
-msgstr "Szöveg újratördelése amikor az oldalsávok nyitva vannak"
+msgstr "Szöveg újratördelése amikor az oldalsávok nyitva vannak."
 
 #: cps/templates/read.html:100
 msgid "Font Sizes"
-msgstr ""
+msgstr "Betűméret"
 
 #: cps/templates/read.html:105
 msgid "Font"
-msgstr ""
+msgstr "Betűtípus"
 
 #: cps/templates/read.html:106
-#, fuzzy
 msgid "Default"
-msgstr "Törlés"
+msgstr "Alap"
 
 #: cps/templates/read.html:107
 msgid "Yahei"
-msgstr ""
+msgstr "Yahei"
 
 #: cps/templates/read.html:108
 msgid "SimSun"
-msgstr ""
+msgstr "SimSun"
 
 #: cps/templates/read.html:109
-#, fuzzy
 msgid "KaiTi"
-msgstr "Várakozás"
+msgstr "KaiTi"
 
 #: cps/templates/read.html:110
-#, fuzzy
 msgid "Arial"
-msgstr "Függőleges"
+msgstr "Arial"
 
 #: cps/templates/read.html:113
-#, fuzzy
 msgid "Spread"
-msgstr "Olvasva"
+msgstr "Elrendezés"
 
 #: cps/templates/read.html:114
 msgid "Two columns"
-msgstr ""
+msgstr "Két oszlop"
 
 #: cps/templates/read.html:115
 msgid "One column"
-msgstr ""
+msgstr "Egy oszlop"
 
 #: cps/templates/readcbr.html:8
-#, fuzzy
 msgid "Comic Reader"
-msgstr "Egyszerű txt olvasó"
+msgstr "Képregény olvasó"
 
 #: cps/templates/readcbr.html:75
 msgid "Keyboard Shortcuts"
@@ -6415,13 +6268,12 @@ msgid "Next Page"
 msgstr "Következő oldal"
 
 #: cps/templates/readcbr.html:80
-#, fuzzy
 msgid "Single Page Display"
-msgstr "Rendszergazda oldala"
+msgstr "Egyoldalas megjelenítés"
 
 #: cps/templates/readcbr.html:81
 msgid "Long Strip Display"
-msgstr ""
+msgstr "Görgethető megjelenítés"
 
 #: cps/templates/readcbr.html:82
 msgid "Scale to Best"
@@ -6457,16 +6309,15 @@ msgstr "Téma"
 
 #: cps/templates/readcbr.html:110
 msgid "Display"
-msgstr ""
+msgstr "Megjelenés"
 
 #: cps/templates/readcbr.html:113
-#, fuzzy
 msgid "Single Page"
-msgstr "Rendszergazda oldala"
+msgstr "Egy oldal"
 
 #: cps/templates/readcbr.html:114
 msgid "Long Strip"
-msgstr ""
+msgstr "Görgethető"
 
 #: cps/templates/readcbr.html:119
 msgid "Scale"
@@ -6505,57 +6356,48 @@ msgid "Vertical"
 msgstr "Függőleges"
 
 #: cps/templates/readcbr.html:150
-#, fuzzy
 msgid "Direction"
-msgstr "Leírás"
+msgstr "Irány"
 
 #: cps/templates/readcbr.html:153
-#, fuzzy
 msgid "Left to Right"
-msgstr "Méretezés a magasságra"
+msgstr "Balról jobbra"
 
 #: cps/templates/readcbr.html:154
-#, fuzzy
 msgid "Right to Left"
-msgstr "Forgatás jobbra"
+msgstr "Jobbról balra"
 
 #: cps/templates/readcbr.html:162
-#, fuzzy
 msgid "Reset to Top"
-msgstr "Vissza a kezdőlapra"
+msgstr "Az elejére ugrás"
 
 #: cps/templates/readcbr.html:163
-#, fuzzy
 msgid "Remember Position"
-msgstr "Emlékezz rám"
+msgstr "Pozíció megjegyzése"
 
 #: cps/templates/readcbr.html:168
 msgid "Scrollbar"
-msgstr ""
+msgstr "Görgetősáv"
 
 #: cps/templates/readcbr.html:171
-#, fuzzy
 msgid "Show"
-msgstr "Mindent mutass"
+msgstr "Megjelenítés"
 
 #: cps/templates/readcbr.html:172
 msgid "Hide"
-msgstr ""
+msgstr "Elrejtés"
 
 #: cps/templates/readdjvu.html:5
-#, fuzzy
 msgid "DJVU Reader"
-msgstr "Egyszerű txt olvasó"
+msgstr "DJVU olvasó"
 
 #: cps/templates/readpdf.html:32
-#, fuzzy
 msgid "PDF Reader"
-msgstr "Egyszerű txt olvasó"
+msgstr "PDF olvasó"
 
 #: cps/templates/readtxt.html:6
-#, fuzzy
 msgid "txt Reader"
-msgstr "Egyszerű txt olvasó"
+msgstr "TXT olvasó"
 
 #: cps/templates/register.html:4
 msgid "Register New Account"
@@ -6571,16 +6413,15 @@ msgstr "Az e-mail címed"
 
 #: cps/templates/remote_login.html:5
 msgid "Magic Link - Authorise New Device"
-msgstr ""
+msgstr "Varász hivatkozás - Új eszköz engedélyezése"
 
 #: cps/templates/remote_login.html:7
 msgid "On another device, login and visit:"
-msgstr ""
+msgstr "Másik eszközön jelentkezzen be és látogassa meg:"
 
 #: cps/templates/remote_login.html:17
 msgid "Once verified, you will automatically be logged in on this device."
-msgstr ""
-"Az első belépés után automatikusan be leszel léptetve ezen az eszközön."
+msgstr "Az első belépés után automatikusan be leszel léptetve ezen az eszközön."
 
 #: cps/templates/remote_login.html:20
 msgid "This verification link will expire in 10 minutes."
@@ -6588,23 +6429,21 @@ msgstr ""
 
 #: cps/templates/schedule_edit.html:30
 msgid ""
-"Automatically refresh all thumbnails during scheduled maintenance. "
-"Thumbnails are always generated on-demand regardless of this setting."
+"Automatically refresh all thumbnails during scheduled maintenance. Thumbnails "
+"are always generated on-demand regardless of this setting."
 msgstr ""
 
 #: cps/templates/schedule_edit.html:34
 msgid "Generate Series Cover Thumbnails"
-msgstr ""
+msgstr "Sorozat címlapkép létrehozás"
 
 #: cps/templates/search.html:6
-#, fuzzy
 msgid "No Results Found"
-msgstr "Találatok a következőhöz:"
+msgstr "Nem található eredmény"
 
 #: cps/templates/search.html:7
-#, fuzzy
 msgid "Search Term:"
-msgstr "Keresési hiba!"
+msgstr "Keresőkifejezés:"
 
 #: cps/templates/search.html:9
 msgid "Results for:"
@@ -6619,17 +6458,16 @@ msgid "Published Date To"
 msgstr "Kiadás éve eddig: "
 
 #: cps/templates/search_form.html:42
-#, fuzzy
 msgid "Read Status"
-msgstr "Állapot"
+msgstr "Olvasási állapot"
 
 #: cps/templates/search_form.html:44 cps/templates/search_form.html:165
 msgid "Any"
-msgstr ""
+msgstr "Bármelyik"
 
 #: cps/templates/search_form.html:45 cps/templates/search_form.html:166
 msgid "Empty"
-msgstr ""
+msgstr "Üres"
 
 #: cps/templates/search_form.html:60
 msgid "Exclude Tags"
@@ -6640,9 +6478,8 @@ msgid "Exclude Series"
 msgstr "Sorozatok kizárása"
 
 #: cps/templates/search_form.html:96
-#, fuzzy
 msgid "Exclude Shelves"
-msgstr "Sorozatok kizárása"
+msgstr "Polcok kizárása"
 
 #: cps/templates/search_form.html:116
 msgid "Exclude Languages"
@@ -6650,12 +6487,11 @@ msgstr "Nyelvek kizárása"
 
 #: cps/templates/search_form.html:127
 msgid "Extensions"
-msgstr ""
+msgstr "Fájlformátumok"
 
 #: cps/templates/search_form.html:135
-#, fuzzy
 msgid "Exclude Extensions"
-msgstr "Sorozatok kizárása"
+msgstr "Kiterjesztések kizárása"
 
 #: cps/templates/search_form.html:145
 msgid "Rating Above"
@@ -6668,12 +6504,12 @@ msgstr "Értékelés kisebb mint"
 #: cps/templates/search_form.html:175 cps/templates/search_form.html:187
 #: cps/templates/search_form.html:201
 msgid "From:"
-msgstr ""
+msgstr "Ettől:"
 
 #: cps/templates/search_form.html:179 cps/templates/search_form.html:191
 #: cps/templates/search_form.html:211
 msgid "To:"
-msgstr ""
+msgstr "Eddig:"
 
 #: cps/templates/shelf.html:13
 msgid "Delete this Shelf"
@@ -6681,27 +6517,27 @@ msgstr "Polc törlése"
 
 #: cps/templates/shelf.html:14
 msgid "Edit Shelf Properties"
-msgstr ""
+msgstr "Polc tulajdonságok szerkesztése"
 
 #: cps/templates/shelf.html:17
 msgid "Arrange books manually"
-msgstr ""
+msgstr "Könyvek kézi elrendezése"
 
 #: cps/templates/shelf.html:18
 msgid "Disable Change order"
-msgstr ""
+msgstr "Sorrend változtatás tiltása"
 
 #: cps/templates/shelf.html:18
 msgid "Enable Change order"
-msgstr ""
+msgstr "Sorrend változtatás engedélyezése"
 
 #: cps/templates/shelf.html:28
 msgid "Sort according to book added to shelf, newest first"
-msgstr ""
+msgstr "Rendezés könyv polchoz adása szerint, legújabb elöl"
 
 #: cps/templates/shelf.html:29
 msgid "Sort according to book added to shelf, oldest first"
-msgstr ""
+msgstr "Rendezés könyv polchoz adása szerint, legrégebbi elöl"
 
 #: cps/templates/shelf_edit.html:14
 msgid "Share with Everyone"
@@ -6709,16 +6545,15 @@ msgstr "Nyilvános polc"
 
 #: cps/templates/shelf_edit.html:21
 msgid "Sync this shelf with Kobo device"
-msgstr ""
+msgstr "Polcok szinkronizációja Kobo eszközzel"
 
 #: cps/templates/shelf_order.html:5
 msgid "Drag to Rearrange Order"
 msgstr "Húzd és dob a sorrend változtatásához"
 
 #: cps/templates/shelf_order.html:33
-#, fuzzy
 msgid "Hidden Book"
-msgstr "Kelendő könyvek"
+msgstr "Rejtett könyvek"
 
 #: cps/templates/stats.html:7
 msgid "Library Statistics"
@@ -6741,14 +6576,12 @@ msgid "Series in this Library"
 msgstr "Sorozatok ebben a könyvtárban"
 
 #: cps/templates/stats.html:29
-#, fuzzy
 msgid "System Statistics"
-msgstr "Statisztika"
+msgstr "Rendszer statisztika"
 
 #: cps/templates/stats.html:33
-#, fuzzy
 msgid "Program"
-msgstr "Állapot"
+msgstr "Program"
 
 #: cps/templates/stats.html:34
 msgid "Installed Version"
@@ -6756,7 +6589,7 @@ msgstr "Telepített verzió"
 
 #: cps/templates/tasks.html:8
 msgid "Background Tasks Overview"
-msgstr ""
+msgstr "Háttérfeladatok áttekintése"
 
 #: cps/templates/tasks.html:13 cps/templates/tasks.html:42
 #: cps/templates/tasks.html:65
@@ -6769,7 +6602,7 @@ msgstr "Feladat"
 
 #: cps/templates/tasks.html:16
 msgid "Status"
-msgstr "Állapot"
+msgstr "Státusz"
 
 #: cps/templates/tasks.html:17
 msgid "Progress"
@@ -6781,39 +6614,38 @@ msgstr "Futásidő"
 
 #: cps/templates/tasks.html:20
 msgid "Message"
-msgstr ""
+msgstr "Üzenet"
 
 #: cps/templates/tasks.html:22 cps/templates/tasks.html:46
 #: cps/templates/tasks.html:68
 msgid "Actions"
-msgstr ""
+msgstr "Műveletek"
 
 #: cps/templates/tasks.html:33
 msgid "Upcoming scheduled sends"
-msgstr ""
+msgstr "Közelgő ütemezett küldések"
 
 #: cps/templates/tasks.html:44 cps/templates/tasks.html:66
 msgid "Scheduled Time"
-msgstr ""
+msgstr "Ütemezett idő"
 
 #: cps/templates/tasks.html:45 cps/templates/tasks.html:67
-#, fuzzy
 msgid "State"
-msgstr "Forgatás"
+msgstr "Állapot"
 
 #: cps/templates/tasks.html:50
 msgid ""
-"Upcoming sends are persisted and will enqueue as tasks at the scheduled "
-"time. You can cancel a pending send before it runs."
+"Upcoming sends are persisted and will enqueue as tasks at the scheduled time. "
+"You can cancel a pending send before it runs."
 msgstr ""
 
 #: cps/templates/tasks.html:55
 msgid "Upcoming scheduled operations"
-msgstr ""
+msgstr "Közelgő ütemezett folyamatok"
 
 #: cps/templates/tasks.html:63
 msgid "Type"
-msgstr ""
+msgstr "Típus"
 
 #: cps/templates/tasks.html:72
 msgid ""
@@ -6828,32 +6660,28 @@ msgstr ""
 
 #: cps/templates/tasks.html:89
 msgid ""
-"If this is a scheduled task, it will be re-ran during the next scheduled "
-"time."
+"If this is a scheduled task, it will be re-ran during the next scheduled time."
 msgstr ""
 
 #: cps/templates/tasks.html:192
-#, fuzzy
 msgid "Scheduled item cancelled successfully"
-msgstr "Profilkép sikeresen frissítve."
+msgstr "Beütemezett feladat sikeresen visszavonva"
 
 #: cps/templates/tasks.html:197
 msgid "Error cancelling scheduled item"
-msgstr ""
+msgstr "Hiba ütemezett feladat visszavonása közben"
 
 #: cps/templates/user_edit.html:173
-#, fuzzy
 msgid "Your Profile"
-msgstr "Az e-mail címed"
+msgstr "Profilod"
 
 #: cps/templates/user_edit.html:173
-#, fuzzy
 msgid "User Settings"
-msgstr "Beállítások"
+msgstr "Felhasználó beállítások"
 
 #: cps/templates/user_edit.html:181
 msgid "Account Information"
-msgstr ""
+msgstr "Fiók információ"
 
 #: cps/templates/user_edit.html:190
 msgid ""
@@ -6865,14 +6693,12 @@ msgid "Reset user Password"
 msgstr "Felhasználó jelszavának alaphelyzetbe állítása"
 
 #: cps/templates/user_edit.html:212
-#, fuzzy
 msgid "eReader Configuration"
-msgstr "Szerver beállítások"
+msgstr "E-olvasó beállítások"
 
 #: cps/templates/user_edit.html:215
-#, fuzzy
 msgid "Send to eReader Email Address"
-msgstr "Kindle"
+msgstr "E-olvasóra küldés e-mail cím"
 
 #: cps/templates/user_edit.html:216
 msgid "Use comma to separate multiple addresses"
@@ -6913,12 +6739,11 @@ msgstr ""
 
 #: cps/templates/user_edit.html:249
 msgid "Language & Theme Preferences"
-msgstr ""
+msgstr "Nyelv és téma beállítások"
 
 #: cps/templates/user_edit.html:252
-#, fuzzy
 msgid "Interface Language"
-msgstr "Nyelvek kizárása"
+msgstr "Felhasználói felület nyelve"
 
 #: cps/templates/user_edit.html:261 cps/templates/user_edit.html:283
 msgid "Language of Books"
@@ -6926,172 +6751,177 @@ msgstr "Mutasd a könyveket a következő nyelvvel"
 
 #: cps/templates/user_edit.html:268 cps/templates/user_edit.html:290
 msgid "Filter the library to only show books in a specific language."
-msgstr ""
+msgstr "Szűrje a könyvtárat, hogy csak az adott nyelvű könyvek jelenjenek meg."
 
 #: cps/templates/user_edit.html:280
-#, fuzzy
 msgid "Book Language Filter"
-msgstr "Hiányzik a könyv érvényes nyelve"
+msgstr "Látható könyvek nyelve"
 
 #: cps/templates/user_edit.html:298
 msgid "OAuth & API Integrations"
-msgstr ""
+msgstr "OAuth és API integráció"
 
 #: cps/templates/user_edit.html:303
-#, fuzzy
 msgid "OAuth Settings"
-msgstr "Beállítások"
+msgstr "OAuth beállítások"
 
 #: cps/templates/user_edit.html:305
 msgid "Link"
-msgstr ""
+msgstr "Összekapcsolás"
 
 #: cps/templates/user_edit.html:307
 msgid "Unlink"
-msgstr ""
+msgstr "Szétkapcsolás"
 
 #: cps/templates/user_edit.html:315
 msgid "Hardcover API Token"
-msgstr ""
+msgstr "Hardcover API token"
 
 #: cps/templates/user_edit.html:317
 msgid "API token for Hardcover metadata provider integration."
-msgstr ""
+msgstr "API token Hardcover metaadat szolgáltató számára."
 
 #: cps/templates/user_edit.html:323
 msgid "Kobo Sync Token"
-msgstr ""
+msgstr "Kobo szinkronizáció token"
 
 #: cps/templates/user_edit.html:325
 msgid "Create/View"
-msgstr ""
+msgstr "Létrehozás/megtekintés"
 
 #: cps/templates/user_edit.html:329
 msgid "Force full kobo sync"
-msgstr ""
+msgstr "Erőltetett teljes Kobo szinkronizáció"
 
 #: cps/templates/user_edit.html:336
 msgid "Sync only books in selected shelves with Kobo"
 msgstr ""
+"Csak a kiválasztott polcokon lévő könyveket szinkronizálja Kobo eszközzel"
 
 #: cps/templates/user_edit.html:346
-#, fuzzy
 msgid "Sidebar Display Settings"
-msgstr "SMTP e-mail kiszolgáló beállítások"
+msgstr "Oldalsó sáv megjelenítési beállítások"
 
 #: cps/templates/user_edit.html:347
 msgid "Choose which sections to display in your sidebar navigation."
-msgstr ""
+msgstr "Válassza ki melyik elemek jelenjenek meg az oldalsávban."
 
 #: cps/templates/user_edit.html:372
 msgid "Add allowed/Denied Custom Column Values"
-msgstr ""
+msgstr "Engedélyezett/tiltott egyedi oszlop értékek megadása"
 
 #: cps/templates/user_edit.html:380
 msgid "OPDS Catalog Order"
-msgstr ""
+msgstr "OPDS katalógus rendezés"
 
 #: cps/templates/user_edit.html:381
 msgid ""
 "Reorder the OPDS root catalog by listing entry IDs in the order you want. "
 "Unknown IDs are ignored and missing entries are appended automatically."
 msgstr ""
+"Rendezze az OPDS gyökérkatalógust a bejegyzésazonosítók tetszőleges "
+"sorrendben aló felsorolásával. Az ismeretlen azonosítók nem lesznek "
+"figyelembe véve, a hiányzó bejegyzések automatikusan hozzáadódnak."
 
 #: cps/templates/user_edit.html:389
 msgid ""
-"Drag to reorder OPDS root entries. Missing entries are appended "
-"automatically."
+"Drag to reorder OPDS root entries. Missing entries are appended automatically."
 msgstr ""
+"Húzással rendezze az OPDS gyökérbejegyzéseket. A hiányzó elemek automatikusan "
+"hozzáadódnak."
 
 #: cps/templates/user_edit.html:398
 msgid "User Permissions"
-msgstr ""
+msgstr "Felhasználó engedélyek"
 
 #: cps/templates/user_edit.html:399
 msgid "Configure what actions this user is allowed to perform."
-msgstr ""
+msgstr "Állítsa be milyen műveleteket hajthat végre ez a felhasználó."
 
 #: cps/templates/user_edit.html:454
 msgid "Magic Shelves Order"
-msgstr ""
+msgstr "Varázspolc rendezés"
 
 #: cps/templates/user_edit.html:455
 msgid "Choose how your magic shelves are ordered in the sidebar."
-msgstr ""
+msgstr "Válassza ki a varázspolcok rendezését az oldalsávban."
 
 #: cps/templates/user_edit.html:459
 msgid "Order Mode"
-msgstr ""
+msgstr "Rendezési mód"
 
 #: cps/templates/user_edit.html:461
 msgid "Manual (drag to reorder)"
-msgstr ""
+msgstr "Kézi (húzza az átrendezéshez)"
 
 #: cps/templates/user_edit.html:462
 msgid "Name (A-Z)"
-msgstr ""
+msgstr "Név (A-Z)"
 
 #: cps/templates/user_edit.html:463
 msgid "Name (Z-A)"
-msgstr ""
+msgstr "Név (Z-A)"
 
 #: cps/templates/user_edit.html:464
 msgid "Book count (high to low)"
-msgstr ""
+msgstr "Könyvek száma (többtől az alacsonyabbig)"
 
 #: cps/templates/user_edit.html:465
 msgid "Book count (low to high)"
-msgstr ""
+msgstr "Könyvek száma (alacsonytól a többig)"
 
 #: cps/templates/user_edit.html:466
 msgid "Created (newest first)"
-msgstr ""
+msgstr "Létrehozva (legújabb elől)"
 
 #: cps/templates/user_edit.html:467
 msgid "Created (oldest first)"
-msgstr ""
+msgstr "Létrehozva (legrégebbi elől)"
 
 #: cps/templates/user_edit.html:468
-#, fuzzy
 msgid "Recently modified"
-msgstr "Olvasott könyvek"
+msgstr "Nemrég szerkesztett"
 
 #: cps/templates/user_edit.html:469
 msgid "Least recently modified"
-msgstr ""
+msgstr "Nemrég szerkesztett"
 
 #: cps/templates/user_edit.html:480
 msgid "Manual order is used only when the order mode is set to Manual."
 msgstr ""
+"Kézi rendezés csak akkor használatos amikor a rendezési mód kézire van "
+"állítva."
 
 #: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"
-msgstr ""
+msgstr "Varázspolc láthatóság"
 
 #: cps/templates/user_edit.html:487
 msgid ""
 "Uncheck shelves you want to hide from your sidebar. System shelves cannot be "
 "deleted, only hidden. Public shelves from other users can also be hidden."
 msgstr ""
+"Szedje ki a pipát azoktól a polcoktól amiket el kíván rejteni az oldalsávban. "
+"A rendszer polcok nem törölhetőek, csak elrejthetőek. Mások nyilvános polcai "
+"szintén elrejthetőek."
 
 #: cps/templates/user_edit.html:491
 msgid "Default System Shelves:"
-msgstr ""
+msgstr "Alapértelmezett rendszer polcok:"
 
 #: cps/templates/user_edit.html:515
-#, fuzzy
 msgid "Public Shelves:"
-msgstr "Polc szerkesztése"
+msgstr "Nyilvános polcok:"
 
 #: cps/templates/user_edit.html:540
 #, python-format
 msgid "%(visible)s of %(total)s default shelves visible"
-msgstr ""
+msgstr "%(visible)s alapértelmezett polc látható ennyiből: %(total)s"
 
 #: cps/templates/user_edit.html:544
 #, python-format
 msgid "%(visible)s of %(total)s public shelves visible"
-msgstr ""
+msgstr "%(visible)s nyilvános polc látható ennyiből: %(total)s"
 
 #: cps/templates/user_edit.html:558 cps/templates/user_table.html:170
 msgid "Delete User"
@@ -7099,120 +6929,107 @@ msgstr "A felhasználó törlése"
 
 #: cps/templates/user_edit.html:569
 msgid "Generate Kobo Auth URL"
-msgstr ""
+msgstr "Kobo bejelentkezési URL generálása"
 
 #: cps/templates/user_edit.html:631
 msgid "Visible"
-msgstr ""
+msgstr "Látható"
 
 #: cps/templates/user_table.html:80 cps/templates/user_table.html:103
 msgid "Select..."
-msgstr ""
+msgstr "Kiválasztás..."
 
 #: cps/templates/user_table.html:124
 msgid "Remove Selections"
-msgstr ""
+msgstr "Kiválasztottak törlése"
 
 #: cps/templates/user_table.html:131
-#, fuzzy
 msgid "Edit User"
-msgstr "Rendszergazda felhasználó"
+msgstr "Felhasználó szerkesztése"
 
 #: cps/templates/user_table.html:134
-#, fuzzy
 msgid "Enter Username"
-msgstr "Válassz egy felhasználónevet"
+msgstr "Felhasználónév bevitele"
 
 #: cps/templates/user_table.html:135
-#, fuzzy
 msgid "Enter Email"
-msgstr "Teszt e-mail"
+msgstr "E-mail bevitele"
 
 #: cps/templates/user_table.html:136
-#, fuzzy
 msgid "Enter eReader Email"
-msgstr "Kindle"
+msgstr "E-olvasó e-mail bevitele"
 
 #: cps/templates/user_table.html:136
-#, fuzzy
 msgid "eReader Email"
-msgstr "Teszt e-mail"
+msgstr "E-olvasó e-mail"
 
 #: cps/templates/user_table.html:137
-#, fuzzy
 msgid "Enter eReader Email Subject"
-msgstr "Kindle"
+msgstr "E-olvasó e-mail tárgyának bevitele"
 
 #: cps/templates/user_table.html:137
-#, fuzzy
 msgid "eReader Email Subject"
-msgstr "Teszt e-mail"
+msgstr "E-olvasó e-mail tárgya"
 
 #: cps/templates/user_table.html:138
-#, fuzzy
 msgid "Locale"
-msgstr "Méretezés"
+msgstr "Nyelv"
 
 #: cps/templates/user_table.html:139
-#, fuzzy
 msgid "Visible Book Languages"
-msgstr "Mutasd a könyveket a következő nyelvvel"
+msgstr "Látható könyv nyelv"
 
 #: cps/templates/user_table.html:140
 msgid "Edit Allowed Tags"
-msgstr ""
+msgstr "Engedélyezett címkék szerkesztése"
 
 #: cps/templates/user_table.html:140
-#, fuzzy
 msgid "Allowed Tags"
-msgstr "Feltöltés engedélyezése"
+msgstr "Engedélyezett címkék"
 
 #: cps/templates/user_table.html:141
 msgid "Edit Denied Tags"
-msgstr ""
+msgstr "Tiltott címkék szerkesztése"
 
 #: cps/templates/user_table.html:141
 msgid "Denied Tags"
-msgstr ""
+msgstr "Tiltott címkék"
 
 #: cps/templates/user_table.html:142
 msgid "Edit Allowed Column Values"
-msgstr ""
+msgstr "Engedélyezett oszlop értékek szerkesztése"
 
 #: cps/templates/user_table.html:142
 msgid "Allowed Column Values"
-msgstr ""
+msgstr "Engedélyezett oszlop értékek"
 
 #: cps/templates/user_table.html:143
 msgid "Edit Denied Column Values"
-msgstr ""
+msgstr "Tiltott oszlop értékek szerkesztése"
 
 #: cps/templates/user_table.html:143
 msgid "Denied Column Values"
-msgstr ""
+msgstr "Tiltott oszlop értékek"
 
 #: cps/templates/user_table.html:145
-#, fuzzy
 msgid "Change Password"
-msgstr "Jelszó változtatásának engedélyezése"
+msgstr "Jelszó változtatás"
 
 #: cps/templates/user_table.html:148
 msgid "View"
-msgstr ""
+msgstr "Megtekintés"
 
 #: cps/templates/user_table.html:151
-#, fuzzy
 msgid "Edit Public Shelves"
-msgstr "Polc szerkesztése"
+msgstr "Nyilvános polcok szerkesztése"
 
 #: cps/templates/user_table.html:153
 msgid "Sync selected Shelves with Kobo"
-msgstr ""
+msgstr "Kiválasztott polcok szinkronizációja Kobo eszközzel"
 
 #: cps/templates/user_table.html:157
-#, fuzzy
 msgid "Show Read/Unread Section"
-msgstr "Sorozat választó mutatása"
+msgstr "Olvasott/olvasatlan mutatása"
 
 #~ msgid "Standard Theme"
 #~ msgstr "Alapértelmezett téma"

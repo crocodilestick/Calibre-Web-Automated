@@ -91,6 +91,7 @@
     </script>
   </head>
   <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container-fluid">

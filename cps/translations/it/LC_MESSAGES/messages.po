@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-05 00:15+0100\n"
+"POT-Creation-Date: 2026-03-11 17:35+0000\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -1186,7 +1186,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
 #: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:151
+#: cps/templates/layout.html:152
 msgid "Upload done, processing, please wait..."
 msgstr "Caricamento terminato, elaborazione in corso..."
 
@@ -1735,8 +1735,8 @@ msgstr "Descrizione"
 msgid "{} Stars"
 msgstr "{} stelle"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/remotelogin.py:76 cps/templates/layout.html:135
+#: cps/templates/layout.html:177 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2187
 msgid "Login"
 msgstr "Accesso"
@@ -1907,8 +1907,8 @@ msgstr ""
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
-#: cps/templates/index.xml:12 cps/templates/layout.html:113
-#: cps/templates/layout.html:116 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:114
+#: cps/templates/layout.html:117 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Cerca"
 
@@ -1941,7 +1941,7 @@ msgstr ""
 "Errore nella ricerca delle colonne personalizzate. Per favore riavvia "
 "Calibre-Web"
 
-#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:124
+#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:125
 msgid "Advanced Search"
 msgstr "Ricerca avanzata"
 
@@ -2062,7 +2062,7 @@ msgstr ""
 "Errore nell'apertura dello scaffale. Lo scaffale non esiste o non è "
 "accessibile"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:162
+#: cps/tasks_status.py:37 cps/templates/layout.html:163
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Attività"
@@ -2228,7 +2228,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "Errore nell'eliminare lo scaffale"
 
-#: cps/templates/layout.html:313 cps/web.py:1153
+#: cps/templates/layout.html:314 cps/web.py:1153
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Crea uno scaffale"
@@ -2349,7 +2349,7 @@ msgstr "Successo! Libro accodato per l'invio agli indirizzi selezionati"
 msgid "Please wait one minute to register next user"
 msgstr "Attendi un minuto per registrare il prossimo utente"
 
-#: cps/templates/layout.html:135 cps/templates/layout.html:177
+#: cps/templates/layout.html:136 cps/templates/layout.html:178
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2066
 #: cps/web.py:2070 cps/web.py:2075 cps/web.py:2079 cps/web.py:2085
 #: cps/web.py:2110 cps/web.py:2114 cps/web.py:2127 cps/web.py:2130
@@ -2641,7 +2641,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "Cancellazione della cache delle miniature delle copertine"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:154 cps/templates/user_table.html:146
+#: cps/templates/layout.html:155 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "Caricamento"
 
@@ -2669,7 +2669,7 @@ msgstr "Invia all'e-mail dell'eReader"
 msgid "Send to eReader Subject"
 msgstr "Invia all'eReader"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:165
+#: cps/templates/admin.html:19 cps/templates/layout.html:166
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "Amministratore"
@@ -3046,14 +3046,14 @@ msgid "Convert book"
 msgstr "Converti libro"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:151 cps/templates/layout.html:270
+#: cps/templates/layout.html:152 cps/templates/layout.html:271
 msgid "Uploading..."
 msgstr "Caricamento in corso..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
-#: cps/templates/layout.html:151 cps/templates/layout.html:360
-#: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:361
+#: cps/templates/layout.html:426 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Chiudi"
@@ -3067,7 +3067,7 @@ msgstr "Chiudi"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:151
+#: cps/templates/layout.html:152
 msgid "Error"
 msgstr "Errore"
 
@@ -3426,9 +3426,8 @@ msgid ""
 "        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
 "wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
-"CWA è configurato in modo tale che il database Calibre (file "
-"<code>metadata.db</code>) sia sempre presente in <code>/calibre-library</"
-"code>.\n"
+"CWA è configurato in modo tale che il database Calibre (file <code>metadata."
+"db</code>) sia sempre presente in <code>/calibre-library</code>.\n"
 "All'avvio, CWA cerca automaticamente in qualsiasi directory associata a "
 "<code>/calibre-library</code> nel file docker-compose i file Calibre "
 "Libraries/metadata.db esistenti.\n"
@@ -5441,7 +5440,7 @@ msgstr "Aggiungi allo scaffale"
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
 #: cps/templates/detail.html:765 cps/templates/detail.html:1251
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/layout.html:302 cps/templates/layout.html:311
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -5810,7 +5809,7 @@ msgstr "Inserisci nome del dominio"
 msgid "Denied Domains (Blacklist)"
 msgstr "Domini non consentiti (lista nera)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:344
+#: cps/templates/feed.xml:22 cps/templates/layout.html:345
 msgid "Next"
 msgstr "Successivo"
 
@@ -6093,96 +6092,96 @@ msgstr ""
 msgid "Home"
 msgstr "Home"
 
-#: cps/templates/layout.html:99
+#: cps/templates/layout.html:100
 msgid "Toggle Navigation"
 msgstr "Attiva/disattiva navigazione"
 
-#: cps/templates/layout.html:114
+#: cps/templates/layout.html:115
 msgid "Search Library"
 msgstr "Cerca nella biblioteca"
 
-#: cps/templates/layout.html:132 cps/templates/layout.html:169
+#: cps/templates/layout.html:133 cps/templates/layout.html:170
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "Account"
 
-#: cps/templates/layout.html:138 cps/templates/layout.html:171
+#: cps/templates/layout.html:139 cps/templates/layout.html:172
 msgid "Logout"
 msgstr "Disconnetti"
 
-#: cps/templates/layout.html:146
+#: cps/templates/layout.html:147
 msgid "Switch Theme"
 msgstr "Cambia tema"
 
-#: cps/templates/layout.html:165 cps/templates/read.html:78
+#: cps/templates/layout.html:166 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: cps/templates/layout.html:167
+#: cps/templates/layout.html:168
 msgid "Refresh Library"
 msgstr "Aggiorna la libreria"
 
-#: cps/templates/layout.html:208
+#: cps/templates/layout.html:209
 msgid "See Changelog"
 msgstr "Vedi Changelog"
 
-#: cps/templates/layout.html:228
+#: cps/templates/layout.html:229
 msgid "Contribute here!"
 msgstr "Clicca per contribuire!"
 
-#: cps/templates/layout.html:271
+#: cps/templates/layout.html:272
 msgid "Please do not refresh the page"
 msgstr "Per favore non aggiornare la pagina"
 
-#: cps/templates/layout.html:281
+#: cps/templates/layout.html:282
 msgid "Browse"
 msgstr "Naviga"
 
-#: cps/templates/layout.html:298 cps/templates/search_form.html:88
+#: cps/templates/layout.html:299 cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Scaffali"
 
-#: cps/templates/layout.html:304
+#: cps/templates/layout.html:305
 #, fuzzy
 msgid "Create Shelf"
 msgstr "Crea uno scaffale"
 
-#: cps/templates/layout.html:308
+#: cps/templates/layout.html:309
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:317 cps/templates/stats.html:3
+#: cps/templates/layout.html:318 cps/templates/stats.html:3
 msgid "About"
 msgstr "Informazioni su"
 
-#: cps/templates/layout.html:329
+#: cps/templates/layout.html:330
 msgid "Previous"
 msgstr "Precedente"
 
-#: cps/templates/layout.html:356
+#: cps/templates/layout.html:357
 msgid "Book Details"
 msgstr "Dettagli del libro"
 
-#: cps/templates/layout.html:426
+#: cps/templates/layout.html:427
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Libro duplicato"
 
-#: cps/templates/layout.html:427
+#: cps/templates/layout.html:428
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:432
+#: cps/templates/layout.html:433
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Nessun libro duplicato trovato"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:441
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:443
+#: cps/templates/layout.html:444
 #, fuzzy
 msgid "View & Resolve Duplicates"
 msgstr "Seleziona i duplicati"

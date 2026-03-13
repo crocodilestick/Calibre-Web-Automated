@@ -308,8 +308,11 @@ $(document).ready(function() {
     
     // Success modal OK button handler
     $('#success_modal_ok').click(function() {
-        // Reload the page to refresh the duplicate list
-        window.location.reload();
+        // Add small delay before reload to allow background cleanup to complete
+        // This prevents race conditions with duplicate cache invalidation
+        setTimeout(function() {
+            window.location.reload();
+        }, 800);
     });
     
     // Dismiss/Undismiss duplicate group handlers

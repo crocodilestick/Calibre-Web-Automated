@@ -8,10 +8,9 @@
 import json
 import time
 from datetime import datetime
-from os import getenv
 from typing import List, Optional
 
-from cps import config, db, logger, ub
+from cps import config, db, logger, ub, helper
 from cps.services.worker import CalibreTask, STAT_FAIL, STAT_FINISH_SUCCESS, STAT_CANCELLED, STAT_ENDED
 from flask_babel import lazy_gettext as N_
 from sqlalchemy import not_
@@ -178,7 +177,7 @@ class TaskAutoHardcoverID(CalibreTask):
         """Get Hardcover token from environment or config"""
         token = (
             getattr(config, "config_hardcover_token", None)
-            or getenv("HARDCOVER_TOKEN")
+            or helper.get_secret("HARDCOVER_TOKEN")
         )
         return token
 

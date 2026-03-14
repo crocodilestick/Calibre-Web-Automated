@@ -2990,7 +2990,7 @@ msgstr "Serveur Discord CWA"
 
 #: cps/templates/admin.html:222
 msgid "Run Hardcover Auto-Fetch"
-msgstr "Exécuter la récupération automatique des livres reliés"
+msgstr "Exécuter la récupération automatique des IDs Hardcover"
 
 #: cps/templates/admin.html:227
 msgid "Administration&nbsp;&nbsp;🚀"
@@ -3268,7 +3268,7 @@ msgstr "Non"
 
 #: cps/templates/book_edit.html:228
 msgid "Hardcover Sync Blacklist"
-msgstr "Livre relié Sync Liste noire"
+msgstr "Liste noire de synchronisation Hardcover"
 
 #: cps/templates/book_edit.html:232
 msgid "Blacklist annotations from syncing to Hardcover"
@@ -4990,7 +4990,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:557
 msgid "Hardcover Token Required"
-msgstr "Jeton relié requis"
+msgstr "Jeton Hardcover requis"
 
 #: cps/templates/cwa_settings.html:558
 msgid ""
@@ -5005,7 +5005,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:569
 msgid "Enable Hardcover Auto-Fetch"
-msgstr "Activer la récupération automatique des livres reliés"
+msgstr "Activer la récupération automatique Hardcover"
 
 #: cps/templates/cwa_settings.html:571
 msgid ""
@@ -5086,8 +5086,8 @@ msgid ""
 "at any time. Check the CWA Stats page to see progress and review queued "
 "matches that need manual approval."
 msgstr ""
-"Vous pouvez déclencher manuellement la tâche de récupération automatique des "
-"livres reliés à partir du panneau d'administration à tout moment. Consultez "
+"Vous pouvez déclencher manuellement la tâche de récupération automatique depuis "
+"Hardcover à partir du panneau d'administration à tout moment. Consultez "
 "la page Statistiques CWA pour voir la progression et examiner les "
 "correspondances en attente qui nécessitent une approbation manuelle."
 
@@ -6188,7 +6188,7 @@ msgstr "Raison de la correspondance"
 #: cps/templates/hardcover_review_matches.html:160
 #, fuzzy
 msgid "View on Hardcover"
-msgstr "Voir la version reliée"
+msgstr "Voir sur Hardcover"
 
 #: cps/templates/hardcover_review_matches.html:168
 msgid "Select This Match"

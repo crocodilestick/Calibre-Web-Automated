@@ -82,4 +82,7 @@ class TestMetadataProviderSettings:
     def test_get_effective_amazon_region_falls_back_to_default(self) -> None:
         user = SimpleNamespace(amazon_region="")
 
-        assert get_effective_amazon_region(user, config_amazon_region="not-real") == constants.AMAZON_REGIONS[0]
+        assert (
+            get_effective_amazon_region(user, config_amazon_region="not-real")
+            == constants.AMAZON_REGIONS[0]
+        )

@@ -28,19 +28,23 @@ def get_book_checksums(db_path, book_id=None):
     """Helper to retrieve checksums from database."""
     conn = sqlite3.connect(db_path, timeout=30)
     cur = conn.cursor()
-
-    if book_id:
-        results = cur.execute("""
-            SELECT book, format, checksum FROM book_format_checksums
-            WHERE book = ?
-        """, (book_id,)).fetchall()
-    else:
-        results = cur.execute("""
-            SELECT book, format, checksum FROM book_format_checksums
-        """).fetchall()
-
-    conn.close()
-    return results
+    try:
+        if book_id:
+            results = cur.execute("""
+                SELECT book, format, checksum FROM book_format_checksums
+                WHERE book = ?
+            """, (book_id,)).fetchall()
+        else:
+            results = cur.execute("""
+                SELECT book, format, checksum FROM book_format_checksums
+            """).fetchall()
+        return results
+    except sqlite3.OperationalError as e:
+        if "no such table: book_format_checksums" in str(e).lower():
+            pytest.skip("KOReader sync disabled; checksum table not initialized")
+        raise
+    finally:
+        conn.close()
 
 
 def get_latest_book_id(db_path):

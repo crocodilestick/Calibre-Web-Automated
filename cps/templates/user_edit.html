@@ -148,6 +148,16 @@
     color: #c5c5c5;
     font-size: 13px;
   }
+
+  .magic-shelf-icon {
+    margin-right: 8px;
+    font-size: 16px;
+  }
+
+  .order-list-disabled .opds-order-item {
+    opacity: 0.6;
+    cursor: default;
+  }
 </style>
 {% endblock %}
 {% block body %}
@@ -261,8 +271,7 @@
       <div class="form-group">
         <label for="theme">{{ _('Theme') }}</label>
         <select name="theme" id="theme" class="form-control">
-          <option value="0" {% if content.theme == 0 %}selected{% endif %}>Standard</option>
-          <option value="1" {% if content.theme == 1 %}selected{% endif %}>caliBlur (Dark)</option>
+          <option value="1" selected>caliBlur (Dark)</option>
         </select>
       </div>
     </div>
@@ -442,6 +451,38 @@
     <!-- Magic Shelves Visibility Card -->
     {% if not content.role_anonymous() and not new_user %}
     <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <h4 class="settings-section-header">{{_('Magic Shelves Order')}}</h4>
+      <p class="settings-explanation">{{_('Choose how your magic shelves are ordered in the sidebar.')}}</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-top: 20px;">
+        <div>
+          <label for="magic_shelf_order_mode" class="settings-explanation" style="display: block; margin-bottom: 8px;">{{_('Order Mode')}}</label>
+          <select name="magic_shelf_order_mode" id="magic_shelf_order_mode" class="form-control">
+            <option value="manual">{{_('Manual (drag to reorder)')}}</option>
+            <option value="name_asc">{{_('Name (A-Z)')}}</option>
+            <option value="name_desc">{{_('Name (Z-A)')}}</option>
+            <option value="book_count_desc">{{_('Book count (high to low)')}}</option>
+            <option value="book_count_asc">{{_('Book count (low to high)')}}</option>
+            <option value="created_desc">{{_('Created (newest first)')}}</option>
+            <option value="created_asc">{{_('Created (oldest first)')}}</option>
+            <option value="modified_desc">{{_('Recently modified')}}</option>
+            <option value="modified_asc">{{_('Least recently modified')}}</option>
+          </select>
+        </div>
+      </div>
+
+      <input type="hidden" name="magic_shelf_order" id="magic_shelf_order" value="{{ magic_shelf_order_string }}">
+      <div id="magic_shelf_order_container" style="margin-top: 1rem;">
+        <ul id="magic_shelf_order_list" style="list-style: none; padding: 0; margin: 0;"></ul>
+      </div>
+      <div class="cwa-settings-tip" style="margin-top: 1.5rem;">
+        <small class="settings-explanation">
+          💡 <strong>{{_('Tip')}}:</strong> {{_('Manual order is used only when the order mode is set to Manual.') }}
+        </small>
+      </div>
+    </div>
+
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
       <h4 class="settings-section-header">{{_('Magic Shelves Visibility')}}</h4>
       <p class="settings-explanation">{{_('Uncheck shelves you want to hide from your sidebar. System shelves cannot be deleted, only hidden. Public shelves from other users can also be hidden.')}}</p>
       
@@ -540,6 +581,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const opdsLabels = {{ opds_root_labels | tojson }};
   const opdsOrderRaw = "{{ opds_root_order_string }}";
   const opdsHiddenRaw = "{{ opds_hidden_entries_string }}";
+  const magicShelfLabels = {{ magic_shelf_order_labels | tojson }};
+  const magicShelfOrderRaw = "{{ magic_shelf_order_string }}";
+  const magicShelfOrderMode = "{{ magic_shelf_order_mode }}";
 
   function parseOrder(raw) {
     if (!raw) return [];
@@ -663,9 +707,102 @@ document.addEventListener('DOMContentLoaded', function() {
     hiddenEntriesInput.value = hidden.join(',');
   }
 
+  function renderMagicShelfOrderList() {
+    const container = document.getElementById('magic_shelf_order_list');
+    if (!container) return;
+
+    const order = buildOrderList(magicShelfLabels, parseOrder(magicShelfOrderRaw));
+    container.innerHTML = '';
+
+    order.forEach(key => {
+      const item = magicShelfLabels.find(entry => entry.key === key);
+      const label = item?.label || key;
+      const icon = item?.icon || '📚';
+      const li = document.createElement('li');
+      li.className = 'opds-order-item magic-shelf-order-item';
+      li.dataset.key = key;
+      li.innerHTML = `
+        <span class="opds-order-drag-handle">☰</span>
+        <span class="magic-shelf-icon">${icon}</span>
+        <span class="opds-order-label">${label}</span>
+      `;
+      container.appendChild(li);
+    });
+
+    setupMagicShelfDragDrop();
+    updateMagicShelfHiddenInput();
+    updateMagicShelfOrderModeState();
+  }
+
+  function setupMagicShelfDragDrop() {
+    let dragged = null;
+    let isDragging = false;
+
+    const items = document.querySelectorAll('.magic-shelf-order-item');
+    items.forEach(item => {
+      item.addEventListener('mousedown', function(e) {
+        const orderMode = document.getElementById('magic_shelf_order_mode')?.value;
+        if (orderMode && orderMode !== 'manual') return;
+        isDragging = true;
+        dragged = this;
+        this.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging || !dragged) return;
+      const container = document.getElementById('magic_shelf_order_list');
+      const afterElement = getOpdsAfterElement(container, e.clientY);
+      if (afterElement == null) {
+        container.appendChild(dragged);
+      } else {
+        container.insertBefore(dragged, afterElement);
+      }
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      if (dragged) {
+        dragged.classList.remove('dragging');
+        dragged = null;
+      }
+      document.body.style.userSelect = '';
+      updateMagicShelfHiddenInput();
+    });
+  }
+
+  function updateMagicShelfHiddenInput() {
+    const container = document.getElementById('magic_shelf_order_list');
+    const hiddenInput = document.getElementById('magic_shelf_order');
+    if (!container || !hiddenInput) return;
+    const items = container.querySelectorAll('.magic-shelf-order-item');
+    const order = Array.from(items).map(item => item.dataset.key);
+    hiddenInput.value = order.join(',');
+  }
+
+  function updateMagicShelfOrderModeState() {
+    const container = document.getElementById('magic_shelf_order_container');
+    const modeSelect = document.getElementById('magic_shelf_order_mode');
+    if (!container || !modeSelect) return;
+    const isManual = modeSelect.value === 'manual';
+    container.classList.toggle('order-list-disabled', !isManual);
+  }
+
+  const magicShelfModeSelect = document.getElementById('magic_shelf_order_mode');
+  if (magicShelfModeSelect) {
+    magicShelfModeSelect.value = magicShelfOrderMode || 'name_asc';
+    magicShelfModeSelect.addEventListener('change', updateMagicShelfOrderModeState);
+  }
+
   const form = document.querySelector('form[role="form"]');
   if (form) {
-    form.addEventListener('submit', updateOpdsHiddenInput);
+    form.addEventListener('submit', function() {
+      updateOpdsHiddenInput();
+      updateMagicShelfHiddenInput();
+    });
   }
 
   document.addEventListener('change', function(e) {
@@ -675,6 +812,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   renderOpdsOrderList();
+  renderMagicShelfOrderList();
 });
 </script>
 

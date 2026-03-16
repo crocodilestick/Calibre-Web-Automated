@@ -204,14 +204,20 @@ class Updater(threading.Thread):
         new_permissions = os.stat(root_dst_dir)
         log.debug('Performing Update on OS-System: %s', sys.platform)
         change_permissions = not (sys.platform == "win32" or sys.platform == "darwin")
-        # Skip permission changes entirely in network share mode
+        # Only skip permission changes for network-share paths
         try:
             nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
-            if nsm:
-                change_permissions = False
-                log.debug('NETWORK_SHARE_MODE=true detected; skipping chown operations during update')
         except Exception:
-            pass
+            nsm = False
+
+        def should_chown(path):
+            if not nsm:
+                return True
+            return not (
+                path == "/config" or path.startswith("/config/") or
+                path == "/calibre-library" or path.startswith("/calibre-library/") or
+                path == "/cwa-book-ingest" or path.startswith("/cwa-book-ingest/")
+            )
         for src_dir, __, files in os.walk(root_src_dir):
             dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
             if not os.path.exists(dst_dir):
@@ -220,7 +226,7 @@ class Updater(threading.Thread):
                     log.debug('Create directory: {}'.format(dst_dir))
                 except OSError as e:
                     log.error('Failed creating folder: {} with error {}'.format(dst_dir, e))
-                if change_permissions:
+                if change_permissions and should_chown(dst_dir):
                     try:
                         os.chown(dst_dir, new_permissions.st_uid, new_permissions.st_gid)
                     except OSError as e:
@@ -232,7 +238,7 @@ class Updater(threading.Thread):
                 src_file = os.path.join(src_dir, file_)
                 dst_file = os.path.join(dst_dir, file_)
                 if os.path.exists(dst_file):
-                    if change_permissions:
+                    if change_permissions and should_chown(dst_file):
                         permission = os.stat(dst_file)
                     try:
                         os.remove(dst_file)
@@ -240,14 +246,14 @@ class Updater(threading.Thread):
                     except OSError as e:
                         log.error('Failed removing file: {} with error {}'.format(dst_file, e))
                 else:
-                    if change_permissions:
+                    if change_permissions and should_chown(dst_file):
                         permission = new_permissions
                 try:
                     shutil.move(src_file, dst_dir)
                     log.debug('Move File %s to %s', src_file, dst_dir)
                 except OSError as ex:
                     log.error('Failed moving file from {} to {} with error {}'.format(src_file, dst_dir, ex))
-                if change_permissions:
+                if change_permissions and should_chown(dst_file):
                     try:
                         os.chown(dst_file, permission.st_uid, permission.st_gid)
                     except OSError as e:

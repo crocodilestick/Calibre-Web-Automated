@@ -107,6 +107,16 @@
 <div class="discover">
   <h2>{{title}}</h2>
 
+  {% if not kosync_enabled %}
+  <div class="kosync-warning" style="margin-top: 2rem; max-width: 100rem; margin-inline: auto;">
+    <strong>{{_('KOReader Sync is disabled.')}}</strong>
+    {{_('Enable it in CWA Settings to activate the /kosync endpoints and checksum generation.')}}
+    <div style="margin-top: 1rem;">
+      <a class="btn btn-default" href="{{ url_for('cwa_settings.set_cwa_settings') }}">{{_('Open CWA Settings')}}</a>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="kosync-container">
     <div class="kosync-section">
       <h3 class="kosync-heading">📱&nbsp;&nbsp;&nbsp;Get the CWA KOReader Sync Plugin</h3>
@@ -120,9 +130,15 @@
       </div>
 
       <div class="text-center">
+        {% if kosync_enabled %}
         <a href="{{ url_for('static', filename='koplugin.zip') }}" class="kosync-download-btn">
           📥 Download CWA Sync Plugin
         </a>
+        {% else %}
+        <div class="kosync-warning" style="margin-top: 1rem;">
+          {{_('Download is available after enabling KOReader Sync in CWA Settings.')}}
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>

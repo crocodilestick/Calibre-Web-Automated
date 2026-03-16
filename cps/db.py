@@ -519,7 +519,10 @@ class AlchemyEncoder(json.JSONEncoder):
                         # ele = None
                         for ele in data:
                             if hasattr(ele, 'value'):       # converter for custom_column values
-                                el.append(str(ele.value))
+                                if isinstance(ele.value, datetime):
+                                    el.append(ele.value.date().isoformat())
+                                else:
+                                    el.append(str(ele.value))
                             elif ele.get:
                                 el.append(ele.get())
                             else:
@@ -824,7 +827,12 @@ class CalibreDB:
 
             # Ensure progress syncing tables exist in metadata.db (book checksums)
             from .progress_syncing.models import ensure_calibre_db_tables
-            if db_writable and not os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on'):
+            from .progress_syncing.settings import is_koreader_sync_enabled
+            if (
+                db_writable
+                and not os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+                and is_koreader_sync_enabled()
+            ):
                 ensure_calibre_db_tables(conn)
 
             cls._init = True

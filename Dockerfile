@@ -20,7 +20,7 @@
 # ==========================================================================
 # STAGE 1: Dependencies - Install system packages and Python dependencies
 # ==========================================================================
-ARG CALIBRE_RELEASE=9.0.0
+ARG CALIBRE_RELEASE=9.1.0
 ARG KEPUBIFY_RELEASE=v4.0.4
 
 FROM ghcr.io/linuxserver/baseimage-ubuntu:noble AS dependencies

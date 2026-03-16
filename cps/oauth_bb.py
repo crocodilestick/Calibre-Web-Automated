@@ -377,11 +377,8 @@ def register_user_from_generic_oauth(token=None):
         user.allowed_column_value = getattr(config, 'config_allowed_column_value', '')
         user.denied_column_value = getattr(config, 'config_denied_column_value', '')
         
-        # Set default theme (use configured theme, fallback to caliBlur=1)
-        try:
-            user.theme = getattr(config, 'config_theme', 1)
-        except Exception:
-            user.theme = 1
+        # Force dark theme (light theme deprecated)
+        user.theme = 1
             
         # Kobo sync setting defaults to 0 (disabled) for new users
         user.kobo_only_shelves_sync = 0

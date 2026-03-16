@@ -13,7 +13,10 @@
     $.support.xhrFileUpload = !!(window.FileReader && window.ProgressEvent);
     $.support.xhrFormData = !!window.FormData;
 
-    if (!$.support.xhrFileUpload || !$.support.xhrFormData) {
+    var ua = (navigator && navigator.userAgent) ? navigator.userAgent : "";
+    var isSafari = /safari/i.test(ua) && !/chrome|chromium|crios|android/i.test(ua);
+
+    if (!$.support.xhrFileUpload || !$.support.xhrFormData || isSafari) {
         // skip decorating form
         return;
     }

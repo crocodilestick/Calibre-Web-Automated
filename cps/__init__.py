@@ -336,7 +336,7 @@ def create_app():
                 
                 g.magic_shelves_access = filtered_shelves
                 log.debug(f"Filtered to {len(filtered_shelves)} visible magic shelves for user {current_user.id}")
-                
+
                 # Magic Shelf Count Caching
                 if 'magic_shelf_counts' not in session:
                     session['magic_shelf_counts'] = {}
@@ -360,6 +360,11 @@ def create_app():
                 
                 if cache_updated:
                     session.modified = True
+
+                try:
+                    magic_shelf.sort_magic_shelves_for_user(g.magic_shelves_access, current_user)
+                except Exception as e:
+                    log.warning(f"Failed to sort magic shelves for user {current_user.id}: {e}")
             except Exception as e:
                 log.error(f"Error populating magic shelves for user {current_user.id}: {str(e)}", exc_info=True)
                 g.magic_shelves_access = []

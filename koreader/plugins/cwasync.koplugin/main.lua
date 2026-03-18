@@ -760,7 +760,7 @@ function CWASync:getProgress(ensure_networking, interactive)
 
             -- Some older KOReader Spore versions can return the raw JSON string
             -- rather than a Lua table as the body.
-            if type(body) == "string" then
+            if type(body) == "string" and body:find("^(%s*){") ~= nil then
                 logger.dbg("CWASync: attempting to decode body payload as json string")
                 local decoded_ok, decoded_body = pcall(function()
                     return Json.decode(body)

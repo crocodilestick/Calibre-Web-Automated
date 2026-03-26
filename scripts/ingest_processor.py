@@ -700,7 +700,7 @@ class NewBookProcessor:
 
 
 
-    def add_book_to_library(self, book_path:str, text: bool=True, format: str="text" ) -> None:
+    def add_book_to_library(self, book_path:str, text: bool=True, format: str="text" ) -> bool:
         # If kindle-epub-fixer is on, run it first and import the *fixed* file.
         if self.target_format == "epub" and self.is_kindle_epub_fixer:
             fixed_epub_path = Path(self.tmp_conversion_dir) / os.path.basename(book_path)
@@ -714,7 +714,7 @@ class NewBookProcessor:
             except OSError as e:
                 if e.errno == 36: # Filename too long
                     print(f"[ingest-processor] Skipping file due to OS path length error: {book_path}", flush=True)
-                    return
+                    return False
                 else:
                     print(f"[ingest-processor] An error occurred while checking the fixed EPUB path on {book_path}:\n{e}", flush=True)
                     raise
@@ -734,7 +734,7 @@ class NewBookProcessor:
         if not source_path.exists() or source_path.stat().st_size == 0:
             print(f"[ingest-processor] ERROR: Import file is missing or empty, skipping: {book_path}", flush=True)
             self.backup(self.filepath, backup_type="failed") # Backup original file
-            return
+            return False
 
         # Stage file for import
         staged_path = Path(self.staging_dir) / source_path.name
@@ -743,7 +743,7 @@ class NewBookProcessor:
         except Exception as e:
             print(f"[ingest-processor] ERROR: Failed to stage file for import: {e}", flush=True)
             self.backup(self.filepath, backup_type="failed")
-            return
+            return False
 
         try:
             if text:
@@ -862,11 +862,14 @@ class NewBookProcessor:
                 except Exception as e:
                     print(f"[ingest-processor] WARN: Failed to adjust timestamps after overwrite import: {e}", flush=True)
 
+            return True
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {staged_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
             self.backup(str(staged_path), backup_type="failed")
+            return False
         except Exception as e:
             print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
+            return False
         finally:
             if staged_path.exists():
                 os.remove(staged_path)
@@ -1268,6 +1271,7 @@ def main(filepath=None):
 
     nbp = None
     skip_delete = False
+    import_successful = None
     try:
         ##############################################################################################
         # Truncates the filename if it is too long
@@ -1346,7 +1350,8 @@ def main(filepath=None):
                         print(f"[ingest-processor] WARN: Failed to handle manifest cleanup: {e}", flush=True)
                     
                     nbp.set_library_permissions()
-                    nbp.delete_current_file()
+                    if success:
+                        nbp.delete_current_file()
                     return
         except Exception as e:
             print(f"[ingest-processor] Error processing manifest file: {e}", flush=True)
@@ -1363,16 +1368,16 @@ def main(filepath=None):
 
         if nbp.is_target_format: # File can just be imported
             print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...", flush=True)
-            nbp.add_book_to_library(filepath)
+            import_successful = nbp.add_book_to_library(filepath)
         elif nbp.is_supported_audiobook():
             print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, is audiobook, importing now...", flush=True)
-            nbp.add_book_to_library(filepath, False, Path(nbp.filename).suffix)
+            import_successful = nbp.add_book_to_library(filepath, False, Path(nbp.filename).suffix)
         else:
             if nbp.auto_convert_on and nbp.can_convert: # File can be converted to target format and Auto-Converter is on
 
                 if nbp.input_format in nbp.convert_ignored_formats: # File could be converted & the converter is activated but the user has specified files of this format should not be converted
                     print(f"\n[ingest-processor]: {nbp.filename} not in target format but user has told CWA not to convert this format so importing the file anyway...", flush=True)
-                    nbp.add_book_to_library(filepath)
+                    import_successful = nbp.add_book_to_library(filepath)
                     convert_successful = False
                 elif nbp.target_format == "kepub": # File is not in the convert ignore list and target is kepub, so we start the kepub conversion process
                     convert_successful, converted_filepath = nbp.convert_to_kepub()
@@ -1380,7 +1385,9 @@ def main(filepath=None):
                     convert_successful, converted_filepath = nbp.convert_book()
 
                 if convert_successful: # If previous conversion process was successful, remove tmp files and import into library
-                    nbp.add_book_to_library(converted_filepath) # type: ignore
+                    import_successful = nbp.add_book_to_library(converted_filepath) # type: ignore
+                else:
+                    import_successful = False
 
                     # If the original format should be retained, also add it as an additional format
                     if nbp.input_format in nbp.convert_retained_formats and nbp.input_format not in nbp.ingest_ignored_formats:
@@ -1409,9 +1416,10 @@ def main(filepath=None):
 
             elif nbp.can_convert and not nbp.auto_convert_on: # Books not in target format but Auto-Converter is off so files are imported anyway
                 print(f"\n[ingest-processor]: {nbp.filename} not in target format but CWA Auto-Convert is deactivated so importing the file anyway...", flush=True)
-                nbp.add_book_to_library(filepath)
+                import_successful = nbp.add_book_to_library(filepath)
             else:
                 print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {nbp.input_format} is currently unsupported / is not a known ebook format.", flush=True)
+                import_successful = False
 
     except Exception as e:
         print(f"[ingest-processor] Unexpected error during processing: {e}", flush=True)
@@ -1427,7 +1435,11 @@ def main(filepath=None):
             try:
                 if skip_delete:
                     print(f"[ingest-processor] Skipping delete for ignored/temporary file: {nbp.filename}", flush=True)
-                else:
+                elif import_successful is False:
+                    print(f"[ingest-processor] Import failed for {nbp.filename}, moving to failed folder to prevent re-processing", flush=True)
+                    nbp.backup(nbp.filepath, backup_type="failed")
+                    nbp.delete_current_file()
+                elif import_successful:
                     nbp.delete_current_file()
             except Exception as e:
                 print(f"[ingest-processor] Error deleting current file during cleanup: {e}", flush=True)
@@ -1443,5 +1455,9 @@ def main(filepath=None):
             except Exception:
                 pass  # Ignore errors in cleanup
 
+    return import_successful
+
 if __name__ == "__main__":
-    main()
+    result = main()
+    if result is False:
+        sys.exit(1)

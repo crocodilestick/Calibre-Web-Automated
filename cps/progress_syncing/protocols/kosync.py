@@ -43,7 +43,7 @@ from typing import Dict, Optional, Any, Tuple
 from flask import Blueprint, request, jsonify
 from flask_babel import gettext as _
 from werkzeug.security import check_password_hash
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from sqlalchemy.exc import SQLAlchemyError
 
 from ... import logger, ub, csrf, config, constants, services, usermanagement
@@ -190,7 +190,7 @@ def authenticate_user() -> Optional[ub.User]:
         if login_result:
             log.info(f"authenticate_user: Successfully authenticated user via LDAP: {user.name}")
             return user
-        
+
         # Log LDAP failure but continue to local check (fallback)
         # We use debug level here because failure is expected if the user is using a local password
         if error:
@@ -431,6 +431,32 @@ def update_book_read_status(user_id: int, book_id: int, percentage: float) -> No
     ub.session.merge(book_read)
 
 
+def get_progress_record(user_id, document_checksum, book_id) -> KOSyncProgress:
+    """
+    Look up and return the KOSyncProgress record associated with a user and document identifier(s).
+
+    Behavior:
+        Returns only the most recently updated record for the given criteria.
+        Should still work with a document_checksum when no book_id is provided, and vice versa.
+
+    Args:
+        user_id: The ID of the user
+        book_id: The ID of the book in the Calibre library
+        document_checksum: The checksum of the document sought
+    """
+    progress_record = ub.session.query(KOSyncProgress).filter(
+        KOSyncProgress.user_id == user_id,
+        KOSyncProgress.document.in_((book_id, document_checksum))
+    ).order_by(
+        desc(KOSyncProgress.timestamp)
+    ).first()
+
+    if not progress_record:
+        log.debug(f"No progress record found for user: {user_id}, document_checksum: {document_checksum}, book_id: {book_id}")
+    log.debug(f"Progress found: {progress_record}")
+    return progress_record
+
+
 ################################################################################
 # API Endpoints
 ################################################################################
@@ -522,6 +548,8 @@ def get_progress(document: str):
         Percentage is returned as decimal (0.4567 = 45.67%) as expected by KOReader.
         Internally stored as percentage (0-100) in database.
     """
+    endpoint = f"GET /kosync/syncs/progress/{document}"
+    log.debug(endpoint)
     try:
         blocked = _require_kosync_enabled()
         if blocked:
@@ -534,21 +562,21 @@ def get_progress(document: str):
         if not is_valid_key_field(document):
             raise KOSyncError(ERROR_DOCUMENT_FIELD_MISSING, "Invalid document field")
 
-        # Query progress from database
-        progress_record = ub.session.query(KOSyncProgress).filter(
-            KOSyncProgress.user_id == user.id,
-            KOSyncProgress.document == document
-        ).first()
+        # Create initial response with Calibre book information if available
+        response_data, book_id, book_format, book_title, _ = enrich_response_with_book_info(
+            {}, document
+        )
+
+        progress_record = get_progress_record(user.id, document, book_id)
 
         if not progress_record:
-            log.debug(f"No progress found for user {user.id}, document {document}")
             return create_sync_response({})
 
         # KOReader expects percentage as a decimal fraction (0.9411 = 94.11%)
         # We store it as percentage (0-100), so convert back to decimal (0-1)
         percentage_decimal = progress_record.percentage / 100.0
 
-        response_data = {
+        response_updates = {
             "document": document,
             "progress": progress_record.progress,
             "percentage": percentage_decimal,
@@ -557,10 +585,9 @@ def get_progress(document: str):
             "timestamp": int(progress_record.timestamp.timestamp())
         }
 
-        # Enrich response with Calibre book information if available
-        response_data, book_id, book_format, book_title, _ = enrich_response_with_book_info(
-            response_data, document
-        )
+        response_data = {**response_data, **response_updates}
+
+        log.debug(endpoint + f" Response: {response_data}")
 
         return create_sync_response(response_data)
 
@@ -616,6 +643,8 @@ def update_progress():
     Note:
         Percentage is converted from decimal (0.9411 = 94.11%) to percentage (94.11).
     """
+    endpoint = f"PUT /kosync/syncs/progress/<document> with: {request.get_json()}"
+    log.debug(endpoint)
     try:
         blocked = _require_kosync_enabled()
         if blocked:
@@ -664,11 +693,22 @@ def update_progress():
 
         timestamp = datetime.now(timezone.utc)
 
+        response_data = {
+            "document": document,
+            "timestamp": int(timestamp.timestamp())
+        }
+
+        # Enrich response with Calibre book information if available
+        response_data, book_id, book_format, book_title, _ = enrich_response_with_book_info(
+            response_data, document
+        )
+
         # Check if progress record exists
-        progress_record = ub.session.query(KOSyncProgress).filter(
-            KOSyncProgress.user_id == user.id,
-            KOSyncProgress.document == document
-        ).first()
+        progress_record = get_progress_record(user.id, document, book_id)
+
+        # Prefer the book_id as the identifier (if we have it) to ensure that all documents associated with the same
+        # Calibre book share the same progress record even if they have different checksums.
+        document = book_id or document
 
         if progress_record:
             # Update existing record
@@ -703,16 +743,6 @@ def update_progress():
             ub.session.rollback()
             raise KOSyncError(ERROR_INTERNAL, "Failed to save sync progress")
 
-        response_data = {
-            "document": document,
-            "timestamp": int(timestamp.timestamp())
-        }
-
-        # Enrich response with Calibre book information if available
-        response_data, book_id, book_format, book_title, _ = enrich_response_with_book_info(
-            response_data, document
-        )
-
         # Update user's ReadBook status if we matched a book
         # This is done AFTER kosync_progress is committed, so sync location is always safe
         if book_id:
@@ -729,6 +759,8 @@ def update_progress():
             except Exception as e:
                 log.error(f"Unexpected error updating ReadBook status for book {book_id}: {e}")
                 ub.session.rollback()
+
+        log.debug(endpoint + f" Response: {response_data}")
 
         return create_sync_response(response_data)
 

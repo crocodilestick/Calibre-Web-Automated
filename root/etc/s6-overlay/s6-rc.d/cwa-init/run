@@ -107,7 +107,7 @@ PY
 )
 if [ -n "$INGEST_DIR" ]; then
   # Create directory if missing
-  install -d -o abc -g abc "$INGEST_DIR" 2>/dev/null || mkdir -p "$INGEST_DIR" 2>/dev/null || true
+  mkdir -p "$INGEST_DIR" 2>/dev/null || true
   # Set ownership unless network share mode (only skip for /cwa-book-ingest)
   if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
     if [ "$INGEST_DIR" = "/cwa-book-ingest" ]; then
@@ -428,4 +428,3 @@ else
 fi
 
 echo "[cwa-init] Versions resolved: INSTALLED=$CWA_INSTALLED_VERSION, STABLE=$CWA_STABLE_VERSION"
-

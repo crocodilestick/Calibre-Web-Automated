@@ -594,10 +594,22 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
         # Build base query
         query = cdb.session.query(db.Books)
         query = query.filter(query_filter)
-        
+
         # Apply standard user permissions filters
         query = query.filter(cdb.common_filters())
-        
+
+        # Join Series table if sort order references it (e.g. author sort
+        # includes series name for sub-sorting within each author).
+        # Without this join, ORDER BY series.name produces empty results.
+        if sort_order is not None:
+            order_list = sort_order if isinstance(sort_order, list) else [sort_order]
+            needs_series_join = any(
+                'series' in str(getattr(expr, 'element', expr)).lower()
+                for expr in order_list
+            )
+            if needs_series_join:
+                query = query.outerjoin(db.books_series_link).outerjoin(db.Series)
+
         # Apply sorting
         if sort_order is not None:
             if isinstance(sort_order, list):
@@ -605,7 +617,7 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
                     query = query.order_by(order_expr)
             else:
                 query = query.order_by(sort_order)
-        
+
         # Execute Full Query for Cache
         try:
             # Fetch ALL IDs

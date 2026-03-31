@@ -2360,9 +2360,8 @@ msgid "No email addresses selected"
 msgstr "Keine E-Mail-Adresse ausgewählt"
 
 #: cps/web.py:2024
-#, fuzzy
 msgid "Additional email addresses are disabled for your account."
-msgstr "Zusätzliche E-Mail-Adressen eingeben (durch Kommas getrennt):"
+msgstr "Zusätzliche E-Mail-Adressen sind für Ihren Account deaktiviert."
 
 #: cps/web.py:2046
 msgid "Success! Book queued for sending to the selected address(es)!"
@@ -4495,9 +4494,8 @@ msgstr ""
 "github.com/innocenat\">innocenat</a> erstellt wurde."
 
 #: cps/templates/cwa_settings.html:181
-#, fuzzy
 msgid "Enable KOReader Sync (CWA Plugin)"
-msgstr "KOReader Sync-Plugin"
+msgstr "KOReader Sync aktivieren (CWAPlugin)"
 
 #: cps/templates/cwa_settings.html:183
 msgid ""
@@ -4731,9 +4729,8 @@ msgid "Cover File Max Size (MB):"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:416
-#, fuzzy
 msgid "Range: 1-200 MB (default: 15)"
-msgstr "Bereich: 5-120 Minuten (Standard: 15)"
+msgstr "Bereich: 1-200 MB (Standard: 15)"
 
 #: cps/templates/cwa_settings.html:419
 msgid ""
@@ -5686,9 +5683,8 @@ msgid "Failed to update tags"
 msgstr "Aktualisierung der Tags fehlgeschlagen"
 
 #: cps/templates/detail.html:1252
-#, fuzzy
 msgid "Failed to update shelves"
-msgstr "Aktualisierung der Tags fehlgeschlagen"
+msgstr "Aktualisierung der Regale fehlgeschlagen"
 
 #: cps/templates/duplicates.html:365
 msgid "CWA Duplicates Manager"
@@ -6190,9 +6186,8 @@ msgid "Sort descending according to series index"
 msgstr "Sortiere nach Serienindex absteigend"
 
 #: cps/templates/kosync_plugin.html:112
-#, fuzzy
 msgid "KOReader Sync is disabled."
-msgstr "Standard-Login ist deaktiviert."
+msgstr "KoReader Sync ist deaktiviert."
 
 #: cps/templates/kosync_plugin.html:113
 msgid ""
@@ -6201,9 +6196,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/kosync_plugin.html:115
-#, fuzzy
 msgid "Open CWA Settings"
-msgstr "CWA Einstellungen"
+msgstr "Öffne CWA Einstellungen"
 
 #: cps/templates/kosync_plugin.html:139
 msgid "Download is available after enabling KOReader Sync in CWA Settings."
@@ -7011,28 +7005,30 @@ msgid ""
 "Email address(es) for your eReader devices. Separate multiple addresses with "
 "commas."
 msgstr ""
-"E-Mail-Adresse(n) für Ihre eReader-Geräte. Trennen Sie mehrere Adressen "
+"E-Mail-Adresse(n) Ihrer eReader-Geräte. Trennen Sie mehrere Adressen "
 "durch Kommas."
 
 #: cps/templates/user_edit.html:228
 msgid "Enable Send-to-eReader Pop-up Modal"
-msgstr ""
+msgstr "Aktiviere Send-to-Reader Pop-Up"
 
 #: cps/templates/user_edit.html:230
 msgid ""
 "Enables or disables the Send-to-eReader Pop-up Modal that allows users to "
-"enter extra email addresses and only send to a selection of saved addresses "
-"when sending to eReader."
+"enter extra email addresses or send to a selection of already saved "
+"addresses when sending to eReader."
 msgstr ""
+"Aktiviert/Deaktiviert das Send-to-Reader Pop-Up, in welchem weitere "
+"Mailadressen für den Versand an eReader eingetragen oder bereits "
+"verfügbare Mailadressen ausgewählt werden können."
 
 #: cps/templates/user_edit.html:232
-#, fuzzy
 msgid ""
 "When disabled, emails will be sent to all configured eReader addresses "
 "without prompting."
 msgstr ""
-"Wenn aktiviert, werden neu hinzugefügte Bücher automatisch an alle oben "
-"konfigurierten E-Mail-Adressen für eReader gesendet."
+"Wenn deaktiviert, werden Mails ohne weitere Hinweise automatisch "
+"an alle oben konfigurierten E-Mail-Adressen für eReader gesendet."
 
 #: cps/templates/user_edit.html:240
 msgid "Automatically send new books to my eReader(s)"
@@ -7150,7 +7146,6 @@ msgid "Configure what actions this user is allowed to perform."
 msgstr "Konfigurieren Sie, welche Aktionen dieser Benutzer ausführen darf."
 
 #: cps/templates/user_edit.html:454
-#, fuzzy
 msgid "Magic Shelves Order"
 msgstr "Magische Regale ✨"
 
@@ -7191,14 +7186,12 @@ msgid "Created (oldest first)"
 msgstr ""
 
 #: cps/templates/user_edit.html:468
-#, fuzzy
 msgid "Recently modified"
 msgstr "Zuletzt geändert"
 
 #: cps/templates/user_edit.html:469
-#, fuzzy
 msgid "Least recently modified"
-msgstr "Zuletzt geändert"
+msgstr "Am längsten nicht geändert"
 
 #: cps/templates/user_edit.html:480
 msgid "Manual order is used only when the order mode is set to Manual."
@@ -7368,10 +7361,10 @@ msgstr "Zeige Gelesen/Ungelesen-Abschnitt"
 #~ "Beliebte Veröffentlichungen dieses Katalogs basierend auf Bewertung."
 
 #~ msgid "Recently added Books"
-#~ msgstr "Kürzlich hinzugefügte Bücher"
+#~ msgstr "Zuletzt hinzugefügte Bücher"
 
 #~ msgid "The latest Books"
-#~ msgstr "Die neuesten Bücher"
+#~ msgstr "Neueste Bücher"
 
 #~ msgid "Random Books"
 #~ msgstr "Zufällige Bücher"

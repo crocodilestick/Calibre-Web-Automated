@@ -72,6 +72,7 @@ def create_authenticated_user(username, email=None, auth_source="unknown"):
             
         # Kobo sync setting defaults to 0 (disabled) for new users
         user.kobo_only_shelves_sync = 0
+        user.opds_only_shelves_sync = 0
         
         ub.session.add(user)
         ub.session.commit()
@@ -259,4 +260,3 @@ def load_user(user_id, random, session_key):
     except (ValueError, TypeError) as e:
         log.error("Invalid user_id in load_user: %s", e)
         return None
-

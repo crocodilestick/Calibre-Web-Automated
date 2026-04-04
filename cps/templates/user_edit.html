@@ -338,6 +338,18 @@
         {% endif %}
       </div>
       {% endif %}
+
+      {% if not content.role_anonymous() and not simple %}
+      <div style="margin-top: 25px;">
+        <label style="display: block; margin-bottom: 12px; font-weight: bold;">{{ _('OPDS Shelf Exposure')}}</label>
+        <div style="margin-top: 20px;
+                    background: #202c34a3;
+                    padding: 2rem;">
+          <input type="checkbox" name="opds_only_shelves_sync" id="opds_only_shelves_sync" {% if content.opds_only_shelves_sync %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="opds_only_shelves_sync">{{_('Expose only books in selected shelves to OPDS')}}</label>
+        </div>
+      </div>
+      {% endif %}
     </div>
     {% endif %}
     

@@ -152,6 +152,7 @@
             {%  if kobo_support %}
             {{ user_single_checkbox_row("kobo_only_shelves_sync", _('Sync selected Shelves with Kobo'))}}
             {%  endif %}
+            {{ user_single_checkbox_row("opds_only_shelves_sync", _('Expose selected Shelves to OPDS'))}}
             {{ user_checkbox_row("sidebar_view", "detail_random", _('Show Random Books in Detail View'), visiblility, sidebar_settings)}}
             {{ user_checkbox_row("sidebar_view", "sidebar_language", _('Show Language Section'), visiblility, sidebar_settings)}}
             {{ user_checkbox_row("sidebar_view", "sidebar_read_and_unread", _('Show Read/Unread Section'), visiblility, sidebar_settings)}}

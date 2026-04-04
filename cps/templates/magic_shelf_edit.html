@@ -391,6 +391,16 @@ div.help-panel > .panel-body {
                         <small class="form-text text-muted">Only works if Kobo integration is enabled</small>
                     </div>
 
+                    {% if opds_expose_enabled %}
+                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                        <label>
+                            <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-opds-expose" {{ 'checked' if opds_expose_checked else '' }}>
+                            Expose this magic shelf in my OPDS feed
+                        </label>
+                        <small class="form-text text-muted">Used when your profile is set to expose only selected shelves through OPDS</small>
+                    </div>
+                    {% endif %}
+
                     <!-- Public Shelf Checkbox (only for custom shelves with permission) -->
                     {% if current_user.role_edit_shelfs() and not (shelf and shelf.is_system) %}
                     <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
@@ -796,6 +806,7 @@ $(function() {
             icon: $('#shelf-icon').val(),
             rules: rules,
             kobo_sync: $('#shelf-kobo-sync').is(':checked'),
+            opds_expose: $('#shelf-opds-expose').is(':checked'),
             is_public: $('#shelf-is-public').is(':checked')
         };
 

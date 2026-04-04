@@ -788,6 +788,8 @@ def edit_list_user(param):
                     user.email = check_email(vals['value'])
                 elif param == 'kobo_only_shelves_sync':
                     user.kobo_only_shelves_sync = int(vals['value'] == 'true')
+                elif param == 'opds_only_shelves_sync':
+                    user.opds_only_shelves_sync = int(vals['value'] == 'true')
                 elif param == 'kindle_mail':
                     user.kindle_mail = valid_email(vals['value']) if vals['value'] else ""
                 elif param == 'kindle_mail_subject':
@@ -943,6 +945,8 @@ def load_dialogtexts(element_id):
                           'for the selected user(s)?')
     elif element_id == "kobo_only_shelves_sync":
         texts["main"] = _('Are you sure you want to change shelf sync behavior for the selected user(s)?')
+    elif element_id == "opds_only_shelves_sync":
+        texts["main"] = _('Are you sure you want to change OPDS shelf exposure for the selected user(s)?')
     elif element_id == "db_submit":
         texts["main"] = _('Are you sure you want to change Calibre library location?')
     elif element_id == "admin_refresh_cover_cache":
@@ -2543,6 +2547,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.denied_column_value = config.config_denied_column_value
         # No default value for kobo sync shelf setting
         content.kobo_only_shelves_sync = to_save.get("kobo_only_shelves_sync", 0) == "on"
+        content.opds_only_shelves_sync = to_save.get("opds_only_shelves_sync", 0) == "on"
         ub.session.add(content)
         ub.session.commit()
         flash(_("User '%(user)s' created", user=content.name), category="success")
@@ -2632,6 +2637,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     # which don't have to be synced have to be removed (added to Shelf archive)
     if old_state == 0 and content.kobo_only_shelves_sync == 1:
         kobo_sync_status.update_on_sync_shelfs(content.id)
+    content.opds_only_shelves_sync = int(to_save.get("opds_only_shelves_sync") == "on") or 0
     # Auto-send and metadata fetch settings
     content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
     content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"

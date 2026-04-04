@@ -8,7 +8,6 @@
 import os
 import re
 import json
-import time
 import threading
 from datetime import datetime, timezone
 from urllib.parse import quote
@@ -17,7 +16,6 @@ from weakref import WeakSet
 from uuid import uuid4
 
 from sqlite3 import OperationalError as sqliteOperationalError
-import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
@@ -830,7 +828,7 @@ class CalibreDB:
             from .progress_syncing.settings import is_koreader_sync_enabled
             if (
                 db_writable
-                and not os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+                and os.getenv('NETWORK_SHARE_MODE', 'False').lower() not in ('1', 'true', 'yes', 'on')
                 and is_koreader_sync_enabled()
             ):
                 ensure_calibre_db_tables(conn)
@@ -921,11 +919,17 @@ class CalibreDB:
             log.error("Database error: {}".format(e))
 
     # Language and content filters for displaying in the UI
-    def common_filters(self, allow_show_archived=False, return_all_languages=False, viewing_tag_id=None):
+    def common_filters(
+        self,
+        allow_show_archived=False,
+        return_all_languages=False,
+        viewing_tag_id=None,
+        extra_filter=None,
+    ):
         if not allow_show_archived:
             archived_books = (ub.session.query(ub.ArchivedBook)
                               .filter(ub.ArchivedBook.user_id==int(current_user.id))
-                              .filter(ub.ArchivedBook.is_archived==True)
+                              .filter(ub.ArchivedBook.is_archived.is_(True))
                               .all())
             archived_book_ids = [archived_book.book_id for archived_book in archived_books]
             archived_filter = Books.id.notin_(archived_book_ids)
@@ -971,8 +975,10 @@ class CalibreDB:
         else:
             pos_content_cc_filter = true()
             neg_content_cc_filter = false()
+        if extra_filter is None:
+            extra_filter = true()
         return and_(lang_filter, pos_content_tags_filter, ~neg_content_tags_filter,
-                    pos_content_cc_filter, ~neg_content_cc_filter, archived_filter)
+                    pos_content_cc_filter, ~neg_content_cc_filter, archived_filter, extra_filter)
 
     def generate_linked_query(self, config_read_column, database):
         # Safety: session can be briefly None during DB reconnects
@@ -1025,13 +1031,16 @@ class CalibreDB:
                                            join_archive_read, config_read_column, *join, **kwargs):
         self.ensure_session()
         viewing_tag_id = kwargs.get('viewing_tag_id')
+        extra_filter = kwargs.get('extra_filter')
         pagesize = pagesize or self.config.config_books_per_page
         if current_user.show_detail_random():
             random_query = self.generate_linked_query(config_read_column, database)
             # Eagerly load the data relationship for random books to prevent session errors
             if database == Books:
                 random_query = random_query.options(joinedload(Books.data))
-            randm = (random_query.filter(self.common_filters(allow_show_archived, viewing_tag_id=viewing_tag_id))
+            randm = (random_query.filter(self.common_filters(allow_show_archived,
+                                                             viewing_tag_id=viewing_tag_id,
+                                                             extra_filter=extra_filter))
                      .order_by(func.random())
                      .limit(self.config.config_random_books).all())
         else:
@@ -1063,7 +1072,9 @@ class CalibreDB:
                 indx -= 1
                 element += 1
         query = query.filter(db_filter)\
-            .filter(self.common_filters(allow_show_archived, viewing_tag_id=viewing_tag_id))
+            .filter(self.common_filters(allow_show_archived,
+                                        viewing_tag_id=viewing_tag_id,
+                                        extra_filter=extra_filter))
         entries = list()
         pagination = list()
         try:
@@ -1233,7 +1244,7 @@ class CalibreDB:
             if not return_all_languages:
                 no_lang_count = (self.session.query(Books)
                                  .outerjoin(books_languages_link).outerjoin(Languages)
-                                 .filter(Languages.lang_code==None)
+                                 .filter(Languages.lang_code.is_(None))
                                  .filter(self.common_filters())
                                  .count())
                 if no_lang_count:

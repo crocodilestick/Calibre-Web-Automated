@@ -382,6 +382,7 @@ def register_user_from_generic_oauth(token=None):
             
         # Kobo sync setting defaults to 0 (disabled) for new users
         user.kobo_only_shelves_sync = 0
+        user.opds_only_shelves_sync = 0
         
         try:    
             ub.session.add(user)

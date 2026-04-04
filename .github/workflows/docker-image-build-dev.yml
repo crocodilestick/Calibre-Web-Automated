@@ -273,6 +273,7 @@ jobs:
             $(printf "ghcr.io/${REPOSITORY_OWNER}/${LOWER_REPO_NAME}@sha256:%s " *)
 
       - name: Increment dev build number
+        if: vars.DEV_TAG_MODE == '' || vars.DEV_TAG_MODE == 'counter'
         uses: action-pack/increment@v2
         id: increment
         with:

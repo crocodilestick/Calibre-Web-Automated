@@ -129,7 +129,7 @@ def search_to_shelf(shelf_id):
         return redirect(url_for('web.index'))
 
     if not check_shelf_edit_permissions(shelf):
-        log.warning("You are not allowed to add a book to the shelf".format(shelf.name))
+        log.warning("You are not allowed to add a book to the shelf")
         flash(_("You are not allowed to add a book to the shelf"), category="error")
         return redirect(url_for('web.index'))
 
@@ -352,6 +352,8 @@ def check_shelf_view_permissions(cur_shelf):
 # if shelf ID is set, we are editing a shelf
 def create_edit_shelf(shelf, page_title, page, shelf_id=False):
     sync_only_selected_shelves = current_user.kobo_only_shelves_sync
+    sync_only_selected_opds_shelves = current_user.opds_only_shelves_sync
+    opds_expose_checked = bool(shelf_id and ub.is_opds_shelf_exposed_for_user(current_user.id, shelf.id))
     # calibre_db.session.query(ub.Shelf).filter(ub.Shelf.user_id == current_user.id).filter(ub.Shelf.kobo_sync).count()
     if request.method == "POST":
         to_save = request.form.to_dict()
@@ -378,6 +380,10 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
                 shelf_action = "changed"
                 flash_text = _("Shelf %(title)s changed", title=shelf_title)
             try:
+                if not shelf_id:
+                    ub.session.flush()
+                if sync_only_selected_opds_shelves:
+                    ub.set_opds_shelf_exposed_for_user(current_user.id, shelf.id, bool(to_save.get("opds_expose")))
                 ub.session.commit()
                 log.info("Shelf {} {}".format(shelf_title, shelf_action))
                 flash(flash_text, category="success")
@@ -396,7 +402,9 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
                                  title=page_title,
                                  page=page,
                                  kobo_sync_enabled=config.config_kobo_sync,
-                                 sync_only_selected_shelves=sync_only_selected_shelves)
+                                 sync_only_selected_shelves=sync_only_selected_shelves,
+                                 sync_only_selected_opds_shelves=sync_only_selected_opds_shelves,
+                                 opds_expose_checked=opds_expose_checked)
 
 
 def check_shelf_is_unique(title, is_public, shelf_id=False):
@@ -434,6 +442,7 @@ def delete_shelf_helper(cur_shelf):
     shelf_id = cur_shelf.id
     ub.session.delete(cur_shelf)
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id).delete()
+    ub.session.query(ub.OpdsShelfExposure).filter(ub.OpdsShelfExposure.shelf_id == shelf_id).delete()
     ub.session.add(ub.ShelfArchive(uuid=cur_shelf.uuid, user_id=cur_shelf.user_id))
     ub.session_commit("successfully deleted Shelf {}".format(cur_shelf.name))
     return True
@@ -499,7 +508,7 @@ def render_show_shelf(shelf_type, shelf_id, page_no, sort_param):
         # delete shelf entries where book is not existent anymore, can happen if book is deleted outside calibre-web
         wrong_entries = calibre_db.session.query(ub.BookShelf) \
             .join(db.Books, ub.BookShelf.book_id == db.Books.id, isouter=True) \
-            .filter(db.Books.id == None).all()
+            .filter(db.Books.id.is_(None)).all()
         for entry in wrong_entries:
             log.info('Not existing book {} in {} deleted'.format(entry.book_id, shelf))
             try:

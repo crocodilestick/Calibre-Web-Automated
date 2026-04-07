@@ -1,3 +1,4 @@
+local BookList = require("ui/widget/booklist")
 local ConfirmBox = require("ui/widget/confirmbox")
 local Device = require("device")
 local Dispatcher = require("dispatcher")
@@ -11,6 +12,7 @@ local WidgetContainer = require("ui/widget/container/widgetcontainer")
 local logger = require("logger")
 local md5 = require("ffi/sha2").md5
 local random = require("random")
+local SyncLogic = require("sync_logic")
 local time = require("ui/time")
 local util = require("util")
 local T = require("ffi/util").template
@@ -751,9 +753,56 @@ function CWASync:getLibraryBooksForSync()
     return paths, true, root_path
 end
 
+function CWASync:refreshLibraryViews(changed_files)
+    if type(changed_files) ~= "table" or #changed_files == 0 then
+        return
+    end
+
+    logger.dbg("CWASync: [Refresh] invalidating metadata for", #changed_files, "books")
+    for _, file_path in ipairs(changed_files) do
+        BookList.resetBookInfoCache(file_path)
+
+        if self.ui and self.ui.file_chooser and self.ui.file_chooser.resetBookInfoCache then
+            self.ui.file_chooser.resetBookInfoCache(file_path)
+        end
+        if self.ui and self.ui.booklist_menu and self.ui.booklist_menu.resetBookInfoCache then
+            self.ui.booklist_menu.resetBookInfoCache(file_path)
+        end
+
+        UIManager:broadcastEvent(Event:new("InvalidateMetadataCache", file_path))
+    end
+    UIManager:broadcastEvent(Event:new("BookMetadataChanged"))
+
+    local refreshed = {}
+    local function refreshMenu(menu, name)
+        if type(menu) ~= "table" or type(menu.updateItems) ~= "function" or refreshed[menu] then
+            return
+        end
+        refreshed[menu] = true
+        logger.dbg("CWASync: [Refresh] refreshing", name)
+        menu.no_refresh_covers = nil
+        menu:updateItems(1, true)
+    end
+
+    refreshMenu(self.ui and self.ui.file_chooser, "file chooser")
+    refreshMenu(self.ui and self.ui.booklist_menu, "book list menu")
+    refreshMenu(self.ui and self.ui.menu, "menu")
+
+    if self.ui and type(self.ui.getMenuInstance) == "function" then
+        refreshMenu(self.ui:getMenuInstance(), "active menu instance")
+    end
+end
+
 function CWASync:applyProgressToBook(file_path, progress, percentage)
     local DocSettings = require("docsettings")
     local doc_settings = DocSettings:open(file_path)
+    local summary = doc_settings:readSetting("summary") or {}
+    local previous_percent = doc_settings:readSetting("percent_finished")
+    local previous_page = doc_settings:readSetting("last_page")
+    local previous_xpointer = doc_settings:readSetting("last_xpointer")
+    local previous_status = summary.status
+    local new_page = tonumber(progress)
+    local new_xpointer = new_page == nil and progress or nil
 
     logger.dbg("CWASync: [Apply] start for", file_path)
     logger.dbg("CWASync: [Apply] previous settings", {
@@ -764,13 +813,48 @@ function CWASync:applyProgressToBook(file_path, progress, percentage)
     })
 
     doc_settings:saveSetting("percent_finished", percentage)
-    if tonumber(progress) ~= nil then
-        doc_settings:saveSetting("last_page", tonumber(progress))
+    if new_page ~= nil then
+        doc_settings:saveSetting("last_page", new_page)
+        if doc_settings.delSetting then
+            doc_settings:delSetting("last_xpointer")
+        end
     else
         doc_settings:saveSetting("last_xpointer", progress)
+        if doc_settings.delSetting then
+            doc_settings:delSetting("last_page")
+        end
     end
 
+    if percentage >= 1 then
+        summary.status = "complete"
+    elseif summary.status == "complete" then
+        summary.status = "reading"
+    end
+    doc_settings:saveSetting("summary", summary)
+
+    logger.dbg("CWASync: [Apply] new settings", {
+        percent_finished = percentage,
+        last_page = new_page,
+        last_xpointer = new_xpointer,
+        status = summary.status,
+    })
+
     doc_settings:flush()
+
+    local changed = SyncLogic.didBookProgressChange({
+        percent_finished = previous_percent,
+        last_page = previous_page,
+        last_xpointer = previous_xpointer,
+        status = previous_status,
+    }, {
+        percent_finished = percentage,
+        last_page = new_page,
+        last_xpointer = new_xpointer,
+        status = summary.status,
+    })
+    logger.dbg("CWASync: [Apply] result for", file_path, changed and "changed" or "unchanged")
+    logger.dbg("CWASync: [Apply] finished for", file_path)
+    return changed
 end
 
 function CWASync:pullLibraryProgress(ensure_networking)
@@ -808,14 +892,25 @@ function CWASync:pullLibraryProgress(ensure_networking)
     }
 
     local index = 1
-    local updated = 0
+    local remote_found = 0
+    local changed = 0
     local missing = 0
     local failed = 0
+    local changed_files = {}
 
     local function finish()
         self.pull_timestamp = now
+        self:refreshLibraryViews(changed_files)
+        logger.dbg("CWASync: [Bulk Pull] end", {
+            remote_found = remote_found,
+            changed = changed,
+            missing = missing,
+            failed = failed,
+            used_root_scan = used_root_scan,
+            root_path = root_path,
+        })
         UIManager:show(InfoMessage:new{
-            text = T(_("Library sync finished. Updated: %1, no remote progress: %2, failed: %3."), updated, missing, failed),
+            text = T(_("Library sync finished. Remote progress: %1, changed: %2, no remote progress: %3, failed: %4."), remote_found, changed, missing, failed),
             timeout = 5,
         })
     end
@@ -858,12 +953,23 @@ function CWASync:pullLibraryProgress(ensure_networking)
                     return
                 end
 
+                if SyncLogic.isRemoteProgressFromThisDevice(body, Device.model, self.device_id) then
+                    logger.dbg("CWASync: [Bulk Pull] skipping same-device progress for", file_path)
+                    pullNextBook()
+                    return
+                end
+
                 local percentage = Math.roundPercent(tonumber(body.percentage) or 0)
-                local apply_ok, apply_err = pcall(self.applyProgressToBook, self, file_path, body.progress, percentage)
+                remote_found = remote_found + 1
+                local apply_ok, changed_or_err = pcall(self.applyProgressToBook, self, file_path, body.progress, percentage)
                 if apply_ok then
-                    updated = updated + 1
+                    if changed_or_err then
+                        changed = changed + 1
+                        changed_files[#changed_files + 1] = file_path
+                    end
+                    logger.dbg("CWASync: [Bulk Pull] applied remote progress for", file_path)
                 else
-                    logger.dbg("CWASync: failed applying pulled progress for", file_path, apply_err)
+                    logger.dbg("CWASync: failed applying pulled progress for", file_path, changed_or_err)
                     failed = failed + 1
                 end
                 pullNextBook()
@@ -1096,8 +1202,8 @@ function CWASync:getProgress(ensure_networking, interactive)
                 return
             end
 
-            if body.device == Device.model
-            and body.device_id == self.device_id then
+            if SyncLogic.isRemoteProgressFromThisDevice(body, Device.model, self.device_id) then
+                logger.dbg("CWASync: [Pull] end for", current_file, "latest progress already belongs to this device")
                 if interactive then
                     UIManager:show(InfoMessage:new{
                         text = _("Latest progress is coming from this device."),

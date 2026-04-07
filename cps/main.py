@@ -82,6 +82,9 @@ def main():
     app.register_blueprint(gdrive)
     app.register_blueprint(editbook)
     app.register_blueprint(kosync)
+    # Register Hardcover sync listener for KoReader progress updates
+    from .hardcover_koreader import register_hardcover_koreader_sync
+    register_hardcover_koreader_sync()
     app.register_blueprint(duplicates)
     if kobo_available:
         app.register_blueprint(kobo)

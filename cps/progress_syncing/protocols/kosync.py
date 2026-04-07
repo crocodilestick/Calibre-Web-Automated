@@ -38,7 +38,7 @@ Reference: https://github.com/koreader/koreader-sync-server
 
 import base64
 from datetime import datetime, timezone
-from typing import Dict, Optional, Any, Tuple
+from typing import Callable, Dict, List, Optional, Any, Tuple
 
 from flask import Blueprint, request, jsonify
 from flask_babel import gettext as _
@@ -55,6 +55,32 @@ log = logger.create()
 
 # Create the blueprint
 kosync = Blueprint('kosync', __name__)
+
+# External listeners notified when reading progress is updated.
+# Each listener receives (user: ub.User, book_id: int, percentage: float).
+# Listeners are called fire-and-forget; exceptions are caught and logged.
+_progress_listeners: List[Callable[[ub.User, int, float], None]] = []
+
+
+def register_progress_listener(listener: Callable[[ub.User, int, float], None]) -> None:
+    """Register a callback that is invoked whenever reading progress is updated
+    and matched to a Calibre book.
+
+    Args:
+        listener: A callable(user, book_id, percentage) where percentage is 0-100.
+    """
+    _progress_listeners.append(listener)
+    log.debug(f"Registered KoSync progress listener: {listener.__qualname__}")
+
+
+def _notify_progress_listeners(user: ub.User, book_id: int, percentage: float) -> None:
+    """Fire all registered progress listeners. Errors are caught and logged so
+    that a misbehaving listener never disrupts KoSync."""
+    for listener in _progress_listeners:
+        try:
+            listener(user, book_id, percentage)
+        except Exception as e:
+            log.error(f"KoSync progress listener {listener.__qualname__} failed: {e}")
 
 # Error codes matching KOReader sync server specification
 ERROR_NO_STORAGE = 1000
@@ -729,6 +755,9 @@ def update_progress():
             except Exception as e:
                 log.error(f"Unexpected error updating ReadBook status for book {book_id}: {e}")
                 ub.session.rollback()
+
+            # Notify external progress listeners (e.g. Hardcover sync)
+            _notify_progress_listeners(user, book_id, percentage_float)
 
         return create_sync_response(response_data)
 

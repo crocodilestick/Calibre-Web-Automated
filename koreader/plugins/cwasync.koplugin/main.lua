@@ -142,6 +142,13 @@ local function getBodyMessage(body, fallback)
     return fallback
 end
 
+local function showNoBookMessage()
+    UIManager:show(InfoMessage:new{
+        text = _("No book is currently open to push progress for."),
+        timeout = 3,
+    })
+end
+
 local function ensureServerConfigured(server)
     if server and server ~= "" then
         return true
@@ -537,21 +544,40 @@ function CWASync:getLastProgress()
     end
 end
 
-function CWASync:getDocumentDigest()
+function CWASync:hasCurrentDocument()
+    return self.ui and self.ui.document ~= nil
+end
+
+function CWASync:getCurrentDocumentFile()
+    if self.view and self.view.document and self.view.document.file then
+        return self.view.document.file
+    elseif self.ui and self.ui.document and self.ui.document.file then
+        return self.ui.document.file
+    end
+
+    return nil
+end
+
+function CWASync:getDocumentDigest(file_path)
     local digest = nil
-    if self.ui and self.ui.doc_settings and self.ui.doc_settings.readSetting then
+    if not file_path and self.ui and self.ui.doc_settings and self.ui.doc_settings.readSetting then
         digest = self.ui.doc_settings:readSetting("partial_md5_checksum")
+    elseif file_path then
+        local ok, DocSettings = pcall(require, "docsettings")
+        if ok and DocSettings then
+            local ok_open, doc_settings = pcall(DocSettings.open, DocSettings, file_path)
+            if ok_open and doc_settings and doc_settings.readSetting then
+                digest = doc_settings:readSetting("partial_md5_checksum")
+            end
+        end
     end
 
     if digest and digest ~= "" then
         return digest
     end
 
-    local file_path = nil
-    if self.view and self.view.document and self.view.document.file then
-        file_path = self.view.document.file
-    elseif self.ui and self.ui.document and self.ui.document.file then
-        file_path = self.ui.document.file
+    if not file_path then
+        file_path = self:getCurrentDocumentFile()
     end
 
     if util.partialMD5 and file_path then
@@ -601,6 +627,257 @@ function CWASync:getDocumentDigest()
     return nil
 end
 
+function CWASync:getLibraryBookPaths()
+    local paths = {}
+    local seen = {}
+    local document_registry_ok, DocumentRegistry = pcall(require, "document/documentregistry")
+
+    local function addPath(path)
+        if type(path) ~= "string" or path == "" or seen[path] then
+            return
+        end
+        if document_registry_ok and DocumentRegistry and DocumentRegistry.hasProvider then
+            local ok, has_provider = pcall(DocumentRegistry.hasProvider, DocumentRegistry, path)
+            if not ok or not has_provider then
+                return
+            end
+        end
+        seen[path] = true
+        paths[#paths + 1] = path
+    end
+
+    local function addItemPaths(items)
+        if type(items) ~= "table" then
+            return
+        end
+        for _, item in ipairs(items) do
+            if type(item) == "table" and (item.is_file == nil or item.is_file) then
+                addPath(item.path or item.file)
+            end
+        end
+    end
+
+    if self.ui and type(self.ui.selected_files) == "table" then
+        for path, selected in pairs(self.ui.selected_files) do
+            if selected then
+                addPath(path)
+            end
+        end
+    end
+
+    if #paths > 0 then
+        return paths
+    end
+
+    addItemPaths(self.ui and self.ui.booklist_menu and self.ui.booklist_menu.item_table)
+
+    local chooser = self.ui and self.ui.file_chooser
+    if chooser then
+        local items = chooser.item_table
+        if chooser.getList and chooser.path then
+            local ok, result = pcall(function()
+                if chooser.getCollate then
+                    return chooser:getList(chooser.path, chooser:getCollate())
+                end
+                return chooser:getList(chooser.path)
+            end)
+            if ok and type(result) == "table" then
+                items = result
+            end
+        end
+        addItemPaths(items)
+    end
+
+    return paths
+end
+
+function CWASync:getLibraryRootPath()
+    local chooser = self.ui and self.ui.file_chooser
+    if chooser and chooser.path and util.directoryExists(chooser.path) then
+        return chooser.path
+    end
+
+    local home_dir = G_reader_settings:readSetting("home_dir")
+    if home_dir and util.directoryExists(home_dir) then
+        return home_dir
+    end
+
+    local lastdir = G_reader_settings:readSetting("lastdir")
+    if lastdir and util.directoryExists(lastdir) then
+        return lastdir
+    end
+
+    if Device.home_dir and util.directoryExists(Device.home_dir) then
+        return Device.home_dir
+    end
+
+    return nil
+end
+
+function CWASync:getLibraryBooksForSync()
+    local paths = self:getLibraryBookPaths()
+    if #paths > 0 then
+        logger.dbg("CWASync: [Bulk Pull] using current view paths", #paths)
+        return paths, false, nil
+    end
+
+    local root_path = self:getLibraryRootPath()
+    if not root_path then
+        logger.dbg("CWASync: [Bulk Pull] no library root available for fallback scan")
+        return {}, false, nil
+    end
+
+    logger.dbg("CWASync: [Bulk Pull] scanning fallback root", root_path)
+
+    local document_registry_ok, DocumentRegistry = pcall(require, "document/documentregistry")
+    local seen = {}
+    paths = {}
+
+    util.findFiles(root_path, function(path)
+        if seen[path] then
+            return
+        end
+        if document_registry_ok and DocumentRegistry and DocumentRegistry.hasProvider then
+            local ok, has_provider = pcall(DocumentRegistry.hasProvider, DocumentRegistry, path)
+            if ok and has_provider then
+                seen[path] = true
+                paths[#paths + 1] = path
+            end
+        end
+    end, true)
+
+    logger.dbg("CWASync: [Bulk Pull] fallback scan found", #paths, "supported books under", root_path)
+
+    return paths, true, root_path
+end
+
+function CWASync:applyProgressToBook(file_path, progress, percentage)
+    local DocSettings = require("docsettings")
+    local doc_settings = DocSettings:open(file_path)
+
+    logger.dbg("CWASync: [Apply] start for", file_path)
+    logger.dbg("CWASync: [Apply] previous settings", {
+        percent_finished = previous_percent,
+        last_page = previous_page,
+        last_xpointer = previous_xpointer,
+        status = previous_status,
+    })
+
+    doc_settings:saveSetting("percent_finished", percentage)
+    if tonumber(progress) ~= nil then
+        doc_settings:saveSetting("last_page", tonumber(progress))
+    else
+        doc_settings:saveSetting("last_xpointer", progress)
+    end
+
+    doc_settings:flush()
+end
+
+function CWASync:pullLibraryProgress(ensure_networking)
+    if not self.settings.username or not self.settings.password then
+        promptLogin()
+        return
+    end
+
+    if not ensureServerConfigured(self.settings.server) then
+        return
+    end
+
+    local now = UIManager:getElapsedTimeSinceBoot()
+    if ensure_networking and NetworkMgr:willRerunWhenOnline(function() self:pullLibraryProgress(ensure_networking) end) then
+        return
+    end
+
+    logger.dbg("CWASync: [Bulk Pull] start")
+
+    local paths, used_root_scan, root_path = self:getLibraryBooksForSync()
+    if #paths == 0 then
+        logger.dbg("CWASync: [Bulk Pull] end with no books found")
+        UIManager:show(InfoMessage:new{
+            text = used_root_scan and T(_("No supported books were found under %1."), root_path)
+                or _("No books were found in the current library view."),
+            timeout = 3,
+        })
+        return
+    end
+
+    local CWASyncClient = require("CWASyncClient")
+    local client = CWASyncClient:new{
+        service_url = self.settings.server .. "/kosync",
+        service_spec = self.path .. "/api.json"
+    }
+
+    local index = 1
+    local updated = 0
+    local missing = 0
+    local failed = 0
+
+    local function finish()
+        self.pull_timestamp = now
+        UIManager:show(InfoMessage:new{
+            text = T(_("Library sync finished. Updated: %1, no remote progress: %2, failed: %3."), updated, missing, failed),
+            timeout = 5,
+        })
+    end
+
+    local function pullNextBook()
+        local file_path = paths[index]
+        index = index + 1
+
+        if not file_path then
+            finish()
+            return
+        end
+
+        logger.dbg("CWASync: [Bulk Pull] syncing path", file_path)
+
+        local doc_digest = self:getDocumentDigest(file_path)
+        if not doc_digest then
+            logger.warn("CWASync: Unable to compute document digest for", file_path)
+            failed = failed + 1
+            pullNextBook()
+            return
+        end
+
+        local ok, err = pcall(client.get_progress,
+            client,
+            self.settings.username,
+            self.settings.password,
+            doc_digest,
+            function(request_ok, body)
+                logger.dbg("CWASync: [Bulk Pull] server response for", file_path, "ok=", request_ok, "body=", body)
+                if not request_ok or type(body) ~= "table" then
+                    failed = failed + 1
+                    pullNextBook()
+                    return
+                end
+
+                if not body.percentage or body.progress == nil then
+                    missing = missing + 1
+                    pullNextBook()
+                    return
+                end
+
+                local percentage = Math.roundPercent(tonumber(body.percentage) or 0)
+                local apply_ok, apply_err = pcall(self.applyProgressToBook, self, file_path, body.progress, percentage)
+                if apply_ok then
+                    updated = updated + 1
+                else
+                    logger.dbg("CWASync: failed applying pulled progress for", file_path, apply_err)
+                    failed = failed + 1
+                end
+                pullNextBook()
+            end)
+        if not ok then
+            logger.dbg("CWASync: failed pulling library progress for", file_path, err)
+            failed = failed + 1
+            pullNextBook()
+        end
+    end
+
+    pullNextBook()
+end
+
 function CWASync:syncToProgress(progress)
     logger.dbg("CWASync: [Sync] progress to", progress)
     if self.ui.document.info.has_pages then
@@ -614,6 +891,13 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
     if not self.settings.username or not self.settings.password then
         if interactive then
             promptLogin()
+        end
+        return
+    end
+
+    if not self:hasCurrentDocument() then
+        if interactive then
+            showNoBookMessage()
         end
         return
     end
@@ -637,9 +921,11 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
         service_url = self.settings.server .. "/kosync",
         service_spec = self.path .. "/api.json"
     }
+    local current_file = self:getCurrentDocumentFile()
+    logger.dbg("CWASync: [Push] start for", current_file)
     local doc_digest = self:getDocumentDigest()
     if not doc_digest then
-        logger.warn("CWASync: Unable to compute document digest for", self.view and self.view.document and self.view.document.file)
+        logger.warn("CWASync: Unable to compute document digest for", current_file)
         if interactive then
             UIManager:show(InfoMessage:new{
                 text = _("Unable to compute document checksum for this book."),
@@ -650,6 +936,14 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
     end
     local progress = self:getLastProgress()
     local percentage = self:getLastPercent()
+    logger.dbg("CWASync: [Push] payload", {
+        file = current_file,
+        document = doc_digest,
+        progress = progress,
+        percentage = percentage,
+        device = Device.model,
+        device_id = self.device_id,
+    })
     local ok, err = pcall(client.update_progress,
         client,
         self.settings.username,
@@ -676,6 +970,7 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
     if not ok then
         if interactive then showSyncError() end
         if err then logger.dbg("err:", err) end
+        logger.dbg("CWASync: [Push] request setup failed for", current_file, err)
     else
         -- This is solely for onSuspend's sake, to clear the ghosting left by the "Connected" InfoMessage
         if on_suspend then
@@ -711,6 +1006,21 @@ function CWASync:getProgress(ensure_networking, interactive)
         return
     end
 
+    if not self:hasCurrentDocument() then
+        if interactive then
+            local root_path = self:getLibraryRootPath()
+            UIManager:show(ConfirmBox:new{
+                text = root_path
+                    and T(_("No book is currently open. Pull progress for all books under %1?"), root_path)
+                    or _("No book is currently open. Pull progress for all books in the current library view?"),
+                ok_callback = function()
+                    self:pullLibraryProgress(ensure_networking)
+                end,
+            })
+        end
+        return
+    end
+
     if not ensureServerConfigured(self.settings.server) then
         return
     end
@@ -730,9 +1040,11 @@ function CWASync:getProgress(ensure_networking, interactive)
         service_url = self.settings.server .. "/kosync",
         service_spec = self.path .. "/api.json"
     }
+    local current_file = self:getCurrentDocumentFile()
+    logger.dbg("CWASync: [Pull] start for", current_file)
     local doc_digest = self:getDocumentDigest()
     if not doc_digest then
-        logger.warn("CWASync: Unable to compute document digest for", self.view and self.view.document and self.view.document.file)
+        logger.warn("CWASync: Unable to compute document digest for", current_file)
         if interactive then
             UIManager:show(InfoMessage:new{
                 text = _("Unable to compute document checksum for this book."),
@@ -750,6 +1062,7 @@ function CWASync:getProgress(ensure_networking, interactive)
             logger.dbg("CWASync: [Pull] progress for", self.view.document.file)
             logger.dbg("CWASync: ok:", ok, "body:", body)
             if not ok or not body then
+                logger.dbg("CWASync: [Pull] end for", current_file, "with failure")
                 if interactive then
                     showSyncError()
                 end
@@ -757,6 +1070,7 @@ function CWASync:getProgress(ensure_networking, interactive)
             end
 
             if type(body) ~= "table" then
+                logger.dbg("CWASync: [Pull] end for", current_file, "with invalid body")
                 if interactive then
                     showSyncError()
                 end
@@ -764,6 +1078,7 @@ function CWASync:getProgress(ensure_networking, interactive)
             end
 
             if not body.percentage then
+                logger.dbg("CWASync: [Pull] end for", current_file, "with no remote progress")
                 if interactive then
                     UIManager:show(InfoMessage:new{
                         text = _("No progress found for this document."),
@@ -774,6 +1089,7 @@ function CWASync:getProgress(ensure_networking, interactive)
             end
 
             if body.progress == nil then
+                logger.dbg("CWASync: [Pull] end for", current_file, "with missing progress field")
                 if interactive then
                     showSyncError()
                 end
@@ -798,6 +1114,7 @@ function CWASync:getProgress(ensure_networking, interactive)
 
             if percentage == body.percentage
             or body.progress == progress then
+                logger.dbg("CWASync: [Pull] end for", current_file, "progress already synchronized")
                 if interactive then
                     UIManager:show(InfoMessage:new{
                         text = _("The progress has already been synchronized."),
@@ -813,6 +1130,10 @@ function CWASync:getProgress(ensure_networking, interactive)
                 -- we always update the progress without further confirmation.
                 self:syncToProgress(body.progress)
                 showSyncedMessage()
+                logger.dbg("CWASync: [Pull] end for", current_file, "interactive sync applied", {
+                    remote_progress = body.progress,
+                    remote_percentage = body.percentage,
+                })
                 return
             end
 
@@ -827,7 +1148,9 @@ function CWASync:getProgress(ensure_networking, interactive)
                 if self.settings.sync_forward == SYNC_STRATEGY.SILENT then
                     self:syncToProgress(body.progress)
                     showSyncedMessage()
+                    logger.dbg("CWASync: [Pull] end for", current_file, "auto-applied newer remote progress")
                 elseif self.settings.sync_forward == SYNC_STRATEGY.PROMPT then
+                    logger.dbg("CWASync: [Pull] awaiting prompt to apply newer remote progress for", current_file)
                     UIManager:show(ConfirmBox:new{
                         text = T(_("Sync to latest location %1% from device '%2'?"),
                                  Math.round(body.percentage * 100),
@@ -841,7 +1164,9 @@ function CWASync:getProgress(ensure_networking, interactive)
                 if self.settings.sync_backward == SYNC_STRATEGY.SILENT then
                     self:syncToProgress(body.progress)
                     showSyncedMessage()
+                    logger.dbg("CWASync: [Pull] end for", current_file, "auto-applied older remote progress")
                 elseif self.settings.sync_backward == SYNC_STRATEGY.PROMPT then
+                    logger.dbg("CWASync: [Pull] awaiting prompt to apply older remote progress for", current_file)
                     UIManager:show(ConfirmBox:new{
                         text = T(_("Sync to previous location %1% from device '%2'?"),
                                  Math.round(body.percentage * 100),
@@ -856,6 +1181,7 @@ function CWASync:getProgress(ensure_networking, interactive)
     if not ok then
         if interactive then showSyncError() end
         if err then logger.dbg("err:", err) end
+        logger.dbg("CWASync: [Pull] request setup failed for", current_file, err)
     end
 
     self.pull_timestamp = now

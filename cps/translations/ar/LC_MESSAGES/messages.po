@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-05 00:15+0100\n"
+"POT-Creation-Date: 2026-03-11 17:35+0000\n"
 "PO-Revision-Date: 2025-06-07 14:44+0300\n"
 "Last-Translator: UsamaFoad <usamafoad@gmail.com>\n"
 "Language-Team: \n"
@@ -1162,7 +1162,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
 #: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:151
+#: cps/templates/layout.html:152
 msgid "Upload done, processing, please wait..."
 msgstr "تم التحميل، جاري المعالجة، يرجى الانتظار..."
 
@@ -1699,8 +1699,8 @@ msgstr "الوصف"
 msgid "{} Stars"
 msgstr "{} نجوم"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/remotelogin.py:76 cps/templates/layout.html:135
+#: cps/templates/layout.html:177 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2187
 msgid "Login"
 msgstr "تسجيل الدخول"
@@ -1872,8 +1872,8 @@ msgstr ""
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
-#: cps/templates/index.xml:12 cps/templates/layout.html:113
-#: cps/templates/layout.html:116 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:114
+#: cps/templates/layout.html:117 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "بحث"
 
@@ -1904,7 +1904,7 @@ msgstr "حالة القراءة = '%(status)s'"
 msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr "خطأ في البحث عن الأعمدة المخصصة، يرجى إعادة تشغيل Calibre-Web"
 
-#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:124
+#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:125
 msgid "Advanced Search"
 msgstr "بحث متقدم"
 
@@ -2021,7 +2021,7 @@ msgstr "الرف: '%(name)s'"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "خطأ في فتح الرف. الرف غير موجود أو غير قابل للوصول"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:162
+#: cps/tasks_status.py:37 cps/templates/layout.html:163
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "المهام"
@@ -2180,7 +2180,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "خطأ في حذف الرف"
 
-#: cps/templates/layout.html:313 cps/web.py:1153
+#: cps/templates/layout.html:314 cps/web.py:1153
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "إنشاء رف"
@@ -2300,7 +2300,7 @@ msgstr "نجاح! تم وضع الكتاب في قائمة الانتظار لل
 msgid "Please wait one minute to register next user"
 msgstr "يرجى الانتظار دقيقة واحدة لتسجيل مستخدم آخر"
 
-#: cps/templates/layout.html:135 cps/templates/layout.html:177
+#: cps/templates/layout.html:136 cps/templates/layout.html:178
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2066
 #: cps/web.py:2070 cps/web.py:2075 cps/web.py:2079 cps/web.py:2085
 #: cps/web.py:2110 cps/web.py:2114 cps/web.py:2127 cps/web.py:2130
@@ -2587,7 +2587,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "مسح ذاكرة التخزين المؤقت لصور الغلاف المصغرة"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:154 cps/templates/user_table.html:146
+#: cps/templates/layout.html:155 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "تحميل"
 
@@ -2615,7 +2615,7 @@ msgstr "إرسال إلى بريد قارئ الكتب الإلكترونية"
 msgid "Send to eReader Subject"
 msgstr "إرسال إلى القارئ الإلكتروني"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:165
+#: cps/templates/admin.html:19 cps/templates/layout.html:166
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "المسؤول"
@@ -2999,14 +2999,14 @@ msgid "Convert book"
 msgstr "تحويل الكتاب"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:151 cps/templates/layout.html:270
+#: cps/templates/layout.html:152 cps/templates/layout.html:271
 msgid "Uploading..."
 msgstr "جاري التحميل..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
-#: cps/templates/layout.html:151 cps/templates/layout.html:360
-#: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:361
+#: cps/templates/layout.html:426 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "إغلاق"
@@ -3020,7 +3020,7 @@ msgstr "إغلاق"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:151
+#: cps/templates/layout.html:152
 msgid "Error"
 msgstr "خطأ"
 
@@ -5275,7 +5275,7 @@ msgstr "إضافة إلى الرف"
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
 #: cps/templates/detail.html:765 cps/templates/detail.html:1251
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/layout.html:302 cps/templates/layout.html:311
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -5642,7 +5642,7 @@ msgstr "أدخل اسم النطاق"
 msgid "Denied Domains (Blacklist)"
 msgstr "النطاقات المرفوضة (القائمة السوداء)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:344
+#: cps/templates/feed.xml:22 cps/templates/layout.html:345
 msgid "Next"
 msgstr "التالي"
 
@@ -5922,98 +5922,98 @@ msgstr ""
 msgid "Home"
 msgstr "الرئيسية"
 
-#: cps/templates/layout.html:99
+#: cps/templates/layout.html:100
 msgid "Toggle Navigation"
 msgstr "تبديل التنقل"
 
-#: cps/templates/layout.html:114
+#: cps/templates/layout.html:115
 msgid "Search Library"
 msgstr "البحث في المكتبة"
 
-#: cps/templates/layout.html:132 cps/templates/layout.html:169
+#: cps/templates/layout.html:133 cps/templates/layout.html:170
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "الحساب"
 
-#: cps/templates/layout.html:138 cps/templates/layout.html:171
+#: cps/templates/layout.html:139 cps/templates/layout.html:172
 msgid "Logout"
 msgstr "تسجيل الخروج"
 
-#: cps/templates/layout.html:146
+#: cps/templates/layout.html:147
 #, fuzzy
 msgid "Switch Theme"
 msgstr "السمة البسيطة"
 
-#: cps/templates/layout.html:165 cps/templates/read.html:78
+#: cps/templates/layout.html:166 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 msgid "Settings"
 msgstr "الإعدادات"
 
-#: cps/templates/layout.html:167
+#: cps/templates/layout.html:168
 #, fuzzy
 msgid "Refresh Library"
 msgstr "البحث في المكتبة"
 
-#: cps/templates/layout.html:208
+#: cps/templates/layout.html:209
 msgid "See Changelog"
 msgstr ""
 
-#: cps/templates/layout.html:228
+#: cps/templates/layout.html:229
 msgid "Contribute here!"
 msgstr ""
 
-#: cps/templates/layout.html:271
+#: cps/templates/layout.html:272
 msgid "Please do not refresh the page"
 msgstr "يرجى عدم تحديث الصفحة"
 
-#: cps/templates/layout.html:281
+#: cps/templates/layout.html:282
 msgid "Browse"
 msgstr "تصفح"
 
-#: cps/templates/layout.html:298 cps/templates/search_form.html:88
+#: cps/templates/layout.html:299 cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "الأرفف"
 
-#: cps/templates/layout.html:304
+#: cps/templates/layout.html:305
 #, fuzzy
 msgid "Create Shelf"
 msgstr "إنشاء رف"
 
-#: cps/templates/layout.html:308
+#: cps/templates/layout.html:309
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:317 cps/templates/stats.html:3
+#: cps/templates/layout.html:318 cps/templates/stats.html:3
 msgid "About"
 msgstr "حول"
 
-#: cps/templates/layout.html:329
+#: cps/templates/layout.html:330
 msgid "Previous"
 msgstr "السابق"
 
-#: cps/templates/layout.html:356
+#: cps/templates/layout.html:357
 msgid "Book Details"
 msgstr "تفاصيل الكتاب"
 
-#: cps/templates/layout.html:426
+#: cps/templates/layout.html:427
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "حذف الكتاب"
 
-#: cps/templates/layout.html:427
+#: cps/templates/layout.html:428
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:432
+#: cps/templates/layout.html:433
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "لم يتم العثور على نتائج"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:441
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:443
+#: cps/templates/layout.html:444
 msgid "View & Resolve Duplicates"
 msgstr ""
 

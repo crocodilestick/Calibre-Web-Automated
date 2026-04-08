@@ -1094,7 +1094,7 @@ msgstr ""
 
 #: cps/cwa_functions.py:2031
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
-msgstr ""
+msgstr "La herramienta Single-book EPUB Fixer no es compatible con las bibliotecas de Google Drive."
 
 #: cps/cwa_functions.py:2038
 #, fuzzy
@@ -1123,7 +1123,7 @@ msgstr "Fusionar libros seleccionados"
 
 #: cps/cwa_functions.py:2072
 msgid "Failed to start EPUB Fixer for selected book."
-msgstr ""
+msgstr "No se pudo iniciar EPUB Fixer para el libro seleccionado."
 
 #: cps/cwa_functions.py:2119
 msgid "You must be an admin to access this page."
@@ -1215,7 +1215,8 @@ msgstr "Rol inválido"
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
-msgstr ""
+msgstr "La carpeta de ingesta no tiene permisos de escritura. "
+"Compruebe los permisos del volumen /cwa-book-ingest."
 
 #: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
@@ -1515,7 +1516,7 @@ msgstr ""
 #: cps/helper.py:1053 cps/helper.py:1061
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
-msgstr ""
+msgstr "La imagen de portada supera el tamaño máximo de %(tamaño)s MB"
 
 #: cps/helper.py:1072
 msgid "Error Downloading Cover"
@@ -4465,11 +4466,11 @@ msgstr "Error al programar la conversión de la biblioteca"
 
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
-msgstr ""
+msgstr "Funciona con un solo libro."
 
 #: cps/templates/cwa_epub_fixer.html:24
 msgid "Search by title/author"
-msgstr ""
+msgstr "Búsqueda por título / autor"
 
 #: cps/templates/cwa_epub_fixer.html:29
 #, fuzzy
@@ -4601,14 +4602,20 @@ msgid ""
 "When enabled, CWA exposes the /kosync endpoints and stores KOReader-"
 "compatible checksums in metadata.db for progress syncing. Requires the "
 "KOReader plugin on your device."
-msgstr ""
+msgstr "Cuando está habilitada, CWA expone los puntos finales /kosync "
+"y almacena sumas de verificación compatibles con KOReader en metadata.db "
+"para la sincronización del progreso. Requiere el complemento KOReader "
+"en su dispositivo."
 
 #: cps/templates/cwa_settings.html:185
 msgid ""
 "Note: Enabling this starts a checksum backfill service at startup which can "
 "temporarily lock metadata.db. To stop a running backfill, restart the "
 "container after disabling."
-msgstr ""
+msgstr "Nota: Al habilitar esta opción, se inicia un servicio de relleno "
+"de suma de comprobación al arrancar, lo que puede bloquear temporalmente "
+"el archivo metadata.db. Para detener el relleno en ejecución, "
+"reinicie el contenedor después de deshabilitar esta opción."
 
 #: cps/templates/cwa_settings.html:192
 msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
@@ -4830,7 +4837,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:403
 msgid "Cover File Max Size (MB):"
-msgstr ""
+msgstr "Tamaño máximo del archivo de portada (MB):"
 
 #: cps/templates/cwa_settings.html:416
 #, fuzzy
@@ -4841,7 +4848,9 @@ msgstr "Rango: 5-120 minutos (predeterminado: 15)"
 msgid ""
 "Limits the maximum size of cover images downloaded from metadata providers "
 "or URLs to prevent slow or stalled saves."
-msgstr ""
+msgstr "Limita el tamaño máximo de las imágenes de portada descargadas de "
+"proveedores de metadatos o URL para evitar que el guardado sea lento "
+"o se bloquee."
 
 #: cps/templates/cwa_settings.html:428
 msgid "Ingest Processing Timeout"
@@ -6373,7 +6382,8 @@ msgstr "Ajustes de CWA"
 
 #: cps/templates/kosync_plugin.html:139
 msgid "Download is available after enabling KOReader Sync in CWA Settings."
-msgstr ""
+msgstr "La descarga estará disponible después de habilitar KOReader Sync "
+"en la configuración de CWA."
 
 #: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
@@ -7198,14 +7208,17 @@ msgstr ""
 
 #: cps/templates/user_edit.html:228
 msgid "Enable Send-to-eReader Pop-up Modal"
-msgstr ""
+msgstr "Habilitar la ventana emergente "Enviar a lector electrónico" "
 
 #: cps/templates/user_edit.html:230
 msgid ""
 "Enables or disables the Send-to-eReader Pop-up Modal that allows users to "
 "enter extra email addresses and only send to a selection of saved addresses "
 "when sending to eReader."
-msgstr ""
+msgstr "Permite activar o desactivar la ventana emergente "Enviar a lector "
+"electrónico", que permite a los usuarios introducir direcciones de correo "
+"electrónico adicionales y enviar el mensaje únicamente a una selección de direcciones "
+"guardadas al enviarlo al lector electrónico."
 
 #: cps/templates/user_edit.html:232
 #, fuzzy
@@ -7343,39 +7356,39 @@ msgstr "Estanterías mágicas ✨"
 
 #: cps/templates/user_edit.html:455
 msgid "Choose how your magic shelves are ordered in the sidebar."
-msgstr ""
+msgstr "En la barra lateral, elige cómo quieres que se ordenen tus estantes mágicos."
 
 #: cps/templates/user_edit.html:459
 msgid "Order Mode"
-msgstr ""
+msgstr "Modo de pedido"
 
 #: cps/templates/user_edit.html:461
 msgid "Manual (drag to reorder)"
-msgstr ""
+msgstr "Manual (arrastra para reordenar)"
 
 #: cps/templates/user_edit.html:462
 msgid "Name (A-Z)"
-msgstr ""
+msgstr "Nombre (A-Z)"
 
 #: cps/templates/user_edit.html:463
 msgid "Name (Z-A)"
-msgstr ""
+msgstr "Nombre (Z-A)"
 
 #: cps/templates/user_edit.html:464
 msgid "Book count (high to low)"
-msgstr ""
+msgstr "Cantidad de libros (de mayor a menor)"
 
 #: cps/templates/user_edit.html:465
 msgid "Book count (low to high)"
-msgstr ""
+msgstr "Cantidad de libros (de menor a mayor)"
 
 #: cps/templates/user_edit.html:466
 msgid "Created (newest first)"
-msgstr ""
+msgstr "Creado (más reciente primero)"
 
 #: cps/templates/user_edit.html:467
 msgid "Created (oldest first)"
-msgstr ""
+msgstr "Creado (el más antiguo primero)"
 
 #: cps/templates/user_edit.html:468
 #, fuzzy
@@ -7389,7 +7402,7 @@ msgstr "Última modificación"
 
 #: cps/templates/user_edit.html:480
 msgid "Manual order is used only when the order mode is set to Manual."
-msgstr ""
+msgstr "El pedido manual solo se utiliza cuando el modo de pedido está configurado en Manual."
 
 #: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"

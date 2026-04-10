@@ -15,6 +15,7 @@ import shutil
 import sqlite3
 import fcntl
 import threading
+from datetime import datetime
 from pathlib import Path
 
 from cwa_db import CWA_DB
@@ -841,6 +842,23 @@ class NewBookProcessor:
                 self.generate_book_checksums(staged_path.stem, book_id=self.last_added_book_id)
             else:
                 self.generate_book_checksums(staged_path.stem)
+
+            # Ensure newly imported books have their timestamp set to the current time
+            # so they appear at the top of "Recently Added" views.
+            # calibredb sets timestamp from EPUB metadata (publication date), which can be
+            # years in the past, making new imports invisible in recently-added sorting.
+            if self.last_added_book_id is not None:
+                try:
+                    with sqlite3.connect(self.metadata_db, timeout=30) as con:
+                        if not self._register_title_sort_function(con):
+                            print("[ingest-processor] INFO: Skipping timestamp adjust (title_sort SQL function unavailable).", flush=True)
+                        else:
+                            cur = con.cursor()
+                            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S+00:00")
+                            cur.execute('UPDATE books SET timestamp = ? WHERE id = ?', (now, self.last_added_book_id))
+                            print(f"[ingest-processor] INFO: Set timestamp to {now} for newly imported book id={self.last_added_book_id}.", flush=True)
+                except Exception as e:
+                    print(f"[ingest-processor] WARN: Failed to set timestamp for new book: {e}", flush=True)
 
             # If we overwrote an existing book, Calibre does not bump books.timestamp, only last_modified.
             # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.

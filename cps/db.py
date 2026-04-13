@@ -105,7 +105,7 @@ class Identifiers(Base):
         if format_type == 'amazon':
             return "Amazon"
         elif format_type.startswith("amazon_"):
-            return "Amazon.{0}".format(format_type[7:].lower().replace("uk","co.uk"))
+            return "Amazon.{0}".format(format_type[7:].lower().replace("uk", "co.uk"))
         elif format_type == "isbn":
             return "ISBN"
         elif format_type == "doi":
@@ -148,7 +148,7 @@ class Identifiers(Base):
         if format_type == "amazon" or format_type == "asin":
             return "https://amazon.com/dp/{0}".format(self.val)
         elif format_type.startswith('amazon_'):
-            return "https://amazon.{0}/dp/{1}".format(format_type[7:].lower().replace("uk","co.uk"), self.val)
+            return "https://amazon.{0}/dp/{1}".format(format_type[7:].lower().replace("uk", "co.uk"), self.val)
         elif format_type == "isbn":
             return "https://www.worldcat.org/isbn/{0}".format(self.val)
         elif format_type == "doi":
@@ -428,7 +428,7 @@ class Books(Base):
         self.has_cover = (has_cover is not None)
 
     def __repr__(self):
-        return "<Books('{0},{1}{2}{3}{4}{5}{6}{7}{8}')>".format(self.title, self.sort, self.author_sort,
+        return "<Books('{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}')>".format(self.title, self.sort, self.author_sort,
                                                                 self.timestamp, self.pubdate, self.series_index,
                                                                 self.last_modified, self.path, self.has_cover)
 
@@ -582,14 +582,14 @@ class CalibreDB:
         """
         if self.session is not None:
             return  # Fast path - session already exists
-        
+
         # Session is None - need to recreate it
         # Acquire lock to ensure atomic recreation (no interruption by dispose)
         with self._reconnect_lock:
             # Double-check after acquiring lock (another thread may have recreated it)
             if self.session is not None:
                 return
-            
+
             # Try to recreate session from factory
             if self.session_factory is not None:
                 try:
@@ -597,7 +597,7 @@ class CalibreDB:
                     return  # Success
                 except Exception as ex:
                     log.error(f"Failed to init session from factory: {ex}")
-            
+
             # Factory is None or init failed - try to rebuild entire database setup
             if self.config and getattr(self.config, 'config_calibre_dir', None):
                 try:
@@ -623,7 +623,7 @@ class CalibreDB:
                             return
                 except Exception as ex:
                     log.error(f"Failed to init session from app.db in ensure_session: {ex}")
-            
+
             # If we still don't have a session, log warning
             # Don't raise exception - let caller handle AttributeError if they try to use None session
             if self.session is None:
@@ -924,8 +924,8 @@ class CalibreDB:
     def common_filters(self, allow_show_archived=False, return_all_languages=False, viewing_tag_id=None):
         if not allow_show_archived:
             archived_books = (ub.session.query(ub.ArchivedBook)
-                              .filter(ub.ArchivedBook.user_id==int(current_user.id))
-                              .filter(ub.ArchivedBook.is_archived==True)
+                              .filter(ub.ArchivedBook.user_id == int(current_user.id))
+                              .filter(ub.ArchivedBook.is_archived is True)
                               .all())
             archived_book_ids = [archived_book.book_id for archived_book in archived_books]
             archived_filter = Books.id.notin_(archived_book_ids)
@@ -939,7 +939,7 @@ class CalibreDB:
         negtags_list = current_user.list_denied_tags()
         postags_list = current_user.list_allowed_tags()
         neg_content_tags_filter = false() if negtags_list == [''] else Books.tags.any(Tags.name.in_(negtags_list))
-        
+
         # Issue #906: When viewing a specific tag category, include that tag in allowed tags
         if viewing_tag_id is not None and postags_list != ['']:
             # Get the tag name for the viewing_tag_id
@@ -947,7 +947,7 @@ class CalibreDB:
             if viewing_tag and viewing_tag.name not in postags_list:
                 # Temporarily add the viewed tag to the allowed list for this query
                 postags_list = postags_list + [viewing_tag.name]
-        
+
         pos_content_tags_filter = true() if postags_list == [''] else Books.tags.any(Tags.name.in_(postags_list))
         if self.config.config_restricted_column:
             try:
@@ -1040,11 +1040,11 @@ class CalibreDB:
             query = self.generate_linked_query(config_read_column, database)
         else:
             query = self.session.query(database)
-        
+
         # Eagerly load the data relationship to prevent DetachedInstanceError in templates
         if database == Books:
             query = query.options(joinedload(Books.data))
-        
+
         off = int(int(pagesize) * (page - 1))
 
         indx = len(join)
@@ -1082,43 +1082,60 @@ class CalibreDB:
     # Orders all Authors in the list according to authors sort
     def order_authors(self, entries, list_return=False, combined=False):
         self.ensure_session()
+        all_authors = self.session.query(Authors).order_by(Authors.sort)
         for entry in entries:
-            if combined:
-                sort_authors = entry.Books.author_sort.split('&')
-                ids = [a.id for a in entry.Books.authors]
+            book = entry.Books if combined else entry
+            ids = [a.id for a in book.authors]
+            sort_authors = [a for a in map(strip_whitespaces, book.author_sort.split('&')) if a.strip()]
 
-            else:
-                sort_authors = entry.author_sort.split('&')
-                ids = [a.id for a in entry.authors]
-            authors_ordered = list()
             # error = False
-            for auth in sort_authors:
-                auth = strip_whitespaces(auth)
-                # Skip empty author strings to prevent spurious errors
-                if not auth:
-                    continue
-                results = self.session.query(Authors).filter(Authors.sort == auth).all()
-                # ToDo: How to handle not found author name
-                if not len(results):
-                    log.error("Author '{}' not found to display name in right order".format(auth))
-                    # error = True
-                    break
-                for r in results:
-                    if r.id in ids:
-                        authors_ordered.append(r)
-                        ids.remove(r.id)
+            authors_ordered = list()
+            for sort_author in sort_authors:
+                results = all_authors.filter(Authors.sort == sort_author).all()
+                if not results:
+                    log.debug("order_authors: updating authors_sort: no results for Books instance: '{}'".format(
+                        book.title))
+                    results = self.update_author_sort_for_book(book)
+                    if not results:
+                        log.error("order_authors: Author '{}' not found for Books instance: '{}'".format(
+                            sort_author, book.title))
+                        # error = True
+                        break
+                for result in results:
+                    if result.id in ids:
+                        authors_ordered.append(result)
+                        ids.remove(result.id)
+
             for author_id in ids:
-                result = self.session.query(Authors).filter(Authors.id == author_id).first()
+                result = all_authors.filter(Authors.id == author_id).first()
                 authors_ordered.append(result)
 
             if list_return:
                 if combined:
-                    entry.Books.authors = authors_ordered
+                    book.authors = authors_ordered
                 else:
-                    entry.ordered_authors = authors_ordered
+                    book.ordered_authors = authors_ordered
             else:
                 return authors_ordered
         return entries
+
+    # Rebuild the author_sort field from the authors relationship,
+    # fixing any out-of-sync authors.sort values along the way.
+    def update_author_sort_for_book(self, book):
+        if book.authors:
+            self.ensure_session()
+            from .helper import get_sorted_author
+            for author in book.authors:
+                sorted_name = get_sorted_author(author.name)
+                if sorted_name != author.sort:
+                    log.debug("update_author_sort_for_book: sort value for Authors instance '{}' updated from '{}' to '{}'".format(
+                        author.name, author.sort, sorted_name))
+                    author.sort = sorted_name
+            book.author_sort = " & ".join(a.sort for a in book.authors)
+            log.debug("update_authorsort_for_book: author_sort value for Books instance '{}' updated to '{}'".format(
+                book.title, book.author_sort))
+            self.session.commit()
+            return book.authors
 
     def get_typeahead(self, database, query, replace=('', ''), tag_filter=true()):
         self.ensure_session()
@@ -1233,7 +1250,7 @@ class CalibreDB:
             if not return_all_languages:
                 no_lang_count = (self.session.query(Books)
                                  .outerjoin(books_languages_link).outerjoin(Languages)
-                                 .filter(Languages.lang_code==None)
+                                 .filter(Languages.lang_code is None)
                                  .filter(self.common_filters())
                                  .count())
                 if no_lang_count:
@@ -1255,7 +1272,7 @@ class CalibreDB:
         if self.session is None:
             log.error("create_functions: Cannot create functions because session is None")
             return
-        
+
         # user defined sort function for calibre databases (Series, etc.)
         if config:
             def _title_sort(title):

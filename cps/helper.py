@@ -431,15 +431,15 @@ def rename_all_files_on_change(one_book, new_path, old_path, all_new_name, gdriv
         if not gdrive:
             if not os.path.exists(new_path):
                 os.makedirs(new_path)
-            
+
             old_file = os.path.join(old_path, file_format.name + '.' + file_format.format.lower())
             new_file = os.path.join(new_path, all_new_name + '.' + file_format.format.lower())
-            
+
             # Skip if source and destination are the same
             if old_file == new_file:
                 log.debug("Skipping file rename - source and destination are identical: %s", old_file)
                 continue
-            
+
             # Check if source file exists
             if not os.path.exists(old_file):
                 log.warning("Source file not found for rename: %s", old_file)
@@ -451,7 +451,7 @@ def rename_all_files_on_change(one_book, new_path, old_path, all_new_name, gdriv
                 else:
                     log.error("Neither old nor new file exists - cannot rename %s to %s", old_file, new_file)
                     continue
-            
+
             # Check if destination already exists
             if os.path.exists(new_file) and old_file != new_file:
                 log.warning("Destination file already exists, will overwrite: %s", new_file)
@@ -459,7 +459,7 @@ def rename_all_files_on_change(one_book, new_path, old_path, all_new_name, gdriv
                     os.remove(new_file)
                 except OSError as ex:
                     log.error("Could not remove existing destination file %s: %s", new_file, ex)
-            
+
             # Attempt to rename the file
             try:
                 shutil.move(old_file, new_file)
@@ -639,11 +639,11 @@ def move_files_on_change(calibre_path, new_author_dir, new_titledir, localbook, 
                         src_file = os.path.join(dir_name, file)
                         dest_dir = new_path + dir_name[len(path):]
                         dest_file = os.path.join(dest_dir, file)
-                        
+
                         # Create destination directory if it doesn't exist
                         if not os.path.exists(dest_dir):
                             os.makedirs(dest_dir)
-                        
+
                         try:
                             shutil.move(src_file, dest_file)
                         except OSError as ex:
@@ -655,14 +655,14 @@ def move_files_on_change(calibre_path, new_author_dir, new_titledir, localbook, 
                                 log.error("Copy+delete fallback failed for %s: %s", src_file, fallback_ex)
                                 # Continue with other files even if one fails
                                 continue
-            
+
             # Try to remove old author directory if empty
             if os.path.exists(os.path.split(path)[0]) and not os.listdir(os.path.split(path)[0]):
                 try:
                     shutil.rmtree(os.path.split(path)[0])
                 except (IOError, OSError) as ex:
                     log.error("Deleting authorpath for book %s failed: %s", localbook.id, ex)
-        
+
         # change location in database to new author/title path
         localbook.path = os.path.join(new_author_dir, new_titledir).replace('\\', '/')
     except OSError as ex:
@@ -890,7 +890,7 @@ def get_book_cover_internal(book, resolution=None):
                     if not is_kobo_request and use_IM:
                         from .tasks.thumbnail import TaskGenerateCoverThumbnails
                         from .services.worker import WorkerThread
-                        
+
                         # Queue thumbnail generation task if not already pending (prevents duplicate tasks)
                         if book.id not in _pending_thumbnail_books:
                             thumbnail_task = TaskGenerateCoverThumbnails(book_id=book.id)
@@ -902,7 +902,7 @@ def get_book_cover_internal(book, resolution=None):
                             except Exception as queue_ex:
                                 # If queueing fails, don't add to pending set
                                 log.error(f'Failed to queue thumbnail task for book {book.id}: {queue_ex}')
-                        
+
                         # Note: Thumbnails will be generated in background
                         # Current request will fall back to serving original cover.jpg
                 except Exception as ex:
@@ -1441,7 +1441,7 @@ def get_download_link(book_id, book_format, client):
         try:
             import json
             from flask import request
-            
+
             # Detect source of download
             source = request.args.get('from', 'direct')
             referer = request.headers.get('Referer', '')
@@ -1458,7 +1458,7 @@ def get_download_link(book_id, book_format, client):
                     source = 'book_detail'
                 elif '/shelf' in referer:
                     source = 'shelf'
-            
+
             cwa_db = CWA_DB()
             cwa_db.log_activity(
                 user_id=current_user.id,
@@ -1541,14 +1541,14 @@ def get_internal_api_url(path):
     port = os.getenv('CWA_PORT_OVERRIDE', '8083').strip()
     if not port.isdigit():
         port = '8083'
-    
+
     protocol = "http"
     certfile = config.get_config_certfile()
     keyfile = config.get_config_keyfile()
     if certfile and keyfile and os.path.isfile(certfile) and os.path.isfile(keyfile):
         protocol = "https"
-        
+
     if not path.startswith("/"):
         path = "/" + path
-        
+
     return f"{protocol}://127.0.0.1:{port}{path}"

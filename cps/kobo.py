@@ -376,7 +376,7 @@ def HandleSyncRequest():
             .all()
 
         new_tags_last_modified = sync_token.tags_last_modified
-            
+
         for shelf in magic_shelves:
             books, _ = magic_shelf.get_books_for_magic_shelf(
                 shelf.id, page=1, page_size=1000
@@ -1407,7 +1407,7 @@ def HandleInitRequest():
 @requires_kobo_auth
 @download_required
 def download_book(book_id, book_format):
-    return get_download_link(book_id, book_format, "kobo")
+    return get_download_link(book_id, book_format)
 
 
 def NATIVE_KOBO_RESOURCES():

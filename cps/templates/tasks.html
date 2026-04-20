@@ -175,7 +175,7 @@
   }
   function cancelScheduled(id) {
     if (!id) return;
-    fetch('{{ url_for("cwa_stats.cwa_scheduled_cancel") }}', {
+    cwaFetch('{{ url_for("cwa_stats.cwa_scheduled_cancel") }}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: id })

@@ -304,7 +304,7 @@ msgstr ""
 #: cps/admin.py:947
 msgid "Are you sure you want to change Calibre library location?"
 msgstr ""
-"Voulez-vous vraiment changer l’emplacement de la  bibliothèque de Calibre ?"
+"Voulez-vous vraiment changer l’emplacement de la bibliothèque de Calibre ?"
 
 #: cps/admin.py:949
 msgid ""
@@ -437,7 +437,7 @@ msgstr "Bravo ! Compte Gmail vérifié."
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
 msgid "Oops! Database Error: %(error)s."
-msgstr "Erreur de la base de données: %(error)s."
+msgstr "Erreur de la base de données : %(error)s."
 
 #: cps/admin.py:1753
 #, python-format
@@ -454,7 +454,7 @@ msgstr "Il y a eu une erreur pendant l’envoi du courriel de test : %(res)s"
 
 #: cps/admin.py:1758
 msgid "Please configure your e-mail address first..."
-msgstr "Veuillez d'abord configurer votre adresse de courriel..."
+msgstr "Veuillez d'abord configurer votre adresse de courriel…"
 
 #: cps/admin.py:1760
 msgid "Email Server Settings updated"
@@ -704,7 +704,7 @@ msgstr "L'adresse e-mail ne peut pas être vide et doit être valide"
 #: cps/admin.py:2821
 #, python-format
 msgid "User '%(nick)s' updated"
-msgstr "Utilisateur '%(nick)s'  mis à jour"
+msgstr "Utilisateur '%(nick)s' mis à jour"
 
 #: cps/admin.py:2886
 #, python-format
@@ -726,7 +726,7 @@ msgstr ""
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr ""
-"Echec de la connexion: Le serveur a retourné le code de status %(code)s"
+"Échec de la connexion : Le serveur a retourné le code de statut %(code)s"
 
 #: cps/admin.py:2895
 msgid ""
@@ -800,11 +800,11 @@ msgstr ""
 
 #: cps/admin.py:2954
 msgid "Connection failed: Request timed out."
-msgstr "Echec de la connexion: Délai d'attente dépassé."
+msgstr "Échec de la connexion : Délai d'attente dépassé."
 
 #: cps/admin.py:2956
 msgid "Connection failed: Invalid JSON in response."
-msgstr "Echec de la connexion: Réponse JSON invalide."
+msgstr "Échec de la connexion : Réponse JSON invalide."
 
 #: cps/admin.py:2959
 msgid "An unknown error occurred."
@@ -1250,7 +1250,7 @@ msgstr "Téléversement terminé, traitement en cours, veuillez patienter…."
 
 #: cps/editbooks.py:157 cps/editbooks.py:183
 msgid "Failed to queue upload for processing"
-msgstr "Echec de mise en file d'attente du téléversement pour traitement"
+msgstr "Échec de mise en file d'attente du téléversement pour traitement"
 
 #: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
@@ -1313,7 +1313,7 @@ msgstr "Les métadonnées ont bien été mises à jour"
 #: cps/editbooks.py:1047
 #, python-brace-format
 msgid "Error editing book: {}"
-msgstr "Erreur d'édition du livre: {}"
+msgstr "Erreur d'édition du livre : {}"
 
 #: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
@@ -1325,8 +1325,8 @@ msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr ""
-"Le fichier téléchargé existe probablement dans la librairie, veuillez le "
-"modifier avant de le télécharger de nouveau: "
+"Le fichier téléchargé existe probablement dans la bibliothèque, veuillez le "
+"modifier avant de le télécharger de nouveau : "
 
 #: cps/editbooks.py:1263
 #, python-format
@@ -1338,7 +1338,7 @@ msgstr ""
 #: cps/editbooks.py:1283
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
-msgstr "Impossible de déplacer le fichier de couverture %(file)s: %(error)s"
+msgstr "Impossible de déplacer le fichier de couverture %(file)s : %(error)s"
 
 #: cps/editbooks.py:1341 cps/editbooks.py:1343
 msgid "Book Format Successfully Deleted"
@@ -1475,7 +1475,7 @@ msgstr ""
 #: cps/helper.py:414
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
-msgstr "La suppression du livre %(id)s a échoué: %(message)s"
+msgstr "La suppression du livre %(id)s a échoué : %(message)s"
 
 #: cps/helper.py:425
 #, python-format
@@ -1617,12 +1617,12 @@ msgstr "Les exécutables Calibre ne sont pas viables"
 #: cps/helper.py:1373
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
-msgstr "Exécutables Calibre manquants: %(missing)s"
+msgstr "Exécutables Calibre manquants : %(missing)s"
 
 #: cps/helper.py:1375
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
-msgstr "Permissions d'exécutions manquantes: %(missing)s"
+msgstr "Permissions d'exécution manquantes : %(missing)s"
 
 #: cps/helper.py:1380
 msgid "Error executing Calibre"
@@ -1818,7 +1818,7 @@ msgstr "Erreur Oauth Google : {}"
 #: cps/oauth_bb.py:1081 cps/oauth_bb.py:1089
 #, python-brace-format
 msgid "OAuth error: {}"
-msgstr "Erreur OAuth  : {}"
+msgstr "Erreur OAuth : {}"
 
 #: cps/opds.py:200
 msgid "description"
@@ -2224,7 +2224,7 @@ msgid ""
 "%(version)s"
 msgstr ""
 "Une nouvelle mise à jour est disponible. Cliquez sur le bouton ci-dessous "
-"pour charger la version: %(version)s"
+"pour charger la version : %(version)s"
 
 #: cps/updater.py:541
 msgid "No release information available"
@@ -2400,7 +2400,7 @@ msgstr "Liste de formats de fichiers"
 
 #: cps/web.py:1961 cps/web.py:1999
 msgid "Please configure the SMTP mail settings first..."
-msgstr "Veuillez configurer les paramètres SMTP au préalable..."
+msgstr "Veuillez configurer les paramètres SMTP au préalable…"
 
 #: cps/web.py:1965
 msgid "Oops! Please update your profile with a valid eReader Email."
@@ -2422,11 +2422,11 @@ msgstr "Il y a eu une erreur en envoyant ce livre : %(res)s"
 
 #: cps/web.py:2007 cps/web.py:2017
 msgid "No email addresses selected"
-msgstr "Aucune adresse email sélectionnée"
+msgstr "Aucune adresse e-mail sélectionnée"
 
 #: cps/web.py:2024
 msgid "Additional email addresses are disabled for your account."
-msgstr "Les adresses email supplémentaires sont désactivées pour votre compte."
+msgstr "Les adresses e-mail supplémentaires sont désactivées pour votre compte."
 
 #: cps/web.py:2046
 msgid "Success! Book queued for sending to the selected address(es)!"
@@ -2534,13 +2534,13 @@ msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
 "known"
 msgstr ""
-"Connexion de secours en tant que: '%(nickname)s', le serveur LDAP est "
+"Connexion de secours en tant que : '%(nickname)s', le serveur LDAP est "
 "indisponible, ou l'utilisateur est inconnu"
 
 #: cps/web.py:2305
 #, python-format
 msgid "Could not login: %(message)s"
-msgstr "Impossible de se connecter: %(message)s"
+msgstr "Impossible de se connecter : %(message)s"
 
 #: cps/web.py:2328 cps/web.py:2329 cps/web.py:2372
 msgid "Wrong Username or Password"
@@ -2591,15 +2591,15 @@ msgstr "Récupération automatique des IDs Hardcover"
 
 #: cps/tasks/auto_send.py:34
 msgid "Preparing to send to eReader..."
-msgstr "Préparation de l'envoi vers l'eReader..."
+msgstr "Préparation de l'envoi vers l'eReader…"
 
 #: cps/tasks/auto_send.py:56
 msgid "Checking available formats..."
-msgstr "Vérification des formats disponibles..."
+msgstr "Vérification des formats disponibles…"
 
 #: cps/tasks/auto_send.py:69
 msgid "Sending to eReader..."
-msgstr "Envoi vers eReader..."
+msgstr "Envoi vers eReader…"
 
 #: cps/tasks/auto_send.py:86
 msgid "Auto-send completed successfully"
@@ -2694,7 +2694,7 @@ msgstr "Adresse de courriel"
 
 #: cps/tasks/metadata_backup.py:23
 msgid "Backing up Metadata"
-msgstr "Sauvegarde  des métadonnées"
+msgstr "Sauvegarde des métadonnées"
 
 #: cps/tasks/ops.py:28
 msgid "Convert Library – full run"
@@ -2832,7 +2832,7 @@ msgstr "Expéditeur des courriels"
 
 #: cps/templates/admin.html:95
 msgid "Email Service"
-msgstr "Email de contact"
+msgstr "Service de messagerie"
 
 #: cps/templates/admin.html:96
 msgid "Gmail via Oauth2"
@@ -3136,7 +3136,7 @@ msgstr "Convertir le livre"
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
 #: cps/templates/layout.html:152 cps/templates/layout.html:271
 msgid "Uploading..."
-msgstr "Téléversement en cours..."
+msgstr "Téléversement en cours…"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
@@ -3291,7 +3291,7 @@ msgstr "Les champs de métadonnées sélectionnés ont été appliqués au formu
 
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
-msgstr "Chargement..."
+msgstr "Chargement…"
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3474,7 +3474,7 @@ msgstr "Éditer les métadonnées"
 #: cps/templates/book_table.html:285
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
 msgstr ""
-"Éditer les champs que vous voulez changer. Les champs vides seront ignorés:"
+"Éditer les champs que vous voulez changer. Les champs vides seront ignorés :"
 
 #: cps/templates/book_table.html:287
 msgid ""
@@ -3492,7 +3492,7 @@ msgstr "Sélectionner une étagère"
 #: cps/templates/book_table.html:346
 msgid "Please select a shelf to add the selected books to:"
 msgstr ""
-"Veuillez sélectionner une étagère à laquelle ajouter les livres sélectionnés:"
+"Veuillez sélectionner une étagère à laquelle ajouter les livres sélectionnés :"
 
 #: cps/templates/book_table.html:348
 msgid "-- Select a Shelf --"
@@ -3555,15 +3555,12 @@ msgid ""
 "and there, enter the path to the rest of the library</b>"
 msgstr ""
 "Ces chemins sont internes à CWA uniquement, vous pouvez changer ce qu'ils "
-"sont liés à votre guise sur le côté gauche, mais il n'y a aucune raison de "
-"changer les chemins sur le côté droit\n"
+"sont liés à votre guise sur le côté gauche, mais il n'y a aucune raison de\n"
 "        changer les chemins sur le côté droit.<br><br>Si vous souhaitez que "
-"votre fichier <code>metadata.db</code> se trouve à un endroit différent du "
-"reste de votre bibliothèque, utilisez l'option Séparer les fichiers de "
-"livres <code>de</code> la bibliothèque ci-dessous\n"
-"        utilisez l'<b>option Séparer les fichiers de livres de la "
-"bibliothèque ci-dessous et entrez le chemin d'accès au reste de la "
-"bibliothèque</b>"
+"votre fichier <code>metadata.db</code> se trouve à un endroit différent du reste\n"
+"        de votre bibliothèque, utilisez l'<b>option Séparer les fichiers de "
+"livres de la bibliothèque ci-dessous et entrez le chemin d'accès au reste de "
+"la bibliothèque</b>"
 
 #: cps/templates/config_db.html:59
 msgid ""
@@ -3577,14 +3574,11 @@ msgid ""
 msgstr ""
 "Par exemple, tant que le fichier <code>metadata.db</code> de votre "
 "bibliothèque est lié quelque part dans <code>/calibre-library</code>, vous "
-"pouvez lier le répertoire contenant les fichiers de livres correspondants, "
-"etc. à quelque chose comme <code>/books</code> et entrer /books dans le "
-"champ qui apparaît en dessous\n"
+"pouvez lier le répertoire\n"
 "        contenant les fichiers de livres correspondants, etc. à quelque "
-"chose comme <code>/books</code> et entrer <code>/books</code> dans le champ "
-"qui s'affiche ci-dessous\n"
-"        une fois que vous avez coché l'option <b>Séparer les fichiers de "
-"livres de la bibliothèque</b>."
+"chose comme <code>/books</code> et entrer <code>/books</code> dans le champ\n"
+"        qui s'affiche ci-dessous une fois que vous avez coché l'option "
+"<b>Séparer les fichiers de livres de la bibliothèque</b>."
 
 #: cps/templates/config_db.html:63
 msgid "Split Library Functionality"
@@ -3772,7 +3766,7 @@ msgstr "Activer la connexion à distance Magic Link"
 
 #: cps/templates/config_edit.html:203
 msgid "Enable Kobo sync"
-msgstr "Activer la synchro Kobo"
+msgstr "Activer la synchronisation Kobo"
 
 #: cps/templates/config_edit.html:208
 msgid "Proxy unknown requests to Kobo Store"
@@ -4512,7 +4506,7 @@ msgstr "Erreur lors du démarrage du correcteur EPUB"
 
 #: cps/templates/cwa_settings.html:136
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "Activer/Désactiver les services  Calibre-Web Automated"
+msgstr "Activer/Désactiver les services Calibre-Web Automated"
 
 #: cps/templates/cwa_settings.html:143
 msgid "Enable CWA Auto-Convert"
@@ -4862,7 +4856,7 @@ msgstr "Délai d'expiration (minutes):"
 
 #: cps/templates/cwa_settings.html:444
 msgid "Range: 5-120 minutes (default: 15)"
-msgstr "Plage: 5-120 minutes (par défaut: 15)"
+msgstr "Plage : 5-120 minutes (par défaut : 15)"
 
 #: cps/templates/cwa_settings.html:448
 msgid "Stale temp cleanup"
@@ -5220,7 +5214,7 @@ msgid ""
 "when it's active, meaning they will be imported as is."
 msgstr ""
 "Les formats sélectionnés ici seront ignorés par la fonction de conversion "
-"automatique de CWA lorsqu'elle est active, c’est-à-dire  qu'ils seront "
+"automatique de CWA lorsqu'elle est active, c’est-à-dire qu'ils seront "
 "importés tel quel."
 
 #: cps/templates/cwa_settings.html:878
@@ -5518,7 +5512,7 @@ msgstr "Activer la résolution automatique des doublons"
 
 #: cps/templates/cwa_settings.html:1169 cps/templates/duplicates.html:437
 msgid "Warning:"
-msgstr "Attention:"
+msgstr "Attention :"
 
 #: cps/templates/cwa_settings.html:1169
 msgid ""
@@ -6167,7 +6161,7 @@ msgstr "Ignorer pour l'instant"
 #: cps/templates/hardcover_review_matches.html:346
 #: cps/templates/hardcover_review_matches.html:380
 msgid "Processing..."
-msgstr "En cours..."
+msgstr "En cours…"
 
 #: cps/templates/hardcover_review_matches.html:280
 #: cps/templates/hardcover_review_matches.html:289
@@ -6225,7 +6219,7 @@ msgid ""
 "Calibre-Web Automated Instance is unconfigured, please contact your "
 "administrator"
 msgstr ""
-"L'instance Calibre-Web Automated  n'est pas configurée, veuillez contacter "
+"L'instance Calibre-Web Automated n'est pas configurée, veuillez contacter "
 "votre administrateur"
 
 #: cps/templates/http_error.html:44
@@ -6547,7 +6541,7 @@ msgstr "et du disque dur"
 msgid ""
 "Important Kobo Note: deleted books will remain on any paired Kobo device."
 msgstr ""
-"Note Kobo importante: les livres supprimés vont rester sur l'appareil Kobo "
+"Note Kobo importante : les livres supprimés vont rester sur l'appareil Kobo "
 "appairé."
 
 #: cps/templates/modal_dialogs.html:57
@@ -6822,7 +6816,7 @@ msgstr "Magic Link - Autoriser un nouvel appareil"
 
 #: cps/templates/remote_login.html:7
 msgid "On another device, login and visit:"
-msgstr "Utilisez votre autre appareil, connectez-vous et visitez:"
+msgstr "Utilisez votre autre appareil, connectez-vous et visitez :"
 
 #: cps/templates/remote_login.html:17
 msgid "Once verified, you will automatically be logged in on this device."
@@ -6851,7 +6845,7 @@ msgstr "Aucun résultat trouvé"
 
 #: cps/templates/search.html:7
 msgid "Search Term:"
-msgstr "Chercher le terme:"
+msgstr "Chercher le terme :"
 
 #: cps/templates/search.html:9
 msgid "Results for:"
@@ -6912,12 +6906,12 @@ msgstr "Évaluation inférieure à"
 #: cps/templates/search_form.html:175 cps/templates/search_form.html:187
 #: cps/templates/search_form.html:201
 msgid "From:"
-msgstr "Depuis:"
+msgstr "Depuis :"
 
 #: cps/templates/search_form.html:179 cps/templates/search_form.html:191
 #: cps/templates/search_form.html:211
 msgid "To:"
-msgstr "Vers:"
+msgstr "Vers :"
 
 #: cps/templates/shelf.html:13
 msgid "Delete this Shelf"
@@ -7221,7 +7215,7 @@ msgstr "Jeton API pour l'intégration du fournisseur de métadonnées Hardcover.
 
 #: cps/templates/user_edit.html:323
 msgid "Kobo Sync Token"
-msgstr "Jeton de synchro Kobo"
+msgstr "Jeton de synchronisation Kobo"
 
 #: cps/templates/user_edit.html:325
 msgid "Create/View"
@@ -7379,7 +7373,7 @@ msgstr "Visible"
 
 #: cps/templates/user_table.html:80 cps/templates/user_table.html:103
 msgid "Select..."
-msgstr "Sélectionner..."
+msgstr "Sélectionner…"
 
 #: cps/templates/user_table.html:124
 msgid "Remove Selections"

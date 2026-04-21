@@ -741,7 +741,7 @@ msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "Échec de la connexion : délai d'attente expiré. Le serveur est peut-être "
-"""lent ou inaccessible."
+"lent ou inaccessible."
 
 #: cps/admin.py:2899
 msgid ""
@@ -771,7 +771,7 @@ msgstr ""
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 "L'URL des métadonnées est valide ! %(count)s points de terminaison OAuth "
-"""trouvés."
+"trouvés."
 
 #: cps/admin.py:2941
 msgid " User info endpoint is available."

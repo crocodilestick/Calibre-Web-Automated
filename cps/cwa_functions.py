@@ -1807,6 +1807,8 @@ def kill_convert_library(queue):
             break
 
 @convert_library.route('/cwa-convert-library-overview', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def show_convert_library_page():
     return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
                                 target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
@@ -1831,6 +1833,8 @@ def schedule_convert_library(delay: int):
     return redirect(url_for('convert_library.show_convert_library_page'))
 
 @convert_library.route('/cwa-convert-library/log-archive', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def show_convert_library_logs():
     logs=get_logs_from_archive("convert-library")
     log_dates = get_log_dates(logs)
@@ -1838,6 +1842,8 @@ def show_convert_library_logs():
                                 logs=logs, log_dates=log_dates)
 
 @convert_library.route('/cwa-convert-library/download-current-log/<log_filename>')
+@login_required_if_no_ano
+@admin_required
 def download_current_log(log_filename):
     log_filename = "convert-library.log"
     LOG_DIR = "/config"
@@ -1864,6 +1870,8 @@ def download_current_log(log_filename):
         abort(400)  # Bad request for malformed or unsafe file paths
 
 @convert_library.route('/cwa-convert-library-start', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def start_conversion():
     # Wipe conversion log from previous runs
     open('/config/convert-library.log', 'w').close()
@@ -1883,12 +1891,16 @@ def start_conversion():
     return redirect(url_for('convert_library.show_convert_library_page'))
 
 @convert_library.route('/convert-library-cancel', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def cancel_convert_library():
     # Create kill trigger file
     open(tempfile.gettempdir() + "/.kill_convert_library_trigger", 'w').close()
     return redirect(url_for('convert_library.show_convert_library_page'))
 
 @convert_library.route('/convert-library-status', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def get_status():
     with open("/config/convert-library.log", 'r') as f:
         status = f.read()
@@ -1949,6 +1961,8 @@ def kill_epub_fixer(queue):
             break
 
 @epub_fixer.route('/cwa-epub-fixer-overview', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def show_epub_fixer_page():
     return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - EPUB Fixer Service"), page="cwa-epub-fixer")
 
@@ -1971,6 +1985,8 @@ def schedule_epub_fixer(delay: int):
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
 @epub_fixer.route('/cwa-epub-fixer/log-archive', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def show_epub_fixer_logs():
     logs = get_logs_from_archive("epub-fixer")
     log_dates = get_log_dates(logs)
@@ -1978,6 +1994,8 @@ def show_epub_fixer_logs():
                                 logs=logs, log_dates=log_dates)
 
 @epub_fixer.route('/cwa-epub-fixer/download-current-log/<log_filename>')
+@login_required_if_no_ano
+@admin_required
 def download_current_log(log_filename):
     log_filename = "epub-fixer.log"
     LOG_DIR = "/config"
@@ -2004,6 +2022,8 @@ def download_current_log(log_filename):
         abort(400)  # Bad request for malformed or unsafe file paths
 
 @epub_fixer.route('/cwa-epub-fixer-start', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def start_epub_fixer():
     # Wipe conversion log from previous runs
     open('/config/epub-fixer.log', 'w').close()
@@ -2072,6 +2092,8 @@ def run_epub_fixer_for_book():
         return jsonify({"success": False, "error": _("Failed to start EPUB Fixer for selected book.")}), 500
 
 @epub_fixer.route('/epub-fixer-cancel', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def cancel_epub_fixer():
     # Create kill trigger file
     open(tempfile.gettempdir() + "/.kill_epub_fixer_trigger", 'w').close()
@@ -2086,6 +2108,8 @@ def cancel_epub_fixer():
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
 @epub_fixer.route('/epub-fixer-status', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def get_status():
     with open("/config/epub-fixer.log", 'r') as f:
         status = f.read()

@@ -62,6 +62,7 @@ RUN mkdir -p /app/calibre \
 # STAGE 2: Final - Runtime image
 # =============================================================================
 FROM debian:trixie-slim
+FROM ghcr.io/linuxserver/unrar:latest AS unrar
 
 ARG BUILD_DATE
 ARG VERSION
@@ -82,6 +83,7 @@ RUN groupadd -g 1000 calibre \
 COPY --from=dependencies /venv /venv
 COPY --from=dependencies /usr/bin/kepubify /usr/bin/kepubify
 COPY --chown=calibre:calibre --from=dependencies /app/calibre /app/calibre
+COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
 
 # Prepend venv to PATH so 'python'/'python3' resolve to the venv binaries
 ENV PATH=/venv/bin:$PATH
@@ -120,7 +122,6 @@ RUN apt-get update \
       libgl1 \
       libglx-mesa0 \
       lsof \
-      unar \
       xz-utils \
       curl \
  && update-ca-certificates \

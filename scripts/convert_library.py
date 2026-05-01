@@ -40,8 +40,8 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 # Define user and group
-USER_NAME = "abc"
-GROUP_NAME = "abc"
+USER_NAME = "calibre"
+GROUP_NAME = "calibre"
 
 # Get UID and GID
 uid = pwd.getpwnam(USER_NAME).pw_uid

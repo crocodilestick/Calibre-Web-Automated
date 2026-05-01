@@ -73,8 +73,8 @@ except FileNotFoundError:
     logger.addHandler(stream_handler)
 
 # Define user and group
-USER_NAME = "abc"
-GROUP_NAME = "abc"
+USER_NAME = "calibre"
+GROUP_NAME = "calibre"
 
 # Kill trigger path
 KILL_TRIGGER_PATH = os.path.join(tempfile.gettempdir(), ".kill_epub_fixer_trigger")

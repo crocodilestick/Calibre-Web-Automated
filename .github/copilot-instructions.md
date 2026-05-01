@@ -5,14 +5,22 @@ Calibre-Web Automated (CWA) is a fork of Calibre-Web that adds automated ebook p
 
 ## Architecture
 
-### Multi-Process Service Model (s6-overlay)
-CWA uses **s6-overlay** for process supervision. Services are defined in `/root/etc/s6-overlay/s6-rc.d/`:
-- **cwa-init**: One-time initialization (directory setup, permissions, Qt6 compatibility checks)
-- **svc-calibre-web-automated**: Main Flask application
-- **cwa-ingest-service**: File watcher that triggers ebook import/conversion via `ingest_processor.py`
-- **metadata-change-detector**: Monitors `metadata.db` for changes to trigger cover/metadata enforcement
-- **cwa-auto-zipper**: Daily compression of processed book backups
+### Background Service Model
+CWA background services are managed by the Flask app itself via `cps/services/background_services.py`, which starts shell scripts from `scripts/services/` as subprocesses. This replaces s6-overlay so the app works identically inside and outside Docker.
+
+**One-shot services** (run synchronously at startup):
+- **cwa-init**: Directory setup, permissions, lock cleanup, app.db init, Qt6 compatibility checks
+- **calibre-binaries-setup**: Runs `calibre_postinstall` to register Calibre binaries
+- **cwa-process-recovery**: Cleans stale temp files, resets stuck ingest status
 - **cwa-auto-library**: Automatic library detection and mounting
+
+**Long-running services** (started as subprocesses):
+- **cwa-ingest-service**: File watcher (inotifywait with polling fallback) that triggers ebook import/conversion via `ingest_processor.py`
+- **metadata-change-detector**: Monitors `metadata_change_logs/` for changes to trigger cover/metadata enforcement via `cover_enforcer.py`
+- **cwa-auto-zipper**: Daily compression of processed book backups at 23:59
+
+**Deferred service** (runs after 15s delay):
+- **cwa-checksum-backfill**: Generates KOReader checksums for existing books
 
 Services communicate via filesystem locks (`/tmp/*.lock`), SQLite databases, and status files (`/config/cwa_ingest_status`).
 

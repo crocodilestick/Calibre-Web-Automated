@@ -389,7 +389,7 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
     try:
         nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
         if not (nsm and ingest_dir == "/cwa-book-ingest"):
-            # Set ownership to abc:abc (uid=1000, gid=1000)
+            # Set ownership to calibre:calibre (uid=1000, gid=1000)
             os.chown(ingest_dir, 1000, 1000)
     except (OSError, PermissionError) as e:
         # Log warning but don't crash the upload process

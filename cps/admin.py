@@ -2431,12 +2431,12 @@ def _configuration_update_helper():
 
         # Rarfile Content configuration
         _config_string(to_save, "config_rarfile_location")
-        unrar_warning = None
+        unar_warning = None
         if "config_rarfile_location" in to_save:
-            unrar_status = helper.check_unrar(config.config_rarfile_location)
-            if unrar_status:
+            unar_status = helper.check_unar(config.config_rarfile_location)
+            if unar_status:
                 # Store warning but don't prevent saving other settings
-                unrar_warning = unrar_status
+                unar_warning = unar_status
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
@@ -2446,7 +2446,7 @@ def _configuration_update_helper():
     if reboot_required:
         web_server.stop(True)
 
-    return _configuration_result(None, reboot_required, " ".join(filter(None, [unrar_warning, arch_warning])))
+    return _configuration_result(None, reboot_required, " ".join(filter(None, [unar_warning, arch_warning])))
 
 
 def _configuration_result(error_flash=None, reboot=False, warning_flash=None):

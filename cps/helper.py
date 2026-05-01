@@ -1313,23 +1313,23 @@ def do_kepubify_metadata_replace(book, file_path):
 ##################################
 
 
-def check_unrar(unrar_location):
-    if not unrar_location:
+def check_unar(unar_location):
+    if not unar_location:
         return
 
-    if not os.path.exists(unrar_location):
-        return _('UnRar binary file not found')
+    if not os.path.exists(unar_location):
+        return _('Unar binary file not found')
 
     try:
-        unrar_location = [unrar_location]
-        value = process_wait(unrar_location, pattern='UNRAR (.*) freeware')
+        unar_location = [unar_location]
+        value = process_wait(unar_location, pattern=r'unar v(\S+)')
         if value:
             version = value.group(1)
-            log.debug("UnRar version %s", version)
+            log.debug("Unar version %s", version)
 
     except (OSError, UnicodeDecodeError) as err:
         log.error_or_exception(err)
-        return _('Error executing UnRar')
+        return _('Error executing Unar')
 
 
 def check_architecture():

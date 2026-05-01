@@ -40,11 +40,11 @@ def get_calibre_version():
     return _get_command_version(config.config_converterpath, r'ebook-convert.*\(calibre', '--version')
 
 
-def get_unrar_version():
-    unrar_version = _get_command_version(config.config_rarfile_location, r'UNRAR.*\d')
-    if unrar_version == "not installed":
-        unrar_version = _get_command_version(config.config_rarfile_location, r'unrar.*\d', '-V')
-    return unrar_version
+def get_unar_version():
+    unar_version = _get_command_version(config.config_rarfile_location, r'unar v\d')
+    if unar_version == "not installed":
+        unar_version = _get_command_version(config.config_rarfile_location, r'v\d+\.\d+', '--version')
+    return unar_version
 
 
 def get_kepubify_version():

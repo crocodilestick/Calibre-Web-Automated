@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ghcr.io/linuxserver/baseimage-ubuntu:noble
+ARG BASE_IMAGE=ghcr.io/linuxserver/baseimage-debian:trixie
 ARG BUILD_DATE
 ARG CALIBRE_RELEASE=9.1.0
 ARG DEBIAN_FRONTEND=noninteractive
@@ -20,9 +20,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN \
-  apt-get update && \
-  apt-get install -y --no-install-recommends software-properties-common && \
-  add-apt-repository ppa:deadsnakes/ppa && \
   apt-get update && \
   apt-get install -y --no-install-recommends \
   binutils \
@@ -60,7 +57,6 @@ RUN \
   xdg-utils \
   xz-utils \
   zip && \
-  apt-get purge -y --auto-remove software-properties-common && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache
 
 # ==============================================================================

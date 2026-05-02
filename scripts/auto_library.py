@@ -61,11 +61,11 @@ class AutoLibrary:
             try:
                 nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
                 if not nsm:
-                    subprocess.run(["chown", "-R", "abc:abc", self.config_dir], check=True)
+                    subprocess.run(["chown", "-R", "calibre:calibre", self.config_dir], check=True)
                 else:
                     print(f"[cwa-auto-library] NETWORK_SHARE_MODE=true detected; skipping chown of {self.config_dir}", flush=True)
             except subprocess.CalledProcessError as e:
-                print(f"[cwa-auto-library] An error occurred while attempting to recursively set ownership of {self.config_dir} to abc:abc. See the following error:\n{e}", flush=True)
+                print(f"[cwa-auto-library] An error occurred while attempting to recursively set ownership of {self.config_dir} to calibre:calibre. See the following error:\n{e}", flush=True)
             print(f"[cwa-auto-library] app.db successfully copied to {self.config_dir}")
         else:
             return
@@ -149,11 +149,11 @@ class AutoLibrary:
         try:
             nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
             if not nsm:
-                subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+                subprocess.run(["chown", "-R", "calibre:calibre", self.library_dir], check=True)
             else:
                 print(f"[cwa-auto-library] NETWORK_SHARE_MODE=true detected; skipping chown of {self.library_dir}", flush=True)
         except subprocess.CalledProcessError as e:
-            print(f"[cwa-auto-library] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}", flush=True)
+            print(f"[cwa-auto-library] An error occurred while attempting to recursively set ownership of {self.library_dir} to calibre:calibre. See the following error:\n{e}", flush=True)
         self.metadb_path = f"{self.library_dir}/metadata.db"
         return
 

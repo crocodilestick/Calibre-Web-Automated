@@ -1248,11 +1248,11 @@ class NewBookProcessor:
         try:
             nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
             if not nsm:
-                subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+                subprocess.run(["chown", "-R", "calibre:calibre", self.library_dir], check=True)
             else:
                 print(f"[ingest-processor] NETWORK_SHARE_MODE=true detected; skipping chown of {self.library_dir}", flush=True)
         except subprocess.CalledProcessError as e:
-            print(f"[ingest-processor] An error occurred while attempting to recursively set ownership of {self.library_dir} to abc:abc. See the following error:\n{e}", flush=True)
+            print(f"[ingest-processor] An error occurred while attempting to recursively set ownership of {self.library_dir} to calibre:calibre. See the following error:\n{e}", flush=True)
 
 
 def main(filepath=None):

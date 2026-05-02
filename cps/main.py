@@ -19,7 +19,18 @@ def request_username():
 def main():
     app = create_app()
 
-    from .cwa_functions import switch_theme, library_refresh, convert_library, epub_fixer, cwa_stats, cwa_check_status, cwa_settings, cwa_logs, profile_pictures, cwa_internal
+    from .cwa_functions import (
+        switch_theme,
+        library_refresh,
+        convert_library,
+        epub_fixer,
+        cwa_stats,
+        cwa_check_status,
+        cwa_settings,
+        cwa_logs,
+        profile_pictures,
+        cwa_internal,
+    )
     from .web import web
     from .opds import opds
     from .admin import admi
@@ -34,26 +45,32 @@ def main():
     from .remotelogin import remotelogin
     from .progress_syncing.protocols.kosync import kosync
     from .duplicates import duplicates
+
     try:
         from .kobo import kobo, get_kobo_activated
         from .kobo_auth import kobo_auth
         from .readingservices import readingservices_api_v3, readingservices_userstorage
         from flask_limiter.util import get_remote_address
+
         kobo_available = get_kobo_activated()
-    except (ImportError, AttributeError):  # Catch also error for not installed flask-WTF (missing csrf decorator)
+    except (
+        ImportError,
+        AttributeError,
+    ):  # Catch also error for not installed flask-WTF (missing csrf decorator)
         kobo_available = False
         kobo = kobo_auth = get_remote_address = None
 
     try:
         from .oauth_bb import oauth
+
         oauth_available = True
     except ImportError:
         oauth_available = False
         oauth = None
 
     from . import web_server
-    init_errorhandler()
 
+    init_errorhandler()
 
     # CWA Blueprints
     app.register_blueprint(switch_theme)
@@ -83,13 +100,21 @@ def main():
     app.register_blueprint(editbook)
     app.register_blueprint(kosync)
     app.register_blueprint(duplicates)
+
     if kobo_available:
         app.register_blueprint(kobo)
         app.register_blueprint(kobo_auth)
         limiter.limit("3/minute", key_func=get_remote_address)(kobo)
         app.register_blueprint(readingservices_api_v3)
         app.register_blueprint(readingservices_userstorage)
+
     if oauth_available:
         app.register_blueprint(oauth)
+
+    from .services.background_services import start_all
+
+    # Start CWA background services (ingest watcher, metadata detector, auto-zipper, etc.)
+    start_all()
+
     success = web_server.start()
     sys.exit(0 if success else 1)

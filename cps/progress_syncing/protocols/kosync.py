@@ -40,6 +40,9 @@ import base64
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any, Tuple
 
+from ...services import SyncToken as SyncToken, hardcover
+from ...kobo import push_reading_state_to_hardcover
+
 from flask import Blueprint, request, jsonify
 from flask_babel import gettext as _
 from werkzeug.security import check_password_hash
@@ -326,7 +329,7 @@ def enrich_response_with_book_info(response_data: Dict[str, Any], document_check
     return response_data, book_id, book_format, book_title, checksum_version
 
 
-def update_book_read_status(user_id: int, book_id: int, percentage: float) -> None:
+def update_book_read_status(user, book_id: int, percentage: float) -> None:
     """
     Update the user's ReadBook status based on reading progress percentage.
 
@@ -359,6 +362,8 @@ def update_book_read_status(user_id: int, book_id: int, percentage: float) -> No
         new_status = ub.ReadBook.STATUS_IN_PROGRESS
     else:
         new_status = ub.ReadBook.STATUS_UNREAD
+
+    user_id = user.id
 
     log.debug(f"update_book_read_status: user {user_id}, book {book_id}, "
               f"percentage {percentage:.2f}% -> status {new_status}")
@@ -429,6 +434,17 @@ def update_book_read_status(user_id: int, book_id: int, percentage: float) -> No
 
     # Merge the record (caller commits)
     ub.session.merge(book_read)
+
+    # # Push to Hardcover
+    # # TODO: just pass in the user?
+    # from ... import calibre_db
+    # book = calibre_db.get_book(book_id)
+    
+    # if user is not None:
+    #     log.debug(f"Going to sync book {book_id} to Hardcover.")
+    #     push_reading_state_to_hardcover(user, book, int(percentage))
+    # else:
+    #     log.debug(f"Book {book_id} not syncing to Hardcover, no matched user.")
 
 
 ################################################################################
@@ -717,10 +733,21 @@ def update_progress():
         # This is done AFTER kosync_progress is committed, so sync location is always safe
         if book_id:
             try:
-                update_book_read_status(user.id, book_id, percentage_float)
+                update_book_read_status(user, book_id, percentage_float)
                 ub.session.commit()
                 log.info(f"Updated ReadBook status: user={user.id}, book={book_id} "
                         f"({book_title}), status based on {percentage_float:.1f}%")
+                
+                # Push to Hardcover
+                from ... import calibre_db
+                book = calibre_db.get_book(book_id)
+                
+                if user is not None:
+                    log.debug(f"Going to sync book {book_id} to Hardcover.")
+                    push_reading_state_to_hardcover(user, book, int(percentage_float))
+                else:
+                    log.debug(f"Book {book_id} not syncing to Hardcover, no matched user.")
+
             except SQLAlchemyError as e:
                 log.error(f"Failed to update ReadBook status for book {book_id}: {e}")
                 # Rollback only affects the failed ReadBook update

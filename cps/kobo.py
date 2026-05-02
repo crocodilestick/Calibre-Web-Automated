@@ -974,7 +974,7 @@ def HandleStateRequest(book_uuid):
             ub.session.rollback()
             abort(400, description="Malformed request data is missing 'ReadingStates' key")
 
-        push_reading_state_to_hardcover(book, request_bookmark)
+        push_reading_state_to_hardcover(current_user, book, request_bookmark['ProgressPercent'])
 
         ub.session.merge(kobo_reading_state)
         ub.session_commit()
@@ -984,7 +984,7 @@ def HandleStateRequest(book_uuid):
         })
 
 
-def push_reading_state_to_hardcover(book: db.Books, request_bookmark: dict):
+def push_reading_state_to_hardcover(user, book: db.Books, progress_percentage: int):
     """
     Sync reading progress to Hardcover if enabled for the user and book is not blacklisted.
 
@@ -992,7 +992,7 @@ def push_reading_state_to_hardcover(book: db.Books, request_bookmark: dict):
     the Kobo from clearing its reading state sync queue.
 
     :param book: The book for which to sync reading progress.
-    :param request_bookmark: The bookmark data from the Kobo request.
+    :param progress_percentage: Reading progress percentage.
     :return: None
     """
 
@@ -1008,16 +1008,16 @@ def push_reading_state_to_hardcover(book: db.Books, request_bookmark: dict):
         return
 
     try:
-        hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
+        hardcoverClient = hardcover.HardcoverClient(user.hardcover_token)
     except hardcover.MissingHardcoverToken:
-        log.info(f"User {current_user.name} has no Hardcover token, not syncing reading progress to Hardcover")
+        log.info(f"User {user.name} has no Hardcover token, not syncing reading progress to Hardcover")
         return
     except Exception as e:
-        log.error(f"Failed to create Hardcover client for user {current_user.name}: {e}")
+        log.error(f"Failed to create Hardcover client for user {user.name}: {e}")
         return
 
     try:
-        hardcoverClient.update_reading_progress(book.identifiers, request_bookmark["ProgressPercent"])
+        hardcoverClient.update_reading_progress(book.identifiers, progress_percentage)
     except Exception as e:
         log.error(f"Failed to update reading progress for book {book.id} in Hardcover: {e}")
 

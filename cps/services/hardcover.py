@@ -155,12 +155,15 @@ class HardcoverClient:
             book = self.get_user_book(ids)
             # Book doesn't exist, add it in Reading status
             if not book:
+                log.debug(f'Book does not exist, add to reading status')
                 book = self.add_book(ids, status=STATUS_READING)
             # Book is either WTR or Read, and we aren't finished reading
             if book.get("status_id") != STATUS_READING and progress_percent != MAX_PROGRESS_PERCENTAGE:
+                log.debug(f'Book is in either want to read or read, not finished reading.')
                 book = self.change_book_status(book, STATUS_READING)
             # Book is already marked as read, and we are also done
             if book.get("status_id") == STATUS_READ and progress_percent == MAX_PROGRESS_PERCENTAGE:
+                log.debug(f'Book is already marked read and we are done.')
                 return
             pages = book.get("edition", {}).get("pages", 0)
             if pages:
@@ -169,8 +172,10 @@ class HardcoverClient:
                 if not read:
                     # read = self.add_read(book, pages_read)
                     # No read exists for some reason, return since we can't update anything.
+                    log.warning(f'No read status exists for book, not updating.')
                     return
                 else:
+                    log.info(f'Setting {pages_read} pages read at {progress_percent}% done.')
                     mutation = """
                     mutation ($readId: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
                         update_user_book_read(id: $readId, object: {
@@ -196,10 +201,12 @@ class HardcoverClient:
                         ),
                     }
                     if progress_percent == MAX_PROGRESS_PERCENTAGE:
+                        log.debug('Book finished, marking as read')
                         self.change_book_status(book, STATUS_READ)
                     self.execute(query=mutation, variables=variables)
             return
         else:
+            log.info('No Hardcover IDs associated with book, not updating.')
             return
 
     def change_book_status(self, book, status):

@@ -93,7 +93,7 @@ $(function () {
     if (presentArray.length === 1 && presentArray[0] === "") {
       presentArray = [];
     }
-    $.each(book[attribute_name], function (i, el) {
+    $.each(book[attribute_name] || [], function (i, el) {
       if ($.inArray(el, presentArray) === -1) presentArray.push(el);
     });
     return presentArray;

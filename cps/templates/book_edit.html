@@ -344,7 +344,7 @@
         <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="description" checked>Description:</dt>
         <dd class="meta_description"><%= book.description %></dd>
       <% } %>
-      <% if (book.tags.length !== 0) { %>
+      <% if (book.tags && book.tags.length !== 0) { %>
         <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="tags" checked>Tags:</dt>
         <dd class="meta_author"><%= book.tags.join(", ") %></dd>
       <% } %>

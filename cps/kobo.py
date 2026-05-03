@@ -598,7 +598,7 @@ def get_metadata(book):
                         "Url": get_download_url_for_book(book.id, book_data.format),
                         # The Kobo forma accepts platforms: (Generic, Android)
                         "Platform": "Generic",
-                        # "DrmType": "None", # Not required
+                        "DrmType": "None",
                     }
                 )
             except (zipfile.BadZipfile, FileNotFoundError) as e:

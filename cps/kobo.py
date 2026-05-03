@@ -631,6 +631,7 @@ def get_metadata(book):
         "RevisionId": book_uuid,
         "Title": book.title,
         "WorkId": book_uuid,
+        "Series": {},
     }
     metadata.update(get_author(book))
 

@@ -151,7 +151,7 @@ $(function () {
       $("#series_index").val(book.series_index);
     }
     if (typeof book.identifiers !== "undefined") {
-      selectedIdentifiers = Object.keys(book.identifiers)
+      selectedIdentifiers = Object.keys(book.identifiers || {})
         .filter((key) => updateItems[key])
         .reduce((result, key) => {
           result[key] = book.identifiers[key];

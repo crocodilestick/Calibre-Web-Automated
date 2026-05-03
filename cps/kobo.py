@@ -474,22 +474,29 @@ def HandleMetadataRequest(book_uuid):
 
 
 def get_download_url_for_book(book_id, book_format):
+    endpoint_name = "kobo.download_book"
+    endpoint_path = "download"
+    if request.headers.get("x-kobo-deviceos") == "Android":
+        endpoint_name = "kobo.redirect_download_book"
+        endpoint_path = "redirect_download"
+
     if not current_app.wsgi_app.is_proxied:
         if ':' in request.host and not request.host.endswith(']'):
             host = "".join(request.host.split(':')[:-1])
         else:
             host = request.host
 
-        return "{url_scheme}://{url_base}:{url_port}/kobo/{auth_token}/download/{book_id}/{book_format}".format(
+        return "{url_scheme}://{url_base}:{url_port}/kobo/{auth_token}/{endpoint_path}/{book_id}/{book_format}".format(
             url_scheme=request.scheme,
             url_base=host,
             url_port=config.config_external_port,
             auth_token=get_auth_token(),
+            endpoint_path=endpoint_path,
             book_id=book_id,
             book_format=book_format.lower()
         )
     return url_for(
-        "kobo.download_book",
+        endpoint_name,
         auth_token=kobo_auth.get_auth_token(),
         book_id=book_id,
         book_format=book_format.lower(),
@@ -1409,6 +1416,19 @@ def HandleInitRequest():
 @download_required
 def download_book(book_id, book_format):
     return get_download_link(book_id, book_format, "kobo")
+
+
+@kobo.route("/redirect_download/<book_id>/<book_format>")
+@requires_kobo_auth
+@download_required
+def redirect_download_book(book_id, book_format):
+    return redirect(url_for(
+        "kobo.download_book",
+        auth_token=kobo_auth.get_auth_token(),
+        book_id=book_id,
+        book_format=book_format.lower(),
+        _external=True,
+    ))
 
 
 def NATIVE_KOBO_RESOURCES():

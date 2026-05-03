@@ -787,7 +787,12 @@ def edit_list_user(param):
                 elif param == 'email':
                     user.email = check_email(vals['value'])
                 elif param == 'kobo_only_shelves_sync':
+                    old_val = user.kobo_only_shelves_sync
                     user.kobo_only_shelves_sync = int(vals['value'] == 'true')
+                    if old_val == 0 and user.kobo_only_shelves_sync == 1:
+                        kobo_sync_status.update_on_sync_shelfs(user.id)
+                    elif old_val == 1 and user.kobo_only_shelves_sync == 0:
+                        kobo_sync_status.on_sync_shelves_disabled(user.id)
                 elif param == 'kindle_mail':
                     user.kindle_mail = valid_email(vals['value']) if vals['value'] else ""
                 elif param == 'kindle_mail_subject':
@@ -1248,8 +1253,14 @@ def ajax_pathchooser():
 
 
 def do_full_kobo_sync(userid):
-    count = ub.session.query(ub.KoboSyncedBooks).filter(userid == ub.KoboSyncedBooks.user_id).delete()
-    message = _("{} sync entries deleted").format(count)
+    # Flag this user so the next Kobo sync request ignores its incoming SyncToken
+    # and replays the full library. The flag is cleared when that sync starts.
+    user = ub.session.query(ub.User).filter(ub.User.id == userid).one_or_none()
+    if user is None:
+        message = _("User not found")
+        return Response(json.dumps([{"type": "danger", "message": message}]), mimetype='application/json')
+    user.kobo_force_full_sync = True
+    message = _("Full Kobo sync requested; the next sync from this user's device will replay the library.")
     ub.session_commit(message)
     return Response(json.dumps([{"type": "success", "message": message}]), mimetype='application/json')
 
@@ -2262,7 +2273,6 @@ def _db_configuration_update_helper():
             ub.session.query(ub.Bookmark).delete()
             ub.session.query(ub.KoboReadingState).delete()
             ub.session.query(ub.KoboStatistics).delete()
-            ub.session.query(ub.KoboSyncedBooks).delete()
             helper.delete_thumbnail_cache()
             ub.session_commit()
             # deleted visibilities based on custom column and tags
@@ -2574,7 +2584,6 @@ def _delete_user(content):
             ub.session.query(ub.ArchivedBook).filter(ub.ArchivedBook.user_id == content.id).delete()
             ub.session.query(ub.RemoteAuthToken).filter(ub.RemoteAuthToken.user_id == content.id).delete()
             ub.session.query(ub.User_Sessions).filter(ub.User_Sessions.user_id == content.id).delete()
-            ub.session.query(ub.KoboSyncedBooks).filter(ub.KoboSyncedBooks.user_id == content.id).delete()
             # delete KoboReadingState and all it's children
             kobo_entries = ub.session.query(ub.KoboReadingState).filter(ub.KoboReadingState.user_id == content.id).all()
             for kobo_entry in kobo_entries:
@@ -2627,11 +2636,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
 
     old_state = content.kobo_only_shelves_sync
     content.kobo_only_shelves_sync = int(to_save.get("kobo_only_shelves_sync") == "on") or 0
-    # 1 -> 0: nothing has to be done
-    # 0 -> 1: all synced books have to be added to archived books, + currently synced shelfs
-    # which don't have to be synced have to be removed (added to Shelf archive)
     if old_state == 0 and content.kobo_only_shelves_sync == 1:
         kobo_sync_status.update_on_sync_shelfs(content.id)
+    elif old_state == 1 and content.kobo_only_shelves_sync == 0:
+        kobo_sync_status.on_sync_shelves_disabled(content.id)
     # Auto-send and metadata fetch settings
     content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
     content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
@@ -3060,7 +3068,7 @@ def restore_calibre_db():
         # 4. Wipe all book-linked tables in app.db
         from sqlalchemy import text as sql_text
         book_tables = [
-            "book_shelf_link", "book_read_link", "bookmark", "archived_book", "kobo_synced_books",
+            "book_shelf_link", "book_read_link", "bookmark", "archived_book",
             "kobo_reading_state", "kobo_bookmark", "kobo_statistics", "kobo_annotation_sync",
             "hardcover_book_blacklist", "hardcover_match_queue", "downloads", "magic_shelf_cache"
         ]

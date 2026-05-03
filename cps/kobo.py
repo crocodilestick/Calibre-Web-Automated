@@ -31,10 +31,9 @@ from flask import (
 from .cw_login import current_user
 from werkzeug.datastructures import Headers
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import and_, or_
 from sqlalchemy.exc import StatementError
-from sqlalchemy.orm import joinedload
-from sqlalchemy.sql import select
 import requests
 
 from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_lib, ub, csrf, kobo_sync_status, magic_shelf
@@ -130,27 +129,6 @@ def convert_to_kobo_timestamp_string(timestamp):
         return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def get_magic_shelf_book_ids_for_kobo(user_id):
-    if not config.config_kobo_sync_magic_shelves:
-        return set()
-
-    magic_shelves = ub.session.query(ub.MagicShelf).filter_by(user_id=user_id, kobo_sync=True).all()
-    if not magic_shelves:
-        return set()
-
-    book_ids = set()
-    for shelf in magic_shelves:
-        books, _ = magic_shelf.get_books_for_magic_shelf(
-            shelf.id, page=1, page_size=None
-        )
-        for book in books:
-            book_ids.add(book.id)
-
-    if book_ids:
-        log.debug("Kobo Sync: magic shelf allowed books: %s", len(book_ids))
-
-    return book_ids
-
 
 @kobo.route("/v1/library/sync")
 @requires_kobo_auth
@@ -167,211 +145,165 @@ def HandleSyncRequest():
     if not current_app.wsgi_app.is_proxied:
         log.debug('Kobo: Received unproxied request, changed request port to external server port')
 
-    # if no books synced don't respect sync_token
-    if not ub.session.query(ub.KoboSyncedBooks).filter(ub.KoboSyncedBooks.user_id == current_user.id).count():
-        sync_token.books_last_modified = datetime.min
-        sync_token.books_last_created = datetime.min
-        sync_token.reading_state_last_modified = datetime.min
-
-    new_books_last_modified = sync_token.books_last_modified  # needed for sync selected shelfs only
-    new_books_last_created = sync_token.books_last_created  # needed to distinguish between new and changed entitlement
-    new_reading_state_last_modified = sync_token.reading_state_last_modified
-
-    new_archived_last_modified = datetime.min
-    sync_results = []
-
-    calibre_db.reconnect_db(config, ub.app_DB_path)
-
-
-    # Two-Way-Sync Deletion Logic
-    magic_shelf_book_ids = set()
-    if current_user.kobo_only_shelves_sync:
-        magic_shelf_book_ids = get_magic_shelf_book_ids_for_kobo(current_user.id)
+    # If a Force Full Sync was requested for this user, drop the incoming token's state
+    # so that the response replays the entire library, then clear the flag.
+    if getattr(current_user, 'kobo_force_full_sync', False):
+        log.info("Kobo Sync: full re-sync requested for user %s; ignoring incoming SyncToken", current_user.name)
+        sync_token = SyncToken.SyncToken(raw_kobo_store_token=sync_token.raw_kobo_store_token)
         try:
-            # Check all books that are on Kobo according to the database
-            synced_books_query = ub.session.query(ub.KoboSyncedBooks.book_id).filter(ub.KoboSyncedBooks.user_id == current_user.id)
-            synced_book_ids = {item.book_id for item in synced_books_query}
-
-            # Check all books currently on a Kobo Sync shelf
-            allowed_books_query = (ub.session.query(ub.BookShelf.book_id)
-                                   .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id)
-                                   .filter(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True))
-            allowed_book_ids = {item.book_id for item in allowed_books_query}
-            if magic_shelf_book_ids:
-                allowed_book_ids |= magic_shelf_book_ids
-
-            # Spot the difference: books that need to be deleted
-            books_to_delete_ids = synced_book_ids - allowed_book_ids
-
-            if books_to_delete_ids:
-                log.info(f"Kobo Sync: Found {len(books_to_delete_ids)} books to remove from device for user {current_user.name}")
-
-                # Go through the “To be deleted” list
-                for book_id in books_to_delete_ids:
-                    book = calibre_db.get_book(book_id)
-                    if book:
-                        # Create a “Remove” command for the Kobo
-                        entitlement = {
-                            "BookEntitlement": create_book_entitlement(book, archived=True),
-                            "BookMetadata": get_metadata(book),
-                        }
-                        sync_results.append({"ChangedEntitlement": entitlement})
-
-                # Remove all books from the tracking table in one go
-                if books_to_delete_ids:
-                    ub.session.query(ub.KoboSyncedBooks).filter(
-                        ub.KoboSyncedBooks.user_id == current_user.id,
-                        ub.KoboSyncedBooks.book_id.in_(books_to_delete_ids)
-                    ).delete(synchronize_session=False)
-                    ub.session_commit()
-
+            user_record = ub.session.query(ub.User).filter(ub.User.id == int(current_user.id)).one_or_none()
+            if user_record is not None:
+                user_record.kobo_force_full_sync = False
+                ub.session_commit()
         except Exception as e:
-            log.error(f"Kobo Sync: Error during deletion logic: {e}")
+            log.error("Kobo Sync: failed to clear kobo_force_full_sync flag: %s", e)
             ub.session.rollback()
+    elif getattr(sync_token, 'migrated_from_v1', False):
+        # First sync after upgrading from a v1 token (pre-KoboBookVisibility).
+        # In the old v1 protocol, the Kobo device is only aware of visible books, where-as in the new v2 protocol the device is aware of all books regardless of visibility. We need to force a full resync to correct the device state for the v2 protocol expectations.
+        log.info("Kobo Sync: v1→v2 token migration for user %s; forcing full re-sync "
+                 "to inform device of non-visible Entitlement Ids", current_user.name)
+        sync_token = SyncToken.SyncToken(raw_kobo_store_token=sync_token.raw_kobo_store_token)
 
     only_kobo_shelves = current_user.kobo_only_shelves_sync
 
-    log.debug("Kobo Sync: books last modified: {}".format(sync_token.books_last_modified))
-
-    rstate_join = and_(
-        db.Books.id == ub.KoboReadingState.book_id,
-        ub.KoboReadingState.user_id == current_user.id,
-    )
-    if only_kobo_shelves:
-        changed_entries = calibre_db.session.query(db.Books,
-                                                   ub.ArchivedBook.last_modified,
-                                                   ub.BookShelf.date_added,
-                                                   ub.ArchivedBook.is_archived,
-                                                   ub.KoboReadingState)
-        changed_entries = (changed_entries
-                           .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
-                                                                          ub.ArchivedBook.user_id == current_user.id))
-                           .outerjoin(ub.KoboReadingState, rstate_join)
-                           .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
-                                                      .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
-                          .filter(or_(
-                              ub.BookShelf.date_added > sync_token.books_last_modified,
-                              db.Books.last_modified > sync_token.books_last_modified,
-                              db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
-                          ))
-                           .filter(db.Data.format.in_(KOBO_FORMATS))
-                           .filter(calibre_db.common_filters(allow_show_archived=True))
-                           .order_by(db.Books.last_modified)
-                           .order_by(db.Books.id)
-                           .outerjoin(ub.BookShelf, db.Books.id == ub.BookShelf.book_id)
-                           .outerjoin(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)
-                           .filter(or_(
-                               and_(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True),
-                               db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
-                           ))
-                           .options(joinedload(db.Books.authors),
-                                    joinedload(db.Books.publishers),
-                                    joinedload(db.Books.series),
-                                    joinedload(db.Books.languages),
-                                    joinedload(db.Books.comments),
-                                    joinedload(db.Books.data))
-                           .distinct())
+    # Initialize pagination state. Reconnect db and refresh Magic-shelf state on the first request
+    if sync_token.pagination is not None:
+        pagination = sync_token.pagination
     else:
-        changed_entries = calibre_db.session.query(db.Books,
-                                                   ub.ArchivedBook.last_modified,
-                                                   ub.ArchivedBook.is_archived,
-                                                   ub.KoboReadingState)
-        changed_entries = (changed_entries
-                           .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
-                                                                          ub.ArchivedBook.user_id == current_user.id))
-                           .outerjoin(ub.KoboReadingState, rstate_join)
-                           .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
-                                                      .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
-                           .filter(calibre_db.common_filters(allow_show_archived=True))
-                           .filter(db.Data.format.in_(KOBO_FORMATS))
-                           .order_by(db.Books.last_modified)
-                           .order_by(db.Books.id)
-                           .options(joinedload(db.Books.authors),
-                                    joinedload(db.Books.publishers),
-                                    joinedload(db.Books.series),
-                                    joinedload(db.Books.languages),
-                                    joinedload(db.Books.comments),
-                                    joinedload(db.Books.data)))
-    log.debug("Kobo Sync: changed entries: {}".format(changed_entries.count()))
+        calibre_db.reconnect_db(config, ub.app_DB_path)
+        if only_kobo_shelves and config.config_kobo_sync_magic_shelves:
+            magic_shelf.update_kobo_book_visibility_from_magic_shelves(current_user.id)
+        pagination = SyncToken.SyncTokenPagination(snapshot_ts=datetime.utcnow())
 
-    reading_states_in_new_entitlements = []
-    books = changed_entries.limit(SYNC_ITEM_LIMIT)
-    log.debug("Kobo Sync: selected to sync: {}".format(len(books.all())))
-    for book in books:
-        formats = [data.format for data in book.Books.data]
+    sync_results = []
 
-        kobo_reading_state = book.KoboReadingState  # None when no record exists yet
-        entitlement = {
-            "BookEntitlement": create_book_entitlement(book.Books, archived=(book.is_archived==True)),
-            "BookMetadata": get_metadata(book.Books),
-        }
+    log.debug("Kobo Sync: books last modified: {}, visibility last modified: {}, pagination: {}".format(
+        sync_token.books_last_modified, sync_token.visibility_last_modified, pagination))
 
-        if (kobo_reading_state is not None
-                and kobo_reading_state.last_modified > sync_token.reading_state_last_modified):
-            entitlement["ReadingState"] = get_kobo_reading_state_response(book.Books, kobo_reading_state)
-            new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
-            reading_states_in_new_entitlements.append(book.Books.id)
+    book_window = or_(
+        and_(db.Books.last_modified > sync_token.books_last_modified,
+             db.Books.last_modified <= pagination.snapshot_ts),
+        and_(ub.KoboBookVisibility.last_modified > sync_token.visibility_last_modified,
+             ub.KoboBookVisibility.last_modified <= pagination.snapshot_ts),
+        and_(ub.ArchivedBook.last_modified > sync_token.visibility_last_modified,
+             ub.ArchivedBook.last_modified <= pagination.snapshot_ts),
+    )
+    rstate_window = and_(
+        ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified,
+        ub.KoboReadingState.last_modified <= pagination.snapshot_ts,
+    )
+
+    # Iterate over all books in increasing BookId order. If results are too large, the sync process is paginated and the next request will resume starting at the last book_id synced returned in the previous response.
+    changed_entries = (calibre_db.session.query(
+                            db.Books,
+                            ub.ArchivedBook.is_archived.label('is_archived'),
+                            ub.ArchivedBook.last_modified.label('archived_last_modified'),
+                            ub.KoboBookVisibility.is_visible.label('kbv_is_visible'),
+                            ub.KoboBookVisibility.last_modified.label('kbv_last_modified'),
+                            ub.KoboReadingState,
+                       )
+                       .outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
+                                                       ub.ArchivedBook.user_id == current_user.id))
+                       .outerjoin(ub.KoboBookVisibility, and_(db.Books.id == ub.KoboBookVisibility.book_id,
+                                                              ub.KoboBookVisibility.user_id == current_user.id))
+                       .outerjoin(ub.KoboReadingState, and_(
+                           db.Books.id == ub.KoboReadingState.book_id,
+                           ub.KoboReadingState.user_id == current_user.id,
+                        ))
+                       .filter(or_(book_window, rstate_window))
+                       .filter(db.Books.id > pagination.books_last_id)
+                       .filter(calibre_db.common_filters(allow_show_archived=True))
+                       .order_by(db.Books.id))
+
+    # Fetch one extra row to detect whether more pages remain without a separate count query.
+    book_rows = changed_entries.limit(SYNC_ITEM_LIMIT + 1).all()
+    has_more = len(book_rows) > SYNC_ITEM_LIMIT
+    book_rows = book_rows[:SYNC_ITEM_LIMIT]
+    log.debug("Kobo Sync: selected to sync: %s (more=%s)", len(book_rows), has_more)
+
+    for book in book_rows:
+        kobo_reading_state = book.KoboReadingState
+
+        # A book is visible if it's not archived and if it's on a kobo synced shelf
+        is_visible = not bool(book.is_archived)
+        if only_kobo_shelves:
+            is_visible = is_visible and bool(book.kbv_is_visible)
 
         ts_created = get_kobo_created_ts(book)
 
-        if ts_created > sync_token.books_last_created:
-            sync_results.append({"NewEntitlement": entitlement})
-        else:
-            sync_results.append({"ChangedEntitlement": entitlement})
+        book_lm = book.Books.last_modified
+        book_last_modified_naive = book_lm.replace(tzinfo=None) if book_lm else None
 
-        new_books_last_modified = max(
-            book.Books.last_modified.replace(tzinfo=None), new_books_last_modified
+        kbv_lm = book.kbv_last_modified
+        if kbv_lm and hasattr(kbv_lm, 'replace'):
+            kbv_lm = kbv_lm.replace(tzinfo=None)
+        archived_lm = book.archived_last_modified
+        if archived_lm and hasattr(archived_lm, 'replace'):
+            archived_lm = archived_lm.replace(tzinfo=None)
+
+        is_newly_created = ts_created > sync_token.books_last_created
+        visibility_changed = any(
+            t is not None and t > sync_token.visibility_last_modified
+            for t in (kbv_lm, archived_lm)
         )
+        metadata_changed = (book_last_modified_naive is not None
+                            and book_last_modified_naive > sync_token.books_last_modified)
+  
+        if is_newly_created:
+            new_entry = {
+                "BookEntitlement": create_book_entitlement(book.Books, archived=not is_visible),
+                "BookMetadata": get_metadata(book.Books) if is_visible else get_removed_metadata(book.Books.uuid),
+            }
+            if is_visible and kobo_reading_state is not None:
+                new_entry["ReadingState"] = get_kobo_reading_state_response(book.Books, kobo_reading_state)
+                if kobo_reading_state.last_modified <= pagination.snapshot_ts:
+                    pagination.reading_state_max_last_modified = max(
+                        pagination.reading_state_max_last_modified, kobo_reading_state.last_modified)
+            sync_results.append({"NewEntitlement": new_entry})
+        elif visibility_changed:
+            sync_results.append({"ChangedEntitlement": {
+                "BookEntitlement": create_book_entitlement(book.Books, archived=not is_visible),
+            }})
+            if is_visible:
+                # Refresh the metadata for a newly visible book, since we previously may have sent a placeholder with empty metadata.
+                sync_results.append({"ChangedProductMetadata": {
+                    "BookMetadata": get_metadata(book.Books),
+                }})
+                if kobo_reading_state is not None:
+                    sync_results.append({"ChangedReadingState": {
+                        "ReadingState": get_kobo_reading_state_response(book.Books, kobo_reading_state),
+                    }})
+                    if kobo_reading_state.last_modified <= pagination.snapshot_ts:
+                        pagination.reading_state_max_last_modified = max(
+                            pagination.reading_state_max_last_modified, kobo_reading_state.last_modified)
+        elif is_visible:
+            # Already visible book that's not newly created, must be a modified book or modified reading state:
+            if metadata_changed:
+                sync_results.append({"ChangedProductMetadata": {
+                    "BookMetadata": get_metadata(book.Books),
+                }})
+            if kobo_reading_state is not None and kobo_reading_state.last_modified > sync_token.reading_state_last_modified:
+                sync_results.append({"ChangedReadingState": {
+                    "ReadingState": get_kobo_reading_state_response(book.Books, kobo_reading_state),
+                }})
+                if kobo_reading_state.last_modified <= pagination.snapshot_ts:
+                    pagination.reading_state_max_last_modified = max(
+                        pagination.reading_state_max_last_modified, kobo_reading_state.last_modified)
 
-        new_books_last_created = max(ts_created, new_books_last_created)
-        kobo_sync_status.add_synced_books(book.Books.id)
+        # Advance all per-signal watermarks unconditionally each iteration.
+        if book_last_modified_naive and book_last_modified_naive <= pagination.snapshot_ts:
+            pagination.books_max_last_modified = max(
+                pagination.books_max_last_modified, book_last_modified_naive)
+        vis_candidates = [t for t in (kbv_lm, archived_lm) if t is not None and t <= pagination.snapshot_ts]
+        if vis_candidates:
+            pagination.visibility_max_last_modified = max(
+                pagination.visibility_max_last_modified, max(vis_candidates))
+        pagination.books_max_last_created = max(pagination.books_max_last_created, ts_created)
+        pagination.books_last_id = book.Books.id
 
-    max_change = changed_entries.filter(ub.ArchivedBook.is_archived)\
-        .filter(ub.ArchivedBook.user_id == current_user.id) \
-        .order_by(func.datetime(ub.ArchivedBook.last_modified).desc()).first()
-
-    max_change = max_change.last_modified if max_change else new_archived_last_modified
-
-    new_archived_last_modified = max(new_archived_last_modified, max_change)
-
-    # no. of books returned
-    book_count = changed_entries.count()
-    # last entry:
-    cont_sync = bool(book_count)
-    log.debug("Kobo Sync: remaining books to sync: {}".format(book_count))
-    # generate reading state data
-    changed_reading_states = ub.session.query(ub.KoboReadingState)
-
-    log.debug("Kobo Sync: rstate last modified: {}".format(sync_token.reading_state_last_modified))
-    if only_kobo_shelves:
-        changed_reading_states = changed_reading_states.outerjoin(ub.BookShelf,
-                                                                  ub.KoboReadingState.book_id == ub.BookShelf.book_id)\
-            .outerjoin(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)\
-            .filter(ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified)\
-            .filter(or_(
-                and_(current_user.id == ub.Shelf.user_id, ub.Shelf.kobo_sync == True),
-                ub.KoboReadingState.book_id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
-            ))\
-            .distinct()
-    else:
-        changed_reading_states = changed_reading_states.filter(
-            ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified)
-
-    changed_reading_states = changed_reading_states.filter(
-        and_(ub.KoboReadingState.user_id == current_user.id,
-             ub.KoboReadingState.book_id.notin_(reading_states_in_new_entitlements)))\
-        .order_by(ub.KoboReadingState.last_modified)
-    log.debug("Kobo Sync: changed states: {}".format(changed_reading_states.count()))
-    cont_sync |= bool(changed_reading_states.count() > SYNC_ITEM_LIMIT)
-    for kobo_reading_state in changed_reading_states.limit(SYNC_ITEM_LIMIT).all():
-        book = calibre_db.session.query(db.Books).filter(db.Books.id == kobo_reading_state.book_id).one_or_none()
-        if book:
-            sync_results.append({
-                "ChangedReadingState": {
-                    "ReadingState": get_kobo_reading_state_response(book, kobo_reading_state)
-                }
-            })
-            new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
+    cont_sync = has_more
+    log.debug("Kobo Sync: more to sync: {}".format(has_more))
 
     sync_shelves(sync_token, sync_results, only_kobo_shelves)
 
@@ -421,12 +353,25 @@ def HandleSyncRequest():
 
         sync_token.tags_last_modified = new_tags_last_modified
 
-    # update last created timestamp to distinguish between new and changed entitlements
-    if not cont_sync:
-        sync_token.books_last_created = new_books_last_created
-    sync_token.books_last_modified = new_books_last_modified
-    sync_token.archive_last_modified = new_archived_last_modified
-    sync_token.reading_state_last_modified = new_reading_state_last_modified
+    # If any section has more pages to send, hand the pagination object back
+    # on the token so the next request can resume against the same snapshot.
+    # When the round is complete, advance each section's watermark to its
+    # max-shipped value that was below snapshot_ts. We use the max-shipped value
+    # instead of snapshot_ts in case a book was concurrently added to the database
+    # outside of calibre-web, in which case it may have a last_created timestamp
+    # larger than all the existing last_created, but smaller than snapshot_ts.
+    if cont_sync:
+        sync_token.pagination = pagination
+    else:
+        sync_token.books_last_modified = max(
+            sync_token.books_last_modified, pagination.books_max_last_modified)
+        sync_token.books_last_created = max(
+            sync_token.books_last_created, pagination.books_max_last_created)
+        sync_token.reading_state_last_modified = max(
+            sync_token.reading_state_last_modified, pagination.reading_state_max_last_modified)
+        sync_token.visibility_last_modified = max(
+            sync_token.visibility_last_modified, pagination.visibility_max_last_modified)
+        sync_token.pagination = None
 
     return generate_sync_response(sync_token, sync_results, cont_sync)
 
@@ -606,6 +551,35 @@ def _get_cover_image_id(book):
         return base_id
 
 
+def get_removed_metadata(book_uuid):
+    book_uuid = str(book_uuid)
+    return {
+        "Categories": ["00000000-0000-0000-0000-000000000001"],
+        "CoverImageId": book_uuid,
+        "CrossRevisionId": book_uuid,
+        "CurrentDisplayPrice": {"CurrencyCode": "USD", "TotalAmount": 0},
+        "CurrentLoveDisplayPrice": {"TotalAmount": 0},
+        "Description": "",
+        "DownloadUrls": [],
+        "EntitlementId": book_uuid,
+        "ExternalIds": [],
+        "Genre": "00000000-0000-0000-0000-000000000001",
+        "IsEligibleForKoboLove": False,
+        "IsInternetArchive": False,
+        "IsPreOrder": False,
+        "IsSocialEnabled": True,
+        "Language": "en",
+        "PhoneticPronunciations": {},
+        "PublicationDate": None,
+        "Publisher": {"Imprint": "", "Name": ""},
+        "RevisionId": book_uuid,
+        "Title": "",
+        "WorkId": book_uuid,
+        "Series": {},
+        "Contributors": None,
+    }
+
+
 def get_metadata(book):
     download_urls = []
 
@@ -752,6 +726,7 @@ def HandleTagUpdate(tag_id):
 def add_items_to_shelf(items, shelf):
     book_ids_already_in_shelf = set([book_shelf.book_id for book_shelf in shelf.books])
     items_unknown_to_calibre = []
+    added_book_ids = []
     for item in items:
         try:
             if item["Type"] != "ProductRevisionTagItem":
@@ -766,8 +741,11 @@ def add_items_to_shelf(items, shelf):
             book_id = book.id
             if book_id not in book_ids_already_in_shelf:
                 shelf.books.append(ub.BookShelf(book_id=book_id))
+                added_book_ids.append(book_id)
         except KeyError:
             items_unknown_to_calibre.append(item)
+    if shelf.kobo_sync and added_book_ids:
+        kobo_sync_status.set_kobo_visibility(added_book_ids, shelf.user_id, is_visible=True)
     return items_unknown_to_calibre
 
 
@@ -824,6 +802,7 @@ def HandleTagRemoveItem(tag_id):
         abort(401, description="User is unauthaurized to edit shelf.")
 
     items_unknown_to_calibre = []
+    removed_book_ids = []
     for item in items:
         try:
             if item["Type"] != "ProductRevisionTagItem":
@@ -836,9 +815,12 @@ def HandleTagRemoveItem(tag_id):
                 continue
 
             shelf.books.filter(ub.BookShelf.book_id == book.id).delete()
+            removed_book_ids.append(book.id)
         except KeyError:
             items_unknown_to_calibre.append(item)
     ub.session_commit()
+    if shelf.kobo_sync and removed_book_ids:
+        kobo_sync_status.recompute_kobo_visibility(removed_book_ids, shelf.user_id)
 
     if items_unknown_to_calibre:
         log.debug("Received request to remove an unknown book to a collecition. Silently ignoring item.")
@@ -1200,7 +1182,6 @@ def HandleBookDeletionRequest(book_uuid):
     elif current_user.check_visibility(32768):
         kobo_sync_status.change_archived_books(book_id, True)
 
-    kobo_sync_status.remove_synced_book(book_id)
     return "", 204
 
 

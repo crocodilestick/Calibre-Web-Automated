@@ -1364,16 +1364,16 @@ def HandleInitRequest():
                                                                url_for("kobo.HandleCoverImageRequest",
                                                                        auth_token=kobo_auth.get_auth_token(),
                                                                        book_uuid="{ImageId}",
-                                                                       width="{width}",
-                                                                       height="{height}",
+                                                                       width="{Width}",
+                                                                       height="{Height}",
                                                                        Quality='{Quality}',
                                                                        isGreyscale='isGreyscale'))
         kobo_resources["image_url_template"] = unquote(calibre_web_url +
                                                        url_for("kobo.HandleCoverImageRequest",
                                                                auth_token=kobo_auth.get_auth_token(),
                                                                book_uuid="{ImageId}",
-                                                               width="{width}",
-                                                               height="{height}",
+                                                               width="{Width}",
+                                                               height="{Height}",
                                                                isGreyscale='false'))
         if config.config_hardcover_annotations_sync and bool(hardcover):
             kobo_resources["reading_services_host"] = calibre_web_url
@@ -1382,16 +1382,16 @@ def HandleInitRequest():
         kobo_resources["image_url_quality_template"] = unquote(url_for("kobo.HandleCoverImageRequest",
                                                                        auth_token=kobo_auth.get_auth_token(),
                                                                        book_uuid="{ImageId}",
-                                                                       width="{width}",
-                                                                       height="{height}",
+                                                                       width="{Width}",
+                                                                       height="{Height}",
                                                                        Quality='{Quality}',
                                                                        isGreyscale='isGreyscale',
                                                                        _external=True))
         kobo_resources["image_url_template"] = unquote(url_for("kobo.HandleCoverImageRequest",
                                                                auth_token=kobo_auth.get_auth_token(),
                                                                book_uuid="{ImageId}",
-                                                               width="{width}",
-                                                               height="{height}",
+                                                               width="{Width}",
+                                                               height="{Height}",
                                                                isGreyscale='false',
                                                                _external=True))
         if config.config_hardcover_annotations_sync and bool(hardcover):

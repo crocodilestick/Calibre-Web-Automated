@@ -535,9 +535,75 @@ class Enforcer:
 
         return supported_files
 
-    def enforce_cover(self, book_dir: str) -> list:
+
+    def get_expected_supported_formats(self, book_id: str | int | None) -> list[str]:
+        """Return supported formats that Calibre's DB says should exist for a book."""
+        if book_id in (None, ""):
+            return []
+
+        try:
+            metadb_path = os.path.join(
+                (self.split_library or {}).get("db_path", self.calibre_library),
+                "metadata.db",
+            )
+            with sqlite3.connect(metadb_path, timeout=60) as con:
+                rows = con.execute(
+                    "SELECT format FROM data WHERE book = ?",
+                    (str(book_id),),
+                ).fetchall()
+        except Exception as e:
+            print(f"[cover-metadata-enforcer] Warning: Failed to check expected formats for book {book_id}: {e}", flush=True)
+            return []
+
+        supported = {fmt.upper() for fmt in self.supported_formats}
+        return sorted({str(row[0]).upper() for row in rows if row and str(row[0]).upper() in supported})
+
+
+    def list_files_from_dir(self, dir: str) -> list[str]:
+        """Return files found below a directory for diagnostics."""
+        return [os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(dir) for f in filenames]
+
+
+    def get_supported_files_from_dir_with_retries(
+        self,
+        dir: str,
+        expected_formats: list[str] | None = None,
+        attempts: int = 6,
+        delay_seconds: float = 1.0,
+    ) -> list[str]:
+        """Retry supported-file discovery when Calibre's DB says supported formats exist."""
+        expected_formats = expected_formats or []
+        attempts = max(1, attempts if expected_formats else 1)
+
+        for attempt in range(attempts):
+            supported_files = self.get_supported_files_from_dir(dir)
+            if supported_files:
+                return supported_files
+            if attempt < attempts - 1:
+                print(
+                    f"[cover-metadata-enforcer] Expected supported format(s) {', '.join(expected_formats)} "
+                    f"for {dir}, but none are visible yet; retrying ({attempt + 1}/{attempts - 1})...",
+                    flush=True,
+                )
+                time.sleep(delay_seconds)
+
+        if expected_formats:
+            visible_files = self.list_files_from_dir(dir)
+            print(
+                f"[cover-metadata-enforcer] Expected supported format(s) {', '.join(expected_formats)} "
+                f"but none were found in {dir}.",
+                flush=True,
+            )
+            print(
+                f"[cover-metadata-enforcer] Files found in selected directory: "
+                f"{visible_files if visible_files else '[]'}",
+                flush=True,
+            )
+        return []
+
+    def enforce_cover(self, book_dir: str, expected_formats: list[str] | None = None) -> list:
         """Will force the Cover & Metadata to update for the supported book files in the given directory"""
-        supported_files = self.get_supported_files_from_dir(book_dir)
+        supported_files = self.get_supported_files_from_dir_with_retries(book_dir, expected_formats=expected_formats)
         if supported_files:
             if len(supported_files) > 1:
                 print("[cover-metadata-enforcer] Multiple file formats for current book detected...", flush=True)
@@ -831,7 +897,8 @@ def main():
         book_dir = enforcer.get_book_dir_from_log(log_info)
         if enforcer.enforcer_on:
             try:
-                book_objects = enforcer.enforce_cover(book_dir)
+                expected_formats = enforcer.get_expected_supported_formats(log_info.get('book_id'))
+                book_objects = enforcer.enforce_cover(book_dir, expected_formats=expected_formats)
                 if not book_objects:
                     print(f"[cover-metadata-enforcer] Metadata for '{log_info['title']}' not successfully enforced")
                     enforcer.record_failed_enforcement(log_info, "No supported files or enforcement failed")

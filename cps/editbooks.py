@@ -839,6 +839,7 @@ def do_edit_book(book_id, upload_formats=None):
     log.debug("[edit_book] start book_id=%s user=%s upload_formats=%s", book_id, getattr(current_user, "name", "unknown"), bool(upload_formats))
     modify_date = False
     edit_error = False
+    thumbnail_refresh_book_id = None
 
     # create the function for sorting...
     calibre_db.create_functions(config)
@@ -887,38 +888,53 @@ def do_edit_book(book_id, upload_formats=None):
                 if result:
                     book.has_cover = 1
                     modify_date = True
-                    # Force thumbnail regeneration after successful cover fetch
-                    helper.replace_cover_thumbnail_cache(book.id)
+                    thumbnail_refresh_book_id = book.id
                     log.debug("[edit_book] cover saved book_id=%s duration=%.3fs", book.id, time.monotonic() - cover_start)
                 else:
                     log.warning("[edit_book] cover save failed book_id=%s duration=%.3fs error=%s", book.id, time.monotonic() - cover_start, error)
                     edit_error = True
                     flash(error, category="error")
 
+        stage_start = time.monotonic()
         modify_date |= edit_book_series_index(to_save.get("series_index"), book)
+        log.debug("[edit_book] series_index ok book_id=%s duration=%.3fs", book.id, time.monotonic() - stage_start)
+        stage_start = time.monotonic()
         modify_date |= edit_book_comments(Markup(to_save.get('comments')).unescape(), book)
+        log.debug("[edit_book] comments ok book_id=%s duration=%.3fs", book.id, time.monotonic() - stage_start)
 
+        stage_start = time.monotonic()
         input_identifiers = identifier_list(to_save, book)
         modification, warning = modify_identifiers(input_identifiers, book.identifiers, calibre_db.session)
         if warning:
             flash(_("Identifiers are not Case Sensitive, Overwriting Old Identifier"), category="warning")
         modify_date |= modification
+        log.debug("[edit_book] identifiers ok book_id=%s duration=%.3fs", book.id, time.monotonic() - stage_start)
 
+        stage_start = time.monotonic()
         modify_date |= edit_book_tags(to_save.get('tags'), book)
+        log.debug("[edit_book] tags ok book_id=%s duration=%.3fs", book.id, time.monotonic() - stage_start)
+        stage_start = time.monotonic()
         modify_date |= edit_book_series(to_save.get("series"), book)
+        log.debug("[edit_book] series ok book_id=%s duration=%.3fs", book.id, time.monotonic() - stage_start)
+        stage_start = time.monotonic()
         modify_date |= edit_book_publisher(to_save.get('publisher'), book)
+        log.debug("[edit_book] publisher ok book_id=%s duration=%.3fs", book.id, time.monotonic() - stage_start)
 
         try:
+            stage_start = time.monotonic()
             invalid = []
             modify_date |= edit_book_languages(to_save.get('languages'), book, upload_mode=upload_formats, invalid=invalid)
             if invalid:
                 for lang in invalid:
                     flash(_("'%(langname)s' is not a valid language", langname=lang), category="warning")
+            log.debug("[edit_book] languages ok book_id=%s duration=%.3fs", book.id, time.monotonic() - stage_start)
         except ValueError as e:
             flash(str(e), category="error")
             edit_error = True
 
+        stage_start = time.monotonic()
         modify_date |= edit_all_cc_data(book_id, book, to_save)
+        log.debug("[edit_book] custom_columns ok book_id=%s duration=%.3fs", book.id, time.monotonic() - stage_start)
 
         # Handle hardcover sync blacklist settings
         if config.config_kobo_sync and config.config_hardcover_sync:
@@ -969,6 +985,10 @@ def do_edit_book(book_id, upload_formats=None):
             calibre_db.session.merge(book)
             calibre_db.session.commit()
             log.debug("[edit_book] db commit retry ok book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
+
+        if thumbnail_refresh_book_id is not None:
+            helper.replace_cover_thumbnail_cache(thumbnail_refresh_book_id)
+            log.debug("[edit_book] thumbnail refresh queued book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
 
         # CWA: Export of changed Metadata after commit, to avoid race conditions with folder renames
         # Only create log if there were actual meaningful metadata changes

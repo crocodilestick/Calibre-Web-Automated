@@ -183,18 +183,9 @@
             }
         }
 
-        if ((data.needs_scan || data.stale) && !isModalActive()) {
-            startStatusPolling();
-            return;
-        }
-
         if (data.count > 0) {
             stopStatusPolling();
             return;
-        }
-
-        if (data.enabled) {
-            startStatusPolling();
         }
     }
     
@@ -279,7 +270,6 @@
         }
 
         fetchDuplicateStatus().then(handleStatusResponse);
-        startStatusPolling();
 
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {

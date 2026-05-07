@@ -24,6 +24,10 @@ var reload = false;
 var lastBooksTableIndex = null;
 // No row-based shift logic; we handle shift ranges on checkbox clicks only to avoid conflicts
 
+function csrfHeaders() {
+    return { "X-CSRFToken": $("input[name='csrf_token']").val() };
+}
+
 $(function() {
     $('#tasktable').bootstrapTable({
         formatNoMatches: function () {
@@ -310,6 +314,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/mergebooks",
             data: JSON.stringify({"Merge_books":selections}),
             success: function success() {
@@ -329,6 +334,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/simulatemerge",
             data: JSON.stringify({"Merge_books":selections}),
             success: function success(booTitles) {
@@ -355,6 +361,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/editselectedbooks",
             data: JSON.stringify({
                 "selections": selections,
@@ -398,6 +405,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/displayselectedbooks",
             data: JSON.stringify({"selections":selections}),
             success: function success(booTitles) {
@@ -415,6 +423,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/archiveselectedbooks",
             data: JSON.stringify({"selections":selections, "archive": true}),
             success: function success(booTitles) {
@@ -434,6 +443,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/displayselectedbooks",
             data: JSON.stringify({"selections":selections}),
             success: function success(booTitles) {
@@ -451,6 +461,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/archiveselectedbooks",
             data: JSON.stringify({"selections":selections, "archive": false}),
             success: function success(booTitles) {
@@ -470,6 +481,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/displayselectedbooks",
             data: JSON.stringify({"selections":selections}),
             success: function success(booTitles) {
@@ -487,6 +499,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/deleteselectedbooks",
             data: JSON.stringify({"selections":selections}),
             success: function success(booTitles) {
@@ -506,6 +519,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/displayselectedbooks",
             data: JSON.stringify({"selections":selections}),
             success: function success(booTitles) {
@@ -523,6 +537,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/readselectedbooks",
             data: JSON.stringify({"selections":selections, "markAsRead": true}),
             success: function success(booTitles) {
@@ -542,6 +557,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/displayselectedbooks",
             data: JSON.stringify({"selections":selections}),
             success: function success(booTitles) {
@@ -559,6 +575,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/readselectedbooks",
             data: JSON.stringify({"selections":selections, "markAsRead": false}),
             success: function success(booTitles) {
@@ -574,6 +591,7 @@ $(function() {
             method:"post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
+            headers: csrfHeaders(),
             url: window.location.pathname + "/../ajax/xchange",
             data: JSON.stringify({"xchange":selections}),
             success: function success() {
@@ -1277,6 +1295,7 @@ function BookCheckboxChange(checkbox, userId, field) {
     $.ajax({
         method: "post",
         url: getPath() + "/ajax/editbooks/" + field,
+        headers: csrfHeaders(),
         data: {"pk": userId, "value": value},
         error: function(data) {
             element.checked = !element.checked;

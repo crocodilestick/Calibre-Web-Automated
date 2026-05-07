@@ -209,6 +209,7 @@ class CalibreTask:
         self.id = uuid.uuid4()
         self.self_cleanup = False
         self._scheduled = False
+        self.done_event = threading.Event()
 
     @abc.abstractmethod
     def run(self, worker_thread):
@@ -297,10 +298,12 @@ class CalibreTask:
         self.stat = STAT_FAIL
         self.progress = 1
         self.error = error_message
+        self.done_event.set()
 
     def _handleSuccess(self):
         self.stat = STAT_FINISH_SUCCESS
         self.progress = 1
+        self.done_event.set()
 
     def __str__(self):
         return self.name

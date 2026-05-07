@@ -299,8 +299,6 @@ def HandleSyncRequest():
     log.debug("Kobo Sync: selected to sync: {}".format(len(books.all())))
     for book in books:
         formats = [data.format for data in book.Books.data]
-        if 'KEPUB' not in formats and config.config_kepubifypath and 'EPUB' in formats:
-            helper.convert_book_format(book.Books.id, config.get_book_path(), 'EPUB', 'KEPUB', current_user.name)
 
         kobo_reading_state = book.KoboReadingState  # None when no record exists yet
         entitlement = {
@@ -603,28 +601,32 @@ def _get_cover_image_id(book):
 
 def get_metadata(book):
     download_urls = []
-    kepub = [data for data in book.data if data.format == 'KEPUB']
 
-    for book_data in kepub if len(kepub) > 0 else book.data:
-        if book_data.format not in KOBO_FORMATS:
-            continue
-        for kobo_format in KOBO_FORMATS[book_data.format]:
-            # log.debug('Id: %s, Format: %s' % (book.id, kobo_format))
-            try:
-                if get_epub_layout(book, book_data) == 'pre-paginated':
-                    kobo_format = 'EPUB3FL'
-                download_urls.append(
-                    {
-                        "Format": kobo_format,
-                        "Size": book_data.uncompressed_size,
-                        "Url": get_download_url_for_book(book.id, book_data.format),
-                        # The Kobo forma accepts platforms: (Generic, Android)
-                        "Platform": "Generic",
-                        # "DrmType": "None", # Not required
-                    }
-                )
-            except (zipfile.BadZipfile, FileNotFoundError) as e:
-                log.error(e)
+    kepub_data = next((d for d in book.data if d.format == 'KEPUB'), None)
+    epub_data  = next((d for d in book.data if d.format == 'EPUB'),  None)
+
+    if kepub_data:
+        book_data, dl_format, published_format = kepub_data, 'kepub', 'KEPUB'
+    elif epub_data and config.config_kepubifypath:
+        book_data, dl_format, published_format = epub_data, 'kepub', 'KEPUB'
+    elif epub_data:
+        book_data, dl_format, published_format = epub_data, 'epub', 'EPUB3'
+    else:
+        book_data = None
+
+    if book_data:
+        try:
+            if get_epub_layout(book, book_data) == 'pre-paginated':
+                published_format = 'EPUB3FL'
+        except (zipfile.BadZipfile, FileNotFoundError) as e:
+            log.error(e)
+        download_urls.append({
+            "Format": published_format,
+            "Size": book_data.uncompressed_size,
+            "Url": get_download_url_for_book(book.id, dl_format),
+            "Platform": "Generic",
+            "DrmType": "None",
+        })
 
     book_uuid = book.uuid
     cover_image_id = _get_cover_image_id(book)

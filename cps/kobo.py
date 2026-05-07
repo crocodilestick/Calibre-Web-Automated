@@ -1147,7 +1147,7 @@ def HandleCoverImageRequest(book_uuid, width, height, Quality, isGreyscale):
         else:
             resolution = COVER_THUMBNAIL_SMALL
     except ValueError:
-        log.error("Requested height %s of book %s is invalid" % (book_uuid, height))
+        log.error("Requested height %s of book %s is invalid" % (height, book_uuid))
         resolution = COVER_THUMBNAIL_SMALL
     book_cover = helper.get_book_cover_with_uuid(book_uuid, resolution=resolution)
     if book_cover:

@@ -33,6 +33,7 @@ from werkzeug.datastructures import Headers
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from sqlalchemy.exc import StatementError
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import select
 import requests
 
@@ -263,6 +264,12 @@ def HandleSyncRequest():
                                and_(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True),
                                db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
                            ))
+                           .options(joinedload(db.Books.authors),
+                                    joinedload(db.Books.publishers),
+                                    joinedload(db.Books.series),
+                                    joinedload(db.Books.languages),
+                                    joinedload(db.Books.comments),
+                                    joinedload(db.Books.data))
                            .distinct())
     else:
         changed_entries = calibre_db.session.query(db.Books,
@@ -278,7 +285,13 @@ def HandleSyncRequest():
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .order_by(db.Books.last_modified)
-                           .order_by(db.Books.id))
+                           .order_by(db.Books.id)
+                           .options(joinedload(db.Books.authors),
+                                    joinedload(db.Books.publishers),
+                                    joinedload(db.Books.series),
+                                    joinedload(db.Books.languages),
+                                    joinedload(db.Books.comments),
+                                    joinedload(db.Books.data)))
     log.debug("Kobo Sync: changed entries: {}".format(changed_entries.count()))
 
     reading_states_in_new_entitlements = []
@@ -643,11 +656,12 @@ def get_metadata(book):
     }
     metadata.update(get_author(book))
 
-    if get_series(book):
-        name = get_series(book)
+    series_name = get_series(book)
+    if series_name:
+        name = series_name
         try:
             metadata["Series"] = {
-                "Name": get_series(book),
+                "Name": series_name,
                 "Number": get_seriesindex(book),        # ToDo Check int() ?
                 "NumberFloat": float(get_seriesindex(book)),
                 # Get a deterministic id based on the series name.

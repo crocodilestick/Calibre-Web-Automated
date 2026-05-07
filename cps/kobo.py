@@ -232,14 +232,20 @@ def HandleSyncRequest():
 
     log.debug("Kobo Sync: books last modified: {}".format(sync_token.books_last_modified))
 
+    rstate_join = and_(
+        db.Books.id == ub.KoboReadingState.book_id,
+        ub.KoboReadingState.user_id == current_user.id,
+    )
     if only_kobo_shelves:
         changed_entries = calibre_db.session.query(db.Books,
                                                    ub.ArchivedBook.last_modified,
                                                    ub.BookShelf.date_added,
-                                                   ub.ArchivedBook.is_archived)
+                                                   ub.ArchivedBook.is_archived,
+                                                   ub.KoboReadingState)
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
+                           .outerjoin(ub.KoboReadingState, rstate_join)
                            .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
                                                       .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
                           .filter(or_(
@@ -261,10 +267,12 @@ def HandleSyncRequest():
     else:
         changed_entries = calibre_db.session.query(db.Books,
                                                    ub.ArchivedBook.last_modified,
-                                                   ub.ArchivedBook.is_archived)
+                                                   ub.ArchivedBook.is_archived,
+                                                   ub.KoboReadingState)
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
+                           .outerjoin(ub.KoboReadingState, rstate_join)
                            .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
                                                       .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
                            .filter(calibre_db.common_filters(allow_show_archived=True))
@@ -281,13 +289,14 @@ def HandleSyncRequest():
         if 'KEPUB' not in formats and config.config_kepubifypath and 'EPUB' in formats:
             helper.convert_book_format(book.Books.id, config.get_book_path(), 'EPUB', 'KEPUB', current_user.name)
 
-        kobo_reading_state = get_or_create_reading_state(book.Books.id)
+        kobo_reading_state = book.KoboReadingState  # None when no record exists yet
         entitlement = {
             "BookEntitlement": create_book_entitlement(book.Books, archived=(book.is_archived==True)),
             "BookMetadata": get_metadata(book.Books),
         }
 
-        if kobo_reading_state.last_modified > sync_token.reading_state_last_modified:
+        if (kobo_reading_state is not None
+                and kobo_reading_state.last_modified > sync_token.reading_state_last_modified):
             entitlement["ReadingState"] = get_kobo_reading_state_response(book.Books, kobo_reading_state)
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
             reading_states_in_new_entitlements.append(book.Books.id)
@@ -1043,8 +1052,10 @@ def get_ub_read_status(kobo_read_status):
 
 
 def get_or_create_reading_state(book_id):
-    book_read = ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id,
-                                                     ub.ReadBook.user_id == int(current_user.id)).one_or_none()
+    book_read = ub.session.query(ub.ReadBook).filter(
+        ub.ReadBook.book_id == book_id,
+        ub.ReadBook.user_id == int(current_user.id),
+    ).one_or_none()
     if not book_read:
         book_read = ub.ReadBook(user_id=current_user.id, book_id=book_id)
     if not book_read.kobo_reading_state:

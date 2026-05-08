@@ -700,7 +700,7 @@ def delete_selected_books():
     vals = request.get_json().get('selections')
     if vals:
         for book_id in vals:
-            delete_book_from_table(book_id, "", True)
+            delete_book_from_table(book_id, "", True, skip_cache_invalidation=True)
         _queue_duplicate_scan_after_change(vals)
         return json.dumps({'success': True})
     return ""
@@ -761,7 +761,7 @@ def merge_list_book():
                                                         element.uncompressed_size,
                                                         to_name))
                             to_file.append(element.format)
-                    delete_book_from_table(from_book.id, "", True)
+                    delete_book_from_table(from_book.id, "", True, skip_cache_invalidation=True)
             calibre_db.session.commit()
             _queue_duplicate_scan_after_change([to_book.id] + vals)
             return json.dumps({'success': True})
@@ -1357,7 +1357,7 @@ def render_delete_book_result(book_format, json_response, warning, book_id, loca
             return redirect(get_redirect_location(location, "web.index"))
 
 
-def delete_book_from_table(book_id, book_format, json_response, location=""):
+def delete_book_from_table(book_id, book_format, json_response, location="", skip_cache_invalidation=False):
     warning = {}
     if current_user.role_delete_books():
         book = calibre_db.get_book(book_id)
@@ -1410,7 +1410,7 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                         log.warning("Failed to refresh duplicate index/cache after deleting book %s: %s", book_id, str(e))
                 
                 # Format-only deletions and refresh failures need a later cache refresh.
-                if not refreshed_duplicate_cache:
+                if not refreshed_duplicate_cache and not skip_cache_invalidation:
                     try:
                         sys.path.insert(1, '/app/calibre-web-automated/scripts/')
                         from cwa_db import CWA_DB

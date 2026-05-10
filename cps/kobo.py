@@ -315,10 +315,11 @@ def HandleSyncRequest():
     cont_sync = has_more
     log.debug("Kobo Sync: more to sync: {}".format(has_more))
 
-    sync_shelves(sync_token, sync_results, only_kobo_shelves)
+    if not cont_sync:
+        sync_shelves(sync_token, sync_results, only_kobo_shelves)
 
     # Add magic shelves as collections
-    if config.config_kobo_sync_magic_shelves:
+    if not cont_sync and config.config_kobo_sync_magic_shelves:
 
         for shelf in ub.session.query(ub.MagicShelf)\
             .filter_by(user_id=current_user.id, kobo_sync=False)\

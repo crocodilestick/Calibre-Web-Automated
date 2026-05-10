@@ -31,7 +31,7 @@ from flask import (
 from .cw_login import current_user
 from werkzeug.datastructures import Headers
 from sqlalchemy import func
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.sql.expression import and_, or_
 from sqlalchemy.exc import StatementError
 import requests
@@ -195,6 +195,8 @@ def HandleSyncRequest():
     )
 
     # Iterate over all books in increasing BookId order. If results are too large, the sync process is paginated and the next request will resume starting at the last book_id synced returned in the previous response.
+    # selectinload fetches each relationship for all books in one IN-list query rather than
+    # one query per book, turning O(n*r) lazy loads into O(r) batch fetches.
     changed_entries = (calibre_db.session.query(
                             db.Books,
                             ub.ArchivedBook.is_archived.label('is_archived'),
@@ -202,6 +204,14 @@ def HandleSyncRequest():
                             ub.KoboBookVisibility.is_visible.label('kbv_is_visible'),
                             ub.KoboBookVisibility.last_modified.label('kbv_last_modified'),
                             ub.KoboReadingState,
+                       )
+                       .options(
+                           selectinload(db.Books.authors),
+                           selectinload(db.Books.languages),
+                           selectinload(db.Books.series),
+                           selectinload(db.Books.publishers),
+                           selectinload(db.Books.comments),
+                           selectinload(db.Books.data),
                        )
                        .outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                        ub.ArchivedBook.user_id == current_user.id))

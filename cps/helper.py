@@ -1489,7 +1489,7 @@ def clear_cover_thumbnail_cache(book_id):
     WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
 
 
-def replace_cover_thumbnail_cache(book_id):
+def replace_cover_thumbnail_cache(book_id, book_path=None, last_modified=None):
     # Always allow replacing thumbnail cache
     # Remove from pending set to allow regeneration
     _pending_thumbnail_books.discard(book_id)
@@ -1500,7 +1500,15 @@ def replace_cover_thumbnail_cache(book_id):
         log.error(f'Failed to queue thumbnail clear for book {book_id}: {e}')
     # Queue generation task and add to pending set only if successful
     try:
-        WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
+        WorkerThread.add(
+            None,
+            TaskGenerateCoverThumbnails(
+                book_id,
+                book_path=book_path,
+                last_modified=last_modified,
+            ),
+            hidden=True,
+        )
         _pending_thumbnail_books.add(book_id)
     except Exception as e:
         log.error(f'Failed to queue thumbnail generation for book {book_id}: {e}')

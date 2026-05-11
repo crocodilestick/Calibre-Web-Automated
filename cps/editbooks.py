@@ -839,6 +839,7 @@ def do_edit_book(book_id, upload_formats=None):
     log.debug("[edit_book] start book_id=%s user=%s upload_formats=%s", book_id, getattr(current_user, "name", "unknown"), bool(upload_formats))
     modify_date = False
     edit_error = False
+    refresh_cover_thumbnail_after_commit = False
 
     # create the function for sorting...
     calibre_db.create_functions(config)
@@ -887,8 +888,7 @@ def do_edit_book(book_id, upload_formats=None):
                 if result:
                     book.has_cover = 1
                     modify_date = True
-                    # Force thumbnail regeneration after successful cover fetch
-                    helper.replace_cover_thumbnail_cache(book.id)
+                    refresh_cover_thumbnail_after_commit = True
                     log.debug("[edit_book] cover saved book_id=%s duration=%.3fs", book.id, time.monotonic() - cover_start)
                 else:
                     log.warning("[edit_book] cover save failed book_id=%s duration=%.3fs error=%s", book.id, time.monotonic() - cover_start, error)
@@ -969,6 +969,13 @@ def do_edit_book(book_id, upload_formats=None):
             calibre_db.session.merge(book)
             calibre_db.session.commit()
             log.debug("[edit_book] db commit retry ok book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
+
+        if refresh_cover_thumbnail_after_commit:
+            helper.replace_cover_thumbnail_cache(
+                book.id,
+                book_path=book.path,
+                last_modified=book.last_modified,
+            )
 
         # CWA: Export of changed Metadata after commit, to avoid race conditions with folder renames
         # Only create log if there were actual meaningful metadata changes

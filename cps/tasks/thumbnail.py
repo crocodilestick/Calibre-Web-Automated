@@ -10,6 +10,7 @@ from shutil import copyfile, copyfileobj
 from urllib.request import urlopen
 from io import BytesIO
 from datetime import datetime, timezone
+from dataclasses import dataclass
 
 from .. import constants
 from cps import config, db, fs, gdriveutils, logger, ub
@@ -21,6 +22,13 @@ try:
     use_IM = True
 except (ImportError, RuntimeError) as e:
     use_IM = False
+
+
+@dataclass(frozen=True)
+class BookCoverSource:
+    id: int
+    path: str
+    last_modified: datetime
 
 
 def get_resize_height(resolution):
@@ -53,10 +61,12 @@ def get_best_fit(width, height, image_width, image_height):
 
 
 class TaskGenerateCoverThumbnails(CalibreTask):
-    def __init__(self, book_id=-1, task_message=''):
+    def __init__(self, book_id=-1, task_message='', book_path=None, last_modified=None):
         super(TaskGenerateCoverThumbnails, self).__init__(task_message)
         self.log = logger.create()
         self.book_id = book_id
+        self.book_path = book_path
+        self.last_modified = last_modified
         self.app_db_session = ub.get_new_session_instance()
         self.cache = fs.FileSystem()
         self.resolutions = [
@@ -69,7 +79,7 @@ class TaskGenerateCoverThumbnails(CalibreTask):
         try:
             if use_IM and self.stat != STAT_CANCELLED and self.stat != STAT_ENDED:
                 self.message = 'Scanning Books'
-                books_with_covers = self.get_books_with_covers(self.book_id)
+                books_with_covers = self.get_cover_sources()
                 count = len(books_with_covers)
 
                 total_generated = 0
@@ -118,6 +128,17 @@ class TaskGenerateCoverThumbnails(CalibreTask):
         books_cover = calibre_db.session.query(db.Books).filter(db.Books.has_cover == 1).filter(filter_exp).all()
         calibre_db.session.close()
         return books_cover
+
+    def get_cover_sources(self):
+        if self.book_id != -1 and self.book_path:
+            return [
+                BookCoverSource(
+                    id=int(self.book_id),
+                    path=self.book_path,
+                    last_modified=self.last_modified or datetime.now(timezone.utc),
+                )
+            ]
+        return self.get_books_with_covers(self.book_id)
 
     def get_book_cover_thumbnails(self, book_id):
         return self.app_db_session \

@@ -602,6 +602,7 @@ class KoboBookmark(Base):
     location_value = Column(String)
     progress_percent = Column(Float)
     content_source_progress_percent = Column(Float)
+    device_id = Column(String)
 
 
 class KoboStatistics(Base):
@@ -1037,6 +1038,16 @@ def migrate_magic_shelf_table(engine, _session):
         _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0")
 
 
+def migrate_kobo_bookmark_table(engine, _session):
+    """Migrate kobo_bookmark table to add device_id column for multi-device sync."""
+    try:
+        _session.query(exists().where(KoboBookmark.device_id)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "kobo_bookmark.device_id")
+        _run_ddl_with_retry(engine, "ALTER TABLE kobo_bookmark ADD column 'device_id' String")
+
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
@@ -1049,6 +1060,7 @@ def migrate_Database(_session):
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
     migrate_magic_shelf_table(engine, _session)
+    migrate_kobo_bookmark_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables

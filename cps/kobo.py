@@ -181,17 +181,17 @@ def HandleSyncRequest():
     log.debug("Kobo Sync: books last modified: {}, visibility last modified: {}, pagination: {}".format(
         sync_token.books_last_modified, sync_token.visibility_last_modified, pagination))
 
-    book_window = or_(
+    query_window = or_(
         and_(db.Books.last_modified > sync_token.books_last_modified,
              db.Books.last_modified <= pagination.snapshot_ts),
         and_(ub.KoboBookVisibility.last_modified > sync_token.visibility_last_modified,
              ub.KoboBookVisibility.last_modified <= pagination.snapshot_ts),
         and_(ub.ArchivedBook.last_modified > sync_token.visibility_last_modified,
              ub.ArchivedBook.last_modified <= pagination.snapshot_ts),
-    )
-    rstate_window = and_(
-        ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified,
-        ub.KoboReadingState.last_modified <= pagination.snapshot_ts,
+        and_(
+            ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified,
+            ub.KoboReadingState.last_modified <= pagination.snapshot_ts,
+        ),
     )
 
     # Iterate over all books in increasing BookId order. If results are too large, the sync process is paginated and the next request will resume starting at the last book_id synced returned in the previous response.
@@ -201,8 +201,8 @@ def HandleSyncRequest():
                             db.Books,
                             ub.ArchivedBook.is_archived.label('is_archived'),
                             ub.ArchivedBook.last_modified.label('archived_last_modified'),
-                            ub.KoboBookVisibility.is_visible.label('kbv_is_visible'),
-                            ub.KoboBookVisibility.last_modified.label('kbv_last_modified'),
+                            ub.KoboBookVisibility.is_visible.label('is_visible'),
+                            ub.KoboBookVisibility.last_modified.label('visible_last_modified'),
                             ub.KoboReadingState,
                        )
                        .options(
@@ -221,7 +221,7 @@ def HandleSyncRequest():
                            db.Books.id == ub.KoboReadingState.book_id,
                            ub.KoboReadingState.user_id == current_user.id,
                         ))
-                       .filter(or_(book_window, rstate_window))
+                       .filter(query_window)
                        .filter(db.Books.id > pagination.books_last_id)
                        .filter(calibre_db.common_filters(allow_show_archived=True))
                        .order_by(db.Books.id))
@@ -238,16 +238,16 @@ def HandleSyncRequest():
         # A book is visible if it's not archived and if it's on a kobo synced shelf
         is_visible = not bool(book.is_archived)
         if only_kobo_shelves:
-            is_visible = is_visible and bool(book.kbv_is_visible)
+            is_visible = is_visible and bool(book.is_visible)
 
         ts_created = get_kobo_created_ts(book)
 
-        book_lm = book.Books.last_modified
-        book_last_modified_naive = book_lm.replace(tzinfo=None) if book_lm else None
+        book_last_modified = book.Books.last_modified
+        book_last_modified = book_last_modified.replace(tzinfo=None) if book_last_modified else None
 
-        kbv_lm = book.kbv_last_modified
-        if kbv_lm and hasattr(kbv_lm, 'replace'):
-            kbv_lm = kbv_lm.replace(tzinfo=None)
+        visible_last_modified = book.visible_last_modified
+        if visible_last_modified and hasattr(visible_last_modified, 'replace'):
+            visible_last_modified = visible_last_modified.replace(tzinfo=None)
         archived_lm = book.archived_last_modified
         if archived_lm and hasattr(archived_lm, 'replace'):
             archived_lm = archived_lm.replace(tzinfo=None)
@@ -255,10 +255,10 @@ def HandleSyncRequest():
         is_newly_created = ts_created > sync_token.books_last_created
         visibility_changed = any(
             t is not None and t > sync_token.visibility_last_modified
-            for t in (kbv_lm, archived_lm)
+            for t in (visible_last_modified, archived_lm)
         )
-        metadata_changed = (book_last_modified_naive is not None
-                            and book_last_modified_naive > sync_token.books_last_modified)
+        metadata_changed = (book_last_modified is not None
+                            and book_last_modified > sync_token.books_last_modified)
   
         if is_newly_created:
             new_entry = {
@@ -293,10 +293,10 @@ def HandleSyncRequest():
                 }})
 
         # Advance all per-signal watermarks unconditionally each iteration.
-        if book_last_modified_naive and book_last_modified_naive <= pagination.snapshot_ts:
+        if book_last_modified and book_last_modified <= pagination.snapshot_ts:
             pagination.books_max_last_modified = max(
-                pagination.books_max_last_modified, book_last_modified_naive)
-        vis_candidates = [t for t in (kbv_lm, archived_lm) if t is not None and t <= pagination.snapshot_ts]
+                pagination.books_max_last_modified, book_last_modified)
+        vis_candidates = [t for t in (visible_last_modified, archived_lm) if t is not None and t <= pagination.snapshot_ts]
         if vis_candidates:
             pagination.visibility_max_last_modified = max(
                 pagination.visibility_max_last_modified, max(vis_candidates))

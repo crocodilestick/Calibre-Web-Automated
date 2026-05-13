@@ -34,7 +34,7 @@ export CWA_INGEST_PROCESSING_DIR="$tmpdir/processing"
 export CWA_INGEST_RECENT_DIR="$tmpdir/recent"
 export CWA_INGEST_RETRY_QUEUE="$tmpdir/retry_queue"
 export CWA_INGEST_STATUS_FILE="$tmpdir/status"
-export CWA_INGEST_RECENT_EVENT_TTL=1
+export CWA_INGEST_RECENT_EVENT_TTL=2
 export CWA_INGEST_BATCH_DIRTY_FILE="$tmpdir/batch_dirty"
 export CWA_INGEST_BATCH_LAST_SUCCESS_FILE="$tmpdir/batch_last_success"
 export CWA_INGEST_BATCH_QUIET_SECONDS=1
@@ -91,7 +91,7 @@ assert_contains "$output" "Skipping duplicate recent event"
 assert_processor_invocations 0
 assert_marker_count "$CWA_INGEST_RECENT_DIR" 1
 
-sleep 2
+sleep 3
 printf 'replacement\n' > "$missing_path"
 output=$(handle_event "$missing_path" 2>&1)
 assert_contains "$output" "Starting Ingest Processor"

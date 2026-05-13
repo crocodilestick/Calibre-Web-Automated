@@ -242,7 +242,7 @@ $(function () {
         type: "POST",
         data: {
           query: keyword,
-          'csrf_token': $('input[name="csrf_token"]').val()
+          csrf_token: $("input[name='csrf_token']").first().val(),
         },
         dataType: "json",
         success: function success(data) {

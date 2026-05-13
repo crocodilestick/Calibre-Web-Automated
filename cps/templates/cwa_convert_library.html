@@ -83,7 +83,7 @@
   }
 
   function scheduleConvertLibrary(delayMinutes) {
-    fetch('/cwa-internal/schedule-convert-library', {
+    cwaFetch('/cwa-internal/schedule-convert-library', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ delay_minutes: delayMinutes, username: '{{ current_user.name }}' })
@@ -109,7 +109,7 @@
     let get;
     
     try {
-      const res = await fetch("{{ url_for('convert_library.get_status')}}");
+      const res = await cwaFetch("{{ url_for('convert_library.get_status')}}");
       get = await res.json();
     } catch (e) {
       console.error("Error: ", e);

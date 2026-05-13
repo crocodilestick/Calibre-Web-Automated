@@ -103,7 +103,7 @@
   }
 
   function scheduleEpubFixer(delayMinutes) {
-    fetch('/cwa-internal/schedule-epub-fixer', {
+    cwaFetch('/cwa-internal/schedule-epub-fixer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ delay_minutes: delayMinutes, username: '{{ current_user.name }}' })
@@ -168,7 +168,7 @@
       return;
     }
     try {
-      const res = await fetch(`/ajax/listbooks?search=${encodeURIComponent(query)}&limit=10&offset=0`);
+      const res = await cwaFetch(`/ajax/listbooks?search=${encodeURIComponent(query)}&limit=10&offset=0`);
       const data = await res.json();
       renderEpubFixerSearchResults((data && data.rows) ? data.rows : []);
     } catch (e) {
@@ -183,7 +183,7 @@
       return;
     }
     try {
-      const res = await fetch("{{ url_for('epub_fixer.run_epub_fixer_for_book') }}", {
+      const res = await cwaFetch("{{ url_for('epub_fixer.run_epub_fixer_for_book') }}", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ book_id: bookId })
@@ -206,7 +206,7 @@
     let get;
     
     try {
-      const res = await fetch("{{ url_for('epub_fixer.get_status')}}");
+      const res = await cwaFetch("{{ url_for('epub_fixer.get_status')}}");
       get = await res.json();
     } catch (e) {
       console.error("Error: ", e);

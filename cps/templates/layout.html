@@ -30,13 +30,35 @@
     <script>
       let checkMessagesInterval = null; // Store interval ID
 
-      function refreshLibrary() {
-          fetch("/cwa-library-refresh", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json"
+      function getCsrfToken() {
+          const input = document.querySelector("input[name='csrf_token']");
+          return input ? input.value : "";
+      }
+
+      function cwaFetch(url, options = {}) {
+          const fetchOptions = { ...options };
+          fetchOptions.credentials = fetchOptions.credentials || "same-origin";
+
+          const method = (fetchOptions.method || "GET").toUpperCase();
+          if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
+              const headers = new Headers(fetchOptions.headers || {});
+              const csrfToken = getCsrfToken();
+              if (csrfToken && !headers.has("X-CSRFToken")) {
+                  headers.set("X-CSRFToken", csrfToken);
               }
-          })
+              fetchOptions.headers = headers;
+          }
+
+          return fetch(url, fetchOptions);
+      }
+
+      function refreshLibrary() {
+          cwaFetch("/cwa-library-refresh", {
+               method: "POST",
+               headers: {
+                   "Content-Type": "application/json"
+               }
+           })
           .then(response => response.json())
           .then(data => {
             updateLibraryRefreshMessage(data.message);  // Show immediate confirmation
@@ -46,11 +68,11 @@
       }
 
       function checkLibraryMessages() {
-          fetch("/cwa-library-refresh/messages")
-              .then(response => response.json())
-              .then(data => {
-                  if (data.messages.length > 0) {
-                    updateLibraryRefreshMessage(data.messages.join("<br>")); // Show messages
+          cwaFetch("/cwa-library-refresh/messages")
+               .then(response => response.json())
+               .then(data => {
+                   if (data.messages.length > 0) {
+                     updateLibraryRefreshMessage(data.messages.join("<br>")); // Show messages
                       stopCheckingMessages(); // Stop checking once we get a message
                   }
               })

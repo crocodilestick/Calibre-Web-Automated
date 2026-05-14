@@ -2987,6 +2987,9 @@ def show_book(book_id):
             if media_format.format.lower() in constants.EXTENSIONS_AUDIO:
                 entry.audio_entries.append(media_format.format.lower())
 
+        log.debug("series2: link_class=%s, cc_class=%s, entry.series2=%r",
+                  db.series2_link_class, db.series2_cc_class, entry.series2)
+
         kosync_progress = None
         kosync_progress_timestamp = None
         if current_user.is_authenticated:

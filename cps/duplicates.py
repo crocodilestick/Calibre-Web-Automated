@@ -12,6 +12,7 @@ from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
 from functools import wraps
 import hashlib
+import json
 import os
 import time
 from shutil import copyfile
@@ -29,6 +30,34 @@ from cwa_db import CWA_DB
 
 duplicates = Blueprint('duplicates', __name__)
 log = logger.create()
+
+
+def _duplicate_scan_transiently_pending():
+    try:
+        from cps.duplicate_index import ingest_batch_follow_up_pending
+        if ingest_batch_follow_up_pending():
+            return True
+    except Exception as ex:
+        log.debug("[cwa-duplicates] Could not check ingest follow-up marker state: %s", str(ex))
+
+    try:
+        from cps.cwa_functions import duplicate_scan_debounce_pending
+        if duplicate_scan_debounce_pending():
+            return True
+    except Exception as ex:
+        log.debug("[cwa-duplicates] Could not check duplicate scan debounce state: %s", str(ex))
+
+    try:
+        terminal_stats = {STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED}
+        for __, __, __, task, __ in WorkerThread.get_instance().tasks:
+            if task.stat in terminal_stats:
+                continue
+            if task.__class__.__name__ == "TaskDuplicateScan" or str(getattr(task, "name", "")).lower() == "duplicate scan":
+                return True
+    except Exception as ex:
+        log.debug("[cwa-duplicates] Could not check duplicate scan worker state: %s", str(ex))
+
+    return False
 
 
 def _normalize_timestamp(ts):
@@ -277,39 +306,48 @@ def filter_dismissed_groups(duplicate_groups, user_id=None):
 @login_required_if_no_ano
 @admin_or_edit_required
 def show_duplicates():
-    """Display books with duplicate titles and authors"""
+    """Display cached duplicate groups and prompt for the initial index scan."""
     print("[cwa-duplicates] Loading duplicates page...", flush=True)
     log.info("[cwa-duplicates] Loading duplicates page for user: %s", current_user.name)
     
     try:
-        # Use SQL/Python detection to find all duplicates once, then filter for current user
-        all_groups = find_duplicate_books(include_dismissed=True)
-        duplicate_groups = filter_dismissed_groups(all_groups, current_user.id if current_user else None)
+        cwa_db = CWA_DB()
+        settings = cwa_db.cwa_settings
+        duplicate_groups = []
+        duplicate_index_needs_full_scan = True
 
-        # Update cache so notifications reflect the latest scan
         try:
-            max_book_id = 0
-            try:
-                max_id_result = calibre_db.session.query(func.max(db.Books.id)).scalar()
-                max_book_id = max_id_result if max_id_result is not None else 0
-            except Exception as max_ex:
-                log.warning("[cwa-duplicates] Could not get max book ID for cache update: %s", str(max_ex))
+            from cps.duplicate_index import (
+                duplicate_index_needs_manual_full_scan,
+                get_duplicate_groups_from_index,
+                library_has_books,
+            )
 
-            cwa_db_cache = CWA_DB()
-            cwa_db_cache.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
-            log.debug("[cwa-duplicates] Cache updated from /duplicates page load")
-        except Exception as cache_ex:
-            log.warning("[cwa-duplicates] Failed to update cache from /duplicates page: %s", str(cache_ex))
+            duplicate_index_needs_full_scan = (
+                library_has_books()
+                and duplicate_index_needs_manual_full_scan(settings)
+                and not _duplicate_scan_transiently_pending()
+            )
+            if duplicate_index_needs_full_scan:
+                log.info("[cwa-duplicates] Duplicate index baseline missing; prompting for manual full scan")
+            else:
+                duplicate_groups = get_duplicate_groups_from_index(
+                    settings,
+                    include_dismissed=False,
+                    user_id=current_user.id if current_user else None,
+                )
+        except Exception as index_ex:
+            log.warning("[cwa-duplicates] Could not load duplicate index state: %s", str(index_ex))
 
         # Compute next scheduled scan run
-        cwa_db = CWA_DB()
-        next_scan_run = get_next_duplicate_scan_run(cwa_db.cwa_settings)
+        next_scan_run = get_next_duplicate_scan_run(settings)
         
         print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
         log.info("[cwa-duplicates] Found %s duplicate groups total", len(duplicate_groups))
         
         return render_title_template('duplicates.html', 
                                      duplicate_groups=duplicate_groups,
+                                     duplicate_index_needs_full_scan=duplicate_index_needs_full_scan,
                                      next_scan_run=next_scan_run,
                                      title=_("Duplicate Books"), 
                                      page="duplicates")
@@ -320,6 +358,7 @@ def show_duplicates():
         # Return empty page on error
         return render_title_template('duplicates.html', 
                                      duplicate_groups=[],
+                                     duplicate_index_needs_full_scan=False,
                                      next_scan_run=None,
                                      title=_("Duplicate Books"), 
                                      page="duplicates")
@@ -506,7 +545,7 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_bo
     if not use_title and not use_author:
         return None
 
-    print("[cwa-duplicates] Using SQL hybrid prefilter (candidate IDs)", flush=True)
+    log.debug("[cwa-duplicates] Using SQL hybrid prefilter (candidate IDs)")
 
     # Note: these GROUP BY fields are evaluated by SQLite at query time; they are not cached
     # groupings in memory. We only use this query to prefilter candidate IDs.
@@ -550,21 +589,12 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_bo
     if min_book_id is not None:
         query = query.having(max_id_field >= int(min_book_id))
 
-    # Debug: print the actual SQL being executed
     try:
-        from sqlalchemy.dialects import sqlite
-        compiled = query.statement.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True})
-        print(f"[cwa-duplicates] SQL prefilter query:\n{compiled}", flush=True)
-    except Exception as debug_ex:
-        print(f"[cwa-duplicates] Could not compile SQL for debug: {debug_ex}", flush=True)
-
-    try:
-        print(f"[cwa-duplicates] Executing SQL prefilter query (min_book_id={min_book_id})...", flush=True)
+        log.debug("[cwa-duplicates] Executing SQL prefilter query (min_book_id=%s)...", min_book_id)
         results = query.all()
-        print(f"[cwa-duplicates] SQL prefilter query completed, got {len(results)} result rows", flush=True)
+        log.debug("[cwa-duplicates] SQL prefilter query completed, got %s result rows", len(results))
     except Exception as e:
         log.error("[cwa-duplicates] Hybrid prefilter SQL failed: %s", str(e))
-        print(f"[cwa-duplicates] Hybrid prefilter SQL failed: {str(e)}", flush=True)
         return None
 
     candidate_ids = set()
@@ -573,7 +603,7 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_bo
             continue
         candidate_ids.update(int(bid) for bid in row.book_ids_str.split(',') if bid)
 
-    print(f"[cwa-duplicates] Hybrid prefilter returned {len(candidate_ids)} candidate books", flush=True)
+    log.debug("[cwa-duplicates] Hybrid prefilter returned %s candidate books", len(candidate_ids))
     return candidate_ids
 
 
@@ -1031,10 +1061,47 @@ def get_duplicate_status():
         # Check if notifications are enabled
         notifications_enabled = cwa_db.cwa_settings.get('duplicate_notifications_enabled', 1)
         
+        try:
+            from cps.duplicate_index import library_has_books
+            duplicate_library_has_books = library_has_books()
+        except Exception as index_ex:
+            log.warning("[cwa-duplicates] Could not check duplicate library size in status endpoint: %s", str(index_ex))
+            duplicate_library_has_books = True
+
         # Try to get cached results first
         cache_data = cwa_db.get_duplicate_cache()
+        duplicate_index_needs_full_scan = (
+            duplicate_library_has_books
+            and (bool(cache_data.get('scan_pending')) if cache_data else True)
+        )
+        if cache_data and duplicate_library_has_books:
+            try:
+                from cps.duplicate_index import (
+                    duplicate_index_needs_manual_full_scan,
+                )
+
+                duplicate_index_needs_full_scan = (
+                    duplicate_library_has_books
+                    and duplicate_index_needs_manual_full_scan(cwa_db.cwa_settings)
+                    and not _duplicate_scan_transiently_pending()
+                )
+            except Exception as index_ex:
+                log.warning("[cwa-duplicates] Could not check duplicate index baseline in status endpoint: %s", str(index_ex))
+                duplicate_index_needs_full_scan = True
         
         if cache_data and cache_data.get('duplicate_groups') is not None:
+            if duplicate_index_needs_full_scan:
+                return jsonify({
+                    'success': True,
+                    'enabled': bool(notifications_enabled),
+                    'count': 0,
+                    'preview': [],
+                    'cached': False,
+                    'stale': True,
+                    'needs_scan': True,
+                    'needs_full_scan': True
+                })
+
             # Cache is available; use it even if scan is pending
             duplicate_groups = cache_data['duplicate_groups']
             
@@ -1063,7 +1130,8 @@ def get_duplicate_status():
                 'preview': preview,
                 'cached': True,
                 'stale': bool(cache_data.get('scan_pending')),
-                'needs_scan': bool(cache_data.get('scan_pending'))
+                'needs_scan': duplicate_index_needs_full_scan,
+                'needs_full_scan': duplicate_index_needs_full_scan
             })
         
         # Cache is missing - DO NOT trigger scan here!
@@ -1080,7 +1148,8 @@ def get_duplicate_status():
             'count': 0,
             'preview': [],
             'cached': False,
-            'needs_scan': True  # Frontend can optionally show "scan needed" message
+            'needs_scan': duplicate_index_needs_full_scan,  # Frontend can optionally show "scan needed" message
+            'needs_full_scan': duplicate_index_needs_full_scan
         })
     except Exception as e:
         log.error("[cwa-duplicates] Error getting duplicate status: %s", str(e))
@@ -1090,6 +1159,21 @@ def get_duplicate_status():
             'count': 0,
             'preview': []
         }), 500
+
+
+@duplicates.route("/duplicates/dismiss-setup-notice", methods=['POST'])
+@login_required_if_no_ano
+@admin_or_edit_required
+def dismiss_duplicate_scan_setup_notice():
+    """Remember that the current duplicate-index setup notice was dismissed."""
+    try:
+        notice_file = f"/app/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
+        with open(notice_file, 'w') as f:
+            f.write("dismissed\n")
+        return jsonify({"success": True})
+    except Exception as e:
+        log.error("[cwa-duplicates] Failed to dismiss duplicate setup notice: %s", str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @duplicates.route("/duplicates/dismiss/<group_hash>", methods=['POST'])
@@ -1219,6 +1303,19 @@ def invalidate_cache():
 def trigger_scan():
     """Manually trigger a duplicate scan"""
     try:
+        try:
+            from cps.duplicate_index import ingest_batch_follow_up_pending
+            if ingest_batch_follow_up_pending():
+                log.info("[cwa-duplicates] Manual full scan blocked while ingest is active")
+                return jsonify({
+                    'success': False,
+                    'blocked': True,
+                    'reason': 'ingest_in_progress',
+                    'message': _('Import is in progress. Run a full duplicate scan after ingest finishes.'),
+                }), 409
+        except Exception as ex:
+            log.warning("[cwa-duplicates] Could not check ingest state before manual scan: %s", str(ex))
+
         # Invalidate cache and run fresh scan
         cwa_db = CWA_DB()
         cwa_db.invalidate_duplicate_cache()
@@ -1244,15 +1341,17 @@ def trigger_scan():
             print(f"[cwa-duplicates] Failed to queue task, using fallback: {str(e)}", flush=True)
 
             # Fallback to synchronous scan to avoid hard failures
-            duplicate_groups = find_duplicate_books(include_dismissed=False)
-            max_book_id = 0
-            try:
-                max_id_result = calibre_db.session.query(func.max(db.Books.id)).scalar()
-                max_book_id = max_id_result if max_id_result is not None else 0
-            except Exception as ex:
-                log.warning("[cwa-duplicates] Could not get max book ID in trigger_scan fallback: %s", str(ex))
+            from cps.duplicate_index import get_duplicate_groups_from_index, rebuild_duplicate_index
 
-            all_groups = find_duplicate_books(include_dismissed=True)
+            settings = cwa_db.cwa_settings
+            rebuild_metadata = rebuild_duplicate_index(settings)
+            duplicate_groups = get_duplicate_groups_from_index(
+                settings,
+                include_dismissed=False,
+                user_id=current_user.id if current_user else None,
+            )
+            all_groups = get_duplicate_groups_from_index(settings, include_dismissed=True)
+            max_book_id = rebuild_metadata.get('max_book_id', 0)
             cwa_db.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
 
             # Check if auto-resolution is enabled for fallback sync scan
@@ -1283,9 +1382,18 @@ def trigger_scan():
                                   flush=True)
                             
                             # Re-scan to get updated counts after resolution
-                            duplicate_groups = find_duplicate_books(include_dismissed=False)
-                            all_groups = find_duplicate_books(include_dismissed=True)
-                            cwa_db.update_duplicate_cache(all_groups, len(all_groups), max_book_id)
+                            rebuild_metadata = rebuild_duplicate_index(settings)
+                            duplicate_groups = get_duplicate_groups_from_index(
+                                settings,
+                                include_dismissed=False,
+                                user_id=current_user.id if current_user else None,
+                            )
+                            all_groups = get_duplicate_groups_from_index(settings, include_dismissed=True)
+                            cwa_db.update_duplicate_cache(
+                                all_groups,
+                                len(all_groups),
+                                rebuild_metadata.get('max_book_id', max_book_id),
+                            )
                             log.debug("[cwa-duplicates] Cache refreshed after fallback auto-resolution")
                 except Exception as ex:
                     log.error("[cwa-duplicates] Error during fallback auto-resolution: %s", str(ex))
@@ -1306,62 +1414,6 @@ def trigger_scan():
             'success': False,
             'error': str(e)
         }), 500
-
-
-@duplicates.route("/duplicates/scan-progress/<task_id>", methods=['GET'])
-@login_required_if_no_ano
-@admin_or_edit_required
-def scan_progress(task_id):
-    """Get progress for a queued duplicate scan task"""
-    try:
-        worker = WorkerThread.get_instance()
-        task = None
-        for __, __, __, queued_task, __ in worker.tasks:
-            if str(queued_task.id) == str(task_id):
-                task = queued_task
-                break
-
-        if task is None:
-            return jsonify({'success': False, 'error': 'Task not found'}), 404
-
-        status = 'running'
-        if task.stat in (STAT_FINISH_SUCCESS,):
-            status = 'completed'
-        elif task.stat in (STAT_FAIL,):
-            status = 'failed'
-        elif task.stat in (STAT_CANCELLED, STAT_ENDED):
-            status = 'cancelled'
-
-        message = getattr(task, 'message', '')
-        if status == 'failed' and getattr(task, 'error', None):
-            message = task.error
-
-        return jsonify({
-            'success': True,
-            'task_id': str(task.id),
-            'progress': task.progress,
-            'status': status,
-            'message': message,
-            'result_count': getattr(task, 'result_count', None)
-        })
-    except Exception as e:
-        log.error("[cwa-duplicates] Error fetching scan progress: %s", str(e))
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-
-@duplicates.route("/duplicates/cancel-scan/<task_id>", methods=['POST'])
-@csrf.exempt
-@login_required_if_no_ano
-@admin_or_edit_required
-def cancel_scan(task_id):
-    """Cancel a running or queued duplicate scan task."""
-    try:
-        worker = WorkerThread.get_instance()
-        worker.end_task(task_id)
-        return jsonify({'success': True, 'message': 'Scan cancelled'})
-    except Exception as e:
-        log.error("[cwa-duplicates] Error cancelling scan: %s", str(e))
-        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @duplicates.route("/duplicates/preview-resolution", methods=["POST"])
@@ -1387,13 +1439,16 @@ def preview_resolution():
             }), 400
         
         print("[cwa-duplicates] Calling auto_resolve_duplicates in dry_run mode...", flush=True)
-        # Note: No duplicate_groups passed - will scan to get fresh data for preview
+        duplicate_groups = _get_duplicate_groups_for_resolution(current_user.id)
         result = auto_resolve_duplicates(
             strategy=strategy,
             dry_run=True,
             user_id=current_user.id,
-            trigger_type='manual'
+            trigger_type='manual',
+            duplicate_groups=duplicate_groups
         )
+        if 'preview' not in result:
+            result['preview'] = []
         
         print(f"[cwa-duplicates] Preview result: {result.get('success', False)}, resolved_count={result.get('resolved_count', 0)}", flush=True)
         return jsonify(result)
@@ -1423,19 +1478,28 @@ def execute_resolution():
                 'success': False,
                 'error': _('Invalid resolution strategy')
             }), 400
+
+        try:
+            from cps.duplicate_index import ingest_batch_follow_up_pending
+            if ingest_batch_follow_up_pending():
+                log.info("[cwa-duplicates] Auto-resolution blocked while ingest is active")
+                return jsonify({
+                    'success': False,
+                    'blocked': True,
+                    'reason': 'ingest_in_progress',
+                    'message': _('Import is in progress. Execute duplicate resolution after ingest finishes.'),
+                }), 409
+        except Exception as ex:
+            log.warning("[cwa-duplicates] Could not check ingest state before auto-resolution: %s", str(ex))
         
-        # Note: No duplicate_groups passed - will scan to get fresh data for execution
+        duplicate_groups = _get_duplicate_groups_for_resolution(current_user.id)
         result = auto_resolve_duplicates(
             strategy=strategy,
             dry_run=False,
             user_id=current_user.id,
-            trigger_type='manual'
+            trigger_type='manual',
+            duplicate_groups=duplicate_groups
         )
-        
-        # Invalidate cache after resolution
-        if result['success'] and result['deleted_count'] > 0:
-            cwa_db = CWA_DB()
-            cwa_db.invalidate_duplicate_cache()
         
         return jsonify(result)
         
@@ -1445,6 +1509,39 @@ def execute_resolution():
             'success': False,
             'error': str(e)
         }), 500
+
+
+def _get_duplicate_groups_for_resolution(user_id=None):
+    """Use the same indexed duplicate source as the Duplicates page."""
+    try:
+        from cps.duplicate_index import get_duplicate_groups_from_index
+
+        cwa_db = CWA_DB()
+        return get_duplicate_groups_from_index(
+            cwa_db.cwa_settings,
+            include_dismissed=False,
+            user_id=user_id,
+        )
+    except Exception as ex:
+        log.warning("[cwa-duplicates] Failed to load indexed groups for resolution, falling back to legacy scan: %s", str(ex))
+        return find_duplicate_books(include_dismissed=False, user_id=user_id)
+
+
+def _refresh_duplicate_cache_after_resolution(cwa_db):
+    """Refresh cached duplicate groups after resolution removes books/index rows."""
+    try:
+        from cps.duplicate_index import get_duplicate_groups_from_index, _current_max_book_id
+
+        duplicate_groups = get_duplicate_groups_from_index(cwa_db.cwa_settings, include_dismissed=True)
+        if not cwa_db.update_duplicate_cache(duplicate_groups, len(duplicate_groups), _current_max_book_id()):
+            raise RuntimeError("update_duplicate_cache returned False")
+        log.debug("[cwa-duplicates] Duplicate cache refreshed after auto-resolution")
+    except Exception as ex:
+        log.warning("[cwa-duplicates] Failed to refresh cache after resolution: %s", str(ex))
+        try:
+            cwa_db.invalidate_duplicate_cache()
+        except Exception as invalidate_ex:
+            log.warning("[cwa-duplicates] Failed to invalidate cache after resolution: %s", str(invalidate_ex))
 
 
 def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trigger_type='manual', duplicate_groups=None):
@@ -1685,6 +1782,13 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                         result['errors'].append(f"Failed to delete book {book.id}: {str(e)}")
                 
                 if deleted_ids:
+                    try:
+                        from cps.duplicate_index import delete_book_keys
+                        delete_book_keys(deleted_ids)
+                    except Exception as e:
+                        log.warning("[cwa-duplicates] Failed to delete duplicate index keys for books %s: %s",
+                                    deleted_ids, str(e))
+
                     # Log to audit table
                     cwa_db.log_duplicate_resolution(
                         group_hash=group['group_hash'],
@@ -1719,13 +1823,10 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
         if result['errors']:
             result['success'] = False
         
-        # Invalidate cache if any books were deleted
-        if result['deleted_count'] > 0:
-            try:
-                cwa_db.invalidate_duplicate_cache()
-                log.debug("[cwa-duplicates] Duplicate cache invalidated after auto-resolution")
-            except Exception as ex:
-                log.warning("[cwa-duplicates] Failed to invalidate cache after resolution: %s", str(ex))
+        # Refresh cache only after real deletions. Dry-run previews report the
+        # would-be deleted count but must not mutate scan/index state.
+        if not dry_run and result['deleted_count'] > 0:
+            _refresh_duplicate_cache_after_resolution(cwa_db)
         
         # Log timing information
         elapsed_time = time.time() - start_time

@@ -701,7 +701,7 @@ def delete_selected_books():
     if vals:
         for book_id in vals:
             delete_book_from_table(book_id, "", True)
-        _queue_duplicate_scan_after_change()
+        _queue_duplicate_scan_after_change(vals)
         return json.dumps({'success': True})
     return ""
 
@@ -763,29 +763,24 @@ def merge_list_book():
                             to_file.append(element.format)
                     delete_book_from_table(from_book.id, "", True)
             calibre_db.session.commit()
-            _queue_duplicate_scan_after_change()
+            _queue_duplicate_scan_after_change([to_book.id] + vals)
             return json.dumps({'success': True})
     return ""
 
 
-def _queue_duplicate_scan_after_change():
+def _queue_duplicate_scan_after_change(book_ids=None):
     """Queue a debounced duplicate scan after manual changes."""
     try:
-        import requests
         sys.path.insert(1, '/app/calibre-web-automated/scripts/')
         from cwa_db import CWA_DB
+        from .cwa_functions import queue_debounced_duplicate_scan
 
         cwa_db = CWA_DB()
-        delay_seconds = int(cwa_db.cwa_settings.get('duplicate_scan_debounce_seconds', 5))
+        delay_seconds = int(cwa_db.cwa_settings.get('duplicate_scan_debounce_seconds', 60))
         delay_seconds = max(5, min(600, delay_seconds))
-        url = helper.get_internal_api_url("/cwa-internal/queue-duplicate-scan")
-        requests.post(
-            url,
-            json={"delay_seconds": delay_seconds},
-            headers={"X-Forwarded-For": "127.0.0.1"},
-            timeout=5,
-            verify=False,
-        )
+        result = queue_debounced_duplicate_scan(delay_seconds=delay_seconds, book_ids=book_ids or [])
+        if result.get("skipped"):
+            log.debug("Duplicate scan scheduling skipped after change: %s", result.get("reason"))
     except Exception as e:
         log.error("Failed to queue duplicate scan after change: %s", str(e))
 
@@ -1034,6 +1029,8 @@ def do_edit_book(book_id, upload_formats=None):
 
         if not edit_error and not title_author_error and cover_upload_success is not False:
             flash(_("Metadata successfully updated"), category="success")
+            if modify_date:
+                _queue_duplicate_scan_after_change([book.id])
 
         if upload_formats:
             return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
@@ -1392,17 +1389,35 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()
+
+                refreshed_duplicate_cache = False
+                if not book_format:
+                    try:
+                        from cps.duplicate_index import (
+                            _current_max_book_id,
+                            delete_book_keys,
+                            get_duplicate_groups_from_index,
+                        )
+                        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+                        from cwa_db import CWA_DB
+
+                        delete_book_keys([book_id])
+                        cwa_db = CWA_DB()
+                        duplicate_groups = get_duplicate_groups_from_index(cwa_db.cwa_settings, include_dismissed=True)
+                        cwa_db.update_duplicate_cache(duplicate_groups, len(duplicate_groups), _current_max_book_id())
+                        refreshed_duplicate_cache = True
+                    except Exception as e:
+                        log.warning("Failed to refresh duplicate index/cache after deleting book %s: %s", book_id, str(e))
                 
-                # Invalidate duplicate cache after book deletion
-                try:
-                    import sys
-                    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-                    from cwa_db import CWA_DB
-                    cwa_db = CWA_DB()
-                    cwa_db.invalidate_duplicate_cache()
-                    cwa_db.close()
-                except Exception as e:
-                    log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
+                # Format-only deletions and refresh failures need a later cache refresh.
+                if not refreshed_duplicate_cache:
+                    try:
+                        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+                        from cwa_db import CWA_DB
+                        cwa_db = CWA_DB()
+                        cwa_db.invalidate_duplicate_cache()
+                    except Exception as e:
+                        log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
                 
             except Exception as ex:
                 log.error_or_exception(ex)

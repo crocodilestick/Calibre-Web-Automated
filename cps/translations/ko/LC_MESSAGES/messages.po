@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-15 14:09+0000\n"
+"POT-Creation-Date: 2026-05-15 21:22+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -119,7 +119,7 @@ msgstr "기본 설정"
 msgid "UI Configuration"
 msgstr "UI 설정"
 
-#: cps/admin.py:645 cps/admin.py:1332 cps/db.py:1039 cps/search.py:153
+#: cps/admin.py:645 cps/admin.py:1332 cps/db.py:1056 cps/search.py:153
 #: cps/web.py:553 cps/web.py:883
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -193,7 +193,7 @@ msgstr "올바른 언어가 아닙니다."
 msgid "No Valid Book Language Given"
 msgstr "제공된 책의 언어가 올바르지 않습니다."
 
-#: cps/admin.py:878 cps/editbooks.py:608
+#: cps/admin.py:878 cps/editbooks.py:609
 msgid "Parameter not found"
 msgstr "매개변수를 찾을 수 없습니다."
 
@@ -373,8 +373,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Gmail 계정 인증에 성공했습니다."
 
 #: cps/admin.py:1773 cps/admin.py:1776 cps/admin.py:2262 cps/admin.py:2492
-#: cps/admin.py:2608 cps/admin.py:2880 cps/editbooks.py:1099
-#: cps/editbooks.py:1865 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2608 cps/admin.py:2880 cps/editbooks.py:1107
+#: cps/editbooks.py:1873 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2777
 #, python-format
@@ -908,221 +908,221 @@ msgstr ""
 msgid "Cover save failed."
 msgstr ""
 
-#: cps/cwa_functions.py:153
+#: cps/cwa_functions.py:155
 msgid "Theme switching is temporarily disabled until v5.0.0"
 msgstr ""
 
-#: cps/cwa_functions.py:252
+#: cps/cwa_functions.py:254
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr "서재 새로고침 중 🔄 새 책을 찾고 있습니다. 잠시 기다려 주세요…"
 
-#: cps/cwa_functions.py:849
+#: cps/cwa_functions.py:858
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 
-#: cps/cwa_functions.py:913
+#: cps/cwa_functions.py:922
 msgid "Calibre-Web NextGen User Settings"
 msgstr ""
 
-#: cps/cwa_functions.py:959 cps/cwa_functions.py:961 cps/cwa_functions.py:965
-#: cps/cwa_functions.py:967 cps/cwa_functions.py:970 cps/cwa_functions.py:972
+#: cps/cwa_functions.py:968 cps/cwa_functions.py:970 cps/cwa_functions.py:974
+#: cps/cwa_functions.py:976 cps/cwa_functions.py:979 cps/cwa_functions.py:981
 msgid "Timestamp"
 msgstr "타임스탬프"
 
-#: cps/cwa_functions.py:959 cps/cwa_functions.py:961
+#: cps/cwa_functions.py:968 cps/cwa_functions.py:970
 #: cps/templates/tasks.html:43
 msgid "Book ID"
 msgstr "책 ID"
 
-#: cps/cwa_functions.py:959 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:968 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "책 제목"
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:968
 msgid "Book Author"
 msgstr "저자"
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:968
 msgid "Trigger Type"
 msgstr "트리거 유형"
 
-#: cps/cwa_functions.py:961 cps/cwa_functions.py:967
+#: cps/cwa_functions.py:970 cps/cwa_functions.py:976
 msgid "Filepath"
 msgstr "파일 위치"
 
-#: cps/cwa_functions.py:965 cps/cwa_functions.py:967 cps/cwa_functions.py:970
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:974 cps/cwa_functions.py:976 cps/cwa_functions.py:979
+#: cps/cwa_functions.py:981
 msgid "Filename"
 msgstr "파일명"
 
-#: cps/cwa_functions.py:965
+#: cps/cwa_functions.py:974
 msgid "Manual?"
 msgstr "수동?"
 
-#: cps/cwa_functions.py:965
+#: cps/cwa_functions.py:974
 msgid "No. Fixes"
 msgstr "아니오, 고칩니다."
 
-#: cps/cwa_functions.py:965 cps/cwa_functions.py:970 cps/cwa_functions.py:972
+#: cps/cwa_functions.py:974 cps/cwa_functions.py:979 cps/cwa_functions.py:981
 msgid "Original Backed Up?"
 msgstr "원본이 백업되었습니까?"
 
-#: cps/cwa_functions.py:967
+#: cps/cwa_functions.py:976
 msgid "Fixes Applied"
 msgstr "수정사항 적용."
 
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:981
 msgid "Original Format"
 msgstr "원본 형식"
 
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:981
 msgid "End Format"
 msgstr "결과 형식"
 
-#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1077
+#: cps/cwa_functions.py:1057 cps/cwa_functions.py:1086
 #, fuzzy
 msgid "Unknown User"
 msgstr "알 수 없음"
 
-#: cps/cwa_functions.py:1185
+#: cps/cwa_functions.py:1194
 msgid "Calibre-Web NextGen Stats & Activity"
 msgstr ""
 
-#: cps/cwa_functions.py:1569
+#: cps/cwa_functions.py:1578
 msgid "Calibre-Web NextGen - Full Enforcement History"
 msgstr ""
 
-#: cps/cwa_functions.py:1578
+#: cps/cwa_functions.py:1587
 msgid "Calibre-Web NextGen - Full Enforcement History (w/ Paths)"
 msgstr ""
 
-#: cps/cwa_functions.py:1587
+#: cps/cwa_functions.py:1596
 msgid "Calibre-Web NextGen - Full Import History"
 msgstr ""
 
-#: cps/cwa_functions.py:1596
+#: cps/cwa_functions.py:1605
 msgid "Calibre-Web NextGen - Full Conversion History"
 msgstr ""
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1614
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1614
+#: cps/cwa_functions.py:1623
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1632
+#: cps/cwa_functions.py:1641
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ 모든 모니터링 서비스가 정상 실행중입니다! 👍"
 
-#: cps/cwa_functions.py:1634
+#: cps/cwa_functions.py:1643
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
 "🔴 가져오기 서비스는 실행중이지만, 메타데이터 변경점 감지기가 정지되었습니다."
 
-#: cps/cwa_functions.py:1636
+#: cps/cwa_functions.py:1645
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 "🔴 메타데이터 변경점 감지기는 실행중이지만, 가져오기 서비스가 정지되었습니다."
 
-#: cps/cwa_functions.py:1638
+#: cps/cwa_functions.py:1647
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr "⛔ 가져오기 서비스와 메타데이터 변경점 감지기 모두 정지되었습니다."
 
-#: cps/cwa_functions.py:1640
+#: cps/cwa_functions.py:1649
 msgid "An Error has occurred"
 msgstr "오류가 발생했습니다."
 
-#: cps/cwa_functions.py:1817 cps/cwa_functions.py:1845
+#: cps/cwa_functions.py:1826 cps/cwa_functions.py:1854
 msgid "Calibre-Web NextGen - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:1971 cps/cwa_functions.py:1997
+#: cps/cwa_functions.py:1980 cps/cwa_functions.py:2006
 msgid "Calibre-Web NextGen - EPUB Fixer Service"
 msgstr ""
 
-#: cps/cwa_functions.py:2055
+#: cps/cwa_functions.py:2064
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2062
+#: cps/cwa_functions.py:2071
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "잘못된 "
 
-#: cps/cwa_functions.py:2068
+#: cps/cwa_functions.py:2077
 #, fuzzy
 msgid "Book not found."
 msgstr "토큰을 찾을 수 없습니다."
 
-#: cps/cwa_functions.py:2074
+#: cps/cwa_functions.py:2083
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "선택한 책 병합"
 
-#: cps/cwa_functions.py:2078
+#: cps/cwa_functions.py:2087
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s 형식을 찾을 수 없습니다."
 
-#: cps/cwa_functions.py:2093
+#: cps/cwa_functions.py:2102
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "선택한 책 병합"
 
-#: cps/cwa_functions.py:2096
+#: cps/cwa_functions.py:2105
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2147
+#: cps/cwa_functions.py:2156
 msgid "You must be an admin to access this page."
 msgstr "이 페이지에 접근하려면 관리자권한이 필요합니다."
 
-#: cps/cwa_functions.py:2162
+#: cps/cwa_functions.py:2171
 msgid "Both username and image data are required."
 msgstr "사용자명과 사진 데이터가 필요합니다."
 
-#: cps/cwa_functions.py:2170
+#: cps/cwa_functions.py:2179
 msgid "Invalid image data format. Must be a valid image."
 msgstr ""
 
-#: cps/cwa_functions.py:2178
+#: cps/cwa_functions.py:2187
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr ""
 
-#: cps/cwa_functions.py:2190
+#: cps/cwa_functions.py:2199
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr ""
 
-#: cps/cwa_functions.py:2194
+#: cps/cwa_functions.py:2203
 msgid "Invalid Base64 image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2198
+#: cps/cwa_functions.py:2207
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "올바른 이메일 주소가 아닙니다."
 
-#: cps/cwa_functions.py:2203
+#: cps/cwa_functions.py:2212
 msgid "Error validating image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2221
+#: cps/cwa_functions.py:2230
 msgid "Profile picture updated successfully."
 msgstr "프로필 사진이 갱신되었습니다."
 
-#: cps/cwa_functions.py:2234
+#: cps/cwa_functions.py:2243
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1333 cps/templates/config_edit.html:333
+#: cps/db.py:1350 cps/templates/config_edit.html:333
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:696 cps/web.py:730 cps/web.py:775 cps/web.py:815 cps/web.py:844
@@ -1167,145 +1167,145 @@ msgstr ""
 msgid "Invalid resolution strategy"
 msgstr "잘못된 권한입니다."
 
-#: cps/editbooks.py:124 cps/editbooks.py:181
+#: cps/editbooks.py:125 cps/editbooks.py:182
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
 
-#: cps/editbooks.py:133
+#: cps/editbooks.py:134
 msgid "Missing or invalid book id for format upload"
 msgstr "형식 업로드를 위한 책 ID가 없거나 잘못되었습니다."
 
-#: cps/editbooks.py:139
+#: cps/editbooks.py:140
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:164 cps/editbooks.py:191 cps/templates/book_edit.html:52
+#: cps/editbooks.py:165 cps/editbooks.py:192 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:178
 msgid "Upload done, processing, please wait..."
 msgstr "업로드 완료, 처리 중입니다. 잠시만 기다려 주세요."
 
-#: cps/editbooks.py:169 cps/editbooks.py:195
+#: cps/editbooks.py:170 cps/editbooks.py:196
 msgid "Failed to queue upload for processing"
 msgstr "연산대기열로 업로드에 실패했습니다."
 
-#: cps/editbooks.py:211
+#: cps/editbooks.py:212
 msgid "Source or destination format for conversion missing"
 msgstr "변환할 원본 또는 대상 형식이 지정되지 않았습니다."
 
-#: cps/editbooks.py:219
+#: cps/editbooks.py:220
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr "%(book_format)s 형식으로 변환하기 위해 작업에 추가되었습니다."
 
-#: cps/editbooks.py:223
+#: cps/editbooks.py:224
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "책 변환 중 오류가 발생했습니다: %(res)s"
 
-#: cps/editbooks.py:379 cps/editbooks.py:1302 cps/editbooks.py:1811
+#: cps/editbooks.py:380 cps/editbooks.py:1310 cps/editbooks.py:1819
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "업로드할 수 없는 파일 형식입니다."
 
-#: cps/editbooks.py:384 cps/editbooks.py:1308 cps/editbooks.py:1822
+#: cps/editbooks.py:385 cps/editbooks.py:1316 cps/editbooks.py:1830
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "파일 확장자 '%(ext)s'은(는) 서버에 업로드할 수 없습니다"
 
-#: cps/editbooks.py:388 cps/editbooks.py:1312 cps/editbooks.py:1827
+#: cps/editbooks.py:389 cps/editbooks.py:1320 cps/editbooks.py:1835
 msgid "File to be uploaded must have an extension"
 msgstr "확장자가 없는 파일은 업로드할 수 없습니다."
 
-#: cps/editbooks.py:892 cps/editbooks.py:1488 cps/web.py:663 cps/web.py:2941
+#: cps/editbooks.py:893 cps/editbooks.py:1496 cps/web.py:663 cps/web.py:2941
 #: cps/web.py:3033 cps/web.py:3128
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "선택한 책을 사용할 수 없습니다. 파일이 없거나 접근할 수 없습니다."
 
-#: cps/editbooks.py:932 cps/editbooks.py:1895
+#: cps/editbooks.py:933 cps/editbooks.py:1903
 msgid "User has no rights to upload cover"
 msgstr "표지 업로드 권한이 없습니다."
 
-#: cps/editbooks.py:940
+#: cps/editbooks.py:941
 msgid "Cover is locked. Unlock it on the cover-picker page first."
 msgstr ""
 
-#: cps/editbooks.py:963 cps/editbooks.py:1290
+#: cps/editbooks.py:964 cps/editbooks.py:1298
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "식별자는 대소문자 구분 없어 덮어씁니다."
 
-#: cps/editbooks.py:975 cps/editbooks.py:1264 cps/editbooks.py:1622
+#: cps/editbooks.py:976 cps/editbooks.py:1272 cps/editbooks.py:1630
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s'은(는) 올바른 언어가 아닙니다."
 
-#: cps/editbooks.py:1086
+#: cps/editbooks.py:1094
 msgid "Metadata successfully updated"
 msgstr "메타데이터가 업데이트되었습니다."
 
-#: cps/editbooks.py:1104
+#: cps/editbooks.py:1112
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "책 편집 중 오류가 발생했습니다: {}"
 
-#: cps/editbooks.py:1159 cps/editbooks.py:1204 cps/editbooks.py:1913
+#: cps/editbooks.py:1167 cps/editbooks.py:1212 cps/editbooks.py:1921
 #: cps/updater.py:649 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "알 수 없음"
 
-#: cps/editbooks.py:1208
+#: cps/editbooks.py:1216
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr "업로드된 책이 이미 존재하는 것 같습니다. 확인이 필요합니다: "
 
-#: cps/editbooks.py:1320
+#: cps/editbooks.py:1328
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "파일 %(filename)s을(를) 임시 폴더에 저장할 수 없습니다."
 
-#: cps/editbooks.py:1340
+#: cps/editbooks.py:1348
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "표지 파일 %(file)s을(를) 이동하지 못했습니다 :%(error)s"
 
-#: cps/editbooks.py:1398 cps/editbooks.py:1400
+#: cps/editbooks.py:1406 cps/editbooks.py:1408
 msgid "Book Format Successfully Deleted"
 msgstr "책 형식이 삭제되었습니다."
 
-#: cps/editbooks.py:1407 cps/editbooks.py:1409
+#: cps/editbooks.py:1415 cps/editbooks.py:1417
 msgid "Book Successfully Deleted"
 msgstr "책이 삭제되었습니다."
 
-#: cps/editbooks.py:1473
+#: cps/editbooks.py:1481
 msgid "You are missing permissions to delete books"
 msgstr "책을 삭제할 권한이 없습니다."
 
-#: cps/editbooks.py:1527
+#: cps/editbooks.py:1535
 msgid "edit metadata"
 msgstr "메타데이터 편집"
 
-#: cps/editbooks.py:1581
+#: cps/editbooks.py:1589
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "시리즈 순서 %(seriesindex)s은(는) 올바르지 않아 건너뜁니다."
 
-#: cps/editbooks.py:1816
+#: cps/editbooks.py:1824
 msgid "User has no rights to upload additional file formats"
 msgstr "추가 파일 형식을 업로드할 권한이 없습니다."
 
-#: cps/editbooks.py:1840
+#: cps/editbooks.py:1848
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "쓰기 권한이 없어 %(path)s 경로 생성에 실패했습니다."
 
-#: cps/editbooks.py:1847
+#: cps/editbooks.py:1855
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "%(file)s 파일 저장에 실패했습니다."
 
-#: cps/editbooks.py:1872
+#: cps/editbooks.py:1880
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "파일 형식 %(ext)s이(가) %(book)s에 추가되었습니다"

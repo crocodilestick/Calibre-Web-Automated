@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-15 14:09+0000\n"
+"POT-Creation-Date: 2026-05-15 21:22+0000\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -132,7 +132,7 @@ msgstr "Основные настройки"
 msgid "UI Configuration"
 msgstr "Настройка интерфейса"
 
-#: cps/admin.py:645 cps/admin.py:1332 cps/db.py:1039 cps/search.py:153
+#: cps/admin.py:645 cps/admin.py:1332 cps/db.py:1056 cps/search.py:153
 #: cps/web.py:553 cps/web.py:883
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -209,7 +209,7 @@ msgstr "Не указана допустимая локаль"
 msgid "No Valid Book Language Given"
 msgstr "Не указан допустимый язык книг"
 
-#: cps/admin.py:878 cps/editbooks.py:608
+#: cps/admin.py:878 cps/editbooks.py:609
 msgid "Parameter not found"
 msgstr "Параметр не найден"
 
@@ -414,8 +414,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Успех! Учетная запись Gmail подтверждена."
 
 #: cps/admin.py:1773 cps/admin.py:1776 cps/admin.py:2262 cps/admin.py:2492
-#: cps/admin.py:2608 cps/admin.py:2880 cps/editbooks.py:1099
-#: cps/editbooks.py:1865 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2608 cps/admin.py:2880 cps/editbooks.py:1107
+#: cps/editbooks.py:1873 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2777
 #, python-format
@@ -965,226 +965,226 @@ msgstr ""
 msgid "Cover save failed."
 msgstr ""
 
-#: cps/cwa_functions.py:153
+#: cps/cwa_functions.py:155
 msgid "Theme switching is temporarily disabled until v5.0.0"
 msgstr "Переключение тем временно отключено до версии 5.0.0"
 
-#: cps/cwa_functions.py:252
+#: cps/cwa_functions.py:254
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr ""
 "Обновление библиотеки 🔄 Проверка пропущенных книг, пожалуйста, подождите..."
 
-#: cps/cwa_functions.py:849
+#: cps/cwa_functions.py:858
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr "Неправильная настройка крон для поиска дублей. Изменения не сохранены."
 
-#: cps/cwa_functions.py:913
+#: cps/cwa_functions.py:922
 msgid "Calibre-Web NextGen User Settings"
 msgstr ""
 
-#: cps/cwa_functions.py:959 cps/cwa_functions.py:961 cps/cwa_functions.py:965
-#: cps/cwa_functions.py:967 cps/cwa_functions.py:970 cps/cwa_functions.py:972
+#: cps/cwa_functions.py:968 cps/cwa_functions.py:970 cps/cwa_functions.py:974
+#: cps/cwa_functions.py:976 cps/cwa_functions.py:979 cps/cwa_functions.py:981
 msgid "Timestamp"
 msgstr "Отметка времени"
 
-#: cps/cwa_functions.py:959 cps/cwa_functions.py:961
+#: cps/cwa_functions.py:968 cps/cwa_functions.py:970
 #: cps/templates/tasks.html:43
 #, fuzzy
 msgid "Book ID"
 msgstr "ID книги"
 
-#: cps/cwa_functions.py:959 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:968 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Название книги"
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:968
 #, fuzzy
 msgid "Book Author"
 msgstr "Автор книги"
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:968
 msgid "Trigger Type"
 msgstr "Тип триггера"
 
-#: cps/cwa_functions.py:961 cps/cwa_functions.py:967
+#: cps/cwa_functions.py:970 cps/cwa_functions.py:976
 #, fuzzy
 msgid "Filepath"
 msgstr "Путь к файлу"
 
-#: cps/cwa_functions.py:965 cps/cwa_functions.py:967 cps/cwa_functions.py:970
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:974 cps/cwa_functions.py:976 cps/cwa_functions.py:979
+#: cps/cwa_functions.py:981
 #, fuzzy
 msgid "Filename"
 msgstr "Имя файла"
 
-#: cps/cwa_functions.py:965
+#: cps/cwa_functions.py:974
 msgid "Manual?"
 msgstr "Вручную?"
 
-#: cps/cwa_functions.py:965
+#: cps/cwa_functions.py:974
 msgid "No. Fixes"
 msgstr "Кол-во исправлений"
 
-#: cps/cwa_functions.py:965 cps/cwa_functions.py:970 cps/cwa_functions.py:972
+#: cps/cwa_functions.py:974 cps/cwa_functions.py:979 cps/cwa_functions.py:981
 msgid "Original Backed Up?"
 msgstr "Оригинал сохранен?"
 
-#: cps/cwa_functions.py:967
+#: cps/cwa_functions.py:976
 msgid "Fixes Applied"
 msgstr "Примененные исправления"
 
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:981
 msgid "Original Format"
 msgstr "Исходный формат"
 
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:981
 #, fuzzy
 msgid "End Format"
 msgstr "Конечный формат"
 
-#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1077
+#: cps/cwa_functions.py:1057 cps/cwa_functions.py:1086
 #, fuzzy
 msgid "Unknown User"
 msgstr "Неизвестно"
 
-#: cps/cwa_functions.py:1185
+#: cps/cwa_functions.py:1194
 msgid "Calibre-Web NextGen Stats & Activity"
 msgstr ""
 
-#: cps/cwa_functions.py:1569
+#: cps/cwa_functions.py:1578
 msgid "Calibre-Web NextGen - Full Enforcement History"
 msgstr ""
 
-#: cps/cwa_functions.py:1578
+#: cps/cwa_functions.py:1587
 msgid "Calibre-Web NextGen - Full Enforcement History (w/ Paths)"
 msgstr ""
 
-#: cps/cwa_functions.py:1587
+#: cps/cwa_functions.py:1596
 msgid "Calibre-Web NextGen - Full Import History"
 msgstr ""
 
-#: cps/cwa_functions.py:1596
+#: cps/cwa_functions.py:1605
 msgid "Calibre-Web NextGen - Full Conversion History"
 msgstr ""
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1614
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1614
+#: cps/cwa_functions.py:1623
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1632
+#: cps/cwa_functions.py:1641
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Все службы мониторинга работают как положено! 👍"
 
-#: cps/cwa_functions.py:1634
+#: cps/cwa_functions.py:1643
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 Служба добавления работает, но детектор изменений метаданных - нет"
 
-#: cps/cwa_functions.py:1636
+#: cps/cwa_functions.py:1645
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr "🔴 Детектор изменений метаданных работает, но служба добавления - нет"
 
-#: cps/cwa_functions.py:1638
+#: cps/cwa_functions.py:1647
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr "⛔ Ни служба добавления, ни детектор изменений метаданных не работают"
 
-#: cps/cwa_functions.py:1640
+#: cps/cwa_functions.py:1649
 msgid "An Error has occurred"
 msgstr "Произошла ошибка"
 
-#: cps/cwa_functions.py:1817 cps/cwa_functions.py:1845
+#: cps/cwa_functions.py:1826 cps/cwa_functions.py:1854
 msgid "Calibre-Web NextGen - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:1971 cps/cwa_functions.py:1997
+#: cps/cwa_functions.py:1980 cps/cwa_functions.py:2006
 msgid "Calibre-Web NextGen - EPUB Fixer Service"
 msgstr ""
 
-#: cps/cwa_functions.py:2055
+#: cps/cwa_functions.py:2064
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 "Редактор ошибок EPUB не поддерживается совместно с библиотеками Google Drive."
 
-#: cps/cwa_functions.py:2062
+#: cps/cwa_functions.py:2071
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "Неверный ID книги."
 
-#: cps/cwa_functions.py:2068
+#: cps/cwa_functions.py:2077
 #, fuzzy
 msgid "Book not found."
 msgstr "Токен не найден"
 
-#: cps/cwa_functions.py:2074
+#: cps/cwa_functions.py:2083
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "Пометить выбранные книги как непрочитанные"
 
-#: cps/cwa_functions.py:2078
+#: cps/cwa_functions.py:2087
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "Формат %(format)s не найден на диске"
 
-#: cps/cwa_functions.py:2093
+#: cps/cwa_functions.py:2102
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "Редактировать выбранные книги"
 
-#: cps/cwa_functions.py:2096
+#: cps/cwa_functions.py:2105
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2147
+#: cps/cwa_functions.py:2156
 msgid "You must be an admin to access this page."
 msgstr "Вы должны быть администратором для доступа к этой странице."
 
-#: cps/cwa_functions.py:2162
+#: cps/cwa_functions.py:2171
 msgid "Both username and image data are required."
 msgstr "Требуются имя пользователя и данные изображения."
 
-#: cps/cwa_functions.py:2170
+#: cps/cwa_functions.py:2179
 msgid "Invalid image data format. Must be a valid image."
 msgstr "Неправильный формат. Невалидное изображение."
 
-#: cps/cwa_functions.py:2178
+#: cps/cwa_functions.py:2187
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "Неправильный формат. Разрешается загружать только PNG и JPEG"
 
-#: cps/cwa_functions.py:2190
+#: cps/cwa_functions.py:2199
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "Изображение очень большое. Используйте размер менее 500Кб"
 
-#: cps/cwa_functions.py:2194
+#: cps/cwa_functions.py:2203
 msgid "Invalid Base64 image data."
 msgstr "Ошибка Base64 изображения"
 
-#: cps/cwa_functions.py:2198
+#: cps/cwa_functions.py:2207
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "Неверный формат адреса электронной почты"
 
-#: cps/cwa_functions.py:2203
+#: cps/cwa_functions.py:2212
 msgid "Error validating image data."
 msgstr "Ошибка проверки изображения"
 
-#: cps/cwa_functions.py:2221
+#: cps/cwa_functions.py:2230
 msgid "Profile picture updated successfully."
 msgstr "Изображение профиля успешно обновлено."
 
-#: cps/cwa_functions.py:2234
+#: cps/cwa_functions.py:2243
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1333 cps/templates/config_edit.html:333
+#: cps/db.py:1350 cps/templates/config_edit.html:333
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:696 cps/web.py:730 cps/web.py:775 cps/web.py:815 cps/web.py:844
@@ -1230,7 +1230,7 @@ msgstr "Дубликаты успешно просканированы"
 msgid "Invalid resolution strategy"
 msgstr "Неверная роль"
 
-#: cps/editbooks.py:124 cps/editbooks.py:181
+#: cps/editbooks.py:125 cps/editbooks.py:182
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
@@ -1238,91 +1238,91 @@ msgstr ""
 "Папка первичного сохранения Ingest не записываема. Проверьте /cwa-book-"
 "ingest права ."
 
-#: cps/editbooks.py:133
+#: cps/editbooks.py:134
 msgid "Missing or invalid book id for format upload"
 msgstr "Отсутствует или неверный идентификатор книги для загрузки формата"
 
-#: cps/editbooks.py:139
+#: cps/editbooks.py:140
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr "Невозможно загрузить формат: Канига не существует в библиотеке"
 
-#: cps/editbooks.py:164 cps/editbooks.py:191 cps/templates/book_edit.html:52
+#: cps/editbooks.py:165 cps/editbooks.py:192 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:178
 msgid "Upload done, processing, please wait..."
 msgstr "Загрузка завершена, обработка, пожалуйста, подождите..."
 
-#: cps/editbooks.py:169 cps/editbooks.py:195
+#: cps/editbooks.py:170 cps/editbooks.py:196
 #, fuzzy
 msgid "Failed to queue upload for processing"
 msgstr "Не удалось создать путь для обложки"
 
-#: cps/editbooks.py:211
+#: cps/editbooks.py:212
 msgid "Source or destination format for conversion missing"
 msgstr "Отсутствует исходный или конечный формат для конвертации"
 
-#: cps/editbooks.py:219
+#: cps/editbooks.py:220
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr "Книга поставлена в очередь для конвертации в %(book_format)s"
 
-#: cps/editbooks.py:223
+#: cps/editbooks.py:224
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "Произошла ошибка при конвертации книги: %(res)s"
 
-#: cps/editbooks.py:379 cps/editbooks.py:1302 cps/editbooks.py:1811
+#: cps/editbooks.py:380 cps/editbooks.py:1310 cps/editbooks.py:1819
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Данный тип файлов не разрешен для загрузки на сервер"
 
-#: cps/editbooks.py:384 cps/editbooks.py:1308 cps/editbooks.py:1822
+#: cps/editbooks.py:385 cps/editbooks.py:1316 cps/editbooks.py:1830
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Расширение файла '%(ext)s' не разрешено для загрузки на сервер"
 
-#: cps/editbooks.py:388 cps/editbooks.py:1312 cps/editbooks.py:1827
+#: cps/editbooks.py:389 cps/editbooks.py:1320 cps/editbooks.py:1835
 msgid "File to be uploaded must have an extension"
 msgstr "Загружаемый файл должен иметь расширение"
 
-#: cps/editbooks.py:892 cps/editbooks.py:1488 cps/web.py:663 cps/web.py:2941
+#: cps/editbooks.py:893 cps/editbooks.py:1496 cps/web.py:663 cps/web.py:2941
 #: cps/web.py:3033 cps/web.py:3128
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Выбранная книга недоступна. Файл не существует или недоступен"
 
-#: cps/editbooks.py:932 cps/editbooks.py:1895
+#: cps/editbooks.py:933 cps/editbooks.py:1903
 msgid "User has no rights to upload cover"
 msgstr "У пользователя нет прав для загрузки обложки"
 
-#: cps/editbooks.py:940
+#: cps/editbooks.py:941
 msgid "Cover is locked. Unlock it on the cover-picker page first."
 msgstr ""
 
-#: cps/editbooks.py:963 cps/editbooks.py:1290
+#: cps/editbooks.py:964 cps/editbooks.py:1298
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Идентификаторы не чувствительны к регистру, перезапись старого идентификатора"
 
-#: cps/editbooks.py:975 cps/editbooks.py:1264 cps/editbooks.py:1622
+#: cps/editbooks.py:976 cps/editbooks.py:1272 cps/editbooks.py:1630
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' не является допустимым языком"
 
-#: cps/editbooks.py:1086
+#: cps/editbooks.py:1094
 msgid "Metadata successfully updated"
 msgstr "Метаданные успешно обновлены"
 
-#: cps/editbooks.py:1104
+#: cps/editbooks.py:1112
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Ошибка редактирования книги: {}"
 
-#: cps/editbooks.py:1159 cps/editbooks.py:1204 cps/editbooks.py:1913
+#: cps/editbooks.py:1167 cps/editbooks.py:1212 cps/editbooks.py:1921
 #: cps/updater.py:649 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Неизвестно"
 
-#: cps/editbooks.py:1208
+#: cps/editbooks.py:1216
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1330,53 +1330,53 @@ msgstr ""
 "Загружаемая книга, вероятно, уже существует в библиотеке, рассмотрите "
 "изменение перед загрузкой новой: "
 
-#: cps/editbooks.py:1320
+#: cps/editbooks.py:1328
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Не удалось сохранить файл %(filename)s во временную директорию"
 
-#: cps/editbooks.py:1340
+#: cps/editbooks.py:1348
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Не удалось переместить файл обложки %(file)s: %(error)s"
 
-#: cps/editbooks.py:1398 cps/editbooks.py:1400
+#: cps/editbooks.py:1406 cps/editbooks.py:1408
 msgid "Book Format Successfully Deleted"
 msgstr "Формат книги успешно удален"
 
-#: cps/editbooks.py:1407 cps/editbooks.py:1409
+#: cps/editbooks.py:1415 cps/editbooks.py:1417
 msgid "Book Successfully Deleted"
 msgstr "Книга успешно удалена"
 
-#: cps/editbooks.py:1473
+#: cps/editbooks.py:1481
 msgid "You are missing permissions to delete books"
 msgstr "У вас недостаточно прав для удаления книг"
 
-#: cps/editbooks.py:1527
+#: cps/editbooks.py:1535
 msgid "edit metadata"
 msgstr "редактировать метаданные"
 
-#: cps/editbooks.py:1581
+#: cps/editbooks.py:1589
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 "Индекс серии: %(seriesindex)s не является допустимым числом, пропускаем"
 
-#: cps/editbooks.py:1816
+#: cps/editbooks.py:1824
 msgid "User has no rights to upload additional file formats"
 msgstr "У пользователя нет прав для загрузки дополнительных форматов файлов"
 
-#: cps/editbooks.py:1840
+#: cps/editbooks.py:1848
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Не удалось создать путь %(path)s (Доступ запрещен)."
 
-#: cps/editbooks.py:1847
+#: cps/editbooks.py:1855
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Не удалось сохранить файл %(file)s."
 
-#: cps/editbooks.py:1872
+#: cps/editbooks.py:1880
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Формат файла %(ext)s добавлен к %(book)s"

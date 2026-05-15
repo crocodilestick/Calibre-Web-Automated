@@ -34,6 +34,7 @@ from .kobo_sync_status import change_archived_books
 from .redirect import get_redirect_location
 from .file_helper import validate_mime_type
 from .cwa_functions import get_ingest_dir
+from .services.calibre_db_lock import metadata_db_write_lock
 from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
 from werkzeug.utils import secure_filename
@@ -999,9 +1000,15 @@ def do_edit_book(book_id, upload_formats=None):
             kobo_sync_status.remove_synced_book(book.id, all=True)
             calibre_db.set_metadata_dirty(book.id)
 
+        # Hold the process-shared metadata.db write lock for the
+        # duration of the commit. Coordinates with the ingest_processor
+        # subprocess so concurrent imports cannot poison the commit
+        # with apsw.BusyError on filesystems with unreliable POSIX
+        # locks (mergerfs, SMB, NFS). See fork issue #192.
         try:
-            calibre_db.session.merge(book)
-            calibre_db.session.commit()
+            with metadata_db_write_lock():
+                calibre_db.session.merge(book)
+                calibre_db.session.commit()
             log.debug("[edit_book] db commit ok book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
         except InvalidRequestError as e:
             # Recover from closed/invalid transaction by recreating the session and retrying once
@@ -1016,8 +1023,9 @@ def do_edit_book(book_id, upload_formats=None):
                 pass
             calibre_db.session = None
             calibre_db.ensure_session()
-            calibre_db.session.merge(book)
-            calibre_db.session.commit()
+            with metadata_db_write_lock():
+                calibre_db.session.merge(book)
+                calibre_db.session.commit()
             log.debug("[edit_book] db commit retry ok book_id=%s duration=%.3fs", book.id, time.monotonic() - request_start)
 
         if refresh_cover_thumbnail_after_commit:

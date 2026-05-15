@@ -36,7 +36,9 @@ sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
 from .services.background_scheduler import BackgroundScheduler, DateTrigger
 from .services.worker import WorkerThread
-from .tasks.database import TaskReconnectDatabase
+# TaskReconnectDatabase no longer imported here — the post-ingest
+# reconnect endpoint now uses CalibreDB.refresh_for_new_data() instead.
+# See fork issue #192.
 from .tasks.auto_send import TaskAutoSend
 from .tasks.ops import TaskConvertLibraryRun, TaskEpubFixerRun
 
@@ -534,7 +536,14 @@ def cwa_internal_schedule_epub_fixer():
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/reconnect-db', methods=["POST"])
 def cwa_internal_reconnect_db():
-    """Enqueue a database reconnect task in the web process.
+    """Refresh the SQLAlchemy session so new books from ingest are
+    visible to the next request.
+
+    Synchronous, light-weight: expires loaded objects and ends the
+    held read transaction on every CalibreDB instance. Does not
+    dispose the engine — that path raced with in-flight requests
+    under sustained ingest load and is the root cause of fork
+    issue #192 (web service unresponsive after concurrent ingest).
 
     Security: Only accepts localhost callers.
     """
@@ -543,9 +552,9 @@ def cwa_internal_reconnect_db():
         if remote not in (None, '127.0.0.1', '::1'):
             abort(403)
 
-        task = TaskReconnectDatabase()
-        WorkerThread.add(None, task, hidden=True)
-        return jsonify({"status": "enqueued"}), 200
+        from .db import CalibreDB
+        CalibreDB.refresh_for_new_data()
+        return jsonify({"status": "refreshed"}), 200
     except Exception as e:
         log.error(f"Internal reconnect-db failed: {e}")
         return jsonify({"error": str(e)}), 400

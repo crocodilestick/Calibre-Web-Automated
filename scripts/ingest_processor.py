@@ -35,6 +35,76 @@ try:
 except ImportError:
     _calibre_plugins = None  # tests with a partial path will skip this branch
 
+# Process-shared metadata.db write lock. Coordinates with the Flask
+# app's commit path so concurrent ingest doesn't poison Edit Book
+# saves (and vice versa) on filesystems with weak POSIX locks. See
+# fork issue #192.
+try:
+    from cps.services.calibre_db_lock import metadata_db_write_lock
+except ImportError:
+    from contextlib import contextmanager
+    @contextmanager
+    def metadata_db_write_lock(*args, **kwargs):  # type: ignore[misc]
+        # No-op fallback when running outside the container. The lock
+        # is advisory; tests that don't need it still work.
+        yield
+
+
+# Retry calibredb add on transient "database is locked" / BusyError.
+# fork issue #192: the reporter hit four lock failures in a row from
+# the same ingest wave because the shell's safety_timeout treated each
+# CalledProcessError as terminal. With backoff, transient locks (from
+# the metadata-change-detector or cwa-auto-zipper running concurrently)
+# recover instead of stranding the book in /processed_books/failed.
+_LOCK_PATTERNS = ("database is locked", "busyerror")
+
+
+def _is_lock_error_stderr(stderr_text):
+    if not stderr_text:
+        return False
+    low = stderr_text.lower()
+    return any(p in low for p in _LOCK_PATTERNS)
+
+
+def _run_calibredb_add_with_retry(cmd, env, max_attempts=4, base_backoff=2.0):
+    """Run calibredb add with retry+backoff on transient lock errors.
+
+    Returns the successful CompletedProcess. Raises the last
+    CalledProcessError if all attempts hit a lock or the first error
+    is not a lock-class error (caller handles those normally).
+    """
+    last_exc = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return subprocess.run(
+                cmd, env=env, check=True, capture_output=True, text=True,
+            )
+        except subprocess.CalledProcessError as e:
+            stderr = e.stderr or ""
+            if not _is_lock_error_stderr(stderr):
+                # Non-lock failure — propagate immediately so the
+                # caller can move the book to /failed without
+                # burning retries.
+                raise
+            last_exc = e
+            if attempt >= max_attempts:
+                print(
+                    f"[ingest-processor] calibredb add failed with lock "
+                    f"error after {attempt} attempts; giving up.",
+                    flush=True,
+                )
+                raise
+            wait = base_backoff * (2 ** (attempt - 1))
+            print(
+                f"[ingest-processor] calibredb add hit transient lock "
+                f"(attempt {attempt}/{max_attempts}); retrying in "
+                f"{wait:.1f}s",
+                flush=True,
+            )
+            time.sleep(wait)
+    # Unreachable: loop either returns or raises.
+    raise last_exc  # pragma: no cover
+
 # Optional: enable GDrive sync and auto-send by importing cps modules when available
 _GDRIVE_AVAILABLE = False
 _CPS_AVAILABLE = False
@@ -765,10 +835,20 @@ class NewBookProcessor:
             return
 
         try:
+            # Process-shared lock around calibredb add: serialises with
+            # the Flask app's Edit Book commit + other ingest passes.
+            # Required for fork #192 — without it, mergerfs/SMB/NFS
+            # POSIX-lock weakness lets apsw.BusyError poison the import.
             if text:
-                result = subprocess.run([
-                    "calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"
-                ], env=self.calibre_env, check=True, capture_output=True, text=True)
+                with metadata_db_write_lock():
+                    result = _run_calibredb_add_with_retry(
+                        cmd=[
+                            "calibredb", "add", str(staged_path),
+                            "--automerge", self.cwa_settings['auto_ingest_automerge'],
+                            f"--library-path={self.library_dir}",
+                        ],
+                        env=self.calibre_env,
+                    )
                 added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
                 if added_ids:
                     self.last_added_book_ids = added_ids
@@ -815,7 +895,10 @@ class NewBookProcessor:
                     if isinstance(ident, str) and ":" in ident and ident.strip():
                         add_command.extend(["--identifier", ident.strip()])
 
-                result = subprocess.run(add_command, env=self.calibre_env, check=True, capture_output=True, text=True)
+                with metadata_db_write_lock():
+                    result = _run_calibredb_add_with_retry(
+                        cmd=add_command, env=self.calibre_env,
+                    )
                 added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
                 if added_ids:
                     self.last_added_book_ids = added_ids
@@ -1226,7 +1309,7 @@ class NewBookProcessor:
                 verify=False,
             )
             if resp.status_code == 200:
-                print("[ingest-processor] Database session refresh enqueued", flush=True)
+                print("[ingest-processor] Database session refreshed", flush=True)
             else:
                 print(f"[ingest-processor] WARN: DB refresh endpoint returned {resp.status_code}", flush=True)
         except Exception as e:

@@ -756,6 +756,14 @@ class CalibreDB:
                         log.warning("WAL mode disabled for calibre/app_settings (%s)", reason)
                 except Exception:
                     pass
+                # Wait up to 60s for any external writer (calibredb during
+                # ingest) instead of failing fast on contention. Required
+                # for fork issue #192 — without this, transient locks on
+                # mergerfs/SMB/NFS surface as immediate OperationalError.
+                try:
+                    connection.execute(text("PRAGMA busy_timeout=60000"))
+                except Exception:
+                    pass
                 local_session = scoped_session(sessionmaker())
                 local_session.configure(bind=connection)
                 database_uuid = local_session().query(Library_Id).one_or_none()
@@ -814,6 +822,15 @@ class CalibreDB:
                         else:
                             reason = "NETWORK_SHARE_MODE=true" if nsm else "metadata.db not writable"
                             log.warning("WAL mode disabled for calibre/app_settings (%s)", reason)
+                    except Exception:
+                        pass
+                    # Wait up to 60s for any external writer (calibredb
+                    # during ingest) before failing the query. Required
+                    # for fork issue #192 — without this, transient
+                    # locks on mergerfs/SMB/NFS surface as immediate
+                    # apsw.BusyError and crash the import.
+                    try:
+                        connection.execute(text("PRAGMA busy_timeout=60000"))
                     except Exception:
                         pass
 
@@ -1428,6 +1445,38 @@ class CalibreDB:
             # Rebuild engine/session factory and update config
             self.setup_db(config.config_calibre_dir, app_db_path)
             self.update_config(config)
+
+    @classmethod
+    def refresh_for_new_data(cls):
+        """Release the read transaction on every CalibreDB instance.
+
+        Used after external writers (calibredb add during ingest) commit
+        new rows to metadata.db. Without this, the web app's SQLAlchemy
+        session sits on a stale read snapshot and the new book stays
+        invisible until the session's transaction ends. Calling
+        expire_all() + rollback() ends the transaction without
+        disposing the engine — the next query starts fresh and sees
+        the latest committed data.
+
+        Replaces the prior async TaskReconnectDatabase path which
+        disposed the shared engine on a worker thread and raced with
+        in-flight request greenlets (fork issue #192).
+        """
+        with cls._reconnect_lock:
+            for inst in list(cls.instances):
+                try:
+                    if inst.session is not None:
+                        try:
+                            inst.session.expire_all()
+                        except Exception:
+                            pass
+                        try:
+                            inst.session.rollback()
+                        except Exception:
+                            pass
+                except Exception:
+                    # One bad instance must not block the rest.
+                    continue
 
 
 def lcase(s):

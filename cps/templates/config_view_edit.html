@@ -93,6 +93,12 @@
           {% endfor %}
         </select>
         <input type="hidden" name="config_series2_label" id="config_series2_label" value="">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="config_show_series2_on_book_list" id="config_show_series2_on_book_list" {% if conf.config_show_series2_on_book_list %}checked{% endif %} style="accent-color: var(--color-secondary);">
+            {{_('Show Second Series on book list pages')}}
+          </label>
+        </div>
         <p class="settings-explanation">{{_('Select a custom column of type "series" to use as a second series display.')}}</p>
       </div>
 

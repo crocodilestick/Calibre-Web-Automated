@@ -101,12 +101,29 @@
         <p class="settings-explanation">{{_('Regex to strip prefixes from titles for proper sorting (e.g., "The", "A", "An").')}}</p>
       </div>
     </div>
-    
+
+    <!-- Custom Column Display Order Card -->
+    {% if allColumns|length > 0 %}
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Custom Column Display Order')}}</h4>
+      <p class="settings-explanation">{{_('Drag to set the display order of custom columns in book details.')}}</p>
+      <input type="hidden" name="config_cc_display_order" id="config_cc_display_order" value="">
+      <ul id="cc-order-list" class="list-group">
+        {% for col in allColumns %}
+        <li class="list-group-item cc-order-item" data-id="{{ col.id }}">
+          <span class="glyphicon glyphicon-move cc-drag-handle"></span>
+          {{ col.name }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
     <!-- Default Settings for New Users Card -->
     <div class="settings-container">
       <h4 class="settings-section-header">{{_('Default Settings for New Users')}}</h4>
       <p class="settings-explanation">{{_('These settings will be applied to all newly created user accounts.')}}</p>
-      
+
       <h5 style="color: #ffc200; margin-top: 25px; margin-bottom: 15px;">{{_('Permissions')}}</h5>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; background: #202c34a3; padding: 2rem; border-radius: 4px;">
         <div>
@@ -221,6 +238,24 @@
 {{ restrict_modal() }}
 {% endblock %}
 {% block js %}
+<script src="{{ url_for('static', filename='js/libs/Sortable.min.js') }}"></script>
+<script>
+(function() {
+  var list = document.getElementById('cc-order-list');
+  var orderInput = document.getElementById('config_cc_display_order');
+  if (!list || !orderInput) return;
+  function updateOrder() {
+    var items = list.querySelectorAll('.cc-order-item');
+    var ids = Array.prototype.map.call(items, function(el) { return el.getAttribute('data-id'); });
+    orderInput.value = ids.join(',');
+  }
+  updateOrder();
+  Sortable.create(list, {
+    animation: 150,
+    onEnd: updateOrder
+  });
+})();
+</script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-editable.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-editable.min.js') }}"></script>

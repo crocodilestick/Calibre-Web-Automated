@@ -220,6 +220,15 @@ finally:
     pass
 PY
 
+#------------------------------------------------------------------------------------------------------------------------
+#  One-time brand-title migration (rebrand legacy defaults to "Calibre-Web NextGen")
+#------------------------------------------------------------------------------------------------------------------------
+
+echo "[cwa-init] Migrating legacy instance titles to Calibre-Web NextGen (one-time, idempotent)..."
+
+python3 /app/calibre-web-automated/scripts/migrate_brand_title.py /config/app.db \
+  || echo "[cwa-init] Brand-title migration reported a non-zero exit; continuing startup."
+
 
 echo "[cwa-init] CWA-init complete! Service exiting now..."
 

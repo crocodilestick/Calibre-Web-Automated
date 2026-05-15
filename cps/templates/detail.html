@@ -799,7 +799,21 @@
                             {% endif %}
                             {% if cc|length > 0 %}
                                 {% for c in cc %}
-                                    {% if entry['custom_column_' ~ c.id]|length > 0 %}
+                                    {% if c.datatype == 'composite' %}
+                                        {% set cval = composite_vals.get(c.id) %}
+                                        {% if cval and cval.value %}
+                                            <div class="real_custom_columns meta-chip">
+                                                <span class="meta-label">{{ c.name }}:</span>
+                                                <span class="meta-value">
+                                                    {% if cval.contains_html %}
+                                                        {{ cval.value|safe }}
+                                                    {% else %}
+                                                        {{ cval.value }}
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    {% elif entry['custom_column_' ~ c.id]|length > 0 %}
                                         <div class="real_custom_columns meta-chip">
                                             <span class="meta-label">{{ c.name }}:</span>
                                             <span class="meta-value">

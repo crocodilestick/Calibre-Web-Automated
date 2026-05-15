@@ -74,7 +74,10 @@
               term="{{tag.name}}"
               label="{{tag.name}}"/>
     {% endfor %}
-    {% if entry.Books.comments[0] %}<summary>{{entry.Books.comments[0].text|striptags}}</summary>{% endif %}
+    {% if entry.Books.comments[0] %}
+    <summary type="text">{{entry.Books.comments[0].text|striptags|first_sentence}}</summary>
+    <content type="text">{{entry.Books.comments[0].text|striptags}}</content>
+    {% endif %}
     {% if entry.Books.has_cover %}
     <link type="image/jpeg" href="{{url_for('opds.feed_get_cover', book_id=entry.Books.id)}}" rel="http://opds-spec.org/image"/>
     <link type="image/jpeg" href="{{url_for('opds.feed_get_cover', book_id=entry.Books.id)}}" rel="http://opds-spec.org/image/thumbnail"/>

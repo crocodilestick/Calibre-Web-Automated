@@ -226,3 +226,14 @@ def contains_music(book_formats):
         if format.format.lower() in g.constants.EXTENSIONS_AUDIO:
             result = True
     return result
+
+
+@jinjia.app_template_filter('first_sentence')
+def first_sentence(text):
+    if not text:
+        return ""
+    sentences = text.split('.')
+    first = sentences[0].strip()
+    if first:
+        return first + '.'
+    return text.strip()

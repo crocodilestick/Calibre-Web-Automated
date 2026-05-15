@@ -306,7 +306,10 @@ VOLUME /cwa-book-ingest
 VOLUME /calibre-library
 
 # Health check for container orchestration
-# Uses shell form to support environment variable substitution for CWA_PORT_OVERRIDE
-# -L follows redirects so the 302 to /login on the root path is treated as healthy
+# Targets the /health endpoint (cps/web.py:1051) which verifies the
+# Calibre metadata.db is reachable and returns 503 on database failure.
+# Shell form supports CWA_PORT_OVERRIDE substitution. 127.0.0.1 avoids
+# IPv6/v4 resolution flakes on hosts where 'localhost' takes the AAAA
+# path first.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=120s --retries=3 \
-  CMD curl -fsL http://localhost:${CWA_PORT_OVERRIDE:-8083}/ || curl -fsL -k https://localhost:${CWA_PORT_OVERRIDE:-8083}/ || exit 1
+  CMD curl -fsS http://127.0.0.1:${CWA_PORT_OVERRIDE:-8083}/health || exit 1

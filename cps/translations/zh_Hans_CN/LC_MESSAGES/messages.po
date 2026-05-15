@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-14 13:59+0000\n"
+"POT-Creation-Date: 2026-05-15 14:09+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -2753,8 +2753,8 @@ msgstr "添加到书架"
 
 #: cps/templates/_book_organizer.html:104 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
-#: cps/templates/detail.html:1290 cps/templates/feed.xml:94
-#: cps/templates/feed.xml:96 cps/templates/layout.html:328
+#: cps/templates/detail.html:1290 cps/templates/feed.xml:97
+#: cps/templates/feed.xml:99 cps/templates/layout.html:328
 #: cps/templates/layout.html:337 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 msgid "(Public)"
@@ -6203,7 +6203,7 @@ msgstr "禁止注册的域名（黑名单）"
 msgid "Next"
 msgstr "下一个"
 
-#: cps/templates/feed.xml:94
+#: cps/templates/feed.xml:97
 msgid "(Magic)"
 msgstr ""
 

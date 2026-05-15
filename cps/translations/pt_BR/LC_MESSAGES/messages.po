@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-14 13:59+0000\n"
+"POT-Creation-Date: 2026-05-15 14:09+0000\n"
 "PO-Revision-Date: 2025-12-02 12:00+0000\n"
 "Last-Translator: Alex <298750+alexantao@users.noreply.github.com>\n"
 "Language-Team: pt_BR <LL@li.org>\n"
@@ -2866,8 +2866,8 @@ msgstr "Adicionar à estante"
 
 #: cps/templates/_book_organizer.html:104 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
-#: cps/templates/detail.html:1290 cps/templates/feed.xml:94
-#: cps/templates/feed.xml:96 cps/templates/layout.html:328
+#: cps/templates/detail.html:1290 cps/templates/feed.xml:97
+#: cps/templates/feed.xml:99 cps/templates/layout.html:328
 #: cps/templates/layout.html:337 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 msgid "(Public)"
@@ -6382,7 +6382,7 @@ msgstr "Domínios Negados (Lista Negra)"
 msgid "Next"
 msgstr "Próximo"
 
-#: cps/templates/feed.xml:94
+#: cps/templates/feed.xml:97
 msgid "(Magic)"
 msgstr ""
 

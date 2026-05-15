@@ -62,7 +62,7 @@ sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
 
 # Computed once at startup. Used for dynamic series2 URL routing.
-_s2_key = (config.config_series2_slug or '').strip() or 'series2'
+_s2_key = (config.config_series2_slug or config.config_series2_label or '').strip() or 'series2'
 
 feature_support = {
     'ldap': bool(services.ldap),
@@ -1709,7 +1709,7 @@ def series2_list():
                                          charlist=[],
                                          title=label,
                                          page="series2list",
-                                         data="series2", order=order_no)
+                                         data=_s2_key, order=order_no)
         else:
             entries = (calibre_db.session.query(
                 db.Books,
@@ -1730,9 +1730,13 @@ def series2_list():
                                          charlist=[],
                                          title=label,
                                          page="series2list",
-                                         data="series2", bodyClass="grid-view", order=order_no)
+                                         data=_s2_key, bodyClass="grid-view", order=order_no)
     else:
         abort(404)
+
+
+if _s2_key != 'series2':
+    web.add_url_rule('/series2', view_func=series2_list)
 
 
 @web.route("/ratings")

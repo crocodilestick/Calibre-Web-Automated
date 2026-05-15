@@ -283,7 +283,7 @@
               {% for element in sidebar %}
                 {% if current_user.check_visibility(element['visibility']) and element['public'] %}
                     <li id="nav_{{element['id']}}" {% if page == element['page'] %}class="active"{% endif %} style="{% if element['id'] == 'duplicates' %}position: relative;{% endif %}">
-                      <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}">
+                      <a href="{% if element['no_param'] %}{{url_for(element['link'])}}{%else%}{{url_for(element['link'], data=element['page'], sort_param='stored')}}{% endif %}">
                         <span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}
                         {% if element['id'] == 'duplicates' %}
                           {% set dup_count = duplicate_notification.count if duplicate_notification is defined else 0 %}

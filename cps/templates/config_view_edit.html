@@ -40,25 +40,25 @@
         <input type="text" class="form-control" name="config_calibre_web_title" id="config_calibre_web_title" value="{% if conf.config_calibre_web_title != None %}{{ conf.config_calibre_web_title }}{% endif %}" autocomplete="off" required>
         <p class="settings-explanation">{{_('The title displayed in the browser tab and navbar.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_books_per_page">{{_('Books per Page')}}</label>
         <input type="number" min="1" max="200" class="form-control" name="config_books_per_page" id="config_books_per_page" value="{% if conf.config_books_per_page != None %}{{ conf.config_books_per_page }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Number of books to display per page in list views (1-200).')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_random_books">{{_('No. of Random Books to Display')}}</label>
         <input type="number" min="1" max="30" class="form-control" name="config_random_books" id="config_random_books" value="{% if conf.config_random_books != None %}{{ conf.config_random_books }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Number of random books shown on the home page (1-30).')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_authors_max">{{_('No. of Authors to Display Before Hiding (0=Disable Hiding)')}}</label>
         <input type="number" min="0" max="999" class="form-control" name="config_authors_max" id="config_authors_max" value="{% if conf.config_authors_max != None %}{{ conf.config_authors_max }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Maximum number of authors to show in book details before truncating. Set to 0 to disable.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_theme">{{_('Default Theme')}}</label>
         <select name="config_theme" id="config_theme" class="form-control">
@@ -66,13 +66,13 @@
         </select>
         <p class="settings-explanation">{{_('Default theme for new users and anonymous browsing. Users can select their own preferred theme in their profile.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_columns_to_ignore">{{_('Regular Expression for Ignoring Columns')}}</label>
         <input type="text" class="form-control" name="config_columns_to_ignore" id="config_columns_to_ignore" value="{% if conf.config_columns_to_ignore != None %}{{ conf.config_columns_to_ignore }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Regex pattern to hide custom columns from being displayed in the UI.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_read_column">{{_('Link Read/Unread Status to Calibre Column')}}</label>
         <select name="config_read_column" id="config_read_column" class="form-control">
@@ -108,12 +108,19 @@
       <h4 class="settings-section-header">{{_('Custom Column Display Order')}}</h4>
       <p class="settings-explanation">{{_('Drag to set the display order of custom columns in book details.')}}</p>
       <input type="hidden" name="config_cc_display_order" id="config_cc_display_order" value="">
+      {% set link_col_ids = (conf.config_cc_link_columns or '').split(',') %}
       <ul id="cc-order-list" class="list-group">
         {% for col in allColumns %}
+        {% if col.id != conf.config_subtitle_column %}
         <li class="list-group-item cc-order-item" data-id="{{ col.id }}">
           <span class="glyphicon glyphicon-move cc-drag-handle"></span>
           {{ col.name }}
+          <label class="cc-link-label">
+            <input type="checkbox" name="cc_link_{{ col.id }}" {% if col.id|string in link_col_ids %}checked{% endif %}>
+            {{_('Link')}}
+          </label>
         </li>
+        {% endif %}
         {% endfor %}
       </ul>
     </div>
@@ -252,6 +259,8 @@
   updateOrder();
   Sortable.create(list, {
     animation: 150,
+    filter: 'input, label',
+    preventOnFilter: false,
     onEnd: updateOrder
   });
 })();

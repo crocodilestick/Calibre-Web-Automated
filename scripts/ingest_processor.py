@@ -256,15 +256,13 @@ class ProcessLock:
             except:
                 pass
 
-# Global lock instance
+# Global lock instance (instantiation only — acquire happens in main()
+# so importing this module from a test runner has no side effects).
 process_lock = ProcessLock()
 
 def cleanup_lock():
     """Cleanup function for atexit"""
     process_lock.release()
-
-# Register cleanup function
-atexit.register(cleanup_lock)
 
 
 def get_app_db_path() -> str:
@@ -360,9 +358,13 @@ def gdrive_sync_if_enabled():
         except Exception as e:
             print(f"[ingest-processor] WARN: GDrive sync failed: {e}", flush=True)
 
-# Acquire process lock to prevent concurrent execution
-if not process_lock.acquire(timeout=10):
-    sys.exit(2)
+def _acquire_process_lock_or_exit():
+    """Single-instance guard. Run only when this module is executed as a
+    script — never on import — so pytest-xdist workers (which share /tmp
+    across processes) don't take each other out at import time."""
+    atexit.register(cleanup_lock)
+    if not process_lock.acquire(timeout=10):
+        sys.exit(2)
 
 # Ensure processed backups directory structure exists so backups never crash on missing folders
 try:
@@ -1397,6 +1399,8 @@ class NewBookProcessor:
 def main(filepath=None):
     """Checks if filepath is a directory. If it is, main will be ran on every file in the given directory
     Inotifywait won't detect files inside folders if the folder was moved rather than copied"""
+
+    _acquire_process_lock_or_exit()
 
     if filepath is None:
         if len(sys.argv) < 2:

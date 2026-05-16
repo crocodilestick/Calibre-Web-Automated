@@ -30,49 +30,50 @@ convert_library_log_file = "/config/convert-library.log"
 # Define the logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Set the logging level
-# Create a FileHandler
-file_handler = logging.FileHandler(convert_library_log_file, mode='w', encoding='utf-8')
-# Create a Formatter and set it for the handler
-LOG_FORMAT = '%(message)s'
-formatter = logging.Formatter(LOG_FORMAT)
-file_handler.setFormatter(formatter)
-# Add the handler to the logger
-logger.addHandler(file_handler)
+# Create a FileHandler if possible, otherwise use StreamHandler
+try:
+    file_handler = logging.FileHandler(convert_library_log_file, mode='w', encoding='utf-8')
+    LOG_FORMAT = '%(message)s'
+    formatter = logging.Formatter(LOG_FORMAT)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+except FileNotFoundError:
+    # Fallback for test environments where /config might not exist
+    stream_handler = logging.StreamHandler()
+    LOG_FORMAT = '%(message)s'
+    formatter = logging.Formatter(LOG_FORMAT)
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
 
 # Define user and group
 USER_NAME = "abc"
 GROUP_NAME = "abc"
 
-# Get UID and GID
-uid = pwd.getpwnam(USER_NAME).pw_uid
-gid = grp.getgrnam(GROUP_NAME).gr_gid
-
-# Set permissions for log file (skip on network shares)
+# Get UID and GID (skip if user doesn't exist, e.g., in CI environments)
+uid = None
+gid = None
 try:
-    nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
-    if not nsm:
-        subprocess.run(["chown", f"{uid}:{gid}", convert_library_log_file], check=True)
-    else:
-        print(f"[convert-library] NETWORK_SHARE_MODE=true detected; skipping chown of {convert_library_log_file}", flush=True)
-except subprocess.CalledProcessError as e:
-    print(f"[convert-library] An error occurred while attempting to set ownership of {convert_library_log_file} to abc:abc. See the following error:\n{e}", flush=True)
+    uid = pwd.getpwnam(USER_NAME).pw_uid
+    gid = grp.getgrnam(GROUP_NAME).gr_gid
+except KeyError:
+    pass
+
+# Set permissions for log file (skip on network shares or if uid/gid not available)
+if uid is not None and gid is not None:
+    try:
+        nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
+        if not nsm:
+            subprocess.run(["chown", f"{uid}:{gid}", convert_library_log_file], check=True)
+        else:
+            print(f"[convert-library] NETWORK_SHARE_MODE=true detected; skipping chown of {convert_library_log_file}", flush=True)
+    except subprocess.CalledProcessError as e:
+        print(f"[convert-library] An error occurred while attempting to set ownership of {convert_library_log_file} to abc:abc. See the following error:\n{e}", flush=True)
 
 def print_and_log(string) -> None:
     """ Ensures the provided string is passed to STDOUT and stored in the runs log file """
     logger.info(string)
     print(string)
 
-
-# Creates a lock file unless one already exists meaning an instance of the script is
-# already running, then the script is closed, the user is notified and the program
-# exits with code 2
-try:
-    lock = open(tempfile.gettempdir() + '/convert_library.lock', 'x')
-    lock.close()
-except FileExistsError:
-    print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
-    logger.info(f"\nNextGen Convert Library Service - Run Cancelled: {datetime.now()}")
-    sys.exit(2)
 
 # Defining function to delete the lock on script exit
 def removeLock():
@@ -81,14 +82,30 @@ def removeLock():
     except FileNotFoundError:
         ...
 
-# Will automatically run when the script exits
-atexit.register(removeLock)
 
-backup_destinations = {
-        entry.name: entry.path
-        for entry in os.scandir("/config/processed_books")
-        if entry.is_dir()
-    }
+def _acquire_lock_or_exit():
+    """Single-instance guard. Run only when this module is executed as a
+    script — never on import — so pytest-xdist workers (which share /tmp
+    across processes) don't take each other out at import time."""
+    try:
+        lock = open(tempfile.gettempdir() + '/convert_library.lock', 'x')
+        lock.close()
+    except FileExistsError:
+        print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
+        logger.info(f"\nNextGen Convert Library Service - Run Cancelled: {datetime.now()}")
+        sys.exit(2)
+    atexit.register(removeLock)
+
+
+try:
+    backup_destinations = {
+            entry.name: entry.path
+            for entry in os.scandir("/config/processed_books")
+            if entry.is_dir()
+        }
+except FileNotFoundError:
+    # Fallback for test environments where /config might not exist
+    backup_destinations = {}
 
 
 class LibraryConverter:
@@ -569,6 +586,8 @@ class LibraryConverter:
 
 
 def main():
+    _acquire_lock_or_exit()
+
     parser = argparse.ArgumentParser(
         prog='convert-library',
         description='Made for the purpose of converting ebooks in a calibre library to the users specified target format (default epub)'

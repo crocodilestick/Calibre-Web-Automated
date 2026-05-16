@@ -185,7 +185,7 @@ Before committing code:
 
 - Review `TESTING_STRATEGY.md` for comprehensive documentation
 - Check existing tests for examples
-- Ask in Discord: https://discord.gg/EjgSeek94R
+- Ask in Discord: https://discord.gg/B8NXZmcp32
 - Open an issue on GitHub
 
 ## Next Steps

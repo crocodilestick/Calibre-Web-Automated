@@ -144,7 +144,7 @@
 
 I just want to say a huge thanks to the very active and passionate community that has built up around CWA since it's release just a few months ago and a special thanks to all of those who contributed to this update those still being prepared for release ❤️
 
-If you have any ideas that you would like to see implemented CWA, get involved and reach out on the [Discord](https://discord.gg/EjgSeek94R)!
+If you have any ideas that you would like to see implemented CWA, get involved and reach out on the [Discord](https://discord.gg/B8NXZmcp32)!
 
 ___
 

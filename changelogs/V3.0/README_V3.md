@@ -177,7 +177,7 @@ Calibre-Web Automated aims to be an all-in-one solution, combining the modern li
 - I want to say a big thanks 🙏 to the members of this community that have taken the time to participate in the testing and development of this project and we encourage anyone who would like to to contribute in some way. Anyone of any level is welcome and every little helps!
   - For any others that wish to contribute to this project in some way, please reach out on our Discord Server and see how you can best get involved:\
     \
-    [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EjgSeek94R)](https://discord.gg/EjgSeek94R)
+    [![](https://dcbadge.limes.pink/api/server/https://discord.gg/B8NXZmcp32)](https://discord.gg/B8NXZmcp32)
 
 # Features Currently Under Active Development and on our Roadmap 🏗️🛣️
 
@@ -362,4 +362,4 @@ Check out [Post-Install Tasks Here](#post-install-tasks) when necessary.
 
 - CWA is really lucky to have a very passionate and active community of people that really help shape CWA into what it is today
 - If you have any ideas or want to contribute to the project, you're more than welcome to! We accept anyone regardless of skill level of expertise!
-- If you've got a good idea or want to simply suggest improvements, simply get in touch with us on the Discord Server [here](https://discord.gg/EjgSeek94R)!
+- If you've got a good idea or want to simply suggest improvements, simply get in touch with us on the Discord Server [here](https://discord.gg/B8NXZmcp32)!

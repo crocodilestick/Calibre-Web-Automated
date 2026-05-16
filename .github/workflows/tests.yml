@@ -38,7 +38,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Remove Python bytecode and pycache
         run: |
@@ -134,7 +134,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Set up Python 3.13
         uses: actions/setup-python@v6
@@ -229,7 +229,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Set up Python 3.13
         uses: actions/setup-python@v6

@@ -28,7 +28,7 @@ jobs:
           fi
       - name: Checkout
         if: steps.probe.outputs.have_webhook == 'true'
-        uses: actions/checkout@v4  # @v3 is deprecated (Node 16 runtime removed from GitHub runners); @v4 still on Node 20
+        uses: actions/checkout@v6  # @v3 is deprecated (Node 16 runtime removed from GitHub runners); @v4 still on Node 20
       - name: Releases To Discord
         if: steps.probe.outputs.have_webhook == 'true'
         uses: sillyangel/releases-to-discord@v1

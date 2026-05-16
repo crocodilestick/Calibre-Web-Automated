@@ -51,7 +51,7 @@ jobs:
           fi
 
       - name: Checkout correct ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ env.BUILD_REF }}
 
@@ -165,7 +165,7 @@ jobs:
           fi
 
       - name: Checkout correct ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ env.BUILD_REF }}
 
@@ -292,7 +292,7 @@ jobs:
           fi
 
       - name: Checkout correct ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ env.BUILD_REF }}
 

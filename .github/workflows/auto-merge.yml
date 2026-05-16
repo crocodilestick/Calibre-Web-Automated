@@ -60,7 +60,7 @@ jobs:
         # currently on main; a malicious PR cannot widen its own auto-
         # merge rules by editing the policy or shadowing the module in
         # its branch.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: main
           fetch-depth: 1

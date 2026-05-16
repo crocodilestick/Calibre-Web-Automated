@@ -31,7 +31,7 @@ jobs:
           echo "::notice::DOCKERHUB_USERNAME not set; skipping DockerHub description sync."
         fi
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       if: steps.probe.outputs.have_creds == 'true'
 
     - name: Docker Hub Description

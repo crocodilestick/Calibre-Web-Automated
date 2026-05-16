@@ -47,7 +47,7 @@ jobs:
         # used to evaluate trust must be the one currently on main; a
         # malicious PR cannot widen its own trusted-labelers list by
         # editing the config in its own branch.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: main
           fetch-depth: 1

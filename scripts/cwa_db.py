@@ -47,6 +47,7 @@ class CWA_DB:
         self.match_stat_table_columns_with_schema()
         self.ensure_scheduled_jobs_schema()
         self.set_default_settings()
+        self._migrate_duplicate_debounce_5_to_30_v1()
         self.cwa_settings = self.get_cwa_settings()
 
 
@@ -449,6 +450,59 @@ class CWA_DB:
                         self.cur.execute(f"ALTER TABLE {table} RENAME COLUMN {current_column_names[table][x]} TO {column_names_in_schema[table][x]}")
                         self.con.commit()
                         print(f'[cwa-db] Fixed column mismatch between versions. Column "{current_column_names[table][x]}" in table "{table}" renamed to "{column_names_in_schema[table][x]}"', flush=True)
+
+
+    def _migrate_duplicate_debounce_5_to_30_v1(self) -> None:
+        """One-time bump duplicate_scan_debounce_seconds from 5 -> 30.
+
+        CWA upstream commit fe60df7b (2026-01-29) lowered the default from
+        30 -> 5 to make duplicate-detection notifications surface faster after
+        multi-book ingest. For users with 10k+ book libraries the 5s default
+        produces stacking SQL prefilter queries that contend for the GIL with
+        concurrent SQLAlchemy session-init paths (which call create_function
+        to register title_sort/lower UDFs), surfacing as Web UI 504s under
+        sustained ingest. Identified as the regression vector by the upstream
+        PR #1346 author in CWA #1256.
+
+        This migration runs once per install, gated by a marker file in
+        ``.cwa_migrations/`` alongside cwa.db. Users who customised the value
+        to anything other than 5 are not touched.
+        """
+        marker_dir = os.path.join(self.db_path, ".cwa_migrations")
+        marker_path = os.path.join(marker_dir, "duplicate_debounce_5_to_30_v1.applied")
+        if os.path.exists(marker_path):
+            return
+        try:
+            row = self.cur.execute(
+                "SELECT duplicate_scan_debounce_seconds FROM cwa_settings LIMIT 1"
+            ).fetchone()
+            if row is not None and row[0] == 5:
+                self.cur.execute(
+                    "UPDATE cwa_settings SET duplicate_scan_debounce_seconds = 30 "
+                    "WHERE duplicate_scan_debounce_seconds = 5"
+                )
+                self.con.commit()
+                print(
+                    "[cwa-db] Migrated duplicate_scan_debounce_seconds 5 -> 30 "
+                    "(CWA regression revert; safer default for large libraries)",
+                    flush=True,
+                )
+        except sqlError as e:
+            print(
+                f"[cwa-db]: duplicate_debounce_5_to_30_v1 migration failed: {e}",
+                flush=True,
+            )
+            return
+
+        try:
+            os.makedirs(marker_dir, exist_ok=True)
+            with open(marker_path, "w", encoding="utf-8") as fh:
+                fh.write(datetime.now().isoformat())
+        except OSError as e:
+            print(
+                f"[cwa-db]: could not write migration marker {marker_path}: {e}",
+                flush=True,
+            )
 
 
     def set_default_settings(self, force=False) -> None:

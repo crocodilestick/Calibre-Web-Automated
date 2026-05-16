@@ -371,9 +371,9 @@ def cwa_internal_queue_duplicate_scan():
         frequency = db.cwa_settings.get('duplicate_scan_frequency', 'manual')
 
         data = request.get_json(force=True, silent=True) or {}
-        default_delay = db.cwa_settings.get('duplicate_scan_debounce_seconds', 5)
+        default_delay = db.cwa_settings.get('duplicate_scan_debounce_seconds', 30)
         delay_seconds = int(data.get('delay_seconds', default_delay))
-        delay_seconds = max(5, min(600, delay_seconds))
+        delay_seconds = max(10, min(600, delay_seconds))
 
         if not enabled or frequency != 'after_import':
             return jsonify({"success": True, "skipped": True, "reason": "disabled_or_manual"}), 200

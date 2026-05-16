@@ -819,8 +819,8 @@ def _queue_duplicate_scan_after_change():
         from cwa_db import CWA_DB
 
         cwa_db = CWA_DB()
-        delay_seconds = int(cwa_db.cwa_settings.get('duplicate_scan_debounce_seconds', 5))
-        delay_seconds = max(5, min(600, delay_seconds))
+        delay_seconds = int(cwa_db.cwa_settings.get('duplicate_scan_debounce_seconds', 30))
+        delay_seconds = max(10, min(600, delay_seconds))
         url = helper.get_internal_api_url("/cwa-internal/queue-duplicate-scan")
         requests.post(
             url,

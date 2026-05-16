@@ -1036,9 +1036,9 @@
 
       <div class="form-group" style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2rem;">
         <label for="duplicate_scan_debounce_seconds" class="settings-section-header">{{_('After import debounce (seconds)')}}</label>
-        <input type="number" min="5" max="600" step="1" class="cwa-settings-input"
+        <input type="number" min="10" max="600" step="1" class="cwa-settings-input"
                name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds"
-               value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 5) }}"
+               value="{{ cwa_settings.get('duplicate_scan_debounce_seconds', 30) }}"
                style="width: 120px; background: #151e2680; border: none; padding: 1rem; border-radius: 4px; margin-left: 1rem;">
       </div>
       <div class="cwa-settings-tip" style="margin-top: 2rem;">

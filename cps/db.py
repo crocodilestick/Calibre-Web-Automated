@@ -16,7 +16,7 @@ from weakref import WeakSet
 from uuid import uuid4
 
 from sqlite3 import OperationalError as sqliteOperationalError
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
 from sqlalchemy.orm import relationship, sessionmaker, scoped_session, joinedload, object_session
@@ -48,6 +48,61 @@ log = logger.create()
 # fires from every page render. Module-level set so we warn once per process
 # per drifted sort string. See fork issue #108.
 _AUTHOR_SORT_DRIFT_WARNED: set = set()
+
+
+def _register_sqlite_udfs(dbapi_connection, _connection_record):
+    """Register Python UDFs (lower, uuid4, title_sort) once per SQLite
+    connection — installed as a SQLAlchemy ``connect`` event listener.
+
+    Eliminates the GIL+SQLite deadlock vector behind CWA #1256: previously,
+    request handlers (``cps/web.py:get_matching_tags``, edit-book paths,
+    admin config saves, search/typeahead/check_exists) called
+    ``calibre_db.create_functions()`` mid-request. With ``StaticPool``
+    sharing one connection across all threads, that ``conn.create_function``
+    call held the GIL while a concurrent worker thread mid-query (e.g.
+    duplicate-scan SQL using ``func.lower``) was waiting for the GIL to
+    invoke the registered UDF. Classic deadlock — neither thread could
+    proceed and the gevent hub stalled.
+
+    Registering UDFs at connection time means they're available for every
+    SQL statement on the connection, no per-request re-registration needed.
+    ``StaticPool`` reuses one connection for the engine's lifetime, so this
+    listener fires exactly once unless the engine is disposed and
+    re-created (e.g. via ``setup_db`` after config changes).
+
+    ``title_sort`` reads ``CalibreDB.config.config_title_regex`` at call
+    time via a closure, so admin updates to the regex are picked up without
+    needing to re-register the UDF.
+    """
+    try:
+        dbapi_connection.create_function("lower", 1, lcase)
+    except Exception:
+        pass
+    try:
+        dbapi_connection.create_function("uuid4", 0, lambda: str(uuid4()))
+    except Exception:
+        pass
+
+    def _title_sort(title):
+        if title is None:
+            return ''
+        cfg = CalibreDB.config
+        try:
+            regex = getattr(cfg, 'config_title_regex', None) if cfg is not None else None
+            if regex:
+                title_pat = re.compile(regex, re.IGNORECASE)
+                match = title_pat.search(title)
+                if match:
+                    prep = match.group(1)
+                    title = title[len(prep):] + ', ' + prep
+        except Exception:
+            pass
+        return strip_whitespaces(title)
+
+    try:
+        dbapi_connection.create_function("title_sort", 1, _title_sort)
+    except Exception:
+        pass
 
 cc_exceptions = ['composite', 'series']
 cc_classes = {}
@@ -600,7 +655,9 @@ class CalibreDB:
             return
         self.session = self.session_factory()
         self.session.expire_on_commit = expire_on_commit
-        self.create_functions(self.config)
+        # UDFs (lower/uuid4/title_sort) are registered once per SQLite
+        # connection via the engine-level ``connect`` event listener
+        # (``_register_sqlite_udfs``); no per-Session call needed.
 
     def ensure_session(self, expire_on_commit=True):
         """Ensure a valid SQLAlchemy session exists.
@@ -741,6 +798,7 @@ class CalibreDB:
                                          isolation_level="SERIALIZABLE",
                                          connect_args={'check_same_thread': False, 'timeout': 30},
                                          poolclass=StaticPool)
+            event.listen(check_engine, "connect", _register_sqlite_udfs)
             with check_engine.begin() as connection:
                 connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
                 connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
@@ -809,6 +867,7 @@ class CalibreDB:
                                            isolation_level="SERIALIZABLE",
                                            connect_args={'check_same_thread': False, 'timeout': 30},
                                            poolclass=StaticPool)
+                event.listen(cls.engine, "connect", _register_sqlite_udfs)
                 with cls.engine.begin() as connection:
                     connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
                     connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
@@ -1233,8 +1292,6 @@ class CalibreDB:
     def get_typeahead(self, database, query, replace=('', ''), tag_filter=true()):
         self.ensure_session()
         query = query or ''
-        self.create_functions()
-        # self.session.connection().connection.connection.create_function("lower", 1, lcase)
         entries = self.session.query(database).filter(tag_filter). \
             filter(func.lower(database.name).ilike("%" + query + "%")).all()
         # json_dumps = json.dumps([dict(name=escape(r.name.replace(*replace))) for r in entries])
@@ -1243,8 +1300,6 @@ class CalibreDB:
 
     def check_exists_book(self, authr, title):
         self.ensure_session()
-        self.create_functions()
-        # self.session.connection().connection.connection.create_function("lower", 1, lcase)
         q = list()
         author_terms = re.split(r'\s*&\s*', authr)
         for author_term in author_terms:
@@ -1256,8 +1311,6 @@ class CalibreDB:
     def search_query(self, term, config, *join):
         self.ensure_session()
         strip_whitespaces(term).lower()
-        self.create_functions()
-        # self.session.connection().connection.connection.create_function("lower", 1, lcase)
         q = list()
         author_terms = re.split("[, ]+", term)
         for author_term in author_terms:
@@ -1361,35 +1414,25 @@ class CalibreDB:
             return sorted(languages, key=lambda x: x.name, reverse=reverse_order)
 
     def create_functions(self, config=None):
-        self.ensure_session()
-        if self.session is None:
-            log.error("create_functions: Cannot create functions because session is None")
-            return
-        
-        # user defined sort function for calibre databases (Series, etc.)
-        if config:
-            def _title_sort(title):
-                # calibre sort stuff
-                title_pat = re.compile(config.config_title_regex, re.IGNORECASE)
-                match = title_pat.search(title)
-                if match:
-                    prep = match.group(1)
-                    title = title[len(prep):] + ', ' + prep
-                return strip_whitespaces(title)
+        """Backward-compatible no-op.
 
-        try:
-            # sqlalchemy <1.4.24 and sqlalchemy 2.0
-            conn = self.session.connection().connection.driver_connection
-        except AttributeError:
-            # sqlalchemy >1.4.24
-            conn = self.session.connection().connection.connection
-        try:
-            if config:
-                conn.create_function("title_sort", 1, _title_sort)
-            conn.create_function('uuid4', 0, lambda: str(uuid4()))
-            conn.create_function("lower", 1, lcase)
-        except sqliteOperationalError:
-            pass
+        UDFs (lower/uuid4/title_sort) are now registered once per SQLite
+        connection by ``_register_sqlite_udfs`` via the engine ``connect``
+        event listener. Per-request callsites in ``cps/web.py``,
+        ``cps/editbooks.py``, ``cps/admin.py``, ``cps/helper.py``, and
+        ``cps/search.py`` previously called this method on hot paths,
+        creating the GIL+SQLite deadlock vector behind CWA #1256 when a
+        worker thread mid-``func.lower`` query collided with a request
+        thread mid-``conn.create_function``. The new model registers UDFs
+        at connect time so request handlers never re-register.
+
+        Method is preserved as a no-op so any external caller (e.g.
+        downstream plugins or tests) doesn't break. The class attribute
+        ``config`` is updated if provided so legacy callers' intent (set
+        the title-sort regex source) is preserved.
+        """
+        if config is not None:
+            type(self).config = config
 
     @classmethod
     def dispose(cls):

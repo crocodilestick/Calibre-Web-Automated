@@ -884,9 +884,6 @@ def do_edit_book(book_id, upload_formats=None):
     edit_error = False
     refresh_cover_thumbnail_after_commit = False
 
-    # create the function for sorting...
-    calibre_db.create_functions(config)
-
     book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
     # Book not found
     if not book:
@@ -1866,7 +1863,6 @@ def upload_book_formats(requested_files, book, book_id, no_cover=True):
                     db_format = db.Data(book_id, file_ext.upper(), file_size, file_name)
                     calibre_db.session.add(db_format)
                     calibre_db.session.commit()
-                    calibre_db.create_functions(config)
                 except (OperationalError, IntegrityError, StaleDataError) as e:
                     calibre_db.session.rollback()
                     log.error_or_exception("Database error: {}".format(e))

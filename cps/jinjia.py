@@ -17,6 +17,7 @@ from flask_babel import format_date
 from .cw_login import current_user
 
 from . import constants, logger
+from .clean_html import clean_string
 
 jinjia = Blueprint('jinjia', __name__)
 log = logger.create()
@@ -135,6 +136,17 @@ def formatseriesindex_filter(series_index):
 @jinjia.app_template_filter('escapedlink')
 def escapedlink_filter(url, text):
     return "<a href='{}'>{}</a>".format(url, escape(text))
+
+
+# Render-time sanitisation of stored book-comment HTML so any `|clean_string|safe`
+# template path strips XSS vectors even if the value bypassed editbooks' save-time
+# sanitiser (e.g. crafted comments imported directly from Calibre desktop into the
+# metadata.db). Defense-in-depth complement to janeczku/calibre-web PR #3625.
+@jinjia.app_template_filter('clean_string')
+def clean_string_filter(val):
+    if not val:
+        return val or ""
+    return clean_string(val)
 
 
 @jinjia.app_template_filter('uuidfilter')

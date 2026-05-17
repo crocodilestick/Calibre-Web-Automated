@@ -241,16 +241,24 @@ def HandleSyncRequest():
                                                    ub.ArchivedBook.last_modified,
                                                    ub.BookShelf.date_added,
                                                    ub.ArchivedBook.is_archived)
+        # Per-device sync state lives in the `x-kobo-synctoken` cursor
+        # (the last_modified comparisons below). Don't filter by
+        # KoboSyncedBooks here — that table is user-keyed, so it would
+        # lock additional devices on the same user out of receiving
+        # books another device already synced.
+        #
+        # Magic-shelf membership is enforced by the OUTER filter
+        # (kobo_sync shelf OR magic-shelf) further down. Don't add
+        # magic_shelf_book_ids to the inner OR — that bypasses the
+        # timestamp cursor and produces an infinite cont_sync loop on
+        # paginated sync.
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
-                           .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
-                                                      .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
-                          .filter(or_(
-                              ub.BookShelf.date_added > sync_token.books_last_modified,
-                              db.Books.last_modified > sync_token.books_last_modified,
-                              db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
-                          ))
+                           .filter(or_(
+                               ub.BookShelf.date_added > sync_token.books_last_modified,
+                               db.Books.last_modified > sync_token.books_last_modified
+                           ))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .order_by(db.Books.last_modified)
@@ -266,11 +274,15 @@ def HandleSyncRequest():
         changed_entries = calibre_db.session.query(db.Books,
                                                    ub.ArchivedBook.last_modified,
                                                    ub.ArchivedBook.is_archived)
+        # Same per-device cursor invariant as the shelf branch above:
+        # don't filter by KoboSyncedBooks (user-keyed, breaks multi-device).
+        # The last_modified > sync_token.books_last_modified filter is the
+        # per-device throttle — without it, this branch returns every book
+        # on every sync and keeps cont_sync True forever.
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
-                           .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
-                                                      .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
+                           .filter(db.Books.last_modified > sync_token.books_last_modified)
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .order_by(db.Books.last_modified)

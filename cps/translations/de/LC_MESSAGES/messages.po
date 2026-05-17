@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-16 23:04+0000\n"
+"POT-Creation-Date: 2026-05-17 02:21+0000\n"
 "PO-Revision-Date: 2026-04-06 17:03+0000\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
@@ -399,7 +399,7 @@ msgstr "Erfolg! G-Mail-Konto verifiziert."
 #: cps/admin.py:2611 cps/admin.py:2883 cps/editbooks.py:1104
 #: cps/editbooks.py:1869 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
-#: cps/tasks/convert.py:145 cps/web.py:2775
+#: cps/tasks/convert.py:145 cps/web.py:2778
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Ups! Datenbankfehler: %(error)s."
@@ -441,7 +441,7 @@ msgstr "Ungültige Laufzeit für Aufgaben spezifiziert"
 msgid "Scheduled tasks settings updated"
 msgstr "Einstellungen für geplante Aufgaben aktualisiert"
 
-#: cps/admin.py:1853 cps/admin.py:1997 cps/admin.py:2879 cps/web.py:2205
+#: cps/admin.py:1853 cps/admin.py:1997 cps/admin.py:2879 cps/web.py:2208
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr ""
 "Ups! Es ist ein unbekannter Fehler aufgetreten. Bitte später erneut "
@@ -451,7 +451,7 @@ msgstr ""
 msgid "Settings DB is not Writeable"
 msgstr "Einstellungsdatenbank ist nicht schreibbar"
 
-#: cps/admin.py:1876 cps/opds.py:309 cps/web.py:2701 cps/web.py:2826
+#: cps/admin.py:1876 cps/opds.py:309 cps/web.py:2704 cps/web.py:2829
 msgid "title"
 msgstr "Titel"
 
@@ -619,7 +619,7 @@ msgstr "Datenbankeinstellung aktualisiert"
 msgid "Database Configuration"
 msgstr "Datenbank-Konfiguration"
 
-#: cps/admin.py:2566 cps/web.py:2174
+#: cps/admin.py:2566 cps/web.py:2177
 msgid "Oops! Please complete all fields."
 msgstr "Ups! Bitte alle Felder ausfüllen."
 
@@ -655,7 +655,7 @@ msgstr "Benutzer 'Guest' kann nicht gelöscht werden"
 msgid "No admin user remaining, can't delete user"
 msgstr "Kein verbleibender Admin-Benutzer, Benutzer kann nicht gelöscht werden"
 
-#: cps/admin.py:2834 cps/web.py:2509
+#: cps/admin.py:2834 cps/web.py:2512
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-Mail kann nicht leer sein und muss gültig sein"
 
@@ -1270,8 +1270,8 @@ msgstr "Dateiendung '%(ext)s' kann nicht auf diesen Server hochgeladen werden"
 msgid "File to be uploaded must have an extension"
 msgstr "Dateien müssen eine Erweiterung haben, um hochgeladen zu werden"
 
-#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2939
-#: cps/web.py:3031 cps/web.py:3126
+#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2942
+#: cps/web.py:3034 cps/web.py:3129
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -1953,7 +1953,7 @@ msgstr "{} Sterne"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:161
 #: cps/templates/layout.html:203 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2283
+#: cps/templates/login.html:39 cps/web.py:2286
 msgid "Login"
 msgstr "Anmelden"
 
@@ -2473,71 +2473,71 @@ msgstr "Downloads"
 msgid "File formats list"
 msgstr "Liste der Dateiformate"
 
-#: cps/web.py:2057 cps/web.py:2095
+#: cps/web.py:2060 cps/web.py:2098
 msgid "Please configure the SMTP mail settings first..."
 msgstr ""
 "Bitte zunächst die SMTP-Einstellungen des E-Mail-Server konfigurieren..."
 
-#: cps/web.py:2061
+#: cps/web.py:2064
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr ""
 "Ups! Bitte zuerst das Profil mit einer validen E-Reader-E-Mail-Adresse "
 "aktualisieren."
 
-#: cps/web.py:2083
+#: cps/web.py:2086
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "Erfolg! Buch erfolgreich zum Senden an %(eReadermail)s eingereiht"
 
-#: cps/web.py:2086 cps/web.py:2144
+#: cps/web.py:2089 cps/web.py:2147
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "Ups! Beim Senden des Buches trat ein Fehler auf: %(res)s"
 
-#: cps/web.py:2103 cps/web.py:2113
+#: cps/web.py:2106 cps/web.py:2116
 msgid "No email addresses selected"
 msgstr "Keine E-Mail-Adresse ausgewählt"
 
-#: cps/web.py:2120
+#: cps/web.py:2123
 #, fuzzy
 msgid "Additional email addresses are disabled for your account."
 msgstr "Zusätzliche E-Mail-Adressen eingeben (durch Kommas getrennt):"
 
-#: cps/web.py:2142
+#: cps/web.py:2145
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr "Erfolg! Buch zum Senden an die ausgewählte(n) Adresse(n) eingereiht!"
 
-#: cps/web.py:2161
+#: cps/web.py:2164
 msgid "Please wait one minute to register next user"
 msgstr "Bitte eine Minute warten vor der Registrierung des nächsten Benutzers"
 
 #: cps/templates/layout.html:162 cps/templates/layout.html:204
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2162
-#: cps/web.py:2166 cps/web.py:2171 cps/web.py:2175 cps/web.py:2181
-#: cps/web.py:2206 cps/web.py:2210 cps/web.py:2223 cps/web.py:2226
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2165
+#: cps/web.py:2169 cps/web.py:2174 cps/web.py:2178 cps/web.py:2184
+#: cps/web.py:2209 cps/web.py:2213 cps/web.py:2226 cps/web.py:2229
 msgid "Register"
 msgstr "Registrieren"
 
-#: cps/web.py:2165 cps/web.py:2330
+#: cps/web.py:2168 cps/web.py:2333
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "Verbindugnsfehler zu Limiter Backend, bitte Administrator kontaktieren"
 
-#: cps/web.py:2170 cps/web.py:2222
+#: cps/web.py:2173 cps/web.py:2225
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr ""
 "Ups! Der E-Mail-Server ist nicht konfiguriert, bitte den Administrator "
 "kontaktieren."
 
-#: cps/web.py:2208
+#: cps/web.py:2211
 msgid "Oops! Your Email is not allowed."
 msgstr "Ups! Diese E-Mail ist nicht erlaubt."
 
-#: cps/web.py:2211
+#: cps/web.py:2214
 msgid "Success! Confirmation Email has been sent."
 msgstr "Erfolg! Eine E-Mail zur Bestätigung wurde versendet."
 
-#: cps/web.py:2259
+#: cps/web.py:2262
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
@@ -2545,7 +2545,7 @@ msgstr ""
 "Authentifizierungsschleife erkannt. Wenn Sie Probleme beim Anmelden haben, "
 "kontaktieren Sie bitte Ihren Administrator."
 
-#: cps/web.py:2304
+#: cps/web.py:2307
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
@@ -2553,28 +2553,28 @@ msgstr ""
 "Die OAuth-Authentifizierung ist nicht korrekt konfiguriert. Bitte "
 "kontaktieren Sie den Administrator."
 
-#: cps/web.py:2309 cps/web.py:2336
+#: cps/web.py:2312 cps/web.py:2339
 msgid "Cannot activate LDAP authentication"
 msgstr "LDAP-Authentifizierung kann nicht aktiviert werden"
 
-#: cps/web.py:2318
+#: cps/web.py:2321
 msgid "Standard login is disabled."
 msgstr "Standard-Login ist deaktiviert."
 
-#: cps/web.py:2326
+#: cps/web.py:2329
 msgid "Please wait one minute before next login"
 msgstr "Bitte eine Minute vor dem nächsten Anmeldeversuch warten"
 
-#: cps/web.py:2344
+#: cps/web.py:2347
 msgid "Username cannot be empty"
 msgstr "Benutzername darf nicht leer sein"
 
-#: cps/web.py:2356
+#: cps/web.py:2359
 #, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "du bist nun eingeloggt als: '%(nickname)s'"
 
-#: cps/web.py:2375
+#: cps/web.py:2378
 #, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
@@ -2583,7 +2583,7 @@ msgstr ""
 "Willkommen! Ihr Konto wurde automatisch erstellt. Sie sind jetzt eingeloggt "
 "als: '%(nickname)s'"
 
-#: cps/web.py:2380 cps/web.py:2383
+#: cps/web.py:2383 cps/web.py:2386
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
@@ -2591,7 +2591,7 @@ msgstr ""
 "Authentifizierung erfolgreich, aber die Kontoerstellung ist fehlgeschlagen. "
 "Bitte kontaktieren Sie Ihren Administrator."
 
-#: cps/web.py:2387
+#: cps/web.py:2390
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
@@ -2599,7 +2599,7 @@ msgstr ""
 "Authentifizierung erfolgreich, aber kein lokales Konto gefunden. Bitte "
 "kontaktieren Sie Ihren Administrator, um Ihr Konto zu erstellen."
 
-#: cps/web.py:2395
+#: cps/web.py:2398
 #, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
@@ -2608,59 +2608,59 @@ msgstr ""
 "Fallback Login als: '%(nickname)s', LDAP Server ist nicht erreichbar, oder "
 "der Nutzer ist unbekannt"
 
-#: cps/web.py:2401
+#: cps/web.py:2404
 #, python-format
 msgid "Could not login: %(message)s"
 msgstr "Login nicht erfolgreich: %(message)s"
 
-#: cps/web.py:2424 cps/web.py:2425 cps/web.py:2468
+#: cps/web.py:2427 cps/web.py:2428 cps/web.py:2471
 msgid "Wrong Username or Password"
 msgstr "Falscher Benutzername oder Passwort"
 
-#: cps/web.py:2433
+#: cps/web.py:2436
 msgid "New Password was sent to your email address"
 msgstr "Das neue Passwort wurde an die E-Mail-Adresse geschickt"
 
-#: cps/web.py:2437
+#: cps/web.py:2440
 msgid "An unknown error occurred. Please try again later."
 msgstr ""
 "Es ist ein unbekannter Fehler aufgetreten. Bitte später erneut versuchen."
 
-#: cps/web.py:2439
+#: cps/web.py:2442
 msgid "Please enter valid username to reset password"
 msgstr ""
 "Bitte einen gültigen Benutzernamen zum Zurücksetzen des Passworts angeben"
 
-#: cps/web.py:2447
+#: cps/web.py:2450
 #, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Du bist nun eingeloggt als: '%(nickname)s'"
 
-#: cps/web.py:2764
+#: cps/web.py:2767
 msgid "Success! Profile Updated"
 msgstr "Erfolg! Profil aktualisiert"
 
-#: cps/web.py:2770
+#: cps/web.py:2773
 msgid "Oops! An account already exists for this Email."
 msgstr "Ups! Es existiert bereits ein Benutzer für diese E-Mail-Adresse."
 
-#: cps/web.py:2894
+#: cps/web.py:2897
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2907
+#: cps/web.py:2910
 #, python-format
 msgid ""
 "App password created for '%(label)s'. Copy it now — you won't see it again: "
 "%(token)s"
 msgstr ""
 
-#: cps/web.py:2925
+#: cps/web.py:2928
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3044
+#: cps/web.py:3047
 msgid "Invalid book ID."
 msgstr "Ungültige Buch-ID."
 

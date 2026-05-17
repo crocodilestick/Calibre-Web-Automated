@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-16 23:04+0000\n"
+"POT-Creation-Date: 2026-05-17 02:21+0000\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -399,7 +399,7 @@ msgstr ""
 #: cps/admin.py:2611 cps/admin.py:2883 cps/editbooks.py:1104
 #: cps/editbooks.py:1869 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
-#: cps/tasks/convert.py:145 cps/web.py:2775
+#: cps/tasks/convert.py:145 cps/web.py:2778
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Kesalahan basis data: %(error)s"
@@ -441,7 +441,7 @@ msgstr "Durasi tidak valid untuk tugas yang ditentukan"
 msgid "Scheduled tasks settings updated"
 msgstr "Pengaturan tugas terjadwal diperbarui"
 
-#: cps/admin.py:1853 cps/admin.py:1997 cps/admin.py:2879 cps/web.py:2205
+#: cps/admin.py:1853 cps/admin.py:1997 cps/admin.py:2879 cps/web.py:2208
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Terjadi kesalahan yang tidak diketahui. Coba lagi nanti."
 
@@ -449,7 +449,7 @@ msgstr "Terjadi kesalahan yang tidak diketahui. Coba lagi nanti."
 msgid "Settings DB is not Writeable"
 msgstr "Pengaturan DB tidak dapat ditulisi"
 
-#: cps/admin.py:1876 cps/opds.py:309 cps/web.py:2701 cps/web.py:2826
+#: cps/admin.py:1876 cps/opds.py:309 cps/web.py:2704 cps/web.py:2829
 #, fuzzy
 msgid "title"
 msgstr "Judul"
@@ -611,7 +611,7 @@ msgstr "Pengaturan Basis Data diperbarui"
 msgid "Database Configuration"
 msgstr "Pengaturan Basis Data"
 
-#: cps/admin.py:2566 cps/web.py:2174
+#: cps/admin.py:2566 cps/web.py:2177
 msgid "Oops! Please complete all fields."
 msgstr "Harap masukkan seluruh isian!"
 
@@ -645,7 +645,7 @@ msgstr "Tidak dapat menghapus Pengguna Tamu"
 msgid "No admin user remaining, can't delete user"
 msgstr "Tidak ada pengguna admin tersisa, tidak dapat menghapus pengguna"
 
-#: cps/admin.py:2834 cps/web.py:2509
+#: cps/admin.py:2834 cps/web.py:2512
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "Alamat email tidak boleh kosong dan harus berupa email yang valid"
 
@@ -1249,8 +1249,8 @@ msgstr "Ekstensi berkas '%(ext)s' tidak diizinkan untuk diunggah ke server ini"
 msgid "File to be uploaded must have an extension"
 msgstr "Berkas yang akan diunggah harus memiliki ekstensi"
 
-#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2939
-#: cps/web.py:3031 cps/web.py:3126
+#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2942
+#: cps/web.py:3034 cps/web.py:3129
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -1905,7 +1905,7 @@ msgstr "{}★"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:161
 #: cps/templates/layout.html:203 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2283
+#: cps/templates/login.html:39 cps/web.py:2286
 msgid "Login"
 msgstr "Masuk"
 
@@ -2432,126 +2432,126 @@ msgstr "Unduhan"
 msgid "File formats list"
 msgstr "Daftar format berkas"
 
-#: cps/web.py:2057 cps/web.py:2095
+#: cps/web.py:2060 cps/web.py:2098
 #, fuzzy
 msgid "Please configure the SMTP mail settings first..."
 msgstr "Harap atur pengaturan email SMTP terlebih dahulu..."
 
-#: cps/web.py:2061
+#: cps/web.py:2064
 #, fuzzy
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr ""
 "Harap perbarui profil Anda dengan alamat e-mail Kirim ke Kindle yang valid."
 
-#: cps/web.py:2083
+#: cps/web.py:2086
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "Buku telah diantrikan untuk dikirim ke %(eReadermail)s"
 
-#: cps/web.py:2086 cps/web.py:2144
+#: cps/web.py:2089 cps/web.py:2147
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "Oops! Terjadi kesalahan saat mengirim buku: %(res)s"
 
-#: cps/web.py:2103 cps/web.py:2113
+#: cps/web.py:2106 cps/web.py:2116
 msgid "No email addresses selected"
 msgstr ""
 
-#: cps/web.py:2120
+#: cps/web.py:2123
 msgid "Additional email addresses are disabled for your account."
 msgstr ""
 
-#: cps/web.py:2142
+#: cps/web.py:2145
 #, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr "Buku telah diantrikan untuk dikirim ke %(eReadermail)s"
 
-#: cps/web.py:2161
+#: cps/web.py:2164
 msgid "Please wait one minute to register next user"
 msgstr ""
 
 #: cps/templates/layout.html:162 cps/templates/layout.html:204
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2162
-#: cps/web.py:2166 cps/web.py:2171 cps/web.py:2175 cps/web.py:2181
-#: cps/web.py:2206 cps/web.py:2210 cps/web.py:2223 cps/web.py:2226
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2165
+#: cps/web.py:2169 cps/web.py:2174 cps/web.py:2178 cps/web.py:2184
+#: cps/web.py:2209 cps/web.py:2213 cps/web.py:2226 cps/web.py:2229
 msgid "Register"
 msgstr "Daftar"
 
-#: cps/web.py:2165 cps/web.py:2330
+#: cps/web.py:2168 cps/web.py:2333
 #, fuzzy
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "Server email belum diatur, silakan hubungi administrator!"
 
-#: cps/web.py:2170 cps/web.py:2222
+#: cps/web.py:2173 cps/web.py:2225
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr "Server email belum diatur, silakan hubungi administrator!"
 
-#: cps/web.py:2208
+#: cps/web.py:2211
 msgid "Oops! Your Email is not allowed."
 msgstr "Alamat email Anda tidak diizinkan untuk mendaftar"
 
-#: cps/web.py:2211
+#: cps/web.py:2214
 msgid "Success! Confirmation Email has been sent."
 msgstr "E-mail konfirmasi telah dikirimkan ke alamat email Anda."
 
-#: cps/web.py:2259
+#: cps/web.py:2262
 #, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
 msgstr "Instans Calibre-Web belum diatur, harap hubungi administrator Anda"
 
-#: cps/web.py:2304
+#: cps/web.py:2307
 #, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
 msgstr "Server email belum diatur, silakan hubungi administrator!"
 
-#: cps/web.py:2309 cps/web.py:2336
+#: cps/web.py:2312 cps/web.py:2339
 #, fuzzy
 msgid "Cannot activate LDAP authentication"
 msgstr "Tidak dapat mengaktifkan autentikasi LDAP."
 
-#: cps/web.py:2318
+#: cps/web.py:2321
 msgid "Standard login is disabled."
 msgstr ""
 
-#: cps/web.py:2326
+#: cps/web.py:2329
 msgid "Please wait one minute before next login"
 msgstr ""
 
-#: cps/web.py:2344
+#: cps/web.py:2347
 msgid "Username cannot be empty"
 msgstr ""
 
-#: cps/web.py:2356
+#: cps/web.py:2359
 #, fuzzy, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "Anda sekarang login sebagai: %(nickname)s"
 
-#: cps/web.py:2375
+#: cps/web.py:2378
 #, fuzzy, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
 msgstr "Anda sekarang login sebagai: %(nickname)s"
 
-#: cps/web.py:2380 cps/web.py:2383
+#: cps/web.py:2383 cps/web.py:2386
 #, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
 msgstr "Instans Calibre-Web belum diatur, harap hubungi administrator Anda"
 
-#: cps/web.py:2387
+#: cps/web.py:2390
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
 msgstr ""
 
-#: cps/web.py:2395
+#: cps/web.py:2398
 #, fuzzy, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
@@ -2560,62 +2560,62 @@ msgstr ""
 "Login Pengganti sebagai: '%(nickname)s', Server LDAP tidak dapat dijangkau, "
 "atau pengguna tidak diketahui."
 
-#: cps/web.py:2401
+#: cps/web.py:2404
 #, fuzzy, python-format
 msgid "Could not login: %(message)s"
 msgstr "Tidak dapat login: %(message)s"
 
-#: cps/web.py:2424 cps/web.py:2425 cps/web.py:2468
+#: cps/web.py:2427 cps/web.py:2428 cps/web.py:2471
 #, fuzzy
 msgid "Wrong Username or Password"
 msgstr "Pengguna atau Kata Sandi salah"
 
-#: cps/web.py:2433
+#: cps/web.py:2436
 #, fuzzy
 msgid "New Password was sent to your email address"
 msgstr "Kata Sandi baru telah dikirimkan ke alamat email Anda"
 
-#: cps/web.py:2437
+#: cps/web.py:2440
 #, fuzzy
 msgid "An unknown error occurred. Please try again later."
 msgstr "Terjadi kesalahan yang tidak diketahui. Coba lagi nanti."
 
-#: cps/web.py:2439
+#: cps/web.py:2442
 #, fuzzy
 msgid "Please enter valid username to reset password"
 msgstr "Harap masukkan pengguna valid untuk mengatur ulang kata sandi"
 
-#: cps/web.py:2447
+#: cps/web.py:2450
 #, fuzzy, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Anda sekarang login sebagai: %(nickname)s"
 
-#: cps/web.py:2764
+#: cps/web.py:2767
 #, fuzzy
 msgid "Success! Profile Updated"
 msgstr "Profil diperbarui"
 
-#: cps/web.py:2770
+#: cps/web.py:2773
 msgid "Oops! An account already exists for this Email."
 msgstr "Ditemukan akun yang ada untuk alamat email ini"
 
-#: cps/web.py:2894
+#: cps/web.py:2897
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2907
+#: cps/web.py:2910
 #, python-format
 msgid ""
 "App password created for '%(label)s'. Copy it now — you won't see it again: "
 "%(token)s"
 msgstr ""
 
-#: cps/web.py:2925
+#: cps/web.py:2928
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3044
+#: cps/web.py:3047
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "Peran tidak valid"

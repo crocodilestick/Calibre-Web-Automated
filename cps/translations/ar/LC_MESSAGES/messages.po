@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-16 23:04+0000\n"
+"POT-Creation-Date: 2026-05-17 02:21+0000\n"
 "PO-Revision-Date: 2025-06-07 14:44+0300\n"
 "Last-Translator: UsamaFoad <usamafoad@gmail.com>\n"
 "Language-Team: \n"
@@ -390,7 +390,7 @@ msgstr "تم التحقق بنجاح! تم التحقق من حساب Gmail."
 #: cps/admin.py:2611 cps/admin.py:2883 cps/editbooks.py:1104
 #: cps/editbooks.py:1869 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
-#: cps/tasks/convert.py:145 cps/web.py:2775
+#: cps/tasks/convert.py:145 cps/web.py:2778
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "عفواً! خطأ في قاعدة البيانات: %(error)s."
@@ -432,7 +432,7 @@ msgstr "مدة غير صالحة للمهمة المحددة"
 msgid "Scheduled tasks settings updated"
 msgstr "تم تحديث إعدادات المهام المجدولة"
 
-#: cps/admin.py:1853 cps/admin.py:1997 cps/admin.py:2879 cps/web.py:2205
+#: cps/admin.py:1853 cps/admin.py:1997 cps/admin.py:2879 cps/web.py:2208
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "عفواً! حدث خطأ غير معروف. يُرجى المحاولة لاحقًا."
 
@@ -440,7 +440,7 @@ msgstr "عفواً! حدث خطأ غير معروف. يُرجى المحاولة
 msgid "Settings DB is not Writeable"
 msgstr "قاعدة بيانات الإعدادات غير قابلة للكتابة"
 
-#: cps/admin.py:1876 cps/opds.py:309 cps/web.py:2701 cps/web.py:2826
+#: cps/admin.py:1876 cps/opds.py:309 cps/web.py:2704 cps/web.py:2829
 #, fuzzy
 msgid "title"
 msgstr "العنوان"
@@ -602,7 +602,7 @@ msgstr "تم تحديث إعدادات قاعدة البيانات"
 msgid "Database Configuration"
 msgstr "تكوين قاعدة البيانات"
 
-#: cps/admin.py:2566 cps/web.py:2174
+#: cps/admin.py:2566 cps/web.py:2177
 msgid "Oops! Please complete all fields."
 msgstr "عفواً! الرجاء تعبئة جميع الحقول."
 
@@ -636,7 +636,7 @@ msgstr "لا يمكن حذف المستخدم الضيف"
 msgid "No admin user remaining, can't delete user"
 msgstr "لم يتبق مستخدم مسؤول، لا يمكن حذف المستخدم"
 
-#: cps/admin.py:2834 cps/web.py:2509
+#: cps/admin.py:2834 cps/web.py:2512
 msgid "Email can't be empty and has to be a valid Email"
 msgstr ""
 "لا يمكن أن يكون البريد الإلكتروني فارغًا ويجب أن يكون بريدًا إلكترونيًا صالحًا"
@@ -1239,8 +1239,8 @@ msgstr "لا يُسمح بتحميل ملحق الملف '%(ext)s' إلى هذا
 msgid "File to be uploaded must have an extension"
 msgstr "يجب أن يكون للملف المراد تحميله امتداد"
 
-#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2939
-#: cps/web.py:3031 cps/web.py:3126
+#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2942
+#: cps/web.py:3034 cps/web.py:3129
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "عفواً! الكتاب المحدد غير متوفر. الملف غير موجود أو غير قابل للوصول"
@@ -1880,7 +1880,7 @@ msgstr "{} نجوم"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:161
 #: cps/templates/layout.html:203 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2283
+#: cps/templates/login.html:39 cps/web.py:2286
 msgid "Login"
 msgstr "تسجيل الدخول"
 
@@ -2393,121 +2393,121 @@ msgstr "التحميلات"
 msgid "File formats list"
 msgstr "قائمة تنسيقات الملفات"
 
-#: cps/web.py:2057 cps/web.py:2095
+#: cps/web.py:2060 cps/web.py:2098
 msgid "Please configure the SMTP mail settings first..."
 msgstr "يرجى تهيئة إعدادات بريد SMTP أولاً..."
 
-#: cps/web.py:2061
+#: cps/web.py:2064
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr "عفوًا! يرجى تحديث ملفك الشخصي ببريد إلكتروني صالح للقارئ الإلكتروني."
 
-#: cps/web.py:2083
+#: cps/web.py:2086
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "نجاح! تم وضع الكتاب في قائمة الانتظار للإرسال إلى %(eReadermail)s"
 
-#: cps/web.py:2086 cps/web.py:2144
+#: cps/web.py:2089 cps/web.py:2147
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "عفوًا! حدث خطأ أثناء إرسال الكتاب: %(res)s"
 
-#: cps/web.py:2103 cps/web.py:2113
+#: cps/web.py:2106 cps/web.py:2116
 msgid "No email addresses selected"
 msgstr ""
 
-#: cps/web.py:2120
+#: cps/web.py:2123
 msgid "Additional email addresses are disabled for your account."
 msgstr ""
 
-#: cps/web.py:2142
+#: cps/web.py:2145
 #, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr "نجاح! تم وضع الكتاب في قائمة الانتظار للإرسال إلى %(eReadermail)s"
 
-#: cps/web.py:2161
+#: cps/web.py:2164
 msgid "Please wait one minute to register next user"
 msgstr "يرجى الانتظار دقيقة واحدة لتسجيل مستخدم آخر"
 
 #: cps/templates/layout.html:162 cps/templates/layout.html:204
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2162
-#: cps/web.py:2166 cps/web.py:2171 cps/web.py:2175 cps/web.py:2181
-#: cps/web.py:2206 cps/web.py:2210 cps/web.py:2223 cps/web.py:2226
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2165
+#: cps/web.py:2169 cps/web.py:2174 cps/web.py:2178 cps/web.py:2184
+#: cps/web.py:2209 cps/web.py:2213 cps/web.py:2226 cps/web.py:2229
 msgid "Register"
 msgstr "تسجيل"
 
-#: cps/web.py:2165 cps/web.py:2330
+#: cps/web.py:2168 cps/web.py:2333
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "خطأ في الاتصال بالواجهة الخلفية للمُحدد، يرجى الاتصال بمسؤول النظام"
 
-#: cps/web.py:2170 cps/web.py:2222
+#: cps/web.py:2173 cps/web.py:2225
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr "عفوًا! خادم البريد الإلكتروني غير مهيأ، يرجى الاتصال بمسؤول النظام."
 
-#: cps/web.py:2208
+#: cps/web.py:2211
 msgid "Oops! Your Email is not allowed."
 msgstr "عفوًا! بريدك الإلكتروني غير مسموح به."
 
-#: cps/web.py:2211
+#: cps/web.py:2214
 msgid "Success! Confirmation Email has been sent."
 msgstr "نجاح! تم إرسال بريد إلكتروني للتأكيد."
 
-#: cps/web.py:2259
+#: cps/web.py:2262
 #, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
 msgstr "مثيل Calibre-Web غير مهيأ، يرجى الاتصال بمسؤول النظام"
 
-#: cps/web.py:2304
+#: cps/web.py:2307
 #, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
 msgstr "عفوًا! خادم البريد الإلكتروني غير مهيأ، يرجى الاتصال بمسؤول النظام."
 
-#: cps/web.py:2309 cps/web.py:2336
+#: cps/web.py:2312 cps/web.py:2339
 msgid "Cannot activate LDAP authentication"
 msgstr "لا يمكن تفعيل مصادقة LDAP"
 
-#: cps/web.py:2318
+#: cps/web.py:2321
 msgid "Standard login is disabled."
 msgstr ""
 
-#: cps/web.py:2326
+#: cps/web.py:2329
 msgid "Please wait one minute before next login"
 msgstr "يرجى الانتظار دقيقة واحدة قبل تسجيل الدخول التالي"
 
-#: cps/web.py:2344
+#: cps/web.py:2347
 msgid "Username cannot be empty"
 msgstr ""
 
-#: cps/web.py:2356
+#: cps/web.py:2359
 #, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "لقد قمت الآن بتسجيل الدخول باسم: '%(nickname)s'"
 
-#: cps/web.py:2375
+#: cps/web.py:2378
 #, fuzzy, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
 msgstr "تم بنجاح! أنت الآن مسجل الدخول باسم: %(nickname)s"
 
-#: cps/web.py:2380 cps/web.py:2383
+#: cps/web.py:2383 cps/web.py:2386
 #, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
 msgstr "مثيل Calibre-Web غير مهيأ، يرجى الاتصال بمسؤول النظام"
 
-#: cps/web.py:2387
+#: cps/web.py:2390
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
 msgstr ""
 
-#: cps/web.py:2395
+#: cps/web.py:2398
 #, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
@@ -2516,57 +2516,57 @@ msgstr ""
 "تسجيل دخول احتياطي باسم: '%(nickname)s'، خادم LDAP غير قابل للوصول، أو "
 "المستخدم غير معروف"
 
-#: cps/web.py:2401
+#: cps/web.py:2404
 #, python-format
 msgid "Could not login: %(message)s"
 msgstr "تعذر تسجيل الدخول: %(message)s"
 
-#: cps/web.py:2424 cps/web.py:2425 cps/web.py:2468
+#: cps/web.py:2427 cps/web.py:2428 cps/web.py:2471
 msgid "Wrong Username or Password"
 msgstr "اسم المستخدم أو كلمة المرور خاطئة"
 
-#: cps/web.py:2433
+#: cps/web.py:2436
 msgid "New Password was sent to your email address"
 msgstr "تم إرسال كلمة مرور جديدة إلى عنوان بريدك الإلكتروني"
 
-#: cps/web.py:2437
+#: cps/web.py:2440
 msgid "An unknown error occurred. Please try again later."
 msgstr "حدث خطأ غير معروف. يرجى المحاولة مرة أخرى لاحقًا."
 
-#: cps/web.py:2439
+#: cps/web.py:2442
 msgid "Please enter valid username to reset password"
 msgstr "يرجى إدخال اسم مستخدم صالح لإعادة تعيين كلمة المرور"
 
-#: cps/web.py:2447
+#: cps/web.py:2450
 #, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "لقد قمت الآن بتسجيل الدخول باسم: '%(nickname)s'"
 
-#: cps/web.py:2764
+#: cps/web.py:2767
 msgid "Success! Profile Updated"
 msgstr "نجاح! تم تحديث الملف الشخصي"
 
-#: cps/web.py:2770
+#: cps/web.py:2773
 msgid "Oops! An account already exists for this Email."
 msgstr "عفوًا! يوجد حساب بالفعل لهذا البريد الإلكتروني."
 
-#: cps/web.py:2894
+#: cps/web.py:2897
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2907
+#: cps/web.py:2910
 #, python-format
 msgid ""
 "App password created for '%(label)s'. Copy it now — you won't see it again: "
 "%(token)s"
 msgstr ""
 
-#: cps/web.py:2925
+#: cps/web.py:2928
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3044
+#: cps/web.py:3047
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "دور غير صالح"

@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated v4.0.6\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-17 20:47+0000\n"
+"POT-Creation-Date: 2026-05-17 21:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -377,7 +377,7 @@ msgstr ""
 
 #: cps/admin.py:1777 cps/admin.py:1780 cps/admin.py:2266 cps/admin.py:2496
 #: cps/admin.py:2612 cps/admin.py:2884 cps/editbooks.py:1104
-#: cps/editbooks.py:1869 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/editbooks.py:1884 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2793
 #, python-format
@@ -1182,27 +1182,27 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr ""
 
-#: cps/editbooks.py:380 cps/editbooks.py:1307 cps/editbooks.py:1816
+#: cps/editbooks.py:380 cps/editbooks.py:1307 cps/editbooks.py:1831
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr ""
 
-#: cps/editbooks.py:385 cps/editbooks.py:1313 cps/editbooks.py:1827
+#: cps/editbooks.py:385 cps/editbooks.py:1313 cps/editbooks.py:1842
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr ""
 
-#: cps/editbooks.py:389 cps/editbooks.py:1317 cps/editbooks.py:1832
+#: cps/editbooks.py:389 cps/editbooks.py:1317 cps/editbooks.py:1847
 msgid "File to be uploaded must have an extension"
 msgstr ""
 
-#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2957
+#: cps/editbooks.py:890 cps/editbooks.py:1508 cps/web.py:661 cps/web.py:2957
 #: cps/web.py:3049 cps/web.py:3144
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not "
 "accessible"
 msgstr ""
 
-#: cps/editbooks.py:930 cps/editbooks.py:1899
+#: cps/editbooks.py:930 cps/editbooks.py:1914
 msgid "User has no rights to upload cover"
 msgstr ""
 
@@ -1214,7 +1214,7 @@ msgstr ""
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 
-#: cps/editbooks.py:973 cps/editbooks.py:1269 cps/editbooks.py:1627
+#: cps/editbooks.py:973 cps/editbooks.py:1269 cps/editbooks.py:1642
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr ""
@@ -1228,7 +1228,7 @@ msgstr ""
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:1164 cps/editbooks.py:1209 cps/editbooks.py:1917
+#: cps/editbooks.py:1164 cps/editbooks.py:1209 cps/editbooks.py:1932
 #: cps/updater.py:649 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr ""
@@ -1249,42 +1249,42 @@ msgstr ""
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr ""
 
-#: cps/editbooks.py:1403 cps/editbooks.py:1405
+#: cps/editbooks.py:1418 cps/editbooks.py:1420
 msgid "Book Format Successfully Deleted"
 msgstr ""
 
-#: cps/editbooks.py:1412 cps/editbooks.py:1414
+#: cps/editbooks.py:1427 cps/editbooks.py:1429
 msgid "Book Successfully Deleted"
 msgstr ""
 
-#: cps/editbooks.py:1478
+#: cps/editbooks.py:1493
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1532
+#: cps/editbooks.py:1547
 msgid "edit metadata"
 msgstr ""
 
-#: cps/editbooks.py:1586
+#: cps/editbooks.py:1601
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 
-#: cps/editbooks.py:1821
+#: cps/editbooks.py:1836
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1845
+#: cps/editbooks.py:1860
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr ""
 
-#: cps/editbooks.py:1852
+#: cps/editbooks.py:1867
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr ""
 
-#: cps/editbooks.py:1876
+#: cps/editbooks.py:1891
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr ""

@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-17 02:21+0000\n"
+"POT-Creation-Date: 2026-05-17 03:14+0000\n"
 "PO-Revision-Date: 2026-04-26 13:31+0200\n"
 "Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at proton."
 "me>\n"
@@ -31,32 +31,32 @@ msgstr "Statistieken"
 msgid "Calibre database unavailable. Please reconfigure the library path."
 msgstr ""
 
-#: cps/admin.py:180
+#: cps/admin.py:181
 #, fuzzy
 msgid "Server restarted, please reload page."
 msgstr "De server is opnieuw gestart, vernieuw de pagina"
 
-#: cps/admin.py:182
+#: cps/admin.py:183
 #, fuzzy
 msgid "Performing Server shutdown, please close window."
 msgstr "Bezig met het afsluiten van de server, sluit het venster"
 
-#: cps/admin.py:190
+#: cps/admin.py:191
 msgid "Success! Database Reconnected"
 msgstr "Gelukt! Database opnieuw verbonden"
 
-#: cps/admin.py:193
+#: cps/admin.py:194
 msgid "Unknown command"
 msgstr "Onbekende opdracht"
 
-#: cps/admin.py:204
+#: cps/admin.py:205
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
 "Gelukt! E-Mail wordt verzonden naar %(email)s, controleer de taken voor het "
 "resultaat"
 
-#: cps/admin.py:224
+#: cps/admin.py:225
 msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
@@ -64,48 +64,48 @@ msgstr ""
 "Fout: Geen Hardcover-token beschikbaar. Stel de omgevingsvariabele "
 "HARDCOVER_TOKEN in of configureer deze in de basisconfiguratie."
 
-#: cps/admin.py:252
+#: cps/admin.py:253
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
 msgstr ""
 "Succes! De taak voor het automatisch ophalen van hardcoverboeken is gestart. "
 "Controleer het takenpaneel voor de voortgang."
 
-#: cps/admin.py:257
+#: cps/admin.py:258
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
 msgstr ""
 "Fout bij het starten van de automatische ophaaltaak voor hardcover: %(error)s"
 
-#: cps/admin.py:296 cps/templates/admin.html:223
+#: cps/admin.py:297 cps/templates/admin.html:223
 #, fuzzy
 msgid "Review Hardcover Matches"
 msgstr "Hardcover-overeenkomsten beoordelen"
 
-#: cps/admin.py:303
+#: cps/admin.py:304
 #, fuzzy, python-format
 msgid "Error loading review queue: %(error)s"
 msgstr "Fout bij het laden van de beoordelingswachtrij: %(error)s"
 
-#: cps/admin.py:384
+#: cps/admin.py:385
 msgid "Hardcover ID applied successfully"
 msgstr "Hardcover ID succesvol toegepast"
 
-#: cps/admin.py:401
+#: cps/admin.py:402
 #, fuzzy, python-format
 msgid "Match %(action)s"
 msgstr "Vergelijk %(action)s"
 
-#: cps/admin.py:439
+#: cps/admin.py:440
 msgid "No pending matches to reject"
 msgstr "Geen openstaande overeenkomsten om af te wijzen"
 
-#: cps/admin.py:445
+#: cps/admin.py:446
 #, python-format
 msgid "Rejected %(count)s match(es)"
 msgstr "%(count)s afgewezen overeenkomst(en)"
 
-#: cps/admin.py:482
+#: cps/admin.py:483
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
@@ -113,157 +113,157 @@ msgstr ""
 "De cache voor miniaturen wordt vernieuwd voor {} boek(en). Dit kan een paar "
 "minuten duren."
 
-#: cps/admin.py:484
+#: cps/admin.py:485
 msgid "No books with covers found to process."
 msgstr "Er zijn geen boeken met omslagen gevonden om te verwerken."
 
-#: cps/admin.py:496
+#: cps/admin.py:497
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
 msgstr "Vernieuwen van de miniatuur is mislukt: {}"
 
-#: cps/admin.py:563
+#: cps/admin.py:564
 msgid "Admin page"
 msgstr "Systeembeheer"
 
-#: cps/admin.py:583
+#: cps/admin.py:584
 msgid "Basic Configuration"
 msgstr "Basisconfiguratie"
 
-#: cps/admin.py:621
+#: cps/admin.py:622
 msgid "UI Configuration"
 msgstr "Uiterlijk aanpassen"
 
-#: cps/admin.py:645 cps/admin.py:1335 cps/db.py:1115 cps/search.py:153
+#: cps/admin.py:646 cps/admin.py:1336 cps/db.py:1115 cps/search.py:153
 #: cps/web.py:551 cps/web.py:881
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Aangepaste kolom Nr.%(column)d bestaat niet in de Calibre Database"
 
-#: cps/admin.py:663 cps/templates/admin.html:55
+#: cps/admin.py:664 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Bewerken Gebruikers"
 
-#: cps/admin.py:707 cps/opds.py:1094 cps/templates/grid.html:14
+#: cps/admin.py:708 cps/opds.py:1094 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Alles"
 
-#: cps/admin.py:734 cps/admin.py:1926
+#: cps/admin.py:735 cps/admin.py:1927
 msgid "User not found"
 msgstr "Gebruiker niet gevonden"
 
-#: cps/admin.py:748
+#: cps/admin.py:749
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} gebruikers succesvol verwijderd"
 
-#: cps/admin.py:771 cps/templates/config_view_edit.html:169
+#: cps/admin.py:772 cps/templates/config_view_edit.html:169
 #: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Alle talen"
 
-#: cps/admin.py:792 cps/admin.py:798
+#: cps/admin.py:793 cps/admin.py:799
 msgid "Malformed request"
 msgstr "Misvormd verzoek"
 
-#: cps/admin.py:810 cps/admin.py:2840
+#: cps/admin.py:811 cps/admin.py:2841
 msgid "Guest Name can't be changed"
 msgstr "Gast naam kan niet worden veranderd"
 
-#: cps/admin.py:826
+#: cps/admin.py:827
 msgid "Guest can't have this role"
 msgstr "Gast kan deze rol niet hebben"
 
-#: cps/admin.py:838 cps/admin.py:2664
+#: cps/admin.py:839 cps/admin.py:2665
 msgid "No admin user remaining, can't remove admin role"
 msgstr ""
 "Kan systeembeheerder rol niet verwijderen van de laatste systeembeheerder"
 
-#: cps/admin.py:842 cps/admin.py:856
+#: cps/admin.py:843 cps/admin.py:857
 msgid "Value has to be true or false"
 msgstr "Waarde moet Waar of Onwaar zijn"
 
-#: cps/admin.py:844
+#: cps/admin.py:845
 msgid "Invalid role"
 msgstr "Ongeldige rol"
 
-#: cps/admin.py:848
+#: cps/admin.py:849
 msgid "Guest can't have this view"
 msgstr "Gast kan dit niet bekijken"
 
-#: cps/admin.py:858
+#: cps/admin.py:859
 msgid "Invalid view"
 msgstr "Ongeldige waarde"
 
-#: cps/admin.py:861
+#: cps/admin.py:862
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr ""
 "Gasts locale is automatisch bepaald en kan niet handmatig worden ingesteld"
 
-#: cps/admin.py:865
+#: cps/admin.py:866
 msgid "No Valid Locale Given"
 msgstr "Geen geldige locale is opgegeven"
 
-#: cps/admin.py:876
+#: cps/admin.py:877
 msgid "No Valid Book Language Given"
 msgstr "Geen geldige boek taal is opgegeven"
 
-#: cps/admin.py:878 cps/editbooks.py:609
+#: cps/admin.py:879 cps/editbooks.py:609
 msgid "Parameter not found"
 msgstr "Parameter is niet gevonden"
 
-#: cps/admin.py:918
+#: cps/admin.py:919
 msgid "Invalid Read Column"
 msgstr "Ongeldige gelezen kolom"
 
-#: cps/admin.py:924
+#: cps/admin.py:925
 msgid "Invalid Restricted Column"
 msgstr "Ongeldige beperkte kolom"
 
-#: cps/admin.py:945 cps/admin.py:2511
+#: cps/admin.py:946 cps/admin.py:2512
 msgid "Calibre-Web NextGen configuration updated"
 msgstr ""
 
-#: cps/admin.py:957
+#: cps/admin.py:958
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Wil je je Kobo Token echt verwijderen?"
 
-#: cps/admin.py:959
+#: cps/admin.py:960
 msgid "Do you really want to delete this domain?"
 msgstr "Wil je dit domein echt verwijderen?"
 
-#: cps/admin.py:961
+#: cps/admin.py:962
 msgid "Do you really want to delete this user?"
 msgstr "Wil je deze gebruiker echt verwijderen?"
 
-#: cps/admin.py:963
+#: cps/admin.py:964
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Weet je zeker dat je deze boekenplank wilt verwijderen?"
 
-#: cps/admin.py:965
+#: cps/admin.py:966
 #, fuzzy
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr ""
 "Weet je zeker dat je de locales van de geselecteerde gebruiker(s) wil "
 "veranderen?"
 
-#: cps/admin.py:967
+#: cps/admin.py:968
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr ""
 "Weet je zeker dat je de zichtbare talen voor de geselecteerde gebruiker(s) "
 "wil veranderen?"
 
-#: cps/admin.py:969
+#: cps/admin.py:970
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
 "Weet je zeker dat je de geselecteerde rol van de geselecteerde gebruiker(s) "
 "wil veranderen?"
 
-#: cps/admin.py:971
+#: cps/admin.py:972
 #, fuzzy
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
@@ -272,7 +272,7 @@ msgstr ""
 "Weet je zeker dat je de geselecteerde beperkingen voor de geselecteerde "
 "gebruikers(s) wil verwijderen?"
 
-#: cps/admin.py:973
+#: cps/admin.py:974
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -280,7 +280,7 @@ msgstr ""
 "Weet je zeker dat je de geselecteerde zichtbaarheidsbeperkingen voor de "
 "geselecteerde gebruiker(s) wil veranderen?"
 
-#: cps/admin.py:976
+#: cps/admin.py:977
 #, fuzzy
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
@@ -288,7 +288,7 @@ msgstr ""
 "Weet je zeker dat je de synchronisatiegedrag van boekenplanken voor de "
 "geselecteerde gebruiker(s) wil veranderen?"
 
-#: cps/admin.py:978
+#: cps/admin.py:979
 #, fuzzy
 msgid ""
 "Are you sure you want to change OPDS shelf exposure for the selected user(s)?"
@@ -296,102 +296,102 @@ msgstr ""
 "Weet je zeker dat je de synchronisatiegedrag van boekenplanken voor de "
 "geselecteerde gebruiker(s) wil veranderen?"
 
-#: cps/admin.py:980
+#: cps/admin.py:981
 #, fuzzy
 msgid "Are you sure you want to change Calibre library location?"
 msgstr ""
 "Weet je zeker dat je de locatie van de Calibre-bibliotheek wil veranderen?"
 
-#: cps/admin.py:982
+#: cps/admin.py:983
 msgid ""
 "Calibre-Web NextGen will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
 msgstr ""
 
-#: cps/admin.py:985
+#: cps/admin.py:986
 msgid ""
 "Are you sure you want delete Calibre-Web NextGen's sync database to force a "
 "full sync with your Kobo Reader?"
 msgstr ""
 
-#: cps/admin.py:1224 cps/admin.py:1230 cps/admin.py:1240 cps/admin.py:1250
+#: cps/admin.py:1225 cps/admin.py:1231 cps/admin.py:1241 cps/admin.py:1251
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Weigeren"
 
-#: cps/admin.py:1226 cps/admin.py:1232 cps/admin.py:1242 cps/admin.py:1252
+#: cps/admin.py:1227 cps/admin.py:1233 cps/admin.py:1243 cps/admin.py:1253
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Toestaan"
 
-#: cps/admin.py:1285
+#: cps/admin.py:1286
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} synchronisatie objecten verwijderd"
 
-#: cps/admin.py:1326
+#: cps/admin.py:1327
 msgid "Tag not found"
 msgstr "Tag niet gevonden"
 
-#: cps/admin.py:1344
+#: cps/admin.py:1345
 msgid "Invalid Action"
 msgstr "Ongeldige actie"
 
-#: cps/admin.py:1471
+#: cps/admin.py:1472
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json is niet geconfigureerd voor webapplicatie"
 
-#: cps/admin.py:1610
+#: cps/admin.py:1611
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "De locatie van het logbestand is onjuist, voer een geldige locatie in"
 
-#: cps/admin.py:1616
+#: cps/admin.py:1617
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "De locatie vam het toegangslog is onjuist, voer een geldige locatie in"
 
-#: cps/admin.py:1651
+#: cps/admin.py:1652
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr ""
 "Voer alsjeblieft een LDAP Provider, Port, DN en User Object Identifier in"
 
-#: cps/admin.py:1657
+#: cps/admin.py:1658
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Voer een geldig LDAP Service Account en wachtwoord in"
 
-#: cps/admin.py:1660
+#: cps/admin.py:1661
 msgid "Please Enter a LDAP Service Account"
 msgstr "Voer een LDAP Service Account in"
 
-#: cps/admin.py:1665
+#: cps/admin.py:1666
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP Groep Object Filter Moet Een \"%s\" Formaat Identificiatie hebben"
 
-#: cps/admin.py:1667
+#: cps/admin.py:1668
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP Groep Object Filter heeft een niet-gebalanceerd haakje"
 
-#: cps/admin.py:1671
+#: cps/admin.py:1672
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP Gebruiker Object Filter moet \"%s\" Formaat Identificatie hebben"
 
-#: cps/admin.py:1673
+#: cps/admin.py:1674
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP Gebruiker Filter heeft een niet-gebalanceerd haakje"
 
-#: cps/admin.py:1680
+#: cps/admin.py:1681
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP Lid Gebruiker Filter moet een \"%s\" Formaat Identificatie hebben"
 
-#: cps/admin.py:1682
+#: cps/admin.py:1683
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "LDAP Lid Gebruiker Filter heeft een niet-gebalanceerd haakje"
 
-#: cps/admin.py:1689
+#: cps/admin.py:1690
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -399,28 +399,28 @@ msgstr ""
 "LDAP CACertficaat, Certificaat of Sleutel Locatie is ongeldig. Voer "
 "alsjeblieft een geldig pad in."
 
-#: cps/admin.py:1722 cps/templates/admin.html:57
+#: cps/admin.py:1723 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Gebruiker toevoegen"
 
-#: cps/admin.py:1737 cps/templates/admin.html:105
+#: cps/admin.py:1738 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "SMTP-instellingen bewerken"
 
-#: cps/admin.py:1756
+#: cps/admin.py:1757
 msgid "Success! Gmail Account Verified."
 msgstr "Gelukt! Gmail account geverifieerd."
 
-#: cps/admin.py:1776 cps/admin.py:1779 cps/admin.py:2265 cps/admin.py:2495
-#: cps/admin.py:2611 cps/admin.py:2883 cps/editbooks.py:1104
+#: cps/admin.py:1777 cps/admin.py:1780 cps/admin.py:2266 cps/admin.py:2496
+#: cps/admin.py:2612 cps/admin.py:2884 cps/editbooks.py:1104
 #: cps/editbooks.py:1869 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
-#: cps/tasks/convert.py:145 cps/web.py:2778
+#: cps/tasks/convert.py:145 cps/web.py:2793
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Database fout: %(error)s."
 
-#: cps/admin.py:1786
+#: cps/admin.py:1787
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
@@ -428,268 +428,268 @@ msgstr ""
 "Test E-Mail wordt verzonden naar %(email)s, controleer de taken voor het "
 "resultaat"
 
-#: cps/admin.py:1789
+#: cps/admin.py:1790
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Fout opgetreden bij het versturen van de test-e-mail: %(res)s"
 
-#: cps/admin.py:1791
+#: cps/admin.py:1792
 msgid "Please configure your e-mail address first..."
 msgstr "Gelieve eerst je e-mail adres configureren..."
 
-#: cps/admin.py:1793
+#: cps/admin.py:1794
 msgid "Email Server Settings updated"
 msgstr "E-mailserver-instellingen bijgewerkt"
 
-#: cps/admin.py:1816 cps/templates/admin.html:201
+#: cps/admin.py:1817 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Bewerk instellingen van geplande taken"
 
-#: cps/admin.py:1828
+#: cps/admin.py:1829
 msgid "Invalid start time for task specified"
 msgstr "De starttijd van de taak is ongeldig"
 
-#: cps/admin.py:1833
+#: cps/admin.py:1834
 msgid "Invalid duration for task specified"
 msgstr "De duur van de taak is ongeldig"
 
-#: cps/admin.py:1843
+#: cps/admin.py:1844
 msgid "Scheduled tasks settings updated"
 msgstr "Instellingen van geplande taken bijgewerkt"
 
-#: cps/admin.py:1853 cps/admin.py:1997 cps/admin.py:2879 cps/web.py:2208
+#: cps/admin.py:1854 cps/admin.py:1998 cps/admin.py:2880 cps/web.py:2223
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Onbekende fout opgetreden. Probeer het later nog eens."
 
-#: cps/admin.py:1857
+#: cps/admin.py:1858
 msgid "Settings DB is not Writeable"
 msgstr "Instellingen database is niet schrijfbaar."
 
-#: cps/admin.py:1876 cps/opds.py:309 cps/web.py:2704 cps/web.py:2829
+#: cps/admin.py:1877 cps/opds.py:309 cps/web.py:2719 cps/web.py:2844
 msgid "title"
 msgstr "titel"
 
-#: cps/admin.py:1982 cps/admin.py:2871
+#: cps/admin.py:1983 cps/admin.py:2872
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Gebruiker '%(nick)s' bewerken"
 
-#: cps/admin.py:1994
+#: cps/admin.py:1995
 #, fuzzy, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Wachtwoord voor gebruiker %(user)s is hersteld"
 
-#: cps/admin.py:2000
+#: cps/admin.py:2001
 #, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Stel eerst SMTP-mail in..."
 
-#: cps/admin.py:2011
+#: cps/admin.py:2012
 msgid "Logfile viewer"
 msgstr "Logbestand lezer"
 
-#: cps/admin.py:2077
+#: cps/admin.py:2078
 msgid "Requesting update package"
 msgstr "Update opvragen"
 
-#: cps/admin.py:2078
+#: cps/admin.py:2079
 msgid "Downloading update package"
 msgstr "Update downloaden"
 
-#: cps/admin.py:2079
+#: cps/admin.py:2080
 msgid "Unzipping update package"
 msgstr "Update uitpakken"
 
-#: cps/admin.py:2080
+#: cps/admin.py:2081
 msgid "Replacing files"
 msgstr "Update toepassen"
 
-#: cps/admin.py:2081
+#: cps/admin.py:2082
 msgid "Database connections are closed"
 msgstr "Databaseverbindingen zijn gesloten"
 
-#: cps/admin.py:2082
+#: cps/admin.py:2083
 msgid "Stopping server"
 msgstr "Bezig met stoppen van Calibre-Web"
 
-#: cps/admin.py:2083
+#: cps/admin.py:2084
 msgid "Update finished, please press okay and reload page"
 msgstr "Update voltooid, klik op 'Oké' en vernieuw de pagina"
 
-#: cps/admin.py:2084 cps/admin.py:2085 cps/admin.py:2086 cps/admin.py:2087
-#: cps/admin.py:2088 cps/admin.py:2089
+#: cps/admin.py:2085 cps/admin.py:2086 cps/admin.py:2087 cps/admin.py:2088
+#: cps/admin.py:2089 cps/admin.py:2090
 msgid "Update failed:"
 msgstr "Update mislukt:"
 
-#: cps/admin.py:2084 cps/updater.py:421 cps/updater.py:660 cps/updater.py:662
+#: cps/admin.py:2085 cps/updater.py:421 cps/updater.py:660 cps/updater.py:662
 msgid "HTTP Error"
 msgstr "HTTP-fout"
 
-#: cps/admin.py:2085 cps/updater.py:423 cps/updater.py:664
+#: cps/admin.py:2086 cps/updater.py:423 cps/updater.py:664
 msgid "Connection error"
 msgstr "Verbindingsfout"
 
-#: cps/admin.py:2086 cps/updater.py:425 cps/updater.py:666
+#: cps/admin.py:2087 cps/updater.py:425 cps/updater.py:666
 msgid "Timeout while establishing connection"
 msgstr "Time-out tijdens maken van verbinding"
 
-#: cps/admin.py:2087 cps/updater.py:427 cps/updater.py:668
+#: cps/admin.py:2088 cps/updater.py:427 cps/updater.py:668
 msgid "General error"
 msgstr "Algemene fout"
 
-#: cps/admin.py:2088
+#: cps/admin.py:2089
 msgid "Update file could not be saved in temp dir"
 msgstr "Geüpload bestand kon niet opgeslagen worden in de tijdelijke map"
 
-#: cps/admin.py:2089
+#: cps/admin.py:2090
 msgid "Files could not be replaced during update"
 msgstr "Bestanden kunnen niet vervangen worden tijdens een update"
 
-#: cps/admin.py:2113
+#: cps/admin.py:2114
 #, fuzzy
 msgid "Failed to extract at least One LDAP User"
 msgstr "Mislukt om minstens een LDAP gebruiker aan te maken"
 
-#: cps/admin.py:2158
+#: cps/admin.py:2159
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Het is niet gelukt tenminste een LDAP gebruiker aan te maken"
 
-#: cps/admin.py:2171
+#: cps/admin.py:2172
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Fout: %(ldaperror)s"
 
-#: cps/admin.py:2175
+#: cps/admin.py:2176
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Fout: No user returned in response of LDAP server"
 
-#: cps/admin.py:2211
+#: cps/admin.py:2212
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Minstens een LDAP Gebruiker is niet gevonden in de Database"
 
-#: cps/admin.py:2213
+#: cps/admin.py:2214
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Gebruiker succesvol geïmporteerd"
 
-#: cps/admin.py:2277
+#: cps/admin.py:2278
 msgid "Books path not valid"
 msgstr "Boekenpad is niet geldig"
 
-#: cps/admin.py:2284
+#: cps/admin.py:2285
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "Database niet gevonden, voer de juiste locatie in"
 
-#: cps/admin.py:2312
+#: cps/admin.py:2313
 msgid "DB is not Writeable"
 msgstr "Kan niet schrijven naar database"
 
-#: cps/admin.py:2325
+#: cps/admin.py:2326
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "SSL-sleutellocatie is niet geldig, voer een geldig pad in"
 
-#: cps/admin.py:2329
+#: cps/admin.py:2330
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "SSL-certificaatlocatie is niet geldig, voer een geldig pad in"
 
-#: cps/admin.py:2417
+#: cps/admin.py:2418
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
 
-#: cps/admin.py:2420
+#: cps/admin.py:2421
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 
-#: cps/admin.py:2439 cps/admin.py:2446
+#: cps/admin.py:2440 cps/admin.py:2447
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2443
+#: cps/admin.py:2444
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2478
+#: cps/admin.py:2479
 msgid "Password length has to be between 1 and 40"
 msgstr "Het wachtwoord moet tussen de 1 en 40 tekens lang zijn"
 
-#: cps/admin.py:2538
+#: cps/admin.py:2539
 msgid "Database Settings updated"
 msgstr "Database-instellingen bijgewerkt"
 
-#: cps/admin.py:2546
+#: cps/admin.py:2547
 #, fuzzy
 msgid "Database Configuration"
 msgstr "Databaseconfiguratie"
 
-#: cps/admin.py:2566 cps/web.py:2177
+#: cps/admin.py:2567 cps/web.py:2192
 msgid "Oops! Please complete all fields."
 msgstr "Vul alle velden in!"
 
-#: cps/admin.py:2575
+#: cps/admin.py:2576
 msgid "E-mail is not from valid domain"
 msgstr "Het e-mailadres bevat geen geldige domeinnaam"
 
-#: cps/admin.py:2583
+#: cps/admin.py:2584
 msgid "Add new user"
 msgstr "Gebruiker toevoegen"
 
-#: cps/admin.py:2601
+#: cps/admin.py:2602
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Gebruiker '%(user)s' aangemaakt"
 
-#: cps/admin.py:2607
+#: cps/admin.py:2608
 #, fuzzy
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
 "Bestaand account met dit e-mailadres of deze gebruikersnaam aangetroffen."
 
-#: cps/admin.py:2637
+#: cps/admin.py:2638
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Gebruiker '%(nick)s' verwijderd"
 
-#: cps/admin.py:2640
+#: cps/admin.py:2641
 msgid "Can't delete Guest User"
 msgstr "Kan Gast gebruiker niet verwijderen"
 
-#: cps/admin.py:2643
+#: cps/admin.py:2644
 msgid "No admin user remaining, can't delete user"
 msgstr "Kan laatste systeembeheerder niet verwijderen"
 
-#: cps/admin.py:2834 cps/web.py:2512
+#: cps/admin.py:2835 cps/web.py:2527
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-mail kan niet leeg zijn en moet geldig zijn"
 
-#: cps/admin.py:2875
+#: cps/admin.py:2876
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Gebruiker '%(nick)s' bijgewerkt"
 
-#: cps/admin.py:2940
+#: cps/admin.py:2941
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2945
+#: cps/admin.py:2946
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2947 cps/admin.py:3004
+#: cps/admin.py:2948 cps/admin.py:3005
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Verbinding mislukt: Server gaf statuscode %(code)s terug"
 
-#: cps/admin.py:2949
+#: cps/admin.py:2950
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
@@ -697,14 +697,14 @@ msgstr ""
 "Verbinding mislukt: Kon geen verbinding maken met de server. Controleer de "
 "URL en de netwerkverbinding"
 
-#: cps/admin.py:2951
+#: cps/admin.py:2952
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "Verbinding mislukt: De aanvraag duurde te lang. De server kan traag zijn of "
 "onbereikbaar."
 
-#: cps/admin.py:2953
+#: cps/admin.py:2954
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -712,12 +712,12 @@ msgstr ""
 "Verbinding mislukt: Ongeldige JSON in de respons. Dit mag niet een geldig "
 "OIDC endpoint zijn."
 
-#: cps/admin.py:2956
+#: cps/admin.py:2957
 #, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Verbindingsfout: %(error)s"
 
-#: cps/admin.py:2982
+#: cps/admin.py:2983
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -726,72 +726,72 @@ msgstr ""
 "Metadata mist vereiste velden: %(fields)s. Dit mag niet een geldig OIDC "
 "metadata endpoint zijn."
 
-#: cps/admin.py:2993
+#: cps/admin.py:2994
 #, fuzzy, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "Metadata URL is geldig! %(count)s endpoints gevonden."
 
-#: cps/admin.py:2995
+#: cps/admin.py:2996
 msgid " User info endpoint is available."
 msgstr "Gebruiker-informatie endoint is beschikbaar"
 
-#: cps/admin.py:2997
+#: cps/admin.py:2998
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:3002
+#: cps/admin.py:3003
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:3006
+#: cps/admin.py:3007
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr "Verbinding mislukt: Kon geen verbinding maken met de server."
 
-#: cps/admin.py:3008
+#: cps/admin.py:3009
 msgid "Connection failed: Request timed out."
 msgstr "Verbinding mislukt: De aanvraag duurde te lang."
 
-#: cps/admin.py:3010
+#: cps/admin.py:3011
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Verbinding mislukt: Ongeldige JSON in de respons."
 
-#: cps/admin.py:3013
+#: cps/admin.py:3014
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "Onbekende fout opgetreden. Probeer het later nog eens."
 
-#: cps/admin.py:3025
+#: cps/admin.py:3026
 msgid "Restore already in progress."
 msgstr "Herstel is al bezig."
 
-#: cps/admin.py:3029
+#: cps/admin.py:3030
 msgid "Restore failed: Calibre library path is not configured."
 msgstr "Herstel mislukt: pad naar Calibre bibliotheek is niet geconfigureerd."
 
-#: cps/admin.py:3034
+#: cps/admin.py:3035
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr "Hertel mislukt: metadata.db niet gevonden in %(path)s"
 
-#: cps/admin.py:3039
+#: cps/admin.py:3040
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr "Hertel mislukt: app.db niet gevonden in %(path)s"
 
-#: cps/admin.py:3111 cps/admin.py:3151
+#: cps/admin.py:3112 cps/admin.py:3152
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Hertel mislukt: %(err)s"
 
-#: cps/admin.py:3128
+#: cps/admin.py:3129
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 
-#: cps/admin.py:3147
+#: cps/admin.py:3148
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1170,8 +1170,8 @@ msgstr ""
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:694 cps/web.py:728 cps/web.py:773 cps/web.py:813 cps/web.py:842
-#: cps/web.py:1693 cps/web.py:1730 cps/web.py:1781 cps/web.py:1813
-#: cps/web.py:1852
+#: cps/web.py:1708 cps/web.py:1745 cps/web.py:1796 cps/web.py:1828
+#: cps/web.py:1867
 msgid "None"
 msgstr "Geen"
 
@@ -1259,8 +1259,8 @@ msgstr "De bestandsextensie '%(ext)s' is niet toegestaan op deze server"
 msgid "File to be uploaded must have an extension"
 msgstr "Het te uploaden bestand moet voorzien zijn van een extensie"
 
-#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2942
-#: cps/web.py:3034 cps/web.py:3129
+#: cps/editbooks.py:890 cps/editbooks.py:1493 cps/web.py:661 cps/web.py:2957
+#: cps/web.py:3049 cps/web.py:3144
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -1827,7 +1827,7 @@ msgid "Books ordered by Author"
 msgstr "Boeken gesorteerd op auteur"
 
 #: cps/opds.py:211 cps/render_template.py:80 cps/templates/book_table.html:111
-#: cps/web.py:1704
+#: cps/web.py:1719
 msgid "Publishers"
 msgstr "Uitgevers"
 
@@ -1836,7 +1836,7 @@ msgid "Books ordered by publisher"
 msgstr "Boeken gesorteerd op uitgever"
 
 #: cps/opds.py:217 cps/render_template.py:70 cps/templates/book_table.html:106
-#: cps/web.py:1856
+#: cps/web.py:1871
 msgid "Categories"
 msgstr "Categorieën"
 
@@ -1848,7 +1848,7 @@ msgstr "Boeken gesorteerd op categorie"
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
-#: cps/templates/search_form.html:70 cps/web.py:1736 cps/web.py:1748
+#: cps/templates/search_form.html:70 cps/web.py:1751 cps/web.py:1763
 msgid "Series"
 msgstr "Boekenreeksen"
 
@@ -1858,7 +1858,7 @@ msgstr "Boeken gesorteerd op reeks"
 
 #: cps/opds.py:229 cps/render_template.py:83 cps/templates/book_table.html:109
 #: cps/templates/detail.html:719 cps/templates/search_form.html:108
-#: cps/web.py:1828
+#: cps/web.py:1843
 msgid "Languages"
 msgstr "Talen"
 
@@ -1866,7 +1866,7 @@ msgstr "Talen"
 msgid "Books ordered by Languages"
 msgstr "Boeken gesorteerd op taal"
 
-#: cps/opds.py:235 cps/render_template.py:87 cps/web.py:1788
+#: cps/opds.py:235 cps/render_template.py:87 cps/web.py:1803
 msgid "Ratings"
 msgstr "Beoordelingen"
 
@@ -1912,7 +1912,7 @@ msgstr "{} sterren"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:161
 #: cps/templates/layout.html:203 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2286
+#: cps/templates/login.html:39 cps/web.py:2301
 msgid "Login"
 msgstr "Inloggen"
 
@@ -2009,7 +2009,7 @@ msgstr "Gearchiveerde boeken"
 msgid "Show Archived Books"
 msgstr "Gearchiveerde boeken tonen"
 
-#: cps/render_template.py:99 cps/web.py:1524
+#: cps/render_template.py:99 cps/web.py:1539
 msgid "Books List"
 msgstr "Boekenlijst"
 
@@ -2329,238 +2329,238 @@ msgstr "Fout bij verwijderen boekenplank!"
 msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 msgstr ""
 
-#: cps/web.py:1112
+#: cps/web.py:1127
 msgid "No rules provided"
 msgstr ""
 
-#: cps/web.py:1118
+#: cps/web.py:1133
 msgid "Invalid rules format"
 msgstr "Ongeldig regel-formaat"
 
-#: cps/web.py:1140
+#: cps/web.py:1155
 msgid "Error processing rules"
 msgstr ""
 
-#: cps/web.py:1144
+#: cps/web.py:1159
 #, fuzzy
 msgid "Invalid request"
 msgstr "Ongeldige rol"
 
-#: cps/web.py:1188
+#: cps/web.py:1203
 #, fuzzy
 msgid "Name and rules are required"
 msgstr "Zowel gebruikersnaam als regels zijn vereist"
 
-#: cps/web.py:1191 cps/web.py:1299
+#: cps/web.py:1206 cps/web.py:1314
 msgid "Shelf name too long (max 100 characters)"
 msgstr ""
 
-#: cps/web.py:1220
+#: cps/web.py:1235
 msgid "Error creating shelf"
 msgstr "Fout bij aanmaken boekenplank"
 
-#: cps/templates/layout.html:340 cps/web.py:1234
+#: cps/templates/layout.html:340 cps/web.py:1249
 msgid "Create Magic Shelf"
 msgstr "Magische boekenplank maken"
 
-#: cps/web.py:1292
+#: cps/web.py:1307
 msgid "Permission denied to change public status"
 msgstr ""
 
-#: cps/web.py:1296
+#: cps/web.py:1311
 msgid "Shelf name is required"
 msgstr "Boekenplank-naam is verplicht"
 
-#: cps/web.py:1336
+#: cps/web.py:1351
 msgid "Error updating shelf"
 msgstr "Fout bij bijwerken boekenplank"
 
-#: cps/web.py:1351
+#: cps/web.py:1366
 #, fuzzy
 msgid "Edit Magic Shelf"
 msgstr "Pas een boekenplank aan"
 
-#: cps/web.py:1366
+#: cps/web.py:1381
 msgid "Shelf not found"
 msgstr "Boekenplank niet gevonden"
 
-#: cps/web.py:1371
+#: cps/web.py:1386
 #, fuzzy
 msgid "Permission denied"
 msgstr "Toegang geweigerd"
 
-#: cps/web.py:1402
+#: cps/web.py:1417
 msgid "Shelf duplicated successfully"
 msgstr "Boekenplank succesvol gedupliceerd"
 
-#: cps/web.py:1408
+#: cps/web.py:1423
 msgid "Error duplicating shelf"
 msgstr "Fout bij dupliceren boekenplank"
 
-#: cps/templates/magic_shelf_edit.html:458 cps/web.py:1435
+#: cps/templates/magic_shelf_edit.html:458 cps/web.py:1450
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
 msgstr ""
 
-#: cps/web.py:1453
+#: cps/web.py:1468
 msgid "Error deleting shelf"
 msgstr "Fout bij verwijderen boekenplank"
 
-#: cps/web.py:1469
+#: cps/web.py:1484
 msgid ""
 "You cannot hide your own shelves. Delete them instead if you don't want them."
 msgstr ""
 
-#: cps/web.py:1479
+#: cps/web.py:1494
 msgid "Shelf already hidden"
 msgstr ""
 
-#: cps/web.py:1493
+#: cps/web.py:1508
 msgid "Error hiding shelf"
 msgstr "Fout bij verbergen boekenplank"
 
-#: cps/web.py:1507
+#: cps/web.py:1522
 msgid "Shelf was not hidden"
 msgstr ""
 
-#: cps/web.py:1516
+#: cps/web.py:1531
 msgid "Error unhiding shelf"
 msgstr "Fout bij zichtbaar maken boekenplank"
 
-#: cps/templates/admin.html:18 cps/web.py:1663
+#: cps/templates/admin.html:18 cps/web.py:1678
 msgid "Downloads"
 msgstr "Downloads"
 
-#: cps/web.py:1815
+#: cps/web.py:1830
 msgid "File formats list"
 msgstr "Alle bestandsformaten"
 
-#: cps/web.py:2060 cps/web.py:2098
+#: cps/web.py:2075 cps/web.py:2113
 #, fuzzy
 msgid "Please configure the SMTP mail settings first..."
 msgstr "Stel eerst SMTP-mail in..."
 
-#: cps/web.py:2064
+#: cps/web.py:2079
 #, fuzzy
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr "Stel je kindle-e-mailadres in..."
 
-#: cps/web.py:2086
+#: cps/web.py:2101
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr ""
 "Het boek is in de wachtrij geplaatst om te worden verstuurd aan "
 "%(eReadermail)s"
 
-#: cps/web.py:2089 cps/web.py:2147
+#: cps/web.py:2104 cps/web.py:2162
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "Fout opgetreden bij het versturen van dit boek: %(res)s"
 
-#: cps/web.py:2106 cps/web.py:2116
+#: cps/web.py:2121 cps/web.py:2131
 msgid "No email addresses selected"
 msgstr "Geen e-mailadressen geselecteerd"
 
-#: cps/web.py:2123
+#: cps/web.py:2138
 #, fuzzy
 msgid "Additional email addresses are disabled for your account."
 msgstr "Kies e-mailadressen:"
 
-#: cps/web.py:2145
+#: cps/web.py:2160
 #, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr ""
 "Het boek is in de wachtrij geplaatst om te worden verstuurd aan "
 "%(eReadermail)s"
 
-#: cps/web.py:2164
+#: cps/web.py:2179
 msgid "Please wait one minute to register next user"
 msgstr ""
 "Wacht alstublieft één minuut voor het registreren van de volgende gebruiker"
 
 #: cps/templates/layout.html:162 cps/templates/layout.html:204
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2165
-#: cps/web.py:2169 cps/web.py:2174 cps/web.py:2178 cps/web.py:2184
-#: cps/web.py:2209 cps/web.py:2213 cps/web.py:2226 cps/web.py:2229
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2180
+#: cps/web.py:2184 cps/web.py:2189 cps/web.py:2193 cps/web.py:2199
+#: cps/web.py:2224 cps/web.py:2228 cps/web.py:2241 cps/web.py:2244
 msgid "Register"
 msgstr "Registreren"
 
-#: cps/web.py:2168 cps/web.py:2333
+#: cps/web.py:2183 cps/web.py:2348
 #, fuzzy
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "E-mailserver is niet geconfigureerd, neem contact op met de beheerder!"
 
-#: cps/web.py:2173 cps/web.py:2225
+#: cps/web.py:2188 cps/web.py:2240
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr "E-mailserver is niet geconfigureerd, neem contact op met de beheerder!"
 
-#: cps/web.py:2211
+#: cps/web.py:2226
 msgid "Oops! Your Email is not allowed."
 msgstr "Dit e-mailadres mag niet worden gebruikt voor registratie."
 
-#: cps/web.py:2214
+#: cps/web.py:2229
 msgid "Success! Confirmation Email has been sent."
 msgstr "Er is een bevestigings-e-mail verstuurd naar je e-mailadres."
 
-#: cps/web.py:2262
+#: cps/web.py:2277
 #, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
 msgstr "E-mailserver is niet geconfigureerd, neem contact op met de beheerder!"
 
-#: cps/web.py:2307
+#: cps/web.py:2322
 #, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
 msgstr "E-mailserver is niet geconfigureerd, neem contact op met de beheerder!"
 
-#: cps/web.py:2312 cps/web.py:2339
+#: cps/web.py:2327 cps/web.py:2354
 #, fuzzy
 msgid "Cannot activate LDAP authentication"
 msgstr "Kan de LDAP authenticatie niet activeren"
 
-#: cps/web.py:2321
+#: cps/web.py:2336
 msgid "Standard login is disabled."
 msgstr ""
 
-#: cps/web.py:2329
+#: cps/web.py:2344
 msgid "Please wait one minute before next login"
 msgstr "Wacht alstublieft één minuut voor de volgende inlogpoging"
 
-#: cps/web.py:2347
+#: cps/web.py:2362
 msgid "Username cannot be empty"
 msgstr ""
 
-#: cps/web.py:2359
+#: cps/web.py:2374
 #, fuzzy, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "je bent ingelogd als: '%(nickname)s'"
 
-#: cps/web.py:2378
+#: cps/web.py:2393
 #, fuzzy, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
 msgstr "je bent ingelogd als: '%(nickname)s'"
 
-#: cps/web.py:2383 cps/web.py:2386
+#: cps/web.py:2398 cps/web.py:2401
 #, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
 msgstr "E-mailserver is niet geconfigureerd, neem contact op met de beheerder!"
 
-#: cps/web.py:2390
+#: cps/web.py:2405
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
 msgstr ""
 
-#: cps/web.py:2398
+#: cps/web.py:2413
 #, fuzzy, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
@@ -2569,63 +2569,63 @@ msgstr ""
 "Terugvallen op login: '%(nickname)s', LDAP Server is onbereikbaar, of de "
 "gebruiker is onbekend"
 
-#: cps/web.py:2404
+#: cps/web.py:2419
 #, fuzzy, python-format
 msgid "Could not login: %(message)s"
 msgstr "Inloggen mislukt: %(message)s"
 
-#: cps/web.py:2427 cps/web.py:2428 cps/web.py:2471
+#: cps/web.py:2442 cps/web.py:2443 cps/web.py:2486
 #, fuzzy
 msgid "Wrong Username or Password"
 msgstr "Verkeerde gebruikersnaam of wachtwoord"
 
-#: cps/web.py:2436
+#: cps/web.py:2451
 #, fuzzy
 msgid "New Password was sent to your email address"
 msgstr "Een nieuw wachtwoord is verzonden naar je e-mailadres"
 
-#: cps/web.py:2440
+#: cps/web.py:2455
 #, fuzzy
 msgid "An unknown error occurred. Please try again later."
 msgstr "Onbekende fout opgetreden. Probeer het later nog eens."
 
-#: cps/web.py:2442
+#: cps/web.py:2457
 #, fuzzy
 msgid "Please enter valid username to reset password"
 msgstr "Geef een geldige gebruikersnaam op om je wachtwoord te herstellen"
 
-#: cps/web.py:2450
+#: cps/web.py:2465
 #, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Je bent nu ingelogd als: '%(nickname)s'"
 
-#: cps/web.py:2767
+#: cps/web.py:2782
 #, fuzzy
 msgid "Success! Profile Updated"
 msgstr "Profiel bijgewerkt"
 
-#: cps/web.py:2773
+#: cps/web.py:2788
 #, fuzzy
 msgid "Oops! An account already exists for this Email."
 msgstr "Bestaand account met dit e-mailadres aangetroffen."
 
-#: cps/web.py:2897
+#: cps/web.py:2912
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2910
+#: cps/web.py:2925
 #, python-format
 msgid ""
 "App password created for '%(label)s'. Copy it now — you won't see it again: "
 "%(token)s"
 msgstr ""
 
-#: cps/web.py:2928
+#: cps/web.py:2943
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3047
+#: cps/web.py:3062
 msgid "Invalid book ID."
 msgstr "Ongeldige boek ID."
 

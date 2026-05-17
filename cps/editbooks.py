@@ -1348,6 +1348,21 @@ def move_coverfile(meta, db_book):
 
 
 def delete_whole_book(book_id, book):
+    # Capture a tombstone for every Kobo-synced user BEFORE we touch
+    # any of the metadata.db / app.db rows. The Kobo protocol needs the
+    # book's UUID to address a DeletedEntitlement on the device; once
+    # the book row is gone there is no way to recover it. Sync handler
+    # consumes these on the next sync and tells each affected device to
+    # archive its local copy. Without this, hard-deleted books linger on
+    # synced devices forever.
+    try:
+        kobo_sync_status.record_book_deletion(book_id, getattr(book, "uuid", None))
+    except Exception as e:
+        # Tombstone capture is best-effort; a failure here must not
+        # block the user's delete action. Worst case: the device keeps
+        # the orphan (same as pre-fix behavior), no data loss.
+        log.warning("Could not record kobo deletion tombstone for book %s: %s", book_id, e)
+
     # delete book from shelves, Downloads, Read list
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).delete()
     ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id).delete()

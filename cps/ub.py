@@ -724,6 +724,36 @@ class KoboSyncedBooks(Base):
     )
 
 
+class KoboDeletedBook(Base):
+    """Tombstone table for books deleted from CW that need to be reported
+    to Kobo devices as DeletedEntitlement on next sync.
+
+    Why we need it: calibre's metadata.db row goes away the moment the
+    book is deleted (cps/editbooks.py:delete_whole_book), and the
+    KoboSyncedBooks table carries only (user_id, book_id) — no UUID. The
+    Kobo protocol needs the book's UUID to address the DeletedEntitlement
+    on the device. So we snapshot (user_id, book_uuid, deleted_at) at
+    delete time, before the book row is gone.
+
+    Lifecycle: rows live as long as the deletion is "newer than" any
+    device's sync cursor. With cursor-based emission (advance
+    archive_last_modified past deleted_at on emit), each device sees
+    each DeletedEntitlement exactly once. Rows can be GC'd by a
+    periodic cleanup once they're older than the oldest active sync
+    token's archive_last_modified — left as a follow-up; current
+    storage cost is one short row per deleted book per affected user.
+    """
+    __tablename__ = 'kobo_deleted_book'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False, index=True)
+    book_uuid = Column(String, nullable=False)
+    deleted_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'book_uuid', name='uq_kobo_deleted_book_user_uuid'),
+    )
+
+
 # CWA #1258 (backport for fork #153): per-user OPDS shelf-exposure helpers.
 # Mirrors the kobo_only_shelves_sync pattern — the User-side flag is added
 # in the User class above; the helpers below maintain the two exposure
@@ -1564,6 +1594,57 @@ def _loser_wins_lm(loser, winner):
     return lo > wn
 
 
+def migrate_kobo_deleted_book(engine, _session):
+    """Create the kobo_deleted_book tombstone table if it doesn't exist.
+
+    Idempotent: gated by a marker file in CONFIG_DIR/.cwa_migrations/ so
+    it runs at most once per install. The marker is a perf optimization,
+    not correctness — the underlying DDL uses CREATE TABLE IF NOT EXISTS
+    so re-running is safe.
+
+    Why this table exists: see the KoboDeletedBook model docstring.
+    Captures (user_id, book_uuid, deleted_at) at the moment a book is
+    deleted, so HandleSyncRequest can emit DeletedEntitlement on the
+    next sync per affected user — the existing two-way deletion logic
+    can only handle books removed from kobo_sync shelves, not hard
+    deletes from the calibre library.
+    """
+    from sqlalchemy import inspect as sa_inspect
+    marker_path = os.path.join(constants.CONFIG_DIR, ".cwa_migrations",
+                               "kobo_deleted_book_v1")
+    if os.path.isfile(marker_path):
+        return
+
+    inspector = sa_inspect(engine)
+    if "kobo_deleted_book" not in inspector.get_table_names():
+        try:
+            KoboDeletedBook.__table__.create(engine, checkfirst=True)
+        except Exception as e:
+            log.error("[kobo-deleted-book-migration] create_all failed: %s", e)
+            return
+
+    # Indexes for the sync query path: (user_id, deleted_at) covers the
+    # "rows for current_user where deleted_at > cursor" pattern.
+    try:
+        _run_ddl_with_retry(
+            engine,
+            "CREATE INDEX IF NOT EXISTS idx_kobo_deleted_book_user_deleted "
+            "ON kobo_deleted_book(user_id, deleted_at)",
+        )
+    except Exception as e:
+        log.warning("[kobo-deleted-book-migration] index creation failed: %s", e)
+
+    try:
+        os.makedirs(os.path.dirname(marker_path), exist_ok=True)
+        with open(marker_path, "w", encoding="utf-8") as fh:
+            fh.write(datetime.now(timezone.utc).isoformat())
+    except OSError as e:
+        log.warning(
+            "[kobo-deleted-book-migration] could not write marker %s: %s",
+            marker_path, e,
+        )
+
+
 def migrate_shelf_table(engine, _session):
     """Ensure Shelf.kobo_sync column exists; backfill DDL if not (legacy
     fork branch — predates the dedicated kobo_sync migrations elsewhere).
@@ -1613,6 +1694,7 @@ def migrate_Database(_session):
     migrate_config_table(engine, _session)
     migrate_magic_shelf_table(engine, _session)
     migrate_kobo_unique_constraints(engine, _session)
+    migrate_kobo_deleted_book(engine, _session)
     migrate_book_cover_preview_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables)

@@ -449,6 +449,57 @@ def HandleSyncRequest():
 
         sync_token.tags_last_modified = new_tags_last_modified
 
+    # Emit DeletedEntitlement tombstones for books hard-deleted from CW
+    # (B3 fix — closes the orphan-book-on-device gap from the 2026-05-17
+    # MITM capture). editbooks.delete_whole_book captures (user_id,
+    # book_uuid, deleted_at) into kobo_deleted_book before tearing down
+    # the metadata.db row; here we play those tombstones back to each
+    # affected device as DeletedEntitlement and advance
+    # archive_last_modified past the tombstone so the device sees each
+    # one exactly once. Page-cap with SYNC_ITEM_LIMIT so a mass-delete
+    # doesn't blow past the device's sync-response size limit.
+    # Compare against the device's cursor (sync_token.archive_last_modified),
+    # NOT against the local new_archived_last_modified — the latter has
+    # already been rolled forward by any ArchivedBook.last_modified row,
+    # which would mask legitimate tombstones whose deleted_at lies
+    # between sync_token.archive_last_modified and new_archived_last_modified.
+    cursor_archive_lm = sync_token.archive_last_modified
+    pending_deletions = (
+        ub.session.query(ub.KoboDeletedBook)
+        .filter(ub.KoboDeletedBook.user_id == current_user.id)
+        .filter(ub.KoboDeletedBook.deleted_at > cursor_archive_lm)
+        .order_by(ub.KoboDeletedBook.deleted_at)
+        .limit(SYNC_ITEM_LIMIT)
+        .all()
+    )
+    for tombstone in pending_deletions:
+        sync_results.append({
+            "DeletedEntitlement": {
+                "BookEntitlement": {
+                    "Id": tombstone.book_uuid,
+                    "RevisionId": tombstone.book_uuid,
+                    "CrossRevisionId": tombstone.book_uuid,
+                }
+            }
+        })
+        ta = tombstone.deleted_at
+        if hasattr(ta, "replace") and getattr(ta, "tzinfo", None) is not None:
+            ta = ta.replace(tzinfo=None)
+        new_archived_last_modified = max(ta, new_archived_last_modified)
+
+    # If there are MORE pending deletions than SYNC_ITEM_LIMIT, mark
+    # cont_sync so the device comes back for the next page rather than
+    # losing tombstones to the page cap.
+    if len(pending_deletions) >= SYNC_ITEM_LIMIT:
+        remaining = (
+            ub.session.query(ub.KoboDeletedBook)
+            .filter(ub.KoboDeletedBook.user_id == current_user.id)
+            .filter(ub.KoboDeletedBook.deleted_at > new_archived_last_modified)
+            .count()
+        )
+        if remaining > 0:
+            cont_sync = True
+
     # update last created timestamp to distinguish between new and changed entitlements
     if not cont_sync:
         sync_token.books_last_created = new_books_last_created

@@ -319,6 +319,23 @@ def HandleSyncRequest():
             book.Books.last_modified.replace(tzinfo=None), new_books_last_modified
         )
 
+        # Also advance the cursor by BookShelf.date_added when the row
+        # carries one (only_kobo_shelves branch selects it on line ~242).
+        # The filter at line ~258-261 matches a book when EITHER
+        # Books.last_modified OR BookShelf.date_added is past the
+        # cursor. Without this max() the cursor only tracks
+        # last_modified, so a book added to a kobo_sync shelf after its
+        # own last_modified re-matches every sync and traps the device
+        # in an infinite cont_sync loop (fork #220 — wire-confirmed
+        # 112 syncs in 60s during the 2026-05-17 MITM capture). Guard
+        # with getattr because the else branch's SELECT does not
+        # include date_added.
+        date_added = getattr(book, "date_added", None)
+        if date_added is not None:
+            if hasattr(date_added, "replace") and getattr(date_added, "tzinfo", None) is not None:
+                date_added = date_added.replace(tzinfo=None)
+            new_books_last_modified = max(date_added, new_books_last_modified)
+
         new_books_last_created = max(ts_created, new_books_last_created)
         kobo_sync_status.add_synced_books(book.Books.id)
 
@@ -371,28 +388,43 @@ def HandleSyncRequest():
 
     sync_shelves(sync_token, sync_results, only_kobo_shelves)
 
-    # Add magic shelves as collections
+    # Always emit DeletedTags for magic shelves that should NOT be on
+    # the device — covers two distinct cases:
+    #   (a) per-shelf kobo_sync flag was just flipped to False (user
+    #       toggled a specific magic shelf off in the UI), or
+    #   (b) global config_kobo_sync_magic_shelves flag was flipped off
+    #       (admin disabled the whole feature). In case (b) every
+    #       magic shelf the user owns needs a tombstone, even ones
+    #       still marked kobo_sync=True, because the device may have
+    #       synced them while the global flag was on.
+    # Without this, toggling either flag off leaves orphan magic-shelf
+    # entries on previously-synced devices that retry DELETE forever
+    # (B1 retry loop). Wire-confirmed against the live
+    # "Test_E2E_Discovered" magic-shelf during the 2026-05-17 capture.
+    deletable_magic_shelves = ub.session.query(ub.MagicShelf).filter_by(
+        user_id=current_user.id,
+    )
     if config.config_kobo_sync_magic_shelves:
-
-        for shelf in ub.session.query(ub.MagicShelf)\
-            .filter_by(user_id=current_user.id, kobo_sync=False)\
-            .all():
-
-            sync_results.append({
-                "DeletedTag": {
-                    "Tag": {
-                        "Id": shelf.uuid,
-                        "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified)
-                    }
+        deletable_magic_shelves = deletable_magic_shelves.filter_by(kobo_sync=False)
+    # else: global flag off, emit DeletedTag for all magic shelves
+    for shelf in deletable_magic_shelves.all():
+        sync_results.append({
+            "DeletedTag": {
+                "Tag": {
+                    "Id": shelf.uuid,
+                    "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified)
                 }
-            })
+            }
+        })
 
+    # Add magic shelves as collections (only when feature is enabled)
+    if config.config_kobo_sync_magic_shelves:
         magic_shelves = ub.session.query(ub.MagicShelf)\
             .filter_by(user_id=current_user.id, kobo_sync=True)\
             .all()
 
         new_tags_last_modified = sync_token.tags_last_modified
-            
+
         for shelf in magic_shelves:
             books, _ = magic_shelf.get_books_for_magic_shelf(
                 shelf.id, page=1, page_size=None
@@ -727,11 +759,19 @@ def HandleTagUpdate(tag_id):
     shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.uuid == tag_id,
                                               ub.Shelf.user_id == current_user.id).one_or_none()
     if not shelf:
-        log.debug("Received Kobo tag update request on a collection unknown to CalibreWeb")
-        if config.config_kobo_proxy:
-            return redirect_or_proxy_request()
-        else:
-            abort(404, description="Collection isn't known to CalibreWeb")
+        # Device-trailing: the shelf is unknown to CalibreWeb because it
+        # was deleted server-side (or was a magic-shelf that no longer
+        # syncs). The device only sees the absence; without a tombstone
+        # in the sync response it pushes DELETE here every sync. Answering
+        # 404 makes the device interpret the failure as transient and
+        # retry forever, burning bandwidth indefinitely. Match the
+        # HandleStateRequest pattern (line ~989) and
+        # redirect_or_proxy_request() unconditionally so the loop ends,
+        # regardless of config_kobo_proxy.
+        log.debug("Received Kobo tag update for unknown collection %s — "
+                  "answering via redirect_or_proxy_request to terminate "
+                  "the device's retry loop", tag_id)
+        return redirect_or_proxy_request()
 
     if request.method == "DELETE":
         if not shelf_lib.delete_shelf_helper(shelf):
@@ -825,9 +865,16 @@ def HandleTagRemoveItem(tag_id):
     shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.uuid == tag_id,
                                               ub.Shelf.user_id == current_user.id).one_or_none()
     if not shelf:
+        # Same device-trailing pattern as HandleTagUpdate: the shelf
+        # vanished server-side between syncs but the device still
+        # thinks it exists and is now trying to remove an item from it.
+        # Answering 404 traps the device in a retry loop. Mirror the
+        # HandleStateRequest pattern and redirect_or_proxy_request().
         log.debug(
-            "Received a request to remove an item from a Collection unknown to CalibreWeb.")
-        abort(404, description="Collection isn't known to CalibreWeb")
+            "Received Kobo tag-remove-item for unknown collection %s — "
+            "answering via redirect_or_proxy_request to terminate "
+            "the device's retry loop", tag_id)
+        return redirect_or_proxy_request()
 
     if not shelf_lib.check_shelf_edit_permissions(shelf):
         abort(401, description="User is unauthaurized to edit shelf.")

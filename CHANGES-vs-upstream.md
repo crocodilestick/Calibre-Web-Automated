@@ -161,6 +161,7 @@ CWA detached from the original Calibre-Web upstream (`janeczku/calibre-web`) at 
 | `01649f8e` | [`4c1d7a9f`](https://github.com/janeczku/calibre-web/commit/4c1d7a9f) | @jvoisin | Shelf reorder POST now requires edit permission, not just view permission |
 | `b716b0bd` | [`94899056`](https://github.com/janeczku/calibre-web/commit/94899056) | upstream | `chmod 0600` on freshly generated `.key` Fernet key file |
 | `119e591c` | [`fd744af7`](https://github.com/janeczku/calibre-web/commit/fd744af7) | @jvoisin | 500 page: log the full traceback server-side, but only render it to authenticated admins |
+| `TBD` | [`c784149d`](https://github.com/janeczku/calibre-web/commit/c784149d) (upstream PR [#3624](https://github.com/janeczku/calibre-web/pull/3624)) | @jvoisin | `serve_book` defense-in-depth: set `Content-Disposition: inline`, `X-Content-Type-Options: nosniff`, and `Content-Security-Policy: script-src 'none'; object-src 'none'` on the PDF/generic response built from `send_from_directory`, so the browser cannot MIME-sniff book content into an executable type or run inline scripts when rendering inline. |
 
 `fixes/fix_kobo` (Kobo IDOR on `generate_auth_token` / `deleteauthtoken`) was independently fixed in our PR #18 (`9f50bb2`); upstream and fork landed on identical guards.
 

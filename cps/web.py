@@ -1050,6 +1050,21 @@ def render_magic_shelf(shelf_id, sort_param, page):
 def health_check():
     uptime = time.time() - _start_time
 
+    # When the DB-configuration wizard has not yet completed, every other
+    # route 302-redirects to it. The Dockerfile HEALTHCHECK probes /health
+    # with `curl -fsS`, which treats 3xx as success and would silently
+    # report the container HEALTHY while the app is unusable — Docker /
+    # k8s / Compose then never page on-call, never roll back, never failover.
+    # Report 503 with a distinct status so orchestration sees the broken
+    # state. The companion allowlist entry in cps.admin.before_request lets
+    # this route reach its own body when db_configured=False.
+    if not config.db_configured:
+        return jsonify({
+            "status": "unconfigured",
+            "uptime": uptime,
+            "version": f"Calibre-Web-NextGen/{constants.INSTALLED_VERSION}",
+        }), 503
+
     try:
         db_path = os.path.join(cwa_get_library_location(), "metadata.db")
         retries = 3

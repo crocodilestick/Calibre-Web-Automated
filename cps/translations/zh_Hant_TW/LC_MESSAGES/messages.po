@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 20:49+0000\n"
+"POT-Creation-Date: 2026-05-18 22:44+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -769,6 +769,24 @@ msgstr ""
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
 "data was reset."
+msgstr ""
+
+#: cps/annotations.py:65 cps/templates/annotations_import.html:4
+msgid "Import Kobo annotations"
+msgstr ""
+
+#: cps/annotations.py:83
+#, fuzzy
+msgid "No file uploaded."
+msgstr "文件 %(file)s 已上傳"
+
+#: cps/annotations.py:91 cps/annotations.py:113
+#, python-format
+msgid "File exceeds %(max)d MB."
+msgstr ""
+
+#: cps/annotations.py:121
+msgid "Uploaded file is not a SQLite database."
 msgstr ""
 
 #: cps/constants.py:207
@@ -3298,6 +3316,69 @@ msgstr "您確定要關閉嗎？"
 msgid "Updating, please do not reload this page"
 msgstr "正在更新，請不要刷新頁面"
 
+#: cps/templates/annotations_import.html:6
+#, python-format
+msgid ""
+"Upload your Kobo device's %(filename)s file to import every highlight and "
+"note you've made. Highlights for books that exist in this library will be "
+"added to your account; sideloaded books not in the library are skipped."
+msgstr ""
+
+#: cps/templates/annotations_import.html:9
+msgid ""
+"The file is parsed in-memory and deleted after the import completes. It is "
+"never stored on the server."
+msgstr ""
+
+#: cps/templates/annotations_import.html:15
+msgid "KoboReader.sqlite"
+msgstr ""
+
+#: cps/templates/annotations_import.html:18
+msgid "Import"
+msgstr ""
+
+#: cps/templates/annotations_import.html:23
+msgid "Import summary"
+msgstr ""
+
+#: cps/templates/annotations_import.html:25
+msgid "new highlights imported"
+msgstr ""
+
+#: cps/templates/annotations_import.html:26
+msgid "already imported (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:27
+#, fuzzy
+msgid "for books not in this library (skipped)"
+msgstr "本書籍在此書庫中"
+
+#: cps/templates/annotations_import.html:28
+msgid "hidden on device (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:29
+msgid "total entries seen"
+msgstr ""
+
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
+#: cps/templates/layout.html:309
+msgid "Uploading..."
+msgstr "正在上傳..."
+
+#: cps/templates/annotations_import.html:69
+#, fuzzy
+msgid "Import failed."
+msgstr "更新失敗："
+
+#: cps/templates/annotations_import.html:75
+#, fuzzy
+msgid "Network error."
+msgstr "連接錯誤"
+
 #: cps/templates/author.html:18
 msgid "via"
 msgstr "通過"
@@ -3345,11 +3426,6 @@ msgstr "轉換到："
 #: cps/templates/book_edit.html:46
 msgid "Convert book"
 msgstr "轉換書籍"
-
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:178 cps/templates/layout.html:309
-msgid "Uploading..."
-msgstr "正在上傳..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
@@ -7981,10 +8057,6 @@ msgstr "顯示已讀/未讀選擇"
 #, fuzzy
 #~ msgid "Please select at least one email address"
 #~ msgstr "新密碼已發送到您的郵箱"
-
-#, python-format
-#~ msgid "File %(file)s uploaded"
-#~ msgstr "文件 %(file)s 已上傳"
 
 #~ msgid "Ratings list"
 #~ msgstr "評分列表"

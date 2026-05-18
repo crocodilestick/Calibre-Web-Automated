@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 20:49+0000\n"
+"POT-Creation-Date: 2026-05-18 22:44+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -828,6 +828,23 @@ msgid ""
 msgstr ""
 "Visszaállítás sikeres. Biztonsági mentések és naplófájlok elkészültek: "
 "%(dir)s. Minden könyvhöz kapcsolódó adat visszaállítva."
+
+#: cps/annotations.py:65 cps/templates/annotations_import.html:4
+msgid "Import Kobo annotations"
+msgstr ""
+
+#: cps/annotations.py:83
+msgid "No file uploaded."
+msgstr ""
+
+#: cps/annotations.py:91 cps/annotations.py:113
+#, python-format
+msgid "File exceeds %(max)d MB."
+msgstr ""
+
+#: cps/annotations.py:121
+msgid "Uploaded file is not a SQLite database."
+msgstr ""
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -3356,6 +3373,70 @@ msgstr "Valóban le akarja állítani a Calibre-Web Automatedet?"
 msgid "Updating, please do not reload this page"
 msgstr "Frissítés folyamatban, ne töltse újra az oldalt"
 
+#: cps/templates/annotations_import.html:6
+#, python-format
+msgid ""
+"Upload your Kobo device's %(filename)s file to import every highlight and "
+"note you've made. Highlights for books that exist in this library will be "
+"added to your account; sideloaded books not in the library are skipped."
+msgstr ""
+
+#: cps/templates/annotations_import.html:9
+msgid ""
+"The file is parsed in-memory and deleted after the import completes. It is "
+"never stored on the server."
+msgstr ""
+
+#: cps/templates/annotations_import.html:15
+msgid "KoboReader.sqlite"
+msgstr ""
+
+#: cps/templates/annotations_import.html:18
+#, fuzzy
+msgid "Import"
+msgstr "Fontos:"
+
+#: cps/templates/annotations_import.html:23
+msgid "Import summary"
+msgstr ""
+
+#: cps/templates/annotations_import.html:25
+msgid "new highlights imported"
+msgstr ""
+
+#: cps/templates/annotations_import.html:26
+msgid "already imported (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:27
+#, fuzzy
+msgid "for books not in this library (skipped)"
+msgstr "Könyvek ebben a könyvtárban"
+
+#: cps/templates/annotations_import.html:28
+msgid "hidden on device (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:29
+msgid "total entries seen"
+msgstr ""
+
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
+#: cps/templates/layout.html:309
+msgid "Uploading..."
+msgstr "Feltöltés..."
+
+#: cps/templates/annotations_import.html:69
+#, fuzzy
+msgid "Import failed."
+msgstr "A frissítés nem sikerült:"
+
+#: cps/templates/annotations_import.html:75
+#, fuzzy
+msgid "Network error."
+msgstr "Kapcsolódási hiba"
+
 #: cps/templates/author.html:18
 msgid "via"
 msgstr "keresztül"
@@ -3402,11 +3483,6 @@ msgstr "Konvertálás erre:"
 #: cps/templates/book_edit.html:46
 msgid "Convert book"
 msgstr "Könyv konvertálása"
-
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:178 cps/templates/layout.html:309
-msgid "Uploading..."
-msgstr "Feltöltés..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 20:49+0000\n"
+"POT-Creation-Date: 2026-05-18 22:44+0000\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
 "Language-Team: \n"
@@ -777,6 +777,23 @@ msgstr ""
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
 "data was reset."
+msgstr ""
+
+#: cps/annotations.py:65 cps/templates/annotations_import.html:4
+msgid "Import Kobo annotations"
+msgstr ""
+
+#: cps/annotations.py:83
+msgid "No file uploaded."
+msgstr ""
+
+#: cps/annotations.py:91 cps/annotations.py:113
+#, python-format
+msgid "File exceeds %(max)d MB."
+msgstr ""
+
+#: cps/annotations.py:121
+msgid "Uploaded file is not a SQLite database."
 msgstr ""
 
 #: cps/constants.py:207
@@ -3300,6 +3317,69 @@ msgstr "Впевнені що хочете перезавантажити?"
 msgid "Updating, please do not reload this page"
 msgstr "Встановлення оновлень, будь-ласка, не оновлюйте сторінку"
 
+#: cps/templates/annotations_import.html:6
+#, python-format
+msgid ""
+"Upload your Kobo device's %(filename)s file to import every highlight and "
+"note you've made. Highlights for books that exist in this library will be "
+"added to your account; sideloaded books not in the library are skipped."
+msgstr ""
+
+#: cps/templates/annotations_import.html:9
+msgid ""
+"The file is parsed in-memory and deleted after the import completes. It is "
+"never stored on the server."
+msgstr ""
+
+#: cps/templates/annotations_import.html:15
+msgid "KoboReader.sqlite"
+msgstr ""
+
+#: cps/templates/annotations_import.html:18
+msgid "Import"
+msgstr ""
+
+#: cps/templates/annotations_import.html:23
+msgid "Import summary"
+msgstr ""
+
+#: cps/templates/annotations_import.html:25
+msgid "new highlights imported"
+msgstr ""
+
+#: cps/templates/annotations_import.html:26
+msgid "already imported (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:27
+#, fuzzy
+msgid "for books not in this library (skipped)"
+msgstr "Книг в цій бібліотеці"
+
+#: cps/templates/annotations_import.html:28
+msgid "hidden on device (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:29
+msgid "total entries seen"
+msgstr ""
+
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
+#: cps/templates/layout.html:309
+msgid "Uploading..."
+msgstr "Завантаження..."
+
+#: cps/templates/annotations_import.html:69
+#, fuzzy
+msgid "Import failed."
+msgstr "Оновлення неуспішне:"
+
+#: cps/templates/annotations_import.html:75
+#, fuzzy
+msgid "Network error."
+msgstr "Помилка зʼєднання"
+
 #: cps/templates/author.html:18
 msgid "via"
 msgstr "через"
@@ -3347,11 +3427,6 @@ msgstr "Конвертувати в:"
 #: cps/templates/book_edit.html:46
 msgid "Convert book"
 msgstr "Конвертувати книгу"
-
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:178 cps/templates/layout.html:309
-msgid "Uploading..."
-msgstr "Завантаження..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 20:49+0000\n"
+"POT-Creation-Date: 2026-05-18 22:44+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -800,6 +800,24 @@ msgid ""
 msgstr ""
 "復元完了。バックアップと復元ログを%(dir)sに保存しました。書籍に紐づくすべての"
 "データがリセットされました。"
+
+#: cps/annotations.py:65 cps/templates/annotations_import.html:4
+msgid "Import Kobo annotations"
+msgstr ""
+
+#: cps/annotations.py:83
+#, fuzzy
+msgid "No file uploaded."
+msgstr "ファイル %(file)s をアップロードしました"
+
+#: cps/annotations.py:91 cps/annotations.py:113
+#, python-format
+msgid "File exceeds %(max)d MB."
+msgstr ""
+
+#: cps/annotations.py:121
+msgid "Uploaded file is not a SQLite database."
+msgstr ""
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -3345,6 +3363,70 @@ msgstr "シャットダウンしてもよろしいですか？"
 msgid "Updating, please do not reload this page"
 msgstr "アップデート中です。このページをリロードしないでください"
 
+#: cps/templates/annotations_import.html:6
+#, python-format
+msgid ""
+"Upload your Kobo device's %(filename)s file to import every highlight and "
+"note you've made. Highlights for books that exist in this library will be "
+"added to your account; sideloaded books not in the library are skipped."
+msgstr ""
+
+#: cps/templates/annotations_import.html:9
+msgid ""
+"The file is parsed in-memory and deleted after the import completes. It is "
+"never stored on the server."
+msgstr ""
+
+#: cps/templates/annotations_import.html:15
+msgid "KoboReader.sqlite"
+msgstr ""
+
+#: cps/templates/annotations_import.html:18
+#, fuzzy
+msgid "Import"
+msgstr "重要："
+
+#: cps/templates/annotations_import.html:23
+msgid "Import summary"
+msgstr ""
+
+#: cps/templates/annotations_import.html:25
+msgid "new highlights imported"
+msgstr ""
+
+#: cps/templates/annotations_import.html:26
+msgid "already imported (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:27
+#, fuzzy
+msgid "for books not in this library (skipped)"
+msgstr "このライブラリ内の本の冊数"
+
+#: cps/templates/annotations_import.html:28
+msgid "hidden on device (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:29
+msgid "total entries seen"
+msgstr ""
+
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
+#: cps/templates/layout.html:309
+msgid "Uploading..."
+msgstr "アップロード中..."
+
+#: cps/templates/annotations_import.html:69
+#, fuzzy
+msgid "Import failed."
+msgstr "アップデート失敗:"
+
+#: cps/templates/annotations_import.html:75
+#, fuzzy
+msgid "Network error."
+msgstr "接続エラー"
+
 #: cps/templates/author.html:18
 msgid "via"
 msgstr "経由"
@@ -3391,11 +3473,6 @@ msgstr "変換先:"
 #: cps/templates/book_edit.html:46
 msgid "Convert book"
 msgstr "本を変換"
-
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:178 cps/templates/layout.html:309
-msgid "Uploading..."
-msgstr "アップロード中..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
@@ -8462,10 +8539,6 @@ msgstr "既読/未読セクションを表示"
 #, fuzzy
 #~ msgid "Please select at least one email address"
 #~ msgstr "新しいパスワードがあなたのメールアドレスに送信されました"
-
-#, python-format
-#~ msgid "File %(file)s uploaded"
-#~ msgstr "ファイル %(file)s をアップロードしました"
 
 #~ msgid "Ratings list"
 #~ msgstr "評価一覧"

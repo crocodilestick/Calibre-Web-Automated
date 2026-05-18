@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 20:49+0000\n"
+"POT-Creation-Date: 2026-05-18 22:44+0000\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -840,6 +840,24 @@ msgid ""
 msgstr ""
 "Restauración completa. Logs de Copia de Seguridad y Restauración guardado en "
 "%(dir)s. Todos los libros linkados fueron restablecidos."
+
+#: cps/annotations.py:65 cps/templates/annotations_import.html:4
+msgid "Import Kobo annotations"
+msgstr ""
+
+#: cps/annotations.py:83
+#, fuzzy
+msgid "No file uploaded."
+msgstr "El fichero %(file)s ha sido subido"
+
+#: cps/annotations.py:91 cps/annotations.py:113
+#, python-format
+msgid "File exceeds %(max)d MB."
+msgstr ""
+
+#: cps/annotations.py:121
+msgid "Uploaded file is not a SQLite database."
+msgstr ""
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -3431,6 +3449,70 @@ msgstr "¿Estás seguro de que deseas apagar?"
 msgid "Updating, please do not reload this page"
 msgstr "Actualizando. Por favor, no recargue la página"
 
+#: cps/templates/annotations_import.html:6
+#, python-format
+msgid ""
+"Upload your Kobo device's %(filename)s file to import every highlight and "
+"note you've made. Highlights for books that exist in this library will be "
+"added to your account; sideloaded books not in the library are skipped."
+msgstr ""
+
+#: cps/templates/annotations_import.html:9
+msgid ""
+"The file is parsed in-memory and deleted after the import completes. It is "
+"never stored on the server."
+msgstr ""
+
+#: cps/templates/annotations_import.html:15
+msgid "KoboReader.sqlite"
+msgstr ""
+
+#: cps/templates/annotations_import.html:18
+#, fuzzy
+msgid "Import"
+msgstr "Importante:"
+
+#: cps/templates/annotations_import.html:23
+msgid "Import summary"
+msgstr ""
+
+#: cps/templates/annotations_import.html:25
+msgid "new highlights imported"
+msgstr ""
+
+#: cps/templates/annotations_import.html:26
+msgid "already imported (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:27
+#, fuzzy
+msgid "for books not in this library (skipped)"
+msgstr "Libros en esta Biblioteca"
+
+#: cps/templates/annotations_import.html:28
+msgid "hidden on device (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:29
+msgid "total entries seen"
+msgstr ""
+
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
+#: cps/templates/layout.html:309
+msgid "Uploading..."
+msgstr "Cargando..."
+
+#: cps/templates/annotations_import.html:69
+#, fuzzy
+msgid "Import failed."
+msgstr "Falló la actualización:"
+
+#: cps/templates/annotations_import.html:75
+#, fuzzy
+msgid "Network error."
+msgstr "Error de conexión"
+
 #: cps/templates/author.html:18
 msgid "via"
 msgstr "via"
@@ -3477,11 +3559,6 @@ msgstr "Convertir a:"
 #: cps/templates/book_edit.html:46
 msgid "Convert book"
 msgstr "Convertir libro"
-
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:178 cps/templates/layout.html:309
-msgid "Uploading..."
-msgstr "Cargando..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
@@ -8750,10 +8827,6 @@ msgstr "Mostrar Selección Leidos/No Leidos"
 #~ msgstr ""
 #~ "Enviar a la dirección de correo electrónico del eReader. Utilice comas "
 #~ "para separar las direcciones de correo electrónico de varios eReaders"
-
-#, python-format
-#~ msgid "File %(file)s uploaded"
-#~ msgstr "El fichero %(file)s ha sido subido"
 
 #~ msgid "Ratings list"
 #~ msgstr "Lista de calificaciones"

@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated v4.0.6\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 21:59+0000\n"
+"POT-Creation-Date: 2026-05-18 22:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -762,6 +762,23 @@ msgstr ""
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-"
 "linked data was reset."
+msgstr ""
+
+#: cps/annotations.py:65 cps/templates/annotations_import.html:4
+msgid "Import Kobo annotations"
+msgstr ""
+
+#: cps/annotations.py:83
+msgid "No file uploaded."
+msgstr ""
+
+#: cps/annotations.py:91 cps/annotations.py:113
+#, python-format
+msgid "File exceeds %(max)d MB."
+msgstr ""
+
+#: cps/annotations.py:121
+msgid "Uploaded file is not a SQLite database."
 msgstr ""
 
 #: cps/constants.py:207
@@ -3167,6 +3184,67 @@ msgstr ""
 msgid "Updating, please do not reload this page"
 msgstr ""
 
+#: cps/templates/annotations_import.html:6
+#, python-format
+msgid ""
+"Upload your Kobo device's %(filename)s file to import every highlight and"
+" note you've made. Highlights for books that exist in this library will "
+"be added to your account; sideloaded books not in the library are "
+"skipped."
+msgstr ""
+
+#: cps/templates/annotations_import.html:9
+msgid ""
+"The file is parsed in-memory and deleted after the import completes. It "
+"is never stored on the server."
+msgstr ""
+
+#: cps/templates/annotations_import.html:15
+msgid "KoboReader.sqlite"
+msgstr ""
+
+#: cps/templates/annotations_import.html:18
+msgid "Import"
+msgstr ""
+
+#: cps/templates/annotations_import.html:23
+msgid "Import summary"
+msgstr ""
+
+#: cps/templates/annotations_import.html:25
+msgid "new highlights imported"
+msgstr ""
+
+#: cps/templates/annotations_import.html:26
+msgid "already imported (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:27
+msgid "for books not in this library (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:28
+msgid "hidden on device (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:29
+msgid "total entries seen"
+msgstr ""
+
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
+#: cps/templates/layout.html:309
+msgid "Uploading..."
+msgstr ""
+
+#: cps/templates/annotations_import.html:69
+msgid "Import failed."
+msgstr ""
+
+#: cps/templates/annotations_import.html:75
+msgid "Network error."
+msgstr ""
+
 #: cps/templates/author.html:18
 msgid "via"
 msgstr ""
@@ -3212,11 +3290,6 @@ msgstr ""
 
 #: cps/templates/book_edit.html:46
 msgid "Convert book"
-msgstr ""
-
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:178 cps/templates/layout.html:309
-msgid "Uploading..."
 msgstr ""
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332

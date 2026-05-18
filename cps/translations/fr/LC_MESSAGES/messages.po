@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 20:49+0000\n"
+"POT-Creation-Date: 2026-05-18 22:44+0000\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -872,6 +872,24 @@ msgid ""
 msgstr ""
 "Restauration terminée. Sauvegardes et journal de restauration enregistrés "
 "dans %(dir)s. Toutes les données liées aux livres ont été réinitialisées."
+
+#: cps/annotations.py:65 cps/templates/annotations_import.html:4
+msgid "Import Kobo annotations"
+msgstr ""
+
+#: cps/annotations.py:83
+#, fuzzy
+msgid "No file uploaded."
+msgstr "Le fichier %(file)s a été téléchargé"
+
+#: cps/annotations.py:91 cps/annotations.py:113
+#, python-format
+msgid "File exceeds %(max)d MB."
+msgstr ""
+
+#: cps/annotations.py:121
+msgid "Uploaded file is not a SQLite database."
+msgstr ""
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -3446,6 +3464,70 @@ msgstr "Voulez-vous vraiment arrêter Calibre-Web?"
 msgid "Updating, please do not reload this page"
 msgstr "Mise à jour en cours, ne pas rafraîchir la page"
 
+#: cps/templates/annotations_import.html:6
+#, python-format
+msgid ""
+"Upload your Kobo device's %(filename)s file to import every highlight and "
+"note you've made. Highlights for books that exist in this library will be "
+"added to your account; sideloaded books not in the library are skipped."
+msgstr ""
+
+#: cps/templates/annotations_import.html:9
+msgid ""
+"The file is parsed in-memory and deleted after the import completes. It is "
+"never stored on the server."
+msgstr ""
+
+#: cps/templates/annotations_import.html:15
+msgid "KoboReader.sqlite"
+msgstr ""
+
+#: cps/templates/annotations_import.html:18
+#, fuzzy
+msgid "Import"
+msgstr "Important :"
+
+#: cps/templates/annotations_import.html:23
+msgid "Import summary"
+msgstr ""
+
+#: cps/templates/annotations_import.html:25
+msgid "new highlights imported"
+msgstr ""
+
+#: cps/templates/annotations_import.html:26
+msgid "already imported (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:27
+#, fuzzy
+msgid "for books not in this library (skipped)"
+msgstr "Livres dans la bibiothèque"
+
+#: cps/templates/annotations_import.html:28
+msgid "hidden on device (skipped)"
+msgstr ""
+
+#: cps/templates/annotations_import.html:29
+msgid "total entries seen"
+msgstr ""
+
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
+#: cps/templates/layout.html:309
+msgid "Uploading..."
+msgstr "Téléversement en cours…"
+
+#: cps/templates/annotations_import.html:69
+#, fuzzy
+msgid "Import failed."
+msgstr "La mise à jour a échoué :"
+
+#: cps/templates/annotations_import.html:75
+#, fuzzy
+msgid "Network error."
+msgstr "Erreur de connexion"
+
 #: cps/templates/author.html:18
 msgid "via"
 msgstr "via"
@@ -3492,11 +3574,6 @@ msgstr "Convertir vers :"
 #: cps/templates/book_edit.html:46
 msgid "Convert book"
 msgstr "Convertir le livre"
-
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:178 cps/templates/layout.html:309
-msgid "Uploading..."
-msgstr "Téléversement en cours…"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
@@ -8712,10 +8789,6 @@ msgstr "Afficher la section Lu / Non lu"
 #~ msgstr ""
 #~ "Actualisation de la bibliothèque 🔄 Une erreur inattendue s'est produite, "
 #~ "vérifiez les journaux ⛔"
-
-#, python-format
-#~ msgid "File %(file)s uploaded"
-#~ msgstr "Le fichier %(file)s a été téléchargé"
 
 #~ msgid "Ratings list"
 #~ msgstr "Liste des évaluations"

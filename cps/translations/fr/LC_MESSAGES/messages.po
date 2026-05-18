@@ -43,7 +43,7 @@ msgstr "Statistiques"
 
 #: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
-msgstr ""
+msgstr "Base de donnée Calbre non disponible. Veuillez configurer le chemin de la librairie."
 
 #: cps/admin.py:180
 msgid "Server restarted, please reload page."
@@ -112,12 +112,12 @@ msgstr "Correspond à %(action)s"
 
 #: cps/admin.py:439
 msgid "No pending matches to reject"
-msgstr ""
+msgstr "Pas de correspondances trouvées à rejeter"
 
 #: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
-msgstr ""
+msgstr "%(count)s des correspondances rejetées"
 
 #: cps/admin.py:482
 #, python-brace-format
@@ -381,8 +381,7 @@ msgstr "Veuillez entrer un compte de service LDAP"
 #: cps/admin.py:1632
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
-msgstr ""
-"Le filtre objet du groupe LDAP a besoin d'un identifiant de format \"%s\""
+msgstr "Le filtre objet du groupe LDAP a besoin d'un identifiant de format \"%s\""
 
 #: cps/admin.py:1634
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
@@ -843,14 +842,14 @@ msgstr "Échec de la connexion : %(error)s"
 
 #: cps/admin.py:3074
 msgid "Restore completed but app.db cleanup failed. See logs for details."
-msgstr ""
+msgstr "Récupération réussie, cependant le nettoyage de app.db a échoué. Verifiez les Log pour plus de details."
 
 #: cps/admin.py:3093
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
 "data was reset."
-msgstr ""
+msgstr "Récupération effectuée. Sauvegarde et restauration des logs effectuée dans %(dir)s. Tous les livres sont linkés"
 
 #: cps/constants.py:207
 msgid "Czech"

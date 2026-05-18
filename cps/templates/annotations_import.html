@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="discover">
+  <h2>{{ _('Import Kobo annotations') }}</h2>
+  <p>
+    {{ _('Upload your Kobo device\'s %(filename)s file to import every highlight and note you\'ve made. Highlights for books that exist in this library will be added to your account; sideloaded books not in the library are skipped.', filename='<code>KoboReader.sqlite</code>')|safe }}
+  </p>
+  <p class="text-muted">
+    {{ _('The file is parsed in-memory and deleted after the import completes. It is never stored on the server.') }}
+  </p>
+
+  <form id="annotations-import-form" enctype="multipart/form-data" method="POST" action="{{ url_for('annotations.annotations_import_submit') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="annotations-import-file">{{ _('KoboReader.sqlite') }}</label>
+      <input id="annotations-import-file" type="file" name="file" accept=".sqlite,application/x-sqlite3,application/octet-stream" required>
+    </div>
+    <button id="annotations-import-submit" class="btn btn-default" type="submit">{{ _('Import') }}</button>
+    <span id="annotations-import-status" class="text-muted" style="margin-left: 1em;"></span>
+  </form>
+
+  <div id="annotations-import-result" style="margin-top: 1.5em; display: none;">
+    <h3>{{ _('Import summary') }}</h3>
+    <ul>
+      <li><strong id="result-imported">0</strong> {{ _('new highlights imported') }}</li>
+      <li><strong id="result-existing">0</strong> {{ _('already imported (skipped)') }}</li>
+      <li><strong id="result-orphan">0</strong> {{ _('for books not in this library (skipped)') }}</li>
+      <li><strong id="result-hidden">0</strong> {{ _('hidden on device (skipped)') }}</li>
+      <li><strong id="result-total">0</strong> {{ _('total entries seen') }}</li>
+    </ul>
+  </div>
+
+  <div id="annotations-import-error" class="text-danger" style="margin-top: 1.5em; display: none;"></div>
+</div>
+
+<script>
+(function() {
+  var form = document.getElementById('annotations-import-form');
+  var submitBtn = document.getElementById('annotations-import-submit');
+  var statusEl = document.getElementById('annotations-import-status');
+  var resultEl = document.getElementById('annotations-import-result');
+  var errorEl = document.getElementById('annotations-import-error');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    resultEl.style.display = 'none';
+    errorEl.style.display = 'none';
+    submitBtn.disabled = true;
+    statusEl.textContent = '{{ _("Uploading...") }}';
+
+    var fd = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: fd,
+      credentials: 'same-origin',
+    }).then(function(r) {
+      return r.json().then(function(body) { return {ok: r.ok, status: r.status, body: body}; });
+    }).then(function(res) {
+      submitBtn.disabled = false;
+      statusEl.textContent = '';
+      if (res.ok) {
+        document.getElementById('result-imported').textContent = res.body.imported || 0;
+        document.getElementById('result-existing').textContent = res.body.skipped_existing || 0;
+        document.getElementById('result-orphan').textContent = res.body.skipped_orphan || 0;
+        document.getElementById('result-hidden').textContent = res.body.skipped_hidden || 0;
+        document.getElementById('result-total').textContent = res.body.total_seen || 0;
+        resultEl.style.display = 'block';
+      } else {
+        errorEl.textContent = (res.body && res.body.message) || '{{ _("Import failed.") }}';
+        errorEl.style.display = 'block';
+      }
+    }).catch(function(err) {
+      submitBtn.disabled = false;
+      statusEl.textContent = '';
+      errorEl.textContent = '{{ _("Network error.") }} ' + err;
+      errorEl.style.display = 'block';
+    });
+  });
+})();
+</script>
+{% endblock %}

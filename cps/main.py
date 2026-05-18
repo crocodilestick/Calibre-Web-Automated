@@ -27,6 +27,7 @@ def main():
     from .editbooks import editbook
     from .cover_picker import cover_picker
     from .cover_preview_blueprint import cover_preview_bp
+    from .annotations import annotations_bp
     from .about import about
     from .search import search
     from .search_metadata import meta
@@ -85,6 +86,7 @@ def main():
     app.register_blueprint(editbook)
     app.register_blueprint(cover_picker)
     app.register_blueprint(cover_preview_bp)
+    app.register_blueprint(annotations_bp)
     app.register_blueprint(kosync)
     app.register_blueprint(duplicates)
     if kobo_available:

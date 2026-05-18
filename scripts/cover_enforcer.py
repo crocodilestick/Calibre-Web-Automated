@@ -312,6 +312,16 @@ class Enforcer:
             if project_root not in sys.path:
                 sys.path.insert(0, project_root)
 
+            # Skip entirely when KOReader sync is disabled — matches PR #94's
+            # gating in cps/helper.py. See fork #219 for the root cause.
+            try:
+                from cps.progress_syncing.settings import is_koreader_sync_enabled
+                if not is_koreader_sync_enabled():
+                    return
+            except Exception:
+                # Fail closed: if the flag can't be read, don't risk writes.
+                return
+
             from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
 
             # Calculate new checksum

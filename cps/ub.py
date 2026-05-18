@@ -1795,11 +1795,11 @@ def migrate_Database(_session):
     migrate_kobo_annotation_sync_h1_columns(engine, _session)
     migrate_book_cover_preview_table(engine, _session)
 
-    # Ensure progress syncing tables in app.db (user-related tables)
+    # Ensure progress syncing tables in app.db (user-related tables).
+    # Schema invariant — must not be gated on KOReader sync being enabled.
+    # See fork #219.
     from .progress_syncing.models import ensure_app_db_tables
-    from .progress_syncing.settings import is_koreader_sync_enabled
-    if is_koreader_sync_enabled():
-        ensure_app_db_tables(engine.raw_connection())
+    ensure_app_db_tables(engine.raw_connection())
     
     # Migrate system magic shelves for existing users
     try:

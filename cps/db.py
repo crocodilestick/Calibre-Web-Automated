@@ -928,13 +928,16 @@ class CalibreDB:
             for inst in cls.instances:
                 inst.init_session()
 
-            # Ensure progress syncing tables exist in metadata.db (book checksums)
+            # Ensure progress syncing tables exist in metadata.db (book checksums).
+            # The table is a schema invariant — its existence must not depend on
+            # KOReader sync being enabled, because three writers in scripts/
+            # (ingest_processor, cover_enforcer, kindle_epub_fixer) historically
+            # fire on every ingest. The table is small and empty when sync is
+            # off; the writers themselves are gated separately. See fork #219.
             from .progress_syncing.models import ensure_calibre_db_tables
-            from .progress_syncing.settings import is_koreader_sync_enabled
             if (
                 db_writable
                 and os.getenv('NETWORK_SHARE_MODE', 'False').lower() not in ('1', 'true', 'yes', 'on')
-                and is_koreader_sync_enabled()
             ):
                 ensure_calibre_db_tables(conn)
 

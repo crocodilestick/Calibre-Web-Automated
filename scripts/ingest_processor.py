@@ -463,6 +463,22 @@ def initialize_runtime() -> bool:
 def _is_missing_ingest_target(filepath: str) -> bool:
     return not os.path.isfile(filepath) and not os.path.isdir(filepath)
 
+
+def _is_koreader_sync_enabled() -> bool:
+    """Lazy proxy for cps.progress_syncing.settings.is_koreader_sync_enabled.
+
+    Used to skip KOReader partial-MD5 generation when sync is disabled —
+    matches the gating PR #94 added in ``cps/helper.py``. Fails closed so
+    a missing setting can't accidentally trigger writes against a
+    not-yet-created table. See fork #219.
+    """
+    try:
+        from cps.progress_syncing.settings import is_koreader_sync_enabled
+        return bool(is_koreader_sync_enabled())
+    except Exception:
+        return False
+
+
 def gdrive_sync_if_enabled():
     """Sync Calibre library to Google Drive if enabled in app config."""
     if _GDRIVE_AVAILABLE and getattr(_cps_config, "config_use_google_drive", False):
@@ -1216,11 +1232,15 @@ class NewBookProcessor:
             else:
                 self.trigger_auto_send_if_enabled(staged_path.stem, book_path)
 
-            # Generate KOReader sync checksums for the imported book
-            if self.last_added_book_id is not None:
-                self.generate_book_checksums(staged_path.stem, book_id=self.last_added_book_id)
-            else:
-                self.generate_book_checksums(staged_path.stem)
+            # Generate KOReader sync checksums for the imported book.
+            # Gated on is_koreader_sync_enabled() so disabled-sync instances
+            # skip the (slow) partial-MD5 work entirely — see PR #94 for the
+            # same pattern in cps/helper.py, and fork #219 for the root cause.
+            if _is_koreader_sync_enabled():
+                if self.last_added_book_id is not None:
+                    self.generate_book_checksums(staged_path.stem, book_id=self.last_added_book_id)
+                else:
+                    self.generate_book_checksums(staged_path.stem)
 
             # Ensure newly imported books have their timestamp set to the current time
             # so they appear at the top of "Recently Added" views.

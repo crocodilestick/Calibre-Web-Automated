@@ -13,7 +13,7 @@ import time
 import sys
 import string
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from datetime import time as datetime_time
 from functools import wraps
 from urllib.parse import urlparse
@@ -1286,6 +1286,42 @@ def do_full_kobo_sync(userid):
     message = _("{} sync entries deleted").format(count)
     ub.session_commit(message)
     return Response(json.dumps([{"type": "success", "message": message}]), mimetype='application/json')
+
+
+@admi.route("/ajax/kobo_resend/<int:userid>/<int:bookid>", methods=["POST"])
+@user_login_required
+@admin_required
+def ajax_kobo_resend(userid, bookid):
+    return do_kobo_resend(userid, bookid)
+
+
+def do_kobo_resend(userid, bookid):
+    # Force re-delivery of one book to one user's Kobo on the next sync.
+    # Clears the (user_id, book_id) row from kobo_synced_books so the
+    # sync emits NewEntitlement, and bumps Books.last_modified so the
+    # sync filter (Books.last_modified > sync_token.books_last_modified)
+    # picks the book up regardless of where the device's cursor is.
+    book = calibre_db.session.query(db.Books).filter(db.Books.id == bookid).first()
+    if book is None:
+        message = _("Book {} not found").format(bookid)
+        return Response(json.dumps([{"type": "danger", "message": message}]),
+                        mimetype='application/json')
+    deleted = ub.session.query(ub.KoboSyncedBooks).filter(
+        ub.KoboSyncedBooks.user_id == userid,
+        ub.KoboSyncedBooks.book_id == bookid,
+    ).delete()
+    book.last_modified = datetime.now(timezone.utc)
+    calibre_db.session.commit()
+    if deleted:
+        message = _("Cleared sync state for book {0} (user {1}); the device "
+                    "will re-receive the book on next sync").format(bookid, userid)
+    else:
+        message = _("Book {0} was not in the sync record for user {1}; "
+                    "last_modified bumped so the device will receive on next "
+                    "sync").format(bookid, userid)
+    ub.session_commit(message)
+    return Response(json.dumps([{"type": "success", "message": message}]),
+                    mimetype='application/json')
 
 
 def check_valid_read_column(column):

@@ -328,6 +328,17 @@
         <div>
           <div class="btn btn-default" id="kobo_full_sync" data-value="{% if current_user.role_admin() %}{{ content.id }}{% else %}0{% endif %}" {% if not content.remote_auth_token.first() %} style="display: none;" {% endif %}>{{_('Force full kobo sync')}}</div>
         </div>
+        {% if current_user.role_admin() %}
+        <div id="kobo_resend_book_block" style="margin-top: 10px;{% if not content.remote_auth_token.first() %} display: none;{% endif %}">
+          <label for="kobo_resend_book_id" style="display: block; margin-bottom: 4px;">{{_('Resend one book to this Kobo')}}</label>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <input type="number" min="1" id="kobo_resend_book_id" placeholder="{{_('Book ID')}}" style="width: 120px;" class="form-control input-sm">
+            <div class="btn btn-default" id="kobo_resend_button" data-userid="{{ content.id }}">{{_('Resend')}}</div>
+            <span id="kobo_resend_feedback" style="margin-left: 8px;"></span>
+          </div>
+          <small class="help-block">{{_('Clears the sync record for one book so the device re-downloads it on next sync. Find the book ID in the book detail page URL.')}}</small>
+        </div>
+        {% endif %}
         {% if kobo_support and not content.role_anonymous() and not simple %}
         <div style="margin-top: 20px;
                     background: #202c34a3;

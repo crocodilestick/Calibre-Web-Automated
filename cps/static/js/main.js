@@ -803,6 +803,7 @@ $(function() {
             $(this).find(".modal-body").html("...");
             $("#config_delete_kobo_token").show();
             $("#kobo_full_sync").show();
+            $("#kobo_resend_book_block").show();
         });
 
     $("#config_delete_kobo_token").click(function() {
@@ -817,6 +818,7 @@ $(function() {
                 });
                 $("#config_delete_kobo_token").hide();
                 $("#kobo_full_sync").hide();
+                $("#kobo_resend_book_block").hide();
             }
         );
     });
@@ -890,6 +892,38 @@ $(function() {
                 });
             }
         );
+    });
+
+    $("#kobo_resend_button").click(function() {
+        var $btn = $(this);
+        var userid = $btn.data('userid');
+        var bookid = parseInt($("#kobo_resend_book_id").val(), 10);
+        var $feedback = $("#kobo_resend_feedback");
+        $feedback.text("");
+        if (!bookid || bookid < 1) {
+            $feedback.css("color", "var(--color-danger, #a94442)").text($btn.data('invalid-id-text') || "Enter a book ID");
+            return;
+        }
+        $btn.addClass("disabled");
+        $.ajax({
+            method: "post",
+            url: getPath() + "/ajax/kobo_resend/" + userid + "/" + bookid,
+            timeout: 5000,
+            success: function(data) {
+                data.forEach(function(item) {
+                    if (!jQuery.isEmptyObject(item)) {
+                        var color = item.type === "success" ? "var(--color-success, #3c763d)" : "var(--color-danger, #a94442)";
+                        $feedback.css("color", color).text(item.message);
+                    }
+                });
+            },
+            error: function() {
+                $feedback.css("color", "var(--color-danger, #a94442)").text("Request failed");
+            },
+            complete: function() {
+                $btn.removeClass("disabled");
+            }
+        });
     });
 
     $("#user_submit").click(function() {

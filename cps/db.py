@@ -1181,9 +1181,15 @@ class CalibreDB:
         pagesize = pagesize or self.config.config_books_per_page
         if current_user.show_detail_random():
             random_query = self.generate_linked_query(config_read_column, database)
-            # Eagerly load the data relationship for random books to prevent session errors
+            # Eagerly load template relationships to prevent detached lazy-load
+            # failures if another request tears down the shared scoped session.
             if database == Books:
-                random_query = random_query.options(joinedload(Books.data))
+                random_query = random_query.options(
+                    joinedload(Books.authors),
+                    joinedload(Books.data),
+                    joinedload(Books.series),
+                    joinedload(Books.ratings),
+                )
             randm = (random_query.filter(self.common_filters(allow_show_archived,
                                                              viewing_tag_id=viewing_tag_id,
                                                              allow_show_hidden=allow_show_hidden,
@@ -1197,9 +1203,15 @@ class CalibreDB:
         else:
             query = self.session.query(database)
         
-        # Eagerly load the data relationship to prevent DetachedInstanceError in templates
+        # Eagerly load template relationships to prevent DetachedInstanceError
+        # during rendering under concurrent status/notification requests.
         if database == Books:
-            query = query.options(joinedload(Books.data))
+            query = query.options(
+                joinedload(Books.authors),
+                joinedload(Books.data),
+                joinedload(Books.series),
+                joinedload(Books.ratings),
+            )
         
         off = int(int(pagesize) * (page - 1))
 

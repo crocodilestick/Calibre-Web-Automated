@@ -212,22 +212,77 @@
   .text-muted {
       color: whitesmoke !important;
   }
-  /* Success Modal Styling */
-  #success_modal .modal-header {
-      background-color: #28a745;
-      color: white;
-      border-radius: 6px 6px 0 0;
-  }
   #success_modal .modal-content {
+      background: #252525;
+      border: 1px solid rgba(46, 204, 113, 0.45);
       border-radius: 6px;
-      border: none;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
+      color: #f4f4f4;
+      overflow: hidden;
+  }
+  #success_modal .modal-header {
+      background: linear-gradient(135deg, #1f8f46 0%, #28a745 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 18px 24px;
+  }
+  #success_modal .modal-header span {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
   }
   #success_modal .modal-body {
-      padding: 30px;
+      color: #f4f4f4;
+      padding: 26px 30px 22px;
   }
   #success_modal .success-icon {
       animation: success-bounce 0.6s ease-out;
+      color: #2ecc71;
+      font-size: 52px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 22px rgba(46, 204, 113, 0.28);
+  }
+  #success_modal .modal-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 18px 30px;
+  }
+  #success_modal .modal-footer .btn {
+      margin: 0;
+      min-height: 46px;
+      min-width: 76px;
+      line-height: 1.2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+  }
+  #success_modal .resolution-success-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+  }
+  #success_modal .resolution-success-stat {
+      background: rgba(46, 204, 113, 0.09);
+      border: 1px solid rgba(46, 204, 113, 0.22);
+      border-radius: 5px;
+      padding: 14px 10px;
+      text-align: center;
+  }
+  #success_modal .resolution-success-value {
+      color: #8af0ad;
+      display: block;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.1;
+  }
+  #success_modal .resolution-success-label {
+      color: #d7d7d7;
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-top: 7px;
+      text-transform: uppercase;
   }
   @keyframes success-bounce {
       0% { transform: scale(0.3); opacity: 0; }
@@ -255,6 +310,60 @@
       0%, 100% { transform: translateX(0); }
       10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
       20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  #execute_resolution_modal .modal-content {
+      background: #252525;
+      border: 1px solid rgba(229, 144, 41, 0.55);
+      border-radius: 6px;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
+      color: #f4f4f4;
+      overflow: hidden;
+  }
+  #execute_resolution_modal .modal-header {
+      background: linear-gradient(135deg, #8f2f24 0%, #c9512c 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 18px 24px;
+  }
+  #execute_resolution_modal .modal-header span {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+  }
+  #execute_resolution_modal .modal-body {
+      color: #f4f4f4;
+      font-size: 15px;
+      line-height: 1.55;
+      padding: 24px;
+  }
+  #execute_resolution_modal .strategy-summary {
+      background: rgba(229, 144, 41, 0.12);
+      border-left: 4px solid #e59029;
+      border-radius: 4px;
+      margin: 18px 0;
+      padding: 12px 14px;
+  }
+  #execute_resolution_modal .danger-note {
+      color: #ffcfbf;
+      font-weight: 700;
+      margin-bottom: 0;
+  }
+  #execute_resolution_modal .modal-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 30px;
+  }
+  #execute_resolution_modal .modal-footer .btn,
+  #execute_resolution_modal .modal-footer input.btn {
+      margin: 0;
+      min-height: 46px;
+      line-height: 1.2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
   }
   .bulk-actions {
       margin-bottom: 30px;
@@ -355,6 +464,29 @@
       max-width: 100%;
     }
   }
+  #duplicate_scan_results_status {
+      display: none;
+  }
+  #duplicate_scan_task_notice {
+      max-width: 720px;
+      margin: 0 auto;
+      color: #ddd;
+  }
+  #duplicate_scan_task_notice .duplicate-scan-progress-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      color: #8bd8ef;
+      font-weight: 600;
+  }
+  #duplicate_scan_task_notice .duplicate-scan-progress {
+      display: block;
+      width: 100%;
+      height: 20px;
+      margin: 6px 0 6px 0;
+      overflow: hidden;
+  }
 </style>
 {% endblock %}
 
@@ -370,10 +502,12 @@
       <div class="bulk-actions" style="margin-bottom: 20px;">
         <div class="form-inline">
           <button type="button" class="btn btn-sm btn-default" id="trigger_scan">
-            <span class="glyphicon glyphicon-refresh"></span> {{_('Scan for Duplicates Now')}}
-          </button>
-          <button type="button" class="btn btn-sm btn-danger" id="cancel_scan" style="display: none;">
-            <span class="glyphicon glyphicon-ban-circle"></span> {{_('Cancel Scan')}}
+            <span class="glyphicon glyphicon-refresh"></span>
+            {% if duplicate_index_needs_full_scan %}
+              {{_('Run Full Duplicate Scan')}}
+            {% else %}
+              {{_('Scan for Duplicates Now')}}
+            {% endif %}
           </button>
           {% if duplicate_groups %}
             <button type="button" class="btn btn-sm btn-default" id="select_all">{{_('Select Duplicates')}}</button>
@@ -383,25 +517,47 @@
           {% endif %}
         </div>
 
-        <div id="scan_progress_container" style="margin-top: 12px; display: none;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="flex: 1; background: #22303a; border-radius: 6px; overflow: hidden; height: 10px;">
-              <div id="scan_progress_bar" style="height: 10px; width: 0%; background: linear-gradient(90deg, #2ecc71, #3498db);"></div>
-            </div>
-            <span id="scan_progress_label" style="color: #ddd; font-size: 12px;">0%</span>
-          </div>
-          <div id="scan_progress_message" style="margin-top: 6px; color: #bbb; font-size: 12px;"></div>
-        </div>
-
         {% if next_scan_run %}
           <div style="margin-top: 10px; color: #bbb; font-size: 12px;">
             {{_('Next scheduled scan:')}} <span id="next_scan_run">{{ next_scan_run }}</span>
           </div>
         {% endif %}
       </div>
+
+      {% if duplicate_index_needs_full_scan %}
+        <div id="duplicate_index_setup_notice" class="cwa-settings-tip" style="margin: 0 0 24px 0; background: rgba(243, 156, 18, 0.16); border-left: 4px solid #f39c12; padding: 16px; border-radius: 6px;">
+          <strong style="color: #f39c12;">{{_('Duplicate scanning needs a one-time full scan.')}}</strong>
+          <p style="color: #ddd; margin: 8px 0 0 0;">
+            {{_('CWA now uses a duplicate index to keep duplicate checks fast during imports and metadata changes. Before incremental scans can run, the index needs an initial baseline.')}}
+          </p>
+          <p style="color: #bbb; margin: 8px 0 0 0;">
+            {{_('Click "Run Full Duplicate Scan" to build it. This may take several minutes on large libraries, and you can keep using CWA while it runs.')}}
+          </p>
+        </div>
+      {% endif %}
+
+      <div id="duplicate_scan_results_status" class="no-duplicates">
+        <div id="duplicate_scan_task_notice">
+          <h3 id="duplicate_scan_task_title" style="color: #8bd8ef;">{{_('Duplicate scan is running.')}}</h3>
+          <p id="duplicate_scan_task_message">{{_('You can keep using CWA while it runs.')}}</p>
+          <div id="duplicate_scan_task_progress_container">
+            <div class="duplicate-scan-progress-header">
+              <span>{{_('Progress')}}</span>
+              <span id="duplicate_scan_task_progress_label">0%</span>
+            </div>
+            <div class="progress duplicate-scan-progress">
+              <div id="duplicate_scan_task_progress" class="progress-bar progress-bar-info progress-bar-striped active"
+                   role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                   style="width: 0%;"></div>
+            </div>
+          </div>
+          <a id="duplicate_scan_task_link" href="{{ url_for('tasks.get_tasks_status') }}">{{_('View Background Tasks')}}</a>
+        </div>
+      </div>
       
       {% if duplicate_groups %}
 
+        <div id="duplicate_results_content">
         <!-- Auto-Resolution Section -->
         <div class="settings-container" style="margin-bottom: 30px; padding: 25px; background: #1c28328a; border-radius: 10px; margin-inline: 0rem; max-width: none;">
           <h4 style="color: white; margin-bottom: 15px; display: flex; align-items: center;">
@@ -511,13 +667,36 @@
           </div>
           {% endfor %}
         </div>
-      {% else %}
-        <div class="no-duplicates">
-          <h3>{{_('No Duplicate Books Found')}}</h3>
-          <p>{{_('Your library has no books with duplicate title and author combinations.')}}</p>
-          <p class="text-muted">{{_('This search looks for books with identical titles AND authors to avoid false positives.')}}</p>
+        </div>
+      {% elif not duplicate_index_needs_full_scan %}
+        <div id="no_duplicate_books_message" class="no-duplicates">
+            <h3>{{_('No Duplicate Books Found')}}</h3>
+            <p>{{_('Your library has no books with duplicate title and author combinations.')}}</p>
+            <p class="text-muted">{{_('This search looks for books with identical titles AND authors to avoid false positives.')}}</p>
         </div>
       {% endif %}
+</div>
+
+<!-- Execute Resolution Confirmation Modal -->
+<div class="modal fade" id="execute_resolution_modal" role="dialog" aria-labelledby="executeResolutionLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <span>{{_('Execute Auto-Resolution')}}</span>
+      </div>
+      <div class="modal-body">
+        <div class="text-left">{{_('CWA will resolve duplicate groups using the selected strategy and permanently delete duplicate books.')}}</div>
+        <div class="text-left strategy-summary">
+          {{_('Selected strategy:')}} <strong id="execute_resolution_strategy_name"></strong>
+        </div>
+        <div class="text-left danger-note">{{_('This action cannot be undone!')}}</div>
+      </div>
+      <div class="modal-footer">
+        <input id="execute_resolution_confirm" type="button" class="btn btn-danger" value="{{_('Execute Resolution')}}" name="execute_resolution_confirm" data-dismiss="modal">
+        <button id="execute_resolution_abort" type="button" class="btn btn-default" data-dismiss="modal">{{_('Cancel')}}</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -594,15 +773,15 @@
 <div class="modal fade" id="success_modal" role="dialog" aria-labelledby="successModalLabel">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-success text-center">
+      <div class="modal-header text-center">
         <span id="success_modal_title">{{_('Success')}}</span>
       </div>
       <div class="modal-body">
         <div class="text-center">
-          <div class="success-icon" style="font-size: 48px; color: #28a745; margin-bottom: 20px;">
+          <div class="success-icon">
             <i class="glyphicon glyphicon-ok-circle"></i>
           </div>
-          <p id="success_modal_message">{{_('Selected duplicate books have been deleted successfully!')}}</p>
+          <div id="success_modal_message">{{_('Selected duplicate books have been deleted successfully!')}}</div>
         </div>
       </div>
       <div class="modal-footer">

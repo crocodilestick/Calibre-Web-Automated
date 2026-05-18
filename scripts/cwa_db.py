@@ -39,7 +39,16 @@ class CWA_DB:
         # Support both Docker and CI environments for schema path
         script_dir = os.path.dirname(os.path.abspath(__file__))
         self.schema_path = os.path.join(script_dir, "cwa_schema.sql")
-        self.stats_tables = ["cwa_enforcement", "cwa_import", "cwa_conversions", "epub_fixes", "cwa_user_activity", "cwa_duplicate_cache", "cwa_duplicate_resolutions"]
+        self.stats_tables = [
+            "cwa_enforcement",
+            "cwa_import",
+            "cwa_conversions",
+            "epub_fixes",
+            "cwa_user_activity",
+            "cwa_duplicate_cache",
+            "cwa_duplicate_book_keys",
+            "cwa_duplicate_resolutions",
+        ]
         self.tables, self.schema = self.make_tables()
 
         self.cwa_default_settings = self.get_cwa_default_settings()

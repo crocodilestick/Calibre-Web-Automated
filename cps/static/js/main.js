@@ -313,6 +313,17 @@ $(function() {
         }
     });
 
+    $(document).on("click", ".duplicate-scan-setup-dismiss", function() {
+        var dismissUrl = $(this).data("dismiss-url");
+        if (!dismissUrl) {
+            return;
+        }
+        $.ajax({
+            method: "post",
+            url: dismissUrl
+        });
+    });
+
     function restartTimer() {
         $("#spinner").addClass("hidden");
         $("#RestartDialog").modal("hide");

@@ -145,9 +145,8 @@ process_lock = None
 _runtime_initialized = False
 _runtime_init_attempted = False
 
-# Debounced duplicate scan timer
-_duplicate_scan_timer = None
-_duplicate_scan_lock = threading.Lock()
+DUPLICATE_FULL_SCAN_WAIT_INTERVAL_SECONDS = 2
+DUPLICATE_FULL_SCAN_WAIT_TIMEOUT_SECONDS = int(os.environ.get("CWA_DUPLICATE_FULL_SCAN_WAIT_TIMEOUT_SECONDS", "7200"))
 
 class ProcessLock:
     """Robust process lock using both file locking and PID tracking"""
@@ -525,9 +524,12 @@ def get_internal_api_headers():
     """Provide headers that satisfy localhost-only internal endpoint checks."""
     return {"X-Forwarded-For": "127.0.0.1"}
 
-
 def get_ingest_batch_dirty_file() -> str:
     return os.environ.get("CWA_INGEST_BATCH_DIRTY_FILE", "/config/cwa_ingest_batch_dirty")
+
+
+def get_ingest_batch_active_file() -> str:
+    return os.environ.get("CWA_INGEST_BATCH_ACTIVE_FILE", "/config/cwa_ingest_batch_active")
 
 
 def mark_ingest_batch_dirty() -> None:
@@ -543,7 +545,28 @@ def mark_ingest_batch_dirty() -> None:
         print(f"[ingest-processor] WARN: Failed to mark ingest batch follow-up dirty: {e}", flush=True)
 
 
-def _post_internal_endpoint(path: str, payload: dict | None = None) -> bool:
+def mark_ingest_batch_active() -> None:
+    active_file = get_ingest_batch_active_file()
+    try:
+        active_dir = os.path.dirname(active_file)
+        if active_dir:
+            os.makedirs(active_dir, exist_ok=True)
+        with open(active_file, "w", encoding="utf-8") as marker:
+            marker.write(f"active_at={int(time.time())}\n")
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Failed to mark ingest active: {e}", flush=True)
+
+
+def clear_ingest_batch_active() -> None:
+    try:
+        os.remove(get_ingest_batch_active_file())
+    except FileNotFoundError:
+        pass
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Failed to clear ingest active marker: {e}", flush=True)
+
+
+def _post_internal_endpoint(path: str, payload: dict | None = None, timeout: int = 5) -> bool:
     global requests
     if requests is None:
         import requests as loaded_requests
@@ -559,7 +582,7 @@ def _post_internal_endpoint(path: str, payload: dict | None = None) -> bool:
                 get_internal_api_url(path),
                 json=payload,
                 headers=get_internal_api_headers(),
-                timeout=5,
+                timeout=timeout,
                 verify=False,
             )
             if resp.status_code == 200:
@@ -594,19 +617,96 @@ def _post_internal_endpoint(path: str, payload: dict | None = None) -> bool:
     return False
 
 
+def duplicate_full_scan_running() -> bool:
+    global requests
+    if requests is None:
+        import requests as loaded_requests
+        requests = loaded_requests
+
+    try:
+        resp = requests.post(
+            get_internal_api_url("/cwa-internal/duplicate-scan-status"),
+            headers=get_internal_api_headers(),
+            timeout=5,
+            verify=False,
+        )
+        if resp.status_code != 200:
+            print(
+                f"[ingest-processor] WARN: Duplicate scan status endpoint returned {resp.status_code}; continuing ingest",
+                flush=True,
+            )
+            return False
+        data = resp.json()
+        return bool(data.get("full_scan_running"))
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Could not check duplicate scan status: {e}; continuing ingest", flush=True)
+        return False
+
+
+def wait_for_duplicate_full_scan_to_finish() -> None:
+    start_time = time.time()
+    logged_wait = False
+    while duplicate_full_scan_running():
+        elapsed = time.time() - start_time
+        if elapsed > DUPLICATE_FULL_SCAN_WAIT_TIMEOUT_SECONDS:
+            print(
+                "[ingest-processor] WARN: Timed out waiting for duplicate full scan; continuing ingest",
+                flush=True,
+            )
+            return
+        if not logged_wait or int(elapsed) % 30 < DUPLICATE_FULL_SCAN_WAIT_INTERVAL_SECONDS:
+            print("[ingest-processor] Duplicate full scan is running; waiting before modifying library", flush=True)
+            logged_wait = True
+        time.sleep(DUPLICATE_FULL_SCAN_WAIT_INTERVAL_SECONDS)
+
+
 def run_post_batch_follow_up() -> int:
-    """Run follow-up work once the ingest service observes a quiet dirty batch."""
+    """Run follow-up work once the ingest service observes a quiet dirty batch.
+
+    After #1353 the per-book incremental duplicate scan happens inline during
+    add_book_to_library / add_format_to_book, so the only deferred work left is
+    the DB reconnect that flushes the long-lived web process's SQLAlchemy
+    session and makes newly-added books visible. /duplicates/invalidate-cache
+    and /cwa-internal/queue-duplicate-scan are no longer needed here.
+    """
     print("[ingest-processor] Running post-batch follow-up", flush=True)
     checks = [
         _post_internal_endpoint("/cwa-internal/reconnect-db"),
-        _post_internal_endpoint("/duplicates/invalidate-cache"),
-        _post_internal_endpoint("/cwa-internal/queue-duplicate-scan"),
     ]
     if all(checks):
         print("[ingest-processor] Post-batch follow-up completed", flush=True)
         return 0
     print("[ingest-processor] WARN: Post-batch follow-up incomplete", flush=True)
     return 1
+
+
+def run_duplicate_scan_for_books(book_ids) -> None:
+    parsed_book_ids = []
+    for book_id in book_ids or []:
+        try:
+            parsed_book_id = int(book_id)
+        except (TypeError, ValueError):
+            continue
+        if parsed_book_id > 0:
+            parsed_book_ids.append(parsed_book_id)
+
+    if not parsed_book_ids:
+        return
+
+    if _post_internal_endpoint(
+        "/cwa-internal/run-duplicate-scan",
+        payload={"book_ids": parsed_book_ids},
+        timeout=30,
+    ):
+        print(
+            f"[ingest-processor] Synchronous duplicate scan completed for book IDs: {parsed_book_ids}",
+            flush=True,
+        )
+    else:
+        print(
+            f"[ingest-processor] WARN: Synchronous duplicate scan failed for book IDs: {parsed_book_ids}",
+            flush=True,
+        )
 
 
 class NewBookProcessor:
@@ -1019,6 +1119,8 @@ class NewBookProcessor:
             return
 
         try:
+            mark_ingest_batch_active()
+            wait_for_duplicate_full_scan_to_finish()
             # Process-shared lock around calibredb add: serialises with
             # the Flask app's Edit Book commit + other ingest passes.
             # Required for fork #192 — without it, mergerfs/SMB/NFS
@@ -1137,6 +1239,8 @@ class NewBookProcessor:
                 except Exception as e:
                     print(f"[ingest-processor] WARN: Failed to set timestamp for new book: {e}", flush=True)
 
+            run_duplicate_scan_for_books(self.last_added_book_ids or [self.last_added_book_id])
+
             # If we overwrote an existing book, Calibre does not bump books.timestamp, only last_modified.
             # Update timestamp to last_modified for any rows changed by this import so sorting by 'new' reflects overwrites.
             if self.cwa_settings.get('auto_ingest_automerge') == 'overwrite':
@@ -1163,6 +1267,7 @@ class NewBookProcessor:
         except Exception as e:
             print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
         finally:
+            clear_ingest_batch_active()
             if staged_path.exists():
                 os.remove(staged_path)
 
@@ -1201,11 +1306,14 @@ class NewBookProcessor:
             return
 
         try:
+            mark_ingest_batch_active()
+            wait_for_duplicate_full_scan_to_finish()
             result = subprocess.run([
                 "calibredb", "add_format", str(book_id), str(staged_path), f"--library-path={self.library_dir}"
             ], env=self.calibre_env, check=True, capture_output=True, text=True)
             print(f"[ingest-processor] Added new format for book id {book_id}: {os.path.basename(str(staged_path))}", flush=True)
             mark_ingest_batch_dirty()
+            run_duplicate_scan_for_books([book_id])
             if self.cwa_settings['auto_backup_imports']:
                 self.backup(str(staged_path), backup_type="imported")
             # Optional post-add-format GDrive sync
@@ -1217,6 +1325,7 @@ class NewBookProcessor:
         except Exception as e:
             print(f"[ingest-processor] Unexpected error while adding format for book id {book_id}: {e}", flush=True)
         finally:
+            clear_ingest_batch_active()
             if staged_path.exists():
                 os.remove(staged_path)
 

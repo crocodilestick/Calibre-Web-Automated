@@ -72,17 +72,20 @@ class TestEditbooksBatchedInvalidation:
         )
 
     def test_delete_selected_books_invalidates_once_after_loop(self):
+        """Pin: exactly ONE post-batch scan scheduling per delete_selected_books
+        call. After CWA #1353 (PR #232) the mechanism switched from a direct
+        `invalidate_duplicate_cache()` call to `_queue_duplicate_scan_after_change()`
+        which queues a debounced incremental scan over the affected book IDs.
+        The invariant is the same: one call after the loop, not per-book."""
         src = self._read_editbooks()
         match = re.search(
             r"def delete_selected_books\(\).*?return\s+\"\"",
             src, re.DOTALL,
         )
         body = match.group(0)
-        # exactly ONE invalidate_duplicate_cache call in the function body
-        # (the one after the loop, not per-book inside delete_book_from_table)
-        n_calls = body.count("invalidate_duplicate_cache()")
+        n_calls = body.count("_queue_duplicate_scan_after_change(")
         assert n_calls == 1, (
-            f"expected exactly 1 invalidate_duplicate_cache() call in "
+            f"expected exactly 1 _queue_duplicate_scan_after_change() call in "
             f"delete_selected_books (one batched call after the loop); "
             f"found {n_calls}"
         )
@@ -101,33 +104,39 @@ class TestEditbooksBatchedInvalidation:
         )
 
     def test_merge_list_book_invalidates_once_after_loop(self):
+        """Same invariant as delete_selected_books: exactly one post-batch
+        scan scheduling per merge_list_book call (after CWA #1353 / PR #232
+        the mechanism is `_queue_duplicate_scan_after_change`)."""
         src = self._read_editbooks()
         match = re.search(
             r"def merge_list_book\(\).*?return\s+\"\"",
             src, re.DOTALL,
         )
         body = match.group(0)
-        n_calls = body.count("invalidate_duplicate_cache()")
+        n_calls = body.count("_queue_duplicate_scan_after_change(")
         assert n_calls == 1, (
-            f"expected exactly 1 invalidate_duplicate_cache() call in "
+            f"expected exactly 1 _queue_duplicate_scan_after_change() call in "
             f"merge_list_book (one batched call after the loop); "
             f"found {n_calls}"
         )
 
     def test_delete_book_from_table_guards_invalidation_on_param(self):
-        """The internal cache-invalidation block must be gated by
-        `if not skip_cache_invalidation:` so bulk callers don't trigger it."""
+        """The internal cache-invalidation block must check `skip_cache_invalidation`
+        so bulk callers don't trigger it. After CWA #1353 (PR #232) the guard
+        was tightened to `if not skip_cache_invalidation and not refreshed_duplicate_cache`,
+        avoiding a double-invalidate when the new indexed refresh already ran;
+        the original PR #100 invariant (skip-flag honored) is preserved."""
         src = self._read_editbooks()
-        # find the delete_book_from_table body up to the next top-level def
         match = re.search(
             r"def delete_book_from_table\(.*?\):.*?(?=\n(?:def |@)\w)",
             src, re.DOTALL,
         )
         assert match is not None, "delete_book_from_table not found"
         body = match.group(0)
-        assert "if not skip_cache_invalidation:" in body, (
-            "delete_book_from_table must wrap its invalidate_duplicate_cache "
-            "block in `if not skip_cache_invalidation:` to honor the flag"
+        assert "skip_cache_invalidation" in body and "not skip_cache_invalidation" in body, (
+            "delete_book_from_table must read `skip_cache_invalidation` to gate "
+            "its invalidate-cache path; the bulk-delete optimization from "
+            "fork PR #100 depends on this guard"
         )
 
 

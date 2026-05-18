@@ -239,6 +239,18 @@
         </div>
       </div>
       {%endif%}
+      {%if message[0] == "duplicate_scan_setup" %}
+      <div class="row-fluid text-center">
+        <div id="flash_info" class="alert alert-info alert-cwa">
+          {{ message[1] }} <a href="{{ url_for('duplicates.show_duplicates') }}">{{ _('Open Duplicates') }}</a>
+          <button type="button" class="close duplicate-scan-setup-dismiss"
+                  data-dismiss-url="{{ url_for('duplicates.dismiss_duplicate_scan_setup_notice') }}"
+                  data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      {%endif%}
       {%if message[0] == "cwa_arch_warning" %}
       <div class="row-fluid text-center">
         <div id="flash_danger" class="alert alert-danger alert-cwa">

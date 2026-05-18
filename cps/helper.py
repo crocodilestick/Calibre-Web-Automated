@@ -66,6 +66,14 @@ from .embed_helper import do_calibre_export
 
 log = logger.create()
 
+
+def _directory_contains_only_nfs_placeholders(path):
+    try:
+        entries = os.listdir(path)
+    except OSError:
+        return False
+    return bool(entries) and all(entry.startswith(".nfs") for entry in entries)
+
 try:
     from wand.image import Image
     from wand.exceptions import MissingDelegateError, BlobError
@@ -409,6 +417,12 @@ def delete_book_file(book, calibrepath, book_format=None):
                                            path=book.path)
                     shutil.rmtree(path)
                 except (IOError, OSError) as ex:
+                    if _directory_contains_only_nfs_placeholders(path):
+                        log.warning(
+                            "Deleting book %s left NFS placeholder files in %s; continuing database cleanup",
+                            book.id, path,
+                        )
+                        return True, None
                     log.error("Deleting book %s failed: %s", book.id, ex)
                     return False, _("Deleting book %(id)s failed: %(message)s", id=book.id, message=ex)
                 authorpath = os.path.join(calibrepath, os.path.split(book.path)[0])

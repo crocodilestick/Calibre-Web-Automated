@@ -43,6 +43,7 @@ def test_successful_import_marks_batch_dirty_without_hot_loop_http_calls(monkeyp
     scripts_dir = Path(__file__).resolve().parents[2] / "scripts"
     monkeypatch.syspath_prepend(str(scripts_dir))
     monkeypatch.setenv("CWA_INGEST_BATCH_DIRTY_FILE", str(tmp_path / "batch_dirty"))
+    monkeypatch.setenv("CWA_INGEST_BATCH_ACTIVE_FILE", str(tmp_path / "batch_active"))
     monkeypatch.setenv("CWA_METADATA_LOCK_DIR", str(tmp_path))
 
     import ingest_processor
@@ -65,11 +66,14 @@ def test_successful_import_marks_batch_dirty_without_hot_loop_http_calls(monkeyp
         mock.patch.object(ingest_processor, "gdrive_sync_if_enabled"), \
         mock.patch.object(processor, "fetch_metadata_if_enabled"), \
         mock.patch.object(processor, "trigger_auto_send_if_enabled"), \
-        mock.patch.object(processor, "generate_book_checksums"):
+        mock.patch.object(processor, "generate_book_checksums"), \
+        mock.patch.object(ingest_processor, "wait_for_duplicate_full_scan_to_finish") as wait_mock:
         processor.add_book_to_library(str(source))
 
+    wait_mock.assert_called_once()
     assert run_mock.call_args.args[0][:2] == ["calibredb", "add"]
     assert (tmp_path / "batch_dirty").exists()
+    assert not (tmp_path / "batch_active").exists()
     assert processor.db.entries == [("source", "False")]
 
     called_urls = [call.args[0] for call in requests_mock.post.call_args_list if call.args]
@@ -82,6 +86,7 @@ def test_failed_import_does_not_mark_batch_dirty(monkeypatch, tmp_path):
     scripts_dir = Path(__file__).resolve().parents[2] / "scripts"
     monkeypatch.syspath_prepend(str(scripts_dir))
     monkeypatch.setenv("CWA_INGEST_BATCH_DIRTY_FILE", str(tmp_path / "batch_dirty"))
+    monkeypatch.setenv("CWA_INGEST_BATCH_ACTIVE_FILE", str(tmp_path / "batch_active"))
     monkeypatch.setenv("CWA_METADATA_LOCK_DIR", str(tmp_path))
 
     import ingest_processor
@@ -101,6 +106,7 @@ def test_failed_import_does_not_mark_batch_dirty(monkeypatch, tmp_path):
         processor.add_book_to_library(str(source))
 
     assert not (tmp_path / "batch_dirty").exists()
+    assert not (tmp_path / "batch_active").exists()
     backup_mock.assert_called_once()
 
 
@@ -108,6 +114,7 @@ def test_successful_add_format_marks_batch_dirty(monkeypatch, tmp_path):
     scripts_dir = Path(__file__).resolve().parents[2] / "scripts"
     monkeypatch.syspath_prepend(str(scripts_dir))
     monkeypatch.setenv("CWA_INGEST_BATCH_DIRTY_FILE", str(tmp_path / "batch_dirty"))
+    monkeypatch.setenv("CWA_INGEST_BATCH_ACTIVE_FILE", str(tmp_path / "batch_active"))
     monkeypatch.setenv("CWA_METADATA_LOCK_DIR", str(tmp_path))
 
     import ingest_processor
@@ -126,8 +133,11 @@ def test_successful_add_format_marks_batch_dirty(monkeypatch, tmp_path):
 
     with mock.patch.object(processor, "_validate_book_exists", return_value=True), \
         mock.patch.object(ingest_processor.subprocess, "run", return_value=result) as run_mock, \
-        mock.patch.object(ingest_processor, "gdrive_sync_if_enabled"):
+        mock.patch.object(ingest_processor, "gdrive_sync_if_enabled"), \
+        mock.patch.object(ingest_processor, "wait_for_duplicate_full_scan_to_finish") as wait_mock:
         processor.add_format_to_book(7, str(source))
 
+    wait_mock.assert_called_once()
     assert run_mock.call_args.args[0][:3] == ["calibredb", "add_format", "7"]
     assert (tmp_path / "batch_dirty").exists()
+    assert not (tmp_path / "batch_active").exists()

@@ -50,6 +50,43 @@ $(document).ready(function() {
             }
         });
     }
+
+    function escapeHtml(value) {
+        return $('<div>').text(value || '').html();
+    }
+
+    function showResolutionSuccess(data) {
+        $('#success_modal_title').text('Resolution Complete');
+        $('#success_modal_message').html(
+            '<div class="resolution-success-summary">' +
+                '<div class="resolution-success-stat">' +
+                    '<span class="resolution-success-value">' + data.resolved_count + '</span>' +
+                    '<span class="resolution-success-label">Groups Resolved</span>' +
+                '</div>' +
+                '<div class="resolution-success-stat">' +
+                    '<span class="resolution-success-value">' + data.kept_count + '</span>' +
+                    '<span class="resolution-success-label">Books Kept</span>' +
+                '</div>' +
+                '<div class="resolution-success-stat">' +
+                    '<span class="resolution-success-value">' + data.deleted_count + '</span>' +
+                    '<span class="resolution-success-label">Books Deleted</span>' +
+                '</div>' +
+            '</div>'
+        );
+        $('#success_modal').modal('show');
+    }
+
+    function showResolutionError(message) {
+        $('#error_modal_title').text('Resolution Failed');
+        $('#error_modal_message').html(message);
+        $('#error_modal').modal('show');
+    }
+
+    function showDuplicateScanError(title, message) {
+        $('#error_modal_title').text(title);
+        $('#error_modal_message').html(escapeHtml(message));
+        $('#error_modal').modal('show');
+    }
     
     // Handle individual checkbox changes  
     $(document).on('change', '.book-checkbox', function() {
@@ -383,85 +420,160 @@ $(document).ready(function() {
         });
     });
     
-    let activeScanTaskId = null;
+    function showScanNotification(message, alertClass) {
+        $('#duplicate_scan_notification').parent().remove();
 
-    function updateProgressUI(progress, message) {
-        const pct = Math.round((progress || 0) * 100);
-        $('#scan_progress_container').show();
-        $('#scan_progress_bar').css('width', pct + '%');
-        $('#scan_progress_label').text(pct + '%');
-        $('#scan_progress_message').text(message || '');
-        $('#cancel_scan').show();
+        var notificationHtml =
+            '<div class="row-fluid text-center">' +
+                '<div id="duplicate_scan_notification" class="alert ' + alertClass + ' refresh-cwa">' +
+                    message +
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span>' +
+                    '</button>' +
+                '</div>' +
+            '</div>';
+
+        $('.navbar').after(notificationHtml);
     }
 
-    function resetProgressUI() {
-        $('#scan_progress_container').hide();
-        $('#scan_progress_bar').css('width', '0%');
-        $('#scan_progress_label').text('0%');
-        $('#scan_progress_message').text('');
-        $('#cancel_scan').hide();
-        activeScanTaskId = null;
+    var duplicateScanPollTimer = null;
+    var duplicateScanTaskId = null;
+    var duplicateScanWasActive = false;
+    window.CWADuplicateScanActive = false;
+
+    function duplicateScanEndpoint(path) {
+        if (typeof getPath === 'function') {
+            return getPath() + path;
+        }
+        return path;
     }
 
-    function pollScanProgress(taskId, btn) {
-        activeScanTaskId = taskId;
-        const pollInterval = 2000;
-        function pollOnce() {
-            $.ajax({
-                url: '/duplicates/scan-progress/' + taskId,
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if (!response.success) {
-                        clearInterval(poller);
-                        btn.prop('disabled', false);
-                        btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
-                        resetProgressUI();
-                        alert('Scan failed: ' + (response.error || 'Unknown error'));
-                        return;
-                    }
+    function parseTaskProgress(task) {
+        var progress = parseInt(task.progress, 10);
+        if (isNaN(progress)) {
+            return 0;
+        }
+        return Math.max(0, Math.min(100, progress));
+    }
 
-                    updateProgressUI(response.progress, response.message);
+    function isDuplicateScanTask(task) {
+        if (duplicateScanTaskId && String(task.task_id) === String(duplicateScanTaskId)) {
+            return true;
+        }
+        return String(task.taskMessage || '').toLowerCase().indexOf('duplicate scan') !== -1;
+    }
 
-                    if (response.status === 'completed') {
-                        clearInterval(poller);
-                        btn.prop('disabled', false);
-                        btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
-                        const resultCount = (response.result_count !== null && response.result_count !== undefined)
-                            ? response.result_count
-                            : null;
-                        const doneMessage = resultCount !== null
-                            ? 'Scan completed. Found ' + resultCount + ' duplicate groups.'
-                            : 'Scan completed.';
-                        updateProgressUI(1, doneMessage + ' Refreshing...');
-                        alert(doneMessage);
-                        setTimeout(function() {
-                            resetProgressUI();
-                            location.reload();
-                        }, 800);
-                    } else if (response.status === 'failed') {
-                        clearInterval(poller);
-                        btn.prop('disabled', false);
-                        btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
-                        resetProgressUI();
-                        alert('Scan failed: ' + (response.message || 'Unknown error'));
-                    } else if (response.status === 'cancelled') {
-                        clearInterval(poller);
-                        btn.prop('disabled', false);
-                        btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
-                        resetProgressUI();
-                        alert('Scan cancelled');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('[CWA Duplicates] Error polling scan progress:', error);
+    function isRunningDuplicateScanTask(task) {
+        return isDuplicateScanTask(task) && task.stat !== 1 && task.stat !== 3 && task.stat !== 4 && task.stat !== 5;
+    }
+
+    function setDuplicateScanNotice(task) {
+        var progress = parseTaskProgress(task);
+        var message = task.taskMessage || 'Duplicate scan is running in the background.';
+        window.CWADuplicateScanActive = true;
+        if (window.CWADuplicates && window.CWADuplicates.updateBadge) {
+            window.CWADuplicates.updateBadge(0);
+        }
+        $('#duplicate_index_setup_notice').hide();
+        $('#duplicate_results_content').hide();
+        $('#no_duplicate_books_message').hide();
+        $('#duplicate_scan_results_status').show();
+        $('#duplicate_scan_task_title').text('Duplicate scan is running.');
+        $('#duplicate_scan_task_message').text(message);
+        $('#duplicate_scan_task_progress_container').show();
+        $('#duplicate_scan_task_link')
+            .attr('href', duplicateScanEndpoint('/tasks'))
+            .text('View Background Tasks');
+        $('#duplicate_scan_task_progress')
+            .addClass('active')
+            .css('width', progress + '%')
+            .attr('aria-valuenow', progress);
+        $('#duplicate_scan_task_progress_label').text(progress + '%');
+    }
+
+    function showDuplicateScanFinishedNotice() {
+        window.CWADuplicateScanActive = false;
+        $('#duplicate_index_setup_notice').hide();
+        $('#duplicate_results_content').hide();
+        $('#no_duplicate_books_message').hide();
+        $('#duplicate_scan_results_status').show();
+        $('#duplicate_scan_task_title').text('Duplicate scan is running.');
+        $('#duplicate_scan_task_message').text('Duplicate scan finished. Updating results...');
+        $('#duplicate_scan_task_progress_container').show();
+        $('#duplicate_scan_task_link')
+            .attr('href', duplicateScanEndpoint('/tasks'))
+            .text('View Background Tasks');
+        $('#duplicate_scan_task_progress')
+            .removeClass('active')
+            .css('width', '100%')
+            .attr('aria-valuenow', 100);
+        $('#duplicate_scan_task_progress_label').text('100%');
+        setTimeout(function() {
+            window.location.reload();
+        }, 500);
+    }
+
+    function showDuplicateResultsAvailableNotice(count) {
+        if (duplicateScanWasActive) {
+            return;
+        }
+        if (!$('#no_duplicate_books_message').length) {
+            return;
+        }
+        if ($('#duplicate_scan_results_status').is(':visible')) {
+            if ($('#duplicate_scan_task_title').text() === 'Duplicate Books Found') {
+                $('#duplicate_scan_task_message').text(
+                    'Found ' + count + ' duplicate ' + (count === 1 ? 'group' : 'groups') + '. Refresh the page to review them.'
+                );
+            }
+            return;
+        }
+        $('#duplicate_results_content').hide();
+        $('#no_duplicate_books_message').hide();
+        $('#duplicate_scan_results_status').show();
+        $('#duplicate_scan_task_title').text('Duplicate Books Found');
+        $('#duplicate_scan_task_message').text(
+            'Found ' + count + ' duplicate ' + (count === 1 ? 'group' : 'groups') + '. Refresh the page to review them.'
+        );
+        $('#duplicate_scan_task_progress_container').hide();
+        $('#duplicate_scan_task_link')
+            .attr('href', window.location.href)
+            .text('Refresh Page');
+    }
+
+    function pollDuplicateScanTask() {
+        $.getJSON(duplicateScanEndpoint('/ajax/emailstat'), function(tasks) {
+            var runningTask = null;
+            $.each(tasks || [], function(index, task) {
+                if (isRunningDuplicateScanTask(task)) {
+                    runningTask = task;
+                    return false;
                 }
             });
-        }
 
-        const poller = setInterval(pollOnce, pollInterval);
-        pollOnce();
+            if (runningTask) {
+                duplicateScanWasActive = true;
+                duplicateScanTaskId = runningTask.task_id;
+                setDuplicateScanNotice(runningTask);
+                if (!duplicateScanPollTimer) {
+                    duplicateScanPollTimer = setInterval(pollDuplicateScanTask, 2000);
+                }
+            } else if (duplicateScanWasActive) {
+                showDuplicateScanFinishedNotice();
+                clearInterval(duplicateScanPollTimer);
+                duplicateScanPollTimer = null;
+            }
+        });
     }
+
+    pollDuplicateScanTask();
+
+    document.addEventListener('cwa:duplicates-status', function(event) {
+        var data = event.detail || {};
+        if (data.count > 0 && !data.needs_scan && !data.needs_full_scan) {
+            showDuplicateResultsAvailableNotice(Number(data.count || 0));
+        }
+    });
 
     // Manual scan trigger
     $('#trigger_scan').on('click', function() {
@@ -470,62 +582,61 @@ $(document).ready(function() {
         btn.html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Scanning...');
         
         $.ajax({
-            url: '/duplicates/trigger-scan',
+            url: duplicateScanEndpoint('/duplicates/trigger-scan'),
             type: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken
             },
             dataType: 'json',
             success: function(response) {
-                if (response.success && response.task_id) {
-                    updateProgressUI(0, 'Queued...');
-                    pollScanProgress(response.task_id, btn);
-                } else if (response.success) {
+                if (response.success) {
+                    if (response.queued === true) {
+                        duplicateScanTaskId = response.task_id || null;
+                        duplicateScanWasActive = true;
+                        setDuplicateScanNotice({
+                            taskMessage: 'Duplicate scan is queued.',
+                            progress: '0 %',
+                            task_id: duplicateScanTaskId,
+                            stat: 0
+                        });
+                        if (!duplicateScanPollTimer) {
+                            duplicateScanPollTimer = setInterval(pollDuplicateScanTask, 2000);
+                        }
+                        pollDuplicateScanTask();
+                        return;
+                    }
                     if (response.queued === false && response.fallback_reason) {
                         console.warn('[CWA Duplicates] Background queue failed, fallback used:', response.fallback_reason);
                     }
-                    const count = (response.count !== undefined && response.count !== null)
+                    var count = (response.count !== undefined && response.count !== null)
                         ? response.count
                         : null;
-                    const message = count !== null
+                    var message = count !== null
                         ? 'Scan completed. Found ' + count + ' duplicate groups.'
                         : 'Scan completed.';
-                    alert(message);
-                    location.reload();
+                    showScanNotification(message, 'alert-success');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 800);
                 } else {
-                    alert('Scan failed: ' + response.error);
+                    showScanNotification('Scan failed: ' + response.error, 'alert-danger');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('[CWA Duplicates] Error triggering scan:', error);
-                alert('Error: Failed to trigger duplicate scan');
-            },
-            complete: function() {
-                // Button state will be restored by poller
-            }
-        });
-    });
-
-    // Cancel scan
-    $('#cancel_scan').on('click', function() {
-        if (!activeScanTaskId) {
-            return;
-        }
-        $.ajax({
-            url: '/duplicates/cancel-scan/' + activeScanTaskId,
-            type: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (!response.success) {
-                    alert('Cancel failed: ' + response.error);
+                var response = xhr.responseJSON || {};
+                if (xhr.status === 409 && response.blocked) {
+                    showDuplicateScanError(
+                        'Duplicate Scan Blocked',
+                        response.message || 'Import is in progress. Run a full duplicate scan after ingest finishes.'
+                    );
+                } else {
+                    showScanNotification('Error: Failed to trigger duplicate scan', 'alert-danger');
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('[CWA Duplicates] Error cancelling scan:', error);
-                alert('Error: Failed to cancel duplicate scan');
+            complete: function() {
+                btn.prop('disabled', false);
+                btn.html('<span class="glyphicon glyphicon-refresh"></span> Scan for Duplicates Now');
             }
         });
     });
@@ -566,13 +677,14 @@ $(document).ready(function() {
     // Execute resolution
     $('#execute_resolution').on('click', function() {
         if ($(this).hasClass('disabled')) return;
-        
-        if (!confirm('Are you sure you want to execute auto-resolution? This will permanently delete duplicate books.')) {
-            return;
-        }
-        
+
+        $('#execute_resolution_strategy_name').text($('#resolution_strategy option:selected').text());
+        $('#execute_resolution_modal').modal('show');
+    });
+
+    $('#execute_resolution_confirm').on('click', function() {
         var strategy = $('#resolution_strategy').val();
-        var btn = $(this);
+        var btn = $('#execute_resolution');
         btn.addClass('disabled').html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Executing...');
         
         $.ajax({
@@ -585,15 +697,17 @@ $(document).ready(function() {
             data: JSON.stringify({ strategy: strategy }),
             success: function(data) {
                 if (data.success) {
-                    alert('Resolution complete!\n\nResolved: ' + data.resolved_count + ' groups\nKept: ' + data.kept_count + ' books\nDeleted: ' + data.deleted_count + ' books');
-                    location.reload();
+                    showResolutionSuccess(data);
                 } else {
-                    alert('Errors occurred:\n' + (data.errors || []).join('\n'));
+                    var errors = data.errors || ['Unknown error occurred during resolution'];
+                    showResolutionError('Errors occurred:<br>' + errors.map(escapeHtml).join('<br>'));
                     btn.removeClass('disabled').html('<span class="glyphicon glyphicon-flash"></span> Execute Resolution');
                 }
             },
-            error: function() {
-                alert('Failed to execute resolution');
+            error: function(xhr, status, error) {
+                console.error('[CWA Duplicates] Failed to execute resolution:', error);
+                var response = xhr.responseJSON || {};
+                showResolutionError(response.message || response.error || 'Failed to execute resolution. Check browser console for details.');
                 btn.removeClass('disabled').html('<span class="glyphicon glyphicon-flash"></span> Execute Resolution');
             }
         });
@@ -652,4 +766,4 @@ $(document).ready(function() {
     // Initialize
     updateSelectionCount();
     updateBookItemVisuals();
-}); 
+});

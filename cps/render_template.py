@@ -27,6 +27,40 @@ from cwa_db import CWA_DB
 
 log = logger.create()
 
+
+def _duplicate_setup_notice_dismissed():
+    notice_file = f"/app/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
+    return os.path.isfile(notice_file)
+
+
+def duplicate_index_setup_notification(settings, cwa_db=None):
+    notice_file = f"/app/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
+    if os.path.isfile(notice_file):
+        return False
+
+    try:
+        from cps.duplicate_index import duplicate_index_needs_manual_full_scan, library_has_books
+
+        if not library_has_books():
+            return False
+        if not duplicate_index_needs_manual_full_scan(settings):
+            return False
+    except Exception as e:
+        log.debug("[cwa-duplicates] Failed to check duplicate setup notification state: %s", str(e))
+        return False
+
+    try:
+        message = _(
+            "Duplicate scanning needs a one-time full scan before fast duplicate checks can run after imports "
+            "and metadata changes. "
+        )
+        flash(message, category="duplicate_scan_setup")
+        return True
+    except Exception as e:
+        log.debug("[cwa-duplicates] Failed to show duplicate index setup notification: %s", str(e))
+        return False
+
+
 def get_sidebar_config(kwargs=None):
     kwargs = kwargs or []
     simple = bool([e for e in ['kindle', 'tolino', "kobo", "bookeen"]
@@ -297,7 +331,20 @@ def render_title_template(*args, **kwargs):
             notifications_enabled = bool(cwa_db.cwa_settings.get('duplicate_notifications_enabled', 1))
             if detection_enabled:
                 cache_data = cwa_db.get_duplicate_cache()
-                if cache_data and cache_data.get('duplicate_groups') is not None:
+                duplicate_setup_notice_dismissed = _duplicate_setup_notice_dismissed()
+                duplicate_setup_notice_shown = False
+                if not duplicate_setup_notice_dismissed:
+                    duplicate_setup_notice_shown = duplicate_index_setup_notification(cwa_db.cwa_settings, cwa_db=cwa_db)
+
+                if duplicate_setup_notice_shown:
+                    duplicate_notification = {
+                        "enabled": notifications_enabled,
+                        "count": 0,
+                        "preview": [],
+                        "cached": False,
+                        "stale": True,
+                    }
+                elif cache_data and cache_data.get('duplicate_groups') is not None:
                     duplicate_groups = cache_data.get('duplicate_groups') or []
                     try:
                         dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\

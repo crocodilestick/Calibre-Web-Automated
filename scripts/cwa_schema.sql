@@ -179,6 +179,23 @@ CREATE TABLE IF NOT EXISTS cwa_duplicate_cache (
 -- Insert default row for cache table
 INSERT OR IGNORE INTO cwa_duplicate_cache (id, scan_pending) VALUES (1, 1);
 
+-- Persisted duplicate key index for bounded duplicate-cache maintenance.
+CREATE TABLE IF NOT EXISTS cwa_duplicate_book_keys (
+    book_id INTEGER PRIMARY KEY,
+    normalized_title TEXT NOT NULL DEFAULT '',
+    normalized_author TEXT NOT NULL DEFAULT '',
+    normalized_language TEXT NOT NULL DEFAULT '',
+    normalized_series TEXT NOT NULL DEFAULT '',
+    normalized_publisher TEXT NOT NULL DEFAULT '',
+    format_signature TEXT NOT NULL DEFAULT '',
+    duplicate_key TEXT NOT NULL,
+    criteria_fingerprint TEXT NOT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_cwa_duplicate_book_keys_key
+    ON cwa_duplicate_book_keys(criteria_fingerprint, duplicate_key);
+
 -- Auto-resolution audit log
 CREATE TABLE IF NOT EXISTS cwa_duplicate_resolutions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

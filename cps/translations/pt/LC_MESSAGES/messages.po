@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 22:44+0000\n"
+"POT-Creation-Date: 2026-05-18 23:26+0000\n"
 "PO-Revision-Date: 2023-07-25 11:30+0100\n"
 "Last-Translator: horus68 <https://github.com/horus68>\n"
 "Language-Team: pt-PT <>\n"
@@ -808,22 +808,27 @@ msgid ""
 "data was reset."
 msgstr ""
 
-#: cps/annotations.py:65 cps/templates/annotations_import.html:4
+#: cps/annotations.py:69 cps/templates/annotations_import.html:4
 msgid "Import Kobo annotations"
 msgstr ""
 
-#: cps/annotations.py:83
+#: cps/annotations.py:87
 #, fuzzy
 msgid "No file uploaded."
 msgstr "Ficheiro %(file)s enviado"
 
-#: cps/annotations.py:91 cps/annotations.py:113
+#: cps/annotations.py:95 cps/annotations.py:117
 #, python-format
 msgid "File exceeds %(max)d MB."
 msgstr ""
 
-#: cps/annotations.py:121
+#: cps/annotations.py:125
 msgid "Uploaded file is not a SQLite database."
+msgstr ""
+
+#: cps/annotations.py:391 cps/templates/annotations_view.html:4
+#, python-format
+msgid "Annotations: %(title)s"
 msgstr ""
 
 #: cps/constants.py:207
@@ -3471,6 +3476,50 @@ msgstr "Atualização falhou:"
 msgid "Network error."
 msgstr "Erro de ligação"
 
+#: cps/templates/annotations_view.html:7
+msgid "Export Markdown"
+msgstr ""
+
+#: cps/templates/annotations_view.html:8
+msgid "Export CSV"
+msgstr ""
+
+#: cps/templates/annotations_view.html:9
+msgid "Export JSON"
+msgstr ""
+
+#: cps/templates/annotations_view.html:10
+msgid "Open book"
+msgstr ""
+
+#: cps/templates/annotations_view.html:15
+#, python-format
+msgid "%(count)d highlights"
+msgstr ""
+
+#: cps/templates/annotations_view.html:23 cps/templates/cwa_settings.html:1122
+#: cps/templates/cwa_settings.html:1208
+msgid "Note:"
+msgstr ""
+
+#: cps/templates/annotations_view.html:31
+#, python-format
+msgid "Chapter progress: %(pct)d%%"
+msgstr ""
+
+#: cps/templates/annotations_view.html:34
+#, fuzzy, python-format
+msgid "Source: %(s)s"
+msgstr "Séries: %(serie)s"
+
+#: cps/templates/annotations_view.html:45
+msgid "No annotations on this book yet."
+msgstr ""
+
+#: cps/templates/annotations_view.html:46
+msgid "Import from Kobo"
+msgstr ""
+
 #: cps/templates/author.html:18
 msgid "via"
 msgstr "via"
@@ -5863,10 +5912,6 @@ msgstr "Formato de carregamento"
 
 #: cps/templates/cwa_settings.html:1116
 msgid "Consider file format when detecting duplicates"
-msgstr ""
-
-#: cps/templates/cwa_settings.html:1122 cps/templates/cwa_settings.html:1208
-msgid "Note:"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1122

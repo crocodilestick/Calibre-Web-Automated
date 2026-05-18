@@ -879,6 +879,37 @@ class KoboAnnotationSync(Base):
         return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
 
 
+class KoboAnnotationBackup(Base):
+    """Per-`(user_id, book_id)` index of gzipped annotation snapshots
+    on disk. See ``cps/services/annotation_backup.py`` and fork #240.
+
+    The actual annotation payload lives in
+    ``/config/annotation-backups/<user_id>/<book_id>/<UTC-iso>.json.gz``
+    — this table just indexes them so retention queries
+    (``ORDER BY created_at DESC LIMIT 3``) hit an index, not the
+    filesystem.
+    """
+    __tablename__ = 'kobo_annotation_backup'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    book_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    content_hash = Column(String(64), nullable=False)
+    file_path = Column(String, nullable=False)
+    size_bytes = Column(Integer, nullable=False, default=0)
+    annotation_count = Column(Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        Index('ix_kobo_annotation_backup_user_book_created',
+              'user_id', 'book_id', 'created_at'),
+    )
+
+    def __repr__(self):
+        return (f'<KoboAnnotationBackup user_id={self.user_id} '
+                f'book_id={self.book_id} created_at={self.created_at}>')
+
+
 class HardcoverBookBlacklist(Base):
     """Track book-level blacklisting for hardcover sync features."""
     __tablename__ = 'hardcover_book_blacklist'
@@ -929,6 +960,44 @@ def receive_before_flush(session, flush_context, instances):
     for change in itertools.chain(session.new, session.deleted):
         if isinstance(change, BookShelf):
             change.ub_shelf.last_modified = datetime.now(timezone.utc)
+
+
+# Annotation backup safety net (fork #240): every INSERT or UPDATE to
+# ``KoboAnnotationSync`` schedules a per-`(user, book)` snapshot on the
+# background worker. Lives here so it captures every writer (Hardcover
+# sync, the H1 import endpoint, the web-reader create path) without
+# each caller having to remember.
+#
+# Two-phase wiring: ``after_flush`` collects keys onto a per-session
+# attribute, ``after_commit`` dispatches them to the worker. This avoids
+# the race where the worker thread queries before the source thread's
+# commit lands. ``after_rollback`` drops the pending set so a rolled-back
+# transaction doesn't trigger a phantom backup.
+@event.listens_for(Session, 'after_flush')
+def _collect_annotation_writes_for_backup(session, flush_context):
+    try:
+        from .services.annotation_backup import collect_annotation_writes
+        collect_annotation_writes(session, flush_context)
+    except Exception as e:
+        log.error("annotation_backup collect hook failed: %s", e)
+
+
+@event.listens_for(Session, 'after_commit')
+def _dispatch_annotation_backup_writes(session):
+    try:
+        from .services.annotation_backup import dispatch_pending_writes
+        dispatch_pending_writes(session)
+    except Exception as e:
+        log.error("annotation_backup dispatch hook failed: %s", e)
+
+
+@event.listens_for(Session, 'after_rollback')
+def _discard_annotation_backup_writes(session):
+    try:
+        from .services.annotation_backup import discard_pending_writes
+        discard_pending_writes(session)
+    except Exception as e:
+        log.error("annotation_backup rollback hook failed: %s", e)
 
 
 # Baseclass representing Downloads from calibre-web in app.db
@@ -1044,6 +1113,8 @@ def add_missing_tables(engine, _session):
         OpdsMagicShelfExposure.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "hidden_magic_shelf_templates"):
         HiddenMagicShelfTemplate.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "kobo_annotation_backup"):
+        KoboAnnotationBackup.__table__.create(bind=engine, checkfirst=True)
 
 
 # migrate all settings missing in registration table

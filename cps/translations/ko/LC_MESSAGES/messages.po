@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 00:55+0000\n"
+"POT-Creation-Date: 2026-05-18 02:57+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -937,207 +937,207 @@ msgid ""
 "wait..."
 msgstr "서재 새로고침 중 🔄 새 책을 찾고 있습니다. 잠시 기다려 주세요…"
 
-#: cps/cwa_functions.py:858
+#: cps/cwa_functions.py:865
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 
-#: cps/cwa_functions.py:922
+#: cps/cwa_functions.py:929
 msgid "Calibre-Web NextGen User Settings"
 msgstr ""
 
-#: cps/cwa_functions.py:968 cps/cwa_functions.py:970 cps/cwa_functions.py:974
-#: cps/cwa_functions.py:976 cps/cwa_functions.py:979 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:975 cps/cwa_functions.py:977 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:983 cps/cwa_functions.py:986 cps/cwa_functions.py:988
 msgid "Timestamp"
 msgstr "타임스탬프"
 
-#: cps/cwa_functions.py:968 cps/cwa_functions.py:970
+#: cps/cwa_functions.py:975 cps/cwa_functions.py:977
 #: cps/templates/tasks.html:43 cps/templates/user_edit.html:335
 msgid "Book ID"
 msgstr "책 ID"
 
-#: cps/cwa_functions.py:968 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:975 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "책 제목"
 
-#: cps/cwa_functions.py:968
+#: cps/cwa_functions.py:975
 msgid "Book Author"
 msgstr "저자"
 
-#: cps/cwa_functions.py:968
+#: cps/cwa_functions.py:975
 msgid "Trigger Type"
 msgstr "트리거 유형"
 
-#: cps/cwa_functions.py:970 cps/cwa_functions.py:976
+#: cps/cwa_functions.py:977 cps/cwa_functions.py:983
 msgid "Filepath"
 msgstr "파일 위치"
 
-#: cps/cwa_functions.py:974 cps/cwa_functions.py:976 cps/cwa_functions.py:979
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:981 cps/cwa_functions.py:983 cps/cwa_functions.py:986
+#: cps/cwa_functions.py:988
 msgid "Filename"
 msgstr "파일명"
 
-#: cps/cwa_functions.py:974
+#: cps/cwa_functions.py:981
 msgid "Manual?"
 msgstr "수동?"
 
-#: cps/cwa_functions.py:974
+#: cps/cwa_functions.py:981
 msgid "No. Fixes"
 msgstr "아니오, 고칩니다."
 
-#: cps/cwa_functions.py:974 cps/cwa_functions.py:979 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:981 cps/cwa_functions.py:986 cps/cwa_functions.py:988
 msgid "Original Backed Up?"
 msgstr "원본이 백업되었습니까?"
 
-#: cps/cwa_functions.py:976
+#: cps/cwa_functions.py:983
 msgid "Fixes Applied"
 msgstr "수정사항 적용."
 
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:988
 msgid "Original Format"
 msgstr "원본 형식"
 
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:988
 msgid "End Format"
 msgstr "결과 형식"
 
-#: cps/cwa_functions.py:1057 cps/cwa_functions.py:1086
+#: cps/cwa_functions.py:1064 cps/cwa_functions.py:1093
 #, fuzzy
 msgid "Unknown User"
 msgstr "알 수 없음"
 
-#: cps/cwa_functions.py:1194
+#: cps/cwa_functions.py:1201
 msgid "Calibre-Web NextGen Stats & Activity"
 msgstr ""
 
-#: cps/cwa_functions.py:1578
+#: cps/cwa_functions.py:1585
 msgid "Calibre-Web NextGen - Full Enforcement History"
 msgstr ""
 
-#: cps/cwa_functions.py:1587
+#: cps/cwa_functions.py:1594
 msgid "Calibre-Web NextGen - Full Enforcement History (w/ Paths)"
 msgstr ""
 
-#: cps/cwa_functions.py:1596
+#: cps/cwa_functions.py:1603
 msgid "Calibre-Web NextGen - Full Import History"
 msgstr ""
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1612
 msgid "Calibre-Web NextGen - Full Conversion History"
 msgstr ""
 
-#: cps/cwa_functions.py:1614
+#: cps/cwa_functions.py:1621
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1623
+#: cps/cwa_functions.py:1630
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1641
+#: cps/cwa_functions.py:1648
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ 모든 모니터링 서비스가 정상 실행중입니다! 👍"
 
-#: cps/cwa_functions.py:1643
+#: cps/cwa_functions.py:1650
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
 "🔴 가져오기 서비스는 실행중이지만, 메타데이터 변경점 감지기가 정지되었습니다."
 
-#: cps/cwa_functions.py:1645
+#: cps/cwa_functions.py:1652
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 "🔴 메타데이터 변경점 감지기는 실행중이지만, 가져오기 서비스가 정지되었습니다."
 
-#: cps/cwa_functions.py:1647
+#: cps/cwa_functions.py:1654
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr "⛔ 가져오기 서비스와 메타데이터 변경점 감지기 모두 정지되었습니다."
 
-#: cps/cwa_functions.py:1649
+#: cps/cwa_functions.py:1656
 msgid "An Error has occurred"
 msgstr "오류가 발생했습니다."
 
-#: cps/cwa_functions.py:1826 cps/cwa_functions.py:1854
+#: cps/cwa_functions.py:1833 cps/cwa_functions.py:1861
 msgid "Calibre-Web NextGen - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:1980 cps/cwa_functions.py:2006
+#: cps/cwa_functions.py:1987 cps/cwa_functions.py:2013
 msgid "Calibre-Web NextGen - EPUB Fixer Service"
 msgstr ""
 
-#: cps/cwa_functions.py:2064
+#: cps/cwa_functions.py:2071
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2071
+#: cps/cwa_functions.py:2078
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "잘못된 "
 
-#: cps/cwa_functions.py:2077
+#: cps/cwa_functions.py:2084
 #, fuzzy
 msgid "Book not found."
 msgstr "토큰을 찾을 수 없습니다."
 
-#: cps/cwa_functions.py:2083
+#: cps/cwa_functions.py:2090
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "선택한 책 병합"
 
-#: cps/cwa_functions.py:2087
+#: cps/cwa_functions.py:2094
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s 형식을 찾을 수 없습니다."
 
-#: cps/cwa_functions.py:2102
+#: cps/cwa_functions.py:2109
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "선택한 책 병합"
 
-#: cps/cwa_functions.py:2105
+#: cps/cwa_functions.py:2112
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2156
+#: cps/cwa_functions.py:2163
 msgid "You must be an admin to access this page."
 msgstr "이 페이지에 접근하려면 관리자권한이 필요합니다."
 
-#: cps/cwa_functions.py:2171
+#: cps/cwa_functions.py:2178
 msgid "Both username and image data are required."
 msgstr "사용자명과 사진 데이터가 필요합니다."
 
-#: cps/cwa_functions.py:2179
+#: cps/cwa_functions.py:2186
 msgid "Invalid image data format. Must be a valid image."
 msgstr ""
 
-#: cps/cwa_functions.py:2187
+#: cps/cwa_functions.py:2194
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr ""
 
-#: cps/cwa_functions.py:2199
+#: cps/cwa_functions.py:2206
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr ""
 
-#: cps/cwa_functions.py:2203
+#: cps/cwa_functions.py:2210
 msgid "Invalid Base64 image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2207
+#: cps/cwa_functions.py:2214
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "올바른 이메일 주소가 아닙니다."
 
-#: cps/cwa_functions.py:2212
+#: cps/cwa_functions.py:2219
 msgid "Error validating image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2230
+#: cps/cwa_functions.py:2237
 msgid "Profile picture updated successfully."
 msgstr "프로필 사진이 갱신되었습니다."
 
-#: cps/cwa_functions.py:2243
+#: cps/cwa_functions.py:2250
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 

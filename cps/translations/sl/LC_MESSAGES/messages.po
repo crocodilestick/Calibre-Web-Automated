@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 00:55+0000\n"
+"POT-Creation-Date: 2026-05-18 02:57+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -998,214 +998,214 @@ msgstr ""
 "Osvežitev knjižnice 🔄 Preverjamo morebitne spregledane knjige, prosimo, "
 "počakajte ..."
 
-#: cps/cwa_functions.py:858
+#: cps/cwa_functions.py:865
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 "Neveljaven cron izraz za iskanje dvojnikov. Spremembe niso bile shranjene."
 
-#: cps/cwa_functions.py:922
+#: cps/cwa_functions.py:929
 msgid "Calibre-Web NextGen User Settings"
 msgstr ""
 
-#: cps/cwa_functions.py:968 cps/cwa_functions.py:970 cps/cwa_functions.py:974
-#: cps/cwa_functions.py:976 cps/cwa_functions.py:979 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:975 cps/cwa_functions.py:977 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:983 cps/cwa_functions.py:986 cps/cwa_functions.py:988
 msgid "Timestamp"
 msgstr "Časovni žig"
 
-#: cps/cwa_functions.py:968 cps/cwa_functions.py:970
+#: cps/cwa_functions.py:975 cps/cwa_functions.py:977
 #: cps/templates/tasks.html:43 cps/templates/user_edit.html:335
 #, fuzzy
 msgid "Book ID"
 msgstr "Knjige"
 
-#: cps/cwa_functions.py:968 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:975 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Naslov knjige"
 
-#: cps/cwa_functions.py:968
+#: cps/cwa_functions.py:975
 #, fuzzy
 msgid "Book Author"
 msgstr "Avtor"
 
-#: cps/cwa_functions.py:968
+#: cps/cwa_functions.py:975
 msgid "Trigger Type"
 msgstr "Vrsta sprožilca"
 
-#: cps/cwa_functions.py:970 cps/cwa_functions.py:976
+#: cps/cwa_functions.py:977 cps/cwa_functions.py:983
 #, fuzzy
 msgid "Filepath"
 msgstr "Vrste datotek"
 
-#: cps/cwa_functions.py:974 cps/cwa_functions.py:976 cps/cwa_functions.py:979
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:981 cps/cwa_functions.py:983 cps/cwa_functions.py:986
+#: cps/cwa_functions.py:988
 #, fuzzy
 msgid "Filename"
 msgstr "ime"
 
-#: cps/cwa_functions.py:974
+#: cps/cwa_functions.py:981
 msgid "Manual?"
 msgstr "Ročno?"
 
-#: cps/cwa_functions.py:974
+#: cps/cwa_functions.py:981
 msgid "No. Fixes"
 msgstr "Brez sprememb"
 
-#: cps/cwa_functions.py:974 cps/cwa_functions.py:979 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:981 cps/cwa_functions.py:986 cps/cwa_functions.py:988
 msgid "Original Backed Up?"
 msgstr "Izvirnik varnostno kopiran?"
 
-#: cps/cwa_functions.py:976
+#: cps/cwa_functions.py:983
 msgid "Fixes Applied"
 msgstr "Uporabljeni popravki"
 
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:988
 msgid "Original Format"
 msgstr "Izvirna oblika"
 
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:988
 #, fuzzy
 msgid "End Format"
 msgstr "Nalaganje vrsta"
 
-#: cps/cwa_functions.py:1057 cps/cwa_functions.py:1086
+#: cps/cwa_functions.py:1064 cps/cwa_functions.py:1093
 #, fuzzy
 msgid "Unknown User"
 msgstr "Neznano"
 
-#: cps/cwa_functions.py:1194
+#: cps/cwa_functions.py:1201
 msgid "Calibre-Web NextGen Stats & Activity"
 msgstr ""
 
-#: cps/cwa_functions.py:1578
+#: cps/cwa_functions.py:1585
 msgid "Calibre-Web NextGen - Full Enforcement History"
 msgstr ""
 
-#: cps/cwa_functions.py:1587
+#: cps/cwa_functions.py:1594
 msgid "Calibre-Web NextGen - Full Enforcement History (w/ Paths)"
 msgstr ""
 
-#: cps/cwa_functions.py:1596
+#: cps/cwa_functions.py:1603
 msgid "Calibre-Web NextGen - Full Import History"
 msgstr ""
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1612
 msgid "Calibre-Web NextGen - Full Conversion History"
 msgstr ""
 
-#: cps/cwa_functions.py:1614
+#: cps/cwa_functions.py:1621
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1623
+#: cps/cwa_functions.py:1630
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1641
+#: cps/cwa_functions.py:1648
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Vse nadzorne storitve delujejo po načrtih! 👍"
 
-#: cps/cwa_functions.py:1643
+#: cps/cwa_functions.py:1650
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 Storitev vnosa se izvaja, detektor sprememb metapodatkov pa ne."
 
-#: cps/cwa_functions.py:1645
+#: cps/cwa_functions.py:1652
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr "🔴 Detektor sprememb metapodatkov deluje, storitev vnosa pa ne."
 
-#: cps/cwa_functions.py:1647
+#: cps/cwa_functions.py:1654
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 "⛔ Niti storitev vnosa niti detektor sprememb metapodatkov se ne izvajata"
 
-#: cps/cwa_functions.py:1649
+#: cps/cwa_functions.py:1656
 msgid "An Error has occurred"
 msgstr "Prišlo je do napake"
 
-#: cps/cwa_functions.py:1826 cps/cwa_functions.py:1854
+#: cps/cwa_functions.py:1833 cps/cwa_functions.py:1861
 msgid "Calibre-Web NextGen - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:1980 cps/cwa_functions.py:2006
+#: cps/cwa_functions.py:1987 cps/cwa_functions.py:2013
 msgid "Calibre-Web NextGen - EPUB Fixer Service"
 msgstr ""
 
-#: cps/cwa_functions.py:2064
+#: cps/cwa_functions.py:2071
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 "Popravljalnik EPUB za posamezno knjigo ni podprt v knjižnicah Google Drive."
 
-#: cps/cwa_functions.py:2071
+#: cps/cwa_functions.py:2078
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "Neveljavna vloga"
 
-#: cps/cwa_functions.py:2077
+#: cps/cwa_functions.py:2084
 #, fuzzy
 msgid "Book not found."
 msgstr "ne najdem žetona"
 
-#: cps/cwa_functions.py:2083
+#: cps/cwa_functions.py:2090
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "Združevanje izbranih knjig"
 
-#: cps/cwa_functions.py:2087
+#: cps/cwa_functions.py:2094
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s vrsta ni najdena na disku"
 
-#: cps/cwa_functions.py:2102
+#: cps/cwa_functions.py:2109
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "Združevanje izbranih knjig"
 
-#: cps/cwa_functions.py:2105
+#: cps/cwa_functions.py:2112
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr "Napaka pri zagonu popravljalnika EPUB za izbrano knjigo."
 
-#: cps/cwa_functions.py:2156
+#: cps/cwa_functions.py:2163
 msgid "You must be an admin to access this page."
 msgstr "Za dostop do te strani morate biti skrbnik."
 
-#: cps/cwa_functions.py:2171
+#: cps/cwa_functions.py:2178
 msgid "Both username and image data are required."
 msgstr "Zahtevani so tako uporabniško ime kot podatki o sliki."
 
-#: cps/cwa_functions.py:2179
+#: cps/cwa_functions.py:2186
 msgid "Invalid image data format. Must be a valid image."
 msgstr "Neveljavna oblika slikovnih podatkov. Izbrati morate veljavno sliko."
 
-#: cps/cwa_functions.py:2187
+#: cps/cwa_functions.py:2194
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "Nepodprta vrsta slike. Dovoljena sta le PNG in JPEG."
 
-#: cps/cwa_functions.py:2199
+#: cps/cwa_functions.py:2206
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "Slika je prevelika. Prosimo, uporabite sliko, manjšo od 500 KB."
 
-#: cps/cwa_functions.py:2203
+#: cps/cwa_functions.py:2210
 msgid "Invalid Base64 image data."
 msgstr "Neveljavni Base64 podatki o sliki."
 
-#: cps/cwa_functions.py:2207
+#: cps/cwa_functions.py:2214
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "Nepravilna oblike e-poštnega naslova"
 
-#: cps/cwa_functions.py:2212
+#: cps/cwa_functions.py:2219
 msgid "Error validating image data."
 msgstr "Napaka pri preverjanju podatkov slike."
 
-#: cps/cwa_functions.py:2230
+#: cps/cwa_functions.py:2237
 #, fuzzy
 msgid "Profile picture updated successfully."
 msgstr "{} uporabnikov uspešno izbrisanih"
 
-#: cps/cwa_functions.py:2243
+#: cps/cwa_functions.py:2250
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 00:55+0000\n"
+"POT-Creation-Date: 2026-05-18 02:57+0000\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -995,211 +995,211 @@ msgid ""
 msgstr ""
 "Обновление библиотеки 🔄 Проверка пропущенных книг, пожалуйста, подождите..."
 
-#: cps/cwa_functions.py:858
+#: cps/cwa_functions.py:865
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr "Неправильная настройка крон для поиска дублей. Изменения не сохранены."
 
-#: cps/cwa_functions.py:922
+#: cps/cwa_functions.py:929
 msgid "Calibre-Web NextGen User Settings"
 msgstr ""
 
-#: cps/cwa_functions.py:968 cps/cwa_functions.py:970 cps/cwa_functions.py:974
-#: cps/cwa_functions.py:976 cps/cwa_functions.py:979 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:975 cps/cwa_functions.py:977 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:983 cps/cwa_functions.py:986 cps/cwa_functions.py:988
 msgid "Timestamp"
 msgstr "Отметка времени"
 
-#: cps/cwa_functions.py:968 cps/cwa_functions.py:970
+#: cps/cwa_functions.py:975 cps/cwa_functions.py:977
 #: cps/templates/tasks.html:43 cps/templates/user_edit.html:335
 #, fuzzy
 msgid "Book ID"
 msgstr "ID книги"
 
-#: cps/cwa_functions.py:968 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:975 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Название книги"
 
-#: cps/cwa_functions.py:968
+#: cps/cwa_functions.py:975
 #, fuzzy
 msgid "Book Author"
 msgstr "Автор книги"
 
-#: cps/cwa_functions.py:968
+#: cps/cwa_functions.py:975
 msgid "Trigger Type"
 msgstr "Тип триггера"
 
-#: cps/cwa_functions.py:970 cps/cwa_functions.py:976
+#: cps/cwa_functions.py:977 cps/cwa_functions.py:983
 #, fuzzy
 msgid "Filepath"
 msgstr "Путь к файлу"
 
-#: cps/cwa_functions.py:974 cps/cwa_functions.py:976 cps/cwa_functions.py:979
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:981 cps/cwa_functions.py:983 cps/cwa_functions.py:986
+#: cps/cwa_functions.py:988
 #, fuzzy
 msgid "Filename"
 msgstr "Имя файла"
 
-#: cps/cwa_functions.py:974
+#: cps/cwa_functions.py:981
 msgid "Manual?"
 msgstr "Вручную?"
 
-#: cps/cwa_functions.py:974
+#: cps/cwa_functions.py:981
 msgid "No. Fixes"
 msgstr "Кол-во исправлений"
 
-#: cps/cwa_functions.py:974 cps/cwa_functions.py:979 cps/cwa_functions.py:981
+#: cps/cwa_functions.py:981 cps/cwa_functions.py:986 cps/cwa_functions.py:988
 msgid "Original Backed Up?"
 msgstr "Оригинал сохранен?"
 
-#: cps/cwa_functions.py:976
+#: cps/cwa_functions.py:983
 msgid "Fixes Applied"
 msgstr "Примененные исправления"
 
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:988
 msgid "Original Format"
 msgstr "Исходный формат"
 
-#: cps/cwa_functions.py:981
+#: cps/cwa_functions.py:988
 #, fuzzy
 msgid "End Format"
 msgstr "Конечный формат"
 
-#: cps/cwa_functions.py:1057 cps/cwa_functions.py:1086
+#: cps/cwa_functions.py:1064 cps/cwa_functions.py:1093
 #, fuzzy
 msgid "Unknown User"
 msgstr "Неизвестно"
 
-#: cps/cwa_functions.py:1194
+#: cps/cwa_functions.py:1201
 msgid "Calibre-Web NextGen Stats & Activity"
 msgstr ""
 
-#: cps/cwa_functions.py:1578
+#: cps/cwa_functions.py:1585
 msgid "Calibre-Web NextGen - Full Enforcement History"
 msgstr ""
 
-#: cps/cwa_functions.py:1587
+#: cps/cwa_functions.py:1594
 msgid "Calibre-Web NextGen - Full Enforcement History (w/ Paths)"
 msgstr ""
 
-#: cps/cwa_functions.py:1596
+#: cps/cwa_functions.py:1603
 msgid "Calibre-Web NextGen - Full Import History"
 msgstr ""
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1612
 msgid "Calibre-Web NextGen - Full Conversion History"
 msgstr ""
 
-#: cps/cwa_functions.py:1614
+#: cps/cwa_functions.py:1621
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1623
+#: cps/cwa_functions.py:1630
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1641
+#: cps/cwa_functions.py:1648
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Все службы мониторинга работают как положено! 👍"
 
-#: cps/cwa_functions.py:1643
+#: cps/cwa_functions.py:1650
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 Служба добавления работает, но детектор изменений метаданных - нет"
 
-#: cps/cwa_functions.py:1645
+#: cps/cwa_functions.py:1652
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr "🔴 Детектор изменений метаданных работает, но служба добавления - нет"
 
-#: cps/cwa_functions.py:1647
+#: cps/cwa_functions.py:1654
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr "⛔ Ни служба добавления, ни детектор изменений метаданных не работают"
 
-#: cps/cwa_functions.py:1649
+#: cps/cwa_functions.py:1656
 msgid "An Error has occurred"
 msgstr "Произошла ошибка"
 
-#: cps/cwa_functions.py:1826 cps/cwa_functions.py:1854
+#: cps/cwa_functions.py:1833 cps/cwa_functions.py:1861
 msgid "Calibre-Web NextGen - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:1980 cps/cwa_functions.py:2006
+#: cps/cwa_functions.py:1987 cps/cwa_functions.py:2013
 msgid "Calibre-Web NextGen - EPUB Fixer Service"
 msgstr ""
 
-#: cps/cwa_functions.py:2064
+#: cps/cwa_functions.py:2071
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 "Редактор ошибок EPUB не поддерживается совместно с библиотеками Google Drive."
 
-#: cps/cwa_functions.py:2071
+#: cps/cwa_functions.py:2078
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "Неверный ID книги."
 
-#: cps/cwa_functions.py:2077
+#: cps/cwa_functions.py:2084
 #, fuzzy
 msgid "Book not found."
 msgstr "Токен не найден"
 
-#: cps/cwa_functions.py:2083
+#: cps/cwa_functions.py:2090
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "Пометить выбранные книги как непрочитанные"
 
-#: cps/cwa_functions.py:2087
+#: cps/cwa_functions.py:2094
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "Формат %(format)s не найден на диске"
 
-#: cps/cwa_functions.py:2102
+#: cps/cwa_functions.py:2109
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "Редактировать выбранные книги"
 
-#: cps/cwa_functions.py:2105
+#: cps/cwa_functions.py:2112
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2156
+#: cps/cwa_functions.py:2163
 msgid "You must be an admin to access this page."
 msgstr "Вы должны быть администратором для доступа к этой странице."
 
-#: cps/cwa_functions.py:2171
+#: cps/cwa_functions.py:2178
 msgid "Both username and image data are required."
 msgstr "Требуются имя пользователя и данные изображения."
 
-#: cps/cwa_functions.py:2179
+#: cps/cwa_functions.py:2186
 msgid "Invalid image data format. Must be a valid image."
 msgstr "Неправильный формат. Невалидное изображение."
 
-#: cps/cwa_functions.py:2187
+#: cps/cwa_functions.py:2194
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "Неправильный формат. Разрешается загружать только PNG и JPEG"
 
-#: cps/cwa_functions.py:2199
+#: cps/cwa_functions.py:2206
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "Изображение очень большое. Используйте размер менее 500Кб"
 
-#: cps/cwa_functions.py:2203
+#: cps/cwa_functions.py:2210
 msgid "Invalid Base64 image data."
 msgstr "Ошибка Base64 изображения"
 
-#: cps/cwa_functions.py:2207
+#: cps/cwa_functions.py:2214
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "Неверный формат адреса электронной почты"
 
-#: cps/cwa_functions.py:2212
+#: cps/cwa_functions.py:2219
 msgid "Error validating image data."
 msgstr "Ошибка проверки изображения"
 
-#: cps/cwa_functions.py:2230
+#: cps/cwa_functions.py:2237
 msgid "Profile picture updated successfully."
 msgstr "Изображение профиля успешно обновлено."
 
-#: cps/cwa_functions.py:2243
+#: cps/cwa_functions.py:2250
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 

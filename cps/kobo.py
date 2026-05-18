@@ -801,7 +801,11 @@ def HandleTagCreate():
         abort(401, description="User is unauthaurized to create shelf.")
 
     if not shelf:
-        shelf = ub.Shelf(user_id=current_user.id, name=name, uuid=str(uuid.uuid4()))
+        # Device-created shelves are Kobo-managed by definition; default
+        # kobo_sync=True so subsequent syncs continue to emit NewTag and
+        # the shelf round-trips across multi-device setups + survives a
+        # factory reset. Users can untoggle via the shelf-edit UI later.
+        shelf = ub.Shelf(user_id=current_user.id, name=name, uuid=str(uuid.uuid4()), kobo_sync=True)
         ub.session.add(shelf)
 
     items_unknown_to_calibre = add_items_to_shelf(items, shelf)

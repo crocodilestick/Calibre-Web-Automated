@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="discover">
+  <h2>{{ _('Annotations: %(title)s', title=book.title) }}</h2>
+
+  <p>
+    <a href="{{ export_md_url }}" class="btn btn-default btn-sm">{{ _('Export Markdown') }}</a>
+    <a href="{{ export_csv_url }}" class="btn btn-default btn-sm">{{ _('Export CSV') }}</a>
+    <a href="{{ export_json_url }}" class="btn btn-default btn-sm">{{ _('Export JSON') }}</a>
+    <a href="{{ url_for('web.show_book', book_id=book.id) }}" class="btn btn-default btn-sm">{{ _('Open book') }}</a>
+  </p>
+
+  {% if annotations %}
+    <p class="text-muted">
+      {{ _('%(count)d highlights', count=annotations|length) }}
+    </p>
+
+    <ol class="cwa-annotation-list">
+      {% for ann in annotations %}
+        <li id="ann-{{ ann.annotation_id }}" class="cwa-annotation cwa-annotation-{{ ann.highlight_color or 'yellow' }}">
+          <blockquote>{{ ann.highlighted_text or '' }}</blockquote>
+          {% if ann.note_text %}
+            <p class="cwa-annotation-note">{{ _('Note:') }} {{ ann.note_text }}</p>
+          {% endif %}
+          <p class="text-muted small">
+            {% if ann.highlight_color %}
+              <span class="cwa-annotation-swatch cwa-annotation-swatch-{{ ann.highlight_color }}" aria-label="{{ ann.highlight_color }}"></span>
+              {{ ann.highlight_color }}
+            {% endif %}
+            {% if ann.chapter_progress is not none %}
+              · {{ _('Chapter progress: %(pct)d%%', pct=(ann.chapter_progress * 100)|int) }}
+            {% endif %}
+            {% if ann.source %}
+              · {{ _('Source: %(s)s', s=ann.source) }}
+            {% endif %}
+            {% if ann.created_at %}
+              · {{ ann.created_at.strftime('%Y-%m-%d') }}
+            {% endif %}
+          </p>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p>
+      {{ _('No annotations on this book yet.') }}
+      <a href="{{ url_for('annotations.annotations_import_form') }}">{{ _('Import from Kobo') }}</a>
+    </p>
+  {% endif %}
+</div>
+
+<style>
+  .cwa-annotation-list { list-style: none; padding-left: 0; }
+  .cwa-annotation { margin: 1em 0; padding: 0.6em 0.9em; border-left: 4px solid #ccc; background: rgba(0,0,0,0.02); }
+  .cwa-annotation-yellow { border-left-color: #f0c419; }
+  .cwa-annotation-red    { border-left-color: #d9534f; }
+  .cwa-annotation-green  { border-left-color: #5cb85c; }
+  .cwa-annotation-blue   { border-left-color: #5bc0de; }
+  .cwa-annotation blockquote { margin: 0 0 0.4em 0; padding: 0; border: 0; font-style: italic; }
+  .cwa-annotation-note { margin: 0.2em 0; }
+  .cwa-annotation-swatch { display: inline-block; width: 0.9em; height: 0.9em; vertical-align: middle; margin-right: 0.2em; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+  .cwa-annotation-swatch-yellow { background: #f0c419; }
+  .cwa-annotation-swatch-red    { background: #d9534f; }
+  .cwa-annotation-swatch-green  { background: #5cb85c; }
+  .cwa-annotation-swatch-blue   { background: #5bc0de; }
+</style>
+{% endblock %}

@@ -4,25 +4,25 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
-"""Annotations blueprint — H1 Phase 3.
+"""Annotations blueprint — H1 Phases 3 + 4.
 
-User-facing routes for the Kobo highlight feature. P3 ships the
-import endpoint; P4 adds the view + export surface; P5 adds the
-web-reader create/edit path.
+User-facing routes for the Kobo highlight feature. P3 ships the import
+endpoint; P4 adds the view + export surface; P5 adds the web-reader
+create/edit path.
 
-Routes shipped in this PR:
+Routes shipped so far:
 
-    GET  /annotations/import          -> upload form
-    POST /annotations/import          -> accept KoboReader.sqlite,
-                                          parse, INSERT into kobo_annotation_sync
+    GET  /annotations/import                 -> upload form           (P3)
+    POST /annotations/import                 -> ingest .sqlite        (P3)
+    GET  /annotations/<book_id>              -> per-book view         (P4)
+    GET  /annotations/<book_id>/export.md    -> Markdown download     (P4)
+    GET  /annotations/<book_id>/export.csv   -> CSV download          (P4)
+    GET  /annotations/<book_id>/export.json  -> JSON download         (P4)
 
 Auth: ``@user_login_required`` — annotation data is per-user-private.
-Anonymous users have nothing to import + nowhere to store imported data,
-so the route rejects them at the auth layer.
 
-CSRF: protected via Flask-WTF's global middleware (we do NOT call
-``@csrf.exempt`` — this is a browser-driven endpoint, not a device-
-protocol endpoint).
+CSRF: protected via Flask-WTF's global middleware on mutating routes
+(POST /annotations/import). Export GETs are idempotent and need no CSRF.
 
 The import path NEVER persists the uploaded SQLite to disk. The file is
 parsed in-place via a temp file that's deleted before the request
@@ -33,12 +33,16 @@ search queries, every bookmark they ever made) — we read what we need
 
 from __future__ import annotations
 
+import csv
+import io
+import json
 import os
+import re
 import tempfile
 from datetime import datetime, timezone
 from typing import Optional
 
-from flask import Blueprint, abort, flash, jsonify, redirect, request, url_for
+from flask import Blueprint, Response, abort, flash, jsonify, redirect, request, url_for
 from flask_babel import gettext as _
 
 from . import calibre_db, logger, ub
@@ -237,3 +241,200 @@ def ingest_bookmarks(sqlite_path, user_id, session, book_lookup, commit) -> dict
         "skipped_hidden": skipped_hidden,
         "total_seen": total_seen,
     }
+
+
+# ---------------------------------------------------------------------------
+# P4 — view + export
+# ---------------------------------------------------------------------------
+
+# Stable export column order — JSON keys + CSV columns + Markdown
+# template all consume this order so the three formats stay in sync.
+_EXPORT_FIELDS = (
+    "annotation_id",
+    "book_id",
+    "highlighted_text",
+    "highlight_color",
+    "note_text",
+    "content_id",
+    "chapter_progress",
+    "context_string",
+    "cfi_range",
+    "source",
+    "created_at",
+    "last_synced",
+)
+
+
+def _load_user_annotations(user_id: int, book_id: int) -> list:
+    """Per-user-per-book read of ``kobo_annotation_sync``. Filters out
+    soft-deleted rows so the view shows the live set. Stable order by
+    chapter_progress so the export round-trips a sensible reading
+    order even for books with hundreds of highlights."""
+    return (
+        ub.session.query(ub.KoboAnnotationSync)
+        .filter(
+            ub.KoboAnnotationSync.user_id == user_id,
+            ub.KoboAnnotationSync.book_id == book_id,
+        )
+        .filter(
+            (ub.KoboAnnotationSync.hidden.is_(None))
+            | (ub.KoboAnnotationSync.hidden == False)  # noqa: E712 — SQLA needs ==
+        )
+        .order_by(
+            ub.KoboAnnotationSync.chapter_progress.asc().nullslast(),
+            ub.KoboAnnotationSync.created_at.asc().nullslast(),
+            ub.KoboAnnotationSync.id.asc(),
+        )
+        .all()
+    )
+
+
+def _row_to_dict(row) -> dict:
+    """Project a ``KoboAnnotationSync`` row to the export payload shape."""
+    return {
+        "annotation_id": row.annotation_id,
+        "book_id": row.book_id,
+        "highlighted_text": row.highlighted_text,
+        "highlight_color": row.highlight_color,
+        "note_text": row.note_text,
+        "content_id": row.content_id,
+        "chapter_progress": row.chapter_progress,
+        "context_string": row.context_string,
+        "cfi_range": row.cfi_range,
+        "source": row.source,
+        "created_at": row.created_at.isoformat() if row.created_at else None,
+        "last_synced": row.last_synced.isoformat() if row.last_synced else None,
+    }
+
+
+def render_markdown(book_title: str, rows) -> str:
+    """Render rows as a Markdown document — single H1 with the book
+    title, then one block per highlight (the quoted passage, then a
+    bulleted attribution line for color/note/source/chapter)."""
+    out = [f"# {book_title}", ""]
+    for r in rows:
+        text = (r.highlighted_text or "").strip()
+        # Markdown blockquote — every line of the highlight gets `> `.
+        quoted = "\n".join("> " + line for line in text.splitlines() or [""])
+        out.append(quoted)
+        meta_bits = []
+        if r.highlight_color:
+            meta_bits.append(f"color: **{r.highlight_color}**")
+        if r.note_text:
+            note_oneline = r.note_text.replace("\n", " ").strip()
+            meta_bits.append(f"note: {note_oneline}")
+        if r.chapter_progress is not None:
+            meta_bits.append(f"chapter progress: {int(r.chapter_progress * 100)}%")
+        if r.source:
+            meta_bits.append(f"source: {r.source}")
+        if meta_bits:
+            out.append("> ")
+            out.append("> *" + " — ".join(meta_bits) + "*")
+        out.append("")
+    return "\n".join(out) + "\n"
+
+
+def render_csv(rows) -> str:
+    """Render rows as RFC-4180-compatible CSV. Stable column order
+    matches ``_EXPORT_FIELDS`` so round-trip parsers don't have to
+    detect the order from the header."""
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=list(_EXPORT_FIELDS), quoting=csv.QUOTE_MINIMAL)
+    writer.writeheader()
+    for r in rows:
+        writer.writerow(_row_to_dict(r))
+    return buf.getvalue()
+
+
+def render_json(book_title: str, book_id: int, user_id: int, rows) -> str:
+    """Render rows as a JSON envelope identical in shape to the
+    annotation-backup snapshot format, so a power user can use either
+    format interchangeably."""
+    payload = {
+        "schema_version": 1,
+        "user_id": user_id,
+        "book_id": book_id,
+        "book_title": book_title,
+        "annotation_count": len(rows),
+        "annotations": [_row_to_dict(r) for r in rows],
+    }
+    return json.dumps(payload, separators=(",", ":"), sort_keys=True, indent=2) + "\n"
+
+
+def _safe_filename_part(s: str, default: str = "book") -> str:
+    """Slugify the book title for the Content-Disposition filename so
+    a user-readable name doesn't trip the header parser. Strips
+    everything except [A-Za-z0-9._-], collapses runs."""
+    if not s:
+        return default
+    cleaned = re.sub(r"[^A-Za-z0-9._-]+", "-", s).strip("-")
+    return cleaned or default
+
+
+def _resolve_book_or_404(book_id: int):
+    """Load the Book row + enforce visibility. Returns the Book."""
+    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
+    if not book:
+        abort(404)
+    return book
+
+
+@annotations_bp.route("/annotations/<int:book_id>", methods=["GET"])
+@user_login_required
+def annotations_view(book_id):
+    """Per-book view — every annotation the current user has for this
+    book, grouped by chapter, sorted by chapter_progress."""
+    book = _resolve_book_or_404(book_id)
+    rows = _load_user_annotations(current_user.id, book_id)
+    return render_title_template(
+        "annotations_view.html",
+        title=_(u"Annotations: %(title)s", title=book.title),
+        page="annotations_view",
+        book=book,
+        annotations=rows,
+        export_md_url=url_for("annotations.annotations_export_markdown", book_id=book_id),
+        export_csv_url=url_for("annotations.annotations_export_csv", book_id=book_id),
+        export_json_url=url_for("annotations.annotations_export_json", book_id=book_id),
+    )
+
+
+@annotations_bp.route("/annotations/<int:book_id>/export.md", methods=["GET"])
+@user_login_required
+def annotations_export_markdown(book_id):
+    book = _resolve_book_or_404(book_id)
+    rows = _load_user_annotations(current_user.id, book_id)
+    body = render_markdown(book.title, rows)
+    fname = f"{_safe_filename_part(book.title)}-highlights.md"
+    return Response(
+        body,
+        mimetype="text/markdown",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+    )
+
+
+@annotations_bp.route("/annotations/<int:book_id>/export.csv", methods=["GET"])
+@user_login_required
+def annotations_export_csv(book_id):
+    book = _resolve_book_or_404(book_id)
+    rows = _load_user_annotations(current_user.id, book_id)
+    body = render_csv(rows)
+    fname = f"{_safe_filename_part(book.title)}-highlights.csv"
+    return Response(
+        body,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+    )
+
+
+@annotations_bp.route("/annotations/<int:book_id>/export.json", methods=["GET"])
+@user_login_required
+def annotations_export_json(book_id):
+    book = _resolve_book_or_404(book_id)
+    rows = _load_user_annotations(current_user.id, book_id)
+    body = render_json(book.title, book_id, current_user.id, rows)
+    fname = f"{_safe_filename_part(book.title)}-highlights.json"
+    return Response(
+        body,
+        mimetype="application/json",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+    )

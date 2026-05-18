@@ -206,9 +206,25 @@ SYSTEM_SHELF_TEMPLATES = {
     #         ]
     #     }
     # },
+    'currently_reading': {
+        'name': 'Currently Reading',
+        'icon': '📖',
+        'description': 'Books you are currently reading (synced via KOSync/Kobo)',
+        'rules': {
+            'condition': 'AND',
+            'rules': [{
+                'id': 'read_status',
+                'field': 'read_status',
+                'type': 'integer',
+                'input': 'radio',
+                'operator': 'equal',
+                'value': 2  # STATUS_IN_PROGRESS
+            }]
+        }
+    },
     'yet_to_read': {
         'name': 'Yet to Read',
-        'icon': '📖',
+        'icon': '📚',
         'description': 'Books you haven\'t read yet',
         'rules': {
             'condition': 'AND',
@@ -377,33 +393,44 @@ def build_filter_from_rule(rule, user_id=None):
         if not use_custom_column:
             if user_id is not None:
                 # Fallback to built-in read status
-                # Get read books for user (STATUS_FINISHED = 1)
-                read_books = ub.session.query(ub.ReadBook).filter(
-                    ub.ReadBook.user_id == user_id, 
-                    ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED
-                ).all()
-                read_book_ids = [rb.book_id for rb in read_books]
-                
-                operator = OPERATOR_MAP.get(operator_name)
-                if not operator:
-                    return None
-                
-                # Value is 0 (Unread) or 1 (Read)
+                # Value: 0 = Unread, 1 = Read/Finished, 2 = Currently Reading/In Progress
                 try:
-                    is_checking_read = (int(value) == 1)
+                    status_value = int(value)
                 except (ValueError, TypeError):
-                    is_checking_read = False
-                
+                    status_value = 0
+
+                if status_value == ub.ReadBook.STATUS_IN_PROGRESS:
+                    # Currently reading: match STATUS_IN_PROGRESS
+                    matching_books = ub.session.query(ub.ReadBook).filter(
+                        ub.ReadBook.user_id == user_id,
+                        ub.ReadBook.read_status == ub.ReadBook.STATUS_IN_PROGRESS
+                    ).all()
+                elif status_value == ub.ReadBook.STATUS_FINISHED:
+                    # Finished reading
+                    matching_books = ub.session.query(ub.ReadBook).filter(
+                        ub.ReadBook.user_id == user_id,
+                        ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED
+                    ).all()
+                else:
+                    # Unread: books with no ReadBook entry or STATUS_UNREAD
+                    matching_books = ub.session.query(ub.ReadBook).filter(
+                        ub.ReadBook.user_id == user_id,
+                        ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED
+                    ).all()
+
+                matching_book_ids = [rb.book_id for rb in matching_books]
+
                 if operator_name == 'equal':
-                    if is_checking_read:
-                        return db.Books.id.in_(read_book_ids)
+                    if status_value == ub.ReadBook.STATUS_UNREAD:
+                        # Unread = NOT in finished list
+                        return ~db.Books.id.in_(matching_book_ids)
                     else:
-                        return ~db.Books.id.in_(read_book_ids)
+                        return db.Books.id.in_(matching_book_ids)
                 elif operator_name == 'not_equal':
-                    if is_checking_read:
-                        return ~db.Books.id.in_(read_book_ids)
+                    if status_value == ub.ReadBook.STATUS_UNREAD:
+                        return db.Books.id.in_(matching_book_ids)
                     else:
-                        return db.Books.id.in_(read_book_ids)
+                        return ~db.Books.id.in_(matching_book_ids)
                 else:
                     return None
             else:

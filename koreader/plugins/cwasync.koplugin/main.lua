@@ -203,6 +203,7 @@ end
 function CWASync:addToMainMenu(menu_items)
     menu_items.cwa_progress_sync = {
         text = _("CWA Progress Sync"),
+        sorting_hint = "tools",
         sub_item_table = {
             {
                 text = _("Set CWA Server"),

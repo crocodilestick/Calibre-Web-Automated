@@ -32,7 +32,7 @@ except ImportError as e:
         oauth_support = False
 from sqlalchemy import create_engine, exc, exists, event, text
 from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint
-from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
+from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON, Text
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import func
 try:
@@ -831,7 +831,18 @@ class KoboStatistics(Base):
 
 
 class KoboAnnotationSync(Base):
-    """Track which Kobo annotations have been synced to external services (e.g., Hardcover)."""
+    """Per-user-per-annotation record for Kobo highlights/notes.
+
+    Originally added for the Hardcover annotation backports (CWA #1166 +
+    #1324) — those fields are ``synced_to_hardcover`` + ``hardcover_journal_id``
+    plus the inline ``highlighted_text`` / ``highlight_color`` / ``note_text``.
+
+    H1 Phase 1 extends this table to be the source-of-truth for ALL highlight
+    ingestion paths (Kobo device upload, web reader, KOReader plugin) — see
+    ``notes/KOBO-WEB-READER-ANNOTATIONS-DESIGN.md``. The position fields below
+    are nullable so pre-H1 Hardcover-sync rows continue to work; the import
+    path populates them when available.
+    """
     __tablename__ = 'kobo_annotation_sync'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -845,7 +856,20 @@ class KoboAnnotationSync(Base):
     highlighted_text = Column(String, nullable=True)
     highlight_color = Column(String, nullable=True)
     note_text = Column(String, nullable=True)
-    
+    # H1 Phase 1 — Kobo-native position fields (also used for re-anchoring).
+    content_id = Column(String, nullable=True)  # chapter pointer "<book_uuid>!!<chapter_file>"
+    start_container_path = Column(Text, nullable=True)
+    start_container_child_index = Column(Integer, nullable=True)
+    start_offset = Column(Integer, nullable=True)
+    end_container_path = Column(Text, nullable=True)
+    end_container_child_index = Column(Integer, nullable=True)
+    end_offset = Column(Integer, nullable=True)
+    context_string = Column(Text, nullable=True)  # ±50 chars around highlight, for re-anchoring
+    chapter_progress = Column(Float, nullable=True)  # 0.0-1.0 within chapter
+    cfi_range = Column(String, nullable=True)  # epub.js native; computed from Kobo coords at insert time
+    source = Column(String, nullable=True)  # 'kobo' | 'webreader' | 'koreader' | 'hardcover'
+    hidden = Column(Boolean, default=False, nullable=True)  # soft-delete flag
+
     __table_args__ = (
         Index('ix_kobo_annotation_sync_user_annotation', 'user_id', 'annotation_id'),
         Index('ix_kobo_annotation_sync_user_book', 'user_id', 'book_id'),
@@ -1683,6 +1707,79 @@ def migrate_book_cover_preview_table(engine, _session):
             print(f"[cover-preview-migration] Could not create idx_bcp_user_locked: {e}", flush=True)
 
 
+def migrate_kobo_annotation_sync_h1_columns(engine, _session):
+    """H1 Phase 1: extend ``kobo_annotation_sync`` with position + source
+    tracking columns for the Kobo highlight import / view / web-reader
+    sync pipeline (see notes/KOBO-WEB-READER-ANNOTATIONS-DESIGN.md §1.1).
+
+    Pre-H1 the table only carried Hardcover-sync fields (CWA #1166, #1324):
+    ``synced_to_hardcover`` + ``hardcover_journal_id`` + inline
+    ``highlighted_text`` / ``highlight_color`` / ``note_text``. H1 reuses
+    the same table as the source-of-truth for ALL highlight ingestion
+    paths; the columns added here are nullable so existing Hardcover-sync
+    rows keep working untouched.
+
+    All ADDs are individually conditional on column-existence, so this
+    migration is idempotent — re-running it is a no-op.
+    """
+    from sqlalchemy import inspect as sa_inspect
+
+    inspector = sa_inspect(engine)
+    if "kobo_annotation_sync" not in inspector.get_table_names():
+        # Fresh install — Base.metadata.create_all already produced the
+        # full schema; nothing to migrate.
+        return
+
+    existing_cols = {c["name"] for c in inspector.get_columns("kobo_annotation_sync")}
+
+    # column name → DDL fragment (must omit leading "ALTER TABLE foo ADD COLUMN")
+    pending = [
+        ("content_id",                  "content_id VARCHAR"),
+        ("start_container_path",        "start_container_path TEXT"),
+        ("start_container_child_index", "start_container_child_index INTEGER"),
+        ("start_offset",                "start_offset INTEGER"),
+        ("end_container_path",          "end_container_path TEXT"),
+        ("end_container_child_index",   "end_container_child_index INTEGER"),
+        ("end_offset",                  "end_offset INTEGER"),
+        ("context_string",              "context_string TEXT"),
+        ("chapter_progress",            "chapter_progress REAL"),
+        ("cfi_range",                   "cfi_range VARCHAR"),
+        ("source",                      "source VARCHAR"),
+        ("hidden",                      "hidden BOOLEAN DEFAULT 0"),
+    ]
+
+    statements = [
+        f"ALTER TABLE kobo_annotation_sync ADD COLUMN {ddl}"
+        for col, ddl in pending
+        if col not in existing_cols
+    ]
+    if not statements:
+        return
+
+    try:
+        _run_ddl_with_retry(engine, statements)
+    except Exception as e:
+        log.error("[kobo-annotation-sync-h1-migration] ADD COLUMN failed: %s", e)
+        return
+
+    # Backfill source='hardcover' for pre-H1 rows so the import path can
+    # distinguish them from new ingestion sources without scanning all
+    # five Hardcover-specific columns. Only touches rows that didn't get
+    # a source set later (idempotent under re-runs).
+    try:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text(
+                "UPDATE kobo_annotation_sync SET source = 'hardcover' "
+                "WHERE source IS NULL AND synced_to_hardcover = 1"
+            ))
+            trans.commit()
+    except Exception as e:
+        log.warning(
+            "[kobo-annotation-sync-h1-migration] source backfill failed: %s", e
+        )
+
+
 def migrate_Database(_session):
     engine = _session.bind
     add_missing_tables(engine, _session)
@@ -1695,6 +1792,7 @@ def migrate_Database(_session):
     migrate_magic_shelf_table(engine, _session)
     migrate_kobo_unique_constraints(engine, _session)
     migrate_kobo_deleted_book(engine, _session)
+    migrate_kobo_annotation_sync_h1_columns(engine, _session)
     migrate_book_cover_preview_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables)

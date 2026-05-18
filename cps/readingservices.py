@@ -458,7 +458,8 @@ def process_annotation_for_sync(
                                 hardcover_journal_id=result.get('id'),
                                 highlighted_text=highlighted_text,
                                 note_text=note_text,
-                                highlight_color=highlight_color
+                                highlight_color=highlight_color,
+                                source='hardcover',
                             )
                             ub.session.add(sync_record)
                         ub.session_commit()

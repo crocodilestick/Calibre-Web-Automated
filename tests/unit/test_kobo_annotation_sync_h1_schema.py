@@ -328,6 +328,228 @@ class TestModelORMRoundTrip:
         assert row.hidden in (0, False)
 
 
+# --- 3b. Data-preservation guarantee on realistic populated DBs ----------
+
+
+@pytest.mark.unit
+class TestMigrationPreservesAllUserData:
+    """Strongest claim the migration makes: it never alters the
+    user-visible payload of an existing row. ``highlighted_text``,
+    ``note_text``, ``highlight_color``, ``hardcover_journal_id``,
+    ``created_at``, ``last_synced``, ``user_id``, ``annotation_id``,
+    and ``book_id`` are read-only as far as the migration is
+    concerned — only the new ``source`` column and the new H1 columns
+    are touched, and ``source`` only on rows already marked
+    ``synced_to_hardcover=1``.
+
+    These tests build a realistic populated pre-H1 DB (100 rows with
+    varied Hardcover-sync states, colors, notes, journal-id values)
+    and pin that every original field on every row survives the
+    migration bit-exact. If anyone changes the migration to UPDATE
+    something it shouldn't, these tests catch it.
+    """
+
+    def _build_populated_pre_h1_db(self, n_synced=70, n_unsynced=30):
+        """100-row pre-H1 DB simulating a heavy Hardcover-sync user.
+
+        Synced rows have all the inline fields populated and a
+        non-null ``hardcover_journal_id``. Unsynced rows have a
+        partial payload and ``hardcover_journal_id IS NULL`` — they
+        represent in-progress writes from before Hardcover responded.
+        """
+        engine = create_engine("sqlite:///:memory:", future=True)
+        with engine.connect() as conn:
+            conn.exec_driver_sql("PRAGMA foreign_keys = OFF")
+            conn.exec_driver_sql(PRE_H1_SCHEMA)
+            conn.exec_driver_sql(PRE_H1_INDEX_USER_ANN)
+            conn.exec_driver_sql(PRE_H1_INDEX_USER_BOOK)
+
+            colors = ["yellow", "red", "green", "blue"]
+            for i in range(n_synced):
+                conn.exec_driver_sql(
+                    "INSERT INTO kobo_annotation_sync ("
+                    "  user_id, annotation_id, book_id, "
+                    "  synced_to_hardcover, hardcover_journal_id, "
+                    "  created_at, last_synced, "
+                    "  highlighted_text, highlight_color, note_text"
+                    ") VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)",
+                    (
+                        (i % 5) + 1,                          # user_id cycle 1..5
+                        f"synced-{i:04d}-uuid-aabbccdd",
+                        100 + (i % 25),                       # book_id cycle 100..124
+                        9000 + i,                             # hardcover_journal_id
+                        f"2026-04-{(i % 28) + 1:02d} 10:00:00",
+                        f"2026-04-{(i % 28) + 1:02d} 10:05:00",
+                        f"Highlighted passage #{i}: lorem ipsum dolor sit amet.",
+                        colors[i % 4],
+                        f"My note #{i}" if i % 3 == 0 else None,
+                    ),
+                )
+            for j in range(n_unsynced):
+                i = n_synced + j
+                conn.exec_driver_sql(
+                    "INSERT INTO kobo_annotation_sync ("
+                    "  user_id, annotation_id, book_id, "
+                    "  synced_to_hardcover, "
+                    "  created_at, "
+                    "  highlighted_text, highlight_color"
+                    ") VALUES (?, ?, ?, 0, ?, ?, ?)",
+                    (
+                        (j % 5) + 1,
+                        f"unsynced-{j:04d}-uuid-eeff0011",
+                        200 + (j % 15),
+                        f"2026-04-{(j % 28) + 1:02d} 11:00:00",
+                        f"Pending Hardcover sync #{j}: a different passage.",
+                        colors[j % 4],
+                    ),
+                )
+            conn.commit()
+        return engine
+
+    def _snapshot_all_rows(self, engine):
+        """Dump every column on every row as a list of dicts so we
+        can compare bit-exact pre/post migration."""
+        with engine.connect() as conn:
+            rows = conn.exec_driver_sql(
+                "SELECT id, user_id, annotation_id, book_id, "
+                "synced_to_hardcover, hardcover_journal_id, "
+                "created_at, last_synced, "
+                "highlighted_text, highlight_color, note_text "
+                "FROM kobo_annotation_sync ORDER BY id"
+            ).fetchall()
+        return [tuple(r) for r in rows]
+
+    def test_all_original_columns_preserved_bit_exact(self):
+        """No INSERT, UPDATE, or DELETE on any pre-H1 column other
+        than ``source`` (which is new, so wasn't on any row before)."""
+        from cps import ub
+
+        engine = self._build_populated_pre_h1_db()
+        session = sessionmaker(bind=engine, future=True)()
+        before = self._snapshot_all_rows(engine)
+
+        ub.migrate_kobo_annotation_sync_h1_columns(engine, session)
+
+        after = self._snapshot_all_rows(engine)
+        assert before == after, (
+            "Migration must not touch ANY pre-H1 column on existing rows. "
+            "Diff: " + str([(b, a) for b, a in zip(before, after) if b != a][:3])
+        )
+
+    def test_no_rows_lost(self):
+        from cps import ub
+
+        engine = self._build_populated_pre_h1_db(n_synced=70, n_unsynced=30)
+        session = sessionmaker(bind=engine, future=True)()
+
+        with engine.connect() as conn:
+            pre_count = conn.exec_driver_sql(
+                "SELECT COUNT(*) FROM kobo_annotation_sync"
+            ).scalar()
+        assert pre_count == 100
+
+        ub.migrate_kobo_annotation_sync_h1_columns(engine, session)
+
+        with engine.connect() as conn:
+            post_count = conn.exec_driver_sql(
+                "SELECT COUNT(*) FROM kobo_annotation_sync"
+            ).scalar()
+        assert post_count == 100, "Migration must not drop rows"
+
+    def test_highlighted_text_and_notes_byte_identical(self):
+        """The most user-precious fields. Pin their full content
+        across every row by hashing the column tuple pre/post."""
+        import hashlib
+        from cps import ub
+
+        engine = self._build_populated_pre_h1_db()
+        session = sessionmaker(bind=engine, future=True)()
+
+        def fingerprint():
+            with engine.connect() as conn:
+                rows = conn.exec_driver_sql(
+                    "SELECT id, highlighted_text, note_text, highlight_color "
+                    "FROM kobo_annotation_sync ORDER BY id"
+                ).fetchall()
+            h = hashlib.sha256()
+            for r in rows:
+                h.update(repr(r).encode("utf-8"))
+            return h.hexdigest()
+
+        before = fingerprint()
+        ub.migrate_kobo_annotation_sync_h1_columns(engine, session)
+        after = fingerprint()
+        assert before == after, (
+            "highlighted_text / note_text / highlight_color must be "
+            "byte-identical before and after the migration"
+        )
+
+    def test_only_synced_rows_get_source_backfilled(self):
+        """The migration must touch ``source`` ONLY on
+        ``synced_to_hardcover=1`` rows. Rows with
+        ``synced_to_hardcover=0`` (incomplete syncs) must keep
+        ``source IS NULL`` so a later import path can claim them."""
+        from cps import ub
+
+        engine = self._build_populated_pre_h1_db(n_synced=70, n_unsynced=30)
+        session = sessionmaker(bind=engine, future=True)()
+        ub.migrate_kobo_annotation_sync_h1_columns(engine, session)
+
+        with engine.connect() as conn:
+            synced_count = conn.exec_driver_sql(
+                "SELECT COUNT(*) FROM kobo_annotation_sync "
+                "WHERE source = 'hardcover'"
+            ).scalar()
+            unsynced_count = conn.exec_driver_sql(
+                "SELECT COUNT(*) FROM kobo_annotation_sync "
+                "WHERE source IS NULL"
+            ).scalar()
+            cross_check = conn.exec_driver_sql(
+                "SELECT COUNT(*) FROM kobo_annotation_sync "
+                "WHERE source = 'hardcover' AND synced_to_hardcover = 0"
+            ).scalar()
+        assert synced_count == 70
+        assert unsynced_count == 30
+        assert cross_check == 0, (
+            "Migration must NEVER set source='hardcover' on an "
+            "unsynced row — that would lie about its origin"
+        )
+
+    def test_orm_can_still_read_old_rows_after_migration(self):
+        """A pre-H1 row inserted by the Hardcover sync code path must
+        be readable through the ORM after the migration runs. This is
+        the upgrade-safety claim: a user on v4.0.77 who upgrades to
+        v4.0.78 (and onward) can still see + sync their existing
+        highlights without the new code path tripping on a NULL field."""
+        from cps import ub
+
+        engine = self._build_populated_pre_h1_db()
+        session_maker = sessionmaker(bind=engine, future=True)
+        session = session_maker()
+        ub.migrate_kobo_annotation_sync_h1_columns(engine, session)
+
+        # Fresh session: ORM read must work on every row.
+        s2 = session_maker()
+        rows = s2.query(ub.KoboAnnotationSync).all()
+        assert len(rows) == 100
+        for r in rows:
+            # All H1 fields are nullable; pre-H1 rows should have
+            # them as None except `source` on synced rows and
+            # `hidden` which defaults to 0 via the DDL DEFAULT.
+            assert r.cfi_range is None
+            assert r.content_id is None
+            assert r.start_offset is None
+            assert r.context_string is None
+            assert r.hidden in (0, False)
+            # Hardcover-sync rows: source = 'hardcover'; unsynced: None.
+            if r.synced_to_hardcover:
+                assert r.source == "hardcover"
+            else:
+                assert r.source is None
+            # The precious fields are non-None for synced rows.
+            assert r.highlighted_text is not None
+
+
 # --- 4. Hardcover sync path tags new rows with source='hardcover' ---------
 
 

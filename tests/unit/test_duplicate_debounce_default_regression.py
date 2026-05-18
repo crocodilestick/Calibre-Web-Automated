@@ -96,12 +96,20 @@ class TestPythonFallbacks:
     def test_ingest_processor_fallback_30(self):
         """ingest_processor.py is a separate short-lived process - its fallback
         is independent of cwa_functions.py (the web process). Both must agree.
+
+        After CWA #1349 (by @navels) the per-book
+        ``schedule_debounced_duplicate_scan`` method was removed from
+        ``ingest_processor.py``; the duplicate-scan debounce default + clamp now
+        lives server-side at the ``/cwa-internal/queue-duplicate-scan``
+        endpoint, which the post-batch follow-up POSTs to with no payload.
+        If the fallback is absent from the script, the test is satisfied — the
+        server-side test above (``test_cwa_functions_fallback_30``) pins the
+        equivalent 30s default for the new code path.
         """
         path = REPO_ROOT / "scripts" / "ingest_processor.py"
         values = self._grep_fallback_calls(_read(path))
-        assert values, (
-            "no duplicate_scan_debounce_seconds fallback found in ingest_processor.py"
-        )
+        if not values:
+            return  # post-#1349: value lives at the server endpoint, not the script
         for v in values:
             assert v == "30", (
                 f"ingest_processor.py has fallback default {v}, expected 30"
@@ -147,14 +155,20 @@ class TestClampFloor:
         assert match.group(1) == "10"
 
     def test_ingest_processor_clamp_floor_10(self):
+        """After CWA #1349 (by @navels), the per-book scheduling of duplicate
+        scans was moved out of ``ingest_processor.py`` into a post-batch
+        follow-up that POSTs to ``/cwa-internal/queue-duplicate-scan`` with no
+        payload — so the clamp also moved server-side
+        (``test_cwa_functions_clamp_floor_10`` above pins it there). If the
+        clamp is no longer in the script, the test is satisfied — the
+        equivalent gate is enforced at the endpoint layer."""
         src = _read(REPO_ROOT / "scripts" / "ingest_processor.py")
         match = re.search(
             r"delay_seconds\s*=\s*max\(\s*(\d+)\s*,\s*min\(\s*600\s*,\s*delay_seconds\s*\)\s*\)",
             src,
         )
-        assert match is not None, (
-            "duplicate-scan delay clamp not found in ingest_processor.py"
-        )
+        if match is None:
+            return  # post-#1349: clamp lives at /cwa-internal/queue-duplicate-scan
         assert match.group(1) == "10"
 
 

@@ -547,17 +547,24 @@ def cwa_internal_reconnect_db():
 
     Security: Only accepts localhost callers.
     """
-    try:
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
+    remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if remote not in (None, '127.0.0.1', '::1'):
+        abort(403)
 
+    try:
+        # Fork PR #199 ships a synchronous CalibreDB.refresh_for_new_data()
+        # in place of TaskReconnectDatabase via WorkerThread.add, which
+        # disposed the shared SQLAlchemy engine while in-flight greenlets
+        # were still using it (root cause of fork #192). Kept on backport
+        # of CWA #1349 by @navels — their deferred-batch logic upstream
+        # of this endpoint is preserved; the endpoint itself stays on
+        # the safe synchronous refresh.
         from .db import CalibreDB
         CalibreDB.refresh_for_new_data()
         return jsonify({"status": "refreshed"}), 200
     except Exception as e:
-        log.error(f"Internal reconnect-db failed: {e}")
-        return jsonify({"error": str(e)}), 400
+        log.exception("Internal reconnect-db failed")
+        return jsonify({"error": str(e)}), 500
 
 @csrf.exempt
 @cwa_stats.route('/cwa-scheduled/cancel', methods=["POST"])

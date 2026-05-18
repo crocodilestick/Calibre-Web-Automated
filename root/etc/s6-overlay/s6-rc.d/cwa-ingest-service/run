@@ -2,15 +2,15 @@
 
 echo "========== STARTING CWA-INGEST SERVICE =========="
 
-WATCH_FOLDER=$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')
+WATCH_FOLDER=${WATCH_FOLDER:-$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')}
 echo "[cwa-ingest-service] Watching folder: $WATCH_FOLDER"
 
 # Create queue file for retry processing (persistent across restarts)
-QUEUE_FILE="/config/cwa_ingest_retry_queue"
+QUEUE_FILE="${CWA_INGEST_RETRY_QUEUE:-/config/cwa_ingest_retry_queue}"
 touch "$QUEUE_FILE"
 
 # Create status file for basic status tracking (persistent across restarts)
-STATUS_FILE="/config/cwa_ingest_status"
+STATUS_FILE="${CWA_INGEST_STATUS_FILE:-/config/cwa_ingest_status}"
 echo "idle" > "$STATUS_FILE"
 
 # Ensure failed backup directory exists
@@ -47,6 +47,13 @@ STABLE_INTERVAL=${CWA_INGEST_STABLE_INTERVAL:-0.5}
 MAX_QUEUE_SIZE=${CWA_INGEST_MAX_QUEUE_SIZE:-50}
 SUPPORTED_EXT_REGEX='(epub|mobi|azw3|azw|pdf|txt|rtf|cbz|cbr|cb7|cbc|fb2|fbz|docx|html|htmlz|lit|lrf|odt|prc|pdb|pml|rb|snb|tcr|txtz|kepub|m4b|m4a|mp4|acsm|kfx|kfx-zip)$'
 TEMP_SUFFIXES='crdownload download part uploading'
+PROCESSING_DIR="${CWA_INGEST_PROCESSING_DIR:-/tmp/cwa_ingest_processing}"
+RECENT_DIR="${CWA_INGEST_RECENT_DIR:-/tmp/cwa_ingest_recent}"
+RECENT_EVENT_TTL="${CWA_INGEST_RECENT_EVENT_TTL:-120}"
+INGEST_BATCH_DIRTY_FILE="${CWA_INGEST_BATCH_DIRTY_FILE:-/config/cwa_ingest_batch_dirty}"
+INGEST_BATCH_LAST_SUCCESS_FILE="${CWA_INGEST_BATCH_LAST_SUCCESS_FILE:-/tmp/cwa_ingest_batch_last_success}"
+INGEST_BATCH_QUIET_SECONDS="${CWA_INGEST_BATCH_QUIET_SECONDS:-5}"
+mkdir -p "$PROCESSING_DIR" "$RECENT_DIR"
 get_stale_temp_minutes_from_db() {
         local minutes
         if command -v sqlite3 >/dev/null 2>&1; then
@@ -145,6 +152,207 @@ is_docker_desktop() {
         return 1
 }
 
+marker_key_for_path() {
+        local path="$1"
+        if command -v sha256sum >/dev/null 2>&1; then
+                printf '%s' "$path" | sha256sum | awk '{print $1}'
+        elif command -v shasum >/dev/null 2>&1; then
+                printf '%s' "$path" | shasum -a 256 | awk '{print $1}'
+        else
+                printf '%s' "$path" | cksum | awk '{print $1}'
+        fi
+}
+
+marker_stat_for_path() {
+        local path="$1"
+        local size mtime
+        size=$(stat -c %s "$path" 2>/dev/null || stat -f %z "$path" 2>/dev/null || echo "")
+        mtime=$(stat -c %Y "$path" 2>/dev/null || stat -f %m "$path" 2>/dev/null || echo "")
+        printf '%s:%s\n' "$size" "$mtime"
+}
+
+marker_age_seconds() {
+        local marker="$1"
+        local now marker_mtime
+        now=$(date +%s)
+        marker_mtime=$(stat -c %Y "$marker" 2>/dev/null || stat -f %m "$marker" 2>/dev/null || echo 0)
+        echo $((now - marker_mtime))
+}
+
+processing_marker_for_path() {
+        printf '%s/%s.processing\n' "$PROCESSING_DIR" "$(marker_key_for_path "$1")"
+}
+
+recent_marker_for_path() {
+        printf '%s/%s.recent\n' "$RECENT_DIR" "$(marker_key_for_path "$1")"
+}
+
+mark_recent_path() {
+        local path="$1"
+        local marker
+        marker=$(recent_marker_for_path "$path")
+        mkdir -p "$RECENT_DIR"
+        {
+                printf 'path=%s\n' "$path"
+                if [ -e "$path" ]; then
+                        printf 'stat=%s\n' "$(marker_stat_for_path "$path")"
+                else
+                        printf 'stat=missing\n'
+                fi
+        } > "$marker"
+}
+
+has_live_processing_marker() {
+        local path="$1"
+        local marker age
+        marker=$(processing_marker_for_path "$path")
+        [ -e "$marker" ] || return 1
+        age=$(marker_age_seconds "$marker")
+        if [ "$age" -ge "$RECENT_EVENT_TTL" ]; then
+                rm -f "$marker" 2>/dev/null || true
+                return 1
+        fi
+        return 0
+}
+
+is_recent_duplicate_event() {
+        local path="$1"
+        local marker age previous_stat current_stat
+        marker=$(recent_marker_for_path "$path")
+        [ -e "$marker" ] || return 1
+        age=$(marker_age_seconds "$marker")
+        if [ "$age" -ge "$RECENT_EVENT_TTL" ]; then
+                rm -f "$marker" 2>/dev/null || true
+                return 1
+        fi
+        if [ ! -e "$path" ]; then
+                return 0
+        fi
+        previous_stat=$(sed -n 's/^stat=//p' "$marker" 2>/dev/null | tail -n 1)
+        current_stat=$(marker_stat_for_path "$path")
+        [ "$previous_stat" = "$current_stat" ]
+}
+
+run_processor_with_timeout() {
+        local safety_timeout="$1"
+        local filepath="$2"
+        # Privilege-drop to the abc service user (PR #37 / #56) so books
+        # written by the ingest pipeline land with PUID:PGID ownership
+        # rather than root:root. The CWA_INGEST_PROCESSOR_CMD override
+        # is for test environments where the harness already manages
+        # the uid context (and the binary may not exist in /app/...).
+        if [ -n "${CWA_INGEST_PROCESSOR_CMD:-}" ]; then
+                timeout "$safety_timeout" "$CWA_INGEST_PROCESSOR_CMD" "$filepath"
+        else
+                timeout "$safety_timeout" s6-setuidgid abc python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+        fi
+}
+
+has_processing_markers() {
+        find "$PROCESSING_DIR" -type f -name '*.processing' -print -quit 2>/dev/null | grep -q .
+}
+
+is_supported_ingest_file() {
+        local filepath="$1"
+        local suf
+        for suf in $TEMP_SUFFIXES; do
+                [[ "$filepath" == *.$suf ]] && return 1
+        done
+        [[ "$filepath" == *.cwa.json ]] || [[ "$filepath" == *.cwa.failed.json ]] && return 1
+        [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]
+}
+
+has_pending_ingest_files() {
+        local candidate
+        [ -d "$WATCH_FOLDER" ] || return 1
+        while IFS= read -r candidate; do
+                if is_supported_ingest_file "$candidate"; then
+                        return 0
+                fi
+        done < <(find "$WATCH_FOLDER" -type f -print 2>/dev/null)
+        return 1
+}
+
+batch_marker_age_seconds() {
+        local marker="$1"
+        [ -e "$marker" ] || return 1
+        marker_age_seconds "$marker"
+}
+
+latest_batch_activity_age_seconds() {
+        local dirty_age success_age
+        dirty_age=$(batch_marker_age_seconds "$INGEST_BATCH_DIRTY_FILE" 2>/dev/null || echo "")
+        success_age=$(batch_marker_age_seconds "$INGEST_BATCH_LAST_SUCCESS_FILE" 2>/dev/null || echo "")
+        if [ -n "$dirty_age" ] && [ -n "$success_age" ] && [ "$success_age" -lt "$dirty_age" ]; then
+                echo "$success_age"
+        else
+                echo "${dirty_age:-0}"
+        fi
+}
+
+is_ingest_batch_quiet() {
+        [ -e "$INGEST_BATCH_DIRTY_FILE" ] || return 1
+        [ -d "$WATCH_FOLDER" ] || return 1
+        has_processing_markers && return 1
+        [ -s "$QUEUE_FILE" ] && return 1
+        has_pending_ingest_files && return 1
+        local age
+        age=$(latest_batch_activity_age_seconds)
+        [ "$age" -ge "$INGEST_BATCH_QUIET_SECONDS" ]
+}
+
+run_post_batch_follow_up() {
+        if [ -n "${CWA_INGEST_POST_BATCH_CMD:-}" ]; then
+                "$CWA_INGEST_POST_BATCH_CMD"
+        else
+                python3 /app/calibre-web-automated/scripts/ingest_processor.py --post-batch-follow-up
+        fi
+}
+
+maybe_run_post_batch_follow_up() {
+        is_ingest_batch_quiet || return 0
+
+        local running_marker="${INGEST_BATCH_DIRTY_FILE}.running"
+        if ! mv "$INGEST_BATCH_DIRTY_FILE" "$running_marker" 2>/dev/null; then
+                return 0
+        fi
+
+        echo "[cwa-ingest-service] Post-batch follow-up triggered"
+        if run_post_batch_follow_up; then
+                rm -f "$running_marker" 2>/dev/null || true
+                echo "[cwa-ingest-service] Post-batch follow-up completed"
+        else
+                echo "[cwa-ingest-service] WARN: Post-batch follow-up failed; will retry later"
+                mv "$running_marker" "$INGEST_BATCH_DIRTY_FILE" 2>/dev/null || touch "$INGEST_BATCH_DIRTY_FILE"
+        fi
+}
+
+post_batch_follow_up_loop() {
+        local interval="$INGEST_BATCH_QUIET_SECONDS"
+        if [ "$interval" -lt 1 ]; then
+                interval=1
+        fi
+        while true; do
+                maybe_run_post_batch_follow_up
+                sleep "$interval"
+        done
+}
+
+POST_BATCH_FOLLOW_UP_PID=""
+
+cleanup_background_jobs() {
+        if [ -n "$POST_BATCH_FOLLOW_UP_PID" ]; then
+                kill "$POST_BATCH_FOLLOW_UP_PID" 2>/dev/null || true
+                wait "$POST_BATCH_FOLLOW_UP_PID" 2>/dev/null || true
+                POST_BATCH_FOLLOW_UP_PID=""
+        fi
+}
+
+terminate_service() {
+        cleanup_background_jobs
+        exit 0
+}
+
 process_retry_queue() {
         if [ -s "$QUEUE_FILE" ]; then
                 echo "[cwa-ingest-service] Processing retry queue..."
@@ -155,8 +363,13 @@ process_retry_queue() {
                                 echo "[cwa-ingest-service] Retrying: $queued_file"
                                 local configured_timeout=$(get_timeout_from_db)  # Get configured timeout from database
                                 local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
-                                timeout $safety_timeout s6-setuidgid abc python3 /app/calibre-web-automated/scripts/ingest_processor.py "$queued_file"
+                                local processing_marker
+                                processing_marker=$(processing_marker_for_path "$queued_file")
+                                mkdir -p "$PROCESSING_DIR"
+                                : > "$processing_marker"
+                                run_processor_with_timeout "$safety_timeout" "$queued_file"
                                 local retry_exit=$?
+                                rm -f "$processing_marker" 2>/dev/null || true
 
                                 if [ $retry_exit -eq 2 ]; then
                                         # Still busy, keep in queue
@@ -170,11 +383,18 @@ process_retry_queue() {
                                                 cp "$queued_file" "/config/processed_books/failed/$failed_filename" 2>/dev/null || true
                                         fi
                                         rm -f "$queued_file" 2>/dev/null || true
+                                        mark_recent_path "$queued_file"
                                 elif [ $retry_exit -eq 0 ]; then
                                         echo "[cwa-ingest-service] Successfully processed retry: $queued_file"
+                                        mark_recent_path "$queued_file"
+                                        touch "$INGEST_BATCH_LAST_SUCCESS_FILE" 2>/dev/null || true
                                 else
                                         echo "[cwa-ingest-service] Error on retry: $queued_file (exit: $retry_exit)"
+                                        mark_recent_path "$queued_file"
                                 fi
+                        else
+                                echo "[cwa-ingest-service] Skipping vanished retry queue entry: $queued_file"
+                                mark_recent_path "$queued_file"
                         fi
                 done < "$QUEUE_FILE"
 
@@ -184,12 +404,11 @@ process_retry_queue() {
                         echo "[cwa-ingest-service] $(wc -l < "$QUEUE_FILE") files remain in retry queue"
                 fi
         fi
+        maybe_run_post_batch_follow_up
 }
 
 handle_event() {
         local filepath="$1"
-        local configured_timeout=$(get_timeout_from_db)  # Get configured timeout from database
-        local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
         local filename=$(basename "$filepath")
 
         # temp suffixes
@@ -206,15 +425,39 @@ handle_event() {
                 return 0
         fi
 
+        if is_recent_duplicate_event "$filepath"; then
+                echo "[cwa-ingest-service] Skipping duplicate recent event: $filepath"
+                return 0
+        fi
+
+        if [ ! -e "$filepath" ]; then
+                echo "[cwa-ingest-service] Skipping stale event for missing file: $filepath"
+                mark_recent_path "$filepath"
+                return 0
+        fi
+
+        if has_live_processing_marker "$filepath"; then
+                echo "[cwa-ingest-service] Skipping duplicate event for in-flight file: $filepath"
+                return 0
+        fi
+
         cleanup_stale_temps
+
+        local configured_timeout=$(get_timeout_from_db)  # Get configured timeout from database
+        local safety_timeout=$((configured_timeout * 3))  # Safety timeout is 3x the configured timeout
+        local processing_marker
+        processing_marker=$(processing_marker_for_path "$filepath")
 
         echo "[cwa-ingest-service] New file detected - $filepath - Starting Ingest Processor..."
         echo "[cwa-ingest-service] Configured timeout: ${configured_timeout}s, Safety timeout: ${safety_timeout}s"
         echo "processing:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
 
         # Use safety timeout as last resort - processor should handle its own timeout internally
-        timeout $safety_timeout s6-setuidgid abc python3 /app/calibre-web-automated/scripts/ingest_processor.py "$filepath"
+        mkdir -p "$PROCESSING_DIR"
+        : > "$processing_marker"
+        run_processor_with_timeout "$safety_timeout" "$filepath"
         local exit_code=$?
+        rm -f "$processing_marker" 2>/dev/null || true
 
         if [ $exit_code -eq 124 ]; then
                 echo "[cwa-ingest-service] SAFETY TIMEOUT: $filepath took longer than safety timeout of ${safety_timeout} seconds"
@@ -228,6 +471,7 @@ handle_event() {
                         cp "$filepath" "/config/processed_books/failed/$failed_filename" 2>/dev/null || true
                 fi
                 rm -f "$filepath" 2>/dev/null || true
+                mark_recent_path "$filepath"
         elif [ $exit_code -eq 2 ]; then
                 echo "[cwa-ingest-service] Processor busy, adding to retry queue: $filepath"
                 echo "queued:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
@@ -246,15 +490,28 @@ handle_event() {
         elif [ $exit_code -ne 0 ]; then
                 echo "[cwa-ingest-service] Error processing $filepath (exit code: $exit_code)"
                 echo "error:$filename:$exit_code:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                mark_recent_path "$filepath"
         else
                 echo "[cwa-ingest-service] Successfully processed: $filepath"
                 echo "completed:$filename:$(date '+%Y-%m-%d %H:%M:%S')" > "$STATUS_FILE"
+                mark_recent_path "$filepath"
+                touch "$INGEST_BATCH_LAST_SUCCESS_FILE" 2>/dev/null || true
                 # Try to process any queued files after successful completion
                 process_retry_queue
+                maybe_run_post_batch_follow_up
         fi
 
         echo "idle" > "$STATUS_FILE"
 }
+
+if [ "${CWA_INGEST_SERVICE_TEST_MODE:-0}" = "1" ]; then
+        return 0 2>/dev/null || exit 0
+fi
+
+post_batch_follow_up_loop &
+POST_BATCH_FOLLOW_UP_PID=$!
+trap cleanup_background_jobs EXIT
+trap terminate_service TERM HUP INT
 
 if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
         echo "[cwa-ingest-service] NETWORK_SHARE_MODE=true -> using fallback watcher"
@@ -291,4 +548,3 @@ fi
                 handle_event "$filepath"
         done
 ) || run_fallback
-

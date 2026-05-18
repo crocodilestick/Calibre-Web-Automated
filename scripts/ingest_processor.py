@@ -23,31 +23,53 @@ from pathlib import Path
 # fast-exit when there's nothing to process. Globals declared just below
 # so _load_runtime_dependencies() can rebind them.
 
-# Path-shim so cps.services.* is importable when this script runs as a
-# standalone subprocess (the cwa-ingest-service entrypoint). cps lives
-# at /app/calibre-web-automated/cps in the container; pytest runs add
-# the same root via PYTHONPATH=scripts:.
+# Fork-original (PR #122 + PR #199) imports — _calibre_plugins and
+# metadata_db_write_lock — are loaded lazily by _load_optional_cps_modules()
+# so they don't fire cps/__init__.py (and its ProxyFix logger setup) on
+# the fast-exit path that @navels designed in CWA #1349. Default to a
+# no-op fallback so callsites that reference these names work even if
+# the lazy load hasn't happened yet (or fails in a test environment).
+_calibre_plugins = None
 _CPS_ROOT = "/app/calibre-web-automated"
-if _CPS_ROOT not in sys.path:
-    sys.path.insert(0, _CPS_ROOT)
-try:
-    from cps.services import calibre_user_plugins as _calibre_plugins
-except ImportError:
-    _calibre_plugins = None  # tests with a partial path will skip this branch
+from contextlib import contextmanager as _contextmanager
 
-# Process-shared metadata.db write lock. Coordinates with the Flask
-# app's commit path so concurrent ingest doesn't poison Edit Book
-# saves (and vice versa) on filesystems with weak POSIX locks. See
-# fork issue #192.
-try:
-    from cps.services.calibre_db_lock import metadata_db_write_lock
-except ImportError:
-    from contextlib import contextmanager
-    @contextmanager
-    def metadata_db_write_lock(*args, **kwargs):  # type: ignore[misc]
-        # No-op fallback when running outside the container. The lock
-        # is advisory; tests that don't need it still work.
-        yield
+
+@_contextmanager
+def _noop_metadata_db_write_lock(*args, **kwargs):
+    # No-op fallback used when running outside the container OR before
+    # _load_optional_cps_modules() has been called. The fcntl-based
+    # lock is advisory; in test paths that don't reach the cps import,
+    # this fallback preserves callsite semantics.
+    yield
+
+
+metadata_db_write_lock = _noop_metadata_db_write_lock
+
+
+def _load_fork_cps_imports() -> None:
+    """Lazy import of fork-PR-introduced cps.services helpers.
+
+    Called from _load_optional_cps_modules() (CWA #1349 path) so the
+    cps package isn't loaded at module-import time — preserving
+    @navels' fast-exit design. Safe to call multiple times; both
+    rebinds are idempotent.
+    """
+    global _calibre_plugins, metadata_db_write_lock
+
+    if _CPS_ROOT not in sys.path:
+        sys.path.insert(0, _CPS_ROOT)
+
+    try:
+        from cps.services import calibre_user_plugins as _module_plugins
+        _calibre_plugins = _module_plugins
+    except ImportError:
+        _calibre_plugins = None
+
+    try:
+        from cps.services.calibre_db_lock import metadata_db_write_lock as _module_lock
+        metadata_db_write_lock = _module_lock
+    except ImportError:
+        metadata_db_write_lock = _noop_metadata_db_write_lock
 
 
 # Retry calibredb add on transient "database is locked" / BusyError.
@@ -341,6 +363,10 @@ def _load_optional_cps_modules() -> None:
 
     try:
         _ensure_project_root_on_path()
+        # Fork-PR helpers (PR #122 calibre_user_plugins, PR #199 metadata
+        # write-lock) live in cps.services — load them now that we're
+        # past @navels' fast-exit gate.
+        _load_fork_cps_imports()
 
         # Import GDrive functionality
         try:

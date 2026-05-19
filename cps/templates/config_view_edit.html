@@ -110,22 +110,24 @@
       <input type="hidden" name="config_cc_display_order" id="config_cc_display_order" value="">
       {% set link_col_ids = (conf.config_cc_link_columns or '').split(',') %}
       {% set hide_col_ids = (conf.config_cc_hidden_columns or '').split(',') %}
-      <ul id="cc-order-list" class="list-group">
-        {% for col in allColumns %}
-        <li class="list-group-item cc-order-item" data-id="{{ col.id }}">
-          <span class="glyphicon glyphicon-move cc-drag-handle"></span>
-          <span class="cc-col-name">{{ col.name }}</span>
-          <label class="cc-link-label">
-            <input type="checkbox" name="cc_hide_{{ col.id }}" {% if col.id|string in hide_col_ids %}checked{% endif %}>
-            {{_('Hide')}}
-          </label>
-          <label class="cc-link-label">
-            <input type="checkbox" name="cc_link_{{ col.id }}" {% if col.id|string in link_col_ids %}checked{% endif %}>
-            {{_('Link')}}
-          </label>
-        </li>
-        {% endfor %}
-      </ul>
+      <div id="cc-order-list-outer">
+        <div id="cc-order-list">
+          {% for col in allColumns %}
+          <div class="cc-order-item" data-id="{{ col.id }}">
+            <span class="cc-drag-handle">⋮⋮</span>
+            <span class="cc-col-name">{{ col.name }}</span>
+            <label class="cc-link-label">
+              <input type="checkbox" name="cc_hide_{{ col.id }}" {% if col.id|string in hide_col_ids %}checked{% endif %}>
+              {{_('Hide')}}
+            </label>
+            <label class="cc-link-label">
+              <input type="checkbox" name="cc_link_{{ col.id }}" {% if col.id|string in link_col_ids %}checked{% endif %}>
+              {{_('Link')}}
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
     </div>
     {% endif %}
 
@@ -248,24 +250,65 @@
 {{ restrict_modal() }}
 {% endblock %}
 {% block js %}
-<script src="{{ url_for('static', filename='js/libs/Sortable.min.js') }}"></script>
 <script>
 (function() {
   var list = document.getElementById('cc-order-list');
   var orderInput = document.getElementById('config_cc_display_order');
   if (!list || !orderInput) return;
+
   function updateOrder() {
     var items = list.querySelectorAll('.cc-order-item');
     var ids = Array.prototype.map.call(items, function(el) { return el.getAttribute('data-id'); });
     orderInput.value = ids.join(',');
   }
   updateOrder();
-  Sortable.create(list, {
-    animation: 150,
-    filter: 'input, label',
-    preventOnFilter: false,
-    onEnd: updateOrder
+
+  var draggedElement = null;
+  var isDragging = false;
+
+  list.addEventListener('mousedown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'LABEL') return;
+    var item = e.target.closest('.cc-order-item');
+    if (!item) return;
+    draggedElement = item;
+    isDragging = true;
+    item.classList.add('dragging');
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
   });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging || !draggedElement) return;
+    var afterElement = getAfterElement(list, e.clientY);
+    if (afterElement == null) {
+      list.appendChild(draggedElement);
+    } else {
+      list.insertBefore(draggedElement, afterElement);
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (!isDragging) return;
+    isDragging = false;
+    if (draggedElement) {
+      draggedElement.classList.remove('dragging');
+      draggedElement = null;
+    }
+    document.body.style.userSelect = '';
+    updateOrder();
+  });
+
+  function getAfterElement(container, y) {
+    var elements = Array.from(container.querySelectorAll('.cc-order-item:not(.dragging)'));
+    return elements.reduce(function(closest, child) {
+      var box = child.getBoundingClientRect();
+      var offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      }
+      return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
 })();
 </script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>

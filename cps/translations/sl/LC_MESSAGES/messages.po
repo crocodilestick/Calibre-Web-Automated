@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 00:01+0000\n"
+"POT-Creation-Date: 2026-05-19 05:41+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -1234,7 +1234,7 @@ msgstr "{} uporabnikov uspešno izbrisanih"
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1418 cps/templates/config_edit.html:333
+#: cps/db.py:1449 cps/templates/config_edit.html:333
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:694 cps/web.py:728 cps/web.py:773 cps/web.py:813 cps/web.py:842

@@ -312,4 +312,4 @@ VOLUME /calibre-library
 # IPv6/v4 resolution flakes on hosts where 'localhost' takes the AAAA
 # path first.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=120s --retries=3 \
-  CMD curl -fsS http://127.0.0.1:${CWA_PORT_OVERRIDE:-8083}/health || exit 1
+  CMD curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:${CWA_PORT_OVERRIDE:-8083}/health || exit 1

@@ -82,3 +82,34 @@ def test_format_request_handles_none_client_address_with_none_environ():
     result = MyWSGIHandler.format_request(handler)
     assert isinstance(result, str)
     assert result.startswith("- ")
+
+
+def test_read_request_forces_connection_close():
+    """``MyWSGIHandler.read_request`` must set ``close_connection = True``
+    on every parsed request.
+
+    Reverse-proxy keepalive sockets can stay attached to the gevent
+    process after the client side has gone away — when the app is
+    overloaded or restarted, those stale sockets prevent the gevent
+    process from accepting new work, and the healthcheck wedges because
+    no greenlet can run. Forcing connection-close after each response
+    means the proxy renegotiates a fresh socket on the next request,
+    which avoids the stuck-keepalive failure mode.
+
+    Backport of CWA #1335 by @I-Would-Like-To-Report-A-Bug-Please. Pins
+    the source-level invariant so a future refactor (or upstream PR
+    pulling the underlying ``WSGIHandler`` apart) can't silently revert
+    the close-after-response behaviour.
+    """
+    import inspect
+
+    source = inspect.getsource(MyWSGIHandler)
+    assert "def read_request" in source, (
+        "MyWSGIHandler must override read_request to force "
+        "self.close_connection = True after each parsed request."
+    )
+    assert "self.close_connection = True" in source, (
+        "MyWSGIHandler.read_request must set self.close_connection = True "
+        "so stale reverse-proxy keepalive sockets don't accumulate against "
+        "the gevent process. See fork issue #193 + CWA #1335."
+    )

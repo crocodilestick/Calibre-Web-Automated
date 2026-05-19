@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 22:12+0000\n"
+"POT-Creation-Date: 2026-05-19 22:33+0000\n"
 "PO-Revision-Date: 2025-12-02 12:00+0000\n"
 "Last-Translator: Alex <298750+alexantao@users.noreply.github.com>\n"
 "Language-Team: pt_BR <LL@li.org>\n"
@@ -1322,8 +1322,8 @@ msgstr ""
 msgid "File to be uploaded must have an extension"
 msgstr "O arquivo a ser carregado deve ter uma extensão"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3023
-#: cps/web.py:3115 cps/web.py:3210
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3026
+#: cps/web.py:3118 cps/web.py:3213
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -2703,12 +2703,12 @@ msgstr "Encontrada uma conta existente para este endereço de e-mail."
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:3009
+#: cps/web.py:3012
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3128
+#: cps/web.py:3131
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "ID de livro inválido."

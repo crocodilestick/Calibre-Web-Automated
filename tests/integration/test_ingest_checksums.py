@@ -14,6 +14,7 @@ Note: These are integration tests that require a running CWA container.
 """
 
 import pytest
+import subprocess
 import sys
 import time
 import sqlite3
@@ -22,6 +23,41 @@ from pathlib import Path
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _enable_koreader_sync(cwa_container, container_name):
+    """Flip `cwa_settings.koreader_sync_enabled` to 1 for this module's lifetime.
+
+    PR #238 / fork #219 gated `book_format_checksums` writes on this flag so
+    disabled-sync instances skip the (slow) partial-MD5 work. The default in
+    `cwa_schema.sql` is 0, so a fresh test container reports `len(checksums)
+    == 0` after ingest and every test in this module would assertion-fail —
+    the regression fork #244 documents.
+
+    The feature these tests verify (checksum generation during ingest) only
+    runs when sync is enabled. Skipping the tests when the flag is 0 would
+    be coverage theater. Enabling the flag exercises the real path.
+
+    `is_koreader_sync_enabled()` re-reads cwa_settings via a fresh
+    `CWA_DB()` instance on every call, so the in-container ingest_processor
+    picks up the flip immediately without a service restart.
+    """
+    subprocess.run(
+        ["docker", "exec", container_name, "sqlite3", "/config/cwa.db",
+         "UPDATE cwa_settings SET koreader_sync_enabled=1"],
+        check=True, timeout=10,
+    )
+    try:
+        yield
+    finally:
+        # Restore the schema default so any later test module that shares the
+        # session-scoped container sees the unmodified state.
+        subprocess.run(
+            ["docker", "exec", container_name, "sqlite3", "/config/cwa.db",
+             "UPDATE cwa_settings SET koreader_sync_enabled=0"],
+            check=False, timeout=10,
+        )
 
 
 def get_book_checksums(db_path, book_id=None):
@@ -39,10 +75,6 @@ def get_book_checksums(db_path, book_id=None):
                 SELECT book, format, checksum FROM book_format_checksums
             """).fetchall()
         return results
-    except sqlite3.OperationalError as e:
-        if "no such table: book_format_checksums" in str(e).lower():
-            pytest.skip("KOReader sync disabled; checksum table not initialized")
-        raise
     finally:
         conn.close()
 

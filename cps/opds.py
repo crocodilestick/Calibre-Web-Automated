@@ -1061,6 +1061,60 @@ def _opds_feed_not_found(_unknown):
     return response
 
 
+# Fork issue #224 / @droM4X: errors raised from inside OPDS routes
+# (``abort(404)`` for unknown book ids, ``abort(403)`` for denied tags,
+# unhandled exceptions, etc.) used to surface as stock Flask HTML error
+# pages — readers like Readest / KOReader can't parse HTML and showed
+# the user "broken feed" with no useful info. The blueprint-level
+# errorhandlers below catch each HTTP error code and return a small
+# Atom-shaped body with the correct ``application/atom+xml`` content-
+# type and the original status code preserved.
+#
+# 401 also sets ``WWW-Authenticate: Basic realm="OPDS"`` so HTTP-Basic
+# readers prompt the user for credentials instead of silently failing.
+# (Flask-HTTPAuth's own ``auth_error_callback`` short-circuits for the
+# authenticate-required decorator path — that response already carries
+# the right header. This handler covers any explicit ``abort(401)`` from
+# inside an OPDS route, e.g. reverse-proxy header rejection.)
+def _opds_error_body(title, error_id):
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<feed xmlns="http://www.w3.org/2005/Atom">\n'
+        f'  <id>{error_id}</id>\n'
+        f'  <title>{title}</title>\n'
+        '</feed>\n'
+    )
+
+
+@opds.errorhandler(401)
+def _opds_unauthorized(_error):
+    response = make_response(_opds_error_body("Unauthorized", "opds-unauthorized"), 401)
+    response.headers["Content-Type"] = "application/atom+xml; charset=utf-8"
+    response.headers["WWW-Authenticate"] = 'Basic realm="OPDS"'
+    return response
+
+
+@opds.errorhandler(403)
+def _opds_forbidden(_error):
+    response = make_response(_opds_error_body("Forbidden", "opds-forbidden"), 403)
+    response.headers["Content-Type"] = "application/atom+xml; charset=utf-8"
+    return response
+
+
+@opds.errorhandler(404)
+def _opds_not_found(_error):
+    response = make_response(_opds_error_body("Not Found", "opds-not-found"), 404)
+    response.headers["Content-Type"] = "application/atom+xml; charset=utf-8"
+    return response
+
+
+@opds.errorhandler(500)
+def _opds_internal_error(_error):
+    response = make_response(_opds_error_body("Internal Server Error", "opds-internal-error"), 500)
+    response.headers["Content-Type"] = "application/atom+xml; charset=utf-8"
+    return response
+
+
 def render_xml_template(*args, **kwargs):
     # ToDo: return time in current timezone similar to %z
     currtime = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S+00:00")

@@ -73,6 +73,14 @@ class Metadata:
         title_patterns = [
             (re.compile(pat, re.IGNORECASE), repl)
             for pat, repl in [
+                # Strip apostrophe-class characters so "Winter's" tokenizes to
+                # "Winters" (one token, no %27) — catalogs index the
+                # apostrophe-free form and miss titles otherwise (issue #217).
+                # Covers ASCII (U+0027), curly (U+2018/U+2019), modifier letter
+                # (U+02BC, Hawaiian okina), backtick (U+0060), acute accent
+                # (U+00B4). Removal, not space-replacement — keep contractions
+                # joined.
+                (r"['‘’ʼ`´]", ""),
                 # Remove things like: (2010) (Omnibus) etc.
                 (
                     r"(?i)[({\[](\d{4}|omnibus|anthology|hardcover|"
@@ -87,8 +95,13 @@ class Metadata:
                 (r"(\d+),(\d+)", r"\1\2"),
                 # Remove hyphens only if they have whitespace before them
                 (r"(\s-)", " "),
-                # Replace other special chars with a space
-                (r"""[:,;!@$%^&*(){}.`~"\s\[\]/]《》「」“”""", " "),
+                # Replace other special chars with a space. The CJK quotes
+                # 《》「」“” live INSIDE the character class — historically
+                # they were appended after the bracket, which made them a
+                # required literal suffix that never actually matched (so
+                # colons/semicolons never split tokens either). Issue #217
+                # follow-up.
+                (r"""[:,;!@$%^&*(){}.~"\s\[\]/《》「」“”]""", " "),
             ]
         ]
 

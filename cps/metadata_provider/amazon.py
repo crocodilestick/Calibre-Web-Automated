@@ -170,12 +170,17 @@ class Amazon(Metadata):
 
         val = list()
         if self.active:
+            # Tokenize via the shared Metadata.get_title_tokens so apostrophe-class
+            # chars are stripped (issue #217) before Amazon URL-encodes them.
+            # Amazon's catalog index stores the apostrophe-free form, so the
+            # raw query `Alice's` → `Alice%27s` historically returned no hits.
+            search_query = " ".join(self.get_title_tokens(query, strip_joiners=False)) or query
             q = {
                 'unfiltered': '1',
                 'sort': 'relevanceexprank',
                 'search-alias': 'stripbooks',
                 'i': 'digital-text',
-                'field-keywords': query,
+                'field-keywords': search_query,
             }
 
             try:

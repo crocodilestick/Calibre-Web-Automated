@@ -376,6 +376,45 @@ def create_app():
             # Failsafe: let route-level code handle specific DB errors
             pass
 
+    @app.before_request
+    def _clear_pending_app_password():
+        """Drop a just-created app-password cleartext from session when
+        the user navigates away from the profile page. Fork issue #223:
+        the cleartext shows inline on /me and survives reloads of /me,
+        but disappears as soon as the user clicks anything else.
+
+        Scoped to **top-level HTML navigations** via the ``Sec-Fetch-Dest``
+        header (browsers send ``document`` for address-bar navigations
+        and link clicks; ``image``/``style``/``script``/``empty`` for
+        sub-resources). XHR + fetch requests count as sub-resources and
+        do not clear the session — only an actual page change does.
+        """
+        from flask import session, request
+        if "pending_app_password" not in session:
+            return
+        # Modern browsers send Sec-Fetch-Dest on every request. Treat
+        # missing header as "unknown — be conservative, don't clear"
+        # so curl / older clients can't accidentally pop the cleartext.
+        dest = request.headers.get("Sec-Fetch-Dest", "")
+        if dest and dest != "document":
+            return
+        if not dest:
+            # Fallback for clients without the header: only clear on
+            # text/html GETs that aren't static-file fetches.
+            if request.endpoint == "static" or request.method != "GET":
+                return
+            if not request.accept_mimetypes.accept_html:
+                return
+        # On a real top-level navigation, only the profile-section
+        # endpoints keep the cleartext alive.
+        keep_endpoints = {
+            "web.profile",
+            "web.app_password_create",
+            "web.app_password_revoke",
+        }
+        if request.endpoint not in keep_endpoints:
+            session.pop("pending_app_password", None)
+
     @app.teardown_appcontext
     def shutdown_session(exception=None):
         if calibre_db.session_factory:

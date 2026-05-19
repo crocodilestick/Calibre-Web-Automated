@@ -595,6 +595,24 @@
     <h4 class="settings-section-header">{{_('App passwords for OPDS / KOReader Sync')}}</h4>
     <p class="settings-explanation">{{_("OPDS readers and KOReader can't sign in through your IdP — they only support HTTP Basic auth. Create an app password here, label it for the device that'll use it, and copy the token shown after creation. You can revoke any app password at any time without affecting your active web session.")}}</p>
 
+    {# Fork issue #223: show the just-created cleartext inline at the top
+       of this section. Survives reloads of /me; vanishes on navigation
+       to any other route (see _clear_pending_app_password in cps/__init__.py). #}
+    {% if pending_app_password %}
+    <div id="pending-app-password" role="region" aria-label="{{_('New app password')}}"
+         style="margin-top: 1rem; padding: 14px 16px; border-radius: 6px; background-color: #2f4a2f; border: 1px solid #5b8a5b;">
+      <div style="font-weight: 600; margin-bottom: 6px; color: #cfe9cf;">{{_("App password created for '%(label)s'. Copy it now — you won't see it again.", label=pending_app_password.label)}}</div>
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <input type="text" readonly value="{{ pending_app_password.token }}"
+               style="flex: 1; min-width: 280px; font-family: monospace; padding: 8px 10px; background-color: #1a2418; border: 1px solid #5b8a5b; color: #e0f0e0;"
+               aria-label="{{_('New app password (cleartext)')}}"
+               onclick="this.select();"/>
+        <button type="button" class="btn btn-default"
+                onclick="(function(b){var i=b.previousElementSibling;i.select();document.execCommand('copy');b.textContent='{{_('Copied!')}}';setTimeout(function(){b.textContent='{{_('Copy')}}';},2000);})(this)">{{_('Copy')}}</button>
+      </div>
+    </div>
+    {% endif %}
+
     <form action="{{ url_for('web.app_password_create') }}" method="POST" style="margin-top: 1rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <input type="text" name="label" placeholder="{{_('e.g. Kobo Forma, KOReader iPad')}}" maxlength="64" required

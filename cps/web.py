@@ -2954,6 +2954,7 @@ def profile():
                                  page="me",
                                  registered_oauth=local_oauth_check,
                                  oauth_status=oauth_status,
+                                 pending_app_password=flask_session.get("pending_app_password"),
                                  app_passwords=ub.session.query(ub.UserAppPassword).filter(
                                      ub.UserAppPassword.user_id == current_user.id,
                                      ub.UserAppPassword.revoked == False,  # noqa: E712
@@ -2985,9 +2986,10 @@ def app_password_create():
     )
     ub.session.add(row)
     ub.session.commit()
-    # Cleartext shown exactly once. The user must copy it now.
-    flash(_("App password created for '%(label)s'. Copy it now — you won't see it again: %(token)s",
-            label=label, token=cleartext), category="info")
+    # Cleartext shown inline on the profile page (fork issue #223). Survives
+    # reloads of /me; cleared on navigation to any other route by the
+    # _clear_pending_app_password before_request hook below.
+    flask_session["pending_app_password"] = {"label": label, "token": cleartext}
     return redirect(url_for("web.profile"))
 
 

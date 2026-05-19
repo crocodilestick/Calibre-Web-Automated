@@ -349,8 +349,10 @@ def HandleSyncRequest():
 
     # no. of books returned
     book_count = changed_entries.count()
-    # last entry:
-    cont_sync = bool(book_count)
+    # Mirror the reading-states branch below: only signal `continue` when
+    # the result set exceeds the batch cap, so an exhaustive batch ends
+    # the session and the device persists the advanced synctoken.
+    cont_sync = bool(book_count > SYNC_ITEM_LIMIT)
     log.debug("Kobo Sync: remaining books to sync: {}".format(book_count))
     # generate reading state data
     changed_reading_states = ub.session.query(ub.KoboReadingState)

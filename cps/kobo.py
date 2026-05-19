@@ -946,6 +946,7 @@ def HandleStateRequest(book_uuid):
                 current_bookmark.progress_percent = request_bookmark["ProgressPercent"]
                 current_bookmark.content_source_progress_percent = request_bookmark["ContentSourceProgressPercent"]
                 current_bookmark.device_id = request.headers.get('x-kobo-deviceid')
+                current_bookmark.device_model = request.headers.get('x-kobo-devicemodel')
                 location = request_bookmark["Location"]
                 if location:
                     current_bookmark.location_value = location["Value"]
@@ -1109,6 +1110,8 @@ def get_current_bookmark_response(current_bookmark):
         }
     if current_bookmark.device_id is not None:
         resp["DeviceId"] = current_bookmark.device_id
+    if current_bookmark.device_model is not None:
+        resp["DeviceModel"] = current_bookmark.device_model
     return resp
 
 

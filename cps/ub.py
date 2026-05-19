@@ -603,6 +603,7 @@ class KoboBookmark(Base):
     progress_percent = Column(Float)
     content_source_progress_percent = Column(Float)
     device_id = Column(String)
+    device_model = Column(String)
 
 
 class KoboStatistics(Base):
@@ -1039,13 +1040,19 @@ def migrate_magic_shelf_table(engine, _session):
 
 
 def migrate_kobo_bookmark_table(engine, _session):
-    """Migrate kobo_bookmark table to add device_id column for multi-device sync."""
+    """Migrate kobo_bookmark table to add device_id and device_model columns for multi-device sync."""
     try:
         _session.query(exists().where(KoboBookmark.device_id)).scalar()
         _session.commit()
     except exc.OperationalError:
         _safe_session_rollback(_session, "kobo_bookmark.device_id")
         _run_ddl_with_retry(engine, "ALTER TABLE kobo_bookmark ADD column 'device_id' String")
+    try:
+        _session.query(exists().where(KoboBookmark.device_model)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "kobo_bookmark.device_model")
+        _run_ddl_with_retry(engine, "ALTER TABLE kobo_bookmark ADD column 'device_model' String")
 
 
 # Migrate database to current version, has to be updated after every database change. Currently migration from

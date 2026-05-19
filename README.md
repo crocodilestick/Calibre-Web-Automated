@@ -348,7 +348,7 @@ Check the [issue tracker](https://github.com/new-usemame/Calibre-Web-NextGen/iss
 | Kobo bookmark sync with missing `Location` | Crashes | Tolerates |
 | `/kobo_auth/generate_auth_token` IDOR | Open (any user can mint another user's token) | Closed |
 | Reverse-proxy user-profile updates | Drops path prefix | Honors `getPath()` |
-| Docker healthcheck on `/ → /login` 302 | Trips on `curl -f` | Uses `-fsL` |
+| Docker healthcheck on `/ → /login` 302 | Trips on `curl -f` | Uses dedicated endpoint with service health checks |
 | `.cbr` / `.cbz` OPDS mimetypes | Non-IANA | IANA-compliant |
 | Cover resolution on high-DPI readers | Often 290×475 (Hardcover thumbnail) | 1000×1500+ via booster |
 | Admin routes (`cwa_logs`, `convert`, `epub_fixer`, …) | 14 unauthenticated | All require admin |

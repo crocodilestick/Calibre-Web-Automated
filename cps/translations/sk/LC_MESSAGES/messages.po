@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 23:26+0000\n"
+"POT-Creation-Date: 2026-05-19 00:01+0000\n"
 "PO-Revision-Date: 2023-11-01 06:12+0100\n"
 "Last-Translator: Branislav Hanáček <brango@brango.sk>\n"
 "Language-Team: \n"
@@ -809,7 +809,7 @@ msgstr ""
 msgid "Uploaded file is not a SQLite database."
 msgstr ""
 
-#: cps/annotations.py:391 cps/templates/annotations_view.html:4
+#: cps/annotations.py:468 cps/templates/annotations_view.html:4
 #, python-format
 msgid "Annotations: %(title)s"
 msgstr ""
@@ -6744,7 +6744,7 @@ msgstr "Odhlásiť sa"
 msgid "Switch Theme"
 msgstr "Štandardná téma"
 
-#: cps/templates/layout.html:192 cps/templates/read.html:79
+#: cps/templates/layout.html:192 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
@@ -7090,68 +7090,77 @@ msgstr "Katalóg e-kníh Calibre-Web"
 msgid "epub Reader"
 msgstr "čítačka epub"
 
-#: cps/templates/read.html:85 cps/templates/readcbr.html:104
+#: cps/templates/read.html:33
+#, fuzzy
+msgid "Annotations"
+msgstr "Akcie"
+
+#: cps/templates/read.html:47
+msgid "Open annotations page"
+msgstr ""
+
+#: cps/templates/read.html:84 cps/templates/readcbr.html:104
 msgid "Light"
 msgstr "Svetlé"
 
-#: cps/templates/read.html:87 cps/templates/readcbr.html:105
+#: cps/templates/read.html:86 cps/templates/readcbr.html:105
 msgid "Dark"
 msgstr "Tmavé"
 
-#: cps/templates/read.html:89
+#: cps/templates/read.html:88
 msgid "Sepia"
 msgstr "Sépia"
 
-#: cps/templates/read.html:91
+#: cps/templates/read.html:90
 msgid "Black"
 msgstr "Čierne"
 
-#: cps/templates/read.html:96
+#: cps/templates/read.html:95
 msgid "Reflow text when sidebars are open."
 msgstr "Preformátovať text keď sú otvorené bočné panely."
 
-#: cps/templates/read.html:101
+#: cps/templates/read.html:100
 msgid "Font Sizes"
 msgstr "Veľkosť písma"
 
-#: cps/templates/read.html:106
+#: cps/templates/read.html:105
 msgid "Font"
 msgstr ""
 
-#: cps/templates/read.html:107
+#: cps/templates/read.html:106
 #, fuzzy
 msgid "Default"
 msgstr "Zmazať"
 
-#: cps/templates/read.html:108
+#: cps/templates/read.html:107
 msgid "Yahei"
 msgstr ""
 
-#: cps/templates/read.html:109
+#: cps/templates/read.html:108
 msgid "SimSun"
 msgstr ""
 
-#: cps/templates/read.html:110
+#: cps/templates/read.html:109
 #, fuzzy
 msgid "KaiTi"
 msgstr "Čakajúca"
 
-#: cps/templates/read.html:111
+#: cps/templates/read.html:110
 #, fuzzy
 msgid "Arial"
 msgstr "Vertikálne"
 
-#: cps/templates/read.html:114
+#: cps/templates/read.html:113
 #, fuzzy
 msgid "Spread"
 msgstr "Čítať"
 
-#: cps/templates/read.html:115
+#: cps/templates/read.html:114
 #, fuzzy
 msgid "Two columns"
 msgstr "Neplatný stĺpec na čítanie"
 
-#: cps/templates/read.html:116
+#: cps/templates/read.html:115
 #, fuzzy
 msgid "One column"
 msgstr "Neplatný stĺpec na čítanie"

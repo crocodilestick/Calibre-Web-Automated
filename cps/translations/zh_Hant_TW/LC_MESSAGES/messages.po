@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-18 23:26+0000\n"
+"POT-Creation-Date: 2026-05-19 00:01+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -789,7 +789,7 @@ msgstr ""
 msgid "Uploaded file is not a SQLite database."
 msgstr ""
 
-#: cps/annotations.py:391 cps/templates/annotations_view.html:4
+#: cps/annotations.py:468 cps/templates/annotations_view.html:4
 #, python-format
 msgid "Annotations: %(title)s"
 msgstr ""
@@ -6719,7 +6719,7 @@ msgstr "登出"
 msgid "Switch Theme"
 msgstr "標準主題"
 
-#: cps/templates/layout.html:192 cps/templates/read.html:79
+#: cps/templates/layout.html:192 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
@@ -7059,69 +7059,77 @@ msgstr "Caliebre-Web電子書路徑"
 msgid "epub Reader"
 msgstr "epub閱讀器"
 
-#: cps/templates/read.html:85 cps/templates/readcbr.html:104
+#: cps/templates/read.html:33
+msgid "Annotations"
+msgstr ""
+
+#: cps/templates/read.html:47
+msgid "Open annotations page"
+msgstr ""
+
+#: cps/templates/read.html:84 cps/templates/readcbr.html:104
 msgid "Light"
 msgstr "淺色"
 
-#: cps/templates/read.html:87 cps/templates/readcbr.html:105
+#: cps/templates/read.html:86 cps/templates/readcbr.html:105
 msgid "Dark"
 msgstr "深色"
 
-#: cps/templates/read.html:89
+#: cps/templates/read.html:88
 msgid "Sepia"
 msgstr ""
 
-#: cps/templates/read.html:91
+#: cps/templates/read.html:90
 #, fuzzy
 msgid "Black"
 msgstr "後退"
 
-#: cps/templates/read.html:96
+#: cps/templates/read.html:95
 msgid "Reflow text when sidebars are open."
 msgstr "打開側欄時重排文本。"
 
-#: cps/templates/read.html:101
+#: cps/templates/read.html:100
 msgid "Font Sizes"
 msgstr ""
 
-#: cps/templates/read.html:106
+#: cps/templates/read.html:105
 msgid "Font"
 msgstr ""
 
-#: cps/templates/read.html:107
+#: cps/templates/read.html:106
 #, fuzzy
 msgid "Default"
 msgstr "刪除數據"
 
-#: cps/templates/read.html:108
+#: cps/templates/read.html:107
 msgid "Yahei"
 msgstr ""
 
-#: cps/templates/read.html:109
+#: cps/templates/read.html:108
 msgid "SimSun"
 msgstr ""
 
-#: cps/templates/read.html:110
+#: cps/templates/read.html:109
 #, fuzzy
 msgid "KaiTi"
 msgstr "等待中"
 
-#: cps/templates/read.html:111
+#: cps/templates/read.html:110
 #, fuzzy
 msgid "Arial"
 msgstr "垂直"
 
-#: cps/templates/read.html:114
+#: cps/templates/read.html:113
 #, fuzzy
 msgid "Spread"
 msgstr "已讀"
 
-#: cps/templates/read.html:115
+#: cps/templates/read.html:114
 #, fuzzy
 msgid "Two columns"
 msgstr "無效的閱讀列"
 
-#: cps/templates/read.html:116
+#: cps/templates/read.html:115
 #, fuzzy
 msgid "One column"
 msgstr "無效的閱讀列"

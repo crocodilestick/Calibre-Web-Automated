@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 22:33+0000\n"
+"POT-Creation-Date: 2026-05-19 23:19+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -3296,8 +3296,8 @@ msgstr "確定"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:951
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:498
-#: cps/templates/layout.html:653 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:525
+#: cps/templates/layout.html:680 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
@@ -3471,8 +3471,8 @@ msgstr "轉換書籍"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:177 cps/templates/layout.html:398
-#: cps/templates/layout.html:535 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:177 cps/templates/layout.html:425
+#: cps/templates/layout.html:562 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "關閉"
@@ -6339,7 +6339,7 @@ msgstr ""
 msgid "The following books will be permanently deleted:"
 msgstr "此書籍將從數據庫中永久刪除"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:450
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:477
 #, fuzzy
 msgid "Merge Books"
 msgstr "未讀書籍"
@@ -6439,7 +6439,8 @@ msgstr "輸入網域名"
 msgid "Denied Domains (Blacklist)"
 msgstr "禁止註冊的網域名（黑名單）"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:382
+#: cps/templates/feed.xml:31 cps/templates/layout.html:383
+#: cps/templates/layout.html:409
 msgid "Next"
 msgstr "下一個"
 
@@ -6752,131 +6753,131 @@ msgstr ""
 msgid "About"
 msgstr "關於"
 
-#: cps/templates/layout.html:367
+#: cps/templates/layout.html:368 cps/templates/layout.html:394
 msgid "Previous"
 msgstr "上一個"
 
-#: cps/templates/layout.html:394
+#: cps/templates/layout.html:421
 msgid "Book Details"
 msgstr "書籍詳情"
 
-#: cps/templates/layout.html:456
+#: cps/templates/layout.html:483
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "您確定要關閉嗎？"
 
-#: cps/templates/layout.html:462
+#: cps/templates/layout.html:489
 #, fuzzy
 msgid "Will be deleted"
 msgstr "合併選中的書籍"
 
-#: cps/templates/layout.html:466 cps/templates/layout.html:479
+#: cps/templates/layout.html:493 cps/templates/layout.html:506
 #, fuzzy
 msgid "Formats:"
 msgstr "上傳格式"
 
-#: cps/templates/layout.html:475
+#: cps/templates/layout.html:502
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:487
+#: cps/templates/layout.html:514
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:493
+#: cps/templates/layout.html:520
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "刪除格式:"
 
-#: cps/templates/layout.html:502
+#: cps/templates/layout.html:529
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:536
+#: cps/templates/layout.html:563
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "刪除書籍"
 
-#: cps/templates/layout.html:537
+#: cps/templates/layout.html:564
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:542
+#: cps/templates/layout.html:569
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "無搜索結果"
 
-#: cps/templates/layout.html:550
+#: cps/templates/layout.html:577
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:553
+#: cps/templates/layout.html:580
 msgid "View & Resolve Duplicates"
 msgstr ""
 
-#: cps/templates/layout.html:562
+#: cps/templates/layout.html:589
 #, fuzzy
 msgid "Scroll to top"
 msgstr "縮放到最佳"
 
-#: cps/templates/layout.html:564
+#: cps/templates/layout.html:591
 #, fuzzy
 msgid "Top"
 msgstr "到："
 
-#: cps/templates/layout.html:654
+#: cps/templates/layout.html:681
 #, fuzzy
 msgid "Confirm"
 msgstr "配置"
 
-#: cps/templates/layout.html:660
+#: cps/templates/layout.html:687
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "添加到書架"
 
-#: cps/templates/layout.html:661
+#: cps/templates/layout.html:688
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:662
+#: cps/templates/layout.html:689
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:663
+#: cps/templates/layout.html:690
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "合併選中的書籍"
 
-#: cps/templates/layout.html:664
+#: cps/templates/layout.html:691
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "標為未讀"
 
-#: cps/templates/layout.html:665
+#: cps/templates/layout.html:692
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "刪除書籍"
 
-#: cps/templates/layout.html:666
+#: cps/templates/layout.html:693
 #, fuzzy
 msgid "Delete books?"
 msgstr "刪除書籍"
 
-#: cps/templates/layout.html:667
+#: cps/templates/layout.html:694
 #, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
 "undone."
 msgstr ""
 
-#: cps/templates/layout.html:668
+#: cps/templates/layout.html:695
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "創建書架"
 
-#: cps/templates/layout.html:669
+#: cps/templates/layout.html:696
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "連接錯誤"

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 22:33+0000\n"
+"POT-Creation-Date: 2026-05-19 23:19+0000\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
 "Language-Team: \n"
@@ -3296,8 +3296,8 @@ msgstr "Ok"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:951
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:498
-#: cps/templates/layout.html:653 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:525
+#: cps/templates/layout.html:680 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
@@ -3472,8 +3472,8 @@ msgstr "Конвертувати книгу"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:177 cps/templates/layout.html:398
-#: cps/templates/layout.html:535 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:177 cps/templates/layout.html:425
+#: cps/templates/layout.html:562 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Закрити"
@@ -6348,7 +6348,7 @@ msgstr ""
 msgid "The following books will be permanently deleted:"
 msgstr "Книга буде видалена з БД Calibre"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:450
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:477
 #, fuzzy
 msgid "Merge Books"
 msgstr "Непрочитані книги"
@@ -6446,7 +6446,8 @@ msgstr "Введіть домен"
 msgid "Denied Domains (Blacklist)"
 msgstr "Заборонені домени (Чорний список)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:382
+#: cps/templates/feed.xml:31 cps/templates/layout.html:383
+#: cps/templates/layout.html:409
 msgid "Next"
 msgstr "Далі"
 
@@ -6758,130 +6759,130 @@ msgstr ""
 msgid "About"
 msgstr "Про програму"
 
-#: cps/templates/layout.html:367
+#: cps/templates/layout.html:368 cps/templates/layout.html:394
 msgid "Previous"
 msgstr "Попередній перегляд"
 
-#: cps/templates/layout.html:394
+#: cps/templates/layout.html:421
 msgid "Book Details"
 msgstr "Деталі"
 
-#: cps/templates/layout.html:456
+#: cps/templates/layout.html:483
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "Впевнені що хочете перезавантажити?"
 
-#: cps/templates/layout.html:462
+#: cps/templates/layout.html:489
 #, fuzzy
 msgid "Will be deleted"
 msgstr "Видалити книгу"
 
-#: cps/templates/layout.html:466 cps/templates/layout.html:479
+#: cps/templates/layout.html:493 cps/templates/layout.html:506
 #, fuzzy
 msgid "Formats:"
 msgstr "Формат завантаження"
 
-#: cps/templates/layout.html:475
+#: cps/templates/layout.html:502
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:487
+#: cps/templates/layout.html:514
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:493
+#: cps/templates/layout.html:520
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "Видалити формати:"
 
-#: cps/templates/layout.html:502
+#: cps/templates/layout.html:529
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:536
+#: cps/templates/layout.html:563
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Видалити книгу"
 
-#: cps/templates/layout.html:537
+#: cps/templates/layout.html:564
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:542
+#: cps/templates/layout.html:569
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Результати для:"
 
-#: cps/templates/layout.html:550
+#: cps/templates/layout.html:577
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:553
+#: cps/templates/layout.html:580
 msgid "View & Resolve Duplicates"
 msgstr ""
 
-#: cps/templates/layout.html:562
+#: cps/templates/layout.html:589
 msgid "Scroll to top"
 msgstr ""
 
-#: cps/templates/layout.html:564
+#: cps/templates/layout.html:591
 #, fuzzy
 msgid "Top"
 msgstr "До:"
 
-#: cps/templates/layout.html:654
+#: cps/templates/layout.html:681
 #, fuzzy
 msgid "Confirm"
 msgstr "Налаштування сервера"
 
-#: cps/templates/layout.html:660
+#: cps/templates/layout.html:687
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "Додати на книжкову полицю"
 
-#: cps/templates/layout.html:661
+#: cps/templates/layout.html:688
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:662
+#: cps/templates/layout.html:689
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:663
+#: cps/templates/layout.html:690
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "Відмітити як не прочитане"
 
-#: cps/templates/layout.html:664
+#: cps/templates/layout.html:691
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "Відмітити як не прочитане"
 
-#: cps/templates/layout.html:665
+#: cps/templates/layout.html:692
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "Видалити книгу"
 
-#: cps/templates/layout.html:666
+#: cps/templates/layout.html:693
 #, fuzzy
 msgid "Delete books?"
 msgstr "Видалити книгу"
 
-#: cps/templates/layout.html:667
+#: cps/templates/layout.html:694
 #, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
 "undone."
 msgstr ""
 
-#: cps/templates/layout.html:668
+#: cps/templates/layout.html:695
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "створити книжкову полицю"
 
-#: cps/templates/layout.html:669
+#: cps/templates/layout.html:696
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "Помилка зʼєднання"

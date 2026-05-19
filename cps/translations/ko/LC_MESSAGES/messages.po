@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 21:30+0000\n"
+"POT-Creation-Date: 2026-05-19 21:51+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -1235,7 +1235,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
 #: cps/editbooks.py:165 cps/editbooks.py:192 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:178
+#: cps/templates/layout.html:177
 msgid "Upload done, processing, please wait..."
 msgstr "업로드 완료, 처리 중입니다. 잠시만 기다려 주세요."
 
@@ -1874,7 +1874,7 @@ msgstr "파일 형식"
 msgid "Books ordered by file formats"
 msgstr "파일 형식별 정렬"
 
-#: cps/opds.py:247 cps/templates/layout.html:337
+#: cps/opds.py:247 cps/templates/layout.html:336
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "서재"
@@ -1904,7 +1904,7 @@ msgid "{} Stars"
 msgstr "{} Stars"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:161
-#: cps/templates/layout.html:203 cps/templates/login.html:11
+#: cps/templates/layout.html:202 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2365
 msgid "Login"
 msgstr "로그인"
@@ -2177,7 +2177,7 @@ msgstr ""
 "서재를 여는 동안 오류가 발생했습니다. 서재가 존재하지 않거나 접근할 수 없습니"
 "다"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:189
+#: cps/tasks_status.py:37 cps/templates/layout.html:188
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "작업"
@@ -2346,7 +2346,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "서재를 삭제하는 중 오류가 발생했습니다."
 
-#: cps/templates/layout.html:352 cps/web.py:1313
+#: cps/templates/layout.html:351 cps/web.py:1313
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "서재 생성"
@@ -2468,7 +2468,7 @@ msgstr "%(eReadermail)s에 전송 작업이 추가되었습니다."
 msgid "Please wait one minute to register next user"
 msgstr "다음 사용자를 등록은 1분 뒤 가능합니다."
 
-#: cps/templates/layout.html:162 cps/templates/layout.html:204
+#: cps/templates/layout.html:162 cps/templates/layout.html:203
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2244
 #: cps/web.py:2248 cps/web.py:2253 cps/web.py:2257 cps/web.py:2263
 #: cps/web.py:2288 cps/web.py:2292 cps/web.py:2305 cps/web.py:2308
@@ -2794,7 +2794,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "표지 섬네일 캐시를 삭제합니다."
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:181 cps/templates/user_table.html:146
+#: cps/templates/layout.html:180 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "업로드"
 
@@ -2835,8 +2835,8 @@ msgstr "책장에 추가"
 #: cps/templates/_book_organizer.html:104 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
 #: cps/templates/detail.html:1290 cps/templates/feed.xml:97
-#: cps/templates/feed.xml:99 cps/templates/layout.html:340
-#: cps/templates/layout.html:349 cps/templates/listenmp3.html:201
+#: cps/templates/feed.xml:99 cps/templates/layout.html:339
+#: cps/templates/layout.html:348 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 msgid "(Public)"
 msgstr "(공개)"
@@ -2985,7 +2985,7 @@ msgstr "전자책 리더로 보낼 이메일"
 msgid "Send to eReader Subject"
 msgstr "전자책 리더로 보내기"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:192
+#: cps/templates/admin.html:19 cps/templates/layout.html:191
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "관리자"
@@ -3265,8 +3265,8 @@ msgstr "예"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:951
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:499
-#: cps/templates/layout.html:654 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:498
+#: cps/templates/layout.html:653 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
@@ -3331,8 +3331,8 @@ msgid "total entries seen"
 msgstr ""
 
 #: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
-#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
-#: cps/templates/layout.html:309
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:177
+#: cps/templates/layout.html:308
 msgid "Uploading..."
 msgstr "업로드 중"
 
@@ -3439,8 +3439,8 @@ msgstr "책 변환"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:178 cps/templates/layout.html:399
-#: cps/templates/layout.html:536 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:177 cps/templates/layout.html:398
+#: cps/templates/layout.html:535 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "닫기"
@@ -3454,7 +3454,7 @@ msgstr "닫기"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:178
+#: cps/templates/layout.html:177
 msgid "Error"
 msgstr "오류"
 
@@ -6310,7 +6310,7 @@ msgstr "되돌릴 수 없습니다!"
 msgid "The following books will be permanently deleted:"
 msgstr "다음 책이 영구히 삭제됩니다:"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:451
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:450
 #, fuzzy
 msgid "Merge Books"
 msgstr "읽지 않음"
@@ -6406,7 +6406,7 @@ msgstr "도메인 입력"
 msgid "Denied Domains (Blacklist)"
 msgstr "차단 도메인 (블랙리스트)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:383
+#: cps/templates/feed.xml:31 cps/templates/layout.html:382
 msgid "Next"
 msgstr "다음"
 
@@ -6667,188 +6667,184 @@ msgstr "메뉴 열기/닫기"
 msgid "Search Library"
 msgstr "검색"
 
-#: cps/templates/layout.html:159 cps/templates/layout.html:196
+#: cps/templates/layout.html:159 cps/templates/layout.html:195
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "계정"
 
-#: cps/templates/layout.html:165 cps/templates/layout.html:198
+#: cps/templates/layout.html:165 cps/templates/layout.html:197
 msgid "Logout"
 msgstr "로그아웃"
 
-#: cps/templates/layout.html:173
-msgid "Switch Theme"
-msgstr "테마 변경"
-
-#: cps/templates/layout.html:192 cps/templates/read.html:78
+#: cps/templates/layout.html:191 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 msgid "Settings"
 msgstr "설정"
 
-#: cps/templates/layout.html:194
+#: cps/templates/layout.html:193
 msgid "Refresh Library"
 msgstr "서재 새로고침"
 
-#: cps/templates/layout.html:235
+#: cps/templates/layout.html:234
 msgid "See Changelog"
 msgstr "변경점 확인"
 
-#: cps/templates/layout.html:245
+#: cps/templates/layout.html:244
 #, fuzzy
 msgid "Open Duplicates"
 msgstr "중복인 책"
 
-#: cps/templates/layout.html:267
+#: cps/templates/layout.html:266
 msgid "Contribute here!"
 msgstr "여기에서 기여하세요!"
 
-#: cps/templates/layout.html:310
+#: cps/templates/layout.html:309
 msgid "Please do not refresh the page"
 msgstr "페이지를 새로고침하지 마세요."
 
-#: cps/templates/layout.html:320
+#: cps/templates/layout.html:319
 msgid "Browse"
 msgstr "탐색"
 
-#: cps/templates/layout.html:343
+#: cps/templates/layout.html:342
 #, fuzzy
 msgid "Create Shelf"
 msgstr "서재 생성"
 
-#: cps/templates/layout.html:347
+#: cps/templates/layout.html:346
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:356 cps/templates/stats.html:3
+#: cps/templates/layout.html:355 cps/templates/stats.html:3
 msgid "About"
 msgstr "서재 정보"
 
-#: cps/templates/layout.html:368
+#: cps/templates/layout.html:367
 msgid "Previous"
 msgstr "이전"
 
-#: cps/templates/layout.html:395
+#: cps/templates/layout.html:394
 msgid "Book Details"
 msgstr "책 상세정보"
 
-#: cps/templates/layout.html:457
+#: cps/templates/layout.html:456
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "되돌릴 수 없습니다!"
 
-#: cps/templates/layout.html:463
+#: cps/templates/layout.html:462
 #, fuzzy
 msgid "Will be deleted"
 msgstr "선택한 책 삭제"
 
-#: cps/templates/layout.html:467 cps/templates/layout.html:480
+#: cps/templates/layout.html:466 cps/templates/layout.html:479
 #, fuzzy
 msgid "Formats:"
 msgstr "결과 형식"
 
-#: cps/templates/layout.html:476
+#: cps/templates/layout.html:475
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:488
+#: cps/templates/layout.html:487
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:494
+#: cps/templates/layout.html:493
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "형식 삭제:"
 
-#: cps/templates/layout.html:503
+#: cps/templates/layout.html:502
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:537
+#: cps/templates/layout.html:536
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "책 복제"
 
-#: cps/templates/layout.html:538
+#: cps/templates/layout.html:537
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:543
+#: cps/templates/layout.html:542
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "중복된 책이 없습니다"
 
-#: cps/templates/layout.html:551
+#: cps/templates/layout.html:550
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:554
+#: cps/templates/layout.html:553
 #, fuzzy
 msgid "View & Resolve Duplicates"
 msgstr "중복인 책을 선택"
 
-#: cps/templates/layout.html:563
+#: cps/templates/layout.html:562
 #, fuzzy
 msgid "Scroll to top"
 msgstr "최적 크기"
 
-#: cps/templates/layout.html:565
+#: cps/templates/layout.html:564
 #, fuzzy
 msgid "Top"
 msgstr "종료:"
 
-#: cps/templates/layout.html:655
+#: cps/templates/layout.html:654
 #, fuzzy
 msgid "Confirm"
 msgstr "설정"
 
-#: cps/templates/layout.html:661
+#: cps/templates/layout.html:660
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "서재에 추가"
 
-#: cps/templates/layout.html:662
+#: cps/templates/layout.html:661
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:663
+#: cps/templates/layout.html:662
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:664
+#: cps/templates/layout.html:663
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "선택한 책 병합"
 
-#: cps/templates/layout.html:665
+#: cps/templates/layout.html:664
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "읽지 않음으로 표시"
 
-#: cps/templates/layout.html:666
+#: cps/templates/layout.html:665
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "책 삭제"
 
-#: cps/templates/layout.html:667
+#: cps/templates/layout.html:666
 #, fuzzy
 msgid "Delete books?"
 msgstr "책 삭제"
 
-#: cps/templates/layout.html:668
+#: cps/templates/layout.html:667
 #, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
 "undone."
 msgstr ""
 
-#: cps/templates/layout.html:669
+#: cps/templates/layout.html:668
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "책장 생성"
 
-#: cps/templates/layout.html:670
+#: cps/templates/layout.html:669
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "연결 오류가 발생했습니다."
@@ -7956,6 +7952,9 @@ msgstr "선택한 서재 Kobo 동기화"
 #: cps/templates/user_table.html:158
 msgid "Show Read/Unread Section"
 msgstr "읽음/읽지 않음 표시"
+
+#~ msgid "Switch Theme"
+#~ msgstr "테마 변경"
 
 #, fuzzy
 #~ msgid "Cancel Scan"

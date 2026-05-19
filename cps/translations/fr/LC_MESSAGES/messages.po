@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 21:30+0000\n"
+"POT-Creation-Date: 2026-05-19 21:51+0000\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -1349,7 +1349,7 @@ msgstr ""
 "bibliothèque"
 
 #: cps/editbooks.py:165 cps/editbooks.py:192 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:178
+#: cps/templates/layout.html:177
 msgid "Upload done, processing, please wait..."
 msgstr "Téléversement terminé, traitement en cours, veuillez patienter…."
 
@@ -2047,7 +2047,7 @@ msgstr "Formats de fichier"
 msgid "Books ordered by file formats"
 msgstr "Livres classés par formats de fichiers"
 
-#: cps/opds.py:247 cps/templates/layout.html:337
+#: cps/opds.py:247 cps/templates/layout.html:336
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Etagères"
@@ -2076,7 +2076,7 @@ msgid "{} Stars"
 msgstr "{} Étoiles"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:161
-#: cps/templates/layout.html:203 cps/templates/login.html:11
+#: cps/templates/layout.html:202 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2365
 msgid "Login"
 msgstr "Connexion"
@@ -2354,7 +2354,7 @@ msgstr ""
 "Erreur à l’ouverture de l’étagère. Elle n’existe plus ou n’est plus "
 "accessible"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:189
+#: cps/tasks_status.py:37 cps/templates/layout.html:188
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Tâches"
@@ -2520,7 +2520,7 @@ msgstr "Nom de l'étagère trop long (100 caractères maximum)"
 msgid "Error creating shelf"
 msgstr "Erreur lors de la création de l'étagère"
 
-#: cps/templates/layout.html:352 cps/web.py:1313
+#: cps/templates/layout.html:351 cps/web.py:1313
 msgid "Create Magic Shelf"
 msgstr "Créer une étagère magique"
 
@@ -2640,7 +2640,7 @@ msgstr ""
 msgid "Please wait one minute to register next user"
 msgstr "Merci de patienter une minute pour enregistrer un nouvel utilisateur"
 
-#: cps/templates/layout.html:162 cps/templates/layout.html:204
+#: cps/templates/layout.html:162 cps/templates/layout.html:203
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2244
 #: cps/web.py:2248 cps/web.py:2253 cps/web.py:2257 cps/web.py:2263
 #: cps/web.py:2288 cps/web.py:2292 cps/web.py:2305 cps/web.py:2308
@@ -2973,7 +2973,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "Effacement du cache des vignettes de couverture"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:181 cps/templates/user_table.html:146
+#: cps/templates/layout.html:180 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "Téléverser"
 
@@ -3014,8 +3014,8 @@ msgstr "Ajouter à l'étagère"
 #: cps/templates/_book_organizer.html:104 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
 #: cps/templates/detail.html:1290 cps/templates/feed.xml:97
-#: cps/templates/feed.xml:99 cps/templates/layout.html:340
-#: cps/templates/layout.html:349 cps/templates/listenmp3.html:201
+#: cps/templates/feed.xml:99 cps/templates/layout.html:339
+#: cps/templates/layout.html:348 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 msgid "(Public)"
 msgstr "(Public)"
@@ -3165,7 +3165,7 @@ msgstr "Envoyer à l'eReader E-mail"
 msgid "Send to eReader Subject"
 msgstr "Objet de l'e-mail eReader"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:192
+#: cps/templates/admin.html:19 cps/templates/layout.html:191
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "Administration"
@@ -3444,8 +3444,8 @@ msgstr "OK"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:951
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:499
-#: cps/templates/layout.html:654 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:498
+#: cps/templates/layout.html:653 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
@@ -3511,8 +3511,8 @@ msgid "total entries seen"
 msgstr ""
 
 #: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
-#: cps/templates/book_edit.html:69 cps/templates/layout.html:178
-#: cps/templates/layout.html:309
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:177
+#: cps/templates/layout.html:308
 msgid "Uploading..."
 msgstr "Téléversement en cours…"
 
@@ -3619,8 +3619,8 @@ msgstr "Convertir le livre"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:178 cps/templates/layout.html:399
-#: cps/templates/layout.html:536 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:177 cps/templates/layout.html:398
+#: cps/templates/layout.html:535 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Fermer"
@@ -3634,7 +3634,7 @@ msgstr "Fermer"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:178
+#: cps/templates/layout.html:177
 msgid "Error"
 msgstr "Erreur"
 
@@ -6675,7 +6675,7 @@ msgstr "Cette action ne peut être défaite !"
 msgid "The following books will be permanently deleted:"
 msgstr "Les livres suivants vont être effacés de manière permanante :"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:451
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:450
 msgid "Merge Books"
 msgstr "Fusionner les livres"
 
@@ -6770,7 +6770,7 @@ msgstr "Saisir le nom de domaine"
 msgid "Denied Domains (Blacklist)"
 msgstr "Domaines refusés (Liste noire)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:383
+#: cps/templates/feed.xml:31 cps/templates/layout.html:382
 msgid "Next"
 msgstr "Suivant"
 
@@ -7033,172 +7033,168 @@ msgstr "Basculer la navigation"
 msgid "Search Library"
 msgstr "Chercher dans librairie"
 
-#: cps/templates/layout.html:159 cps/templates/layout.html:196
+#: cps/templates/layout.html:159 cps/templates/layout.html:195
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "Compte"
 
-#: cps/templates/layout.html:165 cps/templates/layout.html:198
+#: cps/templates/layout.html:165 cps/templates/layout.html:197
 msgid "Logout"
 msgstr "Déconnexion"
 
-#: cps/templates/layout.html:173
-msgid "Switch Theme"
-msgstr "Changer de thème"
-
-#: cps/templates/layout.html:192 cps/templates/read.html:78
+#: cps/templates/layout.html:191 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 msgid "Settings"
 msgstr "Paramètres"
 
-#: cps/templates/layout.html:194
+#: cps/templates/layout.html:193
 msgid "Refresh Library"
 msgstr "Actualiser la bibliothèque"
 
-#: cps/templates/layout.html:235
+#: cps/templates/layout.html:234
 msgid "See Changelog"
 msgstr "Voir le Changelog"
 
-#: cps/templates/layout.html:245
+#: cps/templates/layout.html:244
 #, fuzzy
 msgid "Open Duplicates"
 msgstr "Doubles"
 
-#: cps/templates/layout.html:267
+#: cps/templates/layout.html:266
 msgid "Contribute here!"
 msgstr "Contribuer ici !"
 
-#: cps/templates/layout.html:310
+#: cps/templates/layout.html:309
 msgid "Please do not refresh the page"
 msgstr "Veuillez ne pas rafraîchir la page"
 
-#: cps/templates/layout.html:320
+#: cps/templates/layout.html:319
 msgid "Browse"
 msgstr "Explorer"
 
-#: cps/templates/layout.html:343
+#: cps/templates/layout.html:342
 msgid "Create Shelf"
 msgstr "Créer une étagère"
 
-#: cps/templates/layout.html:347
+#: cps/templates/layout.html:346
 msgid "Magic Shelves ✨"
 msgstr "Étagères magiques ✨"
 
-#: cps/templates/layout.html:356 cps/templates/stats.html:3
+#: cps/templates/layout.html:355 cps/templates/stats.html:3
 msgid "About"
 msgstr "À propos"
 
-#: cps/templates/layout.html:368
+#: cps/templates/layout.html:367
 msgid "Previous"
 msgstr "Précédent"
 
-#: cps/templates/layout.html:395
+#: cps/templates/layout.html:394
 msgid "Book Details"
 msgstr "Détails du livre"
 
-#: cps/templates/layout.html:457
+#: cps/templates/layout.html:456
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "Cette action ne peut être défaite !"
 
-#: cps/templates/layout.html:463
+#: cps/templates/layout.html:462
 #, fuzzy
 msgid "Will be deleted"
 msgstr "Effacer la sélection"
 
-#: cps/templates/layout.html:467 cps/templates/layout.html:480
+#: cps/templates/layout.html:466 cps/templates/layout.html:479
 #, fuzzy
 msgid "Formats:"
 msgstr "Format"
 
-#: cps/templates/layout.html:476
+#: cps/templates/layout.html:475
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:488
+#: cps/templates/layout.html:487
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:494
+#: cps/templates/layout.html:493
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "Supprimer les formats :"
 
-#: cps/templates/layout.html:503
+#: cps/templates/layout.html:502
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:537
+#: cps/templates/layout.html:536
 msgid "Duplicate Books Detected"
 msgstr "Livres en double détectés"
 
-#: cps/templates/layout.html:538
+#: cps/templates/layout.html:537
 msgid "You have unresolved duplicate books in your library"
 msgstr "Vous avez des livres en double non résolus dans votre bibliothèque"
 
-#: cps/templates/layout.html:543
+#: cps/templates/layout.html:542
 msgid "Duplicate Groups Found"
 msgstr "Groupes en double trouvés"
 
-#: cps/templates/layout.html:551
+#: cps/templates/layout.html:550
 msgid "Remind Me Later"
 msgstr "Rappelez-moi plus tard"
 
-#: cps/templates/layout.html:554
+#: cps/templates/layout.html:553
 msgid "View & Resolve Duplicates"
 msgstr "Afficher et résoudre les doublons"
 
-#: cps/templates/layout.html:563
+#: cps/templates/layout.html:562
 #, fuzzy
 msgid "Scroll to top"
 msgstr "Mise à l’échelle optimale"
 
-#: cps/templates/layout.html:565
+#: cps/templates/layout.html:564
 #, fuzzy
 msgid "Top"
 msgstr "Astuce"
 
-#: cps/templates/layout.html:655
+#: cps/templates/layout.html:654
 #, fuzzy
 msgid "Confirm"
 msgstr "Configuration"
 
-#: cps/templates/layout.html:661
+#: cps/templates/layout.html:660
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "Ajouter à l'étagère"
 
-#: cps/templates/layout.html:662
+#: cps/templates/layout.html:661
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:663
+#: cps/templates/layout.html:662
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:664
+#: cps/templates/layout.html:663
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "Marquer les livres sélectionnés comme lus"
 
-#: cps/templates/layout.html:665
+#: cps/templates/layout.html:664
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "Marqué comme non lu"
 
-#: cps/templates/layout.html:666
+#: cps/templates/layout.html:665
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "Supprimer le livre"
 
-#: cps/templates/layout.html:667
+#: cps/templates/layout.html:666
 #, fuzzy
 msgid "Delete books?"
 msgstr "Supprimer le livre"
 
-#: cps/templates/layout.html:668
+#: cps/templates/layout.html:667
 #, fuzzy, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
@@ -7207,12 +7203,12 @@ msgstr ""
 "Cela supprimera définitivement les livres. Les fichiers originaux seront "
 "sauvegardés sur"
 
-#: cps/templates/layout.html:669
+#: cps/templates/layout.html:668
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "Sélectionner d'abord un livre"
 
-#: cps/templates/layout.html:670
+#: cps/templates/layout.html:669
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "Échec de la restauration : %(err)s"
@@ -8363,6 +8359,9 @@ msgstr "Synchroniser les étagères sélectionnées avec Kobo"
 #: cps/templates/user_table.html:158
 msgid "Show Read/Unread Section"
 msgstr "Afficher la section Lu / Non lu"
+
+#~ msgid "Switch Theme"
+#~ msgstr "Changer de thème"
 
 #~ msgid "Scanning for duplicates"
 #~ msgstr "Recherche de doublons"

@@ -167,12 +167,11 @@
                 </ul>
               </li>
               {% endif %}
-              <li class="cwa-switch-theme">
-                <a id="cwa-switch-theme" href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;" title="Temporarily disabled until v5.0.0" data-toggle="tooltip" data-placement="bottom" onclick="return false;">
-                  <span class="glyphicon glyphicon-sunglasses"></span>
-                  <span class="hidden-sm">{{_('Switch Theme')}}</span>
-                </a>
-              </li>
+              {# Fork issue #222 (droM4X): the disabled Switch Theme link
+                 lived here as inert visual clutter ("Temporarily disabled
+                 until v5.0.0"). Removed — if theme switching ships in a
+                 future release, re-introduce a working element. The CSS
+                 / JS / backend route remain as dead code (no UI surface). #}
               {% if current_user.role_upload() and g.allow_upload %}
                   <li>
                     <form id="form-upload" class="navbar-form" action="{{ url_for('edit-book.upload') }}" data-title="{{_('Uploading...')}}" data-footer="{{_('Close')}}" data-failed="{{_('Error')}}" data-message="{{_('Upload done, processing, please wait...')}}" method="post" enctype="multipart/form-data">

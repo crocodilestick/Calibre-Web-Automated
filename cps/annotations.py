@@ -379,6 +379,83 @@ def _resolve_book_or_404(book_id: int):
     return book
 
 
+def _resolve_epub_path(book) -> Optional[str]:
+    """Find the on-disk EPUB file for a book — mirrors the lookup
+    pattern in ``cps/web.py``'s serve_book. Returns ``None`` if no
+    EPUB/KEPUB format exists or the file is missing on disk."""
+    from . import config
+    for fmt in book.data or []:
+        ext = (fmt.format or "").upper()
+        if ext not in ("EPUB", "KEPUB"):
+            continue
+        path = os.path.join(config.get_book_path(), book.path, fmt.name + "." + ext.lower())
+        if os.path.isfile(path):
+            return path
+    return None
+
+
+def _ensure_cfi_range(row, book) -> Optional[str]:
+    """If ``row.cfi_range`` is missing, try to compute it on the fly
+    via P2's converter, persist back to the DB, and return the new
+    value. Returns None when computation isn't possible (no EPUB on
+    disk, malformed position data, etc.) — caller renders the
+    annotation in the sidebar without an overlay."""
+    if row.cfi_range:
+        return row.cfi_range
+    if not row.content_id or "!!" not in (row.content_id or ""):
+        return None
+    epub_path = _resolve_epub_path(book)
+    if not epub_path:
+        return None
+    from pathlib import Path as _Path
+    from .services.kobo_position import compute_cfi_range, KoboPosition
+    try:
+        cfi = compute_cfi_range(_Path(epub_path), KoboPosition(
+            content_id=row.content_id,
+            start_container_path=row.start_container_path or "",
+            start_container_child_index=row.start_container_child_index,
+            start_offset=row.start_offset or 0,
+            end_container_path=row.end_container_path or "",
+            end_container_child_index=row.end_container_child_index,
+            end_offset=row.end_offset or 0,
+            context_string=row.context_string,
+        ))
+    except Exception as e:
+        log.warning("annotations: cfi compute failed for %s: %s", row.annotation_id, e)
+        return None
+    if cfi:
+        row.cfi_range = cfi
+        try:
+            ub.session_commit()
+        except Exception as e:
+            log.error("annotations: cfi persist failed: %s", e)
+            ub.session.rollback()
+    return cfi
+
+
+@annotations_bp.route("/annotations/<int:book_id>/data.json", methods=["GET"])
+@user_login_required
+def annotations_data(book_id):
+    """Lightweight JSON list for the web reader — every visible
+    annotation for the current user + book, with cfi_range computed on
+    the fly + cached if missing. Excludes hidden rows."""
+    book = _resolve_book_or_404(book_id)
+    rows = _load_user_annotations(current_user.id, book_id)
+    out = []
+    for r in rows:
+        cfi = _ensure_cfi_range(r, book)
+        out.append({
+            "annotation_id": r.annotation_id,
+            "cfi_range": cfi,
+            "highlighted_text": r.highlighted_text,
+            "highlight_color": r.highlight_color or "yellow",
+            "note_text": r.note_text,
+            "chapter_progress": r.chapter_progress,
+            "source": r.source,
+        })
+    return jsonify({"annotations": out, "annotation_count": len(out)})
+
+
 @annotations_bp.route("/annotations/<int:book_id>", methods=["GET"])
 @user_login_required
 def annotations_view(book_id):

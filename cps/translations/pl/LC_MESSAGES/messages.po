@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre Web - polski (POT: 2021-06-12 08:52)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 21:51+0000\n"
+"POT-Creation-Date: 2026-05-19 22:12+0000\n"
 "PO-Revision-Date: 2021-06-12 15:35+0200\n"
 "Last-Translator: Radosław Kierznowski <radek.kierznowski@outlook.com>\n"
 "Language-Team: \n"
@@ -133,7 +133,7 @@ msgid "Edit Users"
 msgstr "Edytuj Użytkowników"
 
 # ???
-#: cps/admin.py:708 cps/opds.py:1094 cps/templates/grid.html:14
+#: cps/admin.py:708 cps/opds.py:1148 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Wszystko"

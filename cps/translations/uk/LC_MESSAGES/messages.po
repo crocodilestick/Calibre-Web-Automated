@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 21:51+0000\n"
+"POT-Creation-Date: 2026-05-19 22:12+0000\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
 "Language-Team: \n"
@@ -137,7 +137,7 @@ msgstr ""
 msgid "Edit Users"
 msgstr "Керування сервером"
 
-#: cps/admin.py:708 cps/opds.py:1094 cps/templates/grid.html:14
+#: cps/admin.py:708 cps/opds.py:1148 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Всі"

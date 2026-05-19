@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 21:51+0000\n"
+"POT-Creation-Date: 2026-05-19 22:12+0000\n"
 "PO-Revision-Date: 2025-12-02 12:00+0000\n"
 "Last-Translator: Alex <298750+alexantao@users.noreply.github.com>\n"
 "Language-Team: pt_BR <LL@li.org>\n"
@@ -132,7 +132,7 @@ msgstr ""
 msgid "Edit Users"
 msgstr "Editar Usuários"
 
-#: cps/admin.py:708 cps/opds.py:1094 cps/templates/grid.html:14
+#: cps/admin.py:708 cps/opds.py:1148 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Todos"

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 21:51+0000\n"
+"POT-Creation-Date: 2026-05-19 22:12+0000\n"
 "PO-Revision-Date: 2025-06-07 14:44+0300\n"
 "Last-Translator: UsamaFoad <usamafoad@gmail.com>\n"
 "Language-Team: \n"
@@ -131,7 +131,7 @@ msgstr "لا يوجد عمود مخصص رقم %(column)d في قاعدة بيا
 msgid "Edit Users"
 msgstr "تحرير المستخدمين"
 
-#: cps/admin.py:708 cps/opds.py:1094 cps/templates/grid.html:14
+#: cps/admin.py:708 cps/opds.py:1148 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "الكل"

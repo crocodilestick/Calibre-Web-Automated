@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 20:04+0000\n"
+"POT-Creation-Date: 2026-05-19 21:30+0000\n"
 "PO-Revision-Date: 2026-04-26 13:31+0200\n"
 "Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at proton."
 "me>\n"
@@ -1312,8 +1312,8 @@ msgstr "De bestandsextensie '%(ext)s' is niet toegestaan op deze server"
 msgid "File to be uploaded must have an extension"
 msgstr "Het te uploaden bestand moet voorzien zijn van een extensie"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3021
-#: cps/web.py:3113 cps/web.py:3208
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3023
+#: cps/web.py:3115 cps/web.py:3210
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -2668,23 +2668,16 @@ msgstr "Profiel bijgewerkt"
 msgid "Oops! An account already exists for this Email."
 msgstr "Bestaand account met dit e-mailadres aangetroffen."
 
-#: cps/web.py:2976
+#: cps/web.py:2977
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2989
-#, python-format
-msgid ""
-"App password created for '%(label)s'. Copy it now — you won't see it again: "
-"%(token)s"
-msgstr ""
-
-#: cps/web.py:3007
+#: cps/web.py:3009
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3126
+#: cps/web.py:3128
 msgid "Invalid book ID."
 msgstr "Ongeldige boek ID."
 
@@ -3527,7 +3520,7 @@ msgstr "Boek converteren"
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:178 cps/templates/layout.html:399
 #: cps/templates/layout.html:536 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:648
+#: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Sluiten"
 
@@ -3995,7 +3988,7 @@ msgstr "Google Drive Calibre-map"
 msgid "Metadata Watch Channel ID"
 msgstr "Metagegevens Watch Channel ID"
 
-#: cps/templates/config_db.html:100 cps/templates/user_edit.html:626
+#: cps/templates/config_db.html:100 cps/templates/user_edit.html:644
 msgid "Revoke"
 msgstr "Intrekken"
 
@@ -7902,41 +7895,64 @@ msgid ""
 "app password at any time without affecting your active web session."
 msgstr ""
 
-#: cps/templates/user_edit.html:600
+#: cps/templates/user_edit.html:602
+#, fuzzy
+msgid "New app password"
+msgstr "Wachtwoord wijzigen"
+
+#: cps/templates/user_edit.html:604
+#, python-format
+msgid ""
+"App password created for '%(label)s'. Copy it now — you won't see it again."
+msgstr ""
+
+#: cps/templates/user_edit.html:608
+msgid "New app password (cleartext)"
+msgstr ""
+
+#: cps/templates/user_edit.html:611
+msgid "Copied!"
+msgstr ""
+
+#: cps/templates/user_edit.html:611
+msgid "Copy"
+msgstr ""
+
+#: cps/templates/user_edit.html:618
 msgid "e.g. Kobo Forma, KOReader iPad"
 msgstr ""
 
-#: cps/templates/user_edit.html:602
+#: cps/templates/user_edit.html:620
 #, fuzzy
 msgid "Create app password"
 msgstr "Wachtwoord wijzigen"
 
-#: cps/templates/user_edit.html:610
+#: cps/templates/user_edit.html:628
 msgid "Label"
 msgstr ""
 
-#: cps/templates/user_edit.html:611
+#: cps/templates/user_edit.html:629
 #, fuzzy
 msgid "Created"
 msgstr "Aanmaken/Bekijken"
 
-#: cps/templates/user_edit.html:612
+#: cps/templates/user_edit.html:630
 msgid "Last used"
 msgstr ""
 
-#: cps/templates/user_edit.html:621
+#: cps/templates/user_edit.html:639
 msgid "Never"
 msgstr ""
 
-#: cps/templates/user_edit.html:624
+#: cps/templates/user_edit.html:642
 msgid "Revoke this app password?"
 msgstr ""
 
-#: cps/templates/user_edit.html:644
+#: cps/templates/user_edit.html:662
 msgid "Generate Kobo Auth URL"
 msgstr "Genereer Kobo Auth URL"
 
-#: cps/templates/user_edit.html:706
+#: cps/templates/user_edit.html:724
 msgid "Visible"
 msgstr ""
 

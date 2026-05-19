@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 20:04+0000\n"
+"POT-Creation-Date: 2026-05-19 21:30+0000\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -1302,8 +1302,8 @@ msgstr "Ekstensi berkas '%(ext)s' tidak diizinkan untuk diunggah ke server ini"
 msgid "File to be uploaded must have an extension"
 msgstr "Berkas yang akan diunggah harus memiliki ekstensi"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3021
-#: cps/web.py:3113 cps/web.py:3208
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3023
+#: cps/web.py:3115 cps/web.py:3210
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -2658,23 +2658,16 @@ msgstr "Profil diperbarui"
 msgid "Oops! An account already exists for this Email."
 msgstr "Ditemukan akun yang ada untuk alamat email ini"
 
-#: cps/web.py:2976
+#: cps/web.py:2977
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2989
-#, python-format
-msgid ""
-"App password created for '%(label)s'. Copy it now — you won't see it again: "
-"%(token)s"
-msgstr ""
-
-#: cps/web.py:3007
+#: cps/web.py:3009
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3126
+#: cps/web.py:3128
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "Peran tidak valid"
@@ -3526,7 +3519,7 @@ msgstr "Konversi buku"
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:178 cps/templates/layout.html:399
 #: cps/templates/layout.html:536 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:648
+#: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Tutup"
 
@@ -3995,7 +3988,7 @@ msgstr "Silakan tekan simpan untuk melanjutkan penyiapan"
 msgid "Metadata Watch Channel ID"
 msgstr "ID Saluran Metadata Watch"
 
-#: cps/templates/config_db.html:100 cps/templates/user_edit.html:626
+#: cps/templates/config_db.html:100 cps/templates/user_edit.html:644
 msgid "Revoke"
 msgstr "Tarik Kembali"
 
@@ -7908,41 +7901,64 @@ msgid ""
 "app password at any time without affecting your active web session."
 msgstr ""
 
-#: cps/templates/user_edit.html:600
+#: cps/templates/user_edit.html:602
+#, fuzzy
+msgid "New app password"
+msgstr "Ubah Kata Sandi"
+
+#: cps/templates/user_edit.html:604
+#, python-format
+msgid ""
+"App password created for '%(label)s'. Copy it now — you won't see it again."
+msgstr ""
+
+#: cps/templates/user_edit.html:608
+msgid "New app password (cleartext)"
+msgstr ""
+
+#: cps/templates/user_edit.html:611
+msgid "Copied!"
+msgstr ""
+
+#: cps/templates/user_edit.html:611
+msgid "Copy"
+msgstr ""
+
+#: cps/templates/user_edit.html:618
 msgid "e.g. Kobo Forma, KOReader iPad"
 msgstr ""
 
-#: cps/templates/user_edit.html:602
+#: cps/templates/user_edit.html:620
 #, fuzzy
 msgid "Create app password"
 msgstr "Ubah Kata Sandi"
 
-#: cps/templates/user_edit.html:610
+#: cps/templates/user_edit.html:628
 msgid "Label"
 msgstr ""
 
-#: cps/templates/user_edit.html:611
+#: cps/templates/user_edit.html:629
 #, fuzzy
 msgid "Created"
 msgstr "Buat/Lihat"
 
-#: cps/templates/user_edit.html:612
+#: cps/templates/user_edit.html:630
 msgid "Last used"
 msgstr ""
 
-#: cps/templates/user_edit.html:621
+#: cps/templates/user_edit.html:639
 msgid "Never"
 msgstr ""
 
-#: cps/templates/user_edit.html:624
+#: cps/templates/user_edit.html:642
 msgid "Revoke this app password?"
 msgstr ""
 
-#: cps/templates/user_edit.html:644
+#: cps/templates/user_edit.html:662
 msgid "Generate Kobo Auth URL"
 msgstr "Hasilkan URL Autentikasi Kobo"
 
-#: cps/templates/user_edit.html:706
+#: cps/templates/user_edit.html:724
 msgid "Visible"
 msgstr ""
 

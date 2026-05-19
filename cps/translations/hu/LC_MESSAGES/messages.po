@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 20:04+0000\n"
+"POT-Creation-Date: 2026-05-19 21:30+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -1329,8 +1329,8 @@ msgstr ""
 msgid "File to be uploaded must have an extension"
 msgstr "A feltöltendő fájlnak kiterjesztéssel kell rendelkeznie!"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3021
-#: cps/web.py:3113 cps/web.py:3208
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3023
+#: cps/web.py:3115 cps/web.py:3210
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -2679,25 +2679,16 @@ msgstr "Siker! Profil frissítve"
 msgid "Oops! An account already exists for this Email."
 msgstr "Már létezik felhasználó ehhez az e-mail címhez."
 
-#: cps/web.py:2976
+#: cps/web.py:2977
 msgid "App-password label must be 1-64 characters."
 msgstr "Az alkalmazásjelszó címkéje 1–64 karakter hosszú lehet."
 
-#: cps/web.py:2989
-#, python-format
-msgid ""
-"App password created for '%(label)s'. Copy it now — you won't see it again: "
-"%(token)s"
-msgstr ""
-"Alkalmazásjelszó létrehozva ehhez: „%(label)s”. Másold ki most — később már "
-"nem fogod látni: %(token)s"
-
-#: cps/web.py:3007
+#: cps/web.py:3009
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr "A(z) '%(label)s' alkalmazásjelszó visszavonva."
 
-#: cps/web.py:3126
+#: cps/web.py:3128
 msgid "Invalid book ID."
 msgstr "Érvénytelen könyv azonosító."
 
@@ -3537,7 +3528,7 @@ msgstr "Könyv konvertálása"
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:178 cps/templates/layout.html:399
 #: cps/templates/layout.html:536 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:648
+#: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Bezárás"
 
@@ -4013,7 +4004,7 @@ msgstr "Google Drive Calibre mappa"
 msgid "Metadata Watch Channel ID"
 msgstr "Metadata Watch Channel ID"
 
-#: cps/templates/config_db.html:100 cps/templates/user_edit.html:626
+#: cps/templates/config_db.html:100 cps/templates/user_edit.html:644
 msgid "Revoke"
 msgstr "Visszavonás"
 
@@ -8062,39 +8053,65 @@ msgstr ""
 "megjelenő tokent. Bármely alkalmazásjelszó bármikor visszavonható anélkül, "
 "hogy ez befolyásolná az aktív webes munkamenetet."
 
-#: cps/templates/user_edit.html:600
+#: cps/templates/user_edit.html:602
+#, fuzzy
+msgid "New app password"
+msgstr "Új app jelszó"
+
+#: cps/templates/user_edit.html:604
+#, fuzzy, python-format
+msgid ""
+"App password created for '%(label)s'. Copy it now — you won't see it again."
+msgstr ""
+"Alkalmazásjelszó létrehozva ehhez: „%(label)s”. Másold ki most — később már "
+"nem fogod látni: %(token)s"
+
+#: cps/templates/user_edit.html:608
+msgid "New app password (cleartext)"
+msgstr ""
+
+#: cps/templates/user_edit.html:611
+msgid "Copied!"
+msgstr ""
+
+#: cps/templates/user_edit.html:611
+#, fuzzy
+msgid "Copy"
+msgstr "UUID másolása"
+
+#: cps/templates/user_edit.html:618
 msgid "e.g. Kobo Forma, KOReader iPad"
 msgstr "pl.: Kobo Forma, KOReader iPad"
 
-#: cps/templates/user_edit.html:602
+#: cps/templates/user_edit.html:620
 msgid "Create app password"
 msgstr "Új app jelszó"
 
-#: cps/templates/user_edit.html:610
+#: cps/templates/user_edit.html:628
 msgid "Label"
 msgstr "Címke"
 
-#: cps/templates/user_edit.html:611
+#: cps/templates/user_edit.html:629
 msgid "Created"
 msgstr "Létrehozva"
 
-#: cps/templates/user_edit.html:612
+#: cps/templates/user_edit.html:630
 msgid "Last used"
 msgstr "Utoljára használva"
 
-#: cps/templates/user_edit.html:621
+#: cps/templates/user_edit.html:639
 msgid "Never"
 msgstr "Soha"
 
-#: cps/templates/user_edit.html:624
+#: cps/templates/user_edit.html:642
 msgid "Revoke this app password?"
 msgstr "Vissza szeretné vonni az alkalmazás jelszavát?"
 
-#: cps/templates/user_edit.html:644
+#: cps/templates/user_edit.html:662
 msgid "Generate Kobo Auth URL"
 msgstr "Kobo bejelentkezési URL generálása"
 
-#: cps/templates/user_edit.html:706
+#: cps/templates/user_edit.html:724
 msgid "Visible"
 msgstr "Látható"
 

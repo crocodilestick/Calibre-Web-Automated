@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 20:04+0000\n"
+"POT-Creation-Date: 2026-05-19 21:30+0000\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -1388,8 +1388,8 @@ msgstr ""
 msgid "File to be uploaded must have an extension"
 msgstr "Pour être déposé le fichier doit avoir une extension"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3021
-#: cps/web.py:3113 cps/web.py:3208
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3023
+#: cps/web.py:3115 cps/web.py:3210
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -2775,23 +2775,16 @@ msgstr "Profil mis à jour avec succès"
 msgid "Oops! An account already exists for this Email."
 msgstr "Un compte existant a été trouvé pour cette adresse de courriel."
 
-#: cps/web.py:2976
+#: cps/web.py:2977
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2989
-#, python-format
-msgid ""
-"App password created for '%(label)s'. Copy it now — you won't see it again: "
-"%(token)s"
-msgstr ""
-
-#: cps/web.py:3007
+#: cps/web.py:3009
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3126
+#: cps/web.py:3128
 msgid "Invalid book ID."
 msgstr "Identifiant du livre invalide."
 
@@ -3628,7 +3621,7 @@ msgstr "Convertir le livre"
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:178 cps/templates/layout.html:399
 #: cps/templates/layout.html:536 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:648
+#: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Fermer"
 
@@ -4107,7 +4100,7 @@ msgstr "Répertoire Google Drive pour Calibre"
 msgid "Metadata Watch Channel ID"
 msgstr "Metadata Watch Channel ID"
 
-#: cps/templates/config_db.html:100 cps/templates/user_edit.html:626
+#: cps/templates/config_db.html:100 cps/templates/user_edit.html:644
 msgid "Revoke"
 msgstr "Révoquer"
 
@@ -8207,42 +8200,66 @@ msgid ""
 "app password at any time without affecting your active web session."
 msgstr ""
 
-#: cps/templates/user_edit.html:600
-msgid "e.g. Kobo Forma, KOReader iPad"
-msgstr ""
-
 #: cps/templates/user_edit.html:602
 #, fuzzy
-msgid "Create app password"
+msgid "New app password"
 msgstr "Changer le mot de passe"
 
-#: cps/templates/user_edit.html:610
-msgid "Label"
+#: cps/templates/user_edit.html:604
+#, python-format
+msgid ""
+"App password created for '%(label)s'. Copy it now — you won't see it again."
+msgstr ""
+
+#: cps/templates/user_edit.html:608
+msgid "New app password (cleartext)"
+msgstr ""
+
+#: cps/templates/user_edit.html:611
+msgid "Copied!"
 msgstr ""
 
 #: cps/templates/user_edit.html:611
 #, fuzzy
+msgid "Copy"
+msgstr "Copier l'UUID"
+
+#: cps/templates/user_edit.html:618
+msgid "e.g. Kobo Forma, KOReader iPad"
+msgstr ""
+
+#: cps/templates/user_edit.html:620
+#, fuzzy
+msgid "Create app password"
+msgstr "Changer le mot de passe"
+
+#: cps/templates/user_edit.html:628
+msgid "Label"
+msgstr ""
+
+#: cps/templates/user_edit.html:629
+#, fuzzy
 msgid "Created"
 msgstr "Créer/visualiser"
 
-#: cps/templates/user_edit.html:612
+#: cps/templates/user_edit.html:630
 #, fuzzy
 msgid "Last used"
 msgstr "Dernière modification"
 
-#: cps/templates/user_edit.html:621
+#: cps/templates/user_edit.html:639
 msgid "Never"
 msgstr ""
 
-#: cps/templates/user_edit.html:624
+#: cps/templates/user_edit.html:642
 msgid "Revoke this app password?"
 msgstr ""
 
-#: cps/templates/user_edit.html:644
+#: cps/templates/user_edit.html:662
 msgid "Generate Kobo Auth URL"
 msgstr "Générer l'URL d'authentification Kobo"
 
-#: cps/templates/user_edit.html:706
+#: cps/templates/user_edit.html:724
 msgid "Visible"
 msgstr "Visible"
 

@@ -2990,7 +2990,10 @@ def app_password_create():
     # reloads of /me; cleared on navigation to any other route by the
     # _clear_pending_app_password before_request hook below.
     flask_session["pending_app_password"] = {"label": label, "token": cleartext}
-    return redirect(url_for("web.profile"))
+    # Anchor scroll to the inline box on load (fork #223 follow-up @droM4X):
+    # without this the user lands at the top of /me and has to scroll down
+    # to find the freshly-generated token.
+    return redirect(url_for("web.profile", _anchor="pending-app-password"))
 
 
 @web.route("/me/app-passwords/<int:app_password_id>/revoke", methods=["POST"])

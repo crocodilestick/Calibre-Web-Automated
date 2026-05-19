@@ -716,14 +716,20 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
         book_ids_str = result.book_ids_str
         book_ids = [int(bid) for bid in book_ids_str.split(',')]
         
-        # Load full book objects for these IDs with eager loading
-        books = (calibre_db.session.query(db.Books)
-                .options(joinedload(db.Books.data))
-                .options(joinedload(db.Books.authors))
-                .filter(db.Books.id.in_(book_ids))
-                .filter(get_common_filters(user_id=user_id))
-                .order_by(db.Books.timestamp.desc())
-                .all())
+        # Load full book objects for these IDs with eager loading.
+        # Batch the IN filter so a pathologically large group cannot exceed
+        # SQLite's bound-parameter limit (see _fetch_books_in_chunks).
+        books_base = (calibre_db.session.query(db.Books)
+                      .options(joinedload(db.Books.data))
+                      .options(joinedload(db.Books.authors))
+                      .filter(get_common_filters(user_id=user_id)))
+        books = _fetch_books_in_chunks(books_base, book_ids)
+        # Re-apply ORDER BY timestamp DESC (NULLs last) across batches.
+        # tz-safe key: mixed naive/aware timestamps otherwise raise
+        # "can't compare offset-naive and offset-aware datetimes" — the DB
+        # ORDER BY tolerated it, Python's sort does not.
+        books.sort(key=lambda b: _timestamp_or_default(b.timestamp, _AWARE_MIN),
+                   reverse=True)
         
         if len(books) < 2:
             continue  # Safety check
@@ -796,6 +802,32 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
     return duplicate_groups
 
 
+# SQLite caps host parameters per statement at SQLITE_MAX_VARIABLE_NUMBER
+# (32766 since SQLite 3.32, 999 on older builds). A duplicate prefilter on a
+# large library can return >100k candidate IDs, so an unbatched
+# ``Books.id.in_(ids)`` raises "too many SQL variables" and aborts the scan
+# (and, via the after-import cache refresh, leaves the worker churning full
+# scans because the incremental baseline never persists). Stay well under the
+# lowest historical limit for portability.
+_SQLITE_IN_CHUNK = 900
+
+
+def _fetch_books_in_chunks(base_query, ids):
+    """Run ``base_query`` filtered by ``ids`` without exceeding SQLite's
+    bound-parameter limit.
+
+    The id collection is split into ``_SQLITE_IN_CHUNK``-sized batches and the
+    per-batch results concatenated. Ordering only holds within a batch, so
+    callers needing a global order must sort the returned list themselves.
+    """
+    ids = list(ids)
+    books = []
+    for start in range(0, len(ids), _SQLITE_IN_CHUNK):
+        chunk = ids[start:start + _SQLITE_IN_CHUNK]
+        books.extend(base_query.filter(db.Books.id.in_(chunk)).all())
+    return books
+
+
 def find_duplicate_books_python(use_title, use_author, use_language, use_series, use_publisher, use_format,
                                  include_dismissed=False, user_id=None, candidate_ids=None):
     """Original Python-based duplicate detection - fallback for complex scenarios
@@ -820,9 +852,19 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
         if not candidate_ids:
             print("[cwa-duplicates] No candidate IDs provided, returning empty duplicate set", flush=True)
             return []
-        books_query = books_query.filter(db.Books.id.in_(list(candidate_ids)))
-    
-    all_books = books_query.all()
+        # Batch the IN filter: a large prefilter routinely exceeds SQLite's
+        # bound-parameter limit (see _fetch_books_in_chunks).
+        all_books = _fetch_books_in_chunks(books_query, candidate_ids)
+        # Per-batch queries can only order within a batch; restore the global
+        # ORDER BY title ASC, timestamp DESC (NULLs last) via a stable sort.
+        # tz-safe key: mixed naive/aware timestamps otherwise raise
+        # "can't compare offset-naive and offset-aware datetimes" — the DB
+        # ORDER BY tolerated it, Python's sort does not.
+        all_books.sort(key=lambda b: _timestamp_or_default(b.timestamp, _AWARE_MIN),
+                        reverse=True)
+        all_books.sort(key=lambda b: (b.title or ""))
+    else:
+        all_books = books_query.all()
     print(f"[cwa-duplicates] Retrieved {len(all_books)} books with user filtering applied", flush=True)
     
     # Safety check for very large libraries (optional performance warning)

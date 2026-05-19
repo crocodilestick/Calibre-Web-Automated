@@ -1255,49 +1255,80 @@ class CalibreDB:
 
     # Orders all Authors in the list according to authors sort
     def order_authors(self, entries, list_return=False, combined=False):
+        # Render-side ordering: consult only the already-loaded
+        # `book.authors` collection. The pre-#234 implementation re-queried
+        # `Authors` here on every page render, which opened a race window
+        # during concurrent ingest — a torn-down join could surface a None
+        # entry in `book.authors` (or a None row in the re-query result)
+        # and the downstream `r.id` access crashed the whole page with
+        # `AttributeError: 'NoneType' object has no attribute 'id'`.
+        # Tolerate None authors, None/empty author_sort, and stale sort
+        # entries without raising.
         self.ensure_session()
         for entry in entries:
             if combined:
-                sort_authors = entry.Books.author_sort.split('&')
-                ids = [a.id for a in entry.Books.authors]
-
+                book = entry.Books
             else:
-                sort_authors = entry.author_sort.split('&')
-                ids = [a.id for a in entry.authors]
-            authors_ordered = list()
-            # error = False
+                book = entry
+
+            sort_authors = (getattr(book, 'author_sort', None) or '').split('&')
+            authors_list = [a for a in (getattr(book, 'authors', None) or [])
+                            if a is not None]
+
+            authors_by_sort = {}
+            authors_by_id = {}
+            for a in authors_list:
+                if a.sort:
+                    authors_by_sort[a.sort] = a
+                if a.id is not None:
+                    authors_by_id[a.id] = a
+
+            authors_ordered = []
+            ids_remaining = list(authors_by_id.keys())
             for auth in sort_authors:
                 auth = strip_whitespaces(auth)
-                # Skip empty author strings to prevent spurious errors
+                # Skip empty author strings to prevent spurious lookups.
                 if not auth:
                     continue
-                results = self.session.query(Authors).filter(Authors.sort == auth).all()
-                if not len(results):
-                    # Books.author_sort drifted from Authors.sort. Warn once
-                    # per process per author so the log doesn't fill on every
-                    # page render. The unmatched author still appears in the
-                    # book — it falls through to the Authors.id loop below
+                ordered = authors_by_sort.get(auth)
+                if ordered is None:
+                    # Books.author_sort drifted from Authors.sort. Warn
+                    # once per process per drifted sort string so the log
+                    # doesn't fill on busy pages — the unmatched author
+                    # still appears in the book via the id-fallback below
                     # (continue, not break, so other authors on this same
                     # book that DO have a valid sort still get ordered).
                     if auth not in _AUTHOR_SORT_DRIFT_WARNED:
                         _AUTHOR_SORT_DRIFT_WARNED.add(auth)
                         log.warning(
                             "Author sort '%s' from Books.author_sort has no "
-                            "match in Authors.sort. Falling back to Authors.id "
-                            "order for this author. To fix: edit the author in "
-                            "the admin UI so Authors.sort matches.", auth)
+                            "match in linked authors. Falling back to "
+                            "Authors.id order for this author. To fix: edit "
+                            "the author in the admin UI so Authors.sort "
+                            "matches.", auth)
                     continue
-                for r in results:
-                    if r.id in ids:
-                        authors_ordered.append(r)
-                        ids.remove(r.id)
-            for author_id in ids:
-                result = self.session.query(Authors).filter(Authors.id == author_id).first()
-                authors_ordered.append(result)
+                authors_ordered.append(ordered)
+                if ordered.id in ids_remaining:
+                    ids_remaining.remove(ordered.id)
+
+            # Append any authors that weren't placed by the sort pass —
+            # preserves the pre-fix invariant that every linked Author
+            # appears in ordered_authors. Iteration order of dict keys is
+            # insertion order in CPython 3.7+, so this is stable across
+            # runs for the same input.
+            for author_id in ids_remaining:
+                authors_ordered.append(authors_by_id[author_id])
+
+            # Last-resort fallback: if every sort entry was stale AND no
+            # ids remain (e.g. book.authors was empty), keep the linked
+            # authors so the book renders with its author list rather
+            # than appearing author-less.
+            if not authors_ordered:
+                authors_ordered = authors_list
 
             if list_return:
                 if combined:
-                    entry.Books.authors = authors_ordered
+                    book.authors = authors_ordered
                 else:
                     entry.ordered_authors = authors_ordered
             else:

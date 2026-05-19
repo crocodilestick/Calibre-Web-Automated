@@ -178,86 +178,54 @@ class TestAuthorSortDriftDedupBehavioral:
         assert len(cps_db._AUTHOR_SORT_DRIFT_WARNED) == 4
 
     def test_continue_preserves_other_authors_ordering_for_same_book(self):
-        """A book with TWO authors — one drifted, one valid — should still
-        get the valid one ordered correctly. Pre-fix `break` would dump
-        BOTH into id-order; post-fix only the drifted one falls through."""
+        """A book with TWO linked authors — one whose sort is referenced
+        by Books.author_sort, one whose sort is NOT — should still get the
+        matched one ordered first. Pre-fix #108 `break` would dump BOTH
+        into id-order; post-#108 only the unmatched one falls through.
+
+        Re-shaped for fork #234: the post-#234 implementation consults
+        the already-loaded `book.authors` collection instead of issuing
+        SQL queries during render, so this test exercises the
+        in-memory lookup path directly (no session.query mocks needed)."""
+        from types import SimpleNamespace
         from cps import db as cps_db
 
         cps_db._AUTHOR_SORT_DRIFT_WARNED.clear()
 
         instance = cps_db.CalibreDB.__new__(cps_db.CalibreDB)
-
-        # Mock author rows. The fixture: book.author_sort = "Drift & Valid"
-        # → looking up "Drift" returns nothing; looking up "Valid" returns
-        # an Authors row whose id matches one of book.authors[].id.
-        valid_author = MagicMock()
-        valid_author.id = 42
-        valid_author.name = "Valid"
-        valid_author.sort = "Valid"
-
-        drift_id = 13
-
-        def filter_side_effect(expr):
-            """Crudely emulate the SQLAlchemy filter chain. We don't try
-            to parse the expression; instead, the .all() return value is
-            decided by which call it is."""
-            chain = MagicMock()
-            chain.all = MagicMock()
-            chain.first = MagicMock(return_value=None)
-            return chain
-
-        # We need .filter to vary by the filter expression. Easiest approach:
-        # track call count and dispatch on it. Two filter() calls happen for
-        # the sort lookups; then one filter() per remaining id (the fallback).
-        call_log = {"filter_calls": 0}
-
-        def smart_filter(expr):
-            call_log["filter_calls"] += 1
-            chain = MagicMock()
-            # First call: "Drift" — empty
-            # Second call: "Valid" — returns [valid_author]
-            # Third+: id fallbacks — return one MagicMock for whichever id
-            n = call_log["filter_calls"]
-            if n == 1:
-                chain.all = MagicMock(return_value=[])
-                chain.first = MagicMock(return_value=None)
-            elif n == 2:
-                chain.all = MagicMock(return_value=[valid_author])
-                chain.first = MagicMock(return_value=valid_author)
-            else:
-                fallback_author = MagicMock(id=drift_id, name="Drifted")
-                chain.all = MagicMock(return_value=[fallback_author])
-                chain.first = MagicMock(return_value=fallback_author)
-            return chain
-
-        fake_query = MagicMock()
-        fake_query.filter.side_effect = smart_filter
         instance.session = MagicMock()
-        instance.session.query.return_value = fake_query
         instance.ensure_session = lambda: None
 
-        class _StubBook:
-            pass
+        # Book.author_sort contains a stale entry ("UnknownDrift") that no
+        # linked author has, plus a valid one ("Valid") that the second
+        # linked author does have.
+        drift_id = 13
+        valid_id = 42
+        unmatched = SimpleNamespace(id=drift_id, name="Unmatched", sort="UnmatchedSort")
+        valid_author = SimpleNamespace(id=valid_id, name="Valid", sort="Valid")
 
-        book = _StubBook()
-        book.author_sort = "Drift & Valid"
-        book.authors = [MagicMock(id=drift_id), MagicMock(id=42)]
+        book = SimpleNamespace(
+            author_sort="UnknownDrift & Valid",
+            authors=[unmatched, valid_author],
+        )
 
         instance.order_authors([book], list_return=True, combined=False)
 
+        ordered_ids = [a.id for a in book.ordered_authors]
         # The valid author MUST appear in ordered_authors; pre-fix break
         # would have bailed before reaching it.
-        ordered = book.ordered_authors
-        ordered_ids = [a.id for a in ordered]
-        assert 42 in ordered_ids, (
-            f"valid author (id=42) missing from ordered_authors {ordered_ids}; "
-            f"the post-#108 `continue` should let the loop reach 'Valid' "
-            f"after skipping 'Drift'"
+        assert valid_id in ordered_ids, (
+            f"valid author (id={valid_id}) missing from ordered_authors "
+            f"{ordered_ids}; the post-#108 `continue` should let the loop "
+            f"reach 'Valid' after skipping 'UnknownDrift'"
         )
-        # And valid_author should appear BEFORE the id-fallback drift author
-        # — the sort-order pass placed it; the id pass appends drift after.
-        assert ordered_ids.index(42) < ordered_ids.index(drift_id), (
-            f"valid author should be ordered first (it had a valid sort); "
-            f"got {ordered_ids}. Pre-fix `break` regressed this to drift-id "
-            f"order for the whole book."
+        # And valid_author should appear BEFORE the id-fallback unmatched
+        # author — the sort-order pass placed it; the id pass appends the
+        # unmatched author after.
+        assert ordered_ids.index(valid_id) < ordered_ids.index(drift_id), (
+            f"valid author should be ordered first (it had a matching "
+            f"sort); got {ordered_ids}. Pre-fix `break` regressed this "
+            f"to drift-id order for the whole book."
         )
+        # Drift dedup fired for the stale sort entry.
+        assert "UnknownDrift" in cps_db._AUTHOR_SORT_DRIFT_WARNED

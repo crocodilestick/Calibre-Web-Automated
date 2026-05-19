@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 05:41+0000\n"
+"POT-Creation-Date: 2026-05-19 19:13+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -128,7 +128,7 @@ msgid "UI Configuration"
 msgstr "UI設定"
 
 #: cps/admin.py:646 cps/admin.py:1372 cps/db.py:1118 cps/search.py:153
-#: cps/web.py:551 cps/web.py:881
+#: cps/web.py:552 cps/web.py:882
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "カスタムカラムの%(column)d列目がcalibreのDBに存在しません"
@@ -406,7 +406,7 @@ msgstr "成功！Gmailアカウントが確認されました。"
 #: cps/admin.py:2648 cps/admin.py:2920 cps/editbooks.py:1079
 #: cps/editbooks.py:1878 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
-#: cps/tasks/convert.py:145 cps/web.py:2793
+#: cps/tasks/convert.py:145 cps/web.py:2857
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "DBエラー: %(error)s"
@@ -448,7 +448,7 @@ msgstr "指定したタスクの期間が無効です"
 msgid "Scheduled tasks settings updated"
 msgstr "スケジュールタスクの設定を更新しました"
 
-#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2916 cps/web.py:2223
+#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2916 cps/web.py:2287
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "不明なエラーが発生しました。あとで再試行してください。"
 
@@ -456,7 +456,7 @@ msgstr "不明なエラーが発生しました。あとで再試行してくだ
 msgid "Settings DB is not Writeable"
 msgstr "設定DBが書き込みできません"
 
-#: cps/admin.py:1913 cps/opds.py:309 cps/web.py:2719 cps/web.py:2844
+#: cps/admin.py:1913 cps/opds.py:309 cps/web.py:2783 cps/web.py:2908
 #, fuzzy
 msgid "title"
 msgstr "タイトル"
@@ -621,7 +621,7 @@ msgstr "DB設定を更新しました"
 msgid "Database Configuration"
 msgstr "DB設定"
 
-#: cps/admin.py:2603 cps/web.py:2192
+#: cps/admin.py:2603 cps/web.py:2256
 msgid "Oops! Please complete all fields."
 msgstr "全ての項目を入力してください"
 
@@ -656,7 +656,7 @@ msgstr "ゲストユーザーは削除できません"
 msgid "No admin user remaining, can't delete user"
 msgstr "管理者ユーザーが残っておらず、ユーザーを削除できません"
 
-#: cps/admin.py:2871 cps/web.py:2527
+#: cps/admin.py:2871 cps/web.py:2591
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "メールアドレスは空欄にできず、有効なメールアドレスである必要があります"
 
@@ -1199,9 +1199,9 @@ msgstr ""
 #: cps/db.py:1449 cps/templates/config_edit.html:333
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
-#: cps/web.py:694 cps/web.py:728 cps/web.py:773 cps/web.py:813 cps/web.py:842
-#: cps/web.py:1708 cps/web.py:1745 cps/web.py:1796 cps/web.py:1828
-#: cps/web.py:1867
+#: cps/web.py:695 cps/web.py:729 cps/web.py:774 cps/web.py:814 cps/web.py:843
+#: cps/web.py:1772 cps/web.py:1809 cps/web.py:1860 cps/web.py:1892
+#: cps/web.py:1931
 msgid "None"
 msgstr "なし"
 
@@ -1304,8 +1304,8 @@ msgstr ""
 msgid "File to be uploaded must have an extension"
 msgstr "アップロードするファイルには拡張子が必要です"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:661 cps/web.py:2957
-#: cps/web.py:3049 cps/web.py:3144
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3021
+#: cps/web.py:3113 cps/web.py:3208
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "選択した本は利用できません。ファイルが存在しないか、アクセスできません"
@@ -1842,7 +1842,7 @@ msgstr "人気の本"
 msgid "Popular publications from this catalog based on Downloads."
 msgstr "ダウンロード数に基づいた、この出版社が出している有名な本"
 
-#: cps/opds.py:175 cps/render_template.py:91 cps/web.py:536
+#: cps/opds.py:175 cps/render_template.py:91 cps/web.py:537
 msgid "Top Rated Books"
 msgstr "高評価の本"
 
@@ -1868,11 +1868,11 @@ msgstr "ランダム"
 msgid "Show Random Books"
 msgstr "ランダムに本を表示"
 
-#: cps/opds.py:193 cps/opds.py:194 cps/render_template.py:94 cps/web.py:901
+#: cps/opds.py:193 cps/opds.py:194 cps/render_template.py:94 cps/web.py:902
 msgid "Read Books"
 msgstr "既読の本"
 
-#: cps/opds.py:199 cps/opds.py:200 cps/render_template.py:98 cps/web.py:904
+#: cps/opds.py:199 cps/opds.py:200 cps/render_template.py:98 cps/web.py:905
 msgid "Unread Books"
 msgstr "未読の本"
 
@@ -1887,7 +1887,7 @@ msgid "Books ordered by Author"
 msgstr "著者名順"
 
 #: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:111
-#: cps/web.py:1719
+#: cps/web.py:1783
 msgid "Publishers"
 msgstr "出版社"
 
@@ -1896,7 +1896,7 @@ msgid "Books ordered by publisher"
 msgstr "出版社順"
 
 #: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:106
-#: cps/web.py:1871
+#: cps/web.py:1935
 msgid "Categories"
 msgstr "カテゴリ"
 
@@ -1908,7 +1908,7 @@ msgstr "カテゴリ順"
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
-#: cps/templates/search_form.html:70 cps/web.py:1751 cps/web.py:1763
+#: cps/templates/search_form.html:70 cps/web.py:1815 cps/web.py:1827
 msgid "Series"
 msgstr "シリーズ"
 
@@ -1918,7 +1918,7 @@ msgstr "シリーズ順"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:109
 #: cps/templates/detail.html:719 cps/templates/search_form.html:108
-#: cps/web.py:1843
+#: cps/web.py:1907
 msgid "Languages"
 msgstr "言語"
 
@@ -1926,7 +1926,7 @@ msgstr "言語"
 msgid "Books ordered by Languages"
 msgstr "言語順"
 
-#: cps/opds.py:235 cps/render_template.py:121 cps/web.py:1803
+#: cps/opds.py:235 cps/render_template.py:121 cps/web.py:1867
 msgid "Ratings"
 msgstr "評価"
 
@@ -1973,7 +1973,7 @@ msgstr "星{}"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:161
 #: cps/templates/layout.html:203 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2301
+#: cps/templates/login.html:39 cps/web.py:2365
 msgid "Login"
 msgstr "ログイン"
 
@@ -2060,7 +2060,7 @@ msgstr "評価セクションを表示"
 msgid "Show File Formats Section"
 msgstr "ファイル形式セクションを表示"
 
-#: cps/render_template.py:128 cps/web.py:927
+#: cps/render_template.py:128 cps/web.py:928
 msgid "Archived Books"
 msgstr "アーカイブされた本"
 
@@ -2068,7 +2068,7 @@ msgstr "アーカイブされた本"
 msgid "Show Archived Books"
 msgstr "アーカイブされた書籍を表示"
 
-#: cps/render_template.py:133 cps/web.py:1539
+#: cps/render_template.py:133 cps/web.py:1603
 msgid "Books List"
 msgstr "本の一覧"
 
@@ -2322,148 +2322,148 @@ msgstr ""
 msgid "No release information available"
 msgstr "リリース情報がありません"
 
-#: cps/templates/index.html:33 cps/web.py:563
+#: cps/templates/index.html:33 cps/web.py:564
 msgid "Discover (Random Books)"
 msgstr "本を見つける (ランダムに表示)"
 
-#: cps/web.py:613
+#: cps/web.py:614
 msgid "Hot Books (Most Downloaded)"
 msgstr "人気の本 (最もダウンロードされた本)"
 
-#: cps/web.py:644
+#: cps/web.py:645
 #, python-format
 msgid "Downloaded books by %(user)s"
 msgstr "%(user)s がダウンロードした本"
 
-#: cps/web.py:677
+#: cps/web.py:678
 #, python-format
 msgid "Author: %(name)s"
 msgstr "著者: %(name)s"
 
-#: cps/web.py:713
+#: cps/web.py:714
 #, python-format
 msgid "Publisher: %(name)s"
 msgstr "出版社: %(name)s"
 
-#: cps/web.py:741
+#: cps/web.py:742
 #, python-format
 msgid "Series: %(serie)s"
 msgstr "シリーズ: %(serie)s"
 
-#: cps/web.py:755
+#: cps/web.py:756
 msgid "Rating: None"
 msgstr "評価: なし"
 
-#: cps/web.py:764
+#: cps/web.py:765
 #, python-format
 msgid "Rating: %(rating)s stars"
 msgstr "評価: 星%(rating)s"
 
-#: cps/web.py:795
+#: cps/web.py:796
 #, python-format
 msgid "File format: %(format)s"
 msgstr "ファイル形式: %(format)s"
 
-#: cps/web.py:832
+#: cps/web.py:833
 #, python-format
 msgid "Category: %(name)s"
 msgstr "カテゴリ: %(name)s"
 
-#: cps/web.py:861
+#: cps/web.py:862
 #, python-format
 msgid "Language: %(name)s"
 msgstr "言語: %(name)s"
 
-#: cps/web.py:951
+#: cps/web.py:952
 #, fuzzy
 msgid "Hidden Books"
 msgstr "非表示の本"
 
-#: cps/web.py:1014
+#: cps/web.py:1015
 #, fuzzy
 msgid "Error loading magic shelf"
 msgstr "Magic Shelfの読み込みエラー"
 
-#: cps/web.py:1039
+#: cps/web.py:1040
 #, python-format
 msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 msgstr "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 
-#: cps/web.py:1127
+#: cps/web.py:1191
 msgid "No rules provided"
 msgstr "ルールが指定されていません"
 
-#: cps/web.py:1133
+#: cps/web.py:1197
 #, fuzzy
 msgid "Invalid rules format"
 msgstr "メールアドレスの形式が無効"
 
-#: cps/web.py:1155
+#: cps/web.py:1219
 msgid "Error processing rules"
 msgstr "ルールの処理エラー"
 
-#: cps/web.py:1159
+#: cps/web.py:1223
 #, fuzzy
 msgid "Invalid request"
 msgstr "無効なロール"
 
-#: cps/web.py:1203
+#: cps/web.py:1267
 msgid "Name and rules are required"
 msgstr "名前とルールは必須です"
 
-#: cps/web.py:1206 cps/web.py:1314
+#: cps/web.py:1270 cps/web.py:1378
 msgid "Shelf name too long (max 100 characters)"
 msgstr "シェルフ名が長すぎます（最大100文字）"
 
-#: cps/web.py:1235
+#: cps/web.py:1299
 #, fuzzy
 msgid "Error creating shelf"
 msgstr "本棚の削除中にエラーが発生しました"
 
-#: cps/templates/layout.html:352 cps/web.py:1249
+#: cps/templates/layout.html:352 cps/web.py:1313
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Magic Shelfを作成"
 
-#: cps/web.py:1307
+#: cps/web.py:1371
 msgid "Permission denied to change public status"
 msgstr "公開ステータスを変更する権限がありません"
 
-#: cps/web.py:1311
+#: cps/web.py:1375
 #, fuzzy
 msgid "Shelf name is required"
 msgstr "この項目は必須です"
 
-#: cps/web.py:1351
+#: cps/web.py:1415
 #, fuzzy
 msgid "Error updating shelf"
 msgstr "本棚の削除中にエラーが発生しました"
 
-#: cps/web.py:1366
+#: cps/web.py:1430
 #, fuzzy
 msgid "Edit Magic Shelf"
 msgstr "Magic Shelfを編集"
 
-#: cps/web.py:1381
+#: cps/web.py:1445
 #, fuzzy
 msgid "Shelf not found"
 msgstr "ユーザーが見つかりません"
 
-#: cps/web.py:1386
+#: cps/web.py:1450
 msgid "Permission denied"
 msgstr "権限がありません"
 
-#: cps/web.py:1417
+#: cps/web.py:1481
 #, fuzzy
 msgid "Shelf duplicated successfully"
 msgstr "シェルフを複製しました"
 
-#: cps/web.py:1423
+#: cps/web.py:1487
 #, fuzzy
 msgid "Error duplicating shelf"
 msgstr "本棚の削除中にエラーが発生しました"
 
-#: cps/templates/magic_shelf_edit.html:458 cps/web.py:1450
+#: cps/templates/magic_shelf_edit.html:458 cps/web.py:1514
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
@@ -2471,102 +2471,102 @@ msgstr ""
 "システムシェルフは削除できません。ユーザープロフィール設定で非表示にできま"
 "す。"
 
-#: cps/web.py:1468
+#: cps/web.py:1532
 #, fuzzy
 msgid "Error deleting shelf"
 msgstr "本棚の削除中にエラーが発生しました"
 
-#: cps/web.py:1484
+#: cps/web.py:1548
 msgid ""
 "You cannot hide your own shelves. Delete them instead if you don't want them."
 msgstr "自分のシェルフは非表示にできません。不要な場合は削除してください。"
 
-#: cps/web.py:1494
+#: cps/web.py:1558
 msgid "Shelf already hidden"
 msgstr "シェルフは既に非表示です"
 
-#: cps/web.py:1508
+#: cps/web.py:1572
 #, fuzzy
 msgid "Error hiding shelf"
 msgstr "本棚の削除中にエラーが発生しました"
 
-#: cps/web.py:1522
+#: cps/web.py:1586
 msgid "Shelf was not hidden"
 msgstr "シェルフは非表示になりませんでした"
 
-#: cps/web.py:1531
+#: cps/web.py:1595
 #, fuzzy
 msgid "Error unhiding shelf"
 msgstr "本棚の削除中にエラーが発生しました"
 
-#: cps/templates/admin.html:18 cps/web.py:1678
+#: cps/templates/admin.html:18 cps/web.py:1742
 msgid "Downloads"
 msgstr "ダウンロード数"
 
-#: cps/web.py:1830
+#: cps/web.py:1894
 msgid "File formats list"
 msgstr "ファイル形式一覧"
 
-#: cps/web.py:2075 cps/web.py:2113
+#: cps/web.py:2139 cps/web.py:2177
 msgid "Please configure the SMTP mail settings first..."
 msgstr "まずSMTPメール設定を行ってください..."
 
-#: cps/web.py:2079
+#: cps/web.py:2143
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr ""
 "有効な電子書籍リーダーのメールアドレスをプロフィールに設定してください。"
 
-#: cps/web.py:2101
+#: cps/web.py:2165
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "本の %(eReadermail)s への送信がキューに追加されました"
 
-#: cps/web.py:2104 cps/web.py:2162
+#: cps/web.py:2168 cps/web.py:2226
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "%(res)s を送信中にエラーが発生しました"
 
-#: cps/web.py:2121 cps/web.py:2131
+#: cps/web.py:2185 cps/web.py:2195
 msgid "No email addresses selected"
 msgstr "メールアドレスが選択されていません"
 
-#: cps/web.py:2138
+#: cps/web.py:2202
 msgid "Additional email addresses are disabled for your account."
 msgstr "追加のメールアドレスはあなたのアカウントで無効化されています。"
 
-#: cps/web.py:2160
+#: cps/web.py:2224
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr "成功！選択したアドレスへの送信キューに書籍を追加しました"
 
-#: cps/web.py:2179
+#: cps/web.py:2243
 msgid "Please wait one minute to register next user"
 msgstr "次のユーザー登録まで1分お待ちください"
 
 #: cps/templates/layout.html:162 cps/templates/layout.html:204
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2180
-#: cps/web.py:2184 cps/web.py:2189 cps/web.py:2193 cps/web.py:2199
-#: cps/web.py:2224 cps/web.py:2228 cps/web.py:2241 cps/web.py:2244
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2244
+#: cps/web.py:2248 cps/web.py:2253 cps/web.py:2257 cps/web.py:2263
+#: cps/web.py:2288 cps/web.py:2292 cps/web.py:2305 cps/web.py:2308
 msgid "Register"
 msgstr "登録"
 
-#: cps/web.py:2183 cps/web.py:2348
+#: cps/web.py:2247 cps/web.py:2412
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "リミッターバックエンドへの接続エラーです。管理者に連絡してください"
 
-#: cps/web.py:2188 cps/web.py:2240
+#: cps/web.py:2252 cps/web.py:2304
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr "メールサーバーが設定されていません。管理者に連絡してください"
 
-#: cps/web.py:2226
+#: cps/web.py:2290
 msgid "Oops! Your Email is not allowed."
 msgstr "このメールアドレスは登録が許可されていません"
 
-#: cps/web.py:2229
+#: cps/web.py:2293
 msgid "Success! Confirmation Email has been sent."
 msgstr "確認メールがこのメールアドレスに送信されました。"
 
-#: cps/web.py:2277
+#: cps/web.py:2341
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
@@ -2574,34 +2574,34 @@ msgstr ""
 "認証ループを検出しました。ログインに問題がある場合は、管理者にお問い合わせく"
 "ださい。"
 
-#: cps/web.py:2322
+#: cps/web.py:2386
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
 msgstr "OAuth認証が正しく設定されていません。管理者にお問い合わせください。"
 
-#: cps/web.py:2327 cps/web.py:2354
+#: cps/web.py:2391 cps/web.py:2418
 msgid "Cannot activate LDAP authentication"
 msgstr "LDAP認証を有効にできません"
 
-#: cps/web.py:2336
+#: cps/web.py:2400
 msgid "Standard login is disabled."
 msgstr "標準ログインは無効化されています。"
 
-#: cps/web.py:2344
+#: cps/web.py:2408
 msgid "Please wait one minute before next login"
 msgstr "次のログインまで1分お待ちください"
 
-#: cps/web.py:2362
+#: cps/web.py:2426
 msgid "Username cannot be empty"
 msgstr "ユーザー名を空にできません"
 
-#: cps/web.py:2374
+#: cps/web.py:2438
 #, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "'%(nickname)s' としてログインしました"
 
-#: cps/web.py:2393
+#: cps/web.py:2457
 #, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
@@ -2610,7 +2610,7 @@ msgstr ""
 "ようこそ！アカウントが自動作成されました。'%(nickname)s'としてログインしまし"
 "た"
 
-#: cps/web.py:2398 cps/web.py:2401
+#: cps/web.py:2462 cps/web.py:2465
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
@@ -2618,7 +2618,7 @@ msgstr ""
 "認証は成功しましたが、アカウント作成に失敗しました。管理者にお問い合わせくだ"
 "さい。"
 
-#: cps/web.py:2405
+#: cps/web.py:2469
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
@@ -2626,7 +2626,7 @@ msgstr ""
 "認証は成功しましたが、ローカルアカウントが見つかりません。アカウント作成につ"
 "いては管理者にお問い合わせください。"
 
-#: cps/web.py:2413
+#: cps/web.py:2477
 #, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
@@ -2635,57 +2635,57 @@ msgstr ""
 "フォールバックログイン：'%(nickname)s'、LDAPサーバーに到達できないか、ユー"
 "ザーが不明です"
 
-#: cps/web.py:2419
+#: cps/web.py:2483
 #, python-format
 msgid "Could not login: %(message)s"
 msgstr "ログインできませんでした: %(message)s"
 
-#: cps/web.py:2442 cps/web.py:2443 cps/web.py:2486
+#: cps/web.py:2506 cps/web.py:2507 cps/web.py:2550
 msgid "Wrong Username or Password"
 msgstr "ユーザー名またはパスワードが間違っています"
 
-#: cps/web.py:2451
+#: cps/web.py:2515
 msgid "New Password was sent to your email address"
 msgstr "新しいパスワードをメールアドレスに送信しました"
 
-#: cps/web.py:2455
+#: cps/web.py:2519
 msgid "An unknown error occurred. Please try again later."
 msgstr "不明なエラーが発生しました。後でもう一度お試しください。"
 
-#: cps/web.py:2457
+#: cps/web.py:2521
 msgid "Please enter valid username to reset password"
 msgstr "パスワードをリセットするには有効なユーザー名を入力してください"
 
-#: cps/web.py:2465
+#: cps/web.py:2529
 #, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "'%(nickname)s' としてログインしました"
 
-#: cps/web.py:2782
+#: cps/web.py:2846
 msgid "Success! Profile Updated"
 msgstr "成功！プロフィールを更新しました"
 
-#: cps/web.py:2788
+#: cps/web.py:2852
 msgid "Oops! An account already exists for this Email."
 msgstr "このメールアドレスで登録されたアカウントがすでに存在します"
 
-#: cps/web.py:2912
+#: cps/web.py:2976
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2925
+#: cps/web.py:2989
 #, python-format
 msgid ""
 "App password created for '%(label)s'. Copy it now — you won't see it again: "
 "%(token)s"
 msgstr ""
 
-#: cps/web.py:2943
+#: cps/web.py:3007
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3062
+#: cps/web.py:3126
 msgid "Invalid book ID."
 msgstr "無効な書籍IDです。"
 

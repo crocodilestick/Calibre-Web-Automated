@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 05:41+0000\n"
+"POT-Creation-Date: 2026-05-19 19:13+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -123,7 +123,7 @@ msgid "UI Configuration"
 msgstr "界面配置"
 
 #: cps/admin.py:646 cps/admin.py:1372 cps/db.py:1118 cps/search.py:153
-#: cps/web.py:551 cps/web.py:881
+#: cps/web.py:552 cps/web.py:882
 #, fuzzy, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "自定義列號：%(column)d在Calibre數據庫中不存在"
@@ -398,7 +398,7 @@ msgstr ""
 #: cps/admin.py:2648 cps/admin.py:2920 cps/editbooks.py:1079
 #: cps/editbooks.py:1878 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
-#: cps/tasks/convert.py:145 cps/web.py:2793
+#: cps/tasks/convert.py:145 cps/web.py:2857
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "數據庫錯誤：%(error)s。"
@@ -438,7 +438,7 @@ msgstr ""
 msgid "Scheduled tasks settings updated"
 msgstr ""
 
-#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2916 cps/web.py:2223
+#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2916 cps/web.py:2287
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "發生一個未知錯誤，請稍後再試。"
 
@@ -446,7 +446,7 @@ msgstr "發生一個未知錯誤，請稍後再試。"
 msgid "Settings DB is not Writeable"
 msgstr ""
 
-#: cps/admin.py:1913 cps/opds.py:309 cps/web.py:2719 cps/web.py:2844
+#: cps/admin.py:1913 cps/opds.py:309 cps/web.py:2783 cps/web.py:2908
 #, fuzzy
 msgid "title"
 msgstr "標題"
@@ -609,7 +609,7 @@ msgstr "郵件服務器設置已更新"
 msgid "Database Configuration"
 msgstr "數據庫配置"
 
-#: cps/admin.py:2603 cps/web.py:2192
+#: cps/admin.py:2603 cps/web.py:2256
 msgid "Oops! Please complete all fields."
 msgstr "請填寫所有欄位！"
 
@@ -643,7 +643,7 @@ msgstr "無法刪除訪客用戶"
 msgid "No admin user remaining, can't delete user"
 msgstr "管理員賬戶不存在，無法刪除用戶"
 
-#: cps/admin.py:2871 cps/web.py:2527
+#: cps/admin.py:2871 cps/web.py:2591
 msgid "Email can't be empty and has to be a valid Email"
 msgstr ""
 
@@ -1177,9 +1177,9 @@ msgstr ""
 #: cps/db.py:1449 cps/templates/config_edit.html:333
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
-#: cps/web.py:694 cps/web.py:728 cps/web.py:773 cps/web.py:813 cps/web.py:842
-#: cps/web.py:1708 cps/web.py:1745 cps/web.py:1796 cps/web.py:1828
-#: cps/web.py:1867
+#: cps/web.py:695 cps/web.py:729 cps/web.py:774 cps/web.py:814 cps/web.py:843
+#: cps/web.py:1772 cps/web.py:1809 cps/web.py:1860 cps/web.py:1892
+#: cps/web.py:1931
 msgid "None"
 msgstr "無"
 
@@ -1281,8 +1281,8 @@ msgstr "不能上傳文件附檔名為“%(ext)s”的文件到此服務器"
 msgid "File to be uploaded must have an extension"
 msgstr "要上傳的文件必須具有附檔名"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:661 cps/web.py:2957
-#: cps/web.py:3049 cps/web.py:3144
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:662 cps/web.py:3021
+#: cps/web.py:3113 cps/web.py:3208
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "糟糕！選擇書名無法打開。文件不存在或者文件不可訪問"
@@ -1786,7 +1786,7 @@ msgstr "熱門書籍"
 msgid "Popular publications from this catalog based on Downloads."
 msgstr "基於下載數的熱門書籍。"
 
-#: cps/opds.py:175 cps/render_template.py:91 cps/web.py:536
+#: cps/opds.py:175 cps/render_template.py:91 cps/web.py:537
 msgid "Top Rated Books"
 msgstr "最高評分書籍"
 
@@ -1812,11 +1812,11 @@ msgstr "隨機書籍"
 msgid "Show Random Books"
 msgstr "隨機顯示書籍"
 
-#: cps/opds.py:193 cps/opds.py:194 cps/render_template.py:94 cps/web.py:901
+#: cps/opds.py:193 cps/opds.py:194 cps/render_template.py:94 cps/web.py:902
 msgid "Read Books"
 msgstr "已讀書籍"
 
-#: cps/opds.py:199 cps/opds.py:200 cps/render_template.py:98 cps/web.py:904
+#: cps/opds.py:199 cps/opds.py:200 cps/render_template.py:98 cps/web.py:905
 msgid "Unread Books"
 msgstr "未讀書籍"
 
@@ -1831,7 +1831,7 @@ msgid "Books ordered by Author"
 msgstr "書籍按作者排序"
 
 #: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:111
-#: cps/web.py:1719
+#: cps/web.py:1783
 msgid "Publishers"
 msgstr "出版社"
 
@@ -1840,7 +1840,7 @@ msgid "Books ordered by publisher"
 msgstr "書籍按出版社排序"
 
 #: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:106
-#: cps/web.py:1871
+#: cps/web.py:1935
 msgid "Categories"
 msgstr "分類"
 
@@ -1852,7 +1852,7 @@ msgstr "書籍按分類排序"
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
-#: cps/templates/search_form.html:70 cps/web.py:1751 cps/web.py:1763
+#: cps/templates/search_form.html:70 cps/web.py:1815 cps/web.py:1827
 msgid "Series"
 msgstr "叢書"
 
@@ -1862,7 +1862,7 @@ msgstr "書籍按叢書排序"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:109
 #: cps/templates/detail.html:719 cps/templates/search_form.html:108
-#: cps/web.py:1843
+#: cps/web.py:1907
 msgid "Languages"
 msgstr "語言"
 
@@ -1870,7 +1870,7 @@ msgstr "語言"
 msgid "Books ordered by Languages"
 msgstr "書籍按語言排序"
 
-#: cps/opds.py:235 cps/render_template.py:121 cps/web.py:1803
+#: cps/opds.py:235 cps/render_template.py:121 cps/web.py:1867
 msgid "Ratings"
 msgstr "評分"
 
@@ -1917,7 +1917,7 @@ msgstr "{} 星"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:161
 #: cps/templates/layout.html:203 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2301
+#: cps/templates/login.html:39 cps/web.py:2365
 msgid "Login"
 msgstr "登入"
 
@@ -2012,7 +2012,7 @@ msgstr "顯示評分選擇"
 msgid "Show File Formats Section"
 msgstr "顯示文件格式選擇"
 
-#: cps/render_template.py:128 cps/web.py:927
+#: cps/render_template.py:128 cps/web.py:928
 msgid "Archived Books"
 msgstr "歸檔書籍"
 
@@ -2021,7 +2021,7 @@ msgstr "歸檔書籍"
 msgid "Show Archived Books"
 msgstr "顯示歸檔書籍"
 
-#: cps/render_template.py:133 cps/web.py:1539
+#: cps/render_template.py:133 cps/web.py:1603
 msgid "Books List"
 msgstr "書籍列表"
 
@@ -2263,370 +2263,370 @@ msgstr "有新的更新。單擊下面的按鈕以更新到版本: %(version)s"
 msgid "No release information available"
 msgstr "無可用發佈信息"
 
-#: cps/templates/index.html:33 cps/web.py:563
+#: cps/templates/index.html:33 cps/web.py:564
 msgid "Discover (Random Books)"
 msgstr "發現(隨機書籍)"
 
-#: cps/web.py:613
+#: cps/web.py:614
 msgid "Hot Books (Most Downloaded)"
 msgstr "熱門書籍（最多下載）"
 
-#: cps/web.py:644
+#: cps/web.py:645
 #, python-format
 msgid "Downloaded books by %(user)s"
 msgstr "%(user)s 下載過的書籍"
 
-#: cps/web.py:677
+#: cps/web.py:678
 #, python-format
 msgid "Author: %(name)s"
 msgstr "作者：%(name)s"
 
-#: cps/web.py:713
+#: cps/web.py:714
 #, python-format
 msgid "Publisher: %(name)s"
 msgstr "出版社：%(name)s"
 
-#: cps/web.py:741
+#: cps/web.py:742
 #, python-format
 msgid "Series: %(serie)s"
 msgstr "叢書：%(serie)s"
 
-#: cps/web.py:755
+#: cps/web.py:756
 msgid "Rating: None"
 msgstr ""
 
-#: cps/web.py:764
+#: cps/web.py:765
 #, python-format
 msgid "Rating: %(rating)s stars"
 msgstr "評分：%(rating)s 星"
 
-#: cps/web.py:795
+#: cps/web.py:796
 #, python-format
 msgid "File format: %(format)s"
 msgstr "文件格式：%(format)s"
 
-#: cps/web.py:832
+#: cps/web.py:833
 #, python-format
 msgid "Category: %(name)s"
 msgstr "分類：%(name)s"
 
-#: cps/web.py:861
+#: cps/web.py:862
 #, python-format
 msgid "Language: %(name)s"
 msgstr "語言：%(name)s"
 
-#: cps/web.py:951
+#: cps/web.py:952
 #, fuzzy
 msgid "Hidden Books"
 msgstr "隱藏書籍"
 
-#: cps/web.py:1014
+#: cps/web.py:1015
 #, fuzzy
 msgid "Error loading magic shelf"
 msgstr "下載封面時出錯"
 
-#: cps/web.py:1039
+#: cps/web.py:1040
 #, python-format
 msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 msgstr ""
 
-#: cps/web.py:1127
+#: cps/web.py:1191
 msgid "No rules provided"
 msgstr ""
 
-#: cps/web.py:1133
+#: cps/web.py:1197
 #, fuzzy
 msgid "Invalid rules format"
 msgstr "無效的郵件地址格式"
 
-#: cps/web.py:1155
+#: cps/web.py:1219
 msgid "Error processing rules"
 msgstr ""
 
-#: cps/web.py:1159
+#: cps/web.py:1223
 #, fuzzy
 msgid "Invalid request"
 msgstr "無效角色"
 
-#: cps/web.py:1203
+#: cps/web.py:1267
 msgid "Name and rules are required"
 msgstr ""
 
-#: cps/web.py:1206 cps/web.py:1314
+#: cps/web.py:1270 cps/web.py:1378
 msgid "Shelf name too long (max 100 characters)"
 msgstr ""
 
-#: cps/web.py:1235
+#: cps/web.py:1299
 #, fuzzy
 msgid "Error creating shelf"
 msgstr "下載封面時出錯"
 
-#: cps/templates/layout.html:352 cps/web.py:1249
+#: cps/templates/layout.html:352 cps/web.py:1313
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "創建書架"
 
-#: cps/web.py:1307
+#: cps/web.py:1371
 msgid "Permission denied to change public status"
 msgstr ""
 
-#: cps/web.py:1311
+#: cps/web.py:1375
 #, fuzzy
 msgid "Shelf name is required"
 msgstr "此欄必須填寫"
 
-#: cps/web.py:1351
+#: cps/web.py:1415
 #, fuzzy
 msgid "Error updating shelf"
 msgstr "下載封面時出錯"
 
-#: cps/web.py:1366
+#: cps/web.py:1430
 #, fuzzy
 msgid "Edit Magic Shelf"
 msgstr "編輯書架"
 
-#: cps/web.py:1381
+#: cps/web.py:1445
 #, fuzzy
 msgid "Shelf not found"
 msgstr "找不到用戶"
 
-#: cps/web.py:1386
+#: cps/web.py:1450
 msgid "Permission denied"
 msgstr ""
 
-#: cps/web.py:1417
+#: cps/web.py:1481
 #, fuzzy
 msgid "Shelf duplicated successfully"
 msgstr "成功刪除 {} 個用戶"
 
-#: cps/web.py:1423
+#: cps/web.py:1487
 #, fuzzy
 msgid "Error duplicating shelf"
 msgstr "下載封面時出錯"
 
-#: cps/templates/magic_shelf_edit.html:458 cps/web.py:1450
+#: cps/templates/magic_shelf_edit.html:458 cps/web.py:1514
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
 msgstr ""
 
-#: cps/web.py:1468
+#: cps/web.py:1532
 #, fuzzy
 msgid "Error deleting shelf"
 msgstr "下載封面時出錯"
 
-#: cps/web.py:1484
+#: cps/web.py:1548
 msgid ""
 "You cannot hide your own shelves. Delete them instead if you don't want them."
 msgstr ""
 
-#: cps/web.py:1494
+#: cps/web.py:1558
 msgid "Shelf already hidden"
 msgstr ""
 
-#: cps/web.py:1508
+#: cps/web.py:1572
 #, fuzzy
 msgid "Error hiding shelf"
 msgstr "下載封面時出錯"
 
-#: cps/web.py:1522
+#: cps/web.py:1586
 msgid "Shelf was not hidden"
 msgstr ""
 
-#: cps/web.py:1531
+#: cps/web.py:1595
 #, fuzzy
 msgid "Error unhiding shelf"
 msgstr "下載封面時出錯"
 
-#: cps/templates/admin.html:18 cps/web.py:1678
+#: cps/templates/admin.html:18 cps/web.py:1742
 msgid "Downloads"
 msgstr "下載次數"
 
-#: cps/web.py:1830
+#: cps/web.py:1894
 msgid "File formats list"
 msgstr "文件格式列表"
 
-#: cps/web.py:2075 cps/web.py:2113
+#: cps/web.py:2139 cps/web.py:2177
 #, fuzzy
 msgid "Please configure the SMTP mail settings first..."
 msgstr "請先配置SMTP郵箱設置..."
 
-#: cps/web.py:2079
+#: cps/web.py:2143
 #, fuzzy
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr "請先設置您的kindle郵箱。"
 
-#: cps/web.py:2101
+#: cps/web.py:2165
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "書籍已經成功加入 %(eReadermail)s 的發送隊列"
 
-#: cps/web.py:2104 cps/web.py:2162
+#: cps/web.py:2168 cps/web.py:2226
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "糟糕！發送這本書籍的時候出現錯誤：%(res)s"
 
-#: cps/web.py:2121 cps/web.py:2131
+#: cps/web.py:2185 cps/web.py:2195
 msgid "No email addresses selected"
 msgstr ""
 
-#: cps/web.py:2138
+#: cps/web.py:2202
 msgid "Additional email addresses are disabled for your account."
 msgstr ""
 
-#: cps/web.py:2160
+#: cps/web.py:2224
 #, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr "書籍已經成功加入 %(eReadermail)s 的發送隊列"
 
-#: cps/web.py:2179
+#: cps/web.py:2243
 msgid "Please wait one minute to register next user"
 msgstr ""
 
 #: cps/templates/layout.html:162 cps/templates/layout.html:204
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2180
-#: cps/web.py:2184 cps/web.py:2189 cps/web.py:2193 cps/web.py:2199
-#: cps/web.py:2224 cps/web.py:2228 cps/web.py:2241 cps/web.py:2244
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2244
+#: cps/web.py:2248 cps/web.py:2253 cps/web.py:2257 cps/web.py:2263
+#: cps/web.py:2288 cps/web.py:2292 cps/web.py:2305 cps/web.py:2308
 msgid "Register"
 msgstr "註冊"
 
-#: cps/web.py:2183 cps/web.py:2348
+#: cps/web.py:2247 cps/web.py:2412
 #, fuzzy
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "郵件服務未配置，請聯繫網站管理員！"
 
-#: cps/web.py:2188 cps/web.py:2240
+#: cps/web.py:2252 cps/web.py:2304
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr "郵件服務未配置，請聯繫網站管理員！"
 
-#: cps/web.py:2226
+#: cps/web.py:2290
 msgid "Oops! Your Email is not allowed."
 msgstr "您的電子郵件不允許註冊"
 
-#: cps/web.py:2229
+#: cps/web.py:2293
 msgid "Success! Confirmation Email has been sent."
 msgstr "確認郵件已經發送到您的郵箱。"
 
-#: cps/web.py:2277
+#: cps/web.py:2341
 #, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
 msgstr "Calibre-Web 實例未配置，請聯繫您的系統管理員！"
 
-#: cps/web.py:2322
+#: cps/web.py:2386
 #, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
 msgstr "郵件服務未配置，請聯繫網站管理員！"
 
-#: cps/web.py:2327 cps/web.py:2354
+#: cps/web.py:2391 cps/web.py:2418
 #, fuzzy
 msgid "Cannot activate LDAP authentication"
 msgstr "無法激活LDAP認證"
 
-#: cps/web.py:2336
+#: cps/web.py:2400
 msgid "Standard login is disabled."
 msgstr ""
 
-#: cps/web.py:2344
+#: cps/web.py:2408
 msgid "Please wait one minute before next login"
 msgstr ""
 
-#: cps/web.py:2362
+#: cps/web.py:2426
 msgid "Username cannot be empty"
 msgstr ""
 
-#: cps/web.py:2374
+#: cps/web.py:2438
 #, fuzzy, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "您現在已以“%(nickname)s”身份登入"
 
-#: cps/web.py:2393
+#: cps/web.py:2457
 #, fuzzy, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
 msgstr "您現在已以“%(nickname)s”身份登入"
 
-#: cps/web.py:2398 cps/web.py:2401
+#: cps/web.py:2462 cps/web.py:2465
 #, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
 msgstr "Calibre-Web 實例未配置，請聯繫您的系統管理員！"
 
-#: cps/web.py:2405
+#: cps/web.py:2469
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
 msgstr ""
 
-#: cps/web.py:2413
+#: cps/web.py:2477
 #, fuzzy, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
 "known"
 msgstr "備援登入“%(nickname)s”：無法訪問LDAP伺服器，或用戶未知"
 
-#: cps/web.py:2419
+#: cps/web.py:2483
 #, fuzzy, python-format
 msgid "Could not login: %(message)s"
 msgstr "無法登入：%(message)s"
 
-#: cps/web.py:2442 cps/web.py:2443 cps/web.py:2486
+#: cps/web.py:2506 cps/web.py:2507 cps/web.py:2550
 #, fuzzy
 msgid "Wrong Username or Password"
 msgstr "用戶名或密碼錯誤"
 
-#: cps/web.py:2451
+#: cps/web.py:2515
 #, fuzzy
 msgid "New Password was sent to your email address"
 msgstr "新密碼已發送到您的郵箱"
 
-#: cps/web.py:2455
+#: cps/web.py:2519
 #, fuzzy
 msgid "An unknown error occurred. Please try again later."
 msgstr "發生一個未知錯誤，請稍後再試。"
 
-#: cps/web.py:2457
+#: cps/web.py:2521
 #, fuzzy
 msgid "Please enter valid username to reset password"
 msgstr "請輸入有效的用戶名進行密碼重置"
 
-#: cps/web.py:2465
+#: cps/web.py:2529
 #, fuzzy, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "您現在已以“%(nickname)s”身份登入"
 
-#: cps/web.py:2782
+#: cps/web.py:2846
 #, fuzzy
 msgid "Success! Profile Updated"
 msgstr "資料已更新"
 
-#: cps/web.py:2788
+#: cps/web.py:2852
 msgid "Oops! An account already exists for this Email."
 msgstr "使用此郵箱的賬號已經存在。"
 
-#: cps/web.py:2912
+#: cps/web.py:2976
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:2925
+#: cps/web.py:2989
 #, python-format
 msgid ""
 "App password created for '%(label)s'. Copy it now — you won't see it again: "
 "%(token)s"
 msgstr ""
 
-#: cps/web.py:2943
+#: cps/web.py:3007
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3062
+#: cps/web.py:3126
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "無效角色"

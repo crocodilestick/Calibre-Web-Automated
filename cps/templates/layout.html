@@ -361,7 +361,34 @@
         <div class="col-sm-10">
           {% block body %}{% endblock %}
           {% if pagination and (pagination.has_next or pagination.has_prev) %}
+            {# Top paginator — caliBlur CSS pins this fixed at top-right. #}
             <div class="pagination">
+              {% if pagination.has_prev %}
+              <li class="page-item page-previous"><a class="page-link" aria-label="next page" href="{{ (pagination.page - 1)|url_for_other_page
+                }}">&laquo; {{_('Previous')}}</a></li>
+              {% endif %}
+            {% for page in pagination.iter_pages() %}
+              {% if page %}
+                {% if page != pagination.page %}
+                  <li class="page-item"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
+                {% else %}
+                  <li class="page-item active"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
+                {% endif %}
+              {% else %}
+                <li class="page-item page-last-separator disabled"><a class="page-link" aria-label="">…</a></li>
+              {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+              <li class="page-item page-next"><a class="page-link next" aria-label="next page" href="{{ (pagination.page + 1)|url_for_other_page
+                }}">{{_('Next')}} &raquo;</a></li>
+            {% endif %}
+            </div>
+            {# Fork issue #256 (droM4X): also render the paginator in-flow
+               at the end of the list, so users at the bottom of a long
+               scroll don't have to go back to the top to navigate. The
+               `.pagination-bottom` modifier scopes the `position: static`
+               override to this copy only (caliBlur.css). #}
+            <div class="pagination pagination-bottom">
               {% if pagination.has_prev %}
               <li class="page-item page-previous"><a class="page-link" aria-label="next page" href="{{ (pagination.page - 1)|url_for_other_page
                 }}">&laquo; {{_('Previous')}}</a></li>

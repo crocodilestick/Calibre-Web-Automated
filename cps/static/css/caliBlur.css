@@ -8806,3 +8806,27 @@ button.close {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+/* Fork issue #256 (@droM4X): in-flow paginator at the end of the book
+   list. The default .pagination rule above pins the paginator fixed at
+   the top-right; this modifier scopes a `position: static` override to
+   the bottom copy rendered in layout.html. Without this, the second
+   paginator would stack on top of the first as another fixed element. */
+body > div.container-fluid > div > div.col-sm-10 > div.pagination.pagination-bottom,
+.pagination.pagination-bottom {
+    position: static;
+    top: auto;
+    right: auto;
+    height: auto;
+    line-height: 1.5;
+    margin: 1.5rem 0 0.5rem;
+    padding: 0;
+    text-align: center;
+    z-index: auto;
+    display: block;
+}
+
+body > div.container-fluid > div > div.col-sm-10 > div.pagination.pagination-bottom > .page-item,
+.pagination.pagination-bottom > .page-item {
+    display: inline-block;
+    margin: 0 2px;
+}

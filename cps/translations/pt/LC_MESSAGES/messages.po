@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 19:44+0000\n"
+"POT-Creation-Date: 2026-05-20 21:46+0000\n"
 "PO-Revision-Date: 2023-07-25 11:30+0100\n"
 "Last-Translator: horus68 <https://github.com/horus68>\n"
 "Language-Team: pt-PT <>\n"
@@ -1567,27 +1567,27 @@ msgstr "Formato de endereço de email inválido"
 msgid "Password doesn't comply with password validation rules"
 msgstr ""
 
-#: cps/helper.py:1099
+#: cps/helper.py:1131
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 "O módulo Python 'advocate' não está instalado, mas é necessário para "
 "carregar capas"
 
-#: cps/helper.py:1104 cps/helper.py:1112
+#: cps/helper.py:1136 cps/helper.py:1144
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1126
+#: cps/helper.py:1158
 msgid "Error Downloading Cover"
 msgstr "Erro ao descarregar a capa"
 
-#: cps/helper.py:1129
+#: cps/helper.py:1161
 msgid "Cover Format Error"
 msgstr "Erro de formato da capa"
 
-#: cps/helper.py:1132
+#: cps/helper.py:1164
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
@@ -1595,79 +1595,79 @@ msgstr ""
 "Não possui permissões para aceder a localhost ou à rede local para carregar "
 "capas"
 
-#: cps/helper.py:1148
+#: cps/helper.py:1180
 msgid "Failed to create path for cover"
 msgstr "Falha em criar um caminho para a capa"
 
-#: cps/helper.py:1159 cps/helper.py:1172 cps/helper.py:1175
+#: cps/helper.py:1191 cps/helper.py:1204 cps/helper.py:1207
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr ""
 "O ficheiro de capa não é um ficheiro de imagem válido, ou não foi possível "
 "ser armazenado"
 
-#: cps/helper.py:1192
+#: cps/helper.py:1224
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr ""
 "Apenas ficheiros jpg/jpeg/png/webp/bmp são suportados como ficheiros de capa"
 
-#: cps/helper.py:1208 cps/helper.py:1213
+#: cps/helper.py:1240 cps/helper.py:1245
 msgid "Invalid cover file content"
 msgstr "Conteúdo do ficheiro de capa inválido"
 
-#: cps/helper.py:1217
+#: cps/helper.py:1249
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Apenas ficheiros jpg/jpeg são suportados como ficheiros de capa"
 
-#: cps/helper.py:1418 cps/helper.py:1657
+#: cps/helper.py:1450 cps/helper.py:1689
 #, fuzzy
 msgid "Cover"
 msgstr "Capa"
 
-#: cps/helper.py:1435
+#: cps/helper.py:1467
 msgid "UnRar binary file not found"
 msgstr "Binário UnRar não encontrado"
 
-#: cps/helper.py:1446
+#: cps/helper.py:1478
 #, fuzzy
 msgid "Error executing UnRar"
 msgstr "Erro a executar UnRar"
 
-#: cps/helper.py:1452
+#: cps/helper.py:1484
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. Calibre-Web NextGen is "
 "optimized for x86_64 and aarch64."
 msgstr ""
 
-#: cps/helper.py:1461
+#: cps/helper.py:1493
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1464
+#: cps/helper.py:1496
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1478
+#: cps/helper.py:1510
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "DB não é gravável"
 
-#: cps/helper.py:1487
+#: cps/helper.py:1519
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1489
+#: cps/helper.py:1521
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Falta de permissões de execução"
 
-#: cps/helper.py:1494
+#: cps/helper.py:1526
 #, fuzzy
 msgid "Error executing Calibre"
 msgstr "Erro a executar UnRar"
 
-#: cps/helper.py:1659 cps/templates/admin.html:240
+#: cps/helper.py:1691 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr ""
 "Enviar todos os livros para lista de espera para cópia de segurança de "

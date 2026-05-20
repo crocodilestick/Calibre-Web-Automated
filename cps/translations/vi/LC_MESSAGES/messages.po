@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 19:44+0000\n"
+"POT-Creation-Date: 2026-05-20 21:46+0000\n"
 "PO-Revision-Date: 2022-09-20 21:36+0700\n"
 "Last-Translator: Ha Link <halink0803@gmail.com>\n"
 "Language-Team: \n"
@@ -1513,97 +1513,97 @@ msgstr "Định dạng email address không hợp lệ"
 msgid "Password doesn't comply with password validation rules"
 msgstr ""
 
-#: cps/helper.py:1099
+#: cps/helper.py:1131
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 
-#: cps/helper.py:1104 cps/helper.py:1112
+#: cps/helper.py:1136 cps/helper.py:1144
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1126
+#: cps/helper.py:1158
 msgid "Error Downloading Cover"
 msgstr "Lỗi tải xuống ảnh bìa"
 
-#: cps/helper.py:1129
+#: cps/helper.py:1161
 msgid "Cover Format Error"
 msgstr "Định dạng ảnh bìa lỗi"
 
-#: cps/helper.py:1132
+#: cps/helper.py:1164
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
 
-#: cps/helper.py:1148
+#: cps/helper.py:1180
 msgid "Failed to create path for cover"
 msgstr "Tạo đường dẫn cho ảnh bìa thất bại"
 
-#: cps/helper.py:1159 cps/helper.py:1172 cps/helper.py:1175
+#: cps/helper.py:1191 cps/helper.py:1204 cps/helper.py:1207
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr ""
 
-#: cps/helper.py:1192
+#: cps/helper.py:1224
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr ""
 
-#: cps/helper.py:1208 cps/helper.py:1213
+#: cps/helper.py:1240 cps/helper.py:1245
 msgid "Invalid cover file content"
 msgstr ""
 
-#: cps/helper.py:1217
+#: cps/helper.py:1249
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr ""
 
-#: cps/helper.py:1418 cps/helper.py:1657
+#: cps/helper.py:1450 cps/helper.py:1689
 #, fuzzy
 msgid "Cover"
 msgstr "Khám phá"
 
-#: cps/helper.py:1435
+#: cps/helper.py:1467
 msgid "UnRar binary file not found"
 msgstr ""
 
-#: cps/helper.py:1446
+#: cps/helper.py:1478
 msgid "Error executing UnRar"
 msgstr ""
 
-#: cps/helper.py:1452
+#: cps/helper.py:1484
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. Calibre-Web NextGen is "
 "optimized for x86_64 and aarch64."
 msgstr ""
 
-#: cps/helper.py:1461
+#: cps/helper.py:1493
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1464
+#: cps/helper.py:1496
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1478
+#: cps/helper.py:1510
 msgid "Calibre binaries not viable"
 msgstr ""
 
-#: cps/helper.py:1487
+#: cps/helper.py:1519
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1489
+#: cps/helper.py:1521
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1494
+#: cps/helper.py:1526
 msgid "Error executing Calibre"
 msgstr ""
 
-#: cps/helper.py:1659 cps/templates/admin.html:240
+#: cps/helper.py:1691 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 19:44+0000\n"
+"POT-Creation-Date: 2026-05-20 21:46+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -1583,27 +1583,27 @@ msgstr "Nepravilna oblike e-poštnega naslova"
 msgid "Password doesn't comply with password validation rules"
 msgstr "Geslo ni v skladu s pravili za preverjanje gesla"
 
-#: cps/helper.py:1099
+#: cps/helper.py:1131
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 "Modul Python 'advocate' ni nameščen, vendar je potreben za nalaganje "
 "naslovnic"
 
-#: cps/helper.py:1104 cps/helper.py:1112
+#: cps/helper.py:1136 cps/helper.py:1144
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1126
+#: cps/helper.py:1158
 msgid "Error Downloading Cover"
 msgstr "Napaka pri nalaganju naslovnice"
 
-#: cps/helper.py:1129
+#: cps/helper.py:1161
 msgid "Cover Format Error"
 msgstr "Napaka vrste naslovnice"
 
-#: cps/helper.py:1132
+#: cps/helper.py:1164
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
@@ -1611,74 +1611,74 @@ msgstr ""
 "Dostop do lokalnega gostitelja ali lokalnega omrežja za prenos naslovnice ni "
 "dovoljen."
 
-#: cps/helper.py:1148
+#: cps/helper.py:1180
 msgid "Failed to create path for cover"
 msgstr "Nisem uspel ustvariti poti za naslovnice"
 
-#: cps/helper.py:1159 cps/helper.py:1172 cps/helper.py:1175
+#: cps/helper.py:1191 cps/helper.py:1204 cps/helper.py:1207
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr ""
 "Datoteka naslovnice ni veljavna slikovna datoteka ali je ni bilo mogoče "
 "shraniti"
 
-#: cps/helper.py:1192
+#: cps/helper.py:1224
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "Za datoteke naslovnic so podprte samo datoteke jpg/jpeg/png/webp/bmp"
 
-#: cps/helper.py:1208 cps/helper.py:1213
+#: cps/helper.py:1240 cps/helper.py:1245
 msgid "Invalid cover file content"
 msgstr "Nepravilna vsebina datoteke z naslovnico"
 
-#: cps/helper.py:1217
+#: cps/helper.py:1249
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Samo datoteke jpg/jpeg so podprte kot datoteke naslovnic"
 
-#: cps/helper.py:1418 cps/helper.py:1657
+#: cps/helper.py:1450 cps/helper.py:1689
 msgid "Cover"
 msgstr "Naslovnica"
 
-#: cps/helper.py:1435
+#: cps/helper.py:1467
 msgid "UnRar binary file not found"
 msgstr "Binarna datoteka UnRar ni bila najdena"
 
-#: cps/helper.py:1446
+#: cps/helper.py:1478
 msgid "Error executing UnRar"
 msgstr "Napaka pri izvajanju UnRar"
 
-#: cps/helper.py:1452
+#: cps/helper.py:1484
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. Calibre-Web NextGen is "
 "optimized for x86_64 and aarch64."
 msgstr ""
 
-#: cps/helper.py:1461
+#: cps/helper.py:1493
 msgid "Could not find the specified directory"
 msgstr "Ni bilo mogoče najti določenega imenika"
 
-#: cps/helper.py:1464
+#: cps/helper.py:1496
 msgid "Please specify a directory, not a file"
 msgstr "Navedite imenik in ne datoteke"
 
-#: cps/helper.py:1478
+#: cps/helper.py:1510
 msgid "Calibre binaries not viable"
 msgstr "Binarne datoteke Calibre niso izvedljive"
 
-#: cps/helper.py:1487
+#: cps/helper.py:1519
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Manjkajoče binarne datoteke Calibre: %(missing)s"
 
-#: cps/helper.py:1489
+#: cps/helper.py:1521
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Manjkajoča dovoljenja za izvršilni program: %(missing)s"
 
-#: cps/helper.py:1494
+#: cps/helper.py:1526
 msgid "Error executing Calibre"
 msgstr "Napaka pri izvajanju programa Calibre"
 
-#: cps/helper.py:1659 cps/templates/admin.html:240
+#: cps/helper.py:1691 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Vse knjige v vrsti za varnostno kopiranje metapodatkov"
 

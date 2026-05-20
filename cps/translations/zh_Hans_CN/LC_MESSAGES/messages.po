@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 19:44+0000\n"
+"POT-Creation-Date: 2026-05-20 21:46+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -1505,98 +1505,98 @@ msgstr "无效的邮箱格式"
 msgid "Password doesn't comply with password validation rules"
 msgstr "密码不符合密码验证规则"
 
-#: cps/helper.py:1099
+#: cps/helper.py:1131
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr "上传封面所需的 Python 模块 'advocate' 未安装"
 
-#: cps/helper.py:1104 cps/helper.py:1112
+#: cps/helper.py:1136 cps/helper.py:1144
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1126
+#: cps/helper.py:1158
 msgid "Error Downloading Cover"
 msgstr "下载封面时出错"
 
-#: cps/helper.py:1129
+#: cps/helper.py:1161
 msgid "Cover Format Error"
 msgstr "封面格式出错"
 
-#: cps/helper.py:1132
+#: cps/helper.py:1164
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr "您没有访问本地主机或本地网络进行封面上传"
 
-#: cps/helper.py:1148
+#: cps/helper.py:1180
 msgid "Failed to create path for cover"
 msgstr "创建封面路径失败"
 
-#: cps/helper.py:1159 cps/helper.py:1172 cps/helper.py:1175
+#: cps/helper.py:1191 cps/helper.py:1204 cps/helper.py:1207
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "封面文件不是有效的图片文件，或者无法存储它"
 
-#: cps/helper.py:1192
+#: cps/helper.py:1224
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "封面文件只支持 jpg、jpeg、png、webp、bmp 文件"
 
-#: cps/helper.py:1208 cps/helper.py:1213
+#: cps/helper.py:1240 cps/helper.py:1245
 msgid "Invalid cover file content"
 msgstr "封面文件内容无效"
 
-#: cps/helper.py:1217
+#: cps/helper.py:1249
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "仅将 jpg、jpeg 文件作为封面文件"
 
-#: cps/helper.py:1418 cps/helper.py:1657
+#: cps/helper.py:1450 cps/helper.py:1689
 msgid "Cover"
 msgstr "封面"
 
-#: cps/helper.py:1435
+#: cps/helper.py:1467
 msgid "UnRar binary file not found"
 msgstr "找不到 UnRar 执行文件"
 
-#: cps/helper.py:1446
+#: cps/helper.py:1478
 msgid "Error executing UnRar"
 msgstr "执行 UnRar 时出错"
 
-#: cps/helper.py:1452
+#: cps/helper.py:1484
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. Calibre-Web NextGen is "
 "optimized for x86_64 and aarch64."
 msgstr ""
 
-#: cps/helper.py:1461
+#: cps/helper.py:1493
 msgid "Could not find the specified directory"
 msgstr "找不到指定的目录"
 
-#: cps/helper.py:1464
+#: cps/helper.py:1496
 msgid "Please specify a directory, not a file"
 msgstr "请指定一个目录，而不是文件"
 
-#: cps/helper.py:1478
+#: cps/helper.py:1510
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "数据库不可写入"
 
-#: cps/helper.py:1487
+#: cps/helper.py:1519
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "缺少 Calibre 执行文件: %(missing)s"
 
-#: cps/helper.py:1489
+#: cps/helper.py:1521
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "缺少执行权限"
 
-#: cps/helper.py:1494
+#: cps/helper.py:1526
 #, fuzzy
 msgid "Error executing Calibre"
 msgstr "执行 UnRar 时出错"
 
-#: cps/helper.py:1659 cps/templates/admin.html:240
+#: cps/helper.py:1691 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "将所有书籍加入元数据备份队列"
 

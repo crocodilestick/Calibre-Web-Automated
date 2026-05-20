@@ -72,6 +72,7 @@ jobs:
           touch /config/cwa.db
       
       - name: Run smoke and unit tests
+        timeout-minutes: 10  # Kill if stuck
         env:
           PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
         run: |

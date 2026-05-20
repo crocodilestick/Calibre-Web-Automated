@@ -278,6 +278,12 @@ class LubimyCzytacParser:
         return None, None
 
     def _parse_tags(self) -> List[str]:
+        # CWA PR #1330 (@I-Would-Like-To-Report-A-Bug-Please): return an
+        # empty list, never None — the metadata modal template + the
+        # collection routine both treat `tags` as an array and crash on
+        # `null.length` / `null` iteration. The bug showed up for users
+        # searching with the lubimyczytac.pl provider where some books
+        # legitimately have no tag list in the response.
         tags = self._parse_xpath_node(xpath=LubimyCzytac.TAGS, take_first=False)
         if tags:
             return [
@@ -285,7 +291,7 @@ class LubimyCzytacParser:
                 for w in tags
                 if isinstance(w, str)
             ]
-        return None
+        return []
 
     def _parse_from_summary(self, attribute_name: str) -> Optional[str]:
         value = None

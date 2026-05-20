@@ -60,7 +60,7 @@ class AmazonJp(Metadata):
             try:
                 match = MetaRecord(
                     title = "",
-                    authors = "",
+                    authors = [],
                     source=MetaSourceInfo(
                         id=self.__id__,
                         description="Amazon Japan",

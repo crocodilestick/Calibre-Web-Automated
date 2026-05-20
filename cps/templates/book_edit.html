@@ -361,7 +361,7 @@
       <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="title" checked>Title:</dt>
       <dd><a class="meta_title" href="<%= book.url %>" target="_blank" rel="noopener"><%= book.title %></a></dd>
       <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="authors" checked>Author:</dt>
-      <dd class="meta_author"><%= book.authors.join(" & ") %></dd>
+      <dd class="meta_author"><%= (book.authors || []).join(" & ") %></dd>
       <% if (book.publisher) { %>
         <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="publisher" checked>Publisher:</dt>
         <dd class="meta_publisher"><%= book.publisher %></dd>
@@ -386,11 +386,11 @@
         <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="description" checked>Description:</dt>
         <dd class="meta_description"><%= book.description %></dd>
       <% } %>
-      <% if (book.tags.length !== 0) { %>
+      <% if (book.tags && book.tags.length !== 0) { %>
         <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="tags" checked>Tags:</dt>
         <dd class="meta_author"><%= book.tags.join(", ") %></dd>
       <% } %>
-      <% if (Object.keys(book.identifiers).length !== 0 ) { %>
+      <% if (book.identifiers && Object.keys(book.identifiers).length !== 0 ) { %>
         <% for (const key in book.identifiers) { %>
           <% if (book.identifiers[key] !== "") { %>
             <dt><input type="checkbox" data-meta-index="<%= index %>" data-meta-value="<%= key %>" checked>Identifier</dt>

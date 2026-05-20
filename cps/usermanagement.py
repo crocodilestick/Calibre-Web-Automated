@@ -11,7 +11,7 @@ from functools import wraps
 from sqlalchemy.sql.expression import func
 from .cw_login import login_required
 
-from flask import request, g
+from flask import request, g, make_response
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.datastructures import Authorization
 from werkzeug.security import check_password_hash
@@ -21,6 +21,39 @@ from . import lm, ub, config, logger, limiter, constants, services
 
 log = logger.create()
 auth = HTTPBasicAuth()
+
+
+_OPDS_UNAUTHORIZED_ATOM = (
+    '<?xml version="1.0" encoding="UTF-8"?>\n'
+    '<feed xmlns="http://www.w3.org/2005/Atom">\n'
+    '  <id>opds-unauthorized</id>\n'
+    '  <title>Unauthorized</title>\n'
+    '</feed>\n'
+)
+
+
+@auth.error_handler
+def _http_basic_auth_error(status=401):
+    # Fork issue #224 follow-up. v4.0.92 added @opds.errorhandler(401)
+    # but the blueprint pipeline never fired for the Basic-auth-rejected
+    # case: requires_basic_auth_if_no_ano calls auth.auth_error_callback
+    # directly, which (by default) returns a fully-formed HTML Response.
+    # OPDS readers (Readest, KOReader, generic Atom clients) can't parse
+    # HTML and either show "broken feed" or silently fail.
+    #
+    # Branch on request.path so /opds/* gets Atom XML + the OPDS realm,
+    # while every other Basic-auth consumer (kosync, app-passwords) keeps
+    # the historical HTML response with the generic realm.
+    if status is None:
+        status = 401
+    if request.path == "/opds" or request.path.startswith("/opds/"):
+        response = make_response(_OPDS_UNAUTHORIZED_ATOM, status)
+        response.headers["Content-Type"] = "application/atom+xml; charset=utf-8"
+        response.headers["WWW-Authenticate"] = 'Basic realm="OPDS"'
+        return response
+    response = make_response("Unauthorized Access", status)
+    response.headers["WWW-Authenticate"] = 'Basic realm="Authentication Required"'
+    return response
 
 
 def _verify_app_password(user, password):

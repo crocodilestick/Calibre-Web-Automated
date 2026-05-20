@@ -39,6 +39,7 @@ Library, settings, users, OAuth tokens, and KOReader sync state are preserved. S
 - [Migrating](#migrating)
   - [From upstream CWA](#from-upstream-cwa)
   - [From stock Calibre-Web](#from-stock-calibre-web)
+- [Pair with Shelfmark](#pair-with-shelfmark)
 - [Common configurations](#common-configurations)
   - [Network shares (NFS, SMB, ZFS)](#network-shares-nfs-smb-zfs)
   - [Reverse proxy / Cloudflare Tunnel](#reverse-proxy--cloudflare-tunnel)
@@ -235,6 +236,56 @@ Settings, users, OAuth tokens, and KOReader sync state are preserved. The data f
 5. Start the container.
 
 Users, settings, and shelves carry over. The first launch takes a few extra seconds while CWA registers itself with the existing app database.
+
+---
+
+## Pair with Shelfmark
+
+[Shelfmark](https://github.com/calibrain/shelfmark) by @calibrain is a self-hosted book search and request interface. Users search across torrent, usenet, IRC, and direct sources from a single UI; Shelfmark hands the download to your client of choice and drops the finished file straight into the CWA ingest folder, where this build picks it up automatically. Multi-user requests are built in, so you can share an instance with household readers and approve their picks.
+
+Add it alongside `calibre-web` in the same compose file:
+
+```yaml
+  shelfmark:
+    image: ghcr.io/calibrain/shelfmark:latest
+    container_name: shelfmark
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - SEARCH_MODE=universal
+
+      # Point Shelfmark at CWA's app.db (read-only mount below) so users
+      # log in to Shelfmark with their existing CWA credentials.
+      - CWA_DB_PATH=/auth/cw-config/app.db
+
+      # Optional: shows a "Library" button in Shelfmark's header that
+      # links back to this CWA instance.
+      - CALIBRE_WEB_URL=http://your-host:8083
+
+    volumes:
+      - /path/to/shelfmark-config:/config
+
+      # Read-only mount of your CWA config dir for the auth integration.
+      - /path/to/cwa-config:/auth/cw-config:ro
+
+      # Shelfmark's destination folder = CWA's ingest folder.
+      # Downloads land here and this build ingests them on the next watch tick.
+      - /path/to/cwa-ingest:/books
+
+      # If you use a torrent or usenet client, mount its downloads dir
+      # at the same path you mounted in the client itself, so Shelfmark
+      # can locate the completed file.
+      - /path/to/downloads:/downloads
+
+    ports:
+      - 8084:8084
+    restart: unless-stopped
+```
+
+After Shelfmark starts, open it and pick **Settings → Security → Authentication Method → Calibre-Web Database**, then **Sync from Calibre-Web** to import users. The [Shelfmark docs](https://github.com/calibrain/shelfmark#readme) cover Prowlarr, qBittorrent, SABnzbd, and IRC source setup.
+
+> Shelfmark went into maintenance-only status in May 2026; the v1.3.0 build is stable and the integration with CWA is settled, but new feature work upstream has paused. If you want to pin for reproducibility, use `ghcr.io/calibrain/shelfmark:v1.3.0` instead of `:latest`.
 
 ---
 

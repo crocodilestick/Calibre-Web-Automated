@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 13:49+0000\n"
+"POT-Creation-Date: 2026-05-20 19:44+0000\n"
 "PO-Revision-Date: 2026-04-06 17:03+0000\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
@@ -2944,8 +2944,8 @@ msgstr "Zu Regal hinzufügen"
 
 #: cps/templates/_book_organizer.html:116 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
-#: cps/templates/detail.html:1290 cps/templates/feed.xml:97
-#: cps/templates/feed.xml:99 cps/templates/layout.html:346
+#: cps/templates/detail.html:1290 cps/templates/feed.xml:109
+#: cps/templates/feed.xml:111 cps/templates/layout.html:346
 #: cps/templates/layout.html:355 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 msgid "(Public)"
@@ -6670,7 +6670,7 @@ msgstr "Verbotene Domains für eine Registrierung"
 msgid "Next"
 msgstr "Nächste"
 
-#: cps/templates/feed.xml:97
+#: cps/templates/feed.xml:109
 msgid "(Magic)"
 msgstr "(Magisch)"
 

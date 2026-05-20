@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 13:49+0000\n"
+"POT-Creation-Date: 2026-05-20 19:44+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -2838,8 +2838,8 @@ msgstr "책장에 추가"
 
 #: cps/templates/_book_organizer.html:116 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
-#: cps/templates/detail.html:1290 cps/templates/feed.xml:97
-#: cps/templates/feed.xml:99 cps/templates/layout.html:346
+#: cps/templates/detail.html:1290 cps/templates/feed.xml:109
+#: cps/templates/feed.xml:111 cps/templates/layout.html:346
 #: cps/templates/layout.html:355 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 msgid "(Public)"
@@ -6415,7 +6415,7 @@ msgstr "차단 도메인 (블랙리스트)"
 msgid "Next"
 msgstr "다음"
 
-#: cps/templates/feed.xml:97
+#: cps/templates/feed.xml:109
 msgid "(Magic)"
 msgstr ""
 

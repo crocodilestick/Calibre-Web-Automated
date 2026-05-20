@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated v4.0.6\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 17:41+0000\n"
+"POT-Creation-Date: 2026-05-20 19:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2750,8 +2750,8 @@ msgstr ""
 
 #: cps/templates/_book_organizer.html:116 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
-#: cps/templates/detail.html:1290 cps/templates/feed.xml:97
-#: cps/templates/feed.xml:99 cps/templates/layout.html:346
+#: cps/templates/detail.html:1290 cps/templates/feed.xml:109
+#: cps/templates/feed.xml:111 cps/templates/layout.html:346
 #: cps/templates/layout.html:355 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 msgid "(Public)"
@@ -6200,7 +6200,7 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: cps/templates/feed.xml:97
+#: cps/templates/feed.xml:109
 msgid "(Magic)"
 msgstr ""
 

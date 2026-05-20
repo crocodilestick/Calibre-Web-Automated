@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-19 23:19+0000\n"
+"POT-Creation-Date: 2026-05-20 13:49+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -1305,7 +1305,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr "Formata ni mogoče naložiti: Knjiga ne obstaja več v knjižnici"
 
 #: cps/editbooks.py:165 cps/editbooks.py:192 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:177
+#: cps/templates/layout.html:184
 msgid "Upload done, processing, please wait..."
 msgstr "Prenos opravljen, obdelujem, prosim počakajte..."
 
@@ -1982,7 +1982,7 @@ msgstr "Vrste datotek"
 msgid "Books ordered by file formats"
 msgstr "Knjige, razvrščene po vrstah datotek"
 
-#: cps/opds.py:247 cps/templates/layout.html:336
+#: cps/opds.py:247 cps/templates/layout.html:343
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Police"
@@ -2011,8 +2011,8 @@ msgstr "Opis"
 msgid "{} Stars"
 msgstr "{} zvezdic"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:161
-#: cps/templates/layout.html:202 cps/templates/login.html:11
+#: cps/remotelogin.py:76 cps/templates/layout.html:168
+#: cps/templates/layout.html:209 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2365
 msgid "Login"
 msgstr "Prijava"
@@ -2135,8 +2135,8 @@ msgstr ""
 
 #: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:292
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
-#: cps/templates/index.xml:12 cps/templates/layout.html:140
-#: cps/templates/layout.html:143 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:147
+#: cps/templates/layout.html:150 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Iskanje"
 
@@ -2167,7 +2167,7 @@ msgstr "Prebrani status = '%(status)s'"
 msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr "Napaka pri iskanju stolpcev po meri, ponovno zaženite Calibre-Web"
 
-#: cps/search.py:382 cps/search.py:414 cps/templates/layout.html:151
+#: cps/search.py:382 cps/search.py:414 cps/templates/layout.html:158
 msgid "Advanced Search"
 msgstr "Napredno iskanje"
 
@@ -2285,7 +2285,7 @@ msgstr "Polica: '%(name)s'"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Napaka pri odpiranju police. Polica ne obstaja ali ni dostopna"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:188
+#: cps/tasks_status.py:37 cps/templates/layout.html:195
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Opravila"
@@ -2455,7 +2455,7 @@ msgstr "Ime police je predolgo (največ 100 znakov)"
 msgid "Error creating shelf"
 msgstr "Napaka pri brisanju police"
 
-#: cps/templates/layout.html:351 cps/web.py:1313
+#: cps/templates/layout.html:358 cps/web.py:1313
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Ustvari polico"
@@ -2579,7 +2579,7 @@ msgstr "Uspeh! Knjiga je v vrsti za pošiljanje v %(eReadermail)s"
 msgid "Please wait one minute to register next user"
 msgstr "Počakajte eno minuto za registracijo naslednjega uporabnika"
 
-#: cps/templates/layout.html:162 cps/templates/layout.html:203
+#: cps/templates/layout.html:169 cps/templates/layout.html:210
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2244
 #: cps/web.py:2248 cps/web.py:2253 cps/web.py:2257 cps/web.py:2263
 #: cps/web.py:2288 cps/web.py:2292 cps/web.py:2305 cps/web.py:2308
@@ -2909,7 +2909,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "Čiščenje predpomnilnika sličic naslovnice"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:180 cps/templates/user_table.html:146
+#: cps/templates/layout.html:187 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "Naloži"
 
@@ -2933,47 +2933,51 @@ msgstr "Ustvari polico"
 msgid "Display settings"
 msgstr "Varnostne nastavitve"
 
-#: cps/templates/_book_organizer.html:72
+#: cps/templates/_book_organizer.html:75
 #, fuzzy
 msgid "Cover Settings"
 msgstr "Nastavitve"
 
-#: cps/templates/_book_organizer.html:81
+#: cps/templates/_book_organizer.html:84
+msgid "Hide shelf badges on covers"
+msgstr ""
+
+#: cps/templates/_book_organizer.html:93
 #, fuzzy
 msgid "Selection actions"
 msgstr "izberi možnost"
 
-#: cps/templates/_book_organizer.html:92 cps/templates/book_table.html:65
+#: cps/templates/_book_organizer.html:104 cps/templates/book_table.html:65
 #, fuzzy
 msgid "Add to Shelf"
 msgstr "Dodaj na polico"
 
-#: cps/templates/_book_organizer.html:104 cps/templates/detail.html:603
+#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
 #: cps/templates/detail.html:1290 cps/templates/feed.xml:97
-#: cps/templates/feed.xml:99 cps/templates/layout.html:339
-#: cps/templates/layout.html:348 cps/templates/listenmp3.html:201
+#: cps/templates/feed.xml:99 cps/templates/layout.html:346
+#: cps/templates/layout.html:355 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 msgid "(Public)"
 msgstr "(Javno)"
 
-#: cps/templates/_book_organizer.html:120
+#: cps/templates/_book_organizer.html:132
 msgid "Mark"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:127 cps/templates/book_table.html:56
+#: cps/templates/_book_organizer.html:139 cps/templates/book_table.html:56
 #: cps/templates/book_table.html:250
 #, fuzzy
 msgid "Mark as read"
 msgstr "Označi kot neprebrano"
 
-#: cps/templates/_book_organizer.html:133 cps/templates/book_table.html:59
+#: cps/templates/_book_organizer.html:145 cps/templates/book_table.html:59
 #: cps/templates/book_table.html:270
 #, fuzzy
 msgid "Mark as unread"
 msgstr "Označi kot neprebrano"
 
-#: cps/templates/_book_organizer.html:143 cps/templates/admin.html:27
+#: cps/templates/_book_organizer.html:155 cps/templates/admin.html:27
 #: cps/templates/book_edit.html:17 cps/templates/book_table.html:62
 #: cps/templates/book_table.html:141 cps/templates/book_table.html:190
 #: cps/templates/duplicates.html:718 cps/templates/modal_dialogs.html:63
@@ -2982,99 +2986,99 @@ msgstr "Označi kot neprebrano"
 msgid "Delete"
 msgstr "Izbriši"
 
-#: cps/templates/_book_organizer.html:150
+#: cps/templates/_book_organizer.html:162
 #, fuzzy, python-brace-format
 msgid "{n} selected"
 msgstr "Združevanje izbranih knjig"
 
-#: cps/templates/_book_organizer.html:152
+#: cps/templates/_book_organizer.html:164
 msgid "Done"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:168
+#: cps/templates/_book_organizer.html:180
 msgid "Downloads, fewest first"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:171
+#: cps/templates/_book_organizer.html:183
 #, fuzzy
 msgid "Downloads, most first"
 msgstr "Prenesi"
 
-#: cps/templates/_book_organizer.html:179
-#: cps/templates/_book_organizer.html:206
-#: cps/templates/_book_organizer.html:253
-#: cps/templates/_book_organizer.html:280
+#: cps/templates/_book_organizer.html:191
+#: cps/templates/_book_organizer.html:218
+#: cps/templates/_book_organizer.html:265
+#: cps/templates/_book_organizer.html:292
 #, fuzzy
 msgid "Date added, newest first"
 msgstr "Razvrstite glede na datum knjige, najprej najnovejši"
 
-#: cps/templates/_book_organizer.html:182
-#: cps/templates/_book_organizer.html:209
-#: cps/templates/_book_organizer.html:256
-#: cps/templates/_book_organizer.html:283
+#: cps/templates/_book_organizer.html:194
+#: cps/templates/_book_organizer.html:221
+#: cps/templates/_book_organizer.html:268
+#: cps/templates/_book_organizer.html:295
 #, fuzzy
 msgid "Date added, oldest first"
 msgstr "Razvrsti po datumu knjige, najprej najstarejši"
 
-#: cps/templates/_book_organizer.html:185
-#: cps/templates/_book_organizer.html:212
-#: cps/templates/_book_organizer.html:259
-#: cps/templates/_book_organizer.html:286
+#: cps/templates/_book_organizer.html:197
+#: cps/templates/_book_organizer.html:224
+#: cps/templates/_book_organizer.html:271
+#: cps/templates/_book_organizer.html:298
 msgid "Title A → Z"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:188
-#: cps/templates/_book_organizer.html:215
-#: cps/templates/_book_organizer.html:262
-#: cps/templates/_book_organizer.html:289
+#: cps/templates/_book_organizer.html:200
+#: cps/templates/_book_organizer.html:227
+#: cps/templates/_book_organizer.html:274
+#: cps/templates/_book_organizer.html:301
 msgid "Title Z → A"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:191
-#: cps/templates/_book_organizer.html:218
-#: cps/templates/_book_organizer.html:292
+#: cps/templates/_book_organizer.html:203
+#: cps/templates/_book_organizer.html:230
+#: cps/templates/_book_organizer.html:304
 #, fuzzy
 msgid "Author A → Z"
 msgstr "Avtor"
 
-#: cps/templates/_book_organizer.html:194
-#: cps/templates/_book_organizer.html:221
-#: cps/templates/_book_organizer.html:295
+#: cps/templates/_book_organizer.html:206
+#: cps/templates/_book_organizer.html:233
+#: cps/templates/_book_organizer.html:307
 #, fuzzy
 msgid "Author Z → A"
 msgstr "Avtor"
 
-#: cps/templates/_book_organizer.html:197
-#: cps/templates/_book_organizer.html:224
-#: cps/templates/_book_organizer.html:265
-#: cps/templates/_book_organizer.html:298
+#: cps/templates/_book_organizer.html:209
+#: cps/templates/_book_organizer.html:236
+#: cps/templates/_book_organizer.html:277
+#: cps/templates/_book_organizer.html:310
 #, fuzzy
 msgid "Published, newest first"
 msgstr "Objavljeno pred"
 
-#: cps/templates/_book_organizer.html:200
-#: cps/templates/_book_organizer.html:227
-#: cps/templates/_book_organizer.html:268
-#: cps/templates/_book_organizer.html:301
+#: cps/templates/_book_organizer.html:212
+#: cps/templates/_book_organizer.html:239
+#: cps/templates/_book_organizer.html:280
+#: cps/templates/_book_organizer.html:313
 #, fuzzy
 msgid "Published, oldest first"
 msgstr "Objavljeno pred"
 
-#: cps/templates/_book_organizer.html:233
+#: cps/templates/_book_organizer.html:245
 msgid "Series number, ascending"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:236
+#: cps/templates/_book_organizer.html:248
 msgid "Series number, descending"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:304
+#: cps/templates/_book_organizer.html:316
 #, fuzzy
 msgid "Added to shelf, newest first"
 msgstr ""
 "Razvrsti glede na knjigo, ki je bila dodana na polico, najprej najnovejša."
 
-#: cps/templates/_book_organizer.html:307
+#: cps/templates/_book_organizer.html:319
 #, fuzzy
 msgid "Added to shelf, oldest first"
 msgstr ""
@@ -3104,7 +3108,7 @@ msgstr "Pošlji v e-pošto e-bralnika"
 msgid "Send to eReader Subject"
 msgstr "Pošlji v e-bralnik"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:191
+#: cps/templates/admin.html:19 cps/templates/layout.html:198
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "Administator"
@@ -3389,8 +3393,8 @@ msgstr "V redu"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:951
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:525
-#: cps/templates/layout.html:680 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:532
+#: cps/templates/layout.html:687 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
@@ -3456,8 +3460,8 @@ msgid "total entries seen"
 msgstr ""
 
 #: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
-#: cps/templates/book_edit.html:69 cps/templates/layout.html:177
-#: cps/templates/layout.html:308
+#: cps/templates/book_edit.html:69 cps/templates/layout.html:184
+#: cps/templates/layout.html:315
 msgid "Uploading..."
 msgstr "Nalaganje..."
 
@@ -3564,8 +3568,8 @@ msgstr "Pretvori knjigo"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:177 cps/templates/layout.html:425
-#: cps/templates/layout.html:562 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:184 cps/templates/layout.html:432
+#: cps/templates/layout.html:569 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Zapri"
@@ -3579,7 +3583,7 @@ msgstr "Zapri"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:177
+#: cps/templates/layout.html:184
 msgid "Error"
 msgstr "Napaka"
 
@@ -6614,7 +6618,7 @@ msgstr "Tega dejanja ni mogoče razveljaviti!"
 msgid "The following books will be permanently deleted:"
 msgstr "Naslednje knjige bodo izbrisane:"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:477
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:484
 #, fuzzy
 msgid "Merge Books"
 msgstr "Neprebrane knjige"
@@ -6689,7 +6693,7 @@ msgstr "Omejitev velikosti priloge"
 msgid "Save and Send Test Email"
 msgstr "Shrani in pošlji testno e-pošto"
 
-#: cps/templates/email_edit.html:70 cps/templates/layout.html:119
+#: cps/templates/email_edit.html:70 cps/templates/layout.html:126
 #: cps/templates/shelf_order.html:42 cps/templates/user_table.html:176
 msgid "Back"
 msgstr "Nazaj"
@@ -6710,8 +6714,8 @@ msgstr "Vnesi ime domene"
 msgid "Denied Domains (Blacklist)"
 msgstr "Zavrnjene domene (črni seznam)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:383
-#: cps/templates/layout.html:409
+#: cps/templates/feed.xml:31 cps/templates/layout.html:390
+#: cps/templates/layout.html:416
 msgid "Next"
 msgstr "Naslednji"
 
@@ -6971,184 +6975,184 @@ msgstr ""
 msgid "Download is available after enabling KOReader Sync in NextGen Settings."
 msgstr ""
 
-#: cps/templates/layout.html:119 cps/templates/login.html:51
+#: cps/templates/layout.html:126 cps/templates/login.html:51
 msgid "Home"
 msgstr "Domov"
 
-#: cps/templates/layout.html:126
+#: cps/templates/layout.html:133
 msgid "Toggle Navigation"
 msgstr "Preklopi navigacijo"
 
-#: cps/templates/layout.html:141
+#: cps/templates/layout.html:148
 msgid "Search Library"
 msgstr "Iskanje po knjižnici"
 
-#: cps/templates/layout.html:159 cps/templates/layout.html:195
+#: cps/templates/layout.html:166 cps/templates/layout.html:202
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "Račun"
 
-#: cps/templates/layout.html:165 cps/templates/layout.html:197
+#: cps/templates/layout.html:172 cps/templates/layout.html:204
 msgid "Logout"
 msgstr "Odjava"
 
-#: cps/templates/layout.html:191 cps/templates/read.html:78
+#: cps/templates/layout.html:198 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
 msgstr "Nastavitve"
 
-#: cps/templates/layout.html:193
+#: cps/templates/layout.html:200
 #, fuzzy
 msgid "Refresh Library"
 msgstr "Iskanje po knjižnici"
 
-#: cps/templates/layout.html:234
+#: cps/templates/layout.html:241
 msgid "See Changelog"
 msgstr "Poglej dnevnik sprememb"
 
-#: cps/templates/layout.html:244
+#: cps/templates/layout.html:251
 #, fuzzy
 msgid "Open Duplicates"
 msgstr "Dvojniki"
 
-#: cps/templates/layout.html:266
+#: cps/templates/layout.html:273
 msgid "Contribute here!"
 msgstr "Prispevajte tukaj!"
 
-#: cps/templates/layout.html:309
+#: cps/templates/layout.html:316
 msgid "Please do not refresh the page"
 msgstr "Ne osvežuj strani"
 
-#: cps/templates/layout.html:319
+#: cps/templates/layout.html:326
 msgid "Browse"
 msgstr "Brskaj"
 
-#: cps/templates/layout.html:342
+#: cps/templates/layout.html:349
 #, fuzzy
 msgid "Create Shelf"
 msgstr "Ustvari polico"
 
-#: cps/templates/layout.html:346
+#: cps/templates/layout.html:353
 msgid "Magic Shelves ✨"
 msgstr "Čarobne police ✨"
 
-#: cps/templates/layout.html:355 cps/templates/stats.html:3
+#: cps/templates/layout.html:362 cps/templates/stats.html:3
 msgid "About"
 msgstr "O programu"
 
-#: cps/templates/layout.html:368 cps/templates/layout.html:394
+#: cps/templates/layout.html:375 cps/templates/layout.html:401
 msgid "Previous"
 msgstr "Prejšnji"
 
-#: cps/templates/layout.html:421
+#: cps/templates/layout.html:428
 msgid "Book Details"
 msgstr "Podrobnosti o knjigi"
 
-#: cps/templates/layout.html:483
+#: cps/templates/layout.html:490
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "Tega dejanja ni mogoče razveljaviti!"
 
-#: cps/templates/layout.html:489
+#: cps/templates/layout.html:496
 #, fuzzy
 msgid "Will be deleted"
 msgstr "Združevanje izbranih knjig"
 
-#: cps/templates/layout.html:493 cps/templates/layout.html:506
+#: cps/templates/layout.html:500 cps/templates/layout.html:513
 #, fuzzy
 msgid "Formats:"
 msgstr "Nalaganje vrsta"
 
-#: cps/templates/layout.html:502
+#: cps/templates/layout.html:509
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:514
+#: cps/templates/layout.html:521
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:520
+#: cps/templates/layout.html:527
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "Brisanje vrste:"
 
-#: cps/templates/layout.html:529
+#: cps/templates/layout.html:536
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:563
+#: cps/templates/layout.html:570
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Izbriši knjigo"
 
-#: cps/templates/layout.html:564
+#: cps/templates/layout.html:571
 msgid "You have unresolved duplicate books in your library"
 msgstr "V vaši knjižnici so nerazrešeni dvojniki knjig"
 
-#: cps/templates/layout.html:569
+#: cps/templates/layout.html:576
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Ni bilo najdenih rezultatov"
 
-#: cps/templates/layout.html:577
+#: cps/templates/layout.html:584
 msgid "Remind Me Later"
 msgstr "Opomni me pozneje"
 
-#: cps/templates/layout.html:580
+#: cps/templates/layout.html:587
 msgid "View & Resolve Duplicates"
 msgstr "Ogled in razreševanje dvojnikov"
 
-#: cps/templates/layout.html:589
+#: cps/templates/layout.html:596
 #, fuzzy
 msgid "Scroll to top"
 msgstr "Povečaj na najboljše"
 
-#: cps/templates/layout.html:591
+#: cps/templates/layout.html:598
 #, fuzzy
 msgid "Top"
 msgstr "Nasvet"
 
-#: cps/templates/layout.html:681
+#: cps/templates/layout.html:688
 msgid "Confirm"
 msgstr ""
 
-#: cps/templates/layout.html:687
+#: cps/templates/layout.html:694
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "Dodaj na polico"
 
-#: cps/templates/layout.html:688
+#: cps/templates/layout.html:695
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:689
+#: cps/templates/layout.html:696
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:690
+#: cps/templates/layout.html:697
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "Združevanje izbranih knjig"
 
-#: cps/templates/layout.html:691
+#: cps/templates/layout.html:698
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "Označi kot neprebrano"
 
-#: cps/templates/layout.html:692
+#: cps/templates/layout.html:699
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "Izbriši knjigo"
 
-#: cps/templates/layout.html:693
+#: cps/templates/layout.html:700
 #, fuzzy
 msgid "Delete books?"
 msgstr "Izbriši knjigo"
 
-#: cps/templates/layout.html:694
+#: cps/templates/layout.html:701
 #, fuzzy, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
@@ -7156,12 +7160,12 @@ msgid ""
 msgstr ""
 "To bo trajno izbrisalo knjige. Izvirne datoteke bodo varnostno kopirane v"
 
-#: cps/templates/layout.html:695
+#: cps/templates/layout.html:702
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "Ustvari polico"
 
-#: cps/templates/layout.html:696
+#: cps/templates/layout.html:703
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "Napaka povezave"

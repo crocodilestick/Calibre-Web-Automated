@@ -116,7 +116,14 @@
 
     </script>
   </head>
-  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
+  {# Fork #205 (@goatdancer4000-sudo / @droM4X): per-user "Hide shelf badges
+     on covers" toggle wired to the book-organizer cog button. Setting lives
+     in user.view_settings.cover.hide_shelf_badges (no migration). #}
+  {%- set _cover_hide_shelf_badges = false -%}
+  {%- if current_user is defined and current_user and current_user.get_view_property is defined -%}
+    {%- set _cover_hide_shelf_badges = current_user.get_view_property('cover', 'hide_shelf_badges') -%}
+  {%- endif -%}
+  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}{% if _cover_hide_shelf_badges %} cover-hide-shelf-badges{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">

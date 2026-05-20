@@ -388,6 +388,43 @@ body.book-organizer-select-mode .book-organizer-actions-row {
   opacity: 0.85;
 }
 
+/* Fork #205 (@goatdancer4000-sudo / @droM4X / @Onkeyuk): per-user
+   "Hide shelf badges on covers" toggle on the book-organizer cog menu.
+   When the toggle is on, body carries `cover-hide-shelf-badges` and the
+   shelf-name + overflow-pill variants are hidden. The Read badge stays
+   visible (it's not a shelf and the toggle is scoped to shelf badges
+   specifically). */
+body.cover-hide-shelf-badges .cover-badge-shelf,
+body.cover-hide-shelf-badges .cover-badge-shelf-extra-pill {
+  display: none !important;
+}
+
+/* Cog dropdown styling for the "Cover Settings" header + checkbox-style
+   toggle item. The header is presentational (non-interactive) and gives
+   the dropdown a clear scope label; the toggle item carries the actual
+   `role="menuitemcheckbox"` semantics. */
+.book-organizer-settings-menu .book-organizer-settings-header {
+  padding: 6px 16px 4px;
+  color: #888;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.book-organizer-settings-menu .book-organizer-settings-header > .glyphicon {
+  margin-right: 6px;
+  opacity: 0.7;
+}
+.book-organizer-settings-menu .book-organizer-settings-toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+}
+.book-organizer-settings-menu .book-organizer-settings-checkmark {
+  width: 1em;
+  text-align: center;
+}
+
 /* Hide caliBlur's old read badge in favor of our unified .cover-badges stack. */
 .book .cover .badge.read.glyphicon-ok {
   display: none !important;

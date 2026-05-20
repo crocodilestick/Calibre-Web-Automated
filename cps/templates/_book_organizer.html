@@ -66,10 +66,22 @@
       <ul class="dropdown-menu dropdown-menu-right book-organizer-settings-menu"
           role="menu"
           aria-labelledby="book-organizer-settings-toggle">
+        {%- set _cover_hide_shelf_badges = false -%}
+        {%- if current_user is defined and current_user and current_user.get_view_property is defined -%}
+          {%- set _cover_hide_shelf_badges = current_user.get_view_property('cover', 'hide_shelf_badges') -%}
+        {%- endif -%}
+        <li class="book-organizer-settings-header" role="presentation" aria-hidden="true">
+          <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+          <span>{{ _('Cover Settings') }}</span>
+        </li>
         <li role="presentation">
-          <a href="#" role="menuitem" data-organizer-action="cover-settings">
-            <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-            <span>{{ _('Cover Settings') }}</span>
+          <a href="#"
+             role="menuitemcheckbox"
+             class="book-organizer-settings-toggle-item"
+             data-organizer-action="toggle-hide-shelf-badges"
+             aria-checked="{{ 'true' if _cover_hide_shelf_badges else 'false' }}">
+            <span class="book-organizer-settings-checkmark glyphicon glyphicon-{% if _cover_hide_shelf_badges %}check{% else %}unchecked{% endif %}" aria-hidden="true"></span>
+            <span>{{ _('Hide shelf badges on covers') }}</span>
           </a>
         </li>
       </ul>

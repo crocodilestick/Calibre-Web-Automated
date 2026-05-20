@@ -233,6 +233,48 @@
   function flashInfo(msg) { flash(msg, "info"); }
   function flashError(msg) { flash(msg, "error"); }
 
+  // Fork #205: per-user "Hide shelf badges on covers" toggle wired to the
+  // cog dropdown. Persists via the existing /ajax/view endpoint
+  // (view_settings.cover.hide_shelf_badges) so no DB migration is needed.
+  // Toggling the body class gives instant visual feedback; the server-rendered
+  // class on the next page load keeps the state consistent across navigations.
+  function toggleHideShelfBadges(actionEl) {
+    var bodyEl = document.body;
+    var isHidden = bodyEl.classList.contains("cover-hide-shelf-badges");
+    var nextValue = !isHidden;
+    if (nextValue) {
+      bodyEl.classList.add("cover-hide-shelf-badges");
+    } else {
+      bodyEl.classList.remove("cover-hide-shelf-badges");
+    }
+    if (actionEl) {
+      actionEl.setAttribute("aria-checked", nextValue ? "true" : "false");
+      var mark = actionEl.querySelector(".book-organizer-settings-checkmark");
+      if (mark) {
+        mark.classList.remove("glyphicon-check", "glyphicon-unchecked");
+        mark.classList.add(nextValue ? "glyphicon-check" : "glyphicon-unchecked");
+      }
+    }
+    postJson("/ajax/view", { cover: { hide_shelf_badges: nextValue } })
+      .catch(function () {
+        // Server rejected the persist — revert UI so user state matches storage.
+        if (nextValue) {
+          bodyEl.classList.remove("cover-hide-shelf-badges");
+        } else {
+          bodyEl.classList.add("cover-hide-shelf-badges");
+        }
+        if (actionEl) {
+          actionEl.setAttribute("aria-checked", isHidden ? "true" : "false");
+          var m2 = actionEl.querySelector(".book-organizer-settings-checkmark");
+          if (m2) {
+            m2.classList.remove("glyphicon-check", "glyphicon-unchecked");
+            m2.classList.add(isHidden ? "glyphicon-check" : "glyphicon-unchecked");
+          }
+        }
+        flashError(i18n.coverSettingsSaveFailed || "Could not save cover display setting.");
+      });
+  }
+
   function bulkAddToShelf(shelfId, shelfName) {
     var ids = getSelectedIds().map(Number);
     if (!ids.length) {
@@ -357,8 +399,13 @@
       e.preventDefault();
       clearSelection();
     } else if (action === "cover-settings") {
-      // No-op for now. Another agent will wire this up.
+      // Legacy no-op kept for compatibility with the original menu markup.
+      // The real toggle action below ("toggle-hide-shelf-badges") replaces it.
       e.preventDefault();
+    } else if (action === "toggle-hide-shelf-badges") {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleHideShelfBadges(actionEl);
     } else if (action === "add-to-shelf") {
       e.preventDefault();
       var shelfId = actionEl.getAttribute("data-shelf-id");

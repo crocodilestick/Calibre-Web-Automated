@@ -658,6 +658,27 @@ def get_series(book):
     return book.series[0].name
 
 
+def get_subtitle(book):
+    # Backport of janeczku PR #3358 (@dotknott): surface a per-book
+    # Subtitle in Kobo sync metadata when the Calibre library has a
+    # custom column labeled "subtitle". The upstream patch had three
+    # null-handling bugs (.all()[0] IndexError when no column exists,
+    # unreachable else branch, TypeError on None custom_column attr);
+    # rewritten here for correct empty-result handling end-to-end.
+    col = (calibre_db.session.query(db.CustomColumns)
+                       .filter(db.CustomColumns.mark_for_delete == 0)
+                       .filter(db.CustomColumns.datatype.notin_(db.cc_exceptions))
+                       .filter(db.CustomColumns.label == 'subtitle')
+                       .first())
+    if col is None:
+        return ""
+    column_attr = getattr(book, 'custom_column_' + str(col.id), None)
+    if not column_attr:
+        return ""
+    value = getattr(column_attr[0], 'value', None)
+    return value or ""
+
+
 def get_seriesindex(book):
     return book.series_index if isinstance(book.series_index, float) else 1
 
@@ -758,6 +779,7 @@ def get_metadata(book):
         "Publisher": {"Imprint": "", "Name": get_publisher(book), },
         "RevisionId": book_uuid,
         "Title": book.title,
+        "Subtitle": get_subtitle(book),
         "WorkId": book_uuid,
         "Series": {},
     }

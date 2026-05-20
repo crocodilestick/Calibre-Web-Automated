@@ -888,6 +888,38 @@ def get_book_cover_internal(book, resolution=None):
             webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')
             jpg_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'jpg')
 
+            # CWA #1339 (@Altycoder): treat content-stale thumbnails as
+            # missing. The Thumbnail table keys on `entity_id = book.id`,
+            # so when a library is wiped and re-ingested, the new books
+            # collide with thumbnails from the previous content. Old
+            # files exist on disk → the file-exists check passes → the
+            # stale image is served. The numbered book detail page
+            # uses the `og` resolution which has no Thumbnail rows and
+            # falls through to disk cover.jpg, which is why "click into
+            # a book" shows the right cover while the home grid (which
+            # uses sm/md/lg srcset) shows the wrong one. By nulling
+            # stale entries here we trigger the existing background
+            # regenerate branch AND fall through to cover.jpg for the
+            # current request — the user sees the right cover at once.
+            def _stale(thumb, b):
+                if not thumb or thumb.generated_at is None or b.last_modified is None:
+                    return False
+                try:
+                    book_lm = b.last_modified
+                    if book_lm.tzinfo is not None:
+                        book_lm = book_lm.replace(tzinfo=None)
+                    thumb_at = thumb.generated_at
+                    if thumb_at.tzinfo is not None:
+                        thumb_at = thumb_at.replace(tzinfo=None)
+                    return book_lm > thumb_at
+                except Exception:
+                    return False
+
+            if _stale(webp_thumb, book):
+                webp_thumb = None
+            if _stale(jpg_thumb, book):
+                jpg_thumb = None
+
             # Check if files actually exist on disk
             webp_exists = webp_thumb and cache.get_cache_file_exists(webp_thumb.filename, CACHE_TYPE_THUMBNAILS)
             jpg_exists = jpg_thumb and cache.get_cache_file_exists(jpg_thumb.filename, CACHE_TYPE_THUMBNAILS)

@@ -6,6 +6,8 @@
 # See CONTRIBUTORS for full list of authors.
 
 import os
+import tarfile
+import zipfile
 
 from . import logger, isoLanguages, cover
 from .constants import BookMeta
@@ -17,6 +19,20 @@ except (ImportError, RuntimeError) as e:
     use_IM = False
 
 log = logger.create()
+
+# Backport of janeczku/calibre-web PR #3504 (@lb803): natural-sort the
+# archive entry list before scanning for a cover image. Picking by
+# unsorted order (the prior behavior) or even bare lexicographic sort
+# put `page10` before `page2` and produced a wrong cover on most
+# multi-digit comic series. `natsort` is already a hard dependency for
+# the book listing in cps/web.py; the fallback to stdlib `sorted`
+# keeps deterministic order in stripped-down deployments where natsort
+# might be unavailable.
+try:
+    from natsort import natsorted as sort
+except ImportError:
+    log.debug("Natural sorting unavailable: using standard sorted() method instead.")
+    sort = sorted
 
 try:
     from comicapi.comicarchive import ComicArchive, MetaDataStyle
@@ -33,8 +49,6 @@ try:
         load_archive_plugins = None
 except (ImportError, LookupError) as e:
     log.debug('Cannot import comicapi, extracting comic metadata will not work: %s', e)
-    import zipfile
-    import tarfile
     try:
         import rarfile
         use_rarfile = True
@@ -48,13 +62,28 @@ except (ImportError, LookupError) as e:
         log.debug('Cannot import py7zr, extracting cover files from CB7 files will not work: %s', e)
         use_7zip = False
     use_comic_meta = False
+else:
+    # comicapi imported successfully — rarfile and py7zr aren't strictly
+    # needed for the comicapi path, but `_extract_cover_from_archive`
+    # is still called as a fallback when comicapi can't open a CBR/CB7,
+    # so probe them here too.
+    try:
+        import rarfile
+        use_rarfile = True
+    except (ImportError, SyntaxError):
+        use_rarfile = False
+    try:
+        import py7zr
+        use_7zip = True
+    except (ImportError, SyntaxError):
+        use_7zip = False
 
 
 def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_executable):
     cover_data = extension = None
     if original_file_extension.upper() == '.CBZ':
         cf = zipfile.ZipFile(tmp_file_name)
-        for name in cf.namelist():
+        for name in sort(cf.namelist()):
             ext = os.path.splitext(name)
             if len(ext) > 1:
                 extension = ext[1].lower()
@@ -63,7 +92,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                     break
     elif original_file_extension.upper() == '.CBT':
         cf = tarfile.TarFile(tmp_file_name)
-        for name in cf.getnames():
+        for name in sort(cf.getnames()):
             ext = os.path.splitext(name)
             if len(ext) > 1:
                 extension = ext[1].lower()
@@ -74,7 +103,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
         try:
             rarfile.UNRAR_TOOL = rar_executable
             cf = rarfile.RarFile(tmp_file_name)
-            for name in cf.namelist():
+            for name in sort(cf.namelist()):
                 ext = os.path.splitext(name)
                 if len(ext) > 1:
                     extension = ext[1].lower()
@@ -85,7 +114,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
             log.error('Rarfile failed with error: {}'.format(ex))
     elif original_file_extension.upper() == '.CB7' and use_7zip:
         cf = py7zr.SevenZipFile(tmp_file_name)
-        for name in cf.getnames():
+        for name in sort(cf.getnames()):
             ext = os.path.splitext(name)
             if len(ext) > 1:
                 extension = ext[1].lower()

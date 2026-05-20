@@ -46,6 +46,9 @@ INITIAL_DELAY_SECONDS=${CWA_PREVIEW_CACHE_INITIAL_DELAY:-120}
 echo "[cwa-preview-cache-cleanup] Initial delay: ${INITIAL_DELAY_SECONDS}s; sweep interval: ${SWEEP_INTERVAL_SECONDS}s; cap (MB): ${CWA_PREVIEW_CACHE_MAX_MB:-1024}"
 sleep "$INITIAL_DELAY_SECONDS"
 
+# Python's `-m` only adds CWD to sys.path; cd so `cps` is importable.
+cd /app/calibre-web-automated || { echo "[cwa-preview-cache-cleanup] FATAL: /app/calibre-web-automated missing"; exit 1; }
+
 while true; do
     # Run as the abc service user so unlink permissions match what the
     # Flask endpoint wrote (write_to_cache runs in the gunicorn worker

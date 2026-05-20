@@ -8810,7 +8810,12 @@ button.close {
    list. The default .pagination rule above pins the paginator fixed at
    the top-right; this modifier scopes a `position: static` override to
    the bottom copy rendered in layout.html. Without this, the second
-   paginator would stack on top of the first as another fixed element. */
+   paginator would stack on top of the first as another fixed element.
+   `vertical-align: middle` keeps the prev/next chevron items centered
+   with the numbered buttons (default baseline alignment pushed the
+   smaller arrow content up relative to the boxed numerals). Bottom
+   margin gives ~24px breathing room so the row isn't flush against the
+   page edge / footer. */
 body > div.container-fluid > div > div.col-sm-10 > div.pagination.pagination-bottom,
 .pagination.pagination-bottom {
     position: static;
@@ -8818,7 +8823,10 @@ body > div.container-fluid > div > div.col-sm-10 > div.pagination.pagination-bot
     right: auto;
     height: auto;
     line-height: 1.5;
-    margin: 1.5rem 0 0.5rem;
+    /* caliBlur sets the root font-size to ~10px so `1rem` ≠ 16px here.
+       Use explicit `px` for the bottom margin so the ≥20px guarantee
+       (fork #256 droM4X verification feedback) survives that scale. */
+    margin: 1.5rem 0 24px;
     padding: 0;
     text-align: center;
     z-index: auto;
@@ -8829,4 +8837,5 @@ body > div.container-fluid > div > div.col-sm-10 > div.pagination.pagination-bot
 .pagination.pagination-bottom > .page-item {
     display: inline-block;
     margin: 0 2px;
+    vertical-align: middle;
 }

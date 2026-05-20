@@ -14,11 +14,22 @@ Fix: render a second copy of the paginator at the end of the list in
 normal document flow. The bottom copy carries a ``.pagination-bottom``
 class so it can override the fixed positioning via CSS.
 
+Follow-up (same #256 thread, droM4X's verification reply): the
+chevron prev/next items rendered visually higher than the boxed
+numerals — default ``vertical-align: baseline`` on inline-block
+items aligns text baselines, which puts shorter-content items at the
+top of the row. Bottom margin was also too tight (0.5rem ≈ 8px) and
+needed to be ≥20px so the row isn't flush against page bottom.
+
 These tests pin:
-1. Both paginators exist in `cps/templates/layout.html`.
-2. The bottom one carries the `pagination-bottom` modifier.
-3. The CSS override for `.pagination-bottom` is present in caliBlur.css.
-4. The CSS override actually undoes the `position: fixed`.
+1. Both paginators exist in ``cps/templates/layout.html``.
+2. The bottom one carries the ``pagination-bottom`` modifier.
+3. The CSS override for ``.pagination-bottom`` is present in
+   caliBlur.css and undoes ``position: fixed``.
+4. ``.pagination.pagination-bottom > .page-item`` sets
+   ``vertical-align: middle`` so chevron and numeral items line up.
+5. The bottom margin is at least 1.25rem (20px) per droM4X's
+   verification feedback.
 """
 
 from pathlib import Path
@@ -90,4 +101,74 @@ def test_caliblur_overrides_pagination_bottom_position():
         f"The `.pagination-bottom` rule in caliBlur.css must set "
         f"`position: static` (or similar) to undo the fixed positioning. "
         f"Current rule chunk: {rule_chunk!r}"
+    )
+
+
+def test_pagination_bottom_page_items_vertically_aligned():
+    """The chevron prev/next items have less inner content height than
+    the boxed numerals; without ``vertical-align: middle`` the baseline
+    alignment of inline-block items renders the chevrons higher than
+    the numbers. Pin the alignment rule so a future refactor doesn't
+    silently drop it. See droM4X's verification reply on fork #256.
+    """
+    import re
+
+    src = _caliblur_css()
+    # Find the page-item rule scoped to .pagination-bottom.
+    match = re.search(
+        r"\.pagination\.pagination-bottom\s*>\s*\.page-item\s*\{([^}]+)\}",
+        src,
+    )
+    assert match, (
+        "Expected a `.pagination.pagination-bottom > .page-item { ... }` "
+        "rule in caliBlur.css to scope the inline-block + alignment "
+        "rules to the bottom paginator copy only."
+    )
+    body = match.group(1)
+    assert re.search(r"vertical-align\s*:\s*middle", body), (
+        f"The `.pagination.pagination-bottom > .page-item` rule must set "
+        f"`vertical-align: middle` so the chevron items line up with the "
+        f"boxed numerals. Without this, baseline alignment renders the "
+        f"chevrons visibly higher than the numbers. Rule body: {body!r}."
+    )
+
+
+def test_pagination_bottom_has_breathing_margin_below():
+    """Bottom margin must be at least 1.25rem (20px) per droM4X's
+    verification feedback. The first ship used 0.5rem (≈8px) which
+    rendered the row visually flush against the page footer.
+    """
+    import re
+
+    src = _caliblur_css()
+    match = re.search(
+        r"\.pagination\.pagination-bottom\s*\{([^}]+)\}",
+        src,
+    )
+    assert match, "Expected a `.pagination.pagination-bottom { ... }` rule."
+    body = match.group(1)
+    # Find the `margin: ...` declaration (last one wins in CSS).
+    margins = re.findall(r"margin\s*:\s*([^;]+);", body)
+    assert margins, f"No `margin:` declaration in bottom-paginator rule: {body!r}"
+    last_margin = margins[-1].strip()
+    # `margin: <top> <horizontal> <bottom>` or `<top> <right> <bottom> <left>`.
+    parts = last_margin.split()
+    assert len(parts) >= 3, (
+        f"Expected margin shorthand with at least 3 parts (top right bottom). "
+        f"Got {last_margin!r}."
+    )
+    bottom = parts[2]
+    bottom_match = re.match(r"^([\d.]+)(rem|px|em)$", bottom)
+    assert bottom_match, (
+        f"Bottom-margin value `{bottom}` not in a recognized unit "
+        f"(rem/px/em). Update this test if the unit changed."
+    )
+    value = float(bottom_match.group(1))
+    unit = bottom_match.group(2)
+    # Convert to px for comparison. Assume 1rem = 16px (browser default).
+    px = value * (16 if unit in ("rem", "em") else 1)
+    assert px >= 20, (
+        f"Bottom margin on `.pagination.pagination-bottom` must be ≥20px "
+        f"per droM4X's verification feedback on fork #256. Got "
+        f"`{bottom}` (≈{px}px)."
     )

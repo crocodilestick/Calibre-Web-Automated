@@ -1,0 +1,37 @@
+/*
+ * Fork #283 (reporter @droM4X): wysihtml5 sandbox iframe content overrides.
+ *
+ * Loaded into the editor iframe via the `stylesheets` option set in
+ * book_table.html. Without this, wysihtml5 copies getComputedStyle(textarea)
+ * into the iframe body's inline style — which on the dark CWNG theme picks
+ * up `color: rgb(245, 245, 245)` (the theme's body text color) and pastes
+ * that onto a white iframe background. Result: light gray on white,
+ * effectively unreadable.
+ *
+ * The vendored wysihtml5 library injects its own bootstrap style block
+ * INSIDE the iframe that sets `body { background-color: white; ... }`
+ * but does NOT override color — that's left to whatever inline style ends
+ * up on the body. We override the color (and reassert background + cursor)
+ * with !important so the inline copy can't win.
+ */
+
+body.wysihtml5-editor {
+    color: #333 !important;
+    background-color: #ffffff !important;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    cursor: text;
+}
+
+/* Keep the placeholder text visibly dim — wysihtml5 toggles .placeholder
+   on the body when the editor is empty. Without this rule it would
+   inherit our forced #333 above and look like real content. */
+body.wysihtml5-editor.placeholder {
+    color: #a9a9a9 !important;
+}
+
+/* Sensible link color when users paste content with links. */
+body.wysihtml5-editor a {
+    color: #337ab7;
+}

@@ -1,0 +1,45 @@
+/*
+ * Fork #283 (reporter @droM4X): wysihtml5 toolbar host-page overrides.
+ *
+ * Loaded after bootstrap-wysihtml5-0.0.3.css so these rules win on
+ * specificity ties. Three things this file fixes:
+ *
+ * 1. Toolbar overflow — the vendor library's `float: left` on toolbar
+ *    items wraps awkwardly when the toolbar runs out of horizontal room
+ *    (some items stack vertically with extra whitespace). Switching to
+ *    flexbox gives even wrapping with consistent gaps regardless of
+ *    locale-translated button labels widening the row.
+ *
+ * 2. Insert Link button — hidden because the modal it opens uses
+ *    Bootstrap 2's `modal hide fade` class set (the inline `hide` class
+ *    is what kept it invisible against Bootstrap 3+). The metadata
+ *    editor doesn't render saved HTML links specially, so the
+ *    feature was vestigial anyway.
+ *
+ * 3. Upload Image button — same reason as Link: vendor modal is BS2,
+ *    and image upload isn't supported by the catalog comments field.
+ *
+ * `:has()` selector is required to target the parent `<li>` containing
+ * the button. Supported in Chrome 105+, Safari 15.4+, Firefox 121+ —
+ * all evergreen browsers since late 2023.
+ */
+
+ul.wysihtml5-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 5px;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+
+ul.wysihtml5-toolbar > li {
+    /* Override vendor `float: left; margin: 0 5px 10px 0;` so flex gap
+       controls spacing. */
+    float: none;
+    margin: 0;
+}
+
+ul.wysihtml5-toolbar > li:has(a[data-wysihtml5-command="createLink"]),
+ul.wysihtml5-toolbar > li:has(a[data-wysihtml5-command="insertImage"]) {
+    display: none !important;
+}

@@ -28,6 +28,10 @@
 <link href="{{ url_for('static', filename='css/libs/bootstrap-table.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/libs/bootstrap-editable.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/libs/bootstrap-wysihtml5-0.0.3.css') }}" rel="stylesheet">
+<!-- Fork #283 (@droM4X): toolbar host-page overrides loaded AFTER vendor lib so
+     specificity wins. Adds flex-wrap on the toolbar and hides the vestigial
+     Insert Link / Upload Image buttons whose modals broke on Bootstrap 3+. -->
+<link href="{{ url_for('static', filename='css/wysihtml5-fork.css') }}" rel="stylesheet">
 <style>
   .pagination {
       position: static !important;
@@ -381,5 +385,20 @@
 <script src="{{ url_for('static', filename='js/libs/wysihtml5-0.3.0.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-wysihtml5-0.0.3.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/wysihtml5-0.0.3.js') }}"></script>
+<script>
+    // Fork #283 (@droM4X): inject the iframe-content stylesheet so the
+    // wysihtml5 editor body shows dark text on white instead of inheriting
+    // the dark-theme body color (rgb(245,245,245)) into the iframe's inline
+    // style on a white iframe background. Must run after the x-editable
+    // wysihtml5 plugin registers itself (the .js file above) but before
+    // table.js renders any editable column. See cps/static/css/wysihtml5-fork-iframe.css.
+    if ($.fn.editabletypes && $.fn.editabletypes.wysihtml5) {
+        $.fn.editabletypes.wysihtml5.defaults.wysihtml5 = $.extend(
+            {},
+            $.fn.editabletypes.wysihtml5.defaults.wysihtml5 || {},
+            { stylesheets: ['{{ url_for("static", filename="css/wysihtml5-fork-iframe.css") }}'] }
+        );
+    }
+</script>
 <script src="{{ url_for('static', filename='js/table.js') }}"></script>
 {% endblock %}

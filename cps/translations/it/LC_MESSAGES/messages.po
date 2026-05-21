@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 15:41+0000\n"
+"POT-Creation-Date: 2026-05-21 17:42+0000\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -1906,7 +1906,7 @@ msgstr "Libri letti"
 msgid "Unread Books"
 msgstr "Libri da leggere"
 
-#: cps/opds.py:205 cps/render_template.py:110 cps/templates/book_table.html:105
+#: cps/opds.py:205 cps/render_template.py:110 cps/templates/book_table.html:109
 #: cps/templates/cwa_settings.html:334 cps/templates/cwa_settings.html:336
 #: cps/templates/hardcover_review_matches.html:134
 msgid "Authors"
@@ -1916,7 +1916,7 @@ msgstr "Autori"
 msgid "Books ordered by Author"
 msgstr "Libri ordinati per autore"
 
-#: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:111
+#: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:115
 #: cps/web.py:1784
 msgid "Publishers"
 msgstr "Editori"
@@ -1925,7 +1925,7 @@ msgstr "Editori"
 msgid "Books ordered by publisher"
 msgstr "Libri ordinati per editore"
 
-#: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:106
+#: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:110
 #: cps/web.py:1936
 msgid "Categories"
 msgstr "Categorie"
@@ -1935,7 +1935,7 @@ msgid "Books ordered by category"
 msgstr "Libri ordinati per categoria"
 
 #: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:98
-#: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
+#: cps/templates/book_table.html:111 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
 #: cps/templates/search_form.html:70 cps/web.py:1816 cps/web.py:1828
@@ -1946,7 +1946,7 @@ msgstr "Serie"
 msgid "Books ordered by series"
 msgstr "Libri ordinati per serie"
 
-#: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:109
+#: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
 #: cps/templates/detail.html:719 cps/templates/search_form.html:108
 #: cps/web.py:1908
 msgid "Languages"
@@ -2931,7 +2931,7 @@ msgstr ""
 msgid "Selection actions"
 msgstr "seleziona un'opzione"
 
-#: cps/templates/_book_organizer.html:104 cps/templates/book_table.html:65
+#: cps/templates/_book_organizer.html:104 cps/templates/book_table.html:69
 msgid "Add to Shelf"
 msgstr "Aggiungi allo scaffale"
 
@@ -2948,19 +2948,19 @@ msgstr "(Pubblico)"
 msgid "Mark"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:139 cps/templates/book_table.html:56
-#: cps/templates/book_table.html:250
+#: cps/templates/_book_organizer.html:139 cps/templates/book_table.html:60
+#: cps/templates/book_table.html:254
 msgid "Mark as read"
 msgstr "Contrassegna come letto"
 
-#: cps/templates/_book_organizer.html:145 cps/templates/book_table.html:59
-#: cps/templates/book_table.html:270
+#: cps/templates/_book_organizer.html:145 cps/templates/book_table.html:63
+#: cps/templates/book_table.html:274
 msgid "Mark as unread"
 msgstr "Contrassegna come da leggere"
 
 #: cps/templates/_book_organizer.html:155 cps/templates/admin.html:27
-#: cps/templates/book_edit.html:17 cps/templates/book_table.html:62
-#: cps/templates/book_table.html:141 cps/templates/book_table.html:190
+#: cps/templates/book_edit.html:17 cps/templates/book_table.html:66
+#: cps/templates/book_table.html:145 cps/templates/book_table.html:194
 #: cps/templates/duplicates.html:718 cps/templates/modal_dialogs.html:63
 #: cps/templates/modal_dialogs.html:116 cps/templates/user_edit.html:326
 #: cps/templates/user_table.html:150
@@ -3107,8 +3107,8 @@ msgstr "Download"
 msgid "View Books"
 msgstr "Visualizza libri"
 
-#: cps/templates/admin.html:26 cps/templates/book_table.html:47
-#: cps/templates/book_table.html:328 cps/templates/duplicates.html:657
+#: cps/templates/admin.html:26 cps/templates/book_table.html:51
+#: cps/templates/book_table.html:332 cps/templates/duplicates.html:657
 #: cps/templates/index.html:131 cps/templates/user_table.html:131
 #: cps/templates/user_table.html:149
 msgid "Edit"
@@ -3358,11 +3358,11 @@ msgid "OK"
 msgstr "OK"
 
 #: cps/templates/admin.html:301 cps/templates/admin.html:315
-#: cps/templates/book_edit.html:267 cps/templates/book_table.html:172
-#: cps/templates/book_table.html:191 cps/templates/book_table.html:211
-#: cps/templates/book_table.html:231 cps/templates/book_table.html:251
-#: cps/templates/book_table.html:271 cps/templates/book_table.html:329
-#: cps/templates/book_table.html:365 cps/templates/config_db.html:110
+#: cps/templates/book_edit.html:267 cps/templates/book_table.html:176
+#: cps/templates/book_table.html:195 cps/templates/book_table.html:215
+#: cps/templates/book_table.html:235 cps/templates/book_table.html:255
+#: cps/templates/book_table.html:275 cps/templates/book_table.html:333
+#: cps/templates/book_table.html:369 cps/templates/config_db.html:110
 #: cps/templates/config_edit.html:658 cps/templates/config_view_edit.html:219
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
@@ -3541,7 +3541,7 @@ msgid "Convert book"
 msgstr "Converti libro"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
-#: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
+#: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:184 cps/templates/layout.html:432
 #: cps/templates/layout.html:569 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
@@ -3574,7 +3574,7 @@ msgstr "Autore"
 msgid "Tags"
 msgstr "Etichette"
 
-#: cps/templates/book_edit.html:102 cps/templates/book_table.html:108
+#: cps/templates/book_edit.html:102 cps/templates/book_table.html:112
 msgid "Series ID"
 msgstr "ID della serie"
 
@@ -3747,183 +3747,183 @@ msgstr "Nessun risultato trovato! Prova con un'altra parola chiave."
 msgid "Source"
 msgstr "Origine"
 
-#: cps/templates/book_table.html:12 cps/templates/book_table.html:108
+#: cps/templates/book_table.html:12 cps/templates/book_table.html:112
 #: cps/templates/user_table.html:14 cps/templates/user_table.html:77
 #: cps/templates/user_table.html:100
 msgid "This Field is Required"
 msgstr "Questo campo è obbligatorio"
 
-#: cps/templates/book_table.html:44 cps/templates/book_table.html:171
+#: cps/templates/book_table.html:48 cps/templates/book_table.html:175
 #: cps/templates/duplicates.html:745
 msgid "Merge"
 msgstr "Unisci"
 
-#: cps/templates/book_table.html:50 cps/templates/book_table.html:210
+#: cps/templates/book_table.html:54 cps/templates/book_table.html:214
 #: cps/templates/duplicates.html:660
 msgid "Archive"
 msgstr "Archivio"
 
-#: cps/templates/book_table.html:53 cps/templates/book_table.html:230
+#: cps/templates/book_table.html:57 cps/templates/book_table.html:234
 msgid "Unarchive"
 msgstr "Rimuovi dall'archivio"
 
-#: cps/templates/book_table.html:67
+#: cps/templates/book_table.html:71
 msgid " Exchange author & title"
 msgstr "Inverti autore e titolo"
 
-#: cps/templates/book_table.html:72
+#: cps/templates/book_table.html:76
 msgid "Select all"
 msgstr "Seleziona tutto"
 
-#: cps/templates/book_table.html:75
+#: cps/templates/book_table.html:79
 msgid "Clear all"
 msgstr "Cancella tutto"
 
-#: cps/templates/book_table.html:84
+#: cps/templates/book_table.html:88
 msgid "Update Title Sort automatically  "
 msgstr "Aggiorna automaticamente l'ordinamento per titolo"
 
-#: cps/templates/book_table.html:88
+#: cps/templates/book_table.html:92
 msgid "Update Author Sort automatically"
 msgstr "Aggiorna automaticamente l'ordinamento per autore"
 
-#: cps/templates/book_table.html:102 cps/templates/book_table.html:108
+#: cps/templates/book_table.html:106 cps/templates/book_table.html:112
 msgid "Enter Title"
 msgstr "Inserisci titolo"
 
-#: cps/templates/book_table.html:102 cps/templates/config_view_edit.html:39
+#: cps/templates/book_table.html:106 cps/templates/config_view_edit.html:39
 #: cps/templates/cwa_settings.html:327 cps/templates/cwa_settings.html:329
 #: cps/templates/cwa_settings.html:1085 cps/templates/shelf_edit.html:8
 #: cps/templates/tasks.html:41 cps/templates/tasks.html:64
 msgid "Title"
 msgstr "Titolo"
 
-#: cps/templates/book_table.html:103
+#: cps/templates/book_table.html:107
 msgid "Enter Title Sort"
 msgstr "Inserisci ordinamento per titolo"
 
-#: cps/templates/book_table.html:103
+#: cps/templates/book_table.html:107
 msgid "Title Sort"
 msgstr "Ordina per titolo"
 
-#: cps/templates/book_table.html:104
+#: cps/templates/book_table.html:108
 msgid "Enter Author Sort"
 msgstr "Inserisci ordinamento per autore"
 
-#: cps/templates/book_table.html:104
+#: cps/templates/book_table.html:108
 msgid "Author Sort"
 msgstr "Ordina per autore"
 
-#: cps/templates/book_table.html:105
+#: cps/templates/book_table.html:109
 msgid "Enter Authors"
 msgstr "Inserisci autori"
 
-#: cps/templates/book_table.html:106
+#: cps/templates/book_table.html:110
 msgid "Enter Categories"
 msgstr "Inserisci categorie"
 
-#: cps/templates/book_table.html:107
+#: cps/templates/book_table.html:111
 msgid "Enter Series"
 msgstr "Inserisci serie"
 
-#: cps/templates/book_table.html:109
+#: cps/templates/book_table.html:113
 msgid "Enter Languages"
 msgstr "Inserisci lingue"
 
-#: cps/templates/book_table.html:110
+#: cps/templates/book_table.html:114
 msgid "Publishing Date"
 msgstr "Data di pubblicazione"
 
-#: cps/templates/book_table.html:111
+#: cps/templates/book_table.html:115
 msgid "Enter Publishers"
 msgstr "Inserisci editori"
 
-#: cps/templates/book_table.html:112
+#: cps/templates/book_table.html:116
 msgid "Enter comments"
 msgstr "Inserisci commenti"
 
-#: cps/templates/book_table.html:112
+#: cps/templates/book_table.html:116
 msgid "Comments"
 msgstr "Commenti"
 
-#: cps/templates/book_table.html:114
+#: cps/templates/book_table.html:118
 msgid "Archived?"
 msgstr "Archiviato?"
 
-#: cps/templates/book_table.html:116
+#: cps/templates/book_table.html:120
 msgid "Read?"
 msgstr "Letto?"
 
-#: cps/templates/book_table.html:119 cps/templates/book_table.html:121
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
-#: cps/templates/book_table.html:129 cps/templates/book_table.html:131
-#: cps/templates/book_table.html:135
+#: cps/templates/book_table.html:127 cps/templates/book_table.html:129
+#: cps/templates/book_table.html:133 cps/templates/book_table.html:135
+#: cps/templates/book_table.html:139
 msgid "Enter "
 msgstr "Inserisci "
 
-#: cps/templates/book_table.html:158 cps/templates/book_table.html:182
-#: cps/templates/book_table.html:202 cps/templates/book_table.html:222
-#: cps/templates/book_table.html:242 cps/templates/book_table.html:262
+#: cps/templates/book_table.html:162 cps/templates/book_table.html:186
+#: cps/templates/book_table.html:206 cps/templates/book_table.html:226
+#: cps/templates/book_table.html:246 cps/templates/book_table.html:266
 #: cps/templates/duplicates.html:707 cps/templates/modal_dialogs.html:46
 #: cps/templates/tasks.html:84
 msgid "Are you really sure?"
 msgstr "Sei veramente sicuro?"
 
-#: cps/templates/book_table.html:162
+#: cps/templates/book_table.html:166
 msgid "Books with Title will be merged from:"
 msgstr "I libri con titolo verranno uniti da:"
 
-#: cps/templates/book_table.html:166
+#: cps/templates/book_table.html:170
 msgid "Into Book with Title:"
 msgstr "Nel libro con il titolo:"
 
-#: cps/templates/book_table.html:186
+#: cps/templates/book_table.html:190
 msgid "The following books will be deleted:"
 msgstr "I libri seguenti verranno eliminati:"
 
-#: cps/templates/book_table.html:206
+#: cps/templates/book_table.html:210
 msgid "The following books will be archived:"
 msgstr "I libri seguenti verranno archiviati:"
 
-#: cps/templates/book_table.html:226
+#: cps/templates/book_table.html:230
 msgid "The following books will be unarchived:"
 msgstr "I seguenti libri saranno rimossi dall'archivio:"
 
-#: cps/templates/book_table.html:246
+#: cps/templates/book_table.html:250
 msgid "The following books will be marked read:"
 msgstr "I libri seguenti verranno segnati come letti:"
 
-#: cps/templates/book_table.html:266
+#: cps/templates/book_table.html:270
 msgid "The following books will be marked unread:"
 msgstr "I libri seguenti verranno segnati come non letti:"
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:565
+#: cps/templates/book_table.html:286 cps/templates/detail.html:565
 msgid "Edit Metadata"
 msgstr "Modifica i metadati"
 
-#: cps/templates/book_table.html:285
+#: cps/templates/book_table.html:289
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
 msgstr "Modifica i campi che desideri. I campi vuoti saranno ignorati:"
 
-#: cps/templates/book_table.html:287
+#: cps/templates/book_table.html:291
 msgid ""
 "Multiple values are supported for Authors, Tags/Categories, Languages, and "
 "Publishers. Use comma-separated values (e.g., \"Name1, Name2\")."
 msgstr ""
 
-#: cps/templates/book_table.html:343
+#: cps/templates/book_table.html:347
 msgid "Select a Shelf"
 msgstr "Seleziona uno scaffale"
 
-#: cps/templates/book_table.html:346
+#: cps/templates/book_table.html:350
 msgid "Please select a shelf to add the selected books to:"
 msgstr "Seleziona uno scaffale a cui aggiungere i libri selezionati:"
 
-#: cps/templates/book_table.html:348
+#: cps/templates/book_table.html:352
 msgid "-- Select a Shelf --"
 msgstr "-- Crea uno scaffale --"
 
-#: cps/templates/book_table.html:366 cps/templates/email_edit.html:81
+#: cps/templates/book_table.html:370 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
 msgid "Add"
 msgstr "Aggiungi"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 15:41+0000\n"
+"POT-Creation-Date: 2026-05-21 17:42+0000\n"
 "PO-Revision-Date: 2023-11-01 06:12+0100\n"
 "Last-Translator: Branislav Hanáček <brango@brango.sk>\n"
 "Language-Team: \n"
@@ -1887,7 +1887,7 @@ msgstr "Prečítané knihy"
 msgid "Unread Books"
 msgstr "Neprečítané knihy"
 
-#: cps/opds.py:205 cps/render_template.py:110 cps/templates/book_table.html:105
+#: cps/opds.py:205 cps/render_template.py:110 cps/templates/book_table.html:109
 #: cps/templates/cwa_settings.html:334 cps/templates/cwa_settings.html:336
 #: cps/templates/hardcover_review_matches.html:134
 msgid "Authors"
@@ -1897,7 +1897,7 @@ msgstr "Autori"
 msgid "Books ordered by Author"
 msgstr "Knihy usporiadané podľa autora"
 
-#: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:111
+#: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:115
 #: cps/web.py:1784
 msgid "Publishers"
 msgstr "Vydavatelia"
@@ -1906,7 +1906,7 @@ msgstr "Vydavatelia"
 msgid "Books ordered by publisher"
 msgstr "Knihy usporiadané podľa vydavateľa"
 
-#: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:106
+#: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:110
 #: cps/web.py:1936
 msgid "Categories"
 msgstr "Kategórie"
@@ -1916,7 +1916,7 @@ msgid "Books ordered by category"
 msgstr "Knihy usporiadané podľa kategórie"
 
 #: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:98
-#: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
+#: cps/templates/book_table.html:111 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
 #: cps/templates/search_form.html:70 cps/web.py:1816 cps/web.py:1828
@@ -1927,7 +1927,7 @@ msgstr "Série"
 msgid "Books ordered by series"
 msgstr "Knihy usporiadané podľa série"
 
-#: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:109
+#: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
 #: cps/templates/detail.html:719 cps/templates/search_form.html:108
 #: cps/web.py:1908
 msgid "Languages"
@@ -2907,7 +2907,7 @@ msgstr ""
 msgid "Selection actions"
 msgstr "vybrať možnosť"
 
-#: cps/templates/_book_organizer.html:104 cps/templates/book_table.html:65
+#: cps/templates/_book_organizer.html:104 cps/templates/book_table.html:69
 #, fuzzy
 msgid "Add to Shelf"
 msgstr "Pridať do police"
@@ -2925,21 +2925,21 @@ msgstr "(Verejné)"
 msgid "Mark"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:139 cps/templates/book_table.html:56
-#: cps/templates/book_table.html:250
+#: cps/templates/_book_organizer.html:139 cps/templates/book_table.html:60
+#: cps/templates/book_table.html:254
 #, fuzzy
 msgid "Mark as read"
 msgstr "Označiť ako neprečítané"
 
-#: cps/templates/_book_organizer.html:145 cps/templates/book_table.html:59
-#: cps/templates/book_table.html:270
+#: cps/templates/_book_organizer.html:145 cps/templates/book_table.html:63
+#: cps/templates/book_table.html:274
 #, fuzzy
 msgid "Mark as unread"
 msgstr "Označiť ako neprečítané"
 
 #: cps/templates/_book_organizer.html:155 cps/templates/admin.html:27
-#: cps/templates/book_edit.html:17 cps/templates/book_table.html:62
-#: cps/templates/book_table.html:141 cps/templates/book_table.html:190
+#: cps/templates/book_edit.html:17 cps/templates/book_table.html:66
+#: cps/templates/book_table.html:145 cps/templates/book_table.html:194
 #: cps/templates/duplicates.html:718 cps/templates/modal_dialogs.html:63
 #: cps/templates/modal_dialogs.html:116 cps/templates/user_edit.html:326
 #: cps/templates/user_table.html:150
@@ -3086,8 +3086,8 @@ msgstr "Stiahnuť"
 msgid "View Books"
 msgstr "Zobraziť knihy"
 
-#: cps/templates/admin.html:26 cps/templates/book_table.html:47
-#: cps/templates/book_table.html:328 cps/templates/duplicates.html:657
+#: cps/templates/admin.html:26 cps/templates/book_table.html:51
+#: cps/templates/book_table.html:332 cps/templates/duplicates.html:657
 #: cps/templates/index.html:131 cps/templates/user_table.html:131
 #: cps/templates/user_table.html:149
 msgid "Edit"
@@ -3341,11 +3341,11 @@ msgid "OK"
 msgstr "V poriadku"
 
 #: cps/templates/admin.html:301 cps/templates/admin.html:315
-#: cps/templates/book_edit.html:267 cps/templates/book_table.html:172
-#: cps/templates/book_table.html:191 cps/templates/book_table.html:211
-#: cps/templates/book_table.html:231 cps/templates/book_table.html:251
-#: cps/templates/book_table.html:271 cps/templates/book_table.html:329
-#: cps/templates/book_table.html:365 cps/templates/config_db.html:110
+#: cps/templates/book_edit.html:267 cps/templates/book_table.html:176
+#: cps/templates/book_table.html:195 cps/templates/book_table.html:215
+#: cps/templates/book_table.html:235 cps/templates/book_table.html:255
+#: cps/templates/book_table.html:275 cps/templates/book_table.html:333
+#: cps/templates/book_table.html:369 cps/templates/config_db.html:110
 #: cps/templates/config_edit.html:658 cps/templates/config_view_edit.html:219
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
@@ -3524,7 +3524,7 @@ msgid "Convert book"
 msgstr "Previesť knihu"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
-#: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
+#: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:184 cps/templates/layout.html:432
 #: cps/templates/layout.html:569 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
@@ -3557,7 +3557,7 @@ msgstr "Autor"
 msgid "Tags"
 msgstr "Značka"
 
-#: cps/templates/book_edit.html:102 cps/templates/book_table.html:108
+#: cps/templates/book_edit.html:102 cps/templates/book_table.html:112
 msgid "Series ID"
 msgstr "ID série"
 
@@ -3728,192 +3728,192 @@ msgstr "Nič sa nenaslo! Skúste, prosím iné kľúčové slovo."
 msgid "Source"
 msgstr "Zdroj"
 
-#: cps/templates/book_table.html:12 cps/templates/book_table.html:108
+#: cps/templates/book_table.html:12 cps/templates/book_table.html:112
 #: cps/templates/user_table.html:14 cps/templates/user_table.html:77
 #: cps/templates/user_table.html:100
 msgid "This Field is Required"
 msgstr "Toto pole je povinné"
 
-#: cps/templates/book_table.html:44 cps/templates/book_table.html:171
+#: cps/templates/book_table.html:48 cps/templates/book_table.html:175
 #: cps/templates/duplicates.html:745
 msgid "Merge"
 msgstr "Zlúčiť"
 
-#: cps/templates/book_table.html:50 cps/templates/book_table.html:210
+#: cps/templates/book_table.html:54 cps/templates/book_table.html:214
 #: cps/templates/duplicates.html:660
 #, fuzzy
 msgid "Archive"
 msgstr "Archivovaný"
 
-#: cps/templates/book_table.html:53 cps/templates/book_table.html:230
+#: cps/templates/book_table.html:57 cps/templates/book_table.html:234
 #, fuzzy
 msgid "Unarchive"
 msgstr "Archivovaný"
 
-#: cps/templates/book_table.html:67
+#: cps/templates/book_table.html:71
 #, fuzzy
 msgid " Exchange author & title"
 msgstr "Vymeniť autora a názov"
 
-#: cps/templates/book_table.html:72
+#: cps/templates/book_table.html:76
 #, fuzzy
 msgid "Select all"
 msgstr "Vytvoriť policu"
 
-#: cps/templates/book_table.html:75
+#: cps/templates/book_table.html:79
 msgid "Clear all"
 msgstr ""
 
-#: cps/templates/book_table.html:84
+#: cps/templates/book_table.html:88
 #, fuzzy
 msgid "Update Title Sort automatically  "
 msgstr "Automaticky aktualizovať triedenie podľa názvu"
 
-#: cps/templates/book_table.html:88
+#: cps/templates/book_table.html:92
 msgid "Update Author Sort automatically"
 msgstr "Automaticky aktualizovať triedeni podľa autora"
 
-#: cps/templates/book_table.html:102 cps/templates/book_table.html:108
+#: cps/templates/book_table.html:106 cps/templates/book_table.html:112
 msgid "Enter Title"
 msgstr "Zadajte názov"
 
-#: cps/templates/book_table.html:102 cps/templates/config_view_edit.html:39
+#: cps/templates/book_table.html:106 cps/templates/config_view_edit.html:39
 #: cps/templates/cwa_settings.html:327 cps/templates/cwa_settings.html:329
 #: cps/templates/cwa_settings.html:1085 cps/templates/shelf_edit.html:8
 #: cps/templates/tasks.html:41 cps/templates/tasks.html:64
 msgid "Title"
 msgstr "Názov"
 
-#: cps/templates/book_table.html:103
+#: cps/templates/book_table.html:107
 msgid "Enter Title Sort"
 msgstr "Zadajte triedenie podľa názvu knihy"
 
-#: cps/templates/book_table.html:103
+#: cps/templates/book_table.html:107
 msgid "Title Sort"
 msgstr "Triedenie podľa názvu knihy"
 
-#: cps/templates/book_table.html:104
+#: cps/templates/book_table.html:108
 msgid "Enter Author Sort"
 msgstr "Zadajte triedenie podľa autora knihy"
 
-#: cps/templates/book_table.html:104
+#: cps/templates/book_table.html:108
 msgid "Author Sort"
 msgstr "Triedenie podľa autora knihy"
 
-#: cps/templates/book_table.html:105
+#: cps/templates/book_table.html:109
 msgid "Enter Authors"
 msgstr "Zadajte autorov"
 
-#: cps/templates/book_table.html:106
+#: cps/templates/book_table.html:110
 msgid "Enter Categories"
 msgstr "Zadajte kategórie"
 
-#: cps/templates/book_table.html:107
+#: cps/templates/book_table.html:111
 msgid "Enter Series"
 msgstr "Zadajte série"
 
-#: cps/templates/book_table.html:109
+#: cps/templates/book_table.html:113
 msgid "Enter Languages"
 msgstr "Zadajte jazyky"
 
-#: cps/templates/book_table.html:110
+#: cps/templates/book_table.html:114
 msgid "Publishing Date"
 msgstr "Dátum vydania"
 
-#: cps/templates/book_table.html:111
+#: cps/templates/book_table.html:115
 msgid "Enter Publishers"
 msgstr "Zadajte vydavateľov"
 
-#: cps/templates/book_table.html:112
+#: cps/templates/book_table.html:116
 msgid "Enter comments"
 msgstr "Zadajte komentáre"
 
-#: cps/templates/book_table.html:112
+#: cps/templates/book_table.html:116
 #, fuzzy
 msgid "Comments"
 msgstr "Komentáre"
 
-#: cps/templates/book_table.html:114
+#: cps/templates/book_table.html:118
 #, fuzzy
 msgid "Archived?"
 msgstr "Archivovaný"
 
-#: cps/templates/book_table.html:116
+#: cps/templates/book_table.html:120
 #, fuzzy
 msgid "Read?"
 msgstr "Čítať"
 
-#: cps/templates/book_table.html:119 cps/templates/book_table.html:121
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
-#: cps/templates/book_table.html:129 cps/templates/book_table.html:131
-#: cps/templates/book_table.html:135
+#: cps/templates/book_table.html:127 cps/templates/book_table.html:129
+#: cps/templates/book_table.html:133 cps/templates/book_table.html:135
+#: cps/templates/book_table.html:139
 msgid "Enter "
 msgstr "Zadať "
 
-#: cps/templates/book_table.html:158 cps/templates/book_table.html:182
-#: cps/templates/book_table.html:202 cps/templates/book_table.html:222
-#: cps/templates/book_table.html:242 cps/templates/book_table.html:262
+#: cps/templates/book_table.html:162 cps/templates/book_table.html:186
+#: cps/templates/book_table.html:206 cps/templates/book_table.html:226
+#: cps/templates/book_table.html:246 cps/templates/book_table.html:266
 #: cps/templates/duplicates.html:707 cps/templates/modal_dialogs.html:46
 #: cps/templates/tasks.html:84
 msgid "Are you really sure?"
 msgstr "Naozaj to chcete?"
 
-#: cps/templates/book_table.html:162
+#: cps/templates/book_table.html:166
 msgid "Books with Title will be merged from:"
 msgstr "Kniha z názvom bude zlúčená s:"
 
-#: cps/templates/book_table.html:166
+#: cps/templates/book_table.html:170
 msgid "Into Book with Title:"
 msgstr "Na knihu s názvom:"
 
-#: cps/templates/book_table.html:186
+#: cps/templates/book_table.html:190
 msgid "The following books will be deleted:"
 msgstr ""
 
-#: cps/templates/book_table.html:206
+#: cps/templates/book_table.html:210
 msgid "The following books will be archived:"
 msgstr ""
 
-#: cps/templates/book_table.html:226
+#: cps/templates/book_table.html:230
 msgid "The following books will be unarchived:"
 msgstr ""
 
-#: cps/templates/book_table.html:246
+#: cps/templates/book_table.html:250
 msgid "The following books will be marked read:"
 msgstr ""
 
-#: cps/templates/book_table.html:266
+#: cps/templates/book_table.html:270
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:565
+#: cps/templates/book_table.html:286 cps/templates/detail.html:565
 msgid "Edit Metadata"
 msgstr "Upraviť metadáta"
 
-#: cps/templates/book_table.html:285
+#: cps/templates/book_table.html:289
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
 msgstr ""
 
-#: cps/templates/book_table.html:287
+#: cps/templates/book_table.html:291
 msgid ""
 "Multiple values are supported for Authors, Tags/Categories, Languages, and "
 "Publishers. Use comma-separated values (e.g., \"Name1, Name2\")."
 msgstr ""
 
-#: cps/templates/book_table.html:343
+#: cps/templates/book_table.html:347
 #, fuzzy
 msgid "Select a Shelf"
 msgstr "Vytvoriť policu"
 
-#: cps/templates/book_table.html:346
+#: cps/templates/book_table.html:350
 msgid "Please select a shelf to add the selected books to:"
 msgstr ""
 
-#: cps/templates/book_table.html:348
+#: cps/templates/book_table.html:352
 msgid "-- Select a Shelf --"
 msgstr ""
 
-#: cps/templates/book_table.html:366 cps/templates/email_edit.html:81
+#: cps/templates/book_table.html:370 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
 msgid "Add"
 msgstr "Pridať"

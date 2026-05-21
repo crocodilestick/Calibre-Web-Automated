@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 15:41+0000\n"
+"POT-Creation-Date: 2026-05-21 17:42+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -1841,7 +1841,7 @@ msgstr "읽음"
 msgid "Unread Books"
 msgstr "읽지 않음"
 
-#: cps/opds.py:205 cps/render_template.py:110 cps/templates/book_table.html:105
+#: cps/opds.py:205 cps/render_template.py:110 cps/templates/book_table.html:109
 #: cps/templates/cwa_settings.html:334 cps/templates/cwa_settings.html:336
 #: cps/templates/hardcover_review_matches.html:134
 msgid "Authors"
@@ -1851,7 +1851,7 @@ msgstr "저자"
 msgid "Books ordered by Author"
 msgstr "저자별 정렬"
 
-#: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:111
+#: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:115
 #: cps/web.py:1784
 msgid "Publishers"
 msgstr "출판사"
@@ -1860,7 +1860,7 @@ msgstr "출판사"
 msgid "Books ordered by publisher"
 msgstr "출판사별 정렬"
 
-#: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:106
+#: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:110
 #: cps/web.py:1936
 msgid "Categories"
 msgstr "카테고리"
@@ -1870,7 +1870,7 @@ msgid "Books ordered by category"
 msgstr "카테고리별 정렬"
 
 #: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:98
-#: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
+#: cps/templates/book_table.html:111 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
 #: cps/templates/search_form.html:70 cps/web.py:1816 cps/web.py:1828
@@ -1881,7 +1881,7 @@ msgstr "시리즈"
 msgid "Books ordered by series"
 msgstr "시리즈별 정렬"
 
-#: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:109
+#: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
 #: cps/templates/detail.html:719 cps/templates/search_form.html:108
 #: cps/web.py:1908
 msgid "Languages"
@@ -2859,7 +2859,7 @@ msgstr ""
 msgid "Selection actions"
 msgstr "옵션 선택"
 
-#: cps/templates/_book_organizer.html:104 cps/templates/book_table.html:65
+#: cps/templates/_book_organizer.html:104 cps/templates/book_table.html:69
 msgid "Add to Shelf"
 msgstr "책장에 추가"
 
@@ -2876,19 +2876,19 @@ msgstr "(공개)"
 msgid "Mark"
 msgstr ""
 
-#: cps/templates/_book_organizer.html:139 cps/templates/book_table.html:56
-#: cps/templates/book_table.html:250
+#: cps/templates/_book_organizer.html:139 cps/templates/book_table.html:60
+#: cps/templates/book_table.html:254
 msgid "Mark as read"
 msgstr "읽음으로 표시"
 
-#: cps/templates/_book_organizer.html:145 cps/templates/book_table.html:59
-#: cps/templates/book_table.html:270
+#: cps/templates/_book_organizer.html:145 cps/templates/book_table.html:63
+#: cps/templates/book_table.html:274
 msgid "Mark as unread"
 msgstr "읽지 않음으로 표시"
 
 #: cps/templates/_book_organizer.html:155 cps/templates/admin.html:27
-#: cps/templates/book_edit.html:17 cps/templates/book_table.html:62
-#: cps/templates/book_table.html:141 cps/templates/book_table.html:190
+#: cps/templates/book_edit.html:17 cps/templates/book_table.html:66
+#: cps/templates/book_table.html:145 cps/templates/book_table.html:194
 #: cps/templates/duplicates.html:718 cps/templates/modal_dialogs.html:63
 #: cps/templates/modal_dialogs.html:116 cps/templates/user_edit.html:326
 #: cps/templates/user_table.html:150
@@ -3035,8 +3035,8 @@ msgstr "다운로드"
 msgid "View Books"
 msgstr "책 보기"
 
-#: cps/templates/admin.html:26 cps/templates/book_table.html:47
-#: cps/templates/book_table.html:328 cps/templates/duplicates.html:657
+#: cps/templates/admin.html:26 cps/templates/book_table.html:51
+#: cps/templates/book_table.html:332 cps/templates/duplicates.html:657
 #: cps/templates/index.html:131 cps/templates/user_table.html:131
 #: cps/templates/user_table.html:149
 msgid "Edit"
@@ -3286,11 +3286,11 @@ msgid "OK"
 msgstr "예"
 
 #: cps/templates/admin.html:301 cps/templates/admin.html:315
-#: cps/templates/book_edit.html:267 cps/templates/book_table.html:172
-#: cps/templates/book_table.html:191 cps/templates/book_table.html:211
-#: cps/templates/book_table.html:231 cps/templates/book_table.html:251
-#: cps/templates/book_table.html:271 cps/templates/book_table.html:329
-#: cps/templates/book_table.html:365 cps/templates/config_db.html:110
+#: cps/templates/book_edit.html:267 cps/templates/book_table.html:176
+#: cps/templates/book_table.html:195 cps/templates/book_table.html:215
+#: cps/templates/book_table.html:235 cps/templates/book_table.html:255
+#: cps/templates/book_table.html:275 cps/templates/book_table.html:333
+#: cps/templates/book_table.html:369 cps/templates/config_db.html:110
 #: cps/templates/config_edit.html:658 cps/templates/config_view_edit.html:219
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
@@ -3469,7 +3469,7 @@ msgid "Convert book"
 msgstr "책 변환"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
-#: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
+#: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:184 cps/templates/layout.html:432
 #: cps/templates/layout.html:569 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
@@ -3502,7 +3502,7 @@ msgstr "저자"
 msgid "Tags"
 msgstr "태그"
 
-#: cps/templates/book_edit.html:102 cps/templates/book_table.html:108
+#: cps/templates/book_edit.html:102 cps/templates/book_table.html:112
 msgid "Series ID"
 msgstr "시리즈 ID"
 
@@ -3673,183 +3673,183 @@ msgstr "검색 결과가 없습니다. 다른 검색어로 검색해 보세요."
 msgid "Source"
 msgstr "출처"
 
-#: cps/templates/book_table.html:12 cps/templates/book_table.html:108
+#: cps/templates/book_table.html:12 cps/templates/book_table.html:112
 #: cps/templates/user_table.html:14 cps/templates/user_table.html:77
 #: cps/templates/user_table.html:100
 msgid "This Field is Required"
 msgstr "이 항목은 필수입니다."
 
-#: cps/templates/book_table.html:44 cps/templates/book_table.html:171
+#: cps/templates/book_table.html:48 cps/templates/book_table.html:175
 #: cps/templates/duplicates.html:745
 msgid "Merge"
 msgstr "병합"
 
-#: cps/templates/book_table.html:50 cps/templates/book_table.html:210
+#: cps/templates/book_table.html:54 cps/templates/book_table.html:214
 #: cps/templates/duplicates.html:660
 msgid "Archive"
 msgstr "보관"
 
-#: cps/templates/book_table.html:53 cps/templates/book_table.html:230
+#: cps/templates/book_table.html:57 cps/templates/book_table.html:234
 msgid "Unarchive"
 msgstr "보관 해제"
 
-#: cps/templates/book_table.html:67
+#: cps/templates/book_table.html:71
 msgid " Exchange author & title"
 msgstr "저자와 제목 바꾸기"
 
-#: cps/templates/book_table.html:72
+#: cps/templates/book_table.html:76
 msgid "Select all"
 msgstr "모두 선택"
 
-#: cps/templates/book_table.html:75
+#: cps/templates/book_table.html:79
 msgid "Clear all"
 msgstr "선택 해제"
 
-#: cps/templates/book_table.html:84
+#: cps/templates/book_table.html:88
 msgid "Update Title Sort automatically  "
 msgstr "자동으로 제목 정렬 업데이트 "
 
-#: cps/templates/book_table.html:88
+#: cps/templates/book_table.html:92
 msgid "Update Author Sort automatically"
 msgstr "자동으로 저자 정렬 업데이트"
 
-#: cps/templates/book_table.html:102 cps/templates/book_table.html:108
+#: cps/templates/book_table.html:106 cps/templates/book_table.html:112
 msgid "Enter Title"
 msgstr "제목 입력"
 
-#: cps/templates/book_table.html:102 cps/templates/config_view_edit.html:39
+#: cps/templates/book_table.html:106 cps/templates/config_view_edit.html:39
 #: cps/templates/cwa_settings.html:327 cps/templates/cwa_settings.html:329
 #: cps/templates/cwa_settings.html:1085 cps/templates/shelf_edit.html:8
 #: cps/templates/tasks.html:41 cps/templates/tasks.html:64
 msgid "Title"
 msgstr "제목"
 
-#: cps/templates/book_table.html:103
+#: cps/templates/book_table.html:107
 msgid "Enter Title Sort"
 msgstr "제목 정렬 입력"
 
-#: cps/templates/book_table.html:103
+#: cps/templates/book_table.html:107
 msgid "Title Sort"
 msgstr "제목 정렬"
 
-#: cps/templates/book_table.html:104
+#: cps/templates/book_table.html:108
 msgid "Enter Author Sort"
 msgstr "저자 정렬 입력"
 
-#: cps/templates/book_table.html:104
+#: cps/templates/book_table.html:108
 msgid "Author Sort"
 msgstr "저자 정렬"
 
-#: cps/templates/book_table.html:105
+#: cps/templates/book_table.html:109
 msgid "Enter Authors"
 msgstr "저자 입력"
 
-#: cps/templates/book_table.html:106
+#: cps/templates/book_table.html:110
 msgid "Enter Categories"
 msgstr "카테고리 입력"
 
-#: cps/templates/book_table.html:107
+#: cps/templates/book_table.html:111
 msgid "Enter Series"
 msgstr "시리즈 입력"
 
-#: cps/templates/book_table.html:109
+#: cps/templates/book_table.html:113
 msgid "Enter Languages"
 msgstr "언어 입력"
 
-#: cps/templates/book_table.html:110
+#: cps/templates/book_table.html:114
 msgid "Publishing Date"
 msgstr "발행일"
 
-#: cps/templates/book_table.html:111
+#: cps/templates/book_table.html:115
 msgid "Enter Publishers"
 msgstr "출판사 입력"
 
-#: cps/templates/book_table.html:112
+#: cps/templates/book_table.html:116
 msgid "Enter comments"
 msgstr "설명 입력"
 
-#: cps/templates/book_table.html:112
+#: cps/templates/book_table.html:116
 msgid "Comments"
 msgstr "설명"
 
-#: cps/templates/book_table.html:114
+#: cps/templates/book_table.html:118
 msgid "Archived?"
 msgstr "보관됨?"
 
-#: cps/templates/book_table.html:116
+#: cps/templates/book_table.html:120
 msgid "Read?"
 msgstr "읽음?"
 
-#: cps/templates/book_table.html:119 cps/templates/book_table.html:121
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
-#: cps/templates/book_table.html:129 cps/templates/book_table.html:131
-#: cps/templates/book_table.html:135
+#: cps/templates/book_table.html:127 cps/templates/book_table.html:129
+#: cps/templates/book_table.html:133 cps/templates/book_table.html:135
+#: cps/templates/book_table.html:139
 msgid "Enter "
 msgstr "입력 "
 
-#: cps/templates/book_table.html:158 cps/templates/book_table.html:182
-#: cps/templates/book_table.html:202 cps/templates/book_table.html:222
-#: cps/templates/book_table.html:242 cps/templates/book_table.html:262
+#: cps/templates/book_table.html:162 cps/templates/book_table.html:186
+#: cps/templates/book_table.html:206 cps/templates/book_table.html:226
+#: cps/templates/book_table.html:246 cps/templates/book_table.html:266
 #: cps/templates/duplicates.html:707 cps/templates/modal_dialogs.html:46
 #: cps/templates/tasks.html:84
 msgid "Are you really sure?"
 msgstr "정말로 하시겠습니까?"
 
-#: cps/templates/book_table.html:162
+#: cps/templates/book_table.html:166
 msgid "Books with Title will be merged from:"
 msgstr "다음 책들을 병합합니다:"
 
-#: cps/templates/book_table.html:166
+#: cps/templates/book_table.html:170
 msgid "Into Book with Title:"
 msgstr "다음 책으로 병합:"
 
-#: cps/templates/book_table.html:186
+#: cps/templates/book_table.html:190
 msgid "The following books will be deleted:"
 msgstr "다음 책이 삭제됩니다:"
 
-#: cps/templates/book_table.html:206
+#: cps/templates/book_table.html:210
 msgid "The following books will be archived:"
 msgstr "다음 책이 보관됩니다:"
 
-#: cps/templates/book_table.html:226
+#: cps/templates/book_table.html:230
 msgid "The following books will be unarchived:"
 msgstr "다음 책이 보관해제됩니다:"
 
-#: cps/templates/book_table.html:246
+#: cps/templates/book_table.html:250
 msgid "The following books will be marked read:"
 msgstr "다읍 책이 읽음표시됩니다:"
 
-#: cps/templates/book_table.html:266
+#: cps/templates/book_table.html:270
 msgid "The following books will be marked unread:"
 msgstr "다음 책의 읽음표시가 해제됩니다:"
 
-#: cps/templates/book_table.html:282 cps/templates/detail.html:565
+#: cps/templates/book_table.html:286 cps/templates/detail.html:565
 msgid "Edit Metadata"
 msgstr "메타데이터 편집"
 
-#: cps/templates/book_table.html:285
+#: cps/templates/book_table.html:289
 msgid "Edit the fields you want changed. Blank fields will be ignored:"
 msgstr "바꾸고자 하는 입력란을 수정하십시오. 빈 입력란은 무시됩니다:"
 
-#: cps/templates/book_table.html:287
+#: cps/templates/book_table.html:291
 msgid ""
 "Multiple values are supported for Authors, Tags/Categories, Languages, and "
 "Publishers. Use comma-separated values (e.g., \"Name1, Name2\")."
 msgstr ""
 
-#: cps/templates/book_table.html:343
+#: cps/templates/book_table.html:347
 msgid "Select a Shelf"
 msgstr "책장 생성"
 
-#: cps/templates/book_table.html:346
+#: cps/templates/book_table.html:350
 msgid "Please select a shelf to add the selected books to:"
 msgstr "선택한 책을 추가할 책장을 선택하십시오:"
 
-#: cps/templates/book_table.html:348
+#: cps/templates/book_table.html:352
 msgid "-- Select a Shelf --"
 msgstr "-- 책장 선택 --"
 
-#: cps/templates/book_table.html:366 cps/templates/email_edit.html:81
+#: cps/templates/book_table.html:370 cps/templates/email_edit.html:81
 #: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
 msgid "Add"
 msgstr "추가"

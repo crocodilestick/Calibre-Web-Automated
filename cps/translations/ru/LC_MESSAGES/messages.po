@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 15:09-0400\n"
+"POT-Creation-Date: 2026-05-21 16:37-0400\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -436,7 +436,7 @@ msgstr "Успех! Учетная запись Gmail подтверждена."
 #: cps/admin.py:2648 cps/admin.py:2920 cps/editbooks.py:1079
 #: cps/editbooks.py:1878 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
-#: cps/tasks/convert.py:145 cps/web.py:2858
+#: cps/tasks/convert.py:145 cps/web.py:2872
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Ошибка базы данных: %(error)s."
@@ -478,7 +478,7 @@ msgstr "Указана неверная продолжительность за�
 msgid "Scheduled tasks settings updated"
 msgstr "Настройки запланированных заданий обновлены"
 
-#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2916 cps/web.py:2288
+#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2916 cps/web.py:2302
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Неизвестная ошибка. Пожалуйста, попробуйте позже."
 
@@ -486,7 +486,7 @@ msgstr "Неизвестная ошибка. Пожалуйста, попроб�
 msgid "Settings DB is not Writeable"
 msgstr "База данных настроек недоступна для записи"
 
-#: cps/admin.py:1913 cps/opds.py:309 cps/web.py:2784 cps/web.py:2909
+#: cps/admin.py:1913 cps/opds.py:309 cps/web.py:2798 cps/web.py:2923
 #, fuzzy
 msgid "title"
 msgstr "Название"
@@ -651,7 +651,7 @@ msgstr "Настройки базы данных обновлены"
 msgid "Database Configuration"
 msgstr "Конфигурация базы данных"
 
-#: cps/admin.py:2603 cps/web.py:2257
+#: cps/admin.py:2603 cps/web.py:2271
 msgid "Oops! Please complete all fields."
 msgstr "Пожалуйста, заполните все поля."
 
@@ -687,7 +687,7 @@ msgstr "Нельзя удалить гостевого пользователя"
 msgid "No admin user remaining, can't delete user"
 msgstr "Нет оставшихся администраторов, нельзя удалить пользователя"
 
-#: cps/admin.py:2871 cps/web.py:2592
+#: cps/admin.py:2871 cps/web.py:2606
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "Email не может быть пустым и должен быть действительным адресом"
 
@@ -1337,8 +1337,8 @@ msgstr "Расширение файла '%(ext)s' не разрешено для
 msgid "File to be uploaded must have an extension"
 msgstr "Загружаемый файл должен иметь расширение"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:663 cps/web.py:3027
-#: cps/web.py:3163 cps/web.py:3258
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:663 cps/web.py:3041
+#: cps/web.py:3177 cps/web.py:3287
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Выбранная книга недоступна. Файл не существует или недоступен"
@@ -2044,7 +2044,7 @@ msgstr "{} звезд"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:168
 #: cps/templates/layout.html:209 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2366
+#: cps/templates/login.html:39 cps/web.py:2380
 msgid "Login"
 msgstr "Вход"
 
@@ -2647,7 +2647,7 @@ msgstr "Пожалуйста, обновите свой профиль дейс�
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "Успех! Книга поставлена в очередь отправки на %(eReadermail)s"
 
-#: cps/web.py:2169 cps/web.py:2227
+#: cps/web.py:2169 cps/web.py:2241
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "Ошибка отправки книги: %(res)s"
@@ -2656,103 +2656,103 @@ msgstr "Ошибка отправки книги: %(res)s"
 msgid "No email addresses selected"
 msgstr "Адреса электронной почты не выбраны"
 
-#: cps/web.py:2203
+#: cps/web.py:2217
 #, fuzzy
 msgid "Additional email addresses are disabled for your account."
 msgstr "Выберите адреса электронной почты:"
 
-#: cps/web.py:2225
+#: cps/web.py:2239
 #, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr "Успех! Книга поставлена в очередь отправки на %(eReadermail)s"
 
-#: cps/web.py:2244
+#: cps/web.py:2258
 msgid "Please wait one minute to register next user"
 msgstr ""
 "Пожалуйста, подождите минуту перед регистрацией следующего пользователя"
 
 #: cps/templates/layout.html:169 cps/templates/layout.html:210
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2245
-#: cps/web.py:2249 cps/web.py:2254 cps/web.py:2258 cps/web.py:2264
-#: cps/web.py:2289 cps/web.py:2293 cps/web.py:2306 cps/web.py:2309
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2259
+#: cps/web.py:2263 cps/web.py:2268 cps/web.py:2272 cps/web.py:2278
+#: cps/web.py:2303 cps/web.py:2307 cps/web.py:2320 cps/web.py:2323
 msgid "Register"
 msgstr "Регистрация"
 
-#: cps/web.py:2248 cps/web.py:2413
+#: cps/web.py:2262 cps/web.py:2427
 #, fuzzy
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "Ошибка подключения к серверу ограничений, свяжитесь с администратором"
 
-#: cps/web.py:2253 cps/web.py:2305
+#: cps/web.py:2267 cps/web.py:2319
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr "Почтовый сервер не настроен, свяжитесь с администратором."
 
-#: cps/web.py:2291
+#: cps/web.py:2305
 msgid "Oops! Your Email is not allowed."
 msgstr "Ваш email не разрешен."
 
-#: cps/web.py:2294
+#: cps/web.py:2308
 msgid "Success! Confirmation Email has been sent."
 msgstr "Успех! Письмо с подтверждением отправлено."
 
-#: cps/web.py:2342
+#: cps/web.py:2356
 #, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
 msgstr "Экземпляр Calibre-Web не настроен, свяжитесь с администратором"
 
-#: cps/web.py:2387
+#: cps/web.py:2401
 #, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
 msgstr "Почтовый сервер не настроен, свяжитесь с администратором."
 
-#: cps/web.py:2392 cps/web.py:2419
+#: cps/web.py:2406 cps/web.py:2433
 #, fuzzy
 msgid "Cannot activate LDAP authentication"
 msgstr "Не удалось активировать LDAP-аутентификацию"
 
-#: cps/web.py:2401
+#: cps/web.py:2415
 msgid "Standard login is disabled."
 msgstr ""
 
-#: cps/web.py:2409
+#: cps/web.py:2423
 msgid "Please wait one minute before next login"
 msgstr "Пожалуйста, подождите минуту перед следующей попыткой входа"
 
-#: cps/web.py:2427
+#: cps/web.py:2441
 msgid "Username cannot be empty"
 msgstr ""
 
-#: cps/web.py:2439
+#: cps/web.py:2453
 #, fuzzy, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "вы вошли как: '%(nickname)s'"
 
-#: cps/web.py:2458
+#: cps/web.py:2472
 #, fuzzy, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
 msgstr "Успех! Вы вошли как: %(nickname)s"
 
-#: cps/web.py:2463 cps/web.py:2466
+#: cps/web.py:2477 cps/web.py:2480
 #, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
 msgstr "Экземпляр Calibre-Web не настроен, свяжитесь с администратором"
 
-#: cps/web.py:2470
+#: cps/web.py:2484
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
 msgstr ""
 
-#: cps/web.py:2478
+#: cps/web.py:2492
 #, fuzzy, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
@@ -2761,56 +2761,56 @@ msgstr ""
 "Резервный вход как: '%(nickname)s', LDAP-сервер недоступен или пользователь "
 "неизвестен"
 
-#: cps/web.py:2484
+#: cps/web.py:2498
 #, fuzzy, python-format
 msgid "Could not login: %(message)s"
 msgstr "Не удалось войти: %(message)s"
 
-#: cps/web.py:2507 cps/web.py:2508 cps/web.py:2551
+#: cps/web.py:2521 cps/web.py:2522 cps/web.py:2565
 #, fuzzy
 msgid "Wrong Username or Password"
 msgstr "Неверное имя пользователя или пароль"
 
-#: cps/web.py:2516
+#: cps/web.py:2530
 #, fuzzy
 msgid "New Password was sent to your email address"
 msgstr "Новый пароль был отправлен на ваш email"
 
-#: cps/web.py:2520
+#: cps/web.py:2534
 #, fuzzy
 msgid "An unknown error occurred. Please try again later."
 msgstr "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже."
 
-#: cps/web.py:2522
+#: cps/web.py:2536
 #, fuzzy
 msgid "Please enter valid username to reset password"
 msgstr "Пожалуйста, введите действительное имя пользователя для сброса пароля"
 
-#: cps/web.py:2530
+#: cps/web.py:2544
 #, fuzzy, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Вы вошли как: '%(nickname)s'"
 
-#: cps/web.py:2847
+#: cps/web.py:2861
 #, fuzzy
 msgid "Success! Profile Updated"
 msgstr "Успех! Профиль обновлен"
 
-#: cps/web.py:2853
+#: cps/web.py:2867
 #, fuzzy
 msgid "Oops! An account already exists for this Email."
 msgstr "Учетная запись с этим email уже существует."
 
-#: cps/web.py:2978
+#: cps/web.py:2992
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:3013
+#: cps/web.py:3027
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3176
+#: cps/web.py:3190
 msgid "Invalid book ID."
 msgstr "Неверный ID книги."
 
@@ -3056,7 +3056,7 @@ msgstr "Добавить на полку"
 
 #: cps/templates/_book_organizer.html:116 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
-#: cps/templates/detail.html:1290 cps/templates/feed.xml:109
+#: cps/templates/detail.html:1307 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/layout.html:346
 #: cps/templates/layout.html:359 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
@@ -3499,7 +3499,7 @@ msgstr "OK"
 #: cps/templates/config_edit.html:658 cps/templates/config_view_edit.html:219
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:951
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:968
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
 #: cps/templates/duplicates.html:746 cps/templates/layout.html:536
 #: cps/templates/layout.html:691 cps/templates/modal_dialogs.html:64
@@ -6302,7 +6302,7 @@ msgid "Unhidden"
 msgstr ""
 
 #: cps/templates/detail.html:592 cps/templates/detail.html:786
-#: cps/templates/detail.html:787 cps/templates/detail.html:1327
+#: cps/templates/detail.html:787 cps/templates/detail.html:1344
 #: cps/templates/listenmp3.html:190 cps/templates/search.html:17
 msgid "Add to shelf"
 msgstr "Добавить на полку"
@@ -6366,7 +6366,7 @@ msgid "Remove tag"
 msgstr "Удалить"
 
 #: cps/templates/detail.html:754 cps/templates/detail.html:755
-#: cps/templates/detail.html:1205
+#: cps/templates/detail.html:1222
 msgid "Add tag"
 msgstr ""
 
@@ -6397,39 +6397,43 @@ msgstr "Выберите адреса электронной почты:"
 msgid "Select All"
 msgstr "Выберите полку"
 
-#: cps/templates/detail.html:930
+#: cps/templates/detail.html:932
+msgid "Other users' eReaders:"
+msgstr ""
+
+#: cps/templates/detail.html:947
 #, fuzzy
 msgid "Additional email addresses:"
 msgstr "Выберите адреса электронной почты:"
 
-#: cps/templates/detail.html:931
+#: cps/templates/detail.html:948
 #, fuzzy
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "Выберите адреса электронной почты:"
 
-#: cps/templates/detail.html:932
+#: cps/templates/detail.html:949
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:933
+#: cps/templates/detail.html:950
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:938
+#: cps/templates/detail.html:955
 #, fuzzy
 msgid "Select format:"
 msgstr "Удалить форматы:"
 
-#: cps/templates/detail.html:950
+#: cps/templates/detail.html:967
 msgid "Send"
 msgstr "Отправить"
 
-#: cps/templates/detail.html:1183
+#: cps/templates/detail.html:1200
 #, fuzzy
 msgid "Failed to update tags"
 msgstr "Не удалось создать путь для обложки"
 
-#: cps/templates/detail.html:1291
+#: cps/templates/detail.html:1308
 #, fuzzy
 msgid "Failed to update shelves"
 msgstr "Не удалось создать путь для обложки"

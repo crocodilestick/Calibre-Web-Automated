@@ -924,6 +924,23 @@
                                     </fieldset>
                                 </div>
                                 {% endif %}
+                                {# Fork #276 (@magdalar): admin-only section for sending to other users' eReaders.
+                                   other_users_with_kindle is only populated when current_user.role_admin() is true. #}
+                                {% if other_users_with_kindle %}
+                                <div class="form-group">
+                                    <fieldset>
+                                        <legend style="color: whitesmoke !important;">{{ _("Other users' eReaders:") }}</legend>
+                                        {% for other_user in other_users_with_kindle %}
+                                            <div class="checkbox">
+                                                <label for="other-user-email-{{ other_user.id }}">
+                                                    <input type="checkbox" id="other-user-email-{{ other_user.id }}" name="selected_emails" value="{{ other_user.kindle_mail }}">
+                                                    {{ other_user.name }} <span style="font-size: 80%; color: #888;">({{ other_user.kindle_mail }})</span>
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </fieldset>
+                                </div>
+                                {% endif %}
                                 {% if current_user.allow_additional_ereader_emails %}
                                 <div class="form-group">
                                     <fieldset>

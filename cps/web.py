@@ -2197,7 +2197,21 @@ def send_to_selected_ereaders(book_id):
         return Response(json.dumps(response), mimetype='application/json')
 
     if not getattr(current_user, 'allow_additional_ereader_emails', True):
+        # Fork #276 (@magdalar): admins managing family eReaders can send to
+        # OTHER users' kindle_mail addresses even when the
+        # allow_additional_ereader_emails flag is off. Build the allow-set
+        # from self.kindle_mail + (admin-only) other users' kindle_mail.
         allowed = [email.strip().lower() for email in (current_user.kindle_mail or "").split(',') if email.strip()]
+        if current_user.role_admin():
+            other_users = ub.session.query(ub.User).filter(
+                ub.User.id != int(current_user.id),
+                ub.User.kindle_mail.isnot(None),
+                ub.User.kindle_mail != "",
+            ).all()
+            for other in other_users:
+                for email in (other.kindle_mail or "").split(','):
+                    if email.strip():
+                        allowed.append(email.strip().lower())
         selected_list = [email.strip().lower() for email in selected_emails.split(',') if email.strip()]
         if any(email not in allowed for email in selected_list):
             response = [{'type': "danger", 'message': _("Additional email addresses are disabled for your account.")}]
@@ -3242,6 +3256,20 @@ def show_book(book_id):
                 ub.UserHiddenBook.book_id == int(book_id),
             ).first() is not None
 
+        # Fork #276 (@magdalar): admin checkboxes for sending to OTHER
+        # users' kindle_mail addresses (family eReader management). Only
+        # admins see other users' emails — those are PII otherwise.
+        # Excludes the current user (avoids duplicate display next to
+        # the existing self.kindle_mail checkboxes) and users with no
+        # kindle_mail configured.
+        other_users_with_kindle = []
+        if current_user.is_authenticated and current_user.role_admin():
+            other_users_with_kindle = ub.session.query(ub.User).filter(
+                ub.User.id != int(current_user.id),
+                ub.User.kindle_mail.isnot(None),
+                ub.User.kindle_mail != "",
+            ).order_by(ub.User.name).all()
+
         return render_title_template('detail.html',
                                      entry=entry,
                                      cc=cc,
@@ -3252,6 +3280,7 @@ def show_book(book_id):
                                      kosync_progress=kosync_progress,
                                      kosync_progress_timestamp=kosync_progress_timestamp,
                                      is_hidden=is_hidden,
+                                     other_users_with_kindle=other_users_with_kindle,
                                      page="book")
     else:
         log.debug("Selected book is unavailable. File does not exist or is not accessible")

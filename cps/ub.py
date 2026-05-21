@@ -333,7 +333,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.hardcover_token = None
         self.kobo_only_shelves_sync = None
         self.opds_only_shelves_sync = None
-        self.view_settings = None
+        self.view_settings = {}
         self.allowed_column_value = None
         self.allowed_tags = None
         self.denied_tags = None
@@ -1755,6 +1755,37 @@ def migrate_shelf_table(engine, _session):
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
+def migrate_user_view_settings_null(engine, _session):
+    """One-time normalization of legacy User.view_settings = NULL to '{}'.
+
+    `view_settings` is `Column(JSON, default={})` but SQLAlchemy's
+    `default=` only applies on INSERT through the ORM. Rows imported
+    from older schemas (pre-2025-01-14 when this column was added
+    upstream), or inserted via raw SQL or external admin tools, can
+    land with NULL — which then 500s every page consulting
+    view_settings (layout.html cover-settings cog, sort prefs, etc.)
+    via the unguarded `self.view_settings.get(page)` call in
+    get_view_property.
+
+    Idempotent: the UPDATE matches zero rows on subsequent runs.
+    No-op when there are no NULL rows. Logs the rowcount so operators
+    can see in container logs whether any legacy NULLs existed.
+    """
+    try:
+        result = _session.execute(
+            text("UPDATE user SET view_settings = '{}' WHERE view_settings IS NULL")
+        )
+        _session.commit()
+        if getattr(result, "rowcount", 0):
+            log.info(
+                "[view-settings-null-migration] normalized %d user(s) with NULL view_settings to '{}'",
+                result.rowcount,
+            )
+    except Exception as ex:
+        _session.rollback()
+        log.error("[view-settings-null-migration] failed: %s", ex)
+
+
 def migrate_book_cover_preview_table(engine, _session):
     """Create the book_cover_preview table if it doesn't exist.
     Idempotent — `BookCoverPreview.__table__.create(engine, checkfirst=True)`
@@ -1857,6 +1888,9 @@ def migrate_Database(_session):
     migrate_registration_table(engine, _session)
     migrate_user_session_table(engine, _session)
     migrate_user_table(engine, _session)
+    # Normalize legacy NULL view_settings → '{}' so get_view_property can't
+    # 500 the entire web UI for any user whose row was imported pre-default.
+    migrate_user_view_settings_null(engine, _session)
     migrate_shelf_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)

@@ -15,7 +15,7 @@ from shutil import copyfile
 from markupsafe import escape, Markup  # dependency of flask
 from functools import wraps
 
-from flask import Blueprint, request, flash, redirect, url_for, abort, Response
+from flask import Blueprint, request, flash, redirect, url_for, abort, Response, jsonify
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as N_
 from flask_babel import get_locale
@@ -2131,3 +2131,129 @@ def modify_identifiers(input_identifiers, db_identifiers, db_session):
             db_session.add(identifier)
             changed = True
     return changed, error
+
+
+@editbook.route("/admin/book/<int:book_id>/reload_metadata", methods=["POST"])
+@login_required_if_no_ano
+@edit_required
+def reload_metadata_from_disk(book_id):
+    """Re-read embedded metadata from the book's on-disk file and update
+    the Calibre catalog. Fork issue #218 (@yodatak): users who edit EPUB
+    metadata via external tools (grimmory etc.) saw the old cached
+    metadata in CWNG until manual re-ingest. This endpoint lets them
+    pull the on-disk file as source of truth without round-tripping
+    through ingest.
+
+    Updates: title, comments, publisher, pubdate, languages. Authors,
+    tags, and series are deferred — they involve relationship-table
+    bookkeeping (author_sort regeneration, tag dedup, series
+    create-on-demand) that's better handled through the full edit-book
+    save path. The fields we DO update are the common-case ask
+    ("I changed the description in grimmory and want CWNG to show it").
+
+    Authorization: @edit_required (admin OR edit role) — same gate as
+    /admin/book/<id> POST.
+    """
+    book = calibre_db.get_book(book_id)
+    if not book:
+        return jsonify(success=False, error=_("Book not found")), 404
+
+    if not getattr(book, 'data', None) or len(book.data) == 0:
+        return jsonify(success=False,
+                       error=_("Book has no file formats on disk to reload from")), 400
+
+    # Pick the format to re-read. EPUB is the canonical metadata source
+    # for embedded metadata; if no EPUB is available, fall back to the
+    # first format and let get_epub_info attempt — for non-EPUB formats
+    # it'll fail cleanly and we surface the error.
+    chosen_data = None
+    for d in book.data:
+        if (d.format or '').upper() in ('EPUB', 'KEPUB'):
+            chosen_data = d
+            break
+    if chosen_data is None:
+        chosen_data = book.data[0]
+
+    book_dir = os.path.join(config.get_book_path(), book.path)
+    file_ext = chosen_data.format.lower()
+    file_path = os.path.join(book_dir, chosen_data.name + '.' + file_ext)
+    if not os.path.isfile(file_path):
+        log.error("reload_metadata: file not found on disk: %s", file_path)
+        return jsonify(success=False,
+                       error=_("Book file not found on disk: %(path)s",
+                               path=file_path)), 404
+
+    try:
+        # get_epub_info also handles kepub (which IS an EPUB structurally).
+        from .epub import get_epub_info
+        meta = get_epub_info(file_path, chosen_data.name, file_ext,
+                             no_cover_processing=True)
+    except Exception as ex:
+        log.error_or_exception("reload_metadata: parse failed for %s: %s",
+                               file_path, ex)
+        return jsonify(success=False,
+                       error=_("Could not parse metadata from %(format)s file: %(err)s",
+                               format=file_ext.upper(), err=str(ex))), 500
+
+    updated = []
+    try:
+        with metadata_db_write_lock():
+            # Title.
+            if meta.title and meta.title != book.title:
+                book.title = strip_whitespaces(meta.title)
+                updated.append('title')
+
+            # Comments / description.
+            if meta.description is not None and isinstance(meta.description, str):
+                if edit_book_comments(meta.description, book):
+                    updated.append('comments')
+
+            # Publisher.
+            if meta.publisher:
+                if edit_book_publisher(meta.publisher, book):
+                    updated.append('publisher')
+
+            # Pubdate. Only update if parseable + different.
+            if meta.pubdate:
+                try:
+                    new_pub = datetime.strptime(meta.pubdate, "%Y-%m-%d")
+                    current_pub = getattr(book, 'pubdate', None)
+                    if current_pub is None or current_pub.date() != new_pub.date():
+                        book.pubdate = new_pub
+                        updated.append('pubdate')
+                except (TypeError, ValueError):
+                    log.debug("reload_metadata: unparseable pubdate %r", meta.pubdate)
+
+            # Languages — meta.languages is a string like 'eng'.
+            if meta.languages:
+                try:
+                    if edit_book_languages(meta.languages, book, upload_mode=True):
+                        updated.append('languages')
+                except Exception as ex:
+                    log.debug("reload_metadata: language update failed: %s", ex)
+
+            if updated:
+                book.last_modified = datetime.now(timezone.utc)
+                calibre_db.session.commit()
+                log.info("Reloaded metadata for book %d from disk (fields: %s)",
+                         book.id, ', '.join(updated))
+            else:
+                calibre_db.session.rollback()
+    except Exception as ex:
+        log.error_or_exception("reload_metadata: commit failed for book %d: %s",
+                               book.id, ex)
+        try:
+            calibre_db.session.rollback()
+        except Exception:
+            pass
+        return jsonify(success=False,
+                       error=_("Could not save reloaded metadata: %(err)s",
+                               err=str(ex))), 500
+
+    return jsonify(success=True,
+                   updated_fields=updated,
+                   source_format=file_ext.upper(),
+                   message=(_("Reloaded %(n)d field(s) from on-disk %(fmt)s",
+                              n=len(updated), fmt=file_ext.upper())
+                            if updated
+                            else _("On-disk metadata matches current — no fields updated"))), 200

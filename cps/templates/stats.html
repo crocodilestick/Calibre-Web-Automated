@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block body %}
   <h3>{{_('About')}} {{instance}}</h3>
 <p>{{instance}} powered by

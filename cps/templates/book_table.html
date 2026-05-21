@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% macro text_table_row(parameter, edit_text, show_text, validate, sort) -%}
 <th data-field="{{ parameter }}" id="{{ parameter }}"
   {% if sort %}data-sortable="true" {% endif %}

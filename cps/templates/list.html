@@ -4,7 +4,7 @@ Copyright (C) 2024-2025 Calibre-Web Automated contributors
 SPDX-License-Identifier: GPL-3.0-or-later
 See CONTRIBUTORS for full list of authors. -->
 
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block body %}
 <h1 class="{{page}}">{{_(title)}}</h1>
 

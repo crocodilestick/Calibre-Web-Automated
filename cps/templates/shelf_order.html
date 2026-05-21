@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block body %}
   <div class="col-sm-8 col-lg-8 col-xs-12">
     <h2>{{title}}</h2>

@@ -308,6 +308,13 @@ def render_title_template(*args, **kwargs):
     except Exception as e:
         log.debug("[cwa-duplicates] Failed to build duplicate notification context: %s", str(e))
     try:
+        from .spa import is_fragment_request
+        fragment = is_fragment_request()
+    except Exception:
+        fragment = False
+    kwargs['parent_template'] = 'fragment.html' if fragment else 'layout.html'
+    kwargs['spa_fragment'] = fragment
+    try:
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
                        accept=config.config_upload_formats.split(','),
                        magic_shelf_routes=magic_shelf_routes,

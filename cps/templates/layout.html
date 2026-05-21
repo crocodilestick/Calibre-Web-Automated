@@ -92,6 +92,7 @@
   </head>
   <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div id="cwa-nav-overlay" aria-hidden="true"><div id="cwa-nav-spinner"></div></div>
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container-fluid">
@@ -283,7 +284,7 @@
               {% for element in sidebar %}
                 {% if current_user.check_visibility(element['visibility']) and element['public'] %}
                     <li id="nav_{{element['id']}}" {% if page == element['page'] %}class="active"{% endif %} style="{% if element['id'] == 'duplicates' %}position: relative;{% endif %}">
-                      <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}">
+                      <a href="{% if element['link'] in ['web.index', 'web.download_list'] %}{{url_for(element['link'])}}{% else %}{{url_for(element['link'], data=element['page'], sort_param='stored')}}{% endif %}">
                         <span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}
                         {% if element['id'] == 'duplicates' %}
                           {% set dup_count = duplicate_notification.count if duplicate_notification is defined else 0 %}
@@ -321,7 +322,7 @@
           </nav>
         </div>
         {% endif %}
-        <div class="col-sm-10">
+        <div class="col-sm-10" id="main-content">
           {% block body %}{% endblock %}
           {% if pagination and (pagination.has_next or pagination.has_prev) %}
             <div class="pagination">
@@ -349,20 +350,6 @@
       </div>
     </div>
   </div>
-    <div class="modal fade" id="bookDetailsModal" tabindex="-1" role="dialog" aria-labelledby="bookDetailsModalLabel">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="bookDetailsModalLabel">{{_('Book Details')}}</h4>
-          </div>
-          <div class="modal-body">...</div>
-          <div class="modal-footer">
-            <button type="button" id="details_close" class="btn btn-default" data-dismiss="modal">{{_('Close')}}</button>
-          </div>
-        </div>
-      </div>
-    </div>
     {% block modal %}{% endblock %}
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="{{ url_for('static', filename='js/libs/jquery.min.js') }}"></script>
@@ -450,5 +437,6 @@
     </script>
     <script src="{{ url_for('static', filename='js/duplicate-notifier.js') }}"></script>
     {% endif %}
+    <script src="{{ url_for('static', filename='js/partial-nav.js') }}"></script>
   </body>
 </html>

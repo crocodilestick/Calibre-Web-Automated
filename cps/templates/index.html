@@ -1,5 +1,5 @@
 {% import 'image.html' as image %}
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block header %}
 <style>
 .shelf-actions {
@@ -50,8 +50,7 @@
    {% for entry in random %}
     <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books_rand">
       <div class="cover">
-          <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
-             {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+          <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}"
              data-book-id="{{ entry.Books.id }}"
              data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
              class="book-cover-link">
@@ -62,7 +61,7 @@
           </a>
       </div>
       <div class="meta">
-        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
+        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}">
           <p title="{{entry.Books.title}}" class="title">{{entry.Books.title|shortentitle}}</p>
         </a>
         <p class="author">
@@ -191,8 +190,7 @@
     {% for entry in entries %}
     <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books">
       <div class="cover">
-          <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
-             {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+          <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}"
              data-book-id="{{ entry.Books.id }}"
              data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
              class="book-cover-link">
@@ -203,7 +201,7 @@
           </a>
       </div>
       <div class="meta">
-        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
+        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}">
           <p title="{{ entry.Books.title }}" class="title">{{entry.Books.title|shortentitle}}</p>
         </a>
         <p class="author">

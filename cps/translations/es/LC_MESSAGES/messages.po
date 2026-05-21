@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 17:42+0000\n"
+"POT-Creation-Date: 2026-05-21 14:39-0400\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -2338,6 +2338,19 @@ msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr ""
 "Error al abrir una estantería. La estantería no existe o no es accesible"
 
+#: cps/shelf.py:695
+msgid "Invalid payload: 'order' must be a list"
+msgstr ""
+
+#: cps/shelf.py:713
+msgid "Could not save order"
+msgstr ""
+
+#: cps/shelf.py:717 cps/templates/layout.html:352
+#, fuzzy
+msgid "Reorder Shelves"
+msgstr "Excluir Estanterías"
+
 #: cps/tasks_status.py:37 cps/templates/layout.html:195
 #: cps/templates/tasks.html:7
 msgid "Tasks"
@@ -2510,7 +2523,7 @@ msgstr "El nombre de la estantería es demasiado largo (máximo 100 caracteres).
 msgid "Error creating shelf"
 msgstr "Error al borrar la estantería"
 
-#: cps/templates/layout.html:358 cps/web.py:1314
+#: cps/templates/layout.html:362 cps/web.py:1314
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Crear una Estantería"
@@ -3026,8 +3039,9 @@ msgstr "Agregar a la estantería"
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
 #: cps/templates/detail.html:1290 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/layout.html:346
-#: cps/templates/layout.html:355 cps/templates/listenmp3.html:201
+#: cps/templates/layout.html:359 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
+#: cps/templates/shelf_reorder.html:21
 msgid "(Public)"
 msgstr "(Público)"
 
@@ -3457,8 +3471,8 @@ msgstr "Ok"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:951
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:532
-#: cps/templates/layout.html:687 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:536
+#: cps/templates/layout.html:691 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
@@ -3632,8 +3646,8 @@ msgstr "Convertir libro"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:184 cps/templates/layout.html:432
-#: cps/templates/layout.html:569 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:184 cps/templates/layout.html:436
+#: cps/templates/layout.html:573 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Cerrar"
@@ -3773,7 +3787,7 @@ msgstr "Obtener Metadatos"
 #: cps/templates/config_edit.html:659 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:47
 #: cps/templates/shelf_edit.html:36 cps/templates/shelf_order.html:41
-#: cps/templates/user_edit.html:578
+#: cps/templates/shelf_reorder.html:26 cps/templates/user_edit.html:578
 msgid "Save"
 msgstr "Guardar"
 
@@ -6724,7 +6738,7 @@ msgstr "¡Esta acción no se puede deshacer!"
 msgid "The following books will be permanently deleted:"
 msgstr "Los siguientes libros se eliminarán de forma permanente:"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:484
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:488
 #, fuzzy
 msgid "Merge Books"
 msgstr "Libros No Leídos"
@@ -6802,7 +6816,8 @@ msgid "Save and Send Test Email"
 msgstr "Guardar y enviar un correo electrónico de prueba"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:126
-#: cps/templates/shelf_order.html:42 cps/templates/user_table.html:176
+#: cps/templates/shelf_order.html:42 cps/templates/shelf_reorder.html:27
+#: cps/templates/user_table.html:176
 msgid "Back"
 msgstr "Regresar"
 
@@ -6822,8 +6837,8 @@ msgstr "Introducir nombre de dominio"
 msgid "Denied Domains (Blacklist)"
 msgstr "Dominios Prohibidos (Lista Negra)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:390
-#: cps/templates/layout.html:416
+#: cps/templates/feed.xml:31 cps/templates/layout.html:394
+#: cps/templates/layout.html:420
 msgid "Next"
 msgstr "Siguiente"
 
@@ -7145,127 +7160,127 @@ msgstr "Navegar"
 msgid "Create Shelf"
 msgstr "Crear una Estantería"
 
-#: cps/templates/layout.html:353
+#: cps/templates/layout.html:357
 msgid "Magic Shelves ✨"
 msgstr "Estanterías mágicas ✨"
 
-#: cps/templates/layout.html:362 cps/templates/stats.html:3
+#: cps/templates/layout.html:366 cps/templates/stats.html:3
 msgid "About"
 msgstr "Acerca de"
 
-#: cps/templates/layout.html:375 cps/templates/layout.html:401
+#: cps/templates/layout.html:379 cps/templates/layout.html:405
 msgid "Previous"
 msgstr "Anterior"
 
-#: cps/templates/layout.html:428
+#: cps/templates/layout.html:432
 msgid "Book Details"
 msgstr "Detalles del libro"
 
-#: cps/templates/layout.html:490
+#: cps/templates/layout.html:494
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "¡Esta acción no se puede deshacer!"
 
-#: cps/templates/layout.html:496
+#: cps/templates/layout.html:500
 #, fuzzy
 msgid "Will be deleted"
 msgstr "Eliminar Seleccionados"
 
-#: cps/templates/layout.html:500 cps/templates/layout.html:513
+#: cps/templates/layout.html:504 cps/templates/layout.html:517
 #, fuzzy
 msgid "Formats:"
 msgstr "Formato"
 
-#: cps/templates/layout.html:509
+#: cps/templates/layout.html:513
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:521
+#: cps/templates/layout.html:525
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:527
+#: cps/templates/layout.html:531
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "Borrar formatos:"
 
-#: cps/templates/layout.html:536
+#: cps/templates/layout.html:540
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:570
+#: cps/templates/layout.html:574
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Se han detectado libros duplicados"
 
-#: cps/templates/layout.html:571
+#: cps/templates/layout.html:575
 msgid "You have unresolved duplicate books in your library"
 msgstr "Tienes libros duplicados sin resolver en tu biblioteca"
 
-#: cps/templates/layout.html:576
+#: cps/templates/layout.html:580
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Se han encontrado grupos de duplicados"
 
-#: cps/templates/layout.html:584
+#: cps/templates/layout.html:588
 msgid "Remind Me Later"
 msgstr "Recordármelo más tarde"
 
-#: cps/templates/layout.html:587
+#: cps/templates/layout.html:591
 #, fuzzy
 msgid "View & Resolve Duplicates"
 msgstr "Seleccionar duplicados"
 
-#: cps/templates/layout.html:596
+#: cps/templates/layout.html:600
 #, fuzzy
 msgid "Scroll to top"
 msgstr "Escala al máximo"
 
-#: cps/templates/layout.html:598
+#: cps/templates/layout.html:602
 #, fuzzy
 msgid "Top"
 msgstr "Tip"
 
-#: cps/templates/layout.html:688
+#: cps/templates/layout.html:692
 msgid "Confirm"
 msgstr ""
 
-#: cps/templates/layout.html:694
+#: cps/templates/layout.html:698
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "Agregar a la estantería"
 
-#: cps/templates/layout.html:695
+#: cps/templates/layout.html:699
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:696
+#: cps/templates/layout.html:700
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:697
+#: cps/templates/layout.html:701
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "Fusionar libros seleccionados"
 
-#: cps/templates/layout.html:698
+#: cps/templates/layout.html:702
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "Marcar como no leído"
 
-#: cps/templates/layout.html:699
+#: cps/templates/layout.html:703
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "Borrar Libro"
 
-#: cps/templates/layout.html:700
+#: cps/templates/layout.html:704
 #, fuzzy
 msgid "Delete books?"
 msgstr "Borrar Libro"
 
-#: cps/templates/layout.html:701
+#: cps/templates/layout.html:705
 #, fuzzy, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
@@ -7274,12 +7289,12 @@ msgstr ""
 "Esto eliminará libros de forma permanente. Los archivos originales se "
 "guardarán como copia de seguridad en"
 
-#: cps/templates/layout.html:702
+#: cps/templates/layout.html:706
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "Selecciona una Estantería"
 
-#: cps/templates/layout.html:703
+#: cps/templates/layout.html:707
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "Error de conexión"
@@ -7832,6 +7847,22 @@ msgstr "Arrastra para Reorganizar"
 #: cps/templates/shelf_order.html:33
 msgid "Hidden Book"
 msgstr "Libro Oculto"
+
+#: cps/templates/shelf_reorder.html:9
+msgid "Drag to rearrange the order of your shelves in the sidebar."
+msgstr ""
+
+#: cps/templates/shelf_reorder.html:13
+msgid "You do not have any shelves to reorder yet."
+msgstr ""
+
+#: cps/templates/shelf_reorder.html:58
+msgid "Order saved. The sidebar reflects the new order on next page load."
+msgstr ""
+
+#: cps/templates/shelf_reorder.html:63
+msgid "Could not save order."
+msgstr ""
 
 #: cps/templates/stats.html:8
 msgid "Library Statistics"

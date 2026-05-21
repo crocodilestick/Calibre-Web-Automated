@@ -1,0 +1,74 @@
+{# Fork #237 (@new-usemame): drag-to-reorder regular shelves. Mirrors
+   the shelf_order.html shape but operates on the list of shelves the
+   user can access (own + public) rather than the books inside one shelf.
+   Save POSTs JSON {order:[id,...]} to /shelf/reorder. #}
+{% extends "layout.html" %}
+{% block body %}
+<div class="col-sm-8 col-lg-8 col-xs-12">
+  <h2>{{ title }}</h2>
+  <div>{{ _('Drag to rearrange the order of your shelves in the sidebar.') }}</div>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  {% if shelves|length == 0 %}
+    <p>{{ _('You do not have any shelves to reorder yet.') }}</p>
+  {% else %}
+    <div id="sortShelves" class="list-group" style="margin-top: 1em;">
+      {% for shelf in shelves %}
+        <div id="shelf-{{ shelf.id }}" data-shelf-id="{{ shelf.id }}" class="list-group-item" style="cursor: move;">
+          <span class="glyphicon glyphicon-list"></span>&nbsp;
+          {{ shelf.name }}
+          {% if shelf.is_public == 1 %}
+            <span style="font-size: 80%; color: #888;">{{ _('(Public)') }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    <button id="saveOrderBtn" class="btn btn-default" style="margin-top: 1em;">{{ _('Save') }}</button>
+    <a href="{{ url_for('web.index') }}" class="btn btn-default" style="margin-top: 1em;">{{ _('Back') }}</a>
+    <div id="saveOrderFeedback" style="margin-top: 0.5em;"></div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/libs/Sortable.min.js') }}"></script>
+<script>
+  (function () {
+    var listEl = document.getElementById('sortShelves');
+    var saveBtn = document.getElementById('saveOrderBtn');
+    var feedback = document.getElementById('saveOrderFeedback');
+    if (!listEl || !saveBtn) return;
+
+    new Sortable(listEl, { animation: 150 });
+
+    saveBtn.addEventListener('click', function () {
+      var ids = Array.prototype.map.call(
+        listEl.querySelectorAll('[data-shelf-id]'),
+        function (el) { return parseInt(el.getAttribute('data-shelf-id'), 10); }
+      );
+      saveBtn.disabled = true;
+      feedback.textContent = '';
+      $.ajax({
+        url: '{{ url_for("shelf.reorder_shelves") }}',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ order: ids }),
+        success: function () {
+          feedback.style.color = 'green';
+          feedback.textContent = '{{ _("Order saved. The sidebar reflects the new order on next page load.") }}';
+          saveBtn.disabled = false;
+        },
+        error: function (xhr) {
+          feedback.style.color = 'red';
+          var msg = '{{ _("Could not save order.") }}';
+          if (xhr && xhr.responseJSON && xhr.responseJSON.error) {
+            msg += ' (' + xhr.responseJSON.error + ')';
+          }
+          feedback.textContent = msg;
+          saveBtn.disabled = false;
+        }
+      });
+    });
+  })();
+</script>
+{% endblock %}

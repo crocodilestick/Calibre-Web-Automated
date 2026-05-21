@@ -347,6 +347,10 @@
                 {% endfor %}
               {% if not current_user.is_anonymous %}
                 <li id="nav_createshelf" class="create-shelf"><a href="{{url_for('shelf.create_shelf')}}">{{_('Create Shelf')}}</a></li>
+                {# Fork #237 (@new-usemame): drag-to-reorder shelves. Surfaced only when the user has >1 shelf, since one shelf doesn't need reordering. #}
+                {% if g.shelves_access|length > 1 %}
+                  <li id="nav_reordershelves"><a href="{{url_for('shelf.reorder_shelves')}}">{{_('Reorder Shelves')}}</a></li>
+                {% endif %}
               {% endif %}
               {% endif %}
               {% if current_user.is_authenticated and magic_shelf_routes.render %}

@@ -140,6 +140,12 @@ def get_sidebar_config(kwargs=None):
              "show_text": _('Show Duplicate Books'), "config_show": content})
     g.shelves_access = ub.session.query(ub.Shelf).filter(
         or_(ub.Shelf.is_public == 1, ub.Shelf.user_id == current_user.id)).order_by(ub.Shelf.name).all()
+    # Fork #237 (@new-usemame): apply per-user drag-to-reorder. Falls
+    # back to the alphabetical fetch above when no view_settings.shelves.order
+    # is stored. Function-scope import to avoid circular cps.shelf ↔
+    # cps.render_template at module load.
+    from .shelf import sort_shelves_for_user
+    sort_shelves_for_user(g.shelves_access, current_user)
 
     # Per-book shelf membership for cover badges. One query for all
     # accessible shelves' rows; lookups in templates are O(1).

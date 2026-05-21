@@ -618,3 +618,102 @@ def add_selected_to_shelf():
             'message': f'Successfully added {success_count} books to shelf {shelf.name}.',
             'added_count': success_count
         }), 200
+
+
+# ---------------------------------------------------------------------------
+# Fork #237 (@new-usemame): drag-to-reorder regular shelves in the sidebar.
+#
+# Mirrors the existing magic-shelf ordering pattern (see
+# cps/magic_shelf.py::sort_magic_shelves_for_user). Storage shape on
+# user.view_settings:
+#
+#     {"shelves": {"order": [shelf_id, shelf_id, ...]}}
+#
+# Missing / empty list → fall back to alphabetical (current behavior).
+# Stale IDs in the list are dropped on sort; new shelves not yet in the
+# list are appended after the stored prefix so they remain visible.
+# ---------------------------------------------------------------------------
+
+
+def normalize_shelf_order(order_list, available_ids):
+    """Normalize a stored shelf-order list against the actually-available
+    shelf IDs. Drops unknowns, de-duplicates (first-seen wins), and
+    appends any available IDs not yet in the list."""
+    normalized = []
+    seen = set()
+    available_set = set(available_ids or [])
+    for item in (order_list or []):
+        try:
+            sid = int(item)
+        except (TypeError, ValueError):
+            continue
+        if sid in available_set and sid not in seen:
+            normalized.append(sid)
+            seen.add(sid)
+    for sid in (available_ids or []):
+        if sid not in seen:
+            normalized.append(sid)
+            seen.add(sid)
+    return normalized
+
+
+def sort_shelves_for_user(shelves, user):
+    """Sort regular shelves for `user` in place. Applies the manual order
+    from `user.view_settings['shelves']['order']` if set; otherwise sorts
+    case-insensitive alphabetical by name."""
+    settings = (getattr(user, 'view_settings', None) or {}).get('shelves', {})
+    order_list = settings.get('order') or []
+    if order_list:
+        available_ids = [s.id for s in shelves]
+        normalized = normalize_shelf_order(order_list, available_ids)
+        index = {sid: idx for idx, sid in enumerate(normalized)}
+        shelves.sort(key=lambda s: index.get(s.id, len(index)))
+        return shelves
+    shelves.sort(key=lambda s: (s.name or "").casefold())
+    return shelves
+
+
+@shelf.route("/shelf/reorder", methods=["GET", "POST"])
+@user_login_required
+def reorder_shelves():
+    """Drag-to-reorder UI for the user's accessible regular shelves.
+
+    GET renders the list (own + public). POST accepts JSON
+    {"order": [id, id, ...]} and persists it into
+    user.view_settings['shelves']['order'].
+    """
+    accessible = ub.session.query(ub.Shelf).filter(
+        (ub.Shelf.is_public == 1) | (ub.Shelf.user_id == current_user.id)
+    ).all()
+    sort_shelves_for_user(accessible, current_user)
+
+    if request.method == "POST":
+        payload = request.get_json(silent=True) or {}
+        raw_order = payload.get("order")
+        if not isinstance(raw_order, list):
+            return jsonify(success=False,
+                           error=_("Invalid payload: 'order' must be a list")), 400
+        available_ids = [s.id for s in accessible]
+        normalized = normalize_shelf_order(raw_order, available_ids)
+        vs = dict(current_user.view_settings or {})
+        shelves_settings = dict(vs.get('shelves', {}))
+        shelves_settings['order'] = normalized
+        vs['shelves'] = shelves_settings
+        current_user.view_settings = vs
+        try:
+            from sqlalchemy.orm.attributes import flag_modified
+            flag_modified(current_user, 'view_settings')
+        except Exception:
+            pass
+        try:
+            ub.session.commit()
+        except (InvalidRequestError, OperationalError) as ex:
+            log.error("reorder_shelves: persist failed: %s", ex)
+            ub.session.rollback()
+            return jsonify(success=False, error=_("Could not save order")), 500
+        return jsonify(success=True, order=normalized), 200
+
+    return render_title_template('shelf_reorder.html',
+                                 title=_("Reorder Shelves"),
+                                 page="shelf_reorder",
+                                 shelves=accessible)

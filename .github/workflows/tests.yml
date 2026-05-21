@@ -72,15 +72,21 @@ jobs:
           touch /config/cwa.db
       
       - name: Run smoke and unit tests
-        timeout-minutes: 10  # Kill if stuck
+        timeout-minutes: 10  # Last-resort kill; --timeout below is the real gate.
         env:
           PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
         run: |
+          # --timeout=120 + --timeout-method=thread converts hung tests into named
+          # test failures instead of opaque step-level 10-min step timeouts. Without
+          # this, a stuck test on one xdist worker only manifests as a step timeout
+          # with no indication of which test or worker stalled.
           pytest -m "smoke or unit" \
             -n auto \
             --maxfail=3 \
             -v \
             --tb=short \
+            --timeout=120 \
+            --timeout-method=thread \
             --cov=cps \
             --cov-report=xml \
             --cov-report=term-missing

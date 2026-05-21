@@ -215,3 +215,6 @@ instance/
 # CONFIG_DIR at the repo root for local container runs; they're per-
 # deployment state, not source.
 .cwa_migrations/
+
+# Claude Code workspace cache (per-developer local skill state).
+.claude/

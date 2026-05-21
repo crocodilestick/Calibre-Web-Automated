@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 21:46+0000\n"
+"POT-Creation-Date: 2026-05-21 01:43+0000\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -2131,14 +2131,6 @@ msgstr "Дубликаты"
 #, fuzzy
 msgid "Show Duplicate Books"
 msgstr "Показать книги с наивысшим рейтингом"
-
-#: cps/render_template.py:248
-msgid ""
-"ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
-"temporarily disabled while we develop a new frontend for v5.0.0."
-msgstr ""
-"ℹ️ Ваша тема обновлена ​​до caliBlur (темная). Переключение тем временно "
-"отключено, пока мы разрабатываем новый интерфейс для версии 5.0.0."
 
 #: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:292
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
@@ -8259,6 +8251,13 @@ msgstr "Синхронизировать выбранные полки с Kobo"
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Показать раздел прочитанного/непрочитанного"
+
+#~ msgid ""
+#~ "ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
+#~ "temporarily disabled while we develop a new frontend for v5.0.0."
+#~ msgstr ""
+#~ "ℹ️ Ваша тема обновлена ​​до caliBlur (темная). Переключение тем временно "
+#~ "отключено, пока мы разрабатываем новый интерфейс для версии 5.0.0."
 
 #, fuzzy
 #~ msgid "Switch Theme"

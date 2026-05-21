@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 21:46+0000\n"
+"POT-Creation-Date: 2026-05-21 01:43+0000\n"
 "PO-Revision-Date: 2026-04-06 17:03+0000\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
@@ -2115,15 +2115,6 @@ msgstr "Duplikate"
 #: cps/render_template.py:140
 msgid "Show Duplicate Books"
 msgstr "Zeige Bücherduplikate"
-
-#: cps/render_template.py:248
-msgid ""
-"ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
-"temporarily disabled while we develop a new frontend for v5.0.0."
-msgstr ""
-"ℹ️ Ihr Theme wurde auf caliBlur (Dunkel) aktualisiert. Der Themenwechsel ist "
-"vorübergehend deaktiviert, während wir ein neues Frontend für v5.0.0 "
-"entwickeln."
 
 #: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:292
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
@@ -8243,6 +8234,14 @@ msgstr "Ausgewählte Regale mit Kobo synchronisieren"
 #: cps/templates/user_table.html:158
 msgid "Show Read/Unread Section"
 msgstr "Zeige Gelesen/Ungelesen-Abschnitt"
+
+#~ msgid ""
+#~ "ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
+#~ "temporarily disabled while we develop a new frontend for v5.0.0."
+#~ msgstr ""
+#~ "ℹ️ Ihr Theme wurde auf caliBlur (Dunkel) aktualisiert. Der Themenwechsel "
+#~ "ist vorübergehend deaktiviert, während wir ein neues Frontend für v5.0.0 "
+#~ "entwickeln."
 
 #~ msgid "Switch Theme"
 #~ msgstr "Design wechseln"

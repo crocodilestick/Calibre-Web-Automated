@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-20 21:46+0000\n"
+"POT-Creation-Date: 2026-05-21 01:43+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -2124,14 +2124,6 @@ msgstr "Dvojniki"
 #, fuzzy
 msgid "Show Duplicate Books"
 msgstr "Prikaži najbolje ocenjene knjige"
-
-#: cps/render_template.py:248
-msgid ""
-"ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
-"temporarily disabled while we develop a new frontend for v5.0.0."
-msgstr ""
-"ℹ️ Vaša tema je bila posodobljena na caliBlur (Dark). Preklapljanje tem je "
-"začasno onemogočeno, dokler razvijamo nov vmesnik za v5.0.0."
 
 #: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:292
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
@@ -8314,6 +8306,13 @@ msgstr "Usklajevanje izbrane police s Kobo"
 #: cps/templates/user_table.html:158
 msgid "Show Read/Unread Section"
 msgstr "Prikaži razdelek Prebrano/neprebrano"
+
+#~ msgid ""
+#~ "ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
+#~ "temporarily disabled while we develop a new frontend for v5.0.0."
+#~ msgstr ""
+#~ "ℹ️ Vaša tema je bila posodobljena na caliBlur (Dark). Preklapljanje tem je "
+#~ "začasno onemogočeno, dokler razvijamo nov vmesnik za v5.0.0."
 
 #, fuzzy
 #~ msgid "Switch Theme"

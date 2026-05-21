@@ -96,6 +96,48 @@ def print_event(event: str, path: str) -> None:
     sys.stdout.flush()
 
 
+def _dir_mtime_signature(root: str, recursive: bool) -> Optional[Tuple[int, int]]:
+    """Cheap "did anything change in `root`?" signature.
+
+    Returns ``(mtime_ns, nlink_or_size)`` of the root directory (non-recursive)
+    or of the parent + each immediate subdir (recursive). Linux + macOS bump
+    a directory's mtime when a file is added or removed (rename counts as
+    remove+add). They do NOT bump on file modification — but new-file
+    detection is what the ingest path cares about, so this is the right
+    granularity.
+
+    Returns None on stat failure (root removed, permission denied) — the
+    caller falls back to the full os.walk path.
+
+    See CWA #1360 (Docker-Desktop polling on HDD-backed bind mounts).
+    """
+    try:
+        st = os.stat(root)
+        sig = (getattr(st, 'st_mtime_ns', int(st.st_mtime * 1e9)), st.st_size)
+    except OSError:
+        return None
+    if not recursive:
+        return sig
+    # Recursive mode: also fold in immediate subdir mtimes so we catch
+    # files added inside subfolders without doing a full walk.
+    try:
+        with os.scandir(root) as it:
+            sub_sigs = []
+            for entry in it:
+                try:
+                    if entry.is_dir(follow_symlinks=False):
+                        sub_st = entry.stat(follow_symlinks=False)
+                        sub_sigs.append(getattr(sub_st, 'st_mtime_ns',
+                                                int(sub_st.st_mtime * 1e9)))
+                except OSError:
+                    continue
+        # Hash subdir mtimes into a single int alongside the root mtime.
+        combined = sig[0] ^ sum(sub_sigs)
+        return (combined, sig[1] + len(sub_sigs))
+    except OSError:
+        return sig
+
+
 def scan_once(
     root: str,
     recursive: bool,
@@ -103,11 +145,47 @@ def scan_once(
     index: Dict[FileKey, FileStat],
     stabilize: float,
     emit,
-) -> None:
+    last_dir_sig: Optional[Tuple[int, int]] = None,
+) -> Optional[Tuple[int, int]]:
     """Run a single polling pass over `root`, mutating `index` in-place and
     calling `emit(event, path)` for files that should fire. Extracted from
     main() so tests can drive the state machine deterministically.
+
+    CWA #1360 mtime-gate: if ``last_dir_sig`` is provided AND the current
+    dir signature matches AND the index is non-empty (we've already done
+    at least one full scan), short-circuit the os.walk — nothing has
+    changed at the directory level since last poll, so no new files can
+    have appeared. Massively reduces I/O on HDD-backed bind mounts in
+    Docker Desktop polling mode (the reporter's scenario).
+
+    Always returns the current dir signature so the caller can pass it
+    back on the next iteration. Returns None if root stat failed; caller
+    should treat that as "force full walk next time."
     """
+    current_sig = _dir_mtime_signature(root, recursive)
+
+    # mtime-gate: if we have a prior signature, the new one matches, and
+    # we've already populated the index — skip the full walk. We still
+    # need to honor the stabilize/emit path for files mid-flight, but
+    # that's done via the index state, not via re-walking the tree.
+    # Without this check we'd os.walk + os.stat every file every interval
+    # even when nothing has changed — the exact HDD-thrashing pattern in
+    # the upstream report.
+    if (current_sig is not None and last_dir_sig is not None
+            and current_sig == last_dir_sig and len(index) > 0):
+        # Still emit for any indexed files that have hit the stabilize
+        # threshold via the time.time() vs prev.mtime_ns comparison —
+        # otherwise files that landed JUST before the previous poll
+        # might never fire.
+        now_sec = time.time()
+        for fk, prev in index.items():
+            if prev.stable_count == FIRED_SENTINEL:
+                continue
+            if (now_sec - (prev.mtime_ns / 1e9)) >= stabilize:
+                emit("CLOSE_WRITE", fk.path)
+                prev.stable_count = FIRED_SENTINEL
+        return current_sig
+
     seen: Set[FileKey] = set()
     for fp in iter_files(root, recursive, extensions):
         fk = FileKey(fp)
@@ -141,6 +219,8 @@ def scan_once(
             if fk not in seen:
                 index.pop(fk, None)
 
+    return current_sig
+
 
 def main(argv: Optional[Iterable[str]] = None) -> int:
     p = argparse.ArgumentParser(description="Polling watcher fallback emitting inotify-like events")
@@ -171,6 +251,8 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
             size, mtime_ns = st
             index[FileKey(fp)] = FileStat(size=size, mtime_ns=mtime_ns, stable_count=1)
 
+    last_dir_sig: Optional[Tuple[int, int]] = None
+
     try:
         while True:
             now = time.time()
@@ -179,7 +261,9 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
                 time.sleep(max(0.0, args.interval - (now - last_scan_at)))
             last_scan_at = time.time()
 
-            scan_once(root, args.recursive, exts, index, args.stabilize, print_event)
+            last_dir_sig = scan_once(root, args.recursive, exts, index,
+                                     args.stabilize, print_event,
+                                     last_dir_sig=last_dir_sig)
 
     except KeyboardInterrupt:
         return 0

@@ -27,10 +27,23 @@ log = logger.create()
 class Amazon(Metadata):
     __name__ = "Amazon"
     __id__ = "amazon"
+    # CW #3648: a Firefox User-Agent alone isn't enough — Amazon's
+    # bot detection 503s when the request lacks the full browser-shape
+    # headers (Accept-Language, DNT, Sec-Fetch-*, Upgrade-Insecure-
+    # Requests). Verified in cwn-local: minimal {UA, Accept,
+    # Accept-Encoding} → status=503, body=2.6KB. Full browser headers
+    # → status=200, body=1.1MB with the actual product list.
     headers = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0',
-        'Accept': '*/*',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
         'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'DNT': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
     }
     session = requests.Session()
     session.headers=headers
@@ -184,10 +197,13 @@ class Amazon(Metadata):
             }
 
             try:
+                # `self.session.headers` is set at class definition to
+                # the full browser-shape header dict above (CW #3648 —
+                # Amazon serves 503 to minimal headers). No per-request
+                # override needed.
                 results = self.session.get(
                     "https://www.amazon.com/s",
                     params=q,
-                    # headers=self.headers,
                     timeout=10,
                 )
                 results.raise_for_status()

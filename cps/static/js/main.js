@@ -176,24 +176,8 @@ $(document).ready(function() {
     }
 });
 
-$(".session").click(function() {
-    window.sessionStorage.setItem("back", window.location.pathname);
-    window.sessionStorage.setItem("search", window.location.search);
-});
-
 $("#back").click(function() {
-   var loc = sessionStorage.getItem("back");
-   var param = sessionStorage.getItem("search");
-   if (!loc) {
-       loc = $(this).data("back");
-   }
-   sessionStorage.removeItem("back");
-   sessionStorage.removeItem("search");
-   if (param === null) {
-       param = "";
-   }
-   window.location.href = loc + param;
-
+    history.back();
 });
 
 function confirmDialog(id, dialogid, dataValue, yesFn, noFn) {
@@ -249,12 +233,7 @@ $("#delete_confirm").click(function(event) {
                 }
             });
         } else {
-            var loc = sessionStorage.getItem("back");
-            if (!loc) {
-                loc = $(this).data("back");
-            }
-            sessionStorage.removeItem("back");
-            postButton(event, getPath() + "/delete/" + deleteId, location=loc);
+            postButton(event, getPath() + "/delete/" + deleteId);
         }
     }
 });

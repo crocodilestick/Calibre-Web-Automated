@@ -13,6 +13,7 @@ import importlib
 import re
 import zipfile
 import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify
 from flask import request, redirect, send_from_directory, send_file, make_response, flash, abort, url_for, Response, g
@@ -3080,7 +3081,51 @@ def read_book(book_id, book_format):
             )
         except Exception as e:
             log.debug(f"Failed to log read activity: {e}")
-    
+
+    # CWA #1364 fix: bump `book_read_link.last_time_started_reading` and
+    # `times_started_reading` when an authenticated user opens the web
+    # reader. The Kobo + KOSync code paths already do this; the web
+    # reader was the only book-opening surface that never wrote to
+    # those fields, so a user who only reads through the browser had
+    # no "read history" recorded at all (`/read`, `/unread` filters
+    # never reflected web-reader activity).
+    #
+    # Debounce: only bump the counter when the transition is into
+    # IN_PROGRESS from a NON-in-progress state. A user refreshing the
+    # reader tab or hitting Back/Forward doesn't count as a new
+    # reading session. Always touch `last_time_started_reading` so
+    # "recently read" sorting reflects every open.
+    if current_user.is_authenticated:
+        try:
+            read_row = ub.session.query(ub.ReadBook).filter(
+                ub.ReadBook.user_id == int(current_user.id),
+                ub.ReadBook.book_id == book_id,
+            ).first()
+            now = datetime.now(timezone.utc)
+            if read_row is None:
+                read_row = ub.ReadBook(
+                    user_id=int(current_user.id),
+                    book_id=book_id,
+                    read_status=ub.ReadBook.STATUS_IN_PROGRESS,
+                    times_started_reading=1,
+                    last_time_started_reading=now,
+                )
+                ub.session.add(read_row)
+            else:
+                prev_status = read_row.read_status or 0
+                if prev_status != ub.ReadBook.STATUS_IN_PROGRESS \
+                        and prev_status != ub.ReadBook.STATUS_FINISHED:
+                    read_row.times_started_reading = (read_row.times_started_reading or 0) + 1
+                    read_row.read_status = ub.ReadBook.STATUS_IN_PROGRESS
+                read_row.last_time_started_reading = now
+            ub.session_commit()
+        except Exception as e:
+            log.debug(f"Failed to record web reader open in book_read_link: {e}")
+            try:
+                ub.session.rollback()
+            except Exception:
+                pass
+
     if book_format.lower() in ("epub", "kepub"):
         log.debug("Start epub reader for %d (%s)", book_id, book_format.lower())
         return render_title_template('read.html', bookid=book_id, title=book.title,

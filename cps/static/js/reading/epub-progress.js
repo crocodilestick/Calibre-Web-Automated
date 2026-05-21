@@ -135,10 +135,20 @@ window.addEventListener('locationchange',()=>{
             progressDiv.textContent = newPos + "%";
         }
     }
-    // Save progress to localStorage per book (book percentage — keep the
-    // single-number contract so saved values stay readable across upgrades).
-    if (window.calibre && window.calibre.bookUrl) {
-        // Use bookUrl as a unique key, or use bookid if available
+    // CWA #1364 root-cause fix: only save to localStorage AFTER
+    // `epub.locations.generate()` has resolved. Before that point,
+    // `calculateProgress()` returns 0 because there are no locations
+    // to map the current CFI against — saving that fake 0 wipes the
+    // user's prior valid position. The qFinished/restore path then
+    // reads localStorage=0, calls `display(cfiFromPercentage(0))`, and
+    // the user lands at the beginning of the book even though they
+    // were reading at e.g. 35% before. This is the headline symptom
+    // in the upstream report: "opens at the correct cached position
+    // then immediately snaps back to the beginning".
+    if (window.calibre && window.calibre.bookUrl
+            && epub && epub.locations
+            && Array.isArray(epub.locations._locations)
+            && epub.locations._locations.length > 0) {
         let bookKey = window.calibre.bookUrl;
         localStorage.setItem("calibre.reader.progress." + bookKey, newPos);
     }

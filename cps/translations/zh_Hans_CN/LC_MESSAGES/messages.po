@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 03:49+0000\n"
+"POT-Creation-Date: 2026-05-21 15:41+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -1372,6 +1372,39 @@ msgstr "保存文件 %(file)s 失败"
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "已添加 %(ext)s 格式到 %(book)s"
+
+#: cps/editbooks.py:2159
+#, fuzzy
+msgid "Book not found"
+msgstr "找不到令牌"
+
+#: cps/editbooks.py:2163
+msgid "Book has no file formats on disk to reload from"
+msgstr ""
+
+#: cps/editbooks.py:2183
+#, fuzzy, python-format
+msgid "Book file not found on disk: %(path)s"
+msgstr "硬盘上找不到 %(format)s 格式"
+
+#: cps/editbooks.py:2195
+#, python-format
+msgid "Could not parse metadata from %(format)s file: %(err)s"
+msgstr ""
+
+#: cps/editbooks.py:2250
+#, python-format
+msgid "Could not save reloaded metadata: %(err)s"
+msgstr ""
+
+#: cps/editbooks.py:2256
+#, python-format
+msgid "Reloaded %(n)d field(s) from on-disk %(fmt)s"
+msgstr ""
+
+#: cps/editbooks.py:2259
+msgid "On-disk metadata matches current — no fields updated"
+msgstr ""
 
 #: cps/gdrive.py:43
 msgid ""

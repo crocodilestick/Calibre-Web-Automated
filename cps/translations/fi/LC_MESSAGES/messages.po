@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 03:49+0000\n"
+"POT-Creation-Date: 2026-05-21 15:41+0000\n"
 "PO-Revision-Date: 2020-01-12 13:56+0100\n"
 "Last-Translator: Samuli Valavuo <svalavuo@gmail.com>\n"
 "Language-Team: \n"
@@ -1376,6 +1376,39 @@ msgstr "Tiedoston %(file)s tallennus epäonnistui."
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Tiedostoformaatti %(ext)s lisätty %(book)s"
+
+#: cps/editbooks.py:2159
+#, fuzzy
+msgid "Book not found"
+msgstr "Valtuutusta ei löytynyt"
+
+#: cps/editbooks.py:2163
+msgid "Book has no file formats on disk to reload from"
+msgstr ""
+
+#: cps/editbooks.py:2183
+#, fuzzy, python-format
+msgid "Book file not found on disk: %(path)s"
+msgstr "%(format)s tiedostomuotoa ei löytynyt levyltä"
+
+#: cps/editbooks.py:2195
+#, python-format
+msgid "Could not parse metadata from %(format)s file: %(err)s"
+msgstr ""
+
+#: cps/editbooks.py:2250
+#, python-format
+msgid "Could not save reloaded metadata: %(err)s"
+msgstr ""
+
+#: cps/editbooks.py:2256
+#, python-format
+msgid "Reloaded %(n)d field(s) from on-disk %(fmt)s"
+msgstr ""
+
+#: cps/editbooks.py:2259
+msgid "On-disk metadata matches current — no fields updated"
+msgstr ""
 
 #: cps/gdrive.py:43
 msgid ""

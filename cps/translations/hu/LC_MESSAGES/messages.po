@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 03:49+0000\n"
+"POT-Creation-Date: 2026-05-21 15:41+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -1427,6 +1427,39 @@ msgstr "Nem sikerült elmenteni a %(file)s fájlt."
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "A(z) %(ext)s fájlformátum hozzáadva a könyvhöz: %(book)s"
+
+#: cps/editbooks.py:2159
+#, fuzzy
+msgid "Book not found"
+msgstr "Könyv nem található."
+
+#: cps/editbooks.py:2163
+msgid "Book has no file formats on disk to reload from"
+msgstr ""
+
+#: cps/editbooks.py:2183
+#, fuzzy, python-format
+msgid "Book file not found on disk: %(path)s"
+msgstr "EPUB fájl nem található a lemezen."
+
+#: cps/editbooks.py:2195
+#, python-format
+msgid "Could not parse metadata from %(format)s file: %(err)s"
+msgstr ""
+
+#: cps/editbooks.py:2250
+#, fuzzy, python-format
+msgid "Could not save reloaded metadata: %(err)s"
+msgstr "Nem sikerült menteni a zárolási állapotot."
+
+#: cps/editbooks.py:2256
+#, python-format
+msgid "Reloaded %(n)d field(s) from on-disk %(fmt)s"
+msgstr ""
+
+#: cps/editbooks.py:2259
+msgid "On-disk metadata matches current — no fields updated"
+msgstr ""
 
 #: cps/gdrive.py:43
 msgid ""

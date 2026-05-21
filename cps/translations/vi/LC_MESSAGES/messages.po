@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 03:49+0000\n"
+"POT-Creation-Date: 2026-05-21 15:41+0000\n"
 "PO-Revision-Date: 2022-09-20 21:36+0700\n"
 "Last-Translator: Ha Link <halink0803@gmail.com>\n"
 "Language-Team: \n"
@@ -1375,6 +1375,39 @@ msgstr "Lưu file thất bại %(file)s."
 #: cps/editbooks.py:1885
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
+msgstr ""
+
+#: cps/editbooks.py:2159
+#, fuzzy
+msgid "Book not found"
+msgstr "Không tìm thấy token"
+
+#: cps/editbooks.py:2163
+msgid "Book has no file formats on disk to reload from"
+msgstr ""
+
+#: cps/editbooks.py:2183
+#, fuzzy, python-format
+msgid "Book file not found on disk: %(path)s"
+msgstr "Định dạng %(format)s không được tìm thấy trên đĩa"
+
+#: cps/editbooks.py:2195
+#, python-format
+msgid "Could not parse metadata from %(format)s file: %(err)s"
+msgstr ""
+
+#: cps/editbooks.py:2250
+#, python-format
+msgid "Could not save reloaded metadata: %(err)s"
+msgstr ""
+
+#: cps/editbooks.py:2256
+#, python-format
+msgid "Reloaded %(n)d field(s) from on-disk %(fmt)s"
+msgstr ""
+
+#: cps/editbooks.py:2259
+msgid "On-disk metadata matches current — no fields updated"
 msgstr ""
 
 #: cps/gdrive.py:43

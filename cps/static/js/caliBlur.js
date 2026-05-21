@@ -219,6 +219,12 @@ if ($("body.book").length > 0) {
             positionDropdown($('div[aria-label="Add to shelves"]'), $("#add-to-shelves"));
         }
 
+        window.cwaInit = window.cwaInit || {};
+        window.cwaInit.dropdowns = function () {
+            if ($(".book-meta > .btn-toolbar:first").length === 0) return;
+            dropdownToggle();
+        };
+
         dropdownToggle();
 
         var resizeTimer;
@@ -366,6 +372,9 @@ $(document).on("click", ".dropdown-toggle", function () {
             }
         });
     }
+    window.cwaInit = window.cwaInit || {};
+    window.cwaInit.commentsReadmore = initCommentsReadmore;
+
     var lastIsMobile = null;
     $(function(){
         initCommentsReadmore();
@@ -714,19 +723,24 @@ $("#btnGroupDrop1").attr({
 });
 
 if ($("body.epub").length === 0) {
-    $(document).ready(function () {
+    window.cwaInit = window.cwaInit || {};
+    window.cwaInit.tooltips = function () {
+        try { $("[data-toggle='tooltip']").tooltip('destroy'); } catch (e) {}
+        try { $("[data-toggle-two='tooltip']").tooltip('destroy'); } catch (e) {}
         $("[data-toggle='tooltip']").tooltip({container: "body", trigger: "hover"});
         $("[data-toggle-two='tooltip']").tooltip({container: "body", trigger: "hover"});
         $("#btn-upload").attr("title", " ");
-        
+
         // Ensure disabled theme switcher button has properly styled Bootstrap tooltip
-        $("#cwa-switch-theme").tooltip('destroy').tooltip({
-            container: "body", 
+        try { $("#cwa-switch-theme").tooltip('destroy'); } catch (e) {}
+        $("#cwa-switch-theme").tooltip({
+            container: "body",
             trigger: "hover",
             placement: "bottom",
             template: '<div class="tooltip cwa-tooltip-wrap" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
         });
-    });
+    };
+    $(document).ready(window.cwaInit.tooltips);
 
 
     $('[data-toggle-two="tooltip"]').click(function () {
@@ -766,6 +780,9 @@ $(".shelf .discover h2:first").text(shelfText);
 shelfText = $(".shelforder .col-sm-10 .col-sm-6.col-lg-6.col-xs-6 h2:first").text().replace(':', ' —').replace(/\'/g, "");
 $(".shelforder .col-sm-10 .col-sm-6.col-lg-6.col-xs-6 h2:first").text(shelfText);
 
+
+window.cwaInit = window.cwaInit || {};
+window.cwaInit.mobile = mobileSupport;
 
 function mobileSupport() {
     var windowWidth = $(window).width();
@@ -1268,9 +1285,12 @@ $(function() {
         window.location.href = editUrl;
     }
     
+    window.cwaInit = window.cwaInit || {};
+    window.cwaInit.directReading = initDirectReadingHandler;
+
     // Initialize on page load
     initDirectReadingHandler();
-    
+
     // Re-initialize on window resize with debouncing
     var resizeTimer;
     $(window).on('resize', function() {

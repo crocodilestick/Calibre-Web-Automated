@@ -1,6 +1,42 @@
 {% from 'modal_dialogs.html' import restrict_modal, delete_book, filechooser_modal, delete_confirm_modal, change_confirm_modal %}
 {% import 'image.html' as image %}
-<div class="container-fluid">
-  {% block body %}{% endblock %}
-</div>
+{% if page %}<meta name="x-cwa-page" content="{{ page }}">{% endif %}
+<meta name="x-cwa-body-class" content="{{ page or '' }} {{ bodyClass or '' }}">
+{# Templates often place <style>/<meta> tags in {% block header %}. layout.html
+   renders that into <head>; for fragment swaps we render it inline so the
+   page-specific CSS still applies. #}
+{% block header %}{% endblock %}
+{# layout.html already wraps {% block body %} in
+   <div class="container-fluid"><div class="row-fluid"><div class="col-sm-10" id="main-content">.
+   partial-nav.js injects this fragment INTO that #main-content, so we must
+   render the body block directly — adding another wrapper here breaks the
+   `body > div.container-fluid > div > div.col-sm-10 > div.discover > h2`
+   child-selectors in caliBlur.css. #}
+{% block body %}{% endblock %}
+{# Pagination is rendered by layout.html *outside* {% block body %} (but
+   still inside #main-content). Mirror that here so book-list SPA swaps
+   keep their page-number controls in the top-right. #}
+{% if pagination and (pagination.has_next or pagination.has_prev) %}
+  <div class="pagination">
+    {% if pagination.has_prev %}
+    <li class="page-item page-previous"><a class="page-link" aria-label="next page" href="{{ (pagination.page - 1)|url_for_other_page
+      }}">&laquo; {{_('Previous')}}</a></li>
+    {% endif %}
+  {% for page in pagination.iter_pages() %}
+    {% if page %}
+      {% if page != pagination.page %}
+        <li class="page-item"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
+      {% else %}
+        <li class="page-item active"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
+      {% endif %}
+    {% else %}
+      <li class="page-item page-last-separator disabled"><a class="page-link" aria-label="">…</a></li>
+    {% endif %}
+  {% endfor %}
+  {% if pagination.has_next %}
+    <li class="page-item page-next"><a class="page-link next" aria-label="next page" href="{{ (pagination.page + 1)|url_for_other_page
+      }}">{{_('Next')}} &raquo;</a></li>
+  {% endif %}
+  </div>
+{% endif %}
 {% block js %}{% endblock %}

@@ -37,6 +37,64 @@
         });
     }
 
+    // Re-runnable init hooks. Each script populates window.cwaInit.<name>.
+    // Order matters: layout fixes first, then bindings.
+    window.cwaInit = window.cwaInit || {};
+    window.cwaInit.runAll = function () {
+        var order = ['mobile', 'tooltips', 'dropdowns', 'commentsReadmore',
+                     'directReading', 'isotope', 'infiniteScroll'];
+        order.forEach(function (k) {
+            var fn = window.cwaInit[k];
+            if (typeof fn === 'function') {
+                try { fn(); } catch (e) { console.warn('[cwa-spa] cwaInit.' + k + ' failed', e); }
+            }
+        });
+        // Any extra init hooks added later are run after the ordered ones.
+        for (var k in window.cwaInit) {
+            if (k === 'runAll' || order.indexOf(k) !== -1) continue;
+            var fn = window.cwaInit[k];
+            if (typeof fn === 'function') {
+                try { fn(); } catch (e) { console.warn('[cwa-spa] cwaInit.' + k + ' failed', e); }
+            }
+        }
+    };
+
+    function updateSidebarActive(fragmentRoot) {
+        var meta = fragmentRoot.querySelector('meta[name="x-cwa-page"]');
+        if (!meta) return;
+        var page = meta.getAttribute('content');
+        if (!page) return;
+        var targetId = 'nav_' + page;
+        document.querySelectorAll('#scnd-nav li').forEach(function (li) {
+            li.classList.toggle('active', li.id === targetId);
+        });
+    }
+
+    // Track dynamic body classes injected by previous fragments so we can
+    // remove them on the next swap. Seed from the <meta name="x-cwa-body-class">
+    // emitted by layout.html (and fragment.html) so the seed matches the
+    // body's actual page-driven classes — works whether the initial page is
+    // the SPA shell (body.spa_shell) or a full-render page like /admin/view
+    // (body.admin). Without this, navigating away from an excluded full-
+    // render page leaves the old page class on <body>.
+    var lastBodyDynClasses = (function () {
+        var m = document.head && document.head.querySelector('meta[name="x-cwa-body-class"]');
+        if (!m) return [];
+        return (m.getAttribute('content') || '').split(/\s+/).filter(Boolean);
+    }());
+
+    function updateBodyClass(fragmentRoot) {
+        var meta = fragmentRoot.querySelector('meta[name="x-cwa-body-class"]');
+        if (!meta) return;
+        var dyn = (meta.getAttribute('content') || '')
+            .split(/\s+/).filter(Boolean);
+        lastBodyDynClasses.forEach(function (c) {
+            document.body.classList.remove(c);
+        });
+        dyn.forEach(function (c) { document.body.classList.add(c); });
+        lastBodyDynClasses = dyn;
+    }
+
     /* ------------------------------------------------------------------ */
     /* Overlay (100ms debounce)                                            */
     /* ------------------------------------------------------------------ */
@@ -127,17 +185,34 @@
             return;
         }
 
+        // HTML5 parsing rule: <meta>/<style>/<link> at the start of a fragment
+        // (before the first body-level element) get reparented into <head>.
+        // Our fragment.html emits the page's x-cwa-* metas AND the per-page
+        // {% block header %} content (often a <style> block with the page's
+        // CSS) at the top — both end up in doc.head, NOT doc.body. Build a
+        // prefix of those head nodes so they apply when injected with the rest
+        // of the fragment.
+        var headPrefix = '';
+        if (doc.head) {
+            var headNodes = doc.head.querySelectorAll('meta, style, link');
+            for (var i = 0; i < headNodes.length; i++) {
+                headPrefix += headNodes[i].outerHTML;
+            }
+        }
+
         // The fragment template renders <body>{% block body %}{% block js %}</body>;
         // pull the rendered body wholesale (minus scripts, which we re-exec).
         var sourceBody = doc.body;
         if (!sourceBody) {
-            curContainer.innerHTML = html;
+            curContainer.innerHTML = headPrefix + html;
         } else {
             // Strip scripts before injecting so innerHTML doesn't keep them as
             // inert tags (and so our re-exec list isn't duplicated).
             var scriptNodes = Array.prototype.slice.call(sourceBody.querySelectorAll('script'));
             scriptNodes.forEach(function (s) { s.parentNode.removeChild(s); });
-            curContainer.innerHTML = sourceBody.innerHTML;
+            curContainer.innerHTML = headPrefix + sourceBody.innerHTML;
+            updateBodyClass(curContainer);
+            updateSidebarActive(curContainer);
             executeScripts(scriptNodes);
         }
 
@@ -145,25 +220,55 @@
     }
 
     function executeScripts(scriptNodes) {
+        // Run scripts sequentially: external scripts must finish loading
+        // before later inline scripts run (e.g. magic_shelf_edit.html injects
+        // query-builder.standalone.min.js immediately followed by an inline
+        // $('#builder').queryBuilder(...) — without this, the inline script
+        // fires before the library is available and the rules UI never
+        // renders).
+        var chain = Promise.resolve();
         scriptNodes.forEach(function (oldScript) {
-            if (oldScript.src) {
-                var src = oldScript.src;
-                if (window.__cwaLoadedScripts.has(src)) return;
-                window.__cwaLoadedScripts.add(src);
-                var s = document.createElement('script');
-                s.src = src;
-                if (oldScript.type) s.type = oldScript.type;
-                if (oldScript.hasAttribute('async')) s.async = true;
-                if (oldScript.hasAttribute('defer')) s.defer = true;
-                document.body.appendChild(s);
-            } else {
-                // Inline scripts: always re-execute (page-init code).
-                var inline = document.createElement('script');
-                if (oldScript.type) inline.type = oldScript.type;
-                inline.textContent = oldScript.textContent;
-                document.body.appendChild(inline);
-            }
+            chain = chain.then(function () {
+                return new Promise(function (resolve) {
+                    if (oldScript.src) {
+                        var src = oldScript.src;
+                        if (window.__cwaLoadedScripts.has(src)) {
+                            resolve();
+                            return;
+                        }
+                        window.__cwaLoadedScripts.add(src);
+                        var s = document.createElement('script');
+                        s.src = src;
+                        if (oldScript.type) s.type = oldScript.type;
+                        s.onload = function () { resolve(); };
+                        s.onerror = function () {
+                            console.error('[cwa-spa] failed to load', src);
+                            resolve();
+                        };
+                        document.body.appendChild(s);
+                    } else {
+                        // Inline scripts always re-execute (page-init code).
+                        // Copy ALL attributes — id matters for script tags
+                        // used as <script type="text/template" id="…">
+                        // template carriers (e.g. #template-shelf-add on
+                        // the book-detail page); details.js does
+                        // $("#template-shelf-add").html() to feed
+                        // _.template(), and without the id we'd pass
+                        // undefined and underscore throws.
+                        var inline = document.createElement('script');
+                        for (var ai = 0; ai < oldScript.attributes.length; ai++) {
+                            var a = oldScript.attributes[ai];
+                            try { inline.setAttribute(a.name, a.value); }
+                            catch (e) { /* ignore odd attribute names */ }
+                        }
+                        inline.textContent = oldScript.textContent;
+                        document.body.appendChild(inline);
+                        resolve();
+                    }
+                });
+            });
         });
+        return chain;
     }
 
     function showError() {
@@ -235,7 +340,6 @@
 
             window.scrollTo(0, 0);
 
-            // Stub for Step 4: real re-init lives in window.cwaInit.runAll.
             if (window.cwaInit && typeof window.cwaInit.runAll === 'function') {
                 try { window.cwaInit.runAll(); } catch (e) {
                     console.error('[cwa-spa] cwaInit.runAll threw', e);

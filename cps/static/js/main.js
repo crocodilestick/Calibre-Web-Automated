@@ -382,42 +382,40 @@ $(function() {
         });
     }
 
-    let selectedLayoutMode;
+    window.cwaInit = window.cwaInit || {};
 
-    if ($("body").hasClass("blur")) {
-        selectedLayoutMode = "fitRowsCentered";
-    } else {
-        selectedLayoutMode = "fitRows";
-    }
-
-    $(".discover .row").filter(function() {
-        return $(this).find(".book").length > 0;
-    }).isotope({
-        // options
-        itemSelector : ".book",
-        layoutMode : selectedLayoutMode
-    });
-
-    // Only initialize Infinite Scroll if pagination is NOT present
-    if ($(".load-more").length && $(".next").length && $(".pagination").length === 0) {
-        var $loadMore = $(".load-more .row").infiniteScroll({
-            debug: false,
-            // selector for the paged navigation (it will be hidden)
-            path : ".next",
-            // selector for the NEXT link (to page 2)
-            append : ".load-more .book"
-            //animate      : true, # ToDo: Reenable function
-            //extraScrollPx: 300
+    window.cwaInit.isotope = function () {
+        var selectedLayoutMode = $("body").hasClass("blur") ? "fitRowsCentered" : "fitRows";
+        $(".discover .row").filter(function () {
+            return $(this).find(".book").length > 0;
+        }).each(function () {
+            var $row = $(this);
+            if ($row.data("isotope")) {
+                $row.isotope("reloadItems").isotope("layout");
+            } else {
+                $row.isotope({ itemSelector: ".book", layoutMode: selectedLayoutMode });
+            }
         });
-        $loadMore.on( "append.infiniteScroll", function( event, response, path, data ) {
+    };
+
+    window.cwaInit.infiniteScroll = function () {
+        // Only initialize Infinite Scroll if pagination is NOT present
+        if (!($(".load-more").length && $(".next").length && $(".pagination").length === 0)) return;
+        var $target = $(".load-more .row");
+        if (!$target.length || $target.data("infiniteScroll")) return;
+
+        var $loadMore = $target.infiniteScroll({
+            debug: false,
+            path: ".next",
+            append: ".load-more .book"
+        });
+        $loadMore.on("append.infiniteScroll", function (event, response, path, data) {
             $(".pagination").addClass("hidden").html(() => $(response).find(".pagination").html());
             if ($("body").hasClass("blur")) {
-                $(" a:not(.dropdown-toggle) ")
-                  .removeAttr("data-toggle");
+                $(" a:not(.dropdown-toggle) ").removeAttr("data-toggle");
             }
-            $(".load-more .row").isotope( "appended", $(data), null );
+            $(".load-more .row").isotope("appended", $(data), null);
 
-            // Disable infinite scroll if no .next link exists (last page)
             if (!$(response).find(".next").length) {
                 $loadMore.infiniteScroll('destroy');
             }
@@ -425,17 +423,17 @@ $(function() {
 
         // fix for infinite scroll on CaliBlur Theme (#981)
         if ($("body").hasClass("blur")) {
-            $(".col-sm-10").bind("scroll", function () {
-                if (
-                    $(this).scrollTop() + $(this).innerHeight() >=
-                    $(this)[0].scrollHeight
-                ) {
+            $(".col-sm-10").off("scroll.cwaInfinite").on("scroll.cwaInfinite", function () {
+                if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
                     $loadMore.infiniteScroll("loadNextPage");
                     window.history.replaceState({}, null, $loadMore.infiniteScroll("getAbsolutePath"));
                 }
             });
         }
-    }
+    };
+
+    window.cwaInit.isotope();
+    window.cwaInit.infiniteScroll();
 
     $("#restart").click(function() {
         $.ajax({

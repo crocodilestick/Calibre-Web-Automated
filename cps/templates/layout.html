@@ -9,6 +9,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="mobile-web-app-capable" content="yes">
+    {# Mirrors the meta fragment.html emits inside the body. Lets partial-nav.js
+       seed its tracked dynamic body classes from the current page's render —
+       so when a full-render page (e.g. /admin/view, served outside the SPA
+       shell because /admin is excluded) SPA-navigates away, the old page
+       class (e.g. `admin`) is removed from <body> instead of lingering. #}
+    <meta name="x-cwa-body-class" content="{{ page or '' }} {{ bodyClass or '' }}">
     {% if g.google_site_verification|length > 0 %}
       <meta name="google-site-verification" content="{{g.google_site_verification}}">
     {% endif %}

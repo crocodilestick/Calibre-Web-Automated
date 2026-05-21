@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 14:39-0400\n"
+"POT-Creation-Date: 2026-05-21 15:09-0400\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -2294,17 +2294,58 @@ msgstr "Polc: '%(name)s'"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Hiba a polc megnyitásakor. A polc nem létezik vagy nem elérhető"
 
-#: cps/shelf.py:695
+#: cps/shelf.py:775
+#, python-format
+msgid "Invalid order mode: %(mode)s"
+msgstr "Érvénytelen rendezési mód: %(mode)s"
+
+#: cps/shelf.py:779
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:713
+#: cps/shelf.py:803
 msgid "Could not save order"
 msgstr "Nem sikerült menteni a sorrendet"
 
-#: cps/shelf.py:717 cps/templates/layout.html:352
+#: cps/shelf.py:811 cps/templates/layout.html:352
 msgid "Reorder Shelves"
 msgstr "Polcok átrendezése"
+
+#: cps/shelf.py:816
+msgid "Name (A → Z)"
+msgstr "Név (A → Z)"
+
+#: cps/shelf.py:817
+msgid "Name (Z → A)"
+msgstr "Név (Z → A)"
+
+#: cps/shelf.py:818
+msgid "Book count (most → fewest)"
+msgstr "Könyvek száma (legtöbb → legkevesebb)"
+
+#: cps/shelf.py:819
+msgid "Book count (fewest → most)"
+msgstr "Könyvek száma (legkevesebb → legtöbb)"
+
+#: cps/shelf.py:820
+msgid "Created (newest → oldest)"
+msgstr "Létrehozva (legújabb → legrégebbi)"
+
+#: cps/shelf.py:821
+msgid "Created (oldest → newest)"
+msgstr "Létrehozva (legrégebbi → legújabb)"
+
+#: cps/shelf.py:822
+msgid "Modified (recent → oldest)"
+msgstr "Módosítva (legutóbbi → legrégebbi)"
+
+#: cps/shelf.py:823
+msgid "Modified (oldest → recent)"
+msgstr "Módosítva (legrégebbi → legutóbbi)"
+
+#: cps/shelf.py:824
+msgid "Manual (drag below)"
+msgstr "Kézi (húzd át alább)"
 
 #: cps/tasks_status.py:37 cps/templates/layout.html:195
 #: cps/templates/tasks.html:7
@@ -2967,7 +3008,7 @@ msgstr "Hozzáadás polchoz"
 #: cps/templates/feed.xml:111 cps/templates/layout.html:346
 #: cps/templates/layout.html:359 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
-#: cps/templates/shelf_reorder.html:21
+#: cps/templates/shelf_reorder.html:31
 msgid "(Public)"
 msgstr "(Nyilvános)"
 
@@ -3710,7 +3751,7 @@ msgstr "Metaadatok beszerzése"
 #: cps/templates/config_edit.html:659 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:47
 #: cps/templates/shelf_edit.html:36 cps/templates/shelf_order.html:41
-#: cps/templates/shelf_reorder.html:26 cps/templates/user_edit.html:578
+#: cps/templates/shelf_reorder.html:38 cps/templates/user_edit.html:578
 msgid "Save"
 msgstr "Mentés"
 
@@ -6659,7 +6700,7 @@ msgid "Save and Send Test Email"
 msgstr "Mentés és teszt e-mail küldése"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:126
-#: cps/templates/shelf_order.html:42 cps/templates/shelf_reorder.html:27
+#: cps/templates/shelf_order.html:42 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
 msgstr "Vissza"
@@ -7663,19 +7704,23 @@ msgstr "Húzd és dob a sorrend változtatásához"
 msgid "Hidden Book"
 msgstr "Rejtett könyvek"
 
-#: cps/templates/shelf_reorder.html:9
-msgid "Drag to rearrange the order of your shelves in the sidebar."
-msgstr "Húzd át a polcokat a kívánt sorrend kialakításához az oldalsávban."
+#: cps/templates/shelf_reorder.html:12
+msgid "Sort by"
+msgstr "Rendezés"
 
-#: cps/templates/shelf_reorder.html:13
+#: cps/templates/shelf_reorder.html:21
 msgid "You do not have any shelves to reorder yet."
 msgstr "Még nincs átrendezhető polc."
 
-#: cps/templates/shelf_reorder.html:58
+#: cps/templates/shelf_reorder.html:24
+msgid "Drag to rearrange the order of your shelves in the sidebar."
+msgstr "Húzd át a polcokat a kívánt sorrend kialakításához az oldalsávban."
+
+#: cps/templates/shelf_reorder.html:83
 msgid "Order saved. The sidebar reflects the new order on next page load."
 msgstr "Sorrend mentve. Az oldalsáv a következő oldalbetöltéskor frissül."
 
-#: cps/templates/shelf_reorder.html:63
+#: cps/templates/shelf_reorder.html:88
 msgid "Could not save order."
 msgstr "Nem sikerült menteni a sorrendet."
 

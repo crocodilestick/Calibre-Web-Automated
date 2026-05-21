@@ -191,3 +191,110 @@ def test_reorder_template_uses_sortable():
     src = REORDER_HTML.read_text()
     assert "Sortable" in src, "template must reference SortableJS"
     assert "/shelf/reorder" in src or "shelf.reorder_shelves" in src
+
+
+# ---------------------------------------------------------------------------
+# Order modes (follow-up v4.0.114): parity with magic-shelf modes
+# ---------------------------------------------------------------------------
+
+EXPECTED_MODES = {
+    'manual',
+    'name_asc',
+    'name_desc',
+    'book_count_desc',
+    'book_count_asc',
+    'created_desc',
+    'created_asc',
+    'modified_desc',
+    'modified_asc',
+}
+
+
+def test_shelf_order_modes_set_exposed():
+    src = _shelf_src()
+    assert "SHELF_ORDER_MODES" in src and "DEFAULT_SHELF_ORDER_MODE" in src, (
+        "cps/shelf.py must expose SHELF_ORDER_MODES set + DEFAULT_SHELF_ORDER_MODE"
+    )
+    match = re.search(r"SHELF_ORDER_MODES\s*=\s*\{([^}]*)\}", src, re.DOTALL)
+    assert match, "SHELF_ORDER_MODES literal not found"
+    block = match.group(1)
+    for mode in EXPECTED_MODES:
+        assert f"'{mode}'" in block or f'"{mode}"' in block, (
+            f"SHELF_ORDER_MODES is missing: {mode}"
+        )
+    # Default must be valid.
+    default_match = re.search(r"DEFAULT_SHELF_ORDER_MODE\s*=\s*['\"]([^'\"]+)['\"]", src)
+    assert default_match and default_match.group(1) in EXPECTED_MODES
+
+
+def test_sort_shelves_for_user_dispatches_on_order_mode():
+    """The function body must dispatch on each named mode, not just
+    handle 'manual' + alphabetical."""
+    src = _shelf_src()
+    match = re.search(
+        r"(def sort_shelves_for_user\(.*?)(?=\n(?:def |@|class ))",
+        src, re.DOTALL,
+    )
+    body = match.group(1)
+    # Each mode constant must appear in the dispatch.
+    for mode in ('name_desc', 'book_count_desc', 'book_count_asc',
+                 'created_desc', 'created_asc', 'modified_desc', 'modified_asc'):
+        assert f"'{mode}'" in body or f'"{mode}"' in body, (
+            f"sort_shelves_for_user must dispatch on '{mode}'"
+        )
+
+
+def test_sort_shelves_for_user_book_count_helper_exists():
+    """book_count modes need a helper that doesn't crash on detached
+    relationships."""
+    src = _shelf_src()
+    assert re.search(r"def _shelf_book_count\(", src), (
+        "cps/shelf.py must expose a helper for the book_count modes"
+    )
+
+
+def test_reorder_route_accepts_order_mode_payload():
+    """POST handler must read order_mode from the JSON body, validate
+    against SHELF_ORDER_MODES, and persist it into
+    view_settings['shelves']['order_mode']."""
+    src = _shelf_src()
+    # reorder_shelves is the last function in shelf.py — match through EOF.
+    match = re.search(
+        r"(def reorder_shelves\(.*)",
+        src, re.DOTALL,
+    )
+    assert match, "reorder_shelves definition not found"
+    body = match.group(1)
+    assert 'order_mode' in body, "POST handler must accept order_mode field"
+    assert "SHELF_ORDER_MODES" in body, "POST handler must validate against the set"
+    assert "'order_mode'" in body or '"order_mode"' in body, (
+        "must persist into view_settings['shelves']['order_mode']"
+    )
+
+
+def test_template_renders_order_mode_picker():
+    src = REORDER_HTML.read_text()
+    assert "orderModeSelect" in src, "template must include an order-mode <select>"
+    assert "order_modes" in src, (
+        "template must iterate the order_modes context list (passed by the route)"
+    )
+    # The route's `order_modes` context list (not the template) is the source
+    # of truth for the picker entries — verify the route passes each mode.
+    route_match = re.search(
+        r"(def reorder_shelves\(.*)", _shelf_src(), re.DOTALL,
+    )
+    route_body = route_match.group(1)
+    for mode in ('name_asc', 'name_desc', 'book_count_desc', 'book_count_asc',
+                 'created_desc', 'created_asc', 'modified_desc', 'modified_asc',
+                 'manual'):
+        assert f"'{mode}'" in route_body or f'"{mode}"' in route_body, (
+            f"route must pass {mode} in the order_modes picker list"
+        )
+
+
+def test_template_posts_order_mode_field():
+    src = REORDER_HTML.read_text()
+    # The XHR body must include order_mode (not just order).
+    assert 'order_mode' in src and 'JSON.stringify' in src, (
+        "save action must POST {order_mode, order} as JSON"
+    )

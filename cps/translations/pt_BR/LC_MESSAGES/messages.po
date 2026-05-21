@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 14:39-0400\n"
+"POT-Creation-Date: 2026-05-21 15:09-0400\n"
 "PO-Revision-Date: 2025-12-02 12:00+0000\n"
 "Last-Translator: Alex <298750+alexantao@users.noreply.github.com>\n"
 "Language-Team: pt_BR <LL@li.org>\n"
@@ -2293,18 +2293,59 @@ msgstr "Estante: '%(name)s'"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Erro ao abrir estante. A estante não existe ou não está acessível"
 
-#: cps/shelf.py:695
+#: cps/shelf.py:775
+#, python-format
+msgid "Invalid order mode: %(mode)s"
+msgstr ""
+
+#: cps/shelf.py:779
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:713
+#: cps/shelf.py:803
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:717 cps/templates/layout.html:352
+#: cps/shelf.py:811 cps/templates/layout.html:352
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Excluir Estante"
+
+#: cps/shelf.py:816
+msgid "Name (A → Z)"
+msgstr ""
+
+#: cps/shelf.py:817
+msgid "Name (Z → A)"
+msgstr ""
+
+#: cps/shelf.py:818
+msgid "Book count (most → fewest)"
+msgstr ""
+
+#: cps/shelf.py:819
+msgid "Book count (fewest → most)"
+msgstr ""
+
+#: cps/shelf.py:820
+msgid "Created (newest → oldest)"
+msgstr ""
+
+#: cps/shelf.py:821
+msgid "Created (oldest → newest)"
+msgstr ""
+
+#: cps/shelf.py:822
+msgid "Modified (recent → oldest)"
+msgstr ""
+
+#: cps/shelf.py:823
+msgid "Modified (oldest → recent)"
+msgstr ""
+
+#: cps/shelf.py:824
+msgid "Manual (drag below)"
+msgstr ""
 
 #: cps/tasks_status.py:37 cps/templates/layout.html:195
 #: cps/templates/tasks.html:7
@@ -2994,7 +3035,7 @@ msgstr "Adicionar à estante"
 #: cps/templates/feed.xml:111 cps/templates/layout.html:346
 #: cps/templates/layout.html:359 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
-#: cps/templates/shelf_reorder.html:21
+#: cps/templates/shelf_reorder.html:31
 msgid "(Public)"
 msgstr "(Público)"
 
@@ -3748,7 +3789,7 @@ msgstr "Buscar Metadados"
 #: cps/templates/config_edit.html:659 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:47
 #: cps/templates/shelf_edit.html:36 cps/templates/shelf_order.html:41
-#: cps/templates/shelf_reorder.html:26 cps/templates/user_edit.html:578
+#: cps/templates/shelf_reorder.html:38 cps/templates/user_edit.html:578
 msgid "Save"
 msgstr "Salvar"
 
@@ -6631,7 +6672,7 @@ msgid "Save and Send Test Email"
 msgstr "Salvar e enviar e-mail de teste"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:126
-#: cps/templates/shelf_order.html:42 cps/templates/shelf_reorder.html:27
+#: cps/templates/shelf_order.html:42 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
 msgstr "Voltar"
@@ -7656,19 +7697,23 @@ msgstr "Arrastar para Reorganizar a Ordem"
 msgid "Hidden Book"
 msgstr "Livro Escondido"
 
-#: cps/templates/shelf_reorder.html:9
-msgid "Drag to rearrange the order of your shelves in the sidebar."
+#: cps/templates/shelf_reorder.html:12
+msgid "Sort by"
 msgstr ""
 
-#: cps/templates/shelf_reorder.html:13
+#: cps/templates/shelf_reorder.html:21
 msgid "You do not have any shelves to reorder yet."
 msgstr ""
 
-#: cps/templates/shelf_reorder.html:58
+#: cps/templates/shelf_reorder.html:24
+msgid "Drag to rearrange the order of your shelves in the sidebar."
+msgstr ""
+
+#: cps/templates/shelf_reorder.html:83
 msgid "Order saved. The sidebar reflects the new order on next page load."
 msgstr ""
 
-#: cps/templates/shelf_reorder.html:63
+#: cps/templates/shelf_reorder.html:88
 msgid "Could not save order."
 msgstr ""
 

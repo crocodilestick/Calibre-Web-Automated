@@ -627,12 +627,28 @@ def add_selected_to_shelf():
 # cps/magic_shelf.py::sort_magic_shelves_for_user). Storage shape on
 # user.view_settings:
 #
-#     {"shelves": {"order": [shelf_id, shelf_id, ...]}}
+#     {"shelves": {"order_mode": "manual|name_asc|...", "order": [shelf_id, ...]}}
 #
-# Missing / empty list → fall back to alphabetical (current behavior).
-# Stale IDs in the list are dropped on sort; new shelves not yet in the
+# `order_mode` chooses among the modes in SHELF_ORDER_MODES below; default
+# is name_asc (alphabetical, preserves prior-release behaviour). When
+# order_mode == 'manual', the `order` list is the canonical sequence.
+# Stale IDs in `order` are dropped on sort; new shelves not yet in the
 # list are appended after the stored prefix so they remain visible.
 # ---------------------------------------------------------------------------
+
+SHELF_ORDER_MODES = {
+    'manual',
+    'name_asc',
+    'name_desc',
+    'book_count_desc',
+    'book_count_asc',
+    'created_desc',
+    'created_asc',
+    'modified_desc',
+    'modified_asc',
+}
+
+DEFAULT_SHELF_ORDER_MODE = 'name_asc'
 
 
 def normalize_shelf_order(order_list, available_ids):
@@ -657,18 +673,80 @@ def normalize_shelf_order(order_list, available_ids):
     return normalized
 
 
+def _shelf_book_count(shelf):
+    """Best-effort book count without forcing a relationship load. Returns 0
+    when the relationship is detached or the query can't run."""
+    books = getattr(shelf, 'books', None)
+    if books is None:
+        return 0
+    try:
+        return int(books.count())
+    except Exception:
+        try:
+            return len(list(books))
+        except Exception:
+            return 0
+
+
 def sort_shelves_for_user(shelves, user):
-    """Sort regular shelves for `user` in place. Applies the manual order
-    from `user.view_settings['shelves']['order']` if set; otherwise sorts
-    case-insensitive alphabetical by name."""
+    """Sort regular shelves for `user` in place, honoring
+    `user.view_settings['shelves']['order_mode']`. Modes mirror
+    `cps.magic_shelf.MAGIC_SHELF_ORDER_MODES` so the sidebar feels
+    consistent across shelf kinds. Anonymous users (view_settings = None
+    per cps/ub.py) fall through to the default name_asc."""
     settings = (getattr(user, 'view_settings', None) or {}).get('shelves', {})
-    order_list = settings.get('order') or []
-    if order_list:
-        available_ids = [s.id for s in shelves]
-        normalized = normalize_shelf_order(order_list, available_ids)
-        index = {sid: idx for idx, sid in enumerate(normalized)}
-        shelves.sort(key=lambda s: index.get(s.id, len(index)))
+    order_mode = settings.get('order_mode', DEFAULT_SHELF_ORDER_MODE)
+    if order_mode not in SHELF_ORDER_MODES:
+        order_mode = DEFAULT_SHELF_ORDER_MODE
+
+    if order_mode == 'manual':
+        order_list = settings.get('order') or []
+        # If the user picked manual but never saved an order, fall through
+        # to alphabetical rather than rendering some arbitrary order.
+        if order_list:
+            available_ids = [s.id for s in shelves]
+            normalized = normalize_shelf_order(order_list, available_ids)
+            index = {sid: idx for idx, sid in enumerate(normalized)}
+            shelves.sort(key=lambda s: index.get(s.id, len(index)))
+            return shelves
+
+    if order_mode == 'name_desc':
+        shelves.sort(key=lambda s: (s.name or "").casefold(), reverse=True)
         return shelves
+
+    if order_mode == 'book_count_desc':
+        shelves.sort(key=lambda s: (_shelf_book_count(s), (s.name or "").casefold()),
+                     reverse=True)
+        return shelves
+
+    if order_mode == 'book_count_asc':
+        # Tie-break by name ascending so equal-count shelves are stable.
+        shelves.sort(key=lambda s: (_shelf_book_count(s), (s.name or "").casefold()))
+        return shelves
+
+    if order_mode == 'created_desc':
+        min_dt = datetime.min.replace(tzinfo=timezone.utc)
+        shelves.sort(key=lambda s: (s.created or min_dt, (s.name or "").casefold()),
+                     reverse=True)
+        return shelves
+
+    if order_mode == 'created_asc':
+        max_dt = datetime.max.replace(tzinfo=timezone.utc)
+        shelves.sort(key=lambda s: (s.created or max_dt, (s.name or "").casefold()))
+        return shelves
+
+    if order_mode == 'modified_desc':
+        min_dt = datetime.min.replace(tzinfo=timezone.utc)
+        shelves.sort(key=lambda s: (s.last_modified or min_dt, (s.name or "").casefold()),
+                     reverse=True)
+        return shelves
+
+    if order_mode == 'modified_asc':
+        max_dt = datetime.max.replace(tzinfo=timezone.utc)
+        shelves.sort(key=lambda s: (s.last_modified or max_dt, (s.name or "").casefold()))
+        return shelves
+
+    # Default: name_asc, case-insensitive.
     shelves.sort(key=lambda s: (s.name or "").casefold())
     return shelves
 
@@ -676,11 +754,11 @@ def sort_shelves_for_user(shelves, user):
 @shelf.route("/shelf/reorder", methods=["GET", "POST"])
 @user_login_required
 def reorder_shelves():
-    """Drag-to-reorder UI for the user's accessible regular shelves.
+    """Reorder UI for the user's accessible regular shelves.
 
-    GET renders the list (own + public). POST accepts JSON
-    {"order": [id, id, ...]} and persists it into
-    user.view_settings['shelves']['order'].
+    GET renders an order_mode picker + drag-list for manual mode.
+    POST accepts JSON {"order_mode": "...", "order": [id, id, ...]}
+    and persists into user.view_settings['shelves'].
     """
     accessible = ub.session.query(ub.Shelf).filter(
         (ub.Shelf.is_public == 1) | (ub.Shelf.user_id == current_user.id)
@@ -689,15 +767,27 @@ def reorder_shelves():
 
     if request.method == "POST":
         payload = request.get_json(silent=True) or {}
-        raw_order = payload.get("order")
+        # order_mode is the new contract; if missing, default to manual
+        # (back-compat: pre-modes clients posted just {order:[...]}).
+        order_mode = payload.get("order_mode", "manual")
+        if order_mode not in SHELF_ORDER_MODES:
+            return jsonify(success=False,
+                           error=_("Invalid order mode: %(mode)s", mode=order_mode)), 400
+        raw_order = payload.get("order", [])
         if not isinstance(raw_order, list):
             return jsonify(success=False,
                            error=_("Invalid payload: 'order' must be a list")), 400
         available_ids = [s.id for s in accessible]
-        normalized = normalize_shelf_order(raw_order, available_ids)
+        normalized = normalize_shelf_order(raw_order, available_ids) if order_mode == 'manual' else []
         vs = dict(current_user.view_settings or {})
         shelves_settings = dict(vs.get('shelves', {}))
-        shelves_settings['order'] = normalized
+        shelves_settings['order_mode'] = order_mode
+        # Keep the order list around even for non-manual modes — switching
+        # back to manual later restores the user's previous arrangement.
+        if order_mode == 'manual':
+            shelves_settings['order'] = normalized
+        elif 'order' not in shelves_settings:
+            shelves_settings['order'] = []
         vs['shelves'] = shelves_settings
         current_user.view_settings = vs
         try:
@@ -711,9 +801,25 @@ def reorder_shelves():
             log.error("reorder_shelves: persist failed: %s", ex)
             ub.session.rollback()
             return jsonify(success=False, error=_("Could not save order")), 500
-        return jsonify(success=True, order=normalized), 200
+        return jsonify(success=True, order_mode=order_mode, order=normalized), 200
 
+    current_settings = (getattr(current_user, 'view_settings', None) or {}).get('shelves', {})
+    current_mode = current_settings.get('order_mode', DEFAULT_SHELF_ORDER_MODE)
+    if current_mode not in SHELF_ORDER_MODES:
+        current_mode = DEFAULT_SHELF_ORDER_MODE
     return render_title_template('shelf_reorder.html',
                                  title=_("Reorder Shelves"),
                                  page="shelf_reorder",
-                                 shelves=accessible)
+                                 shelves=accessible,
+                                 current_order_mode=current_mode,
+                                 order_modes=[
+                                     ('name_asc',         _("Name (A → Z)")),
+                                     ('name_desc',        _("Name (Z → A)")),
+                                     ('book_count_desc',  _("Book count (most → fewest)")),
+                                     ('book_count_asc',   _("Book count (fewest → most)")),
+                                     ('created_desc',     _("Created (newest → oldest)")),
+                                     ('created_asc',      _("Created (oldest → newest)")),
+                                     ('modified_desc',    _("Modified (recent → oldest)")),
+                                     ('modified_asc',     _("Modified (oldest → recent)")),
+                                     ('manual',           _("Manual (drag below)")),
+                                 ])

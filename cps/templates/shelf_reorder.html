@@ -1,28 +1,40 @@
-{# Fork #237 (@new-usemame): drag-to-reorder regular shelves. Mirrors
-   the shelf_order.html shape but operates on the list of shelves the
-   user can access (own + public) rather than the books inside one shelf.
-   Save POSTs JSON {order:[id,...]} to /shelf/reorder. #}
+{# Fork #237 (@new-usemame): drag-to-reorder regular shelves with order_mode
+   picker. Mirrors the magic-shelf order-mode contract. Manual mode posts the
+   drag order; the named modes (name_*, book_count_*, created_*, modified_*)
+   apply server-side. #}
 {% extends "layout.html" %}
 {% block body %}
 <div class="col-sm-8 col-lg-8 col-xs-12">
   <h2>{{ title }}</h2>
-  <div>{{ _('Drag to rearrange the order of your shelves in the sidebar.') }}</div>
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  {% if shelves|length == 0 %}
-    <p>{{ _('You do not have any shelves to reorder yet.') }}</p>
-  {% else %}
-    <div id="sortShelves" class="list-group" style="margin-top: 1em;">
-      {% for shelf in shelves %}
-        <div id="shelf-{{ shelf.id }}" data-shelf-id="{{ shelf.id }}" class="list-group-item" style="cursor: move;">
-          <span class="glyphicon glyphicon-list"></span>&nbsp;
-          {{ shelf.name }}
-          {% if shelf.is_public == 1 %}
-            <span style="font-size: 80%; color: #888;">{{ _('(Public)') }}</span>
-          {% endif %}
-        </div>
+  <div style="margin-top: 1em;">
+    <label for="orderModeSelect"><strong>{{ _('Sort by') }}:</strong></label>
+    <select id="orderModeSelect" class="form-control" style="display: inline-block; width: auto; margin-left: 0.5em;">
+      {% for value, label in order_modes %}
+        <option value="{{ value }}"{% if value == current_order_mode %} selected{% endif %}>{{ label }}</option>
       {% endfor %}
+    </select>
+  </div>
+
+  {% if shelves|length == 0 %}
+    <p style="margin-top: 1em;">{{ _('You do not have any shelves to reorder yet.') }}</p>
+  {% else %}
+    <div id="manualSection" style="margin-top: 1em;{% if current_order_mode != 'manual' %} display: none;{% endif %}">
+      <div>{{ _('Drag to rearrange the order of your shelves in the sidebar.') }}</div>
+      <div id="sortShelves" class="list-group" style="margin-top: 0.6em;">
+        {% for shelf in shelves %}
+          <div id="shelf-{{ shelf.id }}" data-shelf-id="{{ shelf.id }}" class="list-group-item" style="cursor: move;">
+            <span class="glyphicon glyphicon-list"></span>&nbsp;
+            {{ shelf.name }}
+            {% if shelf.is_public == 1 %}
+              <span style="font-size: 80%; color: #888;">{{ _('(Public)') }}</span>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
+
     <button id="saveOrderBtn" class="btn btn-default" style="margin-top: 1em;">{{ _('Save') }}</button>
     <a href="{{ url_for('web.index') }}" class="btn btn-default" style="margin-top: 1em;">{{ _('Back') }}</a>
     <div id="saveOrderFeedback" style="margin-top: 0.5em;"></div>
@@ -37,22 +49,35 @@
     var listEl = document.getElementById('sortShelves');
     var saveBtn = document.getElementById('saveOrderBtn');
     var feedback = document.getElementById('saveOrderFeedback');
-    if (!listEl || !saveBtn) return;
+    var modeSelect = document.getElementById('orderModeSelect');
+    var manualSection = document.getElementById('manualSection');
+    if (!saveBtn || !modeSelect) return;
 
-    new Sortable(listEl, { animation: 150 });
+    if (listEl) {
+      new Sortable(listEl, { animation: 150 });
+    }
+
+    function syncManualVisibility() {
+      if (!manualSection) return;
+      manualSection.style.display = modeSelect.value === 'manual' ? '' : 'none';
+    }
+    modeSelect.addEventListener('change', syncManualVisibility);
 
     saveBtn.addEventListener('click', function () {
-      var ids = Array.prototype.map.call(
-        listEl.querySelectorAll('[data-shelf-id]'),
-        function (el) { return parseInt(el.getAttribute('data-shelf-id'), 10); }
-      );
+      var mode = modeSelect.value;
+      var ids = listEl
+        ? Array.prototype.map.call(
+            listEl.querySelectorAll('[data-shelf-id]'),
+            function (el) { return parseInt(el.getAttribute('data-shelf-id'), 10); }
+          )
+        : [];
       saveBtn.disabled = true;
       feedback.textContent = '';
       $.ajax({
         url: '{{ url_for("shelf.reorder_shelves") }}',
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ order: ids }),
+        data: JSON.stringify({ order_mode: mode, order: ids }),
         success: function () {
           feedback.style.color = 'green';
           feedback.textContent = '{{ _("Order saved. The sidebar reflects the new order on next page load.") }}';

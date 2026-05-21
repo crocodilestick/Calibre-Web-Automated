@@ -384,7 +384,19 @@
     /* ------------------------------------------------------------------ */
 
     function bootstrap() {
-        var initial = window.__cwaInitialPath || window.location.pathname + window.location.search;
+        // Only the SPA shell (cwa_spa_shell.html) sets __cwaInitialPath. If
+        // it's absent, the server rendered a full layout-extending page
+        // directly (e.g. excluded paths like /admin/* or /login). The page is
+        // already in its final state — re-fetching it as a fragment would
+        // hit a template that still extends layout.html, then inject the
+        // whole chrome into #main-content (sidebar-inside-content, and any
+        // click handlers bound on DOMContentLoaded get detached when their
+        // targets are replaced — that's why e.g. the Restart modal OK
+        // button stops firing). Subsequent SPA clicks still work via the
+        // delegated handler; we just skip the initial swap.
+        if (!window.__cwaInitialPath) return;
+
+        var initial = window.__cwaInitialPath;
         // Seed history state so the first popstate has something to read.
         try {
             history.replaceState({ url: window.location.href, cwa: true }, '', window.location.href);

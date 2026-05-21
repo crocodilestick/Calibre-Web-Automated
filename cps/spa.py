@@ -11,6 +11,7 @@
 # parent template to fragment.html so only the body+js blocks come back.
 
 import flask
+from .cw_login import current_user
 
 
 EXCLUDED_PATH_PREFIXES = [
@@ -96,6 +97,19 @@ def spa_before_request():
             return None
 
     if is_excluded_path(req.path):
+        return None
+
+    # Don't render the shell for unauthenticated users hitting a protected
+    # route — otherwise the user sees the empty shell + loading overlay
+    # while the fragment XHR follows the /login redirect, then a full nav
+    # to /login swaps it out. Skipping the shell lets Flask-Login redirect
+    # directly so the only thing the user sees is /login.
+    try:
+        authed = current_user.is_authenticated
+    except Exception:
+        authed = False
+    allow_anon = bool(flask.g.get('allow_anonymous', False))
+    if not authed and not allow_anon:
         return None
 
     from .render_template import render_title_template

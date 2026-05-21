@@ -176,22 +176,17 @@
         updateBadge(data.count);
 
         if (data.count > 0 && data.enabled) {
-            stopStatusPolling();
             showNotificationModal(data);
-            if (isModalActive()) {
-                return;
-            }
         }
 
-        if ((data.needs_scan || data.stale) && !isModalActive()) {
-            return;
-        }
-
-        if (data.count > 0) {
+        // Poll only while the server reports a scan is actually running, so we
+        // pick up the result the moment it finishes. The 60-attempt cap inside
+        // startStatusPolling() is a safety net for hung scans.
+        if (data.scan_in_progress) {
+            startStatusPolling();
+        } else {
             stopStatusPolling();
-            return;
         }
-
     }
     
     /**
@@ -274,11 +269,11 @@
             });
         }
 
+        // One fetch on page load. handleStatusResponse starts polling only if
+        // the server reports a scan is currently in progress; otherwise nothing
+        // further is requested until the page is reloaded or the tab regains
+        // focus (visibilitychange listener below).
         fetchDuplicateStatus().then(handleStatusResponse);
-        // Poll for ~2.5 minutes after page load to catch in-progress ingest/scan
-        // results. handleStatusResponse no longer restarts polling, so once the
-        // 60-attempt cap is hit polling stays stopped.
-        startStatusPolling();
 
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {

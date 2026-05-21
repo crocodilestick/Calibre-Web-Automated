@@ -49,6 +49,7 @@ from . import gdriveutils as gd
 from .constants import (STATIC_DIR as _STATIC_DIR, CACHE_TYPE_THUMBNAILS, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES,
                         SUPPORTED_CALIBRE_BINARIES)
 from .subproc_wrapper import process_wait
+from .services.file_move import copy_with_metadata_fallback
 
 # Track books with pending thumbnail generation to prevent duplicate tasks
 _pending_thumbnail_books = set()
@@ -479,10 +480,11 @@ def rename_all_files_on_change(one_book, new_path, old_path, all_new_name, gdriv
                 log.debug("Successfully renamed %s to %s", old_file, new_file)
             except OSError as ex:
                 log.error("Failed to rename file from %s to %s: %s", old_file, new_file, ex)
-                # Try copy+delete as fallback for permission issues (e.g., network shares)
+                # Try copy+delete as fallback for permission issues (e.g., network shares,
+                # cross-ownership bind mounts — janeczku/calibre-web#3437).
                 try:
                     log.info("Attempting copy+delete fallback for %s", old_file)
-                    shutil.copy2(old_file, new_file)
+                    copy_with_metadata_fallback(old_file, new_file)
                     os.remove(old_file)
                     log.info("Successfully copied and removed old file: %s", old_file)
                 except (OSError, IOError) as fallback_ex:
@@ -621,12 +623,22 @@ def move_files_on_change(calibre_path, new_author_dir, new_titledir, localbook, 
             except OSError as ex:
                 log.error("Rename title from %s to %s failed with error: %s, trying copy+delete fallback",
                          path, new_path, ex)
+                dest_filepath = os.path.join(new_path, db_filename)
                 try:
-                    shutil.copy2(original_filepath, os.path.join(new_path, db_filename))
-                    os.remove(original_filepath)
+                    # copy_with_metadata_fallback handles the EPERM-on-chmod case that
+                    # affects cross-ownership bind mounts (janeczku/calibre-web#3437):
+                    # copy2's copystat() raises EPERM on restricted filesystems even
+                    # though copyfile() succeeded — the helper retries with a data-only
+                    # copy in that case, so the upload completes instead of surfacing
+                    # the confusing permission error to the user.
+                    copy_with_metadata_fallback(original_filepath, dest_filepath)
                 except (OSError, IOError) as fallback_ex:
                     log.error("Copy+delete fallback also failed: %s", fallback_ex)
                     raise
+                try:
+                    os.remove(original_filepath)
+                except (OSError, IOError) as rm_ex:
+                    log.warning("Failed to remove staging file after copy: %s", rm_ex)
             log.debug("Moving title: %s to %s", original_filepath, new_path)
         else:
             # Check new path is not valid path
@@ -662,7 +674,9 @@ def move_files_on_change(calibre_path, new_author_dir, new_titledir, localbook, 
                         except OSError as ex:
                             log.error("Failed to move file %s to %s: %s, trying copy+delete", src_file, dest_file, ex)
                             try:
-                                shutil.copy2(src_file, dest_file)
+                                # copy_with_metadata_fallback handles the EPERM-on-chmod case
+                                # that affects cross-ownership bind mounts (janeczku/calibre-web#3437).
+                                copy_with_metadata_fallback(src_file, dest_file)
                                 os.remove(src_file)
                             except (OSError, IOError) as fallback_ex:
                                 log.error("Copy+delete fallback failed for %s: %s", src_file, fallback_ex)

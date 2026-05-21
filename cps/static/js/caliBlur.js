@@ -259,7 +259,33 @@ $(document).mouseup(function (e) {
             && $(value).has(e.target).length === 0) // ... nor a descendant of the container
         {
             if ($(value).hasClass("dropdown-menu")) {
-                $(value).hide();
+                // Don't fight Bootstrap's dropdown plugin. Two failure
+                // modes if we naively .hide() this menu:
+                //  1. User clicked this dropdown's own toggle — the
+                //     click right after this mouseup will addClass
+                //     'open' to the parent, but the inline display:none
+                //     beats `.open .dropdown-menu { display:block }`
+                //     and the menu opens by class but stays invisible.
+                //     This was the search-page "Add to shelf" bug.
+                //  2. We .hide() a Bootstrap menu when clicking outside.
+                //     Bootstrap's own clearMenus also removes .open,
+                //     fine — but the inline display:none lingers, so
+                //     the NEXT time the user opens the dropdown the
+                //     same invisibility happens.
+                var $parent = $(value).parent();
+                // (1) Clicked our own toggle? Let Bootstrap open it.
+                if ($parent.length && $parent.has(e.target).length) {
+                    return; // continue $.each
+                }
+                // (2) Bootstrap-managed (parent currently has .open)?
+                // Close via the class system so no inline display sticks.
+                if ($parent.length && $parent.hasClass('open')) {
+                    $parent.removeClass('open');
+                    $parent.find('[data-toggle="dropdown"]').attr('aria-expanded', 'false');
+                } else {
+                    // Non-Bootstrap menu fallback — keep the legacy hide.
+                    $(value).hide();
+                }
             } else {
                 if ($(value).hasClass("collapse")) {
                     $(value).collapse("toggle");

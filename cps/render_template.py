@@ -229,31 +229,24 @@ def cwa_update_notification() -> None:
     else:
         return
 
-# Notify users once about theme migration to caliBlur
+# Theme migration notification (fork #222 follow-up, @droM4X).
+#
+# v4.0.91 removed the Switch Theme icon from the top bar but the
+# once-per-day flash banner ("Theme switching is temporarily disabled
+# until v5.0.0") kept firing on the first page load. With the icon
+# gone there's no longer anything for users to be reminded *about* —
+# the banner became orphaned context that only confused returning
+# users. droM4X confirmed the icon removal worked and asked for the
+# residual banner to go.
+#
+# Function is preserved as a no-op (rather than removed) so the
+# call site in render_title_template doesn't change shape and so
+# we can re-enable a different banner here later without recreating
+# the function. The underlying theme-migration DB shim in
+# cps.ub::ensure_theme_migration still runs — that's the actual
+# state change; this was only the user-facing notice.
 def theme_migration_notification() -> None:
-    notice_file = '/app/theme_migration_notice'
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    
-    # Check if notification already shown today
-    if os.path.isfile(notice_file):
-        try:
-            with open(notice_file, 'r') as f:
-                last_notification = f.read().strip()
-                if last_notification == current_date:
-                    return
-        except Exception:
-            pass
-    
-    # Show notification
-    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v5.0.0.")
-    flash(message, category="theme_migration")
-    
-    # Mark as shown today
-    try:
-        with open(notice_file, 'w') as f:
-            f.write(current_date)
-    except Exception as e:
-        print(f"[theme-migration-notification] Error writing notice file: {e}", flush=True)
+    return
 
 
 # Checks if translations are missing for the current language

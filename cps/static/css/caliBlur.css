@@ -166,7 +166,11 @@ a, button {
     to {
         width: 0;
         height: 0;
-        overflow: hidden
+        padding: 0;
+        border: 0;
+        margin: 0;
+        visibility: hidden;
+        overflow: hidden;
     }
 }
 
@@ -174,7 +178,11 @@ a, button {
     to {
         width: 0;
         height: 0;
-        visibility: hidden
+        padding: 0;
+        border: 0;
+        margin: 0;
+        visibility: hidden;
+        overflow: hidden;
     }
 }
 
@@ -5567,6 +5575,10 @@ body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > div.col-sm
 #main-nav + #scnd-nav .create-shelf a:hover {
     background: 0 0;
     color: #fff !important
+}
+
+#main-nav + #scnd-nav .create-shelf.active a {
+    color: var(--color-primary) !important
 }
 
 #main-nav + #scnd-nav:after {

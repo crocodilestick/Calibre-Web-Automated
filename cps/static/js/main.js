@@ -935,16 +935,18 @@ $(function() {
         });
     });
 
-    $("#delete_shelf").click(function(event) {
+    // Delegate so the binding survives SPA fragment swaps — the button
+    // doesn't exist when main.js's DOMContentLoaded handler first runs.
+    $(document).on("click", "#delete_shelf", function(event) {
+        var btn = this;
         confirmDialog(
-            $(this).attr('id'),
+            btn.id,
             "GeneralDeleteModal",
-            $(this).data('value'),
+            $(btn).data('value'),
             function(value){
-                postButton(event, $("#delete_shelf").data("action"));
+                postButton(event, $(btn).data("action"));
             }
         );
-
     });
 
     $("#fileModal").on("show.bs.modal", function(e) {

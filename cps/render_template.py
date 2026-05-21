@@ -38,7 +38,7 @@ def get_sidebar_config(kwargs=None):
         content = 'conf' in kwargs
     sidebar = list()
     sidebar.append({"glyph": "glyphicon-book", "text": _('Books'), "link": 'web.index', "id": "new",
-                    "visibility": constants.SIDEBAR_RECENT, 'public': True, "page": "root",
+                    "visibility": constants.SIDEBAR_RECENT, 'public': True, "page": "newest",
                     "show_text": _('Show recent books'), "config_show":False})
     sidebar.append({"glyph": "glyphicon-fire", "text": _('Hot Books'), "link": 'web.books_list', "id": "hot",
                     "visibility": constants.SIDEBAR_HOT, 'public': True, "page": "hot",
@@ -86,10 +86,10 @@ def get_sidebar_config(kwargs=None):
                     "show_text": _('Show Language Section'), "config_show": True})
     sidebar.append({"glyph": "glyphicon-star-empty", "text": _('Ratings'), "link": 'web.ratings_list', "id": "rate",
                     "visibility": constants.SIDEBAR_RATING, 'public': True,
-                    "page": "rating", "show_text": _('Show Ratings Section'), "config_show": True})
+                    "page": "ratings", "show_text": _('Show Ratings Section'), "config_show": True})
     sidebar.append({"glyph": "glyphicon-file", "text": _('File formats'), "link": 'web.formats_list', "id": "format",
                     "visibility": constants.SIDEBAR_FORMAT, 'public': True,
-                    "page": "format", "show_text": _('Show File Formats Section'), "config_show": True})
+                    "page": "formats", "show_text": _('Show File Formats Section'), "config_show": True})
     sidebar.append(
         {"glyph": "glyphicon-trash", "text": _('Archived Books'), "link": 'web.books_list', "id": "archived",
          "visibility": constants.SIDEBAR_ARCHIVED, 'public': (not current_user.is_anonymous), "page": "archived",
@@ -97,7 +97,7 @@ def get_sidebar_config(kwargs=None):
     if not simple:
         sidebar.append(
             {"glyph": "glyphicon-th-list", "text": _('Books List'), "link": 'web.books_table', "id": "list",
-             "visibility": constants.SIDEBAR_LIST, 'public': (not current_user.is_anonymous), "page": "list",
+             "visibility": constants.SIDEBAR_LIST, 'public': (not current_user.is_anonymous), "page": "book_table",
              "show_text": _('Show Books List'), "config_show": content})
     if current_user.role_admin() or current_user.role_edit():
         sidebar.append(

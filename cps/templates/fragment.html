@@ -2,6 +2,7 @@
 {% import 'image.html' as image %}
 {% if page %}<meta name="x-cwa-page" content="{{ page }}">{% endif %}
 <meta name="x-cwa-body-class" content="{{ page or '' }} {{ bodyClass or '' }}">
+{% if title %}<meta name="x-cwa-title" content="{{ instance }} | {{ title }}">{% endif %}
 {# Templates often place <style>/<meta> tags in {% block header %}. layout.html
    renders that into <head>; for fragment swaps we render it inline so the
    page-specific CSS still applies. #}
@@ -39,4 +40,8 @@
   {% endif %}
   </div>
 {% endif %}
+{# Templates such as shelf.html declare modals (e.g. #GeneralDeleteModal)
+   in {% block modal %}; layout.html renders that block, so we must too
+   or the shelf-delete confirm dialog never enters the DOM on SPA loads. #}
+{% block modal %}{% endblock %}
 {% block js %}{% endblock %}

@@ -815,7 +815,19 @@ $(function() {
             data: JSON.stringify(shelfData),
             success: function(response) {
                 if (response.success) {
-                    window.location.href = "{{ url_for('web.index') }}";
+                    {% if shelf %}
+                    // Edit case — go back to the shelf we just saved.
+                    window.location.href = "{{ url_for('web.render_magic_shelf', shelf_id=shelf.id) }}";
+                    {% else %}
+                    // Create case — backend returns the new shelf id; mirror
+                    // regular-shelf behaviour (shelf.create_shelf redirects to
+                    // shelf.show_shelf) by navigating to the new magic shelf.
+                    if (response.shelf_id) {
+                        window.location.href = "{{ url_for('web.render_magic_shelf', shelf_id=0) }}".replace('/0', '/' + response.shelf_id);
+                    } else {
+                        window.location.href = "{{ url_for('web.index') }}";
+                    }
+                    {% endif %}
                 } else {
                     alert('Error saving shelf: ' + (response.message || 'Unknown error'));
                 }

@@ -59,14 +59,28 @@
         }
     };
 
-    function updateSidebarActive(fragmentRoot) {
+    function updateTitle(fragmentRoot) {
+        var meta = fragmentRoot.querySelector('meta[name="x-cwa-title"]');
+        if (meta && meta.getAttribute('content')) {
+            document.title = meta.getAttribute('content');
+        }
+    }
+
+    function updateSidebarActive(fragmentRoot, pathname) {
         var meta = fragmentRoot.querySelector('meta[name="x-cwa-page"]');
-        if (!meta) return;
-        var page = meta.getAttribute('content');
-        if (!page) return;
-        var targetId = 'nav_' + page;
+        var page = meta ? meta.getAttribute('content') : '';
+        var path = pathname || window.location.pathname;
         document.querySelectorAll('#scnd-nav li').forEach(function (li) {
-            li.classList.toggle('active', li.id === targetId);
+            var active = false;
+            if (page && li.getAttribute('data-page') === page) {
+                active = true;
+            } else {
+                // Per-shelf / per-magic-shelf entries: no data-page, no fixed
+                // id — match by their anchor's pathname.
+                var a = li.querySelector('a[href]');
+                if (a && a.pathname === path) active = true;
+            }
+            li.classList.toggle('active', active);
         });
     }
 
@@ -175,7 +189,10 @@
                doc.querySelector('.col-sm-10');
     }
 
-    function injectFragment(html) {
+    // Returns a promise that resolves when all fragment scripts have finished
+    // loading (external) or executing (inline). Callers that depend on page
+    // scripts being ready (cwaInit.runAll) should await it.
+    function injectFragment(html, targetUrl) {
         var parser = new DOMParser();
         var doc = parser.parseFromString(html, 'text/html');
 
@@ -203,6 +220,7 @@
         // The fragment template renders <body>{% block body %}{% block js %}</body>;
         // pull the rendered body wholesale (minus scripts, which we re-exec).
         var sourceBody = doc.body;
+        var scriptsDone = Promise.resolve();
         if (!sourceBody) {
             curContainer.innerHTML = headPrefix + html;
         } else {
@@ -212,11 +230,20 @@
             scriptNodes.forEach(function (s) { s.parentNode.removeChild(s); });
             curContainer.innerHTML = headPrefix + sourceBody.innerHTML;
             updateBodyClass(curContainer);
-            updateSidebarActive(curContainer);
-            executeScripts(scriptNodes);
+            // Resolve target pathname from the URL we're navigating to —
+            // history.pushState hasn't fired yet, so window.location is stale.
+            var targetPath = null;
+            if (targetUrl) {
+                try { targetPath = new URL(targetUrl, window.location.href).pathname; }
+                catch (e) { /* leave null → updateSidebarActive falls back */ }
+            }
+            updateSidebarActive(curContainer, targetPath);
+            updateTitle(curContainer);
+            scriptsDone = executeScripts(scriptNodes);
         }
 
         if (doc.title) document.title = doc.title;
+        return scriptsDone;
     }
 
     function executeScripts(scriptNodes) {
@@ -285,6 +312,20 @@
     /* Core navigation                                                      */
     /* ------------------------------------------------------------------ */
 
+    // On mobile (≤768px) caliBlur's mobileSupport reparents the sidebar into
+    // .navbar-collapse, so it only appears when the hamburger has been
+    // toggled (the collapse gains .in). Clicking a sidebar link used to be
+    // a full page reload that disposed of the open state for free — with
+    // SPA swaps we have to close it ourselves, otherwise the overlay sits
+    // on top of the new content.
+    function closeMobileSidebar() {
+        if (typeof window.$ === 'undefined') return;
+        var $open = window.$('.navbar-collapse.collapse.in');
+        if (!$open.length) return;
+        try { $open.collapse('hide'); }
+        catch (e) { $open.removeClass('in'); }
+    }
+
     function navigateTo(url, opts) {
         opts = opts || {};
 
@@ -295,9 +336,12 @@
 
         navigating = true;
         var token = ++currentNavToken;
-        scheduleOverlay();
 
-        return fetch(url, {
+        // Order matters: kick the XHR off, dismiss the mobile sidebar so its
+        // collapse animation runs while the fetch is in flight, THEN arm the
+        // overlay. The overlay is debounced (100ms) so a fast cached fetch
+        // never paints it; the sidebar close still happens regardless.
+        var fetchPromise = fetch(url, {
             credentials: 'same-origin',
             redirect: 'follow',
             headers: {
@@ -305,34 +349,56 @@
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'text/html'
             }
-        }).then(function (response) {
-            // A redirect that crossed an exclusion boundary (e.g. session
-            // expired → /login) — hand control back to the browser.
+        });
+
+        closeMobileSidebar();
+        scheduleOverlay();
+
+        return fetchPromise.then(function (response) {
+            // Distinguish two kinds of follow-redirect outcomes:
+            //  (a) the redirect crossed an exclusion boundary (e.g. session
+            //      expired → /login) — the response body is the excluded
+            //      page's full layout, useless as a fragment; hand control
+            //      back to the browser.
+            //  (b) same-boundary redirect (e.g. /search → /search/stored/) —
+            //      the response is a real fragment, just at a different URL.
+            //      Inject it and replace the URL bar to the final target.
             if (response.redirected) {
-                window.location.href = response.url;
-                // Resolve as a sentinel so we don't try to inject anything.
-                return { __cwaRedirected: true };
+                var redirectedPath = '';
+                try { redirectedPath = new URL(response.url).pathname; }
+                catch (e) { /* leave empty → treat as excluded for safety */ }
+                if (!redirectedPath || pathExcluded(redirectedPath)) {
+                    window.location.href = response.url;
+                    return { __cwaRedirected: true };
+                }
             }
             if (!response.ok) {
                 throw new Error('HTTP ' + response.status);
             }
             return response.text().then(function (text) {
-                return { html: text, finalUrl: response.url };
+                return { html: text, finalUrl: response.url, redirected: response.redirected };
             });
         }).then(function (result) {
             if (token !== currentNavToken) return;
             if (result && result.__cwaRedirected) return;
 
-            injectFragment(result.html);
+            // After a same-boundary redirect, the URL we asked for and the
+            // URL we ended up at differ — use the final one for history,
+            // pathname-based sidebar lookups, etc.
+            var effectiveUrl = (result && result.redirected && result.finalUrl) ? result.finalUrl : url;
+
+            var scriptsDone = injectFragment(result.html, effectiveUrl) || Promise.resolve();
 
             // Update browser history.
             try {
                 if (opts.skipPush) {
                     // popstate path — URL already matches.
-                } else if (opts.replace) {
-                    history.replaceState({ url: url, cwa: true }, '', url);
+                } else if (opts.replace || (result && result.redirected)) {
+                    // Replace (not push) on redirects so the redirect source
+                    // doesn't pollute history with an unreachable entry.
+                    history.replaceState({ url: effectiveUrl, cwa: true }, '', effectiveUrl);
                 } else {
-                    history.pushState({ url: url, cwa: true }, '', url);
+                    history.pushState({ url: effectiveUrl, cwa: true }, '', effectiveUrl);
                 }
             } catch (e) {
                 console.error('[cwa-spa] history update failed', e);
@@ -340,11 +406,16 @@
 
             window.scrollTo(0, 0);
 
-            if (window.cwaInit && typeof window.cwaInit.runAll === 'function') {
-                try { window.cwaInit.runAll(); } catch (e) {
-                    console.error('[cwa-spa] cwaInit.runAll threw', e);
+            // Wait for fragment scripts (e.g. query-builder) to finish loading
+            // before re-running shared init hooks — some hooks rely on
+            // libraries the fragment just brought in.
+            return scriptsDone.then(function () {
+                if (window.cwaInit && typeof window.cwaInit.runAll === 'function') {
+                    try { window.cwaInit.runAll(); } catch (e) {
+                        console.error('[cwa-spa] cwaInit.runAll threw', e);
+                    }
                 }
-            }
+            });
         }).catch(function (err) {
             if (token !== currentNavToken) return;
             console.error('[cwa-spa] navigation failed for', url, err);

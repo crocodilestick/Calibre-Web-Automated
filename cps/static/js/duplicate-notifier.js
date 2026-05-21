@@ -184,7 +184,6 @@
         }
 
         if ((data.needs_scan || data.stale) && !isModalActive()) {
-            startStatusPolling();
             return;
         }
 
@@ -193,9 +192,6 @@
             return;
         }
 
-        if (data.enabled) {
-            startStatusPolling();
-        }
     }
     
     /**
@@ -279,6 +275,9 @@
         }
 
         fetchDuplicateStatus().then(handleStatusResponse);
+        // Poll for ~2.5 minutes after page load to catch in-progress ingest/scan
+        // results. handleStatusResponse no longer restarts polling, so once the
+        // 60-attempt cap is hit polling stays stopped.
         startStatusPolling();
 
         document.addEventListener('visibilitychange', function() {

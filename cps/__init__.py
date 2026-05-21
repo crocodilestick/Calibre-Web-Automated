@@ -267,7 +267,12 @@ def create_app():
                 # Explicitly set to None to indicate we checked but found nothing
                 g.flask_httpauth_user = None
 
-        if current_user.is_authenticated:
+        _is_api_request = (
+            request.path.startswith('/duplicates/')
+            or 'application/json' in request.headers.get('Accept', '')
+            or 'application/json' in request.headers.get('Content-Type', '')
+        )
+        if current_user.is_authenticated and not _is_api_request:
             try:
                 # Verify required tables exist before querying
                 from sqlalchemy import inspect

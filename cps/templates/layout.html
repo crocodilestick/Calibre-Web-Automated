@@ -26,6 +26,9 @@
     {# Fork #288 mobile pass 2: move .alert toasts to TOP on mobile so they
        don't overlap bottom-of-form buttons (e.g. /login magic-link button). #}
     <link href="{{ url_for('static', filename='css/mobile-alert-toast-position.css') }}" rel="stylesheet" media="screen">
+    {# Fork #288 mobile pass 3: scrollable modal body on mobile so Send/Cancel
+       buttons in tall modals (Send-to-eReader) stay reachable. #}
+    <link href="{{ url_for('static', filename='css/mobile-modal-scrollable-body.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/book_organizer.css') }}" rel="stylesheet" media="screen">
     {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}

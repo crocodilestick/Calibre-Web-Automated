@@ -1,0 +1,33 @@
+/*
+ * Fork #288 mobile pass 3: Bootstrap 3 modals don't have a built-in
+ * scrollable-body class (BS4+ added `.modal-dialog-scrollable`). On
+ * narrow viewports the email-select modal on `/book/<id>` renders
+ * the Send/Cancel buttons below the visible viewport — iPhone SE
+ * users physically can't tap Send without scrolling the entire
+ * outer page.
+ *
+ * Cap `.modal-body` to a sensible height with internal overflow on
+ * mobile (≤767px) so the modal header + footer stay pinned and the
+ * body scrolls between them. 50vh leaves plenty of room for header
+ * (~60px) + footer (~60px) + status bar (~10px) on a 667-tall iPhone
+ * SE viewport, with comfortable margin around the modal.
+ *
+ * Desktop unchanged — modals there have plenty of vertical room.
+ */
+
+@media (max-width: 767px) {
+    /* Pin modal to a small top offset (Bootstrap 3 default is
+       larger) so we maximize available vertical space. */
+    .modal-dialog {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    /* Scrollable body. The modal-content box-shadow keeps the
+       header/footer visually distinct from the scrolling body. */
+    .modal-body {
+        max-height: 50vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}

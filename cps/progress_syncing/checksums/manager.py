@@ -59,10 +59,15 @@ def store_checksum(
         True
     """
     try:
-        from ... import calibre_db
         from sqlalchemy import text
 
         if db_connection is None:
+            # Defer the `cps` import to the calibre_db-needed branch. The
+            # full `cps` package import triggers the Flask app singleton
+            # init, which under pytest-xdist subprocess contexts can hang
+            # waiting on resources that don't exist in the worker. See
+            # notes/xdist-worker-ipc-hang-followup-2026-05-21.md.
+            from ... import calibre_db
             db_connection = calibre_db.engine.connect()
             should_close = True
         else:

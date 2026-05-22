@@ -43,3 +43,71 @@ ul.wysihtml5-toolbar > li:has(a[data-wysihtml5-command="createLink"]),
 ul.wysihtml5-toolbar > li:has(a[data-wysihtml5-command="insertImage"]) {
     display: none !important;
 }
+
+/*
+ * Fork #283 follow-up (reporter @droM4X verified v4.0.112, posted 3 more
+ * issues):
+ *
+ * 4. The "Font Size" dropdown (data-wysihtml5-command="formatBlock" — it
+ *    actually picks paragraph style: H1/H2/H3/Paragraph) only affects
+ *    the entire description text since the metadata editor doesn't
+ *    distinguish heading levels in the rendered output. Hide it — frees
+ *    toolbar space so the remaining buttons stay on one row at narrower
+ *    widths.
+ */
+
+ul.wysihtml5-toolbar > li:has(a[data-wysihtml5-command="formatBlock"]) {
+    display: none !important;
+}
+
+/*
+ * 5 + 6. x-editable's popup puts the form's input and the
+ *        Cancel/Submit buttons as inline-block SIBLINGS in the same
+ *        row (.editable-input + .editable-buttons). At narrow widths
+ *        the buttons overflow the popup. Stack them BELOW the input.
+ *
+ *        Also swap order: x-editable defaults to Submit/Cancel; common
+ *        UX is Cancel-left, Submit-right. Use flex `order:` on the
+ *        buttons inside .editable-buttons.
+ *
+ *        Scope to the popup containing the wysihtml5 editor (the
+ *        comments column + custom-column wysihtml5 fields). Other
+ *        editable popups (text input, select, etc.) keep the default
+ *        inline layout — only the wysihtml5 surface needs the column
+ *        treatment.
+ */
+
+.editable-container .editableform:has(.wysihtml5-sandbox) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .control-group,
+.editable-container .editableform:has(.wysihtml5-sandbox) .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-input {
+    display: block;
+    width: 100%;
+}
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 10px;
+    margin-left: 0;
+}
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-cancel {
+    order: 1;
+    margin-left: 0 !important;
+}
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-submit {
+    order: 2;
+}

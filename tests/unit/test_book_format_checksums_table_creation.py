@@ -180,11 +180,24 @@ class TestKindleEpubFixerGatesChecksumRecalc(_ScriptWriteGuardCase):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.unit
+@pytest.mark.integration
 class TestStoreChecksumWorksAfterUnconditionalEnsure:
     """End-to-end micro-test: a fresh DB + unconditional ensure_* call +
     store_checksum should write a row, not crash with 'no such table'.
-    This is the user-visible symptom from #219, rendered as a test."""
+    This is the user-visible symptom from #219, rendered as a test.
+
+    Classified as @pytest.mark.integration (NOT unit) because it imports
+    `cps.progress_syncing.models`, which transitively imports `cps.db`
+    and `cps.ub` at module level — the heavyweight cps package init.
+    Under pytest-xdist subprocess contexts (default Fast Tests pool)
+    those imports hang on resources that don't exist in the worker.
+    Two prior fixes (PR #297 conn.close, PR #298 deferred-import inside
+    store_checksum) reduced incidence but didn't eliminate it; the
+    hang root cause is the cps.progress_syncing.models module-level
+    imports of cps.db + cps.ub. Reclassifying to integration moves
+    the test out of the xdist pool entirely.
+
+    See notes/xdist-worker-ipc-hang-followup-2026-05-21.md."""
 
     def test_store_checksum_after_ensure_calibre_db_tables(self, tmp_path):
         # Stand up a metadata.db-shaped sqlite (just the `books` table is

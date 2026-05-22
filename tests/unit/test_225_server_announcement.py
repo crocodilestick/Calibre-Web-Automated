@@ -120,6 +120,33 @@ def test_layout_renders_banner_when_set():
     ), "banner must have id='serverAnnouncementBanner' for the dismiss JS to target"
 
 
+def test_layout_banner_does_not_inherit_caliBlur_toast_alert_styles():
+    """Fork #288 mobile-pass-1 regression: caliBlur.css styles every
+    `.alert` element as a fixed-position toast that auto-hides after
+    10s. The announcement banner must NOT use the Bootstrap `alert`
+    class; otherwise on the dark theme it becomes invisible-then-broken
+    on every page. Use a dedicated cwng-server-announcement class with
+    inline styles that force flow-layout positioning."""
+    src = LAYOUT_HTML.read_text()
+    # The banner div must not carry the bootstrap alert class set.
+    banner_match = re.search(
+        r'<div\s+id=[\"\']serverAnnouncementBanner[\"\'][^>]*>',
+        src,
+    )
+    assert banner_match, "banner element not found"
+    opening_tag = banner_match.group(0)
+    assert 'class="alert' not in opening_tag and "class='alert" not in opening_tag, (
+        "banner must NOT use Bootstrap `alert` class — caliBlur.css hijacks "
+        "every .alert into a fixed-position toast. Use a dedicated class instead."
+    )
+    # Must have explicit position (static or relative) — not the fixed/absolute
+    # that caliBlur's .alert rule would otherwise impose.
+    assert re.search(r"position:\s*(static|relative)\b", opening_tag), (
+        "banner must force position: static or relative so it stays in flow "
+        "regardless of what the theme stylesheet does to ambient `.alert` rules"
+    )
+
+
 def test_render_template_passes_server_announcement():
     """render_title_template must populate `server_announcement` from
     config.config_server_announcement (with a None-safe fallback)."""

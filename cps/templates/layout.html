@@ -309,43 +309,6 @@
       {%endif%}
     {% endfor %}
     {% block flash %}{% endblock %}
-    {# Fork #225 (@froggybottomboys): server-wide announcement banner.
-       Renders only when an admin has set server_announcement.
-       Per-user dismiss is client-side via localStorage keyed by a hash of
-       the announcement content — editing the text re-shows it for everyone. #}
-    {% if server_announcement %}
-      <div id="serverAnnouncementBanner" class="alert alert-info" style="margin: 0.5em 1em; display: flex; align-items: center; gap: 1em; border-radius: 4px;" data-announcement-content="{{ server_announcement }}">
-        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-        <span style="flex: 1;">{{ server_announcement }}</span>
-        <button type="button" class="close" id="serverAnnouncementDismiss" aria-label="{{ _('Dismiss') }}" style="margin-left: auto;">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <script>
-        (function () {
-          var banner = document.getElementById('serverAnnouncementBanner');
-          if (!banner) return;
-          var content = banner.getAttribute('data-announcement-content') || '';
-          var hash = 0;
-          for (var i = 0; i < content.length; i++) {
-            hash = ((hash << 5) - hash) + content.charCodeAt(i);
-            hash |= 0;
-          }
-          var key = 'cwng_announcement_dismissed_' + hash;
-          if (localStorage.getItem(key) === '1') {
-            banner.style.display = 'none';
-            return;
-          }
-          var btn = document.getElementById('serverAnnouncementDismiss');
-          if (btn) {
-            btn.addEventListener('click', function () {
-              localStorage.setItem(key, '1');
-              banner.style.display = 'none';
-            });
-          }
-        })();
-      </script>
-    {% endif %}
     {% if g.current_theme == 1 %}
       <div id="loader" hidden="true">
         <center>
@@ -355,6 +318,56 @@
       </div>
     {%endif%}
     <div class="container-fluid">
+      {# Fork #225 (@froggybottomboys): server-wide announcement banner.
+         Renders only when an admin has set server_announcement. Per-user
+         dismiss is client-side via localStorage keyed by a hash of the
+         announcement content — editing the text re-shows it for everyone.
+         Fork #288 (mobile pass 1): banner lives INSIDE .container-fluid so
+         it inherits the same offset that clears the fixed navbar; uses a
+         dedicated CSS class (NOT Bootstrap `.alert .alert-info`) because
+         caliBlur.css hijacks every `.alert` into a fixed-position toast
+         that auto-hides after 10s. Inline styles force flow-layout. #}
+      {% if server_announcement %}
+        <div id="serverAnnouncementBanner" class="cwng-server-announcement" data-announcement-content="{{ server_announcement }}"
+             style="position: relative; z-index: 5;
+                    display: flex; align-items: center; gap: 1em;
+                    margin: 56px 0 0.5em 0; padding: 12px 16px;
+                    background-color: #d9edf7; color: #31708f;
+                    border: 1px solid #bce8f1; border-radius: 4px;
+                    font-size: 14px; line-height: 1.4;">
+          <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="flex: 0 0 auto;"></span>
+          <span style="flex: 1 1 auto;">{{ server_announcement }}</span>
+          <button type="button" class="cwng-server-announcement-dismiss" id="serverAnnouncementDismiss" aria-label="{{ _('Dismiss') }}"
+                  style="flex: 0 0 auto; background: none; border: 0; padding: 0 4px;
+                         font-size: 22px; line-height: 1; color: inherit; opacity: 0.6; cursor: pointer;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <script>
+          (function () {
+            var banner = document.getElementById('serverAnnouncementBanner');
+            if (!banner) return;
+            var content = banner.getAttribute('data-announcement-content') || '';
+            var hash = 0;
+            for (var i = 0; i < content.length; i++) {
+              hash = ((hash << 5) - hash) + content.charCodeAt(i);
+              hash |= 0;
+            }
+            var key = 'cwng_announcement_dismissed_' + hash;
+            if (localStorage.getItem(key) === '1') {
+              banner.style.display = 'none';
+              return;
+            }
+            var btn = document.getElementById('serverAnnouncementDismiss');
+            if (btn) {
+              btn.addEventListener('click', function () {
+                localStorage.setItem(key, '1');
+                banner.style.display = 'none';
+              });
+            }
+          })();
+        </script>
+      {% endif %}
       <div class="row-fluid">
         {% if current_user.is_authenticated or g.allow_anonymous %}
         <div class="col-sm-2">

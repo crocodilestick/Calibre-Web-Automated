@@ -267,12 +267,10 @@ def create_app():
                 # Explicitly set to None to indicate we checked but found nothing
                 g.flask_httpauth_user = None
 
-        _is_api_request = (
-            request.path.startswith('/duplicates/')
-            or 'application/json' in request.headers.get('Accept', '')
-            or 'application/json' in request.headers.get('Content-Type', '')
+        _is_not_magic_shelf_dependant = (
+            request.path.startswith(('/duplicates/', '/application/', '/static/', '/cover/'))
         )
-        if current_user.is_authenticated and not _is_api_request:
+        if current_user.is_authenticated and not _is_not_magic_shelf_dependant:
             try:
                 # Verify required tables exist before querying
                 from sqlalchemy import inspect
@@ -376,11 +374,18 @@ def create_app():
                 g.magic_shelves_access = []
         else:
             g.magic_shelves_access = []
-        try:
-            calibre_db.ensure_session()
-        except Exception:
-            # Failsafe: let route-level code handle specific DB errors
-            pass
+
+        _is_not_DB_dependant = (
+            request.path.startswith(('/application/', '/static/'))
+        )
+        if current_user.is_authenticated and not _is_not_DB_dependant:
+            try:
+                calibre_db.ensure_session()
+                log.debug(f"DB session check passed for request.path '{request.path}'")
+            except Exception:
+                log.debug("error in DB session check")
+                # Failsafe: let route-level code handle specific DB errors
+                pass
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):

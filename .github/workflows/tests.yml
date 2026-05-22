@@ -2,7 +2,12 @@ name: Test Suite
 
 on:
   push:
-    branches: ['**']  # Run Job 1 on all branches
+    # Only fire on direct pushes to main/dev (auto-merge to main, hotfixes).
+    # PR branches get CI via the `pull_request:` trigger below — listing both
+    # `branches: ['**']` here AND `pull_request:` causes dual-trigger CI runs
+    # on the same SHA, which doubles the surface for the xdist worker-IPC
+    # hang documented in notes/xdist-worker-ipc-hang-followup-2026-05-21.md.
+    branches: [main, dev]
   pull_request:
     branches: [main, dev]  # Run Job 1 on PRs to main/dev
   workflow_dispatch:  # Manual trigger button in Actions tab
@@ -80,8 +85,16 @@ jobs:
           # test failures instead of opaque step-level 10-min step timeouts. Without
           # this, a stuck test on one xdist worker only manifests as a step timeout
           # with no indication of which test or worker stalled.
+          #
+          # --dist=loadfile pins all tests in a file to a single worker. This
+          # eliminates the work-stealing race that's been hanging fast-tests
+          # runs (one of two parallel triggers stalls at ~9 minutes with no
+          # currently-executing test for pytest-timeout to interrupt). See
+          # notes/xdist-worker-ipc-hang-followup-2026-05-21.md for diagnostic
+          # log signature + hypothesis. Fewer worker handoffs ≈ fewer races.
           pytest -m "smoke or unit" \
             -n auto \
+            --dist=loadfile \
             --maxfail=3 \
             -v \
             --tb=short \

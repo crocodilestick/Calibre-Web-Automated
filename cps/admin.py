@@ -2383,6 +2383,9 @@ def _configuration_update_helper():
         _config_string(to_save, "config_kobo_cover_padding_aspect")
         _config_string(to_save, "config_kobo_cover_padding_fill_mode")
         _config_string(to_save, "config_kobo_cover_padding_color")
+
+        # Fork #225 (@froggybottomboys): admin-set server-wide announcement banner.
+        _config_string(to_save, "config_server_announcement")
         # Default-on coupling: when the user first enables Kobo sync, auto-
         # enable cover padding too (the padding section was hidden in the
         # form they just submitted, so they couldn't have set it). They can

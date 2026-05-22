@@ -135,6 +135,12 @@ class _Settings(_Base):
     config_kobo_cover_padding_fill_mode = Column(String, default="edge_mirror")
     config_kobo_cover_padding_color = Column(String, default="")
 
+    # Fork #225 (@froggybottomboys): admin-set server-wide announcement
+    # banner. Empty string = no banner. Layout.html renders the banner
+    # at the top of every authenticated page; users dismiss it client-
+    # side via localStorage keyed by content hash.
+    config_server_announcement = Column(String, default="")
+
     config_ldap_provider_url = Column(String, default='example.org')
     config_ldap_port = Column(SmallInteger, default=389)
     config_ldap_authentication = Column(SmallInteger, default=constants.LDAP_AUTH_SIMPLE)

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 16:37-0400\n"
+"POT-Creation-Date: 2026-05-21 21:44-0400\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -153,7 +153,7 @@ msgstr "显示全部"
 msgid "Malformed request"
 msgstr "格式错误的请求"
 
-#: cps/admin.py:811 cps/admin.py:2877
+#: cps/admin.py:811 cps/admin.py:2880
 msgid "Guest Name can't be changed"
 msgstr "访客名称无法更改"
 
@@ -161,7 +161,7 @@ msgstr "访客名称无法更改"
 msgid "Guest can't have this role"
 msgstr "游客无法拥有此角色"
 
-#: cps/admin.py:839 cps/admin.py:2701
+#: cps/admin.py:839 cps/admin.py:2704
 msgid "No admin user remaining, can't remove admin role"
 msgstr "没有其余管理员账户，无法删除管理员角色"
 
@@ -205,7 +205,7 @@ msgstr "无效的阅读栏目"
 msgid "Invalid Restricted Column"
 msgstr "无效的限制栏目"
 
-#: cps/admin.py:946 cps/admin.py:2548
+#: cps/admin.py:946 cps/admin.py:2551
 msgid "Calibre-Web NextGen configuration updated"
 msgstr ""
 
@@ -391,8 +391,8 @@ msgstr "编辑邮件服务器设置"
 msgid "Success! Gmail Account Verified."
 msgstr "Gmail 账户验证成功"
 
-#: cps/admin.py:1813 cps/admin.py:1816 cps/admin.py:2302 cps/admin.py:2532
-#: cps/admin.py:2648 cps/admin.py:2920 cps/editbooks.py:1079
+#: cps/admin.py:1813 cps/admin.py:1816 cps/admin.py:2302 cps/admin.py:2535
+#: cps/admin.py:2651 cps/admin.py:2923 cps/editbooks.py:1079
 #: cps/editbooks.py:1878 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2872
@@ -435,7 +435,7 @@ msgstr "指定任务的持续时间无效"
 msgid "Scheduled tasks settings updated"
 msgstr "已更新计划任务设置"
 
-#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2916 cps/web.py:2302
+#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2919 cps/web.py:2302
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "发生一个未知错误，请稍后再试"
 
@@ -448,7 +448,7 @@ msgstr "设置数据库不可写"
 msgid "title"
 msgstr "标题"
 
-#: cps/admin.py:2019 cps/admin.py:2908
+#: cps/admin.py:2019 cps/admin.py:2911
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "编辑用户 %(nick)s"
@@ -569,200 +569,200 @@ msgstr "密钥文件路径无效，请输入正确的路径"
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "证书文件路径无效，请输入正确的路径"
 
-#: cps/admin.py:2454
+#: cps/admin.py:2457
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
 
-#: cps/admin.py:2457
+#: cps/admin.py:2460
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 
-#: cps/admin.py:2476 cps/admin.py:2483
+#: cps/admin.py:2479 cps/admin.py:2486
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2480
+#: cps/admin.py:2483
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2515
+#: cps/admin.py:2518
 msgid "Password length has to be between 1 and 40"
 msgstr "密码长度必须在1到40之间"
 
-#: cps/admin.py:2575
+#: cps/admin.py:2578
 msgid "Database Settings updated"
 msgstr "数据库设置已更新"
 
-#: cps/admin.py:2583
+#: cps/admin.py:2586
 msgid "Database Configuration"
 msgstr "数据库配置"
 
-#: cps/admin.py:2603 cps/web.py:2271
+#: cps/admin.py:2606 cps/web.py:2271
 msgid "Oops! Please complete all fields."
 msgstr "请填写所有字段！"
 
-#: cps/admin.py:2612
+#: cps/admin.py:2615
 msgid "E-mail is not from valid domain"
 msgstr "邮箱不在有效域中"
 
-#: cps/admin.py:2620
+#: cps/admin.py:2623
 msgid "Add new user"
 msgstr "添加新用户"
 
-#: cps/admin.py:2638
+#: cps/admin.py:2641
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "用户“%(user)s”已创建"
 
-#: cps/admin.py:2644
+#: cps/admin.py:2647
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "使用此邮箱或用户名的账号已经存在"
 
-#: cps/admin.py:2674
+#: cps/admin.py:2677
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "用户“%(nick)s”已删除"
 
-#: cps/admin.py:2677
+#: cps/admin.py:2680
 msgid "Can't delete Guest User"
 msgstr "无法删除游客用户"
 
-#: cps/admin.py:2680
+#: cps/admin.py:2683
 msgid "No admin user remaining, can't delete user"
 msgstr "管理员账户不存在，无法删除用户"
 
-#: cps/admin.py:2871 cps/web.py:2606
+#: cps/admin.py:2874 cps/web.py:2606
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "电子邮件地址不能为空，并且必须是有效的电子邮件"
 
-#: cps/admin.py:2912
+#: cps/admin.py:2915
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "用户“%(nick)s”已更新"
 
-#: cps/admin.py:2977
+#: cps/admin.py:2980
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2982
+#: cps/admin.py:2985
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2984 cps/admin.py:3041
+#: cps/admin.py:2987 cps/admin.py:3044
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "连接失败：服务器返回状态码 %(code)s"
 
-#: cps/admin.py:2986
+#: cps/admin.py:2989
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr "连接失败：无法连接到服务器。"
 
-#: cps/admin.py:2988
+#: cps/admin.py:2991
 #, fuzzy
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr "连接失败：请求超时。"
 
-#: cps/admin.py:2990
+#: cps/admin.py:2993
 #, fuzzy
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr "连接失败：响应中的 JSON 无效。"
 
-#: cps/admin.py:2993
+#: cps/admin.py:2996
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "连接错误"
 
-#: cps/admin.py:3019
+#: cps/admin.py:3022
 #, fuzzy, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr "元数据缺少必填字段：%(fields)s"
 
-#: cps/admin.py:3030
+#: cps/admin.py:3033
 #, fuzzy, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "元数据 URL 有效！找到 %(count)s 个端点。"
 
-#: cps/admin.py:3032
+#: cps/admin.py:3035
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "无可用发布信息"
 
-#: cps/admin.py:3034
+#: cps/admin.py:3037
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:3039
+#: cps/admin.py:3042
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:3043
+#: cps/admin.py:3046
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr "连接失败：无法连接到服务器。"
 
-#: cps/admin.py:3045
+#: cps/admin.py:3048
 msgid "Connection failed: Request timed out."
 msgstr "连接失败：请求超时。"
 
-#: cps/admin.py:3047
+#: cps/admin.py:3050
 msgid "Connection failed: Invalid JSON in response."
 msgstr "连接失败：响应中的 JSON 无效。"
 
-#: cps/admin.py:3050
+#: cps/admin.py:3053
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "发生一个未知错误，请稍后再试"
 
-#: cps/admin.py:3062
+#: cps/admin.py:3065
 #, fuzzy
 msgid "Restore already in progress."
 msgstr "连接错误"
 
-#: cps/admin.py:3066
+#: cps/admin.py:3069
 msgid "Restore failed: Calibre library path is not configured."
 msgstr ""
 
-#: cps/admin.py:3071
+#: cps/admin.py:3074
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:3076
+#: cps/admin.py:3079
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:3148 cps/admin.py:3188
+#: cps/admin.py:3151 cps/admin.py:3191
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "连接错误"
 
-#: cps/admin.py:3165
+#: cps/admin.py:3168
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 
-#: cps/admin.py:3184
+#: cps/admin.py:3187
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1173,7 +1173,7 @@ msgstr "成功删除 {} 个用户"
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1449 cps/templates/config_edit.html:333
+#: cps/db.py:1449 cps/templates/config_edit.html:339
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:696 cps/web.py:730 cps/web.py:775 cps/web.py:815 cps/web.py:844
@@ -1914,7 +1914,7 @@ msgstr "文件格式"
 msgid "Books ordered by file formats"
 msgstr "书籍按文件格式排序"
 
-#: cps/opds.py:247 cps/templates/layout.html:343
+#: cps/opds.py:247 cps/templates/layout.html:380
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "书架列表"
@@ -2221,7 +2221,7 @@ msgstr ""
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:811 cps/templates/layout.html:352
+#: cps/shelf.py:811 cps/templates/layout.html:389
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "排除书架"
@@ -2428,7 +2428,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "删除书架时出错"
 
-#: cps/templates/layout.html:362 cps/web.py:1314
+#: cps/templates/layout.html:399 cps/web.py:1314
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "创建书架"
@@ -2919,8 +2919,8 @@ msgstr "添加到书架"
 #: cps/templates/_book_organizer.html:116 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
 #: cps/templates/detail.html:1307 cps/templates/feed.xml:109
-#: cps/templates/feed.xml:111 cps/templates/layout.html:346
-#: cps/templates/layout.html:359 cps/templates/listenmp3.html:201
+#: cps/templates/feed.xml:111 cps/templates/layout.html:383
+#: cps/templates/layout.html:396 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 #: cps/templates/shelf_reorder.html:31
 msgid "(Public)"
@@ -3188,7 +3188,7 @@ msgstr "魔法链接远程登录"
 msgid "Reverse Proxy Login"
 msgstr "反向代理登录"
 
-#: cps/templates/admin.html:159 cps/templates/config_edit.html:297
+#: cps/templates/admin.html:159 cps/templates/config_edit.html:303
 msgid "Reverse Proxy Header Name"
 msgstr "反向代理头部名称"
 
@@ -3352,13 +3352,13 @@ msgstr "确定"
 #: cps/templates/book_table.html:235 cps/templates/book_table.html:255
 #: cps/templates/book_table.html:275 cps/templates/book_table.html:333
 #: cps/templates/book_table.html:369 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:658 cps/templates/config_view_edit.html:219
+#: cps/templates/config_edit.html:664 cps/templates/config_view_edit.html:219
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:968
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:536
-#: cps/templates/layout.html:691 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:573
+#: cps/templates/layout.html:728 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
@@ -3424,7 +3424,7 @@ msgstr ""
 
 #: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
 #: cps/templates/book_edit.html:69 cps/templates/layout.html:184
-#: cps/templates/layout.html:315
+#: cps/templates/layout.html:352
 msgid "Uploading..."
 msgstr "正在上传..."
 
@@ -3531,8 +3531,8 @@ msgstr "转换书籍"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:184 cps/templates/layout.html:436
-#: cps/templates/layout.html:573 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:184 cps/templates/layout.html:473
+#: cps/templates/layout.html:610 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "关闭"
@@ -3667,7 +3667,7 @@ msgid "Fetch Metadata"
 msgstr "获取元数据"
 
 #: cps/templates/book_edit.html:268 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:659 cps/templates/config_view_edit.html:220
+#: cps/templates/config_edit.html:665 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:47
 #: cps/templates/shelf_edit.html:36 cps/templates/shelf_order.html:41
 #: cps/templates/shelf_reorder.html:38 cps/templates/user_edit.html:578
@@ -4033,11 +4033,11 @@ msgstr "重新连接到 Calibre 库"
 msgid "New db location is invalid, please enter valid path"
 msgstr "新数据库路径无效，请输入有效的路径"
 
-#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:311
+#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:317
 msgid "Use Standard Authentication"
 msgstr "使用标准认证"
 
-#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:313
+#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:319
 msgid "Use LDAP Authentication"
 msgstr "使用 LDAP 认证"
 
@@ -4094,16 +4094,32 @@ msgstr "启用访问日志"
 msgid "Location and name of access logfile (access.log for no entry)"
 msgstr "访问日志路径和名称 (默认为 access.log)"
 
+#: cps/templates/config_edit.html:162
+msgid "Server announcement banner"
+msgstr ""
+
 #: cps/templates/config_edit.html:163
+msgid ""
+"Leave blank to hide the banner. Shown at the top of every page until each "
+"user dismisses it."
+msgstr ""
+
+#: cps/templates/config_edit.html:164
+msgid ""
+"Up to 500 characters. HTML is escaped. Each user dismisses the banner "
+"independently; editing the text re-shows it for everyone."
+msgstr ""
+
+#: cps/templates/config_edit.html:169
 #, fuzzy
 msgid "Feature Configuration"
 msgstr "服务器配置"
 
-#: cps/templates/config_edit.html:166
+#: cps/templates/config_edit.html:172
 msgid "Convert non-English characters in title and author while saving to disk"
 msgstr "保存到磁盘时转换标题和作者中的非英文字符"
 
-#: cps/templates/config_edit.html:170
+#: cps/templates/config_edit.html:176
 msgid ""
 "Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/"
 "Kepubify binaries)"
@@ -4111,151 +4127,151 @@ msgstr ""
 "在下载/转换/电子邮件时将元数据嵌入电子书文件（需要 Calibre/Kepubify 二进制文"
 "件）"
 
-#: cps/templates/config_edit.html:174
+#: cps/templates/config_edit.html:180
 msgid "Enable Uploads"
 msgstr "启用上传"
 
-#: cps/templates/config_edit.html:174
+#: cps/templates/config_edit.html:180
 msgid "(Please ensure that users also have upload permissions)"
 msgstr "（请确保用户也有上传权限）"
 
-#: cps/templates/config_edit.html:178
+#: cps/templates/config_edit.html:184
 msgid "Allowed Upload Fileformats"
 msgstr "允许上传的文件格式"
 
-#: cps/templates/config_edit.html:184
+#: cps/templates/config_edit.html:190
 msgid "Enable Anonymous Browsing"
 msgstr "允许匿名浏览"
 
-#: cps/templates/config_edit.html:188
+#: cps/templates/config_edit.html:194
 msgid "Enable Public Registration"
 msgstr "启用注册"
 
-#: cps/templates/config_edit.html:193
+#: cps/templates/config_edit.html:199
 msgid "Use Email as Username"
 msgstr "使用邮箱或用户名"
 
-#: cps/templates/config_edit.html:198
+#: cps/templates/config_edit.html:204
 msgid "Enable Magic Link Remote Login"
 msgstr "启用魔法链接远程登录"
 
-#: cps/templates/config_edit.html:203
+#: cps/templates/config_edit.html:209
 msgid "Enable Kobo sync"
 msgstr "启用 Kobo 同步"
 
-#: cps/templates/config_edit.html:208
+#: cps/templates/config_edit.html:214
 msgid "Proxy unknown requests to Kobo Store"
 msgstr "代理未知请求到 Kobo 商店"
 
-#: cps/templates/config_edit.html:211
+#: cps/templates/config_edit.html:217
 msgid "Server External Port (for port forwarded API calls)"
 msgstr "服务器扩展端口 (用于转发的 API 调用的端口)"
 
-#: cps/templates/config_edit.html:216
+#: cps/templates/config_edit.html:222
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr "将 Kobo 阅读进度同步到 Hardcover (每个用户需要 API 密钥)"
 
-#: cps/templates/config_edit.html:220
+#: cps/templates/config_edit.html:226
 #, fuzzy
 msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
 msgstr "将 Kobo 阅读进度同步到 Hardcover (每个用户需要 API 密钥)"
 
-#: cps/templates/config_edit.html:225
+#: cps/templates/config_edit.html:231
 msgid "Pad book covers to Kobo screen aspect ratio"
 msgstr ""
 
-#: cps/templates/config_edit.html:226
+#: cps/templates/config_edit.html:232
 msgid ""
 "Eliminates the white letterbox bars that Kobo devices show on covers whose "
 "aspect ratio does not match the screen. Padding is applied server-side; "
 "original cover files on disk are unchanged."
 msgstr ""
 
-#: cps/templates/config_edit.html:230 cps/templates/cover_picker.html:104
+#: cps/templates/config_edit.html:236 cps/templates/cover_picker.html:104
 msgid "Target aspect ratio"
 msgstr ""
 
-#: cps/templates/config_edit.html:232 cps/templates/cover_picker.html:106
+#: cps/templates/config_edit.html:238 cps/templates/cover_picker.html:106
 msgid "Kobo Libra Color / Libra 2 (1264x1680)"
 msgstr ""
 
-#: cps/templates/config_edit.html:233 cps/templates/cover_picker.html:107
+#: cps/templates/config_edit.html:239 cps/templates/cover_picker.html:107
 msgid "Kobo Clara HD / 2E / BW / Colour (1072x1448)"
 msgstr ""
 
-#: cps/templates/config_edit.html:234 cps/templates/cover_picker.html:108
+#: cps/templates/config_edit.html:240 cps/templates/cover_picker.html:108
 msgid "3:4 (generic)"
 msgstr ""
 
-#: cps/templates/config_edit.html:235 cps/templates/cover_picker.html:109
+#: cps/templates/config_edit.html:241 cps/templates/cover_picker.html:109
 msgid "2:3 (publisher cover, no padding for typical covers)"
 msgstr ""
 
-#: cps/templates/config_edit.html:239 cps/templates/cover_picker.html:114
+#: cps/templates/config_edit.html:245 cps/templates/cover_picker.html:114
 msgid "Border fill style"
 msgstr ""
 
-#: cps/templates/config_edit.html:241 cps/templates/cover_picker.html:116
+#: cps/templates/config_edit.html:247 cps/templates/cover_picker.html:116
 msgid "Edge mirror — extend the artwork (recommended)"
 msgstr ""
 
-#: cps/templates/config_edit.html:242 cps/templates/cover_picker.html:117
+#: cps/templates/config_edit.html:248 cps/templates/cover_picker.html:117
 msgid "Edge blur — soft bokeh border"
 msgstr ""
 
-#: cps/templates/config_edit.html:243 cps/templates/cover_picker.html:118
+#: cps/templates/config_edit.html:249 cps/templates/cover_picker.html:118
 msgid "Gradient — palette-matched top/bottom blend"
 msgstr ""
 
-#: cps/templates/config_edit.html:244 cps/templates/cover_picker.html:119
+#: cps/templates/config_edit.html:250 cps/templates/cover_picker.html:119
 msgid "Solid: most-common color in the cover"
 msgstr ""
 
-#: cps/templates/config_edit.html:245 cps/templates/cover_picker.html:120
+#: cps/templates/config_edit.html:251 cps/templates/cover_picker.html:120
 msgid "Solid: average color of the cover"
 msgstr ""
 
-#: cps/templates/config_edit.html:246 cps/templates/cover_picker.html:121
+#: cps/templates/config_edit.html:252 cps/templates/cover_picker.html:121
 msgid "Solid: custom color"
 msgstr ""
 
-#: cps/templates/config_edit.html:250 cps/templates/cover_picker.html:126
+#: cps/templates/config_edit.html:256 cps/templates/cover_picker.html:126
 msgid "Custom border color (hex)"
 msgstr ""
 
-#: cps/templates/config_edit.html:252
+#: cps/templates/config_edit.html:258
 msgid "Only used when fill style is 'Solid: custom color'. Format: #RRGGBB."
 msgstr ""
 
-#: cps/templates/config_edit.html:260
+#: cps/templates/config_edit.html:266
 msgid "Use Goodreads"
 msgstr "使用 Goodreads"
 
-#: cps/templates/config_edit.html:264
+#: cps/templates/config_edit.html:270
 msgid "Goodreads API Key"
 msgstr "Goodreads API Key"
 
-#: cps/templates/config_edit.html:271
+#: cps/templates/config_edit.html:277
 #, fuzzy
 msgid "Enable Hardcover Sync"
 msgstr "启用 Kobo 同步"
 
-#: cps/templates/config_edit.html:275
+#: cps/templates/config_edit.html:281
 msgid "Hardcover API Key"
 msgstr "Hardcover API Key"
 
-#: cps/templates/config_edit.html:277
+#: cps/templates/config_edit.html:283
 msgid ""
 "Free key from https://hardcover.app/account/api — required for Hardcover "
 "metadata results."
 msgstr ""
 
-#: cps/templates/config_edit.html:281
+#: cps/templates/config_edit.html:287
 #, fuzzy
 msgid "Google Books API Key"
 msgstr "Goodreads API Key"
 
-#: cps/templates/config_edit.html:283
+#: cps/templates/config_edit.html:289
 msgid ""
 "Optional. Without a key, Google Books is rate-limited to ~1,000 requests / "
 "IP / day, which is easily exhausted on shared servers (HTTP 429). Free key "
@@ -4263,353 +4279,353 @@ msgid ""
 "API key."
 msgstr ""
 
-#: cps/templates/config_edit.html:287
+#: cps/templates/config_edit.html:293
 msgid "Allow Reverse Proxy Authentication"
 msgstr "允许反向代理认证方式"
 
-#: cps/templates/config_edit.html:288
+#: cps/templates/config_edit.html:294
 msgid ""
 "Trusts the \"Remote-User\" header from a reverse proxy for authentication. "
 "This is an authentication method, distinct from the HTTPS security setting "
 "below."
 msgstr ""
 
-#: cps/templates/config_edit.html:292
+#: cps/templates/config_edit.html:298
 msgid "Use via HTTPS"
 msgstr ""
 
-#: cps/templates/config_edit.html:293
+#: cps/templates/config_edit.html:299
 msgid ""
 "Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if "
 "you are accessing the server via HTTPS, otherwise you will be locked out."
 msgstr ""
 
-#: cps/templates/config_edit.html:302
+#: cps/templates/config_edit.html:308
 msgid "Auto-create users from reverse proxy"
 msgstr ""
 
-#: cps/templates/config_edit.html:303
+#: cps/templates/config_edit.html:309
 msgid ""
 "Automatically create user accounts when valid reverse proxy headers are "
 "received. Only enable if your reverse proxy authentication is properly "
 "secured."
 msgstr ""
 
-#: cps/templates/config_edit.html:309
+#: cps/templates/config_edit.html:315
 msgid "Login type"
 msgstr "登录类型"
 
-#: cps/templates/config_edit.html:316
+#: cps/templates/config_edit.html:322
 msgid "Use OAuth (requires HTTPS)"
 msgstr ""
 
-#: cps/templates/config_edit.html:323
+#: cps/templates/config_edit.html:329
 msgid "LDAP Server Host Name or IP Address"
 msgstr "LDAP 服务器主机名或 IP 地址"
 
-#: cps/templates/config_edit.html:327
+#: cps/templates/config_edit.html:333
 msgid "LDAP Server Port"
 msgstr "LDAP 服务器端口"
 
-#: cps/templates/config_edit.html:331
+#: cps/templates/config_edit.html:337
 msgid "LDAP Encryption"
 msgstr "LDAP 加密"
 
-#: cps/templates/config_edit.html:334
+#: cps/templates/config_edit.html:340
 msgid "TLS"
 msgstr "TLS 协议"
 
-#: cps/templates/config_edit.html:335
+#: cps/templates/config_edit.html:341
 msgid "SSL"
 msgstr "SSL 协议"
 
-#: cps/templates/config_edit.html:339
+#: cps/templates/config_edit.html:345
 msgid ""
 "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP CA证书路径 (仅用于客户端证书认证)"
 
-#: cps/templates/config_edit.html:346
+#: cps/templates/config_edit.html:352
 msgid ""
 "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP 证书路径 (仅用于客户端证书认证)"
 
-#: cps/templates/config_edit.html:353
+#: cps/templates/config_edit.html:359
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP 密钥文件路径 (仅用于客户端证书认证)"
 
-#: cps/templates/config_edit.html:362
+#: cps/templates/config_edit.html:368
 msgid "LDAP Authentication"
 msgstr "LDAP 验证方式"
 
-#: cps/templates/config_edit.html:364
+#: cps/templates/config_edit.html:370
 msgid "Anonymous"
 msgstr "匿名"
 
-#: cps/templates/config_edit.html:365
+#: cps/templates/config_edit.html:371
 msgid "Unauthenticated"
 msgstr "无验证"
 
-#: cps/templates/config_edit.html:366
+#: cps/templates/config_edit.html:372
 msgid "Simple"
 msgstr "简单"
 
-#: cps/templates/config_edit.html:371
+#: cps/templates/config_edit.html:377
 msgid "LDAP Administrator Username"
 msgstr "LDAP 管理员用户名"
 
-#: cps/templates/config_edit.html:377
+#: cps/templates/config_edit.html:383
 msgid "LDAP Administrator Password"
 msgstr "LDAP 管理员密码"
 
-#: cps/templates/config_edit.html:382
+#: cps/templates/config_edit.html:388
 msgid "LDAP Distinguished Name (DN)"
 msgstr "LDAP 专有名称（DN）"
 
-#: cps/templates/config_edit.html:386
+#: cps/templates/config_edit.html:392
 msgid "LDAP User Object Filter"
 msgstr "LDAP 用户对象过滤器"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:397
 msgid "LDAP Server is OpenLDAP?"
 msgstr "LDAP 服务器为 OpenLDAP？"
 
-#: cps/templates/config_edit.html:395
+#: cps/templates/config_edit.html:401
 msgid "Auto-create users from LDAP"
 msgstr ""
 
-#: cps/templates/config_edit.html:396
+#: cps/templates/config_edit.html:402
 msgid ""
 "Automatically create user accounts when LDAP authentication succeeds for new "
 "users. Recommended for enterprise environments."
 msgstr ""
 
-#: cps/templates/config_edit.html:398
+#: cps/templates/config_edit.html:404
 msgid "Following Settings are Needed For User Import"
 msgstr "用户导入需要以下设置"
 
-#: cps/templates/config_edit.html:400
+#: cps/templates/config_edit.html:406
 msgid "LDAP Group Object Filter"
 msgstr "LDAP 组对象过滤器"
 
-#: cps/templates/config_edit.html:404
+#: cps/templates/config_edit.html:410
 msgid "LDAP Group Name"
 msgstr "LDAP 组名"
 
-#: cps/templates/config_edit.html:408
+#: cps/templates/config_edit.html:414
 msgid "LDAP Group Members Field"
 msgstr "LDAP 组成员字段"
 
-#: cps/templates/config_edit.html:412
+#: cps/templates/config_edit.html:418
 msgid "LDAP Member User Filter Detection"
 msgstr "LDAP 成员用户过滤器探测"
 
-#: cps/templates/config_edit.html:414
+#: cps/templates/config_edit.html:420
 msgid "Autodetect"
 msgstr "自动检测"
 
-#: cps/templates/config_edit.html:415
+#: cps/templates/config_edit.html:421
 msgid "Custom Filter"
 msgstr "自定义过滤器"
 
-#: cps/templates/config_edit.html:420
+#: cps/templates/config_edit.html:426
 msgid "LDAP Member User Filter"
 msgstr "LDAP 成员用户过滤器"
 
-#: cps/templates/config_edit.html:430
+#: cps/templates/config_edit.html:436
 msgid "Important:"
 msgstr ""
 
-#: cps/templates/config_edit.html:430
+#: cps/templates/config_edit.html:436
 msgid ""
 "OAuth authentication requires this server to be accessed via HTTPS. If you "
 "are using HTTP, login will fail."
 msgstr ""
 
-#: cps/templates/config_edit.html:433
+#: cps/templates/config_edit.html:439
 msgid "Generic OAuth Provider"
 msgstr "通用 OAuth 提供商"
 
-#: cps/templates/config_edit.html:437
+#: cps/templates/config_edit.html:443
 msgid "OAuth Metadata URL (for auto-discovery)"
 msgstr "OAuth 元数据 URL (用于自动发现)"
 
-#: cps/templates/config_edit.html:441
+#: cps/templates/config_edit.html:447
 #, fuzzy
 msgid "Test Metadata"
 msgstr "获取元数据"
 
-#: cps/templates/config_edit.html:444
+#: cps/templates/config_edit.html:450
 msgid "Leave empty to use manual configuration below"
 msgstr "留空以使用下面的手动配置"
 
-#: cps/templates/config_edit.html:450
+#: cps/templates/config_edit.html:456
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
 msgstr "使用手动端点 URL（覆盖自动发现）"
 
-#: cps/templates/config_edit.html:451
+#: cps/templates/config_edit.html:457
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
 msgstr "选中此项以手动配置单个 OAuth 端点，而不是使用自动发现"
 
-#: cps/templates/config_edit.html:456
+#: cps/templates/config_edit.html:462
 #, fuzzy
 msgid "Manual Endpoint Configuration"
 msgstr "手动端点配置"
 
-#: cps/templates/config_edit.html:459
+#: cps/templates/config_edit.html:465
 msgid "OAuth Base URL"
 msgstr "OAuth 基础 URL"
 
-#: cps/templates/config_edit.html:464
+#: cps/templates/config_edit.html:470
 msgid "Authorization Endpoint"
 msgstr "授权端点"
 
-#: cps/templates/config_edit.html:469
+#: cps/templates/config_edit.html:475
 #, fuzzy
 msgid "Token Endpoint"
 msgstr "令牌端点"
 
-#: cps/templates/config_edit.html:474
+#: cps/templates/config_edit.html:480
 msgid "UserInfo Endpoint"
 msgstr "用户信息端点"
 
-#: cps/templates/config_edit.html:482
+#: cps/templates/config_edit.html:488
 #, fuzzy
 msgid "Test Connection"
 msgstr "连接错误"
 
-#: cps/templates/config_edit.html:491
+#: cps/templates/config_edit.html:497
 #, fuzzy
 msgid "OAuth Scopes"
 msgstr "OAuth 设置"
 
-#: cps/templates/config_edit.html:493
+#: cps/templates/config_edit.html:499
 msgid "Space-separated list of OAuth scopes"
 msgstr "以空格分隔的 OAuth 范围列表"
 
-#: cps/templates/config_edit.html:498
+#: cps/templates/config_edit.html:504
 msgid "OAuth Redirect Host"
 msgstr ""
 
-#: cps/templates/config_edit.html:501
+#: cps/templates/config_edit.html:507
 msgid ""
 "Set a consistent hostname for OAuth redirects to prevent \"invalid redirect "
 "URI\" errors. Include protocol (https://). Leave empty to use automatic "
 "detection."
 msgstr ""
 
-#: cps/templates/config_edit.html:503
+#: cps/templates/config_edit.html:509
 msgid ""
 "Required if: accessing via multiple hostnames, behind reverse proxy, or "
 "getting \"invalid redirect URI\" errors."
 msgstr ""
 
-#: cps/templates/config_edit.html:508
+#: cps/templates/config_edit.html:514
 #, fuzzy
 msgid "OAuth Client Id"
 msgstr "%(provider)s OAuth 客户端 Id"
 
-#: cps/templates/config_edit.html:512
+#: cps/templates/config_edit.html:518
 #, fuzzy
 msgid "OAuth Client Secret"
 msgstr "%(provider)s OAuth 客户端 Secret"
 
-#: cps/templates/config_edit.html:517
+#: cps/templates/config_edit.html:523
 #, fuzzy
 msgid "Field Mapping Configuration"
 msgstr "查看配置"
 
-#: cps/templates/config_edit.html:519
+#: cps/templates/config_edit.html:525
 #, fuzzy
 msgid "Username Field"
 msgstr "用户名"
 
-#: cps/templates/config_edit.html:521
+#: cps/templates/config_edit.html:527
 msgid "JWT field to extract username from"
 msgstr "JWT 字段以提取用户名"
 
-#: cps/templates/config_edit.html:524
+#: cps/templates/config_edit.html:530
 #, fuzzy
 msgid "Email Field"
 msgstr "电子邮件服务"
 
-#: cps/templates/config_edit.html:526
+#: cps/templates/config_edit.html:532
 msgid "JWT field to extract email from"
 msgstr "JWT 字段以提取电子邮件"
 
-#: cps/templates/config_edit.html:529
+#: cps/templates/config_edit.html:535
 msgid "OAuth group for Admin"
 msgstr "OAuth 管理组"
 
-#: cps/templates/config_edit.html:531
+#: cps/templates/config_edit.html:537
 msgid ""
 "Name of the OAuth group that grants admin privileges. Leave empty to disable "
 "group-based admin management, or use the global setting in Security Settings "
 "for more control."
 msgstr ""
 
-#: cps/templates/config_edit.html:534
+#: cps/templates/config_edit.html:540
 msgid "Login Button Text"
 msgstr "登录按钮文本"
 
-#: cps/templates/config_edit.html:540
+#: cps/templates/config_edit.html:546
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
 msgstr "获取 %(provider)s OAuth 凭证"
 
-#: cps/templates/config_edit.html:543
+#: cps/templates/config_edit.html:549
 #, python-format
 msgid "%(provider)s OAuth Client Id"
 msgstr "%(provider)s OAuth 客户端 Id"
 
-#: cps/templates/config_edit.html:547
+#: cps/templates/config_edit.html:553
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
 msgstr "%(provider)s OAuth 客户端 Secret"
 
-#: cps/templates/config_edit.html:558
+#: cps/templates/config_edit.html:564
 msgid "External binaries"
 msgstr "扩展程序配置"
 
-#: cps/templates/config_edit.html:559
+#: cps/templates/config_edit.html:565
 #, fuzzy
 msgid "Path to Calibre Binaries"
 msgstr "Calibre 电子书转换器路径"
 
-#: cps/templates/config_edit.html:567
+#: cps/templates/config_edit.html:573
 #, fuzzy
 msgid "Calibre E-Book Converter Settings"
 msgstr "Calibre 电子书转换器设置"
 
-#: cps/templates/config_edit.html:570
+#: cps/templates/config_edit.html:576
 msgid "Path to Kepubify E-Book Converter"
 msgstr "KEpubify 电子书转换器路径"
 
-#: cps/templates/config_edit.html:578
+#: cps/templates/config_edit.html:584
 #, fuzzy
 msgid "Location of Unrar binary"
 msgstr "UnRar 程序路径"
 
-#: cps/templates/config_edit.html:589
+#: cps/templates/config_edit.html:595
 msgid "Security Settings"
 msgstr "安全设置"
 
-#: cps/templates/config_edit.html:592
+#: cps/templates/config_edit.html:598
 msgid "Disable Standard Login (Username/Password)"
 msgstr ""
 
-#: cps/templates/config_edit.html:593
+#: cps/templates/config_edit.html:599
 msgid ""
 "Hides the standard login form. Users must log in via OAuth or LDAP. Ensure "
 "you have a working alternative login method before enabling."
 msgstr ""
 
-#: cps/templates/config_edit.html:597
+#: cps/templates/config_edit.html:603
 msgid "Enable OAuth Group-Based Admin Role Management"
 msgstr ""
 
-#: cps/templates/config_edit.html:598
+#: cps/templates/config_edit.html:604
 msgid ""
 "When enabled, admin privileges are automatically granted or revoked based on "
 "OAuth group membership. Disable this to manually manage admin roles in the "
@@ -4617,60 +4633,60 @@ msgid ""
 "assignments."
 msgstr ""
 
-#: cps/templates/config_edit.html:602
+#: cps/templates/config_edit.html:608
 msgid "Limit failed login attempts"
 msgstr "限制失败的登录尝试"
 
-#: cps/templates/config_edit.html:606
+#: cps/templates/config_edit.html:612
 msgid "Configure Backend for Limiter"
 msgstr ""
 
-#: cps/templates/config_edit.html:610
+#: cps/templates/config_edit.html:616
 msgid "Options for Limiter Backend"
 msgstr ""
 
-#: cps/templates/config_edit.html:616
+#: cps/templates/config_edit.html:622
 msgid "Check if file extensions matches file content on upload"
 msgstr "检查上传时文件扩展名是否与文件内容匹配"
 
-#: cps/templates/config_edit.html:619
+#: cps/templates/config_edit.html:625
 #, fuzzy
 msgid "Session protection"
 msgstr "会话保护"
 
-#: cps/templates/config_edit.html:621
+#: cps/templates/config_edit.html:627
 msgid "Basic"
 msgstr "基本"
 
-#: cps/templates/config_edit.html:622
+#: cps/templates/config_edit.html:628
 msgid "Strong"
 msgstr "强"
 
-#: cps/templates/config_edit.html:627
+#: cps/templates/config_edit.html:633
 msgid "User Password policy"
 msgstr "用户密码策略"
 
-#: cps/templates/config_edit.html:631
+#: cps/templates/config_edit.html:637
 msgid "Minimum password length"
 msgstr "最小密码长度"
 
-#: cps/templates/config_edit.html:636
+#: cps/templates/config_edit.html:642
 msgid "Enforce number"
 msgstr "必须使用数字"
 
-#: cps/templates/config_edit.html:640
+#: cps/templates/config_edit.html:646
 msgid "Enforce lowercase characters"
 msgstr "必须使用小写字符"
 
-#: cps/templates/config_edit.html:644
+#: cps/templates/config_edit.html:650
 msgid "Enforce uppercase characters"
 msgstr "必须使用大写字符"
 
-#: cps/templates/config_edit.html:648
+#: cps/templates/config_edit.html:654
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
 msgstr "必须使用字符（适用于中文/日文/韩文字符）"
 
-#: cps/templates/config_edit.html:652
+#: cps/templates/config_edit.html:658
 msgid "Enforce special characters"
 msgstr "必须使用特殊字符"
 
@@ -6363,7 +6379,7 @@ msgstr "合并选中的书籍"
 msgid "Dismiss this duplicate group"
 msgstr ""
 
-#: cps/templates/duplicates.html:618
+#: cps/templates/duplicates.html:618 cps/templates/layout.html:320
 msgid "Dismiss"
 msgstr ""
 
@@ -6421,7 +6437,7 @@ msgstr "此操作无法撤销！"
 msgid "The following books will be permanently deleted:"
 msgstr "此书籍将从数据库中永久删除"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:488
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:525
 #, fuzzy
 msgid "Merge Books"
 msgstr "未读书籍"
@@ -6518,8 +6534,8 @@ msgstr "输入域名"
 msgid "Denied Domains (Blacklist)"
 msgstr "禁止注册的域名（黑名单）"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:394
-#: cps/templates/layout.html:420
+#: cps/templates/feed.xml:31 cps/templates/layout.html:431
+#: cps/templates/layout.html:457
 msgid "Next"
 msgstr "下一个"
 
@@ -6811,153 +6827,153 @@ msgstr "重复书籍"
 msgid "Contribute here!"
 msgstr "在这里贡献！"
 
-#: cps/templates/layout.html:316
+#: cps/templates/layout.html:353
 msgid "Please do not refresh the page"
 msgstr "请不要刷新页面"
 
-#: cps/templates/layout.html:326
+#: cps/templates/layout.html:363
 msgid "Browse"
 msgstr "按条件浏览"
 
-#: cps/templates/layout.html:349
+#: cps/templates/layout.html:386
 #, fuzzy
 msgid "Create Shelf"
 msgstr "创建书架"
 
-#: cps/templates/layout.html:357
+#: cps/templates/layout.html:394
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:366 cps/templates/stats.html:3
+#: cps/templates/layout.html:403 cps/templates/stats.html:3
 msgid "About"
 msgstr "关于"
 
-#: cps/templates/layout.html:379 cps/templates/layout.html:405
+#: cps/templates/layout.html:416 cps/templates/layout.html:442
 msgid "Previous"
 msgstr "上一个"
 
-#: cps/templates/layout.html:432
+#: cps/templates/layout.html:469
 msgid "Book Details"
 msgstr "书籍详情"
 
-#: cps/templates/layout.html:494
+#: cps/templates/layout.html:531
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "此操作无法撤销！"
 
-#: cps/templates/layout.html:500
+#: cps/templates/layout.html:537
 #, fuzzy
 msgid "Will be deleted"
 msgstr "合并选中的书籍"
 
-#: cps/templates/layout.html:504 cps/templates/layout.html:517
+#: cps/templates/layout.html:541 cps/templates/layout.html:554
 #, fuzzy
 msgid "Formats:"
 msgstr "上传格式"
 
-#: cps/templates/layout.html:513
+#: cps/templates/layout.html:550
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:525
+#: cps/templates/layout.html:562
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:531
+#: cps/templates/layout.html:568
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "删除格式:"
 
-#: cps/templates/layout.html:540
+#: cps/templates/layout.html:577
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:574
+#: cps/templates/layout.html:611
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "删除书籍"
 
-#: cps/templates/layout.html:575
+#: cps/templates/layout.html:612
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:580
+#: cps/templates/layout.html:617
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "无搜索结果"
 
-#: cps/templates/layout.html:588
+#: cps/templates/layout.html:625
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:591
+#: cps/templates/layout.html:628
 #, fuzzy
 msgid "View & Resolve Duplicates"
 msgstr "选择重复项"
 
-#: cps/templates/layout.html:600
+#: cps/templates/layout.html:637
 #, fuzzy
 msgid "Scroll to top"
 msgstr "缩放到最佳"
 
-#: cps/templates/layout.html:602
+#: cps/templates/layout.html:639
 #, fuzzy
 msgid "Top"
 msgstr "到："
 
-#: cps/templates/layout.html:692
+#: cps/templates/layout.html:729
 #, fuzzy
 msgid "Confirm"
 msgstr "配置"
 
-#: cps/templates/layout.html:698
+#: cps/templates/layout.html:735
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "添加到书架"
 
-#: cps/templates/layout.html:699
+#: cps/templates/layout.html:736
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:700
+#: cps/templates/layout.html:737
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:701
+#: cps/templates/layout.html:738
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "合并选中的书籍"
 
-#: cps/templates/layout.html:702
+#: cps/templates/layout.html:739
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "标为未读"
 
-#: cps/templates/layout.html:703
+#: cps/templates/layout.html:740
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "删除书籍"
 
-#: cps/templates/layout.html:704
+#: cps/templates/layout.html:741
 #, fuzzy
 msgid "Delete books?"
 msgstr "删除书籍"
 
-#: cps/templates/layout.html:705
+#: cps/templates/layout.html:742
 #, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
 "undone."
 msgstr ""
 
-#: cps/templates/layout.html:706
+#: cps/templates/layout.html:743
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "创建书架"
 
-#: cps/templates/layout.html:707
+#: cps/templates/layout.html:744
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "连接错误"

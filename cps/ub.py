@@ -1365,6 +1365,21 @@ def migrate_config_table(engine, _session):
             # Don't raise - let CWA continue without this feature
             pass
 
+    # Fork #225 (@froggybottomboys): server-wide announcement banner.
+    try:
+        _session.execute(text("SELECT config_server_announcement FROM settings LIMIT 1"))
+        _session.commit()
+    except exc.OperationalError:  # Column doesn't exist
+        try:
+            _safe_session_rollback(_session, "settings.config_server_announcement")
+            _run_ddl_with_retry(
+                engine,
+                "ALTER TABLE settings ADD column 'config_server_announcement' String DEFAULT ''",
+            )
+        except Exception as e:
+            log.error("Failed to add config_server_announcement column: %s", e)
+            pass
+
     # Add LDAP auto-create users configuration
     try:
         # Test if the new column exists

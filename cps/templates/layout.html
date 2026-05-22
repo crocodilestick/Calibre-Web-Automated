@@ -309,6 +309,43 @@
       {%endif%}
     {% endfor %}
     {% block flash %}{% endblock %}
+    {# Fork #225 (@froggybottomboys): server-wide announcement banner.
+       Renders only when an admin has set server_announcement.
+       Per-user dismiss is client-side via localStorage keyed by a hash of
+       the announcement content — editing the text re-shows it for everyone. #}
+    {% if server_announcement %}
+      <div id="serverAnnouncementBanner" class="alert alert-info" style="margin: 0.5em 1em; display: flex; align-items: center; gap: 1em; border-radius: 4px;" data-announcement-content="{{ server_announcement }}">
+        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+        <span style="flex: 1;">{{ server_announcement }}</span>
+        <button type="button" class="close" id="serverAnnouncementDismiss" aria-label="{{ _('Dismiss') }}" style="margin-left: auto;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <script>
+        (function () {
+          var banner = document.getElementById('serverAnnouncementBanner');
+          if (!banner) return;
+          var content = banner.getAttribute('data-announcement-content') || '';
+          var hash = 0;
+          for (var i = 0; i < content.length; i++) {
+            hash = ((hash << 5) - hash) + content.charCodeAt(i);
+            hash |= 0;
+          }
+          var key = 'cwng_announcement_dismissed_' + hash;
+          if (localStorage.getItem(key) === '1') {
+            banner.style.display = 'none';
+            return;
+          }
+          var btn = document.getElementById('serverAnnouncementDismiss');
+          if (btn) {
+            btn.addEventListener('click', function () {
+              localStorage.setItem(key, '1');
+              banner.style.display = 'none';
+            });
+          }
+        })();
+      </script>
+    {% endif %}
     {% if g.current_theme == 1 %}
       <div id="loader" hidden="true">
         <center>

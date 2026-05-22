@@ -389,6 +389,9 @@ def render_title_template(*args, **kwargs):
                        accept=config.config_upload_formats.split(','),
                        magic_shelf_routes=magic_shelf_routes,
                        duplicate_notification=duplicate_notification,
+                       # Fork #225 (@froggybottomboys): server-wide announcement banner string;
+                       # consumed in layout.html. Empty string = no banner.
+                       server_announcement=(getattr(config, 'config_server_announcement', '') or ''),
                        *args, **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))

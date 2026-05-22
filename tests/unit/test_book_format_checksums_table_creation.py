@@ -189,40 +189,51 @@ class TestStoreChecksumWorksAfterUnconditionalEnsure:
     def test_store_checksum_after_ensure_calibre_db_tables(self, tmp_path):
         # Stand up a metadata.db-shaped sqlite (just the `books` table is
         # needed for the foreign key).
+        #
+        # IMPORTANT: explicit conn.close() in a try/finally. Without it,
+        # the sqlite3 connection survives past the test function and gets
+        # cleaned up later — and that cleanup can deadlock on the C-level
+        # sqlite mutex during pytest-xdist worker IPC handoff. The hang
+        # was traced to this test in v4.0.121 CI runs (sometimes passes
+        # immediately, sometimes hangs ~9 minutes until the step-level
+        # kill fires). See notes/xdist-worker-ipc-hang-followup-2026-05-21.md.
         db_path = tmp_path / "metadata.db"
         conn = sqlite3.connect(str(db_path))
-        conn.execute(
-            "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            "title TEXT)"
-        )
-        conn.execute("INSERT INTO books (id, title) VALUES (42, 'Test Book')")
-        conn.commit()
+        try:
+            conn.execute(
+                "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "title TEXT)"
+            )
+            conn.execute("INSERT INTO books (id, title) VALUES (42, 'Test Book')")
+            conn.commit()
 
-        # Run the schema setup (this is what cps/db.py calls on startup).
-        from cps.progress_syncing.models import ensure_calibre_db_tables
-        ensure_calibre_db_tables(conn)
+            # Run the schema setup (this is what cps/db.py calls on startup).
+            from cps.progress_syncing.models import ensure_calibre_db_tables
+            ensure_calibre_db_tables(conn)
 
-        # Now exercise store_checksum directly against the same DB. This
-        # mimics the ingest-processor / cover-enforcer / kindle-epub-fixer
-        # path that fails in #219.
-        from cps.progress_syncing.checksums.manager import store_checksum
-        ok = store_checksum(
-            book_id=42,
-            book_format="EPUB",
-            checksum="deadbeef" * 4,
-            version="koreader",
-            db_connection=conn,
-        )
-        assert ok is True, (
-            "store_checksum must succeed after ensure_calibre_db_tables — "
-            "this is the user-visible symptom from #219."
-        )
+            # Now exercise store_checksum directly against the same DB. This
+            # mimics the ingest-processor / cover-enforcer / kindle-epub-fixer
+            # path that fails in #219.
+            from cps.progress_syncing.checksums.manager import store_checksum
+            ok = store_checksum(
+                book_id=42,
+                book_format="EPUB",
+                checksum="deadbeef" * 4,
+                version="koreader",
+                db_connection=conn,
+            )
+            assert ok is True, (
+                "store_checksum must succeed after ensure_calibre_db_tables — "
+                "this is the user-visible symptom from #219."
+            )
 
-        row = conn.execute(
-            "SELECT book, format, checksum FROM book_format_checksums "
-            "WHERE book = 42"
-        ).fetchone()
-        assert row is not None
-        assert row[0] == 42
+            row = conn.execute(
+                "SELECT book, format, checksum FROM book_format_checksums "
+                "WHERE book = 42"
+            ).fetchone()
+            assert row is not None
+            assert row[0] == 42
+        finally:
+            conn.close()
         assert row[1].upper() == "EPUB"
         assert row[2] == "deadbeef" * 4

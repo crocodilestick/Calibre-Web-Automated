@@ -1,0 +1,24 @@
+/*
+ * Fork #288 mobile pass 2: caliBlur.css positions every `.alert` element
+ * as a fixed-bottom toast (`position: fixed; bottom: 20px`). On narrow
+ * viewports the toast frequently overlaps form buttons stacked at the
+ * bottom of the visible area — most visibly on /login where an error
+ * toast like "Wrong Username or Password" lands on top of the
+ * "LOG IN WITH MAGIC LINK" button.
+ *
+ * Move the toast to the TOP of the viewport on mobile so it floats above
+ * the page header instead of on top of bottom-of-form controls. Desktop
+ * keeps the bottom position — there's plenty of vertical room there for
+ * the toast to clear page content.
+ *
+ * Scoped to the standard Bootstrap 3 SM breakpoint (<=767px). The 80px
+ * top offset clears the fixed navbar (typical height 48-60px) plus a
+ * small visual margin.
+ */
+
+@media (max-width: 767px) {
+    .alert {
+        top: 80px !important;
+        bottom: auto !important;
+    }
+}

@@ -124,8 +124,24 @@
   .book-organizer-bar {
     gap: 8px;
   }
+  /* Fork #288 mobile pass 4: at iPhone SE 375px the sort dropdown's
+     leading book + calendar + sort-lines decorative glyphs eat ~80px
+     of the button's 164px width, leaving the label only ~62px and
+     truncating "Date added, newest first" to "DATE A...". The leading
+     icons are pure decoration (the dropdown caret already implies
+     "click to sort"); hide them at mobile widths so the label has
+     room. With icons hidden, the label fits inside the toggle's
+     remaining ~130px without ellipsis.
+
+     Caveat: even with icons hidden, very long sort labels still
+     truncate at 200px max-width. Common short labels like "Date added,
+     newest first" (~95px uppercase without leading icons) render
+     complete. */
+  .book-organizer-sort-toggle .book-organizer-icons {
+    display: none;
+  }
   .book-organizer-sort-toggle .book-organizer-label {
-    max-width: 140px;
+    max-width: 200px;
   }
   .book-organizer-bar-right {
     gap: 6px;

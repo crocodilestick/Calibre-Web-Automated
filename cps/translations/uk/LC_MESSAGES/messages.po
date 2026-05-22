@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-21 21:44-0400\n"
+"POT-Creation-Date: 2026-05-22 02:51+0000\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
 "Language-Team: \n"
@@ -1922,7 +1922,7 @@ msgstr "Формати файлів"
 msgid "Books ordered by file formats"
 msgstr "Книги відсортовані за серією"
 
-#: cps/opds.py:247 cps/templates/layout.html:380
+#: cps/opds.py:247 cps/templates/layout.html:393
 #: cps/templates/search_form.html:88
 #, fuzzy
 msgid "Shelves"
@@ -2243,7 +2243,7 @@ msgstr ""
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:811 cps/templates/layout.html:389
+#: cps/shelf.py:811 cps/templates/layout.html:402
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Виключити серії"
@@ -2447,7 +2447,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr ""
 
-#: cps/templates/layout.html:399 cps/web.py:1314
+#: cps/templates/layout.html:412 cps/web.py:1314
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "створити книжкову полицю"
@@ -2937,8 +2937,8 @@ msgstr "Додати на книжкову полицю"
 #: cps/templates/_book_organizer.html:116 cps/templates/detail.html:603
 #: cps/templates/detail.html:625 cps/templates/detail.html:778
 #: cps/templates/detail.html:1307 cps/templates/feed.xml:109
-#: cps/templates/feed.xml:111 cps/templates/layout.html:383
-#: cps/templates/layout.html:396 cps/templates/listenmp3.html:201
+#: cps/templates/feed.xml:111 cps/templates/layout.html:396
+#: cps/templates/layout.html:409 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
 #: cps/templates/shelf_reorder.html:31
 msgid "(Public)"
@@ -3382,8 +3382,8 @@ msgstr "Ok"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:968
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:573
-#: cps/templates/layout.html:728 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:586
+#: cps/templates/layout.html:741 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
 #: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
@@ -3450,7 +3450,7 @@ msgstr ""
 
 #: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
 #: cps/templates/book_edit.html:69 cps/templates/layout.html:184
-#: cps/templates/layout.html:352
+#: cps/templates/layout.html:315
 msgid "Uploading..."
 msgstr "Завантаження..."
 
@@ -3558,8 +3558,8 @@ msgstr "Конвертувати книгу"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:184 cps/templates/layout.html:473
-#: cps/templates/layout.html:610 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:184 cps/templates/layout.html:486
+#: cps/templates/layout.html:623 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:666
 msgid "Close"
 msgstr "Закрити"
@@ -6396,7 +6396,7 @@ msgstr "Видалити книгу"
 msgid "Dismiss this duplicate group"
 msgstr ""
 
-#: cps/templates/duplicates.html:618 cps/templates/layout.html:320
+#: cps/templates/duplicates.html:618 cps/templates/layout.html:340
 msgid "Dismiss"
 msgstr ""
 
@@ -6454,7 +6454,7 @@ msgstr ""
 msgid "The following books will be permanently deleted:"
 msgstr "Книга буде видалена з БД Calibre"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:525
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:538
 #, fuzzy
 msgid "Merge Books"
 msgstr "Непрочитані книги"
@@ -6553,8 +6553,8 @@ msgstr "Введіть домен"
 msgid "Denied Domains (Blacklist)"
 msgstr "Заборонені домени (Чорний список)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:431
-#: cps/templates/layout.html:457
+#: cps/templates/feed.xml:31 cps/templates/layout.html:444
+#: cps/templates/layout.html:470
 msgid "Next"
 msgstr "Далі"
 
@@ -6844,152 +6844,152 @@ msgstr "Видалити книгу"
 msgid "Contribute here!"
 msgstr ""
 
-#: cps/templates/layout.html:353
+#: cps/templates/layout.html:316
 #, fuzzy
 msgid "Please do not refresh the page"
 msgstr "Встановлення оновлень, будь-ласка, не оновлюйте сторінку"
 
-#: cps/templates/layout.html:363
+#: cps/templates/layout.html:376
 msgid "Browse"
 msgstr "Перегляд"
 
-#: cps/templates/layout.html:386
+#: cps/templates/layout.html:399
 #, fuzzy
 msgid "Create Shelf"
 msgstr "створити книжкову полицю"
 
-#: cps/templates/layout.html:394
+#: cps/templates/layout.html:407
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:403 cps/templates/stats.html:3
+#: cps/templates/layout.html:416 cps/templates/stats.html:3
 msgid "About"
 msgstr "Про програму"
 
-#: cps/templates/layout.html:416 cps/templates/layout.html:442
+#: cps/templates/layout.html:429 cps/templates/layout.html:455
 msgid "Previous"
 msgstr "Попередній перегляд"
 
-#: cps/templates/layout.html:469
+#: cps/templates/layout.html:482
 msgid "Book Details"
 msgstr "Деталі"
 
-#: cps/templates/layout.html:531
+#: cps/templates/layout.html:544
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "Впевнені що хочете перезавантажити?"
 
-#: cps/templates/layout.html:537
+#: cps/templates/layout.html:550
 #, fuzzy
 msgid "Will be deleted"
 msgstr "Видалити книгу"
 
-#: cps/templates/layout.html:541 cps/templates/layout.html:554
+#: cps/templates/layout.html:554 cps/templates/layout.html:567
 #, fuzzy
 msgid "Formats:"
 msgstr "Формат завантаження"
 
-#: cps/templates/layout.html:550
+#: cps/templates/layout.html:563
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:562
+#: cps/templates/layout.html:575
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:568
+#: cps/templates/layout.html:581
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "Видалити формати:"
 
-#: cps/templates/layout.html:577
+#: cps/templates/layout.html:590
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:611
+#: cps/templates/layout.html:624
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Видалити книгу"
 
-#: cps/templates/layout.html:612
+#: cps/templates/layout.html:625
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:617
+#: cps/templates/layout.html:630
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Результати для:"
 
-#: cps/templates/layout.html:625
+#: cps/templates/layout.html:638
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:628
+#: cps/templates/layout.html:641
 msgid "View & Resolve Duplicates"
 msgstr ""
 
-#: cps/templates/layout.html:637
+#: cps/templates/layout.html:650
 msgid "Scroll to top"
 msgstr ""
 
-#: cps/templates/layout.html:639
+#: cps/templates/layout.html:652
 #, fuzzy
 msgid "Top"
 msgstr "До:"
 
-#: cps/templates/layout.html:729
+#: cps/templates/layout.html:742
 #, fuzzy
 msgid "Confirm"
 msgstr "Налаштування сервера"
 
-#: cps/templates/layout.html:735
+#: cps/templates/layout.html:748
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "Додати на книжкову полицю"
 
-#: cps/templates/layout.html:736
+#: cps/templates/layout.html:749
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:737
+#: cps/templates/layout.html:750
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:738
+#: cps/templates/layout.html:751
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "Відмітити як не прочитане"
 
-#: cps/templates/layout.html:739
+#: cps/templates/layout.html:752
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "Відмітити як не прочитане"
 
-#: cps/templates/layout.html:740
+#: cps/templates/layout.html:753
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "Видалити книгу"
 
-#: cps/templates/layout.html:741
+#: cps/templates/layout.html:754
 #, fuzzy
 msgid "Delete books?"
 msgstr "Видалити книгу"
 
-#: cps/templates/layout.html:742
+#: cps/templates/layout.html:755
 #, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
 "undone."
 msgstr ""
 
-#: cps/templates/layout.html:743
+#: cps/templates/layout.html:756
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "створити книжкову полицю"
 
-#: cps/templates/layout.html:744
+#: cps/templates/layout.html:757
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "Помилка зʼєднання"

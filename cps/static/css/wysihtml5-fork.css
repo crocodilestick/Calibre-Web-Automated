@@ -111,3 +111,45 @@ ul.wysihtml5-toolbar > li:has(a[data-wysihtml5-command="formatBlock"]) {
 .editable-container .editableform:has(.wysihtml5-sandbox) .editable-submit {
     order: 2;
 }
+
+/*
+ * Fork #283 round 3 (reporter @droM4X): swap Cancel/Submit colors so the
+ * primary action (Submit) is the orange accent, not the secondary action.
+ *
+ * The CWNG dark theme (caliBlur.css) inverts Bootstrap convention: it maps
+ * `.btn-default` to the orange accent (CWNG's `--color-secondary`) and
+ * `.btn-primary` to a dark muted color. Since x-editable generates the
+ * Cancel button as `.btn-default` and Submit as `.btn-primary`, the
+ * theme accidentally puts the warmer color on the destructive action
+ * (Cancel) and the muted color on the constructive one (Submit).
+ *
+ * Scope the fix to wysihtml5 popups so we don't touch caliBlur's
+ * theme-wide button color mapping (which other surfaces may rely on).
+ * In this surface only, force Cancel → muted dark, Submit → orange accent.
+ */
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-cancel {
+    background-color: #4a5563 !important;
+    border-color: #4a5563 !important;
+    color: #fff !important;
+}
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-cancel:hover,
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-cancel:focus {
+    background-color: #364150 !important;
+    border-color: #364150 !important;
+    color: #fff !important;
+}
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-submit {
+    background-color: var(--color-secondary, #e89b18) !important;
+    border-color: var(--color-secondary, #e89b18) !important;
+    color: #fff !important;
+}
+
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-submit:hover,
+.editable-container .editableform:has(.wysihtml5-sandbox) .editable-submit:focus {
+    background-color: var(--color-secondary-hover, #c98309) !important;
+    border-color: var(--color-secondary-hover, #c98309) !important;
+    color: #fff !important;
+}

@@ -41,6 +41,17 @@
     }
     
     /**
+     * Clear the per-session suppression so the next time duplicates appear the
+     * modal pops again. Call this after the user has resolved duplicates on the
+     * duplicates page (delete / merge / dismiss / auto-resolve).
+     */
+    function resetNotificationSuppression() {
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(LAST_COUNT_KEY);
+        lastPreviewSignature = '';
+    }
+
+    /**
      * Update the duplicate count badge in sidebar
      */
     function updateBadge(count) {
@@ -175,6 +186,14 @@
 
         updateBadge(data.count);
 
+        // Server is the source of truth: if it reports zero duplicates, the
+        // user has none outstanding. Clear any lingering session suppression
+        // so a future re-appearance of duplicates re-pops the modal, even if
+        // our optimistic client-side decrement drifted and never reached 0.
+        if (data.count === 0) {
+            resetNotificationSuppression();
+        }
+
         if (data.count > 0 && data.enabled) {
             showNotificationModal(data);
         }
@@ -286,7 +305,8 @@
     window.CWADuplicates = {
         updateBadge: updateBadge,
         fetchStatus: fetchDuplicateStatus,
-        hideModal: hideNotificationModal
+        hideModal: hideNotificationModal,
+        resetNotificationSuppression: resetNotificationSuppression
     };
     
     // Initialize when DOM is ready

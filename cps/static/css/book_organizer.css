@@ -119,32 +119,55 @@
   padding: 8px 16px;
 }
 
-/* Mobile: tighten spacing, allow label to shrink. */
+/* Mobile: wrap the bar so the sort dropdown gets the full row and the
+   action icons stack below. Operator screenshot at iPhone 14 (414px)
+   showed "DATE ADDED, NEWES..." still truncating in v4.0.125 because
+   the .shelf-actions parent panel constrains the bar to ~324px
+   regardless of viewport width, leaving only ~218px for the dropdown
+   side after subtracting the icon group + gap. Wrapping at <=480px is
+   the cleanest path — the dropdown reclaims the full row, the icons
+   sit underneath, and we stop fighting the panel chrome for pixels.
+   Combined with hiding the decorative leading icons (book + calendar +
+   sort-lines glyphs that the v4.0.125 fix already removed) and
+   tightening dropdown vertical padding, this gives common sort labels
+   like "Date added, newest first" room to render without ellipsis. */
 @media (max-width: 480px) {
   .book-organizer-bar {
+    flex-wrap: wrap;
     gap: 8px;
   }
-  /* Fork #288 mobile pass 4: at iPhone SE 375px the sort dropdown's
-     leading book + calendar + sort-lines decorative glyphs eat ~80px
-     of the button's 164px width, leaving the label only ~62px and
-     truncating "Date added, newest first" to "DATE A...". The leading
-     icons are pure decoration (the dropdown caret already implies
-     "click to sort"); hide them at mobile widths so the label has
-     room. With icons hidden, the label fits inside the toggle's
-     remaining ~130px without ellipsis.
-
-     Caveat: even with icons hidden, very long sort labels still
-     truncate at 200px max-width. Common short labels like "Date added,
-     newest first" (~95px uppercase without leading icons) render
-     complete. */
-  .book-organizer-sort-toggle .book-organizer-icons {
-    display: none;
-  }
-  .book-organizer-sort-toggle .book-organizer-label {
-    max-width: 200px;
+  .book-organizer-bar-left,
+  .book-organizer-bar-right {
+    flex: 1 1 100%;
+    width: 100%;
   }
   .book-organizer-bar-right {
     gap: 6px;
+    justify-content: flex-start;
+  }
+  /* Sort dropdown sized to its parent (now full width of the bar row). */
+  .book-organizer-sort,
+  .book-organizer-sort-toggle {
+    width: 100%;
+    max-width: 100%;
+  }
+  /* Tighten dropdown vertical padding so the row isn't oversized. */
+  .book-organizer-sort-toggle {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  /* Fork #288: the leading book + calendar + sort-lines decorative
+     glyphs were eating label space — they're pure decoration since
+     the dropdown caret already implies "click to sort". Hide on mobile. */
+  .book-organizer-sort-toggle .book-organizer-icons {
+    display: none;
+  }
+  /* Now that the sort dropdown owns the full row, the label can
+     stretch — drop the cap. Caret + padding still leave ~280-360px
+     for the text on viewports between 360-440px. */
+  .book-organizer-sort-toggle .book-organizer-label {
+    max-width: none;
+    flex: 1 1 auto;
   }
 }
 

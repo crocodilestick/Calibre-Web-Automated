@@ -1,0 +1,73 @@
+/*
+ * Fork mobile UI sweep — book card title + author rendering on phones.
+ *
+ * Operator screenshot at iPhone 14 (414px) showed long book titles
+ * truncating aggressively to a single line with ellipsis — e.g.
+ * "(ebook - german) Niet..." instead of two lines of readable text.
+ * On a 2-column mobile grid each card gets ~180-200px wide; a
+ * 15px-font title can only fit ~15-20 characters per line, so most
+ * real-world titles got cut. The single-line + ellipsis rule comes
+ * from caliBlur's `.book .meta .title` which uses
+ * `white-space: nowrap; text-overflow: ellipsis`.
+ *
+ * Mobile fix: allow up to 2 lines of title and 2 lines of author
+ * using -webkit-line-clamp on screens <=767px. Cards still align
+ * vertically because the grid uses flex column auto-layout — variable
+ * card heights are already supported.
+ *
+ * Desktop unchanged — single-line + ellipsis stays the right choice
+ * there because cards are wider and titles rarely truncate.
+ */
+
+@media (max-width: 767px) {
+    /* caliBlur uses `white-space: nowrap !important` on .title + .author
+       (line ~1859 of caliBlur.css). Match the `!important` here so our
+       2-line wrap can win. */
+    .container-fluid .book .meta .title,
+    .container-fluid .book .meta .author,
+    .container-fluid .book .meta .author > a {
+        white-space: normal !important;
+        text-overflow: clip !important;
+        overflow: hidden !important;
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical !important;
+        -webkit-line-clamp: 2 !important;
+        line-clamp: 2 !important;
+        line-height: 1.25 !important;
+    }
+
+    /* Slight font-size bump for mobile readability — the default
+       15px title + 12px author work on desktop where cards are
+       wider; on phones the smaller author text becomes hard to
+       read at typical reading distance. */
+    .container-fluid .book .meta .title {
+        font-size: 14px;
+    }
+    .container-fluid .book .meta .author,
+    .container-fluid .book .meta .author > a {
+        font-size: 12px;
+    }
+
+    /* Persistent .alert-cwa banners (duplicate-scan-setup, cwa-update,
+       translation-missing, etc.) are styled by caliBlur as
+       `position: fixed; bottom: 20px; left: 50%; width: 50%` — a
+       centered floating popup. On phones that floating popup overlaps
+       the book grid content underneath. Move it to TOP (below the
+       fixed navbar, ~60px from top) and full-width so it stops
+       blocking book content while staying visible. Desktop keeps the
+       caliBlur floating-bottom treatment. */
+    .alert-info.alert-cwa,
+    .alert-danger.alert-cwa {
+        top: 64px !important;
+        bottom: auto !important;
+        left: 8px !important;
+        right: 8px !important;
+        width: auto !important;
+        max-width: none !important;
+        padding: 12px 14px !important;
+        font-size: 13px !important;
+        -webkit-transform: none !important;
+        -ms-transform: none !important;
+        transform: none !important;
+    }
+}

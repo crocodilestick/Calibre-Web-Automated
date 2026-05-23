@@ -1178,7 +1178,7 @@ body > div.navbar.navbar-default.navbar-static-top > div > form > div > span.inp
 }
 
 body > div.navbar.navbar-default.navbar-static-top > div > form > div > span > button:hover {
-    color: #fff
+    color: transparent
 }
 
 body > div.navbar.navbar-default.navbar-static-top > div > form {
@@ -2556,7 +2556,6 @@ body > div.container-fluid > div > div.col-sm-10 > div > div > div.col-sm-9.col-
 }
 
 .advanced_search .btn {
-    text-transform: none;
     font-family: Open Sans Semibold, Helvetica Neue, Helvetica, Arial, sans-serif;
     font-weight: 400
 }

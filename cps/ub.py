@@ -2103,39 +2103,67 @@ def _migrate_step7_drop_old_columns(conn):
 def migrate_annotation_polymorphic_position(engine, _session):
     """Sub-projects (3)/(4) — add polymorphic position columns to annotation.
 
-    Adds position_type, pdf_page, pdf_quad_json, comic_page. Idempotent —
-    each ADD COLUMN is guarded by existence check. Runs AFTER the decouple
-    migration (so the table is already named 'annotation').
+    Adds position_type, pdf_page, pdf_quad_json, comic_page. Idempotent.
+
+    Runs AFTER the decouple migration. We query the live SQLite catalog
+    via `PRAGMA table_info` (NOT SQLAlchemy's inspector) because the
+    inspector's reflection cache can be stale after the preceding
+    decouple migration's RENAME — observed on v4.0.130 teenyverse deploy
+    where the inspector still saw the dropped `annotation` placeholder
+    columns and incorrectly reported `position_type` as already present
+    OR (more likely) reported the old kobo_annotation_sync columns
+    AND THEN ADD COLUMN failed because the actual table came from
+    create_all which had the polymorphic columns from the model.
+
+    Per-statement try/except gives belt-and-suspenders idempotency:
+    a duplicate-column-name error on any individual ADD COLUMN is
+    caught, logged at INFO, and skipped — the migration completes the
+    rest of the columns instead of aborting the whole transaction.
     """
-    from sqlalchemy import inspect as sa_inspect
+    with engine.begin() as conn:
+        # Bail out cleanly if the annotation table doesn't exist yet
+        # (fresh install — create_all already produced the full schema).
+        rows = conn.execute(text(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='annotation'"
+        )).fetchall()
+        if not rows:
+            return
 
-    inspector = sa_inspect(engine)
-    if "annotation" not in inspector.get_table_names():
-        return  # Fresh install — create_all already produced the full schema.
-
-    existing = {c["name"] for c in inspector.get_columns("annotation")}
-    pending = [
-        ("position_type",   "position_type VARCHAR"),
-        ("pdf_page",        "pdf_page INTEGER"),
-        ("pdf_quad_json",   "pdf_quad_json TEXT"),
-        ("comic_page",      "comic_page INTEGER"),
-    ]
-    statements = [
-        f"ALTER TABLE annotation ADD COLUMN {ddl}"
-        for col, ddl in pending if col not in existing
-    ]
-    if not statements:
-        return
-    try:
-        with engine.begin() as conn:
-            for stmt in statements:
-                conn.execute(text(stmt))
-        log.info(
-            "[annotation-polymorphic-position] added %d columns",
-            len(statements),
-        )
-    except Exception:
-        log.exception("[annotation-polymorphic-position] failed")
+        # Query the actual live column set via PRAGMA — the SQLAlchemy
+        # inspector cache is unreliable across migrations that RENAME tables.
+        existing = {
+            row[1] for row in conn.execute(text(
+                "PRAGMA table_info(annotation)"
+            )).fetchall()
+        }
+        pending = [
+            ("position_type",   "position_type VARCHAR"),
+            ("pdf_page",        "pdf_page INTEGER"),
+            ("pdf_quad_json",   "pdf_quad_json TEXT"),
+            ("comic_page",      "comic_page INTEGER"),
+        ]
+        added = 0
+        for col, ddl in pending:
+            if col in existing:
+                continue
+            try:
+                conn.execute(text(f"ALTER TABLE annotation ADD COLUMN {ddl}"))
+                added += 1
+            except exc.OperationalError as e:
+                # Duplicate-column-name means another concurrent path
+                # already added it; treat as success, log + continue.
+                if "duplicate column" in str(e).lower():
+                    log.info(
+                        "[annotation-polymorphic-position] column %s already "
+                        "present despite PRAGMA check; treating as idempotent",
+                        col,
+                    )
+                    continue
+                raise
+        if added:
+            log.info(
+                "[annotation-polymorphic-position] added %d columns", added,
+            )
 
 
 def migrate_annotation_decouple_source_target(engine, _session):

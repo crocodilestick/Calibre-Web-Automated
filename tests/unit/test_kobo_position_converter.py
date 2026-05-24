@@ -129,6 +129,31 @@ class TestComputeCfiRangeKepub:
         # /4[<start_id>]:<offset>,/4[<end_id>]:<offset>.
         assert cfi == "epubcfi(/6/2!/4[kobo.1.1]:0,/4[kobo.1.1]:15)"
 
+    def test_live_capture_null_child_index_uses_selector(self, synthetic_kepub):
+        """Live reading-services PATCH capture omits StartContainerChildIndex,
+        so child_index is stored as NULL (not the -99 sentinel). When the
+        KoboSpan IDs are present, the selector path must still be used —
+        a real-device test (2026-05-24) found that gating the selector
+        path on child_index == -99 meant every live-captured kepub
+        highlight resolved to None and never rendered as a web-reader
+        overlay."""
+        from cps.services.kobo_position import KoboPosition, compute_cfi_range
+
+        pos = KoboPosition(
+            content_id="00000000-0000-0000-0000-deadbeefcafe!!chapter1.html",
+            start_container_path="span#kobo\\.1\\.1",
+            start_container_child_index=None,   # live capture stores NULL
+            start_offset=0,
+            end_container_path="span#kobo\\.1\\.1",
+            end_container_child_index=None,
+            end_offset=15,
+        )
+        cfi = compute_cfi_range(synthetic_kepub, pos)
+        assert cfi == "epubcfi(/6/2!/4[kobo.1.1]:0,/4[kobo.1.1]:15)", (
+            "NULL child_index with KoboSpan IDs present must still resolve "
+            "via the selector path (live-captured kepub highlights)"
+        )
+
     def test_multi_span_highlight(self, synthetic_kepub):
         """Highlight spans two consecutive KoboSpans — about 40% of
         real highlights (design doc §3.6 finding 4). Pin that the CFI

@@ -146,12 +146,17 @@ def compute_cfi_range(epub_path: Path, position: KoboPosition) -> Optional[str]:
     start_id = _extract_kobospan_id(position.start_container_path)
     end_id = _extract_kobospan_id(position.end_container_path)
 
-    if (
-        start_id and end_id
-        and position.start_container_child_index == KOBO_SELECTOR_SENTINEL
-        and position.end_container_child_index == KOBO_SELECTOR_SENTINEL
-    ):
-        # The kepub fast path — selector format, KoboSpan IDs present.
+    if start_id and end_id:
+        # The kepub path — KoboSpan IDs present, anchor via the selector
+        # format. Kobo writes child_index=-99 in KoboReader.sqlite to
+        # signal "use the selector", but the LIVE reading-services PATCH
+        # omits StartContainerChildIndex entirely, so live-captured
+        # annotations store it as NULL. Either way, when the KoboSpan IDs
+        # are present they are the reliable anchor — the child-index walk
+        # below is only for plain EPUBs with no KoboSpan IDs. (Gating this
+        # on child_index == -99 meant every live-captured kepub highlight
+        # failed to resolve a CFI and never rendered as a web-reader
+        # overlay — found via real-device test 2026-05-24.)
         return f"epubcfi({spine_step}!/4[{start_id}]:{position.start_offset},/4[{end_id}]:{position.end_offset})"
 
     # Plain-EPUB fallback: no KoboSpan IDs to anchor on. Walk by child

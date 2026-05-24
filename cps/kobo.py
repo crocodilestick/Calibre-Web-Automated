@@ -1333,6 +1333,28 @@ def HandleOauthDiscovery():
     }))
 
 
+@kobo.before_app_request
+def _kobo_reading_services_stub():
+    # Kobo firmware treats reading_services_host as scheme+host only: it strips
+    # any path and calls these endpoints at the SITE ROOT (e.g.
+    # https://host/api/UserStorage/Metadata). In fully-local mode (no Kobo
+    # account, so CWA issues a dummy token) those calls would 401 against CWA,
+    # which the device turns into a web request error and uses to abort the sync
+    # batch (notebooks -> SyncNotebookCommand), so nothing -- not even shelves --
+    # commits. Return benign empty responses so the sync completes. Only the Kobo
+    # reading-services paths are matched; every other request falls through.
+    p = request.path
+    if p == "/api/v3/content/checkforchanges":
+        return make_response(jsonify([]))
+    if p.startswith("/api/v3/content/") and p.endswith("/annotations"):
+        return make_response(jsonify({"data": [], "totalResults": 0}))
+    if p.startswith("/api/UserStorage/"):
+        return make_response(jsonify({}))
+    if p.startswith("/api/internal/notebooks"):
+        return make_response(jsonify({"data": [], "totalResults": 0}))
+    return None
+
+
 @kobo.route("/v1/initialization")
 @requires_kobo_auth
 def HandleInitRequest():
@@ -1425,6 +1447,11 @@ def HandleInitRequest():
                                   auth_token=kobo_auth.get_auth_token(),
                                   _external=True)
         kobo_resources["oauth_host"] = oauth_token_url.rsplit("/oauth", 1)[0] + "/oauth"
+        # Device strips reading_services_host to scheme+host; keep it on CWA so its
+        # reading-services calls hit us (see _kobo_reading_services_stub) instead of
+        # Kobo cloud, which 401s our dummy token and aborts the sync.
+        if not (config.config_hardcover_annotations_sync and bool(hardcover)):
+            kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="

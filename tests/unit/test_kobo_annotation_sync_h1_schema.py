@@ -111,14 +111,14 @@ class TestKoboAnnotationSyncModelDeclaration:
     ``KoboAnnotationSync`` class so ORM-level reads/writes see them."""
 
     def test_model_declares_all_h1_columns(self):
-        from cps.ub import KoboAnnotationSync
+        from cps.ub import Annotation as KoboAnnotationSync
 
         declared = {c.name for c in KoboAnnotationSync.__table__.columns}
         missing = H1_NEW_COLUMNS - declared
         assert not missing, f"H1 columns missing from model: {sorted(missing)}"
 
     def test_h1_columns_are_nullable(self):
-        from cps.ub import KoboAnnotationSync
+        from cps.ub import Annotation as KoboAnnotationSync
 
         cols_by_name = {c.name: c for c in KoboAnnotationSync.__table__.columns}
         # Every H1 addition must be nullable so pre-H1 rows continue to
@@ -132,7 +132,7 @@ class TestKoboAnnotationSyncModelDeclaration:
         """Pin column SQL types so a future refactor can't quietly change
         them (a Kobo position swapping Integer↔String would silently break
         the CFI converter)."""
-        from cps.ub import KoboAnnotationSync
+        from cps.ub import Annotation as KoboAnnotationSync
 
         cols = {c.name: c for c in KoboAnnotationSync.__table__.columns}
         # Integer-typed positions
@@ -294,7 +294,7 @@ class TestModelORMRoundTrip:
         Session = sessionmaker(bind=engine, future=True)
         session = Session()
 
-        record = ub.KoboAnnotationSync(
+        record = ub.Annotation(
             user_id=7,
             annotation_id="dead-beef-1234",
             book_id=348,  # Animal Farm in Maggie's library
@@ -319,7 +319,7 @@ class TestModelORMRoundTrip:
 
         # Read back through a fresh session to defeat identity-map caching.
         session2 = Session()
-        row = session2.query(ub.KoboAnnotationSync).filter_by(annotation_id="dead-beef-1234").one()
+        row = session2.query(ub.Annotation).filter_by(annotation_id="dead-beef-1234").one()
         assert row.cfi_range == "epubcfi(/6/18!/4[kobo.4.1]:0,/4[kobo.4.2]:116)"
         assert row.start_offset == 0
         assert row.end_offset == 116
@@ -517,20 +517,23 @@ class TestMigrationPreservesAllUserData:
 
     def test_orm_can_still_read_old_rows_after_migration(self):
         """A pre-H1 row inserted by the Hardcover sync code path must
-        be readable through the ORM after the migration runs. This is
-        the upgrade-safety claim: a user on v4.0.77 who upgrades to
-        v4.0.78 (and onward) can still see + sync their existing
-        highlights without the new code path tripping on a NULL field."""
+        be readable through the ORM after the migration runs.
+
+        Post-decouple: both H1 and decouple migrations run in sequence
+        (matching production's migrate_Database() flow). The dropped
+        synced_to_hardcover column is replaced by sync_target rows."""
         from cps import ub
 
         engine = self._build_populated_pre_h1_db()
         session_maker = sessionmaker(bind=engine, future=True)
         session = session_maker()
         ub.migrate_kobo_annotation_sync_h1_columns(engine, session)
+        ub.migrate_annotation_decouple_source_target(engine, session)
+        ub.migrate_annotation_polymorphic_position(engine, session)
 
         # Fresh session: ORM read must work on every row.
         s2 = session_maker()
-        rows = s2.query(ub.KoboAnnotationSync).all()
+        rows = s2.query(ub.Annotation).all()
         assert len(rows) == 100
         for r in rows:
             # All H1 fields are nullable; pre-H1 rows should have
@@ -541,9 +544,14 @@ class TestMigrationPreservesAllUserData:
             assert r.start_offset is None
             assert r.context_string is None
             assert r.hidden in (0, False)
-            # Hardcover-sync rows: source = 'hardcover'; unsynced: None.
-            if r.synced_to_hardcover:
-                assert r.source == "hardcover"
+            # Post-decouple: every previously-synced row gets a
+            # sync_target row with status='synced' AND source='kobo'
+            # (the 'hardcover' placeholder was corrected by the
+            # decouple migration). Unsynced rows have no sync_target.
+            hc = r.sync_target("hardcover")
+            if hc is not None:
+                assert hc.status == "synced"
+                assert r.source == "kobo"
             else:
                 assert r.source is None
             # The precious fields are non-None for synced rows.
@@ -555,25 +563,37 @@ class TestMigrationPreservesAllUserData:
 
 @pytest.mark.unit
 class TestHardcoverSyncTagsSource:
-    """Source-pin: the Hardcover annotation sync path in
-    ``cps/readingservices.py::process_annotation_for_sync`` must pass
-    ``source='hardcover'`` when constructing a new ``KoboAnnotationSync``.
+    """Source-pin (post-decouple): ``cps/readingservices.py`` must NOT
+    construct any Annotation row with ``source='hardcover'`` anymore.
 
-    Without this, every Hardcover-sync row gets ``source=NULL`` at insert
-    time — the migration backfill only labels CURRENT rows at restart,
-    not rows created between restarts. Source-pinning the constructor
-    keeps the source column meaningful for the H1 import path's
-    deduplication and source-of-truth logic.
+    Per notes/2026-05-21-annotation-decouple-source-target-DESIGN.md, the
+    Kobo PATCH path tags annotations with ``source='kobo'`` (the dispatcher
+    handles this) and records the Hardcover destination in the separate
+    AnnotationSyncTarget table — not on the source column.
     """
 
-    def test_readingservices_constructor_passes_source(self):
+    def test_readingservices_never_constructs_source_hardcover(self):
         import inspect as py_inspect
         from cps import readingservices
 
         src = py_inspect.getsource(readingservices)
-        # The constructor block must include source='hardcover'.
-        assert "source='hardcover'" in src or 'source="hardcover"' in src, (
-            "readingservices.py must tag new Hardcover-sync rows with "
-            "source='hardcover'; otherwise they appear as un-sourced "
-            "until the next migrate_Database run backfills them"
+        assert "source='hardcover'" not in src, (
+            "readingservices.py must NOT construct rows with source='hardcover' "
+            "— per decouple design, source tracks origin (kobo/webreader/koreader) "
+            "and the Hardcover destination lives on AnnotationSyncTarget."
+        )
+        assert 'source="hardcover"' not in src
+
+    def test_readingservices_dispatches_through_annotation_sync(self):
+        import inspect as py_inspect
+        from cps import readingservices
+
+        src = py_inspect.getsource(readingservices)
+        assert "dispatch_annotation_sync" in src, (
+            "readingservices.py PATCH handler must call dispatch_annotation_sync "
+            "from cps.services.annotation_sync"
+        )
+        assert "dispatch_annotation_deletes" in src, (
+            "readingservices.py PATCH handler must call dispatch_annotation_deletes "
+            "from cps.services.annotation_sync"
         )

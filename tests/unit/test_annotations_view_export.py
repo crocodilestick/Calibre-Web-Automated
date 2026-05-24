@@ -78,7 +78,7 @@ def _seed(session, **overrides):
         hidden=False,
     )
     defaults.update(overrides)
-    row = ub.KoboAnnotationSync(**defaults)
+    row = ub.Annotation(**defaults)
     session.add(row)
     session.commit()
     return row

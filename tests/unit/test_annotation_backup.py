@@ -73,7 +73,7 @@ def memory_db(tmp_path, monkeypatch):
 def _insert_annotation(session, user_id, book_id, annotation_id, text,
                        color="yellow", note=None, source="kobo"):
     from cps import ub
-    row = ub.KoboAnnotationSync(
+    row = ub.Annotation(
         user_id=user_id,
         book_id=book_id,
         annotation_id=annotation_id,
@@ -182,7 +182,7 @@ class TestJsonRoundTrip:
         with gzip.open(path, "rb") as fh:
             payload = json.loads(fh.read())
 
-        assert payload["schema_version"] == 1
+        assert payload["schema_version"] == 2
         assert payload["user_id"] == 7
         assert payload["book_id"] == 348
         assert payload["annotation_count"] == 1
@@ -200,7 +200,7 @@ class TestJsonRoundTrip:
         from cps.services import annotation_backup
 
         session, _, _ = memory_db
-        row = ub.KoboAnnotationSync(
+        row = ub.Annotation(
             user_id=7, book_id=348, annotation_id="uuid-full",
             highlighted_text="A full payload row.",
             highlight_color="green", note_text="with note",
@@ -362,7 +362,7 @@ class TestEdgeCases:
         from cps.services import annotation_backup
         from cps import ub
 
-        ghost = ub.KoboAnnotationSync(
+        ghost = ub.Annotation(
             user_id=7, book_id=348, annotation_id="uuid-real",
         )
         ghost.book_id = None  # post-init mutation; just sets the attr
@@ -392,7 +392,7 @@ class TestCollector:
         from cps.services import annotation_backup
         annotation_backup.reset_for_tests()
 
-        new_row = ub.KoboAnnotationSync(
+        new_row = ub.Annotation(
             user_id=7, book_id=348, annotation_id="uuid-collect",
             highlighted_text="text", source="kobo",
         )
@@ -410,9 +410,9 @@ class TestCollector:
         from cps.services import annotation_backup
         annotation_backup.reset_for_tests()
 
-        r1 = ub.KoboAnnotationSync(user_id=7, book_id=348,
+        r1 = ub.Annotation(user_id=7, book_id=348,
                                     annotation_id="u1", highlighted_text="a")
-        r2 = ub.KoboAnnotationSync(user_id=7, book_id=348,
+        r2 = ub.Annotation(user_id=7, book_id=348,
                                     annotation_id="u2", highlighted_text="b")
         class FakeSession:
             new = {r1, r2}

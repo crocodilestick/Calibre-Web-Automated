@@ -21,6 +21,7 @@
   <script src="{{ url_for('static', filename='js/libs/screenfull.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/compress/uncompress.js') }}"></script>
   <script src="{{ url_for('static', filename='js/kthoom.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/reading/annotations_comic.js') }}" defer></script>
 </head>
 <body>
 <div id="sidebar">
@@ -186,7 +187,8 @@
     window.calibre = {
         bookmarkUrl: "{{ url_for('web.set_bookmark', book_id=comicfile, book_format=extension.upper()) }}",
         bookmark: "{{ bookmark.bookmark_key if bookmark != None }}",
-        useBookmarks: "{{ current_user.is_authenticated | tojson }}"
+        useBookmarks: "{{ current_user.is_authenticated | tojson }}",
+        annotationsApiBase: "{{ url_for('annotations.annotations_view', book_id=comicfile) }}"
     };
 
     document.onreadystatechange = function () {

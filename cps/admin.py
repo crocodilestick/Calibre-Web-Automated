@@ -3153,9 +3153,12 @@ def restore_calibre_db():
 
         # 4. Wipe all book-linked tables in app.db
         from sqlalchemy import text as sql_text
+        # NOTE: annotation_sync_target MUST come before annotation in this list
+        # because of the FK ON DELETE CASCADE direction.
         book_tables = [
             "book_shelf_link", "book_read_link", "bookmark", "archived_book", "kobo_synced_books",
-            "kobo_reading_state", "kobo_bookmark", "kobo_statistics", "kobo_annotation_sync",
+            "kobo_reading_state", "kobo_bookmark", "kobo_statistics",
+            "annotation_sync_target", "annotation",
             "hardcover_book_blacklist", "hardcover_match_queue", "downloads", "magic_shelf_cache"
         ]
         try:

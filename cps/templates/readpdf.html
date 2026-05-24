@@ -54,6 +54,13 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     <script src="{{ url_for('static', filename='js/libs/viewer.mjs') }}" type="module"></script>
 
+    <script type="text/javascript">
+      // Sub-project (3): annotations overlay base URL for the PDF reader.
+      window.calibre = window.calibre || {};
+      window.calibre.annotationsApiBase = "{{ url_for('annotations.annotations_view', book_id=pdffile) }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/reading/annotations_pdf.js') }}"></script>
+
   </head>
 
   <body tabindex="1">

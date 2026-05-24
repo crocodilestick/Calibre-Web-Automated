@@ -121,7 +121,7 @@ class TestIngestCounts:
         )
 
         # bm-002 has all the bells: multi-span, typed note, red color.
-        row = session.query(ub.KoboAnnotationSync).filter_by(
+        row = session.query(ub.Annotation).filter_by(
             annotation_id="bm-002"
         ).one()
         assert row.user_id == 7
@@ -149,7 +149,7 @@ class TestIngestCounts:
             book_lookup=book_lookup, commit=session.commit,
         )
         rows = {r.annotation_id: r for r in
-                session.query(ub.KoboAnnotationSync).filter_by(user_id=7).all()}
+                session.query(ub.Annotation).filter_by(user_id=7).all()}
         assert rows["bm-001"].highlight_color == "yellow"
         assert rows["bm-002"].highlight_color == "red"
         assert rows["bm-003"].highlight_color == "green"
@@ -194,7 +194,7 @@ class TestIdempotency:
             ingest_bookmarks(synthetic_db, user_id=7, session=session,
                               book_lookup=book_lookup, commit=session.commit)
 
-        total = session.query(ub.KoboAnnotationSync).filter_by(user_id=7).count()
+        total = session.query(ub.Annotation).filter_by(user_id=7).count()
         assert total == 3, "Re-import must never duplicate rows"
 
 
@@ -226,8 +226,8 @@ class TestMultiUserIsolation:
         assert result["imported"] == 3
         assert result["skipped_existing"] == 0
 
-        a_rows = session.query(ub.KoboAnnotationSync).filter_by(user_id=7).count()
-        b_rows = session.query(ub.KoboAnnotationSync).filter_by(user_id=99).count()
+        a_rows = session.query(ub.Annotation).filter_by(user_id=7).count()
+        b_rows = session.query(ub.Annotation).filter_by(user_id=99).count()
         assert a_rows == 3
         assert b_rows == 3
 

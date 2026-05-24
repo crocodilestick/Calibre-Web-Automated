@@ -50,7 +50,7 @@ log = logging.getLogger(__name__)
 # Schema version embedded in every JSON backup so a restore endpoint
 # (future PR) can reject incompatible formats cleanly rather than
 # loading garbage.
-BACKUP_SCHEMA_VERSION = 1
+BACKUP_SCHEMA_VERSION = 2
 
 # Number of snapshots retained per `(user_id, book_id)` pair.
 RETENTION_COUNT = 3
@@ -116,9 +116,9 @@ def enqueue_baseline_for_user(user_id: int, session=None) -> int:
     """
     from .. import ub
     s = session or ub.session
-    book_ids = s.query(ub.KoboAnnotationSync.book_id).filter(
-        ub.KoboAnnotationSync.user_id == user_id,
-        ub.KoboAnnotationSync.book_id.isnot(None),
+    book_ids = s.query(ub.Annotation.book_id).filter(
+        ub.Annotation.user_id == user_id,
+        ub.Annotation.book_id.isnot(None),
     ).distinct().all()
     scheduled = 0
     for (book_id,) in book_ids:
@@ -200,10 +200,10 @@ def _run_one(user_id: int, book_id: int, session=None) -> Optional[Path]:
         session = ub.init_db_thread()
         own_session = True
     try:
-        rows = session.query(ub.KoboAnnotationSync).filter(
-            ub.KoboAnnotationSync.user_id == user_id,
-            ub.KoboAnnotationSync.book_id == book_id,
-        ).order_by(ub.KoboAnnotationSync.id.asc()).all()
+        rows = session.query(ub.Annotation).filter(
+            ub.Annotation.user_id == user_id,
+            ub.Annotation.book_id == book_id,
+        ).order_by(ub.Annotation.id.asc()).all()
 
         if not rows:
             # User has no annotations for this book — could happen if
@@ -281,8 +281,6 @@ def _serialize(user_id: int, book_id: int, rows: list) -> dict:
             "highlighted_text": r.highlighted_text,
             "highlight_color": r.highlight_color,
             "note_text": r.note_text,
-            "synced_to_hardcover": bool(r.synced_to_hardcover) if r.synced_to_hardcover is not None else False,
-            "hardcover_journal_id": r.hardcover_journal_id,
             "content_id": r.content_id,
             "start_container_path": r.start_container_path,
             "start_container_child_index": r.start_container_child_index,
@@ -377,7 +375,7 @@ def collect_annotation_writes(session, _flush_context) -> None:
         pending = set()
         session._annotation_backup_pending = pending
     for inst in itertools.chain(session.new, session.dirty):
-        if isinstance(inst, ub.KoboAnnotationSync):
+        if isinstance(inst, ub.Annotation):
             if inst.user_id is None or inst.book_id is None:
                 continue
             pending.add((int(inst.user_id), int(inst.book_id)))

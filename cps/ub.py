@@ -40,7 +40,7 @@ try:
     from sqlalchemy.orm import declarative_base
 except ImportError:
     from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import backref, relationship, sessionmaker, Session, scoped_session
+from sqlalchemy.orm import backref, relationship, sessionmaker, Session, scoped_session, validates
 from werkzeug.security import generate_password_hash
 
 from . import constants, logger
@@ -830,53 +830,145 @@ class KoboStatistics(Base):
     spent_reading_minutes = Column(Integer)
 
 
-class KoboAnnotationSync(Base):
-    """Per-user-per-annotation record for Kobo highlights/notes.
+class Annotation(Base):
+    """Per-user-per-annotation row. Canonical store for ALL highlight/note
+    origins (Kobo device, web reader, KOReader plugin).
 
-    Originally added for the Hardcover annotation backports (CWA #1166 +
-    #1324) — those fields are ``synced_to_hardcover`` + ``hardcover_journal_id``
-    plus the inline ``highlighted_text`` / ``highlight_color`` / ``note_text``.
+    Per-target sync state (Hardcover, future Readwise / Notion / etc.) lives
+    in the AnnotationSyncTarget table — one row per (annotation, target).
 
-    H1 Phase 1 extends this table to be the source-of-truth for ALL highlight
-    ingestion paths (Kobo device upload, web reader, KOReader plugin) — see
-    ``notes/KOBO-WEB-READER-ANNOTATIONS-DESIGN.md``. The position fields below
-    are nullable so pre-H1 Hardcover-sync rows continue to work; the import
-    path populates them when available.
+    Renamed from KoboAnnotationSync as of 2026-05-21 — the table is no
+    longer Kobo-specific. See
+    notes/2026-05-21-annotation-decouple-source-target-DESIGN.md.
     """
-    __tablename__ = 'kobo_annotation_sync'
+    __tablename__ = 'annotation'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    annotation_id = Column(String, nullable=False)  # Kobo annotation UUID
-    book_id = Column(Integer, nullable=False)  # Calibre book ID
-    synced_to_hardcover = Column(Boolean, default=False)
-    hardcover_journal_id = Column(Integer)  # Hardcover journal entry ID
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    last_synced = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    annotation_id = Column(String, nullable=False)
+    book_id = Column(Integer, nullable=False)
+    # Origin tracking — where this annotation was created.
+    source = Column(String, nullable=True)
+    # Content
     highlighted_text = Column(String, nullable=True)
     highlight_color = Column(String, nullable=True)
     note_text = Column(String, nullable=True)
-    # H1 Phase 1 — Kobo-native position fields (also used for re-anchoring).
-    content_id = Column(String, nullable=True)  # chapter pointer "<book_uuid>!!<chapter_file>"
+    # Position (Kobo-native; cfi_range is the canonical web-reader form).
+    content_id = Column(String, nullable=True)
     start_container_path = Column(Text, nullable=True)
     start_container_child_index = Column(Integer, nullable=True)
     start_offset = Column(Integer, nullable=True)
     end_container_path = Column(Text, nullable=True)
     end_container_child_index = Column(Integer, nullable=True)
     end_offset = Column(Integer, nullable=True)
-    context_string = Column(Text, nullable=True)  # ±50 chars around highlight, for re-anchoring
-    chapter_progress = Column(Float, nullable=True)  # 0.0-1.0 within chapter
-    cfi_range = Column(String, nullable=True)  # epub.js native; computed from Kobo coords at insert time
-    source = Column(String, nullable=True)  # 'kobo' | 'webreader' | 'koreader' | 'hardcover'
-    hidden = Column(Boolean, default=False, nullable=True)  # soft-delete flag
+    context_string = Column(Text, nullable=True)
+    chapter_progress = Column(Float, nullable=True)
+    cfi_range = Column(String, nullable=True)
+    # Sub-project (3)/(4) — polymorphic position support for non-CFI formats.
+    # position_type values: 'cfi' (default for EPUB), 'pdf_quad', 'comic_page'.
+    # NULL on legacy rows means EPUB CFI (backward compatible).
+    position_type = Column(String, nullable=True)
+    pdf_page = Column(Integer, nullable=True)         # 1-indexed PDF page number
+    pdf_quad_json = Column(Text, nullable=True)       # JSON: [[x,y,w,h], ...] in PDF user-space coords
+    comic_page = Column(Integer, nullable=True)       # 1-indexed comic page (CBR/CBZ)
+    # Lifecycle
+    hidden = Column(Boolean, default=False, nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_synced = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    sync_targets = relationship(
+        "AnnotationSyncTarget",
+        backref="annotation",
+        cascade="all, delete-orphan",
+        lazy="select",
+        passive_deletes=True,
+    )
 
     __table_args__ = (
-        Index('ix_kobo_annotation_sync_user_annotation', 'user_id', 'annotation_id'),
-        Index('ix_kobo_annotation_sync_user_book', 'user_id', 'book_id'),
+        Index('ix_annotation_user_annotation', 'user_id', 'annotation_id'),
+        Index('ix_annotation_user_book', 'user_id', 'book_id'),
+    )
+
+    _VALID_SOURCES = {"kobo", "webreader", "koreader"}
+    _VALID_POSITION_TYPES = {"cfi", "pdf_quad", "comic_page"}
+
+    @validates("source")
+    def _validate_source(self, _key, value):
+        if value is not None and value not in self._VALID_SOURCES:
+            raise ValueError(
+                f"invalid annotation source: {value!r}; "
+                f"expected one of {sorted(self._VALID_SOURCES)} or None"
+            )
+        return value
+
+    @validates("position_type")
+    def _validate_position_type(self, _key, value):
+        if value is not None and value not in self._VALID_POSITION_TYPES:
+            raise ValueError(
+                f"invalid position_type: {value!r}; "
+                f"expected one of {sorted(self._VALID_POSITION_TYPES)} or None"
+            )
+        return value
+
+    def sync_target(self, target_name):
+        """Return the AnnotationSyncTarget row for a specific target, or None."""
+        for st in self.sync_targets:
+            if st.target == target_name:
+                return st
+        return None
+
+    def is_synced_to(self, target_name):
+        """True iff there's a sync_target row for `target_name` with status='synced'."""
+        st = self.sync_target(target_name)
+        return st is not None and st.status == "synced"
+
+    def __repr__(self):
+        return f'<Annotation annotation_id={self.annotation_id} book_id={self.book_id}>'
+
+
+class AnnotationSyncTarget(Base):
+    """Per-(annotation, target) row tracking sync state to a single remote
+    destination (Hardcover today; Readwise / Notion / etc. later).
+
+    Status state machine: pending -> synced/failed -> tombstone. See
+    notes/2026-05-21-annotation-decouple-source-target-DESIGN.md.
+    """
+    __tablename__ = 'annotation_sync_target'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    annotation_id = Column(
+        Integer,
+        ForeignKey('annotation.id', ondelete='CASCADE'),
+        nullable=False,
+    )
+    target = Column(String, nullable=False)
+    target_record_id = Column(String, nullable=True)
+    status = Column(String, nullable=False)
+    error_message = Column(Text, nullable=True)
+    last_attempt = Column(DateTime, nullable=True)
+    last_synced = Column(DateTime, nullable=True)
+    created_at = Column(
+        DateTime, nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+    updated_at = Column(
+        DateTime, nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    __table_args__ = (
+        UniqueConstraint('annotation_id', 'target', name='uq_ast_annotation_target'),
+        Index('ix_ast_target_status', 'target', 'status'),
     )
 
     def __repr__(self):
-        return f'<KoboAnnotationSync annotation_id={self.annotation_id} book_id={self.book_id}>'
+        return (f'<AnnotationSyncTarget annotation_id={self.annotation_id} '
+                f'target={self.target} status={self.status}>')
 
 
 class KoboAnnotationBackup(Base):
@@ -1897,6 +1989,219 @@ def migrate_kobo_annotation_sync_h1_columns(engine, _session):
         )
 
 
+def _migrate_step1_create_target_table(conn):
+    """Create annotation_sync_target table + indexes if not present."""
+    conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS annotation_sync_target (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            annotation_id     INTEGER NOT NULL,
+            target            VARCHAR NOT NULL,
+            target_record_id  VARCHAR,
+            status            VARCHAR NOT NULL,
+            error_message     TEXT,
+            last_attempt      DATETIME,
+            last_synced       DATETIME,
+            created_at        DATETIME NOT NULL,
+            updated_at        DATETIME NOT NULL,
+            UNIQUE (annotation_id, target),
+            FOREIGN KEY (annotation_id) REFERENCES annotation(id) ON DELETE CASCADE
+        )
+    """))
+    conn.execute(text(
+        "CREATE INDEX IF NOT EXISTS ix_ast_target_status "
+        "ON annotation_sync_target (target, status)"
+    ))
+
+
+def _migrate_step2_backfill_sync_state(conn):
+    """Copy synced_to_hardcover=1 rows into annotation_sync_target.
+
+    Idempotent — WHERE NOT EXISTS so re-runs insert nothing new.
+    Returns the row-count actually inserted.
+    """
+    result = conn.execute(text("""
+        INSERT INTO annotation_sync_target
+            (annotation_id, target, target_record_id, status,
+             last_synced, last_attempt, created_at, updated_at)
+        SELECT
+            kas.id,
+            'hardcover',
+            CAST(kas.hardcover_journal_id AS VARCHAR),
+            'synced',
+            kas.last_synced,
+            kas.last_synced,
+            kas.last_synced,
+            kas.last_synced
+        FROM kobo_annotation_sync kas
+        WHERE kas.synced_to_hardcover = 1
+          AND NOT EXISTS (
+              SELECT 1 FROM annotation_sync_target ast
+              WHERE ast.annotation_id = kas.id AND ast.target = 'hardcover'
+          )
+    """))
+    return result.rowcount
+
+
+def _migrate_step3_fix_source_values(conn):
+    """Correct source='hardcover' rows to source='kobo'. Idempotent."""
+    result = conn.execute(text(
+        "UPDATE kobo_annotation_sync SET source = 'kobo' WHERE source = 'hardcover'"
+    ))
+    return result.rowcount
+
+
+def _migrate_step4_sanity_check(conn):
+    """Refuse destructive steps unless backfill row counts match exactly."""
+    pre = conn.execute(text(
+        "SELECT COUNT(*) FROM kobo_annotation_sync WHERE synced_to_hardcover = 1"
+    )).scalar()
+    post = conn.execute(text(
+        "SELECT COUNT(*) FROM annotation_sync_target WHERE target = 'hardcover'"
+    )).scalar()
+    if pre != post:
+        raise RuntimeError(
+            f"[annotation-decouple-migration] count mismatch: "
+            f"pre-migration synced_to_hardcover=1 rows={pre}, "
+            f"post-backfill annotation_sync_target rows={post}"
+        )
+
+
+def _migrate_step5_rename_table(conn):
+    """Rename kobo_annotation_sync -> annotation."""
+    conn.execute(text("ALTER TABLE kobo_annotation_sync RENAME TO annotation"))
+
+
+def _migrate_step6_rename_indexes(conn):
+    """SQLite doesn't have ALTER INDEX RENAME; drop + create."""
+    conn.execute(text("DROP INDEX IF EXISTS ix_kobo_annotation_sync_user_annotation"))
+    conn.execute(text("DROP INDEX IF EXISTS ix_kobo_annotation_sync_user_book"))
+    conn.execute(text(
+        "CREATE INDEX IF NOT EXISTS ix_annotation_user_annotation "
+        "ON annotation (user_id, annotation_id)"
+    ))
+    conn.execute(text(
+        "CREATE INDEX IF NOT EXISTS ix_annotation_user_book "
+        "ON annotation (user_id, book_id)"
+    ))
+
+
+def _migrate_step7_drop_old_columns(conn):
+    """Drop synced_to_hardcover + hardcover_journal_id columns.
+
+    SQLite >= 3.35 supports DROP COLUMN. Each DROP is guarded by
+    column-existence so re-runs are no-ops.
+    """
+    from sqlalchemy import inspect as sa_inspect
+    inspector = sa_inspect(conn)
+    cols = {c["name"] for c in inspector.get_columns("annotation")}
+    if "synced_to_hardcover" in cols:
+        conn.execute(text("ALTER TABLE annotation DROP COLUMN synced_to_hardcover"))
+    if "hardcover_journal_id" in cols:
+        conn.execute(text("ALTER TABLE annotation DROP COLUMN hardcover_journal_id"))
+
+
+def migrate_annotation_polymorphic_position(engine, _session):
+    """Sub-projects (3)/(4) — add polymorphic position columns to annotation.
+
+    Adds position_type, pdf_page, pdf_quad_json, comic_page. Idempotent —
+    each ADD COLUMN is guarded by existence check. Runs AFTER the decouple
+    migration (so the table is already named 'annotation').
+    """
+    from sqlalchemy import inspect as sa_inspect
+
+    inspector = sa_inspect(engine)
+    if "annotation" not in inspector.get_table_names():
+        return  # Fresh install — create_all already produced the full schema.
+
+    existing = {c["name"] for c in inspector.get_columns("annotation")}
+    pending = [
+        ("position_type",   "position_type VARCHAR"),
+        ("pdf_page",        "pdf_page INTEGER"),
+        ("pdf_quad_json",   "pdf_quad_json TEXT"),
+        ("comic_page",      "comic_page INTEGER"),
+    ]
+    statements = [
+        f"ALTER TABLE annotation ADD COLUMN {ddl}"
+        for col, ddl in pending if col not in existing
+    ]
+    if not statements:
+        return
+    try:
+        with engine.begin() as conn:
+            for stmt in statements:
+                conn.execute(text(stmt))
+        log.info(
+            "[annotation-polymorphic-position] added %d columns",
+            len(statements),
+        )
+    except Exception:
+        log.exception("[annotation-polymorphic-position] failed")
+
+
+def migrate_annotation_decouple_source_target(engine, _session):
+    """Decouple annotation origin from sync target.
+
+    8-step transactional migration. Idempotent. See
+    notes/2026-05-21-annotation-decouple-source-target-DESIGN.md §4.
+
+    Refuses destructive steps if the sanity check (step 4) detects a
+    count mismatch — DB stays in pre-migration state in that case.
+
+    Note on co-existence: ``add_missing_tables`` (which runs before this
+    migration in ``migrate_Database``) creates an empty ``annotation``
+    table via ``Base.metadata.create_all``. We detect that case + drop
+    the empty placeholder before renaming the real ``kobo_annotation_sync``
+    onto it.
+    """
+    from sqlalchemy import inspect as sa_inspect
+
+    inspector = sa_inspect(engine)
+    tables = set(inspector.get_table_names())
+
+    # Idempotency check: migration is already complete when the legacy
+    # table is gone AND the target table exists.
+    if "kobo_annotation_sync" not in tables and "annotation" in tables:
+        log.info("[annotation-decouple-migration] target schema already in place; skip")
+        return
+    if "kobo_annotation_sync" not in tables and "annotation" not in tables:
+        log.info("[annotation-decouple-migration] fresh install; nothing to migrate")
+        return
+
+    log.info("[annotation-decouple-migration] starting")
+    try:
+        with engine.begin() as conn:
+            _migrate_step1_create_target_table(conn)
+            inserted = _migrate_step2_backfill_sync_state(conn)
+            updated = _migrate_step3_fix_source_values(conn)
+            _migrate_step4_sanity_check(conn)
+            # Drop the empty ORM-created annotation placeholder so RENAME
+            # below has a clean target. The placeholder has zero rows
+            # because add_missing_tables only just created it this boot.
+            if "annotation" in inspector.get_table_names():
+                placeholder_count = conn.execute(text(
+                    "SELECT COUNT(*) FROM annotation"
+                )).scalar()
+                if placeholder_count == 0:
+                    conn.execute(text("DROP TABLE annotation"))
+                else:
+                    raise RuntimeError(
+                        "[annotation-decouple-migration] both kobo_annotation_sync "
+                        f"and annotation tables exist + annotation has "
+                        f"{placeholder_count} rows; manual investigation required"
+                    )
+            _migrate_step5_rename_table(conn)
+            _migrate_step6_rename_indexes(conn)
+            _migrate_step7_drop_old_columns(conn)
+            log.info(
+                "[annotation-decouple-migration] complete: "
+                "%d sync_target rows backfilled, %d source values corrected",
+                inserted, updated,
+            )
+    except Exception:
+        log.exception("[annotation-decouple-migration] failed; rolling back")
+        raise
+
+
 def migrate_Database(_session):
     engine = _session.bind
     add_missing_tables(engine, _session)
@@ -1913,6 +2218,8 @@ def migrate_Database(_session):
     migrate_kobo_unique_constraints(engine, _session)
     migrate_kobo_deleted_book(engine, _session)
     migrate_kobo_annotation_sync_h1_columns(engine, _session)
+    migrate_annotation_decouple_source_target(engine, _session)
+    migrate_annotation_polymorphic_position(engine, _session)
     migrate_book_cover_preview_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables).

@@ -130,7 +130,7 @@ class TestEnsureCfiRange:
     def test_short_circuits_when_cfi_already_present(self, memory_db, tmp_path):
         from cps import ub, annotations as ann_mod
 
-        row = ub.KoboAnnotationSync(
+        row = ub.Annotation(
             user_id=7, book_id=1, annotation_id="cached-cfi",
             highlighted_text="x", cfi_range="epubcfi(/already/present)",
             source="kobo",
@@ -146,7 +146,7 @@ class TestEnsureCfiRange:
     def test_computes_cfi_when_missing(self, memory_db, tmp_path, monkeypatch):
         from cps import ub, annotations as ann_mod, config
 
-        row = ub.KoboAnnotationSync(
+        row = ub.Annotation(
             user_id=7, book_id=1, annotation_id="needs-cfi",
             highlighted_text="hello",
             cfi_range=None,
@@ -174,7 +174,7 @@ class TestEnsureCfiRange:
     def test_returns_none_on_malformed_content_id(self, memory_db, tmp_path):
         from cps import ub, annotations as ann_mod
 
-        row = ub.KoboAnnotationSync(
+        row = ub.Annotation(
             user_id=7, book_id=1, annotation_id="bad-content",
             highlighted_text="x", content_id="no-double-bang",
             source="kobo",
@@ -187,7 +187,7 @@ class TestEnsureCfiRange:
     def test_returns_none_when_no_epub_on_disk(self, memory_db, tmp_path, monkeypatch):
         from cps import ub, annotations as ann_mod, config
 
-        row = ub.KoboAnnotationSync(
+        row = ub.Annotation(
             user_id=7, book_id=1, annotation_id="no-epub",
             highlighted_text="x",
             content_id="00000000-0000-0000-0000-deadbeefcafe!!chapter1.html",

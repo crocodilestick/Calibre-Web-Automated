@@ -36,6 +36,21 @@
         line-height: 1.25 !important;
     }
 
+    /* Deterministic title height — reserve exactly 2 lines whether the
+       title is 1 or 2 lines long. This makes each .book card a CONSTANT
+       height regardless of title length OR which font is active at
+       measurement time. isotope absolutely-positions cards from their
+       measured height; a constant card height means isotope cannot
+       mis-place a card when the web font swaps in after layout, so a
+       title can never overflow onto the cover above it. Pairs with the
+       document.fonts.ready relayout in main.js as belt-and-suspenders:
+       the relayout corrects positions, this guarantees the height it
+       measures is stable in the first place. 2 lines × 1.25 line-height
+       × 14px ≈ 35px. */
+    .container-fluid .book .meta .title {
+        min-height: 2.5em;
+    }
+
     /* Slight font-size bump for mobile readability — the default
        15px title + 12px author work on desktop where cards are
        wider; on phones the smaller author text becomes hard to
@@ -69,5 +84,36 @@
         -webkit-transform: none !important;
         -ms-transform: none !important;
         transform: none !important;
+    }
+
+    /* Pagination prev/next arrow vertical-alignment.
+       caliBlur styles the .page-next / .page-previous <a> with desktop
+       dimensions (line-height: 60px; padding: 20px 25px; height: 60px)
+       tuned for its 60px-tall fixed desktop pagination bar. On mobile
+       the numbered page buttons are ~33px tall, so the 60px-tall arrow
+       link + its padded :before glyph sit ~9px BELOW the button centers
+       — the misaligned arrow in the header row. Make the pagination a
+       vertically-centered flex row + collapse the arrow box to match the
+       button height so the glyph centers with the numbers. */
+    .pagination {
+        display: flex !important;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    body > div.container-fluid > div > div.col-sm-10 > div.pagination > .page-next > a,
+    body > div.container-fluid > div > div.col-sm-10 > div.pagination > .page-previous > a {
+        height: auto !important;
+        line-height: 1 !important;
+        display: flex !important;
+        align-items: center;
+        width: auto !important;
+    }
+    body > div.container-fluid > div > div.col-sm-10 > div.pagination > .page-next > a:before,
+    body > div.container-fluid > div > div.col-sm-10 > div.pagination > .page-previous > a:before {
+        height: auto !important;
+        line-height: 1 !important;
+        padding: 0 10px !important;
+        margin-right: 0 !important;
+        font-size: 18px !important;
     }
 }

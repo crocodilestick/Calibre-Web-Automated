@@ -427,6 +427,29 @@ $(function() {
         layoutMode : selectedLayoutMode
     });
 
+    // Re-layout isotope once the web font (Open Sans) finishes loading.
+    // isotope absolutely-positions each .book card based on its measured
+    // height at layout time. On a cold-cache load (typically mobile
+    // Safari over a network), isotope runs at document-ready BEFORE the
+    // web font arrives, so it measures titles with the fallback font's
+    // metrics. When Open Sans swaps in, multi-line titles reflow to a
+    // different height but the absolute card positions are already
+    // fixed — leaving book titles overlapping the cover above them.
+    // Phones never fire window.resize, so it never self-corrects.
+    // Re-running isotope("layout") after document.fonts.ready remeasures
+    // with the real font. Guarded for browsers without the Font Loading
+    // API (degrade to the existing resize-only behavior). window.load is
+    // a belt-and-suspenders pass for any late-settling layout.
+    function relayoutDiscoverIsotope() {
+        $(".discover .row").filter(function() {
+            return !!$(this).data("isotope");
+        }).isotope("layout");
+    }
+    if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === "function") {
+        document.fonts.ready.then(relayoutDiscoverIsotope);
+    }
+    $(window).on("load", relayoutDiscoverIsotope);
+
     // Only initialize Infinite Scroll if pagination is NOT present
     if ($(".load-more").length && $(".next").length && $(".pagination").length === 0) {
         var $loadMore = $(".load-more .row").infiniteScroll({

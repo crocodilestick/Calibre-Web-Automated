@@ -1698,7 +1698,16 @@ def HandleInitRequest():
                                                                width="{Width}",
                                                                height="{Height}",
                                                                isGreyscale='false'))
-        if config.config_hardcover_annotations_sync and bool(hardcover):
+        # Route reading-services (annotations + reading state) through CWNG
+        # whenever Kobo sync is on — not just when Hardcover is enabled.
+        # The annotation handler captures a local copy then ALWAYS proxies
+        # the request on to Kobo's real reading services, so device-side
+        # data is never withheld. Previously this was gated on Hardcover,
+        # so with Hardcover off the device sent annotations straight to
+        # Kobo and CWNG never saw them — the live-Kobo capture from #305
+        # sub-project (2) was a no-op on the wire. (Found via real-device
+        # test 2026-05-24.)
+        if config.config_kobo_sync or (config.config_hardcover_annotations_sync and bool(hardcover)):
             kobo_resources["reading_services_host"] = calibre_web_url
         kobo_resources["library_sync"] = calibre_web_url + url_for("kobo.HandleSyncRequest",
                                                                     auth_token=kobo_auth.get_auth_token())
@@ -1719,7 +1728,9 @@ def HandleInitRequest():
                                                                height="{Height}",
                                                                isGreyscale='false',
                                                                _external=True))
-        if config.config_hardcover_annotations_sync and bool(hardcover):
+        # See note above — redirect reading-services to CWNG whenever Kobo
+        # sync is on so live annotation capture works without Hardcover.
+        if config.config_kobo_sync or (config.config_hardcover_annotations_sync and bool(hardcover)):
             kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
         kobo_resources["library_sync"] = url_for("kobo.HandleSyncRequest",
                                                   auth_token=kobo_auth.get_auth_token(),

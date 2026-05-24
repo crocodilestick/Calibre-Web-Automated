@@ -33,6 +33,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import constants, logger, isoLanguages, services, helper
 from . import db, ub, config, app
 from . import calibre_db, kobo_sync_status
+from .services.ereader_send import send_includes_own_address
 from .search import render_search_results, render_adv_search_results
 from .gdriveutils import getFileFromEbooksFolder, do_gdrive_download
 from .helper import check_valid_domain, check_email, check_username, \
@@ -2220,7 +2221,12 @@ def send_to_selected_ereaders(book_id):
     result = send_mail(book_id, book_format, int(convert), selected_emails, config.get_book_path(), current_user.name, current_user.kindle_mail_subject)
 
     if result is None:
-        ub.update_download(book_id, int(current_user.id))
+        # Fork #276 (@magdalar): only record a self-download when the send
+        # actually targeted one of the sender's own eReader addresses. An admin
+        # relaying a book solely to other users' eReaders did not download it
+        # themselves, so it must not pollute their download history.
+        if send_includes_own_address(current_user.kindle_mail, selected_emails):
+            ub.update_download(book_id, int(current_user.id))
         # Track email/send activity
         try:
             from scripts.cwa_db import CWA_DB

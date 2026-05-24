@@ -63,3 +63,52 @@ class TestHandleInitLibrarySyncRewrite:
         assert defaults.get("library_sync") == (
             "https://storeapi.kobo.com/v1/library/sync"
         )
+
+
+@pytest.mark.unit
+class TestHandleInitReadingServicesRedirect:
+    """Regression: reading_services_host (where the Kobo sends annotations
+    + reading state) must be redirected to CWNG whenever Kobo sync is on,
+    NOT only when Hardcover annotation sync is enabled.
+
+    Real-device test 2026-05-24: Maggie's Kobo synced fine but CWNG
+    captured 0 annotations because reading_services_host was gated on
+    `config_hardcover_annotations_sync and bool(hardcover)`. With
+    Hardcover off, the Init response left reading_services_host at
+    readingservices.kobo.com, so annotations went straight to Kobo and
+    never reached CWNG's capture handler — the #305 sub-project (2)
+    "live Kobo capture" was a no-op on the wire. Fix gates the redirect
+    on `config.config_kobo_sync` (the annotation handler already proxies
+    every request on to Kobo's real reading services, so device-side
+    data is never withheld).
+    """
+
+    def test_redirect_gated_on_kobo_sync_not_only_hardcover(self):
+        from cps.kobo import HandleInitRequest
+        src = inspect.getsource(HandleInitRequest)
+        # The reading_services_host assignment must be reachable when
+        # config_kobo_sync is true. Pin that config_kobo_sync appears in
+        # the guard for the reading_services_host rewrite.
+        assert src.count('kobo_resources["reading_services_host"]') >= 2, (
+            "both proxied + unproxied branches must rewrite reading_services_host"
+        )
+        # The guard immediately preceding each rewrite must reference
+        # config_kobo_sync (so capture works without Hardcover).
+        for chunk in src.split('kobo_resources["reading_services_host"]')[:-1]:
+            guard = chunk.rsplit("if ", 1)[-1]
+            assert "config_kobo_sync" in guard, (
+                "reading_services_host redirect must be gated on "
+                "config.config_kobo_sync (not solely Hardcover), or live "
+                "Kobo annotation capture is a no-op when Hardcover is off"
+            )
+
+    def test_redirect_not_solely_hardcover_gated(self):
+        from cps.kobo import HandleInitRequest
+        src = inspect.getsource(HandleInitRequest)
+        # The exact pre-fix guard must be gone (it bypassed capture when
+        # Hardcover was off).
+        assert (
+            "if config.config_hardcover_annotations_sync and bool(hardcover):\n"
+            '            kobo_resources["reading_services_host"]'
+            not in src
+        ), "reading_services_host must not be solely Hardcover-gated (#305 sp2 real-device fix)"

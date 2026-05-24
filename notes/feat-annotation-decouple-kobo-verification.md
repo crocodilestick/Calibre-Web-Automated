@@ -28,11 +28,16 @@ full user-facing flow against a real Kobo eReader + cwn-local.
    ```
    ✅ Result: `0` rows (Hardcover sync was disabled).
 
-> NOTE: As of sub-project (1), the live PATCH path still only persists
-> annotations when Hardcover is enabled (we kept the existing gating).
-> Sub-project (2) lifts that gating so test 1 captures the annotation
-> *unconditionally*. Until (2) ships, test 1 may yield `annotation`
-> COUNT=0 — that's expected.
+> NOTE: Sub-project (2) shipped in v4.0.130 — the Hardcover gating has
+> been lifted, so test 1 now captures the annotation **unconditionally**
+> (annotation row with `source='kobo'`, 0 sync_target rows). If you see
+> `annotation` COUNT=0 after a confirmed device sync, that's a real
+> failure to investigate, not expected behavior.
+>
+> Schema prerequisite: run this against v4.0.131 or later. v4.0.130's
+> polymorphic-column migration failed on existing installs (fixed in
+> v4.0.131 / PR #309); on v4.0.130 the `annotation` table is missing
+> `position_type`/`pdf_page`/`pdf_quad_json`/`comic_page`.
 
 ## Test 2 — Hardcover ENABLED: annotation pushed + sync_target row created
 

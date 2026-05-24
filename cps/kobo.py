@@ -1304,6 +1304,35 @@ def HandleOauthRequest(subpath=None):
     return make_calibre_web_oauth_response()
 
 
+@kobo.route("/oauth/.well-known/openid-configuration", methods=["GET"])
+@requires_kobo_auth
+def HandleOauthDiscovery():
+    # Recent Kobo firmware performs OpenID Connect discovery against oauth_host
+    # before refreshing an expired access token. When Kobo Store proxying is
+    # disabled CWA hosts the OAuth endpoints itself (see HandleInitRequest ->
+    # oauth_host), so it must advertise them here. Without a token_endpoint the
+    # device requests "a new token from ''", raises a web request error and
+    # cancels the whole sync queue (SyncLibraryCommand included), so
+    # /v1/library/sync is never reached and the device reports "Sync failed".
+    oauth_url = url_for("kobo.HandleOauthRequest",
+                        auth_token=get_auth_token(), _external=True)
+    issuer = oauth_url.rsplit("/oauth", 1)[0] + "/oauth"
+    return make_response(jsonify({
+        "issuer": issuer,
+        "authorization_endpoint": issuer + "/auth",
+        "token_endpoint": issuer + "/token",
+        "userinfo_endpoint": issuer + "/userinfo",
+        "jwks_uri": issuer + "/jwks",
+        "response_types_supported": ["code", "token"],
+        "grant_types_supported": ["authorization_code", "refresh_token"],
+        "subject_types_supported": ["public"],
+        "id_token_signing_alg_values_supported": ["RS256"],
+        "scopes_supported": ["openid", "offline_access"],
+        "token_endpoint_auth_methods_supported":
+            ["client_secret_post", "client_secret_basic", "none"],
+    }))
+
+
 @kobo.route("/v1/initialization")
 @requires_kobo_auth
 def HandleInitRequest():

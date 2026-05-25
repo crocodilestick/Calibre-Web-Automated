@@ -147,17 +147,39 @@ def compute_cfi_range(epub_path: Path, position: KoboPosition) -> Optional[str]:
     end_id = _extract_kobospan_id(position.end_container_path)
 
     if start_id and end_id:
-        # The kepub path — KoboSpan IDs present, anchor via the selector
-        # format. Kobo writes child_index=-99 in KoboReader.sqlite to
-        # signal "use the selector", but the LIVE reading-services PATCH
-        # omits StartContainerChildIndex entirely, so live-captured
-        # annotations store it as NULL. Either way, when the KoboSpan IDs
-        # are present they are the reliable anchor — the child-index walk
-        # below is only for plain EPUBs with no KoboSpan IDs. (Gating this
-        # on child_index == -99 meant every live-captured kepub highlight
-        # failed to resolve a CFI and never rendered as a web-reader
-        # overlay — found via real-device test 2026-05-24.)
-        return f"epubcfi({spine_step}!/4[{start_id}]:{position.start_offset},/4[{end_id}]:{position.end_offset})"
+        # The kepub path — KoboSpan IDs present. Walk the chapter DOM to
+        # produce a structurally valid, portable source-document CFI
+        # (proper 3-part range, offsets on text nodes). The KoboSpan id is
+        # the reliable anchor whenever it's present; child_index is only
+        # consulted for plain EPUBs below. (Kobo writes child_index=-99 in
+        # KoboReader.sqlite, but the live reading-services PATCH omits it,
+        # so live-captured annotations store NULL — gating the selector
+        # path on child_index==-99 broke every live capture, found via
+        # real-device test 2026-05-24.)
+        #
+        # The web reader does NOT consume this CFI — epub.js injects
+        # wrapper divs at render time, so it regenerates a wrapper-aware
+        # CFI client-side from the KoboSpan id (annotations.js). This
+        # string is for export portability / spec-compliant resolvers.
+        try:
+            tree = _get_chapter_dom(cache_key, epub_path, chapter_file)
+            if tree is not None:
+                cfi = _kepub_range_cfi(
+                    tree, spine_step, start_id, end_id,
+                    position.start_offset, position.end_offset,
+                )
+                if cfi:
+                    return cfi
+        except Exception as e:
+            log.warning(
+                "compute_cfi_range: kepub DOM walk failed for %s::%s — %s",
+                epub_path, chapter_file, e,
+            )
+        # KoboSpan ids present but unresolvable in the DOM (re-uploaded
+        # book with a different layout?) — fall through to context.
+        return _fallback_via_context(
+            epub_path, cache_key, chapter_file, spine_step, position,
+        )
 
     # Plain-EPUB fallback: no KoboSpan IDs to anchor on. Walk by child
     # index instead. The CFI step encoding for child-index walks is
@@ -237,6 +259,92 @@ def _extract_kobospan_id(container_path: str) -> Optional[str]:
     if not m:
         return None
     return m.group(1).replace("\\", "")
+
+
+def _cfi_element_step(el) -> str:
+    """One CFI step for an element relative to its parent, using
+    epub.js's numbering: element children are numbered 2, 4, 6, … (the
+    Nth element child, 1-based, times two), with the element's ``id``
+    appended as an assertion. Text nodes don't shift element numbering —
+    lxml only yields element/comment/PI children when iterating, so the
+    index is naturally element-only, matching epub.js's ``.children``."""
+    parent = el.getparent()
+    if parent is None:
+        return ""
+    sibs = [c for c in parent if isinstance(c.tag, str)]
+    try:
+        idx = sibs.index(el)
+    except ValueError:
+        idx = 0
+    step = f"/{2 * (idx + 1)}"
+    eid = el.get("id")
+    return step + (f"[{eid}]" if eid else "")
+
+
+def _element_chain_below_body(el):
+    """Return the element chain ``[body_child, …, el]`` — every element
+    from ``<body>``'s direct child down to ``el`` inclusive, excluding
+    ``<body>`` itself (the CFI anchors body as the literal ``/4`` prefix,
+    matching epub.js and the EPUB CFI convention for ``<html><head/>
+    <body/></html>``)."""
+    chain = []
+    cur = el
+    while cur is not None:
+        parent = cur.getparent()
+        if parent is None:
+            break
+        chain.append(cur)
+        ptag = parent.tag if isinstance(parent.tag, str) else ""
+        if ptag == "body" or ptag.endswith("}body"):
+            break
+        cur = parent
+    chain.reverse()
+    return chain
+
+
+def _kepub_range_cfi(tree, spine_step, start_id, end_id, start_offset, end_offset):
+    """Build a valid 3-part EPUB CFI range
+    (``epubcfi(<common>,<start>,<end>)``) anchoring a highlight between
+    two KoboSpans in the parsed chapter ``tree``.
+
+    The CFI is computed against the *source* document (no reader
+    wrappers), so it is portable — a spec-compliant resolver follows the
+    element path and validates the ``[kobo.x.y]`` id assertions. The web
+    reader does NOT consume this string: epub.js injects wrapper divs at
+    render time that shift every step, so the reader regenerates its own
+    wrapper-aware CFI client-side from the KoboSpan id (see
+    ``cps/static/js/reading/annotations.js``). Returns ``None`` if either
+    span is absent from the chapter."""
+    start_matches = tree.xpath("//*[@id=$v]", v=start_id)
+    end_matches = tree.xpath("//*[@id=$v]", v=end_id)
+    if not start_matches or not end_matches:
+        return None
+    start_el, end_el = start_matches[0], end_matches[0]
+
+    start_chain = _element_chain_below_body(start_el)
+    end_chain = _element_chain_below_body(end_el)
+    if not start_chain or not end_chain:
+        return None
+
+    # Deepest shared ancestor element (compare by identity).
+    common_len = 0
+    for a, b in zip(start_chain, end_chain):
+        if a is b:
+            common_len += 1
+        else:
+            break
+    common_chain = start_chain[:common_len]
+    start_rest = start_chain[common_len:]
+    end_rest = end_chain[common_len:]
+
+    base = f"{spine_step}!/4" + "".join(_cfi_element_step(e) for e in common_chain)
+    if not start_rest and not end_rest:
+        # Same KoboSpan — the common path already reaches it. Both ends
+        # are text-node offsets into that span's first text node (/1).
+        return f"epubcfi({base},/1:{start_offset},/1:{end_offset})"
+    start_path = "".join(_cfi_element_step(e) for e in start_rest) + f"/1:{start_offset}"
+    end_path = "".join(_cfi_element_step(e) for e in end_rest) + f"/1:{end_offset}"
+    return f"epubcfi({base},{start_path},{end_path})"
 
 
 def _child_index_to_cfi_step(child_index: Optional[int]) -> Optional[str]:

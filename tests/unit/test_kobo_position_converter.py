@@ -125,9 +125,12 @@ class TestComputeCfiRangeKepub:
             end_offset=15,
         )
         cfi = compute_cfi_range(synthetic_kepub, pos)
-        # chapter1 is spine index 0 → /6/2; the kepub fast path emits
-        # /4[<start_id>]:<offset>,/4[<end_id>]:<offset>.
-        assert cfi == "epubcfi(/6/2!/4[kobo.1.1]:0,/4[kobo.1.1]:15)"
+        # chapter1 is spine index 0 → /6/2. The fixture chapter is
+        # <body><p><span id=kobo.1.1>…</span>…</p></body>, so the span is
+        # body(/4) > p(/2) > 1st span(/2). Same start/end span → a 3-part
+        # range CFI whose common path reaches the span and whose ends are
+        # text-node (/1) offsets.
+        assert cfi == "epubcfi(/6/2!/4/2/2[kobo.1.1],/1:0,/1:15)"
 
     def test_live_capture_null_child_index_uses_selector(self, synthetic_kepub):
         """Live reading-services PATCH capture omits StartContainerChildIndex,
@@ -149,7 +152,7 @@ class TestComputeCfiRangeKepub:
             end_offset=15,
         )
         cfi = compute_cfi_range(synthetic_kepub, pos)
-        assert cfi == "epubcfi(/6/2!/4[kobo.1.1]:0,/4[kobo.1.1]:15)", (
+        assert cfi == "epubcfi(/6/2!/4/2/2[kobo.1.1],/1:0,/1:15)", (
             "NULL child_index with KoboSpan IDs present must still resolve "
             "via the selector path (live-captured kepub highlights)"
         )
@@ -170,7 +173,10 @@ class TestComputeCfiRangeKepub:
             end_offset=21,
         )
         cfi = compute_cfi_range(synthetic_kepub, pos)
-        assert cfi == "epubcfi(/6/2!/4[kobo.1.1]:0,/4[kobo.1.3]:21)"
+        # Cross-span: common ancestor is the <p> (/4/2); the two ends
+        # diverge to the 1st (/2) and 3rd (/6) spans, each with a /1
+        # text-node offset.
+        assert cfi == "epubcfi(/6/2!/4/2,/2[kobo.1.1]/1:0,/6[kobo.1.3]/1:21)"
 
     def test_mid_span_start_offset(self, synthetic_kepub):
         """The "Comrade Napoleon" example from design doc §3.6 — start
@@ -188,8 +194,8 @@ class TestComputeCfiRangeKepub:
             end_offset=17,
         )
         cfi = compute_cfi_range(synthetic_kepub, pos)
-        # chapter2 is spine index 1 → /6/4
-        assert cfi == "epubcfi(/6/4!/4[kobo.2.1]:8,/4[kobo.2.1]:17)"
+        # chapter2 is spine index 1 → /6/4. Single span, mid-span offsets.
+        assert cfi == "epubcfi(/6/4!/4/2/2[kobo.2.1],/1:8,/1:17)"
 
     def test_three_digit_span_suffix_round_trips(self, tmp_path):
         """The prototype's 0.7% failure was on three-digit span ids —
@@ -224,7 +230,101 @@ class TestComputeCfiRangeKepub:
             end_offset=29,
         )
         cfi = compute_cfi_range(kepub, pos)
-        assert cfi == "epubcfi(/6/2!/4[kobo.4.11]:0,/4[kobo.4.13]:29)"
+        # 13 spans in one <p>: kobo.4.11 is the 11th element child (/22),
+        # kobo.4.13 the 13th (/26); common ancestor is the <p> (/4/2).
+        assert cfi == "epubcfi(/6/2!/4/2,/22[kobo.4.11]/1:0,/26[kobo.4.13]/1:29)"
+
+
+# ---------------------------------------------------------------------------
+# CFI round-trip — the generated CFI resolves back to the right span/text
+# ---------------------------------------------------------------------------
+
+
+def _walk_cfi_element_path(tree, path):
+    """Resolve a CFI element path like ``/4/2/2[kobo.1.1]`` against a
+    parsed lxml tree, returning the landed element. Even steps are the
+    Nth element child (1-based = step/2). ``/4`` is <body>. Used by the
+    round-trip tests to prove the converter's element numbering is
+    correct — independent of the string-equality assertions above."""
+    import re as _re
+    body = tree.xpath("//body")[0]
+    # The leading /4 anchors <body>; walk the remaining even steps.
+    steps = _re.findall(r"/(\d+)(?:\[([^\]]+)\])?", path)
+    # First step is /4 = body itself; skip it, then descend.
+    cur = body
+    for raw, assertion in steps[1:]:
+        n = int(raw)
+        if n % 2 != 0:
+            break  # reached a text step — element walk done
+        idx = n // 2 - 1
+        children = [c for c in cur if isinstance(c.tag, str)]
+        cur = children[idx]
+        if assertion:
+            assert cur.get("id") == assertion, (
+                f"CFI step /{n}[{assertion}] landed on id={cur.get('id')!r}"
+            )
+    return cur
+
+
+@pytest.mark.unit
+class TestCfiRoundTrip:
+    """The string assertions above pin the exact CFI; these prove that
+    string actually resolves back to the highlighted text when walked
+    against the source DOM — so a future numbering change can't pass by
+    updating only the expected-string constant."""
+
+    def test_single_span_roundtrip(self, synthetic_kepub):
+        from cps.services.kobo_position import (
+            KoboPosition, compute_cfi_range, _get_chapter_dom,
+        )
+
+        pos = KoboPosition(
+            content_id="00000000-0000-0000-0000-deadbeefcafe!!chapter1.html",
+            start_container_path="span#kobo\\.1\\.1",
+            start_container_child_index=-99,
+            start_offset=0,
+            end_container_path="span#kobo\\.1\\.1",
+            end_container_child_index=-99,
+            end_offset=15,
+        )
+        cfi = compute_cfi_range(synthetic_kepub, pos)
+        # epubcfi(common,start,end) — common reaches the span.
+        common = cfi[len("epubcfi("):-1].split(",")[0].split("!", 1)[1]
+        cache_key = (str(synthetic_kepub), synthetic_kepub.stat().st_mtime_ns)
+        tree = _get_chapter_dom(cache_key, synthetic_kepub, "chapter1.html")
+        span = _walk_cfi_element_path(tree, common)
+        assert span.get("id") == "kobo.1.1"
+        # /1:0 .. /1:15 over the span's text → the exact highlighted run.
+        assert span.text[0:15] == "Four legs good."
+
+    def test_multi_span_roundtrip(self, synthetic_kepub):
+        from cps.services.kobo_position import (
+            KoboPosition, compute_cfi_range, _get_chapter_dom,
+        )
+
+        pos = KoboPosition(
+            content_id="00000000-0000-0000-0000-deadbeefcafe!!chapter1.html",
+            start_container_path="span#kobo\\.1\\.1",
+            start_container_child_index=-99,
+            start_offset=0,
+            end_container_path="span#kobo\\.1\\.3",
+            end_container_child_index=-99,
+            end_offset=21,
+        )
+        cfi = compute_cfi_range(synthetic_kepub, pos)
+        parts = cfi[len("epubcfi("):-1].split(",")
+        common = parts[0].split("!", 1)[1]
+        cache_key = (str(synthetic_kepub), synthetic_kepub.stat().st_mtime_ns)
+        tree = _get_chapter_dom(cache_key, synthetic_kepub, "chapter1.html")
+        # Common ancestor is the <p>; start/end paths are relative to it.
+        common_el = _walk_cfi_element_path(tree, common)
+        assert common_el.tag == "p"
+        start_el = _walk_cfi_element_path(tree, common + parts[1])
+        end_el = _walk_cfi_element_path(tree, common + parts[2])
+        assert start_el.get("id") == "kobo.1.1"
+        assert end_el.get("id") == "kobo.1.3"
+        assert start_el.text.startswith("Four legs")
+        assert end_el.text[0:21] == "All animals are equal"
 
 
 # ---------------------------------------------------------------------------
@@ -318,7 +418,7 @@ class TestComputeCfiRangeEdgeCases:
             end_offset=11,
         )
         cfi = compute_cfi_range(minimal_epub, pos)
-        assert cfi == "epubcfi(/6/2!/4[kobo.4.1]:0,/4[kobo.4.1]:11)"
+        assert cfi == "epubcfi(/6/2!/4/2/2[kobo.4.1],/1:0,/1:11)"
 
 
 # ---------------------------------------------------------------------------

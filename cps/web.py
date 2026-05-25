@@ -3051,12 +3051,47 @@ def read_book(book_id, book_format):
 
     book.ordered_authors = calibre_db.order_authors([book], False)
 
-    # check if book has a bookmark
+    # Kobo annotation overlays anchor on KoboSpan ids (`kobo.x.y`), which
+    # the reader resolves in the live document to regenerate each
+    # highlight's CFI (see annotations.js). Those spans only exist in the
+    # .kepub, not the plain .epub. When an authenticated user opens an
+    # EPUB-family book for which they have annotations AND a KEPUB format
+    # exists, serve the kepub so the highlights can anchor and render.
+    # Scoped to annotated books so we don't change the reader format (and
+    # orphan epub-keyed bookmarks) for everyone.
+    if (
+        current_user.is_authenticated
+        and book_format.lower() == "epub"
+        and any((d.format or "").upper() == "KEPUB" for d in (book.data or []))
+    ):
+        try:
+            has_annotations = ub.session.query(ub.Annotation).filter(
+                ub.Annotation.user_id == int(current_user.id),
+                ub.Annotation.book_id == book_id,
+                ub.Annotation.hidden == False,  # noqa: E712
+            ).first() is not None
+        except Exception as e:
+            log.debug("read_book: annotation lookup failed for %d: %s", book_id, e)
+            has_annotations = False
+        if has_annotations:
+            log.debug("read_book: serving kepub for %d so annotation overlays resolve", book_id)
+            book_format = "kepub"
+
+    # check if book has a bookmark. Position is keyed by format, but the
+    # epub<->kepub switch above must not orphan it — match either
+    # epub-family format so the reading position survives.
     bookmark = None
     if current_user.is_authenticated:
-        bookmark = ub.session.query(ub.Bookmark).filter(and_(ub.Bookmark.user_id == int(current_user.id),
+        bm_q = ub.session.query(ub.Bookmark).filter(and_(ub.Bookmark.user_id == int(current_user.id),
+                                                         ub.Bookmark.book_id == book_id,
+                                                         ub.Bookmark.format == book_format.upper())).first()
+        if bm_q is None and book_format.lower() in ("epub", "kepub"):
+            # fall back to the sibling epub-family format's bookmark
+            sibling = "EPUB" if book_format.lower() == "kepub" else "KEPUB"
+            bm_q = ub.session.query(ub.Bookmark).filter(and_(ub.Bookmark.user_id == int(current_user.id),
                                                              ub.Bookmark.book_id == book_id,
-                                                             ub.Bookmark.format == book_format.upper())).first()
+                                                             ub.Bookmark.format == sibling)).first()
+        bookmark = bm_q
 
     kosync_progress = None
     if current_user.is_authenticated:

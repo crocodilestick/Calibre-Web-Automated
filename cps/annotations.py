@@ -382,15 +382,32 @@ def _resolve_book_or_404(book_id: int):
 def _resolve_epub_path(book) -> Optional[str]:
     """Find the on-disk EPUB file for a book — mirrors the lookup
     pattern in ``cps/web.py``'s serve_book. Returns ``None`` if no
-    EPUB/KEPUB format exists or the file is missing on disk."""
+    EPUB/KEPUB format exists or the file is missing on disk.
+
+    Prefers KEPUB: Kobo highlights anchor on KoboSpan ids, which only
+    exist in the kepub. A plain EPUB has no KoboSpans, so computing a
+    CFI against it would never resolve the anchor."""
     from . import config
-    for fmt in book.data or []:
+
+    def _disk_path(fmt):
         ext = (fmt.format or "").upper()
         if ext not in ("EPUB", "KEPUB"):
-            continue
+            return None
         path = os.path.join(config.get_book_path(), book.path, fmt.name + "." + ext.lower())
-        if os.path.isfile(path):
-            return path
+        return path if os.path.isfile(path) else None
+
+    data = book.data or []
+    # KEPUB first (carries KoboSpans), then any EPUB as a fallback.
+    for fmt in data:
+        if (fmt.format or "").upper() == "KEPUB":
+            p = _disk_path(fmt)
+            if p:
+                return p
+    for fmt in data:
+        if (fmt.format or "").upper() == "EPUB":
+            p = _disk_path(fmt)
+            if p:
+                return p
     return None
 
 
@@ -433,6 +450,37 @@ def _ensure_cfi_range(row, book) -> Optional[str]:
     return cfi
 
 
+def _data_json_row(r, cfi, pdf_quad) -> dict:
+    """Project one annotation row to the web-reader's data.json shape.
+
+    Emits the canonical KoboSpan anchor (``start_kobospan`` /
+    ``end_kobospan`` + offsets + ``content_id``) — the reader regenerates
+    a wrapper-aware CFI client-side from these, because a server-authored
+    CFI can't account for epub.js's render-time wrapper divs. ``cfi_range``
+    is the portable source CFI, kept for the sidebar "jump" fallback and
+    export parity. Pure + dependency-free so the payload contract is
+    unit-testable without a Flask request context."""
+    from .services.kobo_position import _extract_kobospan_id
+    return {
+        "annotation_id": r.annotation_id,
+        "cfi_range": cfi,
+        "content_id": r.content_id,
+        "start_kobospan": _extract_kobospan_id(r.start_container_path or ""),
+        "start_offset": r.start_offset,
+        "end_kobospan": _extract_kobospan_id(r.end_container_path or ""),
+        "end_offset": r.end_offset,
+        "highlighted_text": r.highlighted_text,
+        "highlight_color": r.highlight_color or "yellow",
+        "note_text": r.note_text,
+        "chapter_progress": r.chapter_progress,
+        "source": r.source,
+        "position_type": getattr(r, "position_type", None),
+        "pdf_page": getattr(r, "pdf_page", None),
+        "pdf_quad": pdf_quad,
+        "comic_page": getattr(r, "comic_page", None),
+    }
+
+
 @annotations_bp.route("/annotations/<int:book_id>/data.json", methods=["GET"])
 @user_login_required
 def annotations_data(book_id):
@@ -459,19 +507,7 @@ def annotations_data(book_id):
                 pdf_quad = json.loads(r.pdf_quad_json)
             except (ValueError, TypeError):
                 pdf_quad = None
-        out.append({
-            "annotation_id": r.annotation_id,
-            "cfi_range": cfi,
-            "highlighted_text": r.highlighted_text,
-            "highlight_color": r.highlight_color or "yellow",
-            "note_text": r.note_text,
-            "chapter_progress": r.chapter_progress,
-            "source": r.source,
-            "position_type": getattr(r, "position_type", None),
-            "pdf_page": getattr(r, "pdf_page", None),
-            "pdf_quad": pdf_quad,
-            "comic_page": getattr(r, "comic_page", None),
-        })
+        out.append(_data_json_row(r, cfi, pdf_quad))
     return jsonify({"annotations": out, "annotation_count": len(out)})
 
 

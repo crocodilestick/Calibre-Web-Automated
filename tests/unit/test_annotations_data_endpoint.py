@@ -205,3 +205,71 @@ class TestEnsureCfiRange:
             lambda: str(tmp_path / "library"),
         )
         assert ann_mod._ensure_cfi_range(row, book) is None
+
+
+# ---------------------------------------------------------------------------
+# _data_json_row — web-reader payload contract
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+class TestDataJsonRow:
+    """The web reader regenerates a wrapper-aware CFI client-side from the
+    KoboSpan id + offset, so data.json MUST carry those anchors. This pins
+    the contract — dropping the anchor fields would silently break overlay
+    rendering (the reader would fall back to sidebar-only). Found the hard
+    way: the server-authored cfi_range never resolved in epub.js because of
+    its render-time wrapper divs (real-device test 2026-05-24/25)."""
+
+    def _row(self):
+        return SimpleNamespace(
+            annotation_id="abc-123",
+            content_id="uuid!!OEBPS/part0003.xhtml",
+            start_container_path="span#kobo\\.0\\.3",
+            start_offset=3,
+            end_container_path="span#kobo\\.0\\.6",
+            end_offset=18,
+            highlighted_text="was a bright cold day",
+            highlight_color="#F6F3B3",
+            note_text="a note",
+            chapter_progress=0.1,
+            source="kobo",
+            position_type=None,
+            pdf_page=None,
+            pdf_quad_json=None,
+            comic_page=None,
+        )
+
+    def test_emits_kobospan_anchors(self):
+        from cps.annotations import _data_json_row
+
+        d = _data_json_row(self._row(), "epubcfi(/6/8!/4/2,/2[kobo.0.3]/1:3,/4[kobo.0.6]/1:18)", None)
+        # The KoboSpan ids must be unescaped from the stored selector path.
+        assert d["start_kobospan"] == "kobo.0.3"
+        assert d["end_kobospan"] == "kobo.0.6"
+        assert d["start_offset"] == 3
+        assert d["end_offset"] == 18
+        assert d["content_id"] == "uuid!!OEBPS/part0003.xhtml"
+        # cfi_range is still carried (sidebar jump fallback / export parity).
+        assert d["cfi_range"].startswith("epubcfi(")
+
+    def test_hex_color_passed_through_verbatim(self):
+        from cps.annotations import _data_json_row
+
+        # Real Kobo stores a hex color; the JS layer maps it to rgba. The
+        # server must not mangle it into a CSS class or a name.
+        d = _data_json_row(self._row(), None, None)
+        assert d["highlight_color"] == "#F6F3B3"
+
+    def test_missing_anchor_yields_none_not_crash(self):
+        from cps.annotations import _data_json_row
+
+        row = self._row()
+        row.start_container_path = None
+        row.end_container_path = ""
+        d = _data_json_row(row, None, None)
+        assert d["start_kobospan"] is None
+        assert d["end_kobospan"] is None
+        # color falls back to a safe default when absent.
+        row.highlight_color = None
+        assert _data_json_row(row, None, None)["highlight_color"] == "yellow"

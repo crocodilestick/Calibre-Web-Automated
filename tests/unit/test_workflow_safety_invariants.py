@@ -36,7 +36,11 @@ workflow.
 
 from __future__ import annotations
 
+import os
 import re
+import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -289,6 +293,146 @@ def test_no_workflow_pushes_to_upstream():
 
 
 # ─── Wall 6: structural sanity ─────────────────────────────────────────
+
+
+# ─── Wall 7: validate-author skips merge commits ───────────────────────
+#
+# GitHub's "Update branch" web button (and auto-update of a behind
+# branch) produces a merge commit whose committer is
+# `GitHub <noreply@github.com>` — the clicker is the author, not the
+# committer. validate-author scans committer email (%ce), so without
+# `--no-merges` every PR that sits long enough for main to advance and
+# need a branch update fails the committer gate. That's a recurring
+# catch-22 unrelated to who authored the substantive code. These tests
+# pin that merge commits are skipped AND that foreign *non-merge*
+# commits are still caught (the gate isn't over-relaxed).
+
+VALIDATE_AUTHOR = WF_DIR / "validate-author.yml"
+_GITHUB_WEB_MERGE_COMMITTER = "noreply@github.com"
+_NEW_USEMAME_COMMITTER = "248195428+new-usemame@users.noreply.github.com"
+
+
+def _git(repo: Path, *args: str, committer_email: str = _NEW_USEMAME_COMMITTER):
+    """Run a git command in `repo` with deterministic author/committer."""
+    env = dict(os.environ)
+    env.update(
+        {
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "HOME": str(repo),  # isolate from the dev's global git config
+            "GIT_AUTHOR_NAME": "tester",
+            "GIT_AUTHOR_EMAIL": "tester@example.com",
+            "GIT_COMMITTER_NAME": "tester",
+            "GIT_COMMITTER_EMAIL": committer_email,
+        }
+    )
+    return subprocess.run(
+        ["git", "-C", str(repo), *args],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
+def _committer_scan(repo: Path, base: str, head: str) -> list[str]:
+    """Mirror the workflow's scan command and return the committer
+    emails it would inspect for the range base..head."""
+    out = _git(repo, "log", "--no-merges", "--format=%H %ce", f"{base}..{head}")
+    return [line.split()[1] for line in out.stdout.splitlines() if line.strip()]
+
+
+def test_validate_author_uses_no_merges_flag():
+    """Source-pin: the committer scan must use `--no-merges`. If this
+    regresses, web-UI branch updates will block auto-merge again."""
+    assert VALIDATE_AUTHOR.exists(), f"missing {VALIDATE_AUTHOR}"
+    text = VALIDATE_AUTHOR.read_text()
+    scan_line = next(
+        (ln for ln in text.splitlines() if "git log" in ln and "%ce" in ln),
+        None,
+    )
+    assert scan_line is not None, "validate-author.yml committer-scan git log line not found"
+    assert "--no-merges" in scan_line, (
+        "validate-author.yml committer scan must pass --no-merges so the "
+        f"GitHub web-UI 'Update branch' merge commit (committer {_GITHUB_WEB_MERGE_COMMITTER}) "
+        "doesn't break the gate. Found: " + scan_line.strip()
+    )
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="git not on PATH")
+def test_no_merges_skips_web_update_merge_commit_but_keeps_real_commits():
+    """Behavioral: a web-UI 'Update branch' merge commit (committer
+    noreply@github.com) is excluded from the scan, while the PR's own
+    new-usemame commit is still inspected."""
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td)
+        _git(repo, "init", "-b", "main")
+        (repo / "a.txt").write_text("base\n")
+        _git(repo, "add", "a.txt")
+        _git(repo, "commit", "-m", "base")
+        base = _git(repo, "rev-parse", "HEAD").stdout.strip()
+
+        # PR branch with one legitimate new-usemame commit.
+        _git(repo, "checkout", "-b", "feature")
+        (repo / "b.txt").write_text("pr work\n")
+        _git(repo, "add", "b.txt")
+        _git(repo, "commit", "-m", "pr commit")
+        pr_commit = _git(repo, "rev-parse", "HEAD").stdout.strip()
+
+        # main advances.
+        _git(repo, "checkout", "main")
+        (repo / "c.txt").write_text("main moved\n")
+        _git(repo, "add", "c.txt")
+        _git(repo, "commit", "-m", "main advances")
+
+        # 'Update branch' merge: committer is GitHub's web identity.
+        _git(repo, "checkout", "feature")
+        _git(
+            repo,
+            "merge",
+            "main",
+            "--no-ff",
+            "-m",
+            "Merge branch 'main' into feature",
+            committer_email=_GITHUB_WEB_MERGE_COMMITTER,
+        )
+        merge_sha = _git(repo, "rev-parse", "HEAD").stdout.strip()
+        head = merge_sha
+
+        committers = _committer_scan(repo, base, head)
+        # The merge commit's foreign committer must NOT appear (skipped).
+        assert _GITHUB_WEB_MERGE_COMMITTER not in committers, (
+            "web-UI merge commit committer leaked into the scan despite --no-merges"
+        )
+        # The real PR commit must still be inspected.
+        scanned_shas = _git(
+            repo, "log", "--no-merges", "--format=%H", f"{base}..{head}"
+        ).stdout.split()
+        assert pr_commit in scanned_shas, "PR commit dropped from scan"
+        assert merge_sha not in scanned_shas, "merge commit not skipped by --no-merges"
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="git not on PATH")
+def test_no_merges_still_catches_foreign_non_merge_commit():
+    """Guard against over-relaxing: a *non-merge* commit by a foreign
+    committer must still be inspected (and would be flagged BAD)."""
+    with tempfile.TemporaryDirectory() as td:
+        repo = Path(td)
+        _git(repo, "init", "-b", "main")
+        (repo / "a.txt").write_text("base\n")
+        _git(repo, "add", "a.txt")
+        _git(repo, "commit", "-m", "base")
+        base = _git(repo, "rev-parse", "HEAD").stdout.strip()
+
+        _git(repo, "checkout", "-b", "feature")
+        (repo / "b.txt").write_text("sneaky\n")
+        _git(repo, "add", "b.txt")
+        _git(repo, "commit", "-m", "foreign commit", committer_email="attacker@evil.example")
+        head = _git(repo, "rev-parse", "HEAD").stdout.strip()
+
+        committers = _committer_scan(repo, base, head)
+        assert "attacker@evil.example" in committers, (
+            "--no-merges must not hide foreign non-merge commits from the gate"
+        )
 
 
 def test_all_workflows_have_minimum_permissions_block():

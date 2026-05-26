@@ -9,8 +9,18 @@ name: validate-author
 #   - 248195428+new-usemame@users.noreply.github.com   (CLI commits)
 #   - pj4wx2vj6n@privaterelay.appleid.com              (GitHub web merges)
 #
-# Any commit signed by a different committer fails the check, gating
-# auto-merge.
+# Any non-merge commit signed by a different committer fails the check,
+# gating auto-merge.
+#
+# Merge commits are skipped (`--no-merges`). They carry no original
+# authored content of their own — their changes are the parents', which
+# are validated independently (the PR's own commits + main's already-
+# merged history). The "Update branch" button in the GitHub web UI
+# produces a merge commit whose committer is `GitHub <noreply@github.com>`
+# (the clicker is recorded as author, not committer). Validating the
+# committer of such mechanical merges would fail every PR that sits long
+# enough for main to advance and need a branch update — a recurring
+# catch-22 that has nothing to do with who authored the substantive code.
 #
 # EXEMPTION: PRs labeled `community-contribution` skip the committer
 # check. Use this for genuine outside contributions where the
@@ -65,7 +75,7 @@ jobs:
             if ! [[ "$ce" =~ $ALLOWED_RE ]]; then
               BAD+=$'\n'"  $sha  committer=$ce"
             fi
-          done < <(git log --format='%H %ce' "$BASE..$HEAD")
+          done < <(git log --no-merges --format='%H %ce' "$BASE..$HEAD")
 
           if [ -n "$BAD" ]; then
             echo "::error::PR contains commits NOT committed by new-usemame:"

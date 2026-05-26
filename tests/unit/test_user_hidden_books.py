@@ -235,3 +235,102 @@ class TestHideRouteShape:
         assert "allow_show_hidden=True" in body, (
             "render_hidden_books must pass allow_show_hidden=True to the helper"
         )
+
+
+@pytest.mark.unit
+class TestHiddenBooksRecoveryFlow:
+    """Issue #319 — the per-user hide feature shipped unrecoverable.
+
+    Three independent breakages combined so a user who hid a book by
+    accident could never get it back:
+
+      1. The /hidden listing rendered a blank page. render_hidden_books
+         passed page="hidden"; layout.html emits <body class="{{ page }}">
+         so the body got class "hidden"; Bootstrap ships
+         .hidden{display:none!important} — the whole body was hidden.
+      2. Even past the blank page, covers link to the detail page, but
+         show_book() filtered hidden books out (get_book_read_archived
+         never forwarded allow_show_hidden), so the detail route bounced
+         with "Selected book is unavailable" — and the Unhide toggle
+         lives only on the detail page. Net: no reachable Unhide.
+      3. The bare /hidden URL (referenced in #64's own comments) 404'd;
+         only /hidden/<sort_param> was routed.
+    """
+
+    @staticmethod
+    def _web_src():
+        from pathlib import Path
+        return (Path(__file__).resolve().parent.parent.parent / "cps" / "web.py").read_text()
+
+    def test_render_hidden_books_page_name_avoids_bootstrap_hidden_collision(self):
+        """The body class must not be the bare token "hidden" — that is a
+        Bootstrap display:none!important utility and blanks the page."""
+        import re
+        match = re.search(
+            r"def render_hidden_books\(.*?\n(?=\n\ndef |\nclass |\Z)",
+            self._web_src(), re.DOTALL,
+        )
+        assert match is not None, "render_hidden_books function not found"
+        body = match.group(0)
+        m = re.search(r'page_name\s*=\s*["\']([^"\']+)["\']', body)
+        assert m is not None, "render_hidden_books must set page_name for the body class"
+        assert m.group(1) != "hidden", (
+            'page_name "hidden" renders <body class="hidden">, which Bootstrap\'s '
+            ".hidden{display:none!important} utility nukes -> blank page (#319). "
+            'Use a non-colliding identifier such as "hidden_books".'
+        )
+
+    def test_get_book_read_archived_accepts_allow_show_hidden(self):
+        from cps.db import CalibreDB
+        sig = inspect.signature(CalibreDB.get_book_read_archived)
+        assert "allow_show_hidden" in sig.parameters, (
+            "get_book_read_archived must accept allow_show_hidden so the detail "
+            "route can reach a hidden book in order to unhide it (#319)"
+        )
+        assert sig.parameters["allow_show_hidden"].default is False, (
+            "default must be False so every existing caller keeps excluding hidden books"
+        )
+
+    def test_get_book_read_archived_forwards_allow_show_hidden_to_common_filters(self):
+        """Behavioral: with allow_show_hidden=True, the flag must reach
+        common_filters — otherwise common_filters defaults to excluding
+        hidden books and the detail query returns None."""
+        from cps import db as cps_db
+        cdb = MagicMock()
+        with patch("cps.db.current_user", MagicMock(id=1)):
+            cps_db.CalibreDB.get_book_read_archived(
+                cdb, 42, None, allow_show_archived=True, allow_show_hidden=True)
+        assert cdb.common_filters.called, "get_book_read_archived must call common_filters"
+        call = cdb.common_filters.call_args
+        forwarded = call.kwargs.get("allow_show_hidden")
+        if forwarded is None and len(call.args) >= 4:
+            forwarded = call.args[3]
+        assert forwarded is True, (
+            "get_book_read_archived must forward allow_show_hidden into "
+            "common_filters so a hidden book's detail page (and its Unhide "
+            "toggle) is reachable — issue #319"
+        )
+
+    def test_show_book_reaches_hidden_books_via_allow_show_hidden(self):
+        """show_book's single get_book_read_archived call must request
+        allow_show_hidden=True, or hidden books 404 on /book/<id>."""
+        import re
+        m = re.search(
+            r"get_book_read_archived\([^)]*allow_show_hidden\s*=\s*True[^)]*\)",
+            self._web_src(),
+        )
+        assert m is not None, (
+            "show_book must call get_book_read_archived(..., allow_show_hidden=True) "
+            "so a hidden book's detail page is reachable for unhiding (#319)"
+        )
+
+    def test_bare_hidden_url_is_routed(self):
+        """The documented /hidden URL must resolve (it 404'd in #319 because
+        only /<data>/<sort_param> was routed)."""
+        import re
+        src = self._web_src()
+        assert re.search(r"""@web\.route\(\s*["']/hidden["']""", src), (
+            "Bare /hidden must be routed (redirect to the canonical "
+            "/hidden/<sort_param> listing) so the documented recovery URL "
+            "no longer 404s — issue #319"
+        )

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-25 06:11+0000\n"
+"POT-Creation-Date: 2026-05-26 20:49+0000\n"
 "PO-Revision-Date: 2023-11-01 06:12+0100\n"
 "Last-Translator: Branislav Hanáček <brango@brango.sk>\n"
 "Language-Team: \n"
@@ -417,7 +417,7 @@ msgstr "Úspech! Gmail konto bolo verifikované."
 #: cps/admin.py:2651 cps/admin.py:2923 cps/editbooks.py:1079
 #: cps/editbooks.py:1878 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
-#: cps/tasks/convert.py:145 cps/web.py:2878
+#: cps/tasks/convert.py:145 cps/web.py:2890
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Chyba databázy: %(error)s."
@@ -459,7 +459,7 @@ msgstr "Bol uvedený neplatný doba behu"
 msgid "Scheduled tasks settings updated"
 msgstr "Nastavenia naplánovaných úloh boli aktualizované"
 
-#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2919 cps/web.py:2308
+#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2919 cps/web.py:2320
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Vyskytla sa neočakávaná chyba. Prosím, skúste to opäť neskôr."
 
@@ -467,7 +467,7 @@ msgstr "Vyskytla sa neočakávaná chyba. Prosím, skúste to opäť neskôr."
 msgid "Settings DB is not Writeable"
 msgstr "Nie je možné zapisovať do databázy nastavení"
 
-#: cps/admin.py:1913 cps/opds.py:309 cps/web.py:2804 cps/web.py:2929
+#: cps/admin.py:1913 cps/opds.py:309 cps/web.py:2816 cps/web.py:2941
 #, fuzzy
 msgid "title"
 msgstr "Názov"
@@ -629,7 +629,7 @@ msgstr "Nastavenia databáze boli aktualizované"
 msgid "Database Configuration"
 msgstr "Konfigurácia databázy"
 
-#: cps/admin.py:2606 cps/web.py:2277
+#: cps/admin.py:2606 cps/web.py:2289
 msgid "Oops! Please complete all fields."
 msgstr "Vyplňte prosím všetky polia."
 
@@ -663,7 +663,7 @@ msgstr "Nie je možné zmazať používateľa Hosť"
 msgid "No admin user remaining, can't delete user"
 msgstr "Nezostáva žiadny používateľ, nie je možné odobrať rolu správcu"
 
-#: cps/admin.py:2874 cps/web.py:2612
+#: cps/admin.py:2874 cps/web.py:2624
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-mailová adresa nemôže byť prázdna a musí byť platná"
 
@@ -1198,8 +1198,8 @@ msgstr ""
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:697 cps/web.py:731 cps/web.py:776 cps/web.py:816 cps/web.py:845
-#: cps/web.py:1774 cps/web.py:1811 cps/web.py:1862 cps/web.py:1894
-#: cps/web.py:1933
+#: cps/web.py:1786 cps/web.py:1823 cps/web.py:1874 cps/web.py:1906
+#: cps/web.py:1945
 msgid "None"
 msgstr "Žiadne"
 
@@ -1301,8 +1301,8 @@ msgstr "Prípona súboru '%(ext)s' nemôže byť nahraná na tento server"
 msgid "File to be uploaded must have an extension"
 msgstr "Súbor ktorý sa má nahrať musí mať príponu"
 
-#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:664 cps/web.py:3047
-#: cps/web.py:3218 cps/web.py:3328
+#: cps/editbooks.py:863 cps/editbooks.py:1502 cps/web.py:664 cps/web.py:3059
+#: cps/web.py:3230 cps/web.py:3345
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
@@ -1898,7 +1898,7 @@ msgid "Books ordered by Author"
 msgstr "Knihy usporiadané podľa autora"
 
 #: cps/opds.py:211 cps/render_template.py:114 cps/templates/book_table.html:115
-#: cps/web.py:1785
+#: cps/web.py:1797
 msgid "Publishers"
 msgstr "Vydavatelia"
 
@@ -1907,7 +1907,7 @@ msgid "Books ordered by publisher"
 msgstr "Knihy usporiadané podľa vydavateľa"
 
 #: cps/opds.py:217 cps/render_template.py:104 cps/templates/book_table.html:110
-#: cps/web.py:1937
+#: cps/web.py:1949
 msgid "Categories"
 msgstr "Kategórie"
 
@@ -1919,7 +1919,7 @@ msgstr "Knihy usporiadané podľa kategórie"
 #: cps/templates/book_table.html:111 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
-#: cps/templates/search_form.html:70 cps/web.py:1817 cps/web.py:1829
+#: cps/templates/search_form.html:70 cps/web.py:1829 cps/web.py:1841
 msgid "Series"
 msgstr "Série"
 
@@ -1929,7 +1929,7 @@ msgstr "Knihy usporiadané podľa série"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
 #: cps/templates/detail.html:719 cps/templates/search_form.html:108
-#: cps/web.py:1909
+#: cps/web.py:1921
 msgid "Languages"
 msgstr "Jazyky"
 
@@ -1937,7 +1937,7 @@ msgstr "Jazyky"
 msgid "Books ordered by Languages"
 msgstr "Knihy usporiadané podľa jazyka"
 
-#: cps/opds.py:235 cps/render_template.py:121 cps/web.py:1869
+#: cps/opds.py:235 cps/render_template.py:121 cps/web.py:1881
 msgid "Ratings"
 msgstr "Hodnotenia"
 
@@ -1984,7 +1984,7 @@ msgstr "{} Hviezdičiek"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:177
 #: cps/templates/layout.html:218 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2386
+#: cps/templates/login.html:39 cps/web.py:2398
 msgid "Login"
 msgstr "Prihlásiť sa"
 
@@ -2079,7 +2079,7 @@ msgstr "Archivované knihy"
 msgid "Show Archived Books"
 msgstr "Zobraziť archivované knihy"
 
-#: cps/render_template.py:133 cps/web.py:1605
+#: cps/render_template.py:133 cps/web.py:1617
 msgid "Books List"
 msgstr "Zoznam kníh"
 
@@ -2434,193 +2434,193 @@ msgstr "Jazyk: %(name)s"
 msgid "Hidden Books"
 msgstr "Skryté chyby"
 
-#: cps/web.py:1017
+#: cps/web.py:1020
 #, fuzzy
 msgid "Error loading magic shelf"
 msgstr "Chyba pri mazaní police"
 
-#: cps/web.py:1042
+#: cps/web.py:1045
 #, python-format
 msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 msgstr ""
 
-#: cps/web.py:1193
+#: cps/web.py:1205
 msgid "No rules provided"
 msgstr ""
 
-#: cps/web.py:1199
+#: cps/web.py:1211
 #, fuzzy
 msgid "Invalid rules format"
 msgstr "Neplatný formát poštovej adresy"
 
-#: cps/web.py:1221
+#: cps/web.py:1233
 msgid "Error processing rules"
 msgstr ""
 
-#: cps/web.py:1225
+#: cps/web.py:1237
 #, fuzzy
 msgid "Invalid request"
 msgstr "Neplatná rola"
 
-#: cps/web.py:1269
+#: cps/web.py:1281
 msgid "Name and rules are required"
 msgstr ""
 
-#: cps/web.py:1272 cps/web.py:1380
+#: cps/web.py:1284 cps/web.py:1392
 msgid "Shelf name too long (max 100 characters)"
 msgstr ""
 
-#: cps/web.py:1301
+#: cps/web.py:1313
 #, fuzzy
 msgid "Error creating shelf"
 msgstr "Chyba pri mazaní police"
 
-#: cps/templates/layout.html:421 cps/web.py:1315
+#: cps/templates/layout.html:421 cps/web.py:1327
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Vytvoriť policu"
 
-#: cps/web.py:1373
+#: cps/web.py:1385
 msgid "Permission denied to change public status"
 msgstr ""
 
-#: cps/web.py:1377
+#: cps/web.py:1389
 #, fuzzy
 msgid "Shelf name is required"
 msgstr "Toto pole je povinné"
 
-#: cps/web.py:1417
+#: cps/web.py:1429
 #, fuzzy
 msgid "Error updating shelf"
 msgstr "Chyba pri mazaní police"
 
-#: cps/web.py:1432
+#: cps/web.py:1444
 #, fuzzy
 msgid "Edit Magic Shelf"
 msgstr "Upraviť policu"
 
-#: cps/web.py:1447
+#: cps/web.py:1459
 #, fuzzy
 msgid "Shelf not found"
 msgstr "Používateľ sa nenašiel"
 
-#: cps/web.py:1452
+#: cps/web.py:1464
 msgid "Permission denied"
 msgstr ""
 
-#: cps/web.py:1483
+#: cps/web.py:1495
 #, fuzzy
 msgid "Shelf duplicated successfully"
 msgstr "Zmazaných {} používateľov"
 
-#: cps/web.py:1489
+#: cps/web.py:1501
 #, fuzzy
 msgid "Error duplicating shelf"
 msgstr "Chyba pri mazaní police"
 
-#: cps/templates/magic_shelf_edit.html:458 cps/web.py:1516
+#: cps/templates/magic_shelf_edit.html:458 cps/web.py:1528
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
 msgstr ""
 
-#: cps/web.py:1534
+#: cps/web.py:1546
 #, fuzzy
 msgid "Error deleting shelf"
 msgstr "Chyba pri mazaní police"
 
-#: cps/web.py:1550
+#: cps/web.py:1562
 msgid ""
 "You cannot hide your own shelves. Delete them instead if you don't want them."
 msgstr ""
 
-#: cps/web.py:1560
+#: cps/web.py:1572
 msgid "Shelf already hidden"
 msgstr ""
 
-#: cps/web.py:1574
+#: cps/web.py:1586
 #, fuzzy
 msgid "Error hiding shelf"
 msgstr "Chyba pri mazaní police"
 
-#: cps/web.py:1588
+#: cps/web.py:1600
 msgid "Shelf was not hidden"
 msgstr ""
 
-#: cps/web.py:1597
+#: cps/web.py:1609
 #, fuzzy
 msgid "Error unhiding shelf"
 msgstr "Chyba pri mazaní police"
 
-#: cps/templates/admin.html:18 cps/web.py:1744
+#: cps/templates/admin.html:18 cps/web.py:1756
 msgid "Downloads"
 msgstr "Stiahnutia"
 
-#: cps/web.py:1896
+#: cps/web.py:1908
 msgid "File formats list"
 msgstr "Zoznam súborových formátov"
 
-#: cps/web.py:2141 cps/web.py:2179
+#: cps/web.py:2153 cps/web.py:2191
 msgid "Please configure the SMTP mail settings first..."
 msgstr "Najskôr nastavte poštový server, prosím..."
 
-#: cps/web.py:2145
+#: cps/web.py:2157
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr "Nastavte vo vašom profile platnú e-mailovú adresu pre vašu čítačku."
 
-#: cps/web.py:2167
+#: cps/web.py:2179
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "Úspech! Kniha bola zaradená na odoslanie do %(eReadermail)s"
 
-#: cps/web.py:2170 cps/web.py:2247
+#: cps/web.py:2182 cps/web.py:2259
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "Vyskytla sa chyba pri posielaní knihy: %(res)s"
 
-#: cps/web.py:2187 cps/web.py:2197
+#: cps/web.py:2199 cps/web.py:2209
 msgid "No email addresses selected"
 msgstr ""
 
-#: cps/web.py:2218
+#: cps/web.py:2230
 msgid "Additional email addresses are disabled for your account."
 msgstr ""
 
-#: cps/web.py:2245
+#: cps/web.py:2257
 #, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr "Úspech! Kniha bola zaradená na odoslanie do %(eReadermail)s"
 
-#: cps/web.py:2264
+#: cps/web.py:2276
 msgid "Please wait one minute to register next user"
 msgstr "Počkajte, prosím minútku pred registráciou ďalšieho používateľa"
 
 #: cps/templates/layout.html:178 cps/templates/layout.html:219
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2265
-#: cps/web.py:2269 cps/web.py:2274 cps/web.py:2278 cps/web.py:2284
-#: cps/web.py:2309 cps/web.py:2313 cps/web.py:2326 cps/web.py:2329
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2277
+#: cps/web.py:2281 cps/web.py:2286 cps/web.py:2290 cps/web.py:2296
+#: cps/web.py:2321 cps/web.py:2325 cps/web.py:2338 cps/web.py:2341
 msgid "Register"
 msgstr "Registrovať"
 
-#: cps/web.py:2268 cps/web.py:2433
+#: cps/web.py:2280 cps/web.py:2445
 #, fuzzy
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "Poštový server nie je nastavený, kontaktujte prosím správcu."
 
-#: cps/web.py:2273 cps/web.py:2325
+#: cps/web.py:2285 cps/web.py:2337
 msgid ""
 "Oops! Email server is not configured, please contact your administrator."
 msgstr "Poštový server nie je nastavený, kontaktujte prosím správcu."
 
-#: cps/web.py:2311
+#: cps/web.py:2323
 msgid "Oops! Your Email is not allowed."
 msgstr "Vaša e-mailová adresa nie je povolená."
 
-#: cps/web.py:2314
+#: cps/web.py:2326
 msgid "Success! Confirmation Email has been sent."
 msgstr "Úspech! Potvrdzujúci e-mail bol odoslaný."
 
-#: cps/web.py:2362
+#: cps/web.py:2374
 #, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
@@ -2628,42 +2628,42 @@ msgid ""
 msgstr ""
 "Inštancia Calibre-Web nie je nastavené, kontaktujte prosím vašeho správcu"
 
-#: cps/web.py:2407
+#: cps/web.py:2419
 #, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
 msgstr "Poštový server nie je nastavený, kontaktujte prosím správcu."
 
-#: cps/web.py:2412 cps/web.py:2439
+#: cps/web.py:2424 cps/web.py:2451
 msgid "Cannot activate LDAP authentication"
 msgstr "Nie je možné aktivovať LDAP autentifikáciu"
 
-#: cps/web.py:2421
+#: cps/web.py:2433
 msgid "Standard login is disabled."
 msgstr ""
 
-#: cps/web.py:2429
+#: cps/web.py:2441
 msgid "Please wait one minute before next login"
 msgstr "Počkajte, prosím minútku pred opätovným prihlásením"
 
-#: cps/web.py:2447
+#: cps/web.py:2459
 msgid "Username cannot be empty"
 msgstr ""
 
-#: cps/web.py:2459
+#: cps/web.py:2471
 #, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "ste prihlásený ako: '%(nickname)s'"
 
-#: cps/web.py:2478
+#: cps/web.py:2490
 #, fuzzy, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
 msgstr "Úspech! Teraz ste prihlásený ako: %(nickname)s"
 
-#: cps/web.py:2483 cps/web.py:2486
+#: cps/web.py:2495 cps/web.py:2498
 #, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
@@ -2671,13 +2671,13 @@ msgid ""
 msgstr ""
 "Inštancia Calibre-Web nie je nastavené, kontaktujte prosím vašeho správcu"
 
-#: cps/web.py:2490
+#: cps/web.py:2502
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
 msgstr ""
 
-#: cps/web.py:2498
+#: cps/web.py:2510
 #, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
@@ -2686,50 +2686,50 @@ msgstr ""
 "Záložné prihlásenie ako: '%(nickname)s', LDAP server je nedostupný alebo "
 "používateľ je neznámy"
 
-#: cps/web.py:2504
+#: cps/web.py:2516
 #, python-format
 msgid "Could not login: %(message)s"
 msgstr "Nemôžem prihlásiť: %(message)s"
 
-#: cps/web.py:2527 cps/web.py:2528 cps/web.py:2571
+#: cps/web.py:2539 cps/web.py:2540 cps/web.py:2583
 msgid "Wrong Username or Password"
 msgstr "Nesprávne používateľské meno alebo heslo"
 
-#: cps/web.py:2536
+#: cps/web.py:2548
 msgid "New Password was sent to your email address"
 msgstr "Na vašu e-mailovú adresu bolo odoslané nové heslo"
 
-#: cps/web.py:2540
+#: cps/web.py:2552
 msgid "An unknown error occurred. Please try again later."
 msgstr "Vyskytla sa neočakávaná chyba. Prosím, skúste to opäť neskôr."
 
-#: cps/web.py:2542
+#: cps/web.py:2554
 msgid "Please enter valid username to reset password"
 msgstr "Na resetovanie hesla zadajte platné používateľské meno"
 
-#: cps/web.py:2550
+#: cps/web.py:2562
 #, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Teraz ste prihlásený ako: '%(nickname)s'"
 
-#: cps/web.py:2867
+#: cps/web.py:2879
 msgid "Success! Profile Updated"
 msgstr "Úspech! Profil bol aktualizovaný"
 
-#: cps/web.py:2873
+#: cps/web.py:2885
 msgid "Oops! An account already exists for this Email."
 msgstr "Účet s touto e-mailovou adresou už existuje."
 
-#: cps/web.py:2998
+#: cps/web.py:3010
 msgid "App-password label must be 1-64 characters."
 msgstr ""
 
-#: cps/web.py:3033
+#: cps/web.py:3045
 #, python-format
 msgid "App password '%(label)s' revoked."
 msgstr ""
 
-#: cps/web.py:3231
+#: cps/web.py:3243
 #, fuzzy
 msgid "Invalid book ID."
 msgstr "Neplatná rola"

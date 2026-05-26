@@ -45,6 +45,7 @@ Library, settings, users, OAuth tokens, and KOReader sync state are preserved. S
   - [Reverse proxy / Cloudflare Tunnel](#reverse-proxy--cloudflare-tunnel)
   - [Hardcover metadata provider](#hardcover-metadata-provider)
   - [KOReader sync](#koreader-sync)
+  - [Kobo sync](#kobo-sync)
 - [Troubleshooting](#troubleshooting)
 - [Differences from upstream](#differences-from-upstream)
 - [Contributing](#contributing)
@@ -342,6 +343,35 @@ CWA has built-in KOReader progress sync; no separate kosync server is needed.
 2. Point the plugin at `http://your-cwa:8083` and log in with your CWA username and password.
 3. Read on any device. Progress syncs back to CWA, and from there to Kobo if Kobo sync is enabled.
 
+### Kobo sync
+
+Read your CWA library on a Kobo e-reader, with reading progress syncing both ways. Sync runs against your own server, so your library never leaves your network.
+
+1. In Admin → Edit Basic Configuration, turn on **Enable Kobo sync**.
+2. Open your user page (Admin → Users → your user, or your own profile) and click **Create/View** next to **Kobo Sync Token**. The dialog shows the exact `api_endpoint=` line for your account.
+3. Plug the Kobo into a computer over USB and open `.kobo/Kobo/Kobo eReader.conf` in a text editor. Add or replace the `api_endpoint=` line with the one from the dialog, save, and eject the device cleanly.
+4. On the Kobo, sync. Books on your Kobo Sync shelves appear on the device, and progress flows back to CWA.
+
+To confirm the device is reaching your server, watch the logs while you sync — you should see requests to `/kobo/<token>/v1/...`:
+
+```bash
+docker logs -f calibre-web 2>&1 | grep /kobo/
+```
+
+**Behind a reverse proxy (nginx, Nginx Proxy Manager, Caddy, Cloudflare Tunnel)**
+
+Kobo devices sync over HTTPS, so the `api_endpoint` has to be your public `https://` address. Put a proxy with a valid certificate in front and point it at the container's plain HTTP port:
+
+- Proxy target is `http://<container-host>:8083`. The proxy terminates TLS on 443; the connection from the proxy to CWA stays HTTP. WebSocket support is not needed for Kobo sync.
+- Generate the token while visiting CWA through the HTTPS address, so the `api_endpoint=` line the dialog shows already carries your public hostname.
+- If you stack proxies (for example Cloudflare Tunnel in front of nginx), set [`TRUSTED_PROXY_COUNT`](#reverse-proxy--cloudflare-tunnel) to the number of proxies.
+
+**If you keep a Kobo account signed in**
+
+Signing into a Kobo account, or doing a factory reset, can rewrite the `api_endpoint=` line back to Kobo's own server, which sends sync to Kobo instead of your library. After signing in, re-check the conf line over USB and set it back if it changed. Many sideloaded setups sign out of the Kobo account so the device stops resetting the endpoint.
+
+To keep the Kobo Store and your library working at the same time, turn on **Proxy unknown requests to Kobo Store** in Admin → Edit Basic Configuration. With it off (the default), any request CWA doesn't recognize gets an empty response — fine for a sideload-only device, but store features won't load.
+
 ---
 
 ## Troubleshooting
@@ -357,6 +387,14 @@ docker exec calibre-web chown -R abc:abc /calibre-library
 ### "Generate Kobo Auth Token" returns a blank page
 
 Fixed in v4.0.14 and later. Upgrade the image.
+
+### Kobo says "Sync failed, please try again"
+
+Almost always one of these:
+
+1. The device isn't reaching your server. The `api_endpoint=` line in `.kobo/Kobo/Kobo eReader.conf` must point at your CWA address (not `storeapi.kobo.com`), and that address must be reachable over HTTPS. See [Kobo sync](#kobo-sync).
+2. A Kobo account is signed in and **Proxy unknown requests to Kobo Store** is off, so the device's store calls get an empty response mid-sync. Turn that setting on, or sign out of the Kobo account on the device.
+3. Behind a reverse proxy, the proxy can't reach the container. Confirm the proxy target is `http://<host>:8083` and that the certificate is valid.
 
 ### "Database is locked" / app frozen
 

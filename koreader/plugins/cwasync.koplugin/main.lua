@@ -213,6 +213,7 @@ end
 function CWASync:addToMainMenu(menu_items)
     menu_items.cwa_progress_sync = {
         text = _("NextGen Progress Sync"),
+        sorting_hint = "tools",
         sub_item_table = {
             {
                 text = _("Set NextGen Server"),

@@ -24,7 +24,7 @@
       <div>{{ _('Drag to rearrange the order of your shelves in the sidebar.') }}</div>
       <div id="sortShelves" class="list-group" style="margin-top: 0.6em;">
         {% for shelf in shelves %}
-          <div id="shelf-{{ shelf.id }}" data-shelf-id="{{ shelf.id }}" class="list-group-item" style="cursor: move;">
+          <div id="shelf-{{ shelf.id }}" data-shelf-id="{{ shelf.id }}" class="list-group-item" style="cursor: move; color: #333;">
             <span class="glyphicon glyphicon-list"></span>&nbsp;
             {{ shelf.name }}
             {% if shelf.is_public == 1 %}

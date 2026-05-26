@@ -298,3 +298,61 @@ def test_template_posts_order_mode_field():
     assert 'order_mode' in src and 'JSON.stringify' in src, (
         "save action must POST {order_mode, order} as JSON"
     )
+
+
+# ---------------------------------------------------------------------------
+# Fork issue #322 (@droM4X): shelf names barely visible in the reorder view.
+#
+# The drag rows are <div class="list-group-item"> with a white background
+# (Bootstrap forces background-color:#fff on .list-group-item). Bootstrap's
+# readable text color only targets the anchor/button variants
+# (a.list-group-item,button.list-group-item{color:#555}); a bare div falls
+# through and inherits the layout's light body text color, which renders as
+# near-white text on the white row — illegible. The fix pins an explicit dark
+# text color on the row so legibility does not depend on inherited theme color.
+# ---------------------------------------------------------------------------
+
+def _wcag_contrast_on_white(hex_color: str) -> float:
+    """WCAG 2.x contrast ratio of `hex_color` against white (#fff)."""
+    h = hex_color.lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+    def _lin(c: float) -> float:
+        c /= 255.0
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+    lum = 0.2126 * _lin(r) + 0.7152 * _lin(g) + 0.0722 * _lin(b)
+    return (1.0 + 0.05) / (lum + 0.05)  # white luminance == 1.0
+
+
+def _shelf_row_open_tag() -> str:
+    """The opening tag of the draggable shelf-name row (the data-shelf-id div)."""
+    src = REORDER_HTML.read_text()
+    match = re.search(r"<div\b[^>]*\bdata-shelf-id=[^>]*>", src)
+    assert match, "shelf-name row div (data-shelf-id) not found in template"
+    return match.group(0)
+
+
+def test_shelf_reorder_row_has_explicit_text_color():
+    """The shelf-name row must declare its own text color, not inherit the
+    layout's light body color onto the white .list-group-item background."""
+    tag = _shelf_row_open_tag()
+    assert re.search(r"color\s*:", tag), (
+        "shelf-reorder row must set an explicit text color so names stay "
+        "legible on the white list-group-item background (fork #322)"
+    )
+
+
+def test_shelf_reorder_row_text_color_meets_wcag_aa():
+    """The row text color must clear WCAG AA (>=4.5:1) against white so the
+    shelf names are readable — the exact symptom @droM4X reported."""
+    tag = _shelf_row_open_tag()
+    match = re.search(r"color\s*:\s*(#[0-9a-fA-F]{3,6})", tag)
+    assert match, "shelf-reorder row text color must be an explicit hex value"
+    ratio = _wcag_contrast_on_white(match.group(1))
+    assert ratio >= 4.5, (
+        f"shelf-reorder row color {match.group(1)} only reaches {ratio:.1f}:1 "
+        f"against white; needs >=4.5:1 (WCAG AA) for legible shelf names"
+    )

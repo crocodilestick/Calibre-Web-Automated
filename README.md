@@ -366,6 +366,20 @@ Kobo devices sync over HTTPS, so the `api_endpoint` has to be your public `https
 - Generate the token while visiting CWA through the HTTPS address, so the `api_endpoint=` line the dialog shows already carries your public hostname.
 - If you stack proxies (for example Cloudflare Tunnel in front of nginx), set [`TRUSTED_PROXY_COUNT`](#reverse-proxy--cloudflare-tunnel) to the number of proxies.
 
+**nginx buffer sizes (important for Kobo sync)**
+
+Kobo's `/v1/library/sync` response carries large headers (auth, sync tokens, library state). Nginx's default `proxy_buffer_size` (4 KB) and `proxy_buffers` (8 × 4 KB) are too small; the response is silently dropped before it reaches the device, and the Kobo shows *"Sync failed, please try again"* with **no error in the CWA log**. The nginx error log shows `upstream sent too big header while reading response header from upstream`. Add these to the `location /` block proxying CWA:
+
+```nginx
+proxy_buffer_size       32k;
+proxy_buffers           4 32k;
+proxy_busy_buffers_size 64k;
+```
+
+(Larger libraries may need `128k / 4 256k / 256k`.) Reload nginx after the change. On Synology DSM, the built-in reverse-proxy GUI doesn't expose these directives — drop a custom config at `/etc/nginx/conf.d/http.calibre_web.conf` that mirrors the DSM entry plus the buffer lines, then disable the DSM entry. DSM rewrites `nginx.conf` on reboot, so a Task Scheduler boot-event job that runs `nginx -s reload` reapplies the custom file. Nginx Proxy Manager users: add the three lines under the proxy host's *Advanced* tab.
+
+See [`examples/nginx-reverse-proxy.conf`](examples/nginx-reverse-proxy.conf) for a complete reference snippet.
+
 **If you keep a Kobo account signed in**
 
 Signing into a Kobo account, or doing a factory reset, can rewrite the `api_endpoint=` line back to Kobo's own server, which sends sync to Kobo instead of your library. After signing in, re-check the conf line over USB and set it back if it changed. Many sideloaded setups sign out of the Kobo account so the device stops resetting the endpoint.
@@ -395,6 +409,7 @@ Almost always one of these:
 1. The device isn't reaching your server. The `api_endpoint=` line in `.kobo/Kobo/Kobo eReader.conf` must point at your CWA address (not `storeapi.kobo.com`), and that address must be reachable over HTTPS. See [Kobo sync](#kobo-sync).
 2. A Kobo account is signed in and **Proxy unknown requests to Kobo Store** is off, so the device's store calls get an empty response mid-sync. Turn that setting on, or sign out of the Kobo account on the device.
 3. Behind a reverse proxy, the proxy can't reach the container. Confirm the proxy target is `http://<host>:8083` and that the certificate is valid.
+4. **nginx is silently dropping the sync response because its default buffers are too small for Kobo's library-sync headers.** The CWA log shows the request arriving but nothing else; the nginx error log shows `upstream sent too big header`. Add `proxy_buffer_size 32k; proxy_buffers 4 32k; proxy_busy_buffers_size 64k;` to the proxy location. See the [nginx buffer sizes](#kobo-sync) note in the Kobo sync section.
 
 ### "Database is locked" / app frozen
 

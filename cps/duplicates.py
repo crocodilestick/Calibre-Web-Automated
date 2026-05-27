@@ -1345,18 +1345,13 @@ def invalidate_cache():
 def trigger_scan():
     """Manually trigger a duplicate scan"""
     try:
-        try:
-            from cps.duplicate_index import ingest_batch_follow_up_pending
-            if ingest_batch_follow_up_pending():
-                log.info("[cwa-duplicates] Manual full scan blocked while ingest is active")
-                return jsonify({
-                    'success': False,
-                    'blocked': True,
-                    'reason': 'ingest_in_progress',
-                    'message': _('Import is in progress. Run a full duplicate scan after ingest finishes.'),
-                }), 409
-        except Exception as ex:
-            log.warning("[cwa-duplicates] Could not check ingest state before manual scan: %s", str(ex))
+        # NOTE (fork #318): we intentionally do not gate manual scan
+        # triggers on the deferred follow-up marker here. That marker can
+        # persist after a clean ingest finishes (or after an abnormal
+        # container shutdown), permanently refusing the user's button.
+        # The task-level gate in cps/tasks/duplicate_scan.py already
+        # exempts `trigger_type='manual'`; it is the single source of
+        # truth.
 
         # Invalidate cache and run fresh scan
         cwa_db = CWA_DB()
@@ -1521,19 +1516,12 @@ def execute_resolution():
                 'error': _('Invalid resolution strategy')
             }), 400
 
-        try:
-            from cps.duplicate_index import ingest_batch_follow_up_pending
-            if ingest_batch_follow_up_pending():
-                log.info("[cwa-duplicates] Auto-resolution blocked while ingest is active")
-                return jsonify({
-                    'success': False,
-                    'blocked': True,
-                    'reason': 'ingest_in_progress',
-                    'message': _('Import is in progress. Execute duplicate resolution after ingest finishes.'),
-                }), 409
-        except Exception as ex:
-            log.warning("[cwa-duplicates] Could not check ingest state before auto-resolution: %s", str(ex))
-        
+        # Fork #318: manual resolution from the admin UI is not gated on
+        # the deferred follow-up marker. That marker can persist past a
+        # clean ingest, permanently refusing the user's button. The
+        # task-level gate is the single source of truth for non-manual
+        # triggers.
+
         duplicate_groups = _get_duplicate_groups_for_resolution(current_user.id)
         result = auto_resolve_duplicates(
             strategy=strategy,

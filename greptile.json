@@ -1,0 +1,10 @@
+{
+  "_comment": "Per-repo Greptile config. Goal: get the highest-value reviews without burning the 50-review/seat/month Pro budget on translation churn, doc-only edits, or per-commit re-reviews.",
+
+  "triggerOnUpdates": false,
+  "triggerOnDrafts": false,
+
+  "ignorePatterns": "cps/translations/**\nmessages.pot\nCONTRIBUTORS\nLICENSE*\n*.po\n*.pot\n.github/workflows/update-translations*.yml\nkubernetes/**\nnotes/**",
+
+  "disabledLabels": ["docs-only", "i18n", "translations"]
+}

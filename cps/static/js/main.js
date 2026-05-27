@@ -274,10 +274,15 @@ $(function() {
         }
     });
 
-    function restartTimer() {
-        $("#spinner").addClass("hidden");
-        $("#RestartDialog").modal("hide");
+    function restartReset() {
+        $("#restart-spinner-container").hide();
+        $("#restart-status-text").hide().text("");
+        $("#restart-confirm-text").show();
+        $("#restart").show();
+        $("#restart-cancel").show().text("Cancel");
     }
+
+    $("#RestartDialog").on("hidden.bs.modal", restartReset);
 
     function cleanUp() {
         clearInterval(updateTimerID);
@@ -415,15 +420,57 @@ $(function() {
     window.cwaInit.infiniteScroll();
 
     $("#restart").click(function() {
+        $("#restart").hide();
+        $("#restart-cancel").hide();
+        $("#restart-confirm-text").hide();
+        $("#restart-spinner-container").show();
+        $("#restart-status-text").show().text("Sending restart command…");
+
         $.ajax({
-            method:"post",
+            method: "post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             url: getPath() + "/shutdown",
             data: JSON.stringify({"parameter":0}),
             success: function success() {
-                $("#spinner").show();
-                setTimeout(restartTimer, 3000);
+                $("#restart-status-text").text("Server is restarting…");
+                var phase = "down";
+                var elapsed = 0;
+                var maxElapsed = 60;
+
+                var pollInterval = setInterval(function() {
+                    elapsed++;
+                    if (elapsed > maxElapsed) {
+                        clearInterval(pollInterval);
+                        $("#restart-spinner-container").hide();
+                        $("#restart-status-text").text("Restart timed out. The server may still be coming back up.");
+                        $("#restart-cancel").show().text("Close");
+                        return;
+                    }
+                    $.ajax({
+                        url: getPath() + "/admin/alive",
+                        timeout: 1500,
+                        success: function(d, statusText, xhr) {
+                            if (phase === "up" && xhr.status < 400) {
+                                clearInterval(pollInterval);
+                                window.location.reload();
+                            }
+                        },
+                        error: function() {
+                            if (phase === "down") {
+                                phase = "up";
+                                $("#restart-status-text").text("Waiting for server to come back up…");
+                            }
+                        }
+                    });
+                }, 1000);
+            },
+            error: function() {
+                $("#restart-spinner-container").hide();
+                $("#restart-status-text").text("Failed to send restart command.");
+                $("#restart").show();
+                $("#restart-cancel").show();
+                $("#restart-confirm-text").show();
             }
         });
     });

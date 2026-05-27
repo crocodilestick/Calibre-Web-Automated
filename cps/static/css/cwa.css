@@ -96,3 +96,51 @@ body.blur #cwa-nav-spinner {
 @keyframes cwa-spin {
     to { transform: rotate(360deg); }
 }
+
+/* Modal restart spinner */
+.cwa-modal-spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    animation: cwa-spin 0.75s linear infinite;
+    margin: 0 auto;
+}
+
+body:not(.blur) .cwa-modal-spinner {
+    border-top-color: #337ab7;
+    border-right-color: rgba(51, 122, 183, 0.25);
+}
+
+body.blur .cwa-modal-spinner {
+    border-top-color: #e5a00d;
+    border-right-color: rgba(229, 160, 13, 0.25);
+}
+
+/* RestartDialog: suppress the non-clickable caliBlur pseudo-element ×,
+   add a real close button, and remove the slide-in animation. */
+#RestartDialog:before {
+    display: none !important;
+}
+
+#RestartDialog > .modal-dialog {
+    -webkit-transform: none !important;
+    transform: none !important;
+    -webkit-transition: none !important;
+    transition: none !important;
+}
+
+#RestartDialog .modal-header .close {
+    float: right;
+    color: #eee;
+    opacity: 0.6;
+    text-shadow: none;
+    font-size: 22px;
+    line-height: 1;
+    margin: -2px -4px 0 0;
+}
+
+#RestartDialog .modal-header .close:hover {
+    color: #fff;
+    opacity: 1;
+}

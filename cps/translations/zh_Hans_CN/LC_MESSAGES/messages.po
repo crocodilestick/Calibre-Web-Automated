@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-26 20:49+0000\n"
+"POT-Creation-Date: 2026-05-27 03:31+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -153,7 +153,7 @@ msgstr "显示全部"
 msgid "Malformed request"
 msgstr "格式错误的请求"
 
-#: cps/admin.py:811 cps/admin.py:2880
+#: cps/admin.py:811 cps/admin.py:2890
 msgid "Guest Name can't be changed"
 msgstr "访客名称无法更改"
 
@@ -161,7 +161,7 @@ msgstr "访客名称无法更改"
 msgid "Guest can't have this role"
 msgstr "游客无法拥有此角色"
 
-#: cps/admin.py:839 cps/admin.py:2704
+#: cps/admin.py:839 cps/admin.py:2714
 msgid "No admin user remaining, can't remove admin role"
 msgstr "没有其余管理员账户，无法删除管理员角色"
 
@@ -205,7 +205,7 @@ msgstr "无效的阅读栏目"
 msgid "Invalid Restricted Column"
 msgstr "无效的限制栏目"
 
-#: cps/admin.py:946 cps/admin.py:2551
+#: cps/admin.py:946 cps/admin.py:2561
 msgid "Calibre-Web NextGen configuration updated"
 msgstr ""
 
@@ -391,8 +391,8 @@ msgstr "编辑邮件服务器设置"
 msgid "Success! Gmail Account Verified."
 msgstr "Gmail 账户验证成功"
 
-#: cps/admin.py:1813 cps/admin.py:1816 cps/admin.py:2302 cps/admin.py:2535
-#: cps/admin.py:2651 cps/admin.py:2923 cps/editbooks.py:1079
+#: cps/admin.py:1813 cps/admin.py:1816 cps/admin.py:2312 cps/admin.py:2545
+#: cps/admin.py:2661 cps/admin.py:2933 cps/editbooks.py:1079
 #: cps/editbooks.py:1878 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2890
@@ -435,7 +435,7 @@ msgstr "指定任务的持续时间无效"
 msgid "Scheduled tasks settings updated"
 msgstr "已更新计划任务设置"
 
-#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2919 cps/web.py:2320
+#: cps/admin.py:1890 cps/admin.py:2034 cps/admin.py:2929 cps/web.py:2320
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "发生一个未知错误，请稍后再试"
 
@@ -448,7 +448,7 @@ msgstr "设置数据库不可写"
 msgid "title"
 msgstr "标题"
 
-#: cps/admin.py:2019 cps/admin.py:2911
+#: cps/admin.py:2019 cps/admin.py:2921
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "编辑用户 %(nick)s"
@@ -466,303 +466,303 @@ msgstr "请先配置 SMTP 邮箱设置..."
 msgid "Logfile viewer"
 msgstr "日志文件查看器"
 
-#: cps/admin.py:2114
+#: cps/admin.py:2124
 msgid "Requesting update package"
 msgstr "正在请求更新包"
 
-#: cps/admin.py:2115
+#: cps/admin.py:2125
 msgid "Downloading update package"
 msgstr "正在下载更新包"
 
-#: cps/admin.py:2116
+#: cps/admin.py:2126
 msgid "Unzipping update package"
 msgstr "正在解压更新包"
 
-#: cps/admin.py:2117
+#: cps/admin.py:2127
 msgid "Replacing files"
 msgstr "正在替换文件"
 
-#: cps/admin.py:2118
+#: cps/admin.py:2128
 msgid "Database connections are closed"
 msgstr "数据库连接已关闭"
 
-#: cps/admin.py:2119
+#: cps/admin.py:2129
 msgid "Stopping server"
 msgstr "正在停止服务器"
 
-#: cps/admin.py:2120
+#: cps/admin.py:2130
 msgid "Update finished, please press okay and reload page"
 msgstr "更新完成，请点击确定并刷新页面"
 
-#: cps/admin.py:2121 cps/admin.py:2122 cps/admin.py:2123 cps/admin.py:2124
-#: cps/admin.py:2125 cps/admin.py:2126
+#: cps/admin.py:2131 cps/admin.py:2132 cps/admin.py:2133 cps/admin.py:2134
+#: cps/admin.py:2135 cps/admin.py:2136
 msgid "Update failed:"
 msgstr "更新失败："
 
-#: cps/admin.py:2121 cps/updater.py:421 cps/updater.py:660 cps/updater.py:662
+#: cps/admin.py:2131 cps/updater.py:421 cps/updater.py:660 cps/updater.py:662
 msgid "HTTP Error"
 msgstr "HTTP 错误"
 
-#: cps/admin.py:2122 cps/updater.py:423 cps/updater.py:664
+#: cps/admin.py:2132 cps/updater.py:423 cps/updater.py:664
 msgid "Connection error"
 msgstr "连接错误"
 
-#: cps/admin.py:2123 cps/updater.py:425 cps/updater.py:666
+#: cps/admin.py:2133 cps/updater.py:425 cps/updater.py:666
 msgid "Timeout while establishing connection"
 msgstr "建立连接超时"
 
-#: cps/admin.py:2124 cps/updater.py:427 cps/updater.py:668
+#: cps/admin.py:2134 cps/updater.py:427 cps/updater.py:668
 msgid "General error"
 msgstr "一般错误"
 
-#: cps/admin.py:2125
+#: cps/admin.py:2135
 msgid "Update file could not be saved in temp dir"
 msgstr "更新文件无法保存在临时目录中"
 
-#: cps/admin.py:2126
+#: cps/admin.py:2136
 msgid "Files could not be replaced during update"
 msgstr "更新期间无法替换文件"
 
-#: cps/admin.py:2150
+#: cps/admin.py:2160
 msgid "Failed to extract at least One LDAP User"
 msgstr "未能获得任何 LDAP 用户"
 
-#: cps/admin.py:2195
+#: cps/admin.py:2205
 msgid "Failed to Create at Least One LDAP User"
 msgstr "未能创建任何 LDAP 用户"
 
-#: cps/admin.py:2208
+#: cps/admin.py:2218
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "错误：%(ldaperror)s"
 
-#: cps/admin.py:2212
+#: cps/admin.py:2222
 msgid "Error: No user returned in response of LDAP server"
 msgstr "错误：在 LDAP 服务器的响应中没有返回用户"
 
-#: cps/admin.py:2248
+#: cps/admin.py:2258
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "数据库中没有找到任何 LDAP 用户"
 
-#: cps/admin.py:2250
+#: cps/admin.py:2260
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} 用户被成功导入"
 
-#: cps/admin.py:2314
+#: cps/admin.py:2324
 msgid "Books path not valid"
 msgstr "书籍路径无效"
 
-#: cps/admin.py:2321
+#: cps/admin.py:2331
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "数据库路径无效，请输入正确的路径"
 
-#: cps/admin.py:2349
+#: cps/admin.py:2359
 msgid "DB is not Writeable"
 msgstr "数据库不可写入"
 
-#: cps/admin.py:2362
+#: cps/admin.py:2372
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "密钥文件路径无效，请输入正确的路径"
 
-#: cps/admin.py:2366
+#: cps/admin.py:2376
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "证书文件路径无效，请输入正确的路径"
 
-#: cps/admin.py:2457
+#: cps/admin.py:2467
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
 
-#: cps/admin.py:2460
+#: cps/admin.py:2470
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 
-#: cps/admin.py:2479 cps/admin.py:2486
+#: cps/admin.py:2489 cps/admin.py:2496
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2483
+#: cps/admin.py:2493
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2518
+#: cps/admin.py:2528
 msgid "Password length has to be between 1 and 40"
 msgstr "密码长度必须在1到40之间"
 
-#: cps/admin.py:2578
+#: cps/admin.py:2588
 msgid "Database Settings updated"
 msgstr "数据库设置已更新"
 
-#: cps/admin.py:2586
+#: cps/admin.py:2596
 msgid "Database Configuration"
 msgstr "数据库配置"
 
-#: cps/admin.py:2606 cps/web.py:2289
+#: cps/admin.py:2616 cps/web.py:2289
 msgid "Oops! Please complete all fields."
 msgstr "请填写所有字段！"
 
-#: cps/admin.py:2615
+#: cps/admin.py:2625
 msgid "E-mail is not from valid domain"
 msgstr "邮箱不在有效域中"
 
-#: cps/admin.py:2623
+#: cps/admin.py:2633
 msgid "Add new user"
 msgstr "添加新用户"
 
-#: cps/admin.py:2641
+#: cps/admin.py:2651
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "用户“%(user)s”已创建"
 
-#: cps/admin.py:2647
+#: cps/admin.py:2657
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "使用此邮箱或用户名的账号已经存在"
 
-#: cps/admin.py:2677
+#: cps/admin.py:2687
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "用户“%(nick)s”已删除"
 
-#: cps/admin.py:2680
+#: cps/admin.py:2690
 msgid "Can't delete Guest User"
 msgstr "无法删除游客用户"
 
-#: cps/admin.py:2683
+#: cps/admin.py:2693
 msgid "No admin user remaining, can't delete user"
 msgstr "管理员账户不存在，无法删除用户"
 
-#: cps/admin.py:2874 cps/web.py:2624
+#: cps/admin.py:2884 cps/web.py:2624
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "电子邮件地址不能为空，并且必须是有效的电子邮件"
 
-#: cps/admin.py:2915
+#: cps/admin.py:2925
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "用户“%(nick)s”已更新"
 
-#: cps/admin.py:2980
+#: cps/admin.py:2990
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:2985
+#: cps/admin.py:2995
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:2987 cps/admin.py:3044
+#: cps/admin.py:2997 cps/admin.py:3054
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "连接失败：服务器返回状态码 %(code)s"
 
-#: cps/admin.py:2989
+#: cps/admin.py:2999
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr "连接失败：无法连接到服务器。"
 
-#: cps/admin.py:2991
+#: cps/admin.py:3001
 #, fuzzy
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr "连接失败：请求超时。"
 
-#: cps/admin.py:2993
+#: cps/admin.py:3003
 #, fuzzy
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr "连接失败：响应中的 JSON 无效。"
 
-#: cps/admin.py:2996
+#: cps/admin.py:3006
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "连接错误"
 
-#: cps/admin.py:3022
+#: cps/admin.py:3032
 #, fuzzy, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr "元数据缺少必填字段：%(fields)s"
 
-#: cps/admin.py:3033
+#: cps/admin.py:3043
 #, fuzzy, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "元数据 URL 有效！找到 %(count)s 个端点。"
 
-#: cps/admin.py:3035
+#: cps/admin.py:3045
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "无可用发布信息"
 
-#: cps/admin.py:3037
+#: cps/admin.py:3047
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:3042
+#: cps/admin.py:3052
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:3046
+#: cps/admin.py:3056
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr "连接失败：无法连接到服务器。"
 
-#: cps/admin.py:3048
+#: cps/admin.py:3058
 msgid "Connection failed: Request timed out."
 msgstr "连接失败：请求超时。"
 
-#: cps/admin.py:3050
+#: cps/admin.py:3060
 msgid "Connection failed: Invalid JSON in response."
 msgstr "连接失败：响应中的 JSON 无效。"
 
-#: cps/admin.py:3053
+#: cps/admin.py:3063
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "发生一个未知错误，请稍后再试"
 
-#: cps/admin.py:3065
+#: cps/admin.py:3075
 #, fuzzy
 msgid "Restore already in progress."
 msgstr "连接错误"
 
-#: cps/admin.py:3069
+#: cps/admin.py:3079
 msgid "Restore failed: Calibre library path is not configured."
 msgstr ""
 
-#: cps/admin.py:3074
+#: cps/admin.py:3084
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:3079
+#: cps/admin.py:3089
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:3151 cps/admin.py:3194
+#: cps/admin.py:3161 cps/admin.py:3204
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "连接错误"
 
-#: cps/admin.py:3171
+#: cps/admin.py:3181
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 
-#: cps/admin.py:3190
+#: cps/admin.py:3200
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1629,7 +1629,7 @@ msgstr "缺少执行权限"
 msgid "Error executing Calibre"
 msgstr "执行 UnRar 时出错"
 
-#: cps/helper.py:1705 cps/templates/admin.html:240
+#: cps/helper.py:1705 cps/templates/admin.html:241
 msgid "Queue all books for metadata backup"
 msgstr "将所有书籍加入元数据备份队列"
 
@@ -2684,7 +2684,7 @@ msgstr ""
 msgid "Invalid book ID."
 msgstr "无效角色"
 
-#: cps/progress_syncing/protocols/kosync.py:485
+#: cps/progress_syncing/protocols/kosync.py:512
 msgid "KOReader Sync Plugin"
 msgstr "KOReader 同步插件"
 
@@ -3230,7 +3230,7 @@ msgstr ""
 msgid "Generate series cover thumbnails"
 msgstr "生成丛书封面缩略图"
 
-#: cps/templates/admin.html:192 cps/templates/admin.html:232
+#: cps/templates/admin.html:192 cps/templates/admin.html:233
 #: cps/templates/schedule_edit.html:38
 msgid "Reconnect Calibre Database"
 msgstr "重新连接到 Calibre 库"
@@ -3287,66 +3287,81 @@ msgid "Administration&nbsp;&nbsp;🚀"
 msgstr "管理"
 
 #: cps/templates/admin.html:228
+msgid ""
+"Sanitized: safe to attach to a public GitHub issue. Passwords, tokens, IPs, "
+"and install paths are scrubbed."
+msgstr ""
+
+#: cps/templates/admin.html:228
+msgid "Get Support Pack"
+msgstr ""
+
+#: cps/templates/admin.html:229
+msgid ""
+"Full unredacted pack. Admin/private use only — contains secrets and IPs."
+msgstr ""
+
+#: cps/templates/admin.html:229
 msgid "Download Debug Package"
 msgstr "下载 Debug 包"
 
-#: cps/templates/admin.html:229
+#: cps/templates/admin.html:230
 msgid "View Logs"
 msgstr "查看日志文件"
 
-#: cps/templates/admin.html:235
+#: cps/templates/admin.html:236
 msgid "Restart"
 msgstr "重启"
 
-#: cps/templates/admin.html:236
+#: cps/templates/admin.html:237
 msgid "Shutdown"
 msgstr "停止"
 
-#: cps/templates/admin.html:245
+#: cps/templates/admin.html:246
 #, fuzzy
 msgid "Version Information&nbsp;&nbsp;📜"
 msgstr "版本信息"
 
-#: cps/templates/admin.html:250
+#: cps/templates/admin.html:251
 msgid "Version"
 msgstr "版本"
 
-#: cps/templates/admin.html:251
+#: cps/templates/admin.html:252
 msgid "Details"
 msgstr "详情"
 
-#: cps/templates/admin.html:260
+#: cps/templates/admin.html:261
 #, fuzzy
 msgid "Update available"
 msgstr "更新失败："
 
-#: cps/templates/admin.html:262
+#: cps/templates/admin.html:263
 msgid "Current Version"
 msgstr "当前版本"
 
-#: cps/templates/admin.html:269 cps/templates/admin.html:274
+#: cps/templates/admin.html:270 cps/templates/admin.html:275
 msgid "-"
 msgstr ""
 
-#: cps/templates/admin.html:281
+#: cps/templates/admin.html:282
 msgid "Check for Update"
 msgstr "检查更新"
 
-#: cps/templates/admin.html:282
+#: cps/templates/admin.html:283
 msgid "Perform Update"
 msgstr "执行更新"
 
-#: cps/templates/admin.html:295
+#: cps/templates/admin.html:296
 msgid "Are you sure you want to restart?"
 msgstr "您确定要重启吗？"
 
-#: cps/templates/admin.html:300 cps/templates/admin.html:314
-#: cps/templates/admin.html:334 cps/templates/config_db.html:139
+#: cps/templates/admin.html:301 cps/templates/admin.html:315
+#: cps/templates/admin.html:335 cps/templates/config_db.html:139
 #: cps/templates/duplicates.html:788 cps/templates/duplicates.html:810
 msgid "OK"
 msgstr "确定"
 
-#: cps/templates/admin.html:301 cps/templates/admin.html:315
+#: cps/templates/admin.html:302 cps/templates/admin.html:316
 #: cps/templates/book_edit.html:267 cps/templates/book_table.html:176
 #: cps/templates/book_table.html:195 cps/templates/book_table.html:215
 #: cps/templates/book_table.html:235 cps/templates/book_table.html:255
@@ -3367,11 +3382,11 @@ msgstr "确定"
 msgid "Cancel"
 msgstr "取消"
 
-#: cps/templates/admin.html:313
+#: cps/templates/admin.html:314
 msgid "Are you sure you want to shutdown?"
 msgstr "您确定要关闭吗？"
 
-#: cps/templates/admin.html:325
+#: cps/templates/admin.html:326
 msgid "Updating, please do not reload this page"
 msgstr "正在更新，请不要刷新页面"
 

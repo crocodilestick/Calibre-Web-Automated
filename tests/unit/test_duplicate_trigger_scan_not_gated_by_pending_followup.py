@@ -124,6 +124,27 @@ class TestExecuteResolutionNotGatedOnFollowUpPending:
             "for a manual user request (fork issue #318)."
         )
 
+    # Positive assertions — Greptile review caught that the "gate is
+    # removed" assertions above don't pin the downstream behavior that
+    # must continue to work. A future refactor of execute_resolution
+    # that accidentally dropped either the auto_resolve_duplicates call
+    # or the manual trigger_type would not have been caught.
+
+    def test_execute_resolution_still_calls_auto_resolve_duplicates(self):
+        assert "auto_resolve_duplicates(" in self.body, (
+            "execute_resolution must still invoke auto_resolve_duplicates; "
+            "this is the load-bearing call the endpoint exists to wrap."
+        )
+
+    def test_execute_resolution_still_passes_manual_trigger_type(self):
+        assert "trigger_type='manual'" in self.body or \
+               'trigger_type="manual"' in self.body, (
+            "execute_resolution must still pass trigger_type='manual' so "
+            "the task-level gate exempts it from the follow-up-pending "
+            "deferral — losing this kwarg silently turns user clicks "
+            "into deferred work."
+        )
+
 
 @pytest.mark.unit
 class TestTaskLevelGatePreserved:

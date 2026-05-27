@@ -395,10 +395,16 @@ class ConfigSQL(object):
                 else:
                     setattr(self, k, v)
 
-        # Enforce unified logging to stdout for Docker deployments
-        if self.config_logfile not in (logger.LOG_TO_STDOUT, logger.LOG_TO_STDERR):
-            self.config_logfile = logger.LOG_TO_STDOUT
-            s.config_logfile = logger.LOG_TO_STDOUT
+        # Fork issue #312: the prior force-reset-to-/dev/stdout block
+        # silently broke admin → View Logs for every install — the on-disk
+        # file was never written. cps.logger.setup() now dual-writes to
+        # both stdout (for `docker logs`) and a rotating file (for the
+        # admin UI), so we no longer need to overwrite the user's chosen
+        # path. We do migrate installs that were saved with the legacy
+        # /dev/stdout value back to the default file path so their viewer
+        # has content on first boot after upgrade.
+        if _migrate_legacy_stdout_logfile(self):
+            s.config_logfile = self.config_logfile
             try:
                 self._session.merge(s)
                 self._session.commit()
@@ -418,9 +424,15 @@ class ConfigSQL(object):
         else:
             # pylint: disable=access-member-before-definition
             logfile = logger.setup(cli_param.logpath or self.config_logfile, self.config_log_level)
-        if logfile != os.path.abspath(self.config_logfile):
-            if logfile != os.path.abspath(cli_param.logpath):
-                log.warning("Log path %s not valid, falling back to default", self.config_logfile)
+        # Detect whether setup() landed on a different path than we
+        # asked for (a fallback was triggered, e.g. /config not
+        # writable). Normalize both sides so the empty-default ↔
+        # absolute-default case doesn't spuriously trip the
+        # "falling back" warning after the #312 migration.
+        if _normalize_logfile(logfile) != _normalize_logfile(self.config_logfile):
+            requested = cli_param.logpath or self.config_logfile
+            if _normalize_logfile(logfile) != _normalize_logfile(cli_param.logpath):
+                log.warning("Log path %s not valid, falling back to default", requested)
             self.config_logfile = logfile
             s.config_logfile = logfile
             self._session.merge(s)
@@ -477,6 +489,40 @@ class ConfigSQL(object):
     def __setattr__(self, attr_name, attr_value):
         super().__setattr__(attr_name, attr_value)
         self.__dict__["dirty"].append(attr_name)
+
+
+def _normalize_logfile(path):
+    """Canonical form for `config_logfile` comparison.
+
+    `""` → `""` (the empty-default sentinel)
+    `/dev/stdout` / `/dev/stderr` → unchanged (stream tokens)
+    anything else → absolute path
+    """
+    if not path:
+        return ""
+    if path in (logger.LOG_TO_STDOUT, logger.LOG_TO_STDERR):
+        return path
+    return os.path.abspath(path)
+
+
+def _migrate_legacy_stdout_logfile(row):
+    """Translate the legacy auto-set `config_logfile = /dev/stdout` value
+    back to the file-path default ('' → DEFAULT_LOG_FILE).
+
+    Until v4.0.137, `_after_load_settings_from_storage` force-overwrote
+    every install's `config_logfile` to `/dev/stdout` on every load.
+    With the dual-handler logger from #312 we always write to stdout AND
+    a file, so the stdout-only override is no longer needed — and
+    leaving the saved value at `/dev/stdout` would suppress the file
+    handler we want to enable.
+
+    Returns True if the row was modified.
+    """
+    current = getattr(row, "config_logfile", None)
+    if current in (logger.LOG_TO_STDOUT, logger.LOG_TO_STDERR):
+        row.config_logfile = ""
+        return True
+    return False
 
 
 def _encrypt_fields(session, secret_key):

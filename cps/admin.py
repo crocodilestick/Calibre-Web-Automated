@@ -2090,6 +2090,16 @@ def download_debug():
     return debug_info.send_debug()
 
 
+@admi.route("/admin/debug/support-pack")
+@user_login_required
+@admin_required
+def download_support_pack():
+    """Sanitized debug pack — passwords, OAuth tokens, public IPs, and
+    install paths stripped. Safe for non-technical users to attach to a
+    public GitHub issue. Fork issue #312."""
+    return debug_info.send_debug_sanitized()
+
+
 @admi.route("/get_update_status", methods=['GET'])
 @user_login_required
 @admin_required

@@ -83,6 +83,22 @@ MAX_DEVICE_ID_LENGTH = 100 # Maximum device ID length
 
 def _require_kosync_enabled():
     if not is_koreader_sync_enabled():
+        # Fork issue #312: the prior silent 503 here is what made
+        # @uschi1's broken sync un-diagnosable from server logs. Log
+        # WARNING with the endpoint and the requesting IP so the admin
+        # can see "ah, sync is disabled — turn it on in CWA Settings"
+        # in one log line.
+        try:
+            client_ip = request.headers.get("X-Forwarded-For", request.remote_addr) or "?"
+            endpoint = request.path or "?"
+        except Exception:
+            client_ip = "?"
+            endpoint = "?"
+        log.warning(
+            "KOReader sync_disabled: rejecting %s from %s. "
+            "Enable in Admin → CWA Settings → KOReader Sync.",
+            endpoint, client_ip,
+        )
         return create_sync_response({
             "error": ERROR_NO_STORAGE,
             "message": "KOReader sync is disabled"
@@ -183,7 +199,10 @@ def authenticate_user() -> Optional[ub.User]:
         return None
 
     if not user:
-        log.debug(f"User not found: {username}")
+        # Fork issue #312: promoted from DEBUG so kosync auth failures
+        # are visible in default-INFO logs. Includes the username so a
+        # typo or stale device config is identifiable from one line.
+        log.info("KOReader auth: User not found: %s", username)
         return None
 
     # Check if LDAP authentication is enabled
@@ -205,7 +224,10 @@ def authenticate_user() -> Optional[ub.User]:
         log.info(f"User authenticated successfully: {username}")
         return user
 
-    log.debug(f"Invalid password for user: {username}")
+    # Fork issue #312: promoted from DEBUG. Invalid-password attempts
+    # for a real user are exactly the signal needed to diagnose stale
+    # device-side credentials after a password change.
+    log.info("KOReader auth: Invalid password for user: %s", username)
     return None
 
 
@@ -292,8 +314,13 @@ def get_book_by_checksum(document_checksum: str, version: str = None):
             log.debug(f"Found book match: {book_title} (ID {book_id}, format {book_format}, checksum v{checksum_version})")
             return book_id, book_format, book_title, book_path, checksum_version
 
-        # No match found
-        log.debug(f"No book found for checksum: {document_checksum}")
+        # Fork issue #312: promoted from DEBUG so admins can see when a
+        # device's file checksum doesn't match anything in the library.
+        # This is exactly the diagnostic for "I synced fine on stock
+        # CWA, my device pushes a checksum, nothing happens" — the
+        # checksum is in the message so the admin can grep the
+        # book_format_checksums table for it.
+        log.info("KOReader sync: No book found for checksum: %s", document_checksum)
         return None, None, None, None, None
 
     except SQLAlchemyError as e:
@@ -744,7 +771,13 @@ def update_progress():
             log.info(f"Saved kosync progress: user={user.id}, document={document}, "
                     f"progress={percentage_float:.2f}%")
         except SQLAlchemyError as e:
-            log.error(f"Failed to commit kosync_progress: {e}")
+            # Fork issue #312: include user and document in the
+            # message so a triage sweep can correlate this with the
+            # client that's failing to sync.
+            log.error(
+                "Failed to commit kosync_progress for user=%s document=%s: %s",
+                getattr(user, "id", "?"), document, e,
+            )
             ub.session.rollback()
             raise KOSyncError(ERROR_INTERNAL, "Failed to save sync progress")
 

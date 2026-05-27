@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-27 03:31+0000\n"
+"POT-Creation-Date: 2026-05-27 03:46+0000\n"
 "PO-Revision-Date: 2021-05-13 11:00+0000\n"
 "Last-Translator: Jonatan Nyberg <jonatan.nyberg.karl@gmail.com>\n"
 "Language-Team: \n"
@@ -1228,28 +1228,19 @@ msgstr "Ta bort boken"
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1356
-msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
-msgstr ""
-
-#: cps/duplicates.py:1377
+#: cps/duplicates.py:1372
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Inga resultat hittades"
 
-#: cps/duplicates.py:1446
+#: cps/duplicates.py:1441
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1521
+#: cps/duplicates.py:1516
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Ogiltig roll"
-
-#: cps/duplicates.py:1532
-msgid ""
-"Import is in progress. Execute duplicate resolution after ingest finishes."
-msgstr ""
 
 #: cps/editbooks.py:125 cps/editbooks.py:182
 msgid ""

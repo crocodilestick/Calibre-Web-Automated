@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-27 03:31+0000\n"
+"POT-Creation-Date: 2026-05-27 03:46+0000\n"
 "PO-Revision-Date: 2026-04-26 13:31+0200\n"
 "Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at proton."
 "me>\n"
@@ -1239,27 +1239,18 @@ msgstr "Groep duplicaten hersteld"
 msgid "Duplicate group was not dismissed"
 msgstr "Groep duplicaten niet afgewezen"
 
-#: cps/duplicates.py:1356
-msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
-msgstr ""
-
-#: cps/duplicates.py:1377
+#: cps/duplicates.py:1372
 msgid "Duplicate scan queued"
 msgstr "Duplicaten scan in wachtrij"
 
-#: cps/duplicates.py:1446
+#: cps/duplicates.py:1441
 msgid "Duplicate scan completed (fallback)"
 msgstr "Duplicaten scan voltooid"
 
-#: cps/duplicates.py:1521
+#: cps/duplicates.py:1516
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Ongeldige rol"
-
-#: cps/duplicates.py:1532
-msgid ""
-"Import is in progress. Execute duplicate resolution after ingest finishes."
-msgstr ""
 
 #: cps/editbooks.py:125 cps/editbooks.py:182
 msgid ""

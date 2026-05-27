@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-27 03:31+0000\n"
+"POT-Creation-Date: 2026-05-27 03:46+0000\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -1308,26 +1308,17 @@ msgstr "Groupe dupliqué restauré"
 msgid "Duplicate group was not dismissed"
 msgstr "Le groupe en double n'a pas été supprimé"
 
-#: cps/duplicates.py:1356
-msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
-msgstr ""
-
-#: cps/duplicates.py:1377
+#: cps/duplicates.py:1372
 msgid "Duplicate scan queued"
 msgstr "Scan en double mis en file d'attente"
 
-#: cps/duplicates.py:1446
+#: cps/duplicates.py:1441
 msgid "Duplicate scan completed (fallback)"
 msgstr "Scan en double terminé (plan de secours)"
 
-#: cps/duplicates.py:1521
+#: cps/duplicates.py:1516
 msgid "Invalid resolution strategy"
 msgstr "Stratégie de résolution non valide"
-
-#: cps/duplicates.py:1532
-msgid ""
-"Import is in progress. Execute duplicate resolution after ingest finishes."
-msgstr ""
 
 #: cps/editbooks.py:125 cps/editbooks.py:182
 msgid ""

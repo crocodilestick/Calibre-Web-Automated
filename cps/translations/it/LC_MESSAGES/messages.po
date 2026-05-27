@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-27 03:31+0000\n"
+"POT-Creation-Date: 2026-05-27 03:46+0000\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -1239,28 +1239,19 @@ msgstr "Libro duplicato"
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1356
-msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
-msgstr ""
-
-#: cps/duplicates.py:1377
+#: cps/duplicates.py:1372
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Duplicati"
 
-#: cps/duplicates.py:1446
+#: cps/duplicates.py:1441
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1521
+#: cps/duplicates.py:1516
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Ruolo non valido"
-
-#: cps/duplicates.py:1532
-msgid ""
-"Import is in progress. Execute duplicate resolution after ingest finishes."
-msgstr ""
 
 #: cps/editbooks.py:125 cps/editbooks.py:182
 msgid ""

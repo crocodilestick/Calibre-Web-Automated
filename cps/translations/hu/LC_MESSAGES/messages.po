@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-27 03:31+0000\n"
+"POT-Creation-Date: 2026-05-27 03:46+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -1252,26 +1252,17 @@ msgstr "Ismétlődő könyvcsoport visszaállítva"
 msgid "Duplicate group was not dismissed"
 msgstr "Ismétlődő csoport nem lett elutasítva"
 
-#: cps/duplicates.py:1356
-msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
-msgstr ""
-
-#: cps/duplicates.py:1377
+#: cps/duplicates.py:1372
 msgid "Duplicate scan queued"
 msgstr "Ismétlődő könyvek ellenőrzése ütemezve"
 
-#: cps/duplicates.py:1446
+#: cps/duplicates.py:1441
 msgid "Duplicate scan completed (fallback)"
 msgstr "Ismétlődő keresés befejezve (tartalék mód)"
 
-#: cps/duplicates.py:1521
+#: cps/duplicates.py:1516
 msgid "Invalid resolution strategy"
 msgstr "Érvénytelen megoldási stratégia"
-
-#: cps/duplicates.py:1532
-msgid ""
-"Import is in progress. Execute duplicate resolution after ingest finishes."
-msgstr ""
 
 #: cps/editbooks.py:125 cps/editbooks.py:182
 msgid ""

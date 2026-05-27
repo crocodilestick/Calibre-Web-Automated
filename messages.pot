@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated v4.0.6\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-27 03:31+0000\n"
+"POT-Creation-Date: 2026-05-27 03:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1176,24 +1176,16 @@ msgstr ""
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1356
-msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
-msgstr ""
-
-#: cps/duplicates.py:1377
+#: cps/duplicates.py:1372
 msgid "Duplicate scan queued"
 msgstr ""
 
-#: cps/duplicates.py:1446
+#: cps/duplicates.py:1441
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1521
+#: cps/duplicates.py:1516
 msgid "Invalid resolution strategy"
-msgstr ""
-
-#: cps/duplicates.py:1532
-msgid "Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr ""
 
 #: cps/editbooks.py:125 cps/editbooks.py:182

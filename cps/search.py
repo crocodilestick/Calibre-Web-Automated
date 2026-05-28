@@ -357,7 +357,11 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
             log.debug_or_exception(ex)
             flash(_("Error on search for custom columns, please restart Calibre-Web"), category="error")
 
-    q = q.order_by(*sort)
+    # Collapse duplicate rows produced by the series/shelf outerjoins (a book in
+    # multiple series or on multiple shelves yields one row per link). Without this,
+    # the SQL LIMIT below counts duplicate rows, so a full page of 60 rows collapses
+    # to fewer distinct books after the ORM dedupes by primary key.
+    q = q.group_by(db.Books.id).order_by(*sort)
     flask_session['query'] = json.dumps(term)
 
     # Perform a count query for pagination, which is much faster than fetching all results.

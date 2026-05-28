@@ -500,11 +500,20 @@
         return document.body.classList.contains('blur');
     }
 
+    // Width of the left margin inside .col-sm-10 > .container (20% of col-sm-10).
+    // Used by the fixed ::before glyphicons on list pages so their width tracks
+    // both sidebar resizes and browser window resizes.
+    function setListGlyphWidth(sidebarW) {
+        var glyphW = Math.round((window.innerWidth - sidebarW) * 0.2);
+        document.documentElement.style.setProperty('--list-glyph-width', glyphW + 'px');
+    }
+
     function setSidebarWidth(sidebar, w) {
         if (isCaliBlur()) {
             // One variable drives sidebar, navbar-brand, ::after gap bar,
             // main-content width, and handle position via CSS.
             document.documentElement.style.setProperty('--sidebar-width', w + 'px');
+            setListGlyphWidth(w);
         } else {
             sidebar.style.width = w + 'px';
         }
@@ -516,6 +525,7 @@
             row.classList.remove('sidebar-resizable');
             sidebar.style.width = '';
             document.documentElement.style.removeProperty('--sidebar-width');
+            document.documentElement.style.removeProperty('--list-glyph-width');
             return;
         }
 
@@ -524,7 +534,10 @@
         if (w < SIDEBAR_MIN || w > SIDEBAR_MAX) w = 0;
 
         if (isCaliBlur()) {
-            if (w) document.documentElement.style.setProperty('--sidebar-width', w + 'px');
+            if (w) {
+                document.documentElement.style.setProperty('--sidebar-width', w + 'px');
+                setListGlyphWidth(w);
+            }
         } else {
             row.classList.add('sidebar-resizable');
             if (w) sidebar.style.width = w + 'px';
@@ -597,5 +610,49 @@
         document.addEventListener('DOMContentLoaded', initSidebarResize);
     } else {
         initSidebarResize();
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Sidebar section collapse (Shelves / Magic Shelves)                  */
+    /* ------------------------------------------------------------------ */
+
+    var SHELF_COLLAPSE_KEY = 'cwa-shelf-collapse';
+
+    function getShelfCollapseState() {
+        try { return JSON.parse(localStorage.getItem(SHELF_COLLAPSE_KEY) || '{}'); }
+        catch (e) { return {}; }
+    }
+
+    function applyCollapseSection(section, collapsed) {
+        document.querySelectorAll('[data-collapse-section="' + section + '"]').forEach(function (el) {
+            el.style.display = collapsed ? 'none' : '';
+        });
+        var btn = document.querySelector('.js-shelf-section-toggle[data-target="' + section + '"]');
+        if (btn) {
+            btn.textContent = collapsed ? '▶' : '▼';
+            btn.setAttribute('aria-expanded', String(!collapsed));
+        }
+    }
+
+    function initShelfCollapse() {
+        var state = getShelfCollapseState();
+        document.querySelectorAll('.js-shelf-section-toggle').forEach(function (btn) {
+            var section = btn.getAttribute('data-target');
+            applyCollapseSection(section, !!state[section]);
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var s = getShelfCollapseState();
+                s[section] = !s[section];
+                localStorage.setItem(SHELF_COLLAPSE_KEY, JSON.stringify(s));
+                applyCollapseSection(section, s[section]);
+            });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initShelfCollapse);
+    } else {
+        initShelfCollapse();
     }
 }());

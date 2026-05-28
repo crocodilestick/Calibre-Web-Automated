@@ -880,6 +880,12 @@ def render_archived_books(page, sort_param):
                                  title=name, page=page_name, order=sort_param[1])
 
 
+@web.route("/magicshelves")
+@login_required_if_no_ano
+def magic_shelf_list():
+    return render_title_template('magic_shelf_list.html', title=_("Magic Shelves"), page="magicshelflist")
+
+
 @web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")

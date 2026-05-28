@@ -1,0 +1,51 @@
+{% extends parent_template|default("layout.html") %}
+{% block body %}
+<div class="discover">
+  <h2>{{_('Magic Shelves ✨')}}</h2>
+  {% if magic_shelf_routes.create %}
+  <div class="filterheader hidden-xs">
+    <a href="{{url_for('web.create_magic_shelf')}}" class="btn btn-primary">{{_('Create Magic Shelf')}}</a>
+  </div>
+  {% endif %}
+  {% if g.magic_shelves_access %}
+  <div class="shelf-list-grid" id="shelf-list-grid">
+    {% for shelf in g.magic_shelves_access %}
+      <div class="shelf-list-item">
+        <a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}"
+           title="{{shelf.name}}{% if shelf.is_public == 1 %} ({{_('Public')}}){% endif %} ({{shelf.book_count}})">
+          <span class="shelf-list-icon shelf-list-emoji">{{shelf.icon}}</span><span class="shelf-list-name">{{shelf.name}}{% if shelf.is_public == 1 %} <span class="shelf-list-public">{{_('(Public)')}}</span>{% endif %}</span><span class="shelf-list-count">({{shelf.book_count}})</span>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-muted">{{_('No magic shelves found.')}}</p>
+  {% endif %}
+</div>
+{% endblock %}
+{% block js %}
+<script>
+(function () {
+  function updateShelfListColumns() {
+    var grid = document.getElementById('shelf-list-grid');
+    if (!grid) return;
+    var names = grid.querySelectorAll('.shelf-list-name');
+    if (!names.length) return;
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    var style = window.getComputedStyle(names[0]);
+    ctx.font = style.fontSize + ' ' + style.fontFamily;
+    var maxW = 0;
+    names.forEach(function (el) {
+      var w = ctx.measureText(el.textContent.trim()).width;
+      if (w > maxW) maxW = w;
+    });
+    // emoji icon (~20px) + padding (~24px) + count (~40px) + gap
+    var colW = Math.min(300, Math.max(120, Math.ceil(maxW) + 90));
+    grid.style.columnWidth = colW + 'px';
+  }
+  window.addEventListener('resize', updateShelfListColumns);
+  updateShelfListColumns();
+}());
+</script>
+{% endblock %}

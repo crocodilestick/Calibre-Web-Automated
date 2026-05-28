@@ -2191,53 +2191,57 @@ body > div.container-fluid > div > div.col-sm-10 > div.discover > div.container 
     -o-transition: background-color .2s, color .2s
 }
 
-body.catlist > div.container-fluid > div.row-fluid > div.col-sm-10:before {
-    content: "\E067";
-    font-family: Glyphicons Regular, serif;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    font-size: 6vw;
-    position: fixed;
-    left: 240px;
-    top: 180px;
-    width: calc(20% - 55px);
-    text-align: center
-}
-
-@media screen and (max-width: 992px) {
-  body.catlist > div.container-fluid > div.row-fluid > div.col-sm-10:before {
-      top: 180px;
-  }
-}
-
-
-body.authorlist > div.container-fluid > div.row-fluid > div.col-sm-10:before, body.langlist > div.container-fluid > div > div.col-sm-10:before {
+body.catlist > div.container-fluid > div > div.col-sm-10:before,
+body.authorlist > div.container-fluid > div > div.col-sm-10:before,
+body.langlist > div.container-fluid > div > div.col-sm-10:before,
+body.publisherlist > div.container-fluid > div > div.col-sm-10:before,
+body.ratingslist > div.container-fluid > div > div.col-sm-10:before,
+body.formatslist > div.container-fluid > div > div.col-sm-10:before {
     font-family: 'Glyphicons Halflings', serif;
     font-style: normal;
     font-weight: 400;
     line-height: 1;
     font-size: 6vw;
-    left: 240px;
+    position: fixed;
+    left: var(--sidebar-width, 240px);
     top: 180px;
-    width: calc(20% - 55px);
-    text-align: center;
-    position: fixed
+    width: var(--list-glyph-width, calc(20vw - 48px));
+    text-align: center
 }
 
-body.authorlist > div.container-fluid > div.row-fluid > div.col-sm-10:before {
+body.catlist > div.container-fluid > div > div.col-sm-10:before {
+    content: "\e067"
+}
+
+body.authorlist > div.container-fluid > div > div.col-sm-10:before {
     content: "\e008";
-    top: 240px;
-}
-
-@media screen and (max-width: 992px) {
-  body.authorlist > div.container-fluid > div.row-fluid > div.col-sm-10:before {
-    top: 180px;
-  }
 }
 
 body.langlist > div.container-fluid > div > div.col-sm-10:before {
     content: "\e034"
+}
+
+body.publisherlist > div.container-fluid > div > div.col-sm-10:before {
+    content: "\e241"
+}
+
+body.ratingslist > div.container-fluid > div > div.col-sm-10:before {
+    content: "\e007"
+}
+
+body.formatslist > div.container-fluid > div > div.col-sm-10:before {
+    content: "\e022"
+}
+
+@media screen and (max-width: 768px) {
+    body.catlist > div.container-fluid > div > div.col-sm-10:before,
+    body.authorlist > div.container-fluid > div > div.col-sm-10:before,
+    body.langlist > div.container-fluid > div > div.col-sm-10:before,
+    body.publisherlist > div.container-fluid > div > div.col-sm-10:before,
+    body.ratingslist > div.container-fluid > div > div.col-sm-10:before,
+    body.formatslist > div.container-fluid > div > div.col-sm-10:before {
+        display: none
+    }
 }
 
 body.authorlist > div.container-fluid > div > div.col-sm-10 > div.container:before, body.catlist > div.container-fluid > div > div.col-sm-10 > div.container:before, body.langlist > div.container-fluid > div > div.col-sm-10 > div.container:before, body.me > div.container-fluid > div > div.col-sm-10 > div.discover:before, body.serieslist > div.container-fluid > div > div.col-sm-10 > div.container:before {
@@ -7703,78 +7707,6 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     text-overflow: ellipsis
 }
 
-body.publisherlist > div.container-fluid > div > div.col-sm-10:before {
-    content: "\e241";
-    font-family: 'Glyphicons Halflings', serif;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    font-size: 6vw;
-    position: fixed;
-    left: 240px;
-    top: 180px;
-    width: calc(20% - 55px);
-    text-align: center
-}
-
-@media screen and (max-width: 992px) {
-  body.publisherlist > div.container-fluid > div > div.col-sm-10:before {
-      top: 180px;
-  }
-}
-
-body.ratingslist > div.container-fluid > div > div.col-sm-10:before {
-    content: "\e007";
-    font-family: 'Glyphicons Halflings', serif;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    font-size: 6vw;
-    position: fixed;
-    left: 240px;
-    top: 180px;
-    width: calc(20% - 55px);
-    text-align: center
-}
-
-@media screen and (max-width: 992px) {
-  body.ratingslist > div.container-fluid > div > div.col-sm-10:before {
-      top: 180px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  body.ratingslist > div.container-fluid > div > div.col-sm-10:before {
-      display: none;
-  }
-}
-
-body.formatslist > div.container-fluid > div > div.col-sm-10:before {
-    content: "\e022";
-    font-family: 'Glyphicons Halflings', serif;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    font-size: 6vw;
-    position: fixed;
-    left: 240px;
-    top: 180px;
-    width: calc(20% - 55px);
-    text-align: center
-}
-
-@media screen and (max-width: 992px) {
-  body.formatslist > div.container-fluid > div > div.col-sm-10:before {
-      top: 180px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  body.formatslist > div.container-fluid > div > div.col-sm-10:before {
-      display: none;
-  }
-}
-
 body.publisherlist > div.container-fluid > div > div.col-sm-10 > div.container:before {
     content: "Publishers";
     top: 60px;
@@ -8817,4 +8749,34 @@ button.close {
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* ---- caliBlur: shelf section collapse & list page overrides ---- */
+#main-nav + #scnd-nav li.nav-head.shelf-section-header > a {
+    color: hsla(0, 0%, 100%, .3);
+    padding: 0 !important;
+    height: auto !important;
+    line-height: inherit;
+    font-size: inherit;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#main-nav + #scnd-nav li.nav-head.shelf-section-header.active > a {
+    color: var(--color-primary);
+}
+
+#main-nav + #scnd-nav li.nav-head.shelf-section-header > a:hover {
+    background: none !important;
+    color: hsla(0, 0%, 100%, .6);
+    text-decoration: underline;
+}
+
+.shelf-list-item a {
+    color: hsla(0, 0%, 100%, .7);
+}
+
+.shelf-list-item a:hover {
+    color: hsla(0, 0%, 100%, .95);
+    background: hsla(0, 0%, 100%, .08) !important;
 }

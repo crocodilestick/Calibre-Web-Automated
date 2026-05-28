@@ -650,7 +650,11 @@ def edit_book_param(param, vals):
 @user_login_required
 def get_sorted_entry(field, bookid):
     if field in ['title', 'authors', 'sort', 'author_sort']:
-        book = calibre_db.get_filtered_book(bookid)
+        # allow_show_hidden=True so the sort-value AJAX endpoint mirrors
+        # the metadata-edit page's access (#319 pushback): editing a user's
+        # own hidden book must work end-to-end, including the live sort
+        # value preview that fires while typing the title/authors fields.
+        book = calibre_db.get_filtered_book(bookid, allow_show_hidden=True)
         if book:
             if field == 'title':
                 return json.dumps({'sort': book.sort})
@@ -857,7 +861,11 @@ def do_edit_book(book_id, upload_formats=None):
     edit_error = False
     refresh_cover_thumbnail_after_commit = False
 
-    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
+    # allow_show_hidden=True: the metadata-save POST must succeed against
+    # a user's own hidden book — droM4X reported the metadata icon on
+    # hidden book detail pages bouncing as "unavailable" (#319 pushback).
+    # Hidden is a per-user listing exclusion, not an access revocation.
+    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True, allow_show_hidden=True)
     # Book not found
     if not book:
         flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
@@ -1497,7 +1505,11 @@ def delete_book_from_table(book_id, book_format, json_response, location="", ski
 
 def render_edit_book(book_id):
     cc = calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.datatype.notin_(db.cc_exceptions)).all()
-    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
+    # allow_show_hidden=True: the metadata-edit page (the metadata icon on
+    # the book detail page) must reach a user's own hidden book — droM4X
+    # reported that icon errored "unavailable" for hidden books (#319
+    # pushback). Hidden is a listing exclusion, not an access revocation.
+    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True, allow_show_hidden=True)
     if not book:
         flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
               category="error")

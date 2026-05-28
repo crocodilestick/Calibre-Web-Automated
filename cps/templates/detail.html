@@ -533,12 +533,17 @@
                                     {% endif %}
 
                                     {% if not current_user.is_anonymous %}
+                                        {# Read-status icon uses checkmark (glyphicon-ok / glyphicon-unchecked) per fork #319
+                                           @droM4X pushback. The old eye-open / eye-close collided visually with the hide button
+                                           (also an eye), which was the source of the user-hostile accidental-hide failure
+                                           SethMilliken reported. Hide button now also gated by config flag + placed at the
+                                           end of the action row — see further down. #}
                                         <button type="button" class="btn btn-default action-icon-btn" id="toggle-read-btn"
                                                 title="{{ entry.read_status and _('Mark As Unread') or _('Mark As Read') }}"
                                                 aria-label="{{ entry.read_status and _('Mark As Unread') or _('Mark As Read') }}"
                                                 data-toast-on="{{ _('Marked as read') }}"
                                                 data-toast-off="{{ _('Marked as unread') }}">
-                                            <span id="read-icon" class="glyphicon {{ entry.read_status and 'glyphicon-eye-open' or 'glyphicon-eye-close' }}"></span>
+                                            <span id="read-icon" class="glyphicon {{ entry.read_status and 'glyphicon-ok' or 'glyphicon-unchecked' }}"></span>
                                         </button>
                                         {% if current_user.check_visibility(32768) %}
                                             <button type="button" class="btn btn-default action-icon-btn" id="toggle-archive-btn"
@@ -549,15 +554,6 @@
                                                 <span id="archive-icon" class="glyphicon {{ entry.is_archived and 'glyphicon-folder-open' or 'glyphicon-folder-close' }}"></span>
                                             </button>
                                         {% endif %}
-                                        {# Hide / Unhide button — fork issue #64. Per-user library declutter, distinct from archive. #}
-                                        <button type="button" class="btn btn-default action-icon-btn" id="toggle-hide-btn"
-                                                data-book-id="{{ entry.id }}"
-                                                title="{{ is_hidden and _('Unhide from your library') or _('Hide from your library') }}"
-                                                aria-label="{{ is_hidden and _('Unhide from your library') or _('Hide from your library') }}"
-                                                data-toast-on="{{ _('Hidden') }}"
-                                                data-toast-off="{{ _('Unhidden') }}">
-                                            <span id="hide-icon" class="glyphicon {{ is_hidden and 'glyphicon-eye-open' or 'glyphicon-eye-close' }}"></span>
-                                        </button>
                                     {% endif %}
 
                                     {% if current_user.role_edit() %}
@@ -576,6 +572,25 @@
                                                 title="{{ _('Delete Book') }}" aria-label="{{ _('Delete Book') }}">
                                             <span class="glyphicon glyphicon-trash"></span>
                                             <span class="sr-only">{{ _('Delete Book') }}</span>
+                                        </button>
+                                    {% endif %}
+                                    {# Hide / Unhide button — fork issue #319 SethMilliken safety pass.
+                                       Gated on EITHER the admin flag (g.user_hide_enabled, populated
+                                       from config.config_user_hide_enabled in admin.py's
+                                       before_app_request — Jinja's `config` global is Flask's
+                                       app.config, not cps.config) OR the book being currently hidden
+                                       by the user (defense-in-depth recovery — admins must not be
+                                       able to strand users' already-hidden books by disabling the
+                                       feature mid-flight). Placed at the END of the action row, well
+                                       away from frequently-clicked Read Status (#319 #3 ask). #}
+                                    {% if not current_user.is_anonymous and (g.user_hide_enabled or is_hidden) %}
+                                        <button type="button" class="btn btn-default action-icon-btn" id="toggle-hide-btn"
+                                                data-book-id="{{ entry.id }}"
+                                                title="{{ is_hidden and _('Unhide from your library') or _('Hide from your library') }}"
+                                                aria-label="{{ is_hidden and _('Unhide from your library') or _('Hide from your library') }}"
+                                                data-toast-on="{{ _('Hidden') }}"
+                                                data-toast-off="{{ _('Unhidden') }}">
+                                            <span id="hide-icon" class="glyphicon {{ is_hidden and 'glyphicon-eye-open' or 'glyphicon-eye-close' }}"></span>
                                         </button>
                                     {% endif %}
                                     {% if current_user.is_authenticated and (current_user.shelf.all() or g.shelves_access) %}
@@ -1037,8 +1052,10 @@
                     }
                     var $icon = $("#read-icon");
                     var isRead = $cb.prop("checked");
-                    $icon.toggleClass("glyphicon-eye-open", isRead)
-                         .toggleClass("glyphicon-eye-close", !isRead);
+                    // Read-status uses checkmark icons (fork #319 droM4X) so the
+                    // toggle no longer collides visually with the hide button (eye).
+                    $icon.toggleClass("glyphicon-ok", isRead)
+                         .toggleClass("glyphicon-unchecked", !isRead);
                     var title = isRead ? $cb.data("checked") : $cb.data("unchecked");
                     $("#toggle-read-btn").attr("title", title).attr("aria-label", title);
                     var $btn = $("#toggle-read-btn");

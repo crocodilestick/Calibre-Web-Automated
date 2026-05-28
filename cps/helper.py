@@ -876,7 +876,11 @@ def get_cover_on_failure():
 
 
 def get_book_cover(book_id, resolution=None):
-    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
+    # allow_show_hidden=True: covers must render for the current user's
+    # OWN hidden books — they're shown in the /hidden/stored listing and
+    # on the hidden book's detail page (#319 pushback @droM4X). Hidden
+    # is a per-user listing exclusion, not an access revocation.
+    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True, allow_show_hidden=True)
     return get_book_cover_internal(book, resolution=resolution)
 
 
@@ -1577,8 +1581,11 @@ def check_valid_domain(domain_text):
 
 def get_download_link(book_id, book_format, client):
     book_format = book_format.split(".")[0]
-    # Try filtered view first to respect user restrictions
-    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
+    # Try filtered view first to respect user restrictions.
+    # allow_show_hidden=True: a user's own hidden book is still downloadable
+    # through Send-to-eReader and OPDS — hidden hides from listings, not from
+    # the user's own access (#319 pushback).
+    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True, allow_show_hidden=True)
 
     # If not found but user is admin, fall back to unfiltered direct lookup
     if not book and getattr(current_user, 'role_admin', lambda: False)():

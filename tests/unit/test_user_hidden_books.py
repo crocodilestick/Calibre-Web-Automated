@@ -334,3 +334,266 @@ class TestHiddenBooksRecoveryFlow:
             "/hidden/<sort_param> listing) so the documented recovery URL "
             "no longer 404s — issue #319"
         )
+
+
+@pytest.mark.unit
+class TestHiddenBooksRouteAccess:
+    """Issue #319 pushback (@droM4X, 2026-05-26): the v4.0.136 fix made
+    the listing + detail page reachable, but the action buttons on the
+    detail page still bounced and the covers never loaded.
+
+    Root cause: ``get_filtered_book`` is the helper every route uses to
+    look up "a book the current user is allowed to see," and v4.0.136
+    only extended ``get_book_read_archived``. ``get_filtered_book``
+    still applies the unscoped common_filters, so for the current user's
+    own hidden book it returns None, and the consuming route flashes
+    "Selected book is unavailable" or 404s the cover.
+
+    The fix extends ``get_filtered_book`` to accept ``allow_show_hidden``
+    and threads it through the routes that legitimately need to reach a
+    user's own hidden book: cover serving, read, edit metadata,
+    download. A hidden book is hidden from listings, not access-revoked
+    — the user can still open it through its detail page (so they can
+    unhide it) and through every action that detail page offers."""
+
+    @staticmethod
+    def _src(rel):
+        from pathlib import Path
+        return (Path(__file__).resolve().parent.parent.parent / rel).read_text()
+
+    def test_get_filtered_book_accepts_allow_show_hidden(self):
+        """Contract: get_filtered_book must expose allow_show_hidden so
+        cover/read/edit routes can reach hidden books for the current user."""
+        from cps.db import CalibreDB
+        sig = inspect.signature(CalibreDB.get_filtered_book)
+        assert "allow_show_hidden" in sig.parameters, (
+            "get_filtered_book must accept allow_show_hidden so /cover/<id>, "
+            "/read/<id>/<fmt>, /admin/book/<id> can reach a user's own "
+            "hidden book (#319 pushback @droM4X)"
+        )
+        assert sig.parameters["allow_show_hidden"].default is False, (
+            "default must be False so every existing caller keeps excluding "
+            "hidden books — opt-in per route"
+        )
+
+    def test_get_filtered_book_forwards_allow_show_hidden_to_common_filters(self):
+        """Behavioral: with allow_show_hidden=True, the flag must reach
+        common_filters — otherwise the underlying SQL still excludes the
+        hidden book ids and the lookup returns None."""
+        from cps import db as cps_db
+        cdb = MagicMock()
+        with patch("cps.db.current_user", MagicMock(id=1)):
+            cps_db.CalibreDB.get_filtered_book(
+                cdb, 42, allow_show_archived=True, allow_show_hidden=True)
+        assert cdb.common_filters.called, "get_filtered_book must call common_filters"
+        call = cdb.common_filters.call_args
+        forwarded = call.kwargs.get("allow_show_hidden")
+        if forwarded is None and len(call.args) >= 4:
+            forwarded = call.args[3]
+        assert forwarded is True, (
+            "get_filtered_book must forward allow_show_hidden into "
+            "common_filters so a hidden book is reachable via cover/read/"
+            "edit routes when the caller opts in — #319 pushback"
+        )
+
+    def test_get_book_cover_helper_allows_hidden_books(self):
+        """get_book_cover services /cover/<book_id>. Without allow_show_hidden
+        the cover for a user's own hidden book 404s — leaving covers blank
+        on the /hidden/stored listing and on the hidden book's detail
+        page (@droM4X #2/#4)."""
+        import re
+        src = self._src("cps/helper.py")
+        # Pin the get_book_cover function body specifically.
+        m = re.search(
+            r"def get_book_cover\(.*?\n(?=\n\ndef |\nclass |\Z)",
+            src, re.DOTALL,
+        )
+        assert m is not None, "get_book_cover not found in cps/helper.py"
+        body = m.group(0)
+        assert "allow_show_hidden=True" in body, (
+            "get_book_cover must request allow_show_hidden=True from "
+            "get_filtered_book so the /cover/<id> route serves covers for a "
+            "user's own hidden book (covers blank otherwise — #319 pushback)"
+        )
+
+    def test_read_book_route_allows_hidden_books(self):
+        """The /read/<book_id>/<book_format> route uses get_filtered_book.
+        Without allow_show_hidden=True the reader bounces with "Selected
+        book is unavailable" — @droM4X reported this for the reading
+        icon on hidden books' detail pages."""
+        import re
+        src = self._src("cps/web.py")
+        # Locate the read_book function body (decorated with @viewer_required).
+        m = re.search(
+            r"def read_book\(book_id, book_format\).*?\n(?=\n@web\.route|\n\ndef |\nclass |\Z)",
+            src, re.DOTALL,
+        )
+        assert m is not None, "read_book function not found in cps/web.py"
+        body = m.group(0)
+        assert re.search(
+            r"calibre_db\.get_filtered_book\([^)]*allow_show_hidden\s*=\s*True",
+            body,
+        ), (
+            "read_book must call get_filtered_book(..., allow_show_hidden=True) "
+            "so a user can read their own hidden book from its detail page "
+            "(@droM4X #319 pushback: reading icon errored 'unavailable')"
+        )
+
+    def test_edit_book_render_allows_hidden_books(self):
+        """render_edit_book backs the /admin/book/<id> GET route. Without
+        allow_show_hidden=True the metadata-edit page errors 'unavailable'
+        for a user's own hidden book — @droM4X reported this for the
+        metadata icon on hidden books' detail pages."""
+        import re
+        src = self._src("cps/editbooks.py")
+        m = re.search(
+            r"def render_edit_book\(.*?\n(?=\n\ndef |\nclass |\Z)",
+            src, re.DOTALL,
+        )
+        assert m is not None, "render_edit_book function not found in cps/editbooks.py"
+        body = m.group(0)
+        assert re.search(
+            r"calibre_db\.get_filtered_book\([^)]*allow_show_hidden\s*=\s*True",
+            body,
+        ), (
+            "render_edit_book must call get_filtered_book(..., "
+            "allow_show_hidden=True) so a user can edit metadata on their "
+            "own hidden book (@droM4X #319 pushback: metadata icon errored "
+            "'unavailable')"
+        )
+
+    def test_edit_book_post_allows_hidden_books(self):
+        """do_edit_book backs the /admin/book/<id> POST route. Same fix:
+        the POST handler must allow_show_hidden so a user's metadata
+        save against their own hidden book succeeds instead of bouncing
+        with 'unavailable'."""
+        import re
+        src = self._src("cps/editbooks.py")
+        m = re.search(
+            r"def do_edit_book\(.*?\n(?=\n\ndef |\nclass |\Z)",
+            src, re.DOTALL,
+        )
+        assert m is not None, "do_edit_book function not found in cps/editbooks.py"
+        body = m.group(0)
+        # First lookup call only — defensive about future calls in the
+        # function body that legitimately may not need allow_show_hidden.
+        first_call = re.search(
+            r"calibre_db\.get_filtered_book\([^)]*\)",
+            body,
+        )
+        assert first_call is not None, (
+            "do_edit_book must call calibre_db.get_filtered_book to load the book"
+        )
+        assert "allow_show_hidden=True" in first_call.group(0), (
+            "do_edit_book's primary book lookup must pass allow_show_hidden=True "
+            "so the metadata save succeeds against a user's own hidden book "
+            "(@droM4X #319 pushback)"
+        )
+
+    def test_serve_book_route_allows_hidden_books(self):
+        """The /show/<book_id>/<book_format> download route uses
+        get_filtered_book. Without allow_show_hidden=True, attempting to
+        download a hidden book returns 'File not in Database'. Users can
+        access their own hidden books through the detail page; the
+        download flow must mirror that."""
+        import re
+        src = self._src("cps/web.py")
+        m = re.search(
+            r"def serve_book\(book_id, book_format, anyname\).*?\n(?=\n@web\.route|\n\ndef |\nclass |\Z)",
+            src, re.DOTALL,
+        )
+        assert m is not None, "serve_book function not found in cps/web.py"
+        body = m.group(0)
+        assert re.search(
+            r"calibre_db\.get_filtered_book\([^)]*allow_show_hidden\s*=\s*True",
+            body,
+        ), (
+            "serve_book must pass allow_show_hidden=True so a user can "
+            "download their own hidden book from the detail page (#319)"
+        )
+
+    def test_get_download_link_allows_hidden_books(self):
+        """get_download_link backs OPDS/Send-to-eReader/eReader download
+        flows. The user's own hidden book must remain downloadable
+        through the same paths the detail page exposes."""
+        import re
+        src = self._src("cps/helper.py")
+        m = re.search(
+            r"def get_download_link\(.*?\n(?=\n\ndef |\nclass |\Z)",
+            src, re.DOTALL,
+        )
+        assert m is not None, "get_download_link function not found in cps/helper.py"
+        body = m.group(0)
+        # First (primary) lookup must allow hidden.
+        first_call = re.search(
+            r"calibre_db\.get_filtered_book\([^)]*\)",
+            body,
+        )
+        assert first_call is not None, "get_download_link must call get_filtered_book"
+        assert "allow_show_hidden=True" in first_call.group(0), (
+            "get_download_link's primary book lookup must pass allow_show_hidden=True "
+            "so Send-to-eReader and OPDS download paths reach a user's own hidden book"
+        )
+
+    def test_profile_page_links_hidden_books_listing(self):
+        """Discoverability (@droM4X #319 pushback #1): the /me profile
+        page must surface a link to /hidden/stored when the user has
+        hidden books. Without this users can never find the recovery
+        page; v4.0.136 added the redirect but the URL is undocumented
+        outside the issue thread."""
+        from pathlib import Path
+        tpl = (Path(__file__).resolve().parent.parent.parent
+               / "cps" / "templates" / "user_edit.html").read_text()
+        # Either a url_for to web.books_list with data='hidden', or a
+        # direct /hidden anchor. Both are acceptable shapes; what matters
+        # is a discoverable link from the profile page.
+        import re
+        has_url_for = re.search(
+            r"url_for\(\s*['\"]web\.books_list['\"]\s*,[^)]*data\s*=\s*['\"]hidden['\"]",
+            tpl,
+        )
+        has_direct = '"/hidden' in tpl or "'/hidden" in tpl
+        assert has_url_for or has_direct, (
+            "user_edit.html (/me profile page) must contain a link to the "
+            "Hidden Books listing so users can discover the recovery flow "
+            "(@droM4X #319 pushback: '/hidden page/link is still not "
+            "discoverable anywhere')"
+        )
+
+    def test_profile_page_hidden_link_is_gated_on_having_hidden_books(self):
+        """The discoverability link should only appear when the user has
+        hidden books. Showing it to every user clutters the profile and
+        teases a feature they haven't opted into."""
+        from pathlib import Path
+        tpl = (Path(__file__).resolve().parent.parent.parent
+               / "cps" / "templates" / "user_edit.html").read_text()
+        # Locate the section that renders the Hidden Books link.
+        import re
+        # Find any occurrence of /hidden in a url_for or anchor, then
+        # check that an {% if ... hidden ... %} guard is nearby (within
+        # 6 lines before the anchor).
+        link_idx = -1
+        for pattern in [
+            r"url_for\(\s*['\"]web\.books_list['\"]\s*,[^)]*data\s*=\s*['\"]hidden['\"]",
+            r"['\"]/hidden",
+        ]:
+            m = re.search(pattern, tpl)
+            if m:
+                link_idx = m.start()
+                break
+        assert link_idx > -1, "Hidden Books link not found in template (gated assertion)"
+        # Get the 600 chars preceding the link — generous window so the
+        # {% if hidden_book_count %} can live in a parent block.
+        window = tpl[max(0, link_idx - 600):link_idx]
+        # Allow either an `if` on a count variable or a `for` over a
+        # collection of hidden books, both gate the link to non-empty.
+        gated = re.search(
+            r"\{%\s*if\s+[^%]*hidden",
+            window,
+            flags=re.IGNORECASE,
+        )
+        assert gated is not None, (
+            "The Hidden Books profile link must be wrapped in a Jinja "
+            "{% if hidden_book_count %} (or equivalent) so it appears only "
+            "for users who have hidden at least one book"
+        )

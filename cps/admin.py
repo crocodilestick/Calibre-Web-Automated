@@ -138,6 +138,12 @@ def before_request():
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
+    # Fork #319 SethMilliken: per-user hide-books gate. Exposed via g so
+    # templates rendered by routes that don't explicitly pass `config=config`
+    # (e.g. detail.html via show_book) can still read the flag. The Jinja
+    # `config` global is Flask's app.config, not cps.config — see PR #335
+    # lessons. Using a `g.` attribute mirrors `g.allow_anonymous` above.
+    g.user_hide_enabled = bool(getattr(config, 'config_user_hide_enabled', False))
     # Theme enforcement: light theme fully deprecated, force caliBlur (dark) in runtime
     try:
         g.current_theme = getattr(current_user, 'theme', config.config_theme)
@@ -2378,6 +2384,9 @@ def _configuration_update_helper():
         _config_checkbox_int(to_save, "config_uploading")
         _config_checkbox_int(to_save, "config_unicode_filename")
         _config_checkbox_int(to_save, "config_embed_metadata")
+        # Per-user hide-books feature flag (fork #319 SethMilliken). Off
+        # by default — the hide button is hidden until admin opts in.
+        _config_checkbox_int(to_save, "config_user_hide_enabled")
         # Reboot on config_anonbrowse with enabled ldap, as decoraters are changed in this case
         reboot_required |= (_config_checkbox_int(to_save, "config_anonbrowse")
                             and config.config_login_type == constants.LOGIN_LDAP)

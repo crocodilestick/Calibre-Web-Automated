@@ -171,6 +171,13 @@
     <div class="profile-title-section">
       <h2>{{title}}</h2>
       <p class="profile-subtitle">{% if profile %}{{_('Your Profile')}}{% else %}{{_('User Settings')}}{% endif %}</p>
+      {% if profile and hidden_book_count %}
+      <p class="profile-hidden-link" style="margin-top: 0.5rem;">
+        <a href="{{ url_for('web.books_list', data='hidden', sort_param='stored') }}" class="btn btn-default btn-sm">
+          {{ _('Hidden Books') }} ({{ hidden_book_count }})
+        </a>
+      </p>
+      {% endif %}
     </div>
   </div>
   <form role="form" method="POST" autocomplete="off" style="margin-top: 3rem;">

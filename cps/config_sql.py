@@ -85,6 +85,13 @@ class _Settings(_Base):
     config_uploading = Column(SmallInteger, default=1)
     config_anonbrowse = Column(SmallInteger, default=0)
     config_public_reg = Column(SmallInteger, default=0)
+    # Per-user hide-books feature flag (fork #319). Off by default —
+    # admin opts the server in via /admin/config. When False the hide
+    # button is suppressed on the book detail page for everyone; the
+    # unhide button + /me Hidden Books recovery link remain available
+    # so users with already-hidden books (from a prior enabled
+    # window) can still recover them.
+    config_user_hide_enabled = Column(Boolean, default=False)
     config_remote_login = Column(Boolean, default=False)
     config_use_https = Column(Boolean, default=False)
     config_kobo_sync = Column(Boolean, default=False)

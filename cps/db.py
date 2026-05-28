@@ -948,9 +948,13 @@ class CalibreDB:
         self.ensure_session()
         return self.session.query(Books).filter(Books.id == book_id).first()
 
-    def get_filtered_book(self, book_id, allow_show_archived=False):
+    def get_filtered_book(self, book_id, allow_show_archived=False, allow_show_hidden=False):
         self.ensure_session()
         # Eagerly load all relationships to prevent detached instance errors during editing
+        # allow_show_hidden=True: covers/read/edit/download flows for a user's
+        # OWN hidden book must reach it (hidden is a listing exclusion, not an
+        # access revocation — otherwise the detail page's action buttons all
+        # error 'unavailable' and the listing shows no covers). See #319.
         return (self.session.query(Books)
                 .options(joinedload(Books.authors),
                          joinedload(Books.tags),
@@ -962,7 +966,7 @@ class CalibreDB:
                          joinedload(Books.publishers),
                          joinedload(Books.identifiers))
                 .filter(Books.id == book_id)
-                .filter(self.common_filters(allow_show_archived))
+                .filter(self.common_filters(allow_show_archived, allow_show_hidden=allow_show_hidden))
                 .first())
 
     def get_book_read_archived(self, book_id, read_column, allow_show_archived=False, allow_show_hidden=False):

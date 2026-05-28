@@ -144,3 +144,49 @@ body.blur .cwa-modal-spinner {
     color: #fff;
     opacity: 1;
 }
+
+/* Sidebar resize — desktop only (≥768px) */
+#sidebar-resize-handle {
+    display: none; /* hidden by default; desktop rule below shows it */
+}
+@media (min-width: 768px) {
+    .sidebar-resizable {
+        display: flex !important;
+        align-items: flex-start;
+    }
+    .sidebar-resizable > #sidebar-col {
+        float: none !important;
+        flex: 0 0 auto;
+    }
+    .sidebar-resizable > #main-content {
+        float: none !important;
+        flex: 1 1 auto;
+        width: auto !important;
+        min-width: 0;
+    }
+    #sidebar-resize-handle {
+        display: block;
+        flex: 0 0 5px;
+        width: 5px;
+        min-height: 100%;
+        cursor: col-resize;
+        background: transparent;
+        position: relative;
+        user-select: none;
+        -webkit-user-select: none;
+        z-index: 10;
+        transition: background 0.15s;
+    }
+    #sidebar-resize-handle::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -4px;
+        right: -4px;
+        bottom: 0;
+    }
+    #sidebar-resize-handle:hover,
+    #sidebar-resize-handle.is-dragging {
+        background: rgba(128, 128, 128, 0.25);
+    }
+}

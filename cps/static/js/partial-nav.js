@@ -480,4 +480,122 @@
     } else {
         bootstrap();
     }
+
+    /* ------------------------------------------------------------------ */
+    /* Sidebar resize                                                        */
+    /* ------------------------------------------------------------------ */
+
+    var SIDEBAR_WIDTH_KEY = 'cwa-sidebar-width';
+    var SIDEBAR_MIN = 100;
+    var SIDEBAR_MAX = 500;
+    var SIDEBAR_MOBILE_BP = 768;
+
+    function sidebarIsMobile() {
+        return window.innerWidth < SIDEBAR_MOBILE_BP;
+    }
+
+    // caliBlur uses position:absolute for sidebar + main-content; detect it via
+    // the body class that layout.html sets when theme == 1.
+    function isCaliBlur() {
+        return document.body.classList.contains('blur');
+    }
+
+    function setSidebarWidth(sidebar, w) {
+        if (isCaliBlur()) {
+            // One variable drives sidebar, navbar-brand, ::after gap bar,
+            // main-content width, and handle position via CSS.
+            document.documentElement.style.setProperty('--sidebar-width', w + 'px');
+        } else {
+            sidebar.style.width = w + 'px';
+        }
+    }
+
+    function applySidebarLayout(sidebar) {
+        var row = sidebar.parentElement;
+        if (sidebarIsMobile()) {
+            row.classList.remove('sidebar-resizable');
+            sidebar.style.width = '';
+            document.documentElement.style.removeProperty('--sidebar-width');
+            return;
+        }
+
+        var saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
+        var w = saved ? parseInt(saved, 10) : 0;
+        if (w < SIDEBAR_MIN || w > SIDEBAR_MAX) w = 0;
+
+        if (isCaliBlur()) {
+            if (w) document.documentElement.style.setProperty('--sidebar-width', w + 'px');
+        } else {
+            row.classList.add('sidebar-resizable');
+            if (w) sidebar.style.width = w + 'px';
+        }
+    }
+
+    function initSidebarResize() {
+        var handle = document.getElementById('sidebar-resize-handle');
+        var sidebar = document.getElementById('sidebar-col');
+        if (!handle || !sidebar) return;
+
+        applySidebarLayout(sidebar);
+
+        var resizeTimer;
+        window.addEventListener('resize', function () {
+            // We dispatch synthetic resize events while dragging (to drive
+            // Isotope's relayout); ignore those here so we don't overwrite the
+            // in-progress width with the last-saved value.
+            if (handle.classList.contains('is-dragging')) return;
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () {
+                applySidebarLayout(sidebar);
+            }, 100);
+        });
+
+        handle.addEventListener('mousedown', function (e) {
+            if (e.button !== 0 || sidebarIsMobile()) return;
+            e.preventDefault();
+            var startX = e.clientX;
+            var startWidth = sidebar.getBoundingClientRect().width;
+
+            handle.classList.add('is-dragging');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+
+            function onMove(e) {
+                var w = Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, startWidth + (e.clientX - startX)));
+                setSidebarWidth(sidebar, w);
+                // Drive Isotope (and other resize-aware components) the same way
+                // a browser window resize does — its built-in resize handler
+                // reliably re-measures the container and re-lays out the grid.
+                window.dispatchEvent(new Event('resize'));
+            }
+
+            function onUp(e) {
+                var w = Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, startWidth + (e.clientX - startX)));
+                setSidebarWidth(sidebar, w);
+                localStorage.setItem(SIDEBAR_WIDTH_KEY, String(Math.round(w)));
+                handle.classList.remove('is-dragging');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+                window.dispatchEvent(new Event('resize'));
+            }
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
+    }
+
+    // partial-nav.js is loaded at the end of <body>, so #sidebar-col already
+    // exists here. Apply the persisted width synchronously — before main.js's
+    // $(document).ready lays out the Isotope grid — so that first layout measures
+    // the resized container width rather than the default. Waiting for
+    // DOMContentLoaded would lose that race (main.js's ready fires first).
+    if (document.getElementById('sidebar-col')) {
+        initSidebarResize();
+    } else if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSidebarResize);
+    } else {
+        initSidebarResize();
+    }
 }());

@@ -379,6 +379,14 @@ $(function() {
             } else {
                 $row.isotope({ itemSelector: ".book", layoutMode: selectedLayoutMode });
             }
+            // Covers load after layout runs; without this the grid is laid out
+            // against collapsed image heights and only corrects on a later
+            // relayout (e.g. SPA nav). Relayout as each cover finishes loading.
+            if ($.fn.imagesLoaded) {
+                $row.imagesLoaded().progress(function () {
+                    $row.isotope("layout");
+                });
+            }
         });
     };
 

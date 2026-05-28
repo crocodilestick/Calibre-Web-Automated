@@ -3625,7 +3625,7 @@ body.shelf > div.container-fluid > div > div.col-sm-10 > div.discover > h2 {
     -webkit-margin-after: 0 !important;
     position: fixed !important;
     top: 60px !important;
-    left: 240px !important;
+    left: 240px;
     text-align: left !important;
     overflow: hidden;
     -o-text-overflow: ellipsis;

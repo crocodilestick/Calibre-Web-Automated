@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-28 02:11+0000\n"
+"POT-Creation-Date: 2026-05-28 18:29+0000\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -1003,7 +1003,7 @@ msgstr "Не удалось найти указанную директорию"
 msgid "Could not load a source image to preview."
 msgstr ""
 
-#: cps/cover_picker.py:515
+#: cps/cover_picker.py:526 cps/cover_picker.py:540
 msgid "Cover save failed."
 msgstr ""
 
@@ -1038,7 +1038,7 @@ msgstr "Отметка времени"
 msgid "Book ID"
 msgstr "ID книги"
 
-#: cps/cwa_functions.py:1119 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:1119 cps/templates/book_edit.html:87
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Название книги"
@@ -1290,7 +1290,7 @@ msgstr "Отсутствует или неверный идентификато�
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr "Невозможно загрузить формат: Канига не существует в библиотеке"
 
-#: cps/editbooks.py:165 cps/editbooks.py:192 cps/templates/book_edit.html:52
+#: cps/editbooks.py:165 cps/editbooks.py:192 cps/templates/book_edit.html:56
 #: cps/templates/layout.html:193
 msgid "Upload done, processing, please wait..."
 msgstr "Загрузка завершена, обработка, пожалуйста, подождите..."
@@ -1489,8 +1489,8 @@ msgstr "Формат %(format)s не найден на Google Drive: %(fn)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "Формат %(format)s не найден: %(fn)s"
 
-#: cps/helper.py:111 cps/helper.py:235 cps/templates/detail.html:516
-#: cps/templates/detail.html:520
+#: cps/helper.py:111 cps/helper.py:235 cps/templates/detail.html:528
+#: cps/templates/detail.html:532
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Отправить на eReader"
@@ -1966,7 +1966,7 @@ msgstr "Категории"
 msgid "Books ordered by category"
 msgstr "Книги, упорядоченные по категории"
 
-#: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:98
+#: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:102
 #: cps/templates/book_table.html:111 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
@@ -1979,7 +1979,7 @@ msgid "Books ordered by series"
 msgstr "Книги, упорядоченные по серии"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
-#: cps/templates/detail.html:734 cps/templates/search_form.html:108
+#: cps/templates/detail.html:746 cps/templates/search_form.html:108
 #: cps/web.py:1934
 msgid "Languages"
 msgstr "Языки"
@@ -2156,7 +2156,7 @@ msgstr "Дубликаты"
 msgid "Show Duplicate Books"
 msgstr "Показать книги с наивысшим рейтингом"
 
-#: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:292
+#: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:296
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
 #: cps/templates/index.xml:12 cps/templates/layout.html:156
 #: cps/templates/layout.html:159 cps/templates/search_form.html:247
@@ -3045,9 +3045,9 @@ msgstr "выберите опцию"
 msgid "Add to Shelf"
 msgstr "Добавить на полку"
 
-#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:618
-#: cps/templates/detail.html:640 cps/templates/detail.html:793
-#: cps/templates/detail.html:1324 cps/templates/feed.xml:109
+#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:630
+#: cps/templates/detail.html:652 cps/templates/detail.html:805
+#: cps/templates/detail.html:1336 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/layout.html:405
 #: cps/templates/layout.html:418 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
@@ -3072,7 +3072,7 @@ msgid "Mark as unread"
 msgstr "Пометить как непрочитанное"
 
 #: cps/templates/_book_organizer.html:155 cps/templates/admin.html:27
-#: cps/templates/book_edit.html:17 cps/templates/book_table.html:66
+#: cps/templates/book_edit.html:21 cps/templates/book_table.html:66
 #: cps/templates/book_table.html:145 cps/templates/book_table.html:194
 #: cps/templates/duplicates.html:718 cps/templates/modal_dialogs.html:63
 #: cps/templates/modal_dialogs.html:116 cps/templates/user_edit.html:333
@@ -3212,7 +3212,7 @@ msgstr "Администратор"
 msgid "Password"
 msgstr "Пароль"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:494
+#: cps/templates/admin.html:24 cps/templates/detail.html:506
 #: cps/templates/shelf.html:9 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "Скачать"
@@ -3497,7 +3497,7 @@ msgid "OK"
 msgstr "OK"
 
 #: cps/templates/admin.html:302 cps/templates/admin.html:316
-#: cps/templates/book_edit.html:267 cps/templates/book_table.html:176
+#: cps/templates/book_edit.html:271 cps/templates/book_table.html:176
 #: cps/templates/book_table.html:195 cps/templates/book_table.html:215
 #: cps/templates/book_table.html:235 cps/templates/book_table.html:255
 #: cps/templates/book_table.html:275 cps/templates/book_table.html:333
@@ -3505,7 +3505,7 @@ msgstr "OK"
 #: cps/templates/config_edit.html:669 cps/templates/config_view_edit.html:219
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:983
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:995
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
 #: cps/templates/duplicates.html:746 cps/templates/layout.html:595
 #: cps/templates/layout.html:750 cps/templates/modal_dialogs.html:64
@@ -3572,8 +3572,8 @@ msgstr ""
 msgid "total entries seen"
 msgstr ""
 
-#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:52
-#: cps/templates/book_edit.html:69 cps/templates/layout.html:193
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:56
+#: cps/templates/book_edit.html:73 cps/templates/layout.html:193
 #: cps/templates/layout.html:324
 msgid "Uploading..."
 msgstr "Загрузка..."
@@ -3650,37 +3650,37 @@ msgstr "уменьшить"
 msgid "More by"
 msgstr "Еще от"
 
-#: cps/templates/book_edit.html:11 cps/templates/detail.html:572
-#: cps/templates/detail.html:574
+#: cps/templates/book_edit.html:15 cps/templates/detail.html:584
+#: cps/templates/detail.html:586
 msgid "Delete Book"
 msgstr "Удалить книгу"
 
-#: cps/templates/book_edit.html:14
+#: cps/templates/book_edit.html:18
 msgid "Delete formats:"
 msgstr "Удалить форматы:"
 
-#: cps/templates/book_edit.html:25
+#: cps/templates/book_edit.html:29
 msgid "Convert book format:"
 msgstr "Конвертировать формат книги:"
 
-#: cps/templates/book_edit.html:30
+#: cps/templates/book_edit.html:34
 msgid "Convert from:"
 msgstr "Конвертировать из:"
 
-#: cps/templates/book_edit.html:32 cps/templates/book_edit.html:39
+#: cps/templates/book_edit.html:36 cps/templates/book_edit.html:43
 #, fuzzy
 msgid "select an option"
 msgstr "выберите опцию"
 
-#: cps/templates/book_edit.html:37
+#: cps/templates/book_edit.html:41
 msgid "Convert to:"
 msgstr "Конвертировать в:"
 
-#: cps/templates/book_edit.html:46
+#: cps/templates/book_edit.html:50
 msgid "Convert book"
 msgstr "Конвертировать книгу"
 
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:332
+#: cps/templates/book_edit.html:56 cps/templates/book_edit.html:336
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:193 cps/templates/layout.html:495
 #: cps/templates/layout.html:632 cps/templates/modal_dialogs.html:34
@@ -3688,7 +3688,7 @@ msgstr "Конвертировать книгу"
 msgid "Close"
 msgstr "Закрыть"
 
-#: cps/templates/book_edit.html:52 cps/templates/duplicates.html:799
+#: cps/templates/book_edit.html:56 cps/templates/duplicates.html:799
 #: cps/templates/hardcover_review_matches.html:279
 #: cps/templates/hardcover_review_matches.html:288
 #: cps/templates/hardcover_review_matches.html:323
@@ -3701,125 +3701,128 @@ msgstr "Закрыть"
 msgid "Error"
 msgstr "Ошибка"
 
-#: cps/templates/book_edit.html:57
+#: cps/templates/book_edit.html:61
 msgid "Upload Format"
 msgstr "Формат загрузки"
 
-#: cps/templates/book_edit.html:90 cps/templates/book_edit.html:413
+#: cps/templates/book_edit.html:94 cps/templates/book_edit.html:417
 #: cps/templates/cwa_settings.html:1091 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Автор"
 
-#: cps/templates/book_edit.html:94 cps/templates/search_form.html:52
+#: cps/templates/book_edit.html:98 cps/templates/search_form.html:52
 msgid "Tags"
 msgstr "Теги"
 
-#: cps/templates/book_edit.html:102 cps/templates/book_table.html:112
+#: cps/templates/book_edit.html:106 cps/templates/book_table.html:112
 msgid "Series ID"
 msgstr "ID серии"
 
-#: cps/templates/book_edit.html:105
+#: cps/templates/book_edit.html:109
 msgid "Published Date"
 msgstr "Дата публикации"
 
-#: cps/templates/book_edit.html:114 cps/templates/book_edit.html:414
+#: cps/templates/book_edit.html:118 cps/templates/book_edit.html:418
 #: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
-#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:809
+#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:821
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Издатель"
 
-#: cps/templates/book_edit.html:118 cps/templates/cwa_settings.html:1097
+#: cps/templates/book_edit.html:122 cps/templates/cwa_settings.html:1097
 #: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "Язык"
 
-#: cps/templates/book_edit.html:122 cps/templates/cwa_settings.html:369
+#: cps/templates/book_edit.html:126 cps/templates/cwa_settings.html:369
 #: cps/templates/cwa_settings.html:371
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: cps/templates/book_edit.html:126 cps/templates/book_edit.html:415
+#: cps/templates/book_edit.html:130 cps/templates/book_edit.html:419
 #: cps/templates/cwa_settings.html:341 cps/templates/cwa_settings.html:343
 #: cps/templates/search_form.html:154
 msgid "Description"
 msgstr "Описание"
 
-#: cps/templates/book_edit.html:130
+#: cps/templates/book_edit.html:134
 msgid "Identifiers"
 msgstr "Идентификаторы"
 
-#: cps/templates/book_edit.html:134 cps/templates/book_edit.html:424
+#: cps/templates/book_edit.html:138 cps/templates/book_edit.html:428
 msgid "Identifier Type"
 msgstr "Тип идентификатора"
 
-#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:425
+#: cps/templates/book_edit.html:139 cps/templates/book_edit.html:429
 msgid "Identifier Value"
 msgstr "Значение идентификатора"
 
-#: cps/templates/book_edit.html:136 cps/templates/book_edit.html:426
+#: cps/templates/book_edit.html:140 cps/templates/book_edit.html:430
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "Удалить"
 
-#: cps/templates/book_edit.html:141
+#: cps/templates/book_edit.html:145
 msgid "Add Identifier"
 msgstr "Добавить идентификатор"
 
-#: cps/templates/book_edit.html:147
-msgid "Open focused cover picker"
-msgstr ""
+#: cps/templates/book_edit.html:151 cps/templates/cover_picker.html:12
+#: cps/templates/detail.html:486 cps/templates/detail.html:489
+#: cps/templates/detail.html:577
+#, fuzzy
+msgid "Change cover"
+msgstr "Изменить пароль"
 
-#: cps/templates/book_edit.html:150
+#: cps/templates/book_edit.html:154
 msgid ""
 "Pick a cover from any source, paste a URL, upload a file, or use the "
 "embedded cover."
 msgstr ""
 
-#: cps/templates/book_edit.html:154
+#: cps/templates/book_edit.html:158
 msgid ""
 "Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)"
 msgstr ""
 "Загрузить обложку из URL (JPEG - изображение будет скачано и сохранено в "
 "базе данных)"
 
-#: cps/templates/book_edit.html:163
+#: cps/templates/book_edit.html:167
 msgid "Upload Cover from Local Disk"
 msgstr "Загрузить обложку с локального диска"
 
-#: cps/templates/book_edit.html:175 cps/templates/search_form.html:46
+#: cps/templates/book_edit.html:179 cps/templates/search_form.html:46
 #: cps/templates/search_form.html:167
 msgid "Yes"
 msgstr "Да"
 
-#: cps/templates/book_edit.html:176 cps/templates/search_form.html:47
+#: cps/templates/book_edit.html:180 cps/templates/search_form.html:47
 #: cps/templates/search_form.html:168
 msgid "No"
 msgstr "Нет"
 
-#: cps/templates/book_edit.html:241
+#: cps/templates/book_edit.html:245
 #, fuzzy
 msgid "Hardcover Sync Blacklist"
 msgstr "Включить синхронизацию с Hardcover"
 
-#: cps/templates/book_edit.html:245
+#: cps/templates/book_edit.html:249
 msgid "Blacklist annotations from syncing to Hardcover"
 msgstr ""
 
-#: cps/templates/book_edit.html:252
+#: cps/templates/book_edit.html:256
 msgid "Blacklist reading progress from syncing to Hardcover"
 msgstr ""
 
-#: cps/templates/book_edit.html:261
+#: cps/templates/book_edit.html:265
 msgid "View Book on Save"
 msgstr "Просмотреть книгу после сохранения"
 
-#: cps/templates/book_edit.html:265 cps/templates/book_edit.html:286
+#: cps/templates/book_edit.html:269 cps/templates/book_edit.html:290
 msgid "Fetch Metadata"
 msgstr "Получить метаданные"
 
-#: cps/templates/book_edit.html:268 cps/templates/config_db.html:111
+#: cps/templates/book_edit.html:272 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:670 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:47
 #: cps/templates/shelf_edit.html:36 cps/templates/shelf_order.html:41
@@ -3827,64 +3830,64 @@ msgstr "Получить метаданные"
 msgid "Save"
 msgstr "Сохранить"
 
-#: cps/templates/book_edit.html:289
+#: cps/templates/book_edit.html:293
 msgid "Keyword"
 msgstr "Ключевое слово"
 
-#: cps/templates/book_edit.html:290
+#: cps/templates/book_edit.html:294
 #, fuzzy
 msgid "Search keyword"
 msgstr "Поиск по ключевому слову"
 
-#: cps/templates/book_edit.html:299
+#: cps/templates/book_edit.html:303
 msgid "Selected metadata fields were applied to the edit form."
 msgstr ""
 
-#: cps/templates/book_edit.html:306
+#: cps/templates/book_edit.html:310
 msgid "API Keys"
 msgstr ""
 
-#: cps/templates/book_edit.html:312
+#: cps/templates/book_edit.html:316
 msgid ""
 "Some metadata sources need an API key. Adding a key here improves cover "
 "quality and unblocks rate-limited services. Keys are stored once for the "
 "whole instance — admins only."
 msgstr ""
 
-#: cps/templates/book_edit.html:314 cps/templates/book_edit.html:328
-#: cps/templates/book_edit.html:410
+#: cps/templates/book_edit.html:318 cps/templates/book_edit.html:332
+#: cps/templates/book_edit.html:414
 msgid "Loading..."
 msgstr "Загрузка..."
 
-#: cps/templates/book_edit.html:319
+#: cps/templates/book_edit.html:323
 msgid "Sort by:"
 msgstr ""
 
-#: cps/templates/book_edit.html:321
+#: cps/templates/book_edit.html:325
 msgid "Provider order (default)"
 msgstr ""
 
-#: cps/templates/book_edit.html:322
+#: cps/templates/book_edit.html:326
 msgid "Cover size — largest first"
 msgstr ""
 
-#: cps/templates/book_edit.html:323
+#: cps/templates/book_edit.html:327
 msgid "Cover size — smallest first"
 msgstr ""
 
-#: cps/templates/book_edit.html:354
+#: cps/templates/book_edit.html:358
 msgid "Apply"
 msgstr ""
 
-#: cps/templates/book_edit.html:411
+#: cps/templates/book_edit.html:415
 msgid "Search error!"
 msgstr "Ошибка поиска!"
 
-#: cps/templates/book_edit.html:412
+#: cps/templates/book_edit.html:416
 msgid "No Result(s) found! Please try another keyword."
 msgstr "Результатов не найдено! Попробуйте другое ключевое слово."
 
-#: cps/templates/book_edit.html:416
+#: cps/templates/book_edit.html:420
 msgid "Source"
 msgstr "Источник"
 
@@ -4055,7 +4058,7 @@ msgstr "Следующие книги будут помечены как про�
 msgid "The following books will be marked unread:"
 msgstr "Следующие книги будут помечены как непрочитанные:"
 
-#: cps/templates/book_table.html:286 cps/templates/detail.html:561
+#: cps/templates/book_table.html:286 cps/templates/detail.html:573
 msgid "Edit Metadata"
 msgstr "Редактировать метаданные"
 
@@ -5083,11 +5086,6 @@ msgstr "Добавить разрешенные/запрещенные знач�
 #, fuzzy
 msgid "Back to edit metadata"
 msgstr "редактировать метаданные"
-
-#: cps/templates/cover_picker.html:12 cps/templates/detail.html:565
-#, fuzzy
-msgid "Change cover"
-msgstr "Изменить пароль"
 
 #: cps/templates/cover_picker.html:14
 msgid ""
@@ -6271,202 +6269,202 @@ msgstr ""
 msgid "Click to See More"
 msgstr "Нажмите, чтобы увидеть больше"
 
-#: cps/templates/detail.html:530
+#: cps/templates/detail.html:542
 msgid "Read in Browser"
 msgstr "Читать в браузере"
 
-#: cps/templates/detail.html:542 cps/templates/detail.html:543
-#: cps/templates/detail.html:872 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:554 cps/templates/detail.html:555
+#: cps/templates/detail.html:884 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Пометить как непрочитанное"
 
-#: cps/templates/detail.html:542 cps/templates/detail.html:543
-#: cps/templates/detail.html:873 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:554 cps/templates/detail.html:555
+#: cps/templates/detail.html:885 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Пометить как прочитанное"
 
-#: cps/templates/detail.html:544
+#: cps/templates/detail.html:556
 #, fuzzy
 msgid "Marked as read"
 msgstr "Пометить как прочитанное"
 
-#: cps/templates/detail.html:545
+#: cps/templates/detail.html:557
 #, fuzzy
 msgid "Marked as unread"
 msgstr "Пометить как непрочитанное"
 
-#: cps/templates/detail.html:550 cps/templates/detail.html:551
-#: cps/templates/detail.html:879 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:562 cps/templates/detail.html:563
+#: cps/templates/detail.html:891 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "Восстановить из архива"
 
-#: cps/templates/detail.html:550 cps/templates/detail.html:551
-#: cps/templates/detail.html:880 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:562 cps/templates/detail.html:563
+#: cps/templates/detail.html:892 cps/templates/listenmp3.html:166
 #, fuzzy
 msgid "Add to archive"
 msgstr "Добавить в архив"
 
-#: cps/templates/detail.html:552 cps/templates/listenmp3.html:167
+#: cps/templates/detail.html:564 cps/templates/listenmp3.html:167
 #, fuzzy
 msgid "Archived"
 msgstr "В архиве"
 
-#: cps/templates/detail.html:553
+#: cps/templates/detail.html:565
 #, fuzzy
 msgid "Restored from archive"
 msgstr "Восстановить из архива"
 
-#: cps/templates/detail.html:589 cps/templates/detail.html:590
+#: cps/templates/detail.html:601 cps/templates/detail.html:602
 msgid "Unhide from your library"
 msgstr ""
 
-#: cps/templates/detail.html:589 cps/templates/detail.html:590
+#: cps/templates/detail.html:601 cps/templates/detail.html:602
 #, fuzzy
 msgid "Hide from your library"
 msgstr "Поиск в библиотеке"
 
-#: cps/templates/detail.html:591
+#: cps/templates/detail.html:603
 #, fuzzy
 msgid "Hidden"
 msgstr "Скрытая книга"
 
-#: cps/templates/detail.html:592
+#: cps/templates/detail.html:604
 msgid "Unhidden"
 msgstr ""
 
-#: cps/templates/detail.html:607 cps/templates/detail.html:801
-#: cps/templates/detail.html:802 cps/templates/detail.html:1361
+#: cps/templates/detail.html:619 cps/templates/detail.html:813
+#: cps/templates/detail.html:814 cps/templates/detail.html:1373
 #: cps/templates/listenmp3.html:190 cps/templates/search.html:17
 msgid "Add to shelf"
 msgstr "Добавить на полку"
 
-#: cps/templates/detail.html:630 cps/templates/detail.html:795
+#: cps/templates/detail.html:642 cps/templates/detail.html:807
 #, fuzzy
 msgid "Remove from shelf"
 msgstr "Восстановить из архива"
 
-#: cps/templates/detail.html:668
+#: cps/templates/detail.html:680
 #, fuzzy
 msgid "Rating updated"
 msgstr "Настройки базы данных обновлены"
 
-#: cps/templates/detail.html:669
+#: cps/templates/detail.html:681
 #, fuzzy
 msgid "Rating cleared"
 msgstr "Рейтинг выше"
 
-#: cps/templates/detail.html:687 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:699 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "Книга %(index)s из %(range)s"
 
-#: cps/templates/detail.html:692
+#: cps/templates/detail.html:704
 msgid "ID"
 msgstr ""
 
-#: cps/templates/detail.html:697
+#: cps/templates/detail.html:709
 msgid "UUID"
 msgstr ""
 
-#: cps/templates/detail.html:700
+#: cps/templates/detail.html:712
 msgid "UUID copied to clipboard"
 msgstr ""
 
-#: cps/templates/detail.html:701
+#: cps/templates/detail.html:713
 msgid "Unable to copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:702 cps/templates/detail.html:703
+#: cps/templates/detail.html:714 cps/templates/detail.html:715
 msgid "Copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:708
+#: cps/templates/detail.html:720
 msgid "Date added"
 msgstr ""
 
-#: cps/templates/detail.html:712
+#: cps/templates/detail.html:724
 msgid "Last modified"
 msgstr ""
 
-#: cps/templates/detail.html:717
+#: cps/templates/detail.html:729
 #, fuzzy
 msgid "File sizes"
 msgstr "Размеры шрифта"
 
-#: cps/templates/detail.html:761
+#: cps/templates/detail.html:773
 #, fuzzy
 msgid "Remove tag"
 msgstr "Удалить"
 
-#: cps/templates/detail.html:769 cps/templates/detail.html:770
-#: cps/templates/detail.html:1239
+#: cps/templates/detail.html:781 cps/templates/detail.html:782
+#: cps/templates/detail.html:1251
 msgid "Add tag"
 msgstr ""
 
-#: cps/templates/detail.html:815 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:827 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "Опубликовано"
 
-#: cps/templates/detail.html:821
+#: cps/templates/detail.html:833
 #, fuzzy
 msgid "KOReader Progress"
 msgstr "Прогресс"
 
-#: cps/templates/detail.html:891 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:903 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Описание:"
 
-#: cps/templates/detail.html:908
+#: cps/templates/detail.html:920
 #, fuzzy
 msgid "Select eReader Email Addresses"
 msgstr "Email для отправки на eReader"
 
-#: cps/templates/detail.html:921
+#: cps/templates/detail.html:933
 msgid "Choose email addresses:"
 msgstr "Выберите адреса электронной почты:"
 
-#: cps/templates/detail.html:926
+#: cps/templates/detail.html:938
 #, fuzzy
 msgid "Select All"
 msgstr "Выберите полку"
 
-#: cps/templates/detail.html:947
+#: cps/templates/detail.html:959
 msgid "Other users' eReaders:"
 msgstr ""
 
-#: cps/templates/detail.html:962
+#: cps/templates/detail.html:974
 #, fuzzy
 msgid "Additional email addresses:"
 msgstr "Выберите адреса электронной почты:"
 
-#: cps/templates/detail.html:963
+#: cps/templates/detail.html:975
 #, fuzzy
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "Выберите адреса электронной почты:"
 
-#: cps/templates/detail.html:964
+#: cps/templates/detail.html:976
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:965
+#: cps/templates/detail.html:977
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:970
+#: cps/templates/detail.html:982
 #, fuzzy
 msgid "Select format:"
 msgstr "Удалить форматы:"
 
-#: cps/templates/detail.html:982
+#: cps/templates/detail.html:994
 msgid "Send"
 msgstr "Отправить"
 
-#: cps/templates/detail.html:1217
+#: cps/templates/detail.html:1229
 #, fuzzy
 msgid "Failed to update tags"
 msgstr "Не удалось создать путь для обложки"
 
-#: cps/templates/detail.html:1325
+#: cps/templates/detail.html:1337
 #, fuzzy
 msgid "Failed to update shelves"
 msgstr "Не удалось создать путь для обложки"

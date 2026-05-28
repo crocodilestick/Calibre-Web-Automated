@@ -2,6 +2,10 @@
 {% block body %}
 {% if book %}
   <div class="editbook-cover-section col-sm-3 col-lg-3 col-xs-12">
+    {# No clickable cover overlay here (unlike the detail page): this page hosts
+       the metadata edit form, and a large cover-sized navigation target would
+       risk discarding unsaved edits on an accidental click. The explicit
+       "Change cover" button below is the intentional entry point. #}
     <div class="cover">
         <!-- Always use full-sized image for the book edit page -->
         <img id="detailcover" title="{{book.title}}" src="{{url_for('web.get_cover', book_id=book.id, resolution='og', c=book|last_modified)}}" />
@@ -144,7 +148,7 @@
     {% if current_user.role_edit() %}
     <div class="form-group">
       <a class="btn btn-default cwa-cover-picker__entry" href="{{ url_for('cover_picker.cover_picker_page', book_id=book.id) }}">
-        <span class="glyphicon glyphicon-picture"></span> {{ _('Open focused cover picker') }}
+        <span class="glyphicon glyphicon-picture"></span> {{ _('Change cover') }}
       </a>
       <p class="text-muted" style="font-size: 12px; margin: 4px 0 0 0;">
         {{ _('Pick a cover from any source, paste a URL, upload a file, or use the embedded cover.') }}

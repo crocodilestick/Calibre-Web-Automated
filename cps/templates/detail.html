@@ -478,9 +478,21 @@
     <div class="book-detail-page">
         <div class="book-detail-card">
             <div class="book-detail-main">
-                <div class="book-detail-cover cover">
+                <div class="book-detail-cover cover{% if current_user.role_edit() %} cover-editable{% endif %}">
                 <img id="detailcover" title="{{ entry.title }}"
                      src="{{ url_for('web.get_cover', book_id=entry.id, resolution='og', c=entry|last_modified) }}"/>
+                {% if current_user.role_edit() %}
+                <a href="{{ url_for('cover_picker.cover_picker_page', book_id=entry.id) }}"
+                   class="cover-change-overlay" aria-label="{{ _('Change cover') }}" title="{{ _('Change cover') }}">
+                    <span class="cover-change-overlay__hint">
+                        <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+                        <span>{{ _('Change cover') }}</span>
+                    </span>
+                    <span class="cover-change-badge" aria-hidden="true">
+                        <span class="glyphicon glyphicon-picture"></span>
+                    </span>
+                </a>
+                {% endif %}
             </div>
                     <div class="book-detail-meta">
                         <div class="book-detail-actions">

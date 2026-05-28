@@ -250,6 +250,15 @@ div.help-panel > .panel-body {
     padding-inline: 1rem;
 }
 
+/* Custom Columns separator option in field dropdowns */
+.query-builder .rule-filter-container select option.cc-header {
+    color: #cc7b19;
+    font-weight: bold;
+    text-align: center;
+    background: #21252b;
+    cursor: default;
+}
+
 /* Date format hint styling - matches preview results box */
 .date-format-hint {
     display: none;
@@ -465,6 +474,9 @@ div.help-panel > .panel-body {
 
 {% set rules_json = shelf.rules|tojson if shelf and shelf.rules else 'null' %}
 {% set languages_json = languages|tojson if languages else '{}' %}
+{% set custom_columns_json = custom_columns|tojson if custom_columns else '[]' %}
+{% set shelves_json = shelves|tojson if shelves else '[]' %}
+{% set identifiers_json = identifiers|tojson if identifiers else '[]' %}
 {% block js %}
 {{ super() }}
 <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
@@ -473,21 +485,21 @@ div.help-panel > .panel-body {
 $(function() {
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
-    
+
     // Character counter for shelf name
     $('#shelf-name').on('input', function() {
         $('#char-count').text($(this).val().length);
     }).trigger('input');
-    
+
     // Icon Picker Logic
     var $iconInput = $('#shelf-icon');
     var $iconOptions = $('.icon-option');
     var $iconSearch = $('#icon-search');
-    
+
     // Set initial selected icon in grid
     var currentIcon = $iconInput.val();
     $('.icon-option[data-icon="' + currentIcon + '"]').addClass('selected');
-    
+
     // When user clicks a quick-pick icon, populate the input field
     $iconOptions.on('click', function() {
         var icon = $(this).data('icon');
@@ -502,7 +514,7 @@ $(function() {
         $iconOptions.removeClass('selected');
         $('.icon-option[data-icon="' + icon + '"]').addClass('selected');
     });
-    
+
     // Icon search filter
     $iconSearch.on('input', function() {
         var searchTerm = $(this).val().toLowerCase();
@@ -515,9 +527,12 @@ $(function() {
             }
         });
     });
-    
+
     // Query Builder Configuration
     var languages = {{ languages_json|safe }};
+    var customColumns = {{ custom_columns_json|safe }};
+    var shelves = {{ shelves_json|safe }};
+    var identifiers = {{ identifiers_json|safe }};
     var fields = [
         {
             id: 'title', 
@@ -613,9 +628,74 @@ $(function() {
             type: 'integer',
             input: 'radio',
             values: {1: 'Yes', 0: 'No'},
-            description: 'Whether book has Hardcover identifier'
+            optgroup: 'Identifiers',
+            description: 'Whether book has a Hardcover identifier (any type)'
         }
     ];
+
+    // Append custom column fields (from Calibre custom columns, excluding composite)
+    customColumns.forEach(function(cc) {
+        var field = {
+            id: 'cc_' + cc.id,
+            label: cc.name,
+            optgroup: 'Custom Columns',
+            description: 'Custom column: #' + cc.label
+        };
+        if (cc.datatype === 'bool') {
+            field.type = 'integer';
+            field.input = 'radio';
+            field.values = {1: 'Yes', 0: 'No'};
+        } else if (cc.datatype === 'int') {
+            field.type = 'integer';
+        } else if (cc.datatype === 'float') {
+            field.type = 'double';
+        } else if (cc.datatype === 'datetime') {
+            field.type = 'date';
+            field.validation = {format: 'YYYY-MM-DD'};
+        } else if (cc.datatype === 'rating') {
+            field.type = 'integer';
+        } else if (cc.datatype === 'enumeration') {
+            field.type = 'string';
+            field.input = 'select';
+            var vals = {};
+            (cc.enum_values || []).forEach(function(v) { vals[v] = v; });
+            field.values = vals;
+        } else {
+            // text, comments
+            field.type = 'string';
+        }
+        fields.push(field);
+    });
+
+    // Append identifier presence fields (populated from cwa.db scan)
+    identifiers.forEach(function(ident) {
+        fields.push({
+            id: 'identifier_' + ident.type,
+            label: 'Has ' + ident.label,
+            optgroup: 'Identifiers',
+            type: 'integer',
+            input: 'radio',
+            values: {1: 'Yes', 0: 'No'},
+            operators: ['equal']
+        });
+    });
+
+    // Append shelf membership fields
+    shelves.forEach(function(s) {
+        fields.push({
+            id: 'shelf_' + s.id,
+            label: s.name,
+            optgroup: 'Shelves',
+            type: 'integer',
+            input: 'radio',
+            values: {1: 'On', 0: 'Not On'},
+            operators: ['equal']
+        });
+    });
+
+    var customDateFieldIds = customColumns
+        .filter(function(cc) { return cc.datatype === 'datetime'; })
+        .map(function(cc) { return 'cc_' + cc.id; });
 
     var operators = [
         {type: 'equal', optgroup: 'basic'},
@@ -656,16 +736,17 @@ $(function() {
     // Show/hide date format hint based on rules
     function checkForDateFields() {
         var hasDateField = false;
-        
+        var builtinDateIds = ['pubdate', 'timestamp'];
+
         // Check all filter dropdowns for date fields
         $('#builder .rule-filter-container select').each(function() {
             var filterId = $(this).val();
-            if (filterId === 'pubdate' || filterId === 'timestamp') {
+            if (builtinDateIds.indexOf(filterId) !== -1 || customDateFieldIds.indexOf(filterId) !== -1) {
                 hasDateField = true;
                 return false; // break out of each loop
             }
         });
-        
+
         if (hasDateField) {
             $('#date-format-hint').addClass('show');
         } else {
@@ -673,11 +754,45 @@ $(function() {
         }
     }
 
+    // Replace QueryBuilder's native <optgroup> with a styled disabled separator option.
+    // Native optgroup always indents child options and can't be un-indented via CSS.
+    var OPTGROUP_LABELS = {
+        'Identifiers':    '── Identifiers ──',
+        'Custom Columns': '── Custom Columns ──',
+        'Shelves':        '── Shelves ──'
+    };
+    function transformOptgroups() {
+        $('#builder .rule-filter-container select').each(function() {
+            var $select = $(this);
+            $select.find('optgroup').each(function() {
+                var $optgroup = $(this);
+                if ($optgroup.data('transformed')) return;
+                var label = $optgroup.attr('label');
+                var separatorText = OPTGROUP_LABELS[label];
+                if (!separatorText) return;
+                $optgroup.data('transformed', true);
+
+                var $separator = $('<option>')
+                    .attr('disabled', 'disabled')
+                    .addClass('cc-header')
+                    .text(separatorText);
+
+                var $options = $optgroup.children('option').detach();
+                $optgroup.replaceWith($separator.add($options));
+            });
+        });
+    }
+
     $('#builder').queryBuilder({
         plugins: ['bt-tooltip-errors'],
         filters: fields,
         operators: operators,
         rules: rules
+    });
+
+    transformOptgroups();
+    $('#builder').on('afterAddRule.queryBuilder afterUpdateRuleFilter.queryBuilder', function() {
+        setTimeout(transformOptgroups, 0);
     });
     
     // Check for date fields on initialization and after changes
@@ -691,8 +806,10 @@ $(function() {
             var $input = $(this);
             var $rule = $input.closest('.rule-container');
             var filterId = $rule.find('.rule-filter-container select').val();
-            
-            if (filterId === 'pubdate' || filterId === 'timestamp') {
+            var isDateField = filterId === 'pubdate' || filterId === 'timestamp' ||
+                              customDateFieldIds.indexOf(filterId) !== -1;
+
+            if (isDateField) {
                 $input.off('blur.dateValidation').on('blur.dateValidation', function() {
                     var value = $(this).val();
                     if (value && !isValidDate(value)) {
@@ -815,7 +932,8 @@ $(function() {
             data: JSON.stringify(shelfData),
             success: function(response) {
                 if (response.success) {
-                    window.location.href = "{{ url_for('web.index') }}";
+                    var shelfId = response.shelf_id || {{ shelf.id if shelf else 'null' }};
+                    window.location.href = "/magicshelf/" + shelfId;
                 } else {
                     alert('Error saving shelf: ' + (response.message || 'Unknown error'));
                 }

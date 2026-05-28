@@ -463,6 +463,7 @@ def reconnect():
         abort(404)
 
 
+
 @admi.route("/ajax/updateThumbnails", methods=['POST'])
 @user_login_required
 @admin_required

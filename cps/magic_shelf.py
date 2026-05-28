@@ -321,6 +321,152 @@ RELATIONSHIP_MAP = {
     'comments': 'comments',  # For description field - requires join to Comments table
 }
 
+def _convert_cc_value(value, datatype):
+    """Convert a rule value to the appropriate Python type for a custom column."""
+    if datatype == 'bool':
+        if isinstance(value, bool):
+            return value
+        try:
+            return bool(int(value))
+        except (TypeError, ValueError):
+            return None
+    elif datatype == 'int':
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+    elif datatype == 'float':
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+    elif datatype == 'datetime':
+        if isinstance(value, str):
+            try:
+                return datetime.strptime(value, '%Y-%m-%d')
+            except ValueError:
+                return None
+        return value
+    # text, comments, enumeration, rating, series — return as-is
+    return value
+
+
+def _build_custom_column_filter(cc_id, datatype, operator_name, value):
+    """Build a SQLAlchemy filter for a single custom column rule."""
+    if cc_id not in db.cc_classes:
+        log.warning(f"Custom column {cc_id} not found in cc_classes")
+        return None
+
+    cc_class = db.cc_classes[cc_id]
+    column = cc_class.value
+    relationship = getattr(db.Books, f'custom_column_{cc_id}', None)
+    if relationship is None:
+        log.warning(f"Books model has no relationship 'custom_column_{cc_id}'")
+        return None
+
+    if operator_name in ('is_empty', 'is_null'):
+        return ~relationship.any()
+    if operator_name in ('is_not_empty', 'is_not_null'):
+        return relationship.any()
+
+    converted = _convert_cc_value(value, datatype)
+
+    negated_ops = {
+        'not_equal': 'equal',
+        'not_contains': 'contains',
+        'not_begins_with': 'begins_with',
+        'not_ends_with': 'ends_with',
+        'not_in': 'in',
+        'not_between': 'between',
+    }
+
+    if operator_name in negated_ops:
+        base_op = OPERATOR_MAP.get(negated_ops[operator_name])
+        if not base_op:
+            return None
+        filter_expr = base_op(column, converted)
+        if filter_expr is None:
+            return None
+        return ~relationship.any(filter_expr)
+
+    op = OPERATOR_MAP.get(operator_name)
+    if not op:
+        return None
+    filter_expr = op(column, converted)
+    if filter_expr is None:
+        return None
+    return relationship.any(filter_expr)
+
+
+def get_identifiers_for_rules():
+    """Return all identifier types present in the library, ordered by frequency.
+
+    Queries the Calibre DB directly and uses Identifiers.format_type() for labels.
+    """
+    try:
+        cdb = db.CalibreDB(init=True)
+        rows = (
+            cdb.session.query(db.Identifiers.type, func.count(db.Identifiers.book))
+            .group_by(db.Identifiers.type)
+            .order_by(func.count(db.Identifiers.book).desc())
+            .all()
+        )
+        return [
+            {'type': r[0], 'label': db.Identifiers('', r[0], 0).format_type()}
+            for r in rows
+        ]
+    except Exception as e:
+        log.warning(f"get_identifiers_for_rules: {e}")
+        return []
+
+
+def get_shelves_for_rules(user_id):
+    """Return regular shelves available as magic shelf rule criteria for a given user.
+
+    Returns the owner's own shelves plus any public shelves, sorted by name.
+    """
+    shelves = ub.session.query(ub.Shelf).filter(
+        or_(
+            ub.Shelf.user_id == user_id,
+            ub.Shelf.is_public == 1,
+        )
+    ).order_by(ub.Shelf.name).all()
+    return [{'id': s.id, 'name': s.name} for s in shelves]
+
+
+def get_custom_columns_for_rules():
+    """Return custom column metadata suitable for building magic shelf rule fields.
+
+    Excludes composite and series datatypes (not mapped in cc_classes).
+    Returns a list of dicts with id, name, label, datatype, and enum_values.
+    """
+    import json as _json
+    cdb = db.CalibreDB(init=True)
+    rows = cdb.session.query(db.CustomColumns).filter(
+        db.CustomColumns.datatype.notin_(db.cc_exceptions)
+    ).all()
+
+    result = []
+    for col in rows:
+        if col.id not in db.cc_classes:
+            continue
+        entry = {
+            'id': col.id,
+            'name': col.name,
+            'label': col.label,
+            'datatype': col.datatype,
+            'enum_values': [],
+        }
+        if col.datatype == 'enumeration':
+            try:
+                display = _json.loads(col.display or '{}')
+                entry['enum_values'] = display.get('enum_values', [])
+            except (ValueError, TypeError):
+                pass
+        result.append(entry)
+    return result
+
+
 def build_filter_from_rule(rule, user_id=None):
     """Builds a SQLAlchemy filter condition from a single rule."""
     from . import config
@@ -331,6 +477,54 @@ def build_filter_from_rule(rule, user_id=None):
 
     if not all([field_name, operator_name]):
         return None
+
+    # Handle dynamic custom column rules (id format: "cc_<column_id>")
+    if field_name.startswith('cc_'):
+        try:
+            cc_id = int(field_name[3:])
+        except ValueError:
+            return None
+        cdb = db.CalibreDB(init=True)
+        cc_col = cdb.session.query(db.CustomColumns).filter(
+            db.CustomColumns.id == cc_id
+        ).first()
+        if cc_col is None or cc_col.datatype in db.cc_exceptions:
+            return None
+        return _build_custom_column_filter(cc_id, cc_col.datatype, operator_name, value)
+
+    # Handle identifier presence rules (id format: "identifier_<type>")
+    if field_name.startswith('identifier_'):
+        id_type = field_name[len('identifier_'):]
+        try:
+            has_id = bool(int(value)) if value is not None else True
+        except (TypeError, ValueError):
+            has_id = True
+        condition = db.Books.identifiers.any(db.Identifiers.type == id_type)
+        if operator_name in ('equal', 'not_equal'):
+            negate = (operator_name == 'not_equal') ^ (not has_id)
+            return ~condition if negate else condition
+        return condition if has_id else ~condition
+
+    # Handle shelf membership rules (id format: "shelf_<shelf_id>")
+    if field_name.startswith('shelf_'):
+        try:
+            shelf_id = int(field_name[6:])
+        except ValueError:
+            return None
+        try:
+            on_shelf = bool(int(value)) if value is not None else True
+        except (TypeError, ValueError):
+            on_shelf = True
+        books_on_shelf = ub.session.query(ub.BookShelf.book_id).filter(
+            ub.BookShelf.shelf == shelf_id
+        ).subquery()
+        condition = db.Books.id.in_(books_on_shelf)
+        if operator_name == 'equal':
+            return condition if on_shelf else ~condition
+        elif operator_name == 'not_equal':
+            return ~condition if on_shelf else condition
+        else:
+            return condition if on_shelf else ~condition
 
     field_info = FIELD_MAP.get(field_name)
     if not field_info:

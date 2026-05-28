@@ -302,11 +302,22 @@ class WebServer(object):
         self.stop()
 
     def stop(self, restart=False):
-        from . import updater_thread
+        from . import updater_thread, ub, db as calibre_db
         updater_thread.stop()
 
         log.info("webserver stop (restart=%s)", restart)
         self.shutdown_scheduler()
+
+        # Close DB connections so SQLite can checkpoint the WAL and remove .db-wal/.db-shm
+        try:
+            calibre_db.dispose()
+        except Exception:
+            pass
+        try:
+            ub.dispose()
+        except Exception:
+            pass
+
         self.restart = restart
         if self.wsgiserver:
             if _GEVENT:

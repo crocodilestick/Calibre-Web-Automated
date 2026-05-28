@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block body %}
    <div id="log_group" class="inputs">
      {% if log_enable %}

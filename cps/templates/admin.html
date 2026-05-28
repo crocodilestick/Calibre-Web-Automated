@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% macro display_bool_setting(setting_value) -%}
   {% if setting_value %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}
 {%- endmacro %}

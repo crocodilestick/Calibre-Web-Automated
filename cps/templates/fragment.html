@@ -7,6 +7,23 @@
    renders that into <head>; for fragment swaps we render it inline so the
    page-specific CSS still applies. #}
 {% block header %}{% endblock %}
+{# Mirror layout.html's flash rendering so SPA navigations (which never
+   re-render the shell) still show flash messages from action redirects. #}
+{% for message in get_flashed_messages(with_categories=True) %}
+  {%if message[0] == "error" %}<div class="row-fluid text-center"><div id="flash_danger" class="alert alert-danger">{{ message[1] }}</div></div>{%endif%}
+  {%if message[0] == "info" %}<div class="row-fluid text-center"><div id="flash_info" class="alert alert-info">{{ message[1] }}</div></div>{%endif%}
+  {%if message[0] == "cwa_update" %}<div class="row-fluid text-center"><div id="flash_info" class="alert alert-info alert-cwa">{{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/releases">{{ _('See Changelog') }}</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "cwa_arch_warning" %}<div class="row-fluid text-center"><div id="flash_danger" class="alert alert-danger alert-cwa">{{ message[1] }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "translation_missing" %}<div class="row-fluid text-center"><div id="flash_info" class="alert alert-info alert-cwa">{{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/wiki/Contributing-Translations">{{ _('Contribute here!') }}</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "theme_migration" %}<div class="row-fluid text-center"><div id="flash_info" class="alert alert-info alert-cwa">{{ message[1] }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "cwa_refresh" %}<div class="row-fluid text-center"><div id="flash_success" class="alert alert-info refresh-cwa">{{ message[1] }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "warning" %}<div class="row-fluid text-center"><div id="flash_warning" class="alert alert-warning">{{ message[1] }}</div></div>{%endif%}
+  {%if message[0] == "success" %}<div class="row-fluid text-center"><div id="flash_success" class="alert alert-success">{{ message[1] }}</div></div>{%endif%}
+{% endfor %}
+{# Some templates (config_edit, cwa_settings, etc.) place top-of-page UI
+   (spinners, form rows) in {% block flash %} — layout.html renders it just
+   above #main-content; mirror that here so it isn't silently dropped. #}
+{% block flash %}{% endblock %}
 {# layout.html already wraps {% block body %} in
    <div class="container-fluid"><div class="row-fluid"><div class="col-sm-10" id="main-content">.
    partial-nav.js injects this fragment INTO that #main-content, so we must

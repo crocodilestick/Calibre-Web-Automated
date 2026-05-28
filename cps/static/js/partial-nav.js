@@ -5,19 +5,27 @@
  *   - This script reads window.__cwaInitialPath, fetches the matching
  *     body fragment with X-CWA-Fragment: 1, injects it into #main-content,
  *     and from then on intercepts link clicks + popstate to navigate
- *     entirely client-side. Excluded routes (auth, downloads, readers,
- *     admin, /ajax, OPDS, Kobo, etc.) fall through to a real browser nav.
+ *     entirely client-side. Excluded routes (auth, file downloads, readers,
+ *     /ajax, OPDS, Kobo, etc.) fall through to a real browser nav.
  */
 (function () {
     'use strict';
 
     var SKIP_PREFIXES = [
-        '/admin', '/login', '/logout', '/register',
+        '/login', '/logout', '/register',
         '/remote/', '/verify/',
         '/opds', '/kobo/', '/kobo_auth',
-        '/ajax/', '/cwa-', '/gdrive',
+        '/ajax/', '/gdrive',
         '/api/v3', '/api/UserStorage',
-        '/me', '/sw.js', '/manifest.json'
+        // File downloads under /admin — no 'download' attribute, must bypass SPA fetch.
+        '/admin/logdownload/', '/admin/debug',
+        // JSON API + SSE stream — never HTML pages.
+        '/cwa-library-refresh',
+        // File downloads under /cwa- prefixes.
+        '/cwa-logs/download/',
+        '/cwa-convert-library/download-current-log/',
+        '/cwa-epub-fixer/download-current-log/',
+        '/sw.js', '/manifest.json'
     ];
 
     // /read/<int>/<fmt> is the reader; /read/<sort> is a books_list view.
@@ -160,7 +168,11 @@
         if (link.target && link.target !== '' && link.target !== '_self') return true;
         if (link.hostname && link.hostname !== window.location.hostname) return true;
         if (link.hasAttribute('download')) return true;
-        if (link.hasAttribute('data-toggle') || link.hasAttribute('data-target')) return true;
+        // Skip Bootstrap interactive-component links (modal, dropdown, collapse,
+        // tabs) but not tooltip/popover — those attach without blocking the href.
+        var toggle = link.getAttribute('data-toggle');
+        if (toggle && toggle !== 'tooltip' && toggle !== 'popover') return true;
+        if (!toggle && link.hasAttribute('data-target')) return true;
 
         var rawHref = link.getAttribute('href') || '';
         if (!rawHref) return true;
@@ -404,8 +416,6 @@
                 console.error('[cwa-spa] history update failed', e);
             }
 
-            window.scrollTo(0, 0);
-
             // Wait for fragment scripts (e.g. query-builder) to finish loading
             // before re-running shared init hooks — some hooks rely on
             // libraries the fragment just brought in.
@@ -415,6 +425,12 @@
                         console.error('[cwa-spa] cwaInit.runAll threw', e);
                     }
                 }
+                // Scroll after init so no hook can override it. Scroll both
+                // window (standard layout) and .col-sm-10 (caliBlur uses it
+                // as the overflow-y:auto scroll container instead of window).
+                window.scrollTo(0, 0);
+                var mainCol = document.querySelector('.col-sm-10');
+                if (mainCol) mainCol.scrollTop = 0;
             });
         }).catch(function (err) {
             if (token !== currentNavToken) return;

@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block header %}
 <style>
   /* Hide the original :before pseudo-elements for user_edit template */

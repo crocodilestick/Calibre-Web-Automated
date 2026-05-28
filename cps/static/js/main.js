@@ -773,8 +773,10 @@ $(function() {
     $("select[data-control]").trigger("change");
     $("select[data-controlall]").trigger("change");
 
-    $("#modal_kobo_token")
-        .on("show.bs.modal", function(e) {
+    // Delegated binding so the handler still fires when #modal_kobo_token
+    // is injected into the DOM via an SPA fragment swap (user_edit.html).
+    $(document)
+        .on("show.bs.modal", "#modal_kobo_token", function(e) {
             $(e.relatedTarget).one('focus', function(e){$(this).blur();});
             var $modalBody = $(this).find(".modal-body");
 
@@ -790,7 +792,7 @@ $(function() {
                 preFilters.remove(useCache);
             });
         })
-        .on("hidden.bs.modal", function() {
+        .on("hidden.bs.modal", "#modal_kobo_token", function() {
             $(this).find(".modal-body").html("...");
             $("#config_delete_kobo_token").show();
             $("#kobo_full_sync").show();

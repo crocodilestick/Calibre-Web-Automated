@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block body %}
 
 <script src="{{ url_for('static', filename='js/libs/echarts.min.js') }}"></script>

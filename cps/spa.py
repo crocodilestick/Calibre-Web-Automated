@@ -15,7 +15,6 @@ from .cw_login import current_user
 
 
 EXCLUDED_PATH_PREFIXES = [
-    '/admin',
     '/login',
     '/logout',
     '/register',
@@ -27,12 +26,18 @@ EXCLUDED_PATH_PREFIXES = [
     '/kobo/',
     '/kobo_auth',
     '/ajax/',
-    '/cwa-',
     '/gdrive',
     '/api/v3',
     '/api/UserStorage',
     '/static/',
-    '/me',
+    # File downloads under /admin — no Content-Disposition 'download' attr in templates.
+    '/admin/logdownload/', '/admin/debug',
+    # JSON API + SSE stream under /cwa-library-refresh.
+    '/cwa-library-refresh',
+    # File downloads under /cwa- prefixes.
+    '/cwa-logs/download/',
+    '/cwa-convert-library/download-current-log/',
+    '/cwa-epub-fixer/download-current-log/',
     '/sw.js',
     '/manifest.json',
 ]

@@ -403,8 +403,9 @@
 
             // Update browser history.
             try {
-                if (opts.skipPush) {
-                    // popstate path — URL already matches.
+                var isSamePage = (new URL(effectiveUrl, window.location.href)).href === window.location.href;
+                if (opts.skipPush || isSamePage) {
+                    // popstate path — URL already matches, or navigating to current page.
                 } else if (opts.replace || (result && result.redirected)) {
                     // Replace (not push) on redirects so the redirect source
                     // doesn't pollute history with an unreachable entry.

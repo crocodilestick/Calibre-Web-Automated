@@ -84,6 +84,13 @@ app.config.update(
     TEMPLATES_AUTO_RELOAD=os.environ.get('DEVELOP_ON', 'False').lower() == 'true',
 )
 
+# The books_list catch-all ('/<data>') defaults sort_param='stored', so Werkzeug
+# otherwise 308-redirects any explicit '/<data>/stored/' back to the bare
+# '/<data>'. That turns the search PRG redirect (/search -> /search/stored/)
+# into an infinite loop and bounces /advsearch/stored/ back to the form. Keep
+# both URL forms serving content instead of canonicalising.
+app.url_map.redirect_defaults = False
+
 # Fix for running behind reverse proxy (e.g. nginx, apache, caddy, ...)
 # Without it, url_for will generate http:// urls even if https:// is used
 # Set TRUSTED_PROXY_COUNT to the number of proxies in your chain (default: 1)

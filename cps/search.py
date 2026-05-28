@@ -6,8 +6,9 @@
 
 import json
 from datetime import datetime
+from urllib.parse import quote_plus
 
-from flask import Blueprint, request, redirect, url_for, flash
+from flask import Blueprint, request, redirect, flash
 from flask import session as flask_session
 from .cw_login import current_user
 from flask_babel import format_date
@@ -45,7 +46,10 @@ def simple_search():
                 )
             except Exception as e:
                 log.debug(f"Failed to log search activity: {e}")
-        return redirect(url_for('web.books_list', data="search", sort_param='stored', query=term.strip()))
+        # Hardcoded path: url_for() collapses sort_param='stored' into the
+        # books_list catch-all default and yields '/search', which re-enters
+        # this handler (redirect loop).
+        return redirect('/search/stored/?query=' + quote_plus(term.strip()))
     else:
         return render_title_template('search.html',
                                      searchterm="",
@@ -63,7 +67,7 @@ def advanced_search():
     for param in params:
         values[param] = list(request.form.getlist(param))
     flask_session['query'] = json.dumps(values)
-    return redirect(url_for('web.books_list', data="advsearch", sort_param='stored', query=""))
+    return redirect('/advsearch/stored/')
 
 
 @search.route("/advsearch", methods=['GET'])
@@ -437,7 +441,7 @@ def render_search_results(term, offset=None, order=None, limit=None):
                                  adv_searchterm=term,
                                  entries=entries,
                                  result_count=result_count,
-                                 title=_("Search"),
+                                 title=(_("Search") + ": " + term) if term else _("Search"),
                                  page="search",
                                  order=order[1])
 

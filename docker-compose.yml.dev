@@ -22,6 +22,12 @@ services:
       # Skip the automatic library detection/mount at startup. When enabled, the auto-library service will not run.
       # Accepts: true/yes/1 to disable auto-mount (default: false)
       # - DISABLE_LIBRARY_AUTOMOUNT=false
+      # DEV SPECIFIC
+      ### Set DEBUG_ON to true to:
+      ###   1. Have Flask/Jinja2 auto-reload templates on each request (no restart needed)
+      ###   2. Watch cps/ for .py changes and auto-restart the server when any Python file changes
+      ### Requres dev specific binds to be set.
+      - DEVELOP_ON=true
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
       - /path/to/config/folder:/config 
@@ -38,6 +44,7 @@ services:
       ### This will let you see your changes in realtime, test ect. You can use build.sh to prepare images with your changes.
       ### For example:
       # /your/dev/env/cps:/app/calibre-web-automated/cps
+      # /your/dev/env/scripts:/app/calibre-web-automated/scripts
 
     ports:
       # Change the first number to change the port you want to access the Web UI, not the second

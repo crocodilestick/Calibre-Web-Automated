@@ -431,7 +431,7 @@ def get_shelves_for_rules(user_id):
             ub.Shelf.is_public == 1,
         )
     ).order_by(ub.Shelf.name).all()
-    return [{'id': s.id, 'name': s.name} for s in shelves]
+    return [{'id': s.id, 'name': s.name, 'is_public': s.is_public} for s in shelves]
 
 
 def get_custom_columns_for_rules():

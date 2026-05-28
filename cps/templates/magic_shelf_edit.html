@@ -680,6 +680,10 @@ $(function() {
         });
     });
 
+    // Build a set of public shelf IDs for filtering
+    var publicShelfIds = new Set();
+    shelves.forEach(function(s) { if (s.is_public) publicShelfIds.add(s.id); });
+
     // Append shelf membership fields
     shelves.forEach(function(s) {
         fields.push({
@@ -792,7 +796,12 @@ $(function() {
 
     transformOptgroups();
     $('#builder').on('afterAddRule.queryBuilder afterUpdateRuleFilter.queryBuilder', function() {
-        setTimeout(transformOptgroups, 0);
+        setTimeout(function() {
+            transformOptgroups();
+            if ($('#shelf-is-public').is(':checked')) {
+                applyShelfPublicFilter(true);
+            }
+        }, 0);
     });
     
     // Check for date fields on initialization and after changes
@@ -837,6 +846,52 @@ $(function() {
     setTimeout(function() {
         checkForDateFields();
     }, 100);
+
+    // Shelf public-filter helpers
+    function applyShelfPublicFilter(publicOnly) {
+        $('#builder .rule-filter-container select').each(function() {
+            $(this).find('option').each(function() {
+                var val = $(this).val();
+                if (val && val.startsWith('shelf_')) {
+                    var shelfId = parseInt(val.replace('shelf_', ''), 10);
+                    if (publicOnly && !publicShelfIds.has(shelfId)) {
+                        $(this).prop('disabled', true).css('display', 'none');
+                    } else {
+                        $(this).prop('disabled', false).css('display', '');
+                    }
+                }
+            });
+        });
+    }
+
+    function purgeNonPublicShelfRules() {
+        var toDelete = [];
+        $('#builder .rule-container').each(function() {
+            var filterId = $(this).find('.rule-filter-container select').val();
+            if (filterId && filterId.startsWith('shelf_')) {
+                var shelfId = parseInt(filterId.replace('shelf_', ''), 10);
+                if (!publicShelfIds.has(shelfId)) {
+                    toDelete.push($(this));
+                }
+            }
+        });
+        toDelete.forEach(function($rule) {
+            $rule.find('.rule-actions .btn-danger').first().trigger('click');
+        });
+    }
+
+    $('#shelf-is-public').on('change', function() {
+        var publicOnly = $(this).is(':checked');
+        if (publicOnly) {
+            purgeNonPublicShelfRules();
+        }
+        applyShelfPublicFilter(publicOnly);
+    });
+
+    // Apply initial filter state if the shelf is already public
+    if ($('#shelf-is-public').is(':checked')) {
+        setTimeout(function() { applyShelfPublicFilter(true); }, 150);
+    }
 
     // Preview Rules Functionality
     $('#preview-btn').on('click', function() {
@@ -906,6 +961,24 @@ $(function() {
         if (!shelfName) {
             alert('Please enter a shelf name.');
             return;
+        }
+
+        if ($('#shelf-is-public').is(':checked')) {
+            var nonPublicShelfNames = [];
+            $('#builder .rule-container').each(function() {
+                var filterId = $(this).find('.rule-filter-container select').val();
+                if (filterId && filterId.startsWith('shelf_')) {
+                    var shelfId = parseInt(filterId.replace('shelf_', ''), 10);
+                    if (!publicShelfIds.has(shelfId)) {
+                        var shelfObj = shelves.find(function(s) { return s.id === shelfId; });
+                        nonPublicShelfNames.push(shelfObj ? shelfObj.name : 'Shelf #' + shelfId);
+                    }
+                }
+            });
+            if (nonPublicShelfNames.length > 0) {
+                alert('Cannot save as public: the following shelves used in your rules are private and would not be visible to other users:\n\n• ' + nonPublicShelfNames.join('\n• ') + '\n\nPlease remove those rules or make this shelf private.');
+                return;
+            }
         }
 
         var shelfData = {

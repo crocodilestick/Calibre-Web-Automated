@@ -226,11 +226,6 @@ a#advanced_search > span.hidden-sm {
     padding-left: 2rem;
 }
 
-/* Prevent white canvas flash when compositor layers are created during drag */
-html {
-    background-color: var(--color-background, #474747);
-}
-
 /* Custom column display order list */
 #cc-order-list-outer {
     position: relative;

@@ -2348,6 +2348,9 @@ def _configuration_update_helper():
             services.goodreads_support.connect(config.config_goodreads_api_key,
                                                config.config_use_goodreads)
 
+        # Google Books configuration
+        _config_string(to_save, "config_google_api_key")
+
         # Hardcover configuration
         _config_checkbox(to_save, "config_hardcover_sync")
         _config_checkbox(to_save, "config_hardcover_annotations_sync")

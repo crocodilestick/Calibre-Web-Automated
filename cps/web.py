@@ -2408,11 +2408,12 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
             current_user.kindle_mail = valid_email(to_save.get("kindle_mail"))
         if to_save.get("kindle_mail_subject", current_user.kindle_mail_subject) != current_user.kindle_mail_subject:
             current_user.kindle_mail_subject = strip_whitespaces(to_save.get("kindle_mail_subject", "")) or ""
-        new_email = valid_email(to_save.get("email", current_user.email))
-        if not new_email:
-            raise Exception(_("Email can't be empty and has to be a valid Email"))
-        if new_email != current_user.email:
-            current_user.email = check_email(new_email)
+        if not (config.config_reverse_proxy_login_use_email and not current_user.role_admin()):
+            new_email = valid_email(to_save.get("email", current_user.email))
+            if not new_email:
+                raise Exception(_("Email can't be empty and has to be a valid Email"))
+            if new_email != current_user.email:
+                current_user.email = check_email(new_email)
         if current_user.role_admin():
             if to_save.get("name", current_user.name) != current_user.name:
                 # Query username, if not existing, change

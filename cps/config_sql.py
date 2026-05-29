@@ -152,6 +152,7 @@ class _Settings(_Base):
     config_reverse_proxy_login_header_name = Column(String)
     config_allow_reverse_proxy_header_login = Column(Boolean, default=False)
     config_reverse_proxy_auto_create_users = Column(Boolean, default=False)
+    config_reverse_proxy_login_use_email = Column(Boolean, default=False)
     config_ldap_auto_create_users = Column(Boolean, default=True)
     config_oauth_redirect_host = Column(String, default='')
     config_disable_standard_login = Column(Boolean, default=False)

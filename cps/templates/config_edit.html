@@ -263,6 +263,20 @@
         <label for="config_reverse_proxy_auto_create_users">{{_('Auto-create users from reverse proxy')}}</label>
         <div class="help-block">{{_('Automatically create user accounts when valid reverse proxy headers are received. Only enable if your reverse proxy authentication is properly secured.')}}</div>
       </div>
+      <div class="form-group">
+        <label>{{_('Match reverse proxy header value to')}}</label>
+        <div>
+          <label style="font-weight:normal; margin-right:15px;">
+            <input type="radio" name="config_reverse_proxy_login_use_email" value="0" {% if not config.config_reverse_proxy_login_use_email %}checked{% endif %}>
+            {{_('Username')}}
+          </label>
+          <label style="font-weight:normal;">
+            <input type="radio" name="config_reverse_proxy_login_use_email" value="1" {% if config.config_reverse_proxy_login_use_email %}checked{% endif %}>
+            {{_('Email')}}
+          </label>
+        </div>
+        <div class="help-block">{{_('When matching by email, users will not be able to change their email address. They must contact an administrator to change it.')}}</div>
+      </div>
     </div>
     {% if not config.config_is_initial %}
     {% if feature_support['ldap'] or feature_support['oauth'] %}

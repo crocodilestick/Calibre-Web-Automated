@@ -2359,6 +2359,7 @@ def _configuration_update_helper():
         _config_checkbox(to_save, "config_allow_reverse_proxy_header_login")
         _config_string(to_save, "config_reverse_proxy_login_header_name")
         _config_checkbox(to_save, "config_reverse_proxy_auto_create_users")
+        config.set_from_dictionary(to_save, "config_reverse_proxy_login_use_email", lambda y: y == "1", False)
 
         # Validate reverse proxy configuration
         if config.config_reverse_proxy_auto_create_users and not config.config_allow_reverse_proxy_header_login:

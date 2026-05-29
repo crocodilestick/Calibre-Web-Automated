@@ -187,11 +187,15 @@
       </div>
       {% endif %}
 
+      {% if profile and config.config_reverse_proxy_login_use_email and not current_user.role_admin() %}
+      <p class="cwa-settings-tip">{{_('Your email address is managed by your login provider and cannot be changed here. Contact an administrator to change it.')}}</p>
+      {% else %}
       <p class="cwa-settings-tip">{{_('If you need to change your email address or password, you can do so here.')}}</p>
-      
+      {% endif %}
+
       <div class="form-group">
         <label for="email">{{_('Email')}}</label>
-        <input type="email" class="form-control" name="email" id="email" value="{{ content.email if content.email != None }}" autocomplete="off">
+        <input type="email" class="form-control" name="email" id="email" value="{{ content.email if content.email != None }}" autocomplete="off" {% if profile and config.config_reverse_proxy_login_use_email and not current_user.role_admin() %}readonly{% endif %}>
       </div>
       
       {% if ( current_user and current_user.role_passwd() or current_user.role_admin() ) and not content.role_anonymous() %}

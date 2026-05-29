@@ -278,6 +278,16 @@
           <option value="1" selected>caliBlur (Dark)</option>
         </select>
       </div>
+
+      <div class="form-group">
+        <label for="series_cover_strategy">{{_('Series Cover Image')}}</label>
+        <select name="series_cover_strategy" id="series_cover_strategy" class="form-control">
+          {% for key, label in cover_strategies %}
+            <option value="{{ key }}"{% if cover_strategy == key %} selected{% endif %}>{{ _(label) }}</option>
+          {% endfor %}
+        </select>
+        <p class="cwa-settings-tip">{{_('Which book cover to display for each series on the series page.')}}</p>
+      </div>
     </div>
     {% else %}
     <div class="settings-container" style="max-width: none; margin-inline: 0rem;">

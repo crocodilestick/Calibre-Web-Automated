@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-28 18:29+0000\n"
+"POT-Creation-Date: 2026-05-29 15:19+0000\n"
 "PO-Revision-Date: 2020-06-09 21:11+0100\n"
 "Last-Translator: Lukas Heroudek <lukas.heroudek@gmail.com>\n"
 "Language-Team: \n"
@@ -195,7 +195,7 @@ msgstr ""
 msgid "No Valid Book Language Given"
 msgstr ""
 
-#: cps/admin.py:885 cps/editbooks.py:609
+#: cps/admin.py:885 cps/editbooks.py:606
 msgid "Parameter not found"
 msgstr ""
 
@@ -403,8 +403,8 @@ msgid "Success! Gmail Account Verified."
 msgstr ""
 
 #: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2554
-#: cps/admin.py:2670 cps/admin.py:2942 cps/editbooks.py:1087
-#: cps/editbooks.py:1890 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2670 cps/admin.py:2942 cps/editbooks.py:1078
+#: cps/editbooks.py:1881 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2915
 #, python-format
@@ -961,7 +961,7 @@ msgstr ""
 msgid "Could not load a source image to preview."
 msgstr ""
 
-#: cps/cover_picker.py:526 cps/cover_picker.py:540
+#: cps/cover_picker.py:523 cps/cover_picker.py:537
 msgid "Cover save failed."
 msgstr ""
 
@@ -1265,59 +1265,59 @@ msgstr "Kniha byla úspěšně zařazena do fronty pro převod do %(book_format)
 msgid "There was an error converting this book: %(res)s"
 msgstr "Při převodu této knihy došlo k chybě: %(res)s"
 
-#: cps/editbooks.py:380 cps/editbooks.py:1290 cps/editbooks.py:1837
+#: cps/editbooks.py:377 cps/editbooks.py:1281 cps/editbooks.py:1828
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Soubor s příponou '%(ext)s' nelze odeslat na tento server"
 
-#: cps/editbooks.py:385 cps/editbooks.py:1296 cps/editbooks.py:1848
+#: cps/editbooks.py:382 cps/editbooks.py:1287 cps/editbooks.py:1839
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Soubor s příponou '%(ext)s' nelze odeslat na tento server"
 
-#: cps/editbooks.py:389 cps/editbooks.py:1300 cps/editbooks.py:1853
+#: cps/editbooks.py:386 cps/editbooks.py:1291 cps/editbooks.py:1844
 msgid "File to be uploaded must have an extension"
 msgstr "Soubor, který má být odeslán musí mít příponu"
 
-#: cps/editbooks.py:871 cps/editbooks.py:1514 cps/web.py:677 cps/web.py:3096
+#: cps/editbooks.py:864 cps/editbooks.py:1505 cps/web.py:677 cps/web.py:3096
 #: cps/web.py:3270 cps/web.py:3385
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
 "Jejda! Vybraná kniha není k dispozici. Soubor neexistuje nebo není přístupný"
 
-#: cps/editbooks.py:911 cps/editbooks.py:1920
+#: cps/editbooks.py:904 cps/editbooks.py:1911
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:919
+#: cps/editbooks.py:912
 msgid "Cover is locked. Unlock it on the cover-picker page first."
 msgstr ""
 
-#: cps/editbooks.py:942 cps/editbooks.py:1278
+#: cps/editbooks.py:935 cps/editbooks.py:1269
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 
-#: cps/editbooks.py:954 cps/editbooks.py:1252 cps/editbooks.py:1648
+#: cps/editbooks.py:947 cps/editbooks.py:1243 cps/editbooks.py:1639
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s není platným jazykem"
 
-#: cps/editbooks.py:1072
+#: cps/editbooks.py:1063
 msgid "Metadata successfully updated"
 msgstr "Metadata úspěšně aktualizována"
 
-#: cps/editbooks.py:1092
+#: cps/editbooks.py:1083
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:1147 cps/editbooks.py:1192 cps/editbooks.py:1938
+#: cps/editbooks.py:1138 cps/editbooks.py:1183 cps/editbooks.py:1929
 #: cps/updater.py:649 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Neznámý"
 
-#: cps/editbooks.py:1196
+#: cps/editbooks.py:1187
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1325,86 +1325,86 @@ msgstr ""
 "Nahraná kniha pravděpodobně existuje v knihovně, zvažte prosím změnu před "
 "nahráním nové: "
 
-#: cps/editbooks.py:1308
+#: cps/editbooks.py:1299
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Soubor %(filename)s nemohl být uložen do dočasného adresáře"
 
-#: cps/editbooks.py:1328
+#: cps/editbooks.py:1319
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Nepodařilo se přesunout soubor obalu %(file)s: %(error)s"
 
-#: cps/editbooks.py:1401 cps/editbooks.py:1403
+#: cps/editbooks.py:1392 cps/editbooks.py:1394
 msgid "Book Format Successfully Deleted"
 msgstr "Formát knihy úspěšně smazán"
 
-#: cps/editbooks.py:1410 cps/editbooks.py:1412
+#: cps/editbooks.py:1401 cps/editbooks.py:1403
 msgid "Book Successfully Deleted"
 msgstr "Kniha úspěšně smazána"
 
-#: cps/editbooks.py:1495
+#: cps/editbooks.py:1486
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1553
+#: cps/editbooks.py:1544
 msgid "edit metadata"
 msgstr "upravit metadata"
 
-#: cps/editbooks.py:1607
+#: cps/editbooks.py:1598
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 
-#: cps/editbooks.py:1842
+#: cps/editbooks.py:1833
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1866
+#: cps/editbooks.py:1857
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Nepodařilo se vytvořit cestu %(path)s (oprávnění odepřeno)."
 
-#: cps/editbooks.py:1873
+#: cps/editbooks.py:1864
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Uložení souboru %(file)s se nezdařilo."
 
-#: cps/editbooks.py:1897
+#: cps/editbooks.py:1888
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Formát souboru %(ext)s přidán do %(book)s"
 
-#: cps/editbooks.py:2171
+#: cps/editbooks.py:2162
 #, fuzzy
 msgid "Book not found"
 msgstr "Token nenalezen"
 
-#: cps/editbooks.py:2175
+#: cps/editbooks.py:2166
 msgid "Book has no file formats on disk to reload from"
 msgstr ""
 
-#: cps/editbooks.py:2195
+#: cps/editbooks.py:2186
 #, fuzzy, python-format
 msgid "Book file not found on disk: %(path)s"
 msgstr "%(format)s formát nenalezen na disku"
 
-#: cps/editbooks.py:2207
+#: cps/editbooks.py:2198
 #, python-format
 msgid "Could not parse metadata from %(format)s file: %(err)s"
 msgstr ""
 
-#: cps/editbooks.py:2262
+#: cps/editbooks.py:2253
 #, python-format
 msgid "Could not save reloaded metadata: %(err)s"
 msgstr ""
 
-#: cps/editbooks.py:2268
+#: cps/editbooks.py:2259
 #, python-format
 msgid "Reloaded %(n)d field(s) from on-disk %(fmt)s"
 msgstr ""
 
-#: cps/editbooks.py:2271
+#: cps/editbooks.py:2262
 msgid "On-disk metadata matches current — no fields updated"
 msgstr ""
 
@@ -1424,224 +1424,224 @@ msgstr ""
 "Doména zpětného volání není ověřena, postupujte podle pokynů k ověření "
 "domény v konzole pro vývojáře google"
 
-#: cps/helper.py:93
+#: cps/helper.py:118
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "%(format)s formát pro knihu: %(book)d nenalezen"
 
-#: cps/helper.py:99 cps/tasks/convert.py:77
+#: cps/helper.py:124 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "%(format)s nenalezen na Google Drive: %(fn)s"
 
-#: cps/helper.py:104
+#: cps/helper.py:129
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s nenalezen: %(fn)s"
 
-#: cps/helper.py:111 cps/helper.py:235 cps/templates/detail.html:528
+#: cps/helper.py:136 cps/helper.py:260 cps/templates/detail.html:528
 #: cps/templates/detail.html:532
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Poslat do Kindle"
 
-#: cps/helper.py:113 cps/helper.py:133 cps/helper.py:246
+#: cps/helper.py:138 cps/helper.py:158 cps/helper.py:271
 msgid "This Email has been sent via Calibre-Web NextGen."
 msgstr ""
 
-#: cps/helper.py:131
+#: cps/helper.py:156
 msgid "Calibre-Web NextGen Test Email"
 msgstr ""
 
-#: cps/helper.py:132
+#: cps/helper.py:157
 #, fuzzy
 msgid "Test Email"
 msgstr "Zkušební e-mail"
 
-#: cps/helper.py:149
+#: cps/helper.py:174
 msgid "Get Started with Calibre-Web NextGen"
 msgstr ""
 
-#: cps/helper.py:154
+#: cps/helper.py:179
 #, fuzzy, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Registrační e-mail pro uživatele: %(name)s"
 
-#: cps/helper.py:165 cps/helper.py:171
+#: cps/helper.py:190 cps/helper.py:196
 #, fuzzy, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "Převést %(orig)s do %(format)s a poslat do Kindle"
 
-#: cps/helper.py:190 cps/helper.py:194 cps/helper.py:198
+#: cps/helper.py:215 cps/helper.py:219 cps/helper.py:223
 #, fuzzy, python-format
 msgid "Send %(format)s to eReader"
 msgstr "Poslat %(format)s do Kindle"
 
-#: cps/helper.py:241
+#: cps/helper.py:266
 #, fuzzy, python-format
 msgid "%(book)s send to eReader"
 msgstr "Poslat do Kindle"
 
-#: cps/helper.py:248
+#: cps/helper.py:273
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "Požadovaný soubor nelze přečíst. Možná nesprávná oprávnění?"
 
-#: cps/helper.py:393
+#: cps/helper.py:418
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr ""
 
-#: cps/helper.py:416
+#: cps/helper.py:441
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr ""
 
-#: cps/helper.py:428
+#: cps/helper.py:453
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "Mazání knihy selhalo %(id)s failed: %(message)s"
 
-#: cps/helper.py:439
+#: cps/helper.py:464
 #, fuzzy, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
 "%(path)s"
 msgstr "Mazání knihy %(id)s, cesta ke knize není platná %(path)s"
 
-#: cps/helper.py:529
+#: cps/helper.py:554
 #, fuzzy, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Přejmenování názvu z: '%(src)s' na '%(dest)s'  selhalo chybou: %(error)s"
 
-#: cps/helper.py:598 cps/helper.py:607
+#: cps/helper.py:623 cps/helper.py:632
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Soubor %(file)s nenalezen na Google Drive"
 
-#: cps/helper.py:697
+#: cps/helper.py:722
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Přejmenování názvu z: '%(src)s' na '%(dest)s'  selhalo chybou: %(error)s"
 
-#: cps/helper.py:736
+#: cps/helper.py:761
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "Cesta ke knize %(path)s nebyla nalezena na Google Drive"
 
-#: cps/helper.py:796
+#: cps/helper.py:821
 msgid "Found an existing account for this Email address"
 msgstr ""
 
-#: cps/helper.py:804
+#: cps/helper.py:829
 msgid "This username is already taken"
 msgstr "Zadané uživatelské jméno je již použito"
 
-#: cps/helper.py:818
+#: cps/helper.py:843
 msgid "Invalid Email address format"
 msgstr ""
 
-#: cps/helper.py:840
+#: cps/helper.py:865
 msgid "Password doesn't comply with password validation rules"
 msgstr ""
 
-#: cps/helper.py:1149
+#: cps/helper.py:1174
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 
-#: cps/helper.py:1154 cps/helper.py:1162
+#: cps/helper.py:1179 cps/helper.py:1187
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1176
+#: cps/helper.py:1201
 msgid "Error Downloading Cover"
 msgstr "Chyba stahování obalu"
 
-#: cps/helper.py:1179
+#: cps/helper.py:1204
 msgid "Cover Format Error"
 msgstr "Chyba formátu obalu"
 
-#: cps/helper.py:1182
+#: cps/helper.py:1207
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
 
-#: cps/helper.py:1198
+#: cps/helper.py:1223
 msgid "Failed to create path for cover"
 msgstr "Vytvoření cesty obalu selhalo"
 
-#: cps/helper.py:1209 cps/helper.py:1222 cps/helper.py:1225
+#: cps/helper.py:1234 cps/helper.py:1247 cps/helper.py:1250
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "Soubor obalu není platný, nebo nelze uložit"
 
-#: cps/helper.py:1242
+#: cps/helper.py:1267
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr ""
 
-#: cps/helper.py:1258 cps/helper.py:1263
+#: cps/helper.py:1283 cps/helper.py:1288
 msgid "Invalid cover file content"
 msgstr ""
 
-#: cps/helper.py:1267
+#: cps/helper.py:1292
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Pouze jpg/jpeg jsou podporované soubory pro obal"
 
-#: cps/helper.py:1468 cps/helper.py:1710
+#: cps/helper.py:1493 cps/helper.py:1735
 #, fuzzy
 msgid "Cover"
 msgstr "Objevte"
 
-#: cps/helper.py:1485
+#: cps/helper.py:1510
 msgid "UnRar binary file not found"
 msgstr "UnRar binární soubor nenalezen"
 
-#: cps/helper.py:1496
+#: cps/helper.py:1521
 #, fuzzy
 msgid "Error executing UnRar"
 msgstr "Chyba provádění UnRar"
 
-#: cps/helper.py:1502
+#: cps/helper.py:1527
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. Calibre-Web NextGen is "
 "optimized for x86_64 and aarch64."
 msgstr ""
 
-#: cps/helper.py:1511
+#: cps/helper.py:1536
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1514
+#: cps/helper.py:1539
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1528
+#: cps/helper.py:1553
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "Databáze není zapisovatelná"
 
-#: cps/helper.py:1537
+#: cps/helper.py:1562
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1539
+#: cps/helper.py:1564
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Chybí povolení k exekuci"
 
-#: cps/helper.py:1544
+#: cps/helper.py:1569
 #, fuzzy
 msgid "Error executing Calibre"
 msgstr "Chyba provádění UnRar"
 
-#: cps/helper.py:1712 cps/templates/admin.html:241
+#: cps/helper.py:1737 cps/templates/admin.html:241
 msgid "Queue all books for metadata backup"
 msgstr ""
 

@@ -208,6 +208,11 @@
         <label for="config_kobo_proxy">{{_('Proxy unknown requests to Kobo Store')}}</label>
       </div>
       <div class="form-group" style="margin-left:10px;">
+        <input type="checkbox" id="config_kobo_strip_comment_newlines" name="config_kobo_strip_comment_newlines" {% if config.config_kobo_strip_comment_newlines %}checked{% endif %}>
+        <label for="config_kobo_strip_comment_newlines">{{_('Strip newlines from book comments before Kobo sync')}}</label>
+        <div class="help-block">{{_('Calibre inserts newlines between paragraph tags in comments; Kobo displays these as blank lines. Enable this to remove them.')}}</div>
+      </div>
+      <div class="form-group" style="margin-left:10px;">
         <label for="config_external_port">{{_('Server External Port (for port forwarded API calls)')}}</label>
         <input type="number" min="1" max="65535" class="form-control" name="config_external_port" id="config_external_port" value="{% if config.config_external_port != None %}{{ config.config_external_port }}{% endif %}" autocomplete="off" required>
       </div>

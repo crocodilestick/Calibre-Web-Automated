@@ -524,7 +524,10 @@ def current_time():
 def get_description(book):
     if not book.comments:
         return None
-    return book.comments[0].text
+    text = book.comments[0].text
+    if config.config_kobo_strip_comment_newlines:
+        text = text.replace('\n', '')
+    return text
 
 
 def get_author(book):

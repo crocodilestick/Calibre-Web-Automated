@@ -1515,7 +1515,15 @@ button#btn-book-convert {
 #books > .cover > a, #books_rand > .cover > a, .book.isotope-item > .cover > a, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a {
     display: inline-block;
     width: auto;
-    height: 100%
+    height: 100%;
+    /* fork #343 (@Oakwhisper): this inline-block wraps a block-level <img>.
+       Without an explicit vertical-align it defaults to baseline, and
+       WebKit/Safari's baseline+descender math pulls the following .meta
+       block ~7px up so the title overlaps the cover (Chromium reserves
+       +10px). vertical-align:top removes the baseline dependency so both
+       engines render identical spacing. Verified -7px(webkit)/-6px(mobile)
+       -> +10px across webkit+chromium via scripts/manual/measure_cover_grid.py */
+    vertical-align: top;
 }
 
 #books > .cover > a:before, #books_rand > .cover > a:before, .book.isotope-item > .cover > a:before, body > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > form > div.col-sm-12 > div.col-sm-12 > div.col-sm-2 > a:before, #books .cover > a:before, #books_rand .cover > a:before {

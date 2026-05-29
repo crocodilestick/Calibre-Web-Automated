@@ -673,12 +673,28 @@ $(function() {
         }
     }
 
-    $('#builder').queryBuilder({
-        plugins: ['bt-tooltip-errors'],
-        filters: fields,
-        operators: operators,
-        rules: rules
-    });
+    try {
+        $('#builder').queryBuilder({
+            plugins: ['bt-tooltip-errors'],
+            filters: fields,
+            operators: operators,
+            rules: rules
+        });
+    } catch (e) {
+        // Saved rules reference a filter not in our fields list (e.g. a custom column).
+        // Fall back to an empty builder so the page still loads and delete still works.
+        $('#builder').queryBuilder({
+            plugins: ['bt-tooltip-errors'],
+            filters: fields,
+            operators: operators
+        });
+        var $warn = $('<div class="alert alert-warning" style="margin-top:10px;">' +
+            '<span class="glyphicon glyphicon-warning-sign"></span> ' +
+            'Some saved rules use unsupported fields and could not be loaded. ' +
+            'You can still delete this shelf, or redefine the rules and save.' +
+            '</div>');
+        $('#builder').before($warn);
+    }
     
     // Check for date fields on initialization and after changes
     $('#builder').on('afterCreateRuleInput.queryBuilder afterUpdateRuleFilter.queryBuilder afterUpdateRuleValue.queryBuilder afterDeleteRule.queryBuilder afterUpdateRuleOperator.queryBuilder', function(e) {

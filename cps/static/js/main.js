@@ -204,7 +204,7 @@ function confirmDialog(id, dialogid, dataValue, yesFn, noFn) {
     $confirm.modal('show');
 }
 
-$("#delete_confirm").click(function(event) {
+$(document).on("click", "#delete_confirm", function(event) {
     //get data-id attribute of the clicked element
     var deleteId = $(this).data("delete-id");
     var bookFormat = $(this).data("delete-format");
@@ -282,7 +282,7 @@ $(function() {
         $("#restart-cancel").show().text("Cancel");
     }
 
-    $("#RestartDialog").on("hidden.bs.modal", restartReset);
+    $(document).on("hidden.bs.modal", "#RestartDialog", restartReset);
 
     function cleanUp() {
         clearInterval(updateTimerID);
@@ -427,7 +427,7 @@ $(function() {
     window.cwaInit.isotope();
     window.cwaInit.infiniteScroll();
 
-    $("#restart").click(function() {
+    $(document).on("click", "#restart", function() {
         $("#restart").hide();
         $("#restart-cancel").hide();
         $("#restart-confirm-text").hide();
@@ -482,7 +482,7 @@ $(function() {
             }
         });
     });
-    $("#shutdown").click(function() {
+    $(document).on("click", "#shutdown", function() {
         $.ajax({
             method:"post",
             contentType: "application/json; charset=utf-8",
@@ -494,7 +494,7 @@ $(function() {
             }
         });
     });
-    $("#check_for_update").click(function() {
+    $(document).on("click", "#check_for_update", function() {
         var $this = $(this);
         var buttonText = $this.html();
         $this.html("...");
@@ -540,7 +540,7 @@ $(function() {
             }
         });
     });
-    $("#admin_refresh_cover_cache").click(function() {
+    $(document).on("click", "#admin_refresh_cover_cache", function() {
         confirmDialog("admin_refresh_cover_cache", "GeneralChangeModal", 0, function () {
             // Show loading state
             $("#admin_refresh_cover_cache").prop('disabled', true).text('Starting...');
@@ -691,7 +691,7 @@ $(function() {
         }, 600000);
     }
 
-    $("#restart_database").click(function() {
+    $(document).on("click", "#restart_database", function() {
         $("#DialogHeader").addClass("hidden");
         $("#DialogFinished").addClass("hidden");
         $("#DialogContent").html("");
@@ -709,7 +709,7 @@ $(function() {
             }
         });
     });
-    $("#metadata_backup").click(function() {
+    $(document).on("click", "#metadata_backup", function() {
         $("#DialogHeader").addClass("hidden");
         $("#DialogFinished").addClass("hidden");
         $("#DialogContent").html("");
@@ -726,7 +726,7 @@ $(function() {
             }
         });
     });
-    $("#hardcover_auto_fetch").click(function() {
+    $(document).on("click", "#hardcover_auto_fetch", function() {
         $("#DialogHeader").addClass("hidden");
         $("#DialogFinished").addClass("hidden");
         $("#DialogContent").html("");
@@ -752,7 +752,7 @@ $(function() {
             }
         });
     });
-    $("#perform_update").click(function() {
+    $(document).on("click", "#perform_update", function() {
         $("#DialogHeader").removeClass("hidden");
         $("#spinner2").show();
         $.ajax({
@@ -768,10 +768,13 @@ $(function() {
         });
     });
 
-    // Init all data control handlers to default
-    $("input[data-control]").trigger("change");
-    $("select[data-control]").trigger("change");
-    $("select[data-controlall]").trigger("change");
+    // Init all data control handlers to default (also re-runs on each SPA swap).
+    window.cwaInit.dataControls = function() {
+        $("input[data-control]").trigger("change");
+        $("select[data-control]").trigger("change");
+        $("select[data-controlall]").trigger("change");
+    };
+    window.cwaInit.dataControls();
 
     // Delegated binding so the handler still fires when #modal_kobo_token
     // is injected into the DOM via an SPA fragment swap (user_edit.html).
@@ -798,7 +801,7 @@ $(function() {
             $("#kobo_full_sync").show();
         });
 
-    $("#config_delete_kobo_token").click(function() {
+    $(document).on("click", "#config_delete_kobo_token", function() {
         confirmDialog(
             $(this).attr('id'),
             "GeneralDeleteModal",
@@ -814,7 +817,7 @@ $(function() {
         );
     });
 
-    $("#toggle_order_shelf").click(function() {
+    $(document).on("click", "#toggle_order_shelf", function() {
         $("#toggle_order_shelf").toggleClass("dummy");
         $("#new").toggleClass("disabled");
         $("#old").toggleClass("disabled");
@@ -840,7 +843,7 @@ $(function() {
         });
     });
 
-    $("#btndeluser").click(function() {
+    $(document).on("click", "#btndeluser", function() {
         confirmDialog(
             $(this).attr('id'),
             "GeneralDeleteModal",
@@ -856,7 +859,7 @@ $(function() {
         );
     });
 
-    $("#kobo_full_sync").click(function() {
+    $(document).on("click", "#kobo_full_sync", function() {
         confirmDialog(
            "btnfullsync",
             "GeneralDeleteModal",
@@ -885,7 +888,7 @@ $(function() {
         );
     });
 
-    $("#user_submit").click(function() {
+    $(document).on("click", "#user_submit", function() {
         this.closest("form").submit();
     });
 
@@ -899,17 +902,17 @@ $(function() {
         }
     }
 
-    $('.collapse').on('shown.bs.collapse', function(){
+    $(document).on('shown.bs.collapse', '.collapse', function(){
         $(this).parent().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
-    }).on('hidden.bs.collapse', function(){
-    $(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+    }).on('hidden.bs.collapse', '.collapse', function(){
+        $(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
     });
 
     function changeDbSettings() {
         $("#db_submit").closest('form').submit();
     }
 
-    $("#db_submit").click(function(e) {
+    $(document).on("click", "#db_submit", function(e) {
         e.preventDefault();
         e.stopPropagation();
         this.blur();
@@ -938,7 +941,7 @@ $(function() {
         });
     });
 
-    $("#config_submit").click(function(e) {
+    $(document).on("click", "#config_submit", function(e) {
         e.preventDefault();
         e.stopPropagation();
         this.blur();
@@ -985,7 +988,7 @@ $(function() {
         );
     });
 
-    $("#fileModal").on("show.bs.modal", function(e) {
+    $(document).on("show.bs.modal", "#fileModal", function(e) {
         var target = $(e.relatedTarget);
         var path = $("#" + target.data("link"))[0].value;
         var folder = target.data("folderonly");
@@ -998,7 +1001,7 @@ $(function() {
         fillFileTable(path,"dir", folder, filter);
     });
 
-    $("#file_confirm").click(function() {
+    $(document).on("click", "#file_confirm", function() {
         $("#" + $(this).data("link"))[0].value = $("#element_selected").text()
     });
 
@@ -1024,7 +1027,7 @@ $(function() {
         }).isotope("layout");
     });
 
-    $("#import_ldap_users").click(function() {
+    $(document).on("click", "#import_ldap_users", function() {
         $("#DialogHeader").addClass("hidden");
         $("#DialogFinished").addClass("hidden");
         $("#DialogContent").html("");
@@ -1042,7 +1045,7 @@ $(function() {
         });
     });
 
-    $(".author-expand").click(function() {
+    $(document).on("click", ".author-expand", function() {
         $(this).parent().find("a.author-name").slice($(this).data("authors-max")).toggle();
         $(this).parent().find("span.author-hidden-divider").toggle();
         $(this).html() === $(this).data("collapse-caption") ? $(this).html("(...)") : $(this).html($(this).data("collapse-caption"));
@@ -1051,7 +1054,7 @@ $(function() {
         }).isotope("layout");
     });
 
-    $(".update-view").click(function(e) {
+    $(document).on("click", ".update-view", function(e) {
         var view = $(this).data("view");
         e.preventDefault();
         e.stopPropagation();

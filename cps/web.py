@@ -2426,6 +2426,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         # 0 -> 1: all synced books have to be added to archived books, + currently synced shelfs which
         # don't have to be synced have to be removed (added to Shelf archive)
         current_user.kobo_only_shelves_sync = int(to_save.get("kobo_only_shelves_sync") == "on") or 0
+        current_user.kobo_sync_public_shelves = int(to_save.get("kobo_sync_public_shelves") == "on") or 0
         if old_state == 0 and current_user.kobo_only_shelves_sync == 1:
             kobo_sync_status.update_on_sync_shelfs(current_user.id)
         current_user.hardcover_token = to_save.get("hardcover_token","" ).replace("Bearer ","" ) or None

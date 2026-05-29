@@ -336,8 +336,13 @@
         <div style="margin-top: 20px;
                     background: #202c34a3;
                     padding: 2rem;">
-          <input type="checkbox" name="kobo_only_shelves_sync" id="kobo_only_shelves_sync" {% if content.kobo_only_shelves_sync %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <input type="checkbox" name="kobo_only_shelves_sync" id="kobo_only_shelves_sync" data-control="kobo-shelf-sync" {% if content.kobo_only_shelves_sync %}checked{% endif %} style="accent-color: var(--color-secondary);">
           <label for="kobo_only_shelves_sync">{{_('Sync only books in selected shelves with Kobo')}}</label>
+          <div data-related="kobo-shelf-sync" style="margin-top: 10px; margin-left: 20px;">
+            <input type="checkbox" name="kobo_sync_public_shelves" id="kobo_sync_public_shelves" {% if content.kobo_sync_public_shelves %}checked{% endif %} style="accent-color: var(--color-secondary);">
+            <label for="kobo_sync_public_shelves">{{_('Also sync public shelves marked for Kobo sync')}}</label>
+            <p id="kobo_sync_public_shelves_warning" class="cwa-settings-tip" style="display: none;">{{_('Note: "Show Archived Books" is not enabled. Books on public shelves cannot be deleted from the Kobo while archived books are hidden.')}}</p>
+          </div>
         </div>
         {% endif %}
       </div>
@@ -817,6 +822,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderOpdsOrderList();
   renderMagicShelfOrderList();
+
+  // Public shelf sync warning: show when sync_public_shelves is checked but show_archived is not
+  // and the user doesn't have permission to edit public shelves.
+  // SIDEBAR_ARCHIVED = 1 << 15 = 32768
+  var userCanEditShelvesByRole = {{ 'true' if content.role_edit_shelfs() else 'false' }};
+  function updatePublicShelfWarning() {
+    var syncPublic = document.getElementById('kobo_sync_public_shelves');
+    var showArchived = document.getElementById('show_32768');
+    var editShelves = document.getElementById('edit_shelf_role');
+    var warning = document.getElementById('kobo_sync_public_shelves_warning');
+    if (!syncPublic || !warning) return;
+    var archivedEnabled = showArchived ? showArchived.checked : false;
+    var canEditShelves = editShelves ? editShelves.checked : userCanEditShelvesByRole;
+    warning.style.display = (syncPublic.checked && !archivedEnabled && !canEditShelves) ? '' : 'none';
+  }
+
+  var syncPublicEl = document.getElementById('kobo_sync_public_shelves');
+  var showArchivedEl = document.getElementById('show_32768');
+  var editShelvesEl = document.getElementById('edit_shelf_role');
+  if (syncPublicEl) { syncPublicEl.addEventListener('change', updatePublicShelfWarning); }
+  if (showArchivedEl) { showArchivedEl.addEventListener('change', updatePublicShelfWarning); }
+  if (editShelvesEl) { editShelvesEl.addEventListener('change', updatePublicShelfWarning); }
+  updatePublicShelfWarning();
 });
 </script>
 

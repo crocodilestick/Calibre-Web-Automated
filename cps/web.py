@@ -1463,7 +1463,7 @@ def list_books():
     elif sort_param == "languages":
         order = [db.Languages.lang_code.asc()] if order == "asc" else [db.Languages.lang_code.desc()]
         join = db.books_languages_link, db.Books.id == db.books_languages_link.c.book, db.Languages
-    elif order and sort_param in ["sort", "title", "authors_sort", "series_index"]:
+    elif order and sort_param in ["sort", "title", "authors_sort", "series_index", "timestamp", "pubdate"]:
         order = [text(sort_param + " " + order)]
     elif not state:
         order = [db.Books.timestamp.desc()]
@@ -1501,6 +1501,7 @@ def list_books():
         val = entry[0]
         val.is_archived = entry[1] is True
         val.read_status = entry[2] == ub.ReadBook.STATUS_FINISHED
+        val.rating_value = round(val.ratings[0].rating / 2, 1) if val.ratings else 0
         for lang_index in range(0, len(val.languages)):
             val.languages[lang_index].language_name = isoLanguages.get_language_name(get_locale(), val.languages[
                 lang_index].lang_code)

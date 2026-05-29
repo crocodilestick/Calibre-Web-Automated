@@ -504,15 +504,12 @@ def _apply_response(ok: bool, message, book):
     if ok:
         try:
             book.has_cover = 1
-            # A new cover IS a metadata change. Bump last_modified so the
-            # c=last_modified cache-buster on every cover URL (detail, grid
-            # srcset, edit, og:image) changes — otherwise the browser keeps
-            # serving the cached cover until a manual refresh — AND so Kobo
-            # native sync re-selects the book (Books.last_modified > token)
-            # and re-pulls the new cover. Mirrors the edit-book path
-            # (editbooks.py) so both cover-change entry points behave alike.
-            book.last_modified = datetime.now(timezone.utc)
-            calibre_db.set_metadata_dirty(book.id)
+            # A new cover IS a metadata change: bump last_modified (drives the
+            # web cover cache-buster on every cover URL + Kobo sync
+            # re-selection) and queue the metadata write-back. remove_synced_book
+            # runs post-commit below (best-effort) so a commit failure can't
+            # leave it half-applied. Single source of truth: helper.mark_book_modified.
+            helper.mark_book_modified(book)
             calibre_db.session.commit()
         except Exception as exc:
             # The cover bytes are on disk but we could not record the change.

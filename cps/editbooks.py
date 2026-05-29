@@ -337,10 +337,7 @@ def edit_selected_books():
                     calibre_db.session.rollback()
                     continue # or return an error response
 
-            book.last_modified = datetime.now(timezone.utc)
-
-            if metadata_changed:
-                calibre_db.set_metadata_dirty(book.id)
+            helper.mark_book_modified(book, set_dirty=metadata_changed)
             try:
                 calibre_db.session.commit()
             except (OperationalError, IntegrityError, StaleDataError) as e:
@@ -607,10 +604,7 @@ def edit_book_param(param, vals):
             log_value = vals.get('value', '')
         else:
             return _("Parameter not found"), 400
-        book.last_modified = datetime.now(timezone.utc)
-
-        if metadata_changed:
-            calibre_db.set_metadata_dirty(book.id)
+        helper.mark_book_modified(book, set_dirty=metadata_changed)
 
         calibre_db.session.commit()
         # revert change for sort if automatic fields link is deactivated
@@ -839,8 +833,7 @@ def table_xchange_author_title():
                 # toDo: Handle error
                 edit_error = helper.update_dir_structure(edited_books_id, config.get_book_path(), input_authors[0])
             if modify_date:
-                book.last_modified = datetime.now(timezone.utc)
-                calibre_db.set_metadata_dirty(book.id)
+                helper.mark_book_modified(book)
             try:
                 calibre_db.session.commit()
             except (OperationalError, IntegrityError, StaleDataError) as e:
@@ -974,9 +967,7 @@ def do_edit_book(book_id, upload_formats=None):
 
         # Stage 3: Commit all changes to the database.
         if modify_date:
-            book.last_modified = datetime.now(timezone.utc)
-            kobo_sync_status.remove_synced_book(book.id, all=True)
-            calibre_db.set_metadata_dirty(book.id)
+            helper.mark_book_modified(book, unsync=True)
 
         # Hold the process-shared metadata.db write lock for the
         # duration of the commit. Coordinates with the ingest_processor
@@ -2245,7 +2236,7 @@ def reload_metadata_from_disk(book_id):
                     log.debug("reload_metadata: language update failed: %s", ex)
 
             if updated:
-                book.last_modified = datetime.now(timezone.utc)
+                helper.mark_book_modified(book, set_dirty=False)
                 calibre_db.session.commit()
                 log.info("Reloaded metadata for book %d from disk (fields: %s)",
                          book.id, ', '.join(updated))

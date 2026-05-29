@@ -68,6 +68,31 @@ from .embed_helper import do_calibre_export
 log = logger.create()
 
 
+def mark_book_modified(book, *, set_dirty=True, unsync=False):
+    """Single source of truth for "this book changed".
+
+    Stamps ``book.last_modified`` — the value that drives BOTH the web
+    cover/metadata cache-buster (the jinjia ``last_modified`` filter feeding
+    the ``c=`` param on every cover URL) AND Kobo native sync selection
+    (``Books.last_modified > sync_token.books_last_modified``). Forgetting it
+    is why a cover change could fail to propagate (fork #340).
+
+    Optional steps mirror what the various edit paths need:
+      * ``set_dirty``  → queue CWA metadata write-back (``set_metadata_dirty``).
+      * ``unsync``     → drop Kobo synced-book records for all users so every
+                         device re-pulls (``remove_synced_book(all=True)``).
+
+    The caller still owns the ``calibre_db.session.commit()``. ``kobo_sync_status``
+    is imported lazily to keep this module's import graph unchanged.
+    """
+    book.last_modified = datetime.now(timezone.utc)
+    if set_dirty:
+        calibre_db.set_metadata_dirty(book.id)
+    if unsync:
+        from . import kobo_sync_status
+        kobo_sync_status.remove_synced_book(book.id, all=True)
+
+
 def _directory_contains_only_nfs_placeholders(path):
     try:
         entries = os.listdir(path)

@@ -129,12 +129,12 @@ class TestCoverApplyMarksModified:
         thumb.assert_not_called()
 
     def test_source_pins_sync_invariant(self):
-        """Refactor guard: a future cleanup of the apply path must not
-        silently drop the cache/sync invalidation that fixes the
-        v4.0.14x cover-staleness bug."""
+        """Refactor guard: the apply path must route the modified-stamp
+        through the shared helper and still force a Kobo re-sync. The full
+        triplet (last_modified + set_metadata_dirty + remove_synced_book) is
+        pinned in test_mark_book_modified.py now that it lives in the helper."""
         from cps import cover_picker
 
         src = inspect.getsource(cover_picker._apply_response)
-        assert "last_modified" in src, "apply path must bump last_modified"
+        assert "mark_book_modified" in src, "apply path must use helper.mark_book_modified"
         assert "remove_synced_book" in src, "apply path must force Kobo re-sync"
-        assert "set_metadata_dirty" in src, "apply path must queue metadata write-back"

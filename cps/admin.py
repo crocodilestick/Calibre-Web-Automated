@@ -586,7 +586,7 @@ def view_configuration():
     read_column = calibre_db.session.query(db.CustomColumns) \
         .filter(and_(db.CustomColumns.datatype == 'bool', db.CustomColumns.mark_for_delete == 0)).all()
     restrict_columns = calibre_db.session.query(db.CustomColumns) \
-        .filter(and_(db.CustomColumns.datatype == 'text', db.CustomColumns.mark_for_delete == 0)).all()
+        .filter(and_(or_(db.CustomColumns.datatype == 'text', db.CustomColumns.datatype == 'enumeration'), db.CustomColumns.mark_for_delete == 0)).all()
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
     return render_title_template("config_view_edit.html", conf=config, readColumns=read_column,
@@ -1265,7 +1265,7 @@ def check_valid_read_column(column):
 def check_valid_restricted_column(column):
     if column != "0":
         if not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
-          .filter(and_(db.CustomColumns.datatype == 'text', db.CustomColumns.mark_for_delete == 0)).all():
+          .filter(and_(or_(db.CustomColumns.datatype == 'text', db.CustomColumns.datatype == 'enumeration'), db.CustomColumns.mark_for_delete == 0)).all():
             return False
     return True
 

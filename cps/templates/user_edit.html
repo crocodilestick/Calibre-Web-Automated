@@ -274,6 +274,12 @@
           <option value="1" selected>caliBlur (Dark)</option>
         </select>
       </div>
+
+      <div style="margin-top: 20px;">
+        <input type="checkbox" id="auto_load_more" name="auto_load_more" {% if content.auto_load_more %}checked{% endif %} style="accent-color: var(--color-secondary);">
+        <label for="auto_load_more">{{_('Automatically load more books while scrolling')}}</label>
+        <p class="cwa-settings-tip">{{_('When enabled, the next page of books is loaded automatically as you scroll near the end of the list. When disabled, you can still click the Load More tile to load the next page.')}}</p>
+      </div>
     </div>
     {% else %}
     <div class="settings-container" style="max-width: none; margin-inline: 0rem;">

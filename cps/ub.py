@@ -287,6 +287,8 @@ class User(UserBase, Base):
     auto_send_enabled = Column(Boolean, default=False)
     # Allow entering additional email addresses on send-to-eReader
     allow_additional_ereader_emails = Column(Boolean, default=True)
+    # Auto-trigger Load More on the books grid when its tile scrolls into view
+    auto_load_more = Column(Boolean, default=True)
 
 
 if oauth_support:
@@ -335,6 +337,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.role = None
         self.name = None
         self.auto_send_enabled = False
+        self.auto_load_more = True
         self.loadSettings()
 
     def loadSettings(self):
@@ -356,6 +359,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.kobo_only_shelves_sync = data.kobo_only_shelves_sync
         self.hardcover_token = data.hardcover_token
         self.auto_send_enabled = data.auto_send_enabled
+        self.auto_load_more = getattr(data, 'auto_load_more', True)
     def role_admin(self):
         return False
 
@@ -881,6 +885,23 @@ def migrate_user_table(engine, _session):
             db_hint = app_DB_path or str(engine.url)
             log.error(
                 "Failed to add allow_additional_ereader_emails column to user table in app.db (%s). "
+                "Check file permissions, locks, and CALIBRE_DBPATH mapping. Error: %s",
+                db_hint,
+                e,
+            )
+
+    # Migration for per-user auto-load-more toggle on the books grid
+    try:
+        _session.query(exists().where(User.auto_load_more)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "user.auto_load_more")
+        try:
+            _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'auto_load_more' Boolean DEFAULT 1")
+        except Exception as e:
+            db_hint = app_DB_path or str(engine.url)
+            log.error(
+                "Failed to add auto_load_more column to user table in app.db (%s). "
                 "Check file permissions, locks, and CALIBRE_DBPATH mapping. Error: %s",
                 db_hint,
                 e,

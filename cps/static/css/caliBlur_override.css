@@ -318,3 +318,70 @@ a#advanced_search > span.hidden-sm {
     border: 1px solid transparent;
     border-radius: 4px;
 }
+
+/* ------------------------------------------------------------------ */
+/* Load More tile — end-of-grid tile styled to match a book cover      */
+/* ------------------------------------------------------------------ */
+.load-more-tile .cover {
+    position: relative;
+}
+
+.load-more-tile .load-more-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.load-more-tile .load-more-img {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 225px;
+    background-color: rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 2px rgba(0, 0, 0, .35);
+    transition: background-color .15s ease;
+}
+
+.load-more-tile .load-more-link:hover .load-more-img,
+.load-more-tile .load-more-link:focus .load-more-img {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.load-more-tile .load-more-arrow {
+    color: #fff;
+    font-size: 56px;
+    line-height: 1;
+    opacity: 0.85;
+}
+
+.load-more-tile .meta .title {
+    color: #fff;
+    text-align: center;
+}
+
+/* Suppress caliBlur's circular play-glyph hover overlay on book covers. */
+.load-more-tile .cover > a:before,
+.load-more-tile .cover > a:after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Fetching state: swap the arrow for an in-tile spinner styled like
+   #cwa-nav-spinner so it reads as the same loading affordance. */
+.load-more-tile.is-loading .load-more-link {
+    pointer-events: none;
+}
+.load-more-tile.is-loading .load-more-arrow {
+    display: none;
+}
+.load-more-tile.is-loading .load-more-img::after {
+    content: "";
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: #e5a00d;
+    border-right-color: rgba(229, 160, 13, 0.25);
+    animation: cwa-spin 0.75s linear infinite;
+}

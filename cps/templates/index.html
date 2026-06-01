@@ -252,6 +252,25 @@
       </div>
     </div>
     {% endfor %}
+    {% if pagination and pagination.has_next %}
+    <div class="col-sm-3 col-lg-2 col-xs-6 book session load-more-tile">
+      <div class="cover">
+        <a href="{{ (pagination.page + 1)|url_for_other_page }}"
+           class="load-more-link"
+           data-next-page="{{ pagination.page + 1 }}"
+           aria-label="{{_('Load More')}}">
+          <span class="img load-more-img">
+            <span class="glyphicon glyphicon-arrow-right load-more-arrow" aria-hidden="true"></span>
+          </span>
+        </a>
+      </div>
+      <div class="meta">
+        <a href="{{ (pagination.page + 1)|url_for_other_page }}" class="load-more-link" tabindex="-1">
+          <p class="title">{{_('Load More')}}</p>
+        </a>
+      </div>
+    </div>
+    {% endif %}
   {% endif %}
   </div>
 </div>

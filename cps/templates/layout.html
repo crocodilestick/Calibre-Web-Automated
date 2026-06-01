@@ -96,7 +96,7 @@
 
     </script>
   </head>
-  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
+  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}" data-auto-load-more="{{ 'false' if current_user.is_authenticated and not current_user.auto_load_more else 'true' }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div id="cwa-nav-overlay" aria-hidden="true"><div id="cwa-nav-spinner"></div></div>
     <!-- Static navbar -->

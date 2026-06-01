@@ -2439,6 +2439,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
         current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
         current_user.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
+        current_user.auto_load_more = to_save.get("auto_load_more") == "on"
         
         # Handle hidden magic shelf templates and custom shelves
         from . import magic_shelf

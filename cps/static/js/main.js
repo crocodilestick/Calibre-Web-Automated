@@ -424,8 +424,128 @@ $(function() {
         }
     };
 
+    // Load-more handler for the .load-more-tile at the end of a books
+    // grid. Triggered by click on the tile or by the tile scrolling into
+    // view (IntersectionObserver). Click is the fallback for keyboard
+    // nav / browsers without IntersectionObserver.
+    window.cwaInit.loadMore = function () {
+        // Hide the bottom pagination — the tile supersedes it.
+        if ($(".load-more-tile").length) {
+            $(".pagination").addClass("hidden");
+        }
+
+        // Direct (not delegated) binding so this runs before
+        // partial-nav.js's document-level click listener; preventDefault
+        // then stops partial-nav from SPA-navigating to the link.
+        $(".load-more-tile .load-more-link").each(function () {
+            var $link = $(this);
+            if ($link.data("cwaLoadMoreBound")) return;
+            $link.data("cwaLoadMoreBound", true);
+            $link.on("click", handleLoadMoreClick);
+        });
+
+        // Auto-fire when the tile enters viewport. Observer is
+        // disconnected after firing once; a fresh one gets attached
+        // to the replacement tile via the recursive cwaInit.loadMore
+        // call after the fetch lands. Gated by per-user opt-out
+        // (default on); click still works either way.
+        var autoLoadMore = document.body.getAttribute("data-auto-load-more") !== "false";
+        if (autoLoadMore && "IntersectionObserver" in window) {
+            $(".load-more-tile").each(function () {
+                var tileEl = this;
+                if (tileEl.__cwaLoadMoreObserver) return;
+                var observer = new IntersectionObserver(function (entries) {
+                    for (var i = 0; i < entries.length; i++) {
+                        if (!entries[i].isIntersecting) continue;
+                        observer.disconnect();
+                        tileEl.__cwaLoadMoreObserver = null;
+                        loadMoreFromTile($(tileEl));
+                        return;
+                    }
+                }, { rootMargin: "-50px" });
+                tileEl.__cwaLoadMoreObserver = observer;
+                observer.observe(tileEl);
+            });
+        }
+    };
+
+    function handleLoadMoreClick(e) {
+        e.preventDefault();
+        loadMoreFromTile($(this).closest(".load-more-tile"));
+    }
+
+    function loadMoreFromTile($tile) {
+        if (!$tile.length || $tile.hasClass("is-loading")) return;
+        var url = $tile.find(".load-more-link").first().attr("href");
+        if (!url) return;
+
+        // Disconnect the observer if a click beat it so we don't double-fire.
+        var tileEl = $tile[0];
+        if (tileEl.__cwaLoadMoreObserver) {
+            tileEl.__cwaLoadMoreObserver.disconnect();
+            tileEl.__cwaLoadMoreObserver = null;
+        }
+
+        $tile.addClass("is-loading");
+
+        fetch(url, {
+            credentials: "same-origin",
+            headers: {
+                "X-CWA-Fragment": "1",
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "text/html"
+            }
+        }).then(function (res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.text();
+        }).then(function (html) {
+            var doc = new DOMParser().parseFromString(html, "text/html");
+            // New books from the next page, including a fresh load-more
+            // tile at the end if more pages remain.
+            var $newBooks = $(doc).find(".discover.load-more > .row > .book");
+            if (!$newBooks.length) {
+                $tile.remove();
+                return;
+            }
+
+            // Insert before the old tile (before() handles cross-doc
+            // adoption from the DOMParser doc), then remove the old.
+            var $row = $tile.parent();
+            var oldTileEl = $tile[0];
+            $tile.before($newBooks);
+            $tile.remove();
+
+            // Re-bind the click handler to the freshly-inserted tile.
+            window.cwaInit.loadMore();
+
+            // Splice the stale tile out of Isotope's items array
+            // manually: isotope("remove") is async and doesn't
+            // re-layout, leaving the slot blank; isotope("reloadItems")
+            // wipes visible items entirely. No imagesLoaded re-layout
+            // either — .book has CSS-fixed dimensions so layout is
+            // correct before covers load, and adding a new .progress
+            // listener over $row on each click stacks them.
+            var iso = $row.data("isotope");
+            if (iso) {
+                $row.isotope("appended", $newBooks);
+                for (var ii = 0; ii < iso.items.length; ii++) {
+                    if (iso.items[ii].element === oldTileEl) {
+                        iso.items.splice(ii, 1);
+                        break;
+                    }
+                }
+                $row.isotope("layout");
+            }
+        }).catch(function (err) {
+            console.error("[cwa-load-more] failed to load", url, err);
+        }).then(function () {
+            $tile.removeClass("is-loading");
+        });
+    }
+
     window.cwaInit.isotope();
     window.cwaInit.infiniteScroll();
+    window.cwaInit.loadMore();
 
     $(document).on("click", "#restart", function() {
         $("#restart").hide();

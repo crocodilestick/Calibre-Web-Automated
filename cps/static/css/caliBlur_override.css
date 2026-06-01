@@ -191,6 +191,12 @@ div#Downloads_list {
         height: 30px;
         min-width: max-content;
     }
+    /* Drop the discover grid's horizontal padding so a 360px viewport still
+       fits two 180px book tiles side-by-side. */
+    body > div.container-fluid > div > div.col-sm-10 > div.discover.load-more {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
 }
 
 .usertable .bootstrap-table.bootstrap3 {

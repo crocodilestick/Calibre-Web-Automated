@@ -1612,6 +1612,12 @@ def publisher_list():
         abort(404)
 
 
+def _get_normalize_covers(user):
+    """User preference for normalizing book-cover sizes; defaults to True when unset."""
+    value = user.get_view_property('books', 'normalize_covers')
+    return True if value is None else bool(value)
+
+
 @web.route("/series")
 @login_required_if_no_ano
 def series_list():
@@ -2532,6 +2538,14 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                     current_user.view_settings.pop('opds', None)
                 flag_modified(current_user, "view_settings")
 
+        # Normalize covers in books pages (checkbox: absent = unchecked = False)
+        if current_user.view_settings is None:
+            current_user.view_settings = {}
+        current_user.view_settings.setdefault('books', {})['normalize_covers'] = (
+            to_save.get("normalize_covers") == "on"
+        )
+        flag_modified(current_user, "view_settings")
+
         # Magic shelf order settings
         magic_shelf_order_raw = to_save.get("magic_shelf_order", "").strip()
         magic_shelf_order_mode = to_save.get("magic_shelf_order_mode", magic_shelf.DEFAULT_MAGIC_SHELF_ORDER_MODE)
@@ -2643,6 +2657,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                                      magic_shelf_order_string=magic_shelf_order_string,
                                      magic_shelf_order_labels=magic_shelf_order_labels,
                                      magic_shelf_order_mode=magic_shelf_order_mode,
+                                     normalize_covers=_get_normalize_covers(current_user),
                                      title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                      page="me",
                                      kobo_support=kobo_support,
@@ -2758,6 +2773,7 @@ def profile():
                                  languages=languages,
                                  content=current_user,
                                  config=config,
+                                 normalize_covers=_get_normalize_covers(current_user),
                                  kobo_support=kobo_support,
                                  hardcover_support=hardcover_support,
                                  system_shelf_templates=system_shelf_templates,

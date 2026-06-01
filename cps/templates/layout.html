@@ -337,7 +337,14 @@
                   <li class="page-item active"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
                 {% endif %}
               {% else %}
-                <li class="page-item page-last-separator disabled"><a class="page-link" aria-label="">…</a></li>
+                <li class="page-item page-last-separator page-jump dropdown">
+                  <a class="page-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" aria-label="{{_('Go to page')}}">…</a>
+                  <ul class="dropdown-menu page-jump-menu" role="menu">
+                    {% for i in range(1, pagination.pages + 1) %}
+                      <li role="presentation"{% if i == pagination.page %} class="active"{% endif %}><a role="menuitem" tabindex="-1" href="{{ i|url_for_other_page }}">{{ i }}</a></li>
+                    {% endfor %}
+                  </ul>
+                </li>
               {% endif %}
             {% endfor %}
             {% if pagination.has_next %}

@@ -19,8 +19,18 @@
 
   if (!window.cwaUserData || !window.cwaUserData.canEditBooks) return;
 
-  var BOOK_SELECTOR = ".book";
+  // Scoped to grid cards only (which carry both `book` and `session` classes
+  // on the index/search/author/shelf templates). Stops drag-merge init from
+  // running on the book detail page, which renders a different `.book` element
+  // for the cover and has no merge use-case. Fork #352 (@SethMilliken).
+  var BOOK_SELECTOR = ".book.session";
   var COVER_LINK_SELECTOR = ".book-cover-link";
+  // Drag SOURCE handle within each card. The whole card was the source in
+  // PR #161, but `draggable="true"` on an ancestor suppresses native text
+  // selection of descendants in Safari/WebKit — breaking title/author
+  // selection for every user. Scoping the draggable attribute to the cover
+  // restores selection on the meta column. Fork #352.
+  var COVER_SELECTOR = ".cover";
   var DRAGGING_CLASS = "drag-merge-dragging";
   var OVER_CLASS = "drag-merge-over";
   var DRAG_ENABLED_CLASS = "drag-merge-enabled";
@@ -341,9 +351,23 @@
   function enableDrag(bookEl) {
     if (bookEl.classList.contains(DRAG_ENABLED_CLASS)) return;
     bookEl.classList.add(DRAG_ENABLED_CLASS);
-    bookEl.setAttribute("draggable", "true");
-    bookEl.addEventListener("dragstart", onDragStart);
-    bookEl.addEventListener("dragend", onDragEnd);
+    // Drag SOURCE on the cover only — keeps title/author text selectable in
+    // the .meta column (fork #352). The drag handlers walk up via
+    // getBookEl(e.target).closest(BOOK_SELECTOR) to find the card, so they
+    // work identically with the listener on the cover.
+    var cover = bookEl.querySelector(COVER_SELECTOR);
+    if (cover) {
+      cover.setAttribute("draggable", "true");
+      cover.addEventListener("dragstart", onDragStart);
+      cover.addEventListener("dragend", onDragEnd);
+    } else if (typeof console !== "undefined" && console.warn) {
+      // Should be impossible — every .book.session in the grid templates
+      // renders a `.cover` child. Surface a warning if a future template
+      // refactor drops it, otherwise the card is silently a drop-only target.
+      console.warn("drag-drop-merge: .book.session card has no .cover child; drag source not wired", bookEl);
+    }
+    // Drop TARGET stays the whole card: drop the source cover onto any part
+    // of the target card (cover or meta area) and the merge fires.
     bookEl.addEventListener("dragenter", onDragEnter);
     bookEl.addEventListener("dragover", onDragOver);
     bookEl.addEventListener("dragleave", onDragLeave);

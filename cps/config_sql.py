@@ -483,6 +483,7 @@ def _migrate_table(session, orm_class, secret_key=None):
     if secret_key:
         _encrypt_fields(session, secret_key)
     changed = False
+    new_columns = set()
 
     for column_name, column in orm_class.__dict__.items():
         if column_name[0] != '_':
@@ -510,6 +511,7 @@ def _migrate_table(session, orm_class, secret_key=None):
                 log.debug(alter_table)
                 session.execute(alter_table)
                 changed = True
+                new_columns.add(column_name)
             except json.decoder.JSONDecodeError as e:
                 log.error("Database corrupt column: {}".format(column_name))
                 log.debug(e)
@@ -519,6 +521,8 @@ def _migrate_table(session, orm_class, secret_key=None):
             session.commit()
         except OperationalError:
             session.rollback()
+
+    return new_columns
 
 
 def autodetect_calibre_binaries():
@@ -586,15 +590,18 @@ def autodetect_kepubify_binary():
 def _migrate_database(session, secret_key):
     # make sure the table is created, if it does not exist
     _Base.metadata.create_all(session.bind)
-    _migrate_table(session, _Settings, secret_key)
+    new_settings_columns = _migrate_table(session, _Settings, secret_key)
     _migrate_table(session, _Flask_Settings)
+    return new_settings_columns
 
 
 def load_configuration(session, secret_key):
-    _migrate_database(session, secret_key)
+    new_columns = _migrate_database(session, secret_key)
     if not session.query(_Settings).count():
         session.add(_Settings())
         session.commit()
+        return True
+    return 'config_subtitle_column' in new_columns
 
 
 def get_flask_session_key(_session):

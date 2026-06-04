@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-04 18:02+0000\n"
+"POT-Creation-Date: 2026-06-04 18:04+0000\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -1439,73 +1439,83 @@ msgstr ""
 "Domain panggilan balik tidak diverifikasi, ikuti langkah-langkah untuk "
 "memverifikasi domain di konsol pengembang google"
 
-#: cps/helper.py:118
+#: cps/helper.py:120
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "%(format)s format tidak ditemukan untuk id buku: %(book)d"
 
-#: cps/helper.py:124 cps/tasks/convert.py:77
+#: cps/helper.py:126 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "%(format)s tidak ditemukan di Google Drive: %(fn)s"
 
-#: cps/helper.py:129
+#: cps/helper.py:131
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s tidak ditemukan: %(fn)s"
 
-#: cps/helper.py:136 cps/helper.py:260 cps/templates/detail.html:528
+#: cps/helper.py:138 cps/helper.py:269 cps/templates/detail.html:528
 #: cps/templates/detail.html:532
 msgid "Send to eReader"
 msgstr "Kirim ke E-Reader"
 
-#: cps/helper.py:138 cps/helper.py:158 cps/helper.py:271
+#: cps/helper.py:140 cps/helper.py:167 cps/helper.py:280
 msgid "This Email has been sent via Calibre-Web NextGen."
 msgstr ""
 
-#: cps/helper.py:156
+#: cps/helper.py:155
+#, fuzzy, python-format
+msgid "Conversion timed out for book id: %(book)d"
+msgstr "%(format)s format tidak ditemukan untuk id buku: %(book)d"
+
+#: cps/helper.py:157
+#, fuzzy, python-format
+msgid "Conversion failed for book id: %(book)d"
+msgstr "%(format)s format tidak ditemukan untuk id buku: %(book)d"
+
+#: cps/helper.py:165
 msgid "Calibre-Web NextGen Test Email"
 msgstr ""
 
-#: cps/helper.py:157
+#: cps/helper.py:166
 #, fuzzy
 msgid "Test Email"
 msgstr "Email tes"
 
-#: cps/helper.py:174
+#: cps/helper.py:183
 msgid "Get Started with Calibre-Web NextGen"
 msgstr ""
 
-#: cps/helper.py:179
+#: cps/helper.py:188
 #, fuzzy, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Email pendaftaran untuk pengguna: %(name)s"
 
-#: cps/helper.py:190 cps/helper.py:196
+#: cps/helper.py:199 cps/helper.py:205
 #, fuzzy, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "Ubah %(orig)s menjadi %(format)s dan kirim ke E-Reader"
 
-#: cps/helper.py:215 cps/helper.py:219 cps/helper.py:223
+#: cps/helper.py:224 cps/helper.py:228 cps/helper.py:232
 #, fuzzy, python-format
 msgid "Send %(format)s to eReader"
 msgstr "Kirim %(format)s ke E-Reader"
 
-#: cps/helper.py:266
+#: cps/helper.py:275
 #, fuzzy, python-format
 msgid "%(book)s send to eReader"
 msgstr "%%(buku)s telah dikirim ke E-Reader"
 
-#: cps/helper.py:273
+#: cps/helper.py:282
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "Berkas yang diminta tidak dapat dibaca. Mungkin izinnya salah?"
 
-#: cps/helper.py:418
+#: cps/helper.py:427
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "Status baca tidak bisa disetel: {}"
 
-#: cps/helper.py:441
+#: cps/helper.py:450
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
@@ -1513,12 +1523,12 @@ msgstr ""
 "Menghapus folder buku untuk buku %(id)s gagal, jalur memiliki subfolder: "
 "%(path)s"
 
-#: cps/helper.py:453
+#: cps/helper.py:462
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "Gagal menghapus buku %(id)s: %(message)s"
 
-#: cps/helper.py:464
+#: cps/helper.py:473
 #, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
@@ -1527,7 +1537,7 @@ msgstr ""
 "Menghapus buku %(id)s hanya dari basis data, jalur buku di basis data tidak "
 "valid: %(path)s"
 
-#: cps/helper.py:554
+#: cps/helper.py:563
 #, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
@@ -1535,61 +1545,61 @@ msgstr ""
 "Ganti nama pengarang dari: '%(src)s' menjadi '%(dest)s' gagal dengan "
 "kesalahan: %(error)s"
 
-#: cps/helper.py:623 cps/helper.py:632
+#: cps/helper.py:632 cps/helper.py:641
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Berkas %(file)s tidak ditemukan di Google Drive"
 
-#: cps/helper.py:722
+#: cps/helper.py:731
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Ganti nama judul dari: '%(src)s' menjadi '%(dest)s' gagal dengan kesalahan: "
 "%(error)s"
 
-#: cps/helper.py:761
+#: cps/helper.py:770
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "Jalur buku %(path)s tidak ditemukan di Google Drive"
 
-#: cps/helper.py:821
+#: cps/helper.py:830
 msgid "Found an existing account for this Email address"
 msgstr ""
 
-#: cps/helper.py:829
+#: cps/helper.py:838
 msgid "This username is already taken"
 msgstr "Nama pengguna ini sudah digunakan"
 
-#: cps/helper.py:843
+#: cps/helper.py:852
 #, fuzzy
 msgid "Invalid Email address format"
 msgstr "Format alamat email tidak valid"
 
-#: cps/helper.py:865
+#: cps/helper.py:874
 msgid "Password doesn't comply with password validation rules"
 msgstr ""
 
-#: cps/helper.py:1174
+#: cps/helper.py:1183
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 "Modul 'advocate' Python tidak diinstal tetapi diperlukan untuk unggahan "
 "sampul"
 
-#: cps/helper.py:1179 cps/helper.py:1187
+#: cps/helper.py:1188 cps/helper.py:1196
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1201
+#: cps/helper.py:1210
 msgid "Error Downloading Cover"
 msgstr "Kesalahan Mengunduh Sampul"
 
-#: cps/helper.py:1204
+#: cps/helper.py:1213
 msgid "Cover Format Error"
 msgstr "Kesalahan Format Sampul"
 
-#: cps/helper.py:1207
+#: cps/helper.py:1216
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
@@ -1597,77 +1607,77 @@ msgstr ""
 "Anda tidak diizinkan mengakses localhost atau jaringan lokal untuk unggahan "
 "sampul"
 
-#: cps/helper.py:1223
+#: cps/helper.py:1232
 msgid "Failed to create path for cover"
 msgstr "Gagal membuat jalur untuk sampul"
 
-#: cps/helper.py:1234 cps/helper.py:1247 cps/helper.py:1250
+#: cps/helper.py:1243 cps/helper.py:1256 cps/helper.py:1259
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr ""
 "Berkas sampul bukan berkas gambar yang valid, atau tidak dapat disimpan"
 
-#: cps/helper.py:1267
+#: cps/helper.py:1276
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "Hanya berkas jpg/jpeg/png/webp/bmp yang didukung sebagai berkas sampul"
 
-#: cps/helper.py:1283 cps/helper.py:1288
+#: cps/helper.py:1292 cps/helper.py:1297
 msgid "Invalid cover file content"
 msgstr "Konten berkas sampul tidak valid"
 
-#: cps/helper.py:1292
+#: cps/helper.py:1301
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Hanya berkas jpg/jpeg yang didukung sebagai berkas sampul"
 
-#: cps/helper.py:1493 cps/helper.py:1735
+#: cps/helper.py:1502 cps/helper.py:1754
 #, fuzzy
 msgid "Cover"
 msgstr "Sampul"
 
-#: cps/helper.py:1510
+#: cps/helper.py:1519
 msgid "UnRar binary file not found"
 msgstr "Berkas biner unrar tidak ditemukan"
 
-#: cps/helper.py:1521
+#: cps/helper.py:1530
 #, fuzzy
 msgid "Error executing UnRar"
 msgstr "Kesalahan saat menjalankan UnRar"
 
-#: cps/helper.py:1527
+#: cps/helper.py:1536
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. Calibre-Web NextGen is "
 "optimized for x86_64 and aarch64."
 msgstr ""
 
-#: cps/helper.py:1536
+#: cps/helper.py:1545
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1539
+#: cps/helper.py:1548
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1553
+#: cps/helper.py:1562
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "Basis Data tidak dapat ditulisi"
 
-#: cps/helper.py:1562
+#: cps/helper.py:1571
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1564
+#: cps/helper.py:1573
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Izin eksekusi hilang"
 
-#: cps/helper.py:1569
+#: cps/helper.py:1578
 #, fuzzy
 msgid "Error executing Calibre"
 msgstr "Kesalahan saat menjalankan UnRar"
 
-#: cps/helper.py:1737 cps/templates/admin.html:241
+#: cps/helper.py:1756 cps/templates/admin.html:241
 msgid "Queue all books for metadata backup"
 msgstr "Antrian semua buku untuk cadangan metadata"
 
@@ -1677,7 +1687,7 @@ msgid ""
 "api_endpoint for kobo device"
 msgstr ""
 
-#: cps/kobo_auth.py:144
+#: cps/kobo_auth.py:107
 msgid "Kobo Setup"
 msgstr "Pengaturan Kobo"
 

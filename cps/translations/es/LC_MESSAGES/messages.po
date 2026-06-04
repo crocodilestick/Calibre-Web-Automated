@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-04 18:02+0000\n"
+"POT-Creation-Date: 2026-06-04 18:04+0000\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -1496,74 +1496,84 @@ msgstr ""
 "El dominio Callback no se ha verificado, siga los pasos para verificarlo en "
 "la consola de desarrollador de Google"
 
-#: cps/helper.py:118
+#: cps/helper.py:120
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "%(format)s formato no encontrado para el ID del libro: %(book)d"
 
-#: cps/helper.py:124 cps/tasks/convert.py:77
+#: cps/helper.py:126 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "%(format)s no encontrado en Google Drive: %(fn)s"
 
-#: cps/helper.py:129
+#: cps/helper.py:131
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s no encontrado: %(fn)s"
 
-#: cps/helper.py:136 cps/helper.py:260 cps/templates/detail.html:528
+#: cps/helper.py:138 cps/helper.py:269 cps/templates/detail.html:528
 #: cps/templates/detail.html:532
 msgid "Send to eReader"
 msgstr "Enviar al eReader"
 
-#: cps/helper.py:138 cps/helper.py:158 cps/helper.py:271
+#: cps/helper.py:140 cps/helper.py:167 cps/helper.py:280
 msgid "This Email has been sent via Calibre-Web NextGen."
 msgstr ""
 
-#: cps/helper.py:156
+#: cps/helper.py:155
+#, fuzzy, python-format
+msgid "Conversion timed out for book id: %(book)d"
+msgstr "%(format)s formato no encontrado para el ID del libro: %(book)d"
+
+#: cps/helper.py:157
+#, fuzzy, python-format
+msgid "Conversion failed for book id: %(book)d"
+msgstr "%(format)s formato no encontrado para el ID del libro: %(book)d"
+
+#: cps/helper.py:165
 msgid "Calibre-Web NextGen Test Email"
 msgstr ""
 
-#: cps/helper.py:157
+#: cps/helper.py:166
 msgid "Test Email"
 msgstr "Comprobar correo electrónico"
 
-#: cps/helper.py:174
+#: cps/helper.py:183
 msgid "Get Started with Calibre-Web NextGen"
 msgstr ""
 
-#: cps/helper.py:179
+#: cps/helper.py:188
 #, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Correo electrónico de registro para el usuario: %(name)s"
 
-#: cps/helper.py:190 cps/helper.py:196
+#: cps/helper.py:199 cps/helper.py:205
 #, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "Convertir %(orig)s a %(format)s y enviar al eReader"
 
-#: cps/helper.py:215 cps/helper.py:219 cps/helper.py:223
+#: cps/helper.py:224 cps/helper.py:228 cps/helper.py:232
 #, python-format
 msgid "Send %(format)s to eReader"
 msgstr "Enviado %(format)s al eReader"
 
-#: cps/helper.py:266
+#: cps/helper.py:275
 #, python-format
 msgid "%(book)s send to eReader"
 msgstr "%(book)s enviado al eReader"
 
-#: cps/helper.py:273
+#: cps/helper.py:282
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr ""
 "El archivo solicitado no puede ser leído. ¿Quizás existen problemas con los "
 "permisos?"
 
-#: cps/helper.py:418
+#: cps/helper.py:427
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "No se pudo establecer el estado de lectura: {}"
 
-#: cps/helper.py:441
+#: cps/helper.py:450
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
@@ -1571,12 +1581,12 @@ msgstr ""
 "Fallo al intentar borrar la carpeta del libro %(id)s, la ruta tiene "
 "subcarpetas: %(path)s"
 
-#: cps/helper.py:453
+#: cps/helper.py:462
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "Eliminación del libro %(id)s falló: %(message)s"
 
-#: cps/helper.py:464
+#: cps/helper.py:473
 #, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
@@ -1585,7 +1595,7 @@ msgstr ""
 "Eliminando el libro %(id)s solo de la base de datos, la ruta del libro es no "
 "válida: %(path)s"
 
-#: cps/helper.py:554
+#: cps/helper.py:563
 #, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
@@ -1593,134 +1603,134 @@ msgstr ""
 "Renombrar el autor de: '%(src)s' a '%(dest)s' ha fallado con el error: "
 "%(error)s"
 
-#: cps/helper.py:623 cps/helper.py:632
+#: cps/helper.py:632 cps/helper.py:641
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Fichero %(file)s no encontrado en Google Drive"
 
-#: cps/helper.py:722
+#: cps/helper.py:731
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Renombrar el  título de: '%(src)s' a '%(dest)s' ha fallado con el error: "
 "%(error)s"
 
-#: cps/helper.py:761
+#: cps/helper.py:770
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "La ruta %(path)s del libro no fue encontrada en Google Drive"
 
-#: cps/helper.py:821
+#: cps/helper.py:830
 msgid "Found an existing account for this Email address"
 msgstr ""
 "Se ha encontrado una cuenta existente para esta dirección de correo "
 "electrónico"
 
-#: cps/helper.py:829
+#: cps/helper.py:838
 msgid "This username is already taken"
 msgstr "Este nombre de usuario ya está en uso"
 
-#: cps/helper.py:843
+#: cps/helper.py:852
 msgid "Invalid Email address format"
 msgstr "Formato de la dirección de correo no válido"
 
-#: cps/helper.py:865
+#: cps/helper.py:874
 msgid "Password doesn't comply with password validation rules"
 msgstr "La contraseña no cumple con las reglas de validación de contraseñas"
 
-#: cps/helper.py:1174
+#: cps/helper.py:1183
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 "El módulo Python 'advocate' no está instalado, pero es necesario para subir "
 "portadas"
 
-#: cps/helper.py:1179 cps/helper.py:1187
+#: cps/helper.py:1188 cps/helper.py:1196
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr "La imagen de portada supera el tamaño máximo de %(size)s MB"
 
-#: cps/helper.py:1201
+#: cps/helper.py:1210
 msgid "Error Downloading Cover"
 msgstr "Error al descargar la portada"
 
-#: cps/helper.py:1204
+#: cps/helper.py:1213
 msgid "Cover Format Error"
 msgstr "Error en el formato de la portada"
 
-#: cps/helper.py:1207
+#: cps/helper.py:1216
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
 "No se permite acceder a localhost ni a la red local para subir portadas"
 
-#: cps/helper.py:1223
+#: cps/helper.py:1232
 msgid "Failed to create path for cover"
 msgstr "Error al crear una ruta para la portada"
 
-#: cps/helper.py:1234 cps/helper.py:1247 cps/helper.py:1250
+#: cps/helper.py:1243 cps/helper.py:1256 cps/helper.py:1259
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "El archivo de la portada no es una imágen válida o no se pudo guardar"
 
-#: cps/helper.py:1267
+#: cps/helper.py:1276
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "Sólo se admiten como portada los archivos jpg/jpeg/png/webp/bmp"
 
-#: cps/helper.py:1283 cps/helper.py:1288
+#: cps/helper.py:1292 cps/helper.py:1297
 msgid "Invalid cover file content"
 msgstr "Contenido del archivo de portada no válido"
 
-#: cps/helper.py:1292
+#: cps/helper.py:1301
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Sólo se admiten los archivos jpg/jpeg como portada"
 
-#: cps/helper.py:1493 cps/helper.py:1735
+#: cps/helper.py:1502 cps/helper.py:1754
 msgid "Cover"
 msgstr "Portada"
 
-#: cps/helper.py:1510
+#: cps/helper.py:1519
 msgid "UnRar binary file not found"
 msgstr "No se encuentra el archivo binario UnRar"
 
-#: cps/helper.py:1521
+#: cps/helper.py:1530
 msgid "Error executing UnRar"
 msgstr "Error ejecutando UnRar"
 
-#: cps/helper.py:1527
+#: cps/helper.py:1536
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. Calibre-Web NextGen is "
 "optimized for x86_64 and aarch64."
 msgstr ""
 
-#: cps/helper.py:1536
+#: cps/helper.py:1545
 msgid "Could not find the specified directory"
 msgstr "No se pudo encontrar el directorio especificado"
 
-#: cps/helper.py:1539
+#: cps/helper.py:1548
 msgid "Please specify a directory, not a file"
 msgstr "Por favor, especifique un directorio, no un archivo"
 
-#: cps/helper.py:1553
+#: cps/helper.py:1562
 msgid "Calibre binaries not viable"
 msgstr "Los binarios de Calibre no son viables"
 
-#: cps/helper.py:1562
+#: cps/helper.py:1571
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Faltan binarios de calibre: %(missing)s"
 
-#: cps/helper.py:1564
+#: cps/helper.py:1573
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Faltan permisos de ejecución: %(missing)s"
 
-#: cps/helper.py:1569
+#: cps/helper.py:1578
 msgid "Error executing Calibre"
 msgstr "Error ejecutando Calibre"
 
-#: cps/helper.py:1737 cps/templates/admin.html:241
+#: cps/helper.py:1756 cps/templates/admin.html:241
 msgid "Queue all books for metadata backup"
 msgstr "Poner en cola todos los libros para la copia de seguridad de metadatos"
 
@@ -1730,7 +1740,7 @@ msgid ""
 "api_endpoint for kobo device"
 msgstr ""
 
-#: cps/kobo_auth.py:144
+#: cps/kobo_auth.py:107
 msgid "Kobo Setup"
 msgstr "Configuración de Kobo"
 

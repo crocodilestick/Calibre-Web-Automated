@@ -1384,38 +1384,49 @@ def migrate_user_table(engine, _session):
         _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'preview_default_color' String")
 
 def migrate_oauth_provider_table(engine, _session):
-    try:
-        _session.query(exists().where(OAuthProvider.oauth_base_url)).scalar()
-        _session.commit()
-    except exc.OperationalError:  # Database is not compatible, some columns are missing
-        _safe_session_rollback(_session, "oauthProvider.base_urls")
-        _run_ddl_with_retry(
-            engine,
-            [
-                "ALTER TABLE oauthProvider ADD column 'oauth_base_url' String DEFAULT NULL",
-                "ALTER TABLE oauthProvider ADD column 'oauth_authorize_url' String DEFAULT NULL",
-                "ALTER TABLE oauthProvider ADD column 'oauth_token_url' String DEFAULT NULL",
-                "ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL",
-                "ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL",
-            ],
-        )
+    """Ensure every migration-managed column on oauthProvider exists.
 
-    # Add new OAuth enhancement fields
-    try:
-        _session.query(exists().where(OAuthProvider.metadata_url)).scalar()
-        _session.commit()
-    except exc.OperationalError:  # New columns are missing
-        _safe_session_rollback(_session, "oauthProvider.metadata_url")
-        _run_ddl_with_retry(
-            engine,
-            [
-                "ALTER TABLE oauthProvider ADD column 'metadata_url' String DEFAULT NULL",
-                "ALTER TABLE oauthProvider ADD column 'scope' String DEFAULT 'openid profile email'",
-                "ALTER TABLE oauthProvider ADD column 'username_mapper' String DEFAULT 'preferred_username'",
-                "ALTER TABLE oauthProvider ADD column 'email_mapper' String DEFAULT 'email'",
-                "ALTER TABLE oauthProvider ADD column 'login_button' String DEFAULT 'OpenID Connect'",
-            ],
-        )
+    Instances upgraded across several releases can reach a *partial* column
+    state — e.g. ``oauth_base_url`` present but ``oauth_authorize_url`` missing.
+    Introspect the live schema and add only the columns that are actually
+    missing, one ALTER per statement, so the migration repairs any partial
+    state and stays idempotent across restarts (fork #354).
+
+    The old probe-by-proxy form queried a single column as a stand-in for its
+    whole group, so a partially-migrated DB passed the probe and the missing
+    columns were never added — OAuth init then failed on the missing column
+    and ``/admin/config`` returned 500.
+    """
+    from sqlalchemy import inspect as sa_inspect
+    inspector = sa_inspect(engine)
+    if "oauthProvider" not in inspector.get_table_names():
+        return  # table is created fresh from the model with every column present
+    existing = {c["name"] for c in inspector.get_columns("oauthProvider")}
+    managed_columns = [
+        ("oauth_base_url", "String DEFAULT NULL"),
+        ("oauth_authorize_url", "String DEFAULT NULL"),
+        ("oauth_token_url", "String DEFAULT NULL"),
+        ("oauth_userinfo_url", "String DEFAULT NULL"),
+        ("oauth_admin_group", "String DEFAULT NULL"),
+        ("metadata_url", "String DEFAULT NULL"),
+        ("scope", "String DEFAULT 'openid profile email'"),
+        ("username_mapper", "String DEFAULT 'preferred_username'"),
+        ("email_mapper", "String DEFAULT 'email'"),
+        ("login_button", "String DEFAULT 'OpenID Connect'"),
+    ]
+    for col, coltype in managed_columns:
+        if col not in existing:
+            # One ALTER per call so a stray duplicate column can't roll back the
+            # rest, and tolerate "duplicate column name" per column: a concurrent
+            # boot (gunicorn pre-fork) or a column present-but-absent-from-snapshot
+            # can make ADD COLUMN raise it. Without swallowing it here the error
+            # propagates and aborts every remaining column for a full boot cycle
+            # (fork #354 / PR #355 hardening). Treat it as already-applied.
+            try:
+                _run_ddl_with_retry(engine, "ALTER TABLE oauthProvider ADD column '{}' {}".format(col, coltype))
+            except exc.OperationalError as e:
+                if "duplicate column name" not in str(e).lower():
+                    raise
 
 
 def migrate_config_table(engine, _session):

@@ -440,7 +440,7 @@
           <p class="text-danger" style="margin-top: 2rem; background: #ffe9ec; padding: 1rem; border-left: 4px solid #a94442; padding-inline: 2rem; margin-bottom: 2rem;">
             <strong>{{_('Important:')}}</strong> {{_('OAuth authentication requires this server to be accessed via HTTPS. If you are using HTTP, login will fail.')}}
           </p>
-          {% set generic = provider | selectattr('provider_name', 'equalto', 'generic') | first %}
+          {% set generic = (provider | selectattr('provider_name', 'equalto', 'generic') | first) or {} %}
           <p>{{ _('Generic OAuth Provider') }}</p>
           
           <!-- Metadata URL for auto-discovery -->
@@ -468,7 +468,7 @@
             
             <div class="form-group">
               <label for="config_generic_oauth_server_url">{{_('OAuth Base URL')}}</label>
-              <input type="text" class="form-control" id="config_generic_oauth_server_url" name="config_generic_oauth_server_url" value="{% if generic['oauth_base_url'] != None %}{{ generic['oauth_base_url'] }}{% endif %}" autocomplete="off">
+              <input type="text" class="form-control" id="config_generic_oauth_server_url" name="config_generic_oauth_server_url" value="{% if generic.get('oauth_base_url') != None %}{{ generic['oauth_base_url'] }}{% endif %}" autocomplete="off">
             </div>
             
             <div class="form-group">
@@ -517,11 +517,11 @@
           
           <div class="form-group">
             <label for="config_generic_oauth_client_id">{{_('OAuth Client Id')}}</label>
-            <input type="text" class="form-control" id="config_generic_oauth_client_id" name="config_generic_oauth_client_id" value="{% if generic['oauth_client_id'] != None %}{{ generic['oauth_client_id'] }}{% endif %}" autocomplete="off">
+            <input type="text" class="form-control" id="config_generic_oauth_client_id" name="config_generic_oauth_client_id" value="{% if generic.get('oauth_client_id') != None %}{{ generic['oauth_client_id'] }}{% endif %}" autocomplete="off">
           </div>
           <div class="form-group">
             <label for="config_generic_oauth_client_secret">{{_('OAuth Client Secret')}}</label>
-            <input type="text" class="form-control" id="config_generic_oauth_client_secret" name="config_generic_oauth_client_secret" value="{% if generic['oauth_client_secret'] != None %}{{ generic['oauth_client_secret'] }}{% endif %}" autocomplete="off">
+            <input type="text" class="form-control" id="config_generic_oauth_client_secret" name="config_generic_oauth_client_secret" value="{% if generic.get('oauth_client_secret') != None %}{{ generic['oauth_client_secret'] }}{% endif %}" autocomplete="off">
           </div>
           
           <!-- Field Mapping Configuration -->
@@ -538,7 +538,7 @@
           </div>
           <div class="form-group">
             <label for="config_generic_oauth_admin_group">{{_('OAuth group for Admin')}}</label>
-            <input type="text" class="form-control" id="config_generic_oauth_admin_group" name="config_generic_oauth_admin_group" value="{% if generic['oauth_admin_group'] != None %}{{ generic['oauth_admin_group'] }}{% endif %}" autocomplete="off">
+            <input type="text" class="form-control" id="config_generic_oauth_admin_group" name="config_generic_oauth_admin_group" value="{% if generic.get('oauth_admin_group') != None %}{{ generic['oauth_admin_group'] }}{% endif %}" autocomplete="off">
             <div class="help-block">{{_('Name of the OAuth group that grants admin privileges. Leave empty to disable group-based admin management, or use the global setting in Security Settings for more control.')}}</div>
           </div>
           <div class="form-group">

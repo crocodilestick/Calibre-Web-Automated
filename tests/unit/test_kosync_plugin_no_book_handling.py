@@ -31,8 +31,10 @@ SYNC_LOGIC_LUA = PLUGIN_DIR / "sync_logic.lua"
 SYNC_LOGIC_TEST_LUA = PLUGIN_DIR / "tests" / "sync_logic_test.lua"
 
 # Standing rule: plugin version mirrors the CWNG release tag (drop the `v`).
-# v4.0.54 is the release this backport ships in.
-EXPECTED_PLUGIN_VERSION = "4.0.54"
+# Update this in lockstep with main.lua on every plugin-touching release — it is
+# a deliberate forcing function, not a value to read dynamically. Currently
+# 4.0.136 (last bumped by the #329 "menu under tools" plugin release).
+EXPECTED_PLUGIN_VERSION = "4.0.136"
 
 
 def _read(path: Path) -> str:
@@ -96,8 +98,8 @@ def test_server_address_guard_helper_defined():
         "main.lua must define ensureServerConfigured() (CWA #1271)"
     )
     assert (
-        '_("Please set the CWA Server address first.")' in body
-    ), "ensureServerConfigured must use the upstream prompt text"
+        '_("Please set the NextGen Server address first.")' in body
+    ), "ensureServerConfigured must use the (NextGen-rebranded) prompt text"
 
 
 def test_pull_log_lines_include_current_file_context():

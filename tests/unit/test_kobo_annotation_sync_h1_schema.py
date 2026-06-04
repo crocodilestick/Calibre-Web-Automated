@@ -530,6 +530,7 @@ class TestMigrationPreservesAllUserData:
         ub.migrate_kobo_annotation_sync_h1_columns(engine, session)
         ub.migrate_annotation_decouple_source_target(engine, session)
         ub.migrate_annotation_polymorphic_position(engine, session)
+        ub.migrate_annotation_device_origin(engine, session)
 
         # Fresh session: ORM read must work on every row.
         s2 = session_maker()

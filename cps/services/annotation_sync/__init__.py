@@ -217,6 +217,33 @@ def dispatch_annotation_sync(payload_annotations, book, user) -> None:
     ub.session_commit()
 
 
+def dispatch_existing_annotation_sync(annotation, book, user) -> None:
+    """Push an already-persisted Annotation row to each enabled sync target.
+
+    The Kobo PATCH path (``dispatch_annotation_sync``) upserts the row from a
+    payload first; web-reader-created (and other non-PATCH origin) rows already
+    exist, so this is their fan-out entry point. Same per-handler semantics:
+    skip disabled handlers, never re-push a tombstoned target, record the
+    result on the AnnotationSyncTarget row.
+    """
+    from cps import ub
+    if annotation is None:
+        return
+    for handler in _registered_handlers():
+        if not handler.is_enabled(user):
+            continue
+        existing = annotation.sync_target(handler.target_name)
+        if existing is not None and existing.status == "tombstone":
+            continue
+        try:
+            result = handler.push(annotation, book, user)
+        except Exception as exc:
+            log.exception("dispatcher: handler %s push raised", handler.target_name)
+            result = SyncResult(status="failed", error_message=str(exc))
+        _upsert_sync_target(ub.session, annotation, handler.target_name, result)
+    ub.session_commit()
+
+
 def dispatch_annotation_deletes(deleted_ids, user) -> None:
     """For each annotation_id, transition non-tombstone sync_targets via
     handler.delete AND soft-delete the local Annotation row by setting

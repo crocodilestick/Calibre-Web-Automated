@@ -32,6 +32,27 @@
                 "document"
             ],
             "expected_status" : [200, 401]
+        },
+        "pull_annotations" : {
+            "path" : "/syncs/annotations/:document",
+            "method" : "GET",
+            "required_params" : [
+                "document"
+            ],
+            "expected_status" : [200, 401, 503]
+        },
+        "push_annotations" : {
+            "path" : "/syncs/annotations",
+            "method" : "PUT",
+            "required_params" : [
+                "document",
+                "annotations"
+            ],
+            "payload" : [
+                "document",
+                "annotations"
+            ],
+            "expected_status" : [200, 401, 503]
         }
     }
 }

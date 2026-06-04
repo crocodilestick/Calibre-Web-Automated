@@ -6,6 +6,8 @@ local socketutil = require("socketutil")
 local PROGRESS_TIMEOUTS = { 2,  5 }
 -- Authentication
 local AUTH_TIMEOUTS     = { 5, 10 }
+-- Annotations: payloads can be larger than a progress ping, so allow longer.
+local ANNOTATION_TIMEOUTS = { 5, 15 }
 
 local CWASyncClient = {
     service_spec = nil,
@@ -188,6 +190,65 @@ function CWASyncClient:get_progress(
             callback(res.status == 200, res.body)
         else
             logger.dbg("CWASyncClient:get_progress failure:", res)
+            callback(false, res.body)
+        end
+    end)
+    self.client:enable("AsyncHTTP", {thread = co})
+    coroutine.resume(co)
+    if UIManager.looper then UIManager:setInputTimeout() end
+    socketutil:reset_timeout()
+end
+
+-- Phase 2: pull annotations for a document (server -> device).
+function CWASyncClient:pull_annotations(username, password, document, callback)
+    self.client:reset_middlewares()
+    self.client:enable("Format.JSON")
+    self.client:enable("GinClient")
+    self.client:enable("CWASyncAuth", {
+        username = username,
+        password = password,
+    })
+    socketutil:set_timeout(ANNOTATION_TIMEOUTS[1], ANNOTATION_TIMEOUTS[2])
+    local co = coroutine.create(function()
+        local ok, res = pcall(function()
+            return self.client:pull_annotations({
+                document = document,
+            })
+        end)
+        if ok then
+            callback(res.status == 200, res.body)
+        else
+            logger.dbg("CWASyncClient:pull_annotations failure:", res)
+            callback(false, res.body)
+        end
+    end)
+    self.client:enable("AsyncHTTP", {thread = co})
+    coroutine.resume(co)
+    if UIManager.looper then UIManager:setInputTimeout() end
+    socketutil:reset_timeout()
+end
+
+-- Phase 2: push annotations for a document (device -> server).
+function CWASyncClient:push_annotations(username, password, document, annotations, callback)
+    self.client:reset_middlewares()
+    self.client:enable("Format.JSON")
+    self.client:enable("GinClient")
+    self.client:enable("CWASyncAuth", {
+        username = username,
+        password = password,
+    })
+    socketutil:set_timeout(ANNOTATION_TIMEOUTS[1], ANNOTATION_TIMEOUTS[2])
+    local co = coroutine.create(function()
+        local ok, res = pcall(function()
+            return self.client:push_annotations({
+                document = document,
+                annotations = annotations,
+            })
+        end)
+        if ok then
+            callback(res.status == 200, res.body)
+        else
+            logger.dbg("CWASyncClient:push_annotations failure:", res)
             callback(false, res.body)
         end
     end)

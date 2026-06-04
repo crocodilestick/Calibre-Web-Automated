@@ -39,6 +39,7 @@ import json
 import os
 import re
 import tempfile
+import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -570,3 +571,212 @@ def annotations_export_json(book_id):
         mimetype="application/json",
         headers={"Content-Disposition": f'attachment; filename="{fname}"'},
     )
+
+
+# ---------------------------------------------------------------------------
+# P5 — web-reader create / edit / delete
+# ---------------------------------------------------------------------------
+
+# Web-created highlights get an origin-tagged id so logs/exports can tell them
+# apart from a Kobo device's BookmarkID UUID, and so Phase 2's device bridge
+# can recognize a row it should materialize on a device.
+WEBREADER_ID_PREFIX = "cwn-web-"
+
+# The colors the web reader offers — the set a Kobo round-trips (Color 0..3).
+# Anything else is rejected so we never store a color a device can't represent.
+WEBREADER_COLORS = ("yellow", "red", "green", "blue")
+
+
+def create_annotation(payload, *, user_id, book, session, commit):
+    """Create a ``source='webreader'`` annotation from a reader selection.
+
+    ``payload`` carries the KoboSpan anchors the reader derived from the live
+    kepub DOM: ``start_kobospan`` / ``end_kobospan`` (bare ids like
+    ``kobo.4.1``), ``start_offset`` / ``end_offset``, ``content_id``,
+    ``highlighted_text``, ``highlight_color``, optional ``note_text``.
+
+    Stores the selection as Kobo-native fields (``span#<id>`` selector + the
+    ``-99`` kepub child-index sentinel) so the same converter that renders
+    device highlights renders these, and so Phase 2 can push them to a device.
+    Computes a portable ``cfi_range`` when the kepub is on disk; a missing CFI
+    is fine (the reader rebuilds one client-side from the KoboSpan id).
+
+    Pure-ish: dependencies are explicit so it's unit-testable without a Flask
+    request context — mirrors :func:`ingest_bookmarks`. Raises ``ValueError``
+    on a payload with no usable anchor.
+    """
+    start_span = (payload.get("start_kobospan") or "").strip()
+    if not start_span:
+        raise ValueError("create_annotation: missing start_kobospan anchor")
+    end_span = (payload.get("end_kobospan") or "").strip() or start_span
+
+    color = (payload.get("highlight_color") or "yellow").strip().lower()
+    if color not in WEBREADER_COLORS:
+        color = "yellow"
+
+    # content_id is "<book_uuid>!!<chapter_file>". The reader knows the chapter
+    # href but not the book uuid, so when it sends a bare chapter_filename we
+    # build the Kobo-valid form here (the server has the Book). A directly
+    # supplied content_id wins.
+    content_id = payload.get("content_id")
+    if not content_id:
+        chapter = (payload.get("chapter_filename") or "").strip()
+        book_uuid = getattr(book, "uuid", None)
+        if chapter and book_uuid:
+            content_id = f"{book_uuid}!!{chapter}"
+
+    row = ub.Annotation(
+        user_id=user_id,
+        annotation_id=WEBREADER_ID_PREFIX + uuid.uuid4().hex,
+        book_id=book.id,
+        source="webreader",
+        highlighted_text=payload.get("highlighted_text"),
+        highlight_color=color,
+        note_text=payload.get("note_text"),
+        content_id=content_id,
+        start_container_path="span#" + start_span,
+        start_container_child_index=-99,
+        start_offset=int(payload.get("start_offset") or 0),
+        end_container_path="span#" + end_span,
+        end_container_child_index=-99,
+        end_offset=int(payload.get("end_offset") or 0),
+        context_string=payload.get("context_string"),
+        hidden=False,
+    )
+    session.add(row)
+    # Compute the portable CFI for export. Never fatal — the row stands on its
+    # KoboSpan anchor regardless. _ensure_cfi_range persists it itself.
+    try:
+        _ensure_cfi_range(row, book)
+    except Exception as e:  # pragma: no cover - defensive
+        log.warning("annotations: cfi compute on create failed: %s", e)
+    commit()
+    return row
+
+
+# Sentinel for "field not supplied" so edit can distinguish "set note to None"
+# (clear it) from "don't touch the note".
+_UNSET = object()
+
+
+def _find_owned_annotation(annotation_id, user_id, book_id, session):
+    """Resolve a single annotation scoped to its owner — the IDOR guard. A row
+    that belongs to another user (or doesn't exist) is invisible: returns
+    ``None`` so callers 404 rather than leaking/mutating a foreign row."""
+    return (
+        session.query(ub.Annotation)
+        .filter(
+            ub.Annotation.user_id == user_id,
+            ub.Annotation.book_id == book_id,
+            ub.Annotation.annotation_id == annotation_id,
+        )
+        .first()
+    )
+
+
+def edit_annotation(annotation_id, *, user_id, book_id, session, commit,
+                    color=_UNSET, note=_UNSET):
+    """Update an annotation's color and/or note. Position is immutable.
+
+    Returns the row, or ``None`` if no annotation with that id belongs to
+    ``(user_id, book_id)``. Raises ``ValueError`` on an unsupported color.
+    """
+    row = _find_owned_annotation(annotation_id, user_id, book_id, session)
+    if row is None:
+        return None
+    if color is not _UNSET:
+        normalized = (color or "").strip().lower()
+        if normalized not in WEBREADER_COLORS:
+            raise ValueError(f"edit_annotation: unsupported color {color!r}")
+        row.highlight_color = normalized
+    if note is not _UNSET:
+        row.note_text = note
+    row.last_synced = datetime.now(timezone.utc)
+    commit()
+    return row
+
+
+def delete_annotation(annotation_id, *, user_id, book_id, session, commit):
+    """Soft-delete an annotation (``hidden=True``). Idempotent: deleting an
+    already-hidden row resolves + returns it (route 200). Returns ``None`` when
+    no such row belongs to ``(user_id, book_id)`` (route 404)."""
+    row = _find_owned_annotation(annotation_id, user_id, book_id, session)
+    if row is None:
+        return None
+    row.hidden = True
+    row.last_synced = datetime.now(timezone.utc)
+    commit()
+    return row
+
+
+def _fanout_to_sync_targets(row, book):
+    """Push a freshly created/edited web-reader row to enabled sync targets
+    (Hardcover today). Never fatal — a remote being down must not fail the
+    local highlight."""
+    try:
+        from .services import annotation_sync
+        annotation_sync.dispatch_existing_annotation_sync(row, book, current_user)
+    except Exception as e:  # pragma: no cover - defensive
+        log.warning("annotations: sync-target fan-out failed: %s", e)
+
+
+@annotations_bp.route("/annotations/<int:book_id>", methods=["POST"])
+@user_login_required
+def annotations_create(book_id):
+    """Create a highlight from a web-reader selection (source='webreader')."""
+    book = _resolve_book_or_404(book_id)
+    payload = request.get_json(silent=True) or {}
+    try:
+        row = create_annotation(
+            payload, user_id=current_user.id, book=book,
+            session=ub.session, commit=ub.session_commit,
+        )
+    except ValueError as e:
+        return jsonify({"error": "bad_anchor", "message": str(e)}), 400
+    _fanout_to_sync_targets(row, book)
+    return jsonify(_data_json_row(row, row.cfi_range, None)), 201
+
+
+@annotations_bp.route("/annotations/<int:book_id>/<annotation_id>", methods=["PATCH"])
+@user_login_required
+def annotations_edit(book_id, annotation_id):
+    """Edit a highlight's color and/or note (position immutable)."""
+    book = _resolve_book_or_404(book_id)
+    data = request.get_json(silent=True) or {}
+    kwargs = {}
+    if "highlight_color" in data:
+        kwargs["color"] = data.get("highlight_color")
+    if "note_text" in data:
+        kwargs["note"] = data.get("note_text")
+    try:
+        row = edit_annotation(
+            annotation_id, user_id=current_user.id, book_id=book_id,
+            session=ub.session, commit=ub.session_commit, **kwargs,
+        )
+    except ValueError as e:
+        return jsonify({"error": "bad_color", "message": str(e)}), 400
+    if row is None:
+        abort(404)
+    _fanout_to_sync_targets(row, book)
+    return jsonify(_data_json_row(row, row.cfi_range, None)), 200
+
+
+@annotations_bp.route("/annotations/<int:book_id>/<annotation_id>", methods=["DELETE"])
+@user_login_required
+def annotations_delete(book_id, annotation_id):
+    """Soft-delete a highlight + tombstone any remote sync targets."""
+    _resolve_book_or_404(book_id)
+    row = delete_annotation(
+        annotation_id, user_id=current_user.id, book_id=book_id,
+        session=ub.session, commit=ub.session_commit,
+    )
+    if row is None:
+        abort(404)
+    # Propagate the delete to any remote sync targets (Hardcover) — no-op when
+    # the row has none. Idempotent (re-sets hidden=True, skips tombstones).
+    try:
+        from .services import annotation_sync
+        annotation_sync.dispatch_annotation_deletes([annotation_id], current_user)
+    except Exception as e:  # pragma: no cover - defensive
+        log.warning("annotations: delete fan-out failed: %s", e)
+    return jsonify({"status": "deleted", "annotation_id": annotation_id}), 200

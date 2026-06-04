@@ -163,11 +163,12 @@
                 reader.rendition.annotations.highlight(
                     cfi,
                     { id: row.annotation_id, color: row.highlight_color },
-                    null,
+                    function (e) { showEditPopup(row, contents, e); },
                     "cwa-annotation-overlay",
                     colorStyle(row.highlight_color)
                 );
                 appliedIds[row.annotation_id] = true;
+                appliedCfi[row.annotation_id] = cfi;
             } catch (e) {
                 if (window.console) { console.warn("annotation overlay failed for " + row.annotation_id + ":", e); }
             }
@@ -190,7 +191,7 @@
         if (!rows.length) {
             var empty = document.createElement("li");
             empty.className = "text-muted small";
-            empty.textContent = "No annotations on this book.";
+            empty.textContent = t("noAnnotations", "No annotations on this book yet.");
             ol.appendChild(empty);
             return;
         }
@@ -252,6 +253,270 @@
         return false;
     }
 
+    // --- Phase 1: create / edit / delete -----------------------------------
+
+    var appliedCfi = {};          // annotation_id -> the cfi actually drawn (for removal on edit/delete)
+    var CREATE_COLORS = ["yellow", "red", "green", "blue"];  // the set a Kobo round-trips
+
+    function csrfToken() {
+        var el = document.querySelector("input[name='csrf_token']");
+        return el ? el.value : "";
+    }
+
+    // The reader is a standalone page (no layout.html fetch shim), so we set
+    // the CSRF header ourselves from read.html's hidden input.
+    function apiFetch(method, url, body) {
+        return fetch(url, {
+            method: method,
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken() },
+            body: body ? JSON.stringify(body) : undefined
+        });
+    }
+
+    function apiBase() {
+        return (calibre && calibre.annotationsApiBase) ? calibre.annotationsApiBase : null;
+    }
+
+    // Nearest enclosing KoboSpan element for a selection endpoint node.
+    function nearestKoboSpan(node) {
+        var el = (node && node.nodeType === 3) ? node.parentNode : node;
+        while (el && el.nodeType === 1) {
+            if (el.id && el.id.indexOf("kobo.") === 0) { return el; }
+            el = el.parentNode;
+        }
+        return null;
+    }
+
+    // Character offset of (node, nodeOffset) within `span` — the inverse of
+    // locateOffset: sum the lengths of the span's descendant text nodes.
+    function offsetWithinSpan(doc, span, node, nodeOffset) {
+        if (node === span) { return 0; }
+        var walker = doc.createTreeWalker(span, NodeFilter.SHOW_TEXT, null, false);
+        var total = 0, n;
+        while ((n = walker.nextNode())) {
+            if (n === node) { return total + nodeOffset; }
+            total += n.nodeValue.length;
+        }
+        return nodeOffset;
+    }
+
+    // Map a live selection Range to the create payload's KoboSpan anchors, or
+    // null when the selection isn't inside KoboSpans (e.g. a non-kepub render).
+    function selectionToAnchor(range, contents) {
+        var doc = contents.document;
+        var sSpan = nearestKoboSpan(range.startContainer);
+        var eSpan = nearestKoboSpan(range.endContainer);
+        if (!sSpan || !eSpan) { return null; }
+        return {
+            start_kobospan: sSpan.id,
+            start_offset: offsetWithinSpan(doc, sSpan, range.startContainer, range.startOffset),
+            end_kobospan: eSpan.id,
+            end_offset: offsetWithinSpan(doc, eSpan, range.endContainer, range.endOffset),
+            chapter_filename: sectionHrefForContents(contents),
+            highlighted_text: range.toString()
+        };
+    }
+
+    // Translate an in-iframe client rect to parent-viewport coordinates so a
+    // popup appended to the parent body lands next to the selection.
+    function iframeRectToParent(contents, rect) {
+        try {
+            var fr = contents.document.defaultView.frameElement.getBoundingClientRect();
+            return { left: fr.left + rect.left, top: fr.top + rect.top, bottom: fr.top + rect.bottom };
+        } catch (e) {
+            return { left: rect.left, top: rect.top, bottom: rect.bottom };
+        }
+    }
+
+    function removePopup() {
+        var p = document.getElementById("cwa-ann-popup");
+        if (p && p.parentNode) { p.parentNode.removeChild(p); }
+    }
+
+    // User-facing popup strings come translated from read.html (window.calibre
+    // .annotationsI18n) so they follow the reader's i18n convention; English
+    // fallbacks keep the popup working if the bridge is ever absent.
+    function annI18n() { return (window.calibre && window.calibre.annotationsI18n) || {}; }
+    function t(key, fallback) { var v = annI18n()[key]; return (typeof v === "string" && v) ? v : fallback; }
+    function colorLabel(c) { var m = annI18n().colors || {}; return (typeof m[c] === "string" && m[c]) ? m[c] : c; }
+
+    function makeSwatchRow(selected, onPick) {
+        var wrap = document.createElement("div");
+        wrap.className = "cwa-ann-swatches";
+        CREATE_COLORS.forEach(function (c) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "cwa-ann-swatch cwa-ann-swatch-" + c + (c === selected ? " is-selected" : "");
+            b.setAttribute("aria-label", colorLabel(c));
+            b.style.background = "rgb(" + NAMED_RGB[c].join(",") + ")";
+            b.addEventListener("click", function () {
+                wrap.querySelectorAll(".cwa-ann-swatch").forEach(function (s) { s.classList.remove("is-selected"); });
+                b.classList.add("is-selected");
+                onPick(c);
+            });
+            wrap.appendChild(b);
+        });
+        return wrap;
+    }
+
+    function positionPopup(popup, pos) {
+        popup.style.left = Math.max(8, Math.min(pos.left, window.innerWidth - 260)) + "px";
+        popup.style.top = Math.max(8, Math.min(pos.bottom + 8, window.innerHeight - 160)) + "px";
+    }
+
+    function showCreatePopup(anchor, range, contents) {
+        removePopup();
+        var popup = document.createElement("div");
+        popup.id = "cwa-ann-popup";
+        popup.className = "cwa-ann-popup";
+        var chosen = { color: "yellow" };
+
+        if (!anchor) {
+            var msg = document.createElement("div");
+            msg.className = "cwa-ann-msg";
+            msg.textContent = t("selectWithin", "Select within a paragraph to highlight.");
+            popup.appendChild(msg);
+        } else {
+            popup.appendChild(makeSwatchRow("yellow", function (c) { chosen.color = c; }));
+            var note = document.createElement("textarea");
+            note.className = "cwa-ann-note";
+            note.placeholder = t("addNote", "Add a note (optional)");
+            popup.appendChild(note);
+            var actions = document.createElement("div");
+            actions.className = "cwa-ann-actions";
+            var save = document.createElement("button");
+            save.type = "button"; save.className = "cwa-ann-save"; save.textContent = t("save", "Save");
+            save.addEventListener("click", function () {
+                save.disabled = true;
+                apiFetch("POST", apiBase(), {
+                    start_kobospan: anchor.start_kobospan, start_offset: anchor.start_offset,
+                    end_kobospan: anchor.end_kobospan, end_offset: anchor.end_offset,
+                    chapter_filename: anchor.chapter_filename,
+                    highlighted_text: anchor.highlighted_text,
+                    highlight_color: chosen.color, note_text: note.value || null
+                })
+                .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+                .then(function (row) {
+                    allRows.push(row);
+                    renderSidebarList(allRows);
+                    applyToRenderedContents();
+                    try { contents.window.getSelection().removeAllRanges(); } catch (e) { /* ignore */ }
+                    removePopup();
+                })
+                .catch(function (err) {
+                    save.disabled = false;
+                    if (window.console) { console.warn("annotation create failed:", err); }
+                });
+            });
+            actions.appendChild(save);
+            var cancel = document.createElement("button");
+            cancel.type = "button"; cancel.className = "cwa-ann-cancel"; cancel.textContent = t("cancel", "Cancel");
+            cancel.addEventListener("click", removePopup);
+            actions.appendChild(cancel);
+            popup.appendChild(actions);
+        }
+        document.body.appendChild(popup);
+        try {
+            positionPopup(popup, iframeRectToParent(contents, range.getBoundingClientRect()));
+        } catch (e) { positionPopup(popup, { left: 40, bottom: 80 }); }
+    }
+
+    function showEditPopup(row, contents, evt) {
+        removePopup();
+        var popup = document.createElement("div");
+        popup.id = "cwa-ann-popup";
+        popup.className = "cwa-ann-popup";
+        var chosen = { color: safeColorToken(row.highlight_color) };
+        popup.appendChild(makeSwatchRow(chosen.color, function (c) { chosen.color = c; }));
+        var note = document.createElement("textarea");
+        note.className = "cwa-ann-note";
+        note.placeholder = t("note", "Note");
+        note.value = row.note_text || "";
+        popup.appendChild(note);
+        var actions = document.createElement("div");
+        actions.className = "cwa-ann-actions";
+        var save = document.createElement("button");
+        save.type = "button"; save.className = "cwa-ann-save"; save.textContent = t("save", "Save");
+        save.addEventListener("click", function () {
+            save.disabled = true;
+            apiFetch("PATCH", apiBase() + "/" + encodeURIComponent(row.annotation_id),
+                     { highlight_color: chosen.color, note_text: note.value || null })
+            .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+            .then(function (updated) { repaintAnnotation(row.annotation_id, updated); removePopup(); })
+            .catch(function (err) { save.disabled = false; if (window.console) { console.warn("annotation edit failed:", err); } });
+        });
+        actions.appendChild(save);
+        var del = document.createElement("button");
+        del.type = "button"; del.className = "cwa-ann-delete"; del.textContent = t("del", "Delete");
+        del.addEventListener("click", function () {
+            del.disabled = true;
+            apiFetch("DELETE", apiBase() + "/" + encodeURIComponent(row.annotation_id), null)
+            .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+            .then(function () { removeAnnotation(row.annotation_id); removePopup(); })
+            .catch(function (err) { del.disabled = false; if (window.console) { console.warn("annotation delete failed:", err); } });
+        });
+        actions.appendChild(del);
+        var cancel = document.createElement("button");
+        cancel.type = "button"; cancel.className = "cwa-ann-cancel"; cancel.textContent = t("cancel", "Cancel");
+        cancel.addEventListener("click", removePopup);
+        actions.appendChild(cancel);
+        popup.appendChild(actions);
+        document.body.appendChild(popup);
+        var pos = { left: 40, bottom: 80 };
+        try {
+            if (evt && contents) {
+                pos = iframeRectToParent(contents, { left: evt.clientX, top: evt.clientY, bottom: evt.clientY });
+            }
+        } catch (e) { /* fall back to default pos */ }
+        positionPopup(popup, pos);
+    }
+
+    // Remove an annotation's overlay + sidebar entry + state.
+    function removeAnnotation(id) {
+        if (appliedCfi[id]) {
+            try { reader.rendition.annotations.remove(appliedCfi[id], "highlight"); } catch (e) { /* ignore */ }
+            delete appliedCfi[id];
+        }
+        delete appliedIds[id];
+        allRows = allRows.filter(function (r) { return r.annotation_id !== id; });
+        renderSidebarList(allRows);
+    }
+
+    // Replace an annotation's data + repaint (after a color/note edit).
+    function repaintAnnotation(id, updated) {
+        if (appliedCfi[id]) {
+            try { reader.rendition.annotations.remove(appliedCfi[id], "highlight"); } catch (e) { /* ignore */ }
+            delete appliedCfi[id];
+        }
+        delete appliedIds[id];
+        for (var i = 0; i < allRows.length; i++) {
+            if (allRows[i].annotation_id === id) { allRows[i] = updated; break; }
+        }
+        renderSidebarList(allRows);
+        applyToRenderedContents();
+    }
+
+    function injectStyles() {
+        if (document.getElementById("cwa-ann-style")) { return; }
+        var s = document.createElement("style");
+        s.id = "cwa-ann-style";
+        s.textContent =
+            ".cwa-ann-popup{position:fixed;z-index:10000;background:#fff;border:1px solid #ccc;" +
+            "border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.25);padding:8px;width:240px;" +
+            "font-size:14px;color:#222;}" +
+            ".cwa-ann-swatches{display:flex;gap:6px;margin-bottom:6px;}" +
+            ".cwa-ann-swatch{width:26px;height:26px;border-radius:50%;border:2px solid transparent;" +
+            "cursor:pointer;padding:0;}" +
+            ".cwa-ann-swatch.is-selected{border-color:#333;}" +
+            ".cwa-ann-note{width:100%;min-height:48px;box-sizing:border-box;margin-bottom:6px;}" +
+            ".cwa-ann-actions{display:flex;gap:6px;justify-content:flex-end;}" +
+            ".cwa-ann-actions button{padding:4px 10px;cursor:pointer;}" +
+            ".cwa-ann-delete{color:#d9534f;}" +
+            ".cwa-ann-msg{color:#777;}";
+        document.head.appendChild(s);
+    }
+
     var hookAttached = false;
     function attachRenderHook() {
         if (hookAttached || !reader.rendition || typeof reader.rendition.on !== "function") { return; }
@@ -266,6 +531,20 @@
                 applyToRenderedContents();
             }
         });
+        // Selecting text in the rendered section offers a create popup.
+        reader.rendition.on("selected", function (cfiRange, contents) {
+            try {
+                var sel = contents.window.getSelection();
+                if (!sel || !sel.rangeCount) { return; }
+                var range = sel.getRangeAt(0);
+                if (range.collapsed || !range.toString().trim()) { return; }
+                showCreatePopup(selectionToAnchor(range, contents), range, contents);
+            } catch (e) {
+                if (window.console) { console.warn("annotation selection handler failed:", e); }
+            }
+        });
+        // Paging away dismisses any open popup (its anchor is gone).
+        reader.rendition.on("relocated", removePopup);
     }
 
     function init() {
@@ -277,6 +556,14 @@
             setTimeout(init, 100);
             return;
         }
+
+        injectStyles();
+        // Clicking the parent chrome (outside the popup) dismisses it. Clicks
+        // inside the iframe are handled by the select/relocate hooks.
+        document.addEventListener("mousedown", function (e) {
+            var p = document.getElementById("cwa-ann-popup");
+            if (p && !p.contains(e.target)) { removePopup(); }
+        });
 
         var dataUrl = calibre.annotationsApiBase + "/data.json";
         fetch(dataUrl, { credentials: "same-origin" })

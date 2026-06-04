@@ -61,6 +61,9 @@ CWASync.default_settings = {
     pages_before_update = nil,
     sync_forward = SYNC_STRATEGY.PROMPT,
     sync_backward = SYNC_STRATEGY.DISABLE,
+    -- Highlight sync writes into the device's KoboReader.sqlite — opt-in,
+    -- default off until the user explicitly enables it (Kobo only).
+    sync_annotations = false,
 }
 
 function CWASync:init()
@@ -396,6 +399,24 @@ If set to 0, updating progress based on page turns will be disabled.]]),
                 end,
                 callback = function()
                     self:getProgress(true, true)
+                end,
+                separator = true,
+            },
+            {
+                text = _("Sync highlights (experimental, Kobo only)"),
+                help_text = _([[Writes highlights from the server into your Kobo's database so they show in the stock reader. A backup of KoboReader.sqlite is made before any write. Needs KOReader running on a Kobo.]]),
+                checked_func = function() return self.settings.sync_annotations end,
+                callback = function()
+                    self.settings.sync_annotations = not self.settings.sync_annotations
+                end,
+            },
+            {
+                text = _("Sync highlights now") .. self:statusTextIfActionUnavailable(),
+                enabled_func = function()
+                    return self.settings.sync_annotations and self.settings.password ~= nil and self:hasActiveDocument()
+                end,
+                callback = function()
+                    self:syncAnnotations(true)
                 end,
                 separator = true,
             },
@@ -1421,6 +1442,106 @@ function CWASync:registerEvents()
         self.onNetworkConnected = nil
         self.onNetworkDisconnecting = nil
     end
+end
+
+-- Phase 2: two-way highlight sync. Pull the book's annotations from the
+-- server, diff against what's on the device, write server-side highlights into
+-- KoboReader.sqlite (so stock Nickel shows them), and push device-side
+-- highlights up. Opt-in (sync_annotations) + Kobo-only (provider.available()).
+-- Verified end-to-end on real hardware per the manual checklist.
+function CWASync:syncAnnotations(interactive)
+    if not self.settings.sync_annotations then
+        if interactive then
+            UIManager:show(InfoMessage:new{ text = _("Highlight sync is off."), timeout = 2 })
+        end
+        return
+    end
+    if not self.settings.username or not self.settings.password then
+        if interactive then promptLogin() end
+        return
+    end
+    if not ensureServerConfigured(self.settings.server) then return end
+    if not self:hasCurrentDocument() then
+        if interactive then showNoBookMessage() end
+        return
+    end
+
+    local DeviceAnnotations = require("device_annotations")
+    local provider = DeviceAnnotations.getProvider()
+    if not provider then
+        if interactive then
+            UIManager:show(InfoMessage:new{
+                text = _("Highlight sync needs KOReader running on a Kobo (KoboReader.sqlite)."),
+                timeout = 3,
+            })
+        end
+        return
+    end
+
+    local digest = self:getDocumentDigest()
+    if not digest then return end
+
+    local CWASyncClient = require("CWASyncClient")
+    local client = CWASyncClient:new{
+        service_url = self.settings.server .. "/kosync",
+        service_spec = self.path .. "/api.json",
+    }
+
+    client:pull_annotations(self.settings.username, self.settings.password, digest,
+        function(ok, body)
+            if not ok or type(body) ~= "table" then
+                if interactive then showSyncError() end
+                return
+            end
+            local remote = body.annotations or {}
+
+            -- Kobo's VolumeID for a CW-synced kepub is the book UUID, which the
+            -- server carries in content_id as "<uuid>!!<chapter>".
+            local volume_id
+            for _, a in ipairs(remote) do
+                if a.content_id then
+                    volume_id = a.content_id:match("^(.-)!!")
+                    if volume_id then break end
+                end
+            end
+
+            local localList = volume_id and provider.readAll(volume_id) or {}
+            local diff = SyncLogic.diffAnnotations(localList, remote)
+
+            local applied = 0
+            if volume_id and #diff.apply_to_device > 0 then
+                local ok_apply, n = pcall(provider.applyToDevice, diff.apply_to_device, volume_id)
+                applied = (ok_apply and n) or 0
+                if applied > 0 then
+                    self:refreshLibraryViews({ self:getCurrentDocumentFile() })
+                end
+            end
+
+            if #diff.send_to_server > 0 then
+                client:push_annotations(self.settings.username, self.settings.password, digest,
+                    diff.send_to_server,
+                    function(ok2, _body2)
+                        if interactive then
+                            if ok2 then
+                                UIManager:show(InfoMessage:new{
+                                    text = T(_("Highlights synced: %1 to device, %2 to server."), applied, #diff.send_to_server),
+                                    timeout = 4,
+                                })
+                            else
+                                UIManager:show(InfoMessage:new{
+                                    text = T(_("Highlights synced: %1 to device. Server push failed."), applied),
+                                    timeout = 4,
+                                })
+                            end
+                        end
+                    end)
+            elseif interactive then
+                UIManager:show(InfoMessage:new{
+                    text = T(_("Highlights synced: %1 to device."), applied),
+                    timeout = 4,
+                })
+            end
+        end)
 end
 
 function CWASync:onCloseWidget()

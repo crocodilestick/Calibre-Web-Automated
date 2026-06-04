@@ -131,7 +131,22 @@
             bookmark: "{{ bookmark.bookmark_key if bookmark != None }}",
             useBookmarks: "{{ current_user.is_authenticated | tojson }}",
             kosyncPercent: {{ kosync_progress | tojson if kosync_progress is not none else 'null' }},
-            annotationsApiBase: "{{ url_for('annotations.annotations_view', book_id=bookid).rstrip('/') }}"
+            annotationsApiBase: "{{ url_for('annotations.annotations_view', book_id=bookid).rstrip('/') }}",
+            annotationsI18n: {
+                save: {{ _('Save') | tojson }},
+                cancel: {{ _('Cancel') | tojson }},
+                del: {{ _('Delete') | tojson }},
+                note: {{ _('Note') | tojson }},
+                addNote: {{ _('Add a note (optional)') | tojson }},
+                selectWithin: {{ _('Select within a paragraph to highlight.') | tojson }},
+                noAnnotations: {{ _('No annotations on this book yet.') | tojson }},
+                colors: {
+                    yellow: {{ _('Yellow') | tojson }},
+                    red: {{ _('Red') | tojson }},
+                    green: {{ _('Green') | tojson }},
+                    blue: {{ _('Blue') | tojson }}
+                }
+            }
         };
 
         window.themes = {

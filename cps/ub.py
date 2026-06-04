@@ -871,6 +871,11 @@ class Annotation(Base):
     pdf_page = Column(Integer, nullable=True)         # 1-indexed PDF page number
     pdf_quad_json = Column(Text, nullable=True)       # JSON: [[x,y,w,h], ...] in PDF user-space coords
     comic_page = Column(Integer, nullable=True)       # 1-indexed comic page (CBR/CBZ)
+    # Phase 2 (KOReader bridge) — opaque per-device id of the row a device last
+    # wrote/saw for this annotation (e.g. the KoboReader.sqlite Bookmark.BookmarkID
+    # the plugin created). Lets the plugin dedup + suppress feedback loops without
+    # the server knowing the device kind. NULL until a device materializes the row.
+    device_origin_id = Column(String, nullable=True)
     # Lifecycle
     hidden = Column(Boolean, default=False, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -2177,6 +2182,42 @@ def migrate_annotation_polymorphic_position(engine, _session):
             )
 
 
+def migrate_annotation_device_origin(engine, _session):
+    """Phase 2 (KOReader bridge) — add the nullable ``device_origin_id`` column
+    to ``annotation``. Idempotent.
+
+    Same PRAGMA-guarded, per-statement try/except shape as
+    :func:`migrate_annotation_polymorphic_position` — query the live SQLite
+    catalog (NOT the SQLAlchemy inspector, whose reflection cache is stale
+    across the decouple migration's RENAME) so the existence check sees the
+    same view as the DDL. Nullable column, zero data risk.
+    """
+    with engine.begin() as conn:
+        rows = conn.execute(text(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='annotation'"
+        )).fetchall()
+        if not rows:
+            return
+        existing = {
+            row[1] for row in conn.execute(text(
+                "PRAGMA table_info(annotation)"
+            )).fetchall()
+        }
+        if "device_origin_id" in existing:
+            return
+        try:
+            conn.execute(text("ALTER TABLE annotation ADD COLUMN device_origin_id VARCHAR"))
+            log.info("[annotation-device-origin] added device_origin_id column")
+        except exc.OperationalError as e:
+            if "duplicate column" in str(e).lower():
+                log.info(
+                    "[annotation-device-origin] column already present despite "
+                    "PRAGMA check; treating as idempotent"
+                )
+            else:
+                raise
+
+
 def migrate_annotation_decouple_source_target(engine, _session):
     """Decouple annotation origin from sync target.
 
@@ -2259,6 +2300,7 @@ def migrate_Database(_session):
     migrate_kobo_annotation_sync_h1_columns(engine, _session)
     migrate_annotation_decouple_source_target(engine, _session)
     migrate_annotation_polymorphic_position(engine, _session)
+    migrate_annotation_device_origin(engine, _session)
     migrate_book_cover_preview_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables).

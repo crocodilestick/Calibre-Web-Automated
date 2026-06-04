@@ -855,3 +855,9 @@ def handle_internal_error(error):
         "error": ERROR_INTERNAL,
         "message": "Internal server error"
     }, 500)
+
+
+# Register the KOReader annotation-bridge routes (Phase 2) on this blueprint.
+# Imported at the bottom so kosync is fully defined first (the module imports
+# helpers from here). See koreader_annotations.py.
+from . import koreader_annotations  # noqa: E402,F401

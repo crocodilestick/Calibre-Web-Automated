@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-29 15:19+0000\n"
+"POT-Creation-Date: 2026-06-04 18:00+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -153,7 +153,7 @@ msgstr "모두 보기"
 msgid "Malformed request"
 msgstr "잘못된 요청입니다."
 
-#: cps/admin.py:817 cps/admin.py:2899
+#: cps/admin.py:817 cps/admin.py:2901
 msgid "Guest Name can't be changed"
 msgstr "게스트 이름은 변경할 수 없습니다."
 
@@ -161,7 +161,7 @@ msgstr "게스트 이름은 변경할 수 없습니다."
 msgid "Guest can't have this role"
 msgstr "게스트는 이 권한을 가질 수 없습니다."
 
-#: cps/admin.py:845 cps/admin.py:2723
+#: cps/admin.py:845 cps/admin.py:2725
 msgid "No admin user remaining, can't remove admin role"
 msgstr "남아있는 관리자가 없어 권한을 삭제할 수 없습니다."
 
@@ -205,7 +205,7 @@ msgstr "읽기 항목이 유효하지 않습니다."
 msgid "Invalid Restricted Column"
 msgstr "제한된 항목이 유효하지 않습니다."
 
-#: cps/admin.py:952 cps/admin.py:2570
+#: cps/admin.py:952 cps/admin.py:2572
 msgid "Calibre-Web NextGen configuration updated"
 msgstr ""
 
@@ -391,8 +391,8 @@ msgstr "이메일 서버 설정"
 msgid "Success! Gmail Account Verified."
 msgstr "Gmail 계정 인증에 성공했습니다."
 
-#: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2554
-#: cps/admin.py:2670 cps/admin.py:2942 cps/editbooks.py:1078
+#: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2555
+#: cps/admin.py:2672 cps/admin.py:2944 cps/editbooks.py:1078
 #: cps/editbooks.py:1881 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2915
@@ -435,7 +435,7 @@ msgstr "작업 종료 시간이 올바르지 않습니다."
 msgid "Scheduled tasks settings updated"
 msgstr "예약 작업 설정이 업데이트되었습니다."
 
-#: cps/admin.py:1896 cps/admin.py:2040 cps/admin.py:2938 cps/web.py:2335
+#: cps/admin.py:1896 cps/admin.py:2040 cps/admin.py:2940 cps/web.py:2335
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
 
@@ -448,7 +448,7 @@ msgstr "설정 데이터베이스에 저장할 수 없습니다."
 msgid "title"
 msgstr "제목"
 
-#: cps/admin.py:2025 cps/admin.py:2930
+#: cps/admin.py:2025 cps/admin.py:2932
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "사용자 %(nick)s 수정"
@@ -591,177 +591,177 @@ msgid ""
 "https://your-domain.com)"
 msgstr ""
 
-#: cps/admin.py:2537
+#: cps/admin.py:2538
 msgid "Password length has to be between 1 and 40"
 msgstr "비밀번호는 1~40자 사이로 입력해주세요."
 
-#: cps/admin.py:2597
+#: cps/admin.py:2599
 msgid "Database Settings updated"
 msgstr "데이터베이스 설정이 업데이트되었습니다."
 
-#: cps/admin.py:2605
+#: cps/admin.py:2607
 msgid "Database Configuration"
 msgstr "데이터베이스 설정"
 
-#: cps/admin.py:2625 cps/web.py:2304
+#: cps/admin.py:2627 cps/web.py:2304
 msgid "Oops! Please complete all fields."
 msgstr "모든 항목을 입력해주세요."
 
-#: cps/admin.py:2634
+#: cps/admin.py:2636
 msgid "E-mail is not from valid domain"
 msgstr "이메일 주소가 올바르지 않습니다."
 
-#: cps/admin.py:2642
+#: cps/admin.py:2644
 msgid "Add new user"
 msgstr "새 사용자 생성"
 
-#: cps/admin.py:2660
+#: cps/admin.py:2662
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "사용자 '%(user)s'이(가) 생성되었습니다."
 
-#: cps/admin.py:2666
+#: cps/admin.py:2668
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "이미 등록된 이메일 주소 또는 이름입니다."
 
-#: cps/admin.py:2696
+#: cps/admin.py:2698
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "사용자 '%(nick)s'이(가) 삭제되었습니다."
 
-#: cps/admin.py:2699
+#: cps/admin.py:2701
 msgid "Can't delete Guest User"
 msgstr "게스트 사용자는 삭제할 수 없습니다."
 
-#: cps/admin.py:2702
+#: cps/admin.py:2704
 msgid "No admin user remaining, can't delete user"
 msgstr "남은 관리자가 없어 사용자를 삭제할 수 없습니다."
 
-#: cps/admin.py:2893 cps/web.py:2639
+#: cps/admin.py:2895 cps/web.py:2639
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "이메일 주소는 비워둘 수 없고, 올바른 형식이어야 합니다."
 
-#: cps/admin.py:2934
+#: cps/admin.py:2936
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "사용자 '%(nick)s의 정보를 수정했습니다."
 
-#: cps/admin.py:2999
+#: cps/admin.py:3001
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 
-#: cps/admin.py:3004
+#: cps/admin.py:3006
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
 
-#: cps/admin.py:3006 cps/admin.py:3063
+#: cps/admin.py:3008 cps/admin.py:3065
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "연결 실패: 서버가 %(code)s 오류를 답신했습니다."
 
-#: cps/admin.py:3008
+#: cps/admin.py:3010
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr "연결 실패: 서버에 연결할 수 없습니다."
 
-#: cps/admin.py:3010
+#: cps/admin.py:3012
 #, fuzzy
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr "연결 실패: 요청 시간 초과."
 
-#: cps/admin.py:3012
+#: cps/admin.py:3014
 #, fuzzy
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr "연결 실패: 응답에 잘못된 JSON이 포함되어 있습니다."
 
-#: cps/admin.py:3015
+#: cps/admin.py:3017
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "연결 오류가 발생했습니다."
 
-#: cps/admin.py:3041
+#: cps/admin.py:3043
 #, fuzzy, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
 "valid OIDC metadata endpoint."
 msgstr "다음 필드에 메타데이터가 없습니다: %(fields)s"
 
-#: cps/admin.py:3052
+#: cps/admin.py:3054
 #, fuzzy, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "유효한 메타데이터 URL. %(count)s개의 엔드포인트를 발견했습니다."
 
-#: cps/admin.py:3054
+#: cps/admin.py:3056
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "업데이트 정보가 없습니다."
 
-#: cps/admin.py:3056
+#: cps/admin.py:3058
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:3061
+#: cps/admin.py:3063
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr ""
 
-#: cps/admin.py:3065
+#: cps/admin.py:3067
 #, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr "연결 실패: 서버에 연결할 수 없습니다."
 
-#: cps/admin.py:3067
+#: cps/admin.py:3069
 msgid "Connection failed: Request timed out."
 msgstr "연결 실패: 요청 시간 초과."
 
-#: cps/admin.py:3069
+#: cps/admin.py:3071
 msgid "Connection failed: Invalid JSON in response."
 msgstr "연결 실패: 응답에 잘못된 JSON이 포함되어 있습니다."
 
-#: cps/admin.py:3072
+#: cps/admin.py:3074
 msgid "An unknown error occurred."
 msgstr "알 수 없는 오류가 발생했습니다."
 
-#: cps/admin.py:3084
+#: cps/admin.py:3086
 #, fuzzy
 msgid "Restore already in progress."
 msgstr "연결 오류가 발생했습니다."
 
-#: cps/admin.py:3088
+#: cps/admin.py:3090
 msgid "Restore failed: Calibre library path is not configured."
 msgstr ""
 
-#: cps/admin.py:3093
+#: cps/admin.py:3095
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:3098
+#: cps/admin.py:3100
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
 
-#: cps/admin.py:3170 cps/admin.py:3213
+#: cps/admin.py:3172 cps/admin.py:3215
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "연결 오류가 발생했습니다."
 
-#: cps/admin.py:3190
+#: cps/admin.py:3192
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 
-#: cps/admin.py:3209
+#: cps/admin.py:3211
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "

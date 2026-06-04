@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-29 15:19+0000\n"
+"POT-Creation-Date: 2026-06-04 18:00+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -161,7 +161,7 @@ msgstr "全て表示"
 msgid "Malformed request"
 msgstr "不正なリクエスト"
 
-#: cps/admin.py:817 cps/admin.py:2899
+#: cps/admin.py:817 cps/admin.py:2901
 msgid "Guest Name can't be changed"
 msgstr "ゲストユーザーの名前は変更できません"
 
@@ -169,7 +169,7 @@ msgstr "ゲストユーザーの名前は変更できません"
 msgid "Guest can't have this role"
 msgstr "ゲストユーザーはこのロールを持つことができません"
 
-#: cps/admin.py:845 cps/admin.py:2723
+#: cps/admin.py:845 cps/admin.py:2725
 msgid "No admin user remaining, can't remove admin role"
 msgstr "管理者ユーザーが残っておらず、管理者ロールを削除できません"
 
@@ -214,7 +214,7 @@ msgstr "無効な読み取り列"
 msgid "Invalid Restricted Column"
 msgstr "無効な制限列"
 
-#: cps/admin.py:952 cps/admin.py:2570
+#: cps/admin.py:952 cps/admin.py:2572
 msgid "Calibre-Web NextGen configuration updated"
 msgstr ""
 
@@ -402,8 +402,8 @@ msgstr "メールサーバー設定を編集"
 msgid "Success! Gmail Account Verified."
 msgstr "成功！Gmailアカウントが確認されました。"
 
-#: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2554
-#: cps/admin.py:2670 cps/admin.py:2942 cps/editbooks.py:1078
+#: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2555
+#: cps/admin.py:2672 cps/admin.py:2944 cps/editbooks.py:1078
 #: cps/editbooks.py:1881 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2915
@@ -448,7 +448,7 @@ msgstr "指定したタスクの期間が無効です"
 msgid "Scheduled tasks settings updated"
 msgstr "スケジュールタスクの設定を更新しました"
 
-#: cps/admin.py:1896 cps/admin.py:2040 cps/admin.py:2938 cps/web.py:2335
+#: cps/admin.py:1896 cps/admin.py:2040 cps/admin.py:2940 cps/web.py:2335
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "不明なエラーが発生しました。あとで再試行してください。"
 
@@ -461,7 +461,7 @@ msgstr "設定DBが書き込みできません"
 msgid "title"
 msgstr "タイトル"
 
-#: cps/admin.py:2025 cps/admin.py:2930
+#: cps/admin.py:2025 cps/admin.py:2932
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "ユーザー %(nick)s を編集"
@@ -609,70 +609,70 @@ msgstr ""
 "OAuthリダイレクトホストにはパスを含めないでください。ベースURLのみを使用して"
 "ください（例：https://your-domain.com）"
 
-#: cps/admin.py:2537
+#: cps/admin.py:2538
 msgid "Password length has to be between 1 and 40"
 msgstr "パスワードの長さは1〜40文字である必要があります"
 
-#: cps/admin.py:2597
+#: cps/admin.py:2599
 msgid "Database Settings updated"
 msgstr "DB設定を更新しました"
 
-#: cps/admin.py:2605
+#: cps/admin.py:2607
 msgid "Database Configuration"
 msgstr "DB設定"
 
-#: cps/admin.py:2625 cps/web.py:2304
+#: cps/admin.py:2627 cps/web.py:2304
 msgid "Oops! Please complete all fields."
 msgstr "全ての項目を入力してください"
 
-#: cps/admin.py:2634
+#: cps/admin.py:2636
 msgid "E-mail is not from valid domain"
 msgstr "このメールは有効なドメインからのものではありません"
 
-#: cps/admin.py:2642
+#: cps/admin.py:2644
 msgid "Add new user"
 msgstr "新規ユーザー追加"
 
-#: cps/admin.py:2660
+#: cps/admin.py:2662
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "ユーザー '%(user)s' を作成しました"
 
-#: cps/admin.py:2666
+#: cps/admin.py:2668
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
 "このメールアドレスかニックネームで登録されたアカウントがすでに存在します。"
 
-#: cps/admin.py:2696
+#: cps/admin.py:2698
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "ユーザー '%(nick)s' を削除しました"
 
-#: cps/admin.py:2699
+#: cps/admin.py:2701
 msgid "Can't delete Guest User"
 msgstr "ゲストユーザーは削除できません"
 
-#: cps/admin.py:2702
+#: cps/admin.py:2704
 msgid "No admin user remaining, can't delete user"
 msgstr "管理者ユーザーが残っておらず、ユーザーを削除できません"
 
-#: cps/admin.py:2893 cps/web.py:2639
+#: cps/admin.py:2895 cps/web.py:2639
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "メールアドレスは空欄にできず、有効なメールアドレスである必要があります"
 
-#: cps/admin.py:2934
+#: cps/admin.py:2936
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "ユーザー '%(nick)s' を更新しました"
 
-#: cps/admin.py:2999
+#: cps/admin.py:3001
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 "接続成功！OIDCディスカバリーエンドポイントにアクセスできます。%(endpoints)s"
 
-#: cps/admin.py:3004
+#: cps/admin.py:3006
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -680,12 +680,12 @@ msgstr ""
 "接続失敗：OIDCディスカバリーエンドポイントが見つかりません（404）。ベースURL"
 "が正しいか確認してください。"
 
-#: cps/admin.py:3006 cps/admin.py:3063
+#: cps/admin.py:3008 cps/admin.py:3065
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "接続失敗：サーバーがステータスコード %(code)s を返しました"
 
-#: cps/admin.py:3008
+#: cps/admin.py:3010
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
@@ -693,13 +693,13 @@ msgstr ""
 "接続失敗：サーバーに接続できませんでした。URLとネットワーク接続を確認してくだ"
 "さい。"
 
-#: cps/admin.py:3010
+#: cps/admin.py:3012
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "接続失敗：リクエストがタイムアウトしました。サーバーが遅いか到達不能です。"
 
-#: cps/admin.py:3012
+#: cps/admin.py:3014
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -707,12 +707,12 @@ msgstr ""
 "接続失敗：サーバーが無効なJSONを返しました。OIDCエンドポイントではない可能性"
 "があります。"
 
-#: cps/admin.py:3015
+#: cps/admin.py:3017
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "接続失敗：%(error)s"
 
-#: cps/admin.py:3041
+#: cps/admin.py:3043
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -721,29 +721,29 @@ msgstr ""
 "メタデータに必要なOIDCフィールドがありません：%(fields)s。有効なOIDCメタデー"
 "タエンドポイントではない可能性があります。"
 
-#: cps/admin.py:3052
+#: cps/admin.py:3054
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 "メタデータURLは有効です！%(count)s個のOAuthエンドポイントが見つかりました。"
 
-#: cps/admin.py:3054
+#: cps/admin.py:3056
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "リリース情報がありません"
 
-#: cps/admin.py:3056
+#: cps/admin.py:3058
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 " 注意：ユーザー情報エンドポイントが見つかりません。認証で問題が発生する可能性"
 "があります。"
 
-#: cps/admin.py:3061
+#: cps/admin.py:3063
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "メタデータURLが見つかりません（404）。URLが正しいか確認してください。"
 
-#: cps/admin.py:3065
+#: cps/admin.py:3067
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
@@ -751,48 +751,48 @@ msgstr ""
 "接続失敗：メタデータURLに接続できませんでした。URLとネットワーク接続を確認し"
 "てください。"
 
-#: cps/admin.py:3067
+#: cps/admin.py:3069
 msgid "Connection failed: Request timed out."
 msgstr "接続失敗：リクエストがタイムアウトしました。"
 
-#: cps/admin.py:3069
+#: cps/admin.py:3071
 msgid "Connection failed: Invalid JSON in response."
 msgstr "接続失敗：レスポンスに無効なJSONが含まれています。"
 
-#: cps/admin.py:3072
+#: cps/admin.py:3074
 msgid "An unknown error occurred."
 msgstr "不明なエラーが発生しました。"
 
-#: cps/admin.py:3084
+#: cps/admin.py:3086
 msgid "Restore already in progress."
 msgstr "復元は既に進行中です。"
 
-#: cps/admin.py:3088
+#: cps/admin.py:3090
 msgid "Restore failed: Calibre library path is not configured."
 msgstr "復元失敗：Calibreライブラリパスが設定されていません。"
 
-#: cps/admin.py:3093
+#: cps/admin.py:3095
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr "復元失敗：metadata.dbが%(path)sに見つかりません"
 
-#: cps/admin.py:3098
+#: cps/admin.py:3100
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr "復元失敗：app.dbが%(path)sに見つかりません"
 
-#: cps/admin.py:3170 cps/admin.py:3213
+#: cps/admin.py:3172 cps/admin.py:3215
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr "復元失敗：%(err)s"
 
-#: cps/admin.py:3190
+#: cps/admin.py:3192
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 "復元は完了しましたが、app.dbのクリーンアップに失敗しました。詳細はログを確認"
 "してください。"
 
-#: cps/admin.py:3209
+#: cps/admin.py:3211
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "

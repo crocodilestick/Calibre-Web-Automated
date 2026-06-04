@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-05-29 15:19+0000\n"
+"POT-Creation-Date: 2026-06-04 18:00+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -161,7 +161,7 @@ msgstr "Minden megjelenítése"
 msgid "Malformed request"
 msgstr "Hibás kérés"
 
-#: cps/admin.py:817 cps/admin.py:2899
+#: cps/admin.py:817 cps/admin.py:2901
 msgid "Guest Name can't be changed"
 msgstr "A Guest felhasználó neve nem módosítható"
 
@@ -169,7 +169,7 @@ msgstr "A Guest felhasználó neve nem módosítható"
 msgid "Guest can't have this role"
 msgstr "Vendég felhasználó nem veheti fel ezt a szerepet"
 
-#: cps/admin.py:845 cps/admin.py:2723
+#: cps/admin.py:845 cps/admin.py:2725
 msgid "No admin user remaining, can't remove admin role"
 msgstr "Nincs admin felhasználó, nem lehet eltávolítani az Admin szerepet"
 
@@ -213,7 +213,7 @@ msgstr "Érvénytelen olvasva/olvasatlan állapot oszlop"
 msgid "Invalid Restricted Column"
 msgstr "Érvénytelen korlátozások oszlop"
 
-#: cps/admin.py:952 cps/admin.py:2570
+#: cps/admin.py:952 cps/admin.py:2572
 msgid "Calibre-Web NextGen configuration updated"
 msgstr ""
 
@@ -425,8 +425,8 @@ msgstr "E-mail szerver beállításainak szerkesztése"
 msgid "Success! Gmail Account Verified."
 msgstr "Siker! A Gmail-fiók hitelesítve."
 
-#: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2554
-#: cps/admin.py:2670 cps/admin.py:2942 cps/editbooks.py:1078
+#: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2555
+#: cps/admin.py:2672 cps/admin.py:2944 cps/editbooks.py:1078
 #: cps/editbooks.py:1881 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2915
@@ -471,7 +471,7 @@ msgstr "A feladat időtartama érvénytelen"
 msgid "Scheduled tasks settings updated"
 msgstr "Az ütemezett feladatok beállításai frissültek"
 
-#: cps/admin.py:1896 cps/admin.py:2040 cps/admin.py:2938 cps/web.py:2335
+#: cps/admin.py:1896 cps/admin.py:2040 cps/admin.py:2940 cps/web.py:2335
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Ismeretlen hiba történt. Később próbálja újra!"
 
@@ -483,7 +483,7 @@ msgstr "A beállítások adatbázisa nem írható"
 msgid "title"
 msgstr "cím"
 
-#: cps/admin.py:2025 cps/admin.py:2930
+#: cps/admin.py:2025 cps/admin.py:2932
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "A felhasználó szerkesztése: %(nick)s"
@@ -636,69 +636,69 @@ msgstr ""
 "OAuth átirányítási cím nem tartalmazhatja az elérési útvonalat. Csak az alap "
 "URL-t adja meg (pl.: https://your-domain.com)"
 
-#: cps/admin.py:2537
+#: cps/admin.py:2538
 msgid "Password length has to be between 1 and 40"
 msgstr "A jelszó hossza 1 és 40 karakter között kell legyen"
 
-#: cps/admin.py:2597
+#: cps/admin.py:2599
 msgid "Database Settings updated"
 msgstr "Adatbázis beállítások frissítve"
 
-#: cps/admin.py:2605
+#: cps/admin.py:2607
 msgid "Database Configuration"
 msgstr "Adatbázis beállítások"
 
-#: cps/admin.py:2625 cps/web.py:2304
+#: cps/admin.py:2627 cps/web.py:2304
 msgid "Oops! Please complete all fields."
 msgstr "Az összes mezőt ki kell tölteni!"
 
-#: cps/admin.py:2634
+#: cps/admin.py:2636
 msgid "E-mail is not from valid domain"
 msgstr "Az e-mail tartománya nem érvényes"
 
-#: cps/admin.py:2642
+#: cps/admin.py:2644
 msgid "Add new user"
 msgstr "Új felhasználó hozzáadása"
 
-#: cps/admin.py:2660
+#: cps/admin.py:2662
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "A következő felhasználó létrehozva: %(user)s"
 
-#: cps/admin.py:2666
+#: cps/admin.py:2668
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
 "Már létezik felhasználó ehhez az e-mail címhez vagy felhasználói névhez."
 
-#: cps/admin.py:2696
+#: cps/admin.py:2698
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "A felhasználó törölve: %(nick)s"
 
-#: cps/admin.py:2699
+#: cps/admin.py:2701
 msgid "Can't delete Guest User"
 msgstr "A vendég felhasználó nem törölhető"
 
-#: cps/admin.py:2702
+#: cps/admin.py:2704
 msgid "No admin user remaining, can't delete user"
 msgstr "Nem marad admin felhasználó, nem lehet felhasználót törölni"
 
-#: cps/admin.py:2893 cps/web.py:2639
+#: cps/admin.py:2895 cps/web.py:2639
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "Az e-mail nem lehet üres, és érvényes e-mail címnek kell lennie"
 
-#: cps/admin.py:2934
+#: cps/admin.py:2936
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "A felhasználó frissítve: %(nick)s"
 
-#: cps/admin.py:2999
+#: cps/admin.py:3001
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr "Kapcsolódás sikeres! OIDC felfedezési végpont elérhető.%(endpoints)s"
 
-#: cps/admin.py:3004
+#: cps/admin.py:3006
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -706,12 +706,12 @@ msgstr ""
 "Kapcsolódás sikertelen: OIDC felfedezési végpont nem található (404). "
 "Ellenőrizze az alap URL-t."
 
-#: cps/admin.py:3006 cps/admin.py:3063
+#: cps/admin.py:3008 cps/admin.py:3065
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Sikertelen kapcsolódás: a szerver által visszaadott státusz %(code)s"
 
-#: cps/admin.py:3008
+#: cps/admin.py:3010
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
@@ -719,14 +719,14 @@ msgstr ""
 "Sikertelen kapcsolódás: Nem érhető el a szerver. Ellenőrizze az URL-t és a "
 "hálózati kapcsolatot."
 
-#: cps/admin.py:3010
+#: cps/admin.py:3012
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "Sikertelen kapcsolódás: Időtúllépés. A szerver lehet túl lassú vagy "
 "elérhetetlen."
 
-#: cps/admin.py:3012
+#: cps/admin.py:3014
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -734,12 +734,12 @@ msgstr ""
 "Sikertelen kapcsolódás: Érvénytelen JSON a válaszban. Lehet, hogy nem OIDC "
 "végpont."
 
-#: cps/admin.py:3015
+#: cps/admin.py:3017
 #, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Sikertelen kapcsolódás: %(error)s"
 
-#: cps/admin.py:3041
+#: cps/admin.py:3043
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -748,27 +748,27 @@ msgstr ""
 "Metaadatokból hiányzó OIDC mezők: %(fields)s. Lehet, hogy nem érvényes OIDC "
 "metaadat végpont."
 
-#: cps/admin.py:3052
+#: cps/admin.py:3054
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "Metaadat URL érvényes! %(count)s OAuth végpont található."
 
-#: cps/admin.py:3054
+#: cps/admin.py:3056
 msgid " User info endpoint is available."
 msgstr "Felhasználó információ végpont elérhető."
 
-#: cps/admin.py:3056
+#: cps/admin.py:3058
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 " Megjegyzés: Felhasználó infó végpont nem található, ami hitelesítési "
 "gondokat okozhat."
 
-#: cps/admin.py:3061
+#: cps/admin.py:3063
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "Metaadat URL nem található (404). Ellenőrizze az URL helyességét."
 
-#: cps/admin.py:3065
+#: cps/admin.py:3067
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
@@ -776,51 +776,51 @@ msgstr ""
 "Sikertelen kapcsolódás: Nem lehet kapcsolódni a metaadat URL-hez. "
 "Ellenőrizze a hálózati kapcsolatot."
 
-#: cps/admin.py:3067
+#: cps/admin.py:3069
 msgid "Connection failed: Request timed out."
 msgstr "Sikertelen kapcsolódás: Időtúllépés."
 
-#: cps/admin.py:3069
+#: cps/admin.py:3071
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Sikertelen kapcsolódás: Érvénytelen JSON a válaszban."
 
-#: cps/admin.py:3072
+#: cps/admin.py:3074
 msgid "An unknown error occurred."
 msgstr "Ismeretlen hiba történt."
 
-#: cps/admin.py:3084
+#: cps/admin.py:3086
 msgid "Restore already in progress."
 msgstr "Visszaállítás már folyamatban."
 
-#: cps/admin.py:3088
+#: cps/admin.py:3090
 msgid "Restore failed: Calibre library path is not configured."
 msgstr "Visszaállítás sikertelen: Calibre könyvtár útvonal nincs beállítva."
 
-#: cps/admin.py:3093
+#: cps/admin.py:3095
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
 "Visszaállítás sikertelen: metadadat.db nem található ezen az útvonalon: "
 "%(path)s"
 
-#: cps/admin.py:3098
+#: cps/admin.py:3100
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
 "Visszaállítás sikertelen: app.db nem található ezen az útvonalon: %(path)s"
 
-#: cps/admin.py:3170 cps/admin.py:3213
+#: cps/admin.py:3172 cps/admin.py:3215
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Visszaállítás sikertelen: %(err)s"
 
-#: cps/admin.py:3190
+#: cps/admin.py:3192
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 "Visszaállítás sikeres de az app.db tisztítás nem sikerült. Tekintse meg a "
 "naplófájlokat a részletekért."
 
-#: cps/admin.py:3209
+#: cps/admin.py:3211
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "

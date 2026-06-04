@@ -218,3 +218,8 @@ instance/
 
 # Claude Code workspace cache (per-developer local skill state).
 .claude/
+
+# Playwright MCP capture artifacts (per-session page/console snapshots).
+# These can incidentally contain auth headers, CSRF tokens, or API keys
+# from whatever page was open at capture time. Never commit.
+.playwright-mcp/

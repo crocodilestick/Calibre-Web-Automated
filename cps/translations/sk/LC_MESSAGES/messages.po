@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-04 18:00+0000\n"
+"POT-Creation-Date: 2026-06-04 18:02+0000\n"
 "PO-Revision-Date: 2023-11-01 06:12+0100\n"
 "Last-Translator: Branislav Hanáček <brango@brango.sk>\n"
 "Language-Team: \n"
@@ -791,25 +791,25 @@ msgid ""
 "data was reset."
 msgstr ""
 
-#: cps/annotations.py:69 cps/templates/annotations_import.html:4
+#: cps/annotations.py:70 cps/templates/annotations_import.html:4
 msgid "Import Kobo annotations"
 msgstr ""
 
-#: cps/annotations.py:87
+#: cps/annotations.py:88
 #, fuzzy
 msgid "No file uploaded."
 msgstr "Súbor %(file)s bol nahraný"
 
-#: cps/annotations.py:95 cps/annotations.py:117
+#: cps/annotations.py:96 cps/annotations.py:118
 #, python-format
 msgid "File exceeds %(max)d MB."
 msgstr ""
 
-#: cps/annotations.py:125
+#: cps/annotations.py:126
 msgid "Uploaded file is not a SQLite database."
 msgstr ""
 
-#: cps/annotations.py:523 cps/templates/annotations_view.html:4
+#: cps/annotations.py:524 cps/templates/annotations_view.html:4
 #, python-format
 msgid "Annotations: %(title)s"
 msgstr ""
@@ -2987,8 +2987,8 @@ msgstr "Označiť ako neprečítané"
 #: cps/templates/book_edit.html:21 cps/templates/book_table.html:66
 #: cps/templates/book_table.html:145 cps/templates/book_table.html:194
 #: cps/templates/duplicates.html:718 cps/templates/modal_dialogs.html:63
-#: cps/templates/modal_dialogs.html:116 cps/templates/user_edit.html:333
-#: cps/templates/user_table.html:150
+#: cps/templates/modal_dialogs.html:116 cps/templates/read.html:138
+#: cps/templates/user_edit.html:333 cps/templates/user_table.html:150
 msgid "Delete"
 msgstr "Zmazať"
 
@@ -3415,10 +3415,10 @@ msgstr "V poriadku"
 #: cps/templates/duplicates.html:746 cps/templates/layout.html:595
 #: cps/templates/layout.html:750 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
-#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
-#: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
-#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
-#: cps/templates/user_edit.html:587
+#: cps/templates/modal_dialogs.html:135 cps/templates/read.html:137
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:34
+#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
+#: cps/templates/tasks.html:173 cps/templates/user_edit.html:587
 msgid "Cancel"
 msgstr "Zrušiť"
 
@@ -3529,7 +3529,7 @@ msgstr ""
 msgid "Source: %(s)s"
 msgstr "Série: %(serie)s"
 
-#: cps/templates/annotations_view.html:45
+#: cps/templates/annotations_view.html:45 cps/templates/read.html:142
 msgid "No annotations on this book yet."
 msgstr ""
 
@@ -3726,9 +3726,10 @@ msgstr "Načítať metadáta"
 
 #: cps/templates/book_edit.html:272 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:670 cps/templates/config_view_edit.html:220
-#: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:47
-#: cps/templates/shelf_edit.html:36 cps/templates/shelf_order.html:41
-#: cps/templates/shelf_reorder.html:38 cps/templates/user_edit.html:585
+#: cps/templates/email_edit.html:65 cps/templates/read.html:136
+#: cps/templates/schedule_edit.html:47 cps/templates/shelf_edit.html:36
+#: cps/templates/shelf_order.html:41 cps/templates/shelf_reorder.html:38
+#: cps/templates/user_edit.html:585
 msgid "Save"
 msgstr "Uložiť"
 
@@ -7275,6 +7276,36 @@ msgstr "Neplatný stĺpec na čítanie"
 #, fuzzy
 msgid "One column"
 msgstr "Neplatný stĺpec na čítanie"
+
+#: cps/templates/read.html:139
+msgid "Note"
+msgstr ""
+
+#: cps/templates/read.html:140
+msgid "Add a note (optional)"
+msgstr ""
+
+#: cps/templates/read.html:141
+msgid "Select within a paragraph to highlight."
+msgstr ""
+
+#: cps/templates/read.html:144
+#, fuzzy
+msgid "Yellow"
+msgstr "Povoliť"
+
+#: cps/templates/read.html:145
+#, fuzzy
+msgid "Red"
+msgstr "Čítať"
+
+#: cps/templates/read.html:146
+msgid "Green"
+msgstr ""
+
+#: cps/templates/read.html:147
+msgid "Blue"
+msgstr ""
 
 #: cps/templates/readcbr.html:8
 msgid "Comic Reader"

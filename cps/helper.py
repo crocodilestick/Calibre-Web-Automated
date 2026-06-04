@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+import glob
 import os
 import random
 import io
@@ -48,7 +49,7 @@ from . import logger, config, db, ub, fs
 from . import gdriveutils as gd
 from .constants import (STATIC_DIR as _STATIC_DIR, CACHE_TYPE_THUMBNAILS, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES,
                         SUPPORTED_CALIBRE_BINARIES)
-from .subproc_wrapper import process_wait
+from .subproc_wrapper import process_wait, process_open
 from .services.file_move import copy_with_metadata_fallback
 
 # Track books with pending thumbnail generation to prevent duplicate tasks
@@ -57,7 +58,7 @@ _pending_thumbnail_books = set()
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
-from .services.worker import WorkerThread
+from .services.worker import WorkerThread, STAT_FINISH_SUCCESS
 from .tasks.mail import TaskEmail
 from .tasks.thumbnail import TaskClearCoverThumbnailCache, TaskGenerateCoverThumbnails
 from .tasks.metadata_backup import TaskBackupMetadata
@@ -111,7 +112,8 @@ except (ImportError, RuntimeError) as e:
 
 
 # Convert existing book entry to new format
-def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id, ereader_mail=None, subject=None):
+def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id,
+                        ereader_mail=None, subject=None, blocking=False):
     book = calibre_db.get_book(book_id)
     data = calibre_db.get_book_format(book.id, old_book_format)
     if not data:
@@ -145,7 +147,14 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
            link)
     settings['old_book_format'] = old_book_format
     settings['new_book_format'] = new_book_format
-    WorkerThread.add(user_id, TaskConvert(file_path, book.id, txt, settings, ereader_mail, user_id))
+    task = TaskConvert(file_path, book.id, txt, settings, ereader_mail, user_id)
+    WorkerThread.add(user_id, task)
+    if blocking:
+        finished = task.done_event.wait(timeout=120)
+        if not finished:
+            return _("Conversion timed out for book id: %(book)d", book=book_id)
+        if task.stat != STAT_FINISH_SUCCESS:
+            return task.error or _("Conversion failed for book id: %(book)d", book=book_id)
     return None
 
 
@@ -1622,6 +1631,16 @@ def get_download_link(book_id, book_format, client):
         abort(404)
 
     data1 = calibre_db.get_book_format(book.id, book_format.upper())
+    if not data1 and book_format == "kepub" and config.config_kepubifypath:
+        data1 = calibre_db.get_book_format(book.id, "EPUB")
+        if data1:
+            log.info("KEPUB not found for book %d; converting on demand", book.id)
+            err = convert_book_format(book.id, config.get_book_path(), 'EPUB', 'KEPUB', None, blocking=True)
+            if not err:
+                data1 = calibre_db.get_book_format(book.id, "KEPUB")
+            else:
+                log.error("On-demand KEPUB conversion failed for book %d: %s", book.id, err)
+                book_format = "epub"
     if not data1:
         log.error("Requested format %s for book id %s not found in database", book_format.upper(), book_id)
         abort(404)

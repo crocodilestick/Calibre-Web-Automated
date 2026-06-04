@@ -28,6 +28,7 @@ silently drops one of the four behaviors.
 """
 
 import inspect
+from pathlib import Path
 
 import pytest
 
@@ -85,13 +86,19 @@ class TestKoboAndroidAppCompat:
         )
 
     def test_metadata_payload_includes_drmtype_none(self):
-        from cps.kobo import get_metadata
-        src = inspect.getsource(get_metadata)
+        # The Android-compat invariant is "DrmType=None ships in the
+        # per-format download_url dict". The dict construction may live
+        # in get_metadata directly or in a helper it calls
+        # (build_download_url, introduced by PR #350's refactor). Inspect
+        # the whole module to keep the pin valid across helper extraction.
+        import cps.kobo
+        src = Path(cps.kobo.__file__).read_text(encoding="utf-8")
         assert '"DrmType": "None"' in src, (
-            "get_metadata must include 'DrmType': 'None' in the per-format "
-            "metadata block. The field was previously commented out as "
-            "'not required' but the Kobo Android app rejects payloads "
-            "without it. See crocodilestick/Calibre-Web-Automated#1343."
+            "cps.kobo must include 'DrmType': 'None' in the per-format "
+            "download_url block (get_metadata directly or a helper it "
+            "calls). The field was previously commented out as 'not "
+            "required' but the Kobo Android app rejects payloads without "
+            "it. See crocodilestick/Calibre-Web-Automated#1343."
         )
 
     def test_metadata_payload_defaults_series_to_empty_dict(self):

@@ -102,43 +102,6 @@ def generate_auth_token(user_id):
         ub.session.add(auth_token)
         ub.session_commit()
 
-    if config.config_kepubifypath:
-        # Scope auto-convert to books on the user's Kobo Sync shelves only.
-        # Reported as crocodilestick/Calibre-Web-Automated#817: visiting this
-        # endpoint converted every EPUB in the library, queueing tens or
-        # hundreds of thousands of tasks and starving Kobo sync. Books not
-        # on a Kobo Sync shelf are still converted on-demand at sync time.
-        try:
-            synced_book_ids = [
-                row.book_id for row in
-                ub.session.query(ub.BookShelf)
-                .join(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)
-                .filter(ub.Shelf.user_id == user_id)
-                .filter(ub.Shelf.kobo_sync == True)
-                .all()
-            ]
-        except Exception as ex:
-            log.warning("Could not enumerate Kobo Sync shelf books: %s", ex)
-            synced_book_ids = []
-
-        if synced_book_ids:
-            try:
-                books = (calibre_db.session.query(db.Books)
-                         .options(joinedload(db.Books.data))
-                         .filter(db.Books.id.in_(synced_book_ids))
-                         .all())
-            except Exception as ex:
-                log.warning("Could not enumerate books for kepub auto-conversion: %s", ex)
-                books = []
-
-            for book in books:
-                try:
-                    formats = [data.format for data in book.data]
-                    if 'KEPUB' not in formats and 'EPUB' in formats:
-                        helper.convert_book_format(book.id, config.config_calibre_dir, 'EPUB', 'KEPUB', current_user.name)
-                except Exception as ex:
-                    log.warning("Skipping kepub auto-conversion for book %s: %s", getattr(book, "id", "?"), ex)
-
     return render_title_template(
         "generate_kobo_auth_url.html",
         title=_("Kobo Setup"),

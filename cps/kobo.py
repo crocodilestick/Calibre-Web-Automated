@@ -35,6 +35,7 @@ from werkzeug.datastructures import Headers
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from sqlalchemy.exc import StatementError
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import select
 import requests
 
@@ -236,11 +237,16 @@ def HandleSyncRequest():
 
     log.debug("Kobo Sync: books last modified: {}".format(sync_token.books_last_modified))
 
+    rstate_join = and_(
+        db.Books.id == ub.KoboReadingState.book_id,
+        ub.KoboReadingState.user_id == current_user.id,
+    )
     if only_kobo_shelves:
         changed_entries = calibre_db.session.query(db.Books,
                                                    ub.ArchivedBook.last_modified,
                                                    ub.BookShelf.date_added,
-                                                   ub.ArchivedBook.is_archived)
+                                                   ub.ArchivedBook.is_archived,
+                                                   ub.KoboReadingState)
         # Per-device sync state lives in the `x-kobo-synctoken` cursor
         # (the last_modified comparisons below). Don't filter by
         # KoboSyncedBooks here — that table is user-keyed, so it would
@@ -255,6 +261,7 @@ def HandleSyncRequest():
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
+                           .outerjoin(ub.KoboReadingState, rstate_join)
                            .filter(or_(
                                ub.BookShelf.date_added > sync_token.books_last_modified,
                                db.Books.last_modified > sync_token.books_last_modified
@@ -269,11 +276,18 @@ def HandleSyncRequest():
                                and_(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True),
                                db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
                            ))
+                           .options(joinedload(db.Books.authors),
+                                    joinedload(db.Books.publishers),
+                                    joinedload(db.Books.series),
+                                    joinedload(db.Books.languages),
+                                    joinedload(db.Books.comments),
+                                    joinedload(db.Books.data))
                            .distinct())
     else:
         changed_entries = calibre_db.session.query(db.Books,
                                                    ub.ArchivedBook.last_modified,
-                                                   ub.ArchivedBook.is_archived)
+                                                   ub.ArchivedBook.is_archived,
+                                                   ub.KoboReadingState)
         # Same per-device cursor invariant as the shelf branch above:
         # don't filter by KoboSyncedBooks (user-keyed, breaks multi-device).
         # The last_modified > sync_token.books_last_modified filter is the
@@ -282,28 +296,32 @@ def HandleSyncRequest():
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
+                           .outerjoin(ub.KoboReadingState, rstate_join)
                            .filter(db.Books.last_modified > sync_token.books_last_modified)
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .order_by(db.Books.last_modified)
-                           .order_by(db.Books.id))
+                           .order_by(db.Books.id)
+                           .options(joinedload(db.Books.authors),
+                                    joinedload(db.Books.publishers),
+                                    joinedload(db.Books.series),
+                                    joinedload(db.Books.languages),
+                                    joinedload(db.Books.comments),
+                                    joinedload(db.Books.data)))
     log.debug("Kobo Sync: changed entries: {}".format(changed_entries.count()))
 
     reading_states_in_new_entitlements = []
     books = changed_entries.limit(SYNC_ITEM_LIMIT)
     log.debug("Kobo Sync: selected to sync: {}".format(len(books.all())))
     for book in books:
-        formats = [data.format for data in book.Books.data]
-        if 'KEPUB' not in formats and config.config_kepubifypath and 'EPUB' in formats:
-            helper.convert_book_format(book.Books.id, config.get_book_path(), 'EPUB', 'KEPUB', current_user.name)
-
-        kobo_reading_state = get_or_create_reading_state(book.Books.id)
+        kobo_reading_state = book.KoboReadingState  # None when no record exists yet
         entitlement = {
             "BookEntitlement": create_book_entitlement(book.Books, archived=(book.is_archived==True)),
             "BookMetadata": get_metadata(book.Books),
         }
 
-        if kobo_reading_state.last_modified > sync_token.reading_state_last_modified:
+        if (kobo_reading_state is not None
+                and kobo_reading_state.last_modified > sync_token.reading_state_last_modified):
             entitlement["ReadingState"] = get_kobo_reading_state_response(book.Books, kobo_reading_state)
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
             reading_states_in_new_entitlements.append(book.Books.id)
@@ -727,31 +745,51 @@ def _get_cover_image_id(book):
         log.debug("Kobo Sync: failed to build cover image id for book %s: %s", book.id, exc)
         return base_id
 
+def build_download_url(book, book_data, download_format, declared_format):
+    return {
+            "Format": declared_format,
+            "Size": book_data.uncompressed_size,
+            "Url": get_download_url_for_book(book.id, download_format),
+            "Platform": "Generic",
+            "DrmType": "None",
+        }
 
 def get_metadata(book):
     download_urls = []
-    kepub = [data for data in book.data if data.format == 'KEPUB']
 
-    for book_data in kepub if len(kepub) > 0 else book.data:
-        if book_data.format not in KOBO_FORMATS:
-            continue
-        for kobo_format in KOBO_FORMATS[book_data.format]:
-            # log.debug('Id: %s, Format: %s' % (book.id, kobo_format))
-            try:
-                if get_epub_layout(book, book_data) == 'pre-paginated':
-                    kobo_format = 'EPUB3FL'
-                download_urls.append(
-                    {
-                        "Format": kobo_format,
-                        "Size": book_data.uncompressed_size,
-                        "Url": get_download_url_for_book(book.id, book_data.format),
-                        # The Kobo forma accepts platforms: (Generic, Android)
-                        "Platform": "Generic",
-                        "DrmType": "None",
-                    }
-                )
-            except (zipfile.BadZipfile, FileNotFoundError) as e:
-                log.error(e)
+    kepub_data = next((d for d in book.data if d.format == 'KEPUB'), None)
+    epub_data  = next((d for d in book.data if d.format == 'EPUB'),  None)
+
+    # Send kepub if kepub format is available or if deferred kepub conversion
+    # is supported
+    if kepub_data:
+        book_data, dl_format = kepub_data, 'kepub'
+    elif epub_data and config.config_kepubifypath:
+        book_data, dl_format = epub_data, 'kepub'
+    elif epub_data:
+        book_data, dl_format = epub_data, 'epub'
+    else:
+        book_data = None
+
+    if book_data:
+        is_fixed_layout = False
+        try:
+            if get_epub_layout(book, book_data) == 'pre-paginated':
+                is_fixed_layout = True
+        except (zipfile.BadZipfile, FileNotFoundError) as e:
+            log.error(e)
+        if is_fixed_layout:
+            # Only send EPUB3FL if the book is a fixed layout. This forces the device
+            # to pick this download, regardless of the priority order in the firmware
+            download_urls.append(build_download_url(book, book_data, dl_format, 'EPUB3FL'))
+        else:
+            if dl_format == 'kepub':
+                download_urls.append(build_download_url(book, book_data, dl_format, 'KEPUB'))
+            else:
+                # Send both EPUB and EPUB3 for epub files, in case legacy devices only support
+                # EPUB download urls
+                download_urls.append(build_download_url(book, book_data, dl_format, 'EPUB3'))
+                download_urls.append(build_download_url(book, book_data, dl_format, 'EPUB'))
 
     book_uuid = book.uuid
     cover_image_id = _get_cover_image_id(book)
@@ -785,11 +823,12 @@ def get_metadata(book):
     }
     metadata.update(get_author(book))
 
-    if get_series(book):
-        name = get_series(book)
+    series_name = get_series(book)
+    if series_name:
+        name = series_name
         try:
             metadata["Series"] = {
-                "Name": get_series(book),
+                "Name": series_name,
                 "Number": get_seriesindex(book),        # ToDo Check int() ?
                 "NumberFloat": float(get_seriesindex(book)),
                 # Get a deterministic id based on the series name.
@@ -1425,7 +1464,7 @@ def HandleCoverImageRequest(book_uuid, width, height, Quality, isGreyscale):
         else:
             resolution = COVER_THUMBNAIL_SMALL
     except ValueError:
-        log.error("Requested height %s of book %s is invalid" % (book_uuid, height))
+        log.error("Requested height %s of book %s is invalid" % (height, book_uuid))
         resolution = COVER_THUMBNAIL_SMALL
 
     padded_response = _serve_padded_cover_if_enabled(book_uuid, resolution)

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eu
+
+port="${CWA_PORT_OVERRIDE:-8083}"
+scheme="http"
+curl_extra=()
+
+if [[ -f /config/app.db ]]; then
+  IFS=$'\t' read -r certfile keyfile <<EOF || true
+$(sqlite3 -separator $'\t' /config/app.db "SELECT COALESCE(config_certfile, ''), COALESCE(config_keyfile, '') FROM settings LIMIT 1;" 2>/dev/null || true)
+EOF
+  if [[ -n "${certfile:-}" && -n "${keyfile:-}" && -f "$certfile" && -f "$keyfile" ]]; then
+    scheme="https"
+    curl_extra=(-k)
+  fi
+fi
+
+exec curl -fsS --connect-timeout 1 --max-time 2 "${curl_extra[@]}" "${scheme}://127.0.0.1:${port}/health"

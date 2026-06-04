@@ -114,6 +114,17 @@ else:
     limiter = None
 
 
+def apply_https_runtime_config():
+    """Refresh cookie security flags from the current saved config."""
+    if config.config_login_type == constants.LOGIN_OAUTH or getattr(config, 'config_use_https', False):
+        app.config['SESSION_COOKIE_SECURE'] = True
+        app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+        log.info("Enforcing SESSION_COOKIE_SECURE=True (OAuth enabled or HTTPS enforced)")
+    else:
+        app.config['SESSION_COOKIE_SECURE'] = os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
+        log.info(f"SESSION_COOKIE_SECURE set to {app.config['SESSION_COOKIE_SECURE']} (Standard/LDAP login)")
+
+
 def create_app():
     if csrf:
         csrf.init_app(app)
@@ -128,16 +139,8 @@ def create_app():
     config.init_config(ub.session, encrypt_key, cli_param)
 
     # Intelligent Security Configuration
-    # Force SESSION_COOKIE_SECURE if OAuth is enabled OR if "Use via HTTPS" is checked
-    # This ensures OAuth works (requires Secure cookies) while allowing HTTP for standard login if desired
-    if config.config_login_type == constants.LOGIN_OAUTH or getattr(config, 'config_use_https', False):
-        app.config['SESSION_COOKIE_SECURE'] = True
-        app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-        log.info("Enforcing SESSION_COOKIE_SECURE=True (OAuth enabled or HTTPS enforced)")
-    else:
-        # Fallback to environment variable or False
-        app.config['SESSION_COOKIE_SECURE'] = os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
-        log.info(f"SESSION_COOKIE_SECURE set to {app.config['SESSION_COOKIE_SECURE']} (Standard/LDAP login)")
+    # Force SESSION_COOKIE_SECURE if OAuth is enabled OR if "Use via HTTPS" is checked.
+    apply_https_runtime_config()
 
     # Set OAuth redirect host consistency
     if hasattr(config, 'config_oauth_redirect_host') and config.config_oauth_redirect_host:
@@ -425,4 +428,3 @@ def create_app():
     register_startup_tasks()
 
     return app
-

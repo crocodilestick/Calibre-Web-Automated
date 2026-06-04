@@ -308,8 +308,7 @@ VOLUME /calibre-library
 # Health check for container orchestration
 # Targets the /health endpoint (cps/web.py:1051) which verifies the
 # Calibre metadata.db is reachable and returns 503 on database failure.
-# Shell form supports CWA_PORT_OVERRIDE substitution. 127.0.0.1 avoids
-# IPv6/v4 resolution flakes on hosts where 'localhost' takes the AAAA
-# path first.
+# The helper auto-switches to HTTPS when app.db has a valid cert/key
+# configured, which avoids spurious HTTP-on-HTTPS warnings from gevent.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=120s --retries=3 \
-  CMD curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:${CWA_PORT_OVERRIDE:-8083}/health || exit 1
+  CMD /usr/local/bin/cwa-healthcheck || exit 1

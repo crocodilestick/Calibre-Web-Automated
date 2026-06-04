@@ -14,7 +14,7 @@ from typing import List, Optional
 from cps import config, db, logger, ub
 from cps.services.worker import CalibreTask, STAT_FAIL, STAT_FINISH_SUCCESS, STAT_CANCELLED, STAT_ENDED
 from flask_babel import lazy_gettext as N_
-from sqlalchemy import not_
+from sqlalchemy.orm import selectinload
 
 # Import the Hardcover provider
 try:
@@ -93,8 +93,8 @@ class TaskAutoHardcoverID(CalibreTask):
         
         try:
             # Query books without hardcover identifiers
-            books = self._get_books_without_hardcover_id()
-            total_books = len(books)
+            book_ids = self._get_books_without_hardcover_id()
+            total_books = len(book_ids)
             
             if total_books == 0:
                 self.log.info("No books found without Hardcover IDs")
@@ -113,11 +113,13 @@ class TaskAutoHardcoverID(CalibreTask):
                 
                 start_idx = batch_num * self.batch_size
                 end_idx = min(start_idx + self.batch_size, total_books)
-                batch = books[start_idx:end_idx]
+                batch = book_ids[start_idx:end_idx]
+                books = self._get_books_for_batch(batch)
                 
-                self.log.info(f"Processing batch {batch_num + 1}/{batch_count} ({len(batch)} books)")
+                self.log.info(f"Processing batch {batch_num + 1}/{batch_count} ({len(books)} books)")
                 
-                for book in batch:
+                for book in books:
+                    book_id = book.id
                     # Check if cancelled
                     if self._cancel_requested():
                         self.log.info("Task cancelled by user")
@@ -148,7 +150,7 @@ class TaskAutoHardcoverID(CalibreTask):
                                 return
                             
                     except Exception as e:
-                        self.log.error(f"Error processing book {book.id} '{book.title}': {e}")
+                        self.log.error(f"Error processing book {book_id}: {e}")
                         self.errors += 1
                         self.consecutive_errors += 1
                         
@@ -182,32 +184,58 @@ class TaskAutoHardcoverID(CalibreTask):
         )
         return token
 
-    def _get_books_without_hardcover_id(self) -> List[db.Books]:
+    def _get_books_without_hardcover_id(self) -> List[int]:
         """
-        Query all books that don't have any Hardcover identifiers.
+        Query book IDs that don't have any Hardcover identifiers.
         Excludes books with hardcover-id, hardcover-slug, or hardcover-edition.
         """
-        books = self.calibre_db.session.query(db.Books).filter(
+        rows = self.calibre_db.session.query(db.Books.id).filter(
             ~db.Books.identifiers.any(
                 db.Identifiers.type.in_(['hardcover-id', 'hardcover-slug', 'hardcover-edition'])
             )
         ).limit(10000).all()  # Safety limit
-        
-        return books
+
+        return [row[0] for row in rows if row[0] is not None]
+
+    def _get_books_for_batch(self, book_ids: List[int]) -> List[db.Books]:
+        """
+        Load one processing batch with the relationships needed for matching.
+        selectinload keeps this bounded to a handful of SELECTs per batch
+        without the cartesian row multiplication caused by joinedload.
+        """
+        if not book_ids:
+            return []
+
+        books = (
+            self.calibre_db.session.query(db.Books)
+            .options(
+                selectinload(db.Books.authors),
+                selectinload(db.Books.identifiers),
+                selectinload(db.Books.series),
+                selectinload(db.Books.publishers),
+            )
+            .filter(db.Books.id.in_(book_ids))
+            .all()
+        )
+        books_by_id = {book.id: book for book in books}
+        return [books_by_id[book_id] for book_id in book_ids if book_id in books_by_id]
 
     def _process_book(self, book: db.Books):
         """
         Process a single book: search Hardcover API, calculate confidence, apply or queue.
         """
+        book_id = book.id
         # Build search query from book metadata
         authors = [author.name for author in book.authors] if book.authors else []
+        authors_csv = ", ".join(authors) if authors else ""
         author_str = ", ".join(authors[:3]) if authors else ""  # Limit to first 3 authors
+        title = book.title
         
         # Build search query
         if author_str:
-            search_query = f"{book.title} {author_str}"
+            search_query = f"{title} {author_str}"
         else:
-            search_query = book.title
+            search_query = title
         
         self.log.debug(f"Searching Hardcover for: {search_query}")
         
@@ -218,11 +246,11 @@ class TaskAutoHardcoverID(CalibreTask):
         results = provider.search(search_query)
         
         if not results:
-            self.log.debug(f"No Hardcover results for book {book.id} '{book.title}'")
+            self.log.debug(f"No Hardcover results for book {book_id} '{title}'")
             self.skipped_no_results += 1
             return
         
-        self.log.debug(f"Found {len(results)} Hardcover results for book {book.id}")
+        self.log.debug(f"Found {len(results)} Hardcover results for book {book_id}")
         
         # Calculate confidence scores for each result
         scored_results = []
@@ -247,7 +275,7 @@ class TaskAutoHardcoverID(CalibreTask):
             # Calculate confidence score
             score, reason = Hardcover.calculate_confidence_score(
                 result=result,
-                query_title=book.title,
+                query_title=title,
                 query_authors=authors,
                 query_isbn=book_isbn,
                 query_series=book_series,
@@ -274,55 +302,58 @@ class TaskAutoHardcoverID(CalibreTask):
         best_score = best_match['score']
         best_result = best_match['result']
         
-        self.log.debug(f"Best match for book {book.id}: score={best_score:.3f}, reason={best_match['reason']}")
+        self.log.debug(f"Best match for book {book_id}: score={best_score:.3f}, reason={best_match['reason']}")
         
         # Track average confidence
         self.total_confidence += best_score
         
         # Auto-apply if confidence is high enough
         if best_score >= self.min_confidence:
-            self._apply_hardcover_id(book, best_result)
+            self._apply_hardcover_id(book_id, best_result)
             self.auto_matched += 1
-            self.log.info(f"Auto-matched book {book.id} '{book.title}' to Hardcover ID {best_result.id} (confidence: {best_score:.3f})")
+            self.log.info(f"Auto-matched book {book_id} '{title}' to Hardcover ID {best_result.id} (confidence: {best_score:.3f})")
         else:
             # Queue for manual review
-            self._queue_for_review(book, search_query, scored_results)
+            self._queue_for_review(book_id, title, authors_csv, search_query, scored_results)
             self.queued_for_review += 1
-            self.log.debug(f"Queued book {book.id} '{book.title}' for manual review (confidence: {best_score:.3f})")
+            self.log.debug(f"Queued book {book_id} '{title}' for manual review (confidence: {best_score:.3f})")
 
-    def _apply_hardcover_id(self, book: db.Books, result):
+    def _apply_hardcover_id(self, book_id: int, result):
         """Apply Hardcover identifiers to a book"""
         try:
             # Add hardcover-id
             if 'hardcover-id' in result.identifiers:
                 hardcover_id = str(result.identifiers['hardcover-id'])
-                new_identifier = db.Identifiers(hardcover_id, 'hardcover-id', book.id)
+                new_identifier = db.Identifiers(hardcover_id, 'hardcover-id', book_id)
                 self.calibre_db.session.add(new_identifier)
             
             # Add hardcover-slug
             if 'hardcover-slug' in result.identifiers:
                 hardcover_slug = str(result.identifiers['hardcover-slug'])
-                new_identifier = db.Identifiers(hardcover_slug, 'hardcover-slug', book.id)
+                new_identifier = db.Identifiers(hardcover_slug, 'hardcover-slug', book_id)
                 self.calibre_db.session.add(new_identifier)
             
             # Add hardcover-edition (if available)
             if 'hardcover-edition' in result.identifiers:
                 hardcover_edition = str(result.identifiers['hardcover-edition'])
-                new_identifier = db.Identifiers(hardcover_edition, 'hardcover-edition', book.id)
+                new_identifier = db.Identifiers(hardcover_edition, 'hardcover-edition', book_id)
                 self.calibre_db.session.add(new_identifier)
             
             self.calibre_db.session.commit()
             
         except Exception as e:
-            self.log.error(f"Error applying Hardcover ID to book {book.id}: {e}")
+            self.log.error(f"Error applying Hardcover ID to book {book_id}: {e}")
             self.calibre_db.session.rollback()
             raise
 
-    def _queue_for_review(self, book: db.Books, search_query: str, scored_results: List[dict]):
+    def _queue_for_review(self, book_id: int, book_title: str, book_authors: str, search_query: str, scored_results: List[dict]):
         """Queue ambiguous match for manual review"""
+        ub_session = None
         try:
-            # Initialize user session for ub database
-            ub.init_db_thread()
+            # Background tasks must not touch the global web-request ub.session.
+            # Use a thread-local app.db session instead so request auth/session
+            # state can't be poisoned by worker commits.
+            ub_session = ub.init_db_thread()
             
             # Prepare results for JSON storage (top 5 candidates)
             results_json = []
@@ -347,9 +378,9 @@ class TaskAutoHardcoverID(CalibreTask):
             
             # Create queue entry
             queue_entry = ub.HardcoverMatchQueue(
-                book_id=book.id,
-                book_title=book.title,
-                book_authors=", ".join([author.name for author in book.authors]) if book.authors else "",
+                book_id=book_id,
+                book_title=book_title,
+                book_authors=book_authors,
                 search_query=search_query,
                 hardcover_results=json.dumps(results_json),
                 confidence_scores=json.dumps(scores_json),
@@ -357,13 +388,20 @@ class TaskAutoHardcoverID(CalibreTask):
                 reviewed=0
             )
             
-            ub.session.add(queue_entry)
-            ub.session.commit()
+            ub_session.add(queue_entry)
+            ub_session.commit()
             
         except Exception as e:
-            self.log.error(f"Error queuing book {book.id} for review: {e}")
-            ub.session.rollback()
+            self.log.error(f"Error queuing book {book_id} for review: {e}")
+            if ub_session is not None:
+                ub_session.rollback()
             raise
+        finally:
+            if ub_session is not None:
+                try:
+                    ub_session.close()
+                except Exception:
+                    pass
 
     def _save_stats(self):
         """Save statistics to CWA database"""

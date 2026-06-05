@@ -156,6 +156,36 @@ def get_magic_shelf_book_ids_for_kobo(user_id):
     return book_ids
 
 
+def get_magic_shelf_membership_added_at(user_id):
+    """Return the most-recent MagicShelfCache.created_at across the user's
+    kobo-sync magic shelves, or ``None`` if no cache rows exist.
+
+    Plays the role ``BookShelf.date_added`` plays for regular shelves —
+    a "membership added" timestamp that lets the sync cursor emit
+    magic-shelf-only books once when the cache (re)builds, then fall
+    out of the cursor on subsequent syncs.
+
+    Returning ``None`` (rather than ``datetime.min``) lets the caller
+    distinguish "no kobo-sync magic shelves at all" from "shelves
+    exist but never cached" — the former should skip the magic-shelf
+    arm entirely; the latter falls through to normal cursor behavior.
+    """
+    if not config.config_kobo_sync_magic_shelves:
+        return None
+
+    max_created_at = (
+        ub.session.query(func.max(ub.MagicShelfCache.created_at))
+        .join(ub.MagicShelf, ub.MagicShelf.id == ub.MagicShelfCache.shelf_id)
+        .filter(ub.MagicShelf.user_id == user_id, ub.MagicShelf.kobo_sync == True)  # noqa: E712
+        .scalar()
+    )
+    if max_created_at is None:
+        return None
+    if hasattr(max_created_at, "replace") and getattr(max_created_at, "tzinfo", None) is not None:
+        max_created_at = max_created_at.replace(tzinfo=None)
+    return max_created_at
+
+
 @kobo.route("/v1/library/sync")
 @requires_kobo_auth
 # @download_required
@@ -189,8 +219,10 @@ def HandleSyncRequest():
 
     # Two-Way-Sync Deletion Logic
     magic_shelf_book_ids = set()
+    magic_shelf_membership_added_at = None
     if current_user.kobo_only_shelves_sync:
         magic_shelf_book_ids = get_magic_shelf_book_ids_for_kobo(current_user.id)
+        magic_shelf_membership_added_at = get_magic_shelf_membership_added_at(current_user.id)
         try:
             # Check all books that are on Kobo according to the database
             synced_books_query = ub.session.query(ub.KoboSyncedBooks.book_id).filter(ub.KoboSyncedBooks.user_id == current_user.id)
@@ -241,6 +273,46 @@ def HandleSyncRequest():
         db.Books.id == ub.KoboReadingState.book_id,
         ub.KoboReadingState.user_id == current_user.id,
     )
+    # Composite-keyset cursor: filter rows after (books_last_modified, books_last_id)
+    # in lexicographic order. This walks paginated batches through blocks of books
+    # that share one last_modified (fork #347 — 4458 books all stamped one second
+    # in a bulk import; the timestamp-only cursor either re-sent the same first
+    # SYNC_ITEM_LIMIT forever or skipped the remainder). For pre-upgrade tokens
+    # books_last_id defaults to -1, so the keyset arm 'id > -1' is True for every
+    # valid book id and no books at exactly books_last_modified are dropped on
+    # the first post-upgrade sync.
+    cursor_lm = sync_token.books_last_modified
+    cursor_id = sync_token.books_last_id
+    composite_keyset_books_only = or_(
+        db.Books.last_modified > cursor_lm,
+        and_(db.Books.last_modified == cursor_lm, db.Books.id > cursor_id),
+    )
+
+    # Magic-shelf membership arm (fork #359): magic-shelf-only books are not in
+    # book_shelf_link, so BookShelf.date_added is NULL and Books.last_modified is
+    # usually in the past — the standard cursor arms filter them out before the
+    # outer (kobo_sync shelf OR magic-shelf) membership filter is evaluated, and
+    # they never reach the device. The cache row's created_at is the membership
+    # timestamp: when the cache (re)builds, emit all magic-shelf books once;
+    # cursor then advances past created_at and the arm goes False so the device
+    # doesn't re-emit (the #213 termination guard, preserved structurally).
+    magic_shelf_arm_active = bool(
+        magic_shelf_book_ids
+        and magic_shelf_membership_added_at is not None
+        and magic_shelf_membership_added_at > cursor_lm
+    )
+    if magic_shelf_arm_active:
+        inner_cursor_filter = or_(
+            ub.BookShelf.date_added > cursor_lm,
+            composite_keyset_books_only,
+            db.Books.id.in_(magic_shelf_book_ids),
+        )
+    else:
+        inner_cursor_filter = or_(
+            ub.BookShelf.date_added > cursor_lm,
+            composite_keyset_books_only,
+        )
+
     if only_kobo_shelves:
         changed_entries = calibre_db.session.query(db.Books,
                                                    ub.ArchivedBook.last_modified,
@@ -254,18 +326,17 @@ def HandleSyncRequest():
         # books another device already synced.
         #
         # Magic-shelf membership is enforced by the OUTER filter
-        # (kobo_sync shelf OR magic-shelf) further down. Don't add
-        # magic_shelf_book_ids to the inner OR — that bypasses the
-        # timestamp cursor and produces an infinite cont_sync loop on
-        # paginated sync.
+        # (kobo_sync shelf OR magic-shelf) further down. The INNER
+        # cursor includes a magic-shelf arm ONLY when the cache was
+        # (re)built after the device's cursor, then advances cursor
+        # past the cache's created_at — same termination guarantee as
+        # #213 (cont_sync goes False once the cache stops moving) but
+        # without the original "infinite loop" failure mode.
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
                            .outerjoin(ub.KoboReadingState, rstate_join)
-                           .filter(or_(
-                               ub.BookShelf.date_added > sync_token.books_last_modified,
-                               db.Books.last_modified > sync_token.books_last_modified
-                           ))
+                           .filter(inner_cursor_filter)
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .order_by(db.Books.last_modified)
@@ -290,14 +361,15 @@ def HandleSyncRequest():
                                                    ub.KoboReadingState)
         # Same per-device cursor invariant as the shelf branch above:
         # don't filter by KoboSyncedBooks (user-keyed, breaks multi-device).
-        # The last_modified > sync_token.books_last_modified filter is the
-        # per-device throttle — without it, this branch returns every book
-        # on every sync and keeps cont_sync True forever.
+        # The composite keyset (Books.last_modified, Books.id) is the per-device
+        # throttle — without it, this branch returns every book on every sync
+        # and keeps cont_sync True forever. The 'else' branch's SELECT does
+        # not join BookShelf, so the date_added arm is dropped here.
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
                            .outerjoin(ub.KoboReadingState, rstate_join)
-                           .filter(db.Books.last_modified > sync_token.books_last_modified)
+                           .filter(composite_keyset_books_only)
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .order_by(db.Books.last_modified)
@@ -311,9 +383,12 @@ def HandleSyncRequest():
     log.debug("Kobo Sync: changed entries: {}".format(changed_entries.count()))
 
     reading_states_in_new_entitlements = []
-    books = changed_entries.limit(SYNC_ITEM_LIMIT)
-    log.debug("Kobo Sync: selected to sync: {}".format(len(books.all())))
-    for book in books:
+    # Materialize the limited result set ONCE — the prior shape called .all()
+    # twice (once for the debug log, once for the for-loop) which round-tripped
+    # the joined-load query twice per sync request.
+    books_list = changed_entries.limit(SYNC_ITEM_LIMIT).all()
+    log.debug("Kobo Sync: selected to sync: {}".format(len(books_list)))
+    for book in books_list:
         kobo_reading_state = book.KoboReadingState  # None when no record exists yet
         entitlement = {
             "BookEntitlement": create_book_entitlement(book.Books, archived=(book.is_archived==True)),
@@ -356,6 +431,43 @@ def HandleSyncRequest():
 
         new_books_last_created = max(ts_created, new_books_last_created)
         kobo_sync_status.add_synced_books(book.Books.id)
+
+    # Composite-keyset cursor: keep books_last_id aligned with new_books_last_modified.
+    # The query ORDER BY (last_modified, id) means books_list iteration is sorted, so
+    # the last emitted row is the highest (last_modified, id) tuple in the batch.
+    #   - If new_books_last_modified == that row's last_modified, store the row's id so
+    #     the next sync's keyset arm `id > books_last_id` walks past it.
+    #   - If new_books_last_modified got pushed past the batch's max ts (via the
+    #     date_added fold from fork #220 or via the magic-shelf cache fold below),
+    #     reset id to -1 — there are no books at the new ts in this batch, so any
+    #     valid id passes the next sync's keyset arm.
+    #   - If the batch was empty, keep the existing cursor id (no emission).
+    if books_list:
+        last_book = books_list[-1]
+        last_book_lm = last_book.Books.last_modified
+        if hasattr(last_book_lm, "replace") and getattr(last_book_lm, "tzinfo", None) is not None:
+            last_book_lm = last_book_lm.replace(tzinfo=None)
+        if new_books_last_modified == last_book_lm:
+            new_books_last_id = last_book.Books.id
+        else:
+            new_books_last_id = -1
+    else:
+        new_books_last_id = sync_token.books_last_id
+
+    # If the magic-shelf membership arm was active this round, advance the cursor
+    # past the cache's created_at so the arm goes False next sync — same termination
+    # guarantee as fork #213 (cont_sync goes False once cache.created_at stops
+    # advancing), but without the original "infinite loop" failure mode. If the
+    # cache.created_at advances cursor past the batch's max book ts, reset id to -1
+    # (no books at the new ts in this batch).
+    if magic_shelf_arm_active and magic_shelf_membership_added_at is not None:
+        if magic_shelf_membership_added_at > new_books_last_modified:
+            new_books_last_modified = magic_shelf_membership_added_at
+            new_books_last_id = -1
+        elif magic_shelf_membership_added_at == new_books_last_modified and not books_list:
+            # Cache rebuilt but no books actually changed past the old cursor — still
+            # advance to prevent the arm from firing again (idempotent re-trigger).
+            new_books_last_id = -1
 
     max_change = changed_entries.filter(ub.ArchivedBook.is_archived)\
         .filter(ub.ArchivedBook.user_id == current_user.id) \
@@ -524,6 +636,7 @@ def HandleSyncRequest():
     if not cont_sync:
         sync_token.books_last_created = new_books_last_created
     sync_token.books_last_modified = new_books_last_modified
+    sync_token.books_last_id = new_books_last_id
     sync_token.archive_last_modified = new_archived_last_modified
     sync_token.reading_state_last_modified = new_reading_state_last_modified
 

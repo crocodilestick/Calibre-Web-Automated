@@ -44,10 +44,15 @@ class SyncToken:
     Attributes:
         books_last_created: Datetime representing the newest book that the device knows about.
         books_last_modified: Datetime representing the last modified book that the device knows about.
+        books_last_id: Composite-keyset tiebreaker — the last Books.id emitted at exactly
+            books_last_modified. Walks paginated batches through blocks of books that share one
+            last_modified (e.g. a bulk import). Default -1 means "no tiebreaker"; any valid book
+            id is > -1, so old tokens still see every book at exactly books_last_modified on the
+            first post-upgrade sync.
     """
 
     SYNC_TOKEN_HEADER = "x-kobo-synctoken"  # nosec
-    VERSION = "1-1-0"
+    VERSION = "1-2-0"
     LAST_MODIFIED_ADDED_VERSION = "1-1-0"
     MIN_VERSION = "1-0-0"
 
@@ -67,8 +72,8 @@ class SyncToken:
             "books_last_created": {"type": "number"},
             "archive_last_modified": {"type": "number"},
             "reading_state_last_modified": {"type": "number"},
-            "tags_last_modified": {"type": "number"}
-            # "books_last_id": {"type": "integer", "optional": True}
+            "tags_last_modified": {"type": "number"},
+            "books_last_id": {"type": "integer"},
         },
     }
 
@@ -79,8 +84,8 @@ class SyncToken:
         books_last_modified=datetime.min,
         archive_last_modified=datetime.min,
         reading_state_last_modified=datetime.min,
-        tags_last_modified=datetime.min
-        # books_last_id=-1
+        tags_last_modified=datetime.min,
+        books_last_id=-1,
     ):  # nosec
         self.raw_kobo_store_token = raw_kobo_store_token
         self.books_last_created = books_last_created
@@ -88,7 +93,7 @@ class SyncToken:
         self.archive_last_modified = archive_last_modified
         self.reading_state_last_modified = reading_state_last_modified
         self.tags_last_modified = tags_last_modified
-        # self.books_last_id = books_last_id
+        self.books_last_id = books_last_id
 
     @staticmethod
     def from_headers(headers):
@@ -126,6 +131,10 @@ class SyncToken:
             log.error("SyncToken timestamps don't parse to a datetime.")
             return SyncToken(raw_kobo_store_token=raw_kobo_store_token)
 
+        books_last_id = data_json.get("books_last_id", -1)
+        if not isinstance(books_last_id, int):
+            books_last_id = -1
+
         return SyncToken(
             raw_kobo_store_token=raw_kobo_store_token,
             books_last_created=books_last_created,
@@ -133,6 +142,7 @@ class SyncToken:
             archive_last_modified=archive_last_modified,
             reading_state_last_modified=reading_state_last_modified,
             tags_last_modified=tags_last_modified,
+            books_last_id=books_last_id,
         )
 
     def set_kobo_store_header(self, store_headers):
@@ -156,14 +166,16 @@ class SyncToken:
                 "archive_last_modified": to_epoch_timestamp(self.archive_last_modified),
                 "reading_state_last_modified": to_epoch_timestamp(self.reading_state_last_modified),
                 "tags_last_modified": to_epoch_timestamp(self.tags_last_modified),
+                "books_last_id": self.books_last_id,
             },
         }
         return b64encode_json(token)
 
     def __str__(self):
-        return "{},{},{},{},{},{}".format(self.books_last_created,
-                                          self.books_last_modified,
-                                          self.archive_last_modified,
-                                          self.reading_state_last_modified,
-                                          self.tags_last_modified,
-                                          self.raw_kobo_store_token)
+        return "{},{},{},{},{},{},{}".format(self.books_last_created,
+                                             self.books_last_modified,
+                                             self.archive_last_modified,
+                                             self.reading_state_last_modified,
+                                             self.tags_last_modified,
+                                             self.books_last_id,
+                                             self.raw_kobo_store_token)

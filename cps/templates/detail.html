@@ -573,6 +573,25 @@
                                            class="btn btn-primary action-icon-btn" role="button" title="{{ _('Edit Metadata') }}" aria-label="{{ _('Edit Metadata') }}">
                                             <span class="glyphicon glyphicon-pencil"></span>
                                         </a>
+                                        {# Reload-metadata-from-disk button — fork issue #218.
+                                           Replaces the manual `curl -X POST /admin/book/<id>/reload_metadata`
+                                           workflow that @yodatak (400 — CSRF token missing) and
+                                           @magdalar (405 — Chrome sent GET) were both stuck on. Posts
+                                           via $.ajax with X-CSRFToken so the @csrf_protect gate sees the
+                                           token, then reloads the page on success so the user immediately
+                                           sees the refreshed title/comments/publisher/pubdate/languages.
+                                           Same role_edit() gate as the route's @edit_required. #}
+                                        <button type="button"
+                                                class="btn btn-primary action-icon-btn"
+                                                id="reload-metadata-btn"
+                                                data-book-id="{{ entry.id }}"
+                                                data-toast-success="{{ _('Reloaded metadata from disk') }}"
+                                                data-toast-no-change="{{ _('On-disk metadata matches — nothing to update') }}"
+                                                data-toast-error="{{ _('Could not reload metadata') }}"
+                                                title="{{ _('Reload metadata from disk') }}"
+                                                aria-label="{{ _('Reload metadata from disk') }}">
+                                            <span id="reload-metadata-icon" class="glyphicon glyphicon-refresh"></span>
+                                        </button>
                                         <a href="{{ url_for('cover_picker.cover_picker_page', book_id=entry.id) }}"
                                            class="btn btn-primary action-icon-btn" role="button" title="{{ _('Change cover') }}" aria-label="{{ _('Change cover') }}">
                                             <span class="glyphicon glyphicon-picture"></span>
@@ -1108,6 +1127,58 @@
                 },
                 error: function () {
                     $cb.prop("checked", !nextChecked);
+                }
+            });
+        });
+
+        // Reload-metadata handler — fork issue #218. Replaces the manual
+        // curl invocation @yodatak/@magdalar were attempting (400/405).
+        // POSTs with X-CSRFToken (CSRF gate on the route), shows a spinner
+        // on the refresh icon while in flight, then a toast + page reload
+        // so the user sees the refreshed title/comments/publisher.
+        $("#reload-metadata-btn").on("click", function () {
+            var $btn = $("#reload-metadata-btn");
+            if ($btn.prop("disabled")) {
+                return;
+            }
+            var bookId = $btn.data("book-id");
+            var $icon = $("#reload-metadata-icon");
+            $btn.prop("disabled", true);
+            $icon.removeClass("glyphicon-refresh").addClass("glyphicon-hourglass");
+            $.ajax({
+                url: "/admin/book/" + bookId + "/reload_metadata",
+                method: "post",
+                headers: {
+                    "X-CSRFToken": $('meta[name="csrf-token"]').attr("content") || ""
+                },
+                success: function (data) {
+                    if (data && data.success) {
+                        var updated = (data.updated_fields || []).length;
+                        var msg = updated > 0 ? $btn.data("toast-success")
+                                              : $btn.data("toast-no-change");
+                        showActionToast(msg, $btn[0]);
+                        if (updated > 0) {
+                            // Page reload so refreshed metadata renders.
+                            setTimeout(function () { location.reload(); }, 800);
+                        } else {
+                            $icon.removeClass("glyphicon-hourglass").addClass("glyphicon-refresh");
+                            $btn.prop("disabled", false);
+                        }
+                    } else {
+                        var err = (data && data.error) ? data.error : $btn.data("toast-error");
+                        showActionToast(err, $btn[0]);
+                        $icon.removeClass("glyphicon-hourglass").addClass("glyphicon-refresh");
+                        $btn.prop("disabled", false);
+                    }
+                },
+                error: function (xhr) {
+                    var err = $btn.data("toast-error");
+                    if (xhr && xhr.responseJSON && xhr.responseJSON.error) {
+                        err = xhr.responseJSON.error;
+                    }
+                    showActionToast(err, $btn[0]);
+                    $icon.removeClass("glyphicon-hourglass").addClass("glyphicon-refresh");
+                    $btn.prop("disabled", false);
                 }
             });
         });

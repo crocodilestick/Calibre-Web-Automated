@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-05 21:37+0000\n"
+"POT-Creation-Date: 2026-06-05 22:24+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -1972,7 +1972,7 @@ msgid "Books ordered by series"
 msgstr "Könyvek sorozat szerint rendezve"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
-#: cps/templates/detail.html:746 cps/templates/search_form.html:108
+#: cps/templates/detail.html:765 cps/templates/search_form.html:108
 #: cps/web.py:1942
 msgid "Languages"
 msgstr "Nyelvek"
@@ -3003,9 +3003,9 @@ msgstr "válassz egy lehetőséget"
 msgid "Add to Shelf"
 msgstr "Hozzáadás polchoz"
 
-#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:630
-#: cps/templates/detail.html:652 cps/templates/detail.html:805
-#: cps/templates/detail.html:1336 cps/templates/feed.xml:109
+#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:649
+#: cps/templates/detail.html:671 cps/templates/detail.html:824
+#: cps/templates/detail.html:1407 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/layout.html:405
 #: cps/templates/layout.html:418 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
@@ -3448,7 +3448,7 @@ msgstr "OK"
 #: cps/templates/config_edit.html:669 cps/templates/config_view_edit.html:219
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:995
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1014
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
 #: cps/templates/duplicates.html:746 cps/templates/layout.html:595
 #: cps/templates/layout.html:750 cps/templates/modal_dialogs.html:64
@@ -3594,8 +3594,8 @@ msgstr "csökkentsd"
 msgid "More by"
 msgstr "Több tőle:"
 
-#: cps/templates/book_edit.html:15 cps/templates/detail.html:584
-#: cps/templates/detail.html:586
+#: cps/templates/book_edit.html:15 cps/templates/detail.html:603
+#: cps/templates/detail.html:605
 msgid "Delete Book"
 msgstr "Könyv törlése"
 
@@ -3667,7 +3667,7 @@ msgstr "Kiadás éve"
 
 #: cps/templates/book_edit.html:118 cps/templates/book_edit.html:418
 #: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
-#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:821
+#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:840
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3712,7 +3712,7 @@ msgstr "Azonosító hozzáadása"
 
 #: cps/templates/book_edit.html:151 cps/templates/cover_picker.html:12
 #: cps/templates/detail.html:486 cps/templates/detail.html:489
-#: cps/templates/detail.html:577
+#: cps/templates/detail.html:596
 msgid "Change cover"
 msgstr "Borítócsere"
 
@@ -6302,12 +6302,12 @@ msgid "Read in Browser"
 msgstr "Olvasás böngészőben"
 
 #: cps/templates/detail.html:554 cps/templates/detail.html:555
-#: cps/templates/detail.html:884 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:903 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Legyen olvasatlan"
 
 #: cps/templates/detail.html:554 cps/templates/detail.html:555
-#: cps/templates/detail.html:885 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:904 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Legyen olvasott"
 
@@ -6320,12 +6320,12 @@ msgid "Marked as unread"
 msgstr "Olvasatlannak jelölve"
 
 #: cps/templates/detail.html:562 cps/templates/detail.html:563
-#: cps/templates/detail.html:891 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:910 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "Archiválás visszavonása"
 
 #: cps/templates/detail.html:562 cps/templates/detail.html:563
-#: cps/templates/detail.html:892 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:911 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "Hozzáadás archívumhoz"
 
@@ -6337,146 +6337,164 @@ msgstr "Archiválva"
 msgid "Restored from archive"
 msgstr "Archiválás visszavonva"
 
-#: cps/templates/detail.html:601 cps/templates/detail.html:602
+#: cps/templates/detail.html:588
+#, fuzzy
+msgid "Reloaded metadata from disk"
+msgstr "Engedélyezett metaadat szolgáltatók"
+
+#: cps/templates/detail.html:589
+msgid "On-disk metadata matches — nothing to update"
+msgstr ""
+
+#: cps/templates/detail.html:590
+#, fuzzy
+msgid "Could not reload metadata"
+msgstr "Nem sikerült menteni a zárolási állapotot."
+
+#: cps/templates/detail.html:591 cps/templates/detail.html:592
+msgid "Reload metadata from disk"
+msgstr ""
+
+#: cps/templates/detail.html:620 cps/templates/detail.html:621
 #, fuzzy
 msgid "Unhide from your library"
 msgstr "Polc elrejtése az oldalsávból"
 
-#: cps/templates/detail.html:601 cps/templates/detail.html:602
+#: cps/templates/detail.html:620 cps/templates/detail.html:621
 #, fuzzy
 msgid "Hide from your library"
 msgstr "Polc elrejtése az oldalsávból"
 
-#: cps/templates/detail.html:603
+#: cps/templates/detail.html:622
 #, fuzzy
 msgid "Hidden"
 msgstr "Rejtett könyvek"
 
-#: cps/templates/detail.html:604
+#: cps/templates/detail.html:623
 msgid "Unhidden"
 msgstr ""
 
-#: cps/templates/detail.html:619 cps/templates/detail.html:813
-#: cps/templates/detail.html:814 cps/templates/detail.html:1373
+#: cps/templates/detail.html:638 cps/templates/detail.html:832
+#: cps/templates/detail.html:833 cps/templates/detail.html:1444
 #: cps/templates/listenmp3.html:190 cps/templates/search.html:17
 msgid "Add to shelf"
 msgstr "Hozzáadás polchoz"
 
-#: cps/templates/detail.html:642 cps/templates/detail.html:807
+#: cps/templates/detail.html:661 cps/templates/detail.html:826
 msgid "Remove from shelf"
 msgstr "Levétel polcról"
 
-#: cps/templates/detail.html:680
+#: cps/templates/detail.html:699
 msgid "Rating updated"
 msgstr "Értékelés frissítve"
 
-#: cps/templates/detail.html:681
+#: cps/templates/detail.html:700
 msgid "Rating cleared"
 msgstr "Értékelés törölve"
 
-#: cps/templates/detail.html:699 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:718 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "%(index)s. könyv a %(range)s közül"
 
-#: cps/templates/detail.html:704
+#: cps/templates/detail.html:723
 msgid "ID"
 msgstr "Azonosító"
 
-#: cps/templates/detail.html:709
+#: cps/templates/detail.html:728
 msgid "UUID"
 msgstr "UUID"
 
-#: cps/templates/detail.html:712
+#: cps/templates/detail.html:731
 msgid "UUID copied to clipboard"
 msgstr "UUID kimásolva vágólapra"
 
-#: cps/templates/detail.html:713
+#: cps/templates/detail.html:732
 msgid "Unable to copy UUID"
 msgstr "UUID nem másolható"
 
-#: cps/templates/detail.html:714 cps/templates/detail.html:715
+#: cps/templates/detail.html:733 cps/templates/detail.html:734
 msgid "Copy UUID"
 msgstr "UUID másolása"
 
-#: cps/templates/detail.html:720
+#: cps/templates/detail.html:739
 msgid "Date added"
 msgstr "Hozzáadás dátuma"
 
-#: cps/templates/detail.html:724
+#: cps/templates/detail.html:743
 msgid "Last modified"
 msgstr "Utoljára módosítva"
 
-#: cps/templates/detail.html:729
+#: cps/templates/detail.html:748
 msgid "File sizes"
 msgstr "Fájl mérete"
 
-#: cps/templates/detail.html:773
+#: cps/templates/detail.html:792
 msgid "Remove tag"
 msgstr "Címke eltávolítása"
 
-#: cps/templates/detail.html:781 cps/templates/detail.html:782
-#: cps/templates/detail.html:1251
+#: cps/templates/detail.html:800 cps/templates/detail.html:801
+#: cps/templates/detail.html:1322
 msgid "Add tag"
 msgstr "Címke hozzáadása"
 
-#: cps/templates/detail.html:827 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:846 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "Kiadva"
 
-#: cps/templates/detail.html:833
+#: cps/templates/detail.html:852
 msgid "KOReader Progress"
 msgstr "KOReader állapot"
 
-#: cps/templates/detail.html:903 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:922 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Ismertető:"
 
-#: cps/templates/detail.html:920
+#: cps/templates/detail.html:939
 msgid "Select eReader Email Addresses"
 msgstr "E-olvasó e-mail címek kiválasztása"
 
-#: cps/templates/detail.html:933
+#: cps/templates/detail.html:952
 msgid "Choose email addresses:"
 msgstr "Válasszon e-mail címeket:"
 
-#: cps/templates/detail.html:938
+#: cps/templates/detail.html:957
 msgid "Select All"
 msgstr "Mind kiválasztása"
 
-#: cps/templates/detail.html:959
+#: cps/templates/detail.html:978
 msgid "Other users' eReaders:"
 msgstr "Más felhasználók e-olvasói:"
 
-#: cps/templates/detail.html:974
+#: cps/templates/detail.html:993
 msgid "Additional email addresses:"
 msgstr "További e-mail címek:"
 
-#: cps/templates/detail.html:975
+#: cps/templates/detail.html:994
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "További e-mail címek megadása (vesszővel elválasztva):"
 
-#: cps/templates/detail.html:976
+#: cps/templates/detail.html:995
 msgid "example@domain.com, another@domain.com"
 msgstr "pelda@domain.hu, masik@domain.hu"
 
-#: cps/templates/detail.html:977
+#: cps/templates/detail.html:996
 msgid "Enter one or more email addresses separated by commas"
 msgstr "Adjon meg egy vagy több e-mail címet vesszővel elválasztva"
 
-#: cps/templates/detail.html:982
+#: cps/templates/detail.html:1001
 msgid "Select format:"
 msgstr "Formátum kiválasztása:"
 
-#: cps/templates/detail.html:994
+#: cps/templates/detail.html:1013
 msgid "Send"
 msgstr "Küldés"
 
-#: cps/templates/detail.html:1229
+#: cps/templates/detail.html:1300
 msgid "Failed to update tags"
 msgstr "Címkék frissítése sikertelen"
 
-#: cps/templates/detail.html:1337
+#: cps/templates/detail.html:1408
 msgid "Failed to update shelves"
 msgstr "Polcok frissítése sikertelen"
 

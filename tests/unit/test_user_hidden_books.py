@@ -213,8 +213,19 @@ class TestHideRouteShape:
     def test_hidden_listing_route_dispatch_is_present(self):
         from pathlib import Path
         src = (Path(__file__).resolve().parent.parent.parent / "cps" / "web.py").read_text()
-        assert 'data == "hidden"' in src, (
-            "The data-dispatch must include the 'hidden' branch so /hidden URL renders"
+        # The dispatch may use `data == "hidden"` or
+        # `data in ("hidden", "hidden_books")` — the alias was added in
+        # fork #319 to handle sort-dropdown URLs from the hidden listing
+        # (which generate /hidden_books/<sort> because the page identifier
+        # avoids Bootstrap's .hidden CSS class). Accept either shape.
+        assert ('data == "hidden"' in src
+                or 'data in ("hidden", "hidden_books")' in src
+                or "data in ('hidden', 'hidden_books')" in src
+                or 'data in ("hidden_books", "hidden")' in src
+                or "data in ('hidden_books', 'hidden')" in src), (
+            "The data-dispatch must include a 'hidden' branch so /hidden "
+            "URL renders. Accepted shapes: `data == \"hidden\"` or "
+            "`data in (\"hidden\", \"hidden_books\")`."
         )
         assert "render_hidden_books(" in src, (
             "render_hidden_books helper must be invoked by the dispatch"

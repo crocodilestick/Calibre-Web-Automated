@@ -508,7 +508,15 @@ def render_books_list(data, sort_param, book_id, page):
         return render_language_books(page, book_id, order)
     elif data == "archived":
         return render_archived_books(page, order)
-    elif data == "hidden":
+    elif data in ("hidden", "hidden_books"):
+        # The 'hidden_books' alias exists because render_hidden_books sets
+        # the body CSS class to 'hidden_books' (not 'hidden' — Bootstrap's
+        # .hidden{display:none!important} would blank the body). The
+        # _book_organizer.html sort dropdown builds URLs via url_for(...,
+        # data=page, ...), so sort links become /hidden_books/<sort>.
+        # Without the alias, that URL falls into the catch-all and
+        # silently renders the unfiltered library (fork #319 droM4X
+        # follow-up).
         return render_hidden_books(page, order)
     elif data == "search":
         term = request.args.get('query', None)

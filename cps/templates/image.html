@@ -14,7 +14,7 @@
 {% set shelves_here = g.book_shelves_map.get(book.id, []) if g.book_shelves_map is defined else [] %}
 {% if is_read or shelves_here %}
 <div class="cover-badges">
-  {% if is_read %}<span class="cover-badge cover-badge-read" title="{{ _('Read') }}"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><span class="cover-badge-read-label">{{ _('Read') }}</span></span>{% endif %}
+  {% if is_read %}<span class="cover-badge cover-badge-read" title="{{ _('Read') }}"><span class="glyphicon glyphicon-check" aria-hidden="true"></span><span class="cover-badge-read-label">{{ _('Read') }}</span></span>{% endif %}
   {% set max_shown = 3 %}
   {% set extra = shelves_here|length - max_shown %}
   {% for sh in shelves_here[:max_shown] %}

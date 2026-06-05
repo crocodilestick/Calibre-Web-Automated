@@ -545,17 +545,23 @@
                                     {% endif %}
 
                                     {% if not current_user.is_anonymous %}
-                                        {# Read-status icon uses checkmark (glyphicon-ok / glyphicon-unchecked) per fork #319
-                                           @droM4X pushback. The old eye-open / eye-close collided visually with the hide button
-                                           (also an eye), which was the source of the user-hostile accidental-hide failure
-                                           SethMilliken reported. Hide button now also gated by config flag + placed at the
-                                           end of the action row — see further down. #}
+                                        {# Read-status icon uses the glyphicon-check / glyphicon-unchecked matched
+                                           pair per fork #319 @droM4X (#2 + #3 of the 2026-05-28 four-item list).
+                                           The icon shows the ACTION the click will perform, matching the button label:
+                                             read_status=False (unread) → label 'Mark As Read'     → icon ☑  glyphicon-check
+                                             read_status=True  (read)   → label 'Mark As Unread'   → icon ☐  glyphicon-unchecked
+                                           Same matched pair is used as a passive STATE indicator on the grid badge
+                                           (index.html) and cover overlay (image.html) — where there's no click context,
+                                           a check means 'this book is read'. The old eye-open / eye-close collided
+                                           visually with the hide button (also an eye), which was the SethMilliken
+                                           accidental-hide failure mode. Hide button is now gated by the config flag +
+                                           placed at the end of the action row — see further down. #}
                                         <button type="button" class="btn btn-default action-icon-btn" id="toggle-read-btn"
                                                 title="{{ entry.read_status and _('Mark As Unread') or _('Mark As Read') }}"
                                                 aria-label="{{ entry.read_status and _('Mark As Unread') or _('Mark As Read') }}"
                                                 data-toast-on="{{ _('Marked as read') }}"
                                                 data-toast-off="{{ _('Marked as unread') }}">
-                                            <span id="read-icon" class="glyphicon {{ entry.read_status and 'glyphicon-ok' or 'glyphicon-unchecked' }}"></span>
+                                            <span id="read-icon" class="glyphicon {{ entry.read_status and 'glyphicon-unchecked' or 'glyphicon-check' }}"></span>
                                         </button>
                                         {% if current_user.check_visibility(32768) %}
                                             <button type="button" class="btn btn-default action-icon-btn" id="toggle-archive-btn"
@@ -1083,10 +1089,12 @@
                     }
                     var $icon = $("#read-icon");
                     var isRead = $cb.prop("checked");
-                    // Read-status uses checkmark icons (fork #319 droM4X) so the
-                    // toggle no longer collides visually with the hide button (eye).
-                    $icon.toggleClass("glyphicon-ok", isRead)
-                         .toggleClass("glyphicon-unchecked", !isRead);
+                    // Read-status uses the glyphicon-check / glyphicon-unchecked matched
+                    // pair, showing ACTION (fork #319 droM4X). When the book is now read,
+                    // the icon switches to glyphicon-unchecked (next click = mark unread);
+                    // when unread, glyphicon-check (next click = mark read).
+                    $icon.toggleClass("glyphicon-unchecked", isRead)
+                         .toggleClass("glyphicon-check", !isRead);
                     var title = isRead ? $cb.data("checked") : $cb.data("unchecked");
                     $("#toggle-read-btn").attr("title", title).attr("aria-label", title);
                     var $btn = $("#toggle-read-btn");

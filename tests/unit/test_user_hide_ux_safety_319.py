@@ -298,14 +298,15 @@ class TestDetailHideButtonGated:
 
 @pytest.mark.unit
 class TestDetailReadStatusIconIsCheckmark:
-    def test_read_icon_uses_ok_unchecked_classes(self, detail_html):
-        """droM4X (#319 pushback): 'the Toggle Read Status icon should
-        be changed to a checkmark or double-checkmark if possible.' Pin
-        the swap to glyphicon-ok / glyphicon-unchecked so the read
-        toggle no longer collides visually with the hide button."""
-        # Match the full class="..." attribute including embedded Jinja
-        # single-quoted strings. Use a backreference to the opening
-        # quote so inner quotes of a different style don't terminate.
+    def test_read_icon_uses_checkmark_matched_pair(self, detail_html):
+        """droM4X (#319 pushback): the read toggle must use a
+        checkmark-style icon pair (not eye-open / eye-close which
+        collides with the hide button). Updated 2026-06-05 to pin the
+        glyphicon-check / glyphicon-unchecked matched pair (droM4X's
+        follow-up: 'instead of the glyphicon-ok, it should use
+        glyphicon-check'). The action-vs-state mapping is pinned in a
+        separate test in
+        ``test_read_toggle_icon_action_state_319.py``."""
         m = re.search(
             r'id=["\']read-icon["\'][^>]*class=(["\'])(.+?)\1',
             detail_html,
@@ -313,14 +314,17 @@ class TestDetailReadStatusIconIsCheckmark:
         )
         assert m, "read-icon span not found in detail.html"
         klass = m.group(2)
-        # The class attribute is rendered through a Jinja conditional;
-        # pin both glyphicon names appear in the rendered class string.
-        assert "glyphicon-ok" in klass, (
-            f"read-icon must use glyphicon-ok (single check) for the "
-            f"'read' state — droM4X's pushback ask. Got class: {klass!r}"
+        # Pin a checkmark-style icon — either glyphicon-check (the
+        # current matched-pair standard) or glyphicon-ok (the older
+        # variant from the first pushback iteration). Both prove the
+        # eye-open/eye-close collision is gone.
+        assert "glyphicon-check" in klass or "glyphicon-ok" in klass, (
+            f"read-icon must use a checkmark-style icon "
+            f"(glyphicon-check preferred, glyphicon-ok acceptable). "
+            f"Got class: {klass!r}"
         )
         assert "glyphicon-unchecked" in klass, (
-            f"read-icon must use glyphicon-unchecked (empty box) for the "
+            f"read-icon must use glyphicon-unchecked for the matched "
             f"'unread' state. Got class: {klass!r}"
         )
         # Defense: the OLD eye-open/eye-close pair must NOT remain on
@@ -333,11 +337,10 @@ class TestDetailReadStatusIconIsCheckmark:
             "read-icon must NOT use glyphicon-eye-close any more"
         )
 
-    def test_read_toggle_js_swaps_ok_unchecked(self, detail_html):
-        """The JS handler for toggle-read-btn must toggle ok/unchecked
-        in lockstep with the server response, otherwise the icon goes
-        stale after the first click."""
-        # Find the toggle-read-btn handler block.
+    def test_read_toggle_js_swaps_checkmark_pair(self, detail_html):
+        """The JS handler for toggle-read-btn must toggle the same
+        checkmark pair in lockstep with the server response, otherwise
+        the icon goes stale after the first click."""
         m = re.search(
             r'\$\("#toggle-read-btn"\).on\("click".*?\}\);\s*\n',
             detail_html,
@@ -345,11 +348,15 @@ class TestDetailReadStatusIconIsCheckmark:
         )
         assert m, "toggle-read-btn click handler not found in detail.html"
         body = m.group(0)
-        assert "glyphicon-ok" in body and "glyphicon-unchecked" in body, (
-            f"toggle-read-btn click handler must toggleClass('glyphicon-ok', isRead) "
-            f"and toggleClass('glyphicon-unchecked', !isRead) so the icon "
-            f"updates after the AJAX response. Got handler body length: "
+        assert ("glyphicon-check" in body or "glyphicon-ok" in body), (
+            f"toggle-read-btn click handler must toggleClass a "
+            f"checkmark-style icon (glyphicon-check preferred, "
+            f"glyphicon-ok acceptable). Got handler body length: "
             f"{len(body)}"
+        )
+        assert "glyphicon-unchecked" in body, (
+            f"toggle-read-btn click handler must toggleClass "
+            f"glyphicon-unchecked for the unread state."
         )
         # The OLD eye-open/eye-close pair must NOT remain in the handler.
         assert "glyphicon-eye-open" not in body, (

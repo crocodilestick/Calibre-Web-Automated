@@ -1087,8 +1087,9 @@ $(function() {
                         // Remove read badge
                         $readBadge.remove();
                     } else {
-                        // Add read badge
-                        var $newBadge = $('<span class="badge read glyphicon glyphicon-ok"></span>');
+                        // Add read badge — matches index.html / image.html
+                        // glyphicon-check (fork #319 droM4X icon-standardization).
+                        var $newBadge = $('<span class="badge read glyphicon glyphicon-check"></span>');
                         $link.find('.img').append($newBadge);
                     }
                     

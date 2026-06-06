@@ -1327,6 +1327,25 @@ def create_magic_shelf():
                 )
             ub.session_commit()
             log.info(f"User {current_user.id} created magic shelf '{name}' (ID: {new_shelf.id})")
+            # Per-shelf Kobo intent is persisted even while the global
+            # 'Sync Magic Shelves to Kobo' setting is off (so enabling the
+            # setting later honors it) — but it is inert until then, so be
+            # honest with API callers who never saw the gated checkbox
+            # (#359 follow-up; the UI disables the checkbox in this state).
+            if kobo_sync and not config.config_kobo_sync_magic_shelves:
+                log.info(
+                    "Magic shelf %s saved with kobo_sync=1 while the global "
+                    "'Sync Magic Shelves to Kobo' setting is off — intent "
+                    "stored but inert until the setting is enabled (#359)",
+                    new_shelf.id,
+                )
+                return jsonify({
+                    "success": True,
+                    "shelf_id": new_shelf.id,
+                    "warning": _("Kobo sync for Magic Shelves is disabled globally — "
+                                 "this shelf won't reach your Kobo until 'Sync Magic "
+                                 "Shelves to Kobo' is enabled in CWA Settings."),
+                })
             return jsonify({"success": True, "shelf_id": new_shelf.id})
         except Exception as e:
             log.error(f"Error creating magic shelf: {e}")
@@ -1344,11 +1363,12 @@ def create_magic_shelf():
         except:
             language_map[lang.lang_code] = lang.lang_code
 
-    return render_title_template('magic_shelf_edit.html', 
-                                 title=_("Create Magic Shelf"), 
+    return render_title_template('magic_shelf_edit.html',
+                                 title=_("Create Magic Shelf"),
                                  page="magic_shelf_create",
                                  opds_expose_enabled=current_user.opds_only_shelves_sync,
                                  opds_expose_checked=False,
+                                 kobo_magic_sync_enabled=bool(config.config_kobo_sync_magic_shelves),
                                  allowed_icons=ALLOWED_ICONS,
                                  languages=language_map)
 
@@ -1443,6 +1463,21 @@ def edit_magic_shelf(shelf_id):
                     flask_session.modified = True
             
             log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}') with icon '{icon}'")
+            # Mirror of the create path: persisted-but-inert kobo intent gets
+            # an explicit warning instead of a silent no-op (#359 follow-up).
+            if kobo_sync and not config.config_kobo_sync_magic_shelves:
+                log.info(
+                    "Magic shelf %s saved with kobo_sync=1 while the global "
+                    "'Sync Magic Shelves to Kobo' setting is off — intent "
+                    "stored but inert until the setting is enabled (#359)",
+                    shelf_id,
+                )
+                return jsonify({
+                    "success": True,
+                    "warning": _("Kobo sync for Magic Shelves is disabled globally — "
+                                 "this shelf won't reach your Kobo until 'Sync Magic "
+                                 "Shelves to Kobo' is enabled in CWA Settings."),
+                })
             return jsonify({"success": True})
         except Exception as e:
             log.error(f"Error updating magic shelf {shelf_id}: {e}")
@@ -1460,12 +1495,13 @@ def edit_magic_shelf(shelf_id):
         except:
             language_map[lang.lang_code] = lang.lang_code
 
-    return render_title_template('magic_shelf_edit.html', 
-                                 shelf=shelf, 
-                                 title=_("Edit Magic Shelf"), 
+    return render_title_template('magic_shelf_edit.html',
+                                 shelf=shelf,
+                                 title=_("Edit Magic Shelf"),
                                  page="magic_shelf_edit",
                                  opds_expose_enabled=current_user.opds_only_shelves_sync,
                                  opds_expose_checked=opds_expose_checked,
+                                 kobo_magic_sync_enabled=bool(config.config_kobo_sync_magic_shelves),
                                  allowed_icons=ALLOWED_ICONS,
                                  languages=language_map)
 

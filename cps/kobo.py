@@ -7,6 +7,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import base64
+import logging
 from datetime import datetime, timezone
 from cps import cw_babel
 from kobo_sync_utils import get_kobo_created_ts
@@ -136,6 +137,19 @@ def convert_to_kobo_timestamp_string(timestamp):
 
 def get_magic_shelf_book_ids_for_kobo(user_id):
     if not config.config_kobo_sync_magic_shelves:
+        # Per-shelf kobo_sync intent with the global flag off is the #359
+        # trap — surface it in debug logs so support can spot it instantly.
+        # (A one-time boot migration enables the global flag where intent
+        # already exists; this log covers shelves marked afterwards, e.g.
+        # via API, while the flag is deliberately off.)
+        if log.isEnabledFor(logging.DEBUG):
+            swallowed = ub.session.query(ub.MagicShelf).filter_by(
+                user_id=user_id, kobo_sync=True).count()
+            if swallowed:
+                log.debug(
+                    "Kobo Sync: %s magic shelves are marked kobo_sync but the "
+                    "global 'Sync Magic Shelves to Kobo' setting is off — not "
+                    "delivering (#359)", swallowed)
         return set()
 
     magic_shelves = ub.session.query(ub.MagicShelf).filter_by(user_id=user_id, kobo_sync=True).all()

@@ -206,6 +206,11 @@ def HandleSyncRequest():
         sync_token.books_last_modified = datetime.min
         sync_token.books_last_created = datetime.min
         sync_token.reading_state_last_modified = datetime.min
+        # Reset books_last_id alongside books_last_modified — with
+        # cursor_lm = datetime.min the stale cursor_id is harmless, but
+        # keeping the two cursor components consistent makes the keyset
+        # behavior easier to reason about for future readers.
+        sync_token.books_last_id = -1
 
     new_books_last_modified = sync_token.books_last_modified  # needed for sync selected shelfs only
     new_books_last_created = sync_token.books_last_created  # needed to distinguish between new and changed entitlement
@@ -495,7 +500,21 @@ def HandleSyncRequest():
     # advancing), but without the original "infinite loop" failure mode. If the
     # cache.created_at advances cursor past the batch's max book ts, reset id to -1
     # (no books at the new ts in this batch).
-    if magic_shelf_arm_active and magic_shelf_membership_added_at is not None:
+    #
+    # CRITICAL: only fire the fold when the batch is PARTIAL (len(books_list) <
+    # SYNC_ITEM_LIMIT). Greptile-surfaced bug: when the batch is full, there may
+    # be pending regular books whose Books.last_modified falls between the batch's
+    # max_lm and magic_shelf_membership_added_at. Advancing the cursor to T_magic
+    # silently drops them on every subsequent sync (their lm < cursor.lm, the
+    # composite keyset fails, the magic-shelf arm gate goes False because cache
+    # no longer > cursor). Deferring the fold until the batch is partial means
+    # the next round walks the remaining ties via the composite keyset; the
+    # magic-shelf arm continues to fire so already-emitted magic books re-emit
+    # (idempotent on device — bandwidth waste only, no data loss). Once all
+    # pending books are drained (batch < limit), the fold fires, cursor jumps
+    # past T_magic, arm goes False, termination achieved.
+    batch_drained = len(books_list) < SYNC_ITEM_LIMIT
+    if magic_shelf_arm_active and batch_drained:
         if magic_shelf_membership_added_at > new_books_last_modified:
             new_books_last_modified = magic_shelf_membership_added_at
             new_books_last_id = -1

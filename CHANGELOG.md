@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.156] – 2026-06-06
+
 ### Fixed
 - **Magic Shelves marked for Kobo sync now actually reach your Kobo** — books
   deliver and the shelf appears as a collection on the device. Previously a
@@ -30,6 +32,11 @@ is for things you can see or feel when running the app.
   it accepted unauthenticated requests on internet-facing deployments (limited
   impact: it could only force a duplicate-scan refresh). (#370, found and fixed
   by @8bitgentleman)
+
+### Added
+- A `:dev` docker channel: `ghcr.io/new-usemame/calibre-web-nextgen:dev` gets
+  every merge as it lands — it's what we run at home. Versioned releases now
+  batch to at most one per day, so release notifications get quieter.
 
 ## [v4.0.155] – 2026-06-06
 

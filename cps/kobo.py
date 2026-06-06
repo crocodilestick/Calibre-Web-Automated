@@ -510,15 +510,25 @@ def HandleSyncRequest():
     # emitted this round. magic_shelf_book_ids may be empty when the arm
     # wasn't active, in which case the comprehension is empty and we keep
     # the existing sub-cursor unchanged.
+    #
+    # CRITICAL: source from the LOCAL magic_shelf_last_id (which may have
+    # been reset to -1 by the cache-rebuild detection above), NOT from
+    # sync_token.magic_shelf_last_id. Otherwise: when the first batch after
+    # a cache rebuild contains no magic books (e.g. it's full of regular
+    # books that sort before the magic ones), the rebuild reset is
+    # silently overwritten by the old token value, the membership_at is
+    # advanced to match, and subsequent syncs never re-trigger the rebuild
+    # detection — leaving low-id magic books undelivered (Greptile P on
+    # PR #368).
     magic_book_ids_emitted = [
         b.Books.id for b in books_list
         if magic_shelf_book_ids and b.Books.id in magic_shelf_book_ids
     ]
     if magic_book_ids_emitted:
-        new_magic_shelf_last_id = max(sync_token.magic_shelf_last_id,
+        new_magic_shelf_last_id = max(magic_shelf_last_id,
                                        max(magic_book_ids_emitted))
     else:
-        new_magic_shelf_last_id = sync_token.magic_shelf_last_id
+        new_magic_shelf_last_id = magic_shelf_last_id
 
     # Composite-keyset cursor: keep books_last_id aligned with new_books_last_modified.
     # The query ORDER BY (last_modified, id) means books_list iteration is sorted, so

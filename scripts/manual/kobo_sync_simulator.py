@@ -18,12 +18,18 @@ import argparse
 import base64
 import json
 import urllib.request
+import zlib
 
 
 def decode_token(tok):
     if not tok:
         return {}
     try:
+        if tok.startswith("z1:"):
+            # Transport-compressed format (fork #331).
+            payload = tok[3:]
+            return json.loads(zlib.decompress(
+                base64.b64decode(payload + "=" * (-len(payload) % 4))))
         return json.loads(base64.b64decode(tok + "=" * (-len(tok) % 4)))
     except Exception:
         return {"undecodable": tok[:40]}

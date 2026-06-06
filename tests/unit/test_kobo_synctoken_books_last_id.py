@@ -40,6 +40,21 @@ import pytest
 from cps.services.SyncToken import SyncToken
 
 
+
+def _decode_built_token(encoded):
+    """Decode a build_sync_token() value regardless of transport format.
+
+    Since fork #331 the token is z1: + b64(zlib(json)) — transport-level
+    compression so the header fits nginx's 4K default. The inner schema is
+    unchanged, which is exactly what these tests pin.
+    """
+    import zlib
+    if encoded.startswith("z1:"):
+        payload = encoded[3:]
+        return json.loads(zlib.decompress(
+            base64.b64decode(payload + "=" * (-len(payload) % 4))))
+    return json.loads(base64.b64decode(encoded + "=" * (-len(encoded) % 4)))
+
 def _encode(payload):
     return base64.b64encode(json.dumps(payload).encode()).decode("utf-8")
 
@@ -142,12 +157,12 @@ class TestSyncTokenVersion:
 
     def test_token_built_carries_advanced_version(self):
         encoded = SyncToken().build_sync_token()
-        wrapper = json.loads(base64.b64decode(encoded + "=" * (-len(encoded) % 4)))
+        wrapper = _decode_built_token(encoded)
         assert wrapper["version"] >= "1-3-0"
 
     def test_books_last_id_present_in_built_data_payload(self):
         encoded = SyncToken(books_last_id=99).build_sync_token()
-        wrapper = json.loads(base64.b64decode(encoded + "=" * (-len(encoded) % 4)))
+        wrapper = _decode_built_token(encoded)
         assert wrapper["data"]["books_last_id"] == 99
 
 
@@ -190,5 +205,5 @@ class TestSyncTokenMagicShelfLastId:
 
     def test_present_in_built_data_payload(self):
         encoded = SyncToken(magic_shelf_last_id=555).build_sync_token()
-        wrapper = json.loads(base64.b64decode(encoded + "=" * (-len(encoded) % 4)))
+        wrapper = _decode_built_token(encoded)
         assert wrapper["data"]["magic_shelf_last_id"] == 555

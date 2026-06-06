@@ -16,6 +16,14 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- Kobo sync no longer fails behind reverse proxies with default buffer sizes
+  (Synology DSM, stock nginx). The sync token header could exceed nginx's 4K
+  default when Kobo store proxying was on; it's now compressed to roughly
+  half the size, with older tokens still accepted — no device reconfiguration
+  needed. If you added `proxy_buffer_size` overrides for this, they can stay
+  (harmless) or go. (#331, reported by @Gusdezup)
+
 ### Added
 - The book detail and edit pages now show the filename a book was imported
   with ("Imported as: …"). Ingest renames files to match their metadata —

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-06 18:45+0000\n"
+"POT-Creation-Date: 2026-06-06 19:55+0000\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -1390,36 +1390,42 @@ msgstr "Gagal menyimpan berkas %(file)s."
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Format berkas %(ext)s ditambahkan ke %(book)s"
 
-#: cps/editbooks.py:2162
+#: cps/editbooks.py:2170
 #, fuzzy
 msgid "Book not found"
 msgstr "Token tidak ditemukan"
 
-#: cps/editbooks.py:2166
+#: cps/editbooks.py:2174
 msgid "Book has no file formats on disk to reload from"
 msgstr ""
 
-#: cps/editbooks.py:2186
+#: cps/editbooks.py:2194
 #, fuzzy, python-format
 msgid "Book file not found on disk: %(path)s"
 msgstr "%(format)s format tidak ditemukan dalam disk"
 
-#: cps/editbooks.py:2198
+#: cps/editbooks.py:2206
 #, python-format
 msgid "Could not parse metadata from %(format)s file: %(err)s"
 msgstr ""
 
-#: cps/editbooks.py:2253
+#: cps/editbooks.py:2320
+#, python-format
+msgid ""
+"Could not rename the book folder to match the reloaded metadata: %(err)s"
+msgstr ""
+
+#: cps/editbooks.py:2342
 #, python-format
 msgid "Could not save reloaded metadata: %(err)s"
 msgstr ""
 
-#: cps/editbooks.py:2259
+#: cps/editbooks.py:2348
 #, python-format
 msgid "Reloaded %(n)d field(s) from on-disk %(fmt)s"
 msgstr ""
 
-#: cps/editbooks.py:2262
+#: cps/editbooks.py:2351
 msgid "On-disk metadata matches current — no fields updated"
 msgstr ""
 

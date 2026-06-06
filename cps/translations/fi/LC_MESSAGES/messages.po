@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-06 20:35+0000\n"
+"POT-Creation-Date: 2026-06-06 22:48+0000\n"
 "PO-Revision-Date: 2020-01-12 13:56+0100\n"
 "Last-Translator: Samuli Valavuo <svalavuo@gmail.com>\n"
 "Language-Team: \n"
@@ -122,7 +122,7 @@ msgstr "Perusasetukset"
 msgid "UI Configuration"
 msgstr "Käyttöliittymän asetukset"
 
-#: cps/admin.py:652 cps/admin.py:1378 cps/db.py:1122 cps/search.py:153
+#: cps/admin.py:652 cps/admin.py:1378 cps/db.py:1281 cps/search.py:153
 #: cps/web.py:575 cps/web.py:905
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -1177,7 +1177,7 @@ msgstr ""
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1453 cps/templates/config_edit.html:344
+#: cps/db.py:1612 cps/templates/config_edit.html:344
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:718 cps/web.py:752 cps/web.py:797 cps/web.py:837 cps/web.py:866

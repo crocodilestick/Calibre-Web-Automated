@@ -54,11 +54,17 @@ class SyncToken:
             shelves with > SYNC_ITEM_LIMIT books otherwise looped forever because the arm
             (id IN magic_shelf_book_ids) is cursor-unaware and emits the same first
             SYNC_ITEM_LIMIT ids every round. Default -1; reset to -1 whenever the fold fires
-            (cursor advances past T_magic) so the next cache rebuild starts fresh.
+            (cursor advances past T_magic) OR whenever magic_shelf_membership_added_at advances
+            past magic_shelf_membership_at (cache was rebuilt since the device last synced).
+        magic_shelf_membership_at: The cache.created_at value the device saw at its last sync.
+            When the cache is rebuilt (cache.created_at advances), the previous magic_shelf_last_id
+            value is stale — books that were added to the shelf with low IDs would be filtered out
+            by `id > magic_shelf_last_id`. Comparing against this stored value detects the rebuild
+            and forces a fresh walk through the new set.
     """
 
     SYNC_TOKEN_HEADER = "x-kobo-synctoken"  # nosec
-    VERSION = "1-3-0"
+    VERSION = "1-4-0"
     LAST_MODIFIED_ADDED_VERSION = "1-1-0"
     MIN_VERSION = "1-0-0"
 
@@ -81,6 +87,7 @@ class SyncToken:
             "tags_last_modified": {"type": "number"},
             "books_last_id": {"type": "integer"},
             "magic_shelf_last_id": {"type": "integer"},
+            "magic_shelf_membership_at": {"type": "number"},
         },
     }
 
@@ -94,6 +101,7 @@ class SyncToken:
         tags_last_modified=datetime.min,
         books_last_id=-1,
         magic_shelf_last_id=-1,
+        magic_shelf_membership_at=datetime.min,
     ):  # nosec
         self.raw_kobo_store_token = raw_kobo_store_token
         self.books_last_created = books_last_created
@@ -103,6 +111,7 @@ class SyncToken:
         self.tags_last_modified = tags_last_modified
         self.books_last_id = books_last_id
         self.magic_shelf_last_id = magic_shelf_last_id
+        self.magic_shelf_membership_at = magic_shelf_membership_at
 
     @staticmethod
     def from_headers(headers):
@@ -136,6 +145,7 @@ class SyncToken:
             archive_last_modified = get_datetime_from_json(data_json, "archive_last_modified")
             reading_state_last_modified = get_datetime_from_json(data_json, "reading_state_last_modified")
             tags_last_modified = get_datetime_from_json(data_json, "tags_last_modified")
+            magic_shelf_membership_at = get_datetime_from_json(data_json, "magic_shelf_membership_at")
         except TypeError:
             log.error("SyncToken timestamps don't parse to a datetime.")
             return SyncToken(raw_kobo_store_token=raw_kobo_store_token)
@@ -157,6 +167,7 @@ class SyncToken:
             tags_last_modified=tags_last_modified,
             books_last_id=books_last_id,
             magic_shelf_last_id=magic_shelf_last_id,
+            magic_shelf_membership_at=magic_shelf_membership_at,
         )
 
     def set_kobo_store_header(self, store_headers):
@@ -182,16 +193,18 @@ class SyncToken:
                 "tags_last_modified": to_epoch_timestamp(self.tags_last_modified),
                 "books_last_id": self.books_last_id,
                 "magic_shelf_last_id": self.magic_shelf_last_id,
+                "magic_shelf_membership_at": to_epoch_timestamp(self.magic_shelf_membership_at),
             },
         }
         return b64encode_json(token)
 
     def __str__(self):
-        return "{},{},{},{},{},{},{},{}".format(self.books_last_created,
-                                                self.books_last_modified,
-                                                self.archive_last_modified,
-                                                self.reading_state_last_modified,
-                                                self.tags_last_modified,
-                                                self.books_last_id,
-                                                self.magic_shelf_last_id,
-                                                self.raw_kobo_store_token)
+        return "{},{},{},{},{},{},{},{},{}".format(self.books_last_created,
+                                                   self.books_last_modified,
+                                                   self.archive_last_modified,
+                                                   self.reading_state_last_modified,
+                                                   self.tags_last_modified,
+                                                   self.books_last_id,
+                                                   self.magic_shelf_last_id,
+                                                   self.magic_shelf_membership_at,
+                                                   self.raw_kobo_store_token)

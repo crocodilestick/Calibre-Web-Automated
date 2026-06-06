@@ -214,6 +214,9 @@ def HandleSyncRequest():
         # Reset the magic-shelf sub-cursor too — a fresh-device sync
         # should re-deliver every magic book.
         sync_token.magic_shelf_last_id = -1
+        # Reset the magic-shelf membership timestamp so the cache-rebuild
+        # detection on the next sync treats the cache as fresh.
+        sync_token.magic_shelf_membership_at = datetime.min
 
     new_books_last_modified = sync_token.books_last_modified  # needed for sync selected shelfs only
     new_books_last_created = sync_token.books_last_created  # needed to distinguish between new and changed entitlement
@@ -329,11 +332,25 @@ def HandleSyncRequest():
     # cursor-unaware — for magic shelves with >= SYNC_ITEM_LIMIT books, it
     # emits the same first SYNC_ITEM_LIMIT ids every round (Greptile P1 on
     # PR #366). Filtering `id > magic_shelf_last_id` walks the arm via a
-    # second-tier keyset across batches. The fold resets
-    # magic_shelf_last_id = -1 when it fires (cache.created_at is past
-    # cursor.lm only on cache rebuilds, so each rebuild starts the
-    # sub-cursor fresh).
-    magic_shelf_last_id = sync_token.magic_shelf_last_id
+    # second-tier keyset across batches.
+    #
+    # CRITICAL: when the cache is rebuilt (membership_added_at advances
+    # past the last-recorded membership_at on the token), reset the
+    # sub-cursor to -1 so the next walk starts from id=0. Without this
+    # reset, a user who adds a low-id book to the shelf after a sync
+    # ended at a high magic_shelf_last_id would see the new book
+    # filtered out by `id > magic_shelf_last_id`; the fold then fires
+    # on an empty batch, advances cursor past the new T_magic, and the
+    # book stays undelivered until ANOTHER cache rebuild happens
+    # (Greptile P on PR #367 v4.0.153).
+    if (
+        magic_shelf_membership_added_at is not None
+        and magic_shelf_membership_added_at > sync_token.magic_shelf_membership_at
+    ):
+        magic_shelf_last_id = -1
+    else:
+        magic_shelf_last_id = sync_token.magic_shelf_last_id
+
     magic_shelf_arm = and_(
         db.Books.id.in_(magic_shelf_book_ids),
         db.Books.id > magic_shelf_last_id,
@@ -728,6 +745,13 @@ def HandleSyncRequest():
     sync_token.books_last_modified = new_books_last_modified
     sync_token.books_last_id = new_books_last_id
     sync_token.magic_shelf_last_id = new_magic_shelf_last_id
+    # Persist the cache-rebuild timestamp so the next sync can detect a
+    # newer rebuild and reset the sub-cursor (Greptile P on PR #367).
+    if magic_shelf_membership_added_at is not None:
+        sync_token.magic_shelf_membership_at = max(
+            sync_token.magic_shelf_membership_at,
+            magic_shelf_membership_added_at,
+        )
     sync_token.archive_last_modified = new_archived_last_modified
     sync_token.reading_state_last_modified = new_reading_state_last_modified
 

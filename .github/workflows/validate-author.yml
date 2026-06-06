@@ -33,6 +33,10 @@ name: validate-author
 on:
   pull_request:
     branches: [main]
+    # labeled/unlabeled included so applying `community-contribution` re-runs
+    # the check with fresh label data — re-running the old failed run replays
+    # a frozen event payload that predates the label (hit on PR #371).
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   contents: read

@@ -25,6 +25,11 @@ is for things you can see or feel when running the app.
   requested by @BakaPhoenix and @magdalar)
 
 ### Fixed
+- Fixed a rare freeze where the whole app could lock up — pages never loading
+  until the container was restarted — when a background task (thumbnail
+  generation, metadata backup, duplicate scan…) hit the database at the same
+  moment as a page load. Database access is now coordinated so the standoff
+  can't happen.
 - "Reload Metadata" now also reloads authors, tags, and series (with series
   number) from the book file — previously only title, description, publisher,
   publish date, and languages came through. Author changes also rename the

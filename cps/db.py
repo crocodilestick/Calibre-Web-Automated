@@ -15,6 +15,7 @@ import unidecode
 from weakref import WeakSet
 from uuid import uuid4
 
+import sqlite3
 from sqlite3 import OperationalError as sqliteOperationalError
 from sqlalchemy import create_engine, event
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
@@ -103,6 +104,158 @@ def _register_sqlite_udfs(dbapi_connection, _connection_record):
         dbapi_connection.create_function("title_sort", 1, _title_sort)
     except Exception:
         pass
+
+
+class _SerializedSqliteCursor(sqlite3.Cursor):
+    """Cursor half of the GIL↔sqlite-mutex deadlock guard.
+
+    Every method that enters sqlite C code takes the owning connection's
+    re-entrant lock first — see ``_SerializedSqliteConnection`` for the
+    deadlock this breaks.
+    """
+
+    def execute(self, *args, **kwargs):
+        with self.connection._cwa_sqlite_lock:
+            return super().execute(*args, **kwargs)
+
+    def executemany(self, *args, **kwargs):
+        with self.connection._cwa_sqlite_lock:
+            return super().executemany(*args, **kwargs)
+
+    def executescript(self, *args, **kwargs):
+        with self.connection._cwa_sqlite_lock:
+            return super().executescript(*args, **kwargs)
+
+    def fetchone(self):
+        with self.connection._cwa_sqlite_lock:
+            return super().fetchone()
+
+    def fetchmany(self, *args, **kwargs):
+        with self.connection._cwa_sqlite_lock:
+            return super().fetchmany(*args, **kwargs)
+
+    def fetchall(self):
+        with self.connection._cwa_sqlite_lock:
+            return super().fetchall()
+
+    def __next__(self):
+        with self.connection._cwa_sqlite_lock:
+            return super().__next__()
+
+    def close(self):
+        with self.connection._cwa_sqlite_lock:
+            return super().close()
+
+
+class _SerializedSqliteConnection(sqlite3.Connection):
+    """sqlite3.Connection whose C entry points are serialized behind one
+    re-entrant per-connection lock — passed as ``factory`` in ``connect_args``
+    on both calibre engines.
+
+    Why: with sqlite compiled in serialized mode (Linux CPython builds,
+    ``sqlite3.threadsafety == 3``), EVERY ``sqlite3_*`` API call internally
+    takes the per-connection mutex — including the short calls pysqlite makes
+    while HOLDING the GIL (``sqlite3_reset``/``bind``/``finalize``/
+    ``create_function``); only prepare/step release it. With ``StaticPool``
+    sharing one connection across real OS threads (web greenlets live on the
+    main thread; ``WorkerThread``/APScheduler tasks are real threads) and
+    Python UDFs registered (``lower``/``title_sort``/``uuid4``), this AB-BA
+    deadlock becomes reachable:
+
+      thread A: holds GIL → blocks on connection mutex (GIL-held short call)
+      thread B: holds connection mutex mid-step → UDF trampoline waits for GIL
+
+    Neither yields; every other thread starves on the GIL; the entire process
+    freezes until SIGKILL. Observed live: CI runs 27071666487 + 27074461288
+    (silent 10-minute walls pytest-timeout couldn't interrupt) and reproduced
+    in <20s with py-spy stack evidence in
+    ``notes/fix-udf-gil-deadlock-DESIGN.md``.
+
+    Taking THIS lock (GIL released while waiting) before entering C means no
+    thread ever blocks on the sqlite mutex while holding the GIL, so the UDF
+    trampoline's GIL wait always completes. RLock so a UDF callback that
+    re-enters the same connection on the same thread can't self-deadlock.
+    ``interrupt()`` is deliberately NOT wrapped: ``sqlite3_interrupt`` is
+    documented mutex-free-safe to call cross-thread, and wrapping it would
+    defeat its purpose (breaking a stuck statement).
+
+    Any new code path that touches the raw DBAPI connection must either use
+    these wrapped methods or take ``_cwa_sqlite_lock`` itself.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Lock first: cursor()/execute() may be entered as soon as any other
+        # thread can see this object.
+        self._cwa_sqlite_lock = threading.RLock()
+        super().__init__(*args, **kwargs)
+
+    def cursor(self, factory=None):
+        with self._cwa_sqlite_lock:
+            return super().cursor(factory or _SerializedSqliteCursor)
+
+    def execute(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().execute(*args, **kwargs)
+
+    def executemany(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().executemany(*args, **kwargs)
+
+    def executescript(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().executescript(*args, **kwargs)
+
+    def commit(self):
+        with self._cwa_sqlite_lock:
+            return super().commit()
+
+    def rollback(self):
+        with self._cwa_sqlite_lock:
+            return super().rollback()
+
+    def close(self):
+        with self._cwa_sqlite_lock:
+            return super().close()
+
+    def create_function(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().create_function(*args, **kwargs)
+
+    def create_aggregate(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().create_aggregate(*args, **kwargs)
+
+    def create_collation(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().create_collation(*args, **kwargs)
+
+    def backup(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().backup(*args, **kwargs)
+
+    def set_authorizer(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().set_authorizer(*args, **kwargs)
+
+    def set_progress_handler(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().set_progress_handler(*args, **kwargs)
+
+    def set_trace_callback(self, *args, **kwargs):
+        with self._cwa_sqlite_lock:
+            return super().set_trace_callback(*args, **kwargs)
+
+    @property
+    def isolation_level(self):
+        return sqlite3.Connection.isolation_level.__get__(self)
+
+    @isolation_level.setter
+    def isolation_level(self, value):
+        # The C setter can run an implicit commit (reset/finalize short calls,
+        # GIL-held) — same hazard class as the methods above.
+        with self._cwa_sqlite_lock:
+            sqlite3.Connection.isolation_level.__set__(self, value)
+
 
 cc_exceptions = ['composite', 'series']
 cc_classes = {}
@@ -796,7 +949,10 @@ class CalibreDB:
             check_engine = create_engine('sqlite://',
                                          echo=False,
                                          isolation_level="SERIALIZABLE",
-                                         connect_args={'check_same_thread': False, 'timeout': 30},
+                                         # factory: GIL↔sqlite-mutex deadlock
+                                         # guard, see _SerializedSqliteConnection
+                                         connect_args={'check_same_thread': False, 'timeout': 30,
+                                                       'factory': _SerializedSqliteConnection},
                                          poolclass=StaticPool)
             event.listen(check_engine, "connect", _register_sqlite_udfs)
             with check_engine.begin() as connection:
@@ -865,7 +1021,10 @@ class CalibreDB:
                 cls.engine = create_engine('sqlite://',
                                            echo=False,
                                            isolation_level="SERIALIZABLE",
-                                           connect_args={'check_same_thread': False, 'timeout': 30},
+                                           # factory: GIL↔sqlite-mutex deadlock
+                                           # guard, see _SerializedSqliteConnection
+                                           connect_args={'check_same_thread': False, 'timeout': 30,
+                                                         'factory': _SerializedSqliteConnection},
                                            poolclass=StaticPool)
                 event.listen(cls.engine, "connect", _register_sqlite_udfs)
                 with cls.engine.begin() as connection:

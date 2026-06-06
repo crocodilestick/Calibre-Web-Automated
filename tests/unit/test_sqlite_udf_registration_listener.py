@@ -181,7 +181,11 @@ class TestEngineConnectListenerBehavior:
         engine = sa.create_engine(
             "sqlite://",
             poolclass=StaticPool,
-            connect_args={"check_same_thread": False, "timeout": 30},
+            # Mirror production connect_args exactly — including the
+            # GIL↔sqlite-mutex deadlock-guard factory — so any divergence
+            # between this harness and setup_db is caught here.
+            connect_args={"check_same_thread": False, "timeout": 30,
+                          "factory": cps_db._SerializedSqliteConnection},
         )
         sa.event.listen(engine, "connect", cps_db._register_sqlite_udfs)
         return engine, cps_db
@@ -305,7 +309,13 @@ class TestConcurrentLowerQueriesNoDeadlock:
         engine = sa.create_engine(
             "sqlite://",
             poolclass=StaticPool,
-            connect_args={"check_same_thread": False, "timeout": 30},
+            # Mirror production connect_args exactly (incl. the deadlock-guard
+            # factory): without it, this class's true-thread fan-out can
+            # reproduce the GIL↔sqlite-mutex AB-BA freeze on serialized-mode
+            # sqlite builds (the CI 10-minute silent walls — see
+            # notes/fix-udf-gil-deadlock-DESIGN.md).
+            connect_args={"check_same_thread": False, "timeout": 30,
+                          "factory": cps_db._SerializedSqliteConnection},
         )
         sa.event.listen(engine, "connect", cps_db._register_sqlite_udfs)
         return engine

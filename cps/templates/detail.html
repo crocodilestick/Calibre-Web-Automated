@@ -741,6 +741,12 @@
                                     </button>
                                 </div>
                             {% endif %}
+                            {% if original_filename %}
+                                <div class="book-original-filename meta-chip">
+                                    <span>{{ _('Imported as') }}:</span>
+                                    <span class="meta-value">{{ original_filename }}</span>
+                                </div>
+                            {% endif %}
                             <div class="book-date-added meta-chip">
                                 <span>{{ _('Date added') }}:</span>
                                 <span class="meta-value">{{ entry.timestamp|formatdate }}</span>

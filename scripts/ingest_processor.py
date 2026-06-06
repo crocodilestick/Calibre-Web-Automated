@@ -793,6 +793,13 @@ class NewBookProcessor:
         # Current file
         self.filepath = filepath
         self.filename = os.path.basename(filepath)
+        # As-imported basename, snapshotted before any conversion/rename can
+        # touch it — recorded into app.db after a successful add so users can
+        # recognize misidentified auto-matches (fork #346).
+        self.original_filename = Path(filepath).name
+        # True when last_added_book_id(s) came from the most-recently-modified
+        # fallback guess rather than parsed calibredb output.
+        self.last_added_ids_are_fallback = False
         self.can_convert, self.input_format = self.can_convert_check()
         # Determine if the file is already in the desired target format using normalized extensions
         self.is_target_format = (self.input_format.lower() == str(self.target_format).lower())
@@ -867,6 +874,11 @@ class NewBookProcessor:
                 if row:
                     self.last_added_book_id = int(row[0])
                     self.last_added_book_ids = [self.last_added_book_id]
+                    # Guess, not parsed output — under concurrent ingest this
+                    # can be ANOTHER processor's book. Consumers that would
+                    # mis-attribute on a wrong id (original-filename capture)
+                    # check this flag and skip.
+                    self.last_added_ids_are_fallback = True
                     print(
                         "[ingest-processor] WARN: Could not parse calibredb output; using most recently modified book ID.",
                         flush=True,
@@ -939,6 +951,52 @@ class NewBookProcessor:
             return True
         else:
             return False
+
+
+    def record_original_filename(self) -> None:
+        """Persist the as-imported filename for every book id this add
+        produced (fork #346) — the one stable reference for recognizing
+        misidentified auto-matches after ingest renames the file.
+
+        Direct sqlite write to app.db with a busy timeout. Note: the
+        processor's other app.db access is read-only; this is its first
+        WRITE — kept safe by app.db's WAL mode (writers don't block the web
+        app's readers), the 30s busy timeout, and the best-effort except.
+        ON CONFLICT(book_id) DO NOTHING: the CREATING import wins; format
+        additions to an existing book never overwrite the original. Best
+        effort: a failure (e.g. table missing on a first boot where the web
+        app hasn't run its migrations yet) must never block the import.
+        """
+        # getattr defaults: tests (and any future code path) construct
+        # NewBookProcessor via object.__new__ without running __init__ —
+        # a missing attribute must mean "nothing to record", never an
+        # AttributeError that trips the import's failure branch.
+        book_ids = getattr(self, 'last_added_book_ids', None) or (
+            [self.last_added_book_id]
+            if getattr(self, 'last_added_book_id', None) else [])
+        if not book_ids or not getattr(self, 'original_filename', None):
+            return
+        if getattr(self, 'last_added_ids_are_fallback', False):
+            # The id is a most-recently-modified guess (calibredb output
+            # parsing failed) — under concurrent ingest it can belong to a
+            # DIFFERENT book, and a wrong "Imported as" is worse than none.
+            print("[ingest-processor] Skipping original-filename record: "
+                  "book id came from fallback inference, not calibredb "
+                  "output", flush=True)
+            return
+        try:
+            with sqlite3.connect(get_app_db_path(), timeout=30) as con:
+                for bid in book_ids:
+                    con.execute(
+                        "INSERT INTO book_original_filename "
+                        "(book_id, filename, created_at) "
+                        "VALUES (?, ?, datetime('now')) "
+                        "ON CONFLICT(book_id) DO NOTHING",
+                        (int(bid), self.original_filename),
+                    )
+        except (sqlite3.Error, ValueError, TypeError) as e:
+            print(f"[ingest-processor] WARN: could not record original "
+                  f"filename for {book_ids}: {e}", flush=True)
 
     def backup(self, input_file, backup_type):
         output_path = None
@@ -1208,6 +1266,7 @@ class NewBookProcessor:
                 else:
                     self._fallback_last_added_book_id()
             print(f"[ingest-processor] Added {staged_path.stem} to Calibre database", flush=True)
+            self.record_original_filename()
 
             if self.cwa_settings['auto_backup_imports']:
                 self.backup(str(staged_path), backup_type="imported")

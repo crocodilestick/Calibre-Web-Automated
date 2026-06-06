@@ -86,6 +86,9 @@
     <div class="form-group">
       <label for="title">{{_('Book Title')}}</label>
       <input type="text" class="form-control" name="title" id="title" value="{{book.title}}">
+      {% if original_filename %}
+      <small class="form-text text-muted" style="display: block; margin-top: 0.5rem;">{{ _('Imported as') }}: {{ original_filename }}</small>
+      {% endif %}
     </div>
     <div class="text-center">
         <button type="button" class="btn btn-default" id="xchange" ><span class="glyphicon glyphicon-arrow-up"></span><span class="glyphicon glyphicon-arrow-down"></span></button>

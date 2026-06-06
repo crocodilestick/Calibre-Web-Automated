@@ -1341,6 +1341,7 @@ def delete_whole_book(book_id, book):
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).delete()
     ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id).delete()
     ub.session.query(ub.ArchivedBook).filter(ub.ArchivedBook.book_id == book_id).delete()
+    ub.session.query(ub.BookOriginalFilename).filter(ub.BookOriginalFilename.book_id == book_id).delete()
     ub.delete_download(book_id)
     ub.session_commit()
 
@@ -1540,7 +1541,11 @@ def render_edit_book(book_id):
     hardcover_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
         ub.HardcoverBookBlacklist.book_id == book.id
     ).first()
+    original_filename_row = ub.session.query(ub.BookOriginalFilename).filter(
+        ub.BookOriginalFilename.book_id == book.id).first()
     return render_title_template('book_edit.html', book=book, authors=author_names, cc=cc,
+                                 original_filename=(original_filename_row.filename
+                                                    if original_filename_row else None),
                                  title=_("edit metadata"), page="editbook",
                                  conversion_formats=allowed_conversion_formats,
                                  config=config,

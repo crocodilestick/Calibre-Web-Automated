@@ -16,6 +16,14 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Added
+- The book detail and edit pages now show the filename a book was imported
+  with ("Imported as: …"). Ingest renames files to match their metadata —
+  including wrong auto-matches — so the original name is the one stable
+  reference for recognizing misidentified books while you fix their tags.
+  Captured automatically for new imports from this version on. (#346,
+  requested by @BakaPhoenix and @magdalar)
+
 ### Fixed
 - "Reload Metadata" now also reloads authors, tags, and series (with series
   number) from the book file — previously only title, description, publisher,

@@ -3412,8 +3412,12 @@ def show_book(book_id):
                 ub.User.kindle_mail != "",
             ).order_by(ub.User.name).all()
 
+        original_filename_row = ub.session.query(ub.BookOriginalFilename).filter(
+            ub.BookOriginalFilename.book_id == book_id).first()
         return render_title_template('detail.html',
                                      entry=entry,
+                                     original_filename=(original_filename_row.filename
+                                                        if original_filename_row else None),
                                      cc=cc,
                                      is_xhr=request.headers.get('X-Requested-With') == 'XMLHttpRequest',
                                      title=entry.title,

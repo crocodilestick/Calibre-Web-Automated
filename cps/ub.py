@@ -724,6 +724,26 @@ class KoboSyncedBooks(Base):
     )
 
 
+class BookOriginalFilename(Base):
+    """The filename a book arrived with in the ingest folder, captured at
+    import time (fork #346, @BakaPhoenix + @magdalar). Ingest renames files
+    to match their (possibly wrongly auto-matched) metadata, so the
+    as-imported name is the one stable reference a user has for recognizing
+    misidentified books while fixing tags.
+
+    One row per book — the import that CREATED the book; later format
+    additions never overwrite it (the ingest writer uses ON CONFLICT
+    DO NOTHING). book_id refers to calibre's metadata.db (cross-database,
+    so no FK). Row is removed by delete_whole_book with the other
+    book-scoped ub rows.
+    """
+    __tablename__ = 'book_original_filename'
+
+    book_id = Column(Integer, primary_key=True)
+    filename = Column(String, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 class KoboDeletedBook(Base):
     """Tombstone table for books deleted from CW that need to be reported
     to Kobo devices as DeletedEntitlement on next sync.
@@ -1206,6 +1226,8 @@ def add_missing_tables(engine, _session):
         MagicShelfCache.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "opds_shelf_exposure"):
         OpdsShelfExposure.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "book_original_filename"):
+        BookOriginalFilename.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "opds_magic_shelf_exposure"):
         OpdsMagicShelfExposure.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "hidden_magic_shelf_templates"):

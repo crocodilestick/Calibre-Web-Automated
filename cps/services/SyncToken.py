@@ -49,10 +49,16 @@ class SyncToken:
             last_modified (e.g. a bulk import). Default -1 means "no tiebreaker"; any valid book
             id is > -1, so old tokens still see every book at exactly books_last_modified on the
             first post-upgrade sync.
+        magic_shelf_last_id: Sub-cursor for the magic-shelf membership arm — the last Books.id
+            emitted via that arm in the current cache-rebuild epoch. Pagination through magic
+            shelves with > SYNC_ITEM_LIMIT books otherwise looped forever because the arm
+            (id IN magic_shelf_book_ids) is cursor-unaware and emits the same first
+            SYNC_ITEM_LIMIT ids every round. Default -1; reset to -1 whenever the fold fires
+            (cursor advances past T_magic) so the next cache rebuild starts fresh.
     """
 
     SYNC_TOKEN_HEADER = "x-kobo-synctoken"  # nosec
-    VERSION = "1-2-0"
+    VERSION = "1-3-0"
     LAST_MODIFIED_ADDED_VERSION = "1-1-0"
     MIN_VERSION = "1-0-0"
 
@@ -74,6 +80,7 @@ class SyncToken:
             "reading_state_last_modified": {"type": "number"},
             "tags_last_modified": {"type": "number"},
             "books_last_id": {"type": "integer"},
+            "magic_shelf_last_id": {"type": "integer"},
         },
     }
 
@@ -86,6 +93,7 @@ class SyncToken:
         reading_state_last_modified=datetime.min,
         tags_last_modified=datetime.min,
         books_last_id=-1,
+        magic_shelf_last_id=-1,
     ):  # nosec
         self.raw_kobo_store_token = raw_kobo_store_token
         self.books_last_created = books_last_created
@@ -94,6 +102,7 @@ class SyncToken:
         self.reading_state_last_modified = reading_state_last_modified
         self.tags_last_modified = tags_last_modified
         self.books_last_id = books_last_id
+        self.magic_shelf_last_id = magic_shelf_last_id
 
     @staticmethod
     def from_headers(headers):
@@ -135,6 +144,10 @@ class SyncToken:
         if not isinstance(books_last_id, int):
             books_last_id = -1
 
+        magic_shelf_last_id = data_json.get("magic_shelf_last_id", -1)
+        if not isinstance(magic_shelf_last_id, int):
+            magic_shelf_last_id = -1
+
         return SyncToken(
             raw_kobo_store_token=raw_kobo_store_token,
             books_last_created=books_last_created,
@@ -143,6 +156,7 @@ class SyncToken:
             reading_state_last_modified=reading_state_last_modified,
             tags_last_modified=tags_last_modified,
             books_last_id=books_last_id,
+            magic_shelf_last_id=magic_shelf_last_id,
         )
 
     def set_kobo_store_header(self, store_headers):
@@ -167,15 +181,17 @@ class SyncToken:
                 "reading_state_last_modified": to_epoch_timestamp(self.reading_state_last_modified),
                 "tags_last_modified": to_epoch_timestamp(self.tags_last_modified),
                 "books_last_id": self.books_last_id,
+                "magic_shelf_last_id": self.magic_shelf_last_id,
             },
         }
         return b64encode_json(token)
 
     def __str__(self):
-        return "{},{},{},{},{},{},{}".format(self.books_last_created,
-                                             self.books_last_modified,
-                                             self.archive_last_modified,
-                                             self.reading_state_last_modified,
-                                             self.tags_last_modified,
-                                             self.books_last_id,
-                                             self.raw_kobo_store_token)
+        return "{},{},{},{},{},{},{},{}".format(self.books_last_created,
+                                                self.books_last_modified,
+                                                self.archive_last_modified,
+                                                self.reading_state_last_modified,
+                                                self.tags_last_modified,
+                                                self.books_last_id,
+                                                self.magic_shelf_last_id,
+                                                self.raw_kobo_store_token)

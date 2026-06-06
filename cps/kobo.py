@@ -211,6 +211,9 @@ def HandleSyncRequest():
         # keeping the two cursor components consistent makes the keyset
         # behavior easier to reason about for future readers.
         sync_token.books_last_id = -1
+        # Reset the magic-shelf sub-cursor too — a fresh-device sync
+        # should re-deliver every magic book.
+        sync_token.magic_shelf_last_id = -1
 
     new_books_last_modified = sync_token.books_last_modified  # needed for sync selected shelfs only
     new_books_last_created = sync_token.books_last_created  # needed to distinguish between new and changed entitlement
@@ -322,6 +325,20 @@ def HandleSyncRequest():
         and magic_shelf_membership_added_at > cursor_lm
     )
 
+    # Magic-shelf SUB-CURSOR: the bare `id IN magic_shelf_book_ids` arm is
+    # cursor-unaware — for magic shelves with >= SYNC_ITEM_LIMIT books, it
+    # emits the same first SYNC_ITEM_LIMIT ids every round (Greptile P1 on
+    # PR #366). Filtering `id > magic_shelf_last_id` walks the arm via a
+    # second-tier keyset across batches. The fold resets
+    # magic_shelf_last_id = -1 when it fires (cache.created_at is past
+    # cursor.lm only on cache rebuilds, so each rebuild starts the
+    # sub-cursor fresh).
+    magic_shelf_last_id = sync_token.magic_shelf_last_id
+    magic_shelf_arm = and_(
+        db.Books.id.in_(magic_shelf_book_ids),
+        db.Books.id > magic_shelf_last_id,
+    )
+
     # only_kobo_shelves branch joins BookShelf, so its inner filter includes
     # the BookShelf.date_added arm (fork #220) alongside the composite keyset
     # and (when active) the magic-shelf membership arm.
@@ -329,7 +346,7 @@ def HandleSyncRequest():
         inner_cursor_filter_with_bookshelf = or_(
             ub.BookShelf.date_added > cursor_lm,
             composite_keyset_books_only,
-            db.Books.id.in_(magic_shelf_book_ids),
+            magic_shelf_arm,
         )
     else:
         inner_cursor_filter_with_bookshelf = or_(
@@ -345,7 +362,7 @@ def HandleSyncRequest():
     if magic_shelf_arm_active:
         inner_cursor_filter_sync_all = or_(
             composite_keyset_books_only,
-            db.Books.id.in_(magic_shelf_book_ids),
+            magic_shelf_arm,
         )
     else:
         inner_cursor_filter_sync_all = composite_keyset_books_only
@@ -472,6 +489,20 @@ def HandleSyncRequest():
         new_books_last_created = max(ts_created, new_books_last_created)
         kobo_sync_status.add_synced_books(book.Books.id)
 
+    # Magic-shelf sub-cursor: advance to the highest magic-shelf book id
+    # emitted this round. magic_shelf_book_ids may be empty when the arm
+    # wasn't active, in which case the comprehension is empty and we keep
+    # the existing sub-cursor unchanged.
+    magic_book_ids_emitted = [
+        b.Books.id for b in books_list
+        if magic_shelf_book_ids and b.Books.id in magic_shelf_book_ids
+    ]
+    if magic_book_ids_emitted:
+        new_magic_shelf_last_id = max(sync_token.magic_shelf_last_id,
+                                       max(magic_book_ids_emitted))
+    else:
+        new_magic_shelf_last_id = sync_token.magic_shelf_last_id
+
     # Composite-keyset cursor: keep books_last_id aligned with new_books_last_modified.
     # The query ORDER BY (last_modified, id) means books_list iteration is sorted, so
     # the last emitted row is the highest (last_modified, id) tuple in the batch.
@@ -518,10 +549,15 @@ def HandleSyncRequest():
         if magic_shelf_membership_added_at > new_books_last_modified:
             new_books_last_modified = magic_shelf_membership_added_at
             new_books_last_id = -1
+            # Cache-rebuild epoch closed — reset the sub-cursor so the next
+            # rebuild (which advances cache.created_at > cursor.lm again)
+            # starts walking the magic books from id=0.
+            new_magic_shelf_last_id = -1
         elif magic_shelf_membership_added_at == new_books_last_modified and not books_list:
             # Cache rebuilt but no books actually changed past the old cursor — still
             # advance to prevent the arm from firing again (idempotent re-trigger).
             new_books_last_id = -1
+            new_magic_shelf_last_id = -1
 
     max_change = changed_entries.filter(ub.ArchivedBook.is_archived)\
         .filter(ub.ArchivedBook.user_id == current_user.id) \
@@ -691,6 +727,7 @@ def HandleSyncRequest():
         sync_token.books_last_created = new_books_last_created
     sync_token.books_last_modified = new_books_last_modified
     sync_token.books_last_id = new_books_last_id
+    sync_token.magic_shelf_last_id = new_magic_shelf_last_id
     sync_token.archive_last_modified = new_archived_last_modified
     sync_token.reading_state_last_modified = new_reading_state_last_modified
 

@@ -124,9 +124,13 @@ class TestSyncTokenBackwardCompat:
 
 @pytest.mark.unit
 class TestSyncTokenVersion:
-    def test_version_advanced_to_one_two_zero(self):
-        assert SyncToken.VERSION == "1-2-0", (
-            "VERSION bumped because the wire data schema gained books_last_id."
+    def test_version_is_one_dash_three_zero_or_greater(self):
+        """VERSION advanced 1-2-0 → 1-3-0 when the schema gained
+        magic_shelf_last_id (fork #359 v4.0.153 follow-up).
+        Accept >= 1-3-0 so this test doesn't go red on the next bump."""
+        v = SyncToken.VERSION
+        assert v >= "1-3-0", (
+            f"VERSION must be >= 1-3-0 (added magic_shelf_last_id), got {v}"
         )
 
     def test_min_version_unchanged_at_one_zero_zero(self):
@@ -139,9 +143,52 @@ class TestSyncTokenVersion:
     def test_token_built_carries_advanced_version(self):
         encoded = SyncToken().build_sync_token()
         wrapper = json.loads(base64.b64decode(encoded + "=" * (-len(encoded) % 4)))
-        assert wrapper["version"] == "1-2-0"
+        assert wrapper["version"] >= "1-3-0"
 
     def test_books_last_id_present_in_built_data_payload(self):
         encoded = SyncToken(books_last_id=99).build_sync_token()
         wrapper = json.loads(base64.b64decode(encoded + "=" * (-len(encoded) % 4)))
         assert wrapper["data"]["books_last_id"] == 99
+
+
+@pytest.mark.unit
+class TestSyncTokenMagicShelfLastId:
+    def test_field_defaults_to_minus_one(self):
+        assert SyncToken().magic_shelf_last_id == -1
+
+    def test_round_trip_through_build_and_from_headers(self):
+        original = SyncToken(magic_shelf_last_id=987)
+        encoded = original.build_sync_token()
+        rehydrated = SyncToken.from_headers({SyncToken.SYNC_TOKEN_HEADER: encoded})
+        assert rehydrated.magic_shelf_last_id == 987
+
+    def test_old_token_missing_magic_shelf_last_id_defaults_to_minus_one(self):
+        encoded = _encode({
+            "version": "1-2-0",
+            "data": {
+                "raw_kobo_store_token": "",
+                "books_last_modified": 0,
+                "books_last_id": 42,
+                # no magic_shelf_last_id — pre-1-3-0 token shape
+            },
+        })
+        token = SyncToken.from_headers({SyncToken.SYNC_TOKEN_HEADER: encoded})
+        assert token.magic_shelf_last_id == -1
+        assert token.books_last_id == 42
+
+    def test_garbage_magic_shelf_last_id_defaults_to_minus_one(self):
+        encoded = _encode({
+            "version": SyncToken.VERSION,
+            "data": {
+                "raw_kobo_store_token": "",
+                "books_last_modified": 0,
+                "magic_shelf_last_id": "not-an-int",
+            },
+        })
+        token = SyncToken.from_headers({SyncToken.SYNC_TOKEN_HEADER: encoded})
+        assert token.magic_shelf_last_id == -1
+
+    def test_present_in_built_data_payload(self):
+        encoded = SyncToken(magic_shelf_last_id=555).build_sync_token()
+        wrapper = json.loads(base64.b64decode(encoded + "=" * (-len(encoded) % 4)))
+        assert wrapper["data"]["magic_shelf_last_id"] == 555

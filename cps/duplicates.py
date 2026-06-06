@@ -1321,6 +1321,8 @@ def undismiss_duplicate_group(group_hash):
 
 @duplicates.route("/duplicates/invalidate-cache", methods=['POST'])
 @csrf.exempt
+@login_required_if_no_ano
+@admin_or_edit_required
 def invalidate_cache():
     """Internal endpoint to invalidate duplicate cache (called after ingest)"""
     try:

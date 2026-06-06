@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-05 23:13+0000\n"
+"POT-Creation-Date: 2026-06-06 18:11+0000\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -1260,16 +1260,16 @@ msgstr "Удалить книгу"
 msgid "Duplicate group was not dismissed"
 msgstr "Группа дубликатов не отклонена"
 
-#: cps/duplicates.py:1372
+#: cps/duplicates.py:1374
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Дубликаты"
 
-#: cps/duplicates.py:1441
+#: cps/duplicates.py:1443
 msgid "Duplicate scan completed (fallback)"
 msgstr "Дубликаты успешно просканированы"
 
-#: cps/duplicates.py:1516
+#: cps/duplicates.py:1518
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Неверная роль"

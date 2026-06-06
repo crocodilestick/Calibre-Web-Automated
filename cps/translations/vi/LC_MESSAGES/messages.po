@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-05 23:13+0000\n"
+"POT-Creation-Date: 2026-06-06 18:11+0000\n"
 "PO-Revision-Date: 2022-09-20 21:36+0700\n"
 "Last-Translator: Ha Link <halink0803@gmail.com>\n"
 "Language-Team: \n"
@@ -1210,16 +1210,16 @@ msgstr "Xoá sách"
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1372
+#: cps/duplicates.py:1374
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Không tìm thấy kết quả"
 
-#: cps/duplicates.py:1441
+#: cps/duplicates.py:1443
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1516
+#: cps/duplicates.py:1518
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Vai trò không hợp lệ"

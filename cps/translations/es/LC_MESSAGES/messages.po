@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-05 23:13+0000\n"
+"POT-Creation-Date: 2026-06-06 18:11+0000\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -1281,16 +1281,16 @@ msgstr "Libros Duplicados"
 msgid "Duplicate group was not dismissed"
 msgstr "No se ha descartado el grupo de duplicados."
 
-#: cps/duplicates.py:1372
+#: cps/duplicates.py:1374
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Duplicados"
 
-#: cps/duplicates.py:1441
+#: cps/duplicates.py:1443
 msgid "Duplicate scan completed (fallback)"
 msgstr "Escaneo de duplicados completado (modo alternativo)."
 
-#: cps/duplicates.py:1516
+#: cps/duplicates.py:1518
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Rol inválido"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-05 23:13+0000\n"
+"POT-Creation-Date: 2026-06-06 18:11+0000\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -1227,16 +1227,16 @@ msgstr "Hapus"
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1372
+#: cps/duplicates.py:1374
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Tidak ada hasil yang ditemukan"
 
-#: cps/duplicates.py:1441
+#: cps/duplicates.py:1443
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1516
+#: cps/duplicates.py:1518
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Peran tidak valid"

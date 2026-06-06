@@ -16,6 +16,14 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- "Reload Metadata" now also reloads authors, tags, and series (with series
+  number) from the book file — previously only title, description, publisher,
+  publish date, and languages came through. Author changes also rename the
+  book's folder and file to match, the same way editing in the web UI does.
+  A file that's missing its author or tags fields leaves your existing data
+  alone instead of wiping it. (#218, reported by @yodatak)
+
 ## [v4.0.156] – 2026-06-06
 
 ### Fixed

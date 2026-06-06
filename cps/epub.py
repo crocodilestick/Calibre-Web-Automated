@@ -193,5 +193,11 @@ def parse_epub_series(ns, tree, epub_metadata):
     if len(series_id) > 0:
         epub_metadata['series_id'] = series_id[0]
     else:
-        epub_metadata['series_id'] = '1'
+        # Absence is '', not a fabricated '1' — consumers that want a default
+        # apply their own (upload already creates Books with series_index '1'
+        # and edit_book_series_index no-ops on falsy; merge_metadata skips
+        # falsy). Fabricating '1' here made reload_metadata_from_disk stomp a
+        # curated series_index whenever a file carried a series name without
+        # a calibre:series_index meta (#218 follow-up review).
+        epub_metadata['series_id'] = ''
     return epub_metadata

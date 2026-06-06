@@ -177,11 +177,14 @@ def test_fork_218_anchor_comment_present():
     )
 
 
-def test_reload_metadata_defers_authors_tags_series():
-    """Verify the deferred-fields decision is documented in the
-    function — those involve relationship-table bookkeeping that the
-    full edit-book save path handles correctly. This test pins that
-    we DON'T silently start updating them through this endpoint."""
+def test_reload_metadata_covers_authors_tags_series_via_helpers():
+    """Originally these three fields were deferred; the #218 follow-up
+    (reporter @yodatak: "it don't reload all the metadata") wires them
+    through the SAME helpers the edit-book save path uses, so the
+    relationship bookkeeping (author_sort regeneration, tag dedup +
+    orphan cleanup, series create-on-demand) is identical — the reason
+    the original deferral existed. Full behavioral pins live in
+    test_reload_metadata_authors_tags_series_218.py."""
     src = _source()
     match = re.search(
         r"def reload_metadata_from_disk\(book_id\):.*?(?=\n\Z)",
@@ -189,13 +192,10 @@ def test_reload_metadata_defers_authors_tags_series():
         re.DOTALL,
     )
     body = match.group(0)
-    # No edit_book_authors or edit_book_tags or edit_book_series call.
-    for forbidden in ("edit_book_authors(", "edit_book_tags(", "edit_book_series("):
-        assert forbidden not in body, (
-            f"reload_metadata_from_disk must NOT call `{forbidden}` — "
-            f"those fields involve relationship-table bookkeeping that "
-            f"is deliberately deferred to the full edit-book save path. "
-            f"Updating them here without the full bookkeeping risks "
-            f"orphaned tag rows / author_sort drift / series-index "
-            f"clashes."
+    for required in ("handle_author_on_edit", "edit_book_tags(", "edit_book_series("):
+        assert required in body, (
+            f"reload_metadata_from_disk must call `{required}` — the "
+            f"deferred-fields gap was closed in the #218 follow-up by "
+            f"reusing the edit-path helpers (NOT by reimplementing the "
+            f"bookkeeping)."
         )

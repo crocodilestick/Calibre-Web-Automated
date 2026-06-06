@@ -2147,12 +2147,20 @@ def reload_metadata_from_disk(book_id):
     pull the on-disk file as source of truth without round-tripping
     through ingest.
 
-    Updates: title, comments, publisher, pubdate, languages. Authors,
-    tags, and series are deferred — they involve relationship-table
-    bookkeeping (author_sort regeneration, tag dedup, series
-    create-on-demand) that's better handled through the full edit-book
-    save path. The fields we DO update are the common-case ask
-    ("I changed the description in grimmory and want CWNG to show it").
+    Updates: title, authors, tags, series (+ index), comments, publisher,
+    pubdate, languages. Authors/tags/series ride the SAME helpers the
+    edit-book save path uses (handle_author_on_edit, edit_book_tags,
+    edit_book_series) so relationship bookkeeping — author_sort
+    regeneration, tag dedup + orphan cleanup, series create-on-demand —
+    stays identical, and title/author changes trigger
+    helper.update_dir_structure exactly like every other edit path
+    (#218 follow-up, @yodatak: "it don't reload all the metadata").
+
+    Absent-field safety: get_epub_info returns the literal 'Unknown' for
+    a missing <dc:creator> and '' for missing <dc:subject>/series. Both
+    mean "the file carries nothing", not "clear the field" — a tool that
+    drops those elements must not stomp curated data, so each of the
+    three is gated on a real value being present.
 
     Authorization: @edit_required (admin OR edit role) — same gate as
     /admin/book/<id> POST.
@@ -2200,48 +2208,129 @@ def reload_metadata_from_disk(book_id):
 
     updated = []
     try:
-        with metadata_db_write_lock():
-            # Title.
-            if meta.title and meta.title != book.title:
-                book.title = strip_whitespaces(meta.title)
-                updated.append('title')
+        # Field mutations are session-local — the edit-book POST path runs
+        # them unlocked too, and takes metadata_db_write_lock only around
+        # the final COMMIT (the lock's contract is single-commit duration;
+        # holding it across file renames would starve the ingest
+        # coordinator, #192). Same for the dir move below.
+        # Title.
+        if meta.title and meta.title != book.title:
+            book.title = strip_whitespaces(meta.title)
+            updated.append('title')
 
-            # Comments / description.
-            if meta.description is not None and isinstance(meta.description, str):
-                if edit_book_comments(meta.description, book):
-                    updated.append('comments')
+        # Comments / description.
+        if meta.description is not None and isinstance(meta.description, str):
+            if edit_book_comments(meta.description, book):
+                updated.append('comments')
 
-            # Publisher.
-            if meta.publisher:
-                if edit_book_publisher(meta.publisher, book):
-                    updated.append('publisher')
+        # Publisher.
+        if meta.publisher:
+            if edit_book_publisher(meta.publisher, book):
+                updated.append('publisher')
 
-            # Pubdate. Only update if parseable + different.
-            if meta.pubdate:
+        # Pubdate. Only update if parseable + different.
+        if meta.pubdate:
+            try:
+                new_pub = datetime.strptime(meta.pubdate, "%Y-%m-%d")
+                current_pub = getattr(book, 'pubdate', None)
+                if current_pub is None or current_pub.date() != new_pub.date():
+                    book.pubdate = new_pub
+                    updated.append('pubdate')
+            except (TypeError, ValueError):
+                log.debug("reload_metadata: unparseable pubdate %r", meta.pubdate)
+
+        # Languages — meta.languages is a string like 'eng'.
+        if meta.languages:
+            try:
+                if edit_book_languages(meta.languages, book, upload_mode=True):
+                    updated.append('languages')
+            except Exception as ex:
+                log.debug("reload_metadata: language update failed: %s", ex)
+
+        # Authors — same helper as the edit-book save path
+        # (author_sort regeneration, rename handling, orphan
+        # cleanup). 'Unknown' is get_epub_info's missing-creator
+        # sentinel: a file without <dc:creator> must not stomp the
+        # book's real authors.
+        input_authors = None
+        author_value = strip_whitespaces(meta.author or '')
+        if author_value and meta.author != 'Unknown':
+            input_authors, author_change = handle_author_on_edit(
+                book, author_value)
+            if author_change:
+                updated.append('authors')
+
+        # Tags — comma-joined <dc:subject> values; '' when the file
+        # has none, which is ambiguous (the editing tool may simply
+        # not write subjects) and must not wipe curated tags.
+        if meta.tags and strip_whitespaces(meta.tags):
+            if edit_book_tags(meta.tags, book):
+                updated.append('tags')
+
+        # Series + index — create-on-demand via the standard helper.
+        # The numeric check is inline because edit_book_series_index
+        # flashes on invalid input, and a flash inside a JSON
+        # endpoint leaks a stale message into the next rendered page.
+        if meta.series and strip_whitespaces(meta.series) \
+                and meta.series != 'Unknown':
+            if edit_book_series(meta.series, book):
+                updated.append('series')
+            series_id = strip_whitespaces(meta.series_id or '')
+            if series_id and series_id.replace('.', '', 1).isdigit():
+                # Compare numerically: series_index is a REAL column, so
+                # str(4.0) != "4" makes a string compare report a change
+                # on every reload — each one re-marking the book modified
+                # and churning Kobo-sync cursors. (edit_book_series_index
+                # carries the same latent string compare; form posts
+                # rarely trip it.)
                 try:
-                    new_pub = datetime.strptime(meta.pubdate, "%Y-%m-%d")
-                    current_pub = getattr(book, 'pubdate', None)
-                    if current_pub is None or current_pub.date() != new_pub.date():
-                        book.pubdate = new_pub
-                        updated.append('pubdate')
+                    if float(book.series_index or 0) != float(series_id):
+                        book.series_index = series_id
+                        updated.append('series_index')
                 except (TypeError, ValueError):
-                    log.debug("reload_metadata: unparseable pubdate %r", meta.pubdate)
+                    log.debug("reload_metadata: unparseable series index %r",
+                              series_id)
 
-            # Languages — meta.languages is a string like 'eng'.
-            if meta.languages:
-                try:
-                    if edit_book_languages(meta.languages, book, upload_mode=True):
-                        updated.append('languages')
-                except Exception as ex:
-                    log.debug("reload_metadata: language update failed: %s", ex)
+        # Title/author changes move the book's on-disk directory the
+        # same way every other edit path does (Author/Title (id)
+        # convention) — otherwise reload leaves a layout no other
+        # write path produces. The v4.0.149 title-only reload skipped
+        # this; fixed here. On rename failure: rollback + bail, exactly
+        # like the edit-book POST path — never commit a layout the move
+        # didn't produce.
+        if 'title' in updated or 'authors' in updated:
+            if input_authors:
+                first_author = input_authors[0]
+            elif book.authors:
+                # Same idiom the title-only edit path uses (web edit,
+                # "Pass the current author to prevent directory
+                # structure issues").
+                first_author = book.authors[0].name
+            else:
+                first_author = None
+            rename_error = helper.update_dir_structure(
+                book.id, config.get_book_path(), first_author)
+            if rename_error:
+                calibre_db.session.rollback()
+                log.error(
+                    "reload_metadata: dir-structure update failed for "
+                    "book %d: %s", book.id, rename_error)
+                return jsonify(
+                    success=False,
+                    error=_("Could not rename the book folder to match "
+                            "the reloaded metadata: %(err)s",
+                            err=str(rename_error))), 500
 
-            if updated:
+        if updated:
+            # Only the COMMIT takes the writers' lock — single-commit
+            # duration per the lock's contract.
+            with metadata_db_write_lock():
                 helper.mark_book_modified(book, set_dirty=False)
                 calibre_db.session.commit()
-                log.info("Reloaded metadata for book %d from disk (fields: %s)",
-                         book.id, ', '.join(updated))
-            else:
-                calibre_db.session.rollback()
+            log.info("Reloaded metadata for book %d from disk (fields: %s)",
+                     book.id, ', '.join(updated))
+        else:
+            calibre_db.session.rollback()
     except Exception as ex:
         log.error_or_exception("reload_metadata: commit failed for book %d: %s",
                                book.id, ex)

@@ -217,12 +217,21 @@ def HandleSyncRequest():
     calibre_db.reconnect_db(config, ub.app_DB_path)
 
 
-    # Two-Way-Sync Deletion Logic
-    magic_shelf_book_ids = set()
-    magic_shelf_membership_added_at = None
+    # Magic-shelf book IDs + membership timestamp are computed for BOTH sync
+    # modes (kobo_only_shelves_sync True AND False). Original v4.0.147 fix
+    # gated the computation on kobo_only_shelves_sync — which left
+    # @recruiterguy stuck: their user is in 'sync-all-library' mode (False),
+    # so the cache never refreshed via this code path, the magic-shelf arm
+    # never gained a fresh `created_at`, and magic-shelf-only books with
+    # old `Books.last_modified` continued to be filtered out by the
+    # else-branch cursor. Computing here forces the cache TTL re-evaluation
+    # on every sync, regardless of mode.
+    magic_shelf_book_ids = get_magic_shelf_book_ids_for_kobo(current_user.id)
+    magic_shelf_membership_added_at = get_magic_shelf_membership_added_at(current_user.id)
+
+    # Two-Way-Sync Deletion Logic (kobo_only_shelves_sync=True only — outer
+    # membership filter is what drives the deletion detection)
     if current_user.kobo_only_shelves_sync:
-        magic_shelf_book_ids = get_magic_shelf_book_ids_for_kobo(current_user.id)
-        magic_shelf_membership_added_at = get_magic_shelf_membership_added_at(current_user.id)
         try:
             # Check all books that are on Kobo according to the database
             synced_books_query = ub.session.query(ub.KoboSyncedBooks.book_id).filter(ub.KoboSyncedBooks.user_id == current_user.id)
@@ -296,22 +305,45 @@ def HandleSyncRequest():
     # timestamp: when the cache (re)builds, emit all magic-shelf books once;
     # cursor then advances past created_at and the arm goes False so the device
     # doesn't re-emit (the #213 termination guard, preserved structurally).
+    #
+    # The arm fires for BOTH kobo_only_shelves_sync modes — in 'sync-all'
+    # mode the outer membership filter doesn't apply, but the inner cursor
+    # would still filter magic-shelf-only books out because their
+    # Books.last_modified is in the past relative to the device cursor.
+    # @recruiterguy's v4.0.147 verification showed this gap concretely.
     magic_shelf_arm_active = bool(
         magic_shelf_book_ids
         and magic_shelf_membership_added_at is not None
         and magic_shelf_membership_added_at > cursor_lm
     )
+
+    # only_kobo_shelves branch joins BookShelf, so its inner filter includes
+    # the BookShelf.date_added arm (fork #220) alongside the composite keyset
+    # and (when active) the magic-shelf membership arm.
     if magic_shelf_arm_active:
-        inner_cursor_filter = or_(
+        inner_cursor_filter_with_bookshelf = or_(
             ub.BookShelf.date_added > cursor_lm,
             composite_keyset_books_only,
             db.Books.id.in_(magic_shelf_book_ids),
         )
     else:
-        inner_cursor_filter = or_(
+        inner_cursor_filter_with_bookshelf = or_(
             ub.BookShelf.date_added > cursor_lm,
             composite_keyset_books_only,
         )
+
+    # else branch does not join BookShelf — drop the date_added arm but keep
+    # the composite keyset + magic-shelf arm (when active). This is what
+    # closes the @recruiterguy gap: in sync-all mode, magic-shelf-only books
+    # with old Books.last_modified still get through the inner cursor via
+    # the third arm.
+    if magic_shelf_arm_active:
+        inner_cursor_filter_sync_all = or_(
+            composite_keyset_books_only,
+            db.Books.id.in_(magic_shelf_book_ids),
+        )
+    else:
+        inner_cursor_filter_sync_all = composite_keyset_books_only
 
     if only_kobo_shelves:
         changed_entries = calibre_db.session.query(db.Books,
@@ -336,7 +368,7 @@ def HandleSyncRequest():
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
                            .outerjoin(ub.KoboReadingState, rstate_join)
-                           .filter(inner_cursor_filter)
+                           .filter(inner_cursor_filter_with_bookshelf)
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .order_by(db.Books.last_modified)
@@ -364,12 +396,15 @@ def HandleSyncRequest():
         # The composite keyset (Books.last_modified, Books.id) is the per-device
         # throttle — without it, this branch returns every book on every sync
         # and keeps cont_sync True forever. The 'else' branch's SELECT does
-        # not join BookShelf, so the date_added arm is dropped here.
+        # not join BookShelf, so the date_added arm is dropped here. The
+        # magic-shelf arm DOES participate (when active), letting magic-shelf
+        # books with old Books.last_modified deliver in 'sync-all' mode too —
+        # fixing the @recruiterguy regression in v4.0.147.
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
                            .outerjoin(ub.KoboReadingState, rstate_join)
-                           .filter(composite_keyset_books_only)
+                           .filter(inner_cursor_filter_sync_all)
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .order_by(db.Books.last_modified)

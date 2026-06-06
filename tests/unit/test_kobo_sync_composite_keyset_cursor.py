@@ -138,11 +138,20 @@ class TestCompositeKeysetCursorPinned:
         # the magic-shelf membership arm. If a future change re-inlines the
         # OR with only the two original arms, both fork #347 and fork #359
         # regress.
-        assert "inner_cursor_filter" in src, (
-            "HandleSyncRequest must build the named 'inner_cursor_filter' that "
-            "composes the date_added arm + composite keyset + conditional "
-            "magic-shelf membership arm. Replacing it with an inline OR "
-            "regresses #347 and/or #359."
+        # Accept either the original single-filter name (v4.0.147) or the
+        # split filter names that came with the v4.0.151 fix for the
+        # sync-all-mode case (`inner_cursor_filter_with_bookshelf` for the
+        # only_kobo_shelves branch, `inner_cursor_filter_sync_all` for the
+        # else branch).
+        assert (
+            "inner_cursor_filter" in src
+            or ("inner_cursor_filter_with_bookshelf" in src
+                and "inner_cursor_filter_sync_all" in src)
+        ), (
+            "HandleSyncRequest must build a named cursor filter (single or "
+            "split per branch) that composes the date_added arm + composite "
+            "keyset + conditional magic-shelf membership arm. Replacing it "
+            "with an inline OR regresses #347 and/or #359."
         )
 
 

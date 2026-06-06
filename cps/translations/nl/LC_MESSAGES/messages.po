@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-06 19:55+0000\n"
+"POT-Creation-Date: 2026-06-06 20:35+0000\n"
 "PO-Revision-Date: 2026-04-26 13:31+0200\n"
 "Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at proton."
 "me>\n"
@@ -432,7 +432,7 @@ msgstr "Gelukt! Gmail account geverifieerd."
 
 #: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2555
 #: cps/admin.py:2672 cps/admin.py:2944 cps/editbooks.py:1078
-#: cps/editbooks.py:1881 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/editbooks.py:1886 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:318 cps/shelf.py:398 cps/shelf.py:523
 #: cps/tasks/convert.py:145 cps/web.py:2959
 #, python-format
@@ -1290,28 +1290,28 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr "Er is een fout opgetreden bij het converteren van dit boek: %(res)s"
 
-#: cps/editbooks.py:377 cps/editbooks.py:1281 cps/editbooks.py:1828
+#: cps/editbooks.py:377 cps/editbooks.py:1281 cps/editbooks.py:1833
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Bestandstype niet toegestaan om te uploaden naar deze server"
 
-#: cps/editbooks.py:382 cps/editbooks.py:1287 cps/editbooks.py:1839
+#: cps/editbooks.py:382 cps/editbooks.py:1287 cps/editbooks.py:1844
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "De bestandsextensie '%(ext)s' is niet toegestaan op deze server"
 
-#: cps/editbooks.py:386 cps/editbooks.py:1291 cps/editbooks.py:1844
+#: cps/editbooks.py:386 cps/editbooks.py:1291 cps/editbooks.py:1849
 msgid "File to be uploaded must have an extension"
 msgstr "Het te uploaden bestand moet voorzien zijn van een extensie"
 
-#: cps/editbooks.py:864 cps/editbooks.py:1505 cps/web.py:685 cps/web.py:3140
-#: cps/web.py:3314 cps/web.py:3429
+#: cps/editbooks.py:864 cps/editbooks.py:1506 cps/web.py:685 cps/web.py:3140
+#: cps/web.py:3314 cps/web.py:3433
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
 "Oeps! Geselecteerd boek is niet beschikbaar. Bestand bestaat niet of is niet "
 "toegankelijk"
 
-#: cps/editbooks.py:904 cps/editbooks.py:1911
+#: cps/editbooks.py:904 cps/editbooks.py:1916
 msgid "User has no rights to upload cover"
 msgstr "Gebruiker mist rechten om de omslag te uploaden"
 
@@ -1325,7 +1325,7 @@ msgstr ""
 "Identificatoren zijn niet hoofdlettergevoelig, overschrijf huidige "
 "identificatoren"
 
-#: cps/editbooks.py:947 cps/editbooks.py:1243 cps/editbooks.py:1639
+#: cps/editbooks.py:947 cps/editbooks.py:1243 cps/editbooks.py:1644
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s is geen geldige taal"
@@ -1339,7 +1339,7 @@ msgstr "De metagegevens zijn bijgewerkt"
 msgid "Error editing book: {}"
 msgstr "Fout tijdens bijwerken van boek: {}"
 
-#: cps/editbooks.py:1138 cps/editbooks.py:1183 cps/editbooks.py:1929
+#: cps/editbooks.py:1138 cps/editbooks.py:1183 cps/editbooks.py:1934
 #: cps/updater.py:649 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Onbekend"
@@ -1362,82 +1362,82 @@ msgstr "Bestand %(filename)s kon niet opgeslagen worden in de tijdelijke map"
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Omslag %(file)s niet verplaatst: %(error)s"
 
-#: cps/editbooks.py:1392 cps/editbooks.py:1394
+#: cps/editbooks.py:1393 cps/editbooks.py:1395
 msgid "Book Format Successfully Deleted"
 msgstr "Het boekformaat is verwijderd"
 
-#: cps/editbooks.py:1401 cps/editbooks.py:1403
+#: cps/editbooks.py:1402 cps/editbooks.py:1404
 msgid "Book Successfully Deleted"
 msgstr "Het boek is verwijderd"
 
-#: cps/editbooks.py:1486
+#: cps/editbooks.py:1487
 msgid "You are missing permissions to delete books"
 msgstr "U mist rechten om boeken te verwijderen"
 
-#: cps/editbooks.py:1544
+#: cps/editbooks.py:1549
 msgid "edit metadata"
 msgstr "metagegevens bewerken"
 
-#: cps/editbooks.py:1598
+#: cps/editbooks.py:1603
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "Seriesindex: %(seriesindex)s is geen geldig nummer, sla het over"
 
-#: cps/editbooks.py:1833
+#: cps/editbooks.py:1838
 msgid "User has no rights to upload additional file formats"
 msgstr "Gebruiker mist rechten om extra bestandsformaten te uploaden"
 
-#: cps/editbooks.py:1857
+#: cps/editbooks.py:1862
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Kan de locatie '%(path)s' niet aanmaken (niet gemachtigd)."
 
-#: cps/editbooks.py:1864
+#: cps/editbooks.py:1869
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Kan %(file)s niet opslaan."
 
-#: cps/editbooks.py:1888
+#: cps/editbooks.py:1893
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Bestandsformaat %(ext)s toegevoegd aan %(book)s"
 
-#: cps/editbooks.py:2170
+#: cps/editbooks.py:2175
 #, fuzzy
 msgid "Book not found"
 msgstr "Boek niet gevonden"
 
-#: cps/editbooks.py:2174
+#: cps/editbooks.py:2179
 msgid "Book has no file formats on disk to reload from"
 msgstr ""
 
-#: cps/editbooks.py:2194
+#: cps/editbooks.py:2199
 #, fuzzy, python-format
 msgid "Book file not found on disk: %(path)s"
 msgstr "EPUB bestand is niet gevonden op de schijf"
 
-#: cps/editbooks.py:2206
+#: cps/editbooks.py:2211
 #, python-format
 msgid "Could not parse metadata from %(format)s file: %(err)s"
 msgstr ""
 
-#: cps/editbooks.py:2320
+#: cps/editbooks.py:2325
 #, python-format
 msgid ""
 "Could not rename the book folder to match the reloaded metadata: %(err)s"
 msgstr ""
 
-#: cps/editbooks.py:2342
+#: cps/editbooks.py:2347
 #, python-format
 msgid "Could not save reloaded metadata: %(err)s"
 msgstr ""
 
-#: cps/editbooks.py:2348
+#: cps/editbooks.py:2353
 #, python-format
 msgid "Reloaded %(n)d field(s) from on-disk %(fmt)s"
 msgstr ""
 
-#: cps/editbooks.py:2351
+#: cps/editbooks.py:2356
 msgid "On-disk metadata matches current — no fields updated"
 msgstr ""
 
@@ -1937,7 +1937,7 @@ msgstr "Categorieën"
 msgid "Books ordered by category"
 msgstr "Boeken gesorteerd op categorie"
 
-#: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:102
+#: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:105
 #: cps/templates/book_table.html:111 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
@@ -1950,7 +1950,7 @@ msgid "Books ordered by series"
 msgstr "Boeken gesorteerd op reeks"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
-#: cps/templates/detail.html:771 cps/templates/search_form.html:108
+#: cps/templates/detail.html:777 cps/templates/search_form.html:108
 #: cps/web.py:1978
 msgid "Languages"
 msgstr "Talen"
@@ -2125,7 +2125,7 @@ msgstr "Duplicaten"
 msgid "Show Duplicate Books"
 msgstr "Best beoordeelde boeken tonen"
 
-#: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:296
+#: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:299
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
 #: cps/templates/index.xml:12 cps/templates/layout.html:156
 #: cps/templates/layout.html:159 cps/templates/search_form.html:247
@@ -3002,8 +3002,8 @@ msgid "Add to Shelf"
 msgstr "Toevoegen aan boekenplank"
 
 #: cps/templates/_book_organizer.html:116 cps/templates/detail.html:655
-#: cps/templates/detail.html:677 cps/templates/detail.html:830
-#: cps/templates/detail.html:1415 cps/templates/feed.xml:109
+#: cps/templates/detail.html:677 cps/templates/detail.html:836
+#: cps/templates/detail.html:1421 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/layout.html:405
 #: cps/templates/layout.html:418 cps/templates/listenmp3.html:201
 #: cps/templates/listenmp3.html:218 cps/templates/search.html:23
@@ -3448,7 +3448,7 @@ msgid "OK"
 msgstr "Oké"
 
 #: cps/templates/admin.html:302 cps/templates/admin.html:316
-#: cps/templates/book_edit.html:271 cps/templates/book_table.html:176
+#: cps/templates/book_edit.html:274 cps/templates/book_table.html:176
 #: cps/templates/book_table.html:195 cps/templates/book_table.html:215
 #: cps/templates/book_table.html:235 cps/templates/book_table.html:255
 #: cps/templates/book_table.html:275 cps/templates/book_table.html:333
@@ -3456,7 +3456,7 @@ msgstr "Oké"
 #: cps/templates/config_edit.html:669 cps/templates/config_view_edit.html:219
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1020
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1026
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
 #: cps/templates/duplicates.html:746 cps/templates/layout.html:595
 #: cps/templates/layout.html:750 cps/templates/modal_dialogs.html:64
@@ -3630,7 +3630,7 @@ msgstr "Converteren naar:"
 msgid "Convert book"
 msgstr "Boek converteren"
 
-#: cps/templates/book_edit.html:56 cps/templates/book_edit.html:336
+#: cps/templates/book_edit.html:56 cps/templates/book_edit.html:339
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:193 cps/templates/layout.html:495
 #: cps/templates/layout.html:632 cps/templates/modal_dialogs.html:34
@@ -3655,122 +3655,127 @@ msgstr "Fout"
 msgid "Upload Format"
 msgstr "Uploadformaat"
 
-#: cps/templates/book_edit.html:94 cps/templates/book_edit.html:417
+#: cps/templates/book_edit.html:90 cps/templates/detail.html:746
+#, fuzzy
+msgid "Imported as"
+msgstr "Update mislukt:"
+
+#: cps/templates/book_edit.html:97 cps/templates/book_edit.html:420
 #: cps/templates/cwa_settings.html:1091 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Auteur"
 
-#: cps/templates/book_edit.html:98 cps/templates/search_form.html:52
+#: cps/templates/book_edit.html:101 cps/templates/search_form.html:52
 msgid "Tags"
 msgstr "Labels"
 
-#: cps/templates/book_edit.html:106 cps/templates/book_table.html:112
+#: cps/templates/book_edit.html:109 cps/templates/book_table.html:112
 msgid "Series ID"
 msgstr "Boekenreeks volgnummer"
 
-#: cps/templates/book_edit.html:109
+#: cps/templates/book_edit.html:112
 msgid "Published Date"
 msgstr "Publicatiedatum"
 
-#: cps/templates/book_edit.html:118 cps/templates/book_edit.html:418
+#: cps/templates/book_edit.html:121 cps/templates/book_edit.html:421
 #: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
-#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:846
+#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:852
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Uitgever"
 
-#: cps/templates/book_edit.html:122 cps/templates/cwa_settings.html:1097
+#: cps/templates/book_edit.html:125 cps/templates/cwa_settings.html:1097
 #: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "Taal"
 
-#: cps/templates/book_edit.html:126 cps/templates/cwa_settings.html:369
+#: cps/templates/book_edit.html:129 cps/templates/cwa_settings.html:369
 #: cps/templates/cwa_settings.html:371
 msgid "Rating"
 msgstr "Beoordeling"
 
-#: cps/templates/book_edit.html:130 cps/templates/book_edit.html:419
+#: cps/templates/book_edit.html:133 cps/templates/book_edit.html:422
 #: cps/templates/cwa_settings.html:341 cps/templates/cwa_settings.html:343
 #: cps/templates/search_form.html:154
 msgid "Description"
 msgstr "Omschrijving"
 
-#: cps/templates/book_edit.html:134
+#: cps/templates/book_edit.html:137
 msgid "Identifiers"
 msgstr "Identificatoren"
 
-#: cps/templates/book_edit.html:138 cps/templates/book_edit.html:428
+#: cps/templates/book_edit.html:141 cps/templates/book_edit.html:431
 msgid "Identifier Type"
 msgstr "Identificatie type"
 
-#: cps/templates/book_edit.html:139 cps/templates/book_edit.html:429
+#: cps/templates/book_edit.html:142 cps/templates/book_edit.html:432
 msgid "Identifier Value"
 msgstr "Identificatie waarde"
 
-#: cps/templates/book_edit.html:140 cps/templates/book_edit.html:430
+#: cps/templates/book_edit.html:143 cps/templates/book_edit.html:433
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "Verwijderen"
 
-#: cps/templates/book_edit.html:145
+#: cps/templates/book_edit.html:148
 msgid "Add Identifier"
 msgstr "Identificator toevoegen"
 
-#: cps/templates/book_edit.html:151 cps/templates/cover_picker.html:12
+#: cps/templates/book_edit.html:154 cps/templates/cover_picker.html:12
 #: cps/templates/detail.html:486 cps/templates/detail.html:489
 #: cps/templates/detail.html:602
 #, fuzzy
 msgid "Change cover"
 msgstr "Wachtwoord wijzigen"
 
-#: cps/templates/book_edit.html:154
+#: cps/templates/book_edit.html:157
 msgid ""
 "Pick a cover from any source, paste a URL, upload a file, or use the "
 "embedded cover."
 msgstr ""
 
-#: cps/templates/book_edit.html:158
+#: cps/templates/book_edit.html:161
 msgid ""
 "Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)"
 msgstr ""
 "Omslag-url (jpg) (de omslag wordt gedownload en opgeslagen in de database)"
 
-#: cps/templates/book_edit.html:167
+#: cps/templates/book_edit.html:170
 msgid "Upload Cover from Local Disk"
 msgstr "Omslag uploaden vanaf de harde schijf"
 
-#: cps/templates/book_edit.html:179 cps/templates/search_form.html:46
+#: cps/templates/book_edit.html:182 cps/templates/search_form.html:46
 #: cps/templates/search_form.html:167
 msgid "Yes"
 msgstr "Ja"
 
-#: cps/templates/book_edit.html:180 cps/templates/search_form.html:47
+#: cps/templates/book_edit.html:183 cps/templates/search_form.html:47
 #: cps/templates/search_form.html:168
 msgid "No"
 msgstr "Nee"
 
-#: cps/templates/book_edit.html:245
+#: cps/templates/book_edit.html:248
 msgid "Hardcover Sync Blacklist"
 msgstr "Hardcover Sync Blacklist"
 
-#: cps/templates/book_edit.html:249
+#: cps/templates/book_edit.html:252
 msgid "Blacklist annotations from syncing to Hardcover"
 msgstr ""
 
-#: cps/templates/book_edit.html:256
+#: cps/templates/book_edit.html:259
 msgid "Blacklist reading progress from syncing to Hardcover"
 msgstr ""
 
-#: cps/templates/book_edit.html:265
+#: cps/templates/book_edit.html:268
 msgid "View Book on Save"
 msgstr "Boek inkijken na bewerking"
 
-#: cps/templates/book_edit.html:269 cps/templates/book_edit.html:290
+#: cps/templates/book_edit.html:272 cps/templates/book_edit.html:293
 msgid "Fetch Metadata"
 msgstr "Metagegevens ophalen"
 
-#: cps/templates/book_edit.html:272 cps/templates/config_db.html:111
+#: cps/templates/book_edit.html:275 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:670 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/read.html:136
 #: cps/templates/schedule_edit.html:47 cps/templates/shelf_edit.html:36
@@ -3779,63 +3784,63 @@ msgstr "Metagegevens ophalen"
 msgid "Save"
 msgstr "Opslaan"
 
-#: cps/templates/book_edit.html:293
+#: cps/templates/book_edit.html:296
 msgid "Keyword"
 msgstr "Trefwoord"
 
-#: cps/templates/book_edit.html:294
+#: cps/templates/book_edit.html:297
 msgid "Search keyword"
 msgstr "Trefwoord zoeken"
 
-#: cps/templates/book_edit.html:303
+#: cps/templates/book_edit.html:306
 msgid "Selected metadata fields were applied to the edit form."
 msgstr ""
 
-#: cps/templates/book_edit.html:310
+#: cps/templates/book_edit.html:313
 msgid "API Keys"
 msgstr ""
 
-#: cps/templates/book_edit.html:316
+#: cps/templates/book_edit.html:319
 msgid ""
 "Some metadata sources need an API key. Adding a key here improves cover "
 "quality and unblocks rate-limited services. Keys are stored once for the "
 "whole instance — admins only."
 msgstr ""
 
-#: cps/templates/book_edit.html:318 cps/templates/book_edit.html:332
-#: cps/templates/book_edit.html:414
+#: cps/templates/book_edit.html:321 cps/templates/book_edit.html:335
+#: cps/templates/book_edit.html:417
 msgid "Loading..."
 msgstr "Bezig met laden..."
 
-#: cps/templates/book_edit.html:323
+#: cps/templates/book_edit.html:326
 msgid "Sort by:"
 msgstr ""
 
-#: cps/templates/book_edit.html:325
+#: cps/templates/book_edit.html:328
 msgid "Provider order (default)"
 msgstr ""
 
-#: cps/templates/book_edit.html:326
+#: cps/templates/book_edit.html:329
 msgid "Cover size — largest first"
 msgstr ""
 
-#: cps/templates/book_edit.html:327
+#: cps/templates/book_edit.html:330
 msgid "Cover size — smallest first"
 msgstr ""
 
-#: cps/templates/book_edit.html:358
+#: cps/templates/book_edit.html:361
 msgid "Apply"
 msgstr ""
 
-#: cps/templates/book_edit.html:415
+#: cps/templates/book_edit.html:418
 msgid "Search error!"
 msgstr "Zoekfout!"
 
-#: cps/templates/book_edit.html:416
+#: cps/templates/book_edit.html:419
 msgid "No Result(s) found! Please try another keyword."
 msgstr "Geen resultaten gevonden! Gebruik een ander trefwoord."
 
-#: cps/templates/book_edit.html:420
+#: cps/templates/book_edit.html:423
 msgid "Source"
 msgstr "Bron"
 
@@ -6165,12 +6170,12 @@ msgid "Read in Browser"
 msgstr "Lezen in webbrowser"
 
 #: cps/templates/detail.html:560 cps/templates/detail.html:561
-#: cps/templates/detail.html:909 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:915 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Markeren als ongelezen"
 
 #: cps/templates/detail.html:560 cps/templates/detail.html:561
-#: cps/templates/detail.html:910 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:916 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Markeren als gelezen"
 
@@ -6183,12 +6188,12 @@ msgid "Marked as unread"
 msgstr "Gemarkeerd als ongelezen"
 
 #: cps/templates/detail.html:568 cps/templates/detail.html:569
-#: cps/templates/detail.html:916 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:922 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "Terughalen uit archief"
 
 #: cps/templates/detail.html:568 cps/templates/detail.html:569
-#: cps/templates/detail.html:917 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:923 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "Toevoegen aan archief"
 
@@ -6235,13 +6240,13 @@ msgstr "Verborgen boek"
 msgid "Unhidden"
 msgstr ""
 
-#: cps/templates/detail.html:644 cps/templates/detail.html:838
-#: cps/templates/detail.html:839 cps/templates/detail.html:1452
+#: cps/templates/detail.html:644 cps/templates/detail.html:844
+#: cps/templates/detail.html:845 cps/templates/detail.html:1458
 #: cps/templates/listenmp3.html:190 cps/templates/search.html:17
 msgid "Add to shelf"
 msgstr "Toevoegen aan boekenplank"
 
-#: cps/templates/detail.html:667 cps/templates/detail.html:832
+#: cps/templates/detail.html:667 cps/templates/detail.html:838
 #, fuzzy
 msgid "Remove from shelf"
 msgstr "Terughalen uit archief"
@@ -6281,93 +6286,93 @@ msgstr ""
 msgid "Copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:745
+#: cps/templates/detail.html:751
 msgid "Date added"
 msgstr ""
 
-#: cps/templates/detail.html:749
+#: cps/templates/detail.html:755
 msgid "Last modified"
 msgstr ""
 
-#: cps/templates/detail.html:754
+#: cps/templates/detail.html:760
 #, fuzzy
 msgid "File sizes"
 msgstr "Lettertypegrootte"
 
-#: cps/templates/detail.html:798
+#: cps/templates/detail.html:804
 #, fuzzy
 msgid "Remove tag"
 msgstr "Verwijderen"
 
-#: cps/templates/detail.html:806 cps/templates/detail.html:807
-#: cps/templates/detail.html:1330
+#: cps/templates/detail.html:812 cps/templates/detail.html:813
+#: cps/templates/detail.html:1336
 msgid "Add tag"
 msgstr ""
 
-#: cps/templates/detail.html:852 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:858 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "Gepubliceerd"
 
-#: cps/templates/detail.html:858
+#: cps/templates/detail.html:864
 #, fuzzy
 msgid "KOReader Progress"
 msgstr "Voortgang"
 
-#: cps/templates/detail.html:928 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:934 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Beschrijving:"
 
-#: cps/templates/detail.html:945
+#: cps/templates/detail.html:951
 #, fuzzy
 msgid "Select eReader Email Addresses"
 msgstr "Kindle-e-mailadres"
 
-#: cps/templates/detail.html:958
+#: cps/templates/detail.html:964
 msgid "Choose email addresses:"
 msgstr "Kies e-mailadressen:"
 
-#: cps/templates/detail.html:963
+#: cps/templates/detail.html:969
 #, fuzzy
 msgid "Select All"
 msgstr "Boekenplank maken"
 
-#: cps/templates/detail.html:984
+#: cps/templates/detail.html:990
 msgid "Other users' eReaders:"
 msgstr ""
 
-#: cps/templates/detail.html:999
+#: cps/templates/detail.html:1005
 #, fuzzy
 msgid "Additional email addresses:"
 msgstr "Kies e-mailadressen:"
 
-#: cps/templates/detail.html:1000
+#: cps/templates/detail.html:1006
 #, fuzzy
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "Kies e-mailadressen:"
 
-#: cps/templates/detail.html:1001
+#: cps/templates/detail.html:1007
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:1002
+#: cps/templates/detail.html:1008
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:1007
+#: cps/templates/detail.html:1013
 #, fuzzy
 msgid "Select format:"
 msgstr "Formaten verwijderen:"
 
-#: cps/templates/detail.html:1019
+#: cps/templates/detail.html:1025
 msgid "Send"
 msgstr "Verzenden"
 
-#: cps/templates/detail.html:1308
+#: cps/templates/detail.html:1314
 #, fuzzy
 msgid "Failed to update tags"
 msgstr "Locatie aanmaken voor omslag mislukt"
 
-#: cps/templates/detail.html:1416
+#: cps/templates/detail.html:1422
 #, fuzzy
 msgid "Failed to update shelves"
 msgstr "Locatie aanmaken voor omslag mislukt"

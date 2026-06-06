@@ -25,7 +25,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture(scope="module")
 def _enable_koreader_sync(cwa_container, container_name):
     """Flip `cwa_settings.koreader_sync_enabled` to 1 for this module's lifetime.
 
@@ -42,6 +42,13 @@ def _enable_koreader_sync(cwa_container, container_name):
     `is_koreader_sync_enabled()` re-reads cwa_settings via a fresh
     `CWA_DB()` instance on every call, so the in-container ingest_processor
     picks up the flip immediately without a service restart.
+
+    Deliberately NOT autouse: it pulls in ``cwa_container``, and as a
+    module-autouse fixture it booted the full docker compose stack for the
+    unit-marked ``TestIngestChecksumLogic`` tests too — 33s of wasted setup
+    in every Fast Tests run, and 2 job-failing ERRORS whenever compose boot
+    flaked on the runner (PR #376's third CI failure, run 27076038060). The
+    docker_integration classes opt in via ``@pytest.mark.usefixtures``.
     """
     subprocess.run(
         ["docker", "exec", container_name, "sqlite3", "/config/cwa.db",
@@ -94,6 +101,7 @@ def get_latest_book_id(db_path):
 
 @pytest.mark.docker_integration
 @pytest.mark.slow
+@pytest.mark.usefixtures("_enable_koreader_sync")
 class TestIngestChecksumGeneration:
     """Test automatic checksum generation during book ingest."""
 
@@ -223,6 +231,7 @@ class TestIngestChecksumGeneration:
 
 @pytest.mark.docker_integration
 @pytest.mark.slow
+@pytest.mark.usefixtures("_enable_koreader_sync")
 class TestChecksumGenerationEdgeCases:
     """Test edge cases in checksum generation during ingest."""
 
@@ -323,6 +332,7 @@ class TestIngestChecksumLogic:
 
 @pytest.mark.docker_integration
 @pytest.mark.slow
+@pytest.mark.usefixtures("_enable_koreader_sync")
 class TestChecksumInitialization:
     """Test the one-time checksum generation at container startup."""
 

@@ -1,46 +1,67 @@
+{% import 'image.html' as image %}
 {% extends "layout.html" %}
 {% block body %}
-  <div class="col-sm-8 col-lg-8 col-xs-12">
+  {# Deliberately NOT the discover wrapper class: main.js runs isotope on
+     every `.discover .row` that contains .book cards. Isotope absolutely-
+     positions cards from its own item-order model, which goes stale the
+     moment Sortable moves a DOM node — any relayout (viewport resize, font
+     load) snaps the covers back to the pre-drag picture while the DB
+     already holds the new order. This page owns its layout: plain
+     responsive flow, Sortable moves real nodes. #}
+  <div class="reorder-page">
     <h2>{{title}}</h2>
-    <div>{{_('Drag to Rearrange Order')}}</div>
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <div id="sortTrue" class="list-group">
-        {% for entry in entries %}
-          <div id="{{entry['Books']['id']}}" class="list-group-item">
-            <div class="row">
-              <div class="col-lg-2 col-sm-4 hidden-xs">
-                {% if entry['visible'] %}
-                  <img title="{{entry['Books']['title']}}" class="cover-height" src="{{ url_for('web.get_cover', book_id=entry['Books']['id']) }}">
-                {% else %}
-                  <img title="{{entry['Books']['title']}}" class="cover-height" src="{{ url_for('static', filename='generic_cover.svg') }}">
-                {% endif %}
-              </div>
-              <div class="col-lg-10 col-sm-8 col-xs-12">
-              {% if entry['visible'] %}
-                  {{entry['Books']['title']}}
-                  {% if entry['Books']['series']|length > 0 %}
-                    <br>
-                    {{entry['Books']['series_index']|formatfloat(2)}} - {{entry['Books']['series'][0].name}}
-                  {% endif %}
-                  <br>
-                  {% for author in entry['Books']['author'] %}
-                    {{author.name.replace('|',',')}}
-                    {% if not loop.last %}
-                      &amp;
-                    {% endif %}
-                  {% endfor %}
-              {% else %}
-                  {{_('Hidden Book')}}
-                  <br>
-              {% endif %}
-              </div>
-            </div>
+    {# fork #320 (@SpookyUSAF): the reorder screen is the same responsive
+       cover grid as the regular shelf view — drag a cover where it belongs,
+       or focus a cover and use the arrow keys. Order saves on every change;
+       there is no Save button to forget. #}
+    <p>
+      {{_('Drag a cover to its new spot — the order saves automatically.')}}
+      <span class="hidden-xs">{{_('Keyboard: focus a cover with Tab, then move it with the arrow keys.')}}</span>
+    </p>
+    <p id="reorder-status" class="text-muted" role="status" aria-live="polite"
+       data-saving-text="{{_('Saving…')}}"
+       data-saved-text="{{_('Order saved')}}"
+       data-error-text="{{_('Could not save the order — click here to retry')}}"
+       data-moved-text="{{_('Moved to position %(num)s of %(total)s', num='__POS__', total='__TOTAL__')}}">&nbsp;</p>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div id="reorder-grid" class="row display-flex"
+         role="list" aria-label="{{_('Shelf order')}}"
+         data-save-url="{{ url_for('shelf.order_shelf', shelf_id=shelf.id) }}">
+      {% for entry in entries %}
+        <div class="col-sm-3 col-lg-2 col-xs-6 book reorder-item" role="listitem" tabindex="0"
+             data-book-id="{{entry['Books']['id']}}"
+             aria-label="{{entry['Books']['title'] if entry['visible'] else _('Hidden Book')}}">
+          <div class="cover">
+            {% if entry['visible'] %}
+              {{ image.book_cover(entry['Books']) }}
+            {% else %}
+              <img title="{{_('Hidden Book')}}" src="{{ url_for('static', filename='generic_cover.svg') }}" alt="">
+            {% endif %}
           </div>
-        {% endfor %}
-      </div>
-        <button onclick="sendData('{{ url_for('shelf.order_shelf', shelf_id=shelf.id) }}')" class="btn btn-default" id="ChangeOrder">{{_('Save')}}</button>
-        <a href="{{ url_for('shelf.show_shelf', shelf_id=shelf.id) }}" id="shelf_back" class="btn btn-default">{{_('Back')}}</a>
+          <div class="meta">
+            {% if entry['visible'] %}
+              <p class="title" title="{{entry['Books']['title']}}">{{entry['Books']['title']|shortentitle}}</p>
+              {% if entry['Books']['series']|length > 0 %}
+                <p class="series">{{entry['Books']['series'][0].name|shortentitle(30)}} ({{entry['Books']['series_index']|formatfloat(2)}})</p>
+              {% endif %}
+            {% else %}
+              <p class="title">{{_('Hidden Book')}}</p>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <a href="{{ url_for('shelf.show_shelf', shelf_id=shelf.id) }}" id="shelf_back" class="btn btn-default">{{_('Back')}}</a>
   </div>
+  <style>
+    /* Reorder affordances: grab cursor, drop ghost, keyboard focus ring. */
+    #reorder-grid .reorder-item { cursor: grab; user-select: none; -webkit-user-select: none; }
+    #reorder-grid .reorder-item:active { cursor: grabbing; }
+    #reorder-grid .reorder-item:focus { outline: 2px solid #45b29d; outline-offset: 2px; }
+    #reorder-grid .reorder-ghost { opacity: 0.4; }
+    #reorder-grid .reorder-chosen { transform: scale(1.03); }
+    #reorder-status.reorder-error { color: #d9534f; cursor: pointer; font-weight: bold; }
+  </style>
 {% endblock %}
 
 {% block js %}

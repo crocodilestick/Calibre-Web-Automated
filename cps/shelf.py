@@ -375,26 +375,64 @@ def show_shelf(shelf_id, sort_param, page):
 @shelf.route("/shelf/order/<int:shelf_id>", methods=["GET", "POST"])
 @user_login_required
 def order_shelf(shelf_id):
+    """Render the cover-grid reorder page; persist order on POST (fork #320).
+
+    POST accepts JSON ``{"order": [book_id, ...]}`` from the grid's
+    save-on-drop fetch. The payload is normalized against the books actually
+    on the shelf (``normalize_shelf_order``): unknown ids are dropped,
+    duplicates collapse to first-seen, and shelved books missing from the
+    payload keep their relative order at the end — a stale page can never
+    error out or orphan a book's position (the legacy form handler raised
+    KeyError → 500 when the shelf changed between page load and save).
+    The legacy form-dict shape is still accepted for one release so a page
+    cached mid-deploy can save.
+    """
     shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.id == shelf_id).first()
     if shelf and check_shelf_view_permissions(shelf):
         if request.method == "POST":
+            wants_json = request.is_json
             if not check_shelf_edit_permissions(shelf):
+                if wants_json:
+                    return jsonify({'status': 'error',
+                                    'message': 'You are not allowed to edit this shelf'}), 403
                 flash(_("Sorry you are not allowed to edit this shelf"), category="error")
                 return redirect(url_for('web.index'))
-            to_save = request.form.to_dict()
             books_in_shelf = ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id).order_by(
                 ub.BookShelf.order.asc()).all()
-            counter = 0
-            for book in books_in_shelf:
-                setattr(book, 'order', to_save[str(book.book_id)])
-                counter += 1
-                # if order different from before -> shelf.last_modified = datetime.now(timezone.utc)
+            available_ids = [entry.book_id for entry in books_in_shelf]
+            if wants_json:
+                payload = request.get_json(silent=True) or {}
+                ordered_ids = payload.get('order', [])
+            else:
+                # Legacy form shape: {book_id: order_value}. Sort the pairs by
+                # the submitted value; ints win over junk, junk sinks stably.
+                to_save = request.form.to_dict()
+
+                def _form_key(book_id):
+                    try:
+                        return (0, int(to_save.get(str(book_id), '')))
+                    except (TypeError, ValueError):
+                        return (1, 0)
+                ordered_ids = sorted(available_ids, key=_form_key)
+            positions = compute_shelf_positions(ordered_ids, available_ids)
+            changed = False
+            for entry in books_in_shelf:
+                new_order = positions[entry.book_id]
+                if entry.order != new_order:
+                    entry.order = new_order
+                    changed = True
             try:
-                ub.session.commit()
+                if changed:
+                    ub.session.commit()
             except (OperationalError, InvalidRequestError) as e:
                 ub.session.rollback()
                 log.error_or_exception("Settings Database error: {}".format(e))
+                if wants_json:
+                    return jsonify({'status': 'error', 'message': 'Database error'}), 500
                 flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
+            if wants_json:
+                return jsonify({'status': 'ok',
+                                'order': sorted(positions, key=positions.get)})
 
         result = list()
         if shelf:
@@ -728,6 +766,17 @@ SHELF_ORDER_MODES = {
 }
 
 DEFAULT_SHELF_ORDER_MODE = 'name_asc'
+
+
+def compute_shelf_positions(ordered_ids, available_ids):
+    """1-based position map for reorder persistence (fork #320).
+
+    Built on ``normalize_shelf_order``: every id in ``available_ids`` gets a
+    position even if the payload omitted it (stale page), unknown ids are
+    dropped, duplicates collapse to first-seen.
+    """
+    normalized = normalize_shelf_order(ordered_ids, available_ids)
+    return {book_id: idx + 1 for idx, book_id in enumerate(normalized)}
 
 
 def normalize_shelf_order(order_list, available_ids):

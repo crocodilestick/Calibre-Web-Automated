@@ -22,6 +22,12 @@ is for things you can see or feel when running the app.
   ones already on the shelf. (#334, requested by @Glennza1962)
 
 ### Changed
+- Rearranging a shelf now happens in the same cover grid as the regular shelf
+  view — drag a cover where it belongs, on desktop or phone (long-press to
+  lift), or move it with the keyboard arrows. The order saves by itself on
+  every change; the old cramped list and its Save button are gone. A shelf
+  that changed in another tab no longer breaks saving. (#320, requested by
+  @SpookyUSAF with design input from @droM4X)
 - Series pages now list books in series order by default (1, 2, 3…) instead of
   newest-first — matching what the OPDS feed always did. Choosing a different
   sort still sticks for next time.

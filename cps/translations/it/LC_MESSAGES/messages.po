@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-07 04:56+0000\n"
+"POT-Creation-Date: 2026-06-07 05:18+0000\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -423,8 +423,8 @@ msgstr "Tutto OK! Account Gmail verificato."
 #: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2555
 #: cps/admin.py:2672 cps/admin.py:2944 cps/editbooks.py:1078
 #: cps/editbooks.py:1886 cps/shelf.py:93 cps/shelf.py:172 cps/shelf.py:244
-#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:397 cps/shelf.py:477
-#: cps/shelf.py:602 cps/tasks/convert.py:145 cps/web.py:2964
+#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:432 cps/shelf.py:515
+#: cps/shelf.py:640 cps/tasks/convert.py:145 cps/web.py:2964
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Errore nel database: %(error)s."
@@ -2238,7 +2238,7 @@ msgstr "Spiacente, ma non sei autorizzato a rimuovere libri da questo scaffale"
 msgid "Create a Shelf"
 msgstr "Crea uno scaffale"
 
-#: cps/shelf.py:340 cps/shelf.py:382
+#: cps/shelf.py:340 cps/shelf.py:398
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Spiacente, ma non sei autorizzato a modificare questo scaffale"
 
@@ -2254,101 +2254,101 @@ msgstr "Errore nell'eliminare lo scaffale"
 msgid "Shelf successfully deleted"
 msgstr "Lo scaffale è stato eliminato correttamente"
 
-#: cps/shelf.py:406
+#: cps/shelf.py:444
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "Cambia l'ordine dello scaffale: '%(name)s'"
 
-#: cps/shelf.py:443
+#: cps/shelf.py:481
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr "Spiacente, ma non sei autorizzato a creare scaffali pubblici"
 
-#: cps/shelf.py:460
+#: cps/shelf.py:498
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "Lo scaffale %(title)s è stato creato"
 
-#: cps/shelf.py:463
+#: cps/shelf.py:501
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "Lo scaffale %(title)s è stato modificato"
 
-#: cps/shelf.py:481
+#: cps/shelf.py:519
 msgid "There was an error"
 msgstr "C'è stato un errore"
 
-#: cps/shelf.py:505
+#: cps/shelf.py:543
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr "Esiste già uno scaffale pubblico con il nome '%(title)s'."
 
-#: cps/shelf.py:516
+#: cps/shelf.py:554
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr "Esiste già uno scaffale privato con il nome '%(title)s'."
 
-#: cps/shelf.py:607
+#: cps/shelf.py:645
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Scaffale: '%(name)s'"
 
-#: cps/shelf.py:613
+#: cps/shelf.py:651
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr ""
 "Errore nell'apertura dello scaffale. Lo scaffale non esiste o non è "
 "accessibile"
 
-#: cps/shelf.py:854
+#: cps/shelf.py:903
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr ""
 
-#: cps/shelf.py:858
+#: cps/shelf.py:907
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:882
+#: cps/shelf.py:931
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:890 cps/templates/layout.html:411
+#: cps/shelf.py:939 cps/templates/layout.html:411
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Escludi scaffali"
 
-#: cps/shelf.py:895
+#: cps/shelf.py:944
 msgid "Name (A → Z)"
 msgstr ""
 
-#: cps/shelf.py:896
+#: cps/shelf.py:945
 msgid "Name (Z → A)"
 msgstr ""
 
-#: cps/shelf.py:897
+#: cps/shelf.py:946
 msgid "Book count (most → fewest)"
 msgstr ""
 
-#: cps/shelf.py:898
+#: cps/shelf.py:947
 msgid "Book count (fewest → most)"
 msgstr ""
 
-#: cps/shelf.py:899
+#: cps/shelf.py:948
 msgid "Created (newest → oldest)"
 msgstr ""
 
-#: cps/shelf.py:900
+#: cps/shelf.py:949
 msgid "Created (oldest → newest)"
 msgstr ""
 
-#: cps/shelf.py:901
+#: cps/shelf.py:950
 msgid "Modified (recent → oldest)"
 msgstr ""
 
-#: cps/shelf.py:902
+#: cps/shelf.py:951
 msgid "Modified (oldest → recent)"
 msgstr ""
 
-#: cps/shelf.py:903
+#: cps/shelf.py:952
 msgid "Manual (drag below)"
 msgstr ""
 
@@ -3794,8 +3794,7 @@ msgstr "Recupera i metadati"
 #: cps/templates/config_edit.html:670 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/read.html:136
 #: cps/templates/schedule_edit.html:47 cps/templates/shelf_edit.html:36
-#: cps/templates/shelf_order.html:41 cps/templates/shelf_reorder.html:38
-#: cps/templates/user_edit.html:585
+#: cps/templates/shelf_reorder.html:38 cps/templates/user_edit.html:585
 msgid "Save"
 msgstr "Salva"
 
@@ -6691,7 +6690,7 @@ msgid "Save and Send Test Email"
 msgstr "Salva e invia e-mail di prova"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:135
-#: cps/templates/shelf_order.html:42 cps/templates/shelf_reorder.html:39
+#: cps/templates/shelf_order.html:54 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
 msgstr "Indietro"
@@ -7725,11 +7724,39 @@ msgstr "Sincronizza questo scaffale con il lettore Kobo"
 msgid "Expose this shelf in my OPDS feed"
 msgstr ""
 
-#: cps/templates/shelf_order.html:5
-msgid "Drag to Rearrange Order"
-msgstr "Trascina per riordinare"
+#: cps/templates/shelf_order.html:18
+msgid "Drag a cover to its new spot — the order saves automatically."
+msgstr ""
 
-#: cps/templates/shelf_order.html:33
+#: cps/templates/shelf_order.html:19
+msgid "Keyboard: focus a cover with Tab, then move it with the arrow keys."
+msgstr ""
+
+#: cps/templates/shelf_order.html:22
+#, fuzzy
+msgid "Saving…"
+msgstr "Cerca"
+
+#: cps/templates/shelf_order.html:23
+msgid "Order saved"
+msgstr ""
+
+#: cps/templates/shelf_order.html:24
+msgid "Could not save the order — click here to retry"
+msgstr ""
+
+#: cps/templates/shelf_order.html:25
+#, python-format
+msgid "Moved to position %(num)s of %(total)s"
+msgstr ""
+
+#: cps/templates/shelf_order.html:28
+#, fuzzy
+msgid "Shelf order"
+msgstr "Utente non trovato"
+
+#: cps/templates/shelf_order.html:33 cps/templates/shelf_order.html:38
+#: cps/templates/shelf_order.html:48
 msgid "Hidden Book"
 msgstr "Libro nascosto"
 
@@ -8327,6 +8354,9 @@ msgstr "Sincronizza gli scaffali selezionati con Kobo"
 #: cps/templates/user_table.html:158
 msgid "Show Read/Unread Section"
 msgstr "Mostra sezione Libri letti e Libri da leggere"
+
+#~ msgid "Drag to Rearrange Order"
+#~ msgstr "Trascina per riordinare"
 
 #~ msgid "Switch Theme"
 #~ msgstr "Cambia tema"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-07 04:56+0000\n"
+"POT-Creation-Date: 2026-06-07 05:18+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -428,8 +428,8 @@ msgstr "Siker! A Gmail-fiók hitelesítve."
 #: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2555
 #: cps/admin.py:2672 cps/admin.py:2944 cps/editbooks.py:1078
 #: cps/editbooks.py:1886 cps/shelf.py:93 cps/shelf.py:172 cps/shelf.py:244
-#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:397 cps/shelf.py:477
-#: cps/shelf.py:602 cps/tasks/convert.py:145 cps/web.py:2964
+#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:432 cps/shelf.py:515
+#: cps/shelf.py:640 cps/tasks/convert.py:145 cps/web.py:2964
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Hoppá! Adatbázis hiba: %(error)s."
@@ -2263,7 +2263,7 @@ msgstr "Sajnálom, de nem távolíthat el könyvet erről a polcról"
 msgid "Create a Shelf"
 msgstr "Polc létrehozása"
 
-#: cps/shelf.py:340 cps/shelf.py:382
+#: cps/shelf.py:340 cps/shelf.py:398
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Nincs engedélye szerkeszteni ezt a polcot"
 
@@ -2279,98 +2279,98 @@ msgstr "Hiba a polc törlése során"
 msgid "Shelf successfully deleted"
 msgstr "Polc sikeresen törölve"
 
-#: cps/shelf.py:406
+#: cps/shelf.py:444
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "A következő polc átrendezése: %(name)s"
 
-#: cps/shelf.py:443
+#: cps/shelf.py:481
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr "Sajnáljuk, de nem hozhat létre nyilvános polcot"
 
-#: cps/shelf.py:460
+#: cps/shelf.py:498
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "A következő polc létre lett hozva: %(title)s"
 
-#: cps/shelf.py:463
+#: cps/shelf.py:501
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "A következő polc megváltoztatva: %(title)s"
 
-#: cps/shelf.py:481
+#: cps/shelf.py:519
 msgid "There was an error"
 msgstr "Hiba történt"
 
-#: cps/shelf.py:505
+#: cps/shelf.py:543
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr "Már létezik egy nyilvános polc a '%(title)s' névvel."
 
-#: cps/shelf.py:516
+#: cps/shelf.py:554
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr "Már létezik egy saját polc a „%(title)s” névvel."
 
-#: cps/shelf.py:607
+#: cps/shelf.py:645
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Polc: '%(name)s'"
 
-#: cps/shelf.py:613
+#: cps/shelf.py:651
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Hiba a polc megnyitásakor. A polc nem létezik vagy nem elérhető"
 
-#: cps/shelf.py:854
+#: cps/shelf.py:903
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr "Érvénytelen rendezési mód: %(mode)s"
 
-#: cps/shelf.py:858
+#: cps/shelf.py:907
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:882
+#: cps/shelf.py:931
 msgid "Could not save order"
 msgstr "Nem sikerült menteni a sorrendet"
 
-#: cps/shelf.py:890 cps/templates/layout.html:411
+#: cps/shelf.py:939 cps/templates/layout.html:411
 msgid "Reorder Shelves"
 msgstr "Polcok átrendezése"
 
-#: cps/shelf.py:895
+#: cps/shelf.py:944
 msgid "Name (A → Z)"
 msgstr "Név (A → Z)"
 
-#: cps/shelf.py:896
+#: cps/shelf.py:945
 msgid "Name (Z → A)"
 msgstr "Név (Z → A)"
 
-#: cps/shelf.py:897
+#: cps/shelf.py:946
 msgid "Book count (most → fewest)"
 msgstr "Könyvek száma (legtöbb → legkevesebb)"
 
-#: cps/shelf.py:898
+#: cps/shelf.py:947
 msgid "Book count (fewest → most)"
 msgstr "Könyvek száma (legkevesebb → legtöbb)"
 
-#: cps/shelf.py:899
+#: cps/shelf.py:948
 msgid "Created (newest → oldest)"
 msgstr "Létrehozva (legújabb → legrégebbi)"
 
-#: cps/shelf.py:900
+#: cps/shelf.py:949
 msgid "Created (oldest → newest)"
 msgstr "Létrehozva (legrégebbi → legújabb)"
 
-#: cps/shelf.py:901
+#: cps/shelf.py:950
 msgid "Modified (recent → oldest)"
 msgstr "Módosítva (legutóbbi → legrégebbi)"
 
-#: cps/shelf.py:902
+#: cps/shelf.py:951
 msgid "Modified (oldest → recent)"
 msgstr "Módosítva (legrégebbi → legutóbbi)"
 
-#: cps/shelf.py:903
+#: cps/shelf.py:952
 msgid "Manual (drag below)"
 msgstr "Kézi (húzd át alább)"
 
@@ -3806,8 +3806,7 @@ msgstr "Metaadatok beszerzése"
 #: cps/templates/config_edit.html:670 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/read.html:136
 #: cps/templates/schedule_edit.html:47 cps/templates/shelf_edit.html:36
-#: cps/templates/shelf_order.html:41 cps/templates/shelf_reorder.html:38
-#: cps/templates/user_edit.html:585
+#: cps/templates/shelf_reorder.html:38 cps/templates/user_edit.html:585
 msgid "Save"
 msgstr "Mentés"
 
@@ -6810,7 +6809,7 @@ msgid "Save and Send Test Email"
 msgstr "Mentés és teszt e-mail küldése"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:135
-#: cps/templates/shelf_order.html:42 cps/templates/shelf_reorder.html:39
+#: cps/templates/shelf_order.html:54 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
 msgstr "Vissza"
@@ -7843,11 +7842,40 @@ msgstr "Polcok szinkronizációja Kobo eszközzel"
 msgid "Expose this shelf in my OPDS feed"
 msgstr ""
 
-#: cps/templates/shelf_order.html:5
-msgid "Drag to Rearrange Order"
-msgstr "Húzd és dob a sorrend változtatásához"
+#: cps/templates/shelf_order.html:18
+msgid "Drag a cover to its new spot — the order saves automatically."
+msgstr ""
 
-#: cps/templates/shelf_order.html:33
+#: cps/templates/shelf_order.html:19
+msgid "Keyboard: focus a cover with Tab, then move it with the arrow keys."
+msgstr ""
+
+#: cps/templates/shelf_order.html:22
+#, fuzzy
+msgid "Saving…"
+msgstr "Keresés…"
+
+#: cps/templates/shelf_order.html:23
+#, fuzzy
+msgid "Order saved"
+msgstr "Rendezési mód"
+
+#: cps/templates/shelf_order.html:24
+msgid "Could not save the order — click here to retry"
+msgstr ""
+
+#: cps/templates/shelf_order.html:25
+#, python-format
+msgid "Moved to position %(num)s of %(total)s"
+msgstr ""
+
+#: cps/templates/shelf_order.html:28
+#, fuzzy
+msgid "Shelf order"
+msgstr "Polc nem található"
+
+#: cps/templates/shelf_order.html:33 cps/templates/shelf_order.html:38
+#: cps/templates/shelf_order.html:48
 msgid "Hidden Book"
 msgstr "Rejtett könyvek"
 
@@ -8463,6 +8491,9 @@ msgstr "Kiválasztott polcok szinkronizációja Kobo eszközzel"
 #: cps/templates/user_table.html:158
 msgid "Show Read/Unread Section"
 msgstr "Olvasott/olvasatlan mutatása"
+
+#~ msgid "Drag to Rearrange Order"
+#~ msgstr "Húzd és dob a sorrend változtatásához"
 
 #~ msgid "Open focused cover picker"
 #~ msgstr "Fókuszált borítóválasztó megnyitása"

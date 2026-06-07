@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-07 04:56+0000\n"
+"POT-Creation-Date: 2026-06-07 05:18+0000\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
 "Language-Team: \n"
@@ -406,8 +406,8 @@ msgstr ""
 #: cps/admin.py:1819 cps/admin.py:1822 cps/admin.py:2318 cps/admin.py:2555
 #: cps/admin.py:2672 cps/admin.py:2944 cps/editbooks.py:1078
 #: cps/editbooks.py:1886 cps/shelf.py:93 cps/shelf.py:172 cps/shelf.py:244
-#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:397 cps/shelf.py:477
-#: cps/shelf.py:602 cps/tasks/convert.py:145 cps/web.py:2964
+#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:432 cps/shelf.py:515
+#: cps/shelf.py:640 cps/tasks/convert.py:145 cps/web.py:2964
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr ""
@@ -2196,7 +2196,7 @@ msgstr ""
 msgid "Create a Shelf"
 msgstr "створити книжкову полицю"
 
-#: cps/shelf.py:340 cps/shelf.py:382
+#: cps/shelf.py:340 cps/shelf.py:398
 #, fuzzy
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Вибачте, але у вас немає дозволу для видалення книги з цієї полиці"
@@ -2213,100 +2213,100 @@ msgstr ""
 msgid "Shelf successfully deleted"
 msgstr ""
 
-#: cps/shelf.py:406
+#: cps/shelf.py:444
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "Змінити розташування книжкової полиці '%(name)s'"
 
-#: cps/shelf.py:443
+#: cps/shelf.py:481
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr ""
 
-#: cps/shelf.py:460
+#: cps/shelf.py:498
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "Створена книжкова полиця %(title)s"
 
-#: cps/shelf.py:463
+#: cps/shelf.py:501
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "Книжкова полиця %(title)s змінена"
 
-#: cps/shelf.py:481
+#: cps/shelf.py:519
 msgid "There was an error"
 msgstr "Сталась помилка"
 
-#: cps/shelf.py:505
+#: cps/shelf.py:543
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr ""
 
-#: cps/shelf.py:516
+#: cps/shelf.py:554
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr ""
 
-#: cps/shelf.py:607
+#: cps/shelf.py:645
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Книжкова полиця: '%(name)s'"
 
-#: cps/shelf.py:613
+#: cps/shelf.py:651
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr ""
 "Помилка при відкриванні полиці. Полиця не існує або до неї відсутній доступ"
 
-#: cps/shelf.py:854
+#: cps/shelf.py:903
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr ""
 
-#: cps/shelf.py:858
+#: cps/shelf.py:907
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:882
+#: cps/shelf.py:931
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:890 cps/templates/layout.html:411
+#: cps/shelf.py:939 cps/templates/layout.html:411
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Виключити серії"
 
-#: cps/shelf.py:895
+#: cps/shelf.py:944
 msgid "Name (A → Z)"
 msgstr ""
 
-#: cps/shelf.py:896
+#: cps/shelf.py:945
 msgid "Name (Z → A)"
 msgstr ""
 
-#: cps/shelf.py:897
+#: cps/shelf.py:946
 msgid "Book count (most → fewest)"
 msgstr ""
 
-#: cps/shelf.py:898
+#: cps/shelf.py:947
 msgid "Book count (fewest → most)"
 msgstr ""
 
-#: cps/shelf.py:899
+#: cps/shelf.py:948
 msgid "Created (newest → oldest)"
 msgstr ""
 
-#: cps/shelf.py:900
+#: cps/shelf.py:949
 msgid "Created (oldest → newest)"
 msgstr ""
 
-#: cps/shelf.py:901
+#: cps/shelf.py:950
 msgid "Modified (recent → oldest)"
 msgstr ""
 
-#: cps/shelf.py:902
+#: cps/shelf.py:951
 msgid "Modified (oldest → recent)"
 msgstr ""
 
-#: cps/shelf.py:903
+#: cps/shelf.py:952
 msgid "Manual (drag below)"
 msgstr ""
 
@@ -3754,8 +3754,7 @@ msgstr "Отримати метадані"
 #: cps/templates/config_edit.html:670 cps/templates/config_view_edit.html:220
 #: cps/templates/email_edit.html:65 cps/templates/read.html:136
 #: cps/templates/schedule_edit.html:47 cps/templates/shelf_edit.html:36
-#: cps/templates/shelf_order.html:41 cps/templates/shelf_reorder.html:38
-#: cps/templates/user_edit.html:585
+#: cps/templates/shelf_reorder.html:38 cps/templates/user_edit.html:585
 msgid "Save"
 msgstr "Зберегти"
 
@@ -6610,7 +6609,7 @@ msgid "Save and Send Test Email"
 msgstr "Kindle"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:135
-#: cps/templates/shelf_order.html:42 cps/templates/shelf_reorder.html:39
+#: cps/templates/shelf_order.html:54 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
 msgstr "Назад"
@@ -7669,11 +7668,39 @@ msgstr ""
 msgid "Expose this shelf in my OPDS feed"
 msgstr ""
 
-#: cps/templates/shelf_order.html:5
-msgid "Drag to Rearrange Order"
-msgstr "Перетягніть для змінення порядку"
+#: cps/templates/shelf_order.html:18
+msgid "Drag a cover to its new spot — the order saves automatically."
+msgstr ""
 
-#: cps/templates/shelf_order.html:33
+#: cps/templates/shelf_order.html:19
+msgid "Keyboard: focus a cover with Tab, then move it with the arrow keys."
+msgstr ""
+
+#: cps/templates/shelf_order.html:22
+#, fuzzy
+msgid "Saving…"
+msgstr "Пошук"
+
+#: cps/templates/shelf_order.html:23
+msgid "Order saved"
+msgstr ""
+
+#: cps/templates/shelf_order.html:24
+msgid "Could not save the order — click here to retry"
+msgstr ""
+
+#: cps/templates/shelf_order.html:25
+#, python-format
+msgid "Moved to position %(num)s of %(total)s"
+msgstr ""
+
+#: cps/templates/shelf_order.html:28
+#, fuzzy
+msgid "Shelf order"
+msgstr "Користувача не знайдено"
+
+#: cps/templates/shelf_order.html:33 cps/templates/shelf_order.html:38
+#: cps/templates/shelf_order.html:48
 #, fuzzy
 msgid "Hidden Book"
 msgstr "Популярні книги"
@@ -8279,6 +8306,9 @@ msgstr ""
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Показувати вибір серії"
+
+#~ msgid "Drag to Rearrange Order"
+#~ msgstr "Перетягніть для змінення порядку"
 
 #, fuzzy
 #~ msgid "Switch Theme"

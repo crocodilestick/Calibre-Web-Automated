@@ -148,6 +148,23 @@
         {% endif %}
     </div>
     {% endif %}
+    {% if page == 'series' and id|string != '-1' and g.shelves_access %}
+    {# fork #334: add every book of this series to a shelf, in series order #}
+    <div class="btn-group series-to-shelf" role="group">
+      <button id="add-series-to-shelf" type="button" class="btn btn-default dropdown-toggle"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="glyphicon glyphicon-list"></span> {{_('Add Series to Shelf')}} <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="add-series-to-shelf">
+        {% for shelf in g.shelves_access %}
+          {% if not shelf.is_public or current_user.role_edit_shelfs() %}
+            <li><a class="postAction" role="button"
+                   data-action="{{ url_for('shelf.add_series_to_shelf', shelf_id=shelf.id, series_id=id) }}">{{shelf.name}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %}</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
 
    {% if page != 'discover' %}
     {{ organizer.books_list_organizer(page, id, order,

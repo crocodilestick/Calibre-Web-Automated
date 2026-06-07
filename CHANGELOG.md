@@ -16,7 +16,21 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Added
+- You can now add a whole series to a shelf in one click: series pages have an
+  "Add Series to Shelf" button that adds every book in series order, skipping
+  ones already on the shelf. (#334, requested by @Glennza1962)
+
+### Changed
+- Series pages now list books in series order by default (1, 2, 3…) instead of
+  newest-first — matching what the OPDS feed always did. Choosing a different
+  sort still sticks for next time.
+
 ### Fixed
+- Adding a single book to a Kobo-synced shelf without JavaScript now syncs it
+  to Hardcover the same way the normal button does.
+- Bulk shelf adds no longer claim books were added when a database error
+  actually rolled everything back.
 - Kobo sync no longer fails behind reverse proxies with default buffer sizes
   (Synology DSM, stock nginx). The sync token header could exceed nginx's 4K
   default when Kobo store proxying was on; it's now compressed to roughly

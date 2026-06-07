@@ -90,18 +90,15 @@ def add_to_shelf(shelf_id, book_id):
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
-        flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
+        flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
         if "HTTP_REFERER" in request.environ:
             return redirect(request.environ["HTTP_REFERER"])
         else:
             return redirect(url_for('web.index'))
-    if not xhr:
-        log.debug("Book has been added to shelf: {}".format(shelf.name))
-        flash(_("Book has been added to shelf: %(sname)s", sname=shelf.name), category="success")
-        if "HTTP_REFERER" in request.environ:
-            return redirect(request.environ["HTTP_REFERER"])
-        else:
-            return redirect(url_for('web.index'))
+    # Hardcover sync runs for BOTH response flavors — it used to sit after
+    # the non-XHR early-return below, so plain form adds (no JS) silently
+    # skipped Hardcover while XHR adds synced. Same book, same shelf, same
+    # user intent — the transport must not change the outcome.
     if shelf.kobo_sync and config.config_hardcover_sync and bool(hardcover):
         try:
             hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
@@ -115,6 +112,14 @@ def add_to_shelf(shelf_id, book_id):
             log.info(f"User {current_user.name} has no Hardcover token, cannot add to Hardcover")
         except Exception as e:
             log.debug(f"Failed to create Hardcover client for {current_user.name}: {e}")
+
+    if not xhr:
+        log.debug("Book has been added to shelf: {}".format(shelf.name))
+        flash(_("Book has been added to shelf: %(sname)s", sname=shelf.name), category="success")
+        if "HTTP_REFERER" in request.environ:
+            return redirect(request.environ["HTTP_REFERER"])
+        else:
+            return redirect(url_for('web.index'))
 
     return "", 204
 
@@ -164,11 +169,85 @@ def search_to_shelf(shelf_id):
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()
             log.error_or_exception("Settings Database error: {}".format(e))
-            flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
+            flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
     else:
         log.error("Could not add books to shelf: {}".format(shelf.name))
         flash(_("Could not add books to shelf: %(sname)s", sname=shelf.name), category="error")
     return redirect(url_for('web.index'))
+
+
+@shelf.route("/shelf/add_series/<int:shelf_id>/<int:series_id>", methods=["POST"])
+@user_login_required
+def add_series_to_shelf(shelf_id, series_id):
+    """Add every book of a series to a shelf in series order (fork #334).
+
+    Form POST from the series page's shelf dropdown (same ``postAction``
+    plumbing as the search page's "add all" dropdown): flash + redirect back.
+    Books land in ``series_index`` order so the shelf reads 1, 2, 3…; books
+    already on the shelf are skipped. ``common_filters()`` applies, so a
+    user can only bulk-add books they are allowed to see. Hardcover sync is
+    deliberately not attempted inline — both existing bulk paths skip it
+    too, and a per-book external API loop doesn't belong in a request
+    handler (tracked as the bulk-shelf Hardcover parity follow-up).
+    """
+    def _back():
+        if "HTTP_REFERER" in request.environ:
+            return redirect(request.environ["HTTP_REFERER"])
+        return redirect(url_for('web.index'))
+
+    shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.id == shelf_id).first()
+    if shelf is None:
+        log.error("Invalid shelf specified: %s", shelf_id)
+        flash(_("Invalid shelf specified"), category="error")
+        return redirect(url_for('web.index'))
+
+    if not check_shelf_edit_permissions(shelf):
+        log.warning("User %s not allowed to add a series to shelf: %s", current_user.id, shelf.name)
+        flash(_("Sorry you are not allowed to add a book to that shelf"), category="error")
+        return _back()
+
+    series = calibre_db.session.query(db.Series).filter(db.Series.id == series_id).first()
+    if series is None:
+        log.error("Invalid series specified: %s", series_id)
+        flash(_("Invalid series specified"), category="error")
+        return _back()
+
+    books = (calibre_db.session.query(db.Books)
+             .filter(db.Books.series.any(db.Series.id == series_id))
+             .filter(calibre_db.common_filters())
+             .order_by(db.Books.series_index.asc(), db.Books.id.asc())
+             .all())
+    if not books:
+        flash(_("Series has no books you can see: %(name)s", name=series.name), category="error")
+        return _back()
+
+    existing = {row.book_id for row in
+                ub.session.query(ub.BookShelf.book_id).filter(ub.BookShelf.shelf == shelf_id).all()}
+    to_add = [book for book in books if book.id not in existing]
+    if not to_add:
+        flash(_("All books of series '%(name)s' are already on shelf: %(sname)s",
+                name=series.name, sname=shelf.name), category="info")
+        return _back()
+
+    max_order = ub.session.query(func.max(ub.BookShelf.order)).filter(
+        ub.BookShelf.shelf == shelf_id).scalar() or 0
+    for book in to_add:
+        max_order += 1
+        shelf.books.append(ub.BookShelf(shelf=shelf.id, book_id=book.id, order=max_order))
+    shelf.last_modified = datetime.now(timezone.utc)
+    try:
+        ub.session.merge(shelf)
+        ub.session.commit()
+    except (OperationalError, InvalidRequestError) as e:
+        ub.session.rollback()
+        log.error_or_exception("Settings Database error: {}".format(e))
+        flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
+        return _back()
+
+    log.debug("Series %s (%d books) added to shelf: %s", series.name, len(to_add), shelf.name)
+    flash(_("%(count)d books of series '%(name)s' added to shelf: %(sname)s",
+            count=len(to_add), name=series.name, sname=shelf.name), category="success")
+    return _back()
 
 
 @shelf.route("/shelf/remove/<int:shelf_id>/<int:book_id>", methods=["POST"])
@@ -225,7 +304,7 @@ def remove_from_shelf(shelf_id, book_id):
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()
             log.error_or_exception("Settings Database error: {}".format(e))
-            flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
+            flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
             if "HTTP_REFERER" in request.environ:
                 return redirect(request.environ["HTTP_REFERER"])
             else:
@@ -275,7 +354,7 @@ def delete_shelf(shelf_id):
     except InvalidRequestError as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
-        flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
+        flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
     return redirect(url_for('web.index'))
 
 
@@ -315,7 +394,7 @@ def order_shelf(shelf_id):
             except (OperationalError, InvalidRequestError) as e:
                 ub.session.rollback()
                 log.error_or_exception("Settings Database error: {}".format(e))
-                flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
+                flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
 
         result = list()
         if shelf:
@@ -395,7 +474,7 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
                 ub.session.rollback()
                 log.error_or_exception(ex)
                 log.error_or_exception("Settings Database error: {}".format(ex))
-                flash(_("Oops! Database Error: %(error)s.", error=ex.orig), category="error")
+                flash(_("Oops! Database Error: %(error)s.", error=getattr(ex, 'orig', ex)), category="error")
             except Exception as ex:
                 ub.session.rollback()
                 log.error_or_exception(ex)
@@ -520,7 +599,7 @@ def render_show_shelf(shelf_type, shelf_id, page_no, sort_param):
             except (OperationalError, InvalidRequestError) as e:
                 ub.session.rollback()
                 log.error_or_exception("Settings Database error: {}".format(e))
-                flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
+                flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
 
         return render_title_template(page,
                                      entries=result,
@@ -557,6 +636,12 @@ def add_selected_to_shelf():
     if not book_ids:
         return jsonify({'status': 'error', 'message': 'No books selected'}), 400
 
+    # One max(order) query up front, incremented in memory — the previous
+    # per-book max() re-query only worked through autoflush and cost a
+    # flush + query per book.
+    maxOrder = ub.session.query(func.max(ub.BookShelf.order)).filter(
+        ub.BookShelf.shelf == shelf_id).scalar() or 0
+
     for book_id in book_ids:
         book = calibre_db.session.query(db.Books).filter(db.Books.id == book_id).one_or_none()
         if not book:
@@ -571,11 +656,8 @@ def add_selected_to_shelf():
             log.info(f"Book {book_id} is already part of {shelf.name}")
             continue
 
-        maxOrder = ub.session.query(func.max(ub.BookShelf.order)).filter(ub.BookShelf.shelf == shelf_id).scalar()
-        if maxOrder is None:
-            maxOrder = 0
-
-        new_entry = ub.BookShelf(shelf=shelf.id, book_id=book_id, order=maxOrder + 1)
+        maxOrder += 1
+        new_entry = ub.BookShelf(shelf=shelf.id, book_id=book_id, order=maxOrder)
         shelf.books.append(new_entry)
         success_count += 1
 
@@ -588,15 +670,12 @@ def add_selected_to_shelf():
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()
             log.error_or_exception(f"Database error while adding books to shelf {shelf.name}: {e}")
-            # Check if any books were actually added before this error, if so, it's a partial success
-            if success_count > len(errors): # if some books were added before the error
-                 return jsonify({
-                     'status': 'partial_success',
-                     'message': f'Successfully added {success_count - len(errors)} books, but a database error occurred. Please try again.',
-                     'errors': errors,
-                     'added_count': success_count - len(errors) # Adjust count if error happened mid-process
-                 }), 207 # Multi-Status
-            return jsonify({'status': 'error', 'message': f'Database error: {e.orig}'}), 500
+            # The rollback reverted EVERYTHING appended above — nothing was
+            # persisted, so this must report a plain failure. (It previously
+            # claimed a partial success with a positive added_count here,
+            # telling users books were added when zero were.)
+            return jsonify({'status': 'error', 'message': f"Database error: {getattr(e, 'orig', e)}",
+                            'errors': errors, 'added_count': 0}), 500
 
     if errors:
         if success_count > 0:

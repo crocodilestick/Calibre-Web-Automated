@@ -441,6 +441,11 @@ def get_sort_function(sort_param, data):
     if sort_param == 'hotasc':
         order = [func.count(ub.Downloads.book_id).asc()]
     if sort_param is None:
+        if data == "series":
+            # A series page reads in series order by default — matching the
+            # OPDS series feed — not newest-first. An explicitly chosen sort
+            # is stored above and honored on the next visit. (fork #334 audit)
+            return [db.Books.series_index.asc()], "seriesasc"
         sort_param = "new"
     return order, sort_param
 

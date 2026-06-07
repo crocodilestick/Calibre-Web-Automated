@@ -16,10 +16,18 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.157] – 2026-06-07
+
 ### Added
 - You can now add a whole series to a shelf in one click: series pages have an
   "Add Series to Shelf" button that adds every book in series order, skipping
   ones already on the shelf. (#334, requested by @Glennza1962)
+- The book detail and edit pages now show the filename a book was imported
+  with ("Imported as: …"). Ingest renames files to match their metadata —
+  including wrong auto-matches — so the original name is the one stable
+  reference for recognizing misidentified books while you fix their tags.
+  Captured automatically for new imports from this version on. (#346,
+  requested by @BakaPhoenix and @magdalar)
 
 ### Changed
 - Rearranging a shelf now happens in the same cover grid as the regular shelf
@@ -41,37 +49,27 @@ is for things you can see or feel when running the app.
   anywhere outside the menu now closes it (it used to do nothing, and the
   menu button itself became untappable behind the overlay — the page was
   stuck until a reload).
-- Adding a single book to a Kobo-synced shelf without JavaScript now syncs it
-  to Hardcover the same way the normal button does.
-- Bulk shelf adds no longer claim books were added when a database error
-  actually rolled everything back.
+- Fixed a rare freeze where the whole app could lock up — pages never loading
+  until the container was restarted — when a background task (thumbnail
+  generation, metadata backup, duplicate scan…) hit the database at the same
+  moment as a page load. Database access is now coordinated so the standoff
+  can't happen.
 - Kobo sync no longer fails behind reverse proxies with default buffer sizes
   (Synology DSM, stock nginx). The sync token header could exceed nginx's 4K
   default when Kobo store proxying was on; it's now compressed to roughly
   half the size, with older tokens still accepted — no device reconfiguration
   needed. If you added `proxy_buffer_size` overrides for this, they can stay
   (harmless) or go. (#331, reported by @Gusdezup)
-
-### Added
-- The book detail and edit pages now show the filename a book was imported
-  with ("Imported as: …"). Ingest renames files to match their metadata —
-  including wrong auto-matches — so the original name is the one stable
-  reference for recognizing misidentified books while you fix their tags.
-  Captured automatically for new imports from this version on. (#346,
-  requested by @BakaPhoenix and @magdalar)
-
-### Fixed
-- Fixed a rare freeze where the whole app could lock up — pages never loading
-  until the container was restarted — when a background task (thumbnail
-  generation, metadata backup, duplicate scan…) hit the database at the same
-  moment as a page load. Database access is now coordinated so the standoff
-  can't happen.
 - "Reload Metadata" now also reloads authors, tags, and series (with series
   number) from the book file — previously only title, description, publisher,
   publish date, and languages came through. Author changes also rename the
   book's folder and file to match, the same way editing in the web UI does.
   A file that's missing its author or tags fields leaves your existing data
   alone instead of wiping it. (#218, reported by @yodatak)
+- Adding a single book to a Kobo-synced shelf without JavaScript now syncs it
+  to Hardcover the same way the normal button does.
+- Bulk shelf adds no longer claim books were added when a database error
+  actually rolled everything back.
 
 ## [v4.0.156] – 2026-06-06
 

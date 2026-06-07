@@ -237,3 +237,16 @@ a#advanced_search > span.hidden-sm {
         z-index: 10;
     }
 }
+/* Fork mobile-menu affordance: caliBlur paints a profile-head glyph over
+   Bootstrap's hamburger button, so nothing on a phone reads as "menu" —
+   users (including the operator) look for a hamburger and conclude the
+   sidebar is gone. Repaint the same button with a standard three-bar
+   hamburger; geometry, position, and tap target are unchanged, and profile
+   access still lives inside the drawer the button opens. Breakpoint matches
+   the theme's own mobile block (767px), where the toggle is visible. */
+@media only screen and (max-width: 767px) {
+    .navbar > .container-fluid > .navbar-header > button.navbar-toggle:before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cg fill='%23F5F5F5'%3E%3Crect y='3' width='22' height='2.5' rx='1.25'/%3E%3Crect y='9.75' width='22' height='2.5' rx='1.25'/%3E%3Crect y='16.5' width='22' height='2.5' rx='1.25'/%3E%3C/g%3E%3C/svg%3E");
+        border-radius: 0;
+    }
+}

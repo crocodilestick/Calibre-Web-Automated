@@ -31,6 +31,10 @@ is for things you can see or feel when running the app.
 - Series pages now list books in series order by default (1, 2, 3…) instead of
   newest-first — matching what the OPDS feed always did. Choosing a different
   sort still sticks for next time.
+- On phones, the menu button now looks like one: a standard hamburger icon
+  replaces the round profile-head glyph, which nobody recognized as the way
+  to open the sidebar. Same spot (top right), same tap target; your profile
+  options are inside the menu it opens, where they always were.
 
 ### Fixed
 - On phones, opening the sidebar no longer dead-ends the page: tapping

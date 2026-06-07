@@ -57,6 +57,47 @@ class TestBackdropCloseHandler:
         )
 
 
+class TestToggleLooksLikeAMenuButton:
+    def test_mobile_toggle_repainted_as_hamburger(self):
+        """caliBlur paints a profile-head glyph over Bootstrap's hamburger
+        button; nothing on a phone reads as "menu" (operator: "there is no
+        hamburger visible"). The override must repaint the toggle's :before
+        with a three-bar glyph and drop the theme's circular clip — and the
+        rule must live INSIDE the theme's mobile media block (767px, where
+        the toggle is visible), not at top level (Greptile P2)."""
+        mobile_chunks = [
+            chunk
+            for chunk in OVERRIDE_CSS.split("@media")
+            if chunk.lstrip().startswith("only screen and (max-width: 767px)")
+        ]
+        assert mobile_chunks, (
+            "the hamburger override must be wrapped in the theme's own "
+            "mobile media query — @media only screen and (max-width: 767px)"
+        )
+        m = None
+        for chunk in mobile_chunks:
+            m = re.search(r"button\.navbar-toggle:before\s*\{([^}]*)\}", chunk)
+            if m:
+                break
+        assert m, (
+            "caliBlur_override.css must override the toggle's :before glyph "
+            "inside the 767px media block — the theme's profile-head fails "
+            "the menu-affordance test"
+        )
+        block = m.group(1)
+        assert "background-image" in block, (
+            "the override must replace the profile-head background-image"
+        )
+        # Three bars = the recognizable hamburger (rects in the inline SVG).
+        assert block.count("rect") == 3, (
+            "the replacement glyph must be a standard three-bar hamburger"
+        )
+        assert "border-radius: 0" in block, (
+            "the theme's 50% border-radius clips the bar corners — "
+            "the override must unclip it"
+        )
+
+
 class TestToggleAboveBackdrop:
     def test_navbar_header_outranks_backdrop_z9(self):
         """The backdrop (z-index 9, same .navbar stacking context) must not

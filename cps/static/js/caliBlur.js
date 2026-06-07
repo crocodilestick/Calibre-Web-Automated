@@ -725,6 +725,16 @@ if ($(".order-shelf-btn").length > 1) {
 $("#top_user > span.hidden-sm").clone().insertBefore(".profileDropli");
 $(".navbar-collapse.collapse.in").before('<div class="sidebar-backdrop"></div>');
 
+// Fork mobile-sidebar fix: the backdrop never had a close handler, so on
+// phones the natural tap-outside gesture did nothing — and with the open
+// drawer's full-screen backdrop sitting above the navbar, the toggle
+// itself became untappable. One accidental open bricked the page until a
+// reload ("can't access the sidebar anymore"). Delegated handler because
+// mobileSupport() recreates the backdrop on resize.
+$(document).on("click", ".sidebar-backdrop", function () {
+    $(".navbar-collapse.collapse.in").collapse("hide");
+});
+
 // Get rid of leading white space
 recentlyAdded = $("#nav_new a:contains('Recently')").text().trim();
 $("#nav_new a:contains('Recently')").contents().filter(function () {

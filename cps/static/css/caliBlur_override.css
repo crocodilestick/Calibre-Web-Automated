@@ -225,3 +225,15 @@ a#advanced_search > span.hidden-sm {
     margin-bottom: 2rem;
     padding-left: 2rem;
 }
+/* Fork mobile-sidebar fix: keep the drawer toggle (the round profile-head
+   button, which IS the menu button in this theme) tappable while the drawer
+   is open. The full-screen .sidebar-backdrop is a later sibling inside the
+   same .navbar stacking context with z-index 9 — without a higher z-index on
+   .navbar-header, the open drawer's backdrop covered the toggle and (with no
+   tap-to-close on the backdrop either) every tap on the page went dead. */
+@media screen and (max-width: 768px) {
+    .navbar > .container-fluid > .navbar-header {
+        position: relative;
+        z-index: 10;
+    }
+}

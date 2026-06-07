@@ -33,6 +33,10 @@ is for things you can see or feel when running the app.
   sort still sticks for next time.
 
 ### Fixed
+- On phones, opening the sidebar no longer dead-ends the page: tapping
+  anywhere outside the menu now closes it (it used to do nothing, and the
+  menu button itself became untappable behind the overlay — the page was
+  stuck until a reload).
 - Adding a single book to a Kobo-synced shelf without JavaScript now syncs it
   to Hardcover the same way the normal button does.
 - Bulk shelf adds no longer claim books were added when a database error

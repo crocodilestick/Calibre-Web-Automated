@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.158] – 2026-06-08
+
 ### Fixed
 - The shelf reorder screen now shows covers at the normal thumbnail size
   instead of blown-up "large icon" size, and the Back button lines up under

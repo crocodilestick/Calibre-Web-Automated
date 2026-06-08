@@ -141,9 +141,13 @@
     flex: 1 1 100%;
     width: 100%;
   }
+  /* Keep the multi-select + settings buttons right-aligned when the bar wraps
+     to its own row on mobile — matches desktop (space-between pushes them
+     right) and, critically, keeps the settings dropdown-menu-right popover on
+     screen: a left-aligned button made it open off the left edge. */
   .book-organizer-bar-right {
     gap: 6px;
-    justify-content: flex-start;
+    justify-content: flex-end;
   }
   /* Sort dropdown sized to its parent (now full width of the bar row). */
   .book-organizer-sort,

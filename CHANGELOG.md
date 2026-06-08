@@ -17,6 +17,9 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- On phones, the select and settings buttons above a book list now sit on the
+  right (matching the desktop layout), so tapping the gear opens its menu on
+  screen instead of off the left edge where it was getting cut off.
 - Pages no longer occasionally fall back to the old, deprecated light theme —
   including error pages. That fallback could happen when a request hit a snag
   while loading, and it was the underlying cause of display glitches like the

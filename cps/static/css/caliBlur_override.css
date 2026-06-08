@@ -250,3 +250,29 @@ a#advanced_search > span.hidden-sm {
         border-radius: 0;
     }
 }
+/* Fork: hamburger on the LEFT on phones. The off-canvas sidebar slides in from
+   the LEFT, so the menu toggle belongs on the left to match — caliBlur floats it
+   to the right (position:relative; right:50px), which reads as disconnected from
+   where the drawer appears. Re-anchor the toggle to the left and reflow the brand
+   to its right. On this breakpoint the home/back buttons are display:none and the
+   search form is absolute at right:10px, so only the toggle + brand reserve change.
+   Centre the hamburger glyph in its now left-anchored 40px button. */
+@media only screen and (max-width: 767px) {
+    .navbar > .container-fluid > .navbar-header > button.navbar-toggle {
+        float: left;
+        right: auto;
+        left: auto;
+        margin-left: 6px;
+    }
+    .navbar > .container-fluid > .navbar-header > button.navbar-toggle:before {
+        left: 9px;
+        right: auto;
+    }
+    /* Brand reserved 138px on the right for the old right-side toggle + search.
+       With the toggle now on the left, reserve room for the toggle (left) +
+       search (right) and let the brand text sit between them. */
+    body > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+        width: calc(100vw - 116px);
+        padding-left: 10px;
+    }
+}

@@ -17,6 +17,9 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- On phones, the menu (hamburger) button is now on the **left**, the same side
+  the navigation drawer slides out from — so the button and the menu it opens
+  line up. Tapping it opens the menu; tapping outside still closes it.
 - On phones, the select and settings buttons above a book list now sit on the
   right (matching the desktop layout), so tapping the gear opens its menu on
   screen instead of off the left edge where it was getting cut off.

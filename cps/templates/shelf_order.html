@@ -51,7 +51,15 @@
         </div>
       {% endfor %}
     </div>
-    <a href="{{ url_for('shelf.show_shelf', shelf_id=shelf.id) }}" id="shelf_back" class="btn btn-default">{{_('Back')}}</a>
+    {# Back button in its own grid row so it inherits the same left gutter as
+       the cover columns on every theme — caliBlur and the default theme resolve
+       the row's negative margin differently, so a bare sibling lands 15px left
+       of the covers on one and flush on the other (fork #320 @droM4X). #}
+    <div class="row reorder-back-row">
+      <div class="col-xs-12">
+        <a href="{{ url_for('shelf.show_shelf', shelf_id=shelf.id) }}" id="shelf_back" class="btn btn-default">{{_('Back')}}</a>
+      </div>
+    </div>
   </div>
   <style>
     /* Reorder affordances: grab cursor, drop ghost, keyboard focus ring. */
@@ -61,6 +69,18 @@
     #reorder-grid .reorder-ghost { opacity: 0.4; }
     #reorder-grid .reorder-chosen { transform: scale(1.03); }
     #reorder-status.reorder-error { color: #d9534f; cursor: pointer; font-weight: bold; }
+    /* fork #320 follow-up (@droM4X + @SpookyUSAF on v4.0.157): cap cover height
+       to the normal book-grid box (225px), independent of theme. Normal grids
+       constrain covers via `.container-fluid .book .cover { height: 225px }`
+       (default theme) or `.cover img { width: 150px }` (caliBlur); on this
+       fork-new page some configurations leave the default-theme box uncapped,
+       so covers render near-natural size ("large icon style ... not needed
+       here"). An id-scoped cap on the image itself is theme-independent, beats
+       the responsive max-width cascade, is a no-op where covers are already
+       correct, and doesn't distort caliBlur (already 225px tall). */
+    #reorder-grid .reorder-item .cover img { max-height: 225px !important; }
+    /* Clear separation between the cover grid and the Back button below it. */
+    .reorder-back-row { margin-top: 1.5em; }
   </style>
 {% endblock %}
 

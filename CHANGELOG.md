@@ -16,6 +16,12 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- The shelf reorder screen now shows covers at the normal thumbnail size
+  instead of blown-up "large icon" size, and the Back button lines up under
+  the covers with proper spacing above it. (#320 follow-up, reported by
+  @droM4X and @SpookyUSAF)
+
 ## [v4.0.157] – 2026-06-07
 
 ### Added

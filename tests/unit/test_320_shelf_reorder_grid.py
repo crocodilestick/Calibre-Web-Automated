@@ -188,6 +188,47 @@ class TestTemplateContract:
             assert attr in ORDER_HTML, f"status line must carry {attr}"
 
 
+class TestDisplayFollowup320:
+    """v4.0.157 follow-up: @droM4X + @SpookyUSAF confirmed the reorder feature
+    works but reported two display defects on the default theme — covers render
+    near-natural size ("large icon style ... not needed here") and the Back
+    button sits too far left with no spacing above it. The default theme caps
+    covers only via `.container-fluid .book .cover { height: 225px }`; on this
+    fork-new page that box can render uncapped, so covers blow past the normal
+    grid size. Both fixes are theme-independent and live in the template's own
+    scoped <style> + markup."""
+
+    def test_cover_height_capped_independent_of_theme(self):
+        m = re.search(
+            r"#reorder-grid\s+\.reorder-item\s+\.cover\s+img\s*\{"
+            r"[^}]*max-height:\s*225px[^}]*!important",
+            ORDER_HTML,
+        )
+        assert m, (
+            "shelf_order.html must cap reorder cover height to the normal "
+            "book-grid box (225px !important) with an id-scoped rule on the "
+            "image — the !important is deliberate: it caps covers even on the "
+            "reporters' instances where the global .cover box renders uncapped "
+            "(#320 follow-up, @droM4X)"
+        )
+
+    def test_back_button_has_gutter_and_spacing(self):
+        # Back button must sit inside a grid column so it inherits the same
+        # left gutter as the cover columns on every theme (a bare sibling
+        # lands 15px off on caliBlur), and the wrapper must carry top spacing.
+        back_idx = ORDER_HTML.find('id="shelf_back"')
+        assert back_idx != -1, "shelf_order.html must keep the Back button"
+        wrapper = ORDER_HTML[max(0, back_idx - 250):back_idx]
+        assert "reorder-back-row" in wrapper and "col-" in wrapper, (
+            "the Back button must be wrapped in a grid row/column so it aligns "
+            "under the first cover on both themes (#320 follow-up, @droM4X)"
+        )
+        assert re.search(r"\.reorder-back-row\s*\{[^}]*margin-top", ORDER_HTML), (
+            "the Back button row must carry top margin so it doesn't butt "
+            "against the cover grid above it"
+        )
+
+
 class TestJsContract:
     def test_touch_uses_long_press(self):
         assert "delayOnTouchOnly: true" in ORDER_JS, (

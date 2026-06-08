@@ -98,6 +98,16 @@ def admin_required(f):
 
 @admi.before_app_request
 def before_request():
+    # Theme enforcement (must be FIRST). The light/default theme is fully
+    # deprecated; caliBlur (dark) is the only supported theme. Force it before
+    # any other work in this handler: the unguarded config reads and the DB
+    # autoconfig/recovery block below can raise, and two @app.before_request
+    # handlers in cps/__init__.py run before this one. If any of them fails the
+    # theme would otherwise stay unset, and templates ({% if g.current_theme == 1 %})
+    # silently fall back to the deprecated default theme on the rendered (error)
+    # page. That gap is how default-theme-only display bugs (e.g. #320's
+    # oversized shelf-reorder covers) reached users. Single source of truth.
+    g.current_theme = 1
     # Safety net: if not configured but metadata.db now exists at default location, auto-set without redirect loop
     if not config.db_configured:
         try:
@@ -144,14 +154,6 @@ def before_request():
     # `config` global is Flask's app.config, not cps.config — see PR #335
     # lessons. Using a `g.` attribute mirrors `g.allow_anonymous` above.
     g.user_hide_enabled = bool(getattr(config, 'config_user_hide_enabled', False))
-    # Theme enforcement: light theme fully deprecated, force caliBlur (dark) in runtime
-    try:
-        g.current_theme = getattr(current_user, 'theme', config.config_theme)
-        if current_user.is_anonymous and not hasattr(current_user, 'theme'):
-            g.current_theme = config.config_theme
-    except Exception:
-        g.current_theme = getattr(config, 'config_theme', 1)
-    g.current_theme = 1
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',

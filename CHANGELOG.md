@@ -16,6 +16,13 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- Pages no longer occasionally fall back to the old, deprecated light theme —
+  including error pages. That fallback could happen when a request hit a snag
+  while loading, and it was the underlying cause of display glitches like the
+  oversized shelf-reorder covers (#320). The dark theme is now enforced even on
+  error pages and requests that are interrupted before they finish loading.
+
 ## [v4.0.158] – 2026-06-08
 
 ### Fixed

@@ -737,6 +737,58 @@ def add_selected_to_shelf():
         }), 200
 
 
+@shelf.route("/shelf/<int:shelf_id>/available_books", methods=["GET"])
+@user_login_required
+def shelf_available_books(shelf_id):
+    """JSON book picker for the shelf-page "Add books" modal.
+
+    Returns up to 30 library books matching ``query`` (or the most recent books
+    when the query is empty), each flagged with whether it is already on this
+    shelf so the picker can disable it. Reuses ``calibre_db.get_search_results``
+    so the same visibility filters (archived / hidden / language) that apply to
+    normal browsing apply here too; ``add_selected_to_shelf`` remains the single
+    (deduping, permission-checked) write path.
+    """
+    shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.id == shelf_id).first()
+    if shelf is None:
+        return jsonify({'status': 'error', 'message': 'Shelf not found'}), 404
+    if not check_shelf_edit_permissions(shelf):
+        return jsonify({'status': 'error',
+                        'message': 'You are not allowed to add books to this shelf'}), 403
+
+    query = (request.args.get('query') or '').strip()
+    limit = 30
+    in_shelf = {row.book_id for row in
+                ub.session.query(ub.BookShelf.book_id).filter(ub.BookShelf.shelf == shelf_id).all()}
+
+    if query:
+        # get_search_results returns author-ordered rows that wrap the book in a
+        # `.Books` attribute (the shape the list/search templates consume).
+        entries, __, ___ = calibre_db.get_search_results(query, config, 0, None, limit)
+    else:
+        # A plain Books query returns Books instances directly (no `.Books`).
+        entries = (calibre_db.session.query(db.Books)
+                   .filter(calibre_db.common_filters())
+                   .order_by(db.Books.timestamp.desc())
+                   .limit(limit).all())
+
+    # Normalise the two shapes: search rows expose the book at `.Books`; the plain
+    # query yields the book itself.
+    books = []
+    for entry in entries:
+        book = getattr(entry, 'Books', entry)
+        books.append({
+            'id': book.id,
+            'title': book.title,
+            'authors': ' & '.join(author.name for author in book.authors) if book.authors else '',
+            'cover': url_for('web.get_cover', book_id=book.id, resolution='sm'),
+            'in_shelf': book.id in in_shelf,
+        })
+
+    return jsonify({'status': 'ok', 'shelf_id': shelf_id,
+                    'shelf_name': shelf.name, 'books': books})
+
+
 # ---------------------------------------------------------------------------
 # Fork #237 (@new-usemame): drag-to-reorder regular shelves in the sidebar.
 #

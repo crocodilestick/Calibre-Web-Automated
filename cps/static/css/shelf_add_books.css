@@ -1,0 +1,142 @@
+/* "Add books" picker modal for the shelf page. Theme-independent (works in both
+   the default theme and caliBlur); the rows are a simple cover + title/author
+   list with a clear selected state. */
+
+.add-books-search-wrap {
+  position: relative;
+}
+.add-books-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.add-books-search.form-control {
+  padding-left: 34px;
+}
+
+.add-books-results {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin: 0 -4px;
+}
+
+.add-books-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  color: inherit;
+}
+.add-books-row + .add-books-row {
+  margin-top: 2px;
+}
+.add-books-row:hover:not(:disabled),
+.add-books-row:focus-visible {
+  background: rgba(127, 127, 127, 0.12);
+  outline: none;
+}
+.add-books-row.is-selected {
+  background: rgba(74, 144, 226, 0.18);
+}
+
+.add-books-cover {
+  width: 38px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex: 0 0 auto;
+  background: rgba(127, 127, 127, 0.15);
+}
+.add-books-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.add-books-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.add-books-author {
+  font-size: 0.85em;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.add-books-check {
+  flex: 0 0 auto;
+  width: 22px;
+  text-align: center;
+  opacity: 0.35;
+}
+.add-books-check:before {
+  content: "\002b"; /* plus */
+}
+.add-books-row.is-selected .add-books-check {
+  opacity: 1;
+  color: #4a90e2;
+}
+.add-books-row.is-selected .add-books-check:before,
+.add-books-row.is-in-shelf .add-books-check:before {
+  content: "\e013"; /* glyphicon-ok */
+}
+.add-books-row.is-in-shelf {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.add-books-empty {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.add-books-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.add-books-count {
+  margin-right: auto;
+}
+.add-books-error {
+  margin-right: auto;
+  font-size: 0.9em;
+}
+/* When an error is shown it takes the count's left slot. */
+.add-books-error:not([hidden]) + .add-books-count {
+  display: none;
+}
+
+/* Phones: full-screen sheet so the picker is comfortable to use one-handed. */
+@media (max-width: 767px) {
+  .add-books-modal .modal-dialog {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+  }
+  .add-books-modal .modal-content {
+    min-height: 100vh;
+    border-radius: 0;
+    border: 0;
+  }
+  .add-books-results {
+    max-height: calc(100vh - 230px);
+  }
+  .add-books-cover {
+    width: 34px;
+    height: 50px;
+  }
+}

@@ -16,6 +16,13 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Added
+- You can now add books to a shelf right from the shelf page. A new **Add Books**
+  button opens a searchable picker — type to find books in your library, tick the
+  ones you want, and add them all at once. Books already on the shelf show as
+  "Already on this shelf" so you can't add duplicates, and it works on phone and
+  desktop. Especially handy for filling a brand-new empty shelf.
+
 ### Fixed
 - On phones, the menu (hamburger) button is now on the **left**, the same side
   the navigation drawer slides out from — so the button and the menu it opens

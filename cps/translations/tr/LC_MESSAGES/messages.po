@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-08 15:28+0000\n"
+"POT-Creation-Date: 2026-06-08 21:28+0000\n"
 "PO-Revision-Date: 2020-04-23 22:47+0300\n"
 "Last-Translator: iz <iz7iz7iz@protonmail.ch>\n"
 "Language-Team: \n"
@@ -2264,57 +2264,57 @@ msgstr ""
 "Kitaplık açılırken hata oluştu. Kitaplık mevcut değil ya da erişilebilir "
 "değil"
 
-#: cps/shelf.py:903
+#: cps/shelf.py:955
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr ""
 
-#: cps/shelf.py:907
+#: cps/shelf.py:959
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:931
+#: cps/shelf.py:983
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:939 cps/templates/layout.html:411
+#: cps/shelf.py:991 cps/templates/layout.html:411
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Serileri Hariç Tut"
 
-#: cps/shelf.py:944
+#: cps/shelf.py:996
 msgid "Name (A → Z)"
 msgstr ""
 
-#: cps/shelf.py:945
+#: cps/shelf.py:997
 msgid "Name (Z → A)"
 msgstr ""
 
-#: cps/shelf.py:946
+#: cps/shelf.py:998
 msgid "Book count (most → fewest)"
 msgstr ""
 
-#: cps/shelf.py:947
+#: cps/shelf.py:999
 msgid "Book count (fewest → most)"
 msgstr ""
 
-#: cps/shelf.py:948
+#: cps/shelf.py:1000
 msgid "Created (newest → oldest)"
 msgstr ""
 
-#: cps/shelf.py:949
+#: cps/shelf.py:1001
 msgid "Created (oldest → newest)"
 msgstr ""
 
-#: cps/shelf.py:950
+#: cps/shelf.py:1002
 msgid "Modified (recent → oldest)"
 msgstr ""
 
-#: cps/shelf.py:951
+#: cps/shelf.py:1003
 msgid "Modified (oldest → recent)"
 msgstr ""
 
-#: cps/shelf.py:952
+#: cps/shelf.py:1004
 msgid "Manual (drag below)"
 msgstr ""
 
@@ -3457,9 +3457,10 @@ msgstr ""
 #: cps/templates/layout.html:750 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/read.html:137
-#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:34
-#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
-#: cps/templates/tasks.html:173 cps/templates/user_edit.html:587
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf.html:125
+#: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
+#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
+#: cps/templates/user_edit.html:587
 msgid "Cancel"
 msgstr ""
 
@@ -3590,7 +3591,7 @@ msgstr "Kitaplıkta"
 
 #: cps/templates/author.html:59 cps/templates/author.html:116
 #: cps/templates/index.html:61 cps/templates/index.html:204
-#: cps/templates/search.html:66 cps/templates/shelf.html:54
+#: cps/templates/search.html:66 cps/templates/shelf.html:61
 msgid "reduce"
 msgstr "azalt"
 
@@ -3632,7 +3633,7 @@ msgstr "eKitabı dönüştür"
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:193 cps/templates/layout.html:495
 #: cps/templates/layout.html:632 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:673
+#: cps/templates/shelf.html:110 cps/templates/user_edit.html:673
 msgid "Close"
 msgstr "Kapak"
 
@@ -4042,7 +4043,8 @@ msgid "-- Select a Shelf --"
 msgstr ""
 
 #: cps/templates/book_table.html:370 cps/templates/email_edit.html:81
-#: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
+#: cps/templates/email_edit.html:108 cps/templates/shelf.html:102
+#: cps/templates/shelf.html:126 cps/templates/user_table.html:27
 msgid "Add"
 msgstr "Ekle"
 
@@ -7656,17 +7658,66 @@ msgstr "Bu Kitaplığı sil"
 msgid "Edit Shelf Properties"
 msgstr ""
 
-#: cps/templates/shelf.html:18
+#: cps/templates/shelf.html:22
+#, fuzzy
+msgid "Add Books"
+msgstr "Popüler"
+
+#: cps/templates/shelf.html:25
 msgid "Arrange books manually"
 msgstr ""
 
-#: cps/templates/shelf.html:19
+#: cps/templates/shelf.html:26
 msgid "Disable Change order"
 msgstr ""
 
-#: cps/templates/shelf.html:19
+#: cps/templates/shelf.html:26
 msgid "Enable Change order"
 msgstr ""
+
+#: cps/templates/shelf.html:101 cps/templates/shelf.html:124
+#, fuzzy, python-format
+msgid "%(count)s selected"
+msgstr "eKitabı Sil"
+
+#: cps/templates/shelf.html:103
+#, fuzzy, python-format
+msgid "Add %(count)s"
+msgstr "Hesap"
+
+#: cps/templates/shelf.html:104 cps/templates/shelf.html:120
+#, fuzzy
+msgid "No books found."
+msgstr "Token bulunamadı"
+
+#: cps/templates/shelf.html:105
+#, fuzzy
+msgid "Already on this shelf"
+msgstr "Bu Kitaplığı sil"
+
+#: cps/templates/shelf.html:106
+msgid "Could not add the books. Please try again."
+msgstr ""
+
+#: cps/templates/shelf.html:111
+#, fuzzy
+msgid "Add books to"
+msgstr "Kitaplığa ekle"
+
+#: cps/templates/shelf.html:117
+#, fuzzy
+msgid "Search your library…"
+msgstr "Kitaplıkta"
+
+#: cps/templates/shelf.html:117
+#, fuzzy
+msgid "Search your library"
+msgstr "Kitaplıkta"
+
+#: cps/templates/shelf.html:119
+#, fuzzy
+msgid "Search results"
+msgstr "Arama hatası!"
 
 #: cps/templates/shelf_edit.html:14
 msgid "Share with Everyone"

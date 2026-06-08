@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-08 15:28+0000\n"
+"POT-Creation-Date: 2026-06-08 21:28+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -2321,56 +2321,56 @@ msgstr "Polc: '%(name)s'"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Hiba a polc megnyitásakor. A polc nem létezik vagy nem elérhető"
 
-#: cps/shelf.py:903
+#: cps/shelf.py:955
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr "Érvénytelen rendezési mód: %(mode)s"
 
-#: cps/shelf.py:907
+#: cps/shelf.py:959
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:931
+#: cps/shelf.py:983
 msgid "Could not save order"
 msgstr "Nem sikerült menteni a sorrendet"
 
-#: cps/shelf.py:939 cps/templates/layout.html:411
+#: cps/shelf.py:991 cps/templates/layout.html:411
 msgid "Reorder Shelves"
 msgstr "Polcok átrendezése"
 
-#: cps/shelf.py:944
+#: cps/shelf.py:996
 msgid "Name (A → Z)"
 msgstr "Név (A → Z)"
 
-#: cps/shelf.py:945
+#: cps/shelf.py:997
 msgid "Name (Z → A)"
 msgstr "Név (Z → A)"
 
-#: cps/shelf.py:946
+#: cps/shelf.py:998
 msgid "Book count (most → fewest)"
 msgstr "Könyvek száma (legtöbb → legkevesebb)"
 
-#: cps/shelf.py:947
+#: cps/shelf.py:999
 msgid "Book count (fewest → most)"
 msgstr "Könyvek száma (legkevesebb → legtöbb)"
 
-#: cps/shelf.py:948
+#: cps/shelf.py:1000
 msgid "Created (newest → oldest)"
 msgstr "Létrehozva (legújabb → legrégebbi)"
 
-#: cps/shelf.py:949
+#: cps/shelf.py:1001
 msgid "Created (oldest → newest)"
 msgstr "Létrehozva (legrégebbi → legújabb)"
 
-#: cps/shelf.py:950
+#: cps/shelf.py:1002
 msgid "Modified (recent → oldest)"
 msgstr "Módosítva (legutóbbi → legrégebbi)"
 
-#: cps/shelf.py:951
+#: cps/shelf.py:1003
 msgid "Modified (oldest → recent)"
 msgstr "Módosítva (legrégebbi → legutóbbi)"
 
-#: cps/shelf.py:952
+#: cps/shelf.py:1004
 msgid "Manual (drag below)"
 msgstr "Kézi (húzd át alább)"
 
@@ -3486,9 +3486,10 @@ msgstr "OK"
 #: cps/templates/layout.html:750 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/read.html:137
-#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:34
-#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
-#: cps/templates/tasks.html:173 cps/templates/user_edit.html:587
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf.html:125
+#: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
+#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
+#: cps/templates/user_edit.html:587
 msgid "Cancel"
 msgstr "Mégsem"
 
@@ -3618,7 +3619,7 @@ msgstr "Könyvtárban"
 
 #: cps/templates/author.html:59 cps/templates/author.html:116
 #: cps/templates/index.html:61 cps/templates/index.html:204
-#: cps/templates/search.html:66 cps/templates/shelf.html:54
+#: cps/templates/search.html:66 cps/templates/shelf.html:61
 msgid "reduce"
 msgstr "csökkentsd"
 
@@ -3659,7 +3660,7 @@ msgstr "Könyv konvertálása"
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:193 cps/templates/layout.html:495
 #: cps/templates/layout.html:632 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:673
+#: cps/templates/shelf.html:110 cps/templates/user_edit.html:673
 msgid "Close"
 msgstr "Bezárás"
 
@@ -4054,7 +4055,8 @@ msgid "-- Select a Shelf --"
 msgstr "-- Polc választása --"
 
 #: cps/templates/book_table.html:370 cps/templates/email_edit.html:81
-#: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
+#: cps/templates/email_edit.html:108 cps/templates/shelf.html:102
+#: cps/templates/shelf.html:126 cps/templates/user_table.html:27
 msgid "Add"
 msgstr "Hozzáadás"
 
@@ -7818,17 +7820,67 @@ msgstr "Polc törlése"
 msgid "Edit Shelf Properties"
 msgstr "Polc tulajdonságok szerkesztése"
 
-#: cps/templates/shelf.html:18
+#: cps/templates/shelf.html:22
+#, fuzzy
+msgid "Add Books"
+msgstr "Rejtett könyvek"
+
+#: cps/templates/shelf.html:25
 msgid "Arrange books manually"
 msgstr "Könyvek kézi elrendezése"
 
-#: cps/templates/shelf.html:19
+#: cps/templates/shelf.html:26
 msgid "Disable Change order"
 msgstr "Sorrend változtatás tiltása"
 
-#: cps/templates/shelf.html:19
+#: cps/templates/shelf.html:26
 msgid "Enable Change order"
 msgstr "Sorrend változtatás engedélyezése"
+
+#: cps/templates/shelf.html:101 cps/templates/shelf.html:124
+#, fuzzy, python-format
+msgid "%(count)s selected"
+msgstr "Futtatás kiválasztott könyvön"
+
+#: cps/templates/shelf.html:103
+#, fuzzy, python-format
+msgid "Add %(count)s"
+msgstr "Legjobb %(count)s"
+
+#: cps/templates/shelf.html:104 cps/templates/shelf.html:120
+#, fuzzy
+msgid "No books found."
+msgstr "Könyv nem található."
+
+#: cps/templates/shelf.html:105
+#, fuzzy
+msgid "Already on this shelf"
+msgstr "Polc törlése"
+
+#: cps/templates/shelf.html:106
+#, fuzzy
+msgid "Could not add the books. Please try again."
+msgstr "Nem sikerült összekapcsolni az OAuth fiókot. Próbálja újra."
+
+#: cps/templates/shelf.html:111
+#, fuzzy
+msgid "Add books to"
+msgstr "Hozzáadás polchoz"
+
+#: cps/templates/shelf.html:117
+#, fuzzy
+msgid "Search your library…"
+msgstr "Keresés könyvtárban"
+
+#: cps/templates/shelf.html:117
+#, fuzzy
+msgid "Search your library"
+msgstr "Keresés könyvtárban"
+
+#: cps/templates/shelf.html:119
+#, fuzzy
+msgid "Search results"
+msgstr "Keresőkifejezés"
 
 #: cps/templates/shelf_edit.html:14
 msgid "Share with Everyone"

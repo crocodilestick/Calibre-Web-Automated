@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-08 15:28+0000\n"
+"POT-Creation-Date: 2026-06-08 21:28+0000\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -2365,63 +2365,63 @@ msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr ""
 "Error al abrir una estantería. La estantería no existe o no es accesible"
 
-#: cps/shelf.py:903
+#: cps/shelf.py:955
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr ""
 
-#: cps/shelf.py:907
+#: cps/shelf.py:959
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:931
+#: cps/shelf.py:983
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:939 cps/templates/layout.html:411
+#: cps/shelf.py:991 cps/templates/layout.html:411
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Excluir Estanterías"
 
-#: cps/shelf.py:944
+#: cps/shelf.py:996
 #, fuzzy
 msgid "Name (A → Z)"
 msgstr "Nombre (A-Z)"
 
-#: cps/shelf.py:945
+#: cps/shelf.py:997
 #, fuzzy
 msgid "Name (Z → A)"
 msgstr "Nombre (Z-A)"
 
-#: cps/shelf.py:946
+#: cps/shelf.py:998
 #, fuzzy
 msgid "Book count (most → fewest)"
 msgstr "Cantidad de libros (de mayor a menor)"
 
-#: cps/shelf.py:947
+#: cps/shelf.py:999
 #, fuzzy
 msgid "Book count (fewest → most)"
 msgstr "Cantidad de libros (de mayor a menor)"
 
-#: cps/shelf.py:948
+#: cps/shelf.py:1000
 #, fuzzy
 msgid "Created (newest → oldest)"
 msgstr "Creado (más reciente primero)"
 
-#: cps/shelf.py:949
+#: cps/shelf.py:1001
 #, fuzzy
 msgid "Created (oldest → newest)"
 msgstr "Creado (el más antiguo primero)"
 
-#: cps/shelf.py:950
+#: cps/shelf.py:1002
 msgid "Modified (recent → oldest)"
 msgstr ""
 
-#: cps/shelf.py:951
+#: cps/shelf.py:1003
 msgid "Modified (oldest → recent)"
 msgstr ""
 
-#: cps/shelf.py:952
+#: cps/shelf.py:1004
 #, fuzzy
 msgid "Manual (drag below)"
 msgstr "Manual (arrastra para reordenar)"
@@ -3571,9 +3571,10 @@ msgstr "Ok"
 #: cps/templates/layout.html:750 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/read.html:137
-#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:34
-#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
-#: cps/templates/tasks.html:173 cps/templates/user_edit.html:587
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf.html:125
+#: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
+#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
+#: cps/templates/user_edit.html:587
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -3703,7 +3704,7 @@ msgstr "En la Biblioteca"
 
 #: cps/templates/author.html:59 cps/templates/author.html:116
 #: cps/templates/index.html:61 cps/templates/index.html:204
-#: cps/templates/search.html:66 cps/templates/shelf.html:54
+#: cps/templates/search.html:66 cps/templates/shelf.html:61
 msgid "reduce"
 msgstr "reducir"
 
@@ -3744,7 +3745,7 @@ msgstr "Convertir libro"
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:193 cps/templates/layout.html:495
 #: cps/templates/layout.html:632 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:673
+#: cps/templates/shelf.html:110 cps/templates/user_edit.html:673
 msgid "Close"
 msgstr "Cerrar"
 
@@ -4137,7 +4138,8 @@ msgid "-- Select a Shelf --"
 msgstr "-- Selecciona una Estantería --"
 
 #: cps/templates/book_table.html:370 cps/templates/email_edit.html:81
-#: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
+#: cps/templates/email_edit.html:108 cps/templates/shelf.html:102
+#: cps/templates/shelf.html:126 cps/templates/user_table.html:27
 msgid "Add"
 msgstr "Añadir"
 
@@ -8001,17 +8003,67 @@ msgstr "Borrar esta Estantería"
 msgid "Edit Shelf Properties"
 msgstr "Editar Propiedades de la Estantería"
 
-#: cps/templates/shelf.html:18
+#: cps/templates/shelf.html:22
+#, fuzzy
+msgid "Add Books"
+msgstr "Libro Oculto"
+
+#: cps/templates/shelf.html:25
 msgid "Arrange books manually"
 msgstr "Ordenar libros manualmente"
 
-#: cps/templates/shelf.html:19
+#: cps/templates/shelf.html:26
 msgid "Disable Change order"
 msgstr "Deshabilitar cambio de orden"
 
-#: cps/templates/shelf.html:19
+#: cps/templates/shelf.html:26
 msgid "Enable Change order"
 msgstr "Habilitar cambio de orden"
+
+#: cps/templates/shelf.html:101 cps/templates/shelf.html:124
+#, fuzzy, python-format
+msgid "%(count)s selected"
+msgstr "Fusionar libros seleccionados"
+
+#: cps/templates/shelf.html:103
+#, fuzzy, python-format
+msgid "Add %(count)s"
+msgstr "Top %(count)s"
+
+#: cps/templates/shelf.html:104 cps/templates/shelf.html:120
+#, fuzzy
+msgid "No books found."
+msgstr "Token no encontrado"
+
+#: cps/templates/shelf.html:105
+#, fuzzy
+msgid "Already on this shelf"
+msgstr "Borrar esta Estantería"
+
+#: cps/templates/shelf.html:106
+#, fuzzy
+msgid "Could not add the books. Please try again."
+msgstr "Fallida para link OAuth cuenta. Por favor intenta de nuevo."
+
+#: cps/templates/shelf.html:111
+#, fuzzy
+msgid "Add books to"
+msgstr "Agregar a la estantería"
+
+#: cps/templates/shelf.html:117
+#, fuzzy
+msgid "Search your library…"
+msgstr "Buscar en la Biblioteca"
+
+#: cps/templates/shelf.html:117
+#, fuzzy
+msgid "Search your library"
+msgstr "Buscar en la Biblioteca"
+
+#: cps/templates/shelf.html:119
+#, fuzzy
+msgid "Search results"
+msgstr "Consulta de búsqueda"
 
 #: cps/templates/shelf_edit.html:14
 msgid "Share with Everyone"

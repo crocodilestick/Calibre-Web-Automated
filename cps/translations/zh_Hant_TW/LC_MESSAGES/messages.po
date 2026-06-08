@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-08 15:28+0000\n"
+"POT-Creation-Date: 2026-06-08 21:28+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -2250,57 +2250,57 @@ msgstr "書架：%(name)s"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "打開書架出錯。書架不存在或不可訪問"
 
-#: cps/shelf.py:903
+#: cps/shelf.py:955
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr ""
 
-#: cps/shelf.py:907
+#: cps/shelf.py:959
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:931
+#: cps/shelf.py:983
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:939 cps/templates/layout.html:411
+#: cps/shelf.py:991 cps/templates/layout.html:411
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "排除書架"
 
-#: cps/shelf.py:944
+#: cps/shelf.py:996
 msgid "Name (A → Z)"
 msgstr ""
 
-#: cps/shelf.py:945
+#: cps/shelf.py:997
 msgid "Name (Z → A)"
 msgstr ""
 
-#: cps/shelf.py:946
+#: cps/shelf.py:998
 msgid "Book count (most → fewest)"
 msgstr ""
 
-#: cps/shelf.py:947
+#: cps/shelf.py:999
 msgid "Book count (fewest → most)"
 msgstr ""
 
-#: cps/shelf.py:948
+#: cps/shelf.py:1000
 msgid "Created (newest → oldest)"
 msgstr ""
 
-#: cps/shelf.py:949
+#: cps/shelf.py:1001
 msgid "Created (oldest → newest)"
 msgstr ""
 
-#: cps/shelf.py:950
+#: cps/shelf.py:1002
 msgid "Modified (recent → oldest)"
 msgstr ""
 
-#: cps/shelf.py:951
+#: cps/shelf.py:1003
 msgid "Modified (oldest → recent)"
 msgstr ""
 
-#: cps/shelf.py:952
+#: cps/shelf.py:1004
 msgid "Manual (drag below)"
 msgstr ""
 
@@ -3434,9 +3434,10 @@ msgstr "確定"
 #: cps/templates/layout.html:750 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/read.html:137
-#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:34
-#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
-#: cps/templates/tasks.html:173 cps/templates/user_edit.html:587
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf.html:125
+#: cps/templates/shelf_edit.html:34 cps/templates/tasks.html:94
+#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
+#: cps/templates/user_edit.html:587
 msgid "Cancel"
 msgstr "取消"
 
@@ -3565,7 +3566,7 @@ msgstr "在書庫"
 
 #: cps/templates/author.html:59 cps/templates/author.html:116
 #: cps/templates/index.html:61 cps/templates/index.html:204
-#: cps/templates/search.html:66 cps/templates/shelf.html:54
+#: cps/templates/search.html:66 cps/templates/shelf.html:61
 msgid "reduce"
 msgstr "減少"
 
@@ -3607,7 +3608,7 @@ msgstr "轉換書籍"
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:193 cps/templates/layout.html:495
 #: cps/templates/layout.html:632 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:673
+#: cps/templates/shelf.html:110 cps/templates/user_edit.html:673
 msgid "Close"
 msgstr "關閉"
 
@@ -4005,7 +4006,8 @@ msgid "-- Select a Shelf --"
 msgstr ""
 
 #: cps/templates/book_table.html:370 cps/templates/email_edit.html:81
-#: cps/templates/email_edit.html:108 cps/templates/user_table.html:27
+#: cps/templates/email_edit.html:108 cps/templates/shelf.html:102
+#: cps/templates/shelf.html:126 cps/templates/user_table.html:27
 msgid "Add"
 msgstr "新增"
 
@@ -7617,17 +7619,66 @@ msgstr "刪除此書架"
 msgid "Edit Shelf Properties"
 msgstr "編輯書架屬性"
 
-#: cps/templates/shelf.html:18
+#: cps/templates/shelf.html:22
+#, fuzzy
+msgid "Add Books"
+msgstr "隱藏書籍"
+
+#: cps/templates/shelf.html:25
 msgid "Arrange books manually"
 msgstr "手動排列書籍排列順序"
 
-#: cps/templates/shelf.html:19
+#: cps/templates/shelf.html:26
 msgid "Disable Change order"
 msgstr "禁止改變順序"
 
-#: cps/templates/shelf.html:19
+#: cps/templates/shelf.html:26
 msgid "Enable Change order"
 msgstr "允許改變順序"
+
+#: cps/templates/shelf.html:101 cps/templates/shelf.html:124
+#, fuzzy, python-format
+msgid "%(count)s selected"
+msgstr "合併選中的書籍"
+
+#: cps/templates/shelf.html:103
+#, fuzzy, python-format
+msgid "Add %(count)s"
+msgstr "賬號"
+
+#: cps/templates/shelf.html:104 cps/templates/shelf.html:120
+#, fuzzy
+msgid "No books found."
+msgstr "找不到Token"
+
+#: cps/templates/shelf.html:105
+#, fuzzy
+msgid "Already on this shelf"
+msgstr "刪除此書架"
+
+#: cps/templates/shelf.html:106
+msgid "Could not add the books. Please try again."
+msgstr ""
+
+#: cps/templates/shelf.html:111
+#, fuzzy
+msgid "Add books to"
+msgstr "添加到書架"
+
+#: cps/templates/shelf.html:117
+#, fuzzy
+msgid "Search your library…"
+msgstr "搜索書庫"
+
+#: cps/templates/shelf.html:117
+#, fuzzy
+msgid "Search your library"
+msgstr "搜索書庫"
+
+#: cps/templates/shelf.html:119
+#, fuzzy
+msgid "Search results"
+msgstr "搜索項："
 
 #: cps/templates/shelf_edit.html:14
 msgid "Share with Everyone"

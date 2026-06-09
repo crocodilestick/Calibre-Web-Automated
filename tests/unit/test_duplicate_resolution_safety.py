@@ -141,3 +141,83 @@ class TestD7BehaviouralDistinctKeys:
             # broken version could never reach)
             assert di.build_duplicate_key(StubBook(3, title="X", authors=[]), settings=None) \
                 != di.build_duplicate_key(StubBook(4, title="X", authors=[]), settings=None)
+
+
+class TestD2ResolutionSerialized:
+    """D2 (data-safety): concurrent execute-resolution (HTTP request) and the
+    background-scan auto-resolve (TaskDuplicateScan worker thread) on the SAME
+    stale group must not double-delete the loser.
+
+    The per-book re-fetch in auto_resolve_duplicates (calibre_db.get_book ->
+    None for an already-deleted book -> skip) is a correct current-state
+    idempotency check, but on its own it is a TOCTOU window: both runs can pass
+    the re-fetch before either commits its delete, then delete the same loser
+    twice / fight over the keeper. CWA is single-process (gevent WSGIServer or
+    tornado; the worker is an in-process thread), so a module-level
+    threading.Lock around the dry_run=False loop genuinely serializes the two
+    entrants — under gevent it is monkey-patched to a greenlet-aware lock. We do
+    NOT key idempotency on group_hash (it is unstable per D5 and an over-eager
+    skip would drop a genuinely-new duplicate); serialization + the existing
+    re-fetch is the mis-fire-proof fix.
+
+    Behavioural proof is the live cwn-local concurrent repro on the real
+    "Crime and Punishment" pair (single survivor, no orphaned audit rows);
+    these pins lock the structural invariant so a refactor can't reopen the race.
+    """
+
+    def test_module_defines_a_resolution_lock(self):
+        assert re.search(r"_AUTO_RESOLVE_LOCK\s*=\s*threading\.(?:R?Lock)\(\)", DUP_SRC), (
+            "duplicates.py must define a module-level threading lock to serialize "
+            "the destructive auto-resolution body (D2 double-delete)"
+        )
+
+    def test_acquire_is_non_blocking_and_guarded_by_not_dry_run(self):
+        src = _func_src("auto_resolve_duplicates")
+        # Acquire only on the destructive path, and NON-BLOCKING (blocking=False)
+        # so a contended acquire on the gevent hub greenlet can't stall the loop.
+        assert re.search(
+            r"if not dry_run:\s*\n\s*lock_held\s*=\s*_AUTO_RESOLVE_LOCK\.acquire\(blocking=False\)",
+            src,
+        ), (
+            "auto_resolve_duplicates must acquire _AUTO_RESOLVE_LOCK non-blockingly "
+            "(blocking=False) only on the not-dry_run path — a blocking acquire on "
+            "the gevent hub greenlet would stall every in-flight HTTP request (D2)"
+        )
+
+    def test_declines_cleanly_when_lock_already_held(self):
+        src = _func_src("auto_resolve_duplicates")
+        # If another resolution holds the lock, return early (decline) rather than
+        # block or fall through into the delete loop — one resolution at a time,
+        # no double-delete, no UI freeze (D2).
+        m = re.search(r"if not lock_held:(.*?)\n\s*for group in duplicate_groups:", src, re.S)
+        assert m, "the could-not-acquire branch must be handled before the delete loop"
+        decline = m.group(1)
+        assert "return" in decline and "in_progress" in decline, (
+            "a contended resolution must return early with an in_progress marker, "
+            "not block or fall through into the destructive loop (D2)"
+        )
+
+    def test_lock_acquired_before_the_destructive_loop(self):
+        src = _func_src("auto_resolve_duplicates")
+        acq = src.find("_AUTO_RESOLVE_LOCK.acquire(")
+        loop = src.find("for group in duplicate_groups:")
+        assert acq != -1 and loop != -1, "acquire + the resolution loop must both exist"
+        assert acq < loop, (
+            "the lock must be acquired BEFORE the per-book re-fetch + delete loop "
+            "so every re-fetch reflects post-lock DB state and a serialized later "
+            "run skips already-deleted losers (D2 TOCTOU)"
+        )
+
+    def test_lock_released_exactly_once_in_finally(self):
+        src = _func_src("auto_resolve_duplicates")
+        assert "finally:" in src, "auto_resolve_duplicates must keep its try/finally"
+        finally_zone = src.split("finally:", 1)[1]
+        assert "if lock_held:" in finally_zone and "_AUTO_RESOLVE_LOCK.release()" in finally_zone, (
+            "the lock must be released in finally guarded by lock_held, so an "
+            "exception mid-loop can't strand it and deadlock every future "
+            "resolution (D2)"
+        )
+        assert src.count("_AUTO_RESOLVE_LOCK.release()") == 1, (
+            "release must happen exactly once (in finally); a stray second "
+            "release on an unlocked lock raises RuntimeError"
+        )

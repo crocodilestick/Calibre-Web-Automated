@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 22:39+0000\n"
+"POT-Creation-Date: 2026-06-09 23:24+0000\n"
 "PO-Revision-Date: 2026-04-06 17:03+0000\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
@@ -1226,35 +1226,35 @@ msgstr ""
 msgid "None"
 msgstr "Keine"
 
-#: cps/duplicates.py:389 cps/duplicates.py:400
+#: cps/duplicates.py:433 cps/duplicates.py:444
 msgid "Duplicate Books"
 msgstr "Bücherduplikate"
 
-#: cps/duplicates.py:1280
+#: cps/duplicates.py:1329
 msgid "Duplicate group already dismissed"
 msgstr "Dublettengruppe bereits verworfen"
 
-#: cps/duplicates.py:1300
+#: cps/duplicates.py:1351
 msgid "Duplicate group dismissed"
 msgstr "Duplikatgruppe verworfen"
 
-#: cps/duplicates.py:1337
+#: cps/duplicates.py:1394
 msgid "Duplicate group restored"
 msgstr "Duplikatgruppe wiederhergestellt"
 
-#: cps/duplicates.py:1339
+#: cps/duplicates.py:1396
 msgid "Duplicate group was not dismissed"
 msgstr "Dublettengruppe wurde nicht verworfen"
 
-#: cps/duplicates.py:1411
+#: cps/duplicates.py:1468
 msgid "Duplicate scan queued"
 msgstr "Duplikat-Scan in Warteschlange eingereiht"
 
-#: cps/duplicates.py:1480
+#: cps/duplicates.py:1537
 msgid "Duplicate scan completed (fallback)"
 msgstr "Dubletten-Scan abgeschlossen (Fallback)"
 
-#: cps/duplicates.py:1555
+#: cps/duplicates.py:1612
 msgid "Invalid resolution strategy"
 msgstr "Ungültige Lösungsstrategie"
 

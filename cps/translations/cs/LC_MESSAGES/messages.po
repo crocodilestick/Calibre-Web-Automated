@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 22:39+0000\n"
+"POT-Creation-Date: 2026-06-09 23:24+0000\n"
 "PO-Revision-Date: 2020-06-09 21:11+0100\n"
 "Last-Translator: Lukas Heroudek <lukas.heroudek@gmail.com>\n"
 "Language-Team: \n"
@@ -1191,39 +1191,39 @@ msgstr ""
 msgid "None"
 msgstr "Žádné"
 
-#: cps/duplicates.py:389 cps/duplicates.py:400
+#: cps/duplicates.py:433 cps/duplicates.py:444
 #, fuzzy
 msgid "Duplicate Books"
 msgstr "Smazat knihu"
 
-#: cps/duplicates.py:1280
+#: cps/duplicates.py:1329
 msgid "Duplicate group already dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1300
+#: cps/duplicates.py:1351
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Smazat knihu"
 
-#: cps/duplicates.py:1337
+#: cps/duplicates.py:1394
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Smazat knihu"
 
-#: cps/duplicates.py:1339
+#: cps/duplicates.py:1396
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1411
+#: cps/duplicates.py:1468
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Nenalezeny žádné výsledky"
 
-#: cps/duplicates.py:1480
+#: cps/duplicates.py:1537
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1555
+#: cps/duplicates.py:1612
 msgid "Invalid resolution strategy"
 msgstr ""
 

@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 22:39+0000\n"
+"POT-Creation-Date: 2026-06-09 23:24+0000\n"
 "PO-Revision-Date: 2026-04-26 13:31+0200\n"
 "Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at proton."
 "me>\n"
@@ -1219,35 +1219,35 @@ msgstr ""
 msgid "None"
 msgstr "Geen"
 
-#: cps/duplicates.py:389 cps/duplicates.py:400
+#: cps/duplicates.py:433 cps/duplicates.py:444
 msgid "Duplicate Books"
 msgstr "Duplicaat boeken"
 
-#: cps/duplicates.py:1280
+#: cps/duplicates.py:1329
 msgid "Duplicate group already dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1300
+#: cps/duplicates.py:1351
 msgid "Duplicate group dismissed"
 msgstr "Groep duplicaten afgewezen"
 
-#: cps/duplicates.py:1337
+#: cps/duplicates.py:1394
 msgid "Duplicate group restored"
 msgstr "Groep duplicaten hersteld"
 
-#: cps/duplicates.py:1339
+#: cps/duplicates.py:1396
 msgid "Duplicate group was not dismissed"
 msgstr "Groep duplicaten niet afgewezen"
 
-#: cps/duplicates.py:1411
+#: cps/duplicates.py:1468
 msgid "Duplicate scan queued"
 msgstr "Duplicaten scan in wachtrij"
 
-#: cps/duplicates.py:1480
+#: cps/duplicates.py:1537
 msgid "Duplicate scan completed (fallback)"
 msgstr "Duplicaten scan voltooid"
 
-#: cps/duplicates.py:1555
+#: cps/duplicates.py:1612
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Ongeldige rol"

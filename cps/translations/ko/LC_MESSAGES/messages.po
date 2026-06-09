@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 16:30+0000\n"
+"POT-Creation-Date: 2026-06-09 17:21+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -6573,7 +6573,7 @@ msgid "Save and Send Test Email"
 msgstr "저장 및 테스트 메일 전송"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:135
-#: cps/templates/shelf_order.html:60 cps/templates/shelf_reorder.html:39
+#: cps/templates/shelf_order.html:71 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
 msgstr "뒤로"
@@ -7648,39 +7648,39 @@ msgstr "이 서재를 Kobo 기기와 동기화"
 msgid "Expose this shelf in my OPDS feed"
 msgstr ""
 
-#: cps/templates/shelf_order.html:18
+#: cps/templates/shelf_order.html:29
 msgid "Drag a cover to its new spot — the order saves automatically."
 msgstr ""
 
-#: cps/templates/shelf_order.html:19
+#: cps/templates/shelf_order.html:30
 msgid "Keyboard: focus a cover with Tab, then move it with the arrow keys."
 msgstr ""
 
-#: cps/templates/shelf_order.html:22
+#: cps/templates/shelf_order.html:33
 #, fuzzy
 msgid "Saving…"
 msgstr "검색"
 
-#: cps/templates/shelf_order.html:23
+#: cps/templates/shelf_order.html:34
 msgid "Order saved"
 msgstr ""
 
-#: cps/templates/shelf_order.html:24
+#: cps/templates/shelf_order.html:35
 msgid "Could not save the order — click here to retry"
 msgstr ""
 
-#: cps/templates/shelf_order.html:25
+#: cps/templates/shelf_order.html:36
 #, python-format
 msgid "Moved to position %(num)s of %(total)s"
 msgstr ""
 
-#: cps/templates/shelf_order.html:28
+#: cps/templates/shelf_order.html:39
 #, fuzzy
 msgid "Shelf order"
 msgstr "사용자를 찾을 수 없습니다."
 
-#: cps/templates/shelf_order.html:33 cps/templates/shelf_order.html:38
-#: cps/templates/shelf_order.html:48
+#: cps/templates/shelf_order.html:44 cps/templates/shelf_order.html:49
+#: cps/templates/shelf_order.html:59
 msgid "Hidden Book"
 msgstr "숨긴 책"
 

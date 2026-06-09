@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 16:30+0000\n"
+"POT-Creation-Date: 2026-06-09 17:21+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -6606,7 +6606,7 @@ msgid "Save and Send Test Email"
 msgstr "保存設置並發送測試郵件"
 
 #: cps/templates/email_edit.html:70 cps/templates/layout.html:135
-#: cps/templates/shelf_order.html:60 cps/templates/shelf_reorder.html:39
+#: cps/templates/shelf_order.html:71 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
 msgstr "後退"
@@ -7692,39 +7692,39 @@ msgstr "同步這個書架到 Kobo device"
 msgid "Expose this shelf in my OPDS feed"
 msgstr ""
 
-#: cps/templates/shelf_order.html:18
+#: cps/templates/shelf_order.html:29
 msgid "Drag a cover to its new spot — the order saves automatically."
 msgstr ""
 
-#: cps/templates/shelf_order.html:19
+#: cps/templates/shelf_order.html:30
 msgid "Keyboard: focus a cover with Tab, then move it with the arrow keys."
 msgstr ""
 
-#: cps/templates/shelf_order.html:22
+#: cps/templates/shelf_order.html:33
 #, fuzzy
 msgid "Saving…"
 msgstr "搜尋"
 
-#: cps/templates/shelf_order.html:23
+#: cps/templates/shelf_order.html:34
 msgid "Order saved"
 msgstr ""
 
-#: cps/templates/shelf_order.html:24
+#: cps/templates/shelf_order.html:35
 msgid "Could not save the order — click here to retry"
 msgstr ""
 
-#: cps/templates/shelf_order.html:25
+#: cps/templates/shelf_order.html:36
 #, python-format
 msgid "Moved to position %(num)s of %(total)s"
 msgstr ""
 
-#: cps/templates/shelf_order.html:28
+#: cps/templates/shelf_order.html:39
 #, fuzzy
 msgid "Shelf order"
 msgstr "找不到用戶"
 
-#: cps/templates/shelf_order.html:33 cps/templates/shelf_order.html:38
-#: cps/templates/shelf_order.html:48
+#: cps/templates/shelf_order.html:44 cps/templates/shelf_order.html:49
+#: cps/templates/shelf_order.html:59
 msgid "Hidden Book"
 msgstr "隱藏書籍"
 

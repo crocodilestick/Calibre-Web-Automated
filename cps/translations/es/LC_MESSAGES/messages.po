@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 23:38+0000\n"
+"POT-Creation-Date: 2026-06-09 23:55+0000\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -1263,34 +1263,34 @@ msgstr "Ninguno"
 msgid "Duplicate Books"
 msgstr "Libros Duplicados"
 
-#: cps/duplicates.py:1352
+#: cps/duplicates.py:1367
 msgid "Duplicate group already dismissed"
 msgstr "El grupo de duplicados ya se ha descartado."
 
-#: cps/duplicates.py:1374
+#: cps/duplicates.py:1389
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Libros Duplicados"
 
-#: cps/duplicates.py:1417
+#: cps/duplicates.py:1432
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Libros Duplicados"
 
-#: cps/duplicates.py:1419
+#: cps/duplicates.py:1434
 msgid "Duplicate group was not dismissed"
 msgstr "No se ha descartado el grupo de duplicados."
 
-#: cps/duplicates.py:1491
+#: cps/duplicates.py:1506
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Duplicados"
 
-#: cps/duplicates.py:1560
+#: cps/duplicates.py:1575
 msgid "Duplicate scan completed (fallback)"
 msgstr "Escaneo de duplicados completado (modo alternativo)."
 
-#: cps/duplicates.py:1635
+#: cps/duplicates.py:1650
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Rol inválido"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 23:38+0000\n"
+"POT-Creation-Date: 2026-06-09 23:55+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -1209,34 +1209,34 @@ msgstr "なし"
 msgid "Duplicate Books"
 msgstr "重複する書籍"
 
-#: cps/duplicates.py:1352
+#: cps/duplicates.py:1367
 msgid "Duplicate group already dismissed"
 msgstr "重複グループは既に解除済みです"
 
-#: cps/duplicates.py:1374
+#: cps/duplicates.py:1389
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "本を削除"
 
-#: cps/duplicates.py:1417
+#: cps/duplicates.py:1432
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "本を削除"
 
-#: cps/duplicates.py:1419
+#: cps/duplicates.py:1434
 msgid "Duplicate group was not dismissed"
 msgstr "重複グループは解除されませんでした"
 
-#: cps/duplicates.py:1491
+#: cps/duplicates.py:1506
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "結果が見つかりません"
 
-#: cps/duplicates.py:1560
+#: cps/duplicates.py:1575
 msgid "Duplicate scan completed (fallback)"
 msgstr "重複スキャンが完了しました（フォールバック）"
 
-#: cps/duplicates.py:1635
+#: cps/duplicates.py:1650
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "無効なロール"

@@ -18,7 +18,7 @@ import threading
 import time
 from shutil import copyfile
 
-from . import db, calibre_db, logger, ub, csrf, config, helper
+from . import db, calibre_db, logger, ub, csrf, config, helper, user_book_data
 from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED
 from .admin import admin_required  
 from .usermanagement import login_required_if_no_ano
@@ -1851,6 +1851,14 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                         # custom columns (Greptile #399). A whole-book cleanup reads only .id and .path.
                         deleted_book_path = book.path
 
+                        # D4: move the user's data on this loser (annotations,
+                        # reading progress, Kobo state, shelf membership…) to
+                        # the kept book BEFORE deleting — for every strategy,
+                        # not just 'merge'. A keep-newest resolution otherwise
+                        # silently deletes highlights made on the older copy.
+                        user_book_data.migrate_user_book_data(deleted_book_id, book_to_keep_id)
+                        ub.session_commit()
+
                         print(f"[cwa-duplicates-auto] Cleaning up database for book {deleted_book_id}...", flush=True)
                         from cps.editbooks import delete_whole_book
                         delete_whole_book(deleted_book_id, book)  # book live here — reads its relationships
@@ -1979,7 +1987,13 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
 
 
 def merge_duplicate_group(book_to_keep, books_to_merge):
-    """Merge formats from duplicate books into the target book."""
+    """Merge file formats from duplicate books into the target book.
+
+    Per-user data (annotations, reading progress, Kobo state, shelf
+    membership…) is migrated separately in the resolution deletion loop —
+    for EVERY strategy, not just 'merge' — via
+    user_book_data.migrate_user_book_data (D4).
+    """
     if not book_to_keep or not books_to_merge:
         return
 

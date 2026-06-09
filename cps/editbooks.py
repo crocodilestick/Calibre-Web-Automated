@@ -25,6 +25,7 @@ from sqlalchemy.orm.exc import StaleDataError
 from sqlalchemy.sql.expression import func
 
 from . import constants, logger, isoLanguages, gdriveutils, uploader, helper, kobo_sync_status
+from . import user_book_data
 from .clean_html import clean_string
 from . import config, ub, db, calibre_db
 from .services.worker import WorkerThread
@@ -1351,12 +1352,12 @@ def delete_whole_book(book_id, book):
         # the orphan (same as pre-fix behavior), no data loss.
         log.warning("Could not record kobo deletion tombstone for book %s: %s", book_id, e)
 
-    # delete book from shelves, Downloads, Read list
-    ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).delete()
-    ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id).delete()
-    ub.session.query(ub.ArchivedBook).filter(ub.ArchivedBook.book_id == book_id).delete()
+    # Delete every per-user-book row (shelves, read status, annotations,
+    # Kobo state, downloads…) through the single enumerator (D4). The
+    # annotation-backup snapshots are deliberately retained — they're the
+    # recovery path for an accidental delete; retention keeps managing them.
+    user_book_data.purge_user_book_data(book_id=book_id, remove_backup_files=False)
     ub.session.query(ub.BookOriginalFilename).filter(ub.BookOriginalFilename.book_id == book_id).delete()
-    ub.delete_download(book_id)
     ub.session_commit()
 
     # check if only this book links to:

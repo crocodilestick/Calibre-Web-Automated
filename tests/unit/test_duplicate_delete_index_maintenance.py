@@ -180,6 +180,11 @@ def _load_editbooks_module(delete_key_calls):
 
     _install_stub("cps.ub")
     _install_stub(
+        "cps.user_book_data",
+        {"migrate_user_book_data": lambda *a, **k: None,
+         "purge_user_book_data": lambda *a, **k: None},
+    )
+    _install_stub(
         "cps.kobo_sync_status",
         {
             "remove_synced_book": lambda *args, **kwargs: calls.append("kobo"),
@@ -274,7 +279,13 @@ def _load_duplicates_module(delete_key_calls):
     cps.config = config
     cps.db = db
 
-    _install_stub("cps.ub", {"init_db_thread": lambda: calls.append("init-db-thread")})
+    _install_stub("cps.ub", {"init_db_thread": lambda: calls.append("init-db-thread"),
+                             "session_commit": lambda *a, **k: None})
+    _install_stub(
+        "cps.user_book_data",
+        {"migrate_user_book_data": lambda *a, **k: None,
+         "purge_user_book_data": lambda *a, **k: None},
+    )
     _install_stub("cps.csrf", {"exempt": _decorator})
     _install_stub("cps.admin", {"admin_required": _decorator})
     _install_stub("cps.usermanagement", {"login_required_if_no_ano": _decorator})

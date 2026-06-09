@@ -17,6 +17,14 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Resolving duplicate books no longer loses your highlights, notes, reading
+  progress, or shelf placement. When duplicates were merged or resolved, only
+  the book files moved to the kept copy — anything you'd done on the removed
+  copy (annotations, read status, Kobo reading position, shelf membership)
+  silently disappeared. All of it now follows the kept book, whichever
+  resolve strategy you use. Deleting a book and deleting a user also clean up
+  everything that belongs to them now (deleted accounts previously left their
+  annotations and annotation-backup files behind).
 - Deleting a book no longer risks leaving a broken "ghost" entry if something
   fails partway through. Previously the book's files were removed before the
   library database was updated, so an error in between could leave an entry that

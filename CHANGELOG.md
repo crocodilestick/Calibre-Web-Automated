@@ -24,6 +24,11 @@ is for things you can see or feel when running the app.
   desktop. Especially handy for filling a brand-new empty shelf.
 
 ### Fixed
+- The shelf reorder screen's cover-size fix now reaches more setups: the covers
+  were still showing oversized for some users on v4.0.158 (e.g. behind certain
+  reverse proxies). The styling moved out of the page into a regular stylesheet
+  and now sizes covers on its own, so they stay at the normal thumbnail size
+  regardless of theme or proxy. (#320 follow-up, reported by @SpookyUSAF)
 - On phones, the menu (hamburger) button is now on the **left**, the same side
   the navigation drawer slides out from — so the button and the menu it opens
   line up. Tapping it opens the menu; tapping outside still closes it.

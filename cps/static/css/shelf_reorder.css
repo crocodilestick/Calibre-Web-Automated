@@ -1,0 +1,32 @@
+/* Shelf reorder grid ("Change order of Shelf") — drag/keyboard reorder
+   affordances + cover sizing. Externalised from an inline <style> so it is
+   CSP-robust and cacheable: an inline block can be stripped by a strict
+   reverse-proxy Content-Security-Policy, which would leave the cover sizing
+   below unapplied and covers oversized (fork #320, @SpookyUSAF on v4.0.158). */
+
+/* Reorder affordances: grab cursor, drop ghost, keyboard focus ring. */
+#reorder-grid .reorder-item { cursor: grab; user-select: none; -webkit-user-select: none; }
+#reorder-grid .reorder-item:active { cursor: grabbing; }
+#reorder-grid .reorder-item:focus { outline: 2px solid #45b29d; outline-offset: 2px; }
+#reorder-grid .reorder-ghost { opacity: 0.4; }
+#reorder-grid .reorder-chosen { transform: scale(1.03); }
+#reorder-status.reorder-error { color: #d9534f; cursor: pointer; font-weight: bold; }
+
+/* fork #320 follow-up (@droM4X + @SpookyUSAF): keep reorder covers at the normal
+   thumbnail size on EVERY theme and configuration. This page is fork-new and
+   deliberately avoids the .discover / isotope wrappers, so it must NOT rely on
+   either theme's cover sizing (the default theme's
+   `.container-fluid .book .cover { height: 225px }` box, or caliBlur's
+   `.cover img { width: 150px }`) — those don't always reach this grid. Size the
+   image itself, fully self-contained: fit it inside a 150x225 thumbnail box with
+   aspect ratio preserved, regardless of theme, cover orientation, or whether any
+   theme rule applies. The id scope beats the responsive max-width cascade. */
+#reorder-grid .reorder-item .cover img {
+  max-width: 150px !important;
+  max-height: 225px !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Clear separation between the cover grid and the Back button below it. */
+.reorder-back-row { margin-top: 1.5em; }

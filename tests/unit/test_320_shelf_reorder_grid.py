@@ -35,6 +35,7 @@ pytestmark = pytest.mark.unit
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SHELF_PY = (REPO_ROOT / "cps" / "shelf.py").read_text()
 ORDER_HTML = (REPO_ROOT / "cps" / "templates" / "shelf_order.html").read_text()
+REORDER_CSS = (REPO_ROOT / "cps" / "static" / "css" / "shelf_reorder.css").read_text()
 ORDER_JS = (REPO_ROOT / "cps" / "static" / "js" / "shelforder.js").read_text()
 
 
@@ -198,19 +199,34 @@ class TestDisplayFollowup320:
     grid size. Both fixes are theme-independent and live in the template's own
     scoped <style> + markup."""
 
-    def test_cover_height_capped_independent_of_theme(self):
+    def test_cover_sizing_externalised_and_self_contained(self):
+        # The reorder styles must be an EXTERNAL stylesheet, not an inline
+        # <style>: a strict reverse-proxy CSP can strip inline blocks, leaving
+        # the cover cap unapplied and covers oversized. @SpookyUSAF still saw
+        # oversized covers on v4.0.158 even though the inline rule was in the
+        # release — the inline block wasn't reaching their render.
+        assert "css/shelf_reorder.css" in ORDER_HTML, (
+            "shelf_order.html must link the external shelf_reorder.css"
+        )
+        _html_no_comments = re.sub(r"\{#.*?#\}", "", ORDER_HTML, flags=re.S)
+        assert "<style" not in _html_no_comments, (
+            "reorder styles must not live in an inline <style> (CSP-fragile, #320)"
+        )
+        # The cover sizing must be SELF-CONTAINED — fit inside a 150x225 box
+        # regardless of theme or cover orientation, not reliant on caliBlur's
+        # width:150 or the default theme's box (which don't always reach this
+        # fork-new grid that deliberately avoids .discover/isotope).
         m = re.search(
-            r"#reorder-grid\s+\.reorder-item\s+\.cover\s+img\s*\{"
-            r"[^}]*max-height:\s*225px[^}]*!important",
-            ORDER_HTML,
+            r"#reorder-grid\s+\.reorder-item\s+\.cover\s+img\s*\{([^}]*)\}",
+            REORDER_CSS,
         )
-        assert m, (
-            "shelf_order.html must cap reorder cover height to the normal "
-            "book-grid box (225px !important) with an id-scoped rule on the "
-            "image — the !important is deliberate: it caps covers even on the "
-            "reporters' instances where the global .cover box renders uncapped "
-            "(#320 follow-up, @droM4X)"
+        assert m, "shelf_reorder.css must size the reorder cover image"
+        rule = m.group(1)
+        assert "max-width: 150px" in rule and "!important" in rule, (
+            "cover must be width-capped to 150px (self-contained), so it stays a "
+            "thumbnail even where no theme width rule applies (#320, @SpookyUSAF)"
         )
+        assert "max-height: 225px" in rule, "cover must be height-capped to 225px"
 
     def test_back_button_has_gutter_and_spacing(self):
         # Back button must sit inside a grid column so it inherits the same
@@ -223,9 +239,9 @@ class TestDisplayFollowup320:
             "the Back button must be wrapped in a grid row/column so it aligns "
             "under the first cover on both themes (#320 follow-up, @droM4X)"
         )
-        assert re.search(r"\.reorder-back-row\s*\{[^}]*margin-top", ORDER_HTML), (
-            "the Back button row must carry top margin so it doesn't butt "
-            "against the cover grid above it"
+        assert re.search(r"\.reorder-back-row\s*\{[^}]*margin-top", REORDER_CSS), (
+            "the Back button row must carry top margin (in shelf_reorder.css) so "
+            "it doesn't butt against the cover grid above it"
         )
 
 

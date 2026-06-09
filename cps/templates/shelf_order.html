@@ -61,27 +61,10 @@
       </div>
     </div>
   </div>
-  <style>
-    /* Reorder affordances: grab cursor, drop ghost, keyboard focus ring. */
-    #reorder-grid .reorder-item { cursor: grab; user-select: none; -webkit-user-select: none; }
-    #reorder-grid .reorder-item:active { cursor: grabbing; }
-    #reorder-grid .reorder-item:focus { outline: 2px solid #45b29d; outline-offset: 2px; }
-    #reorder-grid .reorder-ghost { opacity: 0.4; }
-    #reorder-grid .reorder-chosen { transform: scale(1.03); }
-    #reorder-status.reorder-error { color: #d9534f; cursor: pointer; font-weight: bold; }
-    /* fork #320 follow-up (@droM4X + @SpookyUSAF on v4.0.157): cap cover height
-       to the normal book-grid box (225px), independent of theme. Normal grids
-       constrain covers via `.container-fluid .book .cover { height: 225px }`
-       (default theme) or `.cover img { width: 150px }` (caliBlur); on this
-       fork-new page some configurations leave the default-theme box uncapped,
-       so covers render near-natural size ("large icon style ... not needed
-       here"). An id-scoped cap on the image itself is theme-independent, beats
-       the responsive max-width cascade, is a no-op where covers are already
-       correct, and doesn't distort caliBlur (already 225px tall). */
-    #reorder-grid .reorder-item .cover img { max-height: 225px !important; }
-    /* Clear separation between the cover grid and the Back button below it. */
-    .reorder-back-row { margin-top: 1.5em; }
-  </style>
+  {# Reorder grid styles live in an external stylesheet (not an inline <style>):
+     inline blocks can be stripped by a strict reverse-proxy CSP, which would
+     leave the cover sizing unapplied and covers oversized (fork #320). #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shelf_reorder.css') }}">
 {% endblock %}
 
 {% block js %}

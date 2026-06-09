@@ -16,6 +16,17 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- Automatic metadata fetch (the admin "auto metadata fetch" option, off by
+  default) no longer overwrites a book's correct author, ISBN, series,
+  publication date or rating with a wrong match's. Previously, with auto-fetch
+  on, importing a book could silently replace good metadata with a random
+  foreign edition's — and the "smart application" mode that's meant to only fill
+  gaps didn't actually protect those fields. Now it prefers the edition whose
+  ISBN matches your book, and smart mode never overwrites a value you already
+  have (it only fills what's missing). Open Library is also now part of the
+  default provider order.
+
 ## [v4.0.159] – 2026-06-09
 
 ### Added

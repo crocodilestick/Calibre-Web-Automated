@@ -1226,7 +1226,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // Get current hierarchy from NextGen settings
-  const currentHierarchyStr = {{ cwa_settings.get("metadata_provider_hierarchy", '["ibdb","google","dnb"]') | tojson }};
+  const currentHierarchyStr = {{ cwa_settings.get("metadata_provider_hierarchy", '["google","openlibrary","ibdb","dnb","douban"]') | tojson }};
   let providerHierarchy = [];
   // Get current global enabled map from NextGen settings
   const currentEnabledStr = {{ cwa_settings.get("metadata_providers_enabled", '{}') | tojson }};

@@ -8,6 +8,7 @@ from flask import Blueprint, redirect, flash, url_for, request, send_from_direct
 from flask_babel import gettext as _, lazy_gettext as _l
 
 from . import logger, config, constants, csrf, helper, ub, calibre_db
+from .metadata_constants import DEFAULT_METADATA_PROVIDER_HIERARCHY_JSON
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
@@ -934,7 +935,7 @@ def set_cwa_settings():
                                 result[setting] = json.dumps(json_value)  # Store as JSON string
                             else:
                                 # Use current value if validation fails
-                                result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                                result[setting] = cwa_db.cwa_settings.get(setting, DEFAULT_METADATA_PROVIDER_HIERARCHY_JSON)
                         elif setting == 'metadata_providers_enabled':
                             # Validate dict mapping provider_id -> bool
                             if isinstance(json_value, dict):
@@ -951,7 +952,7 @@ def set_cwa_settings():
                     except (json.JSONDecodeError, ValueError, TypeError):
                         # Use current value if JSON parsing fails
                         if setting == 'metadata_provider_hierarchy':
-                            result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                            result[setting] = cwa_db.cwa_settings.get(setting, DEFAULT_METADATA_PROVIDER_HIERARCHY_JSON)
                         elif setting == 'metadata_providers_enabled':
                             result[setting] = cwa_db.cwa_settings.get(setting, '{}')
                         else:
@@ -959,7 +960,7 @@ def set_cwa_settings():
                 else:
                     # Use current value if not provided
                     if setting == 'metadata_provider_hierarchy':
-                        result[setting] = cwa_db.cwa_settings.get(setting, '["ibdb","google","dnb"]')
+                        result[setting] = cwa_db.cwa_settings.get(setting, DEFAULT_METADATA_PROVIDER_HIERARCHY_JSON)
                     elif setting == 'metadata_providers_enabled':
                         result[setting] = cwa_db.cwa_settings.get(setting, '{}')
                     else:

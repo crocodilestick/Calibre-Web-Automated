@@ -551,7 +551,15 @@ class DismissedDuplicateGroup(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    group_hash = Column(String(32), nullable=False)  # MD5 hash of title+author combo
+    group_hash = Column(String(32), nullable=False)  # MD5 hash of title+author combo (display data; transitional)
+    # D5: the stable identity of the group — the SHA-256 duplicate_key from
+    # cwa_duplicate_book_keys. group_hash is derived from the DISPLAY
+    # title/author of whichever book happens to sort first, so a new ingest or
+    # a metadata edit changed it and dismissed groups resurfaced (and two
+    # groups sharing a raw display title collided into one dismissal).
+    # Dismissals match on duplicate_key when present; group_hash remains for
+    # rows written before the migration and for the UI routes.
+    duplicate_key = Column(String, nullable=True)
     dismissed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
@@ -2017,6 +2025,31 @@ def migrate_user_view_settings_null(engine, _session):
         log.error("[view-settings-null-migration] failed: %s", ex)
 
 
+def migrate_dismissed_duplicate_groups_table(engine, _session):
+    """Add the D5 ``duplicate_key`` column to dismissed_duplicate_groups.
+
+    Introspects the live schema and adds only what's missing, so the
+    migration is idempotent and repairs partial states (same pattern as
+    migrate_oauth_provider_table, fork #354). Existing rows keep a NULL
+    duplicate_key and are lazily backfilled by filter_dismissed_groups when
+    their group_hash next matches a live group.
+    """
+    from sqlalchemy import inspect as sa_inspect
+    try:
+        inspector = sa_inspect(engine)
+        if "dismissed_duplicate_groups" not in inspector.get_table_names():
+            return  # created fresh from the model with every column present
+        existing = {col["name"] for col in inspector.get_columns("dismissed_duplicate_groups")}
+        if "duplicate_key" not in existing:
+            _run_ddl_with_retry(
+                engine,
+                "ALTER TABLE dismissed_duplicate_groups ADD COLUMN duplicate_key TEXT",
+            )
+            print("[dup-dismiss-migration] Added duplicate_key column to dismissed_duplicate_groups", flush=True)
+    except Exception as e:
+        print(f"[dup-dismiss-migration] Failed to add duplicate_key column: {e}", flush=True)
+
+
 def migrate_book_cover_preview_table(engine, _session):
     """Create the book_cover_preview table if it doesn't exist.
     Idempotent — `BookCoverPreview.__table__.create(engine, checkfirst=True)`
@@ -2414,6 +2447,7 @@ def migrate_Database(_session):
     migrate_annotation_polymorphic_position(engine, _session)
     migrate_annotation_device_origin(engine, _session)
     migrate_book_cover_preview_table(engine, _session)
+    migrate_dismissed_duplicate_groups_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables).
     # Schema invariant — must not be gated on KOReader sync being enabled.

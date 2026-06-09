@@ -317,6 +317,7 @@ def _load_duplicates_module(delete_key_calls):
         {
             "func": SimpleNamespace(),
             "and_": lambda *args: args,
+            "or_": lambda *args: args,
             "case": lambda *args, **kwargs: ("case", args, kwargs),
         },
     )

@@ -6,7 +6,7 @@
 
 from flask import Blueprint, jsonify, request, abort
 from flask_babel import gettext as _
-from sqlalchemy import func, and_, case
+from sqlalchemy import func, and_, case, or_
 from sqlalchemy.sql.expression import true, false
 from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
@@ -314,6 +314,22 @@ def get_unresolved_duplicate_count(user_id=None):
         return 0
 
 
+def _stable_group_key(books):
+    """Best-effort stable duplicate_key for a legacy-path group (D5).
+
+    The index path carries the key straight from cwa_duplicate_book_keys; the
+    legacy SQL/Python fallback paths recompute it from the group's first book
+    through the same single key-computation entry point so dismissals keyed on
+    duplicate_key apply regardless of which scan path produced the group.
+    """
+    try:
+        from cps.duplicate_index import build_duplicate_key
+        return build_duplicate_key(books[0], CWA_DB().cwa_settings)
+    except Exception as e:
+        log.warning("[cwa-duplicates] Could not compute stable group key: %s", e)
+        return None
+
+
 def filter_dismissed_groups(duplicate_groups, user_id=None):
     """Filter dismissed duplicate groups for a given user."""
     if not duplicate_groups:
@@ -327,13 +343,41 @@ def filter_dismissed_groups(duplicate_groups, user_id=None):
         return duplicate_groups
 
     try:
-        dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
+        dismissed_rows = ub.session.query(ub.DismissedDuplicateGroup)\
             .filter(ub.DismissedDuplicateGroup.user_id == user_id)\
             .all()
-        dismissed_hashes = {row[0] for row in dismissed_groups}
-        if not dismissed_hashes:
+        if not dismissed_rows:
             return duplicate_groups
-        return [group for group in duplicate_groups if group.get('group_hash') not in dismissed_hashes]
+        # D5: duplicate_key (stable SHA-256 grouping identity) is the match of
+        # record. group_hash derives from display title/author of whichever
+        # book sorts first, so a new ingest or metadata edit changed it and
+        # dismissed groups resurfaced — it remains only for rows written
+        # before the migration (NULL duplicate_key).
+        dismissed_keys = {row.duplicate_key for row in dismissed_rows if row.duplicate_key}
+        legacy_rows = [row for row in dismissed_rows if not row.duplicate_key]
+        legacy_hashes = {row.group_hash for row in legacy_rows}
+
+        # Lazy backfill: a pre-migration row whose hash still matches a live
+        # group learns that group's duplicate_key, surviving future drift.
+        if legacy_hashes:
+            backfilled = False
+            by_hash = {g.get('group_hash'): g.get('duplicate_key')
+                       for g in duplicate_groups if g.get('duplicate_key')}
+            for row in legacy_rows:
+                key = by_hash.get(row.group_hash)
+                if key:
+                    row.duplicate_key = key
+                    dismissed_keys.add(key)
+                    backfilled = True
+            if backfilled:
+                try:
+                    ub.session.commit()
+                except Exception:
+                    ub.session.rollback()
+
+        return [group for group in duplicate_groups
+                if not ((group.get('duplicate_key') and group.get('duplicate_key') in dismissed_keys)
+                        or group.get('group_hash') in legacy_hashes)]
     except Exception as e:
         log.error("[cwa-duplicates] Error filtering dismissed groups: %s", str(e))
         return duplicate_groups
@@ -803,39 +847,25 @@ def find_duplicate_books_sql(use_title, use_author, use_language, use_series, us
             'author': display_author,
             'count': len(books),
             'books': books,
-            'group_hash': group_hash
+            'group_hash': group_hash,
+            'duplicate_key': _stable_group_key(books)
         })
         
         print(f"[cwa-duplicates] Found duplicate group: '{display_title}' by {display_author} ({len(books)} copies) - IDs: {book_ids}", flush=True)
         log.info("[cwa-duplicates] Found duplicate group: '%s' by %s (%s copies) - IDs: %s", 
                 display_title, display_author, len(books), book_ids)
     
-    # Filter out dismissed groups if requested
+    # Filter out dismissed groups if requested — single implementation (D5):
+    # filter_dismissed_groups matches on the stable duplicate_key with a
+    # group_hash fallback for pre-migration rows.
     if not include_dismissed and user_id:
-        try:
-            dismissed_hashes = set()
-            dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
-                .filter(ub.DismissedDuplicateGroup.user_id == user_id)\
-                .all()
-            dismissed_hashes = {row[0] for row in dismissed_groups}
-            
-            if dismissed_hashes:
-                original_count = len(duplicate_groups)
-                duplicate_groups = [group for group in duplicate_groups 
-                                  if group['group_hash'] not in dismissed_hashes]
-                filtered_count = original_count - len(duplicate_groups)
-                if filtered_count > 0:
-                    print(f"[cwa-duplicates] Filtered out {filtered_count} dismissed groups for user {user_id}", flush=True)
-                    log.info("[cwa-duplicates] Filtered out %s dismissed groups for user %s", 
-                            filtered_count, user_id)
-        except Exception as e:
-            log.error("[cwa-duplicates] Error filtering dismissed groups: %s", str(e))
-    
+        duplicate_groups = filter_dismissed_groups(duplicate_groups, user_id=user_id)
+
     # Sort by title, then author for consistent display
     duplicate_groups.sort(key=lambda x: (x['title'].lower(), x['author'].lower()))
-    
+
     print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
-    
+
     return duplicate_groups
 
 
@@ -1015,7 +1045,8 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
                 'author': display_author,
                 'count': len(books),
                 'books': books,
-                'group_hash': group_hash
+                'group_hash': group_hash,
+                'duplicate_key': _stable_group_key(books)
             })
             
             book_ids = [book.id for book in books]
@@ -1023,32 +1054,17 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
             log.info("[cwa-duplicates] Found duplicate group: '%s' by %s (%s copies) - IDs: %s", 
                     display_title, display_author, len(books), book_ids)
     
-    # Filter out dismissed groups if requested
+    # Filter out dismissed groups if requested — single implementation (D5):
+    # filter_dismissed_groups matches on the stable duplicate_key with a
+    # group_hash fallback for pre-migration rows.
     if not include_dismissed and user_id:
-        try:
-            dismissed_hashes = set()
-            dismissed_groups = ub.session.query(ub.DismissedDuplicateGroup.group_hash)\
-                .filter(ub.DismissedDuplicateGroup.user_id == user_id)\
-                .all()
-            dismissed_hashes = {row[0] for row in dismissed_groups}
-            
-            if dismissed_hashes:
-                original_count = len(duplicate_groups)
-                duplicate_groups = [group for group in duplicate_groups 
-                                  if group['group_hash'] not in dismissed_hashes]
-                filtered_count = original_count - len(duplicate_groups)
-                if filtered_count > 0:
-                    print(f"[cwa-duplicates] Filtered out {filtered_count} dismissed groups for user {user_id}", flush=True)
-                    log.info("[cwa-duplicates] Filtered out %s dismissed groups for user %s", 
-                            filtered_count, user_id)
-        except Exception as e:
-            log.error("[cwa-duplicates] Error filtering dismissed groups: %s", str(e))
-    
+        duplicate_groups = filter_dismissed_groups(duplicate_groups, user_id=user_id)
+
     # Sort by title, then author for consistent display
     duplicate_groups.sort(key=lambda x: (x['title'].lower(), x['author'].lower()))
-    
+
     print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
-    
+
     return duplicate_groups
 
 
@@ -1255,6 +1271,27 @@ def dismiss_duplicate_scan_setup_notice():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+def _resolve_duplicate_key_for_hash(group_hash, user_id):
+    """Map a UI group_hash to the group's stable duplicate_key (D5).
+
+    The dismiss/undismiss routes are addressed by group_hash (what the page's
+    buttons carry), but the dismissal of record is keyed on duplicate_key so
+    it survives display-data drift. Resolve against the current groups,
+    dismissed included (undismiss targets a dismissed group).
+    """
+    try:
+        from cps.duplicate_index import get_duplicate_groups_from_index
+        groups = get_duplicate_groups_from_index(
+            CWA_DB().cwa_settings, include_dismissed=True, user_id=user_id)
+        for group in groups:
+            if group.get('group_hash') == group_hash:
+                return group.get('duplicate_key')
+    except Exception as e:
+        log.warning("[cwa-duplicates] Could not resolve duplicate_key for hash %s: %s",
+                    group_hash, e)
+    return None
+
+
 @duplicates.route("/duplicates/dismiss/<group_hash>", methods=['POST'])
 @login_required_if_no_ano
 @admin_or_edit_required
@@ -1268,23 +1305,37 @@ def dismiss_duplicate_group(group_hash):
         JSON response with success status and new count
     """
     try:
-        # Check if already dismissed
-        existing = ub.session.query(ub.DismissedDuplicateGroup)\
-            .filter(ub.DismissedDuplicateGroup.user_id == current_user.id)\
-            .filter(ub.DismissedDuplicateGroup.group_hash == group_hash)\
-            .first()
-        
+        duplicate_key = _resolve_duplicate_key_for_hash(group_hash, current_user.id)
+
+        # Check if already dismissed — by stable key first (D5), then by the
+        # transitional hash for pre-migration rows.
+        query = ub.session.query(ub.DismissedDuplicateGroup)\
+            .filter(ub.DismissedDuplicateGroup.user_id == current_user.id)
+        existing = None
+        if duplicate_key:
+            existing = query.filter(
+                ub.DismissedDuplicateGroup.duplicate_key == duplicate_key).first()
+        if not existing:
+            existing = query.filter(
+                ub.DismissedDuplicateGroup.group_hash == group_hash).first()
+
         if existing:
+            # Backfill the stable key onto a pre-migration row.
+            if duplicate_key and not existing.duplicate_key:
+                existing.duplicate_key = duplicate_key
+                ub.session.commit()
             return jsonify({
                 'success': True,
                 'message': _('Duplicate group already dismissed'),
                 'count': get_unresolved_duplicate_count()
             })
-        
-        # Create dismissal record
+
+        # Create dismissal record keyed on the stable duplicate_key (D5);
+        # group_hash is kept for the UI routes and pre-migration matching.
         dismissal = ub.DismissedDuplicateGroup(
             user_id=current_user.id,
-            group_hash=group_hash
+            group_hash=group_hash,
+            duplicate_key=duplicate_key
         )
         ub.session.add(dismissal)
         ub.session.commit()
@@ -1323,12 +1374,18 @@ def undismiss_duplicate_group(group_hash):
         JSON response with success status and new count
     """
     try:
-        # Find and delete dismissal record
+        # Find and delete the dismissal record — match the stable key when the
+        # group resolves to one (D5), plus the hash for pre-migration rows or
+        # groups whose display data has since drifted.
+        duplicate_key = _resolve_duplicate_key_for_hash(group_hash, current_user.id)
+        conditions = [ub.DismissedDuplicateGroup.group_hash == group_hash]
+        if duplicate_key:
+            conditions.append(ub.DismissedDuplicateGroup.duplicate_key == duplicate_key)
         deleted = ub.session.query(ub.DismissedDuplicateGroup)\
             .filter(ub.DismissedDuplicateGroup.user_id == current_user.id)\
-            .filter(ub.DismissedDuplicateGroup.group_hash == group_hash)\
-            .delete()
-        
+            .filter(or_(*conditions))\
+            .delete(synchronize_session=False)
+
         ub.session.commit()
         
         if deleted:

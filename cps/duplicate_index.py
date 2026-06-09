@@ -410,7 +410,7 @@ def _decorate_books_for_group(books):
         book.cover_url = f"/cover/{book.id}" if getattr(book, "has_cover", None) else "/static/generic_cover.svg"
 
 
-def _group_from_books(books):
+def _group_from_books(books, duplicate_key=None):
     books.sort(key=lambda book: _timestamp_or_default(book.timestamp, _AWARE_MIN), reverse=True)
     _decorate_books_for_group(books)
     display_title = books[0].title if books[0].title else "Untitled"
@@ -422,18 +422,22 @@ def _group_from_books(books):
         "author": display_author,
         "count": len(books),
         "books": books,
+        # group_hash derives from DISPLAY data and drifts when an ingest or a
+        # metadata edit changes books[0] — kept for the UI routes only.
+        # duplicate_key is the stable identity dismissals match on (D5).
         "group_hash": generate_group_hash(display_title, display_author),
+        "duplicate_key": duplicate_key,
     }
 
 
 def get_duplicate_groups_from_index(settings, include_dismissed=False, user_id=None, candidate_book_ids=None):
     duplicate_groups = []
-    for _duplicate_key, book_ids_str, _count in _duplicate_key_rows(settings, candidate_book_ids=candidate_book_ids):
+    for duplicate_key, book_ids_str, _count in _duplicate_key_rows(settings, candidate_book_ids=candidate_book_ids):
         book_ids = [int(book_id) for book_id in book_ids_str.split(",") if book_id]
         books = _load_books_by_ids(book_ids, user_id=user_id)
         if len(books) < 2:
             continue
-        duplicate_groups.append(_group_from_books(books))
+        duplicate_groups.append(_group_from_books(books, duplicate_key=duplicate_key))
 
     duplicate_groups.sort(key=lambda group: (group["title"].lower(), group["author"].lower()))
     if not include_dismissed:

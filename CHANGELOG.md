@@ -17,6 +17,13 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Dismissed duplicate groups stay dismissed. Adding another copy of a book or
+  editing its title changed the group's internal label, so groups you had
+  dismissed popped back onto the Duplicates page (and could re-enter
+  auto-resolve). Dismissals are now tied to the group's stable identity and
+  survive new ingests and metadata edits; existing dismissals are upgraded
+  automatically the first time they match. Two different groups that happened
+  to share a display title also no longer share one dismissal.
 - Merging duplicate books can no longer overwrite one of the kept book's
   files. If a file with the merge target's name was already on disk (from an
   earlier partial failure or a manual edit), the merge silently copied over

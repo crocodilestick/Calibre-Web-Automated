@@ -145,6 +145,24 @@ class TestD5LegacyRowsBackfillAndStillMatch:
         assert "ub-commit" in calls, "the backfill must be persisted"
 
 
+class TestD5KeyRotationRekeys:
+    def test_normalization_bump_rekeys_dismissal_via_hash(self):
+        # A NORMALIZATION_VERSION bump (D6) rotates every duplicate_key. A row
+        # holding a stale v1 key must still match its group via the hash
+        # fallback AND be re-keyed to the group's current key, so the
+        # dismissal survives the index rebuild.
+        row = SimpleNamespace(group_hash="H1", duplicate_key="V1-KEY")
+        module, calls = _world_with_dismissals([row])
+        groups = [_group("Old Book", "H1", "V2-KEY")]
+        out = module.filter_dismissed_groups(groups, user_id=7)
+        assert out == [], (
+            "a dismissal stopped matching after the normalization-version "
+            "rebuild rotated its duplicate_key (D5/D6 interaction)"
+        )
+        assert row.duplicate_key == "V2-KEY", "stale keys must be re-keyed"
+        assert "ub-commit" in calls
+
+
 class TestD5SourcePins:
     def test_dismiss_route_stores_duplicate_key(self):
         m = re.search(r"def dismiss_duplicate_group\(group_hash\):(.*?)\n@", DUP_SRC, re.S)

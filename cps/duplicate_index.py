@@ -23,6 +23,7 @@ from .duplicates import (
     generate_group_hash,
     get_common_filters,
     normalize_title_for_duplicates,
+    normalize_text_for_duplicates,
 )
 
 sys.path.insert(1, "/app/calibre-web-automated/scripts/")
@@ -31,7 +32,7 @@ from cwa_db import CWA_DB
 
 log = logger.create()
 
-NORMALIZATION_VERSION = "duplicate-index-v1"
+NORMALIZATION_VERSION = "duplicate-index-v2"  # v2: NFC + whitespace-collapse normalization (D6)
 MAX_INCREMENTAL_BOOK_IDS = 1000
 DUPLICATE_INDEX_REBUILD_BATCH_SIZE = 250
 INGEST_BATCH_DIRTY_FILE = "/config/cwa_ingest_batch_dirty"
@@ -138,10 +139,10 @@ def build_book_key_parts(book, settings):
     # leading primary-author prefix, unlike the old Python fallback's no-author mode.
     return BookKeyParts(
         normalized_title=normalize_title_for_duplicates(title, primary_author),
-        normalized_author=primary_author.lower().strip() if primary_author else "unknown",
-        normalized_language=language.lower().strip(),
-        normalized_series=series.lower().strip(),
-        normalized_publisher=publisher.lower().strip(),
+        normalized_author=normalize_text_for_duplicates(primary_author, default="unknown"),
+        normalized_language=normalize_text_for_duplicates(language, default="unknown"),
+        normalized_series=normalize_text_for_duplicates(series, default="no_series"),
+        normalized_publisher=normalize_text_for_duplicates(publisher, default="unknown_publisher"),
         format_signature=format_signature,
     )
 

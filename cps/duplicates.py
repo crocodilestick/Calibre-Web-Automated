@@ -13,6 +13,8 @@ from datetime import datetime, timezone
 from functools import wraps
 import hashlib
 import json
+import re
+import unicodedata
 import os
 import threading
 import time
@@ -126,23 +128,38 @@ def admin_or_edit_required(f):
     return decorated_function
 
 
+def normalize_text_for_duplicates(value, default=""):
+    """Shared text normalization for every duplicate-keying surface (D6).
+
+    Unicode NFC first (an NFD 'Café' from macOS filenames or some metadata
+    sources hashed differently from the NFC 'Café' a user typed — real
+    duplicates were invisible), then collapse internal whitespace ('The  Book'
+    vs 'The Book'), then lowercase + strip. generate_group_hash,
+    normalize_title_for_duplicates, and duplicate_index.build_book_key_parts
+    all route through here so the three keying surfaces can never drift.
+    """
+    text = value if value is not None and str(value) else default
+    text = unicodedata.normalize('NFC', str(text))
+    text = re.sub(r'\s+', ' ', text)
+    return text.lower().strip()
+
+
 def generate_group_hash(title, author):
     """Generate MD5 hash for a duplicate group based on title and author
-    
+
     Args:
         title: Book title (will be normalized)
         author: Primary author name (will be normalized)
-        
+
     Returns:
         32-character MD5 hash string
     """
-    # Normalize inputs - lowercase, strip whitespace
-    normalized_title = (title or "untitled").lower().strip()
-    normalized_author = (author or "unknown").lower().strip()
-    
+    normalized_title = normalize_text_for_duplicates(title, default="untitled")
+    normalized_author = normalize_text_for_duplicates(author, default="unknown")
+
     # Create composite key
     composite = f"{normalized_title}|{normalized_author}"
-    
+
     # Generate MD5 hash
     return hashlib.md5(composite.encode('utf-8')).hexdigest()
 
@@ -153,9 +170,9 @@ def normalize_title_for_duplicates(title, primary_author=None):
     If the title starts with the primary author (e.g., "Homer, the Iliad"),
     strip the leading author prefix to avoid false negatives.
     """
-    normalized = (title or "untitled").lower().strip()
+    normalized = normalize_text_for_duplicates(title, default="untitled")
     if primary_author:
-        author_norm = str(primary_author).lower().strip()
+        author_norm = normalize_text_for_duplicates(primary_author)
         author_prefix = f"{author_norm}, "
         if normalized.startswith(author_prefix):
             normalized = normalized[len(author_prefix):].strip()
@@ -353,8 +370,14 @@ def filter_dismissed_groups(duplicate_groups, user_id=None):
         # book sorts first, so a new ingest or metadata edit changed it and
         # dismissed groups resurfaced — it remains only for rows written
         # before the migration (NULL duplicate_key).
+        live_keys = {g.get('duplicate_key') for g in duplicate_groups if g.get('duplicate_key')}
         dismissed_keys = {row.duplicate_key for row in dismissed_rows if row.duplicate_key}
-        legacy_rows = [row for row in dismissed_rows if not row.duplicate_key]
+        # Rows needing (re-)keying: pre-migration rows (no key) AND rows whose
+        # stored key matches no live group — a NORMALIZATION_VERSION bump
+        # rotates every duplicate_key (v1→v2, D6), and without re-keying those
+        # dismissals would silently stop matching after the index rebuilds.
+        legacy_rows = [row for row in dismissed_rows
+                       if not row.duplicate_key or row.duplicate_key not in live_keys]
         legacy_hashes = {row.group_hash for row in legacy_rows}
 
         # Lazy backfill: a pre-migration row whose hash still matches a live
@@ -365,7 +388,7 @@ def filter_dismissed_groups(duplicate_groups, user_id=None):
                        for g in duplicate_groups if g.get('duplicate_key')}
             for row in legacy_rows:
                 key = by_hash.get(row.group_hash)
-                if key:
+                if key and key != row.duplicate_key:
                     row.duplicate_key = key
                     dismissed_keys.add(key)
                     backfilled = True

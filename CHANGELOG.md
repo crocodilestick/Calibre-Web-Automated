@@ -17,6 +17,13 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Duplicate detection now catches copies whose titles differ only in unicode
+  form or spacing. A "Café" imported from a Mac (decomposed accents) and a
+  "Café" typed by hand, or "The  Book" with a double space, counted as
+  different books and never showed up as duplicates. All duplicate matching
+  now normalizes accents and whitespace first; the duplicate index rebuilds
+  itself on first scan after the update, and your existing dismissals carry
+  over automatically.
 - Dismissed duplicate groups stay dismissed. Adding another copy of a book or
   editing its title changed the group's internal label, so groups you had
   dismissed popped back onto the Duplicates page (and could re-enter

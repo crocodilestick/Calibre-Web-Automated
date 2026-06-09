@@ -24,6 +24,11 @@ is for things you can see or feel when running the app.
   desktop. Especially handy for filling a brand-new empty shelf.
 
 ### Fixed
+- Resolving duplicate books is now safe even if a duplicate scan happens to run
+  at the same moment. Before, the two could collide — deleting the same book
+  twice, leaving a duplicate only half-removed, or throwing a brief error that
+  left the library inconsistent. Now only one resolution runs at a time and the
+  other steps aside, so your books stay intact.
 - Duplicate detection no longer treats books that are *missing* a title or
   author as duplicates of each other. Two unrelated books that both happen to
   have no title (or no author) used to collapse together as a "duplicate" — and

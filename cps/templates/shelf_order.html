@@ -1,5 +1,16 @@
 {% import 'image.html' as image %}
 {% extends "layout.html" %}
+{# Load the reorder grid styles from the document HEAD (fork #320, @SpookyUSAF):
+   the cover-sizing rule MUST reach the browser, and the only difference between
+   the core stylesheets (which always apply for this reporter) and this page's
+   sheet was that this one's <link> sat in the <body>. A body-placed stylesheet
+   link is valid HTML but some reverse proxies / security middleware strip or
+   ignore <link> elements found in the body as "injected", which left the covers
+   unsized and oversized on an otherwise-styled (caliBlur) page. Loading it here,
+   in the same <head> block as cwa.css/caliBlur.css, removes that difference. #}
+{% block header %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shelf_reorder.css') }}">
+{% endblock %}
 {% block body %}
   {# Deliberately NOT the discover wrapper class: main.js runs isotope on
      every `.discover .row` that contains .book cards. Isotope absolutely-
@@ -61,10 +72,6 @@
       </div>
     </div>
   </div>
-  {# Reorder grid styles live in an external stylesheet (not an inline <style>):
-     inline blocks can be stripped by a strict reverse-proxy CSP, which would
-     leave the cover sizing unapplied and covers oversized (fork #320). #}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/shelf_reorder.css') }}">
 {% endblock %}
 
 {% block js %}

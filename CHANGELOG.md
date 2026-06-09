@@ -17,6 +17,12 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Shelf reorder covers: the stylesheet that keeps the covers at the normal
+  thumbnail size now loads from the page head, alongside every other stylesheet,
+  instead of from the page body. A body-loaded stylesheet link can be dropped by
+  some reverse proxies, which left the covers oversized on an otherwise-correct
+  page — the case @SpookyUSAF kept hitting on caliBlur even after v4.0.158/159.
+  (#320 follow-up, reported by @SpookyUSAF)
 - Automatic metadata fetch (the admin "auto metadata fetch" option, off by
   default) no longer overwrites a book's correct author, ISBN, series,
   publication date or rating with a wrong match's. Previously, with auto-fetch

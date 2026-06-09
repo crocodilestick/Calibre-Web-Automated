@@ -164,7 +164,7 @@ def _enabled_key_values(parts: BookKeyParts, settings):
     return values
 
 
-def build_duplicate_key(book, settings):
+def build_duplicate_key(book, settings, parts=None):
     # D7 (data-safety): a book must have the REAL metadata for every enabled
     # criterion to be a duplicate candidate. build_book_key_parts substitutes
     # sentinels ("untitled" / "unknown") for missing fields, so two distinct
@@ -172,13 +172,22 @@ def build_duplicate_key(book, settings):
     # collapse to the same key and auto-resolve could DELETE one. Give such
     # incomplete-metadata books a per-book-unique key so they are "duplicates of
     # only themselves" — never grouped, never auto-deleted. (Sentinels remain
-    # fine for display; they just must not be dedup keys.)
+    # fine for display; they just must not be dedup keys.) This is the SINGLE
+    # key-computation entry point: the index writers (upsert_book_keys /
+    # rebuild_duplicate_index) call it, so the guard is on the actual write path.
     criteria = get_effective_duplicate_criteria(settings)
     if criteria.get("title") and not getattr(book, "title", None):
         return _hash_json([("incomplete-no-title", str(getattr(book, "id", id(book))))])
-    if criteria.get("author") and not _primary_author(book):
+    # _primary_author returns the literal "unknown" sentinel (never falsy) when
+    # the book has no authors or a nameless first author — detect THAT, not the
+    # truthiness of the return value.
+    if criteria.get("author") and (
+        not getattr(book, "authors", None) or _primary_author(book) == "unknown"
+    ):
         return _hash_json([("incomplete-no-author", str(getattr(book, "id", id(book))))])
-    return _hash_json(_enabled_key_values(build_book_key_parts(book, settings), settings))
+    if parts is None:
+        parts = build_book_key_parts(book, settings)
+    return _hash_json(_enabled_key_values(parts, settings))
 
 
 def _book_query(book_ids=None):
@@ -246,7 +255,7 @@ def upsert_book_keys(book_ids: Iterable[int], settings):
     updated = 0
     for book in books:
         parts = build_book_key_parts(book, settings)
-        duplicate_key = _hash_json(_enabled_key_values(parts, settings))
+        duplicate_key = build_duplicate_key(book, settings, parts)
         cwa_db.cur.execute(
             """
             INSERT INTO cwa_duplicate_book_keys (
@@ -301,7 +310,7 @@ def rebuild_duplicate_index(settings, progress_callback=None):
             if book is None:
                 continue
             parts = build_book_key_parts(book, settings)
-            duplicate_key = _hash_json(_enabled_key_values(parts, settings))
+            duplicate_key = build_duplicate_key(book, settings, parts)
             key_rows.append(
                 (book.id, *parts.as_db_tuple(), duplicate_key, fingerprint)
             )

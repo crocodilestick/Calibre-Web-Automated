@@ -17,6 +17,12 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Finishing a book in KOReader now marks it read on the website when you use a
+  custom "read" column. If your admin set a Calibre custom column as the read
+  marker (a stock option under Feature Configuration), KOReader completions
+  only wrote the built-in read list, so the book page checkmark stayed empty.
+  The sync now also sets the custom column — and only ever sets it: re-opening
+  a finished book never silently un-reads it.
 - Automatic metadata fetch now actually downloads covers. The "update cover"
   option existed but did nothing — books imported with auto-fetch on never got
   their cover updated. Covers now download through the same safe path as the

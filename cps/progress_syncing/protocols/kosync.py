@@ -47,7 +47,7 @@ from flask import Blueprint, request, jsonify
 from flask_babel import gettext as _
 from werkzeug.security import check_password_hash
 from sqlalchemy import func, desc
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, OperationalError, InvalidRequestError
 
 from ... import logger, ub, csrf, config, constants, services, usermanagement
 from ...render_template import render_title_template
@@ -461,6 +461,56 @@ def update_book_read_status(user, book_id: int, percentage: float) -> None:
 
     # Merge the record (caller commits)
     ub.session.merge(book_read)
+
+    # Mirror the web read-status path (helper.edit_book_read_status): when an admin has
+    # designated a Calibre custom column as the read marker, the book detail page reads
+    # read-status from THAT column, not ub.ReadBook. The ReadBook write above stays intact
+    # (Kobo cross-sync and the default UI read from it), but for custom-column users a
+    # KOReader completion never reached the column, so the checkmark stayed empty (#312,
+    # custom-column subset). Sticky semantics: we only SET the marker on FINISHED and never
+    # clear it from a sync, so re-opening a finished book in KOReader can't silently un-read
+    # it — un-marking stays a manual web toggle, matching "mark as read" intent.
+    if config.config_read_column and new_status == ub.ReadBook.STATUS_FINISHED:
+        _mark_custom_read_column(book_id)
+
+
+def _mark_custom_read_column(book_id: int) -> None:
+    """Set the configured Calibre custom read-column for ``book_id`` to truthy.
+
+    Mirrors the custom-column branch of ``helper.edit_book_read_status`` for the
+    kosync path, which has no Flask ``current_user``. Calibre custom read-columns
+    are book-level (not per-user), so no user scoping is needed — same as the web
+    path, which writes the column without a user filter.
+
+    Best-effort: a missing column or a metadata.db error is logged, never raised,
+    so a custom-column hiccup can't break progress sync (the ReadBook write has
+    already happened and the caller still commits app.db).
+    """
+    from ... import calibre_db, db  # lazy: calibre_db instance + reflected cc_classes
+    cfg = config.config_read_column
+    try:
+        # get_book, not get_filtered_book: kosync auths via headers, so flask-login's
+        # current_user is the ANONYMOUS user here — get_filtered_book would apply the
+        # anonymous content/language/tag restrictions (and the restricted-column error
+        # path even calls flash()), silently filtering the book to None and dropping
+        # the marker. The syncing user's access was already established by the sync flow.
+        book = calibre_db.get_book(book_id)
+        if book is None:
+            log.error("kosync read-status: book %s not found in calibre database", book_id)
+            return
+        read_status = getattr(book, 'custom_column_' + str(cfg))
+        if len(read_status):
+            read_status[0].value = True
+        else:
+            cc_class = db.cc_classes[cfg]
+            calibre_db.session.add(cc_class(value=1, book=book_id))
+        calibre_db.session.commit()
+        log.info("kosync read-status: marked book %s read via custom column No.%s", book_id, cfg)
+    except (KeyError, AttributeError, IndexError):
+        log.error("kosync read-status: custom column No.%s does not exist in calibre database", cfg)
+    except (OperationalError, InvalidRequestError) as ex:
+        calibre_db.session.rollback()
+        log.error("kosync read-status: custom column write failed: %s", ex)
 
 
 def get_progress_record(user_id, document_checksum, book_id) -> KOSyncProgress:

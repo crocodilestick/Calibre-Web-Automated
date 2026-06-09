@@ -24,6 +24,9 @@ is for things you can see or feel when running the app.
   desktop. Especially handy for filling a brand-new empty shelf.
 
 ### Fixed
+- Resolving duplicate books is more reliable: the resolver no longer closes a
+  shared database connection mid-operation, which could cause errors or a
+  half-finished cleanup when the library was being used at the same time.
 - The shelf reorder screen's cover-size fix now reaches more setups: the covers
   were still showing oversized for some users on v4.0.158 (e.g. behind certain
   reverse proxies). The styling moved out of the page into a regular stylesheet

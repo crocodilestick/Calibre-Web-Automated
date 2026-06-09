@@ -1871,12 +1871,15 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
         return result
         
     finally:
-        # Always cleanup sessions
-        try:
-            if calibre_db.session is not None:
-                calibre_db.session.close()
-        except Exception:
-            pass
+        # Do NOT close calibre_db.session here (data-safety, D1). It is a shared
+        # module-level (scoped) session used by BOTH the HTTP worker and the
+        # TaskDuplicateScan thread. Closing it from this utility — which runs from
+        # request contexts (preview/execute-resolution) AND the background scan —
+        # detaches objects mid-operation for any concurrent context
+        # (DetachedInstanceError) and can abort a delete partway through a group.
+        # The session lifecycle is owned by the Flask request teardown and by
+        # TaskDuplicateScan.run()'s own finally — not by this function.
+        pass
 
 
 def merge_duplicate_group(book_to_keep, books_to_merge):

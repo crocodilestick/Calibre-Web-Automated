@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 02:58+0000\n"
+"POT-Creation-Date: 2026-06-09 04:15+0000\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -1288,35 +1288,35 @@ msgstr ""
 msgid "None"
 msgstr "Aucun"
 
-#: cps/duplicates.py:374 cps/duplicates.py:385
+#: cps/duplicates.py:389 cps/duplicates.py:400
 msgid "Duplicate Books"
 msgstr "Livres en double"
 
-#: cps/duplicates.py:1265
+#: cps/duplicates.py:1280
 msgid "Duplicate group already dismissed"
 msgstr "Groupe en double déjà supprimé"
 
-#: cps/duplicates.py:1285
+#: cps/duplicates.py:1300
 msgid "Duplicate group dismissed"
 msgstr "Groupe en double supprimé"
 
-#: cps/duplicates.py:1322
+#: cps/duplicates.py:1337
 msgid "Duplicate group restored"
 msgstr "Groupe dupliqué restauré"
 
-#: cps/duplicates.py:1324
+#: cps/duplicates.py:1339
 msgid "Duplicate group was not dismissed"
 msgstr "Le groupe en double n'a pas été supprimé"
 
-#: cps/duplicates.py:1396
+#: cps/duplicates.py:1411
 msgid "Duplicate scan queued"
 msgstr "Scan en double mis en file d'attente"
 
-#: cps/duplicates.py:1465
+#: cps/duplicates.py:1480
 msgid "Duplicate scan completed (fallback)"
 msgstr "Scan en double terminé (plan de secours)"
 
-#: cps/duplicates.py:1540
+#: cps/duplicates.py:1555
 msgid "Invalid resolution strategy"
 msgstr "Stratégie de résolution non valide"
 

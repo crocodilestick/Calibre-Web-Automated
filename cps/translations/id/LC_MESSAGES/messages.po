@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 02:58+0000\n"
+"POT-Creation-Date: 2026-06-09 04:15+0000\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -1204,39 +1204,39 @@ msgstr ""
 msgid "None"
 msgstr "Tidak ada"
 
-#: cps/duplicates.py:374 cps/duplicates.py:385
+#: cps/duplicates.py:389 cps/duplicates.py:400
 #, fuzzy
 msgid "Duplicate Books"
 msgstr "Hapus"
 
-#: cps/duplicates.py:1265
+#: cps/duplicates.py:1280
 msgid "Duplicate group already dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1285
+#: cps/duplicates.py:1300
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Hapus"
 
-#: cps/duplicates.py:1322
+#: cps/duplicates.py:1337
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Hapus"
 
-#: cps/duplicates.py:1324
+#: cps/duplicates.py:1339
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1396
+#: cps/duplicates.py:1411
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Tidak ada hasil yang ditemukan"
 
-#: cps/duplicates.py:1465
+#: cps/duplicates.py:1480
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1540
+#: cps/duplicates.py:1555
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Peran tidak valid"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 02:58+0000\n"
+"POT-Creation-Date: 2026-06-09 04:15+0000\n"
 "PO-Revision-Date: 2023-01-06 11:00+0000\n"
 "Last-Translator: Vegard Fladby <vegard.fladby@gmail.com>\n"
 "Language-Team: \n"
@@ -1201,39 +1201,39 @@ msgstr ""
 msgid "None"
 msgstr "Ingen"
 
-#: cps/duplicates.py:374 cps/duplicates.py:385
+#: cps/duplicates.py:389 cps/duplicates.py:400
 #, fuzzy
 msgid "Duplicate Books"
 msgstr "Slett bok"
 
-#: cps/duplicates.py:1265
+#: cps/duplicates.py:1280
 msgid "Duplicate group already dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1285
+#: cps/duplicates.py:1300
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Slett bok"
 
-#: cps/duplicates.py:1322
+#: cps/duplicates.py:1337
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Slett bok"
 
-#: cps/duplicates.py:1324
+#: cps/duplicates.py:1339
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1396
+#: cps/duplicates.py:1411
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Merket ble ikke funnet"
 
-#: cps/duplicates.py:1465
+#: cps/duplicates.py:1480
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1540
+#: cps/duplicates.py:1555
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Ugyldig rolle"

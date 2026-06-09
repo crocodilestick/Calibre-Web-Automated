@@ -24,6 +24,12 @@ is for things you can see or feel when running the app.
   desktop. Especially handy for filling a brand-new empty shelf.
 
 ### Fixed
+- Resolving duplicate books no longer risks leaving a book in a broken,
+  half-deleted state if something fails partway through. Previously the files
+  were removed before the library database was updated, so an error in between
+  could leave a "ghost" book that still showed in your library but wouldn't open.
+  The database is now updated first and the files removed last, so a failure
+  leaves the book fully intact and the duplicate is simply re-resolved next time.
 - Resolving duplicate books is now safe even if a duplicate scan happens to run
   at the same moment. Before, the two could collide — deleting the same book
   twice, leaving a duplicate only half-removed, or throwing a brief error that

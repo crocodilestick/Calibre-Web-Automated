@@ -54,6 +54,21 @@ log = logger.create()
 _AUTO_RESOLVE_LOCK = threading.Lock()
 
 
+class _DeletedBookFileRef:
+    """Plain-value stand-in for a just-deleted Book, used by the files-last
+    cleanup in auto_resolve_duplicates so it never reads an expired/detached ORM
+    instance (D3, Greptile #399). delete_whole_book runs intermediate commits
+    (custom-column deletes) and a bulk Books.delete() that expire + detach the
+    real `book`; helper.delete_book(book_format="") only needs .id and .path
+    (both delete_book_file and the Google-Drive whole-book branch), so we capture
+    those as plain values before the DB delete and hand the cleanup this object."""
+    __slots__ = ("id", "path")
+
+    def __init__(self, book_id, path):
+        self.id = book_id
+        self.path = path
+
+
 def _duplicate_scan_transiently_pending():
     try:
         from cps.duplicate_index import ingest_batch_follow_up_pending
@@ -1806,7 +1821,12 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                 # Backup and delete each duplicate
                 for book in books_to_delete:
                     try:
-                        print(f"[cwa-duplicates-auto] Starting deletion of book {book.id}...", flush=True)
+                        # Capture identity as plain values up front so the per-book except and the
+                        # post-DB-delete bookkeeping never read the ORM `book` (delete_whole_book +
+                        # its commit expire/detach it — Greptile #399).
+                        deleted_book_id = book.id
+                        deleted_book_title = book.title
+                        print(f"[cwa-duplicates-auto] Starting deletion of book {deleted_book_id}...", flush=True)
                         
                         # Backup book files
                         book_path = os.path.join(config.config_calibre_dir, book.path)
@@ -1816,53 +1836,72 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                             shutil.copytree(book_path, backup_path)
                             log.info("[cwa-duplicates] Backed up book %s to %s", book.id, backup_path)
                         
-                        print(f"[cwa-duplicates-auto] Deleting book {book.id} from library...", flush=True)
-                        # Delete from Calibre library (bypass user permission check for automatic resolution)
-                        from cps import helper
-                        delete_result, delete_error = helper.delete_book(book, config.get_book_path(), book_format="")
-                        
-                        if not delete_result:
-                            raise Exception(f"Delete failed: {delete_error}")
-                        
-                        print(f"[cwa-duplicates-auto] Cleaning up database for book {book.id}...", flush=True)
-                        # Clean up database references
+                        # D3/D11 (data-safety): commit the DB deletes FIRST, remove files LAST.
+                        # The old order deleted files (helper.delete_book) BEFORE the DB commit, so a
+                        # failure in delete_whole_book / the metadata.db commit left the files gone but
+                        # the Books row surviving — a phantom book that still shows in the library and
+                        # 404s when opened, unrecoverable without the backup. DB-first means a DB
+                        # failure here leaves the book fully intact (files + rows): the per-book except
+                        # below records an error and the duplicate stays resolvable on the next run.
+                        # Capture the relative path as a plain value: the files-last cleanup must NOT
+                        # read the ORM `book` after the DB delete. delete_whole_book runs intermediate
+                        # commits for custom-column deletes (editbooks.py 1367/1374/1380) and ends with
+                        # a bulk Books.delete(), all of which expire + detach `book` — so reading it in
+                        # helper.delete_book would raise DetachedInstanceError on any library that uses
+                        # custom columns (Greptile #399). A whole-book cleanup reads only .id and .path.
+                        deleted_book_path = book.path
+
+                        print(f"[cwa-duplicates-auto] Cleaning up database for book {deleted_book_id}...", flush=True)
                         from cps.editbooks import delete_whole_book
-                        delete_whole_book(book.id, book)
-                        
+                        delete_whole_book(deleted_book_id, book)  # book live here — reads its relationships
                         calibre_db.session.commit()
-                        deleted_ids.append(book.id)
-                        log.info("[cwa-duplicates] Deleted duplicate book %s: %s", book.id, book.title)
+
+                        # Files-last: a failure here is recoverable (the row is already gone; the
+                        # backup + the orphaned files can be reclaimed), so log it — do NOT raise. The
+                        # cleanup gets a plain stand-in, never the now-detached ORM object.
+                        print(f"[cwa-duplicates-auto] Deleting book {deleted_book_id} files from disk...", flush=True)
+                        from cps import helper
+                        delete_result, delete_error = helper.delete_book(
+                            _DeletedBookFileRef(deleted_book_id, deleted_book_path),
+                            config.get_book_path(), book_format="")
+                        if not delete_result:
+                            log.warning("[cwa-duplicates] Book %s removed from the database but file "
+                                        "cleanup failed: %s (files remain on disk; backup under %s)",
+                                        deleted_book_id, delete_error, backup_dir)
+
+                        deleted_ids.append(deleted_book_id)
+                        log.info("[cwa-duplicates] Deleted duplicate book %s: %s", deleted_book_id, deleted_book_title)
                         
-                        print(f"[cwa-duplicates-auto] Cancelling tasks for book {book.id}...", flush=True)
+                        print(f"[cwa-duplicates-auto] Cancelling tasks for book {deleted_book_id}...", flush=True)
                         # Cancel any pending tasks for this book
                         try:
                             from cps.services.worker import WorkerThread
                             worker = WorkerThread.get_instance()
                             if worker:
-                                cancelled_count = worker.cancel_tasks_for_book(book.id)
+                                cancelled_count = worker.cancel_tasks_for_book(deleted_book_id)
                                 if cancelled_count > 0:
-                                    log.info("[cwa-duplicates] Cancelled %d pending task(s) for deleted book %s", 
-                                            cancelled_count, book.id)
-                                    print(f"[cwa-duplicates-auto] Cancelled {cancelled_count} pending task(s) for book {book.id}", 
+                                    log.info("[cwa-duplicates] Cancelled %d pending task(s) for deleted book %s",
+                                            cancelled_count, deleted_book_id)
+                                    print(f"[cwa-duplicates-auto] Cancelled {cancelled_count} pending task(s) for book {deleted_book_id}",
                                           flush=True)
                         except Exception as cancel_ex:
-                            log.warning("[cwa-duplicates] Failed to cancel tasks for book %s: %s", book.id, cancel_ex)
-                        
-                        print(f"[cwa-duplicates-auto] Cancelling scheduled jobs for book {book.id}...", flush=True)
+                            log.warning("[cwa-duplicates] Failed to cancel tasks for book %s: %s", deleted_book_id, cancel_ex)
+
+                        print(f"[cwa-duplicates-auto] Cancelling scheduled jobs for book {deleted_book_id}...", flush=True)
                         # Cancel any scheduled jobs (auto-send, etc.) for this book
                         try:
-                            cancelled_scheduled = cwa_db.scheduled_cancel_for_book(book.id)
+                            cancelled_scheduled = cwa_db.scheduled_cancel_for_book(deleted_book_id)
                             if cancelled_scheduled > 0:
-                                log.info("[cwa-duplicates] Cancelled %d scheduled job(s) for deleted book %s", 
-                                        cancelled_scheduled, book.id)
+                                log.info("[cwa-duplicates] Cancelled %d scheduled job(s) for deleted book %s",
+                                        cancelled_scheduled, deleted_book_id)
                         except Exception as schedule_ex:
-                            log.warning("[cwa-duplicates] Failed to cancel scheduled jobs for book %s: %s", book.id, schedule_ex)
-                        
-                        print(f"[cwa-duplicates-auto] Book {book.id} deletion complete", flush=True)
-                        
+                            log.warning("[cwa-duplicates] Failed to cancel scheduled jobs for book %s: %s", deleted_book_id, schedule_ex)
+
+                        print(f"[cwa-duplicates-auto] Book {deleted_book_id} deletion complete", flush=True)
+
                     except Exception as e:
-                        log.error("[cwa-duplicates] Error deleting book %s: %s", book.id, e)
-                        result['errors'].append(f"Failed to delete book {book.id}: {str(e)}")
+                        log.error("[cwa-duplicates] Error deleting book %s: %s", deleted_book_id, e)
+                        result['errors'].append(f"Failed to delete book {deleted_book_id}: {str(e)}")
                 
                 if deleted_ids:
                     try:

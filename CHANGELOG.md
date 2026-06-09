@@ -17,6 +17,12 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Deleting a book no longer risks leaving a broken "ghost" entry if something
+  fails partway through. Previously the book's files were removed before the
+  library database was updated, so an error in between could leave an entry that
+  still shows in your library but won't open. The database is now updated first
+  and the files removed last, so a failure leaves the book fully intact. (Mirrors
+  the same data-safety fix already made for duplicate resolution.)
 - Shelf reorder covers: the stylesheet that keeps the covers at the normal
   thumbnail size now loads from the page head, alongside every other stylesheet,
   instead of from the page body. A body-loaded stylesheet link can be dropped by

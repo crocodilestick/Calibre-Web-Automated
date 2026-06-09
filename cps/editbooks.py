@@ -1321,6 +1321,20 @@ def move_coverfile(meta, db_book):
               category="error")
 
 
+class _DeletedBookFileRef:
+    """Plain-value stand-in for a just-deleted Book, used by the files-last cleanup
+    in delete_book_from_table so it never reads an expired/detached ORM instance
+    (data-safety, D3-sibling). delete_whole_book runs intermediate commits that
+    expire + detach the real ``book``; a whole-book helper.delete_book reads only
+    ``.id`` and ``.path``, so we capture those as plain values before the DB delete
+    and hand the cleanup this object."""
+    __slots__ = ("id", "path")
+
+    def __init__(self, book_id, path):
+        self.id = book_id
+        self.path = path
+
+
 def delete_whole_book(book_id, book):
     # Capture a tombstone for every Kobo-synced user BEFORE we touch
     # any of the metadata.db / app.db rows. The Kobo protocol needs the
@@ -1411,32 +1425,64 @@ def delete_book_from_table(book_id, book_format, json_response, location="", ski
         book = calibre_db.get_book(book_id)
         if book:
             try:
-                result, error = helper.delete_book(book, config.get_book_path(), book_format=book_format.upper())
-                if not result:
-                    if json_response:
-                        return json.dumps([{"location": url_for("edit-book.show_edit_book", book_id=book_id),
-                                            "type": "danger",
-                                            "format": "",
-                                            "message": error}])
-                    else:
-                        flash(error, category="error")
-                        return redirect(url_for('edit-book.show_edit_book', book_id=book_id))
-                if error:
-                    if json_response:
-                        warning = {"location": url_for("edit-book.show_edit_book", book_id=book_id),
-                                   "type": "warning",
-                                   "format": "",
-                                   "message": error}
-                    else:
-                        flash(error, category="warning")
                 if not book_format:
-                    delete_whole_book(book_id, book)
+                    # Whole-book delete — data-safety (D3-sibling): commit the DB deletes
+                    # FIRST, remove files LAST. The old order deleted the files
+                    # (helper.delete_book) before delete_whole_book + commit, so a DB failure
+                    # left the files gone but the Books row surviving — a phantom book that
+                    # still shows in the library and 404s when opened, unrecoverable. DB-first
+                    # leaves the book fully intact on a DB failure (the except below rolls back);
+                    # a file-cleanup failure after the DB is consistent is recoverable (rows
+                    # already gone, orphaned files reclaimable) and is logged + warned, not raised.
+                    deleted_book_id = book.id
+                    deleted_book_path = book.path
+                    delete_whole_book(deleted_book_id, book)
+                    calibre_db.session.commit()
+                    # Files last: a plain stand-in, never the now-detached ORM book
+                    # (delete_whole_book's intermediate commits expire/detach it; a whole-book
+                    # cleanup reads only .id and .path).
+                    result, error = helper.delete_book(
+                        _DeletedBookFileRef(deleted_book_id, deleted_book_path),
+                        config.get_book_path(), book_format="")
+                    if not result:
+                        log.warning("[delete-book] Book %s removed from the database but file "
+                                    "cleanup failed: %s (files remain on disk)", deleted_book_id, error)
+                    if error:
+                        if json_response:
+                            warning = {"location": url_for("edit-book.show_edit_book", book_id=book_id),
+                                       "type": "warning",
+                                       "format": "",
+                                       "message": error}
+                        else:
+                            flash(error, category="warning")
                 else:
+                    # Single-format delete: remove the format file, then its Data row. Kept
+                    # files-first — a failure here orphans at most one format's row (not the
+                    # whole book), and the format's on-disk path is resolved from that Data row,
+                    # which a files-last order would have already removed.
+                    result, error = helper.delete_book(book, config.get_book_path(), book_format=book_format.upper())
+                    if not result:
+                        if json_response:
+                            return json.dumps([{"location": url_for("edit-book.show_edit_book", book_id=book_id),
+                                                "type": "danger",
+                                                "format": "",
+                                                "message": error}])
+                        else:
+                            flash(error, category="error")
+                            return redirect(url_for('edit-book.show_edit_book', book_id=book_id))
+                    if error:
+                        if json_response:
+                            warning = {"location": url_for("edit-book.show_edit_book", book_id=book_id),
+                                       "type": "warning",
+                                       "format": "",
+                                       "message": error}
+                        else:
+                            flash(error, category="warning")
                     calibre_db.session.query(db.Data).filter(db.Data.book == book.id).\
                         filter(db.Data.format == book_format).delete()
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
-                calibre_db.session.commit()
+                    calibre_db.session.commit()
 
                 refreshed_duplicate_cache = False
                 if not book_format:

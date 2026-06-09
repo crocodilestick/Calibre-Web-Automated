@@ -17,6 +17,12 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Merging duplicate books can no longer overwrite one of the kept book's
+  files. If a file with the merge target's name was already on disk (from an
+  earlier partial failure or a manual edit), the merge silently copied over
+  it; it now refuses that group with a clear error and leaves every file
+  untouched. A merge that fails partway also cleans up after itself instead
+  of leaving stray copied files or phantom format entries behind.
 - Finishing a book in KOReader now marks it read on the website when you use a
   custom "read" column. If your admin set a Calibre custom column as the read
   marker (a stock option under Feature Configuration), KOReader completions

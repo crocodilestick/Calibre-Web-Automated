@@ -1816,6 +1816,12 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                     except Exception as e:
                         log.error("[cwa-duplicates] Error merging books for group '%s': %s", group.get('title', 'unknown'), e)
                         result['errors'].append(f"Group '{group.get('title', 'unknown')}': merge failed: {str(e)}")
+                        # D8: drop anything the failed merge left pending in the
+                        # shared session, or the next group's commit persists it.
+                        try:
+                            calibre_db.session.rollback()
+                        except Exception:
+                            pass
                         continue
                 
                 # Backup and delete each duplicate
@@ -2007,22 +2013,55 @@ def merge_duplicate_group(book_to_keep, books_to_merge):
         author_name = to_book.authors[0].name
     to_name = helper.get_valid_filename(to_book.title, chars=96) + ' - ' + helper.get_valid_filename(author_name, chars=96)
 
+    # D8: stage + validate every copy BEFORE touching disk or the session.
+    # Two failure modes this prevents:
+    #   1. A target file on disk but not in to_book.data (prior partial
+    #      failure, manual/calibre edit) passed the format guard and was
+    #      silently overwritten — the kept book's file destroyed.
+    #   2. A mid-loop copy failure left appended-but-uncommitted Data rows in
+    #      the shared session; the resolution loop's next commit persisted the
+    #      orphans. Validate-all, copy-all, append+commit once — and on any
+    #      failure roll the session back and remove the files we copied.
+    staged = []
+    seen_formats = set(existing_formats)
     for source in books_to_merge:
         from_book = calibre_db.get_book(source.id)
         if not from_book:
             continue
         for element in from_book.data:
-            if element.format not in existing_formats:
-                filepath_new = os.path.normpath(os.path.join(config.get_book_path(),
-                                                             to_book.path,
-                                                             to_name + "." + element.format.lower()))
-                filepath_old = os.path.normpath(os.path.join(config.get_book_path(),
-                                                             from_book.path,
-                                                             element.name + "." + element.format.lower()))
-                copyfile(filepath_old, filepath_new)
-                to_book.data.append(db.Data(to_book.id,
-                                            element.format,
-                                            element.uncompressed_size,
-                                            to_name))
-                existing_formats.append(element.format)
-    calibre_db.session.commit()
+            if element.format in seen_formats:
+                continue
+            filepath_new = os.path.normpath(os.path.join(config.get_book_path(),
+                                                         to_book.path,
+                                                         to_name + "." + element.format.lower()))
+            filepath_old = os.path.normpath(os.path.join(config.get_book_path(),
+                                                         from_book.path,
+                                                         element.name + "." + element.format.lower()))
+            if not os.path.isfile(filepath_old):
+                raise ValueError("Merge aborted: source file missing for format %s: %s"
+                                 % (element.format, filepath_old))
+            if os.path.exists(filepath_new):
+                raise ValueError("Merge aborted: target file already exists on disk, "
+                                 "refusing to overwrite: %s" % filepath_new)
+            staged.append((filepath_old, filepath_new, element))
+            seen_formats.add(element.format)
+
+    copied = []
+    try:
+        for filepath_old, filepath_new, element in staged:
+            copyfile(filepath_old, filepath_new)
+            copied.append(filepath_new)
+        for _filepath_old, _filepath_new, element in staged:
+            to_book.data.append(db.Data(to_book.id,
+                                        element.format,
+                                        element.uncompressed_size,
+                                        to_name))
+        calibre_db.session.commit()
+    except Exception:
+        calibre_db.session.rollback()
+        for path in copied:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+        raise

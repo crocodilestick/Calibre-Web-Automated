@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 04:15+0000\n"
+"POT-Creation-Date: 2026-06-09 16:30+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -983,216 +983,216 @@ msgstr ""
 msgid "Cover save failed."
 msgstr ""
 
-#: cps/cwa_functions.py:169
+#: cps/cwa_functions.py:170
 msgid "Theme switching is temporarily disabled until v5.0.0"
 msgstr "テーマ切り替えはv5.0.0まで一時的に無効化されています"
 
-#: cps/cwa_functions.py:284
+#: cps/cwa_functions.py:285
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr ""
 "ライブラリ更新 🔄 見落とされた可能性のある書籍を確認中です、お待ちください..."
 
-#: cps/cwa_functions.py:977
+#: cps/cwa_functions.py:978
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr "重複スキャンのcron式が無効です。変更は保存されませんでした。"
 
-#: cps/cwa_functions.py:1073
+#: cps/cwa_functions.py:1074
 msgid "Calibre-Web NextGen User Settings"
 msgstr ""
 
-#: cps/cwa_functions.py:1119 cps/cwa_functions.py:1121
-#: cps/cwa_functions.py:1125 cps/cwa_functions.py:1127
-#: cps/cwa_functions.py:1130 cps/cwa_functions.py:1132
+#: cps/cwa_functions.py:1120 cps/cwa_functions.py:1122
+#: cps/cwa_functions.py:1126 cps/cwa_functions.py:1128
+#: cps/cwa_functions.py:1131 cps/cwa_functions.py:1133
 msgid "Timestamp"
 msgstr "タイムスタンプ"
 
-#: cps/cwa_functions.py:1119 cps/cwa_functions.py:1121
+#: cps/cwa_functions.py:1120 cps/cwa_functions.py:1122
 #: cps/templates/tasks.html:43 cps/templates/user_edit.html:342
 msgid "Book ID"
 msgstr "書籍ID"
 
-#: cps/cwa_functions.py:1119 cps/templates/book_edit.html:87
+#: cps/cwa_functions.py:1120 cps/templates/book_edit.html:87
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "本のタイトル"
 
-#: cps/cwa_functions.py:1119
+#: cps/cwa_functions.py:1120
 msgid "Book Author"
 msgstr "著者"
 
-#: cps/cwa_functions.py:1119
+#: cps/cwa_functions.py:1120
 msgid "Trigger Type"
 msgstr "トリガータイプ"
 
-#: cps/cwa_functions.py:1121 cps/cwa_functions.py:1127
+#: cps/cwa_functions.py:1122 cps/cwa_functions.py:1128
 msgid "Filepath"
 msgstr "ファイルパス"
 
-#: cps/cwa_functions.py:1125 cps/cwa_functions.py:1127
-#: cps/cwa_functions.py:1130 cps/cwa_functions.py:1132
+#: cps/cwa_functions.py:1126 cps/cwa_functions.py:1128
+#: cps/cwa_functions.py:1131 cps/cwa_functions.py:1133
 msgid "Filename"
 msgstr "ファイル名"
 
-#: cps/cwa_functions.py:1125
+#: cps/cwa_functions.py:1126
 msgid "Manual?"
 msgstr "手動？"
 
-#: cps/cwa_functions.py:1125
+#: cps/cwa_functions.py:1126
 msgid "No. Fixes"
 msgstr "修正数"
 
-#: cps/cwa_functions.py:1125 cps/cwa_functions.py:1130
-#: cps/cwa_functions.py:1132
+#: cps/cwa_functions.py:1126 cps/cwa_functions.py:1131
+#: cps/cwa_functions.py:1133
 msgid "Original Backed Up?"
 msgstr "元ファイルをバックアップ済み？"
 
-#: cps/cwa_functions.py:1127
+#: cps/cwa_functions.py:1128
 msgid "Fixes Applied"
 msgstr "適用された修正"
 
-#: cps/cwa_functions.py:1132
+#: cps/cwa_functions.py:1133
 msgid "Original Format"
 msgstr "元の形式"
 
-#: cps/cwa_functions.py:1132
+#: cps/cwa_functions.py:1133
 msgid "End Format"
 msgstr "変換後の形式"
 
-#: cps/cwa_functions.py:1208 cps/cwa_functions.py:1237
+#: cps/cwa_functions.py:1209 cps/cwa_functions.py:1238
 msgid "Unknown User"
 msgstr "不明"
 
-#: cps/cwa_functions.py:1345
+#: cps/cwa_functions.py:1346
 msgid "Calibre-Web NextGen Stats & Activity"
 msgstr ""
 
-#: cps/cwa_functions.py:1729
+#: cps/cwa_functions.py:1730
 msgid "Calibre-Web NextGen - Full Enforcement History"
 msgstr ""
 
-#: cps/cwa_functions.py:1738
+#: cps/cwa_functions.py:1739
 msgid "Calibre-Web NextGen - Full Enforcement History (w/ Paths)"
 msgstr ""
 
-#: cps/cwa_functions.py:1747
+#: cps/cwa_functions.py:1748
 msgid "Calibre-Web NextGen - Full Import History"
 msgstr ""
 
-#: cps/cwa_functions.py:1756
+#: cps/cwa_functions.py:1757
 msgid "Calibre-Web NextGen - Full Conversion History"
 msgstr ""
 
-#: cps/cwa_functions.py:1765
+#: cps/cwa_functions.py:1766
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1774
+#: cps/cwa_functions.py:1775
 msgid "Calibre-Web NextGen - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1792
+#: cps/cwa_functions.py:1793
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ すべての監視サービスが正常に稼働しています！👍"
 
-#: cps/cwa_functions.py:1794
+#: cps/cwa_functions.py:1795
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 取り込みサービスは稼働中ですが、メタデータ変更検出は停止しています"
 
-#: cps/cwa_functions.py:1796
+#: cps/cwa_functions.py:1797
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr "🔴 メタデータ変更検出は稼働中ですが、取り込みサービスは停止しています"
 
-#: cps/cwa_functions.py:1798
+#: cps/cwa_functions.py:1799
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr "⛔ 取り込みサービスとメタデータ変更検出の両方が停止しています"
 
-#: cps/cwa_functions.py:1800
+#: cps/cwa_functions.py:1801
 msgid "An Error has occurred"
 msgstr "エラーが発生しました"
 
-#: cps/cwa_functions.py:1977 cps/cwa_functions.py:2005
+#: cps/cwa_functions.py:1978 cps/cwa_functions.py:2006
 msgid "Calibre-Web NextGen - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:2131 cps/cwa_functions.py:2157
+#: cps/cwa_functions.py:2132 cps/cwa_functions.py:2158
 msgid "Calibre-Web NextGen - EPUB Fixer Service"
 msgstr ""
 
-#: cps/cwa_functions.py:2215
+#: cps/cwa_functions.py:2216
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 "単一書籍のEPUB修復ツールはGoogle Driveライブラリでサポートされていません。"
 
-#: cps/cwa_functions.py:2222
+#: cps/cwa_functions.py:2223
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "無効な書籍IDです。"
 
-#: cps/cwa_functions.py:2228
+#: cps/cwa_functions.py:2229
 #, fuzzy
 msgid "Book not found."
 msgstr "トークンが見つかりません"
 
-#: cps/cwa_functions.py:2234
+#: cps/cwa_functions.py:2235
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "選択した本を統合"
 
-#: cps/cwa_functions.py:2238
+#: cps/cwa_functions.py:2239
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "EPUBファイルがディスク上に見つかりません。"
 
-#: cps/cwa_functions.py:2253
+#: cps/cwa_functions.py:2254
 msgid "EPUB Fixer started for selected book."
 msgstr "選択した書籍のEPUB修復ツールを開始しました。"
 
-#: cps/cwa_functions.py:2256
+#: cps/cwa_functions.py:2257
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr "選択した書籍のEPUB修復ツール開始に失敗しました。"
 
-#: cps/cwa_functions.py:2307
+#: cps/cwa_functions.py:2308
 msgid "You must be an admin to access this page."
 msgstr "このページにアクセスするには管理者権限が必要です。"
 
-#: cps/cwa_functions.py:2322
+#: cps/cwa_functions.py:2323
 msgid "Both username and image data are required."
 msgstr "ユーザー名と画像データの両方が必要です。"
 
-#: cps/cwa_functions.py:2330
+#: cps/cwa_functions.py:2331
 msgid "Invalid image data format. Must be a valid image."
 msgstr "画像データの形式が無効です。有効な画像である必要があります。"
 
-#: cps/cwa_functions.py:2338
+#: cps/cwa_functions.py:2339
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "サポートされていない画像形式です。PNGとJPEGのみ使用できます。"
 
-#: cps/cwa_functions.py:2350
+#: cps/cwa_functions.py:2351
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "画像が大きすぎます。500KB未満の画像を使用してください。"
 
-#: cps/cwa_functions.py:2354
+#: cps/cwa_functions.py:2355
 msgid "Invalid Base64 image data."
 msgstr "無効なBase64画像データです。"
 
-#: cps/cwa_functions.py:2358
+#: cps/cwa_functions.py:2359
 msgid "Invalid image data format."
 msgstr "無効な画像データ形式です。"
 
-#: cps/cwa_functions.py:2363
+#: cps/cwa_functions.py:2364
 msgid "Error validating image data."
 msgstr "画像データの検証エラー。"
 
-#: cps/cwa_functions.py:2381
+#: cps/cwa_functions.py:2382
 msgid "Profile picture updated successfully."
 msgstr "プロフィール画像を更新しました。"
 
-#: cps/cwa_functions.py:2394
+#: cps/cwa_functions.py:2395
 msgid "Calibre-Web NextGen Profile Picture Management (WIP)"
 msgstr ""
 

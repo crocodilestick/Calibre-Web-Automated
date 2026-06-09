@@ -442,7 +442,7 @@ def order_shelf(shelf_id):
                 .filter(ub.BookShelf.shelf == shelf_id).order_by(ub.BookShelf.order.asc()).all()
         return render_title_template('shelf_order.html', entries=result,
                                      title=_("Change order of Shelf: '%(name)s'", name=shelf.name),
-                                     shelf=shelf, page="shelforder")
+                                     shelf=shelf, page="shelfreorder")
     else:
         abort(404)
 

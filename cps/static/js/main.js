@@ -117,7 +117,7 @@ $(_kobo_padding_color_sync);
 
 // Syntax has to be bind not on, otherwise problems with firefox
 $(".container-fluid").bind("dragenter dragover", function () {
-    if($("#btn-upload").length && !$('body').hasClass('shelforder')) {
+    if($("#btn-upload").length && !$('body').hasClass('shelfreorder')) {
         $(this).css('background', '#e6e6e6');
     }
     return false;
@@ -125,7 +125,7 @@ $(".container-fluid").bind("dragenter dragover", function () {
 
 // Syntax has to be bind not on, otherwise problems with firefox
 $(".container-fluid").bind("dragleave", function () {
-    if($("#btn-upload").length && !$('body').hasClass('shelforder')) {
+    if($("#btn-upload").length && !$('body').hasClass('shelfreorder')) {
         $(this).css('background', '');
     }
     return false;

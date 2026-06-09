@@ -17,6 +17,13 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Shelf reorder: the giant white sort icon (a down arrow with lines) that sat on
+  top of the first covers on wide screens is gone. It was a leftover decoration
+  from the old list-style reorder page — the theme drew it in what used to be
+  empty space, and the new cover grid now fills that space. The wider your
+  browser window, the bigger the icon got. (#320, reported with screenshots by
+  @SpookyUSAF — the covers themselves were already the right size; this was the
+  last piece.)
 - Resolving duplicate books no longer loses your highlights, notes, reading
   progress, or shelf placement. When duplicates were merged or resolved, only
   the book files moved to the kept copy — anything you'd done on the removed

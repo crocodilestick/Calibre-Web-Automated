@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.159] – 2026-06-09
+
 ### Added
 - You can now add books to a shelf right from the shelf page. A new **Add Books**
   button opens a searchable picker — type to find books in your library, tick the

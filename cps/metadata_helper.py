@@ -309,24 +309,68 @@ def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:
                         book.identifiers.append(new_identifier)
                         updated = True
         
-        # Handle cover image - only if enabled in settings
-        if (cwa_settings.get('auto_metadata_update_cover', True) and 
-            hasattr(metadata, 'cover') and metadata.cover):
-            # TODO: Implement cover resolution checking for smart mode
-            # For now, just apply the cover in normal mode
-            if not use_smart_application:
-                # Apply cover (implementation depends on how covers are handled in Calibre-Web)
-                pass
-        
+        # Cover image (fork #404): download and apply through the same
+        # validated path the manual editor uses. Smart mode only fills a
+        # missing cover; the per-book cover lock is honored in both modes.
+        cover_updated = False
+        if (cwa_settings.get('auto_metadata_update_cover', True) and
+                not (use_smart_application and getattr(book, 'has_cover', 0))):
+            if _apply_cover_from_metadata(book, metadata):
+                updated = True
+                cover_updated = True
+
         if updated:
             calibre_db_instance.session.commit()
-            
+            if cover_updated:
+                # Regenerate the cached thumbnails so the new cover shows in
+                # the grid, same as a manual cover edit.
+                from cps import helper
+                try:
+                    helper.replace_cover_thumbnail_cache(
+                        book.id, book_path=book.path,
+                        last_modified=getattr(book, 'last_modified', None))
+                except Exception as e:
+                    log.warning(f"Cover thumbnail refresh failed for book {book.id}: {e}")
+
         return updated
         
     except Exception as e:
         log.error(f"Error applying metadata to book {getattr(book, 'id', 'unknown')}: {e}")
         calibre_db_instance.session.rollback()
         return False
+
+
+def _apply_cover_from_metadata(book, metadata) -> bool:
+    """Download the provider's cover and store it for ``book`` (fork #404).
+
+    Routed through ``helper.save_cover_from_url`` so the ingest auto-fetch
+    gets the exact safeguards of the manual editor: advocate SSRF guard,
+    download size cap, and image-format validation. Returns True only when
+    the cover was actually written (and sets ``book.has_cover``).
+
+    Fully self-contained failure boundary: this runs in the ingest
+    processor (no Flask app context, where the error-path ``_()`` calls in
+    helper can raise) and a cover problem must never void the rest of the
+    metadata application.
+    """
+    cover_url = str(getattr(metadata, 'cover', '') or '').strip()
+    if not cover_url or cover_url.endswith('/static/generic_cover.svg'):
+        # Providers fall back to the placeholder image when an edition has
+        # no cover — never overwrite a real cover with the placeholder.
+        return False
+    try:
+        from cps import helper
+        if helper.book_cover_is_locked(book.id):
+            log.info(f"Auto metadata fetch: cover locked for book {book.id}, skipping")
+            return False
+        result, error = helper.save_cover_from_url(cover_url, book.path)
+        if result:
+            book.has_cover = 1
+            return True
+        log.warning(f"Auto metadata fetch: cover download failed for book {book.id}: {error}")
+    except Exception as e:
+        log.warning(f"Auto metadata fetch: cover apply failed for book {book.id}: {e}")
+    return False
 
 
 def _normalize_isbn(value):

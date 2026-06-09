@@ -17,6 +17,18 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Automatic metadata fetch now actually downloads covers. The "update cover"
+  option existed but did nothing — books imported with auto-fetch on never got
+  their cover updated. Covers now download through the same safe path as the
+  manual editor (size limits, image checks, server-side request protections),
+  respect the per-book cover lock, and in "smart application" mode only fill in
+  a missing cover, never replace one you have. (#404, confirmed by @beanscg)
+- Downloading a cover by URL (manual editor and auto-fetch alike) no longer
+  destroys the existing cover when the server misbehaves: a redirect stub or an
+  error page served with an image content-type used to get saved as the cover
+  file. The download now follows redirects properly (cover CDNs like Open
+  Library's redirect every image) and verifies the bytes are really an image
+  before anything is overwritten.
 - Shelf reorder: the giant white sort icon (a down arrow with lines) that sat on
   top of the first covers on wide screens is gone. It was a leftover decoration
   from the old list-style reorder page — the theme drew it in what used to be

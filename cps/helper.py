@@ -1168,20 +1168,62 @@ def _get_cover_download_limit():
     return max_mb * 1024 * 1024, max_mb
 
 
+def _sniff_image_bytes(content) -> bool:
+    """True when ``content`` starts with the magic bytes of a supported cover
+    format (JPEG/PNG/WebP/BMP). Cheap guard for downloaded covers whose
+    content-type header lies (fork #404)."""
+    if not content or len(content) < 12:
+        return False
+    if content[:3] == b"\xff\xd8\xff":                      # JPEG
+        return True
+    if content[:8] == b"\x89PNG\r\n\x1a\n":                 # PNG
+        return True
+    if content[:4] == b"RIFF" and content[8:12] == b"WEBP":  # WebP
+        return True
+    if content[:2] == b"BM":                                 # BMP
+        return True
+    return False
+
+
+def book_cover_is_locked(book_id) -> bool:
+    """Honor the per-book BookCoverLock flag set from the focused
+    cover-picker page (resolves janeczku/calibre-web#2165): when locked, any
+    automated cover-write path — the metadata-fetch save in the editor and
+    the ingest auto-metadata fetch (fork #404) — must skip the cover instead
+    of silently overwriting a deliberately-chosen one."""
+    try:
+        record = ub.session.query(ub.BookCoverLock).filter_by(book_id=book_id).first()
+    except Exception:  # pragma: no cover - defensive; missing migrations etc.
+        return False
+    return bool(record and record.locked)
+
+
 def save_cover_from_url(url, book_path):
     max_cover_bytes, max_cover_mb = _get_cover_download_limit()
     img = None
     download_start = time.monotonic()
     log.debug("Cover fetch start: url=%s", url)
     try:
+        # Redirects are followed: cover CDNs redirect as a matter of course
+        # (covers.openlibrary.org 302s every image to archive.org). The
+        # advocate path stays SSRF-safe under redirects because validation
+        # happens per-connection in ValidatingPoolManager — every hop's
+        # target is re-validated, not just the first URL (fork #404).
         if cli_param.allow_localhost:
-            img = requests.get(url, timeout=(10, 30), allow_redirects=False, stream=True)  # ToDo: Error Handling
+            img = requests.get(url, timeout=(10, 30), allow_redirects=True, stream=True)
         elif use_advocate:
-            img = cw_advocate.get(url, timeout=(10, 30), allow_redirects=False, stream=True)      # ToDo: Error Handling
+            img = cw_advocate.get(url, timeout=(10, 30), allow_redirects=True, stream=True)
         else:
             log.error("python module advocate is not installed but is needed")
             return False, _("Python module 'advocate' is not installed but is needed for cover uploads")
         img.raise_for_status()
+        if img.status_code != 200:
+            # raise_for_status passes 3xx: a redirect that wasn't followed
+            # (e.g. redirect loop cut off) must not have its stub body saved
+            # as the cover — that destroys the existing one. Fork #404.
+            log.error("Cover download refused: HTTP %s url=%s location=%s",
+                      img.status_code, url, img.headers.get("location"))
+            return False, _("Error Downloading Cover")
 
         content_length = img.headers.get("content-length")
         if content_length and content_length.isdigit() and int(content_length) > max_cover_bytes:
@@ -1195,6 +1237,14 @@ def save_cover_from_url(url, book_path):
             if len(content) > max_cover_bytes:
                 return False, _("Cover image exceeds maximum size of %(size)s MB", size=max_cover_mb)
         img._content = bytes(content)
+        if not _sniff_image_bytes(img._content):
+            # A correct content-type header is no guarantee of an image body
+            # (error pages and stubs are served as image/jpeg in the wild),
+            # and the JPEG fast path below save_cover skips ImageMagick — a
+            # junk body would overwrite a real cover. Fork #404.
+            log.error("Cover download refused: body is not an image (url=%s, content-type=%s, bytes=%s)",
+                      url, img.headers.get("content-type"), len(img._content))
+            return False, _("Cover-file is not a valid image file, or could not be stored")
         log.info("Cover download ok: url=%s status=%s content-type=%s bytes=%s elapsed=%.3fs",
                  url, getattr(img, "status_code", "?"),
                  img.headers.get("content-type"), len(img._content),
@@ -1204,7 +1254,8 @@ def save_cover_from_url(url, book_path):
             requests.exceptions.HTTPError,
             requests.exceptions.InvalidURL,
             requests.exceptions.ConnectionError,
-            requests.exceptions.Timeout) as ex:
+            requests.exceptions.Timeout,
+            requests.exceptions.TooManyRedirects) as ex:
         # "Invalid host" can be the result of a redirect response
         log.error(u'Cover Download Error %s', ex)
         return False, _("Error Downloading Cover")

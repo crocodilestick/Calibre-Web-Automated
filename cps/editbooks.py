@@ -66,15 +66,9 @@ def edit_required(f):
 
 
 def _book_cover_is_locked(book_id) -> bool:
-    """Honor the per-book BookCoverLock flag set from the focused
-    cover-picker page. Resolves janeczku/calibre-web#2165 — when locked,
-    the metadata-fetch save path skips the cover_url field instead of
-    silently overwriting a deliberately-chosen cover."""
-    try:
-        record = ub.session.query(ub.BookCoverLock).filter_by(book_id=book_id).first()
-    except Exception:  # pragma: no cover - defensive; missing migrations etc.
-        return False
-    return bool(record and record.locked)
+    """Single implementation lives in helper.book_cover_is_locked — shared
+    with the ingest auto-metadata cover path (fork #404)."""
+    return helper.book_cover_is_locked(book_id)
 
 
 @editbook.route("/ajax/delete/<int:book_id>", methods=["POST"])

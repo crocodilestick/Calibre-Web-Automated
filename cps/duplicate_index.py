@@ -165,6 +165,19 @@ def _enabled_key_values(parts: BookKeyParts, settings):
 
 
 def build_duplicate_key(book, settings):
+    # D7 (data-safety): a book must have the REAL metadata for every enabled
+    # criterion to be a duplicate candidate. build_book_key_parts substitutes
+    # sentinels ("untitled" / "unknown") for missing fields, so two distinct
+    # books that both lack a title (or both lack an author) would otherwise
+    # collapse to the same key and auto-resolve could DELETE one. Give such
+    # incomplete-metadata books a per-book-unique key so they are "duplicates of
+    # only themselves" — never grouped, never auto-deleted. (Sentinels remain
+    # fine for display; they just must not be dedup keys.)
+    criteria = get_effective_duplicate_criteria(settings)
+    if criteria.get("title") and not getattr(book, "title", None):
+        return _hash_json([("incomplete-no-title", str(getattr(book, "id", id(book))))])
+    if criteria.get("author") and not _primary_author(book):
+        return _hash_json([("incomplete-no-author", str(getattr(book, "id", id(book))))])
     return _hash_json(_enabled_key_values(build_book_key_parts(book, settings), settings))
 
 

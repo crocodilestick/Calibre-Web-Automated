@@ -22,6 +22,7 @@ pytestmark = pytest.mark.unit
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DUP_SRC = (REPO_ROOT / "cps" / "duplicates.py").read_text()
+DUP_INDEX_SRC = (REPO_ROOT / "cps" / "duplicate_index.py").read_text()
 
 
 def _func_src(name: str) -> str:
@@ -49,4 +50,28 @@ class TestD1SharedSessionNotClosed:
             "auto_resolve_duplicates must not close the shared scoped "
             "calibre_db.session — its lifecycle is owned by the Flask request "
             "teardown and by TaskDuplicateScan.run() (D1 data-safety)"
+        )
+
+
+class TestD7IncompleteMetadataNotGrouped:
+    def test_build_duplicate_key_guards_missing_required_fields(self):
+        # D7: build_book_key_parts substitutes "untitled"/"unknown" sentinels for
+        # missing fields, so two distinct books that both lack a title (or author)
+        # would collapse to the same duplicate_key and auto-resolve could DELETE
+        # one. build_duplicate_key must give such incomplete-metadata books a
+        # per-book-unique key instead (keyed on book id), so they never group.
+        m = re.search(
+            r"def build_duplicate_key\(book, settings\):(.*?)\ndef ",
+            DUP_INDEX_SRC,
+            re.S,
+        )
+        assert m, "build_duplicate_key not found in duplicate_index.py"
+        body = m.group(1)
+        assert "incomplete-no-title" in body and "incomplete-no-author" in body, (
+            "build_duplicate_key must give a book missing a required enabled "
+            "criterion a unique key (D7) so metadata-less books aren't grouped + "
+            "auto-deleted"
+        )
+        assert "book" in body and "id" in body, (
+            "the incomplete-book key must incorporate the book id to be unique"
         )

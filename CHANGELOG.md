@@ -24,6 +24,11 @@ is for things you can see or feel when running the app.
   desktop. Especially handy for filling a brand-new empty shelf.
 
 ### Fixed
+- Duplicate detection no longer treats books that are *missing* a title or
+  author as duplicates of each other. Two unrelated books that both happen to
+  have no title (or no author) used to collapse together as a "duplicate" — and
+  could then be offered up for deletion. They're now kept separate; only books
+  with real matching metadata are grouped.
 - Resolving duplicate books is more reliable: the resolver no longer closes a
   shared database connection mid-operation, which could cause errors or a
   half-finished cleanup when the library was being used at the same time.

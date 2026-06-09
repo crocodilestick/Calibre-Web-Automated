@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 23:24+0000\n"
+"POT-Creation-Date: 2026-06-09 23:38+0000\n"
 "PO-Revision-Date: 2018-08-27 17:06+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1179,39 +1179,39 @@ msgstr ""
 msgid "None"
 msgstr "គ្មាន"
 
-#: cps/duplicates.py:433 cps/duplicates.py:444
+#: cps/duplicates.py:456 cps/duplicates.py:467
 #, fuzzy
 msgid "Duplicate Books"
 msgstr "លុបសៀវភៅ"
 
-#: cps/duplicates.py:1329
+#: cps/duplicates.py:1352
 msgid "Duplicate group already dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1351
+#: cps/duplicates.py:1374
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "លុបសៀវភៅ"
 
-#: cps/duplicates.py:1394
+#: cps/duplicates.py:1417
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "លុបសៀវភៅ"
 
-#: cps/duplicates.py:1396
+#: cps/duplicates.py:1419
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1468
+#: cps/duplicates.py:1491
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "លទ្ធផលសម្រាប់៖"
 
-#: cps/duplicates.py:1537
+#: cps/duplicates.py:1560
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1612
+#: cps/duplicates.py:1635
 msgid "Invalid resolution strategy"
 msgstr ""
 

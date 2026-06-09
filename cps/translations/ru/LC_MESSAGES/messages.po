@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 21:42+0000\n"
+"POT-Creation-Date: 2026-06-09 22:39+0000\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -2847,7 +2847,7 @@ msgstr ""
 msgid "Invalid book ID."
 msgstr "Неверный ID книги."
 
-#: cps/progress_syncing/protocols/kosync.py:512
+#: cps/progress_syncing/protocols/kosync.py:562
 msgid "KOReader Sync Plugin"
 msgstr "Плагин синхронизации KOReader"
 

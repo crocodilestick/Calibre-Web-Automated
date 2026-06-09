@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 21:42+0000\n"
+"POT-Creation-Date: 2026-06-09 22:39+0000\n"
 "PO-Revision-Date: 2023-11-01 06:12+0100\n"
 "Last-Translator: Branislav Hanáček <brango@brango.sk>\n"
 "Language-Team: \n"
@@ -2767,7 +2767,7 @@ msgstr ""
 msgid "Invalid book ID."
 msgstr "Neplatná rola"
 
-#: cps/progress_syncing/protocols/kosync.py:512
+#: cps/progress_syncing/protocols/kosync.py:562
 msgid "KOReader Sync Plugin"
 msgstr ""
 

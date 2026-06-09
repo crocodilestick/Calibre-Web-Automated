@@ -284,3 +284,30 @@ class TestD3FilesDeletedAfterDbCommit:
         assert "removed from the database but file" in src, (
             "the files-last path must log a warning on a file-cleanup failure"
         )
+
+
+class TestD10HiddenBooksExcludedFromScan:
+    def test_get_common_filters_excludes_user_hidden_books(self):
+        # D10: the local re-implementation of common_filters for explicit
+        # user_id scans omitted the UserHiddenBook exclusion — books the user
+        # explicitly hid reappeared in their duplicate scan and could be fed
+        # to destructive auto-resolve.
+        src = _func_src("get_common_filters")
+        assert "UserHiddenBook" in src, (
+            "get_common_filters must exclude UserHiddenBook rows like "
+            "calibre_db.common_filters does (D10 data-safety)"
+        )
+        assert "hidden_filter" in src and "hidden_filter)" in src, (
+            "the hidden filter must be part of the returned and_() filter set"
+        )
+
+    def test_get_common_filters_has_allow_show_hidden_parity(self):
+        src = _func_src("get_common_filters")
+        assert "allow_show_hidden" in src.splitlines()[0] + src.splitlines()[1], (
+            "get_common_filters must take allow_show_hidden for parity with "
+            "calibre_db.common_filters (D10)"
+        )
+        assert "allow_show_hidden=allow_show_hidden" in src, (
+            "the user_id=None branch must forward allow_show_hidden to "
+            "calibre_db.common_filters"
+        )

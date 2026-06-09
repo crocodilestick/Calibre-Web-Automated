@@ -17,6 +17,10 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Books you've hidden no longer show up in your duplicate scan. The Duplicates
+  page respected your language, tag, and archive filters but not your hidden
+  list, so hidden books reappeared there and could even be swept into
+  duplicate auto-resolution.
 - Duplicate detection now catches copies whose titles differ only in unicode
   form or spacing. A "Café" imported from a Mac (decomposed accents) and a
   "Café" typed by hand, or "The  Book" with a double space, counted as

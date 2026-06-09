@@ -1091,7 +1091,8 @@ def find_duplicate_books_python(use_title, use_author, use_language, use_series,
     return duplicate_groups
 
 
-def get_common_filters(user_id=None, allow_show_archived=False, return_all_languages=False):
+def get_common_filters(user_id=None, allow_show_archived=False, return_all_languages=False,
+                       allow_show_hidden=False):
     """Build common filters using either current_user or a specific user_id.
 
     Falls back to no-op filters if user context is unavailable.
@@ -1099,7 +1100,8 @@ def get_common_filters(user_id=None, allow_show_archived=False, return_all_langu
     try:
         if user_id is None:
             return calibre_db.common_filters(allow_show_archived=allow_show_archived,
-                                             return_all_languages=return_all_languages)
+                                             return_all_languages=return_all_languages,
+                                             allow_show_hidden=allow_show_hidden)
     except Exception:
         # No request context; fall back to permissive filter
         return true()
@@ -1118,6 +1120,18 @@ def get_common_filters(user_id=None, allow_show_archived=False, return_all_langu
             archived_filter = db.Books.id.notin_(archived_book_ids)
         else:
             archived_filter = true()
+
+        # D10: mirror calibre_db.common_filters' UserHiddenBook exclusion. The
+        # user explicitly hid these books; without this they reappeared in
+        # their duplicate scan and could be fed to destructive auto-resolve.
+        if not allow_show_hidden:
+            hidden_books = (ub.session.query(ub.UserHiddenBook)
+                            .filter(ub.UserHiddenBook.user_id == int(user.id))
+                            .all())
+            hidden_book_ids = [hidden.book_id for hidden in hidden_books]
+            hidden_filter = db.Books.id.notin_(hidden_book_ids)
+        else:
+            hidden_filter = true()
 
         if user.filter_language() == "all" or return_all_languages:
             lang_filter = true()
@@ -1147,7 +1161,8 @@ def get_common_filters(user_id=None, allow_show_archived=False, return_all_langu
             neg_content_cc_filter = false()
 
         return and_(lang_filter, pos_content_tags_filter, ~neg_content_tags_filter,
-                    pos_content_cc_filter, ~neg_content_cc_filter, archived_filter)
+                    pos_content_cc_filter, ~neg_content_cc_filter, archived_filter,
+                    hidden_filter)
     except Exception:
         return true()
 

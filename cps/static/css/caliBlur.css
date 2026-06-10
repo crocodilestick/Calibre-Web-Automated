@@ -6172,16 +6172,39 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
         background: 0 0;
         cursor: pointer;
         color: transparent;
-        opacity: 0;
+        /* #425: tapping the search icon did nothing on mobile. The collapsed
+           search input is a sibling of the full-width .navbar-header, which
+           paints over it, so a real tap landed on .navbar-header and never
+           reached #query (the focus that expands the box never fired). z-index
+           lifts the 40px tap target above the header. Dropping opacity:0 (the
+           input stays invisible via transparent text + background) additionally
+           lets iOS Safari focus the input on tap — iOS won't focus a fully
+           opacity:0 input, which is why desktop worked but iOS didn't. The
+           placeholder is hidden until focus so no text bleeds into the icon. */
+        position: relative;
+        z-index: 11;
         -webkit-transition: all 0s;
         transition: all 0s
     }
+
+    #query::-webkit-input-placeholder { color: transparent }
+    #query::-moz-placeholder { color: transparent }
+    #query:-ms-input-placeholder { color: transparent }
+    #query::placeholder { color: transparent }
+
+    #query:focus::-webkit-input-placeholder { color: rgba(238, 238, 238, .4) }
+    #query:focus::-moz-placeholder { color: rgba(238, 238, 238, .4) }
+    #query:focus:-ms-input-placeholder { color: rgba(238, 238, 238, .4) }
+    #query:focus::placeholder { color: rgba(238, 238, 238, .4) }
 
     body > div.navbar.navbar-default.navbar-static-top > div > form.search-focus {
         position: absolute;
         top: 0;
         left: 0;
-        width: 100vw
+        width: 100vw;
+        /* #425: keep the expanded search box above .navbar-header (z-index:10)
+           so the opened search isn't painted behind the header. */
+        z-index: 11
     }
 
     body > div.navbar.navbar-default.navbar-static-top > div > form.search-focus > div.form-group {

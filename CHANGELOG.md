@@ -17,6 +17,11 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Search now opens on phones. Tapping the search icon in the top bar did
+  nothing on mobile (most visibly in Safari on iOS) — the icon was covered by
+  the header bar, so the tap never reached the search box, and the box never
+  appeared. Tapping the icon now opens the search field as expected. Desktop is
+  unchanged. (#425, reported by @getthething)
 - On phones, the book detail page no longer shows an oversized, off-center
   cover. The cover used to render wider than its column and sit left of center
   (on the caliBlur theme), pushing the description far down the page. It now

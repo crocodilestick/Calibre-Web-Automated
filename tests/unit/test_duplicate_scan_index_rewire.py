@@ -573,7 +573,7 @@ def _load_duplicates_route_module(
         },
     )
     _install_stub("flask_babel", {"gettext": lambda text, **kwargs: text % kwargs if kwargs else text})
-    _install_stub("sqlalchemy", {"func": object(), "and_": lambda *args, **kwargs: None, "case": lambda *args, **kwargs: None})
+    _install_stub("sqlalchemy", {"func": object(), "and_": lambda *args, **kwargs: None, "case": lambda *args, **kwargs: None, "or_": lambda *args, **kwargs: None})
     _install_stub("sqlalchemy.sql")
     _install_stub("sqlalchemy.sql.expression", {"true": True, "false": False})
     _install_stub("sqlalchemy.orm", {"joinedload": lambda *args, **kwargs: None})

@@ -191,9 +191,11 @@ class TestD5SourcePins:
         )
 
     def test_legacy_paths_attach_stable_key(self):
-        assert DUP_SRC.count("'duplicate_key': _stable_group_key(books)") >= 2, (
-            "both legacy scan paths (SQL + Python) must attach the stable "
-            "duplicate_key to their groups (D5)"
+        # One legacy site since D9 retired the SQL-only grouping engine; the
+        # Python fallback path must keep attaching the stable key.
+        assert DUP_SRC.count("'duplicate_key': _stable_group_key(books)") >= 1, (
+            "the legacy Python scan path must attach the stable "
+            "duplicate_key to its groups (D5)"
         )
 
     def test_model_and_migration(self):

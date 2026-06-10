@@ -562,8 +562,15 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     if scan_method == 'python':
         method_to_use = 'python'
     elif scan_method == 'sql':
-        # SQL-only is available but still experimental
-        method_to_use = 'sql' if not use_format else 'hybrid'
+        # D9: SQL-only *grouping* is retired — it diverged from the Python/
+        # index grouping (one row per co-author via the authors JOIN put a
+        # co-authored book in multiple groups; no author-prefix title strip),
+        # so the same library produced different group sets depending on an
+        # admin toggle. SQL remains as the hybrid PREFILTER (candidate IDs),
+        # with grouping always done by the single Python/index implementation.
+        log.info("[cwa-duplicates] scan_method='sql': SQL-only grouping is retired; "
+                 "using hybrid (SQL prefilter + Python grouping)")
+        method_to_use = 'hybrid'
     elif scan_method == 'hybrid':
         method_to_use = 'hybrid'
     else:  # 'auto'
@@ -577,12 +584,7 @@ def find_duplicate_books(include_dismissed=False, user_id=None):
     print(f"[cwa-duplicates] Using duplicate detection criteria: title={use_title}, author={use_author}, language={use_language}, series={use_series}, publisher={use_publisher}, format={use_format}", flush=True)
     
     # Call appropriate method
-    if method_to_use == 'sql':
-        duplicate_groups = find_duplicate_books_sql(
-            use_title, use_author, use_language, use_series, use_publisher,
-            include_dismissed, user_id
-        )
-    elif method_to_use == 'hybrid':
+    if method_to_use == 'hybrid':
         # Use SQL as a prefilter to get candidate book IDs, then Python for robust grouping
         candidate_ids = find_duplicate_candidate_ids_sql(use_title, use_author, user_id=user_id)
         if candidate_ids is None:
@@ -709,187 +711,6 @@ def find_duplicate_candidate_ids_sql(use_title, use_author, user_id=None, min_bo
 
     log.debug("[cwa-duplicates] Hybrid prefilter returned %s candidate books", len(candidate_ids))
     return candidate_ids
-
-
-def find_duplicate_books_sql(use_title, use_author, use_language, use_series, use_publisher,
-                              include_dismissed=False, user_id=None):
-    """SQL-based duplicate detection using GROUP BY - experimental/WIP
-    
-    NOTE: This is experimental code, disabled by default. Needs refinement:
-    - Multi-author books create duplicate rows (handled by DISTINCT but not ideal)
-    - Relies on COALESCE for NULL handling which may not match Python behavior exactly
-    - Not thoroughly tested across all criteria combinations
-    
-    Use Python method (default) for production until this is properly tested.
-    
-    Args:
-        use_title, use_author, use_language, use_series, use_publisher: Boolean flags for criteria
-        include_dismissed: If False, filter out dismissed groups
-        user_id: User ID for dismissed filtering
-    
-    Returns:
-        List of duplicate group dictionaries
-    """
-    print("[cwa-duplicates] Using SQL-based duplicate detection", flush=True)
-    
-    # Build dynamic GROUP BY clause based on criteria
-    group_by_fields = []
-    select_fields = []
-    
-    if use_title:
-        group_by_fields.append(func.lower(db.Books.title))
-        select_fields.append(func.lower(db.Books.title).label('norm_title'))
-    
-    if use_author:
-        group_by_fields.append(func.lower(db.Authors.name))
-        select_fields.append(func.lower(db.Authors.name).label('norm_author'))
-    
-    if use_language:
-        # Use COALESCE to handle NULL languages (books without language)
-        group_by_fields.append(func.coalesce(func.lower(db.Languages.lang_code), 'unknown'))
-        select_fields.append(func.coalesce(func.lower(db.Languages.lang_code), 'unknown').label('norm_language'))
-    
-    if use_series:
-        # Use COALESCE to handle NULL series (books without series)
-        group_by_fields.append(func.coalesce(func.lower(db.Series.name), 'no_series'))
-        select_fields.append(func.coalesce(func.lower(db.Series.name), 'no_series').label('norm_series'))
-    
-    if use_publisher:
-        # Use COALESCE to handle NULL publishers (books without publisher)
-        group_by_fields.append(func.coalesce(func.lower(db.Publishers.name), 'unknown_publisher'))
-        select_fields.append(func.coalesce(func.lower(db.Publishers.name), 'unknown_publisher').label('norm_publisher'))
-    
-    # Add count and aggregated book IDs
-    # Use DISTINCT because LEFT JOINs can create duplicate rows for books with multiple languages/series/publishers
-    select_fields.extend([
-        func.count(func.distinct(db.Books.id)).label('book_count'),
-        func.group_concat(func.distinct(db.Books.id)).label('book_ids_str')
-    ])
-    
-    # Build query starting from Books table with explicit joins
-    query = calibre_db.session.query(*select_fields).select_from(db.Books)
-    
-    # Join required tables based on criteria
-    # Note: Books with multiple authors/languages/etc will create multiple rows - handled by DISTINCT in count
-    if use_author:
-        # Join to get author (books_authors_link has no ordering column, Python uses first from relationship)
-        query = query.join(db.books_authors_link, db.Books.id == db.books_authors_link.c.book)\
-                     .join(db.Authors, db.books_authors_link.c.author == db.Authors.id)
-    
-    if use_language:
-        # LEFT JOIN to include books without languages (handled by COALESCE)
-        query = query.outerjoin(db.books_languages_link, db.Books.id == db.books_languages_link.c.book)\
-                     .outerjoin(db.Languages, db.books_languages_link.c.lang_code == db.Languages.id)
-    
-    if use_series:
-        # LEFT JOIN to include books without series (handled by COALESCE)
-        query = query.outerjoin(db.books_series_link, db.Books.id == db.books_series_link.c.book)\
-                     .outerjoin(db.Series, db.books_series_link.c.series == db.Series.id)
-    
-    if use_publisher:
-        # LEFT JOIN to include books without publishers (handled by COALESCE)
-        query = query.outerjoin(db.books_publishers_link, db.Books.id == db.books_publishers_link.c.book)\
-                     .outerjoin(db.Publishers, db.books_publishers_link.c.publisher == db.Publishers.id)
-    
-    # Apply common filters for user permissions
-    query = query.filter(get_common_filters(user_id=user_id))
-    
-    # Group by selected criteria
-    query = query.group_by(*group_by_fields)
-    
-    # Only get groups with 2+ books (duplicates)
-    query = query.having(func.count(func.distinct(db.Books.id)) > 1)
-    
-    # Execute query
-    try:
-        results = query.all()
-        print(f"[cwa-duplicates] SQL query returned {len(results)} duplicate groups", flush=True)
-    except Exception as e:
-        log.error("[cwa-duplicates] SQL query failed: %s, falling back to Python method", str(e))
-        print(f"[cwa-duplicates] SQL query failed: {str(e)}, falling back to Python method", flush=True)
-        return find_duplicate_books_python(
-            use_title, use_author, use_language, use_series, use_publisher, False,
-            include_dismissed, user_id
-        )
-    
-    # Process results into duplicate groups
-    duplicate_groups = []
-    
-    for result in results:
-        # Parse book IDs from group_concat result
-        book_ids_str = result.book_ids_str
-        book_ids = [int(bid) for bid in book_ids_str.split(',')]
-        
-        # Load full book objects for these IDs with eager loading.
-        # Batch the IN filter so a pathologically large group cannot exceed
-        # SQLite's bound-parameter limit (see _fetch_books_in_chunks).
-        books_base = (calibre_db.session.query(db.Books)
-                      .options(joinedload(db.Books.data))
-                      .options(joinedload(db.Books.authors))
-                      .filter(get_common_filters(user_id=user_id)))
-        books = _fetch_books_in_chunks(books_base, book_ids)
-        # Re-apply ORDER BY timestamp DESC (NULLs last) across batches.
-        # tz-safe key: mixed naive/aware timestamps otherwise raise
-        # "can't compare offset-naive and offset-aware datetimes" — the DB
-        # ORDER BY tolerated it, Python's sort does not.
-        books.sort(key=lambda b: _timestamp_or_default(b.timestamp, _AWARE_MIN),
-                   reverse=True)
-        
-        if len(books) < 2:
-            continue  # Safety check
-        
-        # Prepare display data
-        for book in books:
-            # Ensure we have ordered authors
-            if not hasattr(book, 'ordered_authors') or not book.ordered_authors:
-                book.ordered_authors = calibre_db.order_authors([book])
-            
-            # Handle potential missing authors
-            if book.ordered_authors and len(book.ordered_authors) > 0:
-                book.author_names = ', '.join([author.name.replace('|', ',') for author in book.ordered_authors if author.name])
-            else:
-                book.author_names = 'Unknown'
-            
-            # Add cover URL
-            if hasattr(book, 'has_cover') and book.has_cover:
-                book.cover_url = f"/cover/{book.id}"
-            else:
-                book.cover_url = "/static/generic_cover.svg"
-        
-        # Get safe title and author for display
-        display_title = books[0].title if books[0].title else 'Untitled'
-        display_author = 'Unknown'
-        if hasattr(books[0], 'author_names') and books[0].author_names:
-            display_author = books[0].author_names.split(',')[0].strip()
-        
-        # Generate group hash for dismiss tracking
-        group_hash = generate_group_hash(display_title, display_author)
-        
-        duplicate_groups.append({
-            'title': display_title,
-            'author': display_author,
-            'count': len(books),
-            'books': books,
-            'group_hash': group_hash,
-            'duplicate_key': _stable_group_key(books)
-        })
-        
-        print(f"[cwa-duplicates] Found duplicate group: '{display_title}' by {display_author} ({len(books)} copies) - IDs: {book_ids}", flush=True)
-        log.info("[cwa-duplicates] Found duplicate group: '%s' by %s (%s copies) - IDs: %s", 
-                display_title, display_author, len(books), book_ids)
-    
-    # Filter out dismissed groups if requested — single implementation (D5):
-    # filter_dismissed_groups matches on the stable duplicate_key with a
-    # group_hash fallback for pre-migration rows.
-    if not include_dismissed and user_id:
-        duplicate_groups = filter_dismissed_groups(duplicate_groups, user_id=user_id)
-
-    # Sort by title, then author for consistent display
-    duplicate_groups.sort(key=lambda x: (x['title'].lower(), x['author'].lower()))
-
-    print(f"[cwa-duplicates] Found {len(duplicate_groups)} duplicate groups total", flush=True)
-
-    return duplicate_groups
 
 
 # SQLite caps host parameters per statement at SQLITE_MAX_VARIABLE_NUMBER

@@ -311,3 +311,26 @@ class TestD10HiddenBooksExcludedFromScan:
             "the user_id=None branch must forward allow_show_hidden to "
             "calibre_db.common_filters"
         )
+
+
+class TestD9SqlGroupingRetired:
+    def test_sql_only_grouping_function_is_gone(self):
+        # D9: find_duplicate_books_sql grouped one row per co-author (a
+        # co-authored book landed in multiple groups — resolution could
+        # over-delete) and skipped the author-prefix title strip, so the same
+        # library produced different group sets than the Python/index paths.
+        # The function is retired; grouping has exactly one implementation.
+        assert "def find_duplicate_books_sql(" not in DUP_SRC, (
+            "the divergent SQL-only grouping engine must stay deleted (D9) — "
+            "SQL is allowed only as the hybrid candidate prefilter"
+        )
+
+    def test_sql_scan_method_routes_to_hybrid(self):
+        src = _func_src("find_duplicate_books")
+        m = re.search(r"elif scan_method == 'sql':(.*?)elif scan_method", src, re.S)
+        assert m, "scan_method dispatch not found"
+        assert "method_to_use = 'hybrid'" in m.group(1), (
+            "scan_method='sql' must route to hybrid (SQL prefilter + Python "
+            "grouping), never to a separate grouping engine (D9)"
+        )
+        assert "'sql' if" not in m.group(1), "no conditional SQL grouping path"

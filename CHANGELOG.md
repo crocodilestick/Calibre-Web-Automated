@@ -17,6 +17,12 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- The experimental "SQL" duplicate-scan mode no longer produces different (and
+  sometimes wrong) results than the default mode. It grouped co-authored books
+  into multiple duplicate groups at once and skipped a title normalization the
+  default scan applies, so the same library showed different duplicates
+  depending on an admin toggle. That mode now uses the same single grouping
+  engine as everything else, keeping SQL only as the fast candidate prefilter.
 - Books you've hidden no longer show up in your duplicate scan. The Duplicates
   page respected your language, tag, and archive filters but not your hidden
   list, so hidden books reappeared there and could even be swept into

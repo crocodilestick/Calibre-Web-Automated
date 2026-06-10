@@ -51,6 +51,19 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         }
 
+        /* caliBlur.css ships a global `.container-fluid img { width: 100%;
+           max-width: 26rem; }` (26rem == 260px under its 10px root font) and
+           loads after this inline block, so an equal-specificity rule loses to
+           it. Because .book-detail-cover is a shrink-wrapped flex item, the img
+           resolves its width against that 26rem cap and overflows the cover
+           column on phones (the "cover too big / off-center" report, #288).
+           Bump specificity above .container-fluid img so the cover can never
+           exceed its own column. */
+        .book-detail-main .book-detail-cover img {
+            width: 100%;
+            max-width: 100%;
+        }
+
         .book-detail-meta {
             flex: 1 1 auto;
             min-width: 0;
@@ -361,6 +374,16 @@
                 padding-right: 0px !important;
             }
 
+            /* caliBlur gives the .discover wrapper an asymmetric
+               `padding: 0 10px 0 20px`, which shifts the whole detail column
+               ~10px right of center on phones. This rule lives only in
+               detail.html's inline <style>, so symmetrizing here re-centers the
+               book detail page without touching .discover on any other page. */
+            body > div.container-fluid > div > div.col-sm-10 > div.discover {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+
             .book-detail-page {
                 margin-left: 0rem;
             }
@@ -392,6 +415,7 @@
             }
 
             .book-detail-cover {
+                width: 240px;
                 max-width: 60%;
             }
 
@@ -402,11 +426,34 @@
 
         @media (max-width: 600px) {
             .book-detail-cover {
-                max-width: 75%;
+                width: 200px;
+                max-width: 70%;
+            }
+
+            /* Tighten the vertical stack on phones so the description sits closer
+               to the fold (#288, @iroQuai: "scroll quite some time to find the
+               description"). Smaller cover->meta gap, smaller title + reduced
+               title margin, tighter chip padding/gaps — none of which touch the
+               desktop layout. */
+            .book-detail-main {
+                gap: 1.25rem;
+            }
+
+            .book-detail-meta {
+                gap: 8px;
             }
 
             .book-detail-meta h2#title {
-                font-size: 3rem;
+                font-size: 2.2rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .book-metadata {
+                gap: 6px 10px;
+            }
+
+            .meta-chip {
+                padding: 0.6rem 1rem;
             }
 
             .book-detail-actions .btn {
